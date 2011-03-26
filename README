@@ -32,7 +32,7 @@ INSTALATION
 
 RUNNING
 1. cd bin
-2. run.sh
+2. ./run.sh
 
 TESTING
 1. Open your web browser and visit http://IPSERVER:9001
