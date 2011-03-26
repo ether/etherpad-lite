@@ -25,7 +25,7 @@ var AttributePoolFactory = require("./AttributePoolFactory");
 /**
  * The initial Text of a Pad
  */
-exports.startText = "Hello World\nGoodbye Etherpad";
+exports.startText = "Welcome to Etherpad Lite.  This pad text is synchronized as you type, so that everyone viewing this page sees the same text.";
 
 /**
  * A Array with all known Pads
