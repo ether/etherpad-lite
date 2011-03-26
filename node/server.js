@@ -42,7 +42,7 @@ server = http.createServer(function(req, res){
     send404(res, path);
   }
 });
-server.listen(80);
+server.listen(9001);
 
 function randomPadName() {
 	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
