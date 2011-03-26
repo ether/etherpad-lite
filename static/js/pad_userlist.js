@@ -14,6 +14,42 @@
  * limitations under the License.
  */
 
+ var colorPickerOpen = false;
+
+ function getColorPickerSwatchIndex(jnode) {
+    return Number(jnode.get(0).className.match(/\bn([0-9]+)\b/)[1])-1;
+  }
+  function closeColorPicker(accept) {
+    if (accept) {
+      var newColorId = getColorPickerSwatchIndex($("#mycolorpicker .picked"));
+      if (newColorId >= 0) { // fails on NaN
+        myUserInfo.colorId = newColorId;
+        pad.notifyChangeColor(newColorId);
+      }
+    }
+    colorPickerOpen = false;
+    $("#mycolorpicker").css('display', 'none');
+    renderMyUserInfo();
+  }
+
+
+  function showColorPicker() {
+    if (! colorPickerOpen) {
+      var palette = pad.getColorPalette();
+      for(var i=0;i<palette.length;i++) {
+        $("#mycolorpicker .n"+(i+1)+" .pickerswatch").css(
+          'background', palette[i]);
+      }
+      $("#mycolorpicker").css('display', 'block');
+      colorPickerOpen = true;
+      renderMyUserInfo();
+    }
+    // this part happens even if color picker is already open
+    $("#mycolorpicker .pickerswatchouter").removeClass('picked');
+    $("#mycolorpicker .pickerswatchouter:eq("+(myUserInfo.colorId||0)+")").
+      addClass('picked');
+  }
+
 
 var paduserlist = (function() {
 
@@ -278,7 +314,6 @@ var paduserlist = (function() {
   var myUserInfo = {};
   var otherUsersInfo = [];
   var otherUsersData = [];
-  var colorPickerOpen = false;
 
   function rowManagerMakeNameEditor(jnode, userId) {
     setUpEditable(jnode, function() {
@@ -350,38 +385,6 @@ var paduserlist = (function() {
       jqueryNode.val(valueGetter()).blur();
     });
     jqueryNode.removeAttr('disabled').addClass('editable');
-  }
-
-  function showColorPicker() {
-    if (! colorPickerOpen) {
-      var palette = pad.getColorPalette();
-      for(var i=0;i<palette.length;i++) {
-        $("#mycolorpicker .n"+(i+1)+" .pickerswatch").css(
-          'background', palette[i]);
-      }
-      $("#mycolorpicker").css('display', 'block');
-      colorPickerOpen = true;
-      renderMyUserInfo();
-    }
-    // this part happens even if color picker is already open
-    $("#mycolorpicker .pickerswatchouter").removeClass('picked');
-    $("#mycolorpicker .pickerswatchouter:eq("+(myUserInfo.colorId||0)+")").
-      addClass('picked');
-  }
-  function getColorPickerSwatchIndex(jnode) {
-    return Number(jnode.get(0).className.match(/\bn([0-9]+)\b/)[1])-1;
-  }
-  function closeColorPicker(accept) {
-    if (accept) {
-      var newColorId = getColorPickerSwatchIndex($("#mycolorpicker .picked"));
-      if (newColorId >= 0) { // fails on NaN
-        myUserInfo.colorId = newColorId;
-        pad.notifyChangeColor(newColorId);
-      }
-    }
-    colorPickerOpen = false;
-    $("#mycolorpicker").css('display', 'none');
-    renderMyUserInfo();
   }
 
   function updateInviteNotice() {
