@@ -19,7 +19,11 @@ var clientVars = {};  // ]]>
 <!--    <script type="text/javascript" src="/static/js/client.js"></script>-->
 <script type="text/javascript" src="/static/js/plugins.js"></script>
 <script type="text/javascript" src="/static/js/undo-xpopup.js"></script>
+<!--
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script> 
+
 <script type="text/javascript" src="/static/js/json2.js"></script>
 <script type="text/javascript" src="/static/js/colorutils.js"></script>
 <script type="text/javascript" src="/static/js/draggable.js"></script>
@@ -32,7 +36,6 @@ var clientVars = {};  // ]]>
 <script type="text/javascript" src="/static/js/ace.js"></script>
 <script type="text/javascript" src="/static/js/collab_client.js"></script>
 <script type="text/javascript" src="/static/js/pad_userlist.js"></script>
-<script type="text/javascript" src="/static/js/pad_chat.js"></script>
 <script type="text/javascript" src="/static/js/pad_impexp.js"></script>
 <script type="text/javascript" src="/static/js/pad_savedrevs.js"></script>
 <script type="text/javascript" src="/static/js/pad_connectionstatus.js"></script>
@@ -104,8 +107,51 @@ var clientVars = {};  // ]]>
                <div id="userscont">
                <table>
                  <!-- some example code so I can make the css -->
-                 <td class="user">John</td>
+                 <td class="myuser"><a onclick="showColorPicker();" title="Change my name/color">John</td>
+		<div id="mycolorpicker">
+		       <div>
+		         <div class="pickerswatchouter n1"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n2"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n3"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n4"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n5"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n6"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n7"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n8"><div class="pickerswatch"><!-- --></div></div>
+		       </div><div>
+		         <div class="pickerswatchouter n9"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n10"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n11"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n12"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n13"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n14"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n15"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n16"><div class="pickerswatch"><!-- --></div></div>
+		       </div><div>
+			  <div class="pickerswatchouter n17"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n18"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n19"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n20"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n21"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n22"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n23"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n24"><div class="pickerswatch"><!-- --></div></div>
+		       </div><div>
+		         <div class="pickerswatchouter n25"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n26"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n27"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n28"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n29"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n30"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n31"><div class="pickerswatch"><!-- --></div></div>
+		         <div class="pickerswatchouter n32"><div class="pickerswatch"><!-- --></div></div>
+		       </div>
+		        <div id="mycolorpickersave">Save</div>
+		        <div id="mycolorpickercancel">Cancel</div>
+		      </div>
+
                  <td class="user">&nbsp;&nbsp;&nbsp;</td>
+                 <td class="user">Joe</td>
 	       </table>
                </div>
             </div>  
