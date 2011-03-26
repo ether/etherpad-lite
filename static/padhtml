@@ -91,6 +91,8 @@ var clientVars = {};  // ]]>
   <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('undo'));" title="Undo (ctrl-Z)"><img src="/static/img/jun09/pad/editbar_undo.gif"></a></td>
   <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('redo'));" title="Redo (ctrl-Y)"><img src="/static/img/jun09/pad/editbar_redo.gif"></a></td>
   <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('save'));" title="Save Revision"><img src="/static/img/jun09/pad/editbar_save.gif"></a></td>
+  <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('embed'));" title="Embed this pad">  <img src="/static/img/mar11/editbar_embed.gif"></a></td>
+
   <td><img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24"></td>
   <td>&nbsp;&nbsp;</td>
   <td><img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24"></td>
