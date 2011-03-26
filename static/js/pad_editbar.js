@@ -93,6 +93,25 @@ var padeditbar = (function(){
             $('#editorcontainerbox').animate({top:'36px'});
           }
         }
+        if (cmd == 'embed') {
+        // get current height
+        var editbarheight = $('#editbar').css('height');
+          if (editbarheight == "36px"){
+            // increase the size of the editbar
+            $('#editbar').animate({height:'72px'});
+            $('#editorcontainerbox').animate({top:'72px'});
+            padurl = document.location;
+            $('#embed').html('Embed code:<input id="embedinput" type="text" value="<iframe src='+padurl+'></iframe>">');
+            $('#embed').show();
+          }
+          else
+          {
+            // increase the size of the editbar
+            $('#editbar').animate({height:'36px'});
+            $('#editorcontainerbox').animate({top:'36px'});
+            $('#embed').hide();
+          }
+        }
         if (cmd == 'save') {
           padsavedrevs.saveNow();
         } else {
