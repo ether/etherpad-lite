@@ -1,5 +1,5 @@
 /**
- * 2011 Peter 'Pita' Martischka
+ * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,35 +19,65 @@ var Changeset = require("./Changeset");
 var AttributePoolFactory = require("./AttributePoolFactory");
 var authorManager = require("./AuthorManager");
 
-//var token2author = {};
-//var author2token = {};
-
+/**
+ * A associative array that translates a session to a pad
+ */
 var session2pad = {};
+/**
+ * A associative array that saves which sessions belong to a pad
+ */
 var pad2sessions = {};
 
+/**
+ * A associative array that saves some general informations about a session
+ * key = sessionId
+ * values = author, rev
+ *   rev = That last revision that was send to this client
+ *   author = the author name of this session
+ */
 var sessioninfos = {};
 
+/**
+ * Saves the Socket class we need to send and recieve data from the client
+ */
 var socketio;
 
+/**
+ * This Method is called by server.js to tell the message handler on which socket it should send
+ * @param socket_io The Socket
+ */
 exports.setSocketIO = function(socket_io)
 {
   socketio=socket_io;
 }
 
+/**
+ * Handles the connection of a new user
+ * @param client the new client
+ */
 exports.handleConnect = function(client)
 {
+  //check if all ok
   throwExceptionIfClientOrIOisInvalid(client);
   
+  //Initalize session2pad and sessioninfos for this new session
   session2pad[client.sessionId]=null;  
   sessioninfos[client.sessionId]={};
 }
 
+/**
+ * Handles the disconnection of a user
+ * @param client the client that leaves
+ */
 exports.handleDisconnect = function(client)
 {
+  //check if all ok
   throwExceptionIfClientOrIOisInvalid(client);
   
+  //save the padname of this session
   var sessionPad=session2pad[client.sessionId];
   
+  //Go trough all sessions of this pad, search and destroy the entry of this client
   for(i in pad2sessions[sessionPad])
   {
     if(pad2sessions[sessionPad][i] == client.sessionId)
@@ -57,29 +87,36 @@ exports.handleDisconnect = function(client)
     }
   }
   
+  //Delete the session2pad and sessioninfos entrys of this session
   delete session2pad[client.sessionId]; 
   delete sessioninfos[client.sessionId]; 
 }
 
+/**
+ * Handles a message from a user
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
 exports.handleMessage = function(client, message)
-{
+{ 
+  //check if all ok
   throwExceptionIfClientOrIOisInvalid(client);
   
   if(message == null)
   {
     throw "Message is null!";
   }
-  
+  //Etherpad sometimes send JSON and sometimes a JSONstring...
   if(typeof message == "string")
   {
     message = JSON.parse(message);
   }
-  
   if(!message.type)
   {
     throw "Message have no type attribute!";
   }
   
+  //Check what type of message we get and delegate to the other methodes
   if(message.type == "CLIENT_READY")
   {
     handleClientReady(client, message);
@@ -96,6 +133,7 @@ exports.handleMessage = function(client, message)
     console.error(JSON.stringify(message));
     handleUserInfoUpdate(client, message);
   }
+  //if the message type is unkown, throw an exception
   else
   {
     console.error(message);
@@ -103,8 +141,14 @@ exports.handleMessage = function(client, message)
   }
 }
 
+/**
+ * Handles a USERINFO_UPDATE, that means that a user have changed his color or name. Anyway, we get both informations
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
 function handleUserInfoUpdate(client, message)
 {
+  //check if all ok
   if(message.data.userInfo.name == null)
   {
     throw "USERINFO_UPDATE Message have no name!";
@@ -114,14 +158,24 @@ function handleUserInfoUpdate(client, message)
     throw "USERINFO_UPDATE Message have no colorId!";
   }
   
+  //Find out the author name of this session
   var author = sessioninfos[client.sessionId].author;
   
+  //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
 }
 
+/**
+ * Handles a USERINFO_UPDATE, that means that a user have changed his color or name. Anyway, we get both informations
+ * This Method is nearly 90% copied out of the Etherpad Source Code. So I can't tell you what happens here exactly
+ * Look at https://github.com/ether/pad/blob/master/etherpad/src/etherpad/collab/collab_server.js in the function applyUserChanges()
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
 function handleUserChanges(client, message)
 {
+  //check if all ok
   if(message.data.baseRev == null)
   {
     throw "USER_CHANGES Message have no baseRev!";
@@ -135,14 +189,15 @@ function handleUserChanges(client, message)
     throw "USER_CHANGES Message have no changeset!";
   }
   
+  //get all Vars we need
   var baseRev = message.data.baseRev;
   var wireApool = (AttributePoolFactory.createAttributePool()).fromJsonable(message.data.apool);
-  //console.error({"wireApool": wireApool});
   var changeset = message.data.changeset;
   var pad = padManager.getPad(session2pad[client.sessionId], false);
   
   //ex. _checkChangesetAndPool
   
+  //Copied from Etherpad, don't know what it does exactly
   Changeset.checkRep(changeset);
   Changeset.eachAttribNumber(changeset, function(n) {
     if (! wireApool.getAttrib(n)) {
@@ -152,11 +207,8 @@ function handleUserChanges(client, message)
   
   //ex. adoptChangesetAttribs
   
-  
-  console.error({"changeset": changeset});
-  //console.error({"before: pad.pool()": pad.pool()});
+  //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
   Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool());
-  //console.error({"after: pad.pool()": pad.pool()});
   
   //ex. applyUserChanges
   
@@ -194,20 +246,15 @@ function handleUserChanges(client, message)
   
   //ex. updatePadClients
   
-  //console.error({"sessioninfos[client.sessionId].author":sessioninfos[client.sessionId].author});
-  
   for(i in pad2sessions[pad.id])
   {
     var session = pad2sessions[pad.id][i];
-    //console.error({"session":session});
     var lastRev = sessioninfos[session].rev;
     
     while (lastRev < pad.getHeadRevisionNumber()) 
     {
       var r = ++lastRev;
       var author = pad.getRevisionAuthor(r);
-      
-      //console.error({"author":author});
       
       if(author == sessioninfos[session].author)
       {
@@ -226,10 +273,11 @@ function handleUserChanges(client, message)
     
     sessioninfos[session].rev = pad.getHeadRevisionNumber();
   }
-  
-  //pad.getAllAuthors();
 }
 
+/**
+ * Copied from the Etherpad Source Code. Don't know what this methode does excatly...
+ */
 function _correctMarkersInPad(atext, apool) {
   var text = atext.text;
 
@@ -269,8 +317,15 @@ function _correctMarkersInPad(atext, apool) {
   return builder.toString();
 }
 
+/**
+ * Handles a CLIENT_READY. A CLIENT_READY is the first message from the client to the server. The Client sends his token 
+ * and the pad it wants to enter. The Server answers with the inital values (clientVars) of the pad
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
 function handleClientReady(client, message)
 {
+  //check if all ok
   if(!message.token)
   {
     throw "CLIENT_READY Message have no token!";
@@ -288,44 +343,35 @@ function handleClientReady(client, message)
     throw "CLIENT_READY Message have a unkown protocolVersion '" + protocolVersion + "'!";
   }
 
+  //Ask the author Manager for a authorname of this token. 
   var author = authorManager.getAuthor4Token(message.token);
-  /*if(token2author[message.token])
-  {
-    author = token2author[message.token];
-  }
-  else
-  {
-    author = "g." + _randomString(16);
-    
-    token2author[message.token] = author;
-    author2token[author] = message.token;
-  }*/
   
+  //Save in session2pad that this session belonges to this pad
   var sessionId=String(client.sessionId);
   session2pad[sessionId] = message.padId;
   
+  //check if there is already a pad2sessions entry, if not, create one
   if(!pad2sessions[message.padId])
   {
     pad2sessions[message.padId] = [];
   }
   
-  padManager.ensurePadExists(message.padId);
+  //Saves in pad2sessions that this session belongs to this pad
   pad2sessions[message.padId].push(sessionId);
+   
+  //Tell the PadManager that it should ensure that this Pad exist
+  padManager.ensurePadExists(message.padId);
   
-  /*console.dir({"session2pad": session2pad});
-  console.dir({"pad2sessions": pad2sessions});
-  console.dir({"token2author": token2author});
-  console.dir({"author2token": author2token});*/
-  
+  //Ask the PadManager for a function Wrapper for this Pad
   var pad = padManager.getPad(message.padId, false);
   
+  //prepare all values for the wire
   atext = pad.atext();
   var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool());
   var apool = attribsForWire.pool.toJsonable();
   atext.attribs = attribsForWire.translated;
   
   var clientVars = {
-    //"userAgent": "Anonymous Agent",
     "accountPrivs": {
         "maxRevisions": 100
     },
@@ -368,13 +414,14 @@ function handleClientReady(client, message)
     "hooks": {}
   }
   
+  //Add a username to the clientVars if one avaiable
   if(authorManager.getAuthorName(author) != null)
   {
     clientVars.userName = authorManager.getAuthorName(author);
   }
   
+  //Add all authors that worked on this pad, to the historicalAuthorData on clientVars
   var allAuthors = pad.getAllAuthors();
-  
   for(i in allAuthors)
   {
     clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]] = {};
@@ -383,11 +430,14 @@ function handleClientReady(client, message)
     clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]].colorId = authorManager.getAuthorColorId(author);
   }
   
+  //Send the clientVars to the Client
   client.send(clientVars);
   
+  //Save the revision and the author id in sessioninfos
   sessioninfos[client.sessionId].rev = pad.getHeadRevisionNumber();
   sessioninfos[client.sessionId].author = author;
   
+  //prepare the notification for the other users on the pad, that this user joined
   var messageToTheOtherUsers = {
     "type": "COLLABROOM",
     "data": {
@@ -400,18 +450,23 @@ function handleClientReady(client, message)
       }
     }
   };
-    
+  
+  //Add the authorname of this new User, if avaiable
   if(authorManager.getAuthorName(author) != null)
   {
     messageToTheOtherUsers.data.userInfo.name = authorManager.getAuthorName(author);
   }
   
+  //Run trough all sessions of this pad
   for(i in pad2sessions[message.padId])
   {
+    //Jump over, if this session is the connection session
     if(pad2sessions[message.padId][i] != client.sessionId)
     {
+      //Send this Session the Notification about the new user
       socketio.clients[pad2sessions[message.padId][i]].send(messageToTheOtherUsers);
     
+      //Send the new User a Notification about this other user
       var messageToNotifyTheClientAboutTheOthers = {
         "type": "COLLABROOM",
         "data": {
@@ -424,7 +479,6 @@ function handleClientReady(client, message)
           }
         }
       };
-      
       client.send(messageToNotifyTheClientAboutTheOthers);
     }
   }
@@ -432,15 +486,9 @@ function handleClientReady(client, message)
   
 }
 
-/*function _randomString(len) {
-  // use only numbers and lowercase letters
-  var pieces = [];
-  for(var i=0;i<len;i++) {
-    pieces.push(Math.floor(Math.random()*36).toString(36).slice(-1));
-  }
-  return pieces.join('');
-}*/
-
+/**
+ * A internal function that simply checks if client or socketio is null and throws a exception if yes
+ */
 function throwExceptionIfClientOrIOisInvalid(client)
 {
   if(client == null)
