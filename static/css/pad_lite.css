@@ -318,91 +318,6 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 }
 .hidesidebar #padsidebar { width: 0; overflow: hidden; }
 
-#padsidebarfull {
-  border: 1px solid #c4c4c4;
-  background: #fafafa;
-  zoom: 1;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 8px;
-}
-
-#padusers {
-  border: 1px solid #c4c4c4;
-  background: #fafafa;
-  zoom: 1;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 300px;
-}
-#myuser {
-  background: #d9e7f9;
-  padding: 5px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 31px;
-}
-#otherusers {
-  overflow: auto;
-  position: absolute;
-  top: 41px;
-  left: 0;
-  right: 0;
-  bottom: 28px;
-}
-#userlistbuttonarea {
-  background: url(/static/img/jun09/pad/inviteshare2.gif) repeat-x 0 0;
-  position: absolute;
-  height: 28px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-#hdraggie {
-  background: url(/static/img/jun09/pad/hdraggie.gif) repeat-x center top;
-  cursor: S-resize;
-  position: absolute;
-  top: 300px;
-  left: 0;
-  right: 0;
-  height: 10px;
-}
-
-#padchat {
-  border: 1px solid #c4c4c4;
-  position: absolute;
-  top: 310px;
-  left: 0;
-  right: 0;
-  bottom: 0px;
-}
-#chatlines {
-  overflow: auto;
-  background: #fafafa;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 30px;
-}
-#chatbottom {
-  background: #ecf2fa;
-  padding: 4px;
-  position: absolute;
-  height: 22px;
-  left: 0;
-  right: 0;
-  bottom: 0px;
-}
-
 #myswatchbox { position: absolute; left: 5px; top: 5px; width: 22px; height: 22px;
   /*border-top: 1px solid #c3cfe0; border-left: 1px solid #c3cfe0;
   border-right: 1px solid #ecf3fc; border-bottom: 1px solid #ecf3fc;*/
@@ -1146,4 +1061,34 @@ height:24px;
 display:inline;
 padding-left:4px;
 margin-left:4px;
+}
+
+#users{
+display:none;
+position:absolute;
+top:42px;
+font-size:14px;
+width:100%;
+}
+
+#userscont{
+margin-left:8px;
+}
+
+.user{
+height:20px;
+border-style:solid;
+border-width:1px;
+border-color:grey;
+background-color:lightblue;
+display:inline;
+min-width:20px;
+position:absolute;
+display:inline;
+}
+
+.username{
+padding-left:4px;
+padding-right:4px;
+padding-top:2px;
 }
