@@ -1132,9 +1132,12 @@ a#topbarmaximize {
 display:none;
 position:absolute;
 top:42px;
-margin-left:10px;
 font-size:14px;
 width:100%;
+}
+
+#embedcode{
+margin-left:10px;
 }
 
 #embedinput{

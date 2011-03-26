@@ -101,7 +101,7 @@ var padeditbar = (function(){
             $('#editbar').animate({height:'72px'});
             $('#editorcontainerbox').animate({top:'72px'});
             padurl = document.location;
-            $('#embed').html('Embed code:<input id="embedinput" type="text" value="<iframe src='+padurl+'></iframe>">');
+            $('#embed').html('<div id="embedcode">Embed code:<input id="embedinput" type="text" value="<iframe src='+padurl+'></iframe></div>">');
             $('#embed').show();
           }
           else
