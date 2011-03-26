@@ -1,4 +1,18 @@
-// Simple Node & Socket server
+/**
+ * 2011 Peter 'Pita' Martischka
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS-IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 var http = require('http')
   , url = require('url')
@@ -98,7 +112,7 @@ function sendRedirect(res, reqPath, location)
 
 function requestLog(code, path, desc)
 {
-  //console.log(code +", " + path + ", " + desc);
+  console.log(code +", " + path + ", " + desc);
 }
 
 var io = io.listen(server);
@@ -111,9 +125,9 @@ io.on('connection', function(client){
   }catch(e){console.error(e);}
   
   client.on('message', function(message){
-    //try{
+    try{
       messageHandler.handleMessage(client, message);
-    //}catch(e){console.error(e);}
+    }catch(e){console.error(e);}
   });
 
   client.on('disconnect', function(){
