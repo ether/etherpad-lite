@@ -6,7 +6,7 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Language" content="en-us" />
     <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
-    <title>LinePad v0.0.1: test</title>
+    <title>Etherpad Lite v0.0.1: test</title>
     <!-- <base href="http://localhost:9001/" />-->
     <!-- CSS -->
     <link href="/static/css/pad_lite.css" rel="stylesheet" type="text/css" />
@@ -100,7 +100,7 @@ var clientVars = {};  // ]]>
           </div>
 	</div>
 	<div id="editorcontainerbox">
-  <div id="editorloadingbox">Loading...</div>
+  <div id="editorloadingbox">Loading Etherpad Lite...</div>
   <div id="editorcontainer"><!-- --></div>
 </div>
       </div><!-- /padeditor -->
