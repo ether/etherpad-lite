@@ -195,11 +195,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options) {
       initialStartConnectTime = +new Date();
    // });
     
-    /*socket.on('message', function(obj){
+    socket.on('message', function(obj){
       if(window.console)
         console.log(obj);
       handleMessageFromServer(obj);
-    });*/
+    });
     
     socket.on('disconnect', function(obj){
       handleSocketClosed(true);
