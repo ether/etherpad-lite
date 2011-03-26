@@ -100,10 +100,15 @@ var clientVars = {};  // ]]>
   <td><img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24"></td>
 		</tr>
 	      </table>
-	      
-	      
-  
-	    </div>
+	    <div id="users">
+               <div id="userscont">
+                 <!-- some example code so I can make the css -->
+                 <div class="user"><div class="username">John</div></div>
+                 <div class="user"><div class="username"></div></div>
+               </div>
+            </div>  
+	    <div id="embed"></div>  
+  	    </div>
           </div>
 	</div>
 	<div id="editorcontainerbox">
