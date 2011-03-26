@@ -154,29 +154,6 @@ var clientVars = {};  // ]]>
 	</div>
       </div>
     </div>
-    <div id="feedbackbox">
-      <div id="feedbackbox-tl"><!-- --></div>
-      <div id="feedbackbox-tr"><!-- --></div>
-      <div id="feedbackbox-bl"><!-- --></div>
-      <div id="feedbackbox-br"><!-- --></div>
-      <div id="feedbackbox-back"><!-- --></div>
-      
-      <div id="feedbackbox-contents">
-	<div id="feedbackbox-contentsinner">
-	  <p><strong>Great, we love feedback!  What kind?</strong></p>
-	  <ul id="uservoicelinks">
-	    <li><a href="http://uservoice.etherpad.com/pages/17280-feature-requests" target="_blank">Feature Request</a></li>
-	    <li><a href="http://uservoice.etherpad.com/pages/17285-bugs-and-problems" target="_blank">Bug Report</a></li>
-	    <li><a href="http://uservoice.etherpad.com/pages/22732-how-are-you-using-etherpad-" target="_blank">How I'm Using It</a></li>
-	    <li><a href="http://uservoice.etherpad.com/pages/22751-general-questions" target="_blank">Other Question</a></li>
-	    <li><a href="http://uservoice.etherpad.com/pages/22733-general-feedback" target="_blank">Other Feedback</a></li>
-	  </ul>
-	  <p>These links will open UserVoice in a new window.</p>
-	  <p id="feedbackemails">You can also send email to <a href="feedback"><tt>feedback</tt></a>, <a href="support"><tt>support</tt></a>, or <a href="bugs"><tt>bugs</tt></a> at <tt>etherpad.com</tt>.</p>
-	</div>
-      </div>
-      <a href="javascript:void(0)" id="feedbackbox-hide"><!-- --></a>
-    </div>
     <div id="sharebox" class="modaldialog">
       <div id="sharebox-inner" class="modaldialog-inner">
 	<a href="javascript:void(0)" id="sharebox-hide" class="modaldialog-hide"><!-- --></a>
