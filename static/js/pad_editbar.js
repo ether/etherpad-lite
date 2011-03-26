@@ -78,6 +78,10 @@ var padeditbar = (function(){
     },
     toolbarClick: function(cmd) {
       if (self.isEnabled()) {
+        if (cmd == 'showusers') {
+        $('#editbar').animate({height:'72px'});
+        $('#editorcontainerbox').animate({top:'72px'});
+        }
         if (cmd == 'save') {
           padsavedrevs.saveNow();
         } else {
