@@ -73,8 +73,8 @@ function OUTER(gscope) {
   var iframePadTop = EDIT_BODY_PADDING_TOP;
   var iframePadBottom = 0, iframePadRight = 0;
 
-  var console = (DEBUG && top.console);
-  if (! console) {
+  var console = (DEBUG && window.console);
+  if (! window.console) {
     var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
       "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
     console = {};
@@ -82,6 +82,7 @@ function OUTER(gscope) {
       console[names[i]] = function() {};
     //console.error = function(str) { alert(str); };
   }
+
   var PROFILER = window.PROFILER;
   if (!PROFILER) {
     PROFILER = function() { return {start:noop, mark:noop, literal:noop, end:noop, cancel:noop}; };
@@ -1311,7 +1312,7 @@ function OUTER(gscope) {
 
     isTimeUp = (isTimeUp || function() { return false; });
 
-    if (DEBUG && top.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
+    if (DEBUG && window.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
 
     var p = PROFILER("incorp", false);
 
