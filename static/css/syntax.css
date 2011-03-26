@@ -1,0 +1,32 @@
+/* ---------- Used by JavaScript Lexer ---------- */
+.syntax .c { color: #bd3f00; font-style: italic } /* Comment */
+.syntax .o { font-weight: bold; } /* Operator */
+.syntax .p { font-weight: bold; } /* Punctuation */
+.syntax .k { color: blue; } /* Keyword */
+.syntax .kc { color: purple } /* Keyword.Constant */
+.syntax .nx { } /* Name.Other */
+.syntax .mf { color: purple } /* Literal.Number.Float */
+.syntax .mh { color: purple } /* Literal.Number.Hex */
+.syntax .mi { color: purple } /* Literal.Number.Integer */
+.syntax .sr { color: purple } /* Literal.String.Regex */
+.syntax .s2 { color: purple } /* Literal.String.Double */
+.syntax .s1 { color: purple } /* Literal.String.Single */
+.syntax .sd { color: purple } /* Literal.String.Doc */
+.syntax .cs { color: #00aa33; font-weight: bold; font-style: italic } /* Comment.Special */
+.syntax .err { color: #cc0000; font-weight: bold; text-decoration: underline; } /* Error */
+
+/* css */
+.syntax .nt { font-weight: bold; } /* tag */
+.syntax .nc { color: #336; } /* class */
+.syntax .nf { color: #336; } /* id */
+.syntax .nd { color: #999; } /* :foo */
+.syntax .m { color: purple } /* number */
+.syntax .nb { color: purple } /* built-in */
+.syntax .cp { color: #bd3f00; } /* !important */
+
+.syntax .flash { background-color: #adf !important; }
+.syntax .flashbad { background-color: #f55 !important; }
+
+/*.syntax .test { background-color: #0f0; }*/
+/*.syntax .test { background: url(http://dl.getdropbox.com/u/88/blackvert.gif)
+	        repeat-y left top; }*/

@@ -1,0 +1,1077 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+ <link rel="icon" type="image/vnd.microsoft.icon" href="http://www.gstatic.com/codesite/ph/images/phosting.ico">
+ 
+ <script type="text/javascript">
+ 
+ 
+ 
+ var codesite_token = null;
+ 
+ 
+ var logged_in_user_email = null;
+ 
+ 
+ var relative_base_url = "";
+ 
+ </script>
+ 
+ 
+ <title>docbarstates.png - 
+ etherpad -
+ 
+ Project Hosting on Google Code</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+ <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
+ 
+ <meta name="ROBOTS" content="NOARCHIVE">
+ 
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/10276742928614796628/css/ph_core.css">
+ 
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/10276742928614796628/css/ph_detail.css" >
+ 
+ 
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/10276742928614796628/css/d_sb_20080522.css" >
+ 
+ 
+ 
+<!--[if IE]>
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/10276742928614796628/css/d_ie.css" >
+<![endif]-->
+ <style type="text/css">
+ .menuIcon.off { background: no-repeat url(http://www.gstatic.com/codesite/ph/images/dropdown_sprite.gif) 0 -42px }
+ .menuIcon.on { background: no-repeat url(http://www.gstatic.com/codesite/ph/images/dropdown_sprite.gif) 0 -28px }
+ .menuIcon.down { background: no-repeat url(http://www.gstatic.com/codesite/ph/images/dropdown_sprite.gif) 0 0; }
+ 
+ 
+ 
+  tr.inline_comment {
+ background: #fff;
+ vertical-align: top;
+ }
+ div.draft, div.published {
+ padding: .3em;
+ border: 1px solid #999; 
+ margin-bottom: .1em;
+ font-family: arial, sans-serif;
+ max-width: 60em;
+ }
+ div.draft {
+ background: #ffa;
+ } 
+ div.published {
+ background: #e5ecf9;
+ }
+ div.published .body, div.draft .body {
+ padding: .5em .1em .1em .1em;
+ max-width: 60em;
+ white-space: pre-wrap;
+ white-space: -moz-pre-wrap;
+ white-space: -pre-wrap;
+ white-space: -o-pre-wrap;
+ word-wrap: break-word;
+ font-size: 1em;
+ }
+ div.draft .actions {
+ margin-left: 1em;
+ font-size: 90%;
+ }
+ div.draft form {
+ padding: .5em .5em .5em 0;
+ }
+ div.draft textarea, div.published textarea {
+ width: 95%;
+ height: 10em;
+ font-family: arial, sans-serif;
+ margin-bottom: .5em;
+ }
+
+ 
+ .nocursor, .nocursor td, .cursor_hidden, .cursor_hidden td {
+ background-color: white;
+ height: 2px;
+ }
+ .cursor, .cursor td {
+ background-color: darkblue;
+ height: 2px;
+ display: '';
+ }
+ 
+ 
+.list {
+ border: 1px solid white;
+ margin-bottom:0;
+}
+
+ </style>
+</head>
+<body class="t4">
+ <script type="text/javascript">
+ var _gaq = _gaq || [];
+ _gaq.push(
+ ['siteTracker._setAccount', 'UA-18071-1'],
+ ['siteTracker._trackPageview']);
+ 
+ (function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+ })();
+ </script>
+<div class="headbg">
+ <div id="gaia">
+ 
+ <span>
+ 
+ <a href="#" id="projects-dropdown" onclick="return false;"><u>My favorites</u> <small>&#9660;</small></a>
+ | <a href="https://www.google.com/accounts/ServiceLogin?service=code&amp;ltmpl=phosting&amp;continue=http%3A%2F%2Fcode.google.com%2Fp%2Fetherpad%2Fsource%2Fbrowse%2Ftrunk%2Fetherpad%2Fsrc%2Fstatic%2Fimg%2Fjun09%2Fpad%2Fdocbarstates.png&amp;followup=http%3A%2F%2Fcode.google.com%2Fp%2Fetherpad%2Fsource%2Fbrowse%2Ftrunk%2Fetherpad%2Fsrc%2Fstatic%2Fimg%2Fjun09%2Fpad%2Fdocbarstates.png" onclick="_CS_click('/gb/ph/signin');"><u>Sign in</u></a>
+ 
+ </span>
+
+ </div>
+ <div class="gbh" style="left: 0pt;"></div>
+ <div class="gbh" style="right: 0pt;"></div>
+ 
+ 
+ <div style="height: 1px"></div>
+<!--[if lte IE 7]>
+<div style="text-align:center;">
+Your version of Internet Explorer is not supported. Try a browser that
+contributes to open source, such as <a href="http://www.firefox.com">Firefox</a>,
+<a href="http://www.google.com/chrome">Google Chrome</a>, or
+<a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame</a>.
+</div>
+<![endif]-->
+
+
+
+
+ <table style="padding:0px; margin: 0px 0px 10px 0px; width:100%" cellpadding="0" cellspacing="0">
+ <tr style="height: 58px;">
+ 
+ <td id="plogo">
+ <a href="/p/etherpad/">
+ 
+ 
+ <img src="/p/etherpad/logo?cct=1261015388" alt="Logo">
+ 
+ </a>
+ </td>
+ 
+ <td style="padding-left: 0.5em">
+ 
+ <div id="pname">
+ <a href="/p/etherpad/">etherpad</a>
+ </div>
+ <div id="psum">
+ <a id="project_summary_link" href="/p/etherpad/" >EtherPad Open Source Release</a>
+ 
+ </div>
+ 
+ </td>
+ <td style="white-space:nowrap;text-align:right; vertical-align:bottom;">
+ 
+ <form action="/hosting/search">
+ <input size="30" name="q" value="" type="text">
+ <input type="submit" name="projectsearch" value="Search projects" >
+ </form>
+ 
+ </tr>
+ </table>
+
+</div>
+
+ 
+<div id="mt" class="gtb"> 
+ <a href="/p/etherpad/" class="tab ">Project&nbsp;Home</a> 
+ 
+ 
+ 
+ 
+ 
+ 
+ <a href="/p/etherpad/w/list" class="tab ">Wiki</a>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <a href="/p/etherpad/source/checkout"
+ class="tab active">Source</a>
+ 
+ 
+ 
+ <div class=gtbc></div>
+</div>
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+ <tr>
+ 
+ 
+ 
+ 
+ 
+ 
+ <td class="subt">
+ <div class="st2">
+ <div class="isf">
+ 
+ <form action="/p/etherpad/source/browse" style="display: inline">
+ 
+ Repository:
+ <select name="repo" id="repo" style="font-size: 92%" onchange="submit()">
+ <option value="default">default</option><option value="wiki">wiki</option>
+ </select>
+ </form>
+ 
+ 
+ 
+ <span class="inst1"><a href="/p/etherpad/source/checkout">Checkout</a></span> &nbsp;
+ <span class="inst2"><a href="/p/etherpad/source/browse/trunk/">Browse</a></span> &nbsp;
+ <span class="inst3"><a href="/p/etherpad/source/list">Changes</a></span> &nbsp;
+ <span class="inst4"><a href="/p/etherpad/source/clones">Clones</a></span> &nbsp; 
+ <form action="http://www.google.com/codesearch" method="get" style="display:inline"
+ onsubmit="document.getElementById('codesearchq').value = document.getElementById('origq').value + ' package:http://etherpad\\.googlecode\\.com'">
+ <input type="hidden" name="q" id="codesearchq" value="">
+ <input type="text" maxlength="2048" size="38" id="origq" name="origq" value="" title="Google Code Search" style="font-size:92%">&nbsp;<input type="submit" value="Search Trunk" name="btnG" style="font-size:92%">
+ 
+ 
+ 
+ </form>
+ </div>
+</div>
+
+ </td>
+ 
+ 
+ 
+ <td align="right" valign="top" class="bevel-right"></td>
+ </tr>
+</table>
+<script type="text/javascript">
+ var cancelBubble = false;
+ function _go(url) { document.location = url; }
+</script>
+
+
+<div id="maincol"
+ 
+>
+
+ 
+<!-- IE -->
+
+
+
+
+<div class="expand">
+<div id="colcontrol">
+<style type="text/css">
+ #file_flipper { white-space: nowrap; padding-right: 2em; }
+ #file_flipper.hidden { display: none; }
+ #file_flipper .pagelink { color: #0000CC; text-decoration: underline; }
+ #file_flipper #visiblefiles { padding-left: 0.5em; padding-right: 0.5em; }
+</style>
+<table id="nav_and_rev" class="list"
+ cellpadding="0" cellspacing="0" width="100%">
+ <tr>
+ 
+ <td nowrap="nowrap" class="src_crumbs src_nav" width="33%">
+ <strong class="src_nav">Source path:&nbsp;</strong>
+ <span id="crumb_root">
+ 
+ <a href="/p/etherpad/source/browse/">hg</a>/&nbsp;</span>
+ <span id="crumb_links" class="ifClosed"><a href="/p/etherpad/source/browse/trunk/">trunk</a><span class="sp">/&nbsp;</span><a href="/p/etherpad/source/browse/trunk/etherpad/">etherpad</a><span class="sp">/&nbsp;</span><a href="/p/etherpad/source/browse/trunk/etherpad/src/">src</a><span class="sp">/&nbsp;</span><a href="/p/etherpad/source/browse/trunk/etherpad/src/static/">static</a><span class="sp">/&nbsp;</span><a href="/p/etherpad/source/browse/trunk/etherpad/src/static/img/">img</a><span class="sp">/&nbsp;</span><a href="/p/etherpad/source/browse/trunk/etherpad/src/static/img/jun09/">jun09</a><span class="sp">/&nbsp;</span><a href="/p/etherpad/source/browse/trunk/etherpad/src/static/img/jun09/pad/">pad</a><span class="sp">/&nbsp;</span>docbarstates.png</span>
+ 
+ 
+
+ </td>
+ 
+ 
+ <td nowrap="nowrap" width="33%" align="right">
+ <table cellpadding="0" cellspacing="0" style="font-size: 100%"><tr>
+ 
+ 
+ <td class="flipper">
+ <ul class="leftside">
+ 
+ <li><a href="/p/etherpad/source/browse/trunk/etherpad/src/static/img/jun09/pad/docbarstates.png?r=a9f8774a2e00cc15b35857471fecea17f649e3c9" title="Previous">&lsaquo;a9f8774a2e</a></li>
+ 
+ </ul>
+ </td>
+ 
+ <td class="flipper"><b>302458c3ff</b></td>
+ 
+ </tr></table>
+ </td> 
+ </tr>
+</table>
+
+<div class="fc">
+ 
+ 
+ <p><em>
+ 
+ This file is not plain text (only UTF-8 and Latin-1
+ text encodings are currently supported).
+ 
+ </em></p>
+ 
+ 
+ <div id="log">
+ <div style="text-align:right">
+ <a class="ifCollapse" href="#" onclick="_toggleMeta('', 'p', 'etherpad', this)">Show details</a>
+ <a class="ifExpand" href="#" onclick="_toggleMeta('', 'p', 'etherpad', this)">Hide details</a>
+ </div>
+ <div class="ifExpand">
+ 
+ <div class="pmeta_bubble_bg" style="border:1px solid white">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <div id="changelog">
+ <p>Change log</p>
+ <div>
+ <a href="/p/etherpad/source/detail?spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be&r=81287c8af1ac7133316fd4416b13a64c9faba321">81287c8af1</a>
+ by Aaron Iba &lt;aaroniba&gt;
+ on Dec 17, 2009
+ &nbsp; <a href="/p/etherpad/source/diff?spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be&r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;format=side&amp;path=/trunk/etherpad/src/static/img/jun09/pad/docbarstates.png&amp;old_path=/trunk/etherpad/src/static/img/jun09/pad/docbarstates.png&amp;old=a9f8774a2e00cc15b35857471fecea17f649e3c9">Diff</a>
+ </div>
+ <pre>removed duplicate trunk directory</pre>
+ </div>
+ 
+ 
+ 
+ 
+ 
+ 
+ <script type="text/javascript">
+ var detail_url = '/p/etherpad/source/detail?r=81287c8af1ac7133316fd4416b13a64c9faba321&spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be';
+ var publish_url = '/p/etherpad/source/detail?r=81287c8af1ac7133316fd4416b13a64c9faba321&spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be#publish';
+ // describe the paths of this revision in javascript.
+ var changed_paths = [];
+ var changed_urls = [];
+ 
+ changed_paths.push('/trunk/COPYING');
+ changed_urls.push('/p/etherpad/source/browse/trunk/COPYING?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/README');
+ changed_urls.push('/p/etherpad/source/browse/trunk/README?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/.gitignore');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/.gitignore?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/bin/.gitignore');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/bin/.gitignore?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/bin/rebuildjar.sh');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/bin/rebuildjar.sh?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/bin/run-local.sh');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/bin/run-local.sh?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/bin/setup-mysql-db.sh');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/bin/setup-mysql-db.sh?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/etc/etherpad.localdev-default.properties');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/etc/etherpad.localdev-default.properties?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/lib/dnsjava-2.0.6.jar');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/lib/dnsjava-2.0.6.jar?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/lib/jbcrypt-0.2.jar');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/lib/jbcrypt-0.2.jar?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/lib/jcommon-1.0.15.jar');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/lib/jcommon-1.0.15.jar?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/lib/jfreechart-1.0.12.jar');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/lib/jfreechart-1.0.12.jar?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/admin/shell.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/admin/shell.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/billing/billing.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/billing/billing.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/billing/fields.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/billing/fields.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/billing/team_billing.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/billing/team_billing.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/ace/contentcollector.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/contentcollector.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/ace/domline.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/domline.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/ace/easysync1.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/easysync1.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/ace/easysync2.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/easysync2.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/ace/easysync2_tests.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/easysync2_tests.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/ace/linestylefilter.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/linestylefilter.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/collab_server.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/collab_server.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/collabroom_server.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/collabroom_server.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/genimg.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/genimg.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/json_sans_eval.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/json_sans_eval.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/readonly_server.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/readonly_server.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/collab/server_utils.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/server_utils.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/aboutcontrol.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/aboutcontrol.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/admincontrol.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/admincontrol.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/blogcontrol.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/blogcontrol.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/connection_diagnostics_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/connection_diagnostics_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/global_pro_account_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/global_pro_account_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/historycontrol.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/historycontrol.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/loadtestcontrol.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/loadtestcontrol.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/maincontrol.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/maincontrol.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pad/pad_changeset_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pad/pad_changeset_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pad/pad_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pad/pad_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pad/pad_importexport_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pad/pad_importexport_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pad/pad_view_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pad/pad_view_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pne_manual_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pne_manual_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pne_tracker_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pne_tracker_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pro/account_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/account_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pro/admin/account_manager_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/account_manager_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pro/admin/license_manager_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/license_manager_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pro/admin/pro_admin_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/pro_admin_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pro/admin/pro_config_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/pro_config_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pro/admin/team_billing_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/team_billing_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pro/pro_main_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/pro_main_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ changed_paths.push('/trunk/etherpad/src/etherpad/control/pro/pro_padlist_control.js');
+ changed_urls.push('/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/pro_padlist_control.js?r\x3d81287c8af1ac7133316fd4416b13a64c9faba321\x26spec\x3dsvn302458c3fffc90cbc46076ffd879c3a66a7656be');
+ 
+ 
+ function getCurrentPageIndex() {
+ for (var i = 0; i < changed_paths.length; i++) {
+ if (selected_path == changed_paths[i]) {
+ return i;
+ }
+ }
+ }
+ function getNextPage() {
+ var i = getCurrentPageIndex();
+ if (i < changed_paths.length - 1) {
+ return changed_urls[i + 1];
+ }
+ return null;
+ }
+ function getPreviousPage() {
+ var i = getCurrentPageIndex();
+ if (i > 0) {
+ return changed_urls[i - 1];
+ }
+ return null;
+ }
+ function gotoNextPage() {
+ var page = getNextPage();
+ if (!page) {
+ page = detail_url;
+ }
+ window.location = page;
+ }
+ function gotoPreviousPage() {
+ var page = getPreviousPage();
+ if (!page) {
+ page = detail_url;
+ }
+ window.location = page;
+ }
+ function gotoDetailPage() {
+ window.location = detail_url;
+ }
+ function gotoPublishPage() {
+ window.location = publish_url;
+ }
+</script>
+
+ 
+ <style type="text/css">
+ #review_nav {
+ border-top: 3px solid white;
+ padding-top: 6px;
+ margin-top: 1em;
+ }
+ #review_nav td {
+ vertical-align: middle;
+ }
+ #review_nav select {
+ margin: .5em 0;
+ }
+ </style>
+ <div id="review_nav">
+ <table><tr><td>Go to:&nbsp;</td><td>
+ <select name="files_in_rev" onchange="window.location=this.value">
+ 
+ <option value="/p/etherpad/source/browse/trunk/COPYING?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >/trunk/COPYING</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/README?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >/trunk/README</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/.gitignore?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >/trunk/etherpad/.gitignore</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/bin/.gitignore?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >/trunk/etherpad/bin/.gitignore</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/bin/rebuildjar.sh?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >/trunk/etherpad/bin/rebuildjar.sh</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/bin/run-local.sh?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >/trunk/etherpad/bin/run-local.sh</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/bin/setup-mysql-db.sh?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...k/etherpad/bin/setup-mysql-db.sh</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/etc/etherpad.localdev-default.properties?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...rpad.localdev-default.properties</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/lib/dnsjava-2.0.6.jar?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...k/etherpad/lib/dnsjava-2.0.6.jar</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/lib/jbcrypt-0.2.jar?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >/trunk/etherpad/lib/jbcrypt-0.2.jar</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/lib/jcommon-1.0.15.jar?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../etherpad/lib/jcommon-1.0.15.jar</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/lib/jfreechart-1.0.12.jar?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...herpad/lib/jfreechart-1.0.12.jar</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/admin/shell.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...rpad/src/etherpad/admin/shell.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/billing/billing.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../src/etherpad/billing/billing.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/billing/fields.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...d/src/etherpad/billing/fields.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/billing/team_billing.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...etherpad/billing/team_billing.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/contentcollector.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...d/collab/ace/contentcollector.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/domline.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...c/etherpad/collab/ace/domline.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/easysync1.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...etherpad/collab/ace/easysync1.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/easysync2.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...etherpad/collab/ace/easysync2.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/easysync2_tests.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...ad/collab/ace/easysync2_tests.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/ace/linestylefilter.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...ad/collab/ace/linestylefilter.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/collab_server.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...etherpad/collab/collab_server.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/collabroom_server.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...rpad/collab/collabroom_server.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/genimg.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...ad/src/etherpad/collab/genimg.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/json_sans_eval.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...therpad/collab/json_sans_eval.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/readonly_server.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...herpad/collab/readonly_server.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/collab/server_utils.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../etherpad/collab/server_utils.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/aboutcontrol.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...etherpad/control/aboutcontrol.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/admincontrol.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...etherpad/control/admincontrol.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/blogcontrol.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../etherpad/control/blogcontrol.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/connection_diagnostics_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...onnection_diagnostics_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/global_pro_account_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...ol/global_pro_account_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/historycontrol.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...herpad/control/historycontrol.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/loadtestcontrol.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...erpad/control/loadtestcontrol.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/maincontrol.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../etherpad/control/maincontrol.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pad/pad_changeset_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...rol/pad/pad_changeset_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pad/pad_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...erpad/control/pad/pad_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pad/pad_importexport_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../pad/pad_importexport_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pad/pad_view_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../control/pad/pad_view_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pne_manual_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...ad/control/pne_manual_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pne_tracker_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...d/control/pne_tracker_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/account_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...d/control/pro/account_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/account_manager_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...admin/account_manager_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/license_manager_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...admin/license_manager_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/pro_admin_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...l/pro/admin/pro_admin_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/pro_config_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../pro/admin/pro_config_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/admin/team_billing_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...ro/admin/team_billing_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/pro_main_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >.../control/pro/pro_main_control.js</option>
+ 
+ <option value="/p/etherpad/source/browse/trunk/etherpad/src/etherpad/control/pro/pro_padlist_control.js?r=81287c8af1ac7133316fd4416b13a64c9faba321&amp;spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be"
+ 
+ >...ntrol/pro/pro_padlist_control.js</option>
+ 
+ </select>
+ </td></tr></table>
+ 
+ 
+ 
+
+
+
+ <div style="white-space:nowrap">
+ Project members,
+ <a href="https://www.google.com/accounts/ServiceLogin?service=code&amp;ltmpl=phosting&amp;continue=http%3A%2F%2Fcode.google.com%2Fp%2Fetherpad%2Fsource%2Fbrowse%2Ftrunk%2Fetherpad%2Fsrc%2Fstatic%2Fimg%2Fjun09%2Fpad%2Fdocbarstates.png&amp;followup=http%3A%2F%2Fcode.google.com%2Fp%2Fetherpad%2Fsource%2Fbrowse%2Ftrunk%2Fetherpad%2Fsrc%2Fstatic%2Fimg%2Fjun09%2Fpad%2Fdocbarstates.png"
+ >sign in</a> to write a code review</div>
+
+
+ 
+ </div>
+ 
+ 
+ </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
+ </div>
+ <div class="pmeta_bubble_bg" style="border:1px solid white">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <div id="older_bubble">
+ <p>Older revisions</p>
+ 
+ 
+ <div class="closed" style="margin-bottom:3px;" >
+ <img class="ifClosed" onclick="_toggleHidden(this)" src="http://www.gstatic.com/codesite/ph/images/plus.gif" >
+ <img class="ifOpened" onclick="_toggleHidden(this)" src="http://www.gstatic.com/codesite/ph/images/minus.gif" >
+ <a href="/p/etherpad/source/detail?spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be&r=a9f8774a2e00cc15b35857471fecea17f649e3c9">a9f8774a2e</a>
+ by Aaron Iba &lt;aaroniba&gt;
+ on Dec 17, 2009
+ &nbsp; <a href="/p/etherpad/source/diff?spec=svn302458c3fffc90cbc46076ffd879c3a66a7656be&r=a9f8774a2e00cc15b35857471fecea17f649e3c9&amp;format=side&amp;path=/trunk/etherpad/src/static/img/jun09/pad/docbarstates.png&amp;old_path=/trunk/etherpad/src/static/img/jun09/pad/docbarstates.png&amp;old=0">Diff</a>
+ <br>
+ <pre class="ifOpened">initial code push</pre>
+ </div>
+ 
+ 
+ <a href="/p/etherpad/source/list?path=/trunk/etherpad/src/static/img/jun09/pad/docbarstates.png&r=81287c8af1ac7133316fd4416b13a64c9faba321">All revisions of this file</a>
+ </div>
+ </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
+ </div>
+ <div class="pmeta_bubble_bg" style="border:1px solid white">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <div id="fileinfo_bubble">
+ <p>File info</p>
+ 
+ <div>Size: 3314 bytes</div>
+ 
+ <div><a href="http://etherpad.googlecode.com/hg/trunk/etherpad/src/static/img/jun09/pad/docbarstates.png">View raw file</a></div>
+ </div>
+ 
+ </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
+ </div>
+ </div>
+ </div>
+
+
+</div>
+
+</div>
+</div>
+
+
+<script src="http://www.gstatic.com/codesite/ph/10276742928614796628/js/source_file_scripts.js"></script>
+
+ <script type="text/javascript" src="https://kibbles.googlecode.com/files/kibbles-1.3.3.comp.js"></script>
+ <script type="text/javascript">
+ var lastStop = null;
+ var initilized = false;
+ 
+ function updateCursor(next, prev) {
+ if (prev && prev.element) {
+ prev.element.className = 'cursor_stop cursor_hidden';
+ }
+ if (next && next.element) {
+ next.element.className = 'cursor_stop cursor';
+ lastStop = next.index;
+ }
+ }
+ 
+ function pubRevealed(data) {
+ updateCursorForCell(data.cellId, 'cursor_stop cursor_hidden');
+ if (initilized) {
+ reloadCursors();
+ }
+ }
+ 
+ function draftRevealed(data) {
+ updateCursorForCell(data.cellId, 'cursor_stop cursor_hidden');
+ if (initilized) {
+ reloadCursors();
+ }
+ }
+ 
+ function draftDestroyed(data) {
+ updateCursorForCell(data.cellId, 'nocursor');
+ if (initilized) {
+ reloadCursors();
+ }
+ }
+ function reloadCursors() {
+ kibbles.skipper.reset();
+ loadCursors();
+ if (lastStop != null) {
+ kibbles.skipper.setCurrentStop(lastStop);
+ }
+ }
+ // possibly the simplest way to insert any newly added comments
+ // is to update the class of the corresponding cursor row,
+ // then refresh the entire list of rows.
+ function updateCursorForCell(cellId, className) {
+ var cell = document.getElementById(cellId);
+ // we have to go two rows back to find the cursor location
+ var row = getPreviousElement(cell.parentNode);
+ row.className = className;
+ }
+ // returns the previous element, ignores text nodes.
+ function getPreviousElement(e) {
+ var element = e.previousSibling;
+ if (element.nodeType == 3) {
+ element = element.previousSibling;
+ }
+ if (element && element.tagName) {
+ return element;
+ }
+ }
+ function loadCursors() {
+ // register our elements with skipper
+ var elements = CR_getElements('*', 'cursor_stop');
+ var len = elements.length;
+ for (var i = 0; i < len; i++) {
+ var element = elements[i]; 
+ element.className = 'cursor_stop cursor_hidden';
+ kibbles.skipper.append(element);
+ }
+ }
+ function toggleComments() {
+ CR_toggleCommentDisplay();
+ reloadCursors();
+ }
+ function keysOnLoadHandler() {
+ // setup skipper
+ kibbles.skipper.addStopListener(
+ kibbles.skipper.LISTENER_TYPE.PRE, updateCursor);
+ // Set the 'offset' option to return the middle of the client area
+ // an option can be a static value, or a callback
+ kibbles.skipper.setOption('padding_top', 50);
+ // Set the 'offset' option to return the middle of the client area
+ // an option can be a static value, or a callback
+ kibbles.skipper.setOption('padding_bottom', 100);
+ // Register our keys
+ kibbles.skipper.addFwdKey("n");
+ kibbles.skipper.addRevKey("p");
+ kibbles.keys.addKeyPressListener(
+ 'u', function() { window.location = detail_url; });
+ kibbles.keys.addKeyPressListener(
+ 'r', function() { window.location = detail_url + '#publish'; });
+ 
+ kibbles.keys.addKeyPressListener('j', gotoNextPage);
+ kibbles.keys.addKeyPressListener('k', gotoPreviousPage);
+ 
+ 
+ }
+ </script>
+<script src="http://www.gstatic.com/codesite/ph/10276742928614796628/js/code_review_scripts.js"></script>
+<script type="text/javascript">
+ 
+ // the comment form template
+ var form = '<div class="draft"><div class="header"><span class="title">Draft comment:</span></div>' +
+ '<div class="body"><form onsubmit="return false;"><textarea id="$ID">$BODY</textarea><br>$ACTIONS</form></div>' +
+ '</div>';
+ // the comment "plate" template used for both draft and published comment "plates".
+ var draft_comment = '<div class="draft" ondblclick="$ONDBLCLICK">' +
+ '<div class="header"><span class="title">Draft comment:</span><span class="actions">$ACTIONS</span></div>' +
+ '<pre id="$ID" class="body">$BODY</pre>' +
+ '</div>';
+ var published_comment = '<div class="published">' +
+ '<div class="header"><span class="title"><a href="$PROFILE_URL">$AUTHOR:</a></span><div>' +
+ '<pre id="$ID" class="body">$BODY</pre>' +
+ '</div>';
+
+ function showPublishInstructions() {
+ var element = document.getElementById('review_instr');
+ if (element) {
+ element.className = 'opened';
+ }
+ }
+ function revsOnLoadHandler() {
+ // register our source container with the commenting code
+ var paths = {'svn302458c3fffc90cbc46076ffd879c3a66a7656be': '/trunk/etherpad/src/static/img/jun09/pad/docbarstates.png'}
+ CR_setup('', 'p', 'etherpad', '', 'svn302458c3fffc90cbc46076ffd879c3a66a7656be', paths,
+ '', CR_BrowseIntegrationFactory);
+ // register our hidden ui elements with the code commenting code ui builder.
+ CR_registerLayoutElement('form', form);
+ CR_registerLayoutElement('draft_comment', draft_comment);
+ CR_registerLayoutElement('published_comment', published_comment);
+ 
+ CR_registerActivityListener(CR_ACTIVITY_TYPE.REVEAL_DRAFT_PLATE, showPublishInstructions);
+ 
+ CR_registerActivityListener(CR_ACTIVITY_TYPE.REVEAL_PUB_PLATE, pubRevealed);
+ CR_registerActivityListener(CR_ACTIVITY_TYPE.REVEAL_DRAFT_PLATE, draftRevealed);
+ CR_registerActivityListener(CR_ACTIVITY_TYPE.DISCARD_DRAFT_COMMENT, draftDestroyed);
+ 
+ 
+ var initilized = true;
+ reloadCursors();
+ }
+ window.onload = function() {keysOnLoadHandler(); revsOnLoadHandler();};
+
+</script>
+<script type="text/javascript" src="http://www.gstatic.com/codesite/ph/10276742928614796628/js/dit_scripts.js"></script>
+
+ 
+ 
+ <script type="text/javascript" src="http://www.gstatic.com/codesite/ph/10276742928614796628/js/core_scripts_20081103.js"></script>
+ <script type="text/javascript" src="/js/codesite_product_dictionary_ph.pack.04102009.js"></script>
+</div> 
+<div id="footer" dir="ltr">
+ 
+ <div class="text">
+ 
+ &copy;2010 Google -
+ <a href="/projecthosting/terms.html">Terms</a> -
+ <a href="http://www.google.com/privacy.html">Privacy</a> -
+ <a href="/p/support/">Project Hosting Help</a>
+ 
+ </div>
+</div>
+ <div class="hostedBy" style="margin-top: -20px;">
+ <span style="vertical-align: top;">Powered by <a href="http://code.google.com/projecthosting/">Google Project Hosting</a></span>
+ </div>
+ 
+ 
+
+
+ 
+ </body>
+</html>
+

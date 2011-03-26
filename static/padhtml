@@ -1,0 +1,501 @@
+<!DOCTYPE html PUBLIC
+	  "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+    <title>LinePad v0.0.1: test</title>
+    <!-- <base href="http://localhost:8080/" />-->
+    <!-- CSS -->
+    <link href="/static/css/pad2_ejs.css" rel="stylesheet" type="text/css" />
+    
+    <!-- javascript -->
+    <script type="text/javascript">
+  // <![CDATA[
+var clientVars = {};  // ]]>
+</script>
+<!--    <script type="text/javascript" src="/static/js/client.js"></script>-->
+<script type="text/javascript" src="/static/js/plugins.js"></script>
+<script type="text/javascript" src="/static/js/undo-xpopup.js"></script>
+<script type="text/javascript" src="/static/js/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="/static/js/json2.js"></script>
+<script type="text/javascript" src="/static/js/colorutils.js"></script>
+<script type="text/javascript" src="/static/js/draggable.js"></script>
+<script type="text/javascript" src="/static/js/pad_utils.js"></script>
+<script type="text/javascript" src="/static/js/pad_cookie.js"></script>
+<script type="text/javascript" src="/static/js/pad_editor.js"></script>
+<script type="text/javascript" src="/static/js/pad_editbar.js"></script>
+<script type="text/javascript" src="/static/js/pad_docbar.js"></script>
+<script type="text/javascript" src="/static/js/pad_modals.js"></script>
+<script type="text/javascript" src="/static/js/ace.js"></script>
+<script type="text/javascript" src="/static/js/collab_client.js"></script>
+<script type="text/javascript" src="/static/js/pad_userlist.js"></script>
+<script type="text/javascript" src="/static/js/pad_chat.js"></script>
+<script type="text/javascript" src="/static/js/pad_impexp.js"></script>
+<script type="text/javascript" src="/static/js/pad_savedrevs.js"></script>
+<script type="text/javascript" src="/static/js/pad_connectionstatus.js"></script>
+<script type="text/javascript" src="/static/js/pad2.js"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  </head>
+  <body id="padbody" class="limwidth nonpropad nonprouser">
+    
+  <div id="padpage">
+    <div id="padtop">
+      <div id="topbar">
+	
+	<div id="topbarleft"><!-- --></div>
+	
+	
+	<div id="topbarright"><!-- --></div>
+	
+	
+	<div id="topbarcenter">
+	  <a href="/" id="topbarBrand">Etherpad v1.1</a>
+        
+            
+	  <a href="http://etherpad.org" id="EtherpadLink">Etherpad is</a> <a href="/static/LICENSE" id="Licensing">free software</a>
+	    
+	<div id="fullscreen" onclick="$('body').toggleClass('maximized');">Full screen</div>
+	  <a href="javascript:void(0);" onclick="$('body').toggleClass('maximized');" id="topbarmaximize" title="Toggle maximization"></a>
+	</div>
+        
+  
+	<div id="specialkeyarea"><!-- --></div>
+      </div>
+      <div id="alertbar">
+	<div id="servermsg">
+	  <h3>Server Notice<span id="servermsgdate"><!-- --></span>:</h3>
+	  <a id="hidetopmsg" href="javascript: void pad.hideServerMessage()">hide</a>
+	  <p id="servermsgtext"><!-- --></p>
+	</div>
+      </div>
+      <div id="navigation">
+        
+      </div>
+      <div id="docbar" class="menu">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%" id="docbartable">
+	  <tr>
+	    <td><img src="/static/img/jun09/pad/roundcorner_left.gif"></td>
+            
+  <td id="docbarpadtitle"><span>Public Pad</span></td>
+	    <td width="100%">&nbsp;</td>
+            
+  
+  
+  <td id="docbaroptions-outer" class="docbarbutton">
+    <a href="javascript:void(0)" id="docbaroptions">
+      <img src="/static/img/jun09/pad/icon_pad_options.gif">Pad&nbsp;Options</a>
+  </td>
+  <td id="docbarimpexp-outer" class="docbarbutton">
+    <a href="javascript:void(0)" id="docbarimpexp">
+      <img src="/static/img/jun09/pad/icon_import_export.gif">Import/Export</a>
+  </td>
+  <td id="docbarsavedrevs-outer" class="docbarbutton">
+    <a href="javascript:void(0)" id="docbarsavedrevs">
+      <img src="/static/img/jun09/pad/icon_saved_revisions.gif">Saved&nbsp;revisions</a>
+  </td>
+  <td id="docbarslider-outer" class="docbarbutton highlight">
+    <a target="_blank" href="/ep/pad/view/test/latest" id="docbarslider">
+      <img src="/static/img/jun09/pad/icon_time_slider.gif">Time&nbsp;Slider</a>
+  </td>
+	    
+	    <td><img src="/static/img/jun09/pad/roundcorner_right_orange.gif"></td>
+	  </tr>
+	</table>
+        
+  
+  <input type="text" id="padtitleedit"/>
+  <div id="padtitlebuttons">
+    <a id="padtitlesave" href="javascript:void(0)">Save</a>
+    <a id="padtitlecancel" href="javascript:void(0)">Cancel</a>
+  </div>
+        
+        
+  
+  <div id="impexp-wrapper" class="dbpanel-wrapper">
+    <div id="impexp-panel" class="dbpanel-panel">
+      <div class="dbpanel-leftedge"><!-- --></div>
+      <div class="dbpanel-rightedge"><!-- --></div>
+      <div class="dbpanel-botleftcorner"><!-- --></div>
+      <div class="dbpanel-botrightcorner"><!-- --></div>
+      <div class="dbpanel-middle">
+	<div class="dbpanel-inner">
+	  <div class="dbpanel-top"><!-- --></div>
+	</div>
+	<div class="dbpanel-bottom"><!-- --></div>
+	<div id="importexport">
+	  <div id="impexp-import">
+	    <div id="impexp-importlabel"><b>Import</b> from text file, HTML, Word, or RTF:</div>
+	    <form id="importform" method="post" action="/ep/pad/impexp/import"
+		  target="importiframe" enctype="multipart/form-data">
+	      <div class="importformdiv" id="importformfilediv">
+		<input type="file" name="file" size="20" id="importfileinput" />
+		<div class="importmessage" id="importmessagefail"></div>
+	      </div>
+	      <div class="importmessage" id="importmessagesuccess">Successful!</div>
+	      <div class="importformdiv" id="importformsubmitdiv">
+		<input type="hidden" name="padId" value="test" />
+		<span class="nowrap">
+		  <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput" />
+		  <img alt="" id="importstatusball" src="/static/img/misc/status-ball.gif" align="top" />
+		  <img alt="" id="importarrow" src="/static/img/may09/leftarrow2.gif" align="top" />
+		</span>
+	      </div>
+	    </form>
+	    
+	  </div><!-- /impexp-import -->
+	  <div id="impexp-export">
+	    <div id="impexp-exportlabel"><b>Export</b> current pad as:</div>
+	    <div id="exportlinks">
+	      <a class="exportlink exporthrefhtml n1 requiresoffice" target="_blank" href="/ep/pad/export/test/latest?format=html">HTML</a>
+	      <a class="exportlink exporthreftxt n2 requiresoffice" target="_blank" href="/ep/pad/export/test/latest?format=txt">Plain text</a>
+	      <a class="exportlink exporthreflink n3 requiresoffice" target="_blank" href="/ep/pad/linkfile?padId=test" title="This will save a file that, when opened, takes you to this pad.">Bookmark file</a>
+	      <a class="exportlink exporthrefdoc n4 requiresoffice" target="_blank" href="/ep/pad/export/test/latest?format=doc">Microsoft Word</a>
+	      <a class="exportlink exporthrefpdf n5 requiresoffice" target="_blank" href="/ep/pad/export/test/latest?format=pdf">PDF</a>
+	      <a class="exportlink exporthrefodt n6 requiresoffice" target="_blank" href="/ep/pad/export/test/latest?format=odt">OpenDocument</a>
+	    </div>
+	    
+	  </div><!-- /impexp-export -->
+	  <div id="impexp-divider"><!-- --></div>
+	  <div id="impexp-disabled-clickcatcher"><!-- --></div>
+	  <a id="impexp-close" href="javascript:void(0)">Hide</a>
+	</div><!-- /importexport -->
+      </div>
+    </div>
+  </div>
+  <div id="savedrevs-wrapper" class="dbpanel-wrapper">
+    <div id="savedrevs-panel" class="dbpanel-panel">
+      <div class="dbpanel-leftedge"><!-- --></div>
+      <div class="dbpanel-rightedge"><!-- --></div>
+      <div class="dbpanel-botleftcorner"><!-- --></div>
+      <div class="dbpanel-botrightcorner"><!-- --></div>
+      <div class="dbpanel-middle">
+	<div class="dbpanel-inner">
+	  <div class="dbpanel-top"><!-- --></div>
+	</div>
+	<div class="dbpanel-bottom"><!-- --></div>
+      </div>
+      <div id="savedrevisions">
+	<a href="javascript:void(0)" id="savedrevs-savenow">
+	  Save Now
+	</a>
+	<div id="savedrevs-scrolly">
+	  <div id="savedrevs-scrollleft" class="disabledscrollleft"><!-- --></div>
+	  <div id="savedrevs-scrollright" class="disabledscrollright"><!-- --></div>
+	  <div id="savedrevs-scrollouter">
+	    <div id="savedrevs-scrollinner">
+	      <!-- -->
+	    </div>
+	  </div>
+	</div>
+	<a id="savedrevs-close" href="javascript:void(0)">Hide</a>
+      </div><!-- /savedrevs close -->
+    </div>
+  </div><!-- /savedrevs-wrapper -->
+  <div id="revision-notifier"><span class="label">Saved:</span> <span class="name">Revision 1</span></div>
+  <div id="options-wrapper" class="dbpanel-wrapper">
+    <div id="options-panel" class="dbpanel-panel">
+      <div class="dbpanel-leftedge"><!-- --></div>
+      <div class="dbpanel-rightedge"><!-- --></div>
+      <div class="dbpanel-botleftcorner"><!-- --></div>
+      <div class="dbpanel-botrightcorner"><!-- --></div>
+      <div class="dbpanel-middle">
+	<div class="dbpanel-inner">
+	  <div class="dbpanel-top"><!-- --></div>
+	</div>
+	<div class="dbpanel-bottom"><!-- --></div>
+      </div>
+      <div id="padoptions">
+	<div id="options-viewhead">Shared view options:</div>
+	<input type="checkbox" id="options-colorscheck" />
+	<label for="options-colorscheck" id="options-colorslabel">Authorship colors</label>
+	<input type="checkbox" id="options-linenoscheck" />
+	<label for="options-linenoscheck" id="options-linenoslabel">Line numbers</label>
+	<div id="options-fontlabel">Display font:</div>
+	<select id="viewfontmenu"><option value="normal">Normal</option><option value="monospace">Monospaced</option></select>
+	<div id="options-viewexplain">These options affect everyone's view of the pad.</div>
+	<a id="options-close" href="javascript:void(0)">Hide</a>
+      </div>
+    </div>
+  </div><!-- /options-wrapper -->
+  
+      </div><!-- /docbar -->
+    </div>
+    
+    <div id="padmain">
+      <script>
+	$(document).ready(function () {
+	  makeResizableHPane("#padeditor", "#vdraggie", "#padsidebar", 0, 0, 10, -22);
+	});
+      </script>
+      <div id="padeditor">
+	<div id="editbar" class="disabledtoolbar">
+          <div id="editbarinner">
+	    
+	    <div id="editbarleft"><!-- --></div>
+	    
+	    <div id="editbarright"><!-- --></div>      
+	    
+	    <div id="editbarinner">
+	      <table cellpadding="0" cellspacing="0" border = "0" id="editbartable">
+		<tr>
+		  
+  <td><img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24"></td>
+  <td class="editbarbutton editbargroupsfirst"><a href="javascript:void (window.pad&&pad.editbarClick('bold'));" title="Bold (ctrl-B)"><img src="/static/img/jun09/pad/editbar_bold.gif"></a></td>
+  <td class="editbarbutton"> <a href="javascript:void (window.pad&&pad.editbarClick('italic'));" title="Italics (ctrl-I)"><img src="/static/img/jun09/pad/editbar_italic.gif"></a></td>
+  <td class="editbarbutton"> <a href="javascript:void (window.pad&&pad.editbarClick('underline'));"  title="Underline (ctrl-U)"><img src="/static/img/jun09/pad/editbar_underline.gif"></a></td>
+  <td class="editbarbutton"> <a href="javascript:void (window.pad&&pad.editbarClick('strikethrough'));" title="Strikethrough"><img src="/static/img/jun09/pad/editbar_strikethrough.gif"></a></td>
+  <td><img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24"></td>
+  <td>&nbsp;&nbsp;</td>
+  <td><img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24"></td>
+  <td class="editbarbutton editbargroupsfirst"><a href="javascript:void (window.pad&&pad.editbarClick('insertunorderedlist'));" title="Toggle Bullet List"><img src="/static/img/jun09/pad/editbar_insertunorderedlist.gif"></a></td>
+  <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('indent'));" title="Indent List"><img src="/static/img/jun09/pad/editbar_indent.gif"></a></td>
+  <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('outdent'));" title="Unindent List"><img src="/static/img/jun09/pad/editbar_outdent.gif"></a></td>
+  <td><img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24"></td>
+  
+		  
+		  <td width="100%">&nbsp;</td>
+		</tr>
+	      </table>
+	      <table cellpadding="0" cellspacing="0" border = "0" id="editbarsavetable">
+		<tr>
+		  
+		  
+  
+  <td><img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24"></td>
+  <td class="editbarbutton editbargroupsfirst"><a href="javascript:void (window.pad&&pad.editbarClick('clearauthorship'));" title="Clear Authorship Colors"><img src="/static/img/jun09/pad/editbar_clearauthorship.gif"></a></td>
+  <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('undo'));" title="Undo (ctrl-Z)"><img src="/static/img/jun09/pad/editbar_undo.gif"></a></td>
+  <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('redo'));" title="Redo (ctrl-Y)"><img src="/static/img/jun09/pad/editbar_redo.gif"></a></td>
+  <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('save'));" title="Save Revision"><img src="/static/img/jun09/pad/editbar_save.gif"></a></td>
+  <td><img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24"></td>
+  <td>&nbsp;&nbsp;</td>
+  <td><img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24"></td>
+  <td class="editbarbutton editbargroupsfirst"><select id="viewzoommenu"><option value="z85">85%</option><option value="z100">100%</option><option value="z115">115%</option><option value="z150">150%</option><option value="z200">200%</option><option value="z300">300%</option></select></td>
+  <td><img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24"></td>
+		</tr>
+	      </table>
+	      
+	      
+  
+	    </div>
+          </div>
+	</div>
+	<div id="editorcontainerbox">
+  <div id="editorloadingbox">Loading...</div>
+  <div id="editorcontainer"><!-- --></div>
+</div>
+      </div><!-- /padeditor -->
+      <div id="vdraggie"><!-- --></div>
+      <div id="padsidebar">
+  <script>
+    $(document).ready(function () {
+      makeResizableVPane("#padusers", "#hdraggie", "#padchat", 75, 75);
+    });
+  </script>
+  <div id="padusers">
+    <div id="connectionstatus">
+      <!-- -->
+    </div>
+    <div id="myuser">
+      <div id="mycolorpicker">
+       <div> 
+	 <div class="pickerswatchouter n1"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n2"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n3"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n4"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n5"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n6"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n7"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n8"><div class="pickerswatch"><!-- --></div></div>
+       </div><div>
+	 <div class="pickerswatchouter n9"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n10"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n11"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n12"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n13"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n14"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n15"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n16"><div class="pickerswatch"><!-- --></div></div>
+       </div><div>
+	 <div class="pickerswatchouter n17"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n18"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n19"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n20"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n21"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n22"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n23"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n24"><div class="pickerswatch"><!-- --></div></div>
+       </div><div>
+	 <div class="pickerswatchouter n25"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n26"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n27"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n28"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n29"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n30"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n31"><div class="pickerswatch"><!-- --></div></div>
+	 <div class="pickerswatchouter n32"><div class="pickerswatch"><!-- --></div></div>
+       </div>
+	<div id="mycolorpickersave">Save</div>
+	<div id="mycolorpickercancel">Cancel</div>
+      </div>
+      <div id="myswatchbox"><div id="myswatch"><!-- --></div></div>
+      <div id="myusernameform"><input type="text" id="myusernameedit" disabled="disabled" /></div>
+      <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled" /></div>
+    </div>
+    <div id="otherusers">
+      <div id="guestprompts"><!-- --></div>
+      <table id="otheruserstable" cellspacing="0" cellpadding="0" border="0">
+	<tr><td></td></tr>
+      </table>
+      <div id="nootherusers"><a href="javascript:void(0)">Invite</a> other users and they will show up here.</div>
+    </div>
+    <div id="userlistbuttonarea">
+      <a href="javascript:void(0)" id="sharebutton">Share</a>
+    </div>
+  </div> <!-- /padusers -->
+  <div id="hdraggie"><!-- --></div>
+  <div id="padchat">
+    <!--      <div id="chattop"><a href="#">View chat logs...</a></div> -->
+    <div id="chatlines">
+      <a href="javascript:void(0)" id="chatloadmore">Load more history...</a>
+      <div id="chatloadingmore">Loading history...</div>
+    </div>
+    <div id="chatbottom">
+      <div id="chatprompt">Chat:</div>
+      <div id="chatentryform"><input type="text" id="chatentrybox"/></div>
+    </div>
+  </div>
+</div> 
+    </div><!-- /padmain -->
+  </div><!-- /padpage -->
+  <div id="modaloverlay"><div id="modaloverlay-inner"><!-- --></div></div>
+    <div id="mainmodals">
+      
+    <div id="connectionbox" class="modaldialog">
+      <div id="connectionboxinner" class="modaldialog-inner">
+	<div class="connecting">
+	  Connecting...
+	</div>
+	<div class="reconnecting">
+	  Reestablishing connection...
+	</div>
+	<div class="disconnected">
+	  <h2 class="h2_disconnect">Disconnected.</h2>
+	  <h2 class="h2_userdup">Opened in another window.</h2>
+	  <h2 class="h2_unauth">No Authorization.</h2>
+	  <div id="disconnected_looping">
+	    <p><b>We're having trouble talking to the EtherPad synchronization server.</b>
+	      You may be connecting through an incompatible firewall or proxy server.</p>
+	  </div>
+	  <div id="disconnected_initsocketfail">
+	    <p><b>We were unable to connect to the EtherPad synchronization server.</b>
+	      This may be due to an incompatibility with your web
+	      browser or internet connection.</p>
+	  </div>
+	  <div id="disconnected_userdup">
+	    <p><b>You seem to have opened this pad in another browser window.</b>
+	      If you'd like to use this window instead, you can reconnect.</p>
+	  </div>
+	  <div id="disconnected_unknown">
+	    <p><b>Lost connection with the EtherPad synchronization
+		server.</b>  This may be due to a loss of network connectivity.</p>
+	  </div>
+	  <div id="disconnected_slowcommit">
+	    <p><b>Server not responding.</b>  This may be due to network connectivity issues or high load on the server.</p>
+	  </div>
+	  <div id="disconnected_unauth">
+	    <p>Your browser's credentials or permissions have changed while viewing this pad.  Try reconnecting.</p>
+	  </div>
+	  <div id="reconnect_advise">
+	    <p>If this continues to happen, please <a target="_blank" href="/ep/support">let us know</a>
+	      (opens in new window).</p>
+	  </div>
+	  <div id="reconnect_form">
+	    <button id="forcereconnect">Reconnect Now</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+    <div id="feedbackbox">
+      <div id="feedbackbox-tl"><!-- --></div>
+      <div id="feedbackbox-tr"><!-- --></div>
+      <div id="feedbackbox-bl"><!-- --></div>
+      <div id="feedbackbox-br"><!-- --></div>
+      <div id="feedbackbox-back"><!-- --></div>
+      
+      <div id="feedbackbox-contents">
+	<div id="feedbackbox-contentsinner">
+	  <p><strong>Great, we love feedback!  What kind?</strong></p>
+	  <ul id="uservoicelinks">
+	    <li><a href="http://uservoice.etherpad.com/pages/17280-feature-requests" target="_blank">Feature Request</a></li>
+	    <li><a href="http://uservoice.etherpad.com/pages/17285-bugs-and-problems" target="_blank">Bug Report</a></li>
+	    <li><a href="http://uservoice.etherpad.com/pages/22732-how-are-you-using-etherpad-" target="_blank">How I'm Using It</a></li>
+	    <li><a href="http://uservoice.etherpad.com/pages/22751-general-questions" target="_blank">Other Question</a></li>
+	    <li><a href="http://uservoice.etherpad.com/pages/22733-general-feedback" target="_blank">Other Feedback</a></li>
+	  </ul>
+	  <p>These links will open UserVoice in a new window.</p>
+	  <p id="feedbackemails">You can also send email to <a href="feedback"><tt>feedback</tt></a>, <a href="support"><tt>support</tt></a>, or <a href="bugs"><tt>bugs</tt></a> at <tt>etherpad.com</tt>.</p>
+	</div>
+      </div>
+      <a href="javascript:void(0)" id="feedbackbox-hide"><!-- --></a>
+    </div>
+    <div id="sharebox" class="modaldialog">
+      <div id="sharebox-inner" class="modaldialog-inner">
+	<a href="javascript:void(0)" id="sharebox-hide" class="modaldialog-hide"><!-- --></a>
+	<div id="sharebox-stripe" class="sharebox-stripe-private">
+	  <div class="public">
+	    <strong>Public Pad:</strong> This pad is accessible to anyone who
+	    visits its URL. To make it private, <a href="javascript:void(0)" class="setsecurity">change security settings</a>.
+	  </div>
+	  <div class="private">
+	    <strong>Private Pad:</strong> This pad is only accessible to team account-holders.  To allow anyone to access it, <a href="javascript:void(0)" class="setsecurity">change security settings</a>.
+	  </div>
+	</div>
+	<div><label>Paste link over email or IM:</label></div>
+	<input class="sharebox-url" type="text" readonly="readonly" value="http://localhost:9000/test"/>
+	<div><label>...or for read only access paste this link:</label></div>
+	<input class="sharebox-url" type="text" readonly="readonly" value="http://localhost:9000/ep/pad/view/ro.wG$4G/latest"/>
+	<h1><a class="expand-collapse" id="sharebox-sendmail-form-expander" href="javascript:" onclick="$('#sharebox-sendmail-form').toggle();$('#sharebox-sendmail-form-expander').toggleClass('expanded');">or send an email invitation...</a></h1>
+	<div id="sharebox-sendmail-form" style="display:none">
+          <table>
+            <tr>
+              <th><label>To:</label></th>
+              <td><input type="text" id="sharebox-to" class="modalfield" /></td>
+            </tr>
+            <tr>
+              <th><label>Subject:</label></th>
+              <td><input type="text" id="sharebox-subject" class="modalfield" /></td>
+            </tr>
+            <tr>
+              <th><label>Message:</label></th>
+              <td><textarea id="sharebox-message" rows="6" cols="40" class="modalfield"></textarea></td>
+            </tr>
+          </table>
+	  <a href="javascript:void(0)" id="sharebox-send"><!-- --></a>
+	</div>
+	<div id="sharebox-response"><!-- --></div>
+        <div style="clear: both;"></div>
+      </div>
+    </div>
+  </div>
+      
+    </div>
+  </div>
+  
+  
+  <form id="reconnectform"
+	method="post"
+	action="/ep/pad/reconnect"
+	accept-charset="UTF-8"
+	style="display: none;">
+    <input type="hidden" class="padId" name="padId" />
+    <input type="hidden" class="diagnosticInfo"
+	   name="diagnosticInfo" />
+    <input type="hidden" class="missedChanges" name="missedChanges" />
+  </form>
+ 
+  </body>
+</html>
+ 

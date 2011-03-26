@@ -1,0 +1,45 @@
+
+/* Firefox (3) is bad about keeping the text cursor in design mode;
+   various actions (clicking, dragging, scroll-wheel) lose it and it
+   doesn't come back easily, presumably because of optimizations.
+   These rules try to maximize the chance Firefox will think the cursor
+   needs changing again.
+*/
+html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
+span { cursor: auto; }
+
+a { cursor: pointer !important; }
+
+/*span { padding-bottom: 1px; }/* padding-top: 1px; }*/
+
+/*div { background: transparent url(/static/img/acecarets/default.gif) repeat-y left top }*/
+
+/*tt { padding-left: 3px; padding-right: 3px; margin-right: -3px; margin-left: -3px; }*/
+
+/*div { display: list-item; list-style: disc outside; margin-left: 20px; }*/
+/*div:before { content:"foo" }*/
+
+ul, ol, li {
+  padding: 0;
+  margin: 0;
+}
+ul { margin-left: 1.5em; }
+ul ul { margin-left: 0 !important; }
+ul.list-bullet1 { margin-left: 1.5em; }
+ul.list-bullet2 { margin-left: 3em; }
+ul.list-bullet3 { margin-left: 4.5em; }
+ul.list-bullet4 { margin-left: 6em; }
+ul.list-bullet5 { margin-left: 7.5em; }
+ul.list-bullet6 { margin-left: 9em; }
+ul.list-bullet7 { margin-left: 10.5em; }
+ul.list-bullet8 { margin-left: 12em; }
+
+ul { list-style-type: disc; }
+ul.list-bullet1 { list-style-type: disc; }
+ul.list-bullet2 { list-style-type: circle; }
+ul.list-bullet3 { list-style-type: square; }
+ul.list-bullet4 { list-style-type: disc; }
+ul.list-bullet5 { list-style-type: circle; }
+ul.list-bullet6 { list-style-type: square; }
+ul.list-bullet7 { list-style-type: disc; }
+ul.list-bullet8 { list-style-type: circle; }

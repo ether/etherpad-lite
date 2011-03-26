@@ -1,0 +1,109 @@
+
+/* These CSS rules are included in both the outer and inner ACE iframe.
+   Also see inner.css, included only in the inner one.
+*/
+
+body {
+  margin: 0;
+  white-space: nowrap;
+}				 
+
+#outerdocbody {
+  background-color: #fff;
+}
+body.grayedout { background-color: #eee !important }
+
+#innerdocbody {
+  font-size: 12px; /* overridden by body.style */
+  font-family: monospace; /* overridden by body.style */
+  line-height: 16px; /* overridden by body.style */
+}
+
+body.doesWrap {
+  white-space: normal;
+}
+
+#innerdocbody {
+  padding-top: 1px; /* important for some reason? */
+  padding-right: 10px;
+  padding-bottom: 8px;
+  padding-left: 1px /* prevents characters from looking chopped off in FF3 */;
+  overflow: hidden;
+  /* blank 1x1 gif, so that IE8 doesn't consider the body transparent */
+  background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);
+}
+
+#sidediv {
+  font-size: 11px;
+  font-family: monospace;
+  line-height: 16px; /* overridden by sideDiv.style */
+  padding-top: 8px; /* EDIT_BODY_PADDING_TOP */
+  padding-right: 3px; /* LINE_NUMBER_PADDING_RIGHT - 1 */
+  position: absolute;
+  width: 20px; /* MIN_LINEDIV_WIDTH */
+  top: 0;
+  left: 0;
+  cursor: default;
+  color: white;
+}
+
+#sidedivinner {
+  text-align: right;
+}
+
+.sidedivdelayed { /* class set after sizes are set */
+  background-color: #eee;
+  color: #888 !important;
+  border-right: 1px solid #999;
+}
+.sidedivhidden {
+  display: none;
+}
+
+#outerdocbody iframe {
+  display: block; /* codemirror says it suppresses bugs */
+  position: relative;
+  left: 32px; /* MIN_LINEDIV_WIDTH + LINE_NUMBER_PADDING_RIGHT + EDIT_BODY_PADDING_LEFT */
+  top: 7px; /* EDIT_BODY_PADDING_TOP - 1*/
+  border: 0;
+  width: 1px; /* changed programmatically */
+  height: 1px; /* changed programmatically */
+}
+
+#outerdocbody .hotrect {
+  border: 1px solid #999;
+  position: absolute;
+}
+
+/* cause "body" area (e.g. where clicks are heard) to grow horizontally with text */
+body.mozilla, body.safari {
+  display: table-cell;
+}
+
+body.doesWrap {
+  display: block !important;
+}
+
+.safari div {
+  /* prevents the caret from disappearing on the longest line of the doc */
+  padding-right: 1px;
+}
+
+p {
+  margin: 0;
+}
+
+/*b, strong, .Apple-style-span { font-weight: normal !important; font-style: normal !important;
+			       color: red !important; }*/
+
+#linemetricsdiv {
+  position: absolute;
+  left: -1000px;
+  top: -1000px;
+  color: white;
+  z-index: -1;
+  font-size: 12px; /* overridden by lineMetricsDiv.style */
+  font-family: monospace; /* overridden by lineMetricsDiv.style */
+}
+
+#overlaysdiv { position: absolute; left: -1000px; top: -1000px; }
