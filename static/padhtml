@@ -7,9 +7,9 @@
     <meta http-equiv="Content-Language" content="en-us" />
     <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
     <title>LinePad v0.0.1: test</title>
-    <!-- <base href="http://localhost:8080/" />-->
+    <!-- <base href="http://localhost:9001/" />-->
     <!-- CSS -->
-    <link href="/static/css/pad2_ejs.css" rel="stylesheet" type="text/css" />
+    <link href="/static/css/pad_lite.css" rel="stylesheet" type="text/css" />
     
     <!-- javascript -->
     <script type="text/javascript">
