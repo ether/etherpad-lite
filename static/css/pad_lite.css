@@ -1,4 +1,3 @@
-
 *,html.body,p { margin: 0; padding: 0; }
 h1, h2, h3, h4, h5, h6 { font-size: 100%; font-weight: normal; font-style: normal;
   text-decoration: none; margin: 0; padding: 0; }
@@ -14,9 +13,7 @@ body, textarea { font-family: Arial, sans-serif; }
  position: absolute;
  top: 0px;
  bottom: 8px;
- left: 50%;
- margin-left: -450px;
- width: 900px;
+ width: 100%;
 }
 
 .maximized #padpage {
@@ -179,9 +176,9 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 }
   
 #padmain {
-  margin-top: 6px;
+  margin-top: 0px;
   position: absolute;
-  top: 56px;
+  top: 0px;
   left: 0px;
   right: 0px;
   bottom: 0px;
@@ -192,7 +189,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   bottom:0px;
   left:0;
   position:absolute;
-  right:300px;
+  right:0px;
   top:0;
   zoom: 1;
 }
