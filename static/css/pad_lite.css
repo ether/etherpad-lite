@@ -266,6 +266,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 .editbarbutton a {
   text-decoration: none;
 }
+
 .editbarbutton a:active
 {
   position: relative;
@@ -1125,4 +1126,21 @@ a#topbarmaximize {
  padding-left: 0;
  padding-right: 0;
  width: 100%;
+}
+
+#embed{
+display:none;
+position:absolute;
+top:42px;
+margin-left:10px;
+font-size:14px;
+width:100%;
+}
+
+#embedinput{
+width:80%;
+height:24px;
+display:inline;
+padding-left:4px;
+margin-left:4px;
 }
