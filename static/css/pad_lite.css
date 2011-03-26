@@ -12,7 +12,7 @@ body, textarea { font-family: Arial, sans-serif; }
 #padpage {
  position: absolute;
  top: 0px;
- bottom: 8px;
+ bottom: 0px;
  width: 100%;
 }
 
