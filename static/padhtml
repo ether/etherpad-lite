@@ -102,9 +102,11 @@ var clientVars = {};  // ]]>
 	      </table>
 	    <div id="users">
                <div id="userscont">
+               <table>
                  <!-- some example code so I can make the css -->
-                 <div class="user"><div class="username">John</div></div>
-                 <div class="user"><div class="username"></div></div>
+                 <td class="user">John</td>
+                 <td class="user">&nbsp;&nbsp;&nbsp;</td>
+	       </table>
                </div>
             </div>  
 	    <div id="embed"></div>  
