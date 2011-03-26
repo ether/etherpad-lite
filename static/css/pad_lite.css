@@ -1066,6 +1066,7 @@ margin-left:4px;
 #users{
 display:none;
 position:absolute;
+height:30px;
 top:42px;
 font-size:14px;
 width:100%;
@@ -1073,9 +1074,13 @@ width:100%;
 
 #userscont{
 margin-left:8px;
+width:90%;
+height:30px;
 }
 
 .user{
+padding-left:2px;
+padding-right:2px;
 height:20px;
 border-style:solid;
 border-width:1px;
@@ -1083,8 +1088,8 @@ border-color:grey;
 background-color:lightblue;
 display:inline;
 min-width:20px;
-position:absolute;
 display:inline;
+cursor:pointer;
 }
 
 .username{
