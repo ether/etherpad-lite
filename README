@@ -1,0 +1,38 @@
+Etherpad-Lite
+What is Etherpad Lite?
+Etherpad lite is a really-real time collaborative editor spawned from the Hell fire of Etherpad.  
+
+Why use Etherpad Lite?
+* Tiny server hardware footprint
+* Pure Javascript client and server side
+* No nasty dependancies
+* Simplfied interface 
+* Easy to embed
+* Well documented
+
+What isn't available yet when compared to Etherpad?
+* Timeslider
+* Import/Export
+* Clear authorship colours
+* Upload files
+* View Saved revisions
+* Chat
+* Pad management
+* User management
+* Plugin framework
+
+REQUIREMENTS
+NoteJS - http://nodejs.org/ [apt-get install nodejs]
+NPM[Node Package Manager] - http://npmjs.org [curl http://npmjs.org/install.sh | sh]
+
+INSTALATION
+1. apt-get install nodejs
+2. curl http://npmjs.org/install.sh | sh
+3. npm install socket.io
+
+RUNNING
+1. bin/run.sh
+
+TESTING
+1. Open your web browser and visit http://IPSERVER:9999
+
