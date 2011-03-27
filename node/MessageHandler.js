@@ -149,10 +149,6 @@ exports.handleMessage = function(client, message)
 function handleUserInfoUpdate(client, message)
 {
   //check if all ok
-  if(message.data.userInfo.name == null)
-  {
-    throw "USERINFO_UPDATE Message have no name!";
-  }
   if(message.data.userInfo.colorId == null)
   {
     throw "USERINFO_UPDATE Message have no colorId!";
@@ -164,6 +160,26 @@ function handleUserInfoUpdate(client, message)
   //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
+  
+  var padId = session2pad[client.sessionId];
+  
+  //set a null name, when there is no name set. cause the client wants it null
+  if(message.data.userInfo.name == null)
+  {
+    message.data.userInfo.name = null;
+  }
+  
+  //The Client don't know about a USERINFO_UPDATE, it can handle only new user_newinfo, so change the message type
+  message.data.type = "USER_NEWINFO";
+  
+  //Send the other clients on the pad the update message
+  for(i in pad2sessions[padId])
+  {
+    if(pad2sessions[padId][i] != client.sessionId)
+    {
+      socketio.clients[pad2sessions[padId][i]].send(message);
+    }
+  }
 }
 
 /**
