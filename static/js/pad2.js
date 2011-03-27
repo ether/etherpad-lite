@@ -509,7 +509,6 @@ var pad = {
       '/static/img/jun09/pad/sharebox4.gif',
       '/static/img/jun09/pad/sharedistri.gif',
       '/static/img/jun09/pad/colorpicker.gif',
-      '/static/img/jun09/pad/docbarstates.png'
     ];
     function loadNextImage() {
       if (images.length == 0) {
