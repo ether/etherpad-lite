@@ -1312,7 +1312,7 @@ function OUTER(gscope) {
 
     isTimeUp = (isTimeUp || function() { return false; });
 
-    if (DEBUG && window.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
+    if (DEBUG && top.DONT_INCORP || top.DEBUG_DONT_INCORP) return false;
 
     var p = PROFILER("incorp", false);
 

@@ -186,7 +186,7 @@ var pad = {
     padeditor.init(postAceInit, pad.padOptions.view || {});
 
     paduserlist.init(pad.myUserInfo);
-    padchat.init(clientVars.chatHistory, pad.myUserInfo);
+//    padchat.init(clientVars.chatHistory, pad.myUserInfo);
     padconnectionstatus.init();
     padmodals.init();
 
@@ -214,12 +214,12 @@ var pad = {
   notifyChangeName: function(newName) {
     pad.myUserInfo.name = newName;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
-    padchat.handleUserJoinOrUpdate(pad.myUserInfo);
+    //padchat.handleUserJoinOrUpdate(pad.myUserInfo);
   },
   notifyChangeColor: function(newColorId) {
     pad.myUserInfo.colorId = newColorId;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
-    padchat.handleUserJoinOrUpdate(pad.myUserInfo);
+    //padchat.handleUserJoinOrUpdate(pad.myUserInfo);
   },
   notifyChangeTitle: function(newTitle) {
     pad.collabClient.sendClientMessage({
@@ -289,15 +289,15 @@ var pad = {
   },
   handleUserJoin: function(userInfo) {
     paduserlist.userJoinOrUpdate(userInfo);
-    padchat.handleUserJoinOrUpdate(userInfo);
+    //padchat.handleUserJoinOrUpdate(userInfo);
   },
   handleUserUpdate: function(userInfo) {
     paduserlist.userJoinOrUpdate(userInfo);
-    padchat.handleUserJoinOrUpdate(userInfo);
+    //padchat.handleUserJoinOrUpdate(userInfo);
   },
   handleUserLeave: function(userInfo) {
     paduserlist.userLeave(userInfo);
-    padchat.handleUserLeave(userInfo);
+    //padchat.handleUserLeave(userInfo);
   },
   handleClientMessage: function(msg) {
     if (msg.type == 'suggestUserName') {
@@ -308,7 +308,7 @@ var pad = {
       }
     }
     else if (msg.type == 'chat') {
-      padchat.receiveChat(msg);
+      //padchat.receiveChat(msg);
     }
     else if (msg.type == 'padtitle') {
       paddocbar.changeTitle(msg.title);
@@ -509,8 +509,7 @@ var pad = {
       '/static/img/jun09/pad/sharebox4.gif',
       '/static/img/jun09/pad/sharedistri.gif',
       '/static/img/jun09/pad/colorpicker.gif',
-      '/static/img/jun09/pad/docbarstates.png',
-      '/static/img/jun09/pad/overlay.png'
+      '/static/img/jun09/pad/docbarstates.png'
     ];
     function loadNextImage() {
       if (images.length == 0) {
