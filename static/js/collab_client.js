@@ -195,11 +195,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options) {
       initialStartConnectTime = +new Date();
    // });
     
-    socket.on('message', function(obj){
+    /*socket.on('message', function(obj){
       if(window.console)
         console.log(obj);
       handleMessageFromServer(obj);
-    });
+    });*/
     
     socket.on('disconnect', function(obj){
       handleSocketClosed(true);
@@ -297,6 +297,9 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options) {
   }
 
   function handleMessageFromServer(evt) {
+    if(window.console)
+      console.log(evt);
+      
     if (! socket) return;
     if (! evt.data) return;
     var wrapper = evt;
@@ -636,6 +639,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options) {
     setOnConnectionTrouble: function(cb) { callbacks.onConnectionTrouble = cb; },
     setOnServerMessage: function(cb) { callbacks.onServerMessage = cb; },
     updateUserInfo: defer(updateUserInfo),
+    handleMessageFromServer: handleMessageFromServer,
     getConnectedUsers: getConnectedUsers,
     sendClientMessage: sendClientMessage,
     getCurrentRevisionNumber: getCurrentRevisionNumber,

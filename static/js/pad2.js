@@ -85,23 +85,42 @@ function handshake()
     var initalized = false;
     
     socket.on('message', function(obj){
+      //if we haven't recieved the clientVars yet, then this message should it be
       if(!receivedClientVars)
       {
-        receivedClientVars=true;
+        //We get a disconnect message
+        if(obj.disconnect)
+        { 
+          socket.disconnect();
+          alert("You have this Pad already opened in another Window/Tab");
+          return;
+        }
+        //yeah, the clientVars are here :). So we can start initalizing the Pad
+        else
+        {
+          receivedClientVars=true;
       
-        clientVars = obj;
-        clientVars.userAgent=navigator.userAgent;
-        clientVars.collab_client_vars.clientAgent=navigator.userAgent;
-        
-        pad.init();
-        
-        initalized=true;
+          clientVars = obj;
+          clientVars.userAgent=navigator.userAgent;
+          clientVars.collab_client_vars.clientAgent=navigator.userAgent;
+          
+          pad.init();
+          
+          initalized=true;
+        }
       }
+      //This handles every Message after the clientVars
       else
       {
+        //We can't handle the message before we initalized the pad, so let this message bounce back in 100ms
         if(!initalized)
         {
-          setTimeOut(this(obj));
+          setTimeOut(this(obj), 100);
+        }
+        //We're initalized, so give this message to the collabClient
+        else
+        {
+          pad.collabClient.handleMessageFromServer(obj);
         }
       }
     });

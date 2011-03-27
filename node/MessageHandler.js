@@ -346,6 +346,19 @@ function handleClientReady(client, message)
   //Ask the author Manager for a authorname of this token. 
   var author = authorManager.getAuthor4Token(message.token);
   
+  //Check if this author is already on the pad, if yes, kick him!
+  if(pad2sessions[message.padId])
+  {
+    for(var i in pad2sessions[message.padId])
+    {
+      if(sessioninfos[pad2sessions[message.padId][i]].author == author)
+      {
+        client.send({disconnect:"doublelogin"});
+        return;
+      }
+    }
+  }
+  
   //Save in session2pad that this session belonges to this pad
   var sessionId=String(client.sessionId);
   session2pad[sessionId] = message.padId;
