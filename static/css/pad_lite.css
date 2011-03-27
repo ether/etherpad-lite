@@ -977,7 +977,6 @@ form#reconnectform { display: none; }
 
 #modaloverlay {
   z-index: 500; display: none;
-  background-image: url(/static/img/jun09/pad/overlay2.png);
   background-repeat: repeat-both;
   width: 100%; position: absolute;
   height: 100%; left: 0; top: 0;
@@ -988,7 +987,6 @@ form#reconnectform { display: none; }
   background-image: none;
   background-repeat: no-repeat;
   /* scale the image */
-  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/static/img/jun09/pad/overlay2.png", sizingMethod="scale");
 }
 
 a#topbarmaximize {
