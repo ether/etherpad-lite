@@ -23,7 +23,7 @@ var clientVars = {};  // ]]>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script> 
-
+<script type="text/javascript" src="/static/js/json.js"></script>
 <script type="text/javascript" src="/static/js/json2.js"></script>
 <script type="text/javascript" src="/static/js/colorutils.js"></script>
 <script type="text/javascript" src="/static/js/draggable.js"></script>
@@ -84,8 +84,7 @@ var clientVars = {};  // ]]>
 		  
 		  
   <td><img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24"></td>
-  <td class="editbarbutton editbargroupsfirst"><a href="javascript:void (window.pad&&pad.editbarClick('showusers'));" title="Show connected users">
-  <img src="/static/img/mar11/editbar_showusers.gif"></a></td>
+  <td class="editbarbutton editbargroupsfirst"><a href="javascript:void (window.pad&&pad.editbarClick('showusers'));" title="Show connected users">  <img id="showusersicon" src="/static/img/mar11/editbar_showusers.gif"></a></td>
   <td><img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24"></td>
   <td>&nbsp;&nbsp;</td>
   <td><img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24"></td>
@@ -95,7 +94,21 @@ var clientVars = {};  // ]]>
   <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('redo'));" title="Redo (ctrl-Y)"><img src="/static/img/jun09/pad/editbar_redo.gif"></a></td>
   <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('save'));" title="Save Revision"><img src="/static/img/jun09/pad/editbar_save.gif"></a></td>
   <td class="editbarbutton"><a href="javascript:void (window.pad&&pad.editbarClick('embed'));" title="Embed this pad">  <img src="/static/img/mar11/editbar_embed.gif"></a></td>
+<td>
+	
+<!-- The below is completely temporary and should be deleted CAKE -->
+	<script type="text/javascript">
+	function shinyshiny(){
+	  $('#showusersicon').fadeOut('fast');
+	  $('#showusersicon').fadeIn('fast');
+	  $('#showusersicon').fadeOut('fast');
+	  $('#showusersicon').fadeIn('fast');
+	}
+	</script>
+	<input type="button" onClick="shinyshiny();" value="shiny">
+<!-- end of temporary section designed to be deleted -->
 
+</td>
   <td><img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24"></td>
   <td>&nbsp;&nbsp;</td>
   <td><img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24"></td>
@@ -182,11 +195,11 @@ var clientVars = {};  // ]]>
 	  <h2 class="h2_userdup">Opened in another window.</h2>
 	  <h2 class="h2_unauth">No Authorization.</h2>
 	  <div id="disconnected_looping">
-	    <p><b>We're having trouble talking to the EtherPad synchronization server.</b>
+	    <p><b>We're having trouble talking to the EtherPad lite synchronization server.</b>
 	      You may be connecting through an incompatible firewall or proxy server.</p>
 	  </div>
 	  <div id="disconnected_initsocketfail">
-	    <p><b>We were unable to connect to the EtherPad synchronization server.</b>
+	    <p><b>We were unable to connect to the EtherPad lite synchronization server.</b>
 	      This may be due to an incompatibility with your web
 	      browser or internet connection.</p>
 	  </div>
@@ -195,7 +208,7 @@ var clientVars = {};  // ]]>
 	      If you'd like to use this window instead, you can reconnect.</p>
 	  </div>
 	  <div id="disconnected_unknown">
-	    <p><b>Lost connection with the EtherPad synchronization
+	    <p><b>Lost connection with the EtherPad lite synchronization
 		server.</b>  This may be due to a loss of network connectivity.</p>
 	  </div>
 	  <div id="disconnected_slowcommit">
@@ -214,49 +227,8 @@ var clientVars = {};  // ]]>
 	</div>
       </div>
     </div>
-    <div id="sharebox" class="modaldialog">
-      <div id="sharebox-inner" class="modaldialog-inner">
-	<a href="javascript:void(0)" id="sharebox-hide" class="modaldialog-hide"><!-- --></a>
-	<div id="sharebox-stripe" class="sharebox-stripe-private">
-	  <div class="public">
-	    <strong>Public Pad:</strong> This pad is accessible to anyone who
-	    visits its URL. To make it private, <a href="javascript:void(0)" class="setsecurity">change security settings</a>.
-	  </div>
-	  <div class="private">
-	    <strong>Private Pad:</strong> This pad is only accessible to team account-holders.  To allow anyone to access it, <a href="javascript:void(0)" class="setsecurity">change security settings</a>.
-	  </div>
-	</div>
-	<div><label>Paste link over email or IM:</label></div>
-	<input class="sharebox-url" type="text" readonly="readonly" value="http://localhost:9000/test"/>
-	<div><label>...or for read only access paste this link:</label></div>
-	<input class="sharebox-url" type="text" readonly="readonly" value="http://localhost:9000/ep/pad/view/ro.wG$4G/latest"/>
-	<h1><a class="expand-collapse" id="sharebox-sendmail-form-expander" href="javascript:" onclick="$('#sharebox-sendmail-form').toggle();$('#sharebox-sendmail-form-expander').toggleClass('expanded');">or send an email invitation...</a></h1>
-	<div id="sharebox-sendmail-form" style="display:none">
-          <table>
-            <tr>
-              <th><label>To:</label></th>
-              <td><input type="text" id="sharebox-to" class="modalfield" /></td>
-            </tr>
-            <tr>
-              <th><label>Subject:</label></th>
-              <td><input type="text" id="sharebox-subject" class="modalfield" /></td>
-            </tr>
-            <tr>
-              <th><label>Message:</label></th>
-              <td><textarea id="sharebox-message" rows="6" cols="40" class="modalfield"></textarea></td>
-            </tr>
-          </table>
-	  <a href="javascript:void(0)" id="sharebox-send"><!-- --></a>
-	</div>
-	<div id="sharebox-response"><!-- --></div>
-        <div style="clear: both;"></div>
-      </div>
-    </div>
   </div>
-      
-    </div>
-  </div>
-  
+</div>
   
   <form id="reconnectform"
 	method="post"
@@ -268,7 +240,6 @@ var clientVars = {};  // ]]>
 	   name="diagnosticInfo" />
     <input type="hidden" class="missedChanges" name="missedChanges" />
   </form>
- 
   </body>
 </html>
  
