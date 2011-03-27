@@ -16,8 +16,8 @@
 
 function OUTER(gscope) {
 
-  var DEBUG=true;//$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
-
+  var DEBUG=false;//$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
+// changed to false 
   var isSetUp = false;
 
   var THE_TAB = '    ';//4
@@ -768,7 +768,7 @@ function OUTER(gscope) {
       else {
         setAttributeOnSelection('author', '');
       }
-    },
+    }
   };
 
   function execCommand(cmd) {
@@ -1312,7 +1312,7 @@ function OUTER(gscope) {
 
     isTimeUp = (isTimeUp || function() { return false; });
 
-    if (DEBUG && top.DONT_INCORP || top.DEBUG_DONT_INCORP) return false;
+    if (DEBUG && window.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
 
     var p = PROFILER("incorp", false);
 
@@ -2999,7 +2999,7 @@ function OUTER(gscope) {
   }
 
   function handleKeyEvent(evt) {
-    if (DEBUG && top.DONT_INCORP) return;
+    // if (DEBUG && window.DONT_INCORP) return;
 
     if (! isEditable) return;
 
