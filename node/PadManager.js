@@ -123,7 +123,8 @@ function appendRevision(id, theChangeset, author)
   globalPads[id].rev[newRev].meta.timestamp = new Date().getTime();
   
   //ex. getNumForAuthor
-  apool.putAttrib(['author',author||'']);
+  if(author != '')
+    apool.putAttrib(['author',author||'']);
   
   if(newRev%100==0)
   {
