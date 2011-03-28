@@ -98,6 +98,9 @@ function handshake()
         //yeah, the clientVars are here :). So we can start initalizing the Pad
         else
         {
+          if(window.console)
+            console.log(obj);
+            
           receivedClientVars=true;
       
           clientVars = obj;
