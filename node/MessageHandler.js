@@ -77,6 +77,22 @@ exports.handleDisconnect = function(client)
   //save the padname of this session
   var sessionPad=session2pad[client.sessionId];
   
+  var author = sessioninfos[client.sessionId].author;
+  
+  //prepare the notification for the other users on the pad, that this user joined
+  var messageToTheOtherUsers = {
+    "type": "COLLABROOM",
+    "data": {
+      type: "USER_LEAVE",
+      userInfo: {
+        "ip": "127.0.0.1",
+        "colorId": authorManager.getAuthorColorId(author),
+        "userAgent": "Anonymous",
+        "userId": author
+      }
+    }
+  };
+  
   //Go trough all sessions of this pad, search and destroy the entry of this client
   for(i in pad2sessions[sessionPad])
   {
@@ -85,6 +101,12 @@ exports.handleDisconnect = function(client)
       delete pad2sessions[sessionPad][i];  
       break;
     }
+  }
+  
+  //Go trough all user that are still on the pad, and send them the USER_LEAVE message
+  for(i in pad2sessions[sessionPad])
+  {
+    socketio.clients[pad2sessions[sessionPad][i]].send(messageToTheOtherUsers);
   }
   
   //Delete the session2pad and sessioninfos entrys of this session
