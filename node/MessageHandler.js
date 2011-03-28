@@ -182,6 +182,11 @@ function handleUserInfoUpdate(client, message)
   }
 }
 
+function errlog(name, value)
+{
+  console.error(name+"=" + JSON.stringify(value));
+}
+
 /**
  * Handles a USERINFO_UPDATE, that means that a user have changed his color or name. Anyway, we get both informations
  * This Method is nearly 90% copied out of the Etherpad Source Code. So I can't tell you what happens here exactly
@@ -224,7 +229,7 @@ function handleUserChanges(client, message)
   //ex. adoptChangesetAttribs
   
   //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
-  Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool());
+  changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool());
   
   //ex. applyUserChanges
   
@@ -258,8 +263,6 @@ function handleUserChanges(client, message)
     pad.appendRevision(nlChangeset);
   }
   
-  console.error(JSON.stringify(pad.pool()));
-  
   //ex. updatePadClients
   
   for(i in pad2sessions[pad.id])
@@ -282,7 +285,8 @@ function handleUserChanges(client, message)
         var wireMsg = {"type":"COLLABROOM","data":{type:"NEW_CHANGES", newRev:r,
                    changeset: forWire.translated,
                    apool: forWire.pool,
-                   author: author}};
+                   author: author}};        
+                   
         socketio.clients[session].send(wireMsg);
       }
     }
