@@ -1,3 +1,6 @@
+/* @override 
+	http://localhost:9001/static/css/pad_lite.css */
+
 *,html.body,p { margin: 0; padding: 0; }
 h1, h2, h3, h4, h5, h6 { font-size: 100%; font-weight: normal; font-style: normal;
   text-decoration: none; margin: 0; padding: 0; }
@@ -337,58 +340,12 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   background: url(/static/img/jun09/pad/colorpicker.gif) no-repeat left top;
   width: 232px; height: 140px;
   position: absolute;
-  left: 13px; top: 13px; z-index: 101;
+  left: 10px; top: 18px; z-index: 101;
   display: none;/*...initially*/
 }
-#mycolorpicker .n1 { left: 13px; }
-#mycolorpicker .n2 { left: 40px; }
-#mycolorpicker .n3 { left: 67px; }
-#mycolorpicker .n4 { left: 94px; }
-#mycolorpicker .n5 { left: 121px; }
-#mycolorpicker .n6 { left: 148px; }
-#mycolorpicker .n7 { left: 175px; }
-#mycolorpicker .n8 { left: 202px; }
 
-#mycolorpicker .n9  { left: 13px; top: 34px ! important;}
-#mycolorpicker .n10 { left: 40px; top: 34px ! important;}
-#mycolorpicker .n11 { left: 67px; top: 34px ! important;}
-#mycolorpicker .n12 { left: 94px; top: 34px ! important;}
-#mycolorpicker .n13 { left: 121px; top: 34px ! important;}
-#mycolorpicker .n14 { left: 148px; top: 34px ! important;}
-#mycolorpicker .n15 { left: 175px; top: 34px ! important;}
-#mycolorpicker .n16 { left: 202px; top: 34px ! important;}
+#mycolorpicker .picked { border: 1px solid #fff !important; }
 
-#mycolorpicker .n17  { left: 13px; top: 56px ! important;}
-#mycolorpicker .n18 { left: 40px; top: 56px ! important;}
-#mycolorpicker .n19 { left: 67px; top: 56px ! important;}
-#mycolorpicker .n20 { left: 94px; top: 56px ! important;}
-#mycolorpicker .n21 { left: 121px; top: 56px ! important;}
-#mycolorpicker .n22 { left: 148px; top: 56px ! important;}
-#mycolorpicker .n23 { left: 175px; top: 56px ! important;}
-#mycolorpicker .n24 { left: 202px; top: 56px ! important;}
-
-#mycolorpicker .n25  { left: 13px; top: 78px ! important;}
-#mycolorpicker .n26 { left: 40px; top: 78px ! important;}
-#mycolorpicker .n27 { left: 67px; top: 78px ! important;}
-#mycolorpicker .n28 { left: 94px; top: 78px ! important;}
-#mycolorpicker .n29 { left: 121px; top: 78px ! important;}
-#mycolorpicker .n30 { left: 148px; top: 78px ! important;}
-#mycolorpicker .n31 { left: 175px; top: 78px ! important;}
-#mycolorpicker .n32 { left: 202px; top: 78px ! important;}
-
-#mycolorpicker .pickerswatchouter {
-  border: 1px solid white;
-  width: 15px; height: 15px; position: absolute;
-  top: 12px;
-}
-#mycolorpicker .pickerswatch {
-  border: 1px solid #999;
-  width: 13px;
-  height: 13px;
-  position: absolute;
-  left: 0; top: 0;
-}
-#mycolorpicker .picked { border: 1px solid #666 !important; }
 #mycolorpicker .picked .pickerswatch { border: 1px solid #666; }
 #mycolorpickersave { position: absolute; left: 14px; top: 102px;
   width: 47px; height: 0; padding-top: 20px; overflow: hidden;
@@ -1073,10 +1030,41 @@ font-size:14px;
 width:100%;
 }
 
-#userscont{
-margin-left:6px;
-width:90%;
-height:30px;
+#users ul li
+{
+float: left;
+list-style: none;
+margin-left: 10px;
+padding-right: 10px;
+border-right: 1px solid #000;
+}
+
+#users ul li a:hover
+{
+text-decoration: underline;
+cursor: pointer;
+}
+
+ul#colorpickerswatches
+{
+  padding-left: 3px;
+  padding-top: 5px;
+}
+
+ul#colorpickerswatches li 
+{
+  border: 1px solid #999; 
+  width: 14px; 
+  height: 14px; 
+  overflow: hidden;
+  margin: 3px 6px;
+  padding: 0px;
+}
+
+ul#colorpickerswatches li:hover
+{
+  border: 1px solid #000; 
+  cursor: pointer;
 }
 
 .user{

@@ -14,41 +14,72 @@
  * limitations under the License.
  */
 
- var colorPickerOpen = false;
+var myUserInfo = {};
 
- function getColorPickerSwatchIndex(jnode) {
-    return Number(jnode.get(0).className.match(/\bn([0-9]+)\b/)[1])-1;
-  }
-  function closeColorPicker(accept) {
-    if (accept) {
-      var newColorId = getColorPickerSwatchIndex($("#mycolorpicker .picked"));
-      if (newColorId >= 0) { // fails on NaN
-        myUserInfo.colorId = newColorId;
-        pad.notifyChangeColor(newColorId);
-      }
+var colorPickerOpen = false;
+var colorPickerSetup = false;
+var previousColorId = 0;
+
+function getColorPickerSwatchIndex(jnode) {
+//  return Number(jnode.get(0).className.match(/\bn([0-9]+)\b/)[1])-1;
+  return $("#colorpickerswatches li").index(jnode);
+}
+function closeColorPicker(accept) {
+  if (accept) {
+    var newColorId = getColorPickerSwatchIndex($("#colorpickerswatches .picked"));
+    if (newColorId >= 0) { // fails on NaN
+      myUserInfo.colorId = newColorId;
+      pad.notifyChangeColor(newColorId);
     }
-    colorPickerOpen = false;
-    $("#mycolorpicker").css('display', 'none');
-    renderMyUserInfo();
+  } else {
+    pad.notifyChangeColor(previousColorId);
   }
+  colorPickerOpen = false;
+  $("#mycolorpicker").css('display', 'none');
+  //renderMyUserInfo();
+}
 
+function showColorPicker() {
+  previousColorId = myUserInfo.colorId ;
 
-  function showColorPicker() {
-    if (! colorPickerOpen) {
-      var palette = pad.getColorPalette();
+  if (! colorPickerOpen) {
+    var palette = pad.getColorPalette();
+
+    if(!colorPickerSetup) {
+      var colorsList = $("#colorpickerswatches")
       for(var i=0;i<palette.length;i++) {
-        $("#mycolorpicker .n"+(i+1)+" .pickerswatch").css(
-          'background', palette[i]);
+        
+        var li = $('<li>', {
+            style: 'background: '+palette[i]+';'
+        });
+        
+        li.appendTo(colorsList);
+        
+        li.bind('click', function(event){
+          $("#colorpickerswatches li").removeClass('picked');
+          $(event.target).addClass("picked");
+          
+          var newColorId = getColorPickerSwatchIndex($("#colorpickerswatches .picked"));
+          pad.notifyChangeColor(newColorId);
+        });
+        
+        if(myUserInfo.colorId == i){
+          $(event.target).addClass("picked");
+        }
       }
-      $("#mycolorpicker").css('display', 'block');
-      colorPickerOpen = true;
-      renderMyUserInfo();
+            
+      colorPickerSetup = true;
     }
-    // this part happens even if color picker is already open
-    $("#mycolorpicker .pickerswatchouter").removeClass('picked');
-    $("#mycolorpicker .pickerswatchouter:eq("+(myUserInfo.colorId||0)+")").
-      addClass('picked');
-  }
+    
+    $("#mycolorpicker").css('display', 'block');
+    colorPickerOpen = true;
+    
+    $("#colorpickerswatches li").removeClass('picked');
+    $($("#colorpickerswatches li")[myUserInfo.colorId]).addClass("picked"); //seems weird
+    
+    //paduserlist.renderMyUserInfo();
+  } 
+}
 
 
 var paduserlist = (function() {
@@ -311,7 +342,6 @@ var paduserlist = (function() {
     return self;
   }()); ////////// rowManager
 
-  var myUserInfo = {};
   var otherUsersInfo = [];
   var otherUsersData = [];
 
@@ -605,4 +635,3 @@ var paduserlist = (function() {
   };
   return self;
 }());
-
