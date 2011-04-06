@@ -176,7 +176,7 @@ function Ace2Editor() {
       //iframeHTML.push($$INCLUDE_CSS_Q("editor.css syntax.css inner.css"));
       
       iframeHTML.push($$INCLUDE_CSS_Q("/static/css/editor.css"));
-      iframeHTML.push($$INCLUDE_CSS_Q("/static/css/syntax.cs"));
+      iframeHTML.push($$INCLUDE_CSS_Q("/static/css/syntax.css"));
       iframeHTML.push($$INCLUDE_CSS_Q("/static/css/inner.css"));
       
       //iframeHTML.push(INCLUDE_JS_Q_DEV("ace2_common_dev.js"));

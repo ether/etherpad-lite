@@ -76,15 +76,6 @@ var padmodals = (function() {
       $("#feedbackbutton").click(function() {
         self.showFeedback();
       });
-
-      $("#uservoicelinks a").click(function() {
-        self.hideModal();
-        return true;
-      });
-      $("#feedbackemails a").each(function() {
-        var node = $(this);
-        node.attr('href', "mailto:"+node.attr('href')+"@etherpad.com");
-      });
     },
     initShareBox: function() {
       $("#sharebutton, #nootherusers a").click(function() {

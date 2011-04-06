@@ -9,6 +9,7 @@ Why use Etherpad Lite?
 * Simplfied interface 
 * Easy to embed
 * Well documented
+* Better support for third party editors
 
 What isn't available yet when compared to Etherpad?
 * Timeslider
@@ -31,7 +32,8 @@ INSTALATION
 3. npm install socket.io
 
 RUNNING
-1. bin/run.sh
+1. cd bin
+2. ./run.sh
 
 TESTING
 1. Open your web browser and visit http://IPSERVER:9001
