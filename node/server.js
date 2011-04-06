@@ -122,20 +122,38 @@ messageHandler.setSocketIO(io);
 io.on('connection', function(client){
   try{
     messageHandler.handleConnect(client);
-  }catch(e){console.error(e);}
+  }catch(e){errorlog(e);}
   
   client.on('message', function(message){
     try{
       messageHandler.handleMessage(client, message);
-    }catch(e){console.error(e);}
+    }catch(e){errorlog(e);}
   });
 
   client.on('disconnect', function(){
     try{
       messageHandler.handleDisconnect(client);
-    }catch(e){console.error(e);}
+    }catch(e){errorlog(e);}
   });
 });
+
+function errorlog(e)
+{
+  var timeStr = new Date().toUTCString() + ": ";
+
+  if(typeof e == "string")
+  {
+    console.error(timeStr + e);
+  }
+  else if(e.stack != null)
+  {
+    console.error(timeStr + e.stack);
+  }
+  else
+  {
+    console.error(timeStr + JSON.stringify(e));
+  }
+}
 
 
 
