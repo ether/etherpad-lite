@@ -59,7 +59,6 @@ var padmodals = (function() {
     init: function() {
       self.initFeedback();
       self.initShareBox();
-      console.log("self.initShareBox");
     },
     initFeedback: function() {
       /*var emailField = $("#feedbackbox-email");
@@ -81,7 +80,6 @@ var padmodals = (function() {
     initShareBox: function() {
       $("#sharebutton").click(function() {
         self.showShareBox();
-        console.log("share");
       });
       $("#sharebox-hide").click(function() {
         self.hideModal();

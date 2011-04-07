@@ -467,9 +467,9 @@ var paduserlist = (function() {
         rowManager.insertRow(newIndex, userData);
       }
 
-      updateInviteNotice();
+      updateInviteNotice(); 
       
-      console.log(self.updateNumberOfOnlineUsers());
+      self.updateNumberOfOnlineUsers();
     },
     updateNumberOfOnlineUsers: function(){
       var online = 1; // you are always online!
@@ -480,6 +480,7 @@ var paduserlist = (function() {
         }
       }
       $("#online_count").text(online);
+            
       return online;
     },
     userLeave: function(info) {
@@ -510,9 +511,9 @@ var paduserlist = (function() {
         }, 8000); // how long to wait
         userData.leaveTimer = thisLeaveTimer;
       }
-      updateInviteNotice();
+      updateInviteNotice();    
       
-      console.log(self.updateNumberOfOnlineUsers());
+      self.updateNumberOfOnlineUsers();  
     },
     showGuestPrompt: function(userId, displayName) {
       if (knocksToIgnore[userId]) {
