@@ -370,7 +370,6 @@ var paduserlist = (function() {
   var self = {
     init: function(myInitialUserInfo) {
       self.setMyUserInfo(myInitialUserInfo);
-      console.log(myInitialUserInfo);
       $("#otheruserstable tr").remove();
 
       if (pad.getUserIsGuest()) {
@@ -633,6 +632,5 @@ function showColorPicker() {
     
     $("#colorpickerswatches li").removeClass('picked');
     $($("#colorpickerswatches li")[myUserInfo.colorId]).addClass("picked"); //seems weird
-    console.log(paduserlist);    
   } 
 }
