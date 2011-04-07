@@ -1,5 +1,4 @@
-# Etherpad-Lite
-What is Etherpad Lite?
+# About
 Etherpad lite is a really-real time collaborative editor spawned from the Hell fire of Etherpad. 
 We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad Lite 
 is based on node.js what makes it much leigther and more stable than the original Etherpad. Our hope 
@@ -37,7 +36,16 @@ documented codebase makes it easier for developers to improve the code
 3. Open your web browser and visit http://IPSERVER:9001
 
 # Contribute
-Look at the TODO list at <https://github.com/Pita/etherpad-lite/wiki/TODO>
-You can get in touch via petermartischka-at-googlemail.com 
-A mailinglist/irc channel will follow later
+Look at the TODO list at <https://github.com/Pita/etherpad-lite/wiki/TODO>.
+You can get in touch via petermartischka-at-googlemail.com . 
+A mailinglist/irc channel will follow later.
+
+# Debug
+1. cd bin
+2. ./runDebug.sh
+3. Open your webkit browser and visit http://IPSERVER:8080
+
+# License
+Apache License v2 <http://www.apache.org/licenses/LICENSE-2.0.html>
+
 
