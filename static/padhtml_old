@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC
+	  "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Content-Language" content="en-us"/>
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
+<title>Etherpad Lite v0.0.1: test</title>
+<!-- <base href="http://localhost:9001/" />-->
+<!-- CSS -->
+<link href="/static/css/pad_lite.css" rel="stylesheet" type="text/css"/>
+<!-- javascript -->
+<script type="text/javascript">
+  // <![CDATA[
+var clientVars = {};  // ]]>
+</script>
+<!--    <script type="text/javascript" src="/static/js/client.js"></script>-->
+<script type="text/javascript" src="/static/js/plugins.js"></script>
+<script type="text/javascript" src="/static/js/undo-xpopup.js"></script>
+<!--
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/json.js"></script>
+<script type="text/javascript" src="/static/js/json2.js"></script>
+<script type="text/javascript" src="/static/js/colorutils.js"></script>
+<script type="text/javascript" src="/static/js/draggable.js"></script>
+<script type="text/javascript" src="/static/js/pad_utils.js"></script>
+<script type="text/javascript" src="/static/js/pad_cookie.js"></script>
+<script type="text/javascript" src="/static/js/pad_editor.js"></script>
+<script type="text/javascript" src="/static/js/pad_editbar.js"></script>
+<script type="text/javascript" src="/static/js/pad_docbar.js"></script>
+<script type="text/javascript" src="/static/js/pad_modals.js"></script>
+<script type="text/javascript" src="/static/js/ace.js"></script>
+<script type="text/javascript" src="/static/js/collab_client.js"></script>
+<script type="text/javascript" src="/static/js/pad_userlist.js"></script>
+<script type="text/javascript" src="/static/js/pad_impexp.js"></script>
+<script type="text/javascript" src="/static/js/pad_savedrevs.js"></script>
+<script type="text/javascript" src="/static/js/pad_connectionstatus.js"></script>
+<script type="text/javascript" src="/static/js/pad2.js"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+</head>
+<body id="padbody" class="limwidth nonpropad nonprouser">
+<div id="padeditor">
+	<div id="editbar" class="disabledtoolbar">
+		<table cellpadding="0" cellspacing="0" border="0" id="editbartable">
+		<tr>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24">
+			</td>
+			<td class="editbarbutton editbargroupsfirst">
+				<a href="javascript:void (window.pad&&pad.editbarClick('bold'));" title="Bold (ctrl-B)"><img src="/static/img/jun09/pad/editbar_bold.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('italic'));" title="Italics (ctrl-I)"><img src="/static/img/jun09/pad/editbar_italic.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('underline'));" title="Underline (ctrl-U)"><img src="/static/img/jun09/pad/editbar_underline.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('strikethrough'));" title="Strikethrough"><img src="/static/img/jun09/pad/editbar_strikethrough.gif"></a>
+			</td>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24">
+			</td>
+			<td>
+				&nbsp;&nbsp;
+			</td>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24">
+			</td>
+			<td class="editbarbutton editbargroupsfirst">
+				<a href="javascript:void (window.pad&&pad.editbarClick('insertunorderedlist'));" title="Toggle Bullet List"><img src="/static/img/jun09/pad/editbar_insertunorderedlist.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('indent'));" title="Indent List"><img src="/static/img/jun09/pad/editbar_indent.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('outdent'));" title="Unindent List"><img src="/static/img/jun09/pad/editbar_outdent.gif"></a>
+			</td>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24">
+			</td>
+			<td width="100%">
+				&nbsp;
+			</td>
+		</tr>
+		</table>
+		
+		<table cellpadding="0" cellspacing="0" border="0" id="editbarsavetable">
+		<tr>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24">
+			</td>
+			<td class="editbarbutton editbargroupsfirst">
+				<a href="javascript:void (window.pad&&pad.editbarClick('showusers'));" title="Show connected users"><img id="showusersicon" src="/static/img/mar11/editbar_showusers.gif"></a>
+			</td>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24">
+			</td>
+			<td>
+				&nbsp;&nbsp;
+			</td>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24">
+			</td>
+			<td class="editbarbutton editbargroupsfirst">
+				<a href="javascript:void (window.pad&&pad.editbarClick('clearauthorship'));" title="Clear Authorship Colors">
+				<img src="/static/img/jun09/pad/editbar_clearauthorship.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('undo'));" title="Undo (ctrl-Z)"><img src="/static/img/jun09/pad/editbar_undo.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('redo'));" title="Redo (ctrl-Y)"><img src="/static/img/jun09/pad/editbar_redo.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('save'));" title="Save Revision"><img src="/static/img/jun09/pad/editbar_save.gif"></a>
+			</td>
+			<td class="editbarbutton">
+				<a href="javascript:void (window.pad&&pad.editbarClick('embed'));" title="Embed this pad"><img src="/static/img/mar11/editbar_embed.gif"></a>
+			</td>
+			<td>
+				<!-- The below is completely temporary and should be deleted CAKE -->
+				<script type="text/javascript">
+      	function shinyshiny(){
+      	  $('#showusersicon').fadeOut('fast');
+      	  $('#showusersicon').fadeIn('fast');
+      	  $('#showusersicon').fadeOut('fast');
+      	  $('#showusersicon').fadeIn('fast');
+      	}
+      	</script>
+				<input type="button" onclick="shinyshiny();" value="shiny">
+				<!-- end of temporary section designed to be deleted -->
+			</td>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24">
+			</td>
+			<td>
+				&nbsp;&nbsp;
+			</td>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupleft.gif" width="2" height="24">
+			</td>
+			<td class="editbarbutton editbargroupsfirst">
+				<select id="viewzoommenu">
+					<option value="z85">85%</option>
+					<option value="z100">100%</option>
+					<option value="z115">115%</option>
+					<option value="z150">150%</option>
+					<option value="z200">200%</option>
+					<option value="z300">300%</option>
+				</select>
+			</td>
+			<td>
+				<img src="/static/img/jun09/pad/editbar_groupright.gif" width="2" height="24">
+			</td>
+		</tr>
+		</table>
+		
+		<div id="users">
+			<ul>
+				<li><a onclick="showColorPicker();" title="Change my name/color">John</a></li>
+				<li>Joe</li>
+			</ul>
+			<!-- some example code so I can make the css -->
+			<div id="mycolorpicker">
+				<ul id="colorpickerswatches">
+				</ul>
+				<div id="mycolorpickersave">
+					<a onclick="closeColorPicker()">Save</a>
+				</div>
+				<div id="mycolorpickercancel">
+					<a onclick="closeColorPicker()">Cancel</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="embed">
+	</div>
+</div>
+
+<div id="editorcontainerbox">
+
+<div id="editorcontainer">
+	<!-- -->
+</div>
+	<div id="editorloadingbox">
+		Loading Etherpad Lite...
+	</div>
+</div>
+
+
+<!-- /padeditor -->
+<div id="modaloverlay">
+<div id="modaloverlay-inner">
+<!-- -->
+</div>
+</div>
+<div id="mainmodals">
+<div id="connectionbox" class="modaldialog">
+<div id="connectionboxinner" class="modaldialog-inner">
+<div class="connecting">
+	 Connecting...
+</div>
+<div class="reconnecting">
+	 Reestablishing connection...
+</div>
+<div class="disconnected">
+	<h2 class="h2_disconnect">Disconnected.</h2>
+	<h2 class="h2_userdup">Opened in another window.</h2>
+	<h2 class="h2_unauth">No Authorization.</h2>
+	<div id="disconnected_looping">
+		<p>
+			<b>We're having trouble talking to the EtherPad lite synchronization server.</b>
+			You may be connecting through an incompatible firewall or proxy server.
+		</p>
+	</div>
+	<div id="disconnected_initsocketfail">
+		<p>
+			<b>We were unable to connect to the EtherPad lite synchronization server.</b>
+			This may be due to an incompatibility with your web browser or internet connection.
+		</p>
+	</div>
+	<div id="disconnected_userdup">
+		<p>
+			<b>You seem to have opened this pad in another browser window.</b>
+			If you'd like to use this window instead, you can reconnect.
+		</p>
+	</div>
+	<div id="disconnected_unknown">
+		<p>
+			<b>Lost connection with the EtherPad lite synchronization server.</b> This may be due to a loss of network connectivity.
+		</p>
+	</div>
+	<div id="disconnected_slowcommit">
+		<p>
+			<b>Server not responding.</b> This may be due to network connectivity issues or high load on the server.
+		</p>
+	</div>
+	<div id="disconnected_unauth">
+		<p>
+			Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.
+		</p>
+	</div>
+	<div id="reconnect_advise">
+		<p>
+			If this continues to happen, please <a target="_blank" href="/ep/support">let us know</a>
+			(opens in new window).
+		</p>
+	</div>
+	<div id="reconnect_form">
+		<button id="forcereconnect">Reconnect Now</button>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
+<input type="hidden" class="padId" name="padId"/>
+<input type="hidden" class="diagnosticInfo" name="diagnosticInfo"/>
+<input type="hidden" class="missedChanges" name="missedChanges"/>
+</form>
+
+</body>
+</html>
