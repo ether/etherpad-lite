@@ -51,6 +51,11 @@ var clientVars = {};  // ]]>
   </a>
 </li>
 <li>
+	<a href="javascript:void (window.pad&&pad.editbarClick('italic'));" title="Italics (ctrl-I)">
+	  <img src="/static/img/jun09/pad/editbar_italic.gif">
+	</a>
+</li>
+<li>
   <a href="javascript:void (window.pad&&pad.editbarClick('underline'));" title="Underline (ctrl-U)">
     <img src="/static/img/jun09/pad/editbar_underline.gif" />
   </a>
