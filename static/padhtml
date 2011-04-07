@@ -122,7 +122,7 @@ var clientVars = {};  // ]]>
 </li>
 <li>
   <a href="javascript:void (window.pad&&pad.editbarClick('showusers'));" title="Show connected users">
-    <img id="showusersicon" src="/static/img/mar11/editbar_showusers.gif" /> <span>1</span>
+    <img id="showusersicon" src="/static/img/mar11/editbar_showusers.gif" /> <span id="online_count">1</span>
   </a>
 </li>
 </ul>

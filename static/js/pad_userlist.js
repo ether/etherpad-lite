@@ -468,6 +468,19 @@ var paduserlist = (function() {
       }
 
       updateInviteNotice();
+      
+      console.log(self.updateNumberOfOnlineUsers());
+    },
+    updateNumberOfOnlineUsers: function(){
+      var online = 1; // you are always online!
+      for(var i=0;i<otherUsersData.length;i++) {
+        if(otherUsersData[i].status == "")
+        {
+          online++;
+        }
+      }
+      $("#online_count").text(online);
+      return online;
     },
     userLeave: function(info) {
       var existingIndex = findExistingIndex(info.userId);
@@ -498,6 +511,8 @@ var paduserlist = (function() {
         userData.leaveTimer = thisLeaveTimer;
       }
       updateInviteNotice();
+      
+      console.log(self.updateNumberOfOnlineUsers());
     },
     showGuestPrompt: function(userId, displayName) {
       if (knocksToIgnore[userId]) {
