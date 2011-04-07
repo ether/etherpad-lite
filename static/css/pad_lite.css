@@ -294,13 +294,17 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 /*  border-bottom: 1px solid #c4c4c4;*!/
 
   */  
-  position: relative;
+  position: absolute;
   height: 100%; 
-  top: 38px;
+  width: 100%;
   zoom: 1;
+  overflow: hidden;
 }
 
-#editorcontainer { height: 100%; }
+#editorcontainer { 
+  height: 100%; 
+  padding-top: 36px;
+}
   
 #editorcontainer iframe { width: 100%; height: 100%; padding: 0; margin: 0; }
 
