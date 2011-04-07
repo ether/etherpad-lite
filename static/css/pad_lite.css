@@ -290,17 +290,14 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   right: 38px; top: 5px; display: none; }
   
 #editorcontainerbox {
-  border-left: 1px solid #c4c4c4; border-right: 1px solid #c4c4c4;
-/*  border-bottom: 1px solid #c4c4c4;*/
-  background: #fff;
-  bottom:0;
-  left:0;
-  overflow: hidden;
-  position: absolute;
-  right: 0;
-  top: 36px;
+/*  border-left: 1px solid #c4c4c4; border-right: 1px solid #c4c4c4;
+/*  border-bottom: 1px solid #c4c4c4;*!/
+
+  */  
+  position: relative;
+  height: 100%; 
+  top: 38px;
   zoom: 1;
-  z-index: 11;
 }
 
 #editorcontainer { height: 100%; }
