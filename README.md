@@ -26,7 +26,7 @@ documented codebase makes it easier for developers to improve the code
 * Plugin framework
 
 # Installation
-1. download latest node.js version from <http://nodejs.org/> and build it with this instructions <https://github.com/joyent/node/wiki/Installation>
+1. download latest node.js version from <http://nodejs.org/> and build it with this instructions <https://github.com/joyent/node/wiki/Installation>. THE NODE.JS VERSION OF YOUR LINUX REPOSITORY MAY BE TOO OLD. PLEASE COMPILE FROM THE SOURCE TO GET SURE YOU HAVE THE LATEST VERSION.
 2. install npm [curl http://npmjs.org/install.sh | sh]
 3. install socket.io [npm install socket.io]
 
