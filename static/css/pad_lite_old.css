@@ -1,128 +1,16 @@
 /* @override 
 	http://localhost:9001/static/css/pad_lite.css */
 
-*,html,body,p{ margin: 0; padding: 0; }
+*,html.body,p { margin: 0; padding: 0; }
+h1, h2, h3, h4, h5, h6 { font-size: 100%; font-weight: normal; font-style: normal;
+  text-decoration: none; margin: 0; padding: 0; }
+
 .clear { clear: both; }
+
 html { font-size: 62.5%; }
-body { background: #ccc;}
-body, textarea { font-family: Helvetica, Arial, sans-serif; }
 
-a img
-{
-  border: 0;
-}
-
-/* menu */
-#editbar ul
-{
-  position: relative;
-  list-style: none;
-  padding-right: 3px;
-  padding-left: 1px;
-  z-index: 2;
-  height: 31px;
-    overflow: hidden;
-
-}
-
-#editbar
-{
-  background-color: #F3F7F9;
-  width: 100%;
-  height: 31px;
-  padding-top: 4px;
-  overflow: hidden;
-}
-
-#editbar ul li
-{
-  float: left;
-  margin-left: 2px;
-  background-color: #fff;
-  
-  -moz-border-radius: 2px;
-  border-radius: 2px; 
-  
-  border: 1px solid #ccc;
-  padding: 4px 6px;
-  
-  height: 18px;
-  
-  overflow: hidden;
-  
-  background: white; /* fallback for older/unsupporting browsers */  
-  background: -moz-linear-gradient(top, #eee, white 20%, white 20%);  
-  background: -webkit-gradient(linear, 0 0, 0 100%, from(#eee), color-stop(20%, white), color-stop(20%, white));  
-}
-
-#editbar ul li:hover
-{
-  border: 1px solid #888;
-  background: #fff;
-}
-
-#editbar ul li.separator
-{
-  border: inherit;
-  background: inherit;
-}
-#editbar ul li a
-{
-  display: block;
-}
-#editbar ul li a img
-{
-  padding: 1px;
-}
-
-
-#editbar ul
-{
-  float: left;
-}
-#editbar ul#menu_right
-{
-  float: right;
-}
-
-#users
-{
-  display: none;
-}
-
-#editorcontainer 
-{
-  position: absolute;
-  
-  width: 100%;
-  
-  top: 36px;
-  left: 0px;  
-  bottom: 0px;
-
-  z-index: 1;
-}
-
-#editorcontainer iframe {
-  height: 100%;
-  width: 100%; 
-  padding: 0; 
-  margin: 0; 
-}
-
-#editorloadingbox { padding-top: 100px; padding-bottom: 100px; font-size: 2.5em;  color: #aaa;
-   text-align: center; position: absolute; width: 100%; height: 30px; z-index: 100; }
-
-
-
-
-/**
-
-OLD
-*/
-
-/* @override 
-	http://localhost:9001/static/css/pad_lite.css */
+body { position: absolute; width: 100%; height: 100%; background: #ebebeb url(/static/img/jun09/pad/backgrad.gif) repeat-x left top;}
+body, textarea { font-family: Arial, sans-serif; }
 
 #padpage {
  position: absolute;
@@ -141,6 +29,20 @@ OLD
 body.fullwidth #padpage { width: auto; margin-left: 6px; margin-right: 6px; }
 body.squish1width #padpage { width: 800px; }
 body.squish2width #padpage { width: 700px; }
+
+#topbar { height: 25px; background: #326cbd url(/static/img/jun09/pad/padtopback2.gif) repeat-x left top;
+  position: relative; }
+
+#topbarleft { float: left; height: 100%;  overflow: hidden;
+ background: url(/static/img/jun09/pad/padtop5.gif) no-repeat left top; width: 5px; 
+
+ } 
+#topbarright { float: right; height: 100%; overflow: hidden;
+ background: url(/static/img/jun09/pad/padtop5.gif) no-repeat right top; width: 5px; }
+
+.propad #topbar { background: #2c2c2c url(/static/img/jun09/pad/protop.gif) repeat-x 0 -25px; }
+.propad #topbarleft { background: url(/static/img/jun09/pad/protop.gif) no-repeat left top; }
+.propad #topbarright { background: url(/static/img/jun09/pad/protop.gif) no-repeat right top; }
 
 a#backtoprosite, #accountnav {
   display: block; position: absolute; height: 15px; line-height: 15px;
@@ -307,6 +209,34 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   z-index: 10;
 }
 
+#editbar { height: 36px;
+  background: #a5bfe2 url(/static/img/jun09/pad/editbar_background.gif) repeat-x; 
+  height:36px;
+  left:0;
+  position:absolute;
+  right:0;
+  top:0;
+  color: #444444;
+}
+
+#editbarinner {
+  overflow: hidden;
+}
+
+#editbarleft { float: left; height: 100%; overflow: hidden;
+  background: url(/static/img/jun09/pad/editbar_background_left.gif) no-repeat left top; width: 2px; }
+#editbarright { float: right; height: 100%; overflow: hidden;
+  background: url(/static/img/jun09/pad/editbar_background_right.gif) no-repeat right top; width: 2px; }
+
+#editbartable
+{
+  position:absolute;
+  top: 6px;
+  left: 7px;
+  width: 250px;
+  height: 24px;
+}
+
 #editbarsavetable
 {
   position:absolute;
@@ -358,6 +288,39 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 #editbar #syncstatusdone { position: absolute; height: 26px; width: 26px;
   background: url(/static/img/jun09/pad/syncdone.gif) no-repeat center center;
   right: 38px; top: 5px; display: none; }
+  
+  
+body
+{
+}
+#editorcontainerbox 
+{
+  position:relative;
+  
+  height: 100%;
+  width: 100%;
+  
+  background: #fff;
+
+  overflow: hidden;  
+  top: 36px;
+}
+
+#iebug
+{
+  position: absolute;
+  clear: both;
+}
+
+#editorcontainer {  
+  width: 100%;
+  height: 100%; 
+}
+  
+#editorcontainer iframe { width: 100%; height: 100%; padding: 0; margin: 0; }
+
+#editorloadingbox { padding-top: 100px; padding-bottom: 100px; font-size: 2.5em;  color: #aaa;
+   text-align: center; position: absolute; width: 100%; height: 30px; z-index: 100; }
 
 #padsidebar { 
   bottom: 0px;
@@ -561,7 +524,6 @@ table#otheruserstable { display: none; }
 
 #reconnect_form button {
   font-size: 12pt;
-  padding: 5px;
 }
 
 /* We give docbar a higher z-index than its descendant impexp-wrapper in
@@ -901,6 +863,7 @@ form#reconnectform { display: none; }
  border: 1px solid #999;
 }
 .modaldialog .modaldialog-inner { padding: 10pt; }
+.modaldialog .modaldialog-inner * { margin: 2pt; }
 .modaldialog .modaldialog-hide {
   float: right;
   background-repeat: no-repeat;
@@ -1068,6 +1031,30 @@ height:24px;
 display:inline;
 padding-left:4px;
 margin-left:4px;
+}
+
+#users{
+display:none;
+position:absolute;
+height:30px;
+top:42px;
+font-size:14px;
+width:100%;
+}
+
+#users ul li
+{
+float: left;
+list-style: none;
+margin-left: 10px;
+padding-right: 10px;
+border-right: 1px solid #000;
+}
+
+#users ul li a:hover
+{
+text-decoration: underline;
+cursor: pointer;
 }
 
 ul#colorpickerswatches
