@@ -370,6 +370,7 @@ var paduserlist = (function() {
   var self = {
     init: function(myInitialUserInfo) {
       self.setMyUserInfo(myInitialUserInfo);
+
       $("#otheruserstable tr").remove();
 
       if (pad.getUserIsGuest()) {

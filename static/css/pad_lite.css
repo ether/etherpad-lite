@@ -463,6 +463,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   background: white;  border-left: 1px solid #c3c3c3;
   border-top: 1px solid #c3c3c3;
   border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
+  color: #000
 }
 #myusernameform .editempty { color: #ef641e; }
   
@@ -471,7 +472,7 @@ table#otheruserstable { display: none; }
 #nootherusers a { color: #3C88FF; }
 
 #otheruserstable td {
-  border-bottom: 1px solid #555;
+  border-top: 1px solid #555;
   height: 26px;
   vertical-align: middle;
   padding: 0 2px;
