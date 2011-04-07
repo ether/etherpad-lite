@@ -11,5 +11,9 @@ type -P node &>/dev/null || {
   exit 1 
 }
 
-cd ../node
+if [ -d "../bin" ]; then
+  cd "../"
+fi
+
+cd "node"
 node server.js

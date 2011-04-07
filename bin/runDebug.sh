@@ -11,5 +11,9 @@ node-inspector &
 
 echo "If you new to node-inspector, take a look at this video: http://youtu.be/AOnK3NVnxL8"
 
-cd ../node
+if [ -d "../bin" ]; then
+  cd "../"
+fi
+
+cd "node"
 node --debug server.js

@@ -6,5 +6,9 @@ type -P nodeunit &>/dev/null || {
   echo "Run: npm install nodeunit" >&2
   exit 1 
 }
-  
-nodeunit ../tests
+
+if [ -d "../bin" ]; then
+  cd "../"
+fi
+
+nodeunit tests

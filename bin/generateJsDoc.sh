@@ -4,7 +4,11 @@ if [ ! -x /usr/bin/java ]; then
   exit 1
 fi
 
-cd "../doc/jsdoc-toolkit"
+if [ -d "../bin" ]; then
+  cd "../"
+fi
+
+cd "doc/jsdoc-toolkit"
 
 JSRUN="jsrun.jar"
 RUNJS="app/run.js"
