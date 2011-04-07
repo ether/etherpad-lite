@@ -85,17 +85,6 @@ var clientVars = {};  // ]]>
 
 <ul id="menu_right">
 <li>
-  <a href="javascript:void (window.pad&&pad.editbarClick('showusers'));" title="Show connected users">
-    <img id="showusersicon" src="/static/img/mar11/editbar_showusers.gif" />
-  </a>
-</li>
-<li class="separator"></li>
-<li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('clearauthorship'));" title="Clear Authorship Colors">
-	  <img src="/static/img/jun09/pad/editbar_clearauthorship.gif" />
-	</a>
-</li>
-<li>
 	<a href="javascript:void (window.pad&&pad.editbarClick('undo'));" title="Undo (ctrl-Z)">
 	  <img src="/static/img/jun09/pad/editbar_undo.gif" />
 	</a>
@@ -125,27 +114,74 @@ var clientVars = {};  // ]]>
 		<option value="z300">300%</option>
 	</select>
 </li>
+<li class="separator"></li>
+<li>
+	<a href="javascript:void (window.pad&&pad.editbarClick('clearauthorship'));" title="Clear Authorship Colors">
+	  <img src="/static/img/jun09/pad/editbar_clearauthorship.gif" />
+	</a>
+</li>
+<li>
+  <a href="javascript:void (window.pad&&pad.editbarClick('showusers'));" title="Show connected users">
+    <img id="showusersicon" src="/static/img/mar11/editbar_showusers.gif" /> <span>1</span>
+  </a>
+</li>
 </ul>
 
 </div>
 
 <div id="users">
-	<ul>
-		<li><a onclick="showColorPicker();" title="Change my name/color">John</a></li>
-		<li>Joe</li>
-	</ul>
-	<!-- some example code so I can make the css -->
-	<div id="mycolorpicker">
-		<ul id="colorpickerswatches">
-		</ul>
-		<span id="mycolorpickersave">
-			<a onclick="closeColorPicker()">Save</a>
-		</span>
-		<span id="mycolorpickercancel">
-			<a onclick="closeColorPicker()">Cancel</a>
-		</span>
-	</div>
-</div>
+  <div id="connectionstatus">
+    <!-- -->
+  </div>
+
+  <div id="myuser">
+  
+     <div id="mycolorpicker">
+     	<ul id="colorpickerswatches">
+     	</ul>
+     	<span id="mycolorpickersave">
+     		<a onclick="closeColorPicker()">Save</a>
+     	</span>
+     	<span id="mycolorpickercancel">
+     		<a onclick="closeColorPicker()">Cancel</a>
+     	</span>
+   </div>
+  	  <div id="mycolorpickersave">Save</div>
+      <div id="mycolorpickercancel">Cancel</div>
+    
+    <div id="myswatchbox"><div id="myswatch"><!-- --></div></div>
+    <div id="myusernameform"><input type="text" id="myusernameedit" disabled="disabled" /></div>
+    <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled" /></div>
+  </div>
+  
+  <div id="otherusers">
+    <div id="guestprompts"><!-- --></div>
+    
+    <table id="otheruserstable" cellspacing="0" cellpadding="0" border="0">
+  	<tr>
+  	<td>
+  	</td>
+    </tr>
+    </table>
+    
+    <div id="nootherusers">
+      <a href="javascript:void(0)">Invite</a> other users and they will show up here.
+    </div>
+  </div>
+  
+  <div id="userlistbuttonarea">
+    <!--<a href="javascript:void(0)" id="sharebutton">Share</a>-->
+  </div>
+  
+</div> 
+<!-- /padusers -->
+  
+  
+<!--<div id="users">
+
+	<!-- some example code so I can make the css --*>
+	
+</div>-->
 
 <div id="editorcontainer">
 

@@ -7,6 +7,33 @@ html { font-size: 62.5%; }
 body { background: #ccc;}
 body, textarea { font-family: Helvetica, Arial, sans-serif; }
 
+#users
+{
+  position: absolute;
+  z-index: 3;
+  background-color: rgba(0,0,0,0.7);
+  width: 160px;
+  right: 4px;
+  top: 40px;
+  color: #fff;
+  padding: 5px;
+  
+  -moz-border-radius: 6px;
+  border-radius: 6px; 
+}
+
+#sharebutton {
+  background: url(/static/img/jun09/pad/inviteshare2.gif) no-repeat 0 -31px;
+  position: relative;
+  display: block; 
+  top: 6px; 
+  padding-top: 30px;
+  height: 0; overflow: hidden; width: 96px;
+  left:50%;
+  margin-left: -48px;
+}
+
+
 a img
 {
   border: 0;
@@ -40,11 +67,11 @@ a img
   margin-left: 2px;
   background-color: #fff;
   
-  -moz-border-radius: 2px;
-  border-radius: 2px; 
+  -moz-border-radius: 4px;
+  border-radius: 4px; 
   
   border: 1px solid #ccc;
-  padding: 4px 6px;
+  padding: 4px 5px;
   
   height: 18px;
   
@@ -53,6 +80,18 @@ a img
   background: white; /* fallback for older/unsupporting browsers */  
   background: -moz-linear-gradient(top, #eee, white 20%, white 20%);  
   background: -webkit-gradient(linear, 0 0, 0 100%, from(#eee), color-stop(20%, white), color-stop(20%, white));  
+}
+
+#editbar ul li a
+{
+  text-decoration: none;
+  color: #ccc;
+}
+
+#editbar ul li a span
+{
+  position: relative;
+  top:-2px
 }
 
 #editbar ul li:hover
@@ -373,8 +412,11 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 #myswatchbox { position: absolute; left: 5px; top: 5px; width: 22px; height: 22px;
   /*border-top: 1px solid #c3cfe0; border-left: 1px solid #c3cfe0;
   border-right: 1px solid #ecf3fc; border-bottom: 1px solid #ecf3fc;*/
-  border: 1px solid #bbb;
-  padding: 1px; background: transparent; cursor: pointer; }
+  border: 1px solid #fff;
+  padding: 1px; background: transparent; cursor: pointer; 
+  -moz-border-radius: 3px;
+  border-radius: 3px; 
+  }
 /*
 #myuser .myswatchboxhoverable, #myuser .myswatchboxunhoverable {
   background: white;
@@ -389,13 +431,17 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   background: url(/static/img/jun09/pad/colorpicker.gif) no-repeat left top;
   width: 232px; height: 140px;
   position: absolute;
-  left: 10px; top: 18px; z-index: 101;
+  left: -240px; top: 0px; z-index: 101;
   display: none;/*...initially*/
 }
 
-#mycolorpicker .picked { border: 1px solid #fff !important; }
+#mycolorpicker ul li
+{
+  float: left;
+}
+#mycolorpicker .picked { border: 1px solid #000 !important; }
 
-#mycolorpicker .picked .pickerswatch { border: 1px solid #666; }
+#mycolorpicker .picked .pickerswatch { border: 1px solid #fff; }
 #mycolorpickersave { position: absolute; left: 14px; top: 102px;
   width: 47px; height: 0; padding-top: 20px; overflow: hidden;
   cursor: pointer; }
@@ -403,11 +449,11 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   width: 44px; height: 0; padding-top: 20px; overflow: hidden;
   cursor: pointer; }
 #myusernameform { margin-left: 35px; }
-#myusernameedit { font-size: 1.6em; color: #444;
+#myusernameedit { font-size: 1.3em; color: #fff;
   padding: 3px; height: 18px; margin: 0; border: 0;
-  width: 197px; background: transparent; }
-#myusernameform input.editable { border: 1px solid #bbb; }
-#myuser .myusernameedithoverable:hover { background: white; }
+  width: 117px; background: transparent; }
+#myusernameform input.editable { border: 1px solid #444; }
+#myuser .myusernameedithoverable:hover { background: white; color: black}
 #mystatusform { margin-left: 35px; margin-top: 5px; }
 #mystatusedit { font-size: 1.2em; color: #777;
   font-style: italic; display: none;
@@ -421,18 +467,19 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 #myusernameform .editempty { color: #ef641e; }
   
 table#otheruserstable { display: none; }
-#nootherusers { padding: 10px; font-size: 1.2em; color: #999; font-weight: bold;}
-#nootherusers a { color: #48d; }
+#nootherusers { padding: 10px; font-size: 1.2em; color: #eee; font-weight: bold;}
+#nootherusers a { color: #3C88FF; }
 
 #otheruserstable td {
-  border-bottom: 1px solid #e1e1e1;
+  border-bottom: 1px solid #555;
   height: 26px;
   vertical-align: middle;
   padding: 0 2px;
+  color: #fff;
 }
 
 #otheruserstable .swatch {
-  border: 1px solid #999; width: 13px; height: 13px; overflow: hidden;
+  border: 1px solid #000; width: 13px; height: 13px; overflow: hidden;
   margin: 0 4px;
 }
 
@@ -448,15 +495,6 @@ table#otheruserstable { display: none; }
   border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
 }
 .usertdname input.editempty { color: #888; font-style: italic;}
-
-#sharebutton {
-  background: url(/static/img/jun09/pad/inviteshare2.gif) no-repeat 0 -31px;
-  position: absolute; display: block; top: 3px; padding-top: 23px;
-  height: 0; overflow: hidden; width: 96px;
-  left:50%;
-  margin-left: -48px;
-}
-
   /*#guestslabel { font-size: 1.2em; position: absolute; width: auto;
   height: 22px; line-height: 22px; top: 4px; left: 8px; }
 #guestsmenu { font-size: 1.2em; position: absolute; left: 100px;
@@ -1053,9 +1091,17 @@ a#topbarmaximize {
 #embed{
 display:none;
 position:absolute;
-top:42px;
+top:40px;
 font-size:14px;
-width:100%;
+width:400px;
+right: 5px;
+z-index: 500;
+background-color: #000;
+color: white;
+background-color: rgba(0,0,0,0.7);
+padding: 10px;
+-moz-border-radius: 6px;
+border-radius: 6px; 
 }
 
 #embedcode{
@@ -1063,11 +1109,11 @@ margin-left:10px;
 }
 
 #embedinput{
-width:80%;
+width:375px;
 height:24px;
 display:inline;
+margin-top: 10px;
 padding-left:4px;
-margin-left:4px;
 }
 
 ul#colorpickerswatches
@@ -1078,7 +1124,7 @@ ul#colorpickerswatches
 
 ul#colorpickerswatches li 
 {
-  border: 1px solid #999; 
+  border: 1px solid #fff; 
   width: 14px; 
   height: 14px; 
   overflow: hidden;
