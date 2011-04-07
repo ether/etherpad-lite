@@ -182,13 +182,16 @@ var clientVars = {};  // ]]>
 </div>
 
 <div id="editorcontainerbox">
+
+<div id="editorcontainer">
+	<!-- -->
+</div>
 	<div id="editorloadingbox">
 		Loading Etherpad Lite...
 	</div>
-	<div id="editorcontainer">
-		<!-- -->
-	</div>
 </div>
+
+
 <!-- /padeditor -->
 <div id="modaloverlay">
 <div id="modaloverlay-inner">
