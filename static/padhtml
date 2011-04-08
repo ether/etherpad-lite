@@ -10,6 +10,9 @@
 <!-- <base href="http://localhost:9001/" />-->
 <!-- CSS -->
 <link href="/static/css/pad_lite.css" rel="stylesheet" type="text/css"/>
+<!--[if lte IE 7]>
+<link href="/static/css/pad_ie_lite.css" rel="stylesheet" type="text/css"/>
+<![endif]-->
 <!-- javascript -->
 <script type="text/javascript">
   // <![CDATA[
@@ -183,9 +186,9 @@ var clientVars = {};  // ]]>
 	
 </div>-->
 
-<div id="editorcontainer">
+<div id="editorcontainerbox">
 
-<div id="editor">
+<div id="editorcontainer">
   <!-- -->
 </div>
 <div id="editorloading">

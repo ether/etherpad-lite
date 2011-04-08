@@ -10,14 +10,14 @@ body, textarea { font-family: Helvetica, Arial, sans-serif; }
 #users
 {
   position: absolute;
-  z-index: 3;
+  z-index: 10;
+  background-color: #000;
   background-color: rgba(0,0,0,0.7);
   width: 160px;
   right: 4px;
   top: 40px;
   color: #fff;
   padding: 5px;
-  
   -moz-border-radius: 6px;
   border-radius: 6px; 
 }
@@ -104,6 +104,7 @@ a img
 {
   border: inherit;
   background: inherit;
+  visibility:hidden;
 }
 #editbar ul li a
 {
@@ -1099,6 +1100,7 @@ right: 5px;
 z-index: 500;
 background-color: #000;
 color: white;
+background-color: rgb(0,0,0);
 background-color: rgba(0,0,0,0.7);
 padding: 10px;
 -moz-border-radius: 6px;
