@@ -81,29 +81,29 @@ var padeditbar = (function(){
         if (cmd == 'showusers') {
         // show users shows the current users on teh pad
         // get current height
-        var editbarheight = $('#editbar').css('height');
-          if (editbarheight == "36px"){
+        var editbarheight = $('#users').css('display');
+          if (editbarheight == "none"){
             // increase the size of the editbar
-            $('#editbar').animate({height:'72px'});
-            $('#editorcontainerbox').animate({top:'72px'});
+            //$('#editbar').animate({height:'72px'});
+            //$('#editorcontainerbox').animate({top:'72px'});
             $('#embed').hide();
             $('#users').show();
           }
           else
           {
             // increase the size of the editbar
-            $('#editbar').animate({height:'36px'});
-            $('#editorcontainerbox').animate({top:'36px'});
+            //$('#editbar').animate({height:'36px'});
+            //$('#editorcontainerbox').animate({top:'36px'});
             $('#users').hide();
           }
         }
         if (cmd == 'embed') {
         // embed shows the embed link
         // get current height
-        var editbarheight = $('#editbar').css('height');
-          if (editbarheight == "36px"){
+        var editbarheight = $('#embed').css('display');
+          if (editbarheight == "none"){
             // increase the size of the editbar
-            $('#editbar').animate({height:'72px'});
+            //$('#editbar').animate({height:'72px'});
             $('#editorcontainerbox').animate({top:'72px'});
             // hide the users
             $('#users').hide();
@@ -111,12 +111,13 @@ var padeditbar = (function(){
             padurl = document.location;
             // change the div contents to include the pad url in an input box
             $('#embed').html('<div id="embedcode">Embed code:<input id="embedinput" type="text" value="<iframe src=&quot;'+padurl+'&quot; width=500 height=400>"</iframe>></div>');
+            $('#users').hide();
             $('#embed').show();
           }
           else
           {
             // increase the size of the editbar
-            $('#editbar').animate({height:'36px'});
+            //$('#editbar').animate({height:'36px'});
             $('#editorcontainerbox').animate({top:'36px'});
             $('#embed').hide();
           }

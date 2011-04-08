@@ -20,67 +20,6 @@ var colorPickerOpen = false;
 var colorPickerSetup = false;
 var previousColorId = 0;
 
-function getColorPickerSwatchIndex(jnode) {
-//  return Number(jnode.get(0).className.match(/\bn([0-9]+)\b/)[1])-1;
-  return $("#colorpickerswatches li").index(jnode);
-}
-function closeColorPicker(accept) {
-  if (accept) {
-    var newColorId = getColorPickerSwatchIndex($("#colorpickerswatches .picked"));
-    if (newColorId >= 0) { // fails on NaN
-      myUserInfo.colorId = newColorId;
-      pad.notifyChangeColor(newColorId);
-    }
-  } else {
-    pad.notifyChangeColor(previousColorId);
-  }
-  colorPickerOpen = false;
-  $("#mycolorpicker").css('display', 'none');
-  //renderMyUserInfo();
-}
-
-function showColorPicker() {
-  previousColorId = myUserInfo.colorId ;
-
-  if (! colorPickerOpen) {
-    var palette = pad.getColorPalette();
-
-    if(!colorPickerSetup) {
-      var colorsList = $("#colorpickerswatches")
-      for(var i=0;i<palette.length;i++) {
-        
-        var li = $('<li>', {
-            style: 'background: '+palette[i]+';'
-        });
-        
-        li.appendTo(colorsList);
-        
-        li.bind('click', function(event){
-          $("#colorpickerswatches li").removeClass('picked');
-          $(event.target).addClass("picked");
-          
-          var newColorId = getColorPickerSwatchIndex($("#colorpickerswatches .picked"));
-          pad.notifyChangeColor(newColorId);
-        });
-        
-        if(myUserInfo.colorId == i){
-          $(event.target).addClass("picked");
-        }
-      }
-            
-      colorPickerSetup = true;
-    }
-    
-    $("#mycolorpicker").css('display', 'block');
-    colorPickerOpen = true;
-    
-    $("#colorpickerswatches li").removeClass('picked');
-    $($("#colorpickerswatches li")[myUserInfo.colorId]).addClass("picked"); //seems weird
-    
-    //paduserlist.renderMyUserInfo();
-  } 
-}
-
 
 var paduserlist = (function() {
 
@@ -366,26 +305,6 @@ var paduserlist = (function() {
     });
   }
 
-  function renderMyUserInfo() {
-    if (myUserInfo.name) {
-      $("#myusernameedit").removeClass("editempty").val(
-        myUserInfo.name);
-    }
-    else {
-      $("#myusernameedit").addClass("editempty").val(
-        "< enter your name >");
-    }
-    if (colorPickerOpen) {
-      $("#myswatchbox").addClass('myswatchboxunhoverable').removeClass(
-        'myswatchboxhoverable');
-    }
-    else {
-      $("#myswatchbox").addClass('myswatchboxhoverable').removeClass(
-        'myswatchboxunhoverable');
-    }
-    $("#myswatch").css('background', pad.getColorPalette()[myUserInfo.colorId]);
-  }
-
   function findExistingIndex(userId) {
     var existingIndex = -1;
     for(var i=0;i<otherUsersInfo.length;i++) {
@@ -466,7 +385,7 @@ var paduserlist = (function() {
                         // wrap with setTimeout to do later because we get
                         // a double "blur" fire in IE...
                         window.setTimeout(function() {
-                          renderMyUserInfo();
+                          self.renderMyUserInfo();
                         }, 0);
                       });
       }
@@ -489,7 +408,7 @@ var paduserlist = (function() {
     setMyUserInfo: function(info) {
       myUserInfo = $.extend({}, info);
 
-      renderMyUserInfo();
+      self.renderMyUserInfo();
     },
     userJoinOrUpdate: function(info) {
       if ((! info.userId) || (info.userId == myUserInfo.userId)) {
@@ -548,7 +467,21 @@ var paduserlist = (function() {
         rowManager.insertRow(newIndex, userData);
       }
 
-      updateInviteNotice();
+      updateInviteNotice(); 
+      
+      self.updateNumberOfOnlineUsers();
+    },
+    updateNumberOfOnlineUsers: function(){
+      var online = 1; // you are always online!
+      for(var i=0;i<otherUsersData.length;i++) {
+        if(otherUsersData[i].status == "")
+        {
+          online++;
+        }
+      }
+      $("#online_count").text(online);
+            
+      return online;
     },
     userLeave: function(info) {
       var existingIndex = findExistingIndex(info.userId);
@@ -578,7 +511,9 @@ var paduserlist = (function() {
         }, 8000); // how long to wait
         userData.leaveTimer = thisLeaveTimer;
       }
-      updateInviteNotice();
+      updateInviteNotice();    
+      
+      self.updateNumberOfOnlineUsers();  
     },
     showGuestPrompt: function(userId, displayName) {
       if (knocksToIgnore[userId]) {
@@ -631,7 +566,88 @@ var paduserlist = (function() {
       pad.sendClientMessage(msg);
 
       self.removeGuestPrompt(guestId);
+    },
+    renderMyUserInfo: function() {
+      if (myUserInfo.name) {
+        $("#myusernameedit").removeClass("editempty").val(
+          myUserInfo.name);
+      }
+      else {
+        $("#myusernameedit").addClass("editempty").val(
+          "Enter your name");
+      }
+      if (colorPickerOpen) {
+        $("#myswatchbox").addClass('myswatchboxunhoverable').removeClass(
+          'myswatchboxhoverable');
+      }
+      else {
+        $("#myswatchbox").addClass('myswatchboxhoverable').removeClass(
+          'myswatchboxunhoverable');
+      }
+      $("#myswatch").css('background', pad.getColorPalette()[myUserInfo.colorId]);
     }
   };
   return self;
 }());
+
+function getColorPickerSwatchIndex(jnode) {
+//  return Number(jnode.get(0).className.match(/\bn([0-9]+)\b/)[1])-1;
+  return $("#colorpickerswatches li").index(jnode);
+}
+function closeColorPicker(accept) {
+  if (accept) {
+    var newColorId = getColorPickerSwatchIndex($("#colorpickerswatches .picked"));
+    if (newColorId >= 0) { // fails on NaN
+      myUserInfo.colorId = newColorId;
+      pad.notifyChangeColor(newColorId);
+    }
+    
+    paduserlist.renderMyUserInfo();
+  } else {
+    pad.notifyChangeColor(previousColorId);
+    paduserlist.renderMyUserInfo();
+  }
+  
+  colorPickerOpen = false;
+  $("#mycolorpicker").css('display', 'none');
+}
+
+function showColorPicker() {
+  previousColorId = myUserInfo.colorId ;
+
+  if (! colorPickerOpen) {
+    var palette = pad.getColorPalette();
+
+    if(!colorPickerSetup) {
+      var colorsList = $("#colorpickerswatches")
+      for(var i=0;i<palette.length;i++) {
+        
+        var li = $('<li>', {
+            style: 'background: '+palette[i]+';'
+        });
+        
+        li.appendTo(colorsList);
+        
+        li.bind('click', function(event){
+          $("#colorpickerswatches li").removeClass('picked');
+          $(event.target).addClass("picked");
+          
+          var newColorId = getColorPickerSwatchIndex($("#colorpickerswatches .picked"));
+          pad.notifyChangeColor(newColorId);
+        });
+        
+        if(myUserInfo.colorId == i){
+          $(event.target).addClass("picked");
+        }
+      }
+            
+      colorPickerSetup = true;
+    }
+    
+    $("#mycolorpicker").css('display', 'block');
+    colorPickerOpen = true;
+    
+    $("#colorpickerswatches li").removeClass('picked');
+    $($("#colorpickerswatches li")[myUserInfo.colorId]).addClass("picked"); //seems weird
+  } 
+}

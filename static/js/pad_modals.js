@@ -78,7 +78,7 @@ var padmodals = (function() {
       });
     },
     initShareBox: function() {
-      $("#sharebutton, #nootherusers a").click(function() {
+      $("#sharebutton").click(function() {
         self.showShareBox();
       });
       $("#sharebox-hide").click(function() {

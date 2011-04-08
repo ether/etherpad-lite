@@ -529,6 +529,7 @@ function handleClientReady(client, message)
           userInfo: {
             "ip": "127.0.0.1",
             "colorId": authorManager.getAuthorColorId(sessioninfos[pad2sessions[message.padId][i]].author),
+            "name": authorManager.getAuthorName(sessioninfos[pad2sessions[message.padId][i]].author),
             "userAgent": "Anonymous",
             "userId": sessioninfos[pad2sessions[message.padId][i]].author
           }
