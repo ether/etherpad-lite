@@ -992,6 +992,10 @@ form#reconnectform { display: none; }
 #viewzoommenu {
   width: 65px;
 }
+#viewfontmenu {
+  position: static;
+  width: 65px;
+}
 #bottomarea {
   height: 28px;
   overflow: hidden;
