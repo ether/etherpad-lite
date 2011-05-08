@@ -37,8 +37,7 @@ documented codebase makes it easier for developers to improve the code
 
 # Contribute
 Look at the TODO list at <https://github.com/Pita/etherpad-lite/wiki/TODO>.
-You can get in touch via petermartischka-at-googlemail.com . 
-A mailinglist/irc channel will follow later.
+You can join the mailinglist <http://groups.google.com/group/etherpad-lite-dev> or go to the freenode irc channel #etherpad-lite-dev
 
 # Debug
 1. cd bin
