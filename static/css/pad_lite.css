@@ -4,7 +4,7 @@
 *,html,body,p{ margin: 0; padding: 0; }
 .clear { clear: both; }
 html { font-size: 62.5%; }
-body { background: #ccc;}
+body { background: #fff;}
 body, textarea { font-family: Helvetica, Arial, sans-serif; }
 
 #users
@@ -58,6 +58,7 @@ a img
   width: 100%;
   height: 31px;
   padding-top: 4px;
+  border-bottom: 1px solid #ccc;
   overflow: hidden;
 }
 
