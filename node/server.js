@@ -57,6 +57,7 @@ server = http.createServer(function(req, res){
   }
 });
 server.listen(9001);
+console.log("Server is listening at port 9001");
 
 function randomPadName() {
 	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
