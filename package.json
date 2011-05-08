@@ -1,0 +1,14 @@
+{
+  "name"          : "ep-lite",
+  "description"   : "A Etherpad based on node.js",
+  "url"           : "https://github.com/Pita/etherpad-lite",
+  "keywords"      : ["etherpad", "realtime", "collaborative", "editor"],
+  "author"        : "Peter 'Pita' Martischka <petermartischka@googlemail.com>",
+  "dependencies"  : {
+                      "socket.io"  : ">=0.6.17"
+                    },
+  "version"       : "0.0.1",
+  "bin"           : { 
+                      "ep-lite" : "./bin/run.sh"
+                    }
+}
