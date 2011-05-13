@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#Move to the folder where ep-lite is installed 
+FOLDER=$(dirname $(readlink -f $0))
+cd $FOLDER                     
+echo $FOLDER
+
 if [[ $EUID -eq 0 ]]; then
    echo "You shouldn't start Etherpad-Lite as root!" 1>&2
    echo "Use authbind if you want to use a port lower than 1024 -> http://en.wikipedia.org/wiki/Authbind" 1>&2
