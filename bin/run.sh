@@ -3,7 +3,6 @@
 #Move to the folder where ep-lite is installed 
 FOLDER=$(dirname $(readlink -f $0))
 cd $FOLDER                     
-echo $FOLDER
 
 if [[ $EUID -eq 0 ]]; then
    echo "You shouldn't start Etherpad-Lite as root!" 1>&2
