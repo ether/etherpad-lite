@@ -19,6 +19,7 @@ var http = require('http')
   , fs = require('fs')
   , io = require('socket.io')
   , sys = require('sys')
+  , settings = require('./settings')
   , server;
 
 server = http.createServer(function(req, res){
@@ -56,7 +57,7 @@ server = http.createServer(function(req, res){
     send404(res, path);
   }
 });
-server.listen(9001);
+server.listen(settings.port);
 console.log("Server is listening at port 9001");
 
 function randomPadName() {
