@@ -30,11 +30,6 @@ async.waterfall([
   },
   function (callback)
   {
-    db.db.set("a","test");
-    db.db.get("a", function(err,value){
-      console.error(value);
-    })
-  
     var server = http.createServer(function(req, res){
       var path = url.parse(req.url).pathname;
       
