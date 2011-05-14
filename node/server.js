@@ -17,50 +17,91 @@
 var http = require('http')
   , url = require('url')
   , fs = require('fs')
-  , io = require('socket.io')
+  , socketio = require('socket.io')
   , sys = require('sys')
   , settings = require('./settings')
-  , server;
+  , db = require('./db')
+  , async = require('async');
 
-server = http.createServer(function(req, res){
-  var path = url.parse(req.url).pathname;
+async.waterfall([
+  function (callback)
+  {
+    db.init(callback);
+  },
+  function (callback)
+  {
+    db.db.set("a","test");
+    db.db.get("a", function(err,value){
+      console.error(value);
+    })
   
-  if(path.substring(0,"/static".length) == "/static" || path.substring(0,"/p/".length) == "/p/")
-  {
-    if(path.substring(0,"/p/".length) == "/p/")
-    {
-      if(path.length < 7)
+    var server = http.createServer(function(req, res){
+      var path = url.parse(req.url).pathname;
+      
+      if(path.substring(0,"/static".length) == "/static" || path.substring(0,"/p/".length) == "/p/")
+      {
+        if(path.substring(0,"/p/".length) == "/p/")
+        {
+          if(path.length < 7)
+            send404(res, path);
+        
+          path = "/static/padhtml";
+        }
+        
+        sendFile(res, path, __dirname + "/.." + path);
+      }
+      else if(path == "/")
+      {
+        sendRedirect(res, path, "/p/test");
+      }
+      else if(path == "/newpad")
+      {
+        sendRedirect(res, path, "/p/" + randomPadName());
+      }
+      else if(path == "/ep/pad/reconnect")
+      {
+        if(req.headers.referer != null)
+          sendRedirect(res, path, req.headers.referer);
+        else
+          send404(res, path);
+      }
+      else
+      {
         send404(res, path);
-    
-      path = "/static/padhtml";
-    }
-    
-    sendFile(res, path, __dirname + "/.." + path);
-  }
-  else if(path == "/")
-  {
-    sendRedirect(res, path, "/p/test");
-  }
-  else if(path == "/newpad")
-  {
-    sendRedirect(res, path, "/p/" + randomPadName());
-  }
-  else if(path == "/ep/pad/reconnect")
-  {
-    if(req.headers.referer != null)
-      sendRedirect(res, path, req.headers.referer);
-    else
-      send404(res, path);
-  }
-  else
-  {
-    send404(res, path);
-  }
-});
-server.listen(settings.port);
-console.log("Server is listening at port 9001");
+      }
+    });
 
-function randomPadName() {
+    server.listen(settings.port);
+    console.log("Server is listening at port " + settings.port);
+
+    var io = socketio.listen(server);
+    var messageHandler = require("./MessageHandler");
+    messageHandler.setSocketIO(io);
+
+    io.on('connection', function(client){
+      try{
+        messageHandler.handleConnect(client);
+      }catch(e){errorlog(e);}
+      
+      client.on('message', function(message){
+        try{
+          messageHandler.handleMessage(client, message);
+        }catch(e){errorlog(e);}
+      });
+
+      client.on('disconnect', function(){
+        try{
+          messageHandler.handleDisconnect(client);
+        }catch(e){errorlog(e);}
+      });
+    });
+    
+    callback(null);  
+  }
+]);
+
+function randomPadName() 
+{
 	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
 	var string_length = 10;
 	var randomstring = '';
@@ -117,28 +158,6 @@ function requestLog(code, path, desc)
   console.log(code +", " + path + ", " + desc);
 }
 
-var io = io.listen(server);
-var messageHandler = require("./MessageHandler");
-messageHandler.setSocketIO(io);
-
-io.on('connection', function(client){
-  try{
-    messageHandler.handleConnect(client);
-  }catch(e){errorlog(e);}
-  
-  client.on('message', function(message){
-    try{
-      messageHandler.handleMessage(client, message);
-    }catch(e){errorlog(e);}
-  });
-
-  client.on('disconnect', function(){
-    try{
-      messageHandler.handleDisconnect(client);
-    }catch(e){errorlog(e);}
-  });
-});
-
 function errorlog(e)
 {
   var timeStr = new Date().toUTCString() + ": ";
@@ -156,7 +175,3 @@ function errorlog(e)
     console.error(timeStr + JSON.stringify(e));
   }
 }
-
-
-
-

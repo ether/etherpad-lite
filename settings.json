@@ -1,3 +1,7 @@
 {
-  "port":9001
+  "port" : 9001,
+  "dbType" : "sqlite",
+  "dbSettings" : {
+                   "filename" : "../var/sqlite.db"
+                 }
 }

@@ -18,6 +18,8 @@ var fs = require("fs");
 
 //default settings
 exports.port = 9001;
+exports.dbType = "sqlite";
+exports.dbSettings = { "filename" : "../var/sqlite.db" };
 
 //read the settings sync
 var settingsStr = fs.readFileSync("../settings.json");

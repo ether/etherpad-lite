@@ -6,7 +6,8 @@
   "author"        : "Peter 'Pita' Martischka <petermartischka@googlemail.com>",
   "dependencies"  : {
                       "socket.io"  : ">=0.6.17",
-                      "ueberDB"  : ">=0.0.1"
+                      "ueberDB"    : ">=0.0.1",
+                      "async"      : ">=0.1.9"
                     },
   "version"       : "0.0.1",
   "bin"           : { 
