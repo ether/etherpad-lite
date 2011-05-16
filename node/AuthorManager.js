@@ -19,103 +19,88 @@
  * The AuthorManager controlls all information about the Pad authors
  */
 
-/**
- * Saves all Authors as a assoative Array. The Key is the author id.
- * Authors can have the following attributes:
- * -name The Name of the Author as shown on the Pad
- * -colorId The Id of Usercolor. A number between 0 and 31
- * -timestamp The timestamp on which the user was last seen
- */ 
-var globalAuthors = {};
-
-/**
- * A easy key value pair. The Key is the token, the value is the authorid 
- */
-var token2author = {};
+var db = require("./db").db;
+var async = require("async");
 
 /**
  * Returns the Author Id for a token. If the token is unkown, 
  * it creates a author for the token
  * @param token The token 
  */
-exports.getAuthor4Token = function (token)
-{
+exports.getAuthor4Token = function (token, callback)
+{  
   var author;
   
-  if(token2author[token] == null)
-  {
-    author = "g." + _randomString(16);
-    
-    while(globalAuthors[author] != null)
+  async.waterfall([
+    //try to get the author for this token
+    function(callback)
     {
-      author = "g." + _randomString(16);
+      db.get("token2author:" + token, callback);
+    },
+    function(value, callback)
+    {
+      //there is no author with this token, so create one
+      if(value == null)
+      {
+        //create the new author name
+        author = "g." + _randomString(16);
+        
+        //set the token2author db entry
+        db.set("token2author:" + token, author);
+        
+        //set the globalAuthors db entry
+        var authorObj = {colorId : Math.floor(Math.random()*32), name: null, timestamp: new Date().getTime()};
+        db.set("globalAuthor:" + author, authorObj); 
+        
+        callback(null);
+      }
+      //there is a author with this token
+      else
+      {
+        author = value;
+        
+        //update the author time
+        db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
+
+        callback(null);
+      }
     }
-    
-    token2author[token]=author;
-  
-    globalAuthors[author] = {};
-    globalAuthors[author].colorId = Math.floor(Math.random()*32);
-    globalAuthors[author].name = null;
-  }
-  else
+  ], function(err)
   {
-    author = token2author[token];
-  }
-  
-  globalAuthors[author].timestamp = new Date().getTime();
-  
-  return author;
+    callback(err, author);
+  });
 }
 
 /**
  * Returns the color Id of the author
  */
-exports.getAuthorColorId = function (author)
+exports.getAuthorColorId = function (author, callback)
 {
-  throwExceptionIfAuthorNotExist(author);
-  
-  return globalAuthors[author].colorId;
+  db.getSub("globalAuthor:" + author, ["colorId"], callback);
 }
 
 /**
  * Sets the color Id of the author
  */
-exports.setAuthorColorId = function (author, colorId)
+exports.setAuthorColorId = function (author, colorId, callback)
 {
-  throwExceptionIfAuthorNotExist(author);
-  
-  globalAuthors[author].colorId = colorId;
+  db.setSub("globalAuthor:" + author, ["colorId"], colorId, callback);
 }
 
 /**
  * Returns the name of the author
  */
-exports.getAuthorName = function (author)
+exports.getAuthorName = function (author, callback)
 {
-  throwExceptionIfAuthorNotExist(author);
-  
-  return globalAuthors[author].name;
+  db.getSub("globalAuthor:" + author, ["name"], callback);
 }
 
 /**
  * Sets the name of the author
  */
-exports.setAuthorName = function (author, name)
+exports.setAuthorName = function (author, name, callback)
 {
-  throwExceptionIfAuthorNotExist(author);
-  
-  globalAuthors[author].name = name;
-}
-
-/**
- * A internal function that checks if the Author exist and throws a exception if not
- */
-function throwExceptionIfAuthorNotExist(author)
-{
-  if(globalAuthors[author] == null)
-  {
-    throw "Author '" + author + "' is unkown!";
-  }
+  db.setSub("globalAuthor:" + author, ["name"], name, callback);
 }
 
 /**

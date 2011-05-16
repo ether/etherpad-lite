@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+var async = require("async");
 var padManager = require("./PadManager");
 var Changeset = require("./Changeset");
 var AttributePoolFactory = require("./AttributePoolFactory");
@@ -79,39 +80,45 @@ exports.handleDisconnect = function(client)
   
   var author = sessioninfos[client.sessionId].author;
   
-  //prepare the notification for the other users on the pad, that this user joined
-  var messageToTheOtherUsers = {
-    "type": "COLLABROOM",
-    "data": {
-      type: "USER_LEAVE",
-      userInfo: {
-        "ip": "127.0.0.1",
-        "colorId": authorManager.getAuthorColorId(author),
-        "userAgent": "Anonymous",
-        "userId": author
+  //get the author color out of the db
+  authorManager.getAuthorColorId(author, function(err, color)
+  {
+    if(err) throw err;
+    
+    //prepare the notification for the other users on the pad, that this user left
+    var messageToTheOtherUsers = {
+      "type": "COLLABROOM",
+      "data": {
+        type: "USER_LEAVE",
+        userInfo: {
+          "ip": "127.0.0.1",
+          "colorId": color,
+          "userAgent": "Anonymous",
+          "userId": author
+        }
+      }
+    };
+    
+    //Go trough all sessions of this pad, search and destroy the entry of this client
+    for(i in pad2sessions[sessionPad])
+    {
+      if(pad2sessions[sessionPad][i] == client.sessionId)
+      {
+        delete pad2sessions[sessionPad][i];  
+        break;
       }
     }
-  };
-  
-  //Go trough all sessions of this pad, search and destroy the entry of this client
-  for(i in pad2sessions[sessionPad])
-  {
-    if(pad2sessions[sessionPad][i] == client.sessionId)
+    
+    //Go trough all user that are still on the pad, and send them the USER_LEAVE message
+    for(i in pad2sessions[sessionPad])
     {
-      delete pad2sessions[sessionPad][i];  
-      break;
+      socketio.clients[pad2sessions[sessionPad][i]].send(messageToTheOtherUsers);
     }
-  }
-  
-  //Go trough all user that are still on the pad, and send them the USER_LEAVE message
-  for(i in pad2sessions[sessionPad])
-  {
-    socketio.clients[pad2sessions[sessionPad][i]].send(messageToTheOtherUsers);
-  }
-  
-  //Delete the session2pad and sessioninfos entrys of this session
-  delete session2pad[client.sessionId]; 
-  delete sessioninfos[client.sessionId]; 
+    
+    //Delete the session2pad and sessioninfos entrys of this session
+    delete session2pad[client.sessionId]; 
+    delete sessioninfos[client.sessionId]; 
+  });   
 }
 
 /**
@@ -385,161 +392,227 @@ function handleClientReady(client, message)
     throw "CLIENT_READY Message have a unkown protocolVersion '" + protocolVersion + "'!";
   }
 
-  //Ask the author Manager for a authorname of this token. 
-  var author = authorManager.getAuthor4Token(message.token);
-  
-  //Check if this author is already on the pad, if yes, kick him!
-  if(pad2sessions[message.padId])
-  {
-    for(var i in pad2sessions[message.padId])
+  var author;
+  var authorName;
+  var authorColorId;
+
+  async.waterfall([
+    //get all authordata of this new user
+    function(callback)
     {
-      if(sessioninfos[pad2sessions[message.padId][i]].author == author)
+      //Ask the author Manager for a author of this token. 
+      authorManager.getAuthor4Token(message.token, function(err,value)
       {
-        client.send({disconnect:"doublelogin"});
-        return;
-      }
-    }
-  }
-  
-  //Save in session2pad that this session belonges to this pad
-  var sessionId=String(client.sessionId);
-  session2pad[sessionId] = message.padId;
-  
-  //check if there is already a pad2sessions entry, if not, create one
-  if(!pad2sessions[message.padId])
-  {
-    pad2sessions[message.padId] = [];
-  }
-  
-  //Saves in pad2sessions that this session belongs to this pad
-  pad2sessions[message.padId].push(sessionId);
-   
-  //Tell the PadManager that it should ensure that this Pad exist
-  padManager.ensurePadExists(message.padId);
-  
-  //Ask the PadManager for a function Wrapper for this Pad
-  var pad = padManager.getPad(message.padId, false);
-  
-  //prepare all values for the wire
-  atext = pad.atext();
-  var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool());
-  var apool = attribsForWire.pool.toJsonable();
-  atext.attribs = attribsForWire.translated;
-  
-  var clientVars = {
-    "accountPrivs": {
-        "maxRevisions": 100
+        author = value;
+        
+        async.parallel([
+          //get colorId
+          function(callback)
+          {
+            authorManager.getAuthorColorId(author, function(err, value)
+            {
+              authorColorId = value;
+              callback(err);
+            });
+          },
+          //get author name
+          function(callback)
+          {
+            authorManager.getAuthorName(author, function(err, value)
+            {
+              authorName = value;
+              callback(err);
+            });
+          }
+        ], callback);
+      });
     },
-    "initialRevisionList": [],
-    "initialOptions": {
-        "guestPolicy": "deny"
-    },
-    "collab_client_vars": {
-        "initialAttributedText": atext,
-        "clientIp": (client.request && client.request.connection) ? client.request.connection.remoteAddress : "127.0.0.1",
-        //"clientAgent": "Anonymous Agent",
-        "padId": message.padId,
-        "historicalAuthorData": {},
-        "apool": apool,
-        "rev": pad.getHeadRevisionNumber(),
-        "globalPadId": message.padId
-    },
-    "colorPalette": ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ff8f8f", "#ffe38f", "#c7ff8f", "#8fffab", "#8fffff", "#8fabff", "#c78fff", "#ff8fe3", "#d97979", "#d9c179", "#a9d979", "#79d991", "#79d9d9", "#7991d9", "#a979d9", "#d979c1", "#d9a9a9", "#d9cda9", "#c1d9a9", "#a9d9b5", "#a9d9d9", "#a9b5d9", "#c1a9d9", "#d9a9cd"],
-    "clientIp": (client.request && client.request.connection) ? client.request.connection.remoteAddress : "127.0.0.1",
-    "userIsGuest": true,
-    "userColor": authorManager.getAuthorColorId(author),
-    "padId": message.padId,
-    "initialTitle": "Pad: " + message.padId,
-    "opts": {},
-    "chatHistory": {
-        "start": 0,
-        "historicalAuthorData": {},
-        "end": 0,
-        "lines": []
-    },
-    "numConnectedUsers": pad2sessions[message.padId].length,
-    "isProPad": false,
-    "serverTimestamp": new Date().getTime(),
-    "globalPadId": message.padId,
-    "userId": author,
-    "cookiePrefsToSet": {
-        "fullWidth": false,
-        "hideSidebar": false
-    },
-    "hooks": {}
-  }
-  
-  //Add a username to the clientVars if one avaiable
-  if(authorManager.getAuthorName(author) != null)
-  {
-    clientVars.userName = authorManager.getAuthorName(author);
-  }
-  
-  //Add all authors that worked on this pad, to the historicalAuthorData on clientVars
-  var allAuthors = pad.getAllAuthors();
-  for(i in allAuthors)
-  {
-    clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]] = {};
-    if(authorManager.getAuthorName(author) != null)
-      clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]].name = authorManager.getAuthorName(author);
-    clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]].colorId = authorManager.getAuthorColorId(author);
-  }
-  
-  //Send the clientVars to the Client
-  client.send(clientVars);
-  
-  //Save the revision and the author id in sessioninfos
-  sessioninfos[client.sessionId].rev = pad.getHeadRevisionNumber();
-  sessioninfos[client.sessionId].author = author;
-  
-  //prepare the notification for the other users on the pad, that this user joined
-  var messageToTheOtherUsers = {
-    "type": "COLLABROOM",
-    "data": {
-      type: "USER_NEWINFO",
-      userInfo: {
-        "ip": "127.0.0.1",
-        "colorId": authorManager.getAuthorColorId(author),
-        "userAgent": "Anonymous",
-        "userId": author
-      }
-    }
-  };
-  
-  //Add the authorname of this new User, if avaiable
-  if(authorManager.getAuthorName(author) != null)
-  {
-    messageToTheOtherUsers.data.userInfo.name = authorManager.getAuthorName(author);
-  }
-  
-  //Run trough all sessions of this pad
-  for(i in pad2sessions[message.padId])
-  {
-    //Jump over, if this session is the connection session
-    if(pad2sessions[message.padId][i] != client.sessionId)
+    function(callback)
     {
-      //Send this Session the Notification about the new user
-      socketio.clients[pad2sessions[message.padId][i]].send(messageToTheOtherUsers);
-    
-      //Send the new User a Notification about this other user
-      var messageToNotifyTheClientAboutTheOthers = {
+      //Check if this author is already on the pad, if yes, kick him!
+      if(pad2sessions[message.padId])
+      {
+        for(var i in pad2sessions[message.padId])
+        {
+          if(sessioninfos[pad2sessions[message.padId][i]].author == author)
+          {
+            client.send({disconnect:"doublelogin"});
+            return;
+          }
+        }
+      }
+      
+      //Save in session2pad that this session belonges to this pad
+      var sessionId=String(client.sessionId);
+      session2pad[sessionId] = message.padId;
+      
+      //check if there is already a pad2sessions entry, if not, create one
+      if(!pad2sessions[message.padId])
+      {
+        pad2sessions[message.padId] = [];
+      }
+      
+      //Saves in pad2sessions that this session belongs to this pad
+      pad2sessions[message.padId].push(sessionId);
+       
+      //Tell the PadManager that it should ensure that this Pad exist
+      padManager.ensurePadExists(message.padId);
+      
+      //Ask the PadManager for a function Wrapper for this Pad
+      var pad = padManager.getPad(message.padId, false);
+      
+      //prepare all values for the wire
+      atext = pad.atext();
+      var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool());
+      var apool = attribsForWire.pool.toJsonable();
+      atext.attribs = attribsForWire.translated;
+      
+      var clientVars = {
+        "accountPrivs": {
+            "maxRevisions": 100
+        },
+        "initialRevisionList": [],
+        "initialOptions": {
+            "guestPolicy": "deny"
+        },
+        "collab_client_vars": {
+            "initialAttributedText": atext,
+            "clientIp": (client.request && client.request.connection) ? client.request.connection.remoteAddress : "127.0.0.1",
+            //"clientAgent": "Anonymous Agent",
+            "padId": message.padId,
+            "historicalAuthorData": {},
+            "apool": apool,
+            "rev": pad.getHeadRevisionNumber(),
+            "globalPadId": message.padId
+        },
+        "colorPalette": ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ff8f8f", "#ffe38f", "#c7ff8f", "#8fffab", "#8fffff", "#8fabff", "#c78fff", "#ff8fe3", "#d97979", "#d9c179", "#a9d979", "#79d991", "#79d9d9", "#7991d9", "#a979d9", "#d979c1", "#d9a9a9", "#d9cda9", "#c1d9a9", "#a9d9b5", "#a9d9d9", "#a9b5d9", "#c1a9d9", "#d9a9cd"],
+        "clientIp": (client.request && client.request.connection) ? client.request.connection.remoteAddress : "127.0.0.1",
+        "userIsGuest": true,
+        "userColor": authorColorId,
+        "padId": message.padId,
+        "initialTitle": "Pad: " + message.padId,
+        "opts": {},
+        "chatHistory": {
+            "start": 0,
+            "historicalAuthorData": {},
+            "end": 0,
+            "lines": []
+        },
+        "numConnectedUsers": pad2sessions[message.padId].length,
+        "isProPad": false,
+        "serverTimestamp": new Date().getTime(),
+        "globalPadId": message.padId,
+        "userId": author,
+        "cookiePrefsToSet": {
+            "fullWidth": false,
+            "hideSidebar": false
+        },
+        "hooks": {}
+      }
+      
+      //Add a username to the clientVars if one avaiable
+      if(authorName != null)
+      {
+        clientVars.userName = authorName;
+      }
+      
+      //Add all authors that worked on this pad, to the historicalAuthorData on clientVars
+      var allAuthors = pad.getAllAuthors();
+      for(i in allAuthors)
+      {
+        clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]] = {};
+        if(authorName != null)
+          clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]].name = authorName;
+        clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]].colorId = authorColorId;
+      }
+      
+      //Send the clientVars to the Client
+      client.send(clientVars);
+      
+      //Save the revision and the author id in sessioninfos
+      sessioninfos[client.sessionId].rev = pad.getHeadRevisionNumber();
+      sessioninfos[client.sessionId].author = author;
+      
+      //prepare the notification for the other users on the pad, that this user joined
+      var messageToTheOtherUsers = {
         "type": "COLLABROOM",
         "data": {
           type: "USER_NEWINFO",
           userInfo: {
             "ip": "127.0.0.1",
-            "colorId": authorManager.getAuthorColorId(sessioninfos[pad2sessions[message.padId][i]].author),
-            "name": authorManager.getAuthorName(sessioninfos[pad2sessions[message.padId][i]].author),
+            "colorId": authorColorId,
             "userAgent": "Anonymous",
-            "userId": sessioninfos[pad2sessions[message.padId][i]].author
+            "userId": author
           }
         }
       };
-      client.send(messageToNotifyTheClientAboutTheOthers);
+      
+      //Add the authorname of this new User, if avaiable
+      if(authorName != null)
+      {
+        messageToTheOtherUsers.data.userInfo.name = authorName;
+      }
+      
+      //Run trough all sessions of this pad
+      async.forEach(pad2sessions[message.padId], function(sessionID, callback)
+      {
+        var sessionAuthorName, sessionAuthorColorId;
+      
+        async.series([
+          //get the authorname & colorId
+          function(callback)
+          {
+            async.parallel([
+              function(callback)
+              {
+                authorManager.getAuthorColorId(sessioninfos[sessionID].author, function(err, value)
+                {
+                  sessionAuthorColorId = value;
+                  callback(err);
+                })
+              },
+              function(callback)
+              {
+                authorManager.getAuthorName(sessioninfos[sessionID].author, function(err, value)
+                {
+                  sessionAuthorName = value;
+                  callback(err);
+                })
+              }
+            ],callback);
+          }, 
+          function (callback)
+          {
+            //Jump over, if this session is the connection session
+            if(sessionID != client.sessionId)
+            {
+              //Send this Session the Notification about the new user
+              socketio.clients[sessionID].send(messageToTheOtherUsers);
+            
+              //Send the new User a Notification about this other user
+              var messageToNotifyTheClientAboutTheOthers = {
+                "type": "COLLABROOM",
+                "data": {
+                  type: "USER_NEWINFO",
+                  userInfo: {
+                    "ip": "127.0.0.1",
+                    "colorId": sessionAuthorColorId,
+                    "name": sessionAuthorName,
+                    "userAgent": "Anonymous",
+                    "userId": sessioninfos[sessionID].author
+                  }
+                }
+              };
+              client.send(messageToNotifyTheClientAboutTheOthers);
+            }
+          }
+        ], callback);        
+      }, callback);
     }
-  }
-  
-  
+  ],function(err)
+  {
+    if(err) throw err;
+  });
 }
 
 /**
