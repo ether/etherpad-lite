@@ -39,7 +39,6 @@ exports.getPad = function(id, createIfNotExist)
   {
     pad = new Pad(id);
     globalPads[id] = pad;
-    console.log(pad);
   }
   
   if(!pad) return null;
