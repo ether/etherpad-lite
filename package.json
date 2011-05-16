@@ -7,7 +7,8 @@
   "dependencies"  : {
                       "socket.io"  : ">=0.6.17",
                       "ueberDB"    : ">=0.0.2",
-                      "async"      : ">=0.1.9"
+                      "async"      : ">=0.1.9",
+                      "joose"      : ">=3.18.0"
                     },
   "version"       : "0.0.1",
   "bin"           : { 
