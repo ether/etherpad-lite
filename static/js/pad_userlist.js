@@ -636,9 +636,6 @@ function showColorPicker() {
           pad.notifyChangeColor(newColorId);
         });
         
-        if(myUserInfo.colorId == i){
-          $(event.target).addClass("picked");
-        }
       }
             
       colorPickerSetup = true;

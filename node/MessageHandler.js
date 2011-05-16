@@ -258,11 +258,11 @@ function handleUserChanges(client, message)
   //ex. adoptChangesetAttribs
   
   //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
-  changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool());
+  changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
   
   //ex. applyUserChanges
   
-  var apool = pad.pool();
+  var apool = pad.pool;
   var r = baseRev;
   
   while (r < pad.getHeadRevisionNumber()) {
@@ -281,7 +281,7 @@ function handleUserChanges(client, message)
   
   pad.appendRevision(changeset, thisAuthor);
   
-  var correctionChangeset = _correctMarkersInPad(pad.atext(), pad.pool());
+  var correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
   if (correctionChangeset) {
     pad.appendRevision(correctionChangeset);
   }
@@ -310,7 +310,7 @@ function handleUserChanges(client, message)
       }
       else
       {
-        var forWire = Changeset.prepareForWire(pad.getRevisionChangeset(r), pad.pool());
+        var forWire = Changeset.prepareForWire(pad.getRevisionChangeset(r), pad.pool);
         var wireMsg = {"type":"COLLABROOM","data":{type:"NEW_CHANGES", newRev:r,
                    changeset: forWire.translated,
                    apool: forWire.pool,
@@ -462,8 +462,8 @@ function handleClientReady(client, message)
       var pad = padManager.getPad(message.padId, false);
       
       //prepare all values for the wire
-      atext = pad.atext();
-      var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool());
+      atext = pad.atext;
+      var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
       var apool = attribsForWire.pool.toJsonable();
       atext.attribs = attribsForWire.translated;
       

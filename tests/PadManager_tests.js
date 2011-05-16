@@ -16,11 +16,11 @@ exports.createAPad = function(test)
   test.equal(pad.id, "test", "The PadManager gave a pad with a other id than expeted");
   
   //Test if the startText is correct set
-  var atext = pad.atext();
+  var atext = pad.atext;
   test.equal(atext.text, padManager.startText + "\n", "The Starttext of a Pad is wrong set");
 
   //Test if the atext().text and text() is the same
-  test.equal(atext.text, pad.text(), "pad.atext().text is not pad.text()");
+  test.equal(atext.text, pad.text(), "pad.atext.text is not pad.text()");
 
   //Test if the Revision Number is Zero
   var head = pad.getHeadRevisionNumber();
