@@ -23,6 +23,8 @@ var http = require('http')
   , db = require('./db')
   , async = require('async');
 
+require('joose');
+
 async.waterfall([
   function (callback)
   {
