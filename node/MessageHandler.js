@@ -243,85 +243,159 @@ function handleUserChanges(client, message)
   var baseRev = message.data.baseRev;
   var wireApool = (AttributePoolFactory.createAttributePool()).fromJsonable(message.data.apool);
   var changeset = message.data.changeset;
-  var pad = padManager.getPad(session2pad[client.sessionId], false);
-  
-  //ex. _checkChangesetAndPool
-  
-  //Copied from Etherpad, don't know what it does exactly
-  Changeset.checkRep(changeset);
-  Changeset.eachAttribNumber(changeset, function(n) {
-    if (! wireApool.getAttrib(n)) {
-      throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
-    }
-  });
-  
-  //ex. adoptChangesetAttribs
-  
-  //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
-  changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
-  
-  //ex. applyUserChanges
-  
-  var apool = pad.pool;
-  var r = baseRev;
-  
-  while (r < pad.getHeadRevisionNumber()) {
-    r++;
-    var c = pad.getRevisionChangeset(r);
-    changeset = Changeset.follow(c, changeset, false, apool);
-  }
-  
-  var prevText = pad.text();
-  if (Changeset.oldLen(changeset) != prevText.length) {
-    throw "Can't apply USER_CHANGES "+changeset+" with oldLen " 
-    + Changeset.oldLen(changeset) + " to document of length " + prevText.length;
-  }
-  
-  var thisAuthor = sessioninfos[client.sessionId].author;
-  
-  pad.appendRevision(changeset, thisAuthor);
-  
-  var correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
-  if (correctionChangeset) {
-    pad.appendRevision(correctionChangeset);
-  }
-  
-  if (pad.text().lastIndexOf("\n\n") != pad.text().length-2) {
-    var nlChangeset = Changeset.makeSplice(
-      pad.text(), pad.text().length-1, 0, "\n");
-    pad.appendRevision(nlChangeset);
-  }
-  
-  //ex. updatePadClients
-  
-  for(i in pad2sessions[pad.id])
-  {
-    var session = pad2sessions[pad.id][i];
-    var lastRev = sessioninfos[session].rev;
-    
-    while (lastRev < pad.getHeadRevisionNumber()) 
-    {
-      var r = ++lastRev;
-      var author = pad.getRevisionAuthor(r);
       
-      if(author == sessioninfos[session].author)
-      {
-        socketio.clients[session].send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
-      }
-      else
-      {
-        var forWire = Changeset.prepareForWire(pad.getRevisionChangeset(r), pad.pool);
-        var wireMsg = {"type":"COLLABROOM","data":{type:"NEW_CHANGES", newRev:r,
-                   changeset: forWire.translated,
-                   apool: forWire.pool,
-                   author: author}};        
-                   
-        socketio.clients[session].send(wireMsg);
-      }
-    }
+  var r, apool, pad;
     
-    sessioninfos[session].rev = pad.getHeadRevisionNumber();
-  }
+  async.series([
+    //get the pad
+    function(callback)
+    {
+      padManager.getPad(session2pad[client.sessionId], function(err, value)
+      {
+        pad = value;
+        callback(err);
+      });
+    },
+    //create the changeset
+    function(callback)
+    {
+      //ex. _checkChangesetAndPool
+  
+      //Copied from Etherpad, don't know what it does exactly
+      Changeset.checkRep(changeset);
+      Changeset.eachAttribNumber(changeset, function(n) {
+        if (! wireApool.getAttrib(n)) {
+          throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
+        }
+      });
+        
+      //ex. adoptChangesetAttribs
+        
+      //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
+      changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
+        
+      //ex. applyUserChanges
+      apool = pad.pool;
+      r = baseRev;
+        
+      //https://github.com/caolan/async#whilst
+      async.whilst(
+        function() { return r < pad.getHeadRevisionNumber(); },
+        function(callback)
+        {
+          r++;
+            
+          pad.getRevisionChangeset(r, function(err, c)
+          {
+            if(err)
+            {
+              callback(err);
+              return;
+            } 
+            else
+            {
+              changeset = Changeset.follow(c, changeset, false, apool);
+              callback(null);
+            }
+          });
+        },
+        //use the callback of the series function
+        callback
+      );
+    },
+    //do correction changesets, and send it to all users
+    function (callback)
+    {
+      var prevText = pad.text();
+      if (Changeset.oldLen(changeset) != prevText.length) {
+        throw "Can't apply USER_CHANGES "+changeset+" with oldLen " 
+        + Changeset.oldLen(changeset) + " to document of length " + prevText.length;
+      }
+        
+      var thisAuthor = sessioninfos[client.sessionId].author;
+        
+      pad.appendRevision(changeset, thisAuthor);
+        
+      var correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
+      if (correctionChangeset) {
+        pad.appendRevision(correctionChangeset);
+      }
+        
+      if (pad.text().lastIndexOf("\n\n") != pad.text().length-2) {
+        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1, 0, "\n");
+        pad.appendRevision(nlChangeset);
+      }
+        
+      //ex. updatePadClients
+        
+      //go trough all sessions on this pad
+      async.forEach(pad2sessions[pad.id], function(session, callback)
+      {
+        var lastRev = sessioninfos[session].rev;
+        
+        //https://github.com/caolan/async#whilst
+        //send them all new changesets
+        async.whilst(
+          function (){ return lastRev < pad.getHeadRevisionNumber()},
+          function(callback)
+          {
+            var author, revChangeset;
+          
+            var r = ++lastRev;
+          
+            async.parallel([
+              function (callback)
+              {
+                pad.getRevisionAuthor(r, function(err, value)
+                {
+                  author = value;
+                  callback(err);
+                });
+              },
+              function (callback)
+              {
+                pad.getRevisionChangeset(r, function(err, value)
+                {
+                  revChangeset = value;
+                  callback(err);
+                });
+              }
+            ], function(err)
+            {
+              if(err)
+              {
+                callback(err);
+                return;
+              }
+                
+              if(author == sessioninfos[session].author)
+              {
+                socketio.clients[session].send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
+              }
+              else
+              {
+                var forWire = Changeset.prepareForWire(revChangeset, pad.pool);
+                var wireMsg = {"type":"COLLABROOM","data":{type:"NEW_CHANGES", newRev:r,
+                             changeset: forWire.translated,
+                             apool: forWire.pool,
+                             author: author}};        
+                             
+                socketio.clients[session].send(wireMsg);
+              }
+              
+              callback(null);
+            });
+          },
+          callback
+        );
+          
+        sessioninfos[session].rev = pad.getHeadRevisionNumber();
+      },callback);  
+    }
+  ], function(err)
+  {
+    if(err) throw err;
+  });
 }
 
 /**
@@ -395,8 +469,9 @@ function handleClientReady(client, message)
   var author;
   var authorName;
   var authorColorId;
+  var pad;
 
-  async.waterfall([
+  async.series([
     //get all authordata of this new user
     function(callback)
     {
@@ -421,6 +496,14 @@ function handleClientReady(client, message)
             authorManager.getAuthorName(author, function(err, value)
             {
               authorName = value;
+              callback(err);
+            });
+          },
+          function(callback)
+          {
+            padManager.getPad(message.padId, function(err, value)
+            {
+              pad = value;
               callback(err);
             });
           }
@@ -454,12 +537,6 @@ function handleClientReady(client, message)
       
       //Saves in pad2sessions that this session belongs to this pad
       pad2sessions[message.padId].push(sessionId);
-       
-      //Tell the PadManager that it should ensure that this Pad exist
-      padManager.ensurePadExists(message.padId);
-      
-      //Ask the PadManager for a function Wrapper for this Pad
-      var pad = padManager.getPad(message.padId, false);
       
       //prepare all values for the wire
       atext = pad.atext;

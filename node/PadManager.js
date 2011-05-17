@@ -31,31 +31,34 @@ globalPads = [];
  * @param id A String with the id of the pad
  * @param createIfNotExist A Boolean which says the function if it should create the Pad if it not exist
  */
-exports.getPad = function(id, createIfNotExist)
-{  
-	var pad = globalPads[id];
-
-  if(!pad && createIfNotExist == true)
+exports.getPad = function(id, callback)
+{    
+  var pad = globalPads[id];
+  
+  //return pad if its already loaded
+  if(pad != null)
+  {
+    callback(null, pad);
+  }
+  //try to load pad
+  else
   {
     pad = new Pad(id);
-    globalPads[id] = pad;
+    
+    //initalize the pad
+    pad.init(function(err)
+    {
+      if(err)
+      {
+        callback(err, null);
+      }
+      else
+      {
+        globalPads[id] = pad;
+        callback(null, pad);
+      }
+    });
   }
-  
-  if(!pad) return null;
   
   //globalPads[id].timestamp = new Date().getTime();
-  
-  return pad;
-}
-
-/**
- * Ensures that the Pad exists
- * @param id The Pad id
- */
-exports.ensurePadExists = function(id)
-{
-  if(!globalPads[id])
-  {
-    exports.getPad(id, true);
-  }
 }

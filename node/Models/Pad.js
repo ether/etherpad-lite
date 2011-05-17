@@ -1,5 +1,7 @@
 var Changeset = require("../Changeset");
 var AttributePoolFactory = require("../AttributePoolFactory");
+var db = require("../db").db;
+var async = require("async");
 
 exports.startText = "Welcome to Etherpad Lite.  This pad text is synchronized as you type, so that everyone viewing this page sees the same text.";
 
@@ -27,23 +29,13 @@ Class('Pad', {
 			getterName : 'apool' // legacy
 		}, // pool
 		
-		rev : { 
-			is : 'rw', 
-			init : [] 
-		}, // rev
-		
 		head : { 
 			is : 'rw', 
 			init : -1, 
 			getterName : 'getHeadRevisionNumber' 
 		}, // head
 		
-		authors : { 
-			is : 'rw', 
-			init : []
-		},
-		
-		id : { is : 'rw' }
+		id : { is : 'r' }
 	},
 
 	methods : {
@@ -65,11 +57,12 @@ Class('Pad', {
 		  Changeset.copyAText(newAText, this.atext);
 		  
 		  var newRev = ++this.head;
-		  this.rev[newRev] = {};
-		  this.rev[newRev].changeset = aChangeset;
-		  this.rev[newRev].meta = {};
-		  this.rev[newRev].meta.author = author;
-		  this.rev[newRev].meta.timestamp = new Date().getTime();
+		  
+		  var newRevData = {};
+		  newRevData.changeset = aChangeset;
+		  newRevData.meta = {};
+		  newRevData.meta.author = author;
+		  newRevData.meta.timestamp = new Date().getTime();
 		  
 		  //ex. getNumForAuthor
 		  if(author != '')
@@ -77,34 +70,21 @@ Class('Pad', {
 		  
 		  if(newRev % 100 == 0)
 		  {
-		    this.rev[newRev].meta.atext = this.atext;
+		    newRevData.meta.atext = this.atext;
 		  }
 		  
+		  db.set("pad:"+this.id+":revs:"+newRev, newRevData);
+		  db.set("pad:"+this.id, {atext: this.atext, pool: this.pool.toJsonable(), head: this.head});
 		}, //appendRevision
 		
-		getRevisionChangeset : function(revNum) 
+		getRevisionChangeset : function(revNum, callback) 
 		{
-			
-			if(revNum < this.rev.length) 
-			{
-				return this.rev[revNum].changeset;
-			} else {
-				throw 'this revision does not exist! : ' + revNum;
-				return null;
-			}
-			
+			db.getSub("pad:"+this.id+":revs:"+revNum, ["changeset"], callback);
 		}, // getRevisionChangeset
 		
-		getRevisionAuthor : function(revNum) 
-		{
-			if(revNum < this.rev.length) 
-			{
-			  return this.rev[revNum].meta.author;
-			} else {
-				throw 'this revision author does not exist! : ' + revNum;
-				return null;
-			}
-			
+		getRevisionAuthor : function(revNum, callback) 
+		{			
+			db.getSub("pad:"+this.id+":revs:"+revNum, ["meta", "author"], callback);
 		}, // getRevisionAuthor
 		
 		getAllAuthors : function() 
@@ -125,21 +105,39 @@ Class('Pad', {
 		text : function()
 		{
 			return this.atext.text;
-		}
+		},
+		
+		init : function (callback) 
+		{		
+		  var _this = this;
+		
+		  //try to load the pad	
+    	db.get("pad:"+this.id, function(err, value)
+    	{
+    	  if(err)
+    	  {
+    	    callback(err, null);
+    	    return;
+    	  }  
+    	  
+    	  //if this pad exists, load it
+    	  if(value != null)
+    	  {
+    	    _this.head = value.head;
+    	    _this.atext = value.atext;
+    	    _this.pool = _this.pool.fromJsonable(value.pool);
+    	  }
+    	  //this pad doesn't exist, so create it
+    	  else
+    	  {
+    	    var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(exports.startText));                      
+    	
+  		    _this.appendRevision(firstChangeset, '');
+    	  }
+    	  
+    	  callback(null);
+    	});
+    } 
 		
 	}, // methods
-	
-	
-	after : {
-	
-		initialize : function (props) 
-		{			
-    	this.id = props.id;
-    	
-    	var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(exports.startText));                      
-    	
-  		this.appendRevision(firstChangeset, '');
-    } 
-	
-	}
 });
