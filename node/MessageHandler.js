@@ -539,7 +539,7 @@ function handleClientReady(client, message)
       pad2sessions[message.padId].push(sessionId);
       
       //prepare all values for the wire
-      atext = pad.atext;
+      var atext = Changeset.cloneAText(pad.atext);
       var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
       var apool = attribsForWire.pool.toJsonable();
       atext.attribs = attribsForWire.translated;
