@@ -1,0 +1,7 @@
+bin/generateJsDoc.sh
+bin/runDebug.sh
+bin/runTests.sh
+doc
+tests
+README.md
+var/sqlite.db
