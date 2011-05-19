@@ -16,8 +16,6 @@
 
 require('joose');
 
-//var http = require('http')
-//var url = require('url')
 var socketio = require('socket.io')
 var settings = require('./settings')
 var db = require('./db')
@@ -119,6 +117,24 @@ async.waterfall([
     callback(null);  
   }
 ]);
+
+function errorlog(e)
+{
+  var timeStr = new Date().toUTCString() + ": ";
+
+  if(typeof e == "string")
+  {
+    console.error(timeStr + e);
+  }
+  else if(e.stack != null)
+  {
+    console.error(timeStr + e.stack);
+  }
+  else
+  {
+    console.error(timeStr + JSON.stringify(e));
+  }
+}
 
 function randomPadName() 
 {
