@@ -21,7 +21,7 @@ var padconnectionstatus = (function() {
   var self = {
     init: function() {
       $('button#forcereconnect').click(function() {
-        pad.forceReconnect();
+        window.location.reload();
       });
     },
     connected: function() {
