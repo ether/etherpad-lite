@@ -2,8 +2,7 @@ var Changeset = require("../Changeset");
 var AttributePoolFactory = require("../AttributePoolFactory");
 var db = require("../db").db;
 var async = require("async");
-
-exports.startText = "Welcome to Etherpad Lite.  This pad text is synchronized as you type, so that everyone viewing this page sees the same text.";
+var settings = require('../settings');
 
 /**
  * Copied from the Etherpad source code, don't know what its good for
@@ -130,7 +129,7 @@ Class('Pad', {
     	  //this pad doesn't exist, so create it
     	  else
     	  {
-    	    var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(exports.startText));                      
+    	    var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(settings.defaultPadText));                      
     	
   		    _this.appendRevision(firstChangeset, '');
     	  }
