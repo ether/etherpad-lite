@@ -22,7 +22,10 @@ exports.dbType = "sqlite";
 exports.dbSettings = { "filename" : "../var/sqlite.db" };
 
 //read the settings sync
-var settingsStr = fs.readFileSync("../settings.json");
+var settingsStr = fs.readFileSync("../settings.json").toString();
+
+//remove all comments
+settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
 
 //try to parse the settings
 var settings;
@@ -33,8 +36,7 @@ try
 catch(e)
 {
   console.error("There is a syntax error in your settings.json file");
-  console.error("We recommend http://jsonlint.com/ to find the mistake");
-  console.error(e.stack);
+  console.error(e.message);
   process.exit(1);
 }
 

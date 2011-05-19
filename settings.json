@@ -1,7 +1,23 @@
+/*
+This file must be valid JSON. But comments are allowed
+*/
 {
   "port" : 9001,
+  
+  //The Type of the database. You can choose between sqlite and mysql
   "dbType" : "sqlite",
+  //the database specific settings
   "dbSettings" : {
                    "filename" : "../var/sqlite.db"
                  }
+                 
+  /* An Example of MySQL Configuration
+   "dbType" : "mysql",
+   "dbSettings" : {
+                    "user"    : "root", 
+                    "host"    : "localhost", 
+                    "password": "", 
+                    "database": "store"
+                  }
+  */
 }
