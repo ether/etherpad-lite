@@ -20,6 +20,7 @@ var fs = require("fs");
 exports.port = 9001;
 exports.dbType = "sqlite";
 exports.dbSettings = { "filename" : "../var/sqlite.db" };
+exports.logHTTP = true;
 
 //read the settings sync
 var settingsStr = fs.readFileSync("../settings.json").toString();

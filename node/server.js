@@ -14,67 +14,90 @@
  * limitations under the License.
  */
 
-var http = require('http')
-  , url = require('url')
-  , fs = require('fs')
-  , socketio = require('socket.io')
-  , sys = require('sys')
-  , settings = require('./settings')
-  , db = require('./db')
-  , async = require('async');
-
 require('joose');
 
+//var http = require('http')
+//var url = require('url')
+var socketio = require('socket.io')
+var settings = require('./settings')
+var db = require('./db')
+var async = require('async');
+var express = require('express');
+var path = require('path');
+
+var serverName = "Etherpad-Lite ( http://j.mp/ep-lite )";
+
 async.waterfall([
+  //initalize the database
   function (callback)
   {
     db.init(callback);
   },
+  //initalize the http server
   function (callback)
   {
-    var server = http.createServer(function(req, res){
-      var path = url.parse(req.url).pathname;
-      
-      if(path.substring(0,"/static".length) == "/static" || path.substring(0,"/p/".length) == "/p/")
-      {
-        if(path.substring(0,"/p/".length) == "/p/")
-        {
-          if(path.length < 7)
-            send404(res, path);
-        
-          path = "/static/padhtml";
-        }
-        
-        sendFile(res, path, __dirname + "/.." + path);
-      }
-      else if(path == "/")
-      {
-        sendRedirect(res, path, "/p/test");
-      }
-      else if(path == "/newpad")
-      {
-        sendRedirect(res, path, "/p/" + randomPadName());
-      }
-      else if(path == "/ep/pad/reconnect")
-      {
-        if(req.headers.referer != null)
-          sendRedirect(res, path, req.headers.referer);
-        else
-          send404(res, path);
-      }
-      else
-      {
-        send404(res, path);
-      }
+    //create server
+    var app = express.createServer();
+    
+    //set logging
+    if(settings.logHTTP)
+      app.use(express.logger({ format: ':date: :status, :method :url' }));
+    
+    //serve static files
+    app.get('/static/*', function(req, res)
+    { 
+      res.header("Server", serverName);
+      var filePath = path.normalize(__dirname + "/.." + req.url);
+      res.sendfile(filePath, { maxAge: 1000*60*60 });
     });
-
-    server.listen(settings.port);
+    
+    //serve pad.html under /p
+    app.get('/p/:pad', function(req, res)
+    {
+      res.header("Server", serverName);
+      var filePath = path.normalize(__dirname + "/../static/pad.html");
+      res.sendfile(filePath, { maxAge: 1000*60*60 });
+    });
+    
+    //serve index.html under /
+    app.get('/', function(req, res)
+    {
+      res.header("Server", serverName);
+      var filePath = path.normalize(__dirname + "/../static/index.html");
+      res.sendfile(filePath, { maxAge: 1000*60*60 });
+    });
+    
+    //serve robots.txt
+    app.get('/robots.txt', function(req, res)
+    {
+      res.header("Server", serverName);
+      var filePath = path.normalize(__dirname + "/../static/robots.txt");
+      res.sendfile(filePath, { maxAge: 1000*60*60 });
+    });
+    
+    //serve favicon.ico
+    app.get('/favicon.ico', function(req, res)
+    {
+      res.header("Server", serverName);
+      var filePath = path.normalize(__dirname + "/../static/favicon.ico");
+      res.sendfile(filePath, { maxAge: 1000*60*60 });
+    });
+    
+    //redirect the newpad requests
+    app.get('/newpad', function(req, res)
+    {
+      res.header("Server", serverName);
+      res.redirect('/p/' + randomPadName());
+    });
+    
+    //let the server listen
+    app.listen(settings.port);
     console.log("Server is listening at port " + settings.port);
 
-    var io = socketio.listen(server);
+    //init socket.io and redirect all requests to the MessageHandler
+    var io = socketio.listen(app);
     var messageHandler = require("./MessageHandler");
     messageHandler.setSocketIO(io);
-
     io.on('connection', function(client){
       try{
         messageHandler.handleConnect(client);
@@ -107,68 +130,4 @@ function randomPadName()
 		randomstring += chars.substring(rnum,rnum+1);
 	}
 	return randomstring;
-}
-
-function sendFile(res, reqPath, path)
-{
-  fs.readFile(path, function(err, data){
-    if (err){
-      send404(res, reqPath);
-    } else {
-      var contentType = "text/html";
-    
-      if (path.substring(path.length -3, path.length) == ".js")
-        contentType = "text/javascript";
-      else if (path.substring(path.length -4, path.length) == ".css")
-        contentType = "text/css";
-      else if (path.substring(path.length -4, path.length) == ".gif")
-        contentType = "image/gif";
-    
-      res.writeHead(200, {'Content-Type': contentType});
-      res.write(data, 'utf8');
-      res.end();
-      
-      requestLog(200, reqPath, "-> " + path);
-    }
-  });
-}
-
-function send404(res, reqPath)
-{
-  res.writeHead(404);
-  res.write("404 - Not Found");
-  res.end();
-  
-  requestLog(404, reqPath, "NOT FOUND!");
-}
-
-function sendRedirect(res, reqPath, location)
-{
-  res.writeHead(302, {'Location': location});
-  res.end();
-  
-  requestLog(302, reqPath, "-> " + location);
-}
-
-function requestLog(code, path, desc)
-{
-  console.log(code +", " + path + ", " + desc);
-}
-
-function errorlog(e)
-{
-  var timeStr = new Date().toUTCString() + ": ";
-
-  if(typeof e == "string")
-  {
-    console.error(timeStr + e);
-  }
-  else if(e.stack != null)
-  {
-    console.error(timeStr + e.stack);
-  }
-  else
-  {
-    console.error(timeStr + JSON.stringify(e));
-  }
 }

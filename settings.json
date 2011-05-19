@@ -9,7 +9,7 @@ This file must be valid JSON. But comments are allowed
   //the database specific settings
   "dbSettings" : {
                    "filename" : "../var/sqlite.db"
-                 }
+                 },
                  
   /* An Example of MySQL Configuration
    "dbType" : "mysql",
@@ -20,4 +20,6 @@ This file must be valid JSON. But comments are allowed
                     "database": "store"
                   }
   */
+  
+  "logHTTP" : true
 }
