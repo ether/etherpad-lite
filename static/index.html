@@ -1,0 +1,76 @@
+<html>
+  <head>
+    <title>Etherpad Lite</title>
+    <style>
+      * {
+        font-family: Helvetica, Verdana, Sans-Serif;
+      }
+      
+      html, body {
+        height:100%;
+        margin:0;
+        padding:0;
+      }
+      
+      #wrapper {
+        margin:auto;
+        margin-top: 200px;
+        width: 300px;
+        height: 200px;
+      }
+      
+      #button {
+        width: 300px;
+        height: 80px;
+        
+        display: block;
+        
+        margin:auto;
+        
+        border: 2px solid #999;
+ 
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        
+        background-color: #fff;
+        background: white; /* fallback for older/unsupporting browsers */  
+        background: -moz-linear-gradient(top, #aaa, white 70%, white 70%);  
+        background: -webkit-gradient(linear, 0 0, 0 100%, from(#aaa), color-stop(70%, white), color-stop(70%, white));  
+        
+        text-decoration: none;
+        text-align: center;
+      }
+      
+      #button span {     
+        display: block;
+        margin-top:15px;   
+        font-size: 40px;
+        color: #333;
+        font-weight:bold;
+        text-decoration: none;
+      }
+      
+      #nameWrapper {
+        text-align: center;
+      }
+    </style>
+    <script type="text/javascript">
+      function go()
+      {
+        var padname = document.getElementById("padname").value;
+        if(padname.length > 0)
+        {
+          window.location = "http://" + window.location.host + "/p/" + padname;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <a href="/newpad" id="button"><span>New Pad</span></a>
+      <div id="nameWrapper"><form>
+        <span><br>or create a Pad with the name <br></span> <input type="text" id="padname"/> <input type="submit" value="OK" onclick="go();return false;">
+      </form></div></a>
+    </div>
+  </body>
+</html>
