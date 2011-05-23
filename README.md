@@ -5,6 +5,9 @@ is based on node.js what makes it much leigther and more stable than the origina
 is that this will encourage more users to install a realtime collaborative editor. A smaller and well 
 documented codebase makes it easier for developers to improve the code
 
+# Online demo
+Visit <http://pitapoison.de:9001> to test it lives
+
 # Why use Etherpad Lite?
 * Tiny server hardware footprint
 * Pure Javascript client and server side
