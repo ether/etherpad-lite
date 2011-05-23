@@ -23,7 +23,7 @@ body, textarea { font-family: Helvetica, Arial, sans-serif; }
 }
 
 #sharebutton {
-  background: url(/static/img/jun09/pad/inviteshare2.gif) no-repeat 0 -31px;
+  background: url(/static/img/inviteshare2.gif) no-repeat 0 -31px;
   position: relative;
   display: block; 
   top: 6px; 
@@ -190,13 +190,13 @@ a#backtoprosite, #accountnav {
 a#backtoprosite, #accountnav a { color: #cde7ff; text-decoration: underline; }
 
 a#backtoprosite { padding-left: 20px; left: 6px;
-  background: url(/static/img/jun09/pad/protop.gif) no-repeat -5px -6px; }
+  background: url(/static/img/protop.gif) no-repeat -5px -6px; }
 #accountnav { right: 30px; color: #fff; }
   
 #topbarcenter { margin-left: 150px; margin-right: 150px; text-align:center;}
 a#topbaretherpad { margin-left: auto; margin-right: auto; display: block; width: 103px;
   position: relative; top: 3px; height: 0; padding-top: 20px;
-/*  background: url(/static/img/jun09/pad/padtop5.gif) no-repeat -397px -3px; overflow: hidden; */
+/*  background: url(/static/img/padtop5.gif) no-repeat -397px -3px; overflow: hidden; */
 }
 
 
@@ -208,7 +208,7 @@ a#topbaretherpad { margin-left: auto; margin-right: auto; display: block; width:
 #Licensing {font-size: 1.2em; color: white;float:left;margin-top:4px;margin-left:-75px; text-decoration: none;  }
 #fullscreen {font-size: 1.2em; color: white;float:right;margin-top:4px;margin-right:-120px; text-decoration: none;  }
 
-.propad a#topbaretherpad { background: url(/static/img/jun09/pad/protop.gif) no-repeat -397px -3px; }
+.propad a#topbaretherpad { background: url(/static/img/protop.gif) no-repeat -397px -3px; }
 
 #specialkeyarea { top: 5px; left: 250px; color: yellow; font-weight: bold;
   font-size: 1.5em; position: absolute; }
@@ -235,7 +235,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   background: #ffc; padding: 0.6em; font-size: 1.2em; margin-top: 6px; }
 
 #docbar { margin-top: 6px; height: 25px; position: relative; zoom: 1;
-  background: #fbfbfb url(/static/img/jun09/pad/padtopback2.gif) repeat-x 0 -31px; }
+  background: #fbfbfb url(/static/img/padtopback2.gif) repeat-x 0 -31px; }
 
 .docbarbutton
 {
@@ -284,7 +284,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 
 #docbarleft { position: absolute; left: 0; top: 0; height: 100%;
   overflow: hidden;
-  background: url(/static/img/jun09/pad/padtop5.gif) no-repeat left -31px; width: 7px; }
+  background: url(/static/img/padtop5.gif) no-repeat left -31px; width: 7px; }
 
 
   
@@ -294,7 +294,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   overflow: hidden; text-overflow: ellipsis /*not supported in FF*/;
   white-space:nowrap; }
 .docbar-public #docbarpadtitle { padding-left: 22px;
-  background: url(/static/img/jun09/pad/public.gif) no-repeat left center; }
+  background: url(/static/img/public.gif) no-repeat left center; }
   
 #docbarrenamelink { position: absolute; top: 6px;
   font-size: 1.1em; display: none; }
@@ -302,7 +302,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 #docbarrenamelink a:hover { color: #48d; }
 #padtitlebuttons { position: absolute; width: 74px; zoom: 1;
   height: 17px; top: 4px; left: 170px; display: none;
-  background: url(/static/img/jun09/pad/ok_or_cancel.gif) 0px 0px; }
+  background: url(/static/img/ok_or_cancel.gif) 0px 0px; }
 #padtitlesave { position: absolute; display: block;
   height: 0; padding-top: 17px; overflow: hidden;
   width: 23px; left: 0; top: 0; }
@@ -338,7 +338,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 .hidesidebar #padeditor { right: 0; }
 
 #vdraggie {
-  background: url(/static/img/jun09/pad/vdraggie.gif) no-repeat top center;
+  background: url(/static/img/vdraggie.gif) no-repeat top center;
   cursor: W-resize;
   bottom:0;
   position:absolute;
@@ -394,10 +394,10 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 }
 
 #editbar #syncstatussyncing { position: absolute; height: 26px; width: 26px;
-  background: url(/static/img/jun09/pad/syncing2.gif) no-repeat center center;
+  background: url(/static/img/syncing2.gif) no-repeat center center;
   right: 38px; top: 5px; display: none; }
 #editbar #syncstatusdone { position: absolute; height: 26px; width: 26px;
-  background: url(/static/img/jun09/pad/syncdone.gif) no-repeat center center;
+  background: url(/static/img/syncdone.gif) no-repeat center center;
   right: 38px; top: 5px; display: none; }
 
 #padsidebar { 
@@ -430,7 +430,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 
 #myswatch { width: 100%; height: 100%; background: transparent;/*...initially*/ }
 #mycolorpicker {
-  background: url(/static/img/jun09/pad/colorpicker.gif) no-repeat left top;
+  background: url(/static/img/colorpicker.gif) no-repeat left top;
   width: 232px; height: 140px;
   position: absolute;
   left: -240px; top: 0px; z-index: 101;
@@ -537,7 +537,7 @@ table#otheruserstable { display: none; }
 
 .modaldialog.cboxreconnecting .modaldialog-inner,
 .modaldialog.cboxconnecting .modaldialog-inner {
-  background: url(/static/img/jun09/pad/connectingbar.gif) no-repeat center 60px;
+  background: url(/static/img/connectingbar.gif) no-repeat center 60px;
   height: 100px;
 }
 .modaldialog.cboxreconnecting {
@@ -646,12 +646,12 @@ table#otheruserstable { display: none; }
   width: 100%; height: 100%; position: absolute; overflow: hidden; top: -10px; }
 
 .dbpanel-top { position: absolute; top: 0; width: 100%;
-  height: 400px; background-image: url(/static/img/jun09/pad/docpanelmiddle2.png);
+  height: 400px; background-image: url(/static/img/docpanelmiddle2.png);
   background-position: left top; }
 
 .dbpanel-bottom { position: absolute; height: 400px;
   bottom: -390px; width: 100%;
-  background-image: url(/static/img/jun09/pad/docpanelmiddle2.png);
+  background-image: url(/static/img/docpanelmiddle2.png);
   background-position: left top;
 }
 
@@ -659,14 +659,14 @@ table#otheruserstable { display: none; }
   background-color: transparent;
   background-image: url(/static/img/apr09/blank.gif);
   /* scale the image instead of repeating, but it amounts to the same */
-  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/static/img/jun09/pad/docpanelmiddle2.png", sizingMethod="scale");
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/static/img/docpanelmiddle2.png", sizingMethod="scale");
 }
 
 .dbpanel-leftedge, .dbpanel-rightedge, .dbpanel-botleftcorner, .dbpanel-botrightcorner {
   position: absolute; 
   background-repeat: no-repeat;
   background-color: transparent;
-  background-image: url(/static/img/jun09/pad/docpaneledge2.png);
+  background-image: url(/static/img/docpaneledge2.png);
 }
 
 .dbpanel-leftedge, .dbpanel-rightedge { height: 100%; width: 7px; bottom: 11px; }
@@ -682,7 +682,7 @@ table#otheruserstable { display: none; }
   background-color: transparent;
   background-image: url(/static/img/apr09/blank.gif);
   /* crop the image */
-  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/static/img/jun09/pad/docpaneledge2.png", sizingMethod="crop");
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/static/img/docpaneledge2.png", sizingMethod="crop");
 }
 * html .dbpanel-leftedge, * html .dbpanel-botleftcorner { left: -7px;  width: 14px; }
 
@@ -724,7 +724,7 @@ table#otheruserstable { display: none; }
 #exportlinks .exportlink {
   display: block; position: absolute; height: 22px; width: auto;
   background-repeat: no-repeat;
-  background-image: url(/static/img/jun09/pad/fileicons.gif);
+  background-image: url(/static/img/fileicons.gif);
   line-height: 22px; padding-left: 22px; padding-right: 2px;
 }
 #exportlinks .n1 { left: 350px; top: 30px; }
@@ -747,11 +747,11 @@ table#otheruserstable { display: none; }
 }
 #savedrevs-scrollleft { height: 100%; width: 14px; position: absolute;
   left: 0; top: 0; cursor: pointer;
-  background: url(/static/img/jun09/pad/savedrevarrows.gif) no-repeat right top;
+  background: url(/static/img/savedrevarrows.gif) no-repeat right top;
 }
 #savedrevs-scrollright { height: 100%; width: 14px; position: absolute;
   right: 0; top: 0; cursor: pointer;
-  background: url(/static/img/jun09/pad/savedrevarrows.gif) no-repeat left top;
+  background: url(/static/img/savedrevarrows.gif) no-repeat left top;
 }
 #savedrevs-scrolly .disabledscrollleft { background-position: right bottom; }
 #savedrevs-scrolly .disabledscrollright { background-position: left bottom; }
@@ -792,7 +792,7 @@ table#otheruserstable { display: none; }
 #savedrevs-savenow { display: block; position: absolute;
   overflow: hidden; height: 0; padding-top: 24px; width: 81px;
   top: 22px; right: 27px;
-  background: url(/static/img/jun09/pad/savedrevsgfx2.gif) no-repeat 0 0;
+  background: url(/static/img/savedrevsgfx2.gif) no-repeat 0 0;
 }
 #savedrevs-savenow:active { background-position: 0 -24px; }
 #savedrevs-close { display: block; position: absolute; right: 7px; bottom: 8px;
@@ -875,7 +875,7 @@ form#reconnectform { display: none; }
 #feedbackbox-hide, #feedbackbox-send, #feedbackbox-back {
   position: absolute; display: block;
   background-repeat: no-repeat;
-  background-image: url(/static/img/jun09/pad/feedbackbox2.gif);
+  background-image: url(/static/img/feedbackbox2.gif);
 }
 #feedbackbox-tl { width: 392px;
   height: 262px; left: 0; top: 0;
@@ -917,7 +917,7 @@ form#reconnectform { display: none; }
 
 .expand-collapse {
   height: 22px;
-  background-image: url(/static/img/jun09/pad/sharedistri.gif);
+  background-image: url(/static/img/sharedistri.gif);
   background-repeat: no-repeat;
   background-position: 0 3px;
   padding-left: 17px;
@@ -945,7 +945,7 @@ form#reconnectform { display: none; }
 .modaldialog .modaldialog-hide {
   float: right;
   background-repeat: no-repeat;
-  background-image: url(/static/img/jun09/pad/sharebox4.gif);
+  background-image: url(/static/img/sharebox4.gif);
   display: block;
   width: 22px; height: 22px;
   background-position: -454px -6px;
@@ -978,7 +978,7 @@ form#reconnectform { display: none; }
 #sharebox-send {
   float: right;
   background-repeat: no-repeat;
-  background-image: url(/static/img/jun09/pad/sharebox4.gif);
+  background-image: url(/static/img/sharebox4.gif);
   display: block;
   width: 87px; height: 22px;
   background-position: -383px -289px;
@@ -1009,20 +1009,20 @@ form#reconnectform { display: none; }
   color: #444;
 }
 #widthprefcheck { position: absolute;
-  background-image: url(/static/img/jun09/pad/layoutbuttons.gif);
+  background-image: url(/static/img/layoutbuttons.gif);
   background-repeat: no-repeat; cursor: pointer;
   width: 86px; height: 20px; top: 4px; right: 2px; }
 .widthprefunchecked { background-position: -1px -1px; }
 .widthprefchecked { background-position: -1px -23px; }
 #sidebarcheck { position: absolute;
-  background-image: url(/static/img/jun09/pad/layoutbuttons.gif);
+  background-image: url(/static/img/layoutbuttons.gif);
   background-repeat: no-repeat; cursor: pointer;
   width: 86px; height: 20px; top: 4px; right: 90px; }
 .sidebarunchecked { background-position: -1px -45px; }
 .sidebarchecked { background-position: -1px -67px; }
 #feedbackbutton { display: block; position: absolute; width: 68px;
   height: 0; padding-top: 17px; overflow: hidden;
-  background: url(/static/img/jun09/pad/bottomareagfx.gif);
+  background: url(/static/img/bottomareagfx.gif);
   top: 5px; right: 220px;
 }
 
@@ -1046,11 +1046,11 @@ a#topbarmaximize {
  height: 16px;
  margin-right:-143px;
  margin-top:4px;
- background: url(/static/img/jun09/pad/maximize_normal.png);
+ background: url(/static/img/maximize_normal.png);
 }
 
 .maximized a#topbarmaximize {
- background: url(/static/img/jun09/pad/maximize_maximized.png);
+ background: url(/static/img/maximize_maximized.png);
 }
 
 #editbarinner h1 {
