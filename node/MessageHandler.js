@@ -78,47 +78,51 @@ exports.handleDisconnect = function(client)
   //save the padname of this session
   var sessionPad=session2pad[client.sessionId];
   
-  var author = sessioninfos[client.sessionId].author;
-  
-  //get the author color out of the db
-  authorManager.getAuthorColorId(author, function(err, color)
+  //if this connection was already etablished with a handshake, send a disconnect message to the others
+  if(sessioninfos[client.sessionId].author)
   {
-    if(err) throw err;
-    
-    //prepare the notification for the other users on the pad, that this user left
-    var messageToTheOtherUsers = {
-      "type": "COLLABROOM",
-      "data": {
-        type: "USER_LEAVE",
-        userInfo: {
-          "ip": "127.0.0.1",
-          "colorId": color,
-          "userAgent": "Anonymous",
-          "userId": author
+    var author = sessioninfos[client.sessionId].author;
+  
+    //get the author color out of the db
+    authorManager.getAuthorColorId(author, function(err, color)
+    {
+      if(err) throw err;
+      
+      //prepare the notification for the other users on the pad, that this user left
+      var messageToTheOtherUsers = {
+        "type": "COLLABROOM",
+        "data": {
+          type: "USER_LEAVE",
+          userInfo: {
+            "ip": "127.0.0.1",
+            "colorId": color,
+            "userAgent": "Anonymous",
+            "userId": author
+          }
         }
-      }
-    };
-    
-    //Go trough all sessions of this pad, search and destroy the entry of this client
-    for(i in pad2sessions[sessionPad])
-    {
-      if(pad2sessions[sessionPad][i] == client.sessionId)
+      };
+      
+      //Go trough all user that are still on the pad, and send them the USER_LEAVE message
+      for(i in pad2sessions[sessionPad])
       {
-        delete pad2sessions[sessionPad][i];  
-        break;
+        socketio.clients[pad2sessions[sessionPad][i]].send(messageToTheOtherUsers);
       }
-    }
-    
-    //Go trough all user that are still on the pad, and send them the USER_LEAVE message
-    for(i in pad2sessions[sessionPad])
+    }); 
+  }
+  
+  //Go trough all sessions of this pad, search and destroy the entry of this client
+  for(i in pad2sessions[sessionPad])
+  {
+    if(pad2sessions[sessionPad][i] == client.sessionId)
     {
-      socketio.clients[pad2sessions[sessionPad][i]].send(messageToTheOtherUsers);
+      delete pad2sessions[sessionPad][i];  
+      break;
     }
-    
-    //Delete the session2pad and sessioninfos entrys of this session
-    delete session2pad[client.sessionId]; 
-    delete sessioninfos[client.sessionId]; 
-  });   
+  }
+  
+  //Delete the session2pad and sessioninfos entrys of this session
+  delete session2pad[client.sessionId]; 
+  delete sessioninfos[client.sessionId]; 
 }
 
 /**
