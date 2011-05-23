@@ -70,6 +70,8 @@ function handshake()
   socket.on('connect', function(){
       var padId= document.URL.substring(document.URL.lastIndexOf("/")+1);
       
+      document.title = document.title + " | " + padId;
+      
       var token = readCookie("token");
       if(token == null)
       {
