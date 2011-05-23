@@ -110,7 +110,7 @@ var padeditbar = (function(){
             // get the pad url
             padurl = document.location;
             // change the div contents to include the pad url in an input box
-            $('#embed').html('<div id="embedcode">Embed code:<input id="embedinput" type="text" value="<iframe src=&quot;'+padurl+'&quot; width=500 height=400>"</iframe>></div>');
+            $('#embed').html('<div id="embedcode">Embed code:<input id="embedinput" type="text" value="<iframe src=&quot;'+padurl+'&quot; width=500 height=400>"</iframe></div>');
             $('#users').hide();
             $('#embed').show();
           }
