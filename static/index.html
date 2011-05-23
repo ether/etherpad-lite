@@ -55,21 +55,38 @@
       }
     </style>
     <script type="text/javascript">
-      function go()
+      function go2Name()
       {
         var padname = document.getElementById("padname").value;
         if(padname.length > 0)
         {
-          window.location = "http://" + window.location.host + "/p/" + padname;
+          window.location = window.location.protocol + "//" + window.location.host + "/p/" + padname;
         }
+      }
+      
+      function go2Random()
+      {
+        window.location = window.location.protocol + "//" + window.location.host + "/p/" + randomPadName() ;
+      }
+      
+      function randomPadName() 
+      {
+	      var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	      var string_length = 10;
+	      var randomstring = '';
+	      for (var i=0; i<string_length; i++) {
+		      var rnum = Math.floor(Math.random() * chars.length);
+		      randomstring += chars.substring(rnum,rnum+1);
+	      }
+	      return randomstring;
       }
     </script>
   </head>
   <body>
     <div id="wrapper">
-      <a href="/newpad" id="button"><span>New Pad</span></a>
+      <a href="javascript:go2Random()" id="button"><span>New Pad</span></a>
       <div id="nameWrapper"><form>
-        <span><br>or create a Pad with the name <br></span> <input type="text" id="padname"/> <input type="submit" value="OK" onclick="go();return false;">
+        <span><br>or create a Pad with the name <br></span> <input type="text" id="padname"/> <input type="submit" value="OK" onclick="go2Name();return false;">
       </form></div></a>
     </div>
   </body>

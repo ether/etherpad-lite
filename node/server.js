@@ -81,13 +81,6 @@ async.waterfall([
       res.sendfile(filePath, { maxAge: 1000*60*60 });
     });
     
-    //redirect the newpad requests
-    app.get('/newpad', function(req, res)
-    {
-      res.header("Server", serverName);
-      res.redirect('/p/' + randomPadName());
-    });
-    
     //let the server listen
     app.listen(settings.port);
     console.log("Server is listening at port " + settings.port);
@@ -134,16 +127,4 @@ function errorlog(e)
   {
     console.error(timeStr + JSON.stringify(e));
   }
-}
-
-function randomPadName() 
-{
-	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-	var string_length = 10;
-	var randomstring = '';
-	for (var i=0; i<string_length; i++) {
-		var rnum = Math.floor(Math.random() * chars.length);
-		randomstring += chars.substring(rnum,rnum+1);
-	}
-	return randomstring;
 }
