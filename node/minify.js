@@ -4,7 +4,6 @@ var fs = require('fs');
 var cleanCSS = require('clean-css');
 var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
-var compress=require("compress");
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var gzip = require('gzip');
