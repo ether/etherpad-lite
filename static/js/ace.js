@@ -164,27 +164,17 @@ function Ace2Editor() {
     };
 
     (function() {
-      var doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '+
-	'"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
-
+      var doctype = "<!doctype html>";
+     
       var iframeHTML = ["'"+doctype+"<html><head>'"];
 
       plugins.callHook(
         "aceInitInnerdocbodyHead", {iframeHTML:iframeHTML});
   
-      // these lines must conform to a specific format because they are passed by the build script:
-      //iframeHTML.push($$INCLUDE_CSS_Q("editor.css syntax.css inner.css"));
-      
+      // these lines must conform to a specific format because they are passed by the build script:      
       iframeHTML.push($$INCLUDE_CSS_Q("/static/css/editor.css"));
       iframeHTML.push($$INCLUDE_CSS_Q("/static/css/syntax.css"));
       iframeHTML.push($$INCLUDE_CSS_Q("/static/css/inner.css"));
-      
-      //iframeHTML.push(INCLUDE_JS_Q_DEV("ace2_common_dev.js"));
-      //iframeHTML.push(INCLUDE_JS_Q_DEV("profiler.js"));
-      
-      //iframeHTML.push($$INCLUDE_JS_Q("ace2_common.js skiplist.js virtual_lines.js easysync2.js cssmanager.js colorutils.js undomodule.js contentcollector.js changesettracker.js linestylefilter.js domline.js"));
-      //iframeHTML.push($$INCLUDE_JS_Q("ace2_inner.js"));
-      
       iframeHTML.push($$INCLUDE_JS_Q("/static/js/ace2_common.js"));
       iframeHTML.push($$INCLUDE_JS_Q("/static/js/skiplist.js"));
       iframeHTML.push($$INCLUDE_JS_Q("/static/js/virtual_lines.js"));
@@ -212,8 +202,8 @@ function Ace2Editor() {
 	'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); '+
 	'iframe.ace_outerWin = window; '+
 	'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; '+
-	'var doc = iframe.contentWindow.document; doc.open(); doc.write('+
-	iframeHTML.join('+')+'); doc.close(); '+
+	'var doc = iframe.contentWindow.document; doc.open(); var text = ('+
+	iframeHTML.join('+')+').replace(/\\\\x3c/g, \'<\');doc.write(text); doc.close(); '+
 	'}, 0); }';
 
       var outerHTML = [doctype, '<html><head>',
@@ -221,9 +211,8 @@ function Ace2Editor() {
 	// bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
 	// (throbs busy while typing)
 	'<link rel="stylesheet" type="text/css" href="data:text/css,"/>',
-	'\x3cscript>', outerScript, '\x3c/script>',
+	'\x3cscript>\n', outerScript, '\n\x3c/script>',
 	'</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>'];
-
 
       if (!Array.prototype.map) Array.prototype.map = function(fun) { //needed for IE
         if (typeof fun != "function") throw new TypeError();

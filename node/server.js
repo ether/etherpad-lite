@@ -16,12 +16,13 @@
 
 require('joose');
 
-var socketio = require('socket.io')
-var settings = require('./settings')
-var db = require('./db')
+var socketio = require('socket.io');
+var settings = require('./settings');
+var db = require('./db');
 var async = require('async');
 var express = require('express');
 var path = require('path');
+var minify = require('./minify');
 
 var serverName = "Etherpad-Lite ( http://j.mp/ep-lite )";
 
@@ -45,8 +46,25 @@ async.waterfall([
     app.get('/static/*', function(req, res)
     { 
       res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/.." + req.url);
+      var filePath = path.normalize(__dirname + "/.." + req.url.split("?")[0]);
       res.sendfile(filePath, { maxAge: 1000*60*60 });
+    });
+    
+    //serve minified files
+    app.get('/minified/:id', function(req, res)
+    { 
+      res.header("Server", serverName);
+      
+      var id = req.params.id;
+      
+      if(id == "pad.js")
+      {
+        minify.padJS(req,res);
+      }
+      else
+      {
+        res.send('404 - Not Found', 404);
+      }
     });
     
     //serve pad.html under /p
