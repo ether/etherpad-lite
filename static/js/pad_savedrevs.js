@@ -30,7 +30,7 @@ var padsavedrevs = (function() {
                 '<div class="sractions"><a class="srview" href="javascript:void(0)" target="_blank">view</a> | <a class="srrestore" href="javascript:void(0)">restore</a></div>'+
                 '<div class="srtime"><!-- --></div>'+
                 '<div class="srauthor"><!-- --></div>'+
-                '<img class="srtwirly" src="/static/img/misc/status-ball.gif">'+
+                '<img class="srtwirly" src="static/img/misc/status-ball.gif">'+
                 '</div></div>');
     setBoxLabel(box, revisionInfo.label);
     setBoxTimestamp(box, revisionInfo.timestamp);

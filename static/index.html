@@ -60,13 +60,13 @@
         var padname = document.getElementById("padname").value;
         if(padname.length > 0)
         {
-          window.location = window.location.protocol + "//" + window.location.host + "/p/" + padname;
+          window.location = "p/" + padname;
         }
       }
       
       function go2Random()
       {
-        window.location = window.location.protocol + "//" + window.location.host + "/p/" + randomPadName() ;
+        window.location = "p/" + randomPadName() ;
       }
       
       function randomPadName() 

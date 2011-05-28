@@ -172,21 +172,21 @@ function Ace2Editor() {
         "aceInitInnerdocbodyHead", {iframeHTML:iframeHTML});
   
       // these lines must conform to a specific format because they are passed by the build script:      
-      iframeHTML.push($$INCLUDE_CSS_Q("/static/css/editor.css"));
-      iframeHTML.push($$INCLUDE_CSS_Q("/static/css/syntax.css"));
-      iframeHTML.push($$INCLUDE_CSS_Q("/static/css/inner.css"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/ace2_common.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/skiplist.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/virtual_lines.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/easysync2.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/cssmanager.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/colorutils.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/undomodule.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/contentcollector.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/changesettracker.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/linestylefilter.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/domline.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("/static/js/ace2_inner.js"));
+      iframeHTML.push($$INCLUDE_CSS_Q("static/css/editor.css"));
+      iframeHTML.push($$INCLUDE_CSS_Q("static/css/syntax.css"));
+      iframeHTML.push($$INCLUDE_CSS_Q("static/css/inner.css"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/ace2_common.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/skiplist.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/virtual_lines.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/easysync2.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/cssmanager.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/colorutils.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/undomodule.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/contentcollector.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/changesettracker.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/linestylefilter.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/domline.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("static/js/ace2_inner.js"));
       
       iframeHTML.push('\'\\n<style type="text/css" title="dynamicsyntax"></style>\\n\'');
       iframeHTML.push('\'</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>\'');
@@ -207,7 +207,7 @@ function Ace2Editor() {
 	'}, 0); }';
 
       var outerHTML = [doctype, '<html><head>',
-	$$INCLUDE_CSS("/static/css/editor.css"),
+	$$INCLUDE_CSS("static/css/editor.css"),
 	// bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
 	// (throbs busy while typing)
 	'<link rel="stylesheet" type="text/css" href="data:text/css,"/>',

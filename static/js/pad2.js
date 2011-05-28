@@ -533,10 +533,10 @@ var pad = {
   },
   preloadImages: function() {
     var images = [
-      '/static/img/feedbackbox2.gif',
-      '/static/img/sharebox4.gif',
-      '/static/img/sharedistri.gif',
-      '/static/img/colorpicker.gif',
+      'static/img/feedbackbox2.gif',
+      'static/img/sharebox4.gif',
+      'static/img/sharedistri.gif',
+      'static/img/colorpicker.gif',
     ];
     function loadNextImage() {
       if (images.length == 0) {
