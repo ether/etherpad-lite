@@ -7,6 +7,7 @@ var pro = require("uglify-js").uglify;
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var gzip = require('gzip');
+var server = require('./server');
 
 /**
  * Answers a http request for the pad javascript
@@ -201,7 +202,7 @@ exports.padJS = function(req, res)
         pathStr = path.normalize(__dirname + "/../var/minified_pad.js");
       }
       
-      res.sendfile(pathStr);
+      res.sendfile(pathStr, { maxAge: server.maxAge });
     })
   }
   //minifying is disabled, so load the files with jquery
