@@ -14,4 +14,7 @@ type -P doc.md &>/dev/null || {
   exit 1 
 }
 
+echo "empty doc folder..."
+rm -rf doc/jsdoc/*
+
 doc.md node doc/jsdoc
