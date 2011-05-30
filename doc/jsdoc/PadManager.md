@@ -5,6 +5,7 @@ The Pad Manager is a Factory for pad Objects
 
 ## Functions
 
+- - -
 ### getPad (id, callback)
 A Array with all known Pads
 

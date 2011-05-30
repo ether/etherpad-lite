@@ -6,6 +6,7 @@ provided by the settings module
 
 ## Functions
 
+- - -
 ### init (callback)
 Initalizes the database with the settings provided by the settings module
 
@@ -13,6 +14,7 @@ Initalizes the database with the settings provided by the settings module
 
 ##Variables
 
+- - -
 ### db 
 The UeberDB Object that provides the database functions
 
