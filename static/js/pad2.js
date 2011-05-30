@@ -60,11 +60,7 @@ function randomString() {
 
 function handshake()
 {
-  var host = window.location.hostname;
-  var options = {secure: window.location.protocol == 'https:',
-                 port: window.location.port};
-
-  socket = new io.Socket(host, options);
+  socket = new io.Socket();
   socket.connect();
 
   socket.on('connect', function(){
