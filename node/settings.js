@@ -1,4 +1,9 @@
 /**
+ * The Settings Modul reads the settings out of settings.json and provides 
+ * this information to the other modules
+ */
+
+/*
  * 2011 Peter 'Pita' Martischka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +21,29 @@
 
 var fs = require("fs");
 
-//default settings
+/**
+ * The Port ep-lite should listen to
+ */
 exports.port = 9001;
+/*
+ * The Type of the database
+ */
 exports.dbType = "sqlite";
+/**
+ * This setting is passed with dbType to ueberDB to set up the database
+ */
 exports.dbSettings = { "filename" : "../var/sqlite.db" };
+/**
+ * A flag that shows if http requests should be loged to stdout
+ */
 exports.logHTTP = true;
+/**
+ * The default Text of a new pad
+ */
 exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
+/**
+ * A flag that shows if minification is enabled or not
+ */
 exports.minify = true;
 
 //read the settings sync

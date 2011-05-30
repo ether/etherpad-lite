@@ -1,4 +1,9 @@
-/**
+/*
+ * This is the Changeset library copied from the old Etherpad with some modifications to use it in node.js
+ * Can be found in https://github.com/ether/pad/blob/master/infrastructure/ace/www/easysync2.js
+ */ 
+
+/*
  * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

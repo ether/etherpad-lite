@@ -1,4 +1,9 @@
 /**
+ * The DB Module provides a database initalized with the settings 
+ * provided by the settings module
+ */
+
+/*
  * 2011 Peter 'Pita' Martischka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,9 +25,15 @@ var settings = require("./settings");
 //set database settings
 var db = new ueberDB.database(settings.dbType, settings.dbSettings);
 
-//set the exported db to null, we will set it in intalize
+/**
+ * The UeberDB Object that provides the database functions
+ */
 exports.db = null;
 
+/**
+ * Initalizes the database with the settings provided by the settings module
+ * @param callback {Function} 
+ */
 exports.init = function(callback)
 {
   //initalize the database async

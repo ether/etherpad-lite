@@ -1,3 +1,7 @@
+/**
+ * The pad object, defined with joose
+ */
+
 var Changeset = require("../Changeset");
 var AttributePoolFactory = require("../AttributePoolFactory");
 var db = require("../db").db;
@@ -5,7 +9,7 @@ var async = require("async");
 var settings = require('../settings');
 
 /**
- * Copied from the Etherpad source code, don't know what its good for
+ * Copied from the Etherpad source code. It converts Windows line breaks to Unix line breaks and convert Tabs to spaces
  * @param txt
  */
 exports.cleanText = function (txt) {

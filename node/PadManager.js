@@ -1,4 +1,8 @@
 /**
+ * The Pad Manager is a Factory for pad Objects
+ */
+
+/*
  * 2011 Peter 'Pita' Martischka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +18,6 @@
  * limitations under the License.
  */
 
-/*
-The Pad Module trys to simulate the pad object from EtherPad. You can find the original code in /etherpad/src/etherpad/pad/model.js
-see https://github.com/ether/pad/blob/master/etherpad/src/etherpad/pad/model.js
-*/
-
 var Changeset = require("./Models/Pad");
 
 /**
@@ -27,9 +26,9 @@ var Changeset = require("./Models/Pad");
 globalPads = [];
 
 /**
- * Return a Function Wrapper to work with the Pad
+ * Returns a Pad Object with the callback
  * @param id A String with the id of the pad
- * @param createIfNotExist A Boolean which says the function if it should create the Pad if it not exist
+ * @param callback {Function}
  */
 exports.getPad = function(id, callback)
 {    

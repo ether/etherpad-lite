@@ -1,36 +1,26 @@
-#settings
+# settings
 `require("./settings");`
 
-2011 Peter 'Pita' Martischka
-* Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-*      http://www.apache.org/licenses/LICENSE-2.0
-* Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS-IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-##Functions
+The Settings Modul reads the settings out of settings.json and provides 
+this information to the other modules
 
 ##Variables
 
-###dbSettings 
+### dbSettings 
+This setting is passed with dbType to ueberDB to set up the database
+
+### dbType 
 
 
-###dbType 
+### defaultPadText 
+The default Text of a new pad
 
+### logHTTP 
+A flag that shows if http requests should be loged to stdout
 
-###defaultPadText 
+### minify 
+A flag that shows if minification is enabled or not
 
-
-###logHTTP 
-
-
-###minify 
-
-
-###port 
-
+### port 
+The Port ep-lite should listen to
 

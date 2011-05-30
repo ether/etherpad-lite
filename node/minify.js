@@ -1,4 +1,9 @@
 /**
+ * This Module manages all /minified/* requests. It controls the 
+ * minification && compression of Javascript and CSS. 
+ */ 
+
+/*
  * 2011 Peter 'Pita' Martischka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +32,8 @@ var server = require('./server');
 
 /**
  * Answers a http request for the pad javascript
+ * @param req the Express request
+ * @param res the Express response
  */
 exports.padJS = function(req, res)
 {

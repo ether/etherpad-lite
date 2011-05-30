@@ -1,33 +1,14 @@
-#minify
+# minify
 `require("./minify");`
 
-2011 Peter 'Pita' Martischka
-* Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-*      http://www.apache.org/licenses/LICENSE-2.0
-* Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS-IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+This Module manages all /minified/* requests. It controls the 
+minification && compression of Javascript and CSS.
 
-##Functions
+## Functions
 
-###padJS (req, res)
-2011 Peter 'Pita' Martischka
-* Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-*      http://www.apache.org/licenses/LICENSE-2.0
-* Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS-IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+### padJS (req, res)
+Answers a http request for the pad javascript
 
-* **req** 
-* **res** 
-
-##Variables
+* **req** the Express request
+* **res** the Express response
 

@@ -1,4 +1,8 @@
 /**
+ * The AuthorManager controlls all information about the Pad authors
+ */
+
+/*
  * 2011 Peter 'Pita' Martischka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +18,15 @@
  * limitations under the License.
  */
 
-
-/**
- * The AuthorManager controlls all information about the Pad authors
- */
-
 var db = require("./db").db;
 var async = require("async");
 
 /**
  * Returns the Author Id for a token. If the token is unkown, 
  * it creates a author for the token
- * @param token The token 
+ * @param token {String} The token 
+ * @param callback {Function} callback (err, author) 
+ * The callback function that is called when the result is here 
  */
 exports.getAuthor4Token = function (token, callback)
 {  
@@ -73,6 +74,8 @@ exports.getAuthor4Token = function (token, callback)
 
 /**
  * Returns the color Id of the author
+ * @param author {String} The id of the author
+ * @param callback {Function} callback(err, colorId)
  */
 exports.getAuthorColorId = function (author, callback)
 {
@@ -81,6 +84,8 @@ exports.getAuthorColorId = function (author, callback)
 
 /**
  * Sets the color Id of the author
+ * @param author {String} The id of the author
+ * @param callback {Function} (optional)
  */
 exports.setAuthorColorId = function (author, colorId, callback)
 {
@@ -89,6 +94,8 @@ exports.setAuthorColorId = function (author, colorId, callback)
 
 /**
  * Returns the name of the author
+ * @param author {String} The id of the author
+ * @param callback {Function} callback(err, name)
  */
 exports.getAuthorName = function (author, callback)
 {
@@ -97,6 +104,8 @@ exports.getAuthorName = function (author, callback)
 
 /**
  * Sets the name of the author
+ * @param author {String} The id of the author
+ * @param callback {Function} (optional)
  */
 exports.setAuthorName = function (author, name, callback)
 {

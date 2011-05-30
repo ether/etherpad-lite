@@ -1,18 +1,7 @@
-#easysync_tests
+# easysync_tests
 `require("./easysync_tests");`
 
-Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka
-* Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-*      http://www.apache.org/licenses/LICENSE-2.0
-* Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS-IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-##Functions
-
-##Variables
+I found this tests in the old Etherpad and used it to test if the Changeset library can be run on node.js.
+It has no use for ep-lite, but I thought I keep it cause it may help someone to understand the Changeset library
+https://github.com/ether/pad/blob/master/infrastructure/ace/www/easysync2_tests.js
 

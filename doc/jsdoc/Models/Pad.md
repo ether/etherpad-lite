@@ -1,15 +1,12 @@
-#Mod
+# Mod
 `require("./Models/Pad");`
 
-Copied from the Etherpad source code, don't know what its good for
-@param txt
+The pad object, defined with joose
 
-##Functions
+## Functions
 
-###cleanText (txt)
-Copied from the Etherpad source code, don't know what its good for
+### cleanText (txt)
+Copied from the Etherpad source code. It converts Windows line breaks to Unix line breaks and convert Tabs to spaces
 
-* **txt** 
-
-##Variables
+* **txt** *No description*
 
