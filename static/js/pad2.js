@@ -93,7 +93,6 @@ function handshake()
         //We get a disconnect message
         if(obj.disconnect)
         { 
-          socket.reconnect = false;
           socket.disconnect();
           padconnectionstatus.disconnected("userdup");
           return;
