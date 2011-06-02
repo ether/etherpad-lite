@@ -93,6 +93,7 @@ function handshake()
         //We get a disconnect message
         if(obj.disconnect)
         { 
+          socket.reconnect = false;
           socket.disconnect();
           alert("You have this Pad already opened in another Window/Tab");
           return;
