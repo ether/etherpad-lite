@@ -24,8 +24,8 @@ var async = require("async");
 /**
  * Returns the Author Id for a token. If the token is unkown, 
  * it creates a author for the token
- * @param token {String} The token 
- * @param callback {Function} callback (err, author) 
+ * @param {String} token The token 
+ * @param {Function} callback callback (err, author) 
  * The callback function that is called when the result is here 
  */
 exports.getAuthor4Token = function (token, callback)
@@ -74,8 +74,8 @@ exports.getAuthor4Token = function (token, callback)
 
 /**
  * Returns the color Id of the author
- * @param author {String} The id of the author
- * @param callback {Function} callback(err, colorId)
+ * @param {String} author The id of the author
+ * @param {Function} callback callback(err, colorId)
  */
 exports.getAuthorColorId = function (author, callback)
 {
@@ -84,8 +84,8 @@ exports.getAuthorColorId = function (author, callback)
 
 /**
  * Sets the color Id of the author
- * @param author {String} The id of the author
- * @param callback {Function} (optional)
+ * @param {String} author The id of the author
+ * @param {Function} callback (optional)
  */
 exports.setAuthorColorId = function (author, colorId, callback)
 {
@@ -94,8 +94,8 @@ exports.setAuthorColorId = function (author, colorId, callback)
 
 /**
  * Returns the name of the author
- * @param author {String} The id of the author
- * @param callback {Function} callback(err, name)
+ * @param {String} author The id of the author
+ * @param {Function} callback callback(err, name)
  */
 exports.getAuthorName = function (author, callback)
 {
@@ -104,8 +104,8 @@ exports.getAuthorName = function (author, callback)
 
 /**
  * Sets the name of the author
- * @param author {String} The id of the author
- * @param callback {Function} (optional)
+ * @param {String} author The id of the author
+ * @param {Function} callback (optional)
  */
 exports.setAuthorName = function (author, name, callback)
 {

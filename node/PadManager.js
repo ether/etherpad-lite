@@ -28,7 +28,7 @@ globalPads = [];
 /**
  * Returns a Pad Object with the callback
  * @param id A String with the id of the pad
- * @param callback {Function}
+ * @param {Function} callback 
  */
 exports.getPad = function(id, callback)
 {    

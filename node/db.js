@@ -32,7 +32,7 @@ exports.db = null;
 
 /**
  * Initalizes the database with the settings provided by the settings module
- * @param callback {Function} 
+ * @param {Function} callback 
  */
 exports.init = function(callback)
 {
