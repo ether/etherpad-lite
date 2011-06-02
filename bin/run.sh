@@ -13,9 +13,9 @@ type -P node &>/dev/null || {
   exit 1 
 }
 
-#Is node installed?
+#Is npm installed?
 type -P npm &>/dev/null || { 
-  echo "You need to install npmq to run Etherpad-Lite!" >&2
+  echo "You need to install npm to run Etherpad-Lite!" >&2
   exit 1 
 }
 
