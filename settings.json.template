@@ -1,5 +1,7 @@
 /*
-This file must be valid JSON. But comments are allowed
+  This file must be valid JSON. But comments are allowed
+
+  Please edit settings.json, not settings.json.template
 */
 {
   "port" : 9001,

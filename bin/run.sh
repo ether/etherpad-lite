@@ -19,5 +19,9 @@ if [ -d "../bin" ]; then
   cd "../"
 fi
 
+if [ ! -f "settings.json" ]; then
+  cp settings.json.template settings.json 
+fi
+
 cd "node"
 node server.js
