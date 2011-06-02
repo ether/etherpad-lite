@@ -4,6 +4,9 @@
   "homepage"      : "https://github.com/Pita/etherpad-lite",
   "keywords"      : ["etherpad", "realtime", "collaborative", "editor"],
   "author"        : "Peter 'Pita' Martischka <petermartischka@googlemail.com>",
+  "contributors": [
+                    { "name": "Hans Pinckaers"}
+                  ],
   "dependencies"  : {
                       "socket.io"  : "0.6.18",
                       "ueberDB"    : "0.0.5",
@@ -14,8 +17,5 @@
                       "uglify-js"  : "1.0.2",
                       "gzip"       : "0.1.0"
                     },
-  "version"       : "0.0.4",
-  "bin"           : { 
-                      "ep-lite" : "./bin/run.sh"
-                    }
+  "version"       : "0.0.4"
 }
