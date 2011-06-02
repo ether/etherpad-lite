@@ -43,6 +43,10 @@ var padconnectionstatus = (function() {
       var cls = 'modaldialog cboxdisconnected cboxdisconnected_'+k;
       $("#connectionbox").get(0).className = cls;
       padmodals.showModal("#connectionbox", 500);
+    
+      $('button#forcereconnect').click(function() {
+        window.location.reload();
+      });
     },
     isFullyConnected: function() {
       return status.what == 'connected';

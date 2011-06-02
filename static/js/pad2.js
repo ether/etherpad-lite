@@ -95,7 +95,7 @@ function handshake()
         { 
           socket.reconnect = false;
           socket.disconnect();
-          alert("You have this Pad already opened in another Window/Tab");
+          padconnectionstatus.disconnected("userdup");
           return;
         }
         //yeah, the clientVars are here :). So we can start initalizing the Pad
