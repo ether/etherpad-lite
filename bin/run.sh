@@ -1,5 +1,14 @@
 #!/bin/bash                 
 
+#Move to the folder where ep-lite is installed
+FOLDER=$(dirname $(readlink -f $0))
+cd $FOLDER 
+
+#Was this script started in the bin folder? if yes move out
+if [ -d "../bin" ]; then
+  cd "../"
+fi
+
 #Stop the script if its started as root
 if [[ $EUID -eq 0 ]]; then
    echo "You shouldn't start Etherpad-Lite as root!" 1>&2
@@ -18,11 +27,6 @@ type -P npm &>/dev/null || {
   echo "You need to install npm to run Etherpad-Lite!" >&2
   exit 1 
 }
-
-#Was this script started in the bin folder? if yes move out
-if [ -d "../bin" ]; then
-  cd "../"
-fi
 
 #Does a settings.json exist? if no copy the template
 if [ ! -f "settings.json" ]; then
