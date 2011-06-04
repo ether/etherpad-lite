@@ -520,15 +520,14 @@ function handleClientReady(client, message)
     },
     function(callback)
     {
-      //Check if this author is already on the pad, if yes, kick him!
+      //Check if this author is already on the pad, if yes, kick the other sessions!
       if(pad2sessions[message.padId])
       {
         for(var i in pad2sessions[message.padId])
         {
           if(sessioninfos[pad2sessions[message.padId][i]].author == author)
           {
-            client.send({disconnect:"doublelogin"});
-            return;
+            socketio.clients[pad2sessions[message.padId][i]].send({disconnect:"doublelogin"});
           }
         }
       }

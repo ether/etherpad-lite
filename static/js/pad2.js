@@ -90,39 +90,28 @@ function handshake()
       //if we haven't recieved the clientVars yet, then this message should it be
       if(!receivedClientVars)
       {
-        //We get a disconnect message
+        if(window.console)
+          console.log(obj);
+            
+        receivedClientVars=true;
+      
+        clientVars = obj;
+        clientVars.userAgent=navigator.userAgent;
+        clientVars.collab_client_vars.clientAgent=navigator.userAgent;
+          
+        pad.init();
+          
+        initalized=true;
+      }
+      //This handles every Message after the clientVars
+      else
+      {
         if(obj.disconnect)
         { 
           socket.disconnect();
           padconnectionstatus.disconnected("userdup");
           return;
         }
-        //yeah, the clientVars are here :). So we can start initalizing the Pad
-        else
-        {
-          if(window.console)
-            console.log(obj);
-            
-          receivedClientVars=true;
-      
-          clientVars = obj;
-          clientVars.userAgent=navigator.userAgent;
-          clientVars.collab_client_vars.clientAgent=navigator.userAgent;
-          
-          pad.init();
-          
-          initalized=true;
-        }
-      }
-      //This handles every Message after the clientVars
-      else
-      {
-        //We can't handle the message before we initalized the pad, so let this message bounce back in 100ms
-        if(!initalized)
-        {
-          setTimeOut(this(obj), 100);
-        }
-        //We're initalized, so give this message to the collabClient
         else
         {
           pad.collabClient.handleMessageFromServer(obj);
