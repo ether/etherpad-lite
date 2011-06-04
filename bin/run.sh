@@ -38,10 +38,6 @@ fi
 echo "Clear minfified cache..."
 rm var/minified* 2> /dev/null
 
-#Ensure all dependencies are installed
-echo "Ensure dependencies are up to date..."
-npm link
-
 #Move to the node folder and start
 echo "start..."
 cd "node"
