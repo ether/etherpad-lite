@@ -9,7 +9,7 @@
                   ],
   "dependencies"  : {
                       "socket.io"  : "0.6.18",
-                      "ueberDB"    : "0.0.7",
+                      "ueberDB"    : "0.0.8",
                       "async"      : "0.1.9",
                       "joose"      : "3.18.0",
                       "express"    : "2.3.10",

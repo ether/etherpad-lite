@@ -103,7 +103,7 @@ function loadBroadcastJS()
 
   var userId = "hiddenUser" + randomString();
   var socketId;
-  var socket;
+  //var socket;
 
   var channelState = "DISCONNECTED";
 
@@ -406,12 +406,13 @@ function loadBroadcastJS()
     }));
   }
 
-  var changesetLoader = {
+  global.changesetLoader = {
     running: false,
     resolved: [],
     requestQueue1: [],
     requestQueue2: [],
     requestQueue3: [],
+    reqCallbacks: [],
     queueUp: function (revision, width, callback)
     {
       if (revision < 0) revision = 0;
@@ -448,7 +449,26 @@ function loadBroadcastJS()
       var granularity = request.res;
       var callback = request.callback;
       var start = request.rev;
-      debugLog("loadinging revision", start, "through ajax");
+      var requestID = Math.floor(Math.random()*100000);
+      
+      /*var msg = { "component" : "timeslider",
+                  "type":"CHANGESET_REQ", 
+                  "padId": padId,
+                  "token": token,
+                  "protocolVersion": 2, 
+                  "data"
+                  {
+                    "start": start,
+                    "granularity": granularity
+                  }};
+    
+      socket.send(msg);*/
+      
+      sendSocketMsg("CHANGESET_REQ",{ "start": start, "granularity": granularity, "requestID": requestID});
+      
+      self.reqCallbacks[requestID] = callback;
+      
+      /*debugLog("loadinging revision", start, "through ajax");
       $.getJSON("/ep/pad/changes/" + clientVars.padIdForUrl + "?s=" + start + "&g=" + granularity, function (data, textStatus)
       {
         if (textStatus !== "success")
@@ -459,7 +479,19 @@ function loadBroadcastJS()
         self.handleResponse(data, start, granularity, callback);
 
         setTimeout(self.loadFromQueue, 10); // load the next ajax function
-      });
+      });*/
+    },
+    handleSocketResponse: function (message)
+    {
+       var self = changesetLoader;
+       
+       var start = message.data.start;
+       var granularity = message.data.granularity;
+       var callback = self.reqCallbacks[message.data.requestID];
+       delete self.reqCallbacks[message.data.requestID];
+       
+       self.handleResponse(message.data, start, granularity, callback);
+       setTimeout(self.loadFromQueue, 10);
     },
     handleResponse: function (data, start, granularity, callback)
     {
@@ -561,7 +593,7 @@ function loadBroadcastJS()
     }));
   }
 
-  function setUpSocket()
+  /*function setUpSocket()
   {
     // required for Comet
     if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
@@ -607,7 +639,7 @@ function loadBroadcastJS()
     {
       abandonConnection("initsocketfail");
     }
-  }
+  }*/
 
   function setChannelState(newChannelState, moreInfo)
   {

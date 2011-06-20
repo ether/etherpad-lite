@@ -51,11 +51,10 @@
 	  return "t." + randomstring;
   }
 
-  /*var padId, token;
+  var socket, token, padId;
 
-  $(document).ready(function() 
+  $(window).load(function () 
   {
-    //find out the padId
     var urlParts= document.URL.split("/");
     padId = urlParts[urlParts.length-2];
         
@@ -74,53 +73,9 @@
     socket = new io.Socket();
     socket.connect();
     
-    socket.on('connect', function(){
-      var msg = { "component" : "timeslider",
-                  "type":"CLIENT_READY", 
-                  "padId": padId,
-                  "token": token,
-                  "protocolVersion": 2};
-    
-      socket.send(msg);
-    });
-    
-    socket.on('message', function(message)
-    {
-      console.log(message);
-      clientVars = message.data;
-      initalizeWithClientVars();
-    })
-  });*/
-
-  $(window).load(function () 
-  {
-    var urlParts= document.URL.split("/");
-    var padId = urlParts[urlParts.length-2];
-        
-    //set the title
-    document.title = document.title + " | " + padId;
-        
-    //ensure we have a token
-    var token = readCookie("token");
-    if(token == null)
-    {
-      token = randomString();
-      createCookie("token", token, 60);
-    }
-    
-    //build up the socket io connection
-    var socket = new io.Socket();
-    socket.connect();
-    
     socket.on('connect', function()
     {
-      var msg = { "component" : "timeslider",
-                  "type":"CLIENT_READY", 
-                  "padId": padId,
-                  "token": token,
-                  "protocolVersion": 2};
-    
-      socket.send(msg);
+      sendSocketMsg("CLIENT_READY", {});
     });
     
     socket.on('message', function(message)
@@ -131,10 +86,25 @@
       {
         handleClientVars(message);
       }
+      else if(message.type == "CHANGESET_REQ")
+      {
+        changesetLoader.handleSocketResponse(message);
+        //alert("answer!")
+      }
     });
-    
-    //handleClientVars({data: clientVars});
   });
+  
+  function sendSocketMsg(type, data)
+  {
+    var msg = { "component" : "timeslider",
+                "type": type,
+                "data": data, 
+                "padId": padId,
+                "token": token,
+                "protocolVersion": 2};
+    
+    socket.send(msg);
+  }
   
   var fireWhenAllScriptsAreLoaded = [];
   
@@ -151,34 +121,6 @@
     {
       fireWhenAllScriptsAreLoaded[i]();
     }
-    
-    /*var scriptsToLoad = 3;
-    
-    var loadCallback = function(info)
-    {
-      scriptsToLoad--;
-      
-      console.log(scriptsToLoad);
-      
-      if(scriptsToLoad == 1)
-      {
-        $.getScript('/static/js/broadcast.js', loadCallback);
-      }
-      
-      //if all scripts are loaded
-      if(scriptsToLoad == 0)
-      {
-        console.log("execute!");
-      
-        for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
-        {
-          fireWhenAllScriptsAreLoaded[i]();
-        }
-      }
-    }*/
-    
-    //$.getScript('/static/js/broadcast_slider.js', loadCallback);
-    //$.getScript('/static/js/broadcast_revisions.js', loadCallback);
   }
 
   // ]]>

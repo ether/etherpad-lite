@@ -68,6 +68,10 @@ exports.handleMessage = function(client, message)
   {
     handleClientReady(client, message);
   }
+  else if(message.type == "CHANGESET_REQ")
+  {
+    handleChangesetRequest(client, message);
+  }
   //if the message type is unkown, throw an exception
   else
   {
@@ -83,6 +87,24 @@ function handleClientReady(client, message)
     
     client.send({type: "CLIENT_VARS", data: clientVars});
   })
+}
+
+function handleChangesetRequest(client, message)
+{
+  var granularity = message.data.granularity;
+  var start = message.data.start;
+  var end = start + (100 * granularity);
+  var padId = message.padId;
+  
+  getChangesetInfo(padId, start, end, granularity, function(err, changesetInfo)
+  {
+    if(err) throw err;
+    
+    var data = changesetInfo;
+    data.requestID = message.data.requestID;
+    
+    client.send({type: "CHANGESET_REQ", data: data});
+  });
 }
 
 function createTimesliderClientVars (padId, callback)
