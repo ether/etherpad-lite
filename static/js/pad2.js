@@ -75,10 +75,11 @@ function handshake()
         createCookie("token", token, 60);
       }
       
-      var msg = { "type":"CLIENT_READY", 
+      var msg = { "component" : "pad", 
+                  "type":"CLIENT_READY", 
                   "padId": padId,
                   "token": token,
-                  "protocolVersion": 1};
+                  "protocolVersion": 2};
   
       socket.send(msg);
     });

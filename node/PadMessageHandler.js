@@ -143,11 +143,6 @@ exports.handleMessage = function(client, message)
   {
     throw "Message is null!";
   }
-  //Etherpad sometimes send JSON and sometimes a JSONstring...
-  if(typeof message == "string")
-  {
-    message = JSON.parse(message);
-  }
   if(!message.type)
   {
     throw "Message have no type attribute!";
@@ -161,19 +156,16 @@ exports.handleMessage = function(client, message)
   else if(message.type == "COLLABROOM" && 
           message.data.type == "USER_CHANGES")
   {
-    console.error(JSON.stringify(message));
     handleUserChanges(client, message);
   }
   else if(message.type == "COLLABROOM" && 
           message.data.type == "USERINFO_UPDATE")
   {
-    console.error(JSON.stringify(message));
     handleUserInfoUpdate(client, message);
   }
   //if the message type is unkown, throw an exception
   else
   {
-    console.error(message);
     throw "unkown Message Type: '" + message.type + "'";
   }
 }
@@ -469,9 +461,9 @@ function handleClientReady(client, message)
   {
     throw "CLIENT_READY Message have no protocolVersion!";
   }
-  if(message.protocolVersion != 1)
+  if(message.protocolVersion != 2)
   {
-    throw "CLIENT_READY Message have a unkown protocolVersion '" + protocolVersion + "'!";
+    throw "CLIENT_READY Message have a unkown protocolVersion '" + message.protocolVersion + "'!";
   }
 
   var author;

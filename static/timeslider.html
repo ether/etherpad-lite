@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Language" content="en-us" />
+  <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+
+  <title>Etherpad Lite Timeslider</title>
+  <link href="/static/css/pad2_ejs.css" rel="stylesheet" type="text/css" />
+  <link href="/static/css/broadcast.css" rel="stylesheet" type="text/css" /><!-- javascript -->
+  <style type="text/css" title="dynamicsyntax"></style>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+  <script type="text/javascript">
+// <![CDATA[
+  var clientVars = {};
+  /*var clientVars = {"historicalAuthorData":{"g.y7pr6ar7tcoyvosu":{"colorId":20}},"totalRevs":80,"hooks":{},"disableRightBar":false,"revNum":80,"initialStyledContents":{"atext":{"text":"sdfWelcsdfsdome to Etsdfherpad v1.1!ASdasdf\nsdASASdsdsad\nThisdfs paASDASd text isasdf synchrsdfonisdfzed as dsfyou typasdfe, so that everyonsde viewiasdng thasdfs page sees theADS same tdsext.  This allows you to collabasdforatessadf seamlaSDssly on documents!sddfsdf\n asdsdsd\nASdasdASDsddf\nsdaasdfsddsdfsdfsdf\nsdsfsd\n\n\nasdfsd\n\nasdf\nsda\nas\ns\nss\nss\na\nsd\n\nsd\nfsadf\nsd\nf\nsdf\nsadfs\nsdf\nsdf\nsf\nsdf\nsdffsd\nsdas\ndfsdf\n\n\n","attribs":"*0+3+4*0+5+9*0+3+c*0+7|1+1*0+c*1|1+1*1+3*0*1+3*1+4*0*1+5*1+9*0*1+4*1+7*0*1+3*1+3*0*1+3*1+7*0*1+3*1+7*0*1+4*1+i*0*1+2*1+7*0*1+3*1+5*0*1+4*1+f*0*1+3*1+7*0*1+2*1+v*0*1+4*1+5*0*1+5*1+6*0*1+3*1+i*0*1+7*1|1+1*1+1*0*1+7*1|1+1*0*1+d|1+1*0+j|1+1*0|r+2s|2+2"},"historicalAuthorData":{"g.y7pr6ar7tcoyvosu":{"colorId":20}},"apool":{"numToAttrib":{"0":["author","g.y7pr6ar7tcoyvosu"],"1":["underline","true"]},"nextNum":2}},"viewId":"test","fullWidth":false,"initialChangesets":[{"start":0,"forwardsChangesets":[],"timeDeltas":[],"granularity":100,"actualEndNum":0,"apool":{"numToAttrib":{},"nextNum":0},"backwardsChangesets":[]},{"start":0,"forwardsChangesets":["Z:1>5o+p*0+3|1+1*0+7|1+1+2e*0+3|2+1z*0+6|1+1$Welcome to Etherpad v1.1!ASd\nsdASASd\nThis pad text is synchronized as you type, so that everyone viewing this page sees theADS same text.  This allows you to collaborate seamlessly on documents!\n \nASdasd\n","Z:5p>n=d*0+3|1=g=7*1|1=1*1=g*0*1+4*1=a*0*1+3*1=e*0*1+4*1=u-1*0*1+4*1=1k*0*1+4*1=b-1*0*1+3*1|2=l*1=6$sdfasdfsdfasdfasdfasdfaSD","Z:6c>n|1=w=7*0+5|1=1=7*0*1+5=1x*0*1+3|1=2u=1*0*1+3|1=1=6*0*1+3|1=1*0+3|1+1$sdsadASDASasdasdASDsda\n","Z:6z>p|2=19=w*0*1+3=49*0*1+4|1=1=4*0*1+4|1=1=9*0*1+4|1=1=3*0+a$sdfsddfsdsdsddfasdfsddsdf","Z:7o>s=4*0+3=r*0+4|2=e=3*0*1+3=19*0*1+3=t*0*1+2=18*0*1+2=14*0*1+5=v*0*1+3|3=o=d*0+3$sdfasdfsdfdsfsddsssadfsdfsdf","Z:8g>o*0+3=7*0+2|5=7r=g*0+3|1=1*0|3+9*0+6|1+1$sdfsdsdfsdsfsd\n\n\nasdfsd\n","Z:94>z|9=8w=6*0|c+v*0+4$\n\nasdf\nsda\nas\ns\nss\nss\na\nsd\n\nsd\nfsad","Z:a3>1d|l=9x=4*0|b+18*0+5$f\nsd\nf\nsdf\nsadfs\nsdf\nsdf\nsf\nsdf\nsdffsd\nsdas\ndfsdf"],"timeDeltas":[25,1875,6,5,6,5,5,5],"granularity":10,"actualEndNum":80,"apool":{"numToAttrib":{"0":["author","g.y7pr6ar7tcoyvosu"],"1":["underline","true"],"2":["underline",""]},"nextNum":3},"backwardsChangesets":["Z:5p\x3c5o|5-5o$","Z:6c\x3cn=d-3|1=g=7*2|1=1*2=g-4*2=a-3*2=e-4*2=u-4+1*2=1k-4*2=b-3+1*2|2=l*2=6$ie","Z:6z\x3cn|1=w=7-5|1=1=7-5=1x-3|1=2u=1-3|1=1=6-3|1=1|1-4$","Z:7o\x3cp|2=19=w-3=49-4|1=1=4-4|1=1=9-4|1=1=3-a$","Z:8g\x3cs=4-3=r-4|2=e=3-3=19-3=t-2=18-2=14-5=v-3|3=o=d-3$","Z:94\x3co-3=7-2|5=7r=g-3|1=1|4-g$","Z:a3\x3cz|9=8w=6|c-v-4$","Z:bg\x3c1d|l=9x=4|b-18-5$"]},{"start":80,"forwardsChangesets":["Z:bg>1|w=b9=5*0|1+1$\n"],"timeDeltas":[1],"granularity":1,"actualEndNum":81,"apool":{"numToAttrib":{"0":["author","g.y7pr6ar7tcoyvosu"]},"nextNum":1},"backwardsChangesets":["Z:bh\x3c1|w=b9=5|1-1$"]},{"start":0,"forwardsChangesets":["Z:1>5o+p*0+3|1+1*0+7|1+1+2e*0+3|2+1z*0+6|1+1$Welcome to Etherpad v1.1!ASd\nsdASASd\nThis pad text is synchronized as you type, so that everyone viewing this page sees theADS same text.  This allows you to collaborate seamlessly on documents!\n \nASdasd\n","Z:5p>n=d*0+3|1=g=7*1|1=1*1=g*0*1+4*1=a*0*1+3*1=e*0*1+4*1=u-1*0*1+4*1=1k*0*1+4*1=b-1*0*1+3*1|2=l*1=6$sdfasdfsdfasdfasdfasdfaSD","Z:6c>n|1=w=7*0+5|1=1=7*0*1+5=1x*0*1+3|1=2u=1*0*1+3|1=1=6*0*1+3|1=1*0+3|1+1$sdsadASDASasdasdASDsda\n","Z:6z>p|2=19=w*0*1+3=49*0*1+4|1=1=4*0*1+4|1=1=9*0*1+4|1=1=3*0+a$sdfsddfsdsdsddfasdfsddsdf","Z:7o>s=4*0+3=r*0+4|2=e=3*0*1+3=19*0*1+3=t*0*1+2=18*0*1+2=14*0*1+5=v*0*1+3|3=o=d*0+3$sdfasdfsdfdsfsddsssadfsdfsdf","Z:8g>o*0+3=7*0+2|5=7r=g*0+3|1=1*0|3+9*0+6|1+1$sdfsdsdfsdsfsd\n\n\nasdfsd\n","Z:94>z|9=8w=6*0|c+v*0+4$\n\nasdf\nsda\nas\ns\nss\nss\na\nsd\n\nsd\nfsad","Z:a3>1d|l=9x=4*0|b+18*0+5$f\nsd\nf\nsdf\nsadfs\nsdf\nsdf\nsf\nsdf\nsdffsd\nsdas\ndfsdf"],"timeDeltas":[25,1875,6,5,6,5,5,5],"granularity":10,"actualEndNum":80,"apool":{"numToAttrib":{"0":["author","g.y7pr6ar7tcoyvosu"],"1":["underline","true"],"2":["underline",""]},"nextNum":3},"backwardsChangesets":["Z:5p\x3c5o|5-5o$","Z:6c\x3cn=d-3|1=g=7*2|1=1*2=g-4*2=a-3*2=e-4*2=u-4+1*2=1k-4*2=b-3+1*2|2=l*2=6$ie","Z:6z\x3cn|1=w=7-5|1=1=7-5=1x-3|1=2u=1-3|1=1=6-3|1=1|1-4$","Z:7o\x3cp|2=19=w-3=49-4|1=1=4-4|1=1=9-4|1=1=3-a$","Z:8g\x3cs=4-3=r-4|2=e=3-3=19-3=t-2=18-2=14-5=v-3|3=o=d-3$","Z:94\x3co-3=7-2|5=7r=g-3|1=1|4-g$","Z:a3\x3cz|9=8w=6|c-v-4$","Z:bg\x3c1d|l=9x=4|b-18-5$"]},{"start":80,"forwardsChangesets":["Z:bg>1|w=b9=5*0|1+1$\n"],"timeDeltas":[1],"granularity":1,"actualEndNum":81,"apool":{"numToAttrib":{"0":["author","g.y7pr6ar7tcoyvosu"]},"nextNum":1},"backwardsChangesets":["Z:bh\x3c1|w=b9=5|1-1$"]}],"sliderEnabled":true,"colorPalette":["#ffc7c7","#fff1c7","#e3ffc7","#c7ffd5","#c7ffff","#c7d5ff","#e3c7ff","#ffc7f1","#ff8f8f","#ffe38f","#c7ff8f","#8fffab","#8fffff","#8fabff","#c78fff","#ff8fe3","#d97979","#d9c179","#a9d979","#79d991","#79d9d9","#7991d9","#a979d9","#d979c1","#d9a9a9","#d9cda9","#c1d9a9","#a9d9b5","#a9d9d9","#a9b5d9","#c1a9d9","#d9a9cd"],"supportsSlider":true,"currentTime":1308076144078,"savedRevisions":[],"initialPadContents":"sdfWelcsdfsdome to Etsdfherpad v1.1!ASdasdf\nsdASASdsdsad\nThisdfs paASDASd text isasdf synchrsdfonisdfzed as dsfyou typasdfe, so that everyonsde viewiasdng thasdfs page sees theADS same tdsext.  This allows you to collabasdforatessadf seamlaSDssly on documents!sddfsdf\n asdsdsd\nASdasdASDsddf\nsdaasdfsddsdfsdfsdf\nsdsfsd\n\n\nasdfsd\n\nasdf\nsda\nas\ns\nss\nss\na\nsd\n\nsd\nfsadf\nsd\nf\nsdf\nsadfs\nsdf\nsdf\nsf\nsdf\nsdffsd\nsdas\ndfsdf\n\n","padIdForUrl":"test"};*/
+
+  function createCookie(name,value,days) 
+  {
+	  if (days) {
+		  var date = new Date();
+		  date.setTime(date.getTime()+(days*24*60*60*1000));
+		  var expires = "; expires="+date.toGMTString();
+	  }
+	  else var expires = "";
+	  document.cookie = name+"="+value+expires+"; path=/";
+  }
+
+  function readCookie(name) 
+  {
+	  var nameEQ = name + "=";
+	  var ca = document.cookie.split(';');
+	  for(var i=0;i < ca.length;i++) {
+		  var c = ca[i];
+		  while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		  if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	  }
+	  return null;
+  }
+
+  function randomString() {
+	  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	  var string_length = 20;
+	  var randomstring = '';
+	  for (var i=0; i<string_length; i++) {
+		  var rnum = Math.floor(Math.random() * chars.length);
+		  randomstring += chars.substring(rnum,rnum+1);
+	  }
+	  return "t." + randomstring;
+  }
+
+  /*var padId, token;
+
+  $(document).ready(function() 
+  {
+    //find out the padId
+    var urlParts= document.URL.split("/");
+    padId = urlParts[urlParts.length-2];
+        
+    //set the title
+    document.title = document.title + " | " + padId;
+        
+    //ensure we have a token
+    token = readCookie("token");
+    if(token == null)
+    {
+      token = randomString();
+      createCookie("token", token, 60);
+    }
+    
+    //build up the socket io connection
+    socket = new io.Socket();
+    socket.connect();
+    
+    socket.on('connect', function(){
+      var msg = { "component" : "timeslider",
+                  "type":"CLIENT_READY", 
+                  "padId": padId,
+                  "token": token,
+                  "protocolVersion": 2};
+    
+      socket.send(msg);
+    });
+    
+    socket.on('message', function(message)
+    {
+      console.log(message);
+      clientVars = message.data;
+      initalizeWithClientVars();
+    })
+  });*/
+
+  $(window).load(function () 
+  {
+    var urlParts= document.URL.split("/");
+    var padId = urlParts[urlParts.length-2];
+        
+    //set the title
+    document.title = document.title + " | " + padId;
+        
+    //ensure we have a token
+    var token = readCookie("token");
+    if(token == null)
+    {
+      token = randomString();
+      createCookie("token", token, 60);
+    }
+    
+    //build up the socket io connection
+    var socket = new io.Socket();
+    socket.connect();
+    
+    socket.on('connect', function()
+    {
+      var msg = { "component" : "timeslider",
+                  "type":"CLIENT_READY", 
+                  "padId": padId,
+                  "token": token,
+                  "protocolVersion": 2};
+    
+      socket.send(msg);
+    });
+    
+    socket.on('message', function(message)
+    {
+      if(window.console) console.log(message);
+      
+      if(message.type == "CLIENT_VARS")
+      {
+        handleClientVars(message);
+      }
+    });
+    
+    //handleClientVars({data: clientVars});
+  });
+  
+  var fireWhenAllScriptsAreLoaded = [];
+  
+  function handleClientVars(message)
+  {
+    //save the client Vars
+    clientVars = message.data;
+    
+    loadBroadcastSliderJS();
+    loadBroadcastRevisionsJS();
+    loadBroadcastJS();
+    
+    for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
+    {
+      fireWhenAllScriptsAreLoaded[i]();
+    }
+    
+    /*var scriptsToLoad = 3;
+    
+    var loadCallback = function(info)
+    {
+      scriptsToLoad--;
+      
+      console.log(scriptsToLoad);
+      
+      if(scriptsToLoad == 1)
+      {
+        $.getScript('/static/js/broadcast.js', loadCallback);
+      }
+      
+      //if all scripts are loaded
+      if(scriptsToLoad == 0)
+      {
+        console.log("execute!");
+      
+        for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
+        {
+          fireWhenAllScriptsAreLoaded[i]();
+        }
+      }
+    }*/
+    
+    //$.getScript('/static/js/broadcast_slider.js', loadCallback);
+    //$.getScript('/static/js/broadcast_revisions.js', loadCallback);
+  }
+
+  // ]]>
+  </script>
+  <script type="text/javascript" src="/static/js/plugins.js"></script>
+  <script type="text/javascript" src="/static/js/undo-xpopup.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/static/js/json2.js"></script>
+  <script type="text/javascript" src="/static/js/colorutils.js"></script>
+  <script type="text/javascript" src="/static/js/draggable.js"></script>
+  <script type="text/javascript" src="/static/js/pad_utils.js"></script>
+  <script type="text/javascript" src="/static/js/pad_cookie.js"></script>
+  <script type="text/javascript" src="/static/js/pad_editor.js"></script>
+  <script type="text/javascript" src="/static/js/pad_editbar.js"></script>
+  <script type="text/javascript" src="/static/js/pad_docbar.js"></script>
+  <script type="text/javascript" src="/static/js/pad_modals.js"></script>
+  <script type="text/javascript" src="/static/js/easysync2_client.js"></script>
+  <script type="text/javascript" src="/static/js/domline_client.js"></script>
+  <script type="text/javascript" src="/static/js/linestylefilter_client.js"></script>
+  <script type="text/javascript" src="/static/js/cssmanager_client.js"></script>
+<script type="text/javascript" src="/static/js/broadcast.js">
+</script>
+  <script type="text/javascript" src="/static/js/broadcast_slider.js">
+</script>
+  <script type="text/javascript" src="/static/js/broadcast_revisions.js">
+</script>
+</head>
+
+<body id="padbody" class="timeslider limwidth nonpropad nonprouser">
+  <div id="padpage">
+    <div id="padtop">
+      <div class="topbar">
+        <div class="topbarleft">
+          <!-- -->
+        </div>
+
+        <div class="topbarright">
+          <!-- -->
+        </div>
+
+        <div class="topbarcenter">
+          <a href="/" class="topbarBrand">Etherpad v1.1</a> <a href="http://etherpad.org"
+          class="EtherpadLink">Etherpad is</a> <a href="/static/LICENSE" class=
+          "Licensing">free software</a>
+
+          <div class="fullscreen" onclick="$('body').toggleClass('maximized');">
+            Full screen
+          </div><a href="javascript:void(0);" onclick=
+          "$('body').toggleClass('maximized');" class="topbarmaximize" title=
+          "Toggle maximization"></a>
+        </div>
+
+        <div class="specialkeyarea">
+          <!-- -->
+        </div>
+      </div>
+
+      <div id="alertbar">
+        <div id="servermsg">
+          <h3>Server Notice<span id="servermsgdate"><!-- --></span>:</h3><a id=
+          "hidetopmsg" href="javascript:%20void%20pad.hideServerMessage()" name=
+          "hidetopmsg">hide</a>
+
+          <p id="servermsgtext"><!-- --></p>
+        </div>
+      </div>
+
+      <div id="navigation"></div>
+
+      <div id="docbar" class="menu docbar">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" id="docbartable"
+        class="docbartable">
+          <tr>
+            <td><img src="/static/img/roundcorner_left.gif" /></td>
+
+            <td id="docbarpadtitle" class="docbarpadtitle" title=
+            "Public Pad: Public Pad"><span>Public Pad</span></td>
+
+            <td width="100%">&nbsp;</td>
+
+            <td><img src="/static/img/roundcorner_right.gif" /></td>
+          </tr>
+        </table>
+      </div><!-- /docbar -->
+    </div>
+
+    <div id="timeslider-wrapper">
+      <div id="error" style="display: none">
+        It looks like you're having connection troubles. <a href=
+        "/ep/pad/view/test/latest">Reconnect now</a>.
+      </div>
+
+      <div id="timeslider" unselectable="on" style="display: none">
+        <div id="timeslider-left"></div>
+
+        <div id="timeslider-right"></div>
+
+        <div id="timer">
+          06/14/2011 19:29:04
+        </div>
+
+        <div id="timeslider-slider">
+          <div id="ui-slider-handle"></div>
+
+          <div id="ui-slider-bar"></div>
+        </div>
+
+        <div id="playpause_button">
+          <div id="playpause_button_icon" class=""></div>
+        </div>
+
+        <div id="steppers">
+          <div class="stepper" id="leftstar"></div>
+
+          <div class="stepper" id="rightstar"></div>
+
+          <div class="stepper" id="leftstep"></div>
+
+          <div class="stepper" id="rightstep"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!--<div id="rightbars" style="top: 95px;">
+      <div id="rightbar"><a href="/ep/pad/view/c6fg9GM51V/latest" id="viewlatest">Viewing latest content</a><br>
+      <a thref="/ep/pad/view/c6fg9GM51V/rev.%revision%" href="/ep/pad/view/c6fg9GM51V/rev.0" class="tlink">Link to this version</a>
+      <br><a thref="/ep/pad/view/ro.fw470Orpi4T/rev.%revision%" href="/ep/pad/view/ro.fw470Orpi4T/rev.0" class="tlink">Link to read-only page</a><br><a href="/c6fg9GM51V">Edit this pad</a>
+      <h2>Download as</h2>
+      <img src="/static/img/may09/html.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=html" href="/ep/pad/export/c6fg9GM51V/rev.0?format=html" class="tlink">HTML</a><br>
+      <img src="/static/img/may09/txt.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=txt" href="/ep/pad/export/c6fg9GM51V/rev.0?format=txt" class="tlink">Plain text</a><br>
+      <img src="/static/img/may09/doc.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=doc" href="/ep/pad/export/c6fg9GM51V/rev.0?format=doc" class="tlink">Microsoft Word</a><br>
+      <img src="/static/img/may09/pdf.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=pdf" href="/ep/pad/export/c6fg9GM51V/rev.0?format=pdf" class="tlink">PDF</a>
+
+
+      </div>
+      <div id="legend">
+      <h2>Authors</h2>
+      <table cellspacing="0" cellpadding="0" border="0" id="authorstable"><tbody><tr><td style="color:#999; padding-left: 10px" colspan="2">No Authors</td></tr></tbody></table>
+      </div>
+    </div>-->
+
+    <div id="padmain">
+      <div id="padeditor">
+        <div id="editbar" class="editbar disabledtoolbar">
+          <div id="editbarinner" class="editbarinner">
+            <div id="editbarleft" class="editbarleft">
+              <!-- -->
+            </div>
+
+            <div id="editbarright" class="editbarright">
+              <!-- -->
+            </div>
+
+            <div id="editbarinner" class="editbarinner">
+              <table cellpadding="0" cellspacing="0" border="0" id="editbartable" class=
+              "editbartable">
+                <tr>
+                  <td>
+                    <h1>Public Pad <span id="revision_label">Latest text of pad
+                    test</span> <span id="revision_date">Saved June 14, 2011</span></h1>
+                  </td>
+
+                  <td width="100%">&nbsp;</td>
+                </tr>
+              </table>
+
+              <table cellpadding="0" cellspacing="0" border="0" id="editbarsavetable"
+              class="editbarsavetable">
+                <tr>
+                  <td></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="editorcontainerbox">
+          <div id="padcontent">
+            
+          </div>
+        </div>
+      </div><!-- /padeditor -->
+    </div><!-- /padmain -->
+  </div><!-- /padpage -->
+
+  <div id="modaloverlay">
+    <div id="modaloverlay-inner">
+      <!-- -->
+    </div>
+  </div>
+
+  <div id="mainmodals"></div>
+</body>
+</html>
+

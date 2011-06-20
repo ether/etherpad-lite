@@ -90,6 +90,11 @@ Class('Pad', {
 			db.getSub("pad:"+this.id+":revs:"+revNum, ["meta", "author"], callback);
 		}, // getRevisionAuthor
 		
+		getRevisionDate : function(revNum, callback) 
+		{			
+			db.getSub("pad:"+this.id+":revs:"+revNum, ["meta", "timestamp"], callback);
+		}, // getRevisionAuthor
+		
 		getAllAuthors : function() 
 		{
 		  var authors = [];
@@ -103,6 +108,77 @@ Class('Pad', {
 		  }
 		  
 		  return authors;
+		},
+		
+		getInternalRevisionAText : function(targetRev, callback) 
+		{
+		  var _this = this;
+		
+		  var keyRev = this.getKeyRevisionNumber(targetRev);
+		  var atext; 
+		  var changesets = [];
+		  
+		  //find out which changesets are needed
+		  var neededChangesets = [];
+		  var curRev = keyRev;
+		  while (curRev < targetRev) 
+		  {
+        curRev++;
+        neededChangesets.push(curRev);
+      }
+		  
+		  async.series([
+		    //get all needed data out of the database
+		    function(callback)
+		    {
+		      async.parallel([
+		        //get the atext of the key revision
+		        function (callback)
+		        {
+		          db.getSub("pad:"+_this.id+":revs:"+keyRev, ["meta", "atext"], function(err, _atext)
+		          {
+		            atext = Changeset.cloneAText(_atext);
+		            callback(err);
+		          });
+		        },
+		        //get all needed changesets
+		        function (callback)
+		        {
+		          async.forEach(neededChangesets, function(item, callback)
+		          {
+		            _this.getRevisionChangeset(item, function(err, changeset)
+		            {
+		              changesets[item] = changeset;
+		              callback(err);
+		            });
+		          }, callback);
+		        }
+		      ], callback);
+		    },
+		    //apply all changesets to the key changeset
+		    function(callback)
+		    {		    
+          var apool = _this.apool();
+          var curRev = keyRev;
+          
+          while (curRev < targetRev) 
+          {
+            curRev++;
+            var cs = changesets[curRev];
+            atext = Changeset.applyToAText(cs, atext, apool);
+          }
+          
+          callback(null);
+		    }  
+		  ], function(err)
+		  {
+		    callback(err, atext);
+		  });
+		},
+		
+		getKeyRevisionNumber : function(revNum)
+		{
+		  return Math.floor(revNum / 100) * 100;
 		},
 		
 		text : function()

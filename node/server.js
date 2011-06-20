@@ -24,6 +24,7 @@ require('joose');
 
 var socketio = require('socket.io');
 var settings = require('./settings');
+var socketIORouter = require("./SocketIORouter");
 var db = require('./db');
 var async = require('async');
 var express = require('express');
@@ -83,6 +84,14 @@ async.waterfall([
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
+    //serve timeslider.html under /p/$padname/timeslider
+    app.get('/p/:pad/timeslider', function(req, res)
+    {
+      res.header("Server", serverName);
+      var filePath = path.normalize(__dirname + "/../static/timeslider.html");
+      res.sendfile(filePath, { maxAge: exports.maxAge });
+    });
+    
     //serve index.html under /
     app.get('/', function(req, res)
     {
@@ -113,44 +122,15 @@ async.waterfall([
 
     //init socket.io and redirect all requests to the MessageHandler
     var io = socketio.listen(app);
-    var messageHandler = require("./MessageHandler");
-    messageHandler.setSocketIO(io);
-    io.on('connection', function(client){
-      try{
-        messageHandler.handleConnect(client);
-      }catch(e){errorlog(e);}
-      
-      client.on('message', function(message){
-        try{
-          messageHandler.handleMessage(client, message);
-        }catch(e){errorlog(e);}
-      });
-
-      client.on('disconnect', function(){
-        try{
-          messageHandler.handleDisconnect(client);
-        }catch(e){errorlog(e);}
-      });
-    });
+    
+    var padMessageHandler = require("./PadMessageHandler");
+    var timesliderMessageHandler = require("./TimesliderMessageHandler");
+    
+    //Initalize the Socket.IO Router
+    socketIORouter.setSocketIO(io);
+    socketIORouter.addComponent("pad", padMessageHandler);
+    socketIORouter.addComponent("timeslider", timesliderMessageHandler);
     
     callback(null);  
   }
 ]);
-
-function errorlog(e)
-{
-  var timeStr = new Date().toUTCString() + ": ";
-
-  if(typeof e == "string")
-  {
-    console.error(timeStr + e);
-  }
-  else if(e.stack != null)
-  {
-    console.error(timeStr + e.stack);
-  }
-  else
-  {
-    console.error(timeStr + JSON.stringify(e));
-  }
-}
