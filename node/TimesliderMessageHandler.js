@@ -81,6 +81,7 @@ exports.handleMessage = function(client, message)
 
 function handleClientReady(client, message)
 {
+  //send the timeslider client the clientVars, with this values its able to start
   createTimesliderClientVars (message.padId, function(err, clientVars)
   {
     if(err) throw err;
@@ -89,6 +90,9 @@ function handleClientReady(client, message)
   })
 }
 
+/**
+ * Handles a request for a rough changeset, the timeslider client needs it 
+ */
 function handleChangesetRequest(client, message)
 {
   var granularity = message.data.granularity;
@@ -96,6 +100,7 @@ function handleChangesetRequest(client, message)
   var end = start + (100 * granularity);
   var padId = message.padId;
   
+  //build the requested rough changesets and send them back
   getChangesetInfo(padId, start, end, granularity, function(err, changesetInfo)
   {
     if(err) throw err;

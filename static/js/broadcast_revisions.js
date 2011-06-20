@@ -120,14 +120,3 @@ function loadBroadcastRevisionsJS()
     };
   }
 }
-
-  // revisionInfo.addChangeset(0, 5, "abcde")
-  // revisionInfo.addChangeset(5, 10, "fghij")
-  // revisionInfo.addChangeset(10, 11, "k")
-  // revisionInfo.addChangeset(11, 12, "l")
-  // revisionInfo.addChangeset(12, 13, "m")
-  // revisionInfo.addChangeset(13, 14, "n")
-  // revisionInfo.addChangeset(14, 15, "o")
-  // revisionInfo.addChangeset(15, 20, "pqrst")
-  //
-  // print (revisionInfo.getPath(15, 0))
