@@ -4,6 +4,7 @@
 
 #padcontent {
   padding: 10px;
+  font-size: 12px;
 }
 
 #timeslider-wrapper {
@@ -15,7 +16,7 @@
 
 #timeslider-left {
   position: absolute;
-  left:-2px;
+  left:0px;
   background-image: url(/static/img/timeslider_left.png);
   width: 134px;
   height: 63px;
@@ -24,7 +25,7 @@
 #timeslider-right {
   position: absolute;
   top:0px;
-  right:0px;
+  right:-2px;
   background-image: url(/static/img/timeslider_right.png);
   width: 155px;
   height: 63px;
@@ -266,9 +267,10 @@ top:30px;
 float:right;
 }
 
-#returnbutton{
-  width:100px;
-  height:28px;
-  margin-right:4px;
-  background:url("/static/img/timeslider_right.png"); /* im so lazy */
+#returnbutton
+{ 
+  font-size: 16px;
+  line-height: 29px;
+  margin-top: 0;
+  padding-right: 6pt;
 }

@@ -8,9 +8,8 @@
   <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
 
   <title>Etherpad Lite Timeslider</title>
-  <link href="/static/css/broadcast.css" rel="stylesheet" type="text/css" />
-<!-- javascript -->
   <link href="/static/css/pad_lite.css" rel="stylesheet" type="text/css" />
+  <link href="/static/css/broadcast.css" rel="stylesheet" type="text/css" />
   <style type="text/css" title="dynamicsyntax"></style>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
   <script type="text/javascript">
@@ -182,7 +181,6 @@
           <!-- -->
         </div>
       </div>
-
       <div id="alertbar">
         <div id="servermsg">
           <h3>Server Notice<span id="servermsgdate"><!-- --></span>:</h3><a id=
@@ -194,7 +192,7 @@
       </div>
 
       <div id="navigation"></div>
-
+      
       <div id="docbar" class="menu docbar">
         <table border="0" cellpadding="0" cellspacing="0" width="100%" id="docbartable"
         class="docbartable">
@@ -277,7 +275,7 @@
 
             <div id="editbarright" class="editbarright">
               <!-- termporary place holder--> 
-              <button id="returnbutton">Return to pad</button>
+              <a id = "returnbutton" href="javascript:document.location=document.location.href.substring(0,document.location.href.lastIndexOf('/timeslider'))">Return to pad</a>
             </div>
 
             <div id="editbarinner" class="editbarinner">
@@ -285,7 +283,7 @@
               "editbartable">
                 <tr>
                   <td>
-                    <h1>Public Pad <span id="revision_label">Latest text of pad
+                    <h1><span id="revision_label">Latest text of pad
                     test</span> <span id="revision_date">Saved June 14, 2011</span></h1>
                   </td>
 
