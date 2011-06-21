@@ -62,8 +62,13 @@ exports.setSocketIO = function(_socket)
       if(message.component && components[message.component])
       {
         console.error(message);
+
+				//check if component is registered in the components array        
+        if(components[message.component])
+        {
+                components[message.component].handleMessage(client, message);
+        }
         
-        components[message.component].handleMessage(client, message);
       }
       else
       {
