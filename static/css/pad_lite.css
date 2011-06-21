@@ -320,7 +320,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 #padmain {
   margin-top: 0px;
   position: absolute;
-  top: 0px;
+  top: 63px !important;
   left: 0px;
   right: 0px;
   bottom: 0px;

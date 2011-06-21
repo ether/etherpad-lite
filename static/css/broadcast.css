@@ -24,7 +24,7 @@
 #timeslider-right {
   position: absolute;
   top:0px;
-  right:-2px;
+  right:0px;
   background-image: url(/static/img/timeslider_right.png);
   width: 155px;
   height: 63px;
@@ -32,7 +32,7 @@
 
 
 #timeslider {
-  margin:7px;
+/*  margin:7px;*/
   margin-bottom: 0px;
   height: 63px;
   margin-left: 9px;
@@ -248,4 +248,27 @@ div #timeslider div#steppers div#rightstep {
   margin-top:3px;
   margin-right: 14px;
   border: rgb(149, 149, 149) 1px solid;
+}
+
+.topbarcenter{
+display:none;
+}
+
+#docbar{
+display:none;
+}
+
+#padmain{
+top:30px;
+}
+
+#editbarright{
+float:right;
+}
+
+#returnbutton{
+  width:100px;
+  height:28px;
+  margin-right:4px;
+  background:url("/static/img/timeslider_right.png"); /* im so lazy */
 }
