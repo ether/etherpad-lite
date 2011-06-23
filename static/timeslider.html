@@ -70,8 +70,7 @@
     }
     
     //build up the socket io connection
-    socket = new io.Socket();
-    socket.connect();
+    socket = io.connect();
     
     //send the ready message once we're connected
     socket.on('connect', function()
@@ -105,7 +104,7 @@
                 "token": token,
                 "protocolVersion": 2};
     
-    socket.send(msg);
+    socket.json.send(msg);
   }
   
   var fireWhenAllScriptsAreLoaded = [];

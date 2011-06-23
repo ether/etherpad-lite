@@ -60,7 +60,7 @@ function randomString() {
 
 function handshake()
 {
-  socket = new io.connect();
+  socket = io.connect();
 
   socket.on('connect', function(){
       var padId= document.URL.substring(document.URL.lastIndexOf("/")+1);
@@ -80,7 +80,7 @@ function handshake()
                   "token": token,
                   "protocolVersion": 2};
   
-      socket.send(msg);
+      socket.json.send(msg);
     });
     
     var receivedClientVars=false;
