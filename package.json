@@ -12,7 +12,7 @@
                       "ueberDB"    : "0.0.8",
                       "async"      : "0.1.9",
                       "joose"      : "3.18.0",
-                      "express"    : "2.3.10",
+                      "express"    : "2.3.12",
                       "clean-css"  : "0.2.4",
                       "uglify-js"  : "1.0.2",
                       "gzip"       : "0.1.0"
