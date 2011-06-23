@@ -20,14 +20,14 @@ Visit <http://pitapoison.de:9001> to test it live
 2. Install npm `curl http://npmjs.org/install.sh | sh`
 3. Ensure you have installed the sqlite develob libraries, gzip and git `apt-get install libsqlite3-dev gzip git-core`
 4. Clone the git repository `git clone 'git://github.com/Pita/etherpad-lite.git'`
-5. Install the dependencies `cd etherpad-lite && npm link`
+5. Install the dependencies `cd etherpad-lite && npm install`
 6. Start it with `bin/run.sh`
 7. Open your web browser and visit <http://localhost:9001>
 
 # Next Steps
 You can modify the settings in the file settings.json
 
-You can update to the latest version with `git pull origin && npm link`
+You can update to the latest version with `git pull origin && npm install`
 
 You can debug with `bin/runDebug.sh`
 

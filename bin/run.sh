@@ -34,6 +34,9 @@ if [ ! -f "settings.json" ]; then
   cp -v settings.json.template settings.json 
 fi
 
+echo "Ensure that all dependencies are up to date..."
+npm install
+
 #Remove all minified data to force node creating it new
 echo "Clear minfified cache..."
 rm var/minified* 2> /dev/null
