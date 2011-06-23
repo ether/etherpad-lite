@@ -48,7 +48,7 @@ exports.setSocketIO = function(_socket)
   //save this socket internaly
   socket = _socket;
   
-  socket.on('connection', function(client)
+  socket.sockets.on('connection', function(client)
   {
     //tell all components about this connect
     for(var i in components)

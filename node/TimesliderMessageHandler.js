@@ -86,7 +86,7 @@ function handleClientReady(client, message)
   {
     if(err) throw err;
     
-    client.send({type: "CLIENT_VARS", data: clientVars});
+    client.json.send({type: "CLIENT_VARS", data: clientVars});
   })
 }
 
@@ -108,7 +108,7 @@ function handleChangesetRequest(client, message)
     var data = changesetInfo;
     data.requestID = message.data.requestID;
     
-    client.send({type: "CHANGESET_REQ", data: data});
+    client.json.send({type: "CHANGESET_REQ", data: data});
   });
 }
 

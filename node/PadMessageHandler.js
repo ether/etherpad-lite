@@ -66,8 +66,8 @@ exports.handleConnect = function(client)
   throwExceptionIfClientOrIOisInvalid(client);
   
   //Initalize session2pad and sessioninfos for this new session
-  session2pad[client.sessionId]=null;  
-  sessioninfos[client.sessionId]={};
+  session2pad[client.id]=null;  
+  sessioninfos[client.id]={};
 }
 
 /**
@@ -80,12 +80,12 @@ exports.handleDisconnect = function(client)
   throwExceptionIfClientOrIOisInvalid(client);
   
   //save the padname of this session
-  var sessionPad=session2pad[client.sessionId];
+  var sessionPad=session2pad[client.id];
   
   //if this connection was already etablished with a handshake, send a disconnect message to the others
-  if(sessioninfos[client.sessionId].author)
+  if(sessioninfos[client.id].author)
   {
-    var author = sessioninfos[client.sessionId].author;
+    var author = sessioninfos[client.id].author;
   
     //get the author color out of the db
     authorManager.getAuthorColorId(author, function(err, color)
@@ -109,7 +109,7 @@ exports.handleDisconnect = function(client)
       //Go trough all user that are still on the pad, and send them the USER_LEAVE message
       for(i in pad2sessions[sessionPad])
       {
-        socketio.clients[pad2sessions[sessionPad][i]].send(messageToTheOtherUsers);
+        socketio.sockets.sockets[pad2sessions[sessionPad][i]].json.send(messageToTheOtherUsers);
       }
     }); 
   }
@@ -117,7 +117,7 @@ exports.handleDisconnect = function(client)
   //Go trough all sessions of this pad, search and destroy the entry of this client
   for(i in pad2sessions[sessionPad])
   {
-    if(pad2sessions[sessionPad][i] == client.sessionId)
+    if(pad2sessions[sessionPad][i] == client.id)
     {
       delete pad2sessions[sessionPad][i];  
       break;
@@ -125,8 +125,8 @@ exports.handleDisconnect = function(client)
   }
   
   //Delete the session2pad and sessioninfos entrys of this session
-  delete session2pad[client.sessionId]; 
-  delete sessioninfos[client.sessionId]; 
+  delete session2pad[client.id]; 
+  delete sessioninfos[client.id]; 
 }
 
 /**
@@ -184,13 +184,13 @@ function handleUserInfoUpdate(client, message)
   }
   
   //Find out the author name of this session
-  var author = sessioninfos[client.sessionId].author;
+  var author = sessioninfos[client.id].author;
   
   //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
   
-  var padId = session2pad[client.sessionId];
+  var padId = session2pad[client.id];
   
   //set a null name, when there is no name set. cause the client wants it null
   if(message.data.userInfo.name == null)
@@ -204,9 +204,9 @@ function handleUserInfoUpdate(client, message)
   //Send the other clients on the pad the update message
   for(i in pad2sessions[padId])
   {
-    if(pad2sessions[padId][i] != client.sessionId)
+    if(pad2sessions[padId][i] != client.id)
     {
-      socketio.clients[pad2sessions[padId][i]].send(message);
+      socketio.clients[pad2sessions[padId][i]].json.send(message);
     }
   }
 }
@@ -250,7 +250,7 @@ function handleUserChanges(client, message)
     //get the pad
     function(callback)
     {
-      padManager.getPad(session2pad[client.sessionId], function(err, value)
+      padManager.getPad(session2pad[client.id], function(err, value)
       {
         pad = value;
         callback(err);
@@ -312,7 +312,7 @@ function handleUserChanges(client, message)
         + Changeset.oldLen(changeset) + " to document of length " + prevText.length;
       }
         
-      var thisAuthor = sessioninfos[client.sessionId].author;
+      var thisAuthor = sessioninfos[client.id].author;
         
       pad.appendRevision(changeset, thisAuthor);
         
@@ -370,7 +370,7 @@ function handleUserChanges(client, message)
                 
               if(author == sessioninfos[session].author)
               {
-                socketio.clients[session].send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
+                socketio.sockets.sockets[session].json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
               }
               else
               {
@@ -380,7 +380,7 @@ function handleUserChanges(client, message)
                              apool: forWire.pool,
                              author: author}};        
                              
-                socketio.clients[session].send(wireMsg);
+                socketio.clients[session].json.send(wireMsg);
               }
               
               callback(null);
@@ -519,13 +519,13 @@ function handleClientReady(client, message)
         {
           if(sessioninfos[pad2sessions[message.padId][i]].author == author)
           {
-            socketio.clients[pad2sessions[message.padId][i]].send({disconnect:"doublelogin"});
+            socketio.clients[pad2sessions[message.padId][i]].json.send({disconnect:"doublelogin"});
           }
         }
       }
       
       //Save in session2pad that this session belonges to this pad
-      var sessionId=String(client.sessionId);
+      var sessionId=String(client.id);
       session2pad[sessionId] = message.padId;
       
       //check if there is already a pad2sessions entry, if not, create one
@@ -603,11 +603,11 @@ function handleClientReady(client, message)
       }
       
       //Send the clientVars to the Client
-      client.send(clientVars);
+      client.json.send(clientVars);
       
       //Save the revision and the author id in sessioninfos
-      sessioninfos[client.sessionId].rev = pad.getHeadRevisionNumber();
-      sessioninfos[client.sessionId].author = author;
+      sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+      sessioninfos[client.id].author = author;
       
       //prepare the notification for the other users on the pad, that this user joined
       var messageToTheOtherUsers = {
@@ -660,10 +660,10 @@ function handleClientReady(client, message)
           function (callback)
           {
             //Jump over, if this session is the connection session
-            if(sessionID != client.sessionId)
+            if(sessionID != client.id)
             {
               //Send this Session the Notification about the new user
-              socketio.clients[sessionID].send(messageToTheOtherUsers);
+              socketio.clients[sessionID].json.send(messageToTheOtherUsers);
             
               //Send the new User a Notification about this other user
               var messageToNotifyTheClientAboutTheOthers = {
@@ -679,7 +679,7 @@ function handleClientReady(client, message)
                   }
                 }
               };
-              client.send(messageToNotifyTheClientAboutTheOthers);
+              client.json.send(messageToNotifyTheClientAboutTheOthers);
             }
           }
         ], callback);        
