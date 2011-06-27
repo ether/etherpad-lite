@@ -58,7 +58,7 @@ exports.setSocketIO = function(_socket)
       
     client.on('message', function(message)
     {
-      if(!message.protocolVersion|| message.protocolVersion != 2)
+      if(message.protocolVersion && message.protocolVersion != 2)
       {
         console.error("Protocolversion header is not correct:" + JSON.stringify(message));
         return;
