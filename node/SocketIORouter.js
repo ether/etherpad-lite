@@ -58,6 +58,12 @@ exports.setSocketIO = function(_socket)
       
     client.on('message', function(message)
     {
+      if(!message.protocolVersion|| message.protocolVersion != 2)
+      {
+        console.error("Protocolversion header is not correct:" + JSON.stringify(message));
+        return;
+      }
+    
       //route this message to the correct component, if possible
       if(message.component && components[message.component])
       {
@@ -71,7 +77,7 @@ exports.setSocketIO = function(_socket)
       }
       else
       {
-        throw "Can't route the message:" + JSON.stringify(message);
+        console.error("Can't route the message:" + JSON.stringify(message));
       }
     });
 
