@@ -225,7 +225,7 @@ exports.padJS = function(req, res)
         pathStr = path.normalize(__dirname + "/../var/minified_pad.js");
       }
       
-      res.sendfile(pathStr, { maxAge: server.maxAge });
+      res.sendfile(pathStr);
     })
   }
   //minifying is disabled, so load the files with jquery
