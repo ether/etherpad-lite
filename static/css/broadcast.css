@@ -171,7 +171,7 @@ div #timeslider div#steppers div#rightstep {
 
 
 
-#rightbars {
+/*#rightbars {
   margin-left: 730px;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -220,10 +220,10 @@ div #timeslider div#steppers div#rightstep {
   color: rgb(50, 132, 213);
   text-decoration: none;
 }
+*/
 
 
-
-#legend {
+/*#legend {
   width: 143px;
   background-color: white;
   border: 1px solid rgb(194, 194, 194);
@@ -249,7 +249,7 @@ div #timeslider div#steppers div#rightstep {
   margin-top:3px;
   margin-right: 14px;
   border: rgb(149, 149, 149) 1px solid;
-}
+}*/
 
 .topbarcenter{
 display:none;
