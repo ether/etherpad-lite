@@ -75,16 +75,30 @@ async.waterfall([
     });
     
     //serve pad.html under /p
-    app.get('/p/:pad', function(req, res)
+    app.get('/p/:pad', function(req, res, next)
     {
+      //ensure the padname is valid and the url doesn't end with a /
+      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      {
+        next();
+        return;
+      }
+      
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/pad.html");
       res.sendfile(filePath);
     });
     
     //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', function(req, res)
+    app.get('/p/:pad/timeslider', function(req, res, next)
     {
+      //ensure the padname is valid and the url doesn't end with a /
+      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      {
+        next();
+        return;
+      }
+      
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/timeslider.html");
       res.sendfile(filePath);
@@ -132,3 +146,12 @@ async.waterfall([
     callback(null);  
   }
 ]);
+
+function isValidPadname(padname)
+{
+  //ensure there is no dollar sign in the pad name
+  if(padname.indexOf("$")!=-1)
+    return false;
+  
+  return true;
+}
