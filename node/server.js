@@ -32,6 +32,8 @@ var path = require('path');
 var minify = require('./minify');
 
 var serverName = "Etherpad-Lite ( http://j.mp/ep-lite )";
+//cache a week
+exports.maxAge = 1000*60*60*24*1;
 
 async.waterfall([
   //initalize the database
@@ -54,7 +56,7 @@ async.waterfall([
     { 
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/.." + req.url.split("?")[0]);
-      res.sendfile(filePath);
+      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve minified files
@@ -86,7 +88,7 @@ async.waterfall([
       
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/pad.html");
-      res.sendfile(filePath);
+      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve timeslider.html under /p/$padname/timeslider
@@ -101,7 +103,7 @@ async.waterfall([
       
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/timeslider.html");
-      res.sendfile(filePath);
+      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve index.html under /
@@ -109,7 +111,7 @@ async.waterfall([
     {
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/index.html");
-      res.sendfile(filePath);
+      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve robots.txt
@@ -117,7 +119,7 @@ async.waterfall([
     {
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/robots.txt");
-      res.sendfile(filePath);
+      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve favicon.ico
@@ -125,7 +127,7 @@ async.waterfall([
     {
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/favicon.ico");
-      res.sendfile(filePath);
+      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //let the server listen
