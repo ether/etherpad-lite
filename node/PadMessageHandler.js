@@ -470,6 +470,7 @@ function handleClientReady(client, message)
   var authorName;
   var authorColorId;
   var pad;
+  var historicalAuthorData = {};
 
   async.series([
     //get all authordata of this new user
@@ -509,6 +510,20 @@ function handleClientReady(client, message)
           }
         ], callback);
       });
+    },
+    function(callback)
+    {
+      var authors = pad.getAllAuthors();
+      
+      //get all author data out of the database
+      async.forEach(authors, function(authorId, callback)
+      {
+        authorManager.getAuthor(authorId, function(err, author)
+        {
+          historicalAuthorData[authorId] = author;
+          callback(err);
+        });
+      }, callback);
     },
     function(callback)
     {
@@ -556,7 +571,7 @@ function handleClientReady(client, message)
             "clientIp": (client.request && client.request.connection) ? client.request.connection.remoteAddress : "127.0.0.1",
             //"clientAgent": "Anonymous Agent",
             "padId": message.padId,
-            "historicalAuthorData": {},
+            "historicalAuthorData": historicalAuthorData,
             "apool": apool,
             "rev": pad.getHeadRevisionNumber(),
             "globalPadId": message.padId
@@ -570,7 +585,7 @@ function handleClientReady(client, message)
         "opts": {},
         "chatHistory": {
             "start": 0,
-            "historicalAuthorData": {},
+            "historicalAuthorData": historicalAuthorData,
             "end": 0,
             "lines": []
         },
@@ -590,16 +605,6 @@ function handleClientReady(client, message)
       if(authorName != null)
       {
         clientVars.userName = authorName;
-      }
-      
-      //Add all authors that worked on this pad, to the historicalAuthorData on clientVars
-      var allAuthors = pad.getAllAuthors();
-      for(i in allAuthors)
-      {
-        clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]] = {};
-        if(authorName != null)
-          clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]].name = authorName;
-        clientVars.collab_client_vars.historicalAuthorData[allAuthors[i]].colorId = authorColorId;
       }
       
       //Send the clientVars to the Client
