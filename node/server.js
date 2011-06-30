@@ -23,6 +23,7 @@
 require('joose');
 
 var socketio = require('socket.io');
+var fs = require('fs');
 var settings = require('./settings');
 var socketIORouter = require("./SocketIORouter");
 var db = require('./db');
@@ -31,7 +32,22 @@ var express = require('express');
 var path = require('path');
 var minify = require('./minify');
 
-var serverName = "Etherpad-Lite ( http://j.mp/ep-lite )";
+//try to get the git version
+var version = "";
+try
+{
+  var ref = fs.readFileSync("../.git/HEAD", "utf-8");
+  var refPath = "../.git/" + ref.substring(5, ref.indexOf("\n"));
+  version = fs.readFileSync(refPath, "utf-8");
+  version = version.substring(0, 8);
+}
+catch(e) 
+{
+  console.error("Can't get git version for server header\n" + e.message)
+}
+
+var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
+
 //cache a week
 exports.maxAge = 1000*60*60*6;
 
