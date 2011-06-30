@@ -100,7 +100,10 @@ var clientVars = {};  // ]]>
 </li>
 
 <li>
-  <a href="javascript:document.location = document.location+ '/timeslider'" title="Show the history of this pad">
+  <a id="timesliderlink" title="Show the history of this pad">
+    <script>
+      $("#timesliderlink").attr("href", document.location+ '/timeslider');
+    </script>
     <img src="/static/img/editbar_timeslider.gif" />
   </a>
 </li>
