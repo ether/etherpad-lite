@@ -33,7 +33,7 @@ var minify = require('./minify');
 
 var serverName = "Etherpad-Lite ( http://j.mp/ep-lite )";
 //cache a week
-exports.maxAge = 1000*60*60*24*1;
+exports.maxAge = 1000*60*60*6;
 
 async.waterfall([
   //initalize the database
