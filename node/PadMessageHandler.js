@@ -145,7 +145,7 @@ exports.handleMessage = function(client, message)
   }
   if(!message.type)
   {
-    throw "Message have no type attribute!";
+    throw "Message has no type attribute!";
   }
   
   //Check what type of message we get and delegate to the other methodes
@@ -163,10 +163,46 @@ exports.handleMessage = function(client, message)
   {
     handleUserInfoUpdate(client, message);
   }
+  else if(message.type == "COLLABROOM" && 
+          message.data.type == "CLIENT_MESSAGE" &&
+          message.data.payload.type == "suggestUserName")
+  {
+    handleSuggestUserName(client, message);
+  }
   //if the message type is unkown, throw an exception
   else
   {
     throw "unkown Message Type: '" + message.type + "'";
+  }
+}
+
+/**
+ * Handles a handleSuggestUserName, that means a user have suggest a userName for a other user
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
+function handleSuggestUserName(client, message)
+{
+  //check if all ok
+  if(message.data.payload.newName == null)
+  {
+    throw "suggestUserName Message has no newName!";
+  }
+  if(message.data.payload.unnamedId == null)
+  {
+    throw "suggestUserName Message has no unnamedId!";
+  }
+  
+  var padId = session2pad[client.sessionId];
+  
+  //search the author and send him this message
+  for(var i in pad2sessions[padId])
+  {
+    if(sessioninfos[pad2sessions[padId][i]].author == message.data.payload.unnamedId)
+    {
+      socketio.clients[pad2sessions[padId][i]].send(message);
+      break;
+    }
   }
 }
 
@@ -180,7 +216,7 @@ function handleUserInfoUpdate(client, message)
   //check if all ok
   if(message.data.userInfo.colorId == null)
   {
-    throw "USERINFO_UPDATE Message have no colorId!";
+    throw "USERINFO_UPDATE Message has no colorId!";
   }
   
   //Find out the author name of this session
@@ -202,7 +238,7 @@ function handleUserInfoUpdate(client, message)
   message.data.type = "USER_NEWINFO";
   
   //Send the other clients on the pad the update message
-  for(i in pad2sessions[padId])
+  for(var i in pad2sessions[padId])
   {
     if(pad2sessions[padId][i] != client.sessionId)
     {
@@ -228,15 +264,15 @@ function handleUserChanges(client, message)
   //check if all ok
   if(message.data.baseRev == null)
   {
-    throw "USER_CHANGES Message have no baseRev!";
+    throw "USER_CHANGES Message has no baseRev!";
   }
   if(message.data.apool == null)
   {
-    throw "USER_CHANGES Message have no apool!";
+    throw "USER_CHANGES Message has no apool!";
   }
   if(message.data.changeset == null)
   {
-    throw "USER_CHANGES Message have no changeset!";
+    throw "USER_CHANGES Message has no changeset!";
   }
   
   //get all Vars we need
@@ -451,19 +487,19 @@ function handleClientReady(client, message)
   //check if all ok
   if(!message.token)
   {
-    throw "CLIENT_READY Message have no token!";
+    throw "CLIENT_READY Message has no token!";
   }
   if(!message.padId)
   {
-    throw "CLIENT_READY Message have no padId!";
+    throw "CLIENT_READY Message has no padId!";
   }
   if(!message.protocolVersion)
   {
-    throw "CLIENT_READY Message have no protocolVersion!";
+    throw "CLIENT_READY Message has no protocolVersion!";
   }
   if(message.protocolVersion != 2)
   {
-    throw "CLIENT_READY Message have a unkown protocolVersion '" + message.protocolVersion + "'!";
+    throw "CLIENT_READY Message has a unkown protocolVersion '" + message.protocolVersion + "'!";
   }
 
   var author;
