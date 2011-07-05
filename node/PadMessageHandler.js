@@ -193,7 +193,7 @@ function handleSuggestUserName(client, message)
     throw "suggestUserName Message has no unnamedId!";
   }
   
-  var padId = session2pad[client.sessionId];
+  var padId = session2pad[client.id];
   
   //search the author and send him this message
   for(var i in pad2sessions[padId])
@@ -704,7 +704,7 @@ function handleClientReady(client, message)
             if(sessionID != client.id)
             {
               //Send this Session the Notification about the new user
-              socketio.clients[sessionID].json.send(messageToTheOtherUsers);
+              socketio.sockets.sockets[sessionID].json.send(messageToTheOtherUsers);
             
               //Send the new User a Notification about this other user
               var messageToNotifyTheClientAboutTheOthers = {
