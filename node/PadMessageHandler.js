@@ -570,7 +570,7 @@ function handleClientReady(client, message)
         {
           if(sessioninfos[pad2sessions[message.padId][i]].author == author)
           {
-            socketio.clients[pad2sessions[message.padId][i]].json.send({disconnect:"doublelogin"});
+            socketio.sockets.sockets[pad2sessions[message.padId][i]].json.send({disconnect:"doublelogin"});
           }
         }
       }
