@@ -19,7 +19,6 @@
 var clientVars = {};  // ]]>
 </script>
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
 <!--<script type="text/javascript" src="/static/js/plugins.js"></script>
@@ -100,7 +99,10 @@ var clientVars = {};  // ]]>
 </li>
 
 <li>
-  <a href="javascript:document.location = document.location+ '/timeslider'" title="Show the history of this pad">
+  <a id="timesliderlink" title="Show the history of this pad">
+    <script>
+      $("#timesliderlink").attr("href", document.location+ '/timeslider');
+    </script>
     <img src="/static/img/editbar_timeslider.gif" />
   </a>
 </li>

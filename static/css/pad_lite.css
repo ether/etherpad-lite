@@ -22,7 +22,7 @@ body, textarea { font-family: Helvetica, Arial, sans-serif; }
   border-radius: 6px; 
 }
 
-#sharebutton {
+/*#sharebutton {
   background: url(static/img/inviteshare2.gif) no-repeat 0 -31px;
   position: relative;
   display: block; 
@@ -31,7 +31,7 @@ body, textarea { font-family: Helvetica, Arial, sans-serif; }
   height: 0; overflow: hidden; width: 96px;
   left:50%;
   margin-left: -48px;
-}
+}*/
 
 
 a img
@@ -193,20 +193,17 @@ a#backtoprosite { padding-left: 20px; left: 6px;
   background: url(static/img/protop.gif) no-repeat -5px -6px; }
 #accountnav { right: 30px; color: #fff; }
   
-#topbarcenter { margin-left: 150px; margin-right: 150px; text-align:center;}
+/*#topbarcenter { margin-left: 150px; margin-right: 150px; text-align:center;}
 a#topbaretherpad { margin-left: auto; margin-right: auto; display: block; width: 103px;
   position: relative; top: 3px; height: 0; padding-top: 20px;
-/*  background: url(static/img/padtop5.gif) no-repeat -397px -3px; overflow: hidden; */
-}
+}*/
 
 
-#topbarBrand {font-size:2.1em; color: white; font-weight: bold; text-decoration: none; text-align: center;}
-
-
+/*#topbarBrand {font-size:2.1em; color: white; font-weight: bold; text-decoration: none; text-align: center;}
 
 #EtherpadLink {font-size: 1.2em; color: white;float:left;margin-left:-140px;margin-top:4px; text-decoration: none;  }
 #Licensing {font-size: 1.2em; color: white;float:left;margin-top:4px;margin-left:-75px; text-decoration: none;  }
-#fullscreen {font-size: 1.2em; color: white;float:right;margin-top:4px;margin-right:-120px; text-decoration: none;  }
+#fullscreen {font-size: 1.2em; color: white;float:right;margin-top:4px;margin-right:-120px; text-decoration: none;  }*/
 
 .propad a#topbaretherpad { background: url(static/img/protop.gif) no-repeat -397px -3px; }
 
@@ -361,7 +358,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   white-space: nowrap;
 }
 
-.editbarbutton
+/*.editbarbutton
 {
   border-top: 1px solid #8b9eba;
   border-bottom: 1px solid #8b9eba;
@@ -386,21 +383,21 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   position: relative;
   top: 1px;
   left: 1px;
-}
+}*/
 
-.editbargroupsfirst
+/*.editbargroupsfirst
 {
   border-left-width: 0px !important;
-}
+}*/
 
-#editbar #syncstatussyncing { position: absolute; height: 26px; width: 26px;
+/*#editbar #syncstatussyncing { position: absolute; height: 26px; width: 26px;
   background: url(static/img/syncing2.gif) no-repeat center center;
   right: 38px; top: 5px; display: none; }
 #editbar #syncstatusdone { position: absolute; height: 26px; width: 26px;
   background: url(static/img/syncdone.gif) no-repeat center center;
-  right: 38px; top: 5px; display: none; }
+  right: 38px; top: 5px; display: none; }*/
 
-#padsidebar { 
+/*#padsidebar { 
   bottom: 0px;
   position: absolute;
   right: 0;
@@ -409,7 +406,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   overflow: hidden;
   z-index: 11;
 }
-.hidesidebar #padsidebar { width: 0; overflow: hidden; }
+.hidesidebar #padsidebar { width: 0; overflow: hidden; }*/
 
 #myswatchbox { position: absolute; left: 5px; top: 5px; width: 22px; height: 22px;
   /*border-top: 1px solid #c3cfe0; border-left: 1px solid #c3cfe0;
@@ -504,12 +501,12 @@ table#otheruserstable { display: none; }
   top: 5px; width: 95px; }
 .guestpolicystuff { display: none; }*/
 
-.guestprompt { border: 1px solid #ccc; font-size: 1.2em;
+/*.guestprompt { border: 1px solid #ccc; font-size: 1.2em;
   padding: 5px; color: #222; background: #ffc; }
 .guestprompt .choices { float: right; }
-.guestprompt a { margin: 0 0.5em; }
+.guestprompt a { margin: 0 0.5em; }*/
 
-#chattop { background: #ecf2fa; padding: 5px; font-size: 1.2em; border-bottom: 1px solid #ddd; }
+/*#chattop { background: #ecf2fa; padding: 5px; font-size: 1.2em; border-bottom: 1px solid #ddd; }
 #chattop a { color: #36b; }
 #chatlines .chatline { color: #444; padding-left: 5px; padding-top: 2px; padding-bottom: 2px;
   background: #ddd; overflow: hidden; }
@@ -527,13 +524,13 @@ table#otheruserstable { display: none; }
 #padchat a#chatloadmore { display: none; font-size: 1.2em; padding: 2px 5px; font-style: italic; }
 #padchat #chatloadingmore { display: none; font-size: 1.2em; padding: 2px 5px; font-style: italic;
   color: #999; }
-#padchat a#chatloadmore:focus { outline: 0; }
+#padchat a#chatloadmore:focus { outline: 0; }*/
 
-#djs { font-family: monospace;  font-size: 10pt;
+/*#djs { font-family: monospace;  font-size: 10pt;
   height: 200px;  overflow: auto; border: 1px solid #ccc;
   background: #fee; margin: 0; padding: 6px;
 }
-#djs p { margin: 0; padding: 0; display: block; }
+#djs p { margin: 0; padding: 0; display: block; }*/
 
 .modaldialog.cboxreconnecting .modaldialog-inner,
 .modaldialog.cboxconnecting .modaldialog-inner {
@@ -635,14 +632,14 @@ table#otheruserstable { display: none; }
 
 /* We don't ever actually hide the wrapper, even when the panel is
    cloased, so that its contents can always be manipulated accurately. */
-.dbpanel-wrapper { position: absolute;
-  overflow: hidden; /* animated: */ height: 0; top: 25px; /* /animated */
+/*.dbpanel-wrapper { position: absolute;
+  overflow: hidden; height: 0; top: 25px; 
   z-index: 51; zoom: 1; }
 .dbpanel-panel { position: absolute; bottom: 0; width: 100%; }
 
 .dbpanel-middle { margin-left: 7px; margin-right: 7px;
   position: relative; height: 100%; overflow: hidden; zoom: 1; }
-.dbpanel-inner { background: #f7f7f7 /* covered up by images */;
+.dbpanel-inner { background: #f7f7f7 ;
   width: 100%; height: 100%; position: absolute; overflow: hidden; top: -10px; }
 
 .dbpanel-top { position: absolute; top: 0; width: 100%;
@@ -655,10 +652,10 @@ table#otheruserstable { display: none; }
   background-position: left top;
 }
 
-* html .dbpanel-top, * html .dbpanel-bottom { /* for IE 6+ */
+* html .dbpanel-top, * html .dbpanel-bottom { 
   background-color: transparent;
   background-image: url(static/img/apr09/blank.gif);
-  /* scale the image instead of repeating, but it amounts to the same */
+  
   filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="static/img/docpanelmiddle2.png", sizingMethod="scale");
 }
 
@@ -681,12 +678,12 @@ table#otheruserstable { display: none; }
 * html .dbpanel-leftedge, * html .dbpanel-rightedge, * html .dbpanel-botleftcorner, * html .dbpanel-botrightcorner {
   background-color: transparent;
   background-image: url(static/img/apr09/blank.gif);
-  /* crop the image */
+  
   filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="static/img/docpaneledge2.png", sizingMethod="crop");
 }
 * html .dbpanel-leftedge, * html .dbpanel-botleftcorner { left: -7px;  width: 14px; }
-
-#impexp-importlabel { position: absolute; top: 5px; left: 10px; width: 300px; }
+*/
+/*#impexp-importlabel { position: absolute; top: 5px; left: 10px; width: 300px; }
 
 #importform { position: absolute; top: 24px; left: 5px; width: 300px; height: 60px; }
 #importformsubmitdiv, #importformfilediv { padding: 5px 5px; }
@@ -703,7 +700,7 @@ table#otheruserstable { display: none; }
 #importexport #importmessagesuccess { margin: 0 20px; }
 #importexport a.disabledexport {
   color: #333; text-decoration: none;
-  opacity: 0.5; filter: alpha(opacity = 50) /*IE*/;
+  opacity: 0.5; filter: alpha(opacity = 50) ;
 }
 #importexport #importfileinput { padding: 2px 0; }
 #importexport #importsubmitinput { padding: 2px; }
@@ -712,7 +709,7 @@ table#otheruserstable { display: none; }
   background: #ddd; }
 #impexp-close { display: block; position: absolute; right: 2px; bottom: 15px;
   width: auto; height: auto; font-size: 85%; color: #444;
-  z-index: 61 /* > clickcatcher */}
+  z-index: 61}
 #impexp-disabled-clickcatcher {
   display: none;
   position: absolute; width: 100%; height: 100%;
@@ -721,7 +718,7 @@ table#otheruserstable { display: none; }
 
 #impexp-exportlabel { position: absolute; top: 5px; left: 350px;
   width: 300px; }
-#exportlinks .exportlink {
+  #exportlinks .exportlink {
   display: block; position: absolute; height: 22px; width: auto;
   background-repeat: no-repeat;
   background-image: url(static/img/fileicons.gif);
@@ -759,7 +756,7 @@ table#otheruserstable { display: none; }
   width: auto; height: 100%; overflow: hidden; position: relative;
 }
 #savedrevs-scrollinner { position: absolute; width: 1px; height: 100%;
-  overflow: visible; right: 0/*...initially*/; top: 0; }
+  overflow: visible; right: 0; top: 0; }
 #savedrevisions .srouterbox { width: 120px; height: 100%;
   position: absolute; top: 0;
 }
@@ -767,10 +764,10 @@ table#otheruserstable { display: none; }
   height: 59px; width: auto; border-left: 1px solid #ddd;
   padding: 0 8px 0 8px; }
 #savedrevisions a.srname { display: block; white-space: nowrap;
-  text-overflow: ellipsis /*no FF support*/; overflow: hidden;
+  text-overflow: ellipsis ; overflow: hidden;
   text-decoration: none; color: #444; cursor: text;
   padding: 1px; height: 14px;  position: relative; left: -1px;
-  width: 100px /*specify for proper overflow in IE*/;
+  width: 100px ;
 }
 #savedrevisions a.srname:hover { text-decoration: none; color: #444;
   border: 1px solid #ccc; padding: 0; }
@@ -782,7 +779,7 @@ table#otheruserstable { display: none; }
 #savedrevisions .srtime { color: #666; font-size: 90%;
  white-space: nowrap; margin-top: 3px; }
 #savedrevisions .srauthor { color: #666; font-size: 90%;
- white-space: nowrap; overflow: hidden; text-overflow: ellipsis /*no FF*/;
+ white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 #savedrevisions .srtwirly { position: absolute; display: block;
   bottom: 0; right: 10px; display: none; }
@@ -797,7 +794,7 @@ table#otheruserstable { display: none; }
 #savedrevs-savenow:active { background-position: 0 -24px; }
 #savedrevs-close { display: block; position: absolute; right: 7px; bottom: 8px;
   width: auto; height: auto; font-size: 85%; color: #444; }
-form#reconnectform { display: none; }
+form#reconnectform { display: none; }*/
 
 #padoptions { position: absolute; top: 0; left: 0; font-size: 1.2em;
   color: #444; height: 100%; width: 100%; line-height: 15px; }
@@ -817,7 +814,7 @@ form#reconnectform { display: none; }
 #options-close { display: block; position: absolute; right: 7px; bottom: 8px;
   width: auto; height: auto; font-size: 85%; color: #444; }
 
-#padsecurity { position: absolute; top: 0; left: 0; font-size: 1.1em;
+/*#padsecurity { position: absolute; top: 0; left: 0; font-size: 1.1em;
   color: #444; height: 100%; width: 100%; line-height: 15px; }
 #security-close { display: block; position: absolute; right: 7px; bottom: 8px;
   width: auto; height: auto; font-size: 85%; color: #444; }
@@ -856,7 +853,7 @@ form#reconnectform { display: none; }
 #access-public, #access-public-label { top: 60px; }
 #security-access label { color: #999;  }
 #security-access label strong { font-weight: normal; padding-right: 10px;
-  color: #444; }
+  color: #444; }*/
 
 #mainmodals { z-index: 600; /* higher than the modals themselves
                                so that modals are on top in IE */ }
@@ -865,10 +862,10 @@ form#reconnectform { display: none; }
 #mainmodals .editempty { color: #aaa; }
 
 
-#feedbackbox {
+/*#feedbackbox {
   position: absolute; display: none;
   width: 400px; height: 270px;
-  left: 100px/*set in code*/; bottom: 50px;
+  left: 100px ; bottom: 50px;
   z-index: 501; zoom: 1;
 }
 #feedbackbox-tl, #feedbackbox-tr, #feedbackbox-bl, #feedbackbox-br,
@@ -914,7 +911,7 @@ form#reconnectform { display: none; }
 #feedbackbox li a:hover { background: #ffe; }
 #feedbackbox a, #feedbackbox li a:visited { color: #47b; }
 #feedbackbox tt { font-size: 110%; }
-
+*/
 .expand-collapse {
   height: 22px;
   background-image: url(static/img/sharedistri.gif);
@@ -1142,7 +1139,7 @@ ul#colorpickerswatches li:hover
   cursor: pointer;
 }
 
-.user{
+/*.user{
 border: 1px solid #BBBBBB;
 padding-left:2px;
 padding-right:2px;
@@ -1182,4 +1179,4 @@ color:#000;
 padding-left:4px;
 padding-right:4px;
 padding-top:2px;
-}
+}*/

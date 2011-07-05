@@ -23,6 +23,7 @@
 require('joose');
 
 var socketio = require('socket.io');
+var fs = require('fs');
 var settings = require('./settings');
 var socketIORouter = require("./SocketIORouter");
 var db = require('./db');
@@ -31,9 +32,24 @@ var express = require('express');
 var path = require('path');
 var minify = require('./minify');
 
-var serverName = "Etherpad-Lite ( http://j.mp/ep-lite )";
+//try to get the git version
+var version = "";
+try
+{
+  var ref = fs.readFileSync("../.git/HEAD", "utf-8");
+  var refPath = "../.git/" + ref.substring(5, ref.indexOf("\n"));
+  version = fs.readFileSync(refPath, "utf-8");
+  version = version.substring(0, 8);
+}
+catch(e) 
+{
+  console.error("Can't get git version for server header\n" + e.message)
+}
+
+var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
+
 //cache a week
-exports.maxAge = 1000*60*60*24*1;
+exports.maxAge = 1000*60*60*6;
 
 async.waterfall([
   //initalize the database
@@ -77,16 +93,30 @@ async.waterfall([
     });
     
     //serve pad.html under /p
-    app.get('/p/:pad', function(req, res)
+    app.get('/p/:pad', function(req, res, next)
     {
+      //ensure the padname is valid and the url doesn't end with a /
+      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      {
+        next();
+        return;
+      }
+      
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/pad.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', function(req, res)
+    app.get('/p/:pad/timeslider', function(req, res, next)
     {
+      //ensure the padname is valid and the url doesn't end with a /
+      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      {
+        next();
+        return;
+      }
+      
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/timeslider.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
@@ -134,3 +164,12 @@ async.waterfall([
     callback(null);  
   }
 ]);
+
+function isValidPadname(padname)
+{
+  //ensure there is no dollar sign in the pad name
+  if(padname.indexOf("$")!=-1)
+    return false;
+  
+  return true;
+}
