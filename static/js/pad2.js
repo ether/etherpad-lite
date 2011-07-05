@@ -60,7 +60,16 @@ function randomString() {
 
 function handshake()
 {
-  socket = io.connect();
+  var loc = document.location;
+  //get the correct port
+  var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
+  //create the url
+  var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
+  //find out in which subfolder we are
+  var resource = loc.pathname.substring(0,loc.pathname.indexOf("/p/")) + "/socket.io";
+  
+  //connect
+  socket = io.connect(url, {resource: resource});
 
   socket.on('connect', function(){
       var padId= document.URL.substring(document.URL.lastIndexOf("/")+1);

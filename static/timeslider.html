@@ -8,10 +8,10 @@
   <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
 
   <title>Etherpad Lite Timeslider</title>
-  <link href="/static/css/pad_lite.css" rel="stylesheet" type="text/css" />
-  <link href="/static/css/broadcast.css" rel="stylesheet" type="text/css" />
+  <link href="../../static/css/pad_lite.css" rel="stylesheet" type="text/css" />
+  <link href="../../static/css/broadcast.css" rel="stylesheet" type="text/css" />
   <style type="text/css" title="dynamicsyntax"></style>
-  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+  <script type="text/javascript" src="../../static/js/jquery.min.js"></script>
   <script type="text/javascript">
 // <![CDATA[
   var clientVars = {};
@@ -69,8 +69,16 @@
       createCookie("token", token, 60);
     }
     
+    var loc = document.location;
+    //get the correct port
+    var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
+    //create the url
+    var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
+    //find out in which subfolder we are
+    var resource = loc.pathname.substring(0,loc.pathname.indexOf("/p/")) + "/socket.io";
+    
     //build up the socket io connection
-    socket = io.connect();
+    socket = io.connect(url, {resource: resource});
     
     //send the ready message once we're connected
     socket.on('connect', function()
@@ -128,27 +136,25 @@
 
   // ]]>
   </script>
-  <script type="text/javascript" src="/static/js/plugins.js"></script>
-  <script type="text/javascript" src="/static/js/undo-xpopup.js"></script>
-  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-  <script type="text/javascript" src="/static/js/json2.js"></script>
-  <script type="text/javascript" src="/static/js/colorutils.js"></script>
-  <script type="text/javascript" src="/static/js/draggable.js"></script>
-  <script type="text/javascript" src="/static/js/pad_utils.js"></script>
-  <script type="text/javascript" src="/static/js/pad_cookie.js"></script>
-  <script type="text/javascript" src="/static/js/pad_editor.js"></script>
-  <script type="text/javascript" src="/static/js/pad_editbar.js"></script>
-  <script type="text/javascript" src="/static/js/pad_docbar.js"></script>
-  <script type="text/javascript" src="/static/js/pad_modals.js"></script>
-  <script type="text/javascript" src="/static/js/easysync2_client.js"></script>
-  <script type="text/javascript" src="/static/js/domline_client.js"></script>
-  <script type="text/javascript" src="/static/js/linestylefilter_client.js"></script>
-  <script type="text/javascript" src="/static/js/cssmanager_client.js"></script>
-<script type="text/javascript" src="/static/js/broadcast.js">
-</script>
-  <script type="text/javascript" src="/static/js/broadcast_slider.js">
-</script>
-  <script type="text/javascript" src="/static/js/broadcast_revisions.js">
+  <script type="text/javascript" src="../../static/js/plugins.js"></script>
+  <script type="text/javascript" src="../../static/js/undo-xpopup.js"></script>
+  <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="../../static/js/json2.js"></script>
+  <script type="text/javascript" src="../../static/js/colorutils.js"></script>
+  <script type="text/javascript" src="../../static/js/draggable.js"></script>
+  <script type="text/javascript" src="../../static/js/pad_utils.js"></script>
+  <script type="text/javascript" src="../../static/js/pad_cookie.js"></script>
+  <script type="text/javascript" src="../../static/js/pad_editor.js"></script>
+  <script type="text/javascript" src="../../static/js/pad_editbar.js"></script>
+  <script type="text/javascript" src="../../static/js/pad_docbar.js"></script>
+  <script type="text/javascript" src="../../static/js/pad_modals.js"></script>
+  <script type="text/javascript" src="../../static/js/easysync2_client.js"></script>
+  <script type="text/javascript" src="../../static/js/domline_client.js"></script>
+  <script type="text/javascript" src="../../static/js/linestylefilter_client.js"></script>
+  <script type="text/javascript" src="../../static/js/cssmanager_client.js"></script>
+  <script type="text/javascript" src="../../static/js/broadcast.js"></script>
+  <script type="text/javascript" src="../../static/js/broadcast_slider.js"></script>
+  <script type="text/javascript" src="../../static/js/broadcast_revisions.js">
 </script>
 </head>
 
@@ -166,7 +172,7 @@
 
         <div class="topbarcenter">
           <a href="/" class="topbarBrand">Etherpad v1.1</a> <a href="http://etherpad.org"
-          class="EtherpadLink">Etherpad is</a> <a href="/static/LICENSE" class=
+          class="EtherpadLink">Etherpad is</a> <a href="../../static/LICENSE" class=
           "Licensing">free software</a>
 
           <div class="fullscreen" onclick="$('body').toggleClass('maximized');">
@@ -196,14 +202,14 @@
         <table border="0" cellpadding="0" cellspacing="0" width="100%" id="docbartable"
         class="docbartable">
           <tr>
-            <td><img src="/static/img/roundcorner_left.gif" /></td>
+            <td><img src="../../static/img/roundcorner_left.gif" /></td>
 
             <td id="docbarpadtitle" class="docbarpadtitle" title=
             "Public Pad: Public Pad"><span>Public Pad</span></td>
 
             <td width="100%">&nbsp;</td>
 
-            <td><img src="/static/img/roundcorner_right.gif" /></td>
+            <td><img src="../../static/img/roundcorner_right.gif" /></td>
           </tr>
         </table>
       </div><!-- /docbar -->
@@ -251,10 +257,10 @@
       <a thref="/ep/pad/view/c6fg9GM51V/rev.%revision%" href="/ep/pad/view/c6fg9GM51V/rev.0" class="tlink">Link to this version</a>
       <br><a thref="/ep/pad/view/ro.fw470Orpi4T/rev.%revision%" href="/ep/pad/view/ro.fw470Orpi4T/rev.0" class="tlink">Link to read-only page</a><br><a href="/c6fg9GM51V">Edit this pad</a>
       <h2>Download as</h2>
-      <img src="/static/img/may09/html.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=html" href="/ep/pad/export/c6fg9GM51V/rev.0?format=html" class="tlink">HTML</a><br>
-      <img src="/static/img/may09/txt.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=txt" href="/ep/pad/export/c6fg9GM51V/rev.0?format=txt" class="tlink">Plain text</a><br>
-      <img src="/static/img/may09/doc.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=doc" href="/ep/pad/export/c6fg9GM51V/rev.0?format=doc" class="tlink">Microsoft Word</a><br>
-      <img src="/static/img/may09/pdf.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=pdf" href="/ep/pad/export/c6fg9GM51V/rev.0?format=pdf" class="tlink">PDF</a>
+      <img src="../../static/img/may09/html.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=html" href="/ep/pad/export/c6fg9GM51V/rev.0?format=html" class="tlink">HTML</a><br>
+      <img src="../../static/img/may09/txt.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=txt" href="/ep/pad/export/c6fg9GM51V/rev.0?format=txt" class="tlink">Plain text</a><br>
+      <img src="../../static/img/may09/doc.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=doc" href="/ep/pad/export/c6fg9GM51V/rev.0?format=doc" class="tlink">Microsoft Word</a><br>
+      <img src="../../static/img/may09/pdf.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=pdf" href="/ep/pad/export/c6fg9GM51V/rev.0?format=pdf" class="tlink">PDF</a>
 
 
       </div>

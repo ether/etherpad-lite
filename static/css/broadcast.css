@@ -17,7 +17,7 @@
 #timeslider-left {
   position: absolute;
   left:0px;
-  background-image: url(/static/img/timeslider_left.png);
+  background-image: url(../../static/img/timeslider_left.png);
   width: 134px;
   height: 63px;
 }
@@ -26,7 +26,7 @@
   position: absolute;
   top:0px;
   right:-2px;
-  background-image: url(/static/img/timeslider_right.png);
+  background-image: url(../../static/img/timeslider_right.png);
   width: 155px;
   height: 63px;
 }
@@ -38,7 +38,7 @@
   height: 63px;
   margin-left: 9px;
   margin-right: 9px;
-  background-image: url(/static/img/timeslider_background.png);
+  background-image: url(../../static/img/timeslider_background.png);
 }
 
 div#timeslider #timeslider-slider {
@@ -52,7 +52,7 @@ div#timeslider #timeslider-slider {
 div#ui-slider-handle {
   width: 13px;
   height: 61px;
-  background-image: url(/static/img/crushed_current_location.png);
+  background-image: url(../../static/img/crushed_current_location.png);
   cursor: pointer;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -62,7 +62,7 @@ div#ui-slider-handle {
   left: 0;
 }
 * html div#ui-slider-handle { /* IE 6/7 */
-  background-image: url(/static/img/current_location.gif);  
+  background-image: url(../../static/img/current_location.gif);  
 }
 
 div#ui-slider-bar {
@@ -79,7 +79,7 @@ div#ui-slider-bar {
 }
 
 div#timeslider div#playpause_button {
-  background-image: url(/static/img/crushed_button_undepressed.png);
+  background-image: url(../../static/img/crushed_button_undepressed.png);
   width: 47px;
   height: 47px;
   position: absolute;
@@ -88,7 +88,7 @@ div#timeslider div#playpause_button {
 }
 
 div#timeslider div#playpause_button div#playpause_button_icon {
-  background-image: url(/static/img/play.png);
+  background-image: url(../../static/img/play.png);
   width: 47px;
   height: 47px;
   position: absolute;
@@ -96,14 +96,14 @@ div#timeslider div#playpause_button div#playpause_button_icon {
   left:0px;
 }
 * html div#timeslider div#playpause_button div#playpause_button_icon {
-  background-image: url(/static/img/play.gif); /* IE 6/7 */
+  background-image: url(../../static/img/play.gif); /* IE 6/7 */
 }
 
 div#timeslider div#playpause_button div.pause#playpause_button_icon {
-  background-image: url(/static/img/pause.png);
+  background-image: url(../../static/img/pause.png);
 }
 * html div#timeslider div#playpause_button div.pause#playpause_button_icon {
-  background-image: url(/static/img/pause.gif); /* IE 6/7 */
+  background-image: url(../../static/img/pause.gif); /* IE 6/7 */
 }
 
 div #timeslider div#steppers div#leftstar {
@@ -112,7 +112,7 @@ div #timeslider div#steppers div#leftstar {
   top: 8px;
   width:30px;
   height:21px;
-  background: url(/static/img/stepper_buttons.png) 0px 44px;
+  background: url(../../static/img/stepper_buttons.png) 0px 44px;
   overflow:hidden;
 }
 
@@ -122,7 +122,7 @@ div #timeslider div#steppers div#rightstar {
   top: 8px;
   width:29px;
   height:21px;
-  background: url(/static/img/stepper_buttons.png) 29px 44px;
+  background: url(../../static/img/stepper_buttons.png) 29px 44px;
   overflow:hidden;
 }
 
@@ -132,7 +132,7 @@ div #timeslider div#steppers div#leftstep {
   top: 33px;
   width:30px;
   height:21px;
-  background: url(/static/img/stepper_buttons.png) 0px 22px;
+  background: url(../../static/img/stepper_buttons.png) 0px 22px;
   overflow:hidden;
 }
 
@@ -142,20 +142,20 @@ div #timeslider div#steppers div#rightstep {
   top: 33px;
   width:29px;
   height:21px;
-  background: url(/static/img/stepper_buttons.png) 29px 22px;
+  background: url(../../static/img/stepper_buttons.png) 29px 22px;
   overflow:hidden;
 }
 
 #timeslider div.star {
   position: absolute;
   top: 40px;
-  background-image: url(/static/img/star.png);
+  background-image: url(../../static/img/star.png);
   width: 15px;
   height: 16px;
   cursor: pointer;
 }
 * html #timeslider div.star {
-  background-image: url(/static/img/star.gif); /* IE 6/7 */
+  background-image: url(../../static/img/star.gif); /* IE 6/7 */
 }
 
 #timeslider div#timer {
