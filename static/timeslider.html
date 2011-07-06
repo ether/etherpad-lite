@@ -75,7 +75,7 @@
     //create the url
     var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
     //find out in which subfolder we are
-    var resource = loc.pathname.substring(0,loc.pathname.indexOf("/p/")) + "/socket.io";
+    var resource = loc.pathname.substr(1,loc.pathname.indexOf("/p/")) + "socket.io";
     
     //build up the socket io connection
     socket = io.connect(url, {resource: resource});
