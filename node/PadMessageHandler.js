@@ -200,7 +200,7 @@ function handleSuggestUserName(client, message)
   {
     if(sessioninfos[pad2sessions[padId][i]].author == message.data.payload.unnamedId)
     {
-      socketio.clients[pad2sessions[padId][i]].send(message);
+      socketio.sockets.sockets[pad2sessions[padId][i]].send(message);
       break;
     }
   }
@@ -416,7 +416,7 @@ function handleUserChanges(client, message)
                              apool: forWire.pool,
                              author: author}};        
                              
-                socketio.clients[session].json.send(wireMsg);
+                socketio.sockets.sockets[session].json.send(wireMsg);
               }
               
               callback(null);
