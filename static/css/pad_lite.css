@@ -1125,7 +1125,7 @@ ul#colorpickerswatches
 
 ul#colorpickerswatches li 
 {
-  border: 1px solid #fff; 
+  border: 1px solid #ccc; 
   width: 14px; 
   height: 14px; 
   overflow: hidden;

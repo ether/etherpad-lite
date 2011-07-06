@@ -609,7 +609,7 @@ function closeColorPicker(accept) {
   }
   
   colorPickerOpen = false;
-  $("#mycolorpicker").css('display', 'none');
+  $("#mycolorpicker").fadeOut("fast");
 }
 
 function showColorPicker() {
@@ -641,7 +641,7 @@ function showColorPicker() {
       colorPickerSetup = true;
     }
     
-    $("#mycolorpicker").css('display', 'block');
+    $("#mycolorpicker").fadeIn();
     colorPickerOpen = true;
     
     $("#colorpickerswatches li").removeClass('picked');
