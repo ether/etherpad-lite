@@ -242,7 +242,7 @@ function handleUserInfoUpdate(client, message)
   {
     if(pad2sessions[padId][i] != client.id)
     {
-      socketio.clients[pad2sessions[padId][i]].json.send(message);
+      socketio.sockets.sockets[pad2sessions[padId][i]].json.send(message);
     }
   }
 }
