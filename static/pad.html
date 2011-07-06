@@ -65,9 +65,7 @@ var clientVars = {};  // ]]>
 	  <img src="../static/img/editbar_outdent.gif" />
 	</a>
 </li>
-</ul>
-
-<ul id="menu_right">
+<li class="separator"></li>
 <li>
 	<a href="javascript:void (window.pad&&pad.editbarClick('undo'));" title="Undo (ctrl-Z)">
 	  <img src="../static/img/editbar_undo.gif" />
@@ -78,22 +76,22 @@ var clientVars = {};  // ]]>
 	  <img src="../static/img/editbar_redo.gif" />
 	</a>
 </li>
-
+<li class="separator"></li>
 <li>
-  <a id="timesliderlink" title="Show the history of this pad">
-    <script>
-      $("#timesliderlink").attr("href", document.location+ '/timeslider');
-    </script>
-    <img src="../static/img/editbar_timeslider.gif" />
-  </a>
+	<a href="javascript:void (window.pad&&pad.editbarClick('clearauthorship'));" title="Clear Authorship Colors">
+	  <img src="../static/img/editbar_clearauthorship.gif" />
+	</a>
 </li>
+</ul>
 
+<ul id="menu_right">
 
 <li>
 	<a href="javascript:void (window.pad&&pad.editbarClick('embed'));" title="Embed this pad">
 	  <img src="../static/img/editbar_embed.gif" />
 	</a>
 </li>
+<li class="separator"></li>
 <li>
 	<select id="viewzoommenu">
 		<option value="z85">85%</option>
@@ -106,9 +104,12 @@ var clientVars = {};  // ]]>
 </li>
 <li class="separator"></li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('clearauthorship'));" title="Clear Authorship Colors">
-	  <img src="../static/img/editbar_clearauthorship.gif" />
-	</a>
+  <a id="timesliderlink" title="Show the history of this pad">
+    <script>
+      $("#timesliderlink").attr("href", document.location+ '/timeslider');
+    </script>
+    <img src="../static/img/editbar_timeslider.gif" />
+  </a>
 </li>
 <li>
   <a href="javascript:void (window.pad&&pad.editbarClick('showusers'));" title="Show connected users">
