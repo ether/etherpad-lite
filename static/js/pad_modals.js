@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-var padmodals = (function() {
+var padmodals = (function()
+{
 
-  /*var clearFeedbackEmail = function() {};
+/*var clearFeedbackEmail = function() {};
   function clearFeedback() {
     clearFeedbackEmail();
     $("#feedbackbox-message").val('');
@@ -37,140 +38,187 @@ var padmodals = (function() {
   }*/
 
   var sendingInvite = false;
-  function setSendingInvite(v) {
+
+  function setSendingInvite(v)
+  {
     v = !! v;
-    if (sendingInvite != v) {
+    if (sendingInvite != v)
+    {
       sendingInvite = v;
-      if (v) {
+      if (v)
+      {
         $(".sharebox-send").css('opacity', 0.75);
       }
-      else {
+      else
+      {
         $("#sharebox-send").css('opacity', 1);
       }
     }
   }
 
-  var clearShareBoxTo = function() {};
-  function clearShareBox() {
+  var clearShareBoxTo = function()
+    {};
+
+  function clearShareBox()
+  {
     clearShareBoxTo();
   }
 
   var self = {
-    init: function() {
+    init: function()
+    {
       self.initFeedback();
       self.initShareBox();
     },
-    initFeedback: function() {
-      /*var emailField = $("#feedbackbox-email");
+    initFeedback: function()
+    {
+/*var emailField = $("#feedbackbox-email");
       clearFeedbackEmail =
         padutils.makeFieldLabeledWhenEmpty(emailField, '(your email address)').clear;
       clearFeedback();*/
 
-      $("#feedbackbox-hide").click(function() {
+      $("#feedbackbox-hide").click(function()
+      {
         self.hideModal();
       });
-      /*$("#feedbackbox-send").click(function() {
+/*$("#feedbackbox-send").click(function() {
         self.sendFeedbackEmail();
       });*/
 
-      $("#feedbackbutton").click(function() {
+      $("#feedbackbutton").click(function()
+      {
         self.showFeedback();
       });
     },
-    initShareBox: function() {
-      $("#sharebutton").click(function() {
+    initShareBox: function()
+    {
+      $("#sharebutton").click(function()
+      {
         self.showShareBox();
       });
-      $("#sharebox-hide").click(function() {
+      $("#sharebox-hide").click(function()
+      {
         self.hideModal();
       });
-      $("#sharebox-send").click(function() {
+      $("#sharebox-send").click(function()
+      {
         self.sendInvite();
       });
 
-      $("#sharebox-url").click(function() {
+      $("#sharebox-url").click(function()
+      {
         $("#sharebox-url").focus().select();
       });
 
-      clearShareBoxTo =
-        padutils.makeFieldLabeledWhenEmpty($("#sharebox-to"),
-                                           "(email addresses)").clear;
+      clearShareBoxTo = padutils.makeFieldLabeledWhenEmpty($("#sharebox-to"), "(email addresses)").clear;
       clearShareBox();
 
       $("#sharebox-subject").val(self.getDefaultShareBoxSubjectForName(pad.getUserName()));
       $("#sharebox-message").val(self.getDefaultShareBoxMessageForName(pad.getUserName()));
 
-      $("#sharebox-stripe .setsecurity").click(function() {
+      $("#sharebox-stripe .setsecurity").click(function()
+      {
         self.hideModal();
         paddocbar.setShownPanel('security');
       });
     },
-    getDefaultShareBoxMessageForName: function(name) {
-      return (name || "Somebody")+" has shared an EtherPad document with you."+
-        "\n\n"+"View it here:\n\n"+
-        padutils.escapeHtml($(".sharebox-url").val()+"\n");
+    getDefaultShareBoxMessageForName: function(name)
+    {
+      return (name || "Somebody") + " has shared an EtherPad document with you." + "\n\n" + "View it here:\n\n" + padutils.escapeHtml($(".sharebox-url").val() + "\n");
     },
-    getDefaultShareBoxSubjectForName: function(name) {
-      return (name || "Somebody")+" invited you to an EtherPad document";
+    getDefaultShareBoxSubjectForName: function(name)
+    {
+      return (name || "Somebody") + " invited you to an EtherPad document";
     },
-    relayoutWithBottom: function(px) {
+    relayoutWithBottom: function(px)
+    {
       $("#modaloverlay").height(px);
-      $("#sharebox").css('left',
-                         Math.floor(($(window).width() -
-                                     $("#sharebox").outerWidth())/2));
-      $("#feedbackbox").css('left',
-                            Math.floor(($(window).width() -
-                                        $("#feedbackbox").outerWidth())/2));
+      $("#sharebox").css('left', Math.floor(($(window).width() - $("#sharebox").outerWidth()) / 2));
+      $("#feedbackbox").css('left', Math.floor(($(window).width() - $("#feedbackbox").outerWidth()) / 2));
     },
-    showFeedback: function() {
+    showFeedback: function()
+    {
       self.showModal("#feedbackbox");
     },
-    showShareBox: function() {
+    showShareBox: function()
+    {
       // when showing the dialog, if it still says "Somebody" invited you
       // then we fill in the updated username if there is one;
       // otherwise, we don't touch it, perhaps the user is happy with it
       var msgbox = $("#sharebox-message");
-      if (msgbox.val() == self.getDefaultShareBoxMessageForName(null)) {
+      if (msgbox.val() == self.getDefaultShareBoxMessageForName(null))
+      {
         msgbox.val(self.getDefaultShareBoxMessageForName(pad.getUserName()));
       }
       var subjBox = $("#sharebox-subject");
-      if (subjBox.val() == self.getDefaultShareBoxSubjectForName(null)) {
+      if (subjBox.val() == self.getDefaultShareBoxSubjectForName(null))
+      {
         subjBox.val(self.getDefaultShareBoxSubjectForName(pad.getUserName()));
       }
 
-      if (pad.isPadPublic()) {
+      if (pad.isPadPublic())
+      {
         $("#sharebox-stripe").get(0).className = 'sharebox-stripe-public';
       }
-      else {
+      else
+      {
         $("#sharebox-stripe").get(0).className = 'sharebox-stripe-private';
       }
 
       self.showModal("#sharebox", 500);
       $("#sharebox-url").focus().select();
     },
-    showModal: function(modalId, duration) {
+    showModal: function(modalId, duration)
+    {
       $(".modaldialog").hide();
-      $(modalId).show().css({'opacity': 0}).animate({'opacity': 1}, duration);
-      $("#modaloverlay").show().css({'opacity': 0}).animate({'opacity': 1}, duration);
+      $(modalId).show().css(
+      {
+        'opacity': 0
+      }).animate(
+      {
+        'opacity': 1
+      }, duration);
+      $("#modaloverlay").show().css(
+      {
+        'opacity': 0
+      }).animate(
+      {
+        'opacity': 1
+      }, duration);
     },
-    hideModal: function(duration) {
+    hideModal: function(duration)
+    {
       padutils.cancelActions('hide-feedbackbox');
       padutils.cancelActions('hide-sharebox');
       $("#sharebox-response").hide();
-      $(".modaldialog").animate({'opacity': 0}, duration, function () { $("#modaloverlay").hide(); });
-      $("#modaloverlay").animate({'opacity': 0}, duration, function () { $("#modaloverlay").hide(); });
+      $(".modaldialog").animate(
+      {
+        'opacity': 0
+      }, duration, function()
+      {
+        $("#modaloverlay").hide();
+      });
+      $("#modaloverlay").animate(
+      {
+        'opacity': 0
+      }, duration, function()
+      {
+        $("#modaloverlay").hide();
+      });
     },
-    hideFeedbackLaterIfNoOtherInteraction: function() {
-      return padutils.getCancellableAction('hide-feedbackbox',
-                                           function() {
-                                             self.hideModal();
-                                           });
+    hideFeedbackLaterIfNoOtherInteraction: function()
+    {
+      return padutils.getCancellableAction('hide-feedbackbox', function()
+      {
+        self.hideModal();
+      });
     },
-    hideShareboxLaterIfNoOtherInteraction: function() {
-      return padutils.getCancellableAction('hide-sharebox',
-                                           function() {
-                                             self.hideModal();
-                                           });
+    hideShareboxLaterIfNoOtherInteraction: function()
+    {
+      return padutils.getCancellableAction('hide-sharebox', function()
+      {
+        self.hideModal();
+      });
     },
 /*    sendFeedbackEmail: function() {
       if (sendingFeedback) {
@@ -217,38 +265,44 @@ var padmodals = (function() {
         $("#feedbackbox-response").show();
       }
     },*/
-    sendInvite: function() {
-      if (sendingInvite) {
+    sendInvite: function()
+    {
+      if (sendingInvite)
+      {
         return;
       }
-      if (! pad.isFullyConnected()) {
+      if (!pad.isFullyConnected())
+      {
         displayErrorMessage("Error: Connection to the server is down or flaky.");
         return;
       }
       var message = $("#sharebox-message").val();
-      if (! message) {
+      if (!message)
+      {
         displayErrorMessage("Please enter a message body before sending.");
         return;
       }
-      var emails = ($("#sharebox-to").hasClass('editempty') ? '' :
-                   $("#sharebox-to").val()) || '';
+      var emails = ($("#sharebox-to").hasClass('editempty') ? '' : $("#sharebox-to").val()) || '';
       // find runs of characters that aren't obviously non-email punctuation
       var emailArray = emails.match(/[^\s,:;<>\"\'\/\(\)\[\]{}]+/g) || [];
-      if (emailArray.length == 0) {
+      if (emailArray.length == 0)
+      {
         displayErrorMessage('Please enter at least one "To:" address.');
         $("#sharebox-to").focus().select();
         return;
       }
-      for(var i=0;i<emailArray.length;i++) {
+      for (var i = 0; i < emailArray.length; i++)
+      {
         var addr = emailArray[i];
-        if (! addr.match(/^[\w\.\_\+\-]+\@[\w\_\-]+\.[\w\_\-\.]+$/)) {
-          displayErrorMessage('"'+padutils.escapeHtml(addr) +
-                              '" does not appear to be a valid email address.');
+        if (!addr.match(/^[\w\.\_\+\-]+\@[\w\_\-]+\.[\w\_\-\.]+$/))
+        {
+          displayErrorMessage('"' + padutils.escapeHtml(addr) + '" does not appear to be a valid email address.');
           return;
         }
       }
       var subject = $("#sharebox-subject").val();
-      if (! subject) {
+      if (!subject)
+      {
         subject = self.getDefaultShareBoxSubjectForName(pad.getUserName());
         $("#sharebox-subject").val(subject); // force the default subject
       }
@@ -258,7 +312,8 @@ var padmodals = (function() {
       setSendingInvite(true);
       $("#sharebox-response").html("Sending...").get(0).className = '';
       $("#sharebox-response").show();
-      $.ajax({
+      $.ajax(
+      {
         type: 'post',
         url: '/ep/pad/emailinvite',
         data: {
@@ -272,22 +327,30 @@ var padmodals = (function() {
         error: error
       });
       var hideCall = self.hideShareboxLaterIfNoOtherInteraction();
-      function success(msg) {
+
+      function success(msg)
+      {
         setSendingInvite(false);
         $("#sharebox-response").html("Email invitation sent!").get(0).className = 'goodresponse';
         $("#sharebox-response").show();
-        window.setTimeout(function() {
-          $("#sharebox-response").fadeOut('slow', function() {
+        window.setTimeout(function()
+        {
+          $("#sharebox-response").fadeOut('slow', function()
+          {
             hideCall();
           });
         }, 1500);
       }
-      function error(e) {
+
+      function error(e)
+      {
         setSendingFeedback(false);
         $("#sharebox-response").html("An error occurred; no email was sent.").get(0).className = 'badresponse';
         $("#sharebox-response").show();
       }
-      function displayErrorMessage(msgHtml) {
+
+      function displayErrorMessage(msgHtml)
+      {
         $("#sharebox-response").html(msgHtml).get(0).className = 'badresponse';
         $("#sharebox-response").show();
       }

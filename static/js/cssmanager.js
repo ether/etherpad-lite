@@ -1,5 +1,3 @@
-
-
 /**
  * Copyright 2009 Google Inc.
  *
@@ -16,20 +14,24 @@
  * limitations under the License.
  */
 
-function makeCSSManager(emptyStylesheetTitle) {
+function makeCSSManager(emptyStylesheetTitle)
+{
 
-  function getSheetByTitle(title) {
+  function getSheetByTitle(title)
+  {
     var allSheets = document.styleSheets;
-    for(var i=0;i<allSheets.length;i++) {
+    for (var i = 0; i < allSheets.length; i++)
+    {
       var s = allSheets[i];
-      if (s.title == title) {
-	return s;
+      if (s.title == title)
+      {
+        return s;
       }
     }
     return null;
   }
 
-  /*function getSheetTagByTitle(title) {
+/*function getSheetTagByTitle(title) {
     var allStyleTags = document.getElementsByTagName("style");
     for(var i=0;i<allStyleTags.length;i++) {
       var t = allStyleTags[i];
@@ -42,29 +44,43 @@ function makeCSSManager(emptyStylesheetTitle) {
 
   var browserSheet = getSheetByTitle(emptyStylesheetTitle);
   //var browserTag = getSheetTagByTitle(emptyStylesheetTitle);
-  function browserRules() { return (browserSheet.cssRules || browserSheet.rules); }
-  function browserDeleteRule(i) {
+
+
+  function browserRules()
+  {
+    return (browserSheet.cssRules || browserSheet.rules);
+  }
+
+  function browserDeleteRule(i)
+  {
     if (browserSheet.deleteRule) browserSheet.deleteRule(i);
     else browserSheet.removeRule(i);
   }
-  function browserInsertRule(i, selector) {
-    if (browserSheet.insertRule) browserSheet.insertRule(selector+' {}', i);
+
+  function browserInsertRule(i, selector)
+  {
+    if (browserSheet.insertRule) browserSheet.insertRule(selector + ' {}', i);
     else browserSheet.addRule(selector, null, i);
   }
   var selectorList = [];
 
-  function indexOfSelector(selector) {
-    for(var i=0;i<selectorList.length;i++) {
-      if (selectorList[i] == selector) {
-	return i;
+  function indexOfSelector(selector)
+  {
+    for (var i = 0; i < selectorList.length; i++)
+    {
+      if (selectorList[i] == selector)
+      {
+        return i;
       }
     }
     return -1;
   }
 
-  function selectorStyle(selector) {
+  function selectorStyle(selector)
+  {
     var i = indexOfSelector(selector);
-    if (i < 0) {
+    if (i < 0)
+    {
       // add selector
       browserInsertRule(0, selector);
       selectorList.splice(0, 0, selector);
@@ -73,16 +89,22 @@ function makeCSSManager(emptyStylesheetTitle) {
     return browserRules().item(i).style;
   }
 
-  function removeSelectorStyle(selector) {
+  function removeSelectorStyle(selector)
+  {
     var i = indexOfSelector(selector);
-    if (i >= 0) {
+    if (i >= 0)
+    {
       browserDeleteRule(i);
       selectorList.splice(i, 1);
     }
   }
 
-  return {selectorStyle:selectorStyle, removeSelectorStyle:removeSelectorStyle,
-	  info: function() {
-	    return selectorList.length+":"+browserRules().length;
-	  }};
+  return {
+    selectorStyle: selectorStyle,
+    removeSelectorStyle: removeSelectorStyle,
+    info: function()
+    {
+      return selectorList.length + ":" + browserRules().length;
+    }
+  };
 }

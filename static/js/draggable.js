@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,7 @@
 
 function makeDraggable(jqueryNodes, eventHandler)
 {
-  jqueryNodes.each(function ()
+  jqueryNodes.each(function()
   {
     var node = $(this);
     var state = {};
@@ -77,7 +77,7 @@ function makeResizableVPane(top, sep, bottom, minTop, minBottom, callback)
   if (minTop === undefined) minTop = 0;
   if (minBottom === undefined) minBottom = 0;
 
-  makeDraggable($(sep), function (eType, evt, state)
+  makeDraggable($(sep), function(eType, evt, state)
   {
     if (eType == 'dragstart')
     {
@@ -125,7 +125,7 @@ function makeResizableHPane(left, sep, right, minLeft, minRight, sepWidth, sepOf
   if (minLeft === undefined) minLeft = 0;
   if (minRight === undefined) minRight = 0;
 
-  makeDraggable($(sep), function (eType, evt, state)
+  makeDraggable($(sep), function(eType, evt, state)
   {
     if (eType == 'dragstart')
     {

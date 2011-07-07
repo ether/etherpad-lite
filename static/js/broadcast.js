@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ function loadBroadcastJS()
   // Below Array#map code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_map.htm
   if (!Array.prototype.map)
   {
-    Array.prototype.map = function (fun /*, thisp*/ )
+    Array.prototype.map = function(fun /*, thisp*/ )
     {
       var len = this.length >>> 0;
       if (typeof fun != "function") throw new TypeError();
@@ -41,7 +41,7 @@ function loadBroadcastJS()
   // Below Array#forEach code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_foreach.htm
   if (!Array.prototype.forEach)
   {
-    Array.prototype.forEach = function (fun /*, thisp*/ )
+    Array.prototype.forEach = function(fun /*, thisp*/ )
     {
       var len = this.length >>> 0;
       if (typeof fun != "function") throw new TypeError();
@@ -57,7 +57,7 @@ function loadBroadcastJS()
   // Below Array#indexOf code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_indexof.htm
   if (!Array.prototype.indexOf)
   {
-    Array.prototype.indexOf = function (elt /*, from*/ )
+    Array.prototype.indexOf = function(elt /*, from*/ )
     {
       var len = this.length >>> 0;
 
@@ -77,11 +77,11 @@ function loadBroadcastJS()
   {
     try
     {
-      if(window.console) console.log.apply(console, arguments);
+      if (window.console) console.log.apply(console, arguments);
     }
     catch (e)
     {
-      if(window.console) console.log("error printing: ", e);
+      if (window.console) console.log("error printing: ", e);
     }
   }
 
@@ -104,7 +104,6 @@ function loadBroadcastJS()
   var userId = "hiddenUser" + randomString();
   var socketId;
   //var socket;
-
   var channelState = "DISCONNECTED";
 
   var appLevelDisconnectReason = null;
@@ -120,7 +119,7 @@ function loadBroadcastJS()
     clientVars.initialStyledContents.atext.attribs, clientVars.initialStyledContents.atext.text),
 
     // generates a jquery element containing HTML for a line
-    lineToElement: function (line, aline)
+    lineToElement: function(line, aline)
     {
       var element = document.createElement("div");
       var emptyLine = (line == '\n');
@@ -133,7 +132,7 @@ function loadBroadcastJS()
       return $(element);
     },
 
-    applySpliceToDivs: function (start, numRemoved, newLines)
+    applySpliceToDivs: function(start, numRemoved, newLines)
     {
       // remove spliced-out lines from DOM
       for (var i = start; i < start + numRemoved && i < this.currentDivs.length; i++)
@@ -176,11 +175,11 @@ function loadBroadcastJS()
     },
 
     // splice the lines
-    splice: function (start, numRemoved, newLinesVA)
+    splice: function(start, numRemoved, newLinesVA)
     {
       var newLines = Array.prototype.slice.call(arguments, 2).map(
 
-      function (s)
+      function(s)
       {
         return s;
       });
@@ -194,17 +193,17 @@ function loadBroadcastJS()
       this.currentLines.splice.apply(this.currentLines, arguments);
     },
     // returns the contents of the specified line I
-    get: function (i)
+    get: function(i)
     {
       return this.currentLines[i];
     },
     // returns the number of lines in the document
-    length: function ()
+    length: function()
     {
       return this.currentLines.length;
     },
 
-    getActiveAuthors: function ()
+    getActiveAuthors: function()
     {
       var self = this;
       var authors = [];
@@ -212,7 +211,7 @@ function loadBroadcastJS()
       var alines = self.alines;
       for (var i = 0; i < alines.length; i++)
       {
-        Changeset.eachAttribNumber(alines[i], function (n)
+        Changeset.eachAttribNumber(alines[i], function(n)
         {
           if (!seenNums[n])
           {
@@ -246,7 +245,7 @@ function loadBroadcastJS()
 
   function wrapRecordingErrors(catcher, func)
   {
-    return function ()
+    return function()
     {
       try
       {
@@ -273,7 +272,7 @@ function loadBroadcastJS()
     if (broadcasting) applyChangeset(changesetForward, revision + 1, false, timeDelta);
   }
 
-  /*
+/*
    At this point, we must be certain that the changeset really does map from
    the current revision to the specified revision.  Any mistakes here will
    cause the whole slider to get out of sync.
@@ -303,7 +302,7 @@ function loadBroadcastJS()
     padContents.currentTime += timeDelta * 1000;
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
-    BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function (name)
+    BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
     {
       return authorData[name];
     }));
@@ -311,7 +310,7 @@ function loadBroadcastJS()
 
   function updateTimer()
   {
-    var zpad = function (str, length)
+    var zpad = function(str, length)
       {
         str = str + "";
         while (str.length < length)
@@ -319,8 +318,10 @@ function loadBroadcastJS()
         return str;
         }
         
+        
+        
     var date = new Date(padContents.currentTime);
-    var dateFormat = function ()
+    var dateFormat = function()
       {
         var month = zpad(date.getMonth() + 1, 2);
         var day = zpad(date.getDate(), 2);
@@ -330,6 +331,8 @@ function loadBroadcastJS()
         var seconds = zpad(date.getSeconds(), 2);
         return ([month, '/', day, '/', year, ' ', hours, ':', minutes, ':', seconds].join(""));
         }
+        
+        
         
         
         
@@ -365,7 +368,7 @@ function loadBroadcastJS()
       var sliderLocation = padContents.currentRevision;
       // callback is called after changeset information is pulled from server
       // this may never get called, if the changeset has already been loaded
-      var update = function (start, end)
+      var update = function(start, end)
         {
           // if we've called goToRevision in the time since, don't goToRevision
           goToRevision(padContents.targetRevision);
@@ -400,7 +403,7 @@ function loadBroadcastJS()
 
       changesetLoader.queueUp(start, 1, update);
     }
-    BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function (name)
+    BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
     {
       return authorData[name];
     }));
@@ -413,7 +416,7 @@ function loadBroadcastJS()
     requestQueue2: [],
     requestQueue3: [],
     reqCallbacks: [],
-    queueUp: function (revision, width, callback)
+    queueUp: function(revision, width, callback)
     {
       if (revision < 0) revision = 0;
       // if(changesetLoader.requestQueue.indexOf(revision) != -1)
@@ -434,7 +437,7 @@ function loadBroadcastJS()
         setTimeout(changesetLoader.loadFromQueue, 10);
       }
     },
-    loadFromQueue: function ()
+    loadFromQueue: function()
     {
       var self = changesetLoader;
       var requestQueue = self.requestQueue1.length > 0 ? self.requestQueue1 : self.requestQueue2.length > 0 ? self.requestQueue2 : self.requestQueue3.length > 0 ? self.requestQueue3 : null;
@@ -449,9 +452,9 @@ function loadBroadcastJS()
       var granularity = request.res;
       var callback = request.callback;
       var start = request.rev;
-      var requestID = Math.floor(Math.random()*100000);
-      
-      /*var msg = { "component" : "timeslider",
+      var requestID = Math.floor(Math.random() * 100000);
+
+/*var msg = { "component" : "timeslider",
                   "type":"CHANGESET_REQ", 
                   "padId": padId,
                   "token": token,
@@ -463,12 +466,16 @@ function loadBroadcastJS()
                   }};
     
       socket.send(msg);*/
-      
-      sendSocketMsg("CHANGESET_REQ",{ "start": start, "granularity": granularity, "requestID": requestID});
-      
+
+      sendSocketMsg("CHANGESET_REQ", {
+        "start": start,
+        "granularity": granularity,
+        "requestID": requestID
+      });
+
       self.reqCallbacks[requestID] = callback;
-      
-      /*debugLog("loadinging revision", start, "through ajax");
+
+/*debugLog("loadinging revision", start, "through ajax");
       $.getJSON("/ep/pad/changes/" + clientVars.padIdForUrl + "?s=" + start + "&g=" + granularity, function (data, textStatus)
       {
         if (textStatus !== "success")
@@ -481,19 +488,19 @@ function loadBroadcastJS()
         setTimeout(self.loadFromQueue, 10); // load the next ajax function
       });*/
     },
-    handleSocketResponse: function (message)
+    handleSocketResponse: function(message)
     {
-       var self = changesetLoader;
-       
-       var start = message.data.start;
-       var granularity = message.data.granularity;
-       var callback = self.reqCallbacks[message.data.requestID];
-       delete self.reqCallbacks[message.data.requestID];
-       
-       self.handleResponse(message.data, start, granularity, callback);
-       setTimeout(self.loadFromQueue, 10);
+      var self = changesetLoader;
+
+      var start = message.data.start;
+      var granularity = message.data.granularity;
+      var callback = self.reqCallbacks[message.data.requestID];
+      delete self.reqCallbacks[message.data.requestID];
+
+      self.handleResponse(message.data, start, granularity, callback);
+      setTimeout(self.loadFromQueue, 10);
     },
-    handleResponse: function (data, start, granularity, callback)
+    handleResponse: function(data, start, granularity, callback)
     {
       debugLog("response: ", data);
       var pool = (new AttribPool()).fromJsonable(data.apool);
@@ -538,7 +545,7 @@ function loadBroadcastJS()
         var authorMap = {};
         authorMap[obj.author] = obj.data;
         receiveAuthorData(authorMap);
-        BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function (name)
+        BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
         {
           return authorData[name];
         }));
@@ -593,7 +600,7 @@ function loadBroadcastJS()
     }));
   }
 
-  /*function setUpSocket()
+/*function setUpSocket()
   {
     // required for Comet
     if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
@@ -654,9 +661,9 @@ function loadBroadcastJS()
   {
     if (socket)
     {
-      socket.onclosed = function ()
+      socket.onclosed = function()
       {};
-      socket.onhiccup = function ()
+      socket.onhiccup = function()
       {};
       socket.disconnect();
     }
@@ -664,7 +671,7 @@ function loadBroadcastJS()
     setChannelState("DISCONNECTED", reason);
   }
 
-  /*window['onloadFuncts'] = [];
+/*window['onloadFuncts'] = [];
   window.onload = function ()
   {
     window['isloaded'] = true;
@@ -677,7 +684,7 @@ function loadBroadcastJS()
   // to start upon window load, just push a function onto this array
   //window['onloadFuncts'].push(setUpSocket);
   //window['onloadFuncts'].push(function ()
-  fireWhenAllScriptsAreLoaded.push(function ()
+  fireWhenAllScriptsAreLoaded.push(function()
   {
     // set up the currentDivs and DOM
     padContents.currentDivs = [];
@@ -694,7 +701,7 @@ function loadBroadcastJS()
   // this is necessary to keep infinite loops of events firing,
   // since goToRevision changes the slider position
   var goToRevisionIfEnabledCount = 0;
-  var goToRevisionIfEnabled = function ()
+  var goToRevisionIfEnabled = function()
     {
       if (goToRevisionIfEnabledCount > 0)
       {
@@ -708,9 +715,11 @@ function loadBroadcastJS()
       
       
       
+      
+      
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
-  (function ()
+  (function()
   {
     for (var i = 0; i < clientVars.initialChangesets.length; i++)
     {

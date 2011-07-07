@@ -46,7 +46,6 @@ function makeCSSManager(emptyStylesheetTitle)
   var browserSheet = getSheetByTitle(emptyStylesheetTitle);
   //var browserTag = getSheetTagByTitle(emptyStylesheetTitle);
 
-
   function browserRules()
   {
     return (browserSheet.cssRules || browserSheet.rules);
@@ -103,7 +102,7 @@ function makeCSSManager(emptyStylesheetTitle)
   return {
     selectorStyle: selectorStyle,
     removeSelectorStyle: removeSelectorStyle,
-    info: function ()
+    info: function()
     {
       return selectorList.length + ":" + browserRules().length;
     }

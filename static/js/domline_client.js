@@ -19,19 +19,19 @@
 // requires: plugins
 // requires: undefined
 var domline = {};
-domline.noop = function ()
+domline.noop = function()
 {};
-domline.identity = function (x)
+domline.identity = function(x)
 {
   return x;
 };
 
-domline.addToLineClass = function (lineClass, cls)
+domline.addToLineClass = function(lineClass, cls)
 {
   // an "empty span" at any point can be used to add classes to
   // the line, using line:className.  otherwise, we ignore
   // the span.
-  cls.replace(/\S+/g, function (c)
+  cls.replace(/\S+/g, function(c)
   {
     if (c.indexOf("line:") == 0)
     {
@@ -44,7 +44,7 @@ domline.addToLineClass = function (lineClass, cls)
 
 // if "document" is falsy we don't create a DOM node, just
 // an object with innerHTML and className
-domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
+domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
 {
   var result = {
     node: null,
@@ -83,7 +83,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
   var perTextNodeProcess = (doesWrap ? identity : processSpaces);
   var perHtmlLineProcess = (doesWrap ? processSpaces : identity);
   var lineClass = 'ace-line';
-  result.appendSpan = function (txt, cls)
+  result.appendSpan = function(txt, cls)
   {
     if (cls.indexOf('list') >= 0)
     {
@@ -104,7 +104,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
     var simpleTags = null;
     if (cls.indexOf('url') >= 0)
     {
-      cls = cls.replace(/(^| )url:(\S+)/g, function (x0, space, url)
+      cls = cls.replace(/(^| )url:(\S+)/g, function(x0, space, url)
       {
         href = url;
         return space + "url";
@@ -112,7 +112,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
     }
     if (cls.indexOf('tag') >= 0)
     {
-      cls = cls.replace(/(^| )tag:(\S+)/g, function (x0, space, tag)
+      cls = cls.replace(/(^| )tag:(\S+)/g, function(x0, space, tag)
       {
         if (!simpleTags) simpleTags = [];
         simpleTags.push(tag.toLowerCase());
@@ -124,7 +124,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
     var extraCloseTags = "";
 
     var plugins_;
-    if (typeof (plugins) != 'undefined')
+    if (typeof(plugins) != 'undefined')
     {
       plugins_ = plugins;
     }
@@ -137,7 +137,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
       domline: domline,
       cls: cls,
       document: document
-    }).map(function (modifier)
+    }).map(function(modifier)
     {
       cls = modifier.cls;
       extraOpenTags = extraOpenTags + modifier.extraOpenTags;
@@ -165,7 +165,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
       html.push('<span class="', cls || '', '">', extraOpenTags, perTextNodeProcess(domline.escapeHTML(txt)), extraCloseTags, '</span>');
     }
   };
-  result.clearSpans = function ()
+  result.clearSpans = function()
   {
     html = [];
     lineClass = ''; // non-null to cause update
@@ -200,7 +200,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;
-  result.getInnerHTML = function ()
+  result.getInnerHTML = function()
   {
     return curHTML || '';
   };
@@ -208,7 +208,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument)
   return result;
 };
 
-domline.escapeHTML = function (s)
+domline.escapeHTML = function(s)
 {
   var re = /[&<>'"]/g;
   /']/; // stupid indentation thing
@@ -223,13 +223,13 @@ domline.escapeHTML = function (s)
       "'": '&#39;'
     };
   }
-  return s.replace(re, function (c)
+  return s.replace(re, function(c)
   {
     return re.MAP[c];
   });
 };
 
-domline.processSpaces = function (s, doesWrap)
+domline.processSpaces = function(s, doesWrap)
 {
   if (s.indexOf("<") < 0 && !doesWrap)
   {
@@ -237,7 +237,7 @@ domline.processSpaces = function (s, doesWrap)
     return s.replace(/ /g, '&nbsp;');
   }
   var parts = [];
-  s.replace(/<[^>]*>?| |[^ <]+/g, function (m)
+  s.replace(/<[^>]*>?| |[^ <]+/g, function(m)
   {
     parts.push(m);
   });

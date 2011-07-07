@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,50 +15,66 @@
  */
 
 
-var paddocbar = (function() {
+var paddocbar = (function()
+{
   var isTitleEditable = false;
   var isEditingTitle = false;
   var isEditingPassword = false;
   var enabled = false;
 
-  function getPanelOpenCloseAnimator(panelName, panelHeight) {
-    var wrapper = $("#"+panelName+"-wrapper");
-    var openingClass = "docbar"+panelName+"-opening";
-    var openClass = "docbar"+panelName+"-open";
-    var closingClass = "docbar"+panelName+"-closing";
-    function setPanelState(action) {
+  function getPanelOpenCloseAnimator(panelName, panelHeight)
+  {
+    var wrapper = $("#" + panelName + "-wrapper");
+    var openingClass = "docbar" + panelName + "-opening";
+    var openClass = "docbar" + panelName + "-open";
+    var closingClass = "docbar" + panelName + "-closing";
+
+    function setPanelState(action)
+    {
       $("#docbar").removeClass(openingClass).removeClass(openClass).
-        removeClass(closingClass);
-      if (action != "closed") {
-        $("#docbar").addClass("docbar"+panelName+"-"+action);
+      removeClass(closingClass);
+      if (action != "closed")
+      {
+        $("#docbar").addClass("docbar" + panelName + "-" + action);
       }
     }
 
-    function openCloseAnimate(state) {
-      function pow(x) { x = 1-x; x *= x*x; return 1-x; }
+    function openCloseAnimate(state)
+    {
+      function pow(x)
+      {
+        x = 1 - x;
+        x *= x * x;
+        return 1 - x;
+      }
 
-      if (state == -1) {
+      if (state == -1)
+      {
         // startng to open
         setPanelState("opening");
         wrapper.css('height', '0');
       }
-      else if (state < 0) {
+      else if (state < 0)
+      {
         // opening
-        var height = Math.round(pow(state+1)*(panelHeight-1))+'px';
+        var height = Math.round(pow(state + 1) * (panelHeight - 1)) + 'px';
         wrapper.css('height', height);
       }
-      else if (state == 0) {
+      else if (state == 0)
+      {
         // open
         setPanelState("open");
-        wrapper.css('height', panelHeight-1);
+        wrapper.css('height', panelHeight - 1);
       }
-      else if (state < 1) {
+      else if (state < 1)
+      {
         // closing
         setPanelState("closing");
-        var height = Math.round((1-pow(state))*(panelHeight-1))+'px';
+        var height = Math.round((1 - pow(state)) * (panelHeight - 1)) + 'px';
         wrapper.css('height', height);
       }
-      else if (state == 1) {
+      else if (state == 1)
+      {
         // closed
         setPanelState("closed");
         wrapper.css('height', '0');
@@ -70,16 +86,21 @@ var paddocbar = (function() {
 
 
   var currentPanel = null;
-  function setCurrentPanel(newCurrentPanel) {
-    if (currentPanel != newCurrentPanel) {
+
+  function setCurrentPanel(newCurrentPanel)
+  {
+    if (currentPanel != newCurrentPanel)
+    {
       currentPanel = newCurrentPanel;
       padutils.cancelActions("hide-docbar-panel");
     }
   }
   var panels;
 
-  function changePassword(newPass) {
-    if ((newPass || null) != (self.password || null)) {
+  function changePassword(newPass)
+  {
+    if ((newPass || null) != (self.password || null))
+    {
       self.password = (newPass || null);
       pad.notifyChangePassword(newPass);
     }
@@ -89,37 +110,72 @@ var paddocbar = (function() {
   var self = {
     title: null,
     password: null,
-    init: function(opts) {
+    init: function(opts)
+    {
       panels = {
-        impexp: { animator: getPanelOpenCloseAnimator("impexp", 160) },
-        savedrevs: { animator: getPanelOpenCloseAnimator("savedrevs", 79) },
-        options: { animator: getPanelOpenCloseAnimator(
-          "options", 114) },
-        security: { animator: getPanelOpenCloseAnimator("security", 130) }
+        impexp: {
+          animator: getPanelOpenCloseAnimator("impexp", 160)
+        },
+        savedrevs: {
+          animator: getPanelOpenCloseAnimator("savedrevs", 79)
+        },
+        options: {
+          animator: getPanelOpenCloseAnimator("options", 114)
+        },
+        security: {
+          animator: getPanelOpenCloseAnimator("security", 130)
+        }
       };
 
       isTitleEditable = opts.isTitleEditable;
       self.title = opts.initialTitle;
       self.password = opts.initialPassword;
 
-      $("#docbarimpexp").click(function() {self.togglePanel("impexp");});
-      $("#docbarsavedrevs").click(function() {self.togglePanel("savedrevs");});
-      $("#docbaroptions").click(function() {self.togglePanel("options");});
-      $("#docbarsecurity").click(function() {self.togglePanel("security");});
+      $("#docbarimpexp").click(function()
+      {
+        self.togglePanel("impexp");
+      });
+      $("#docbarsavedrevs").click(function()
+      {
+        self.togglePanel("savedrevs");
+      });
+      $("#docbaroptions").click(function()
+      {
+        self.togglePanel("options");
+      });
+      $("#docbarsecurity").click(function()
+      {
+        self.togglePanel("security");
+      });
 
       $("#docbarrenamelink").click(self.editTitle);
-      $("#padtitlesave").click(function() { self.closeTitleEdit(true); });
-      $("#padtitlecancel").click(function() { self.closeTitleEdit(false); });
-      padutils.bindEnterAndEscape($("#padtitleedit"),
-                                  function() {
-                                    $("#padtitlesave").trigger('click'); },
-                                  function() {
-                                    $("#padtitlecancel").trigger('click'); });
+      $("#padtitlesave").click(function()
+      {
+        self.closeTitleEdit(true);
+      });
+      $("#padtitlecancel").click(function()
+      {
+        self.closeTitleEdit(false);
+      });
+      padutils.bindEnterAndEscape($("#padtitleedit"), function()
+      {
+        $("#padtitlesave").trigger('click');
+      }, function()
+      {
+        $("#padtitlecancel").trigger('click');
+      });
 
-      $("#options-close").click(function() {self.setShownPanel(null);});
-      $("#security-close").click(function() {self.setShownPanel(null);});
+      $("#options-close").click(function()
+      {
+        self.setShownPanel(null);
+      });
+      $("#security-close").click(function()
+      {
+        self.setShownPanel(null);
+      });
 
-      if (pad.getIsProPad()) {
+      if (pad.getIsProPad())
+      {
         self.initPassword();
       }
 
@@ -127,135 +183,171 @@ var paddocbar = (function() {
       self.render();
 
       // public/private
-      $("#security-access input").bind("change click", function(evt) {
-        pad.changePadOption('guestPolicy',
-                            $("#security-access input[name='padaccess']:checked").val());
+      $("#security-access input").bind("change click", function(evt)
+      {
+        pad.changePadOption('guestPolicy', $("#security-access input[name='padaccess']:checked").val());
       });
       self.setGuestPolicy(opts.guestPolicy);
     },
-    setGuestPolicy: function(newPolicy) {
-      $("#security-access input[value='"+newPolicy+"']").attr("checked",
-                                                              "checked");
+    setGuestPolicy: function(newPolicy)
+    {
+      $("#security-access input[value='" + newPolicy + "']").attr("checked", "checked");
       self.render();
     },
-    initPassword: function() {
+    initPassword: function()
+    {
       self.renderPassword();
-      $("#password-clearlink").click(function() {
+      $("#password-clearlink").click(function()
+      {
         changePassword(null);
       });
-      $("#password-setlink, #password-display").click(function() {
+      $("#password-setlink, #password-display").click(function()
+      {
         self.enterPassword();
       });
-      $("#password-cancellink").click(function() {
+      $("#password-cancellink").click(function()
+      {
         self.exitPassword(false);
       });
-      $("#password-savelink").click(function() {
+      $("#password-savelink").click(function()
+      {
         self.exitPassword(true);
       });
-      padutils.bindEnterAndEscape($("#security-passwordedit"),
-                                  function() {
-                                    self.exitPassword(true);
-                                  },
-                                  function() {
-                                    self.exitPassword(false);
-                                  });
+      padutils.bindEnterAndEscape($("#security-passwordedit"), function()
+      {
+        self.exitPassword(true);
+      }, function()
+      {
+        self.exitPassword(false);
+      });
     },
-    enterPassword: function() {
+    enterPassword: function()
+    {
       isEditingPassword = true;
       $("#security-passwordedit").val(self.password || '');
       self.renderPassword();
       $("#security-passwordedit").focus().select();
     },
-    exitPassword: function(accept) {
+    exitPassword: function(accept)
+    {
       isEditingPassword = false;
-      if (accept) {
+      if (accept)
+      {
         changePassword($("#security-passwordedit").val());
       }
-      else {
+      else
+      {
         self.renderPassword();
       }
     },
-    renderPassword: function() {
-      if (isEditingPassword) {
+    renderPassword: function()
+    {
+      if (isEditingPassword)
+      {
         $("#password-nonedit").hide();
         $("#password-inedit").show();
       }
-      else {
-        $("#password-nonedit").toggleClass('nopassword', ! self.password);
+      else
+      {
+        $("#password-nonedit").toggleClass('nopassword', !self.password);
         $("#password-setlink").html(self.password ? "Change..." : "Set...");
-        if (self.password) {
+        if (self.password)
+        {
           $("#password-display").html(self.password.replace(/./g, '&#8226;'));
         }
-        else {
+        else
+        {
           $("#password-display").html("None");
         }
         $("#password-inedit").hide();
         $("#password-nonedit").show();
       }
     },
-    togglePanel: function(panelName) {
-      if (panelName in panels) {
-        if (currentPanel == panelName) {
+    togglePanel: function(panelName)
+    {
+      if (panelName in panels)
+      {
+        if (currentPanel == panelName)
+        {
           self.setShownPanel(null);
         }
-        else {
+        else
+        {
           self.setShownPanel(panelName);
         }
       }
     },
-    setShownPanel: function(panelName) {
-      function animateHidePanel(panelName, next) {
+    setShownPanel: function(panelName)
+    {
+      function animateHidePanel(panelName, next)
+      {
         var delay = 0;
-        if (panelName == 'options' && isEditingPassword) {
+        if (panelName == 'options' && isEditingPassword)
+        {
           // give user feedback that the password they've
           // typed in won't actually take effect
           self.exitPassword(false);
           delay = 500;
         }
 
-        window.setTimeout(function() {
+        window.setTimeout(function()
+        {
           panels[panelName].animator.hide();
-          if (next) {
+          if (next)
+          {
             next();
           }
         }, delay);
       }
 
-      if (! panelName) {
-        if (currentPanel) {
+      if (!panelName)
+      {
+        if (currentPanel)
+        {
           animateHidePanel(currentPanel);
           setCurrentPanel(null);
         }
       }
-      else if (panelName in panels) {
-        if (currentPanel != panelName) {
-          if (currentPanel) {
-            animateHidePanel(currentPanel, function() {
+      else if (panelName in panels)
+      {
+        if (currentPanel != panelName)
+        {
+          if (currentPanel)
+          {
+            animateHidePanel(currentPanel, function()
+            {
               panels[panelName].animator.show();
               setCurrentPanel(panelName);
             });
           }
-          else {
+          else
+          {
             panels[panelName].animator.show();
             setCurrentPanel(panelName);
           }
         }
       }
     },
-    isPanelShown: function(panelName) {
-      if (! panelName) {
-        return ! currentPanel;
+    isPanelShown: function(panelName)
+    {
+      if (!panelName)
+      {
+        return !currentPanel;
       }
-      else {
+      else
+      {
         return (panelName == currentPanel);
       }
     },
-    changeTitle: function(newTitle) {
+    changeTitle: function(newTitle)
+    {
       self.title = newTitle;
       self.render();
     },
-    editTitle: function() {
-      if (! enabled) {
+    editTitle: function()
+    {
+      if (!enabled)
+      {
         return;
       }
       $("#padtitleedit").val(self.title);
@@ -263,13 +355,17 @@ var paddocbar = (function() {
       self.render();
       $("#padtitleedit").focus().select();
     },
-    closeTitleEdit: function(accept) {
-      if (! enabled) {
+    closeTitleEdit: function(accept)
+    {
+      if (!enabled)
+      {
         return;
       }
-      if (accept) {
+      if (accept)
+      {
         var newTitle = $("#padtitleedit").val();
-        if (newTitle) {
+        if (newTitle)
+        {
           newTitle = newTitle.substring(0, 80);
           self.title = newTitle;
 
@@ -280,67 +376,76 @@ var paddocbar = (function() {
       isEditingTitle = false;
       self.render();
     },
-    changePassword: function(newPass) {
-      if (newPass) {
+    changePassword: function(newPass)
+    {
+      if (newPass)
+      {
         self.password = newPass;
       }
-      else {
+      else
+      {
         self.password = null;
       }
       self.renderPassword();
     },
-    render: function() {
-      if (isEditingTitle) {
+    render: function()
+    {
+      if (isEditingTitle)
+      {
         $("#docbarpadtitle").hide();
         $("#docbarrenamelink").hide();
         $("#padtitleedit").show();
         $("#padtitlebuttons").show();
-        if (! enabled) {
+        if (!enabled)
+        {
           $("#padtitleedit").attr('disabled', 'disabled');
         }
-        else {
+        else
+        {
           $("#padtitleedit").removeAttr('disabled');
         }
       }
-      else {
+      else
+      {
         $("#padtitleedit").hide();
         $("#padtitlebuttons").hide();
 
         var titleSpan = $("#docbarpadtitle span");
         titleSpan.html(padutils.escapeHtml(self.title));
-        $("#docbarpadtitle").attr('title',
-                                  (pad.isPadPublic() ? "Public Pad: " : "")+
-                                  self.title);
+        $("#docbarpadtitle").attr('title', (pad.isPadPublic() ? "Public Pad: " : "") + self.title);
         $("#docbarpadtitle").show();
 
-        if (isTitleEditable) {
-          var titleRight = $("#docbarpadtitle").position().left +
-            $("#docbarpadtitle span").position().left +
-            Math.min($("#docbarpadtitle").width(),
-                     $("#docbarpadtitle span").width());
+        if (isTitleEditable)
+        {
+          var titleRight = $("#docbarpadtitle").position().left + $("#docbarpadtitle span").position().left + Math.min($("#docbarpadtitle").width(), $("#docbarpadtitle span").width());
           $("#docbarrenamelink").css('left', titleRight + 10).show();
         }
 
-        if (pad.isPadPublic()) {
+        if (pad.isPadPublic())
+        {
           $("#docbar").addClass("docbar-public");
         }
-        else {
+        else
+        {
           $("#docbar").removeClass("docbar-public");
         }
       }
     },
-    disable: function() {
+    disable: function()
+    {
       enabled = false;
       self.render();
     },
-    handleResizePage: function() {
+    handleResizePage: function()
+    {
       padsavedrevs.handleResizePage();
     },
-    hideLaterIfNoOtherInteraction: function() {
-      return padutils.getCancellableAction('hide-docbar-panel',
-                                           function() {
-                                             self.setShownPanel(null);
-                                           });
+    hideLaterIfNoOtherInteraction: function()
+    {
+      return padutils.getCancellableAction('hide-docbar-panel', function()
+      {
+        self.setShownPanel(null);
+      });
     }
   };
   return self;

@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,6 @@
 // revision info is a skip list whos entries represent a particular revision
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
-
 var global = this;
 
 function loadBroadcastRevisionsJS()
@@ -27,25 +26,25 @@ function loadBroadcastRevisionsJS()
     this.changesets = [];
   }
 
-  Revision.prototype.addChangeset = function (destIndex, changeset, timeDelta)
+  Revision.prototype.addChangeset = function(destIndex, changeset, timeDelta)
   {
     var changesetWrapper = {
       deltaRev: destIndex - this.rev,
       deltaTime: timeDelta,
-      getValue: function ()
+      getValue: function()
       {
         return changeset;
       }
     };
     this.changesets.push(changesetWrapper);
-    this.changesets.sort(function (a, b)
+    this.changesets.sort(function(a, b)
     {
       return (b.deltaRev - a.deltaRev)
     });
   }
 
   revisionInfo = {};
-  revisionInfo.addChangeset = function (fromIndex, toIndex, changeset, backChangeset, timeDelta)
+  revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta)
   {
     var startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
     var endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
@@ -55,7 +54,7 @@ function loadBroadcastRevisionsJS()
 
   revisionInfo.latest = clientVars.totalRevs || -1;
 
-  revisionInfo.createNew = function (index)
+  revisionInfo.createNew = function(index)
   {
     revisionInfo[index] = new Revision(index);
     if (index > revisionInfo.latest)
@@ -68,7 +67,7 @@ function loadBroadcastRevisionsJS()
 
   // assuming that there is a path from fromIndex to toIndex, and that the links
   // are laid out in a skip-list format
-  revisionInfo.getPath = function (fromIndex, toIndex)
+  revisionInfo.getPath = function(fromIndex, toIndex)
   {
     var changesets = [];
     var spans = [];

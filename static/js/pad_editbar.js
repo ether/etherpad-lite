@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,50 +15,61 @@
  */
 
 
-var padeditbar = (function(){
+var padeditbar = (function()
+{
 
-  var syncAnimation = (function() {
+  var syncAnimation = (function()
+  {
     var SYNCING = -100;
     var DONE = 100;
     var state = DONE;
     var fps = 25;
-    var step = 1/fps;
+    var step = 1 / fps;
     var T_START = -0.5;
     var T_FADE = 1.0;
     var T_GONE = 1.5;
-    var animator = padutils.makeAnimationScheduler(function() {
-      if (state == SYNCING || state == DONE) {
+    var animator = padutils.makeAnimationScheduler(function()
+    {
+      if (state == SYNCING || state == DONE)
+      {
         return false;
       }
-      else if (state >= T_GONE) {
+      else if (state >= T_GONE)
+      {
         state = DONE;
         $("#syncstatussyncing").css('display', 'none');
         $("#syncstatusdone").css('display', 'none');
         return false;
       }
-      else if (state < 0) {
+      else if (state < 0)
+      {
         state += step;
-        if (state >= 0) {
+        if (state >= 0)
+        {
           $("#syncstatussyncing").css('display', 'none');
           $("#syncstatusdone").css('display', 'block').css('opacity', 1);
         }
         return true;
       }
-      else {
+      else
+      {
         state += step;
-        if (state >= T_FADE) {
+        if (state >= T_FADE)
+        {
           $("#syncstatusdone").css('opacity', (T_GONE - state) / (T_GONE - T_FADE));
         }
         return true;
       }
-    }, step*1000);
+    }, step * 1000);
     return {
-      syncing: function() {
+      syncing: function()
+      {
         state = SYNCING;
         $("#syncstatussyncing").css('display', 'block');
         $("#syncstatusdone").css('display', 'none');
       },
-      done: function() {
+      done: function()
+      {
         state = T_START;
         animator.scheduleAnimation();
       }
@@ -66,23 +77,30 @@ var padeditbar = (function(){
   }());
 
   var self = {
-    init: function() {
+    init: function()
+    {
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
     },
-    isEnabled: function() {
-      return ! $("#editbar").hasClass('disabledtoolbar');
+    isEnabled: function()
+    {
+      return !$("#editbar").hasClass('disabledtoolbar');
     },
-    disable: function() {
+    disable: function()
+    {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
     },
-    toolbarClick: function(cmd) {
-      if (self.isEnabled()) {
-        if (cmd == 'showusers') {
-        // show users shows the current users on teh pad
-        // get current height
-        var editbarheight = $('#users').css('display');
-          if (editbarheight == "none"){
+    toolbarClick: function(cmd)
+    {
+      if (self.isEnabled())
+      {
+        if (cmd == 'showusers')
+        {
+          // show users shows the current users on teh pad
+          // get current height
+          var editbarheight = $('#users').css('display');
+          if (editbarheight == "none")
+          {
             // increase the size of the editbar
             //$('#editbar').animate({height:'72px'});
             //$('#editorcontainerbox').animate({top:'72px'});
@@ -97,18 +115,23 @@ var padeditbar = (function(){
             $('#users').slideUp("fast");
           }
         }
-        if (cmd == 'embed') {
-        // embed shows the embed link
-        // get current height
-        var editbarheight = $('#embed').css('display');
-          if (editbarheight == "none"){
+        if (cmd == 'embed')
+        {
+          // embed shows the embed link
+          // get current height
+          var editbarheight = $('#embed').css('display');
+          if (editbarheight == "none")
+          {
             // increase the size of the editbar
             //$('#editbar').animate({height:'72px'});
-            $('#editorcontainerbox').animate({top:'72px'});
+            $('#editorcontainerbox').animate(
+            {
+              top: '72px'
+            });
             // get the pad url
             padurl = document.location;
             // change the div contents to include the pad url in an input box
-            $('#embed').html('<div id="embedcode">Embed code:<input id="embedinput" type="text" value="<iframe src=&quot;'+padurl+'&quot; width=500 height=400>"</iframe></div>');
+            $('#embed').html('<div id="embedcode">Embed code:<input id="embedinput" type="text" value="<iframe src=&quot;' + padurl + '&quot; width=500 height=400>"</iframe></div>');
             $('#users').slideUp("fast");
             $('#embed').slideDown("fast");
           }
@@ -116,46 +139,64 @@ var padeditbar = (function(){
           {
             // increase the size of the editbar
             //$('#editbar').animate({height:'36px'});
-            $('#editorcontainerbox').animate({top:'36px'});
+            $('#editorcontainerbox').animate(
+            {
+              top: '36px'
+            });
             $('#embed').hide();
           }
         }
-        if (cmd == 'save') {
+        if (cmd == 'save')
+        {
           padsavedrevs.saveNow();
-        } else {
-	  padeditor.ace.callWithAce(function (ace) {
-	    if (cmd == 'bold' || cmd == 'italic' || cmd == 'underline' || cmd == 'strikethrough')
-	      ace.ace_toggleAttributeOnSelection(cmd);
-            else if (cmd == 'undo' || cmd == 'redo') 
-	      ace.ace_doUndoRedo(cmd);
-            else if (cmd == 'insertunorderedlist') 
-	      ace.ace_doInsertUnorderedList();
-            else if (cmd == 'indent') {
-	      if (! ace.ace_doIndentOutdent(false)) {
-	       ace.ace_doInsertUnorderedList();
-	      }
-	    } else if (cmd == 'outdent') {
+        }
+        else
+        {
+          padeditor.ace.callWithAce(function(ace)
+          {
+            if (cmd == 'bold' || cmd == 'italic' || cmd == 'underline' || cmd == 'strikethrough') ace.ace_toggleAttributeOnSelection(cmd);
+            else if (cmd == 'undo' || cmd == 'redo') ace.ace_doUndoRedo(cmd);
+            else if (cmd == 'insertunorderedlist') ace.ace_doInsertUnorderedList();
+            else if (cmd == 'indent')
+            {
+              if (!ace.ace_doIndentOutdent(false))
+              {
+                ace.ace_doInsertUnorderedList();
+              }
+            }
+            else if (cmd == 'outdent')
+            {
               ace.ace_doIndentOutdent(true);
-	    } else if (cmd == 'clearauthorship') {
-	      if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret()) {
-		if (window.confirm("Clear authorship colors on entire document?")) {
-		  ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length,
-							    [['author', '']]);
-		}
-	      } else {
-		ace.ace_setAttributeOnSelection('author', '');
-	      }
-	    }
-	  }, cmd, true);
+            }
+            else if (cmd == 'clearauthorship')
+            {
+              if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret())
+              {
+                if (window.confirm("Clear authorship colors on entire document?"))
+                {
+                  ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
+                    ['author', '']
+                  ]);
+                }
+              }
+              else
+              {
+                ace.ace_setAttributeOnSelection('author', '');
+              }
+            }
+          }, cmd, true);
         }
       }
       padeditor.ace.focus();
     },
-    setSyncStatus: function(status) {
-      if (status == "syncing") {
+    setSyncStatus: function(status)
+    {
+      if (status == "syncing")
+      {
         syncAnimation.syncing();
       }
-      else if (status == "done") {
+      else if (status == "done")
+      {
         syncAnimation.done();
       }
     }
