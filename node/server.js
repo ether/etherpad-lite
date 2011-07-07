@@ -157,6 +157,9 @@ async.waterfall([
     //we should remove this when the new socket.io version is more stable
     io.set('transports', ['xhr-polling']);
     
+    //reduce the log level
+    io.set('log level', 2);
+    
     var padMessageHandler = require("./PadMessageHandler");
     var timesliderMessageHandler = require("./TimesliderMessageHandler");
     
