@@ -12,24 +12,25 @@ Visit <http://pitapoison.de:9001> to test it live
 # Etherpad vs Etherpad Lite
 <table>
   <tr>
-    <td>&nbsp;</td><td>&nbsp;</td><td><b>Etherpad</b></td><td>&nbsp;</td><td><b>Etherpad Lite</b></td>
+    <td>&nbsp;</td><td><b>Etherpad</b></td><td><b>Etherpad Lite</b></td>
   </tr>
   <tr>
-    <td align="right">Size of the folder (without git history)</td><td>&nbsp;</td><td>30 MB</td><td>&nbsp;</td><td>1.5 MB</td>
+    <td align="right">Size of the folder (without git history)</td><td>30 MB</td><td>1.5 MB</td>
   </tr>
   <tr>
-    <td align="right">Languages used server side</td><td>&nbsp;</td><td>Javascript (Rhino), Java, Scala</td><td>&nbsp;</td><td>Javascript (node.js)</td>
+    <td align="right">Languages used server side</td><td>Javascript (Rhino), Java, Scala</td><td>Javascript (node.js)</td>
   </tr>
   <tr>
-    <td align="right">Lines of server side Javascript code</td><td>&nbsp;</td><td>101410</td><td>&nbsp;</td><td>5330</td>
+    <td align="right">Lines of server side Javascript code</td><td>101410</td><td>5330</td>
   </tr>
   <tr>
-    <td align="right">RAM Usage immediately after start</td><td>&nbsp;</td><td>257 MB</td><td>&nbsp;</td><td>16 MB</td>
+    <td align="right">RAM Usage immediately after start</td><td>257 MB</td><td>16 MB</td>
   </tr>
 </table>
 
 # Installation
-1. Download latest node.js version from <http://nodejs.org/> and build it with this instructions <https://github.com/joyent/node/wiki/Installation>. <br>THE NODE.JS VERSION OF YOUR LINUX REPOSITORY MAY BE TOO OLD. PLEASE COMPILE FROM THE SOURCE TO GET SURE YOU HAVE THE LATEST VERSION.
+1. Download latest node.js version from <http://nodejs.org/> and build it with this instructions <https://github.com/joyent/node/wiki/Installation>. <br>
+The Node.js version of your Linux repository might be too old/new. Please compile from the source to get sure you have the correct version. We support node.js version 0.4.*
 2. Install npm `curl http://npmjs.org/install.sh | sh`
 3. Ensure you have installed the sqlite develob libraries, gzip and git `apt-get install libsqlite3-dev gzip git-core`
 4. Clone the git repository `git clone 'git://github.com/Pita/etherpad-lite.git'`
