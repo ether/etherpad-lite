@@ -31,8 +31,6 @@ var async = require('async');
 var express = require('express');
 var path = require('path');
 var minify = require('./minify');
-var exporthtml = require("./exporters/exporthtml");
-var padManager = require("./PadManager");
 
 //try to get the git version
 var version = "";
@@ -107,14 +105,6 @@ async.waterfall([
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/pad.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    app.get("/p/:pad/html", function (req, res) {
-      padManager.getPad(req.params.pad, function (err, pad) {
-        exporthtml.getPadHTMLDocument(pad, null, false, function (err, html) {
-          res.send(html);
-        });
-      });
     });
     
     //serve timeslider.html under /p/$padname/timeslider

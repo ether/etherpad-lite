@@ -28,7 +28,7 @@ var db = new ueberDB.database(settings.dbType, settings.dbSettings);
 /**
  * The UeberDB Object that provides the database functions
  */
-exports.db = db;
+exports.db = null;
 
 /**
  * Initalizes the database with the settings provided by the settings module
@@ -49,6 +49,7 @@ exports.init = function(callback)
     //everything ok
     else
     {
+      exports.db = db;  
       callback(null);
     }
   });
