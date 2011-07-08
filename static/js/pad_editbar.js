@@ -101,9 +101,17 @@ var padeditbar = (function()
         else if (cmd == 'embed')
         {
           var padurl = document.location;
-          $('#embed').html('<div id="embedcode">Embed code:<input id="embedinput" type="text" value="<iframe src=&quot;' + padurl + '&quot; width=500 height=400>"</iframe></div>');
+          $('#embedinput').val("<iframe src='" + padurl + "' width=500 height=400>");
           self.toogleDropDown("embed");
           $('#embedinput').focus().select();
+        }
+        else if (cmd == 'readonly')
+        {
+          var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
+          var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
+          $('#readonlyInput').val(readonlyLink);
+          self.toogleDropDown("readonly");
+          $('#readonlyInput').focus().select();
         }
         else if (cmd == 'save')
         {
@@ -150,7 +158,7 @@ var padeditbar = (function()
     },
     toogleDropDown: function(moduleName)
     {
-      var modules = ["embed", "users"];
+      var modules = ["embed", "users", "readonly"];
       
       //hide all modules
       if(moduleName == "none")

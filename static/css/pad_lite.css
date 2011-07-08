@@ -1088,7 +1088,7 @@ a#topbarmaximize {
  width: 100%;
 }
 
-#embed{
+#embed, #readonly {
 display:none;
 position:absolute;
 top:40px;
@@ -1105,11 +1105,11 @@ padding: 10px;
 border-radius: 6px; 
 }
 
-#embedcode{
+#embedcode, #readonlyUrl {
 margin-left:10px;
 }
 
-#embedinput{
+#embedinput, #readonlyInput{
 width:375px;
 height:24px;
 display:inline;

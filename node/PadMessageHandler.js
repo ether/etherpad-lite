@@ -23,6 +23,7 @@ var padManager = require("./PadManager");
 var Changeset = require("./Changeset");
 var AttributePoolFactory = require("./AttributePoolFactory");
 var authorManager = require("./AuthorManager");
+var readOnlyManager = require("./ReadOnlyManager");
 
 /**
  * A associative array that translates a session to a pad
@@ -507,6 +508,7 @@ function handleClientReady(client, message)
   var authorColorId;
   var pad;
   var historicalAuthorData = {};
+  var readOnlyId;
 
   async.series([
     //get all authordata of this new user
@@ -541,6 +543,14 @@ function handleClientReady(client, message)
             padManager.getPad(message.padId, function(err, value)
             {
               pad = value;
+              callback(err);
+            });
+          },
+          function(callback)
+          {
+            readOnlyManager.getReadOnlyId(message.padId, function(err, value)
+            {
+              readOnlyId = value;
               callback(err);
             });
           }
@@ -627,6 +637,7 @@ function handleClientReady(client, message)
         },
         "numConnectedUsers": pad2sessions[message.padId].length,
         "isProPad": false,
+        "readOnlyId": readOnlyId,
         "serverTimestamp": new Date().getTime(),
         "globalPadId": message.padId,
         "userId": author,
