@@ -3464,6 +3464,9 @@ function OUTER(gscope)
 
   function handleClick(evt)
   {
+    //hide the dropdowns
+    window.top.padeditbar.toogleDropDown("none");
+  
     inCallStack("handleClick", function()
     {
       idleWorkTimer.atMost(200);
