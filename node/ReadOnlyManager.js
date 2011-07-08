@@ -61,6 +61,15 @@ exports.getReadOnlyId = function (padId, callback)
 }
 
 /**
+ * returns a the padId for a read only id
+ * @param {String} readOnlyId read only id
+ */
+exports.getPadId = function(readOnlyId, callback)
+{
+  db.get("readonly2pad:" + readOnlyId, callback);
+}
+
+/**
  * Generates a random String with the given length. Is needed to generate the read only ids
  */
 function randomString(len) 

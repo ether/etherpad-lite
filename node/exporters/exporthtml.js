@@ -15,6 +15,7 @@
  */
 var async = require("async");
 var Changeset = require("../Changeset");
+var padManager = require("../PadManager");
 
 
 function getPadPlainText(pad, revNum) {
@@ -307,22 +308,33 @@ function _analyzeLine(text, aline, apool) {
   return line;
 }
 
-function getPadHTMLDocument(pad, revNum, noDocType, callback) {
-  var head = (noDocType?'':'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '+
+exports.getPadHTMLDocument = function(padId, revNum, noDocType, callback) {
+  padManager.getPad(padId, function(err, pad)
+  {
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+  
+    var head = (noDocType?'':'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '+
               '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')+
     '<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">\n'+
     (noDocType?'':
       '<head>\n'+
       '<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n'+
       '<meta http-equiv="Content-Language" content="en-us" />\n'+
-      '<title>'+'/'+pad.getId()+'</title>\n'+
+      '<style> * { font-family: Arial, sans-serif;\n'+
+      'font-size: 13px;\n'+
+      'line-height: 17px; }</style>\n' +
       '</head>\n')+
     '<body>';
 
-  var foot = '</body>\n</html>\n';
+    var foot = '</body>\n</html>\n';
 
-  getPadHTML(pad, revNum, function (err, html) {
-    callback(err, head + html + foot);
+    getPadHTML(pad, revNum, function (err, html) {
+      callback(err, head + html + foot);
+    });
   });
 }
 
@@ -410,7 +422,3 @@ function _findURLs(text) {
 
   return urls;
 }
-
-
-exports.getPadHTML = getPadHTML;
-exports.getPadHTMLDocument = getPadHTMLDocument;
