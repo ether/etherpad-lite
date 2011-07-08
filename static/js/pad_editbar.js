@@ -103,6 +103,7 @@ var padeditbar = (function()
           var padurl = document.location;
           $('#embed').html('<div id="embedcode">Embed code:<input id="embedinput" type="text" value="<iframe src=&quot;' + padurl + '&quot; width=500 height=400>"</iframe></div>');
           self.toogleDropDown("embed");
+          $('#embedinput').focus().select();
         }
         else if (cmd == 'save')
         {
