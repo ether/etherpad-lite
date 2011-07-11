@@ -8,7 +8,7 @@
                     { "name": "Hans Pinckaers"}
                   ],
   "dependencies"  : {
-                      "socket.io"  : "0.7.2",
+                      "socket.io"  : "https://github.com/Pita/socket.io/tarball/master",
                       "ueberDB"    : "0.0.8",
                       "async"      : "0.1.9",
                       "joose"      : "3.18.0",
