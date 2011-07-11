@@ -50,6 +50,14 @@ exports.setSocketIO = function(_socket)
   
   socket.sockets.on('connection', function(client)
   {
+    //wrap the original send function to log the messages
+    client._send = client.send;
+    client.send = function(message)
+    {
+      console.log(new Date().toUTCString() + ": message to " + client.id + ": " + JSON.stringify(message));
+      client._send(message);
+    }
+  
     //tell all components about this connect
     for(var i in components)
     {
@@ -67,7 +75,7 @@ exports.setSocketIO = function(_socket)
       //route this message to the correct component, if possible
       if(message.component && components[message.component])
       {
-        console.error(message);
+        console.log(new Date().toUTCString() + ": message from " + client.id + ": " + JSON.stringify(message));
 
         //check if component is registered in the components array        
         if(components[message.component])
