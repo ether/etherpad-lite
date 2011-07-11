@@ -7,7 +7,7 @@ documented codebase makes it easier for developers to improve the code. Etherpad
 to be easy embeddable
 
 **Online demo**<br>
-Visit <http://pitapoison.de:9001> to test it live
+Visit <http://pitapoison.de:9001> to test it live. You can find the same instance behind a nginx, with ssl and in a subpath here -> [https://pad.pitapoison.de/pad/](https://pad.pitapoison.de/pad/)
 
 # Etherpad vs Etherpad Lite
 <table>
