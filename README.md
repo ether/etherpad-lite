@@ -45,6 +45,8 @@ You can update to the latest version with `git pull origin && npm install`
 
 You can debug with `bin/runDebug.sh`
 
+Look at the Wiki: [How to put Etherpad Lite behind a reverse Proxy](https://github.com/Pita/etherpad-lite/wiki/How-to-put-Etherpad-Lite-behind-a-reverse-Proxy), [How to deploy Etherpad Lite as a service](https://github.com/Pita/etherpad-lite/wiki/How-to-deploy-Etherpad-Lite-as-a-service). Feel free to improve these wiki pages
+
 # Develop
 If you're new to git and github, start here <http://learn.github.com/p/intro.html>.
 
