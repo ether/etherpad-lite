@@ -36,7 +36,7 @@ while [ 1 ]
 do
   #try to touch the file if it doesn't exist
   if [ ! -f $1 ]; then
-    touch $1 || echo "Logfile '$1' is not writeable" && exit 1
+    touch $1 || ( echo "Logfile '$1' is not writeable" && exit 1 )
   fi
   
   #check if the file is writeable
