@@ -8,8 +8,9 @@ zoom: 1;
 
 #editorcontainerbox
 {
-position: relative;
-top: 1px;
+/*position: relative;*/
+position:absolute;
+top: 37px;
 padding-top: 37px;
 }
 #editorcontainer 
