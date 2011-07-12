@@ -8,13 +8,13 @@
                     { "name": "Hans Pinckaers"}
                   ],
   "dependencies"  : {
-                      "socket.io"  : "https://github.com/Pita/socket.io/tarball/master",
-                      "ueberDB"    : "0.0.8",
+                      "socket.io"  : "0.7.7",
+                      "ueberDB"    : "0.0.9",
                       "async"      : "0.1.9",
                       "joose"      : "3.18.0",
-                      "express"    : "2.3.12",
+                      "express"    : "2.4.2",
                       "clean-css"  : "0.2.4",
-                      "uglify-js"  : "1.0.2",
+                      "uglify-js"  : "1.0.4",
                       "gzip"       : "0.1.0"
                     },
   "version"       : "0.0.4"
