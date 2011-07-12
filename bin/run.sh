@@ -39,7 +39,7 @@ npm install
 
 echo "Ensure jQuery is downloaded and up to date..."
 DOWNLOAD_JQUERY="true"
-NEEDED_VERSION="1.6.1"
+NEEDED_VERSION="1.6.2"
 if [ -f "static/js/jquery.min.js" ]; then
   VERSION=$(cat static/js/jquery.min.js | head -n 2 | tail -n 1 | grep -o "v[0-9]*\.[0-9]*\.[0-9]*");
   
