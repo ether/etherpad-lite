@@ -74,9 +74,7 @@ function handshake()
   //create the url
   var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
   //find out in which subfolder we are
-  console.log(loc.pathname);
   var resource = loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "socket.io";
-  console.log(resource);
   //connect
   socket = io.connect(url, {
     resource: resource
