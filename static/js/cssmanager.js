@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-function makeCSSManager(emptyStylesheetTitle)
+function makeCSSManager(emptyStylesheetTitle, top)
 {
 
-  function getSheetByTitle(title)
+  function getSheetByTitle(title, top)
   {
-    var allSheets = document.styleSheets;
+    if(top)
+      var allSheets = window.top.document.styleSheets;
+    else 
+      var allSheets = document.styleSheets;
+    
     for (var i = 0; i < allSheets.length; i++)
     {
       var s = allSheets[i];
@@ -42,7 +46,7 @@ function makeCSSManager(emptyStylesheetTitle)
     return null;
   }*/
 
-  var browserSheet = getSheetByTitle(emptyStylesheetTitle);
+  var browserSheet = getSheetByTitle(emptyStylesheetTitle, top);
   //var browserTag = getSheetTagByTitle(emptyStylesheetTitle);
 
 

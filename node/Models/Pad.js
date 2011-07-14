@@ -7,6 +7,7 @@ var AttributePoolFactory = require("../AttributePoolFactory");
 var db = require("../db").db;
 var async = require("async");
 var settings = require('../settings');
+var authorManager = require("../AuthorManager");
 
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix line breaks and convert Tabs to spaces
@@ -38,6 +39,11 @@ Class('Pad', {
 			getterName : 'getHeadRevisionNumber' 
 		}, // head
 		
+		chatHead : {
+		  is: 'rw',
+		  init: -1
+		}, // chatHead
+		
 		id : { is : 'r' }
 	},
 
@@ -52,7 +58,6 @@ Class('Pad', {
 		
 		appendRevision : function(aChangeset, author) 
 		{
-		
 			if(!author)
 				author = '';
 
@@ -77,7 +82,7 @@ Class('Pad', {
 		  }
 		  
 		  db.set("pad:"+this.id+":revs:"+newRev, newRevData);
-		  db.set("pad:"+this.id, {atext: this.atext, pool: this.pool.toJsonable(), head: this.head});
+		  db.set("pad:"+this.id, {atext: this.atext, pool: this.pool.toJsonable(), head: this.head, chatHead: this.chatHead});
 		}, //appendRevision
 		
 		getRevisionChangeset : function(revNum, callback) 
@@ -186,6 +191,99 @@ Class('Pad', {
 			return this.atext.text;
 		},
 		
+		appendChatMessage: function(text, userId, time)
+		{
+		  this.chatHead++;
+		  //save the chat entry in the database
+		  db.set("pad:"+this.id+":chat:"+this.chatHead, {"text": text, "userId": userId, "time": time});
+		  //save the new chat head
+		  db.setSub("pad:"+this.id, ["chatHead"], this.chatHead);
+		},
+		
+		getChatMessage: function(entryNum, withName, callback)
+		{		  
+		  var _this = this;
+		  var entry;
+		  
+		  async.series([
+		    //get the chat entry 
+		    function(callback)
+		    {
+		      db.get("pad:"+_this.id+":chat:"+entryNum, function(err, _entry)
+		      {
+		        entry = _entry;
+		        callback(err);
+		      });
+		    },
+		    //add the authorName
+		    function(callback)
+		    {
+		      //skip if we don't need the authorName
+		      if(!withName) 
+		      {
+		        callback();
+		        return;
+		      }
+		      
+		      //get the authorName
+		      authorManager.getAuthorName(entry.userId, function(err, authorName)
+		      {
+		        entry.userName = authorName;
+		        callback(err);
+		      });
+		    }
+		  ], function(err)
+		  {
+		    callback(err, entry);
+		  });
+		},
+		
+		getLastChatMessages: function(count, callback)
+		{
+		  //return an empty array if there are no chat messages 
+		  if(this.chatHead == -1)
+		  {
+		    callback(null, []);
+		    return;
+		  }
+		
+      var _this = this;
+      
+      //works only if we decrement the amount, for some reason
+      count--;
+
+		  //set the startpoint
+		  var start = this.chatHead-count;
+		  if(start < 0)
+		    start = 0;
+      
+      //set the endpoint		    
+		  var end = this.chatHead;
+		  
+		  //collect the numbers of chat entries and in which order we need them
+		  var neededEntries = [];
+		  var order = 0;
+		  for(var i=start;i<=end; i++)
+		  {
+		    neededEntries.push({entryNum:i, order: order});
+		    order++;
+		  }
+		  
+		  //get all entries out of the database
+		  var entries = [];
+		  async.forEach(neededEntries, function(entryObject, callback)
+      {
+        _this.getChatMessage(entryObject.entryNum, true, function(err, entry)
+        {
+          entries[entryObject.order] = entry;
+          callback(err);
+        });
+      }, function(err)
+      {
+        callback(err, entries);
+      });
+		},
+		
 		init : function (callback) 
 		{		
 		  var _this = this;
@@ -205,6 +303,11 @@ Class('Pad', {
     	    _this.head = value.head;
     	    _this.atext = value.atext;
     	    _this.pool = _this.pool.fromJsonable(value.pool);
+    	    
+    	    if(value.chatHead != null)
+    	      _this.chatHead = value.chatHead;
+    	    else
+    	      _this.chatHead = -1;
     	  }
     	  //this pad doesn't exist, so create it
     	  else

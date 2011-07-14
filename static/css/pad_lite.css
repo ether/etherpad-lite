@@ -1186,3 +1186,120 @@ padding-left:4px;
 padding-right:4px;
 padding-top:2px;
 }*/
+
+#chatbox
+{
+  position:absolute;
+  bottom:0px;
+  right: 20px;
+  width: 180px;
+  height: 200px;
+  z-index: 400;
+  background-color:#f3f7f9;
+  border-left: 1px solid #999;
+  border-right: 1px solid #999;
+  border-top: 1px solid #999;
+  padding: 3px;
+  padding-bottom: 10px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  display:none;
+}
+
+#chattext
+{
+  background-color: white;
+  border: 1px solid white;
+  overflow-y:scroll;
+  height: 165px;
+  font-size: 12px;
+}
+
+#chattext p
+{
+  padding: 3px;
+}
+
+#chatinputbox
+{
+  padding: 3px 2px;
+}
+
+#chatlabel
+{
+  font-size:13px;
+  line-height:16px;
+  font-weight:bold;
+  color:#555;
+  text-decoration: none;
+  position: relative;
+  bottom: 3px;
+}
+
+#chatinput
+{
+  border: 1px solid #BBBBBB;
+  width: 100%;
+  float:right;
+}
+
+#chaticon
+{
+  z-index: 400;
+  position:absolute;
+  bottom:0px;
+  right: 20px;
+  padding: 5px;
+  border-left: 1px solid #999;
+  border-right: 1px solid #999;
+  border-top: 1px solid #999;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+#chaticon a
+{
+  text-decoration: none;
+}
+
+#chatcounter
+{
+  color:#555;
+  font-size:9px;
+  position:relative;
+  bottom: 2px;
+}
+
+#titlebar
+{
+  line-height:16px;
+  font-weight:bold;
+  color:#555;
+  position: relative;
+  bottom: 2px;
+} 
+
+#titlelabel
+{
+  font-size:13px;
+} 
+
+#titlecross
+{
+  font-size:16px;
+  float:right;
+  text-align: right;
+  text-decoration: none;
+  color:#555;
+}
+
+.time
+{
+  float:right;
+  color:#333;
+  font-style:italic;
+  font-size: 10px;
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-top:2px;
+}

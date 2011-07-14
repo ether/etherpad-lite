@@ -165,6 +165,11 @@ exports.handleMessage = function(client, message)
     handleUserInfoUpdate(client, message);
   }
   else if(message.type == "COLLABROOM" && 
+          message.data.type == "CHAT_MESSAGE")
+  {
+    handleChatMessage(client, message);
+  }
+  else if(message.type == "COLLABROOM" && 
           message.data.type == "CLIENT_MESSAGE" &&
           message.data.payload.type == "suggestUserName")
   {
@@ -176,6 +181,71 @@ exports.handleMessage = function(client, message)
     throw "unkown Message Type: '" + message.type + "'";
   }
 }
+
+/**
+ * Handles a Chat Message
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
+function handleChatMessage(client, message)
+{
+  var time = new Date().getTime();
+  var userId = sessioninfos[client.id].author;
+  var text = message.data.text;
+  var padId = session2pad[client.id];
+  
+  var pad;
+  var userName;
+  
+  async.series([
+    //get the pad
+    function(callback)
+    {
+      padManager.getPad(padId, function(err, _pad)
+      {
+        pad = _pad;
+        callback(err);
+      });
+    },
+    function(callback)
+    {
+      authorManager.getAuthorName(userId, function(err, _userName)
+      {
+        userName = _userName;
+        callback(err);
+      });
+    },
+    //save the chat message and broadcast it
+    function(callback)
+    {
+      //save the chat message
+      pad.appendChatMessage(text, userId, time);
+      
+      var msg = {
+        type: "COLLABROOM",
+        data: {
+                type: "CHAT_MESSAGE",
+                userId: userId,
+                userName: userName,
+                time: time,
+                text: text
+              }
+      };
+      
+      //broadcast the chat message to everyone on the pad
+      for(var i in pad2sessions[padId])
+      {
+        socketio.sockets.sockets[pad2sessions[padId][i]].json.send(msg);
+      }
+      
+      callback();
+    }
+  ], function(err)
+  {
+    if(err) throw err;
+  });
+}
+
 
 /**
  * Handles a handleSuggestUserName, that means a user have suggest a userName for a other user
@@ -509,6 +579,7 @@ function handleClientReady(client, message)
   var pad;
   var historicalAuthorData = {};
   var readOnlyId;
+  var chatMessages;
 
   async.series([
     //get all authordata of this new user
@@ -557,19 +628,36 @@ function handleClientReady(client, message)
         ], callback);
       });
     },
+    //these db requests all need the pad object
     function(callback)
     {
       var authors = pad.getAllAuthors();
       
-      //get all author data out of the database
-      async.forEach(authors, function(authorId, callback)
-      {
-        authorManager.getAuthor(authorId, function(err, author)
+      async.parallel([
+        //get all author data out of the database
+        function(callback)
         {
-          historicalAuthorData[authorId] = author;
-          callback(err);
-        });
-      }, callback);
+          async.forEach(authors, function(authorId, callback)
+          {
+            authorManager.getAuthor(authorId, function(err, author)
+            {
+              historicalAuthorData[authorId] = author;
+              callback(err);
+            });
+          }, callback);
+        },
+        //get the latest chat messages
+        function(callback)
+        {
+          pad.getLastChatMessages(20, function(err, _chatMessages)
+          {
+            chatMessages = _chatMessages;
+            callback(err);
+          });
+        }
+      ], callback);
+      
+      
     },
     function(callback)
     {
@@ -629,12 +717,7 @@ function handleClientReady(client, message)
         "padId": message.padId,
         "initialTitle": "Pad: " + message.padId,
         "opts": {},
-        "chatHistory": {
-            "start": 0,
-            "historicalAuthorData": historicalAuthorData,
-            "end": 0,
-            "lines": []
-        },
+        "chatHistory": chatMessages,
         "numConnectedUsers": pad2sessions[message.padId].length,
         "isProPad": false,
         "readOnlyId": readOnlyId,

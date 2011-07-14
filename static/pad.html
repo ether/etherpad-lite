@@ -21,6 +21,7 @@ var clientVars = {};  // ]]>
 
 <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 <script type="text/javascript" src="../minified/pad.js"></script>
+<style type="text/css" title="dynamicsyntax"></style>
 
 </head>
 
@@ -115,12 +116,12 @@ We removed this feature cause its not worth the space it needs in the editbar
 	</select>
 </li>-->
 <li class="separator"></li>
-<li>
+<!--<li>
 	<a href="javascript:void (window.pad&&pad.editbarClick('chat'));"
 	title="(Placeholder, not implemented so far) Open the chat for this pad">
 	  <img src="../static/img/editbar_chat.gif" width="16" height="16" />
 	</a>
-</li>
+</li>-->
 <li>
   <a id="timesliderlink" title="Show the history of this pad">
     <script>
@@ -214,6 +215,25 @@ Embed code:<input id="embedinput" type="text" value="">
 <div id="readonlyUrl">
 Use this link to share a read-only version of your pad:<input id="readonlyInput" type="text" value="">
 </div>
+</div>
+
+<div id="chaticon">
+<a href="javascript:chat.show();"
+	title="Open the chat for this pad">
+	  <span id="chatlabel">Chat</span>
+	  <img src="../static/img/editbar_chat.gif" width="16" height="16" />
+</a>
+<span id="chatcounter">0</span>
+</div>
+
+<div id="chatbox">
+  <div id="titlebar"><span id ="titlelabel">Chat</span><a id="titlecross" href="javascript:chat.hide();">x&nbsp;</a></div>
+  <div id="chattext" class="authorColors"></div>
+  <div id="chatinputbox">
+    <form>
+      <input id="chatinput" type="text" maxlength="140"/>
+    </form>
+  </div>
 </div>
 
 <!-- /padeditor -->

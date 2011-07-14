@@ -74,9 +74,7 @@ function handshake()
   //create the url
   var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
   //find out in which subfolder we are
-  console.log(loc.pathname);
   var resource = loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "socket.io";
-  console.log(resource);
   //connect
   socket = io.connect(url, {
     resource: resource
@@ -150,7 +148,7 @@ var pad = {
   myUserInfo: null,
   diagnosticInfo: {},
   initTime: 0,
-  clientTimeOffset: (+new Date()) - clientVars.serverTimestamp,
+  clientTimeOffset: null,
   preloadedImages: false,
   padOptions: {},
 
@@ -203,6 +201,11 @@ var pad = {
 
   init: function()
   {
+    pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
+  
+    //initialize the chat
+    chat.init();
+    
     pad.diagnosticInfo.uniqueId = padutils.uniqueId();
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;

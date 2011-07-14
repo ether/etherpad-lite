@@ -441,6 +441,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
     {
       callbacks.onClientMessage(msg.payload);
     }
+    else if (msg.type == "CHAT_MESSAGE")
+    {
+      chat.addMessage(msg, true);
+    }
     else if (msg.type == "SERVER_MESSAGE")
     {
       callbacks.onServerMessage(msg.payload);
@@ -858,6 +862,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
     handleMessageFromServer: handleMessageFromServer,
     getConnectedUsers: getConnectedUsers,
     sendClientMessage: sendClientMessage,
+    sendMessage: sendMessage,
     getCurrentRevisionNumber: getCurrentRevisionNumber,
     getDiagnosticInfo: getDiagnosticInfo,
     getMissedChanges: getMissedChanges,

@@ -138,10 +138,12 @@ function OUTER(gscope)
   }
 
   var dynamicCSS = null;
+  var dynamicCSSTop = null;
 
   function initDynamicCSS()
   {
     dynamicCSS = makeCSSManager("dynamicsyntax");
+    dynamicCSSTop = makeCSSManager("dynamicsyntax", true);
   }
 
   var changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
@@ -184,6 +186,7 @@ function OUTER(gscope)
       if (dynamicCSS)
       {
         dynamicCSS.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
+        dynamicCSSTop.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
       }
     }
     else
@@ -200,6 +203,9 @@ function OUTER(gscope)
           }
 
           dynamicCSS.selectorStyle(getAuthorColorClassSelector(
+          getAuthorClassName(author))).backgroundColor = bgcolor;
+          
+          dynamicCSSTop.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author))).backgroundColor = bgcolor;
         }
       }
