@@ -231,9 +231,17 @@ exports.padJS = function(req, res)
   //minifying is disabled, so load the files with jquery
   else
   {
+    res.write("function loadjsfile(filename){\n"+
+              "var fileref=document.createElement('script');\n"+
+              "fileref.setAttribute('type','text/javascript');\n"+
+              "var path = 'static/js/' + filename;\n"+
+              "fileref.setAttribute('src', path);\n" + 
+              "document.getElementsByTagName('head')[0].appendChild(fileref);\n" +
+              "}\n");
+  
     for(var i in jsFiles)
     {
-      res.write("$.getScript('/static/js/" + jsFiles[i]+ "');\n");
+      res.write("loadjsfile('"+ jsFiles[i] + "');\n");
     }
     
     res.end();

@@ -81,6 +81,20 @@ async.waterfall([
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
+    //if minified is disabled, we need to server the static files under /p/static too
+    //it looks like dynamic script loading works only for subfolders, thats the reason we're doing this
+    if(settings.minify == false)
+    {
+      //serve static files
+      app.get('/p/static/*', function(req, res)
+      { 
+        res.header("Server", serverName);
+        var filePath = path.normalize(__dirname + "/.." + req.url.split("?")[0].replace("p/",""));
+        console.error(filePath);
+        res.sendfile(filePath, { maxAge: exports.maxAge });
+      });
+    }
+    
     //serve minified files
     app.get('/minified/:id', function(req, res)
     { 
@@ -149,7 +163,7 @@ async.waterfall([
     
     //serve pad.html under /p
     app.get('/p/:pad', function(req, res, next)
-    {
+    {    
       //ensure the padname is valid and the url doesn't end with a /
       if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
       {

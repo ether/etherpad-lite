@@ -125,7 +125,7 @@ We removed this feature cause its not worth the space it needs in the editbar
 <li>
   <a id="timesliderlink" title="Show the history of this pad">
     <script>
-      $("#timesliderlink").attr("href", document.location+ '/timeslider');
+      document.getElementById('timesliderlink').href = document.location+ '/timeslider';
     </script>
     <img src="../static/img/editbar_timeslider.gif" width="16" height="16" />
   </a>
