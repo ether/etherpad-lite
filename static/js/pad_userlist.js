@@ -144,7 +144,7 @@ var paduserlist = (function()
         var titleText = data.titleText;
         window.setTimeout(function()
         {
-          tr.attr('title', titleText)
+          /* tr.attr('title', titleText)*/
         }, 0);
       }
       else

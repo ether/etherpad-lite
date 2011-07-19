@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 var padeditbar = (function()
 {
 
@@ -84,14 +83,15 @@ var padeditbar = (function()
     },
     isEnabled: function()
     {
-      return !$("#editbar").hasClass('disabledtoolbar');
+//      return !$("#editbar").hasClass('disabledtoolbar');
+      return true;
     },
     disable: function()
     {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
     },
     toolbarClick: function(cmd)
-    {
+    {  
       if (self.isEnabled())
       {
         if(cmd == "showusers")
@@ -99,7 +99,7 @@ var padeditbar = (function()
           self.toogleDropDown("users");
         }
         else if (cmd == 'embed')
-        {
+        {  
           var padurl = document.location;
           $('#embedinput').val("<iframe src='" + padurl + "' width=500 height=400>");
           self.toogleDropDown("embed");

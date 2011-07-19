@@ -1,6 +1,3 @@
-/* @override 
-	static/css/pad_lite.css */
-
 *,html,body,p{ margin: 0; padding: 0; }
 .clear { clear: both; }
 html { font-size: 62.5%; }
@@ -15,25 +12,13 @@ iframe {position:absolute;}
   background-color: #000;
   background-color: rgba(0,0,0,0.7);
   width: 160px;
-  right: 4px;
+  right: 20px;
   top: 40px;
   color: #fff;
   padding: 5px;
   -moz-border-radius: 6px;
   border-radius: 6px; 
 }
-
-/*#sharebutton {
-  background: url(static/img/inviteshare2.gif) no-repeat 0 -31px;
-  position: relative;
-  display: block; 
-  top: 6px; 
-  padding-top: 30px;
-  height: 0; overflow: hidden; width: 96px;
-  left:50%;
-  margin-left: -48px;
-}*/
-
 
 a img
 {
@@ -163,14 +148,6 @@ a img
 }
 
 
-/**
-
-OLD
-*/
-
-/* @override 
-	static/css/pad_lite.css */
-
 #padpage {
  position: absolute;
  top: 0px;
@@ -199,18 +176,6 @@ a#backtoprosite { padding-left: 20px; left: 6px;
   background: url(static/img/protop.gif) no-repeat -5px -6px; }
 #accountnav { right: 30px; color: #fff; }
   
-/*#topbarcenter { margin-left: 150px; margin-right: 150px; text-align:center;}
-a#topbaretherpad { margin-left: auto; margin-right: auto; display: block; width: 103px;
-  position: relative; top: 3px; height: 0; padding-top: 20px;
-}*/
-
-
-/*#topbarBrand {font-size:2.1em; color: white; font-weight: bold; text-decoration: none; text-align: center;}
-
-#EtherpadLink {font-size: 1.2em; color: white;float:left;margin-left:-140px;margin-top:4px; text-decoration: none;  }
-#Licensing {font-size: 1.2em; color: white;float:left;margin-top:4px;margin-left:-75px; text-decoration: none;  }
-#fullscreen {font-size: 1.2em; color: white;float:right;margin-top:4px;margin-right:-120px; text-decoration: none;  }*/
-
 .propad a#topbaretherpad { background: url(static/img/protop.gif) no-repeat -397px -3px; }
 
 #specialkeyarea { top: 5px; left: 250px; color: yellow; font-weight: bold;
@@ -364,72 +329,12 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   white-space: nowrap;
 }
 
-/*.editbarbutton
-{
-  border-top: 1px solid #8b9eba;
-  border-bottom: 1px solid #8b9eba;
-  border-left: 1px solid #758aa9;
-  background-color: white;
-  padding: 0px 2px;
-}
-
-.editbarbutton img
-{
-  border: 0px;
-  width: 16px;
-  height: 16px;
-}
-
-.editbarbutton a {
-  text-decoration: none;
-}
-
-.editbarbutton a:active
-{
-  position: relative;
-  top: 1px;
-  left: 1px;
-}*/
-
-/*.editbargroupsfirst
-{
-  border-left-width: 0px !important;
-}*/
-
-/*#editbar #syncstatussyncing { position: absolute; height: 26px; width: 26px;
-  background: url(static/img/syncing2.gif) no-repeat center center;
-  right: 38px; top: 5px; display: none; }
-#editbar #syncstatusdone { position: absolute; height: 26px; width: 26px;
-  background: url(static/img/syncdone.gif) no-repeat center center;
-  right: 38px; top: 5px; display: none; }*/
-
-/*#padsidebar { 
-  bottom: 0px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 290px;
-  overflow: hidden;
-  z-index: 11;
-}
-.hidesidebar #padsidebar { width: 0; overflow: hidden; }*/
-
 #myswatchbox { position: absolute; left: 5px; top: 5px; width: 22px; height: 22px;
-  /*border-top: 1px solid #c3cfe0; border-left: 1px solid #c3cfe0;
-  border-right: 1px solid #ecf3fc; border-bottom: 1px solid #ecf3fc;*/
   border: 1px solid #fff;
   padding: 1px; background: transparent; cursor: pointer; 
   -moz-border-radius: 3px;
   border-radius: 3px; 
   }
-/*
-#myuser .myswatchboxhoverable, #myuser .myswatchboxunhoverable {
-  background: white;
-}
-#myuser .myswatchboxhoverable:hover {
-  background: #bbb;
-}
-*/
 
 #myswatch { width: 100%; height: 100%; background: transparent;/*...initially*/ }
 #mycolorpicker {
@@ -501,43 +406,7 @@ table#otheruserstable { display: none; }
   border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
 }
 .usertdname input.editempty { color: #888; font-style: italic;}
-  /*#guestslabel { font-size: 1.2em; position: absolute; width: auto;
-  height: 22px; line-height: 22px; top: 4px; left: 8px; }
-#guestsmenu { font-size: 1.2em; position: absolute; left: 100px;
-  top: 5px; width: 95px; }
-.guestpolicystuff { display: none; }*/
-
-/*.guestprompt { border: 1px solid #ccc; font-size: 1.2em;
-  padding: 5px; color: #222; background: #ffc; }
-.guestprompt .choices { float: right; }
-.guestprompt a { margin: 0 0.5em; }*/
-
-/*#chattop { background: #ecf2fa; padding: 5px; font-size: 1.2em; border-bottom: 1px solid #ddd; }
-#chattop a { color: #36b; }
-#chatlines .chatline { color: #444; padding-left: 5px; padding-top: 2px; padding-bottom: 2px;
-  background: #ddd; overflow: hidden; }
-#chatlines .chatlinetime { display: block; font-size: 1em; color: #666; float: right; width: auto;
-  padding-right: 5px; }
-#chatlines .chatlinename, #chatlines .chatlinetext { font-size: 1.2em; }
-#chatlines h2 { margin: 0; padding-left: 5px; padding-top: 2px; padding-bottom: 2px; color: #999; font-style: italic; font-weight: bold; font-size: 1.2em; }
-#chatprompt { font-size: 1.2em; color: #444; float: left; line-height: 22px; width: 35px; text-align: right; }
-#chatentryform { margin-left: 40px; }
-#chatentrybox { font-size: 1.2em; color: #444;
-  padding: 2px; height: 16px; margin: 0; border-left: 1px solid #c3c3c3;
-  border-top: 1px solid #c3c3c3;
-  border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
-  width: 230px; }
-#padchat a#chatloadmore { display: none; font-size: 1.2em; padding: 2px 5px; font-style: italic; }
-#padchat #chatloadingmore { display: none; font-size: 1.2em; padding: 2px 5px; font-style: italic;
-  color: #999; }
-#padchat a#chatloadmore:focus { outline: 0; }*/
-
-/*#djs { font-family: monospace;  font-size: 10pt;
-  height: 200px;  overflow: auto; border: 1px solid #ccc;
-  background: #fee; margin: 0; padding: 6px;
-}
-#djs p { margin: 0; padding: 0; display: block; }*/
-
+  
 .modaldialog.cboxreconnecting .modaldialog-inner,
 .modaldialog.cboxconnecting .modaldialog-inner {
   background: url(static/img/connectingbar.gif) no-repeat center 60px;
@@ -638,169 +507,7 @@ table#otheruserstable { display: none; }
 
 /* We don't ever actually hide the wrapper, even when the panel is
    cloased, so that its contents can always be manipulated accurately. */
-/*.dbpanel-wrapper { position: absolute;
-  overflow: hidden; height: 0; top: 25px; 
-  z-index: 51; zoom: 1; }
-.dbpanel-panel { position: absolute; bottom: 0; width: 100%; }
 
-.dbpanel-middle { margin-left: 7px; margin-right: 7px;
-  position: relative; height: 100%; overflow: hidden; zoom: 1; }
-.dbpanel-inner { background: #f7f7f7 ;
-  width: 100%; height: 100%; position: absolute; overflow: hidden; top: -10px; }
-
-.dbpanel-top { position: absolute; top: 0; width: 100%;
-  height: 400px; background-image: url(static/img/docpanelmiddle2.png);
-  background-position: left top; }
-
-.dbpanel-bottom { position: absolute; height: 400px;
-  bottom: -390px; width: 100%;
-  background-image: url(static/img/docpanelmiddle2.png);
-  background-position: left top;
-}
-
-* html .dbpanel-top, * html .dbpanel-bottom { 
-  background-color: transparent;
-  background-image: url(static/img/apr09/blank.gif);
-  
-  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="static/img/docpanelmiddle2.png", sizingMethod="scale");
-}
-
-.dbpanel-leftedge, .dbpanel-rightedge, .dbpanel-botleftcorner, .dbpanel-botrightcorner {
-  position: absolute; 
-  background-repeat: no-repeat;
-  background-color: transparent;
-  background-image: url(static/img/docpaneledge2.png);
-}
-
-.dbpanel-leftedge, .dbpanel-rightedge { height: 100%; width: 7px; bottom: 11px; }
-.dbpanel-botleftcorner, .dbpanel-botrightcorner { height: 11px; width: 7px; bottom: 0; }
-
-.dbpanel-leftedge, .dbpanel-botleftcorner { left: 0; background-position: -7px 0; }
-.dbpanel-rightedge, .dbpanel-botrightcorner { right: 0; background-position: 0 0; }
-
-#importexport { position: absolute; top: 5px; left: 0; font-size: 1.2em; color: #444;
-  height: 100%; width: 100%; }
-
-* html .dbpanel-leftedge, * html .dbpanel-rightedge, * html .dbpanel-botleftcorner, * html .dbpanel-botrightcorner {
-  background-color: transparent;
-  background-image: url(static/img/apr09/blank.gif);
-  
-  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="static/img/docpaneledge2.png", sizingMethod="crop");
-}
-* html .dbpanel-leftedge, * html .dbpanel-botleftcorner { left: -7px;  width: 14px; }
-*/
-/*#impexp-importlabel { position: absolute; top: 5px; left: 10px; width: 300px; }
-
-#importform { position: absolute; top: 24px; left: 5px; width: 300px; height: 60px; }
-#importformsubmitdiv, #importformfilediv { padding: 5px 5px; }
-#importexport .importformenabled {
-  background: #cfc;
-  border: 1px solid #292;
-}
-#importexport span.nowrap { white-space: nowrap; }
-#importexport #importstatusball { margin-left: 3px; padding-top: 1px; display: none; }
-#importexport #importarrow { margin-left: 5px; padding-top: 1px; display: none; }
-#importexport .importmessage { border: 1px solid #992;
-  background: #ffc; padding: 5px; font-size: 85%; display: none; }
-#importexport #importmessagefail { margin-top: 5px; }
-#importexport #importmessagesuccess { margin: 0 20px; }
-#importexport a.disabledexport {
-  color: #333; text-decoration: none;
-  opacity: 0.5; filter: alpha(opacity = 50) ;
-}
-#importexport #importfileinput { padding: 2px 0; }
-#importexport #importsubmitinput { padding: 2px; }
-
-#impexp-divider { position: absolute; left: 320px; top: 5px; height: 135px; width: 2px;
-  background: #ddd; }
-#impexp-close { display: block; position: absolute; right: 2px; bottom: 15px;
-  width: auto; height: auto; font-size: 85%; color: #444;
-  z-index: 61}
-#impexp-disabled-clickcatcher {
-  display: none;
-  position: absolute; width: 100%; height: 100%;
-  z-index: 60;
-}
-
-#impexp-exportlabel { position: absolute; top: 5px; left: 350px;
-  width: 300px; }
-  #exportlinks .exportlink {
-  display: block; position: absolute; height: 22px; width: auto;
-  background-repeat: no-repeat;
-  background-image: url(static/img/fileicons.gif);
-  line-height: 22px; padding-left: 22px; padding-right: 2px;
-}
-#exportlinks .n1 { left: 350px; top: 30px; }
-#exportlinks .n2 { left: 350px; top: 57px; }
-#exportlinks .n3 { left: 350px; top: 84px; }
-#exportlinks .n4 { left: 485px; top: 30px; }
-#exportlinks .n5 { left: 485px; top: 57px; }
-#exportlinks .n6 { left: 485px; top: 84px; }
-#exportlinks .exporthrefdoc { background-position: 2px -1px; }
-#exportlinks .exporthrefhtml { background-position: 2px -25px; }
-#exportlinks .exporthreflink { background-position: 2px -49px; }
-#exportlinks .exporthrefodt { background-position: 2px -73px; }
-#exportlinks .exporthrefpdf { background-position: 2px -97px; }
-#exportlinks .exporthreftxt { background-position: 2px -121px; }
-
-#savedrevisions { position: absolute; top: 0; left: 0; font-size: 1.2em;
-  color: #444; height: 100%; width: 100%; }
-#savedrevs-scrolly { height: 75px; width: auto; margin-right: 136px;
-  overflow: hidden; position: relative; top: 1px;
-}
-#savedrevs-scrollleft { height: 100%; width: 14px; position: absolute;
-  left: 0; top: 0; cursor: pointer;
-  background: url(static/img/savedrevarrows.gif) no-repeat right top;
-}
-#savedrevs-scrollright { height: 100%; width: 14px; position: absolute;
-  right: 0; top: 0; cursor: pointer;
-  background: url(static/img/savedrevarrows.gif) no-repeat left top;
-}
-#savedrevs-scrolly .disabledscrollleft { background-position: right bottom; }
-#savedrevs-scrolly .disabledscrollright { background-position: left bottom; }
-#savedrevs-scrollouter { margin-left: 14px; margin-right: 14px;
-  width: auto; height: 100%; overflow: hidden; position: relative;
-}
-#savedrevs-scrollinner { position: absolute; width: 1px; height: 100%;
-  overflow: visible; right: 0; top: 0; }
-#savedrevisions .srouterbox { width: 120px; height: 100%;
-  position: absolute; top: 0;
-}
-#savedrevisions .srinnerbox { position: relative; top: 8px;
-  height: 59px; width: auto; border-left: 1px solid #ddd;
-  padding: 0 8px 0 8px; }
-#savedrevisions a.srname { display: block; white-space: nowrap;
-  text-overflow: ellipsis ; overflow: hidden;
-  text-decoration: none; color: #444; cursor: text;
-  padding: 1px; height: 14px;  position: relative; left: -1px;
-  width: 100px ;
-}
-#savedrevisions a.srname:hover { text-decoration: none; color: #444;
-  border: 1px solid #ccc; padding: 0; }
-#savedrevisions .sractions { font-size: 85%; color: #ccc;
- margin-top: 1px; height: 12px; }
-#savedrevisions .sractions a { text-decoration: none;
-  color: #06c; }
-#savedrevisions .sractions a:hover { text-decoration: underline; }
-#savedrevisions .srtime { color: #666; font-size: 90%;
- white-space: nowrap; margin-top: 3px; }
-#savedrevisions .srauthor { color: #666; font-size: 90%;
- white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-#savedrevisions .srtwirly { position: absolute; display: block;
-  bottom: 0; right: 10px; display: none; }
-#savedrevisions .srnameedit {
-  position: absolute;
-}
-#savedrevs-savenow { display: block; position: absolute;
-  overflow: hidden; height: 0; padding-top: 24px; width: 81px;
-  top: 22px; right: 27px;
-  background: url(static/img/savedrevsgfx2.gif) no-repeat 0 0;
-}
-#savedrevs-savenow:active { background-position: 0 -24px; }
-#savedrevs-close { display: block; position: absolute; right: 7px; bottom: 8px;
-  width: auto; height: auto; font-size: 85%; color: #444; }
-form#reconnectform { display: none; }*/
 
 #padoptions { position: absolute; top: 0; left: 0; font-size: 1.2em;
   color: #444; height: 100%; width: 100%; line-height: 15px; }
@@ -820,104 +527,11 @@ form#reconnectform { display: none; }*/
 #options-close { display: block; position: absolute; right: 7px; bottom: 8px;
   width: auto; height: auto; font-size: 85%; color: #444; }
 
-/*#padsecurity { position: absolute; top: 0; left: 0; font-size: 1.1em;
-  color: #444; height: 100%; width: 100%; line-height: 15px; }
-#security-close { display: block; position: absolute; right: 7px; bottom: 8px;
-  width: auto; height: auto; font-size: 85%; color: #444; }
-#security-passhead { font-weight: bold; position: absolute; top: 90px; left: 15px;
-  width: auto; height: auto; }
-#security-passbody { position: absolute; left: 75px; top: 90px; }
-#security-passwordedit { height: 15px; border: 1px solid #bbb;
-  position: absolute; top: 0; left: 15px; width: 120px; }
-#security-password a { text-decoration: none; display: block;
-  width: auto; height: auto; }
-#password-savelink, #password-cancellink {position: absolute; top: 0; }
-#security-password a:hover { text-decoration: underline; }
-#password-savelink { left: 144px; color: #06c; }
-#password-cancellink { left: 180px; color: #666; }
-#password-nonedit { left: 15px; position: absolute;
-  width: 220px; top: 0; }
-#password-setlink { color: #06c; }
-#password-clearlink { color: #06c; }
-#password-display { height: 15px; width: auto; }
-#password-inedit { display: none; }
-#password-display, #password-setlink, #password-clearlink {
-  float: left; margin-right: 10px;
-}
-#password-display { font-size: 18px; }
-#security-password .nopassword #password-display { font-size: 100%; }
-#security-password .nopassword #password-clearlink { display: none; }
-#security-password .nopassword #password-setlink { left: 60px; }
-
-#security-access { position: absolute; left: 15px; width: 200px; }
-#security-accesshead { font-weight: bold; position: absolute; top: 10px;
-  left: 0; width: auto; height: auto; }
-#security-access input, #security-access label { position: absolute; }
-#security-access input { left: 10px; }
-#security-access label { left: 30px; width: 250px; }
-#access-private, #access-private-label { top: 35px; }
-#access-public, #access-public-label { top: 60px; }
-#security-access label { color: #999;  }
-#security-access label strong { font-weight: normal; padding-right: 10px;
-  color: #444; }*/
-
 #mainmodals { z-index: 600; /* higher than the modals themselves
-                               so that modals are on top in IE */ }
-
+                              so that modals are on top in IE */ }
 .modalfield { font-size: 1.2em; padding: 1px; border: 1px solid #bbb;}
 #mainmodals .editempty { color: #aaa; }
 
-
-/*#feedbackbox {
-  position: absolute; display: none;
-  width: 400px; height: 270px;
-  left: 100px ; bottom: 50px;
-  z-index: 501; zoom: 1;
-}
-#feedbackbox-tl, #feedbackbox-tr, #feedbackbox-bl, #feedbackbox-br,
-#feedbackbox-hide, #feedbackbox-send, #feedbackbox-back {
-  position: absolute; display: block;
-  background-repeat: no-repeat;
-  background-image: url(static/img/feedbackbox2.gif);
-}
-#feedbackbox-tl { width: 392px;
-  height: 262px; left: 0; top: 0;
-  background-position: left top; }
-#feedbackbox-tr { width: 8px; height: 262px;
-  right: 0; top: 0; background-position: right top; }
-#feedbackbox-bl { width: 392px;
-  height: 8px; left: 0; bottom: 0;
-  background-position: left bottom; }
-#feedbackbox-br { width: 8px; height: 8px; bottom: 0; right: 0;
-  background-position: right bottom; }
-#feedbackbox-hide { width: 22px; height: 22px; right: 9px; top: 7px;
-  background-position: -569px -6px;
-}
-#feedbackbox-back { width: 384px;
-  height: 254px; left: 8px; top: 8px;
-  background-position: -8px -8px;
-  background-color: white; }
-#feedbackbox-contents { width: 384px;
-  height: 254px; left: 8px; top: 8px;
-  position: absolute; font-size: 1.4em; color: #444; }
-#feedbackbox-contentsinner { padding: 10px; }
-#feedbackbox-send { width: 50px; height: 22px; right: 15px; bottom: 15px;
-  background-position: -535px -363px;
-}
-#feedbackbox-email { left: 90px; top: 48px; width: 356px; height: auto; }
-#feedbackbox-message { left: 90px; top: 84px; width: 358px; height: 100px; }
-#feedbackbox-response { position: absolute; bottom: 15px; left: 15px;
-  width: 390px; height: auto; font-size: 1.2em; display: none; }
-#feedbackbox .goodresponse { font-weight: bold; color: green; }
-#feedbackbox .badresponse { font-weight: bold; color: red; }
-#feedbackbox p { margin-bottom: 1em; }
-#feedbackbox ul { margin: 1em 0 1em 2em }
-#feedbackbox li { padding: 0.3em 0; }
-#feedbackbox li a { display: block; font-weight: bold; }
-#feedbackbox li a:hover { background: #ffe; }
-#feedbackbox a, #feedbackbox li a:visited { color: #47b; }
-#feedbackbox tt { font-size: 110%; }
-*/
 .expand-collapse {
   height: 22px;
   background-image: url(static/img/sharedistri.gif);
@@ -1100,7 +714,7 @@ position:absolute;
 top:40px;
 font-size:14px;
 width:400px;
-right: 5px;
+right: 20px;
 z-index: 500;
 background-color: #000;
 color: white;
@@ -1145,47 +759,7 @@ ul#colorpickerswatches li:hover
   cursor: pointer;
 }
 
-/*.user{
-border: 1px solid #BBBBBB;
-padding-left:2px;
-padding-right:2px;
-height:20px;
-border-style:solid;
-border-width:1px;
-border-color:grey;
-background-color:lightblue;
-display:inline;
-min-width:20px;
-display:inline;
-cursor:default;
-}
 
-.myuser{
-border: 1px solid #BBBBBB;
-padding-left:2px;
-padding-right:2px;
-height:20px;
-border-style:solid;
-border-width:1px;
-border-color:grey;
-background-color:lightblue;
-display:inline;
-min-width:20px;
-display:inline;
-cursor:pointer;
-}
-
-.myuser a{
-text-decoration:none;
-color:#000;
-}
-
-
-.username{
-padding-left:4px;
-padding-right:4px;
-padding-top:2px;
-}*/
 
 #chatbox
 {
@@ -1211,18 +785,27 @@ padding-top:2px;
   background-color: white;
   border: 1px solid white;
   overflow-y:scroll;
-  height: 165px;
   font-size: 12px;
+  position:absolute;
+  right:0px;
+  left:0px;
+  top:25px;
+  bottom:25px;
 }
 
 #chattext p
 {
   padding: 3px;
+  overflow-x: hidden;
 }
 
 #chatinputbox
 {
   padding: 3px 2px;
+  position: absolute;
+  bottom:0px;
+  right:0px;
+  left:3px;
 }
 
 #chatlabel
@@ -1255,6 +838,7 @@ padding-top:2px;
   border-top: 1px solid #999;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  background-color:#fff;
 }
 
 #chaticon a
@@ -1282,6 +866,8 @@ padding-top:2px;
 #titlelabel
 {
   font-size:13px;
+  margin-left:20px;
+  padding-top:3px;
 } 
 
 #titlecross
@@ -1303,3 +889,32 @@ padding-top:2px;
   margin-right: 3px;
   margin-top:2px;
 }
+
+
+/* resizable stuff for chat */
+.ui-resizable {
+position: relative;
+} 
+.ui-resizable-handle { 
+  position: absolute;
+  font-size: 0.1px;
+  z-index: 99999;
+  display: block;
+    
+} 
+/*
+.ui-resizable-disabled .ui-resizable-handle, .ui-resizable- autohide .ui-resizable-handle { display: none; } 
+*/
+
+.ui-resizable-nw {
+  cursor: nw-resize; 
+  width: 22px; 
+  height: 22px; 
+  left: 0px; top: 0px; 
+  background-size: 100% auto;
+  background-image: url("/static/img/nw-resize.png");
+  background-repeat: no-repeat;
+/*  background-position: -5px -5px;*/
+} 
+.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: 
+-5px; top: -5px;} 

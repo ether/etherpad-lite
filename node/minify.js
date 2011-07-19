@@ -39,7 +39,7 @@ exports.padJS = function(req, res)
 {
   res.header("Content-Type","text/javascript");
 
-  var jsFiles = ["jquery.min.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_utils.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui-slide.js", "chat.js"];
+  var jsFiles = ["jquery.min.js", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js"];
   
   //minifying is enabled
   if(settings.minify)
@@ -241,6 +241,7 @@ exports.padJS = function(req, res)
   
     for(var i in jsFiles)
     {
+	console.log(jsFiles[i]);
       res.write("loadjsfile('"+ jsFiles[i] + "');\n");
     }
     

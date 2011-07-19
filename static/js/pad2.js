@@ -205,7 +205,6 @@ var pad = {
   
     //initialize the chat
     chat.init();
-    
     pad.diagnosticInfo.uniqueId = padutils.uniqueId();
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
