@@ -31,55 +31,55 @@ var clientVars = {};  // ]]>
 
 <ul id="menu_left">
 <li>
-  <a href="javascript:void (window.pad&&pad.editbarClick('bold'));" title="Bold (ctrl-B)">
+  <a onClick="window.pad&&pad.editbarClick('bold');return false" title="Bold (ctrl-B)">
     <img src="../static/img/editbar_bold.gif" width="16" height="16" />
   </a>
 </li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('italic'));" title="Italics (ctrl-I)">
+	<a onClick="window.pad&&pad.editbarClick('italic'); return false;" title="Italics (ctrl-I)">
 	  <img src="../static/img/editbar_italic.gif" width="16" height="16" />
 	</a>
 </li>
 <li>
-  <a href="javascript:void (window.pad&&pad.editbarClick('underline'));" title="Underline (ctrl-U)">
+  <a onClick="window.pad&&pad.editbarClick('underline');return false;" title="Underline (ctrl-U)">
     <img src="../static/img/editbar_underline.gif" width="16" height="16" />
   </a>
 </li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('strikethrough'));" title="Strikethrough">
+	<a onClick="window.pad&&pad.editbarClick('strikethrough');return false;" title="Strikethrough">
 	  <img src="../static/img/editbar_strikethrough.gif" width="16" height="16" />
 	</a>
 </li>
 <li class="separator"></li>
 <li>
-  <a href="javascript:void (window.pad&&pad.editbarClick('insertunorderedlist'));" title="Toggle Bullet List">
+  <a onClick="window.pad&&pad.editbarClick('insertunorderedlist');return false;" title="Toggle Bullet List">
     <img src="../static/img/editbar_insertunorderedlist.gif" width="16" height="16" />
   </a>
 </li>
 <li>
-  <a href="javascript:void (window.pad&&pad.editbarClick('indent'));" title="Indent List">
+  <a onClick="window.pad&&pad.editbarClick('indent');return false;" title="Indent List">
     <img src="../static/img/editbar_indent.gif" width="16" height="16" />
   </a>
 </li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('outdent'));" title="Unindent List">
+	<a onClick="window.pad&&pad.editbarClick('outdent');return false;" title="Unindent List">
 	  <img src="../static/img/editbar_outdent.gif" width="16" height="16" />
 	</a>
 </li>
 <li class="separator"></li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('undo'));" title="Undo (ctrl-Z)">
+	<a onClick="window.pad&&pad.editbarClick('undo');return false;" title="Undo (ctrl-Z)">
 	  <img src="../static/img/editbar_undo.gif" width="16" height="16" />
 	</a>
 </li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('redo'));" title="Redo (ctrl-Y)">
+	<a onClick="window.pad&&pad.editbarClick('redo');return false;" title="Redo (ctrl-Y)">
 	  <img src="../static/img/editbar_redo.gif" width="16" height="16" />
 	</a>
 </li>
 <li class="separator"></li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('clearauthorship'));" title="Clear Authorship Colors">
+	<a onClick="window.pad&&pad.editbarClick('clearauthorship');return false;" title="Clear Authorship Colors">
 	  <img src="../static/img/editbar_clearauthorship.gif" width="16" height="16" />
 	</a>
 </li>
@@ -88,18 +88,18 @@ var clientVars = {};  // ]]>
 <ul id="menu_right">
 
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('readonly'));" title="Create a readonly link for this pad">
+	<a onClick="window.pad&&pad.editbarClick('readonly');return false;" title="Create a readonly link for this pad">
 	  <img src="../static/img/editbar_readonly.gif" width="16" height="16" />
 	</a>
 </li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('import_export'));"
+	<a onClick="window.pad&&pad.editbarClick('import_export');return false;"
 	title="(Placeholder, not implemented so far) Import/Export from/to different document formats">
 	  <img src="../static/img/editbar_import_export.gif" width="16" height="16" />
 	</a>
 </li>
 <li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('embed'));" title="Embed this pad">
+	<a onClick="window.pad&&pad.editbarClick('embed');return false;" title="Embed this pad">
 	  <img src="../static/img/editbar_embed.gif" width="16" height="16" />
 	</a>
 </li>
@@ -117,7 +117,7 @@ We removed this feature cause its not worth the space it needs in the editbar
 </li>-->
 <li class="separator"></li>
 <!--<li>
-	<a href="javascript:void (window.pad&&pad.editbarClick('chat'));"
+	<a onClick="window.pad&&pad.editbarClick('chat'); return false;"
 	title="(Placeholder, not implemented so far) Open the chat for this pad">
 	  <img src="../static/img/editbar_chat.gif" width="16" height="16" />
 	</a>
@@ -131,7 +131,7 @@ We removed this feature cause its not worth the space it needs in the editbar
   </a>
 </li>
 <li>
-  <a href="javascript:void (window.pad&&pad.editbarClick('showusers'));" title="Show connected users">
+  <a onClick="window.pad&&pad.editbarClick('showusers');return false;" title="Show connected users">
     <img id="showusersicon" src="../static/img/editbar_showusers.gif" width="16" height="16" /> <span id="online_count">1</span>
   </a>
 </li>
@@ -218,7 +218,7 @@ Use this link to share a read-only version of your pad:<input id="readonlyInput"
 </div>
 
 <div id="chaticon">
-<a href="javascript:chat.show();"
+<a onClick="chat.show();return false;"
 	title="Open the chat for this pad">
 	  <span id="chatlabel">Chat</span>
 	  <img src="../static/img/editbar_chat.gif" width="16" height="16" />
