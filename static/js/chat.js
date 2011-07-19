@@ -11,6 +11,7 @@ var chat = (function()
         }, stop: function(event,ui){
           $("#editorcontainer").show();
         }});
+
       });
     },
     hide: function () 
