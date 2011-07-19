@@ -828,6 +828,8 @@ ul#colorpickerswatches li:hover
 
 #chaticon
 {
+  cursor:pointer;
+  cursor:hand;
   z-index: 400;
   position:absolute;
   bottom:0px;
@@ -868,6 +870,7 @@ ul#colorpickerswatches li:hover
   font-size:13px;
   margin-left:20px;
   padding-top:3px;
+  position:absolute;
 } 
 
 #titlecross
