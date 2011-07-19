@@ -6,6 +6,7 @@ var chat = (function()
       $("#chaticon").hide("slide", { direction: "down" }, 500, function()
       {
         $("#chatbox").show("slide", { direction: "down" }, 750, self.scrollDown);
+	$("#chatbox").resizable();
       });
     },
     hide: function () 
