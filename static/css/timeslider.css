@@ -1,0 +1,194 @@
+#editorcontainerbox {
+  overflow: auto;
+}
+
+#padcontent {
+  padding: 10px;
+  font-size: 12px;
+}
+
+#timeslider-wrapper {
+  position: relative;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+}
+
+#timeslider-left {
+  position: absolute;
+  left:0px;
+  background-image: url(../../static/img/timeslider_left.png);
+  width: 134px;
+  height: 63px;
+}
+
+#timeslider-right {
+  position: absolute;
+  top:0px;
+  right:0px;
+  background-image: url(../../static/img/timeslider_right.png);
+  width: 155px;
+  height: 63px;
+}
+
+
+#timeslider {
+/*  margin:7px;*/
+  margin-bottom: 0px;
+  height: 63px;
+  margin-left: 9px;
+  margin-right: 9px;
+  background-image: url(../../static/img/timeslider_background.png);
+}
+
+div#timeslider #timeslider-slider {
+  position: absolute;
+  left: 0px;
+  top: 1px;
+  height: 61px;
+  width: 100%;
+}
+
+div#ui-slider-handle {
+  width: 13px;
+  height: 61px;
+  background-image: url(../../static/img/crushed_current_location.png);
+  cursor: pointer;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+* html div#ui-slider-handle { /* IE 6/7 */
+  background-image: url(../../static/img/current_location.gif);  
+}
+
+div#ui-slider-bar {
+  position: relative;
+  margin-right: 148px;
+  height: 35px;
+  margin-left: 5px;
+  top: 20px;
+  cursor: pointer;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+
+}
+
+div#timeslider div#playpause_button {
+  background-image: url(../../static/img/crushed_button_undepressed.png);
+  width: 47px;
+  height: 47px;
+  position: absolute;
+  right: 77px;
+  top: 9px;
+}
+
+div#timeslider div#playpause_button div#playpause_button_icon {
+  background-image: url(../../static/img/play.png);
+  width: 47px;
+  height: 47px;
+  position: absolute;
+  top :0px;
+  left:0px;
+}
+* html div#timeslider div#playpause_button div#playpause_button_icon {
+  background-image: url(../../static/img/play.gif); /* IE 6/7 */
+}
+
+div#timeslider div#playpause_button div.pause#playpause_button_icon {
+  background-image: url(../../static/img/pause.png);
+}
+* html div#timeslider div#playpause_button div.pause#playpause_button_icon {
+  background-image: url(../../static/img/pause.gif); /* IE 6/7 */
+}
+
+div #timeslider div#steppers div#leftstar {
+  position: absolute;
+  right: 34px;
+  top: 8px;
+  width:30px;
+  height:21px;
+  background: url(../../static/img/stepper_buttons.png) 0px 44px;
+  overflow:hidden;
+}
+
+div #timeslider div#steppers div#rightstar {
+  position: absolute;
+  right: 5px;
+  top: 8px;
+  width:29px;
+  height:21px;
+  background: url(../../static/img/stepper_buttons.png) 29px 44px;
+  overflow:hidden;
+}
+
+div #timeslider div#steppers div#leftstep {
+  position: absolute;
+  right: 34px;
+  top: 33px;
+  width:30px;
+  height:21px;
+  background: url(../../static/img/stepper_buttons.png) 0px 22px;
+  overflow:hidden;
+}
+
+div #timeslider div#steppers div#rightstep {
+  position: absolute;
+  right: 5px;
+  top: 33px;
+  width:29px;
+  height:21px;
+  background: url(../../static/img/stepper_buttons.png) 29px 22px;
+  overflow:hidden;
+}
+
+#timeslider div.star {
+  position: absolute;
+  top: 40px;
+  background-image: url(../../static/img/star.png);
+  width: 15px;
+  height: 16px;
+  cursor: pointer;
+}
+* html #timeslider div.star {
+  background-image: url(../../static/img/star.gif); /* IE 6/7 */
+}
+
+#timeslider div#timer {
+  position: absolute;
+  font-family: Arial, sans-serif;
+  left: 7px;
+  top: 9px;
+  width: 122px;
+  text-align: center;
+  color: white;
+  font-size: 11px;
+}
+
+.topbarcenter{
+display:none;
+}
+
+#docbar{
+display:none;
+}
+
+#padmain{
+top:30px;
+}
+
+#editbarright{
+float:right;
+}
+
+#returnbutton
+{ 
+  font-size: 16px;
+  line-height: 29px;
+  margin-top: 0;
+  padding-right: 6pt;
+}
