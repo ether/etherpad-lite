@@ -921,3 +921,79 @@ position: relative;
 } 
 .ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: 
 -5px; top: -5px;} 
+
+#importexport{
+  position:absolute;
+  top:40px;
+  font-size:14px;
+  width:400px;
+  right: 20px;
+  z-index: 500;
+  background-color: #000;
+  color: white;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.7);
+  padding: 10px;
+ -moz-border-radius: 6px;
+  border-radius: 6px;
+  height:170px;
+}
+
+#import{
+  position:absolute;
+  width:200px;
+  left:10px;
+  line-height:20px;
+}
+
+#export{
+  position:absolute;
+  width:180px;
+  right:10px;
+  line-height:20px;
+}
+
+.exporttype{
+  line-height:25px;
+  background-repeat:no-repeat;
+  padding-left:25px;
+  background-image: url("/static/img/fileicons.gif");
+}
+
+#importexportline{
+  border: dotted 1px;
+  height: 165px;
+  position:absolute;
+  width:0px;
+  left:210px;
+  opacity:.8;
+}
+
+button{
+background-image: -moz-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
+}
+
+#exporthtml{
+  background-position: 2px -25px;
+}
+
+#exportplain{
+  background-position: 2px -121px;
+}
+
+#exportword{
+  background-position: 2px -0px;
+}
+
+#exportpdf{
+  background-position: 2px -97px;
+}
+
+#exportopen{
+  background-position: 2px -74px;
+}
+
+#exportwordle{
+  background-position: 2px -49px;
+}
+
