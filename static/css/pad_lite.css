@@ -785,8 +785,12 @@ ul#colorpickerswatches li:hover
   background-color: white;
   border: 1px solid white;
   overflow-y:scroll;
-  height: 165px;
   font-size: 12px;
+  position:absolute;
+  right:0px;
+  left:0px;
+  top:25px;
+  bottom:25px;
 }
 
 #chattext p
@@ -798,6 +802,10 @@ ul#colorpickerswatches li:hover
 #chatinputbox
 {
   padding: 3px 2px;
+  position: absolute;
+  bottom:0px;
+  right:0px;
+  left:3px;
 }
 
 #chatlabel
@@ -858,6 +866,8 @@ ul#colorpickerswatches li:hover
 #titlelabel
 {
   font-size:13px;
+  margin-left:20px;
+  padding-top:3px;
 } 
 
 #titlecross
@@ -879,3 +889,32 @@ ul#colorpickerswatches li:hover
   margin-right: 3px;
   margin-top:2px;
 }
+
+
+/* resizable stuff for chat */
+.ui-resizable {
+position: relative;
+} 
+.ui-resizable-handle { 
+  position: absolute;
+  font-size: 0.1px;
+  z-index: 99999;
+  display: block;
+    
+} 
+/*
+.ui-resizable-disabled .ui-resizable-handle, .ui-resizable- autohide .ui-resizable-handle { display: none; } 
+*/
+
+.ui-resizable-nw {
+  cursor: nw-resize; 
+  width: 22px; 
+  height: 22px; 
+  left: 0px; top: 0px; 
+  background-size: 100% auto;
+  background-image: url("/static/img/nw-resize.png");
+  background-repeat: no-repeat;
+/*  background-position: -5px -5px;*/
+} 
+.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: 
+-5px; top: -5px;} 

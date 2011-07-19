@@ -6,7 +6,11 @@ var chat = (function()
       $("#chaticon").hide("slide", { direction: "down" }, 500, function()
       {
         $("#chatbox").show("slide", { direction: "down" }, 750, self.scrollDown);
-	$("#chatbox").resizable();
+ 	$("#chatbox").resizable({ handles: 'nw', start: function(event,ui){
+	  $("#editorcontainer").hide();
+        }, stop: function(event,ui){
+          $("#editorcontainer").show();
+        }});
       });
     },
     hide: function () 
@@ -19,7 +23,7 @@ var chat = (function()
     },
     scrollDown: function()
     {
-      console.log($('#chatbox').css("display"));
+      //console.log($('#chatbox').css("display"));
     
       if($('#chatbox').css("display") != "none")
         $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
