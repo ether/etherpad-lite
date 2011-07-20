@@ -926,7 +926,7 @@ position: relative;
   position:absolute;
   top:40px;
   font-size:14px;
-  width:400px;
+  width:450px;
   right: 20px;
   z-index: 500;
   background-color: #000;
@@ -934,14 +934,14 @@ position: relative;
   background-color: rgb(0,0,0);
   background-color: rgba(0,0,0,0.7);
   padding: 10px;
- -moz-border-radius: 6px;
+  -moz-border-radius: 6px;
   border-radius: 6px;
   height:170px;
 }
 
 #import{
   position:absolute;
-  width:200px;
+  width:250px;
   left:10px;
   line-height:20px;
 }
@@ -965,12 +965,13 @@ position: relative;
   height: 165px;
   position:absolute;
   width:0px;
-  left:210px;
+  left:260px;
   opacity:.8;
 }
 
-button{
-background-image: -moz-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
+.impexpbutton{
+  background-image: -moz-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
+  padding:3px;
 }
 
 #exporthtml{

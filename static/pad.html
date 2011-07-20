@@ -207,9 +207,9 @@ We removed this feature cause its not worth the space it needs in the editbar
 <div id="importexport">
 <div id="import">
   Import from text file, HTML, Word, or RTF:<br/><br/>
-  <button name="choosefile">Choose file</button>
-  <div id="fileselected">No file Chosen</div><br/>
-  <button name="importit">Import now</button>
+  <input id="choosefile" name="choosefile" type="file">
+<!--  <div id="fileselected">No file Chosen</div><br/> -->
+  <input type="submit" class="impexpbutton" id="importit" value="Import now">
 </div>
 <div id="importexportline"></div>
 <div id="export">
