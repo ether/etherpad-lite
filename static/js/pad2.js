@@ -21,6 +21,7 @@ var socket;
 $(document).ready(function()
 {
   handshake();
+// This is a temporary location, Peter to move
   $("#exporthtmla").attr("href", document.location.href + "/export/html");
   $("#exportplaina").attr("href", document.location.href + "/export/txt");
   $("#exportworda").attr("href", document.location.href + "/export/doc");
