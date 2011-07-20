@@ -21,12 +21,11 @@ var socket;
 $(document).ready(function()
 {
   handshake();
-// temporary place holder for exports, peter to move wherever he wants to put
   $("#exporthtmla").attr("href", document.location.href + "/export/html");
-  $("#exportplaina").attr("href", document.location.href + "/export/plain");
-  $("#exportworda").attr("href", document.location.href + "/export/word");
+  $("#exportplaina").attr("href", document.location.href + "/export/txt");
+  $("#exportworda").attr("href", document.location.href + "/export/doc");
   $("#exportpdfa").attr("href", document.location.href + "/export/pdf");
-  $("#exportopena").attr("href", document.location.href + "/export/open");
+  $("#exportopena").attr("href", document.location.href + "/export/odt");
   $("#exportwordlea").attr("href", document.location.href + "/export/wordle");
 });
 
