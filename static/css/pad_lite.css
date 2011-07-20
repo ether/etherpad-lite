@@ -936,6 +936,7 @@ position: relative;
   -moz-border-radius: 6px;
   border-radius: 6px;
   height:170px;
+  display:none;
 }
 
 #import{
