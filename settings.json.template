@@ -31,5 +31,9 @@
   
   /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly, 
      but makes it impossible to debug the javascript/css */
-  "minify" : true
+  "minify" : true,
+  
+  /* This is the path to the Abiword executable. Setting it to null, disables abiword.
+     Abiword is needed to enable the import/export of pads*/  
+  "abiword" : null
 }

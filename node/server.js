@@ -31,6 +31,7 @@ var async = require('async');
 var express = require('express');
 var path = require('path');
 var minify = require('./minify');
+var exportHandler;
 var exporthtml;
 var readOnlyManager;
 
@@ -68,6 +69,7 @@ async.waterfall([
     //load modules that needs a initalized db
     readOnlyManager = require("./ReadOnlyManager");
     exporthtml = require("./exporters/exporthtml");
+    exportHandler = require('./ExportHandler');
     
     //set logging
     if(settings.logHTTP)
@@ -189,6 +191,28 @@ async.waterfall([
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/timeslider.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
+    });
+    
+    //serve timeslider.html under /p/$padname/timeslider
+    app.get('/p/:pad/export/:type', function(req, res, next)
+    {
+      var types = ["pdf", "doc", "txt", "html", "odt"];
+      //send a 404 if we don't support this filetype
+      if(types.indexOf(req.params.type) == -1)
+      {
+        next();
+        return;
+      }
+      
+      //if abiword is disabled, and this is a format we only support with abiword, output a message
+      if(settings.abiword == null && req.params.type != "html" && req.params.type != "txt" )
+      {
+        res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
+        return;
+      }
+      
+      res.header("Server", serverName);
+      exportHandler.doExport(req, res, req.params.pad, req.params.type);
     });
     
     //serve index.html under /

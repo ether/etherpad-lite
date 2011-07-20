@@ -46,6 +46,11 @@ exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchron
  */
 exports.minify = true;
 
+/**
+ * The path of the abiword executable
+ */
+exports.abiword = null;
+
 //read the settings sync
 var settingsStr = fs.readFileSync("../settings.json").toString();
 
@@ -75,7 +80,7 @@ for(var i in settings)
   }
 
   //we know this setting, so we overwrite it
-  if(exports[i])
+  if(exports[i] !== undefined)
   {
     exports[i] = settings[i];
   }
