@@ -958,6 +958,8 @@ position: relative;
   background-repeat:no-repeat;
   padding-left:25px;
   background-image: url("/static/img/fileicons.gif");
+  color:#fff;
+  text-decoration:none;
 }
 
 #importexportline{
