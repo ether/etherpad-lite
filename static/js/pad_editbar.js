@@ -105,6 +105,11 @@ var padeditbar = (function()
           self.toogleDropDown("embed");
           $('#embedinput').focus().select();
         }
+        else if (cmd == 'import_export')
+        {
+	  self.toogleDropDown("importexport");
+        }
+
         else if (cmd == 'readonly')
         {
           var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
@@ -158,7 +163,7 @@ var padeditbar = (function()
     },
     toogleDropDown: function(moduleName)
     {
-      var modules = ["embed", "users", "readonly"];
+      var modules = ["embed", "users", "readonly", "importexport"];
       
       //hide all modules
       if(moduleName == "none")
