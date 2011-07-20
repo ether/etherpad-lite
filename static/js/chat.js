@@ -69,13 +69,13 @@ var chat = (function()
         var count = Number($("#chatcounter").text());
         count++;
         $("#chatcounter").text(count);
-        
-        //animation
-        $("#chatcounter").css({"font-weight": "bold"});
-        setTimeout('$("#chatcounter").css({"font-weight": "normal"})', 500);
+        // chat throb stuff -- Just make it throb in for ~2 secs then fadeotu
+        $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
+        $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},2000);
       }
       
       self.scrollDown();
+
     },
     init: function()
     {

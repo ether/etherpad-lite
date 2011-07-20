@@ -1022,3 +1022,21 @@ position: relative;
   height:50px;
 }
 
+#chatthrob{
+display:none;
+position:absolute;
+bottom:40px;
+font-size:14px;
+width:150px;
+height:40px;
+right: 20px;
+z-index: 200;
+background-color: #000;
+color: white;
+background-color: rgb(0,0,0);
+background-color: rgba(0,0,0,0.7);
+padding: 10px;
+-moz-border-radius: 6px;
+border-radius: 6px;
+opacity:.8;
+}
