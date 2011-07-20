@@ -35,6 +35,18 @@ $(window).unload(function()
   pad.dispose();
 });
 
+// Wordle code, Peter to move
+function loadCont(){
+    padUrl = location.pathname;
+    padHost = location.host;
+    var padUrl = "http://" + padHost +  padUrl + "/export/txt";
+    $.get(padUrl, function(data) {
+    $('.result').html(data);
+    $('#text').html(data);
+    $('#wordlepost').submit();
+  });
+}
+
 function createCookie(name, value, days)
 {
   if (days)
