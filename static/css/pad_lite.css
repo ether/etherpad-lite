@@ -914,7 +914,7 @@ position: relative;
   height: 22px; 
   left: 0px; top: 0px; 
   background-size: 100% auto;
-  background-image: url("/static/img/nw-resize.png");
+  background-image: url("../img/nw-resize.png");
   background-repeat: no-repeat;
 /*  background-position: -5px -5px;*/
 } 
@@ -956,7 +956,7 @@ position: relative;
   line-height:25px;
   background-repeat:no-repeat;
   padding-left:25px;
-  background-image: url("/static/img/fileicons.gif");
+  background-image: url("../img/fileicons.gif");
   color:#fff;
   text-decoration:none;
 }
