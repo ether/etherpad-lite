@@ -10,6 +10,7 @@ var chat = (function()
 	  $("#editorcontainer").hide();
         }, stop: function(event,ui){
           $("#editorcontainer").show();
+ 	  self.scrollDown();
         }});
 
       });
