@@ -5,7 +5,8 @@
   "keywords"      : ["etherpad", "realtime", "collaborative", "editor"],
   "author"        : "Peter 'Pita' Martischka <petermartischka@googlemail.com>",
   "contributors": [
-                    { "name": "Hans Pinckaers"}
+                    { "name": "John McLear", 
+                      "name": "Hans Pinckaers"}
                   ],
   "dependencies"  : {
                       "socket.io"  : "0.7.7",
@@ -15,7 +16,8 @@
                       "express"    : "2.4.2",
                       "clean-css"  : "0.2.4",
                       "uglify-js"  : "1.0.4",
-                      "gzip"       : "0.1.0"
+                      "gzip"       : "0.1.0",
+                      "formidable" : "1.0.2"
                     },
   "version"       : "0.0.4"
 }

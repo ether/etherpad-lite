@@ -191,6 +191,20 @@ Class('Pad', {
 			return this.atext.text;
 		},
 		
+		setText : function(newText)
+		{
+		  //clean the new text
+		  newText = exports.cleanText(newText);
+		  
+		  var oldText = this.text();
+		  
+		  //create the changeset 
+		  var changeset = Changeset.makeSplice(oldText, 0, oldText.length-1, newText);
+		  
+		  //append the changeset
+		  this.appendRevision(changeset);
+		},
+		
 		appendChatMessage: function(text, userId, time)
 		{
 		  this.chatHead++;

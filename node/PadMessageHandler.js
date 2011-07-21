@@ -433,76 +433,79 @@ function handleUserChanges(client, message)
         pad.appendRevision(nlChangeset);
       }
         
-      //ex. updatePadClients
-        
-      //go trough all sessions on this pad
-      async.forEach(pad2sessions[pad.id], function(session, callback)
-      {
-        var lastRev = sessioninfos[session].rev;
-        
-        //https://github.com/caolan/async#whilst
-        //send them all new changesets
-        async.whilst(
-          function (){ return lastRev < pad.getHeadRevisionNumber()},
-          function(callback)
-          {
-            var author, revChangeset;
-          
-            var r = ++lastRev;
-          
-            async.parallel([
-              function (callback)
-              {
-                pad.getRevisionAuthor(r, function(err, value)
-                {
-                  author = value;
-                  callback(err);
-                });
-              },
-              function (callback)
-              {
-                pad.getRevisionChangeset(r, function(err, value)
-                {
-                  revChangeset = value;
-                  callback(err);
-                });
-              }
-            ], function(err)
-            {
-              if(err)
-              {
-                callback(err);
-                return;
-              }
-                
-              if(author == sessioninfos[session].author)
-              {
-                socketio.sockets.sockets[session].json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
-              }
-              else
-              {
-                var forWire = Changeset.prepareForWire(revChangeset, pad.pool);
-                var wireMsg = {"type":"COLLABROOM","data":{type:"NEW_CHANGES", newRev:r,
-                             changeset: forWire.translated,
-                             apool: forWire.pool,
-                             author: author}};        
-                             
-                socketio.sockets.sockets[session].json.send(wireMsg);
-              }
-              
-              callback(null);
-            });
-          },
-          callback
-        );
-          
-        sessioninfos[session].rev = pad.getHeadRevisionNumber();
-      },callback);  
+      exports.updatePadClients(pad, callback);
     }
   ], function(err)
   {
     if(err) throw err;
   });
+}
+
+exports.updatePadClients = function(pad, callback)
+{       
+  //go trough all sessions on this pad
+  async.forEach(pad2sessions[pad.id], function(session, callback)
+  {
+    var lastRev = sessioninfos[session].rev;
+    
+    //https://github.com/caolan/async#whilst
+    //send them all new changesets
+    async.whilst(
+      function (){ return lastRev < pad.getHeadRevisionNumber()},
+      function(callback)
+      {
+        var author, revChangeset;
+      
+        var r = ++lastRev;
+      
+        async.parallel([
+          function (callback)
+          {
+            pad.getRevisionAuthor(r, function(err, value)
+            {
+              author = value;
+              callback(err);
+            });
+          },
+          function (callback)
+          {
+            pad.getRevisionChangeset(r, function(err, value)
+            {
+              revChangeset = value;
+              callback(err);
+            });
+          }
+        ], function(err)
+        {
+          if(err)
+          {
+            callback(err);
+            return;
+          }
+            
+          if(author == sessioninfos[session].author)
+          {
+            socketio.sockets.sockets[session].json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
+          }
+          else
+          {
+            var forWire = Changeset.prepareForWire(revChangeset, pad.pool);
+            var wireMsg = {"type":"COLLABROOM","data":{type:"NEW_CHANGES", newRev:r,
+                         changeset: forWire.translated,
+                         apool: forWire.pool,
+                         author: author}};        
+                         
+            socketio.sockets.sockets[session].json.send(wireMsg);
+          }
+          
+          callback(null);
+        });
+      },
+      callback
+    );
+      
+    sessioninfos[session].rev = pad.getHeadRevisionNumber();
+  },callback);  
 }
 
 /**

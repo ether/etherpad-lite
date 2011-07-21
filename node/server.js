@@ -32,6 +32,7 @@ var express = require('express');
 var path = require('path');
 var minify = require('./minify');
 var exportHandler;
+var importHandler;
 var exporthtml;
 var readOnlyManager;
 
@@ -51,7 +52,7 @@ catch(e)
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 
-//cache a week
+//cache 6 hours
 exports.maxAge = 1000*60*60*6;
 
 async.waterfall([
@@ -70,6 +71,7 @@ async.waterfall([
     readOnlyManager = require("./ReadOnlyManager");
     exporthtml = require("./exporters/exporthtml");
     exportHandler = require('./ExportHandler');
+    importHandler = require('./ImportHandler');
     
     //set logging
     if(settings.logHTTP)
@@ -213,6 +215,20 @@ async.waterfall([
       
       res.header("Server", serverName);
       exportHandler.doExport(req, res, req.params.pad, req.params.type);
+    });
+    
+    //handle import requests
+    app.post('/p/:pad/import', function(req, res, next)
+    {
+      //if abiword is disabled, skip handling this request
+      if(settings.abiword == null)
+      {
+        next();
+        return; 
+      }
+      
+      res.header("Server", serverName);
+      importHandler.doImport(req, res, req.params.pad);
     });
     
     //serve index.html under /

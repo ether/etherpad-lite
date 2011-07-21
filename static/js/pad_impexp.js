@@ -24,9 +24,9 @@ var padimpexp = (function()
 
   function addImportFrames()
   {
-    $("#impexp-import .importframe").remove();
-    $('#impexp-import').append(
-    $('<iframe style="display: none;" name="importiframe" class="importframe"></iframe>'));
+    $("#import .importframe").remove();
+    var iframe = $('<iframe style="display: none;" name="importiframe" class="importframe"></iframe>');
+    $('#import').append(iframe);
   }
 
   function fileInputUpdated()
@@ -64,7 +64,7 @@ var padimpexp = (function()
     $('#importmessagefail').fadeOut("fast");
     var ret = window.confirm("Importing a file will overwrite the current text of the pad." + " Are you sure you want to proceed?");
     if (ret)
-    {
+    {        
       hidePanelCall = paddocbar.hideLaterIfNoOtherInteraction();
       currentImportTimer = window.setTimeout(function()
       {
@@ -88,6 +88,11 @@ var padimpexp = (function()
       }, 0);
       $('#importarrow').stop(true, true).hide();
       $('#importstatusball').show();
+      
+      $("#import .importframe").load(function()
+      {
+        importDone();
+      });
     }
     return ret;
   }
@@ -225,6 +230,8 @@ var padimpexp = (function()
   var self = {
     init: function()
     {
+      $("#importform").get(0).setAttribute('action', document.location.href + "/import"); 
+    
       $("#impexp-close").click(function()
       {
         paddocbar.setShownPanel(null);
@@ -249,13 +256,13 @@ var padimpexp = (function()
     disable: function()
     {
       $("#impexp-disabled-clickcatcher").show();
-      $("#impexp-import").css('opacity', 0.5);
+      $("#import").css('opacity', 0.5);
       $("#impexp-export").css('opacity', 0.5);
     },
     enable: function()
     {
       $("#impexp-disabled-clickcatcher").hide();
-      $("#impexp-import").css('opacity', 1);
+      $("#import").css('opacity', 1);
       $("#impexp-export").css('opacity', 1);
     }
   };
