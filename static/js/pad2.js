@@ -21,31 +21,12 @@ var socket;
 $(document).ready(function()
 {
   handshake();
-// This is a temporary location, Peter to move
-  $("#exporthtmla").attr("href", document.location.href + "/export/html");
-  $("#exportplaina").attr("href", document.location.href + "/export/txt");
-  $("#exportworda").attr("href", document.location.href + "/export/doc");
-  $("#exportpdfa").attr("href", document.location.href + "/export/pdf");
-  $("#exportopena").attr("href", document.location.href + "/export/odt");
-  $("#exportwordlea").attr("href", document.location.href + "/export/wordle");
 });
 
 $(window).unload(function()
 {
   pad.dispose();
 });
-
-// Wordle code, Peter to move
-function loadCont(){
-    padUrl = location.pathname;
-    padHost = location.host;
-    var padUrl = "http://" + padHost +  padUrl + "/export/txt";
-    $.get(padUrl, function(data) {
-    $('.result').html(data);
-    $('#text').html(data);
-    $('#wordlepost').submit();
-  });
-}
 
 function createCookie(name, value, days)
 {
