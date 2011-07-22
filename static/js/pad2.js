@@ -80,7 +80,7 @@ function handshake()
     resource: resource
   });
 
-  socket.on('connect', function()
+  socket.once('connect', function()
   {
     var padId = document.URL.substring(document.URL.lastIndexOf("/") + 1);
 
