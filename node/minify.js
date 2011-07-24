@@ -228,24 +228,34 @@ exports.padJS = function(req, res)
       res.sendfile(pathStr, { maxAge: server.maxAge });
     })
   }
-  //minifying is disabled, so load the files with jquery
+  //minifying is disabled, so put the files together in one file
   else
   {
-    res.write("function loadjsfile(filename){\n"+
-              "var fileref=document.createElement('script');\n"+
-              "fileref.setAttribute('type','text/javascript');\n"+
-              "var path = 'static/js/' + filename;\n"+
-              "fileref.setAttribute('src', path);\n" + 
-              "document.getElementsByTagName('head')[0].appendChild(fileref);\n" +
-              "}\n");
+    var fileValues = {};
   
-    for(var i in jsFiles)
+    //read all js files
+    async.forEach(jsFiles, function (item, callback)
     {
-	console.log(jsFiles[i]);
-      res.write("loadjsfile('"+ jsFiles[i] + "');\n");
-    }
-    
-    res.end();
+      fs.readFile("../static/js/" + item, "utf-8", function(err, data)
+      {            
+        fileValues[item] = data;
+        callback(err);
+      });
+    }, 
+    //send all files together
+    function(err)
+    {
+      if(err) throw err;
+      
+      for(var i=0;i<jsFiles.length;i++)
+      {
+        var fileName = jsFiles[i];
+        res.write("\n\n\n/*** File: static/js/" + fileName + " ***/\n\n\n");
+        res.write(fileValues[fileName]);
+      }
+      
+      res.end();
+    });
   }
 }
 
