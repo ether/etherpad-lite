@@ -52,7 +52,7 @@ If you're new to git and github, start here <http://learn.github.com/p/intro.htm
 
 If you're new to node.js, start with this video <http://youtu.be/jo_B4LTHi3I>.
 
-If you wanna find out how Etherpads Easysync works (the library that makes it realy realtime), start with this [PDF](https://github.com/Pita/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading it).
+If you wanna find out how Etherpads Easysync works (the library that makes it really realtime), start with this [PDF](https://github.com/Pita/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading it).
 
 You know all this and just want to know how you can help? Look at the [TODO list](https://github.com/Pita/etherpad-lite/wiki/TODO).
 You can join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) or go to the freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)
