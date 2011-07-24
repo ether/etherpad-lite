@@ -7,12 +7,8 @@
 <meta http-equiv="Content-Language" content="en-us"/>
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
 <title>Etherpad Lite</title>
-<!-- <base href="http://localhost:9001/" />-->
 <!-- CSS -->
-<link href="../static/css/pad_lite.css" rel="stylesheet" type="text/css"/>
-<!--[if lte IE 7]>
-<link href="../static/css/pad_ie_lite.css" rel="stylesheet" type="text/css"/>
-<![endif]-->
+<link href="../static/css/pad.css" rel="stylesheet" type="text/css"/>
 <!-- javascript -->
 <script type="text/javascript">
   // <![CDATA[
@@ -234,7 +230,7 @@ We removed this feature cause its not worth the space it needs in the editbar
   <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
   <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
   <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
-  <a id="exportwordlea" target="_blank" onClick="loadCont();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
+  <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
   <form id="wordlepost" name="wall" action="http://wordle.net/advanced" method="POST" style="margin-left:0px;"> 
     <div id="hidetext" style=""><textarea id="text" name="text" id="text" style="display:none;">Coming soon!</textarea></div> 
   </form> 

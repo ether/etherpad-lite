@@ -1000,6 +1000,10 @@ position: relative;
   background-position: 2px -49px;
 }
 
+#export a{
+  text-decoration: none;
+}
+
 #importstatusball{
   display:none;
 }

@@ -230,6 +230,14 @@ var padimpexp = (function()
   var self = {
     init: function()
     {
+      // build the export links
+      $("#exporthtmla").attr("href", document.location.href + "/export/html");
+      $("#exportplaina").attr("href", document.location.href + "/export/txt");
+      $("#exportworda").attr("href", document.location.href + "/export/doc");
+      $("#exportpdfa").attr("href", document.location.href + "/export/pdf");
+      $("#exportopena").attr("href", document.location.href + "/export/odt");
+      $("#exportwordlea").attr("href", document.location.href + "/export/wordle");
+    
       $("#importform").get(0).setAttribute('action', document.location.href + "/import"); 
     
       $("#impexp-close").click(function()
@@ -264,6 +272,19 @@ var padimpexp = (function()
       $("#impexp-disabled-clickcatcher").hide();
       $("#import").css('opacity', 1);
       $("#impexp-export").css('opacity', 1);
+    },
+    export2Wordle: function()
+    {
+      padUrl = location.pathname;
+      padHost = location.host;
+      var padUrl = "http://" + padHost +  padUrl + "/export/txt";
+      
+      $.get(padUrl, function(data) 
+      {
+        $('.result').html(data);
+        $('#text').html(data);
+        $('#wordlepost').submit();
+      });
     }
   };
   return self;
