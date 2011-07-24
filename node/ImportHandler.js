@@ -109,9 +109,9 @@ exports.doImport = function(req, res, padId)
     }
   ], function(err)
   {
+    if(err) throw err;
+  
     //close the connection
     res.send("ok");
-  
-    if(err) throw err;
   });
 }

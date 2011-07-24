@@ -29,10 +29,10 @@ var queue = async.queue(doConvertTask, 1);
 //spawn the abiword process
 var abiword = spawn(settings.abiword, ["--plugin", "AbiCommand"]);
 
-//output error messages to stderr
+//append error messages to the buffer
 abiword.stderr.on('data', function (data) 
 {
-  console.error("Abiword: " + data);
+  stdoutBuffer += data.toString();
 });
 
 //throw exceptions if abiword is dieing
@@ -57,8 +57,7 @@ function onAbiwordStdout(data)
   if(stdoutBuffer.search("AbiWord:>") != -1)
   {
     //filter the feedback message
-    var lines = stdoutBuffer.split("\n");
-    var err = lines [1] == "OK" ? null : lines[1];
+    var err = stdoutBuffer.search("OK") != -1 ? null : stdoutBuffer;
     
     //reset the buffer
     stdoutBuffer = "";
