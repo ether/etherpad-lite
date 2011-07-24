@@ -58,6 +58,38 @@ exports.doImport = function(req, res, padId)
       });
     },
     
+    //ensure this is a file ending we know, else we change the file ending to .txt
+    //this allows us to accept source code files like .c or .java
+    function(callback)
+    {
+      var fileEnding = srcFile.split(".")[1];
+      var knownFileEndings = ["txt", "doc", "docx", "pdf", "odt", "html", "htm"];
+      
+      //find out if this is a known file ending
+      var fileEndingKnown = false;
+      for(var i in knownFileEndings)
+      {
+        if(fileEnding == knownFileEndings[i])
+        {
+          fileEndingKnown = true;
+        }
+      }
+      
+      //if the file ending is known, continue as normal
+      if(fileEndingKnown)
+      {
+        callback();
+      }
+      //we need to rename this file with a .txt ending
+      else
+      {
+        var oldSrcFile = srcFile;
+        srcFile = srcFile.split(".")[0] + ".txt";
+        
+        fs.rename(oldSrcFile, srcFile, callback);
+      }
+    },
+    
     //convert file to text
     function(callback)
     {
