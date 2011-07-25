@@ -1,92 +1,166 @@
-<!DOCTYPE html>
-  <head>
-    <title>Etherpad Lite</title>
-    <style>
-      * {
-        font-family: Helvetica, Verdana, Sans-Serif;
-      }
-      
-      html, body {
-        height:100%;
-        margin:0;
-        padding:0;
-      }
-      
-      #wrapper {
-        margin:0 auto;
-        margin-top: 200px;
-        width: 300px;
-        height: 200px;
-      }
-      
-      #button {
-        width: 300px;
-        height: 80px;
+<!doctype html> 
+<html>
+    
+        <title>Etherpad Lite</title>
         
-        display: block;
-        
-        margin:auto;
-        
-        border: 2px solid #999;
- 
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-        
-        background #fff;
-        background: -moz-linear-gradient(top, #aaa, white 70%, white 70%);  
-        background: -webkit-gradient(linear, 0 0, 0 100%, from(#aaa), color-stop(70%, white), color-stop(70%, white));  
-        
-        text-decoration: none;
-        text-align: center;
-      }
-      
-      #button span {     
-        display: block;
-        margin-top:15px;   
-        font-size: 40px;
-        color: #333;
-        font-weight:bold;
-        text-decoration: none;
-      }
-      
-      #nameWrapper {
-        text-align: center;
-      }
-    </style>
-    <script type="text/javascript">
-      function go2Name()
-      {
-        var padname = document.getElementById("padname").value;
-        if(padname.length > 0)
-        {
-          window.location = "p/" + padname;
-        }
-      }
-      
-      function go2Random()
-      {
-        window.location = "p/" + randomPadName() ;
-      }
-      
-      function randomPadName() 
-      {
-	      var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-	      var string_length = 10;
-	      var randomstring = '';
-	      for (var i=0; i<string_length; i++) {
-		      var rnum = Math.floor(Math.random() * chars.length);
-		      randomstring += chars.substring(rnum,rnum+1);
-	      }
-	      return randomstring;
-      }
-    </script>
-  </head>
-  <body>
-    <div id="wrapper">
-      <a href="javascript:go2Random()" id="button"><span>New Pad</span></a>
-      <div id="nameWrapper"><form>
-        <span><br>or create a Pad with the name <br></span> <input type="text" id="padname"/> <input type="submit" value="OK" onclick="go2Name();return false;">
-      </form></div></a>
-    </div>
-  </body>
+        <style> 
+            * {
+             margin: 0; padding: 0;
+            }
+            
+            body {
+             background: rgba(0, 0, 0, .05);
+             color: #555;
+             text-shadow: 0 1px 0 #fff;
+             font: 14px helvetica,sans-serif;
+             background: #ccc;
+             background:    -moz-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
+             background: -webkit-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
+             background:     -ms-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
+             background:      -o-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
+             overflow-x: hidden;
+            }
+            
+            #container {
+             border-top: 1px solid #999;
+             margin-top: 160px;
+             width: 100%;
+             text-align: center;
+             padding: 15px;
+             background: #eee;
+             background: -webkit-linear-gradient(#fff, #ccc);
+             background:    -moz-linear-gradient(#fff, #ccc);
+             background:     -ms-linear-gradient(#fff, #ccc);
+             background:      -o-linear-gradient(#fff, #ccc);
+             opacity: .9;
+             box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.3);
+             -webkit-animation: pop .3s ease-in 1;
+             -moz-animation: pop .3s ease-in 1;
+            }
+            
+            @-webkit-keyframes pop {
+             from {
+              opacity: 0;
+             }
+             to {
+              opacity: 1;
+             }
+            }
+            
+            @-moz-keyframes pop {
+             from {
+              opacity: 0;
+             }
+             to {
+              opacity: 1;
+             }
+            }
+            
+            #button {
+             margin: 0 auto;
+             border-radius: 3px;
+             text-align: center;
+             font: 36px verdana,arial,sans-serif;
+             color: white;
+             text-shadow: 0 -1px 0 rgba(0,0,0,.8);
+             height: 70px;
+             line-height: 70px;
+             width: 300px;
+             background: #555;
+             background: -webkit-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
+             background:    -moz-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
+             background:     -ms-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
+             background:      -o-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
+             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
+            } 
+            
+            #button:hover {
+             cursor: pointer;
+             background: #666;
+             background: -webkit-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
+             background:    -moz-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
+             background:     -ms-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
+             background:      -o-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
+            }
+             
+            #button:active {
+             box-shadow: inset 0 1px 12px rgba(0, 0, 0, 0.9);
+             background: #444;
+             background: -webkit-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
+             background:    -moz-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
+             background:     -ms-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
+             background:      -o-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
+            }
+            
+            input[type="text"] {
+             font-weight: bold;
+             font-size: 14px;
+             padding: 5px;
+             width: 245px;
+            }
+            
+            input[type="submit"] {
+             height: 30px;
+             width: 40px;
+            }
+            
+            ::selection {
+             background-color:rgba(119,119,119,.8);
+             color:#fff;
+            }
+            
+            ::-moz-selection {
+             background-color:rgba(119,119,119,.8);
+             color:#fff;
+            }
+            
+            #label {
+              color:black;
+              text-align:left;
+              margin: 0 auto;
+              width:300px;
+              padding-left: 3px;
+            }
+        </style> 
+
+        <div id="container">
+            <div id="button" onclick="go2Random()">New Pad</div> 
+            <br><br> 
+            <div id="label">or create/open a Pad with the name</div>
+            <input type="text" id="padname"> <input type="submit" value="OK" onclick="go2Name();return false;">
+        </div> 
+  
+        <script> 
+            function go2Name() 
+            {
+                var padname = document.getElementById("padname").value;
+                if (padname.length > 0) 
+                {
+                    window.location = "p/" + padname;
+                }
+                else
+                {
+                    alert("Please enter a name");
+                }
+            }
+
+            function go2Random() 
+            {
+                window.location = "p/" + randomPadName();
+            }
+
+            function randomPadName() 
+            {
+                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+                var string_length = 10;
+                var randomstring = '';
+                for (var i = 0; i < string_length; i++) 
+                {
+                    var rnum = Math.floor(Math.random() * chars.length);
+                    randomstring += chars.substring(rnum, rnum + 1);
+                }
+                return randomstring;
+            }
+        </script> 
+    
 </html>
