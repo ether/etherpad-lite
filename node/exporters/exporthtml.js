@@ -317,14 +317,12 @@ exports.getPadHTMLDocument = function(padId, revNum, noDocType, callback) {
       return;
     }
   
-    var head = (noDocType?'':'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '+
-              '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')+
-    '<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">\n'+
+    var head = (noDocType?'':'<!doctype html>')+
+    '<html lang="en">\n'+
     (noDocType?'':
       '<head>\n'+
-      '<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n'+
-      '<meta http-equiv="Content-Language" content="en-us" />\n'+
-      '<style> * { font-family: Arial, sans-serif;\n'+
+      '<meta charset="utf-8">\n'+
+      '<style> * { font-family: arial, sans-serif;\n'+
       'font-size: 13px;\n'+
       'line-height: 17px; }</style>\n' +
       '</head>\n')+
