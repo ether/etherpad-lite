@@ -317,7 +317,7 @@ exports.getPadHTMLDocument = function(padId, revNum, noDocType, callback) {
       return;
     }
   
-    var head = (noDocType?'':'<!doctype html>')+
+    var head = (noDocType?'':'<!doctype html>\n')+
     '<html lang="en">\n'+
     (noDocType?'':
       '<head>\n'+
