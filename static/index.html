@@ -1,13 +1,22 @@
 <!doctype html> 
-<html>
-    
-        <title>Etherpad Lite</title>
-        
+<html>   
+        <title>Etherpad Lite</title> 
         <style> 
             * {
              margin: 0; padding: 0;
             }
-            
+            @-webkit-keyframes inception {
+              0% { opacity:0; -webkit-transform:scale(3); }
+              100% {}
+            }  
+            @-moz-keyframes inception {
+              0% { opacity:0; -moz-transform:scale(3); }
+              100% {}
+            }
+            @-o-keyframes inception {
+              0% { opacity:0; -o-transform:scale(3); }
+              100% {}
+            }
             body {
              background: rgba(0, 0, 0, .05);
              color: #555;
@@ -20,7 +29,6 @@
              background:      -o-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
              overflow-x: hidden;
             }
-            
             #container {
              border-top: 1px solid #999;
              margin-top: 160px;
@@ -34,28 +42,10 @@
              background:      -o-linear-gradient(#fff, #ccc);
              opacity: .9;
              box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.3);
-             -webkit-animation: pop .3s ease-in 1;
-             -moz-animation: pop .3s ease-in 1;
+             -webkit-animation: inception .3s linear 1;
+                -moz-animation: inception .3s linear 1;
+                  -o-animation: inception .3s linear 1;
             }
-            
-            @-webkit-keyframes pop {
-             from {
-              opacity: 0;
-             }
-             to {
-              opacity: 1;
-             }
-            }
-            
-            @-moz-keyframes pop {
-             from {
-              opacity: 0;
-             }
-             to {
-              opacity: 1;
-             }
-            }
-            
             #button {
              margin: 0 auto;
              border-radius: 3px;
@@ -73,7 +63,6 @@
              background:      -o-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
              box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
             } 
-            
             #button:hover {
              cursor: pointer;
              background: #666;
@@ -82,54 +71,37 @@
              background:     -ms-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
              background:      -o-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
             }
-             
             #button:active {
              box-shadow: inset 0 1px 12px rgba(0, 0, 0, 0.9);
              background: #444;
-             background: -webkit-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
-             background:    -moz-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
-             background:     -ms-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
-             background:      -o-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
-            }
-            
+             /*
+              background: -webkit-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
+              background:    -moz-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
+              background:     -ms-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
+              background:      -o-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
+             */
+            }  
             input[type="text"] {
              font-weight: bold;
              font-size: 14px;
              padding: 5px;
              width: 245px;
-            }
-            
+             outline: none;
+            }  
             input[type="submit"] {
              height: 30px;
              width: 40px;
             }
-            
-            ::selection {
-             background-color:rgba(119,119,119,.8);
-             color:#fff;
-            }
-            
-            ::-moz-selection {
-             background-color:rgba(119,119,119,.8);
-             color:#fff;
-            }
-            
-            #label {
-              color:black;
-              text-align:left;
-              margin: 0 auto;
-              width:300px;
-              padding-left: 3px;
-            }
         </style> 
-
-        <div id="container">
+        <div id="container"> 
             <div id="button" onclick="go2Random()">New Pad</div> 
-            <br><br> 
-            <div id="label">or create/open a Pad with the name</div>
-            <input type="text" id="padname"> <input type="submit" value="OK" onclick="go2Name();return false;">
+            <br> 
+            or create/open a Pad with the name
+            <form action="" onsubmit="go2Name();return false;"> 
+                    <input type="text" id="padname" autofocus> 
+                    <input type="submit" value="OK"> 
+            </form> 
         </div> 
-  
         <script> 
             function go2Name() 
             {
@@ -143,12 +115,12 @@
                     alert("Please enter a name");
                 }
             }
-
+ 
             function go2Random() 
             {
                 window.location = "p/" + randomPadName();
             }
-
+ 
             function randomPadName() 
             {
                 var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
@@ -162,5 +134,5 @@
                 return randomstring;
             }
         </script> 
-    
+        <!-- CC BY 3.0 Robin Buse --> 
 </html>
