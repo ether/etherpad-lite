@@ -247,19 +247,19 @@ function Ace2Editor()
       });
 
       // these lines must conform to a specific format because they are passed by the build script:      
-      iframeHTML.push($$INCLUDE_CSS_Q("static/css/iframe_editor.css"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/ace2_common.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/skiplist.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/virtual_lines.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/easysync2.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/cssmanager.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/colorutils.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/undomodule.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/contentcollector.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/changesettracker.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/linestylefilter.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/domline.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("static/js/ace2_inner.js"));
+      iframeHTML.push($$INCLUDE_CSS_Q("../static/css/iframe_editor.css"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/ace2_common.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/skiplist.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/virtual_lines.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/easysync2.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/cssmanager.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/colorutils.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/undomodule.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/contentcollector.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/changesettracker.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/linestylefilter.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/domline.js"));
+      iframeHTML.push($$INCLUDE_JS_Q("../static/js/ace2_inner.js"));
 
       iframeHTML.push('\'\\n<style type="text/css" title="dynamicsyntax"></style>\\n\'');
       iframeHTML.push('\'</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>\'');
@@ -267,7 +267,7 @@ function Ace2Editor()
       var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); ' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
       'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + iframeHTML.join('+') + ').replace(/\\\\x3c/g, \'<\');doc.write(text); doc.close(); ' + '}, 0); }';
 
-      var outerHTML = [doctype, '<html><head>', $$INCLUDE_CSS("static/css/iframe_editor.css"),
+      var outerHTML = [doctype, '<html><head>', $$INCLUDE_CSS("../static/css/iframe_editor.css"),
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
       '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript, '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>'];
