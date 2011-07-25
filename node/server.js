@@ -31,6 +31,7 @@ var async = require('async');
 var express = require('express');
 var path = require('path');
 var minify = require('./minify');
+var formidable = require('formidable');
 var exportHandler;
 var importHandler;
 var exporthtml;
@@ -215,6 +216,17 @@ async.waterfall([
       
       res.header("Server", serverName);
       importHandler.doImport(req, res, req.params.pad);
+    });
+    
+    //The Etherpad client side sends information about how a disconnect happen
+    //I don't know how to use them, but maybe there usefull, so we should print them out to the log
+    app.post('/ep/pad/connection-diagnostic-info', function(req, res)
+    {
+      new formidable.IncomingForm().parse(req, function(err, fields, files) 
+      { 
+        console.log(new Date().toUTCString() + ": DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
+        res.end("OK");
+      });
     });
     
     //serve index.html under /
