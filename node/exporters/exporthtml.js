@@ -246,32 +246,32 @@ function getHTMLFromAtext(pad, atext) {
 
       if (whichList >= lists.length) {
         lists.push([line.listLevel, line.listTypeName]);
-        pieces.push('<ul><li>', lineContent || '<br/>');
+        pieces.push('<ul><li>', lineContent || '<br>');
       }
       else if (whichList == -1) {
         if (line.text) {
           // non-blank line, end all lists
           pieces.push(new Array(lists.length+1).join('</li></ul\n>'));
           lists.length = 0;
-          pieces.push(lineContent, '<br\n/>');
+          pieces.push(lineContent, '<br>');
         }
         else {
-          pieces.push('<br/><br\n/>');
+          pieces.push('<br><br>');
         }
       }
       else {
         while (whichList < lists.length-1) {
-          pieces.push('</li></ul\n>');
+          pieces.push('</li></ul>');
           lists.length--;
         }
-        pieces.push('</li\n><li>', lineContent || '<br/>');
+        pieces.push('</li><li>', lineContent || '<br>');
       }
     }
     else {
-      pieces.push(lineContent, '<br\n/>');
+      pieces.push(lineContent, '<br>');
     }
   }
-  pieces.push(new Array(lists.length+1).join('</li></ul\n>'));
+  pieces.push(new Array(lists.length+1).join('</li></ul>'));
 
   return pieces.join('');
 }
