@@ -342,6 +342,8 @@ function loadBroadcastJS()
     $('#revision_date').html(revisionDate)
 
   }
+  
+  updateTimer();
 
   function goToRevision(newRevision)
   {

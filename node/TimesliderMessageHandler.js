@@ -163,10 +163,17 @@ function createTimesliderClientVars (padId, callback)
         callback(err);
       });
     },
+    //get the timestamp of the last revision
     function(callback)
     {
-      //currentTime: rev.timestamp,
-    
+      pad.getRevisionDate(pad.getHeadRevisionNumber(), function(err, date)
+      {
+        clientVars.currentTime = date;
+        callback(err);
+      });
+    },
+    function(callback)
+    {
       //get the head revision Number
       var lastRev = pad.getHeadRevisionNumber();
       
