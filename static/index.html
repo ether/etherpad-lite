@@ -78,23 +78,26 @@
               background:     -ms-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
               background:      -o-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
              */
-            }  
+            }
+            .label {
+             text-align: left;
+            }
             input[type="text"] {
              font-weight: bold;
-             font-size: 14px;
+             font-size: 17px;
              padding: 5px;
              width: 245px;
              outline: none;
             }  
             input[type="submit"] {
-             height: 30px;
+             height: 35px;
              width: 40px;
             }
         </style> 
         <div id="container"> 
             <div id="button" onclick="go2Random()">New Pad</div> 
             <br> 
-            or create/open a Pad with the name
+            <span class="label">or create/open a Pad with the name</span>
             <form action="" onsubmit="go2Name();return false;"> 
                     <input type="text" id="padname" autofocus> 
                     <input type="submit" value="OK"> 
