@@ -10,12 +10,12 @@
                   ],
   "dependencies"  : {
                       "socket.io"  : "0.7.7",
-                      "ueberDB"    : "0.0.9",
+                      "ueberDB"    : "0.0.10",
                       "async"      : "0.1.9",
                       "joose"      : "3.18.0",
-                      "express"    : "2.4.2",
+                      "express"    : "2.4.3",
                       "clean-css"  : "0.2.4",
-                      "uglify-js"  : "1.0.4",
+                      "uglify-js"  : "1.0.6",
                       "gzip"       : "0.1.0",
                       "formidable" : "1.0.2"
                     },
