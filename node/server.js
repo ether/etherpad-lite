@@ -87,19 +87,19 @@ async.waterfall([
     });
     
     //serve minified files
-    app.get('/minified/:id', function(req, res)
+    app.get('/minified/:id', function(req, res, next)
     { 
       res.header("Server", serverName);
       
       var id = req.params.id;
       
-      if(id == "pad.js")
+      if(id == "pad.js" || id == "timeslider.js")
       {
-        minify.padJS(req,res);
+        minify.minifyJS(req,res,id);
       }
       else
       {
-        res.send('404 - Not Found', 404);
+        next();
       }
     });
     
