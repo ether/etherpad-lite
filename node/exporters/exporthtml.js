@@ -246,32 +246,32 @@ function getHTMLFromAtext(pad, atext) {
 
       if (whichList >= lists.length) {
         lists.push([line.listLevel, line.listTypeName]);
-        pieces.push('<ul><li>', lineContent || '<br/>');
+        pieces.push('<ul><li>', lineContent || '<br>');
       }
       else if (whichList == -1) {
         if (line.text) {
           // non-blank line, end all lists
           pieces.push(new Array(lists.length+1).join('</li></ul\n>'));
           lists.length = 0;
-          pieces.push(lineContent, '<br\n/>');
+          pieces.push(lineContent, '<br>');
         }
         else {
-          pieces.push('<br/><br\n/>');
+          pieces.push('<br><br>');
         }
       }
       else {
         while (whichList < lists.length-1) {
-          pieces.push('</li></ul\n>');
+          pieces.push('</li></ul>');
           lists.length--;
         }
-        pieces.push('</li\n><li>', lineContent || '<br/>');
+        pieces.push('</li><li>', lineContent || '<br>');
       }
     }
     else {
-      pieces.push(lineContent, '<br\n/>');
+      pieces.push(lineContent, '<br>');
     }
   }
-  pieces.push(new Array(lists.length+1).join('</li></ul\n>'));
+  pieces.push(new Array(lists.length+1).join('</li></ul>'));
 
   return pieces.join('');
 }
@@ -317,14 +317,12 @@ exports.getPadHTMLDocument = function(padId, revNum, noDocType, callback) {
       return;
     }
   
-    var head = (noDocType?'':'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '+
-              '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')+
-    '<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">\n'+
+    var head = (noDocType?'':'<!doctype html>\n')+
+    '<html lang="en">\n'+
     (noDocType?'':
       '<head>\n'+
-      '<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n'+
-      '<meta http-equiv="Content-Language" content="en-us" />\n'+
-      '<style> * { font-family: Arial, sans-serif;\n'+
+      '<meta charset="utf-8">\n'+
+      '<style> * { font-family: arial, sans-serif;\n'+
       'font-size: 13px;\n'+
       'line-height: 17px; }</style>\n' +
       '</head>\n')+

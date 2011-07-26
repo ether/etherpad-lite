@@ -1,7 +1,7 @@
 # About
 Etherpad lite is a really-real time collaborative editor spawned from the Hell fire of Etherpad. 
 We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad Lite 
-is based on node.js what makes it much leigther and more stable than the original Etherpad. Our hope 
+is based on node.js what makes it much ligther and more stable than the original Etherpad. Our hope 
 is that this will encourage more users to install a realtime collaborative editor. A smaller and well 
 documented codebase makes it easier for developers to improve the code. Etherpad Lite is optimized 
 to be easy embeddable
@@ -61,4 +61,3 @@ You also help the project, if you only host a ep-lite instance and share your ex
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
-
