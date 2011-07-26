@@ -291,7 +291,8 @@ var padimpexp = (function()
     {
       padUrl = location.pathname;
       padHost = location.host;
-      var padUrl = "http://" + padHost +  padUrl + "/export/txt";
+      padProto = location.protocol;
+      var padUrl = padProto + "//" + padHost +  padUrl + "/export/txt";
       
       $.get(padUrl, function(data) 
       {
