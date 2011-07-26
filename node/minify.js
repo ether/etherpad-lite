@@ -30,16 +30,32 @@ var Buffer = require('buffer').Buffer;
 var gzip = require('gzip');
 var server = require('./server');
 
+var padJS = ["jquery.min.js", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js"];
+
+var timesliderJS = ["jquery.min.js", "plugins.js", "undo-xpopup.js", "json2.js", "colorutils.js", "draggable.js", "pad_utils.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "easysync2_client.js", "domline_client.js", "linestylefilter_client.js", "cssmanager_client.js", "broadcast.js", "broadcast_slider.js", "broadcast_revisions.js"];
+
 /**
- * Answers a http request for the pad javascript
+ * creates the minifed javascript for the given minified name
  * @param req the Express request
  * @param res the Express response
  */
-exports.padJS = function(req, res)
+exports.minifyJS = function(req, res, jsFilename)
 {
   res.header("Content-Type","text/javascript");
-
-  var jsFiles = ["jquery.min.js", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js"];
+  
+  //choose the js files we need
+  if(jsFilename == "pad.js")
+  {
+    jsFiles = padJS;
+  }
+  else if(jsFilename == "timeslider.js")
+  {
+    jsFiles = timesliderJS;
+  }
+  else
+  {
+    throw new Error("there is no profile for creating " + name);
+  }
   
   //minifying is enabled
   if(settings.minify)
@@ -91,7 +107,7 @@ exports.padJS = function(req, res)
       function(callback)
       {
         //check the modification time of the minified js
-        fs.stat("../var/minified_pad.js", function(err, stats)
+        fs.stat("../var/minified_" + jsFilename, function(err, stats)
         {
           if(err && err.code != "ENOENT") callback(err);
         
@@ -122,6 +138,13 @@ exports.padJS = function(req, res)
       //find all includes in ace.js and embed them 
       function(callback)
       {        
+        //if this is not the creation of pad.js, skip this part
+        if(jsFilename != "pad.js")
+        {
+          callback();
+          return;
+        }
+      
         var founds = fileValues["ace.js"].match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"]+\)/gi);
         
         //go trough all includes
@@ -194,7 +217,7 @@ exports.padJS = function(req, res)
           //write the results plain in a file
           function(callback)
           {
-            fs.writeFile("../var/minified_pad.js", result, "utf8", callback);  
+            fs.writeFile("../var/minified_" + jsFilename, result, "utf8", callback);  
           },
           //write the results compressed in a file
           function(callback)
@@ -202,7 +225,7 @@ exports.padJS = function(req, res)
             gzip(result, 9, function(err, compressedResult){
               if(err) {callback(err); return}
               
-              fs.writeFile("../var/minified_pad.js.gz", compressedResult, callback);  
+              fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);  
             });
           }
         ],callback);
@@ -217,12 +240,12 @@ exports.padJS = function(req, res)
       var pathStr;
       if(gzipSupport)
       {
-        pathStr = path.normalize(__dirname + "/../var/minified_pad.js.gz");
+        pathStr = path.normalize(__dirname + "/../var/minified_" + jsFilename + ".gz");
         res.header('Content-Encoding', 'gzip');
       }
       else
       {
-        pathStr = path.normalize(__dirname + "/../var/minified_pad.js");
+        pathStr = path.normalize(__dirname + "/../var/minified_" + jsFilename );
       }
       
       res.sendfile(pathStr, { maxAge: server.maxAge });

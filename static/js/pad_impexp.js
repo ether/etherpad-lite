@@ -233,12 +233,26 @@ var padimpexp = (function()
       // build the export links
       $("#exporthtmla").attr("href", document.location.href + "/export/html");
       $("#exportplaina").attr("href", document.location.href + "/export/txt");
-      $("#exportworda").attr("href", document.location.href + "/export/doc");
-      $("#exportpdfa").attr("href", document.location.href + "/export/pdf");
-      $("#exportopena").attr("href", document.location.href + "/export/odt");
       $("#exportwordlea").attr("href", document.location.href + "/export/wordle");
-    
-      $("#importform").get(0).setAttribute('action', document.location.href + "/import"); 
+      
+      //hide stuff thats not avaible if abiword is disabled
+      if(!clientVars.abiwordAvailable)
+      {
+        $("#exportworda").remove();
+        $("#exportpdfa").remove();
+        $("#exportopena").remove();
+        $("#importexport").css({"height":"95px"});
+        $("#importexportline").css({"height":"95px"});
+        $("#import").html("Import is not available");
+      }
+      else
+      {
+        $("#exportworda").attr("href", document.location.href + "/export/doc");
+        $("#exportpdfa").attr("href", document.location.href + "/export/pdf");
+        $("#exportopena").attr("href", document.location.href + "/export/odt");
+        
+        $("#importform").get(0).setAttribute('action', document.location.href + "/import"); 
+      }
     
       $("#impexp-close").click(function()
       {
