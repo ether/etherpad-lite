@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-type -P node-inspector &>/dev/null || { 
+hash node-inspector > /dev/null 2>&1 || { 
   echo "You need to install node-inspector to run the tests!" >&2
   echo "You can install it with npm" >&2
   echo "Run: npm install node-inspector" >&2

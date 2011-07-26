@@ -1,4 +1,4 @@
-#!/bin/bash                 
+#!/bin/sh
 
 #Move to the folder where ep-lite is installed
 FOLDER=$(dirname $(readlink -f $0))
@@ -10,20 +10,20 @@ if [ -d "../bin" ]; then
 fi
 
 #Stop the script if its started as root
-if [[ $EUID -eq 0 ]]; then
+if [ "$(id -u)" -eq 0 ]; then
    echo "You shouldn't start Etherpad-Lite as root!" 1>&2
    echo "Use authbind if you want to use a port lower than 1024 -> http://en.wikipedia.org/wiki/Authbind" 1>&2
    exit 1
 fi
 
 #Is node installed?
-type -P node &>/dev/null || { 
+hash node > /dev/null 2>&1 || { 
   echo "You need to install node to run Etherpad-Lite!" >&2
   exit 1 
 }
 
 #Is npm installed?
-type -P npm &>/dev/null || { 
+hash npm > /dev/null 2>&1 || { 
   echo "You need to install npm to run Etherpad-Lite!" >&2
   exit 1 
 }
@@ -43,12 +43,12 @@ NEEDED_VERSION="1.6.2"
 if [ -f "static/js/jquery.min.js" ]; then
   VERSION=$(cat static/js/jquery.min.js | head -n 2 | tail -n 1 | grep -o "v[0-9]*\.[0-9]*\.[0-9]*");
   
-  if [[ ${VERSION:1} = $NEEDED_VERSION ]]; then
+  if [ ${VERSION#v} = $NEEDED_VERSION ]; then
     DOWNLOAD_JQUERY="false"
   fi
 fi
 
-if [[ $DOWNLOAD_JQUERY = "true" ]]; then
+if [ $DOWNLOAD_JQUERY = "true" ]; then
   wget -O static/js/jquery.min.js http://code.jquery.com/jquery-$NEEDED_VERSION.min.js
 fi
 

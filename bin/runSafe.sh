@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #This script ensures that ep-lite is automatically restarting after an error happens
 
@@ -49,12 +49,12 @@ do
   bin/run.sh >>$1 2>>$1
   
   #Send email
-  if [ $ERROR_HANDLING == 1 ]; then
+  if [ $ERROR_HANDLING = 1 ]; then
     TIME_NOW=$(date +%s)
     TIME_SINCE_LAST_SEND=$(($TIME_NOW - $LAST_EMAIL_SEND))
     
     if [ $TIME_SINCE_LAST_SEND -gt $TIME_BETWEEN_EMAILS ]; then
-      echo -e "Server was restared at: $(date)\nThe last 50 lines of the log before the error happens:\n $(tail -n 50 $1)" | mail -s "Pad Server was restarted" $EMAIL_ADDRESS
+      printf "Server was restared at: $(date)\nThe last 50 lines of the log before the error happens:\n $(tail -n 50 $1)" | mail -s "Pad Server was restarted" $EMAIL_ADDRESS
       
       LAST_EMAIL_SEND=$TIME_NOW
     fi

@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-type -P nodeunit &>/dev/null || { 
+hash nodeunit > /dev/null 2>&1 || { 
   echo "You need to install Nodeunit to run the tests!" >&2
   echo "You can install it with npm" >&2
   echo "Run: npm install nodeunit" >&2
