@@ -20,6 +20,15 @@ var socket;
 
 $(document).ready(function()
 {
+  //test if the url is proper, means without any ? or # that doesn't belong to a url
+  //if it isn't proper, clean the url a do a redirect
+  var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);  
+  var expectedURL = document.location.href.substring(0,document.location.href.lastIndexOf("/") ) + "/" + padId;
+  if(expectedURL != document.location.href)
+  {
+    document.location = expectedURL;
+  }
+
   handshake();
 });
 
@@ -82,8 +91,8 @@ function handshake()
 
   socket.once('connect', function()
   {
-    var padId = document.URL.substring(document.URL.lastIndexOf("/") + 1);
-
+    var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
+    
     document.title = document.title + " | " + padId;
 
     var token = readCookie("token");
