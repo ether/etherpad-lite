@@ -24,6 +24,7 @@ var Changeset = require("./Changeset");
 var AttributePoolFactory = require("./AttributePoolFactory");
 var authorManager = require("./AuthorManager");
 var readOnlyManager = require("./ReadOnlyManager");
+var settings = require('./settings');
 
 /**
  * A associative array that translates a session to a pad
@@ -731,6 +732,7 @@ function handleClientReady(client, message)
             "fullWidth": false,
             "hideSidebar": false
         },
+        "abiwordAvailable": settings.abiword != null, 
         "hooks": {}
       }
       
