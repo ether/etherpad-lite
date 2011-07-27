@@ -267,6 +267,10 @@ async.waterfall([
     //reduce the log level
     io.set('log level', 2);
     
+    //minify socket.io javascript
+    if(settings.minify)
+      io.enable('browser client minification');
+    
     var padMessageHandler = require("./PadMessageHandler");
     var timesliderMessageHandler = require("./TimesliderMessageHandler");
     
