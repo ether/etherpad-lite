@@ -289,9 +289,7 @@ var padimpexp = (function()
     },
     export2Wordle: function()
     {
-      padUrl = location.pathname;
-      padHost = location.host;
-      var padUrl = "http://" + padHost +  padUrl + "/export/txt";
+      var padUrl = document.location.href + "/export/txt";
       
       $.get(padUrl, function(data) 
       {
