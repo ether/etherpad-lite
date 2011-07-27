@@ -21,7 +21,7 @@
 var util  = require('util');
 var spawn = require('child_process').spawn;
 var async = require("async");
-var settings = require("./settings");
+var settings = require("./Settings");
 
 //Queue with the converts we have to do
 var queue = async.queue(doConvertTask, 1);
