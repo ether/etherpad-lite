@@ -18,15 +18,15 @@
  * limitations under the License.
  */
 
-var exporthtml = require("./exporters/exporthtml");
-var padManager = require("./PadManager");
+var exporthtml = require("../utils/ExportHtml");
+var padManager = require("../db/PadManager");
 var async = require("async");
 var fs = require("fs");
-var settings = require('./settings');
+var settings = require('../utils/Settings');
 
 //load abiword only if its enabled
 if(settings.abiword != null)
-  var abiword = require("./Abiword");
+  var abiword = require("../utils/Abiword");
 
 /**
  * do a requested export

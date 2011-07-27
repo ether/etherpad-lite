@@ -19,12 +19,12 @@
  */
 
 var async = require("async");
-var padManager = require("./PadManager");
-var Changeset = require("./Changeset");
-var AttributePoolFactory = require("./AttributePoolFactory");
-var authorManager = require("./AuthorManager");
-var readOnlyManager = require("./ReadOnlyManager");
-var settings = require('./settings');
+var padManager = require("../db/PadManager");
+var Changeset = require("../utils/Changeset");
+var AttributePoolFactory = require("../utils/AttributePoolFactory");
+var authorManager = require("../db/AuthorManager");
+var readOnlyManager = require("../db/ReadOnlyManager");
+var settings = require('../utils/Settings');
 
 /**
  * A associative array that translates a session to a pad

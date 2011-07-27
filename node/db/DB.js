@@ -20,7 +20,7 @@
  */
 
 var ueberDB = require("ueberDB");
-var settings = require("./settings");
+var settings = require("../utils/Settings");
 
 //set database settings
 var db = new ueberDB.database(settings.dbType, settings.dbSettings);

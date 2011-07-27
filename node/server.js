@@ -24,13 +24,13 @@ require('joose');
 
 var socketio = require('socket.io');
 var fs = require('fs');
-var settings = require('./settings');
-var socketIORouter = require("./SocketIORouter");
-var db = require('./db');
+var settings = require('./utils/Settings');
+var socketIORouter = require("./handler/SocketIORouter");
+var db = require('./db/DB');
 var async = require('async');
 var express = require('express');
 var path = require('path');
-var minify = require('./minify');
+var minify = require('./utils/Minify');
 var formidable = require('formidable');
 var exportHandler;
 var importHandler;
@@ -69,10 +69,10 @@ async.waterfall([
     var app = express.createServer();
     
     //load modules that needs a initalized db
-    readOnlyManager = require("./ReadOnlyManager");
-    exporthtml = require("./exporters/exporthtml");
-    exportHandler = require('./ExportHandler');
-    importHandler = require('./ImportHandler');
+    readOnlyManager = require("./db/ReadOnlyManager");
+    exporthtml = require("./utils/ExportHtml");
+    exportHandler = require('./handler/ExportHandler');
+    importHandler = require('./handler/ImportHandler');
     
     //set logging
     if(settings.logHTTP)
@@ -271,8 +271,8 @@ async.waterfall([
     if(settings.minify)
       io.enable('browser client minification');
     
-    var padMessageHandler = require("./PadMessageHandler");
-    var timesliderMessageHandler = require("./TimesliderMessageHandler");
+    var padMessageHandler = require("./handler/PadMessageHandler");
+    var timesliderMessageHandler = require("./handler/TimesliderMessageHandler");
     
     //Initalize the Socket.IO Router
     socketIORouter.setSocketIO(io);

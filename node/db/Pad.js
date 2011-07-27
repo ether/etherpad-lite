@@ -2,12 +2,12 @@
  * The pad object, defined with joose
  */
 
-var Changeset = require("../Changeset");
-var AttributePoolFactory = require("../AttributePoolFactory");
-var db = require("../db").db;
+var Changeset = require("../utils/Changeset");
+var AttributePoolFactory = require("../utils/AttributePoolFactory");
+var db = require("./DB").db;
 var async = require("async");
-var settings = require('../settings');
-var authorManager = require("../AuthorManager");
+var settings = require('../utils/Settings');
+var authorManager = require("./AuthorManager");
 
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix line breaks and convert Tabs to spaces

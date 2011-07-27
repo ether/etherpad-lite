@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-var settings = require('./settings');
+var settings = require('./Settings');
 var async = require('async');
 var fs = require('fs');
 var cleanCSS = require('clean-css');
@@ -28,7 +28,7 @@ var pro = require("uglify-js").uglify;
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var gzip = require('gzip');
-var server = require('./server');
+var server = require('../server');
 
 var padJS = ["jquery.min.js", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js"];
 
@@ -240,12 +240,12 @@ exports.minifyJS = function(req, res, jsFilename)
       var pathStr;
       if(gzipSupport)
       {
-        pathStr = path.normalize(__dirname + "/../var/minified_" + jsFilename + ".gz");
+        pathStr = path.normalize(__dirname + "/../../var/minified_" + jsFilename + ".gz");
         res.header('Content-Encoding', 'gzip');
       }
       else
       {
-        pathStr = path.normalize(__dirname + "/../var/minified_" + jsFilename );
+        pathStr = path.normalize(__dirname + "/../../var/minified_" + jsFilename );
       }
       
       res.sendfile(pathStr, { maxAge: server.maxAge });

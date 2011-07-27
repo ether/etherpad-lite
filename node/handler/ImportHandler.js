@@ -18,16 +18,16 @@
  * limitations under the License.
  */
 
-var padManager = require("./PadManager");
+var padManager = require("../db/PadManager");
 var padMessageHandler = require("./PadMessageHandler");
 var async = require("async");
 var fs = require("fs");
-var settings = require('./settings');
+var settings = require('../utils/Settings');
 var formidable = require('formidable');
 
 //load abiword only if its enabled
 if(settings.abiword != null)
-  var abiword = require("./Abiword");
+  var abiword = require("../utils/Abiword");
   
 /**
  * do a requested import

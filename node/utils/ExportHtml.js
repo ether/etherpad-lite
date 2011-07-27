@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 var async = require("async");
-var Changeset = require("../Changeset");
-var padManager = require("../PadManager");
+var Changeset = require("./Changeset");
+var padManager = require("../db/PadManager");
 
 
 function getPadPlainText(pad, revNum) {

@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-var db = require("./db").db;
+var db = require("./DB").db;
 var async = require("async");
 
 /**

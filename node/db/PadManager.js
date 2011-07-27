@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-var Changeset = require("./Models/Pad");
+require("../db/Pad");
 
 /**
  * A Array with all known Pads
