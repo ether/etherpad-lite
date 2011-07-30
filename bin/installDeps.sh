@@ -53,4 +53,12 @@ fi
 echo "Clear minfified cache..."
 rm -f var/minified*
 
+echo "ensure custom css/js files are created..."
+for f in $(cat "static/custom/.gitignore")
+do
+  if [ ! -f "static/custom/$f" ]; then
+    touch "static/custom/$f"
+  fi
+done
+
 exit 0
