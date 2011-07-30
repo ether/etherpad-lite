@@ -1,5 +1,5 @@
-# MessageHandler
-`require("./MessageHandler");`
+# handler/PadMessag
+`require("./handler/PadMessageHandler");`
 
 The MessageHandler handles all Messages that comes from Socket.IO and controls the sessions
 
@@ -29,4 +29,10 @@ Handles a message from a user
 A associative array that translates a session to a pad
 
 * **socket_io** The Socket
+
+- - -
+### updatePadClients (pad, callback)
+
+* **pad** *No description*
+* **callback** *No description*
 

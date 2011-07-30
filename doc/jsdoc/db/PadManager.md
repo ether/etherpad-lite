@@ -1,5 +1,5 @@
-# PadManager
-`require("./PadManager");`
+# db/PadMana
+`require("./db/PadManager");`
 
 The Pad Manager is a Factory for pad Objects
 

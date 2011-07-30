@@ -1,10 +1,14 @@
-# settings
-`require("./settings");`
+# utils/Se
+`require("./utils/Settings");`
 
 The Settings Modul reads the settings out of settings.json and provides 
 this information to the other modules
 
 ##Variables
+
+- - -
+### abiword 
+The path of the abiword executable
 
 - - -
 ### dbSettings 
@@ -17,6 +21,10 @@ This setting is passed with dbType to ueberDB to set up the database
 - - -
 ### defaultPadText 
 The default Text of a new pad
+
+- - -
+### ip 
+The IP ep-lite should listen to
 
 - - -
 ### logHTTP 

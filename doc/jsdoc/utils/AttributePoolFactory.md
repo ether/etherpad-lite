@@ -1,5 +1,5 @@
-# AttributePoolFactory
-`require("./AttributePoolFactory");`
+# utils/AttributePoolF
+`require("./utils/AttributePoolFactory");`
 
 This code represents the Attribute Pool Object of the original Etherpad. 
 90% of the code is still like in the original Etherpad

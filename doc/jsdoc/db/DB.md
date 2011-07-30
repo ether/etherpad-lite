@@ -1,5 +1,5 @@
 # db
-`require("./db");`
+`require("./db/DB");`
 
 The DB Module provides a database initalized with the settings 
 provided by the settings module

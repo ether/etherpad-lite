@@ -1,9 +1,16 @@
-# AuthorManager
-`require("./AuthorManager");`
+# db/AuthorMana
+`require("./db/AuthorManager");`
 
 The AuthorManager controlls all information about the Pad authors
 
 ## Functions
+
+- - -
+### getAuthor (author, callback)
+Internal function that creates the database entry for an author
+
+* **author** *(String)* The id of the author
+* **callback** *(Function)* callback(err, authorObj)
 
 - - -
 ### getAuthor4Token (token, callback)

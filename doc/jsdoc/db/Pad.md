@@ -1,5 +1,5 @@
-# Mod
-`require("./Models/Pad");`
+# db/
+`require("./db/Pad");`
 
 The pad object, defined with joose
 
