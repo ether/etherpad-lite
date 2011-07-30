@@ -4,6 +4,8 @@
   Please edit settings.json, not settings.json.template
 */
 {
+  //Ip and port which etherpad should bind at
+  "ip": "0.0.0.0",
   "port" : 9001,
   
   //The Type of the database. You can choose between sqlite and mysql

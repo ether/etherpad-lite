@@ -22,6 +22,11 @@
 var fs = require("fs");
 
 /**
+ * The IP ep-lite should listen to
+ */
+exports.ip = "0.0.0.0";
+  
+/**
  * The Port ep-lite should listen to
  */
 exports.port = 9001;

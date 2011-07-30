@@ -254,8 +254,8 @@ async.waterfall([
     });
     
     //let the server listen
-    app.listen(settings.port);
-    console.log("Server is listening at port " + settings.port);
+    app.listen(settings.port, settings.ip);
+    console.log("Server is listening at " + settings.ip + ":" + settings.port);
 
     //init socket.io and redirect all requests to the MessageHandler
     var io = socketio.listen(app);
