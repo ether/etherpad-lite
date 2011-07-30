@@ -32,44 +32,68 @@ exports.getAuthor4Token = function (token, callback)
 {  
   var author;
   
-  async.waterfall([
+  async.series([
     //try to get the author for this token
     function(callback)
     {
-      db.get("token2author:" + token, callback);
+      db.get("token2author:" + token, function (err, _author)
+      {
+        author = _author;
+        callback(err);
+      });
     },
-    function(value, callback)
+    function(callback)
     {
       //there is no author with this token, so create one
-      if(value == null)
+      if(author == null)
       {
-        //create the new author name
-        author = "g." + _randomString(16);
+        author = createAuthor(token);
         
-        //set the token2author db entry
-        db.set("token2author:" + token, author);
-        
-        //set the globalAuthors db entry
-        var authorObj = {colorId : Math.floor(Math.random()*32), name: null, timestamp: new Date().getTime()};
-        db.set("globalAuthor:" + author, authorObj); 
-        
-        callback(null);
+        callback();
       }
       //there is a author with this token
       else
       {
-        author = value;
-        
-        //update the author time
-        db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
-
-        callback(null);
+        //check if there is also an author object for this token, if not, create one
+        db.get("globalAuthor:" + author, function(err, authorObject)
+        {
+          if(authorObject == null)
+          {
+            createAuthor(token);
+          }
+          else
+          {
+            //update the author time
+            db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
+          }
+          
+          callback();
+        });
       }
     }
   ], function(err)
   {
     callback(err, author);
   });
+}
+
+/**
+ * Internal function that creates the database entry for an author 
+ * @param {String} token The token 
+ */
+function createAuthor (token)
+{
+  //create the new author name
+  author = "g." + _randomString(16);
+        
+  //set the token2author db entry
+  db.set("token2author:" + token, author);
+  
+  //set the globalAuthors db entry
+  var authorObj = {colorId : Math.floor(Math.random()*32), name: null, timestamp: new Date().getTime()};
+  db.set("globalAuthor:" + author, authorObj); 
+  
+  return author;
 }
 
 /**
