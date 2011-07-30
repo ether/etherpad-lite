@@ -6,7 +6,8 @@
   "author"        : "Peter 'Pita' Martischka <petermartischka@googlemail.com>",
   "contributors": [
                     { "name": "John McLear", 
-                      "name": "Hans Pinckaers"}
+                      "name": "Hans Pinckaers",
+                      "name": "Robin Buse"}
                   ],
   "dependencies"  : {
                       "socket.io"  : "0.7.7",
