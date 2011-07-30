@@ -1,5 +1,10 @@
 #!/bin/sh
 
+#Move to the folder where ep-lite is installed
+FOLDER=$(dirname $(readlink -f $0))
+cd $FOLDER 
+
+#Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
   cd "../"
 fi
