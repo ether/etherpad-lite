@@ -415,9 +415,13 @@ function handleUserChanges(client, message)
     function (callback)
     {
       var prevText = pad.text();
-      if (Changeset.oldLen(changeset) != prevText.length) {
-        throw "Can't apply USER_CHANGES "+changeset+" with oldLen " 
-        + Changeset.oldLen(changeset) + " to document of length " + prevText.length;
+      
+      if (Changeset.oldLen(changeset) != prevText.length) 
+      {
+        console.log("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
+        client.json.send({disconnect:"badChangeset"});
+        callback();
+        return;
       }
         
       var thisAuthor = sessioninfos[client.id].author;
