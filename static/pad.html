@@ -81,18 +81,18 @@
 <ul id="menu_right">
 
 <li>
-	<a onClick="window.pad&&pad.editbarClick('readonly');return false;" title="Create a readonly link for this pad">
+	<a id="readonlylink" onClick="window.pad&&pad.editbarClick('readonly');return false;" title="Create a readonly link for this pad">
 	  <img src="../static/img/editbar_readonly.gif" width="16" height="16" />
 	</a>
 </li>
 <li>
-	<a onClick="window.pad&&pad.editbarClick('import_export');return false;"
+	<a id="exportlink" onClick="window.pad&&pad.editbarClick('import_export');return false;"
 	title="Import/Export from/to different document formats">
 	  <img src="../static/img/editbar_import_export.gif" width="16" height="16" />
 	</a>
 </li>
 <li>
-	<a onClick="window.pad&&pad.editbarClick('embed');return false;" title="Embed this pad">
+	<a id="embedlink" onClick="window.pad&&pad.editbarClick('embed');return false;" title="Embed this pad">
 	  <img src="../static/img/editbar_embed.gif" width="16" height="16" />
 	</a>
 </li>
