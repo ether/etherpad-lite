@@ -116,7 +116,7 @@ We removed this feature cause its not worth the space it needs in the editbar
 </li>
 <li>
   <a onClick="window.pad&&pad.editbarClick('showusers');return false;" title="Show connected users">
-    <div class="buttonicon" style="background-position:0px -184px"></div>
+    <div class="buttonicon" style="background-position:0px -184px;display:inline-block;"></div>
  <span id="online_count">1</span>
   </a>
 </li>
@@ -248,7 +248,7 @@ Use this link to share a read-only version of your pad:<input id="readonlyInput"
 <a onClick="chat.show();return false;"
 	title="Open the chat for this pad">
 	  <span id="chatlabel">Chat</span>
-	  <img src="../static/img/editbar_chat.gif" width="16" height="16" />
+          <div class="buttonicon" style="background-position:0px -104px;display:inline-block;"></div>
 </a>
 <span id="chatcounter">0</span>
 </div>
