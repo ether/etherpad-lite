@@ -54,10 +54,16 @@ echo "Clear minfified cache..."
 rm -f var/minified*
 
 echo "ensure custom css/js files are created..."
-for f in $(cat "static/custom/.gitignore")
+FILES=( index pad timeslider )
+
+for f in ${FILES[@]}
 do
-  if [ ! -f "static/custom/$f" ]; then
-    touch "static/custom/$f"
+  if [ ! -f "static/custom/$f.js" ]; then
+    cp -v "static/custom/js.template" "static/custom/$f.js" || exit 1
+  fi
+  
+  if [ ! -f "static/custom/$f.css" ]; then
+    cp -v "static/custom/css.template" "static/custom/$f.css" || exit 1
   fi
 done
 

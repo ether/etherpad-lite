@@ -29,6 +29,9 @@ $(document).ready(function()
     document.location = expectedURL;
   }
 
+  //start the costum js
+  if(costumStart) costumStart();
+
   handshake();
 });
 
