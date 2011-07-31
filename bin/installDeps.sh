@@ -1,3 +1,5 @@
+#!/bin/sh
+
 #Move to the folder where ep-lite is installed
 FOLDER=$(dirname $(readlink -f $0))
 cd $FOLDER 
@@ -54,9 +56,8 @@ echo "Clear minfified cache..."
 rm -f var/minified*
 
 echo "ensure custom css/js files are created..."
-FILES=( index pad timeslider )
 
-for f in ${FILES[@]}
+for f in "index" "pad" "timeslider"
 do
   if [ ! -f "static/custom/$f.js" ]; then
     cp -v "static/custom/js.template" "static/custom/$f.js" || exit 1
