@@ -300,7 +300,7 @@ Class('Pad', {
         var cleanedEntries = [];
         for(var i=0;i<entries.length;i++)
         {
-          if(entries[i]==null)
+          if(entries[i]!=null)
             cleanedEntries.push(entries[i]);
           else
             console.warn("WARNING: Found broken chat entry in pad " + _this.id);
