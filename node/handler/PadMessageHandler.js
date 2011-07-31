@@ -649,6 +649,7 @@ function handleClientReady(client, message)
           {
             authorManager.getAuthor(authorId, function(err, author)
             {
+              delete author.timestamp;
               historicalAuthorData[authorId] = author;
               callback(err);
             });
