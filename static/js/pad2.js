@@ -126,8 +126,8 @@ function handshake()
       receivedClientVars = true;
 
       clientVars = obj;
-      clientVars.userAgent = navigator.userAgent;
-      clientVars.collab_client_vars.clientAgent = navigator.userAgent;
+      clientVars.userAgent = "Anonymous";
+      clientVars.collab_client_vars.clientAgent = "Anonymous";
 
       pad.init();
 
