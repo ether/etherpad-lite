@@ -303,7 +303,7 @@ Class('Pad', {
           if(entries[i]==null)
             cleanedEntries.push(entries[i]);
           else
-            console.log("WARNING: Found broken chat entry in pad " + _this.id);
+            console.warn("WARNING: Found broken chat entry in pad " + _this.id);
         }
       
         callback(err, cleanedEntries);

@@ -319,11 +319,6 @@ function handleUserInfoUpdate(client, message)
   }
 }
 
-function errlog(name, value)
-{
-  console.error(name+"=" + JSON.stringify(value));
-}
-
 /**
  * Handles a USERINFO_UPDATE, that means that a user have changed his color or name. Anyway, we get both informations
  * This Method is nearly 90% copied out of the Etherpad Source Code. So I can't tell you what happens here exactly
@@ -418,7 +413,7 @@ function handleUserChanges(client, message)
       
       if (Changeset.oldLen(changeset) != prevText.length) 
       {
-        console.log("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
+        console.warn("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
         client.json.send({disconnect:"badChangeset"});
         callback();
         return;

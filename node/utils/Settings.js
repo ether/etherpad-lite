@@ -39,10 +39,6 @@ exports.dbType = "sqlite";
  */
 exports.dbSettings = { "filename" : "../var/sqlite.db" };
 /**
- * A flag that shows if http requests should be loged to stdout
- */
-exports.logHTTP = true;
-/**
  * The default Text of a new pad
  */
 exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
@@ -93,6 +89,6 @@ for(var i in settings)
   else
   {
     console.error("WARNING: Unkown Setting: '" + i + "'");
-    console.error("If this isn't a mistake, add the default settings for this value to node/settings.js");
+    console.error("This setting doesn't exist or it was removed");
   }
 }

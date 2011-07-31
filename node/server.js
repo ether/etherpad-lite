@@ -32,6 +32,7 @@ var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
 var formidable = require('formidable');
+var log4js = require('log4js');
 var exportHandler;
 var importHandler;
 var exporthtml;
@@ -48,7 +49,7 @@ try
 }
 catch(e) 
 {
-  console.error("Can't get git version for server header\n" + e.message)
+  console.warn("Can't get git version for server header\n" + e.message)
 }
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
@@ -74,9 +75,12 @@ async.waterfall([
     exportHandler = require('./handler/ExportHandler');
     importHandler = require('./handler/ImportHandler');
     
-    //set logging
-    if(settings.logHTTP)
-      app.use(express.logger({ format: ':date: :status, :method :url' }));
+    //install logging      
+    var httpLogger = log4js.getLogger("http");
+    app.configure(function() 
+    {
+      app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+    });
     
     //serve static files
     app.get('/static/*', function(req, res)
@@ -224,7 +228,7 @@ async.waterfall([
     {
       new formidable.IncomingForm().parse(req, function(err, fields, files) 
       { 
-        console.log(new Date().toUTCString() + ": DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
+        console.log("DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
         res.end("OK");
       });
     });
@@ -264,8 +268,26 @@ async.waterfall([
     //we should remove this when the new socket.io version is more stable
     io.set('transports', ['xhr-polling']);
     
-    //reduce the log level
-    io.set('log level', 2);
+    var socketIOLogger = log4js.getLogger("socket.io");
+    io.set('logger', {
+      debug: function (str)
+      {
+        //supress debug messages
+        //socketIOLogger.debug(str);
+      }, 
+      info: function (str)
+      {
+        socketIOLogger.info(str);
+      },
+      warn: function (str)
+      {
+        socketIOLogger.warn(str);
+      },
+      error: function (str)
+      {
+        socketIOLogger.error(str);
+      },
+    });
     
     //minify socket.io javascript
     if(settings.minify)

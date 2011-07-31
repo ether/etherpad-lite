@@ -19,6 +19,9 @@
  * limitations under the License.
  */
 
+var log4js = require('log4js');
+var messageLogger = log4js.getLogger("message");
+
 /**
  * Saves all components
  * key is the component name
@@ -54,7 +57,7 @@ exports.setSocketIO = function(_socket)
     client._send = client.send;
     client.send = function(message)
     {
-      console.log(new Date().toUTCString() + ": message to " + client.id + ": " + JSON.stringify(message));
+      messageLogger.info("to " + client.id + ": " + JSON.stringify(message));
       client._send(message);
     }
   
@@ -68,14 +71,14 @@ exports.setSocketIO = function(_socket)
     {
       if(message.protocolVersion && message.protocolVersion != 2)
       {
-        console.error("Protocolversion header is not correct:" + JSON.stringify(message));
+        messageLogger.warn("Protocolversion header is not correct:" + JSON.stringify(message));
         return;
       }
     
       //route this message to the correct component, if possible
       if(message.component && components[message.component])
       {
-        console.log(new Date().toUTCString() + ": message from " + client.id + ": " + JSON.stringify(message));
+        messageLogger.info("from " + client.id + ": " + JSON.stringify(message));
 
         //check if component is registered in the components array        
         if(components[message.component])
@@ -85,7 +88,7 @@ exports.setSocketIO = function(_socket)
       }
       else
       {
-        console.error("Can't route the message:" + JSON.stringify(message));
+        messageLogger.error("Can't route the message:" + JSON.stringify(message));
       }
     });
 

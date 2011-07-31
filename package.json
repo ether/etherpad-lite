@@ -18,7 +18,8 @@
                       "clean-css"  : "0.2.4",
                       "uglify-js"  : "1.0.6",
                       "gzip"       : "0.1.0",
-                      "formidable" : "1.0.2"
+                      "formidable" : "1.0.2",
+                      "log4js"     : "0.3.7"
                     },
   "version"       : "0.0.4"
 }
