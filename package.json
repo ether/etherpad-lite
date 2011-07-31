@@ -11,7 +11,7 @@
                   ],
   "dependencies"  : {
                       "socket.io"  : "0.7.7",
-                      "ueberDB"    : "0.0.11",
+                      "ueberDB"    : "0.0.12",
                       "async"      : "0.1.9",
                       "joose"      : "3.18.0",
                       "express"    : "2.4.3",
