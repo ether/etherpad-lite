@@ -214,7 +214,7 @@ Class('Pad', {
 		  db.setSub("pad:"+this.id, ["chatHead"], this.chatHead);
 		},
 		
-		getChatMessage: function(entryNum, withName, callback)
+		getChatMessage: function(entryNum, callback)
 		{		  
 		  var _this = this;
 		  var entry;
@@ -231,9 +231,9 @@ Class('Pad', {
 		    },
 		    //add the authorName
 		    function(callback)
-		    {
-		      //skip if we don't need the authorName
-		      if(!withName) 
+		    {		      
+		      //this chat message doesn't exist, return null
+		      if(entry == null)
 		      {
 		        callback();
 		        return;
@@ -287,14 +287,26 @@ Class('Pad', {
 		  var entries = [];
 		  async.forEach(neededEntries, function(entryObject, callback)
       {
-        _this.getChatMessage(entryObject.entryNum, true, function(err, entry)
+        _this.getChatMessage(entryObject.entryNum, function(err, entry)
         {
           entries[entryObject.order] = entry;
           callback(err);
         });
       }, function(err)
       {
-        callback(err, entries);
+        //sort out broken chat entries
+        //it looks like in happend in the past that the chat head was 
+        //incremented, but the chat message wasn't added
+        var cleanedEntries = [];
+        for(var i=0;i<entries.length;i++)
+        {
+          if(entries[i]==null)
+            cleanedEntries.push(entries[i]);
+          else
+            console.log("WARNING: Found broken chat entry in pad " + _this.id);
+        }
+      
+        callback(err, cleanedEntries);
       });
 		},
 		
