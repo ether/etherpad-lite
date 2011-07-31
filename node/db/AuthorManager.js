@@ -47,9 +47,11 @@ exports.getAuthor4Token = function (token, callback)
       //there is no author with this token, so create one
       if(author == null)
       {
-        author = createAuthor(token);
-        
-        callback();
+        createAuthor(token, function(err, _author)
+        {
+          author = _author;
+          callback(err);
+        });
       }
       //there is a author with this token
       else
@@ -59,15 +61,18 @@ exports.getAuthor4Token = function (token, callback)
         {
           if(authorObject == null)
           {
-            createAuthor(token);
+            createAuthor(token, function(err, _author)
+            {
+              author = _author;
+              callback(err);
+            });
           }
+          //the author exists, update the timestamp of this author
           else
           {
-            //update the author time
             db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
+            callback();
           }
-          
-          callback();
         });
       }
     }
@@ -81,19 +86,30 @@ exports.getAuthor4Token = function (token, callback)
  * Internal function that creates the database entry for an author 
  * @param {String} token The token 
  */
-function createAuthor (token)
+function createAuthor (token, callback)
 {
   //create the new author name
-  author = "g." + _randomString(16);
+  var author = "g." + _randomString(16);
         
-  //set the token2author db entry
-  db.set("token2author:" + token, author);
-  
-  //set the globalAuthors db entry
+  //create the globalAuthors db entry
   var authorObj = {colorId : Math.floor(Math.random()*32), name: null, timestamp: new Date().getTime()};
-  db.set("globalAuthor:" + author, authorObj); 
-  
-  return author;
+        
+  //we do this in series to ensure this db entries are written in the correct order
+  async.series([
+    //set the global author db entry
+    function(callback)
+    {
+      db.set("globalAuthor:" + author, authorObj, callback); 
+    },
+    //set the token2author db entry
+    function(callback)
+    {
+      db.set("token2author:" + token, author, callback);
+    }
+  ], function(err)
+  {
+    callback(err, author);
+  });
 }
 
 /**
