@@ -64,7 +64,7 @@ function readCookie(name)
 
 function randomString()
 {
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var string_length = 20;
   var randomstring = '';
   for (var i = 0; i < string_length; i++)
