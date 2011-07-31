@@ -308,7 +308,13 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 .hidesidebar #padeditor { right: 0; }
 
 #vdraggie {
-  background: url(static/img/vdraggie.gif) no-repeat top center;
+/*  background: url(static/img/vdraggie.gif) no-repeat top center;*/
+  width:16px;
+  height:16px;
+  background-image:url('../../static/img/etherpad_lite_icons.gif');
+  background-repeat: no-repeat;
+  background-position: 0px -300px;
+
   cursor: W-resize;
   bottom:0;
   position:absolute;
@@ -906,19 +912,18 @@ position: relative;
   display: block;
     
 } 
-/*
-.ui-resizable-disabled .ui-resizable-handle, .ui-resizable- autohide .ui-resizable-handle { display: none; } 
-*/
 
 .ui-resizable-nw {
+  width:16px;
+  height:16px;
+  background-image:url('../../static/img/etherpad_lite_icons.gif');
+  background-repeat: no-repeat;
+  background-position: 0px -455px;
   cursor: nw-resize; 
   width: 22px; 
   height: 22px; 
-  left: 0px; top: 0px; 
-  background-size: 100% auto;
-  background-image: url("../img/nw-resize.png");
-  background-repeat: no-repeat;
-/*  background-position: -5px -5px;*/
+  left: 2px; top: 1px; 
+  background-size: 80% auto;
 } 
 .ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: 
 -5px; top: -5px;} 
