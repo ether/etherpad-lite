@@ -710,7 +710,7 @@ function handleClientReady(client, message)
         },
         "collab_client_vars": {
             "initialAttributedText": atext,
-            "clientIp": (client.request && client.request.connection) ? client.request.connection.remoteAddress : "127.0.0.1",
+            "clientIp": "127.0.0.1",
             //"clientAgent": "Anonymous Agent",
             "padId": message.padId,
             "historicalAuthorData": historicalAuthorData,
@@ -719,7 +719,7 @@ function handleClientReady(client, message)
             "globalPadId": message.padId
         },
         "colorPalette": ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ff8f8f", "#ffe38f", "#c7ff8f", "#8fffab", "#8fffff", "#8fabff", "#c78fff", "#ff8fe3", "#d97979", "#d9c179", "#a9d979", "#79d991", "#79d9d9", "#7991d9", "#a979d9", "#d979c1", "#d9a9a9", "#d9cda9", "#c1d9a9", "#a9d9b5", "#a9d9d9", "#a9b5d9", "#c1a9d9", "#d9a9cd"],
-        "clientIp": (client.request && client.request.connection) ? client.request.connection.remoteAddress : "127.0.0.1",
+        "clientIp": "127.0.0.1",
         "userIsGuest": true,
         "userColor": authorColorId,
         "padId": message.padId,
