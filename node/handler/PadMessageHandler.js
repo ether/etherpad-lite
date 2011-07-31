@@ -85,7 +85,7 @@ exports.handleDisconnect = function(client)
   var sessionPad=session2pad[client.id];
   
   //if this connection was already etablished with a handshake, send a disconnect message to the others
-  if(sessioninfos[client.id].author)
+  if(sessioninfos[client.id] && sessioninfos[client.id].author)
   {
     var author = sessioninfos[client.id].author;
   
