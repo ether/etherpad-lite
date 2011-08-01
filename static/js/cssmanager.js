@@ -20,7 +20,7 @@ function makeCSSManager(emptyStylesheetTitle, top)
   function getSheetByTitle(title, top)
   {
     if(top)
-      var allSheets = window.top.document.styleSheets;
+      var allSheets = window.parent.parent.document.styleSheets;
     else 
       var allSheets = document.styleSheets;
     

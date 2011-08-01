@@ -29,6 +29,9 @@ $(document).ready(function()
     document.location = expectedURL;
   }
 
+  //start the costum js
+  if(costumStart) costumStart();
+
   handshake();
 });
 
@@ -64,7 +67,7 @@ function readCookie(name)
 
 function randomString()
 {
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var string_length = 20;
   var randomstring = '';
   for (var i = 0; i < string_length; i++)
@@ -126,8 +129,8 @@ function handshake()
       receivedClientVars = true;
 
       clientVars = obj;
-      clientVars.userAgent = navigator.userAgent;
-      clientVars.collab_client_vars.clientAgent = navigator.userAgent;
+      clientVars.userAgent = "Anonymous";
+      clientVars.collab_client_vars.clientAgent = "Anonymous";
 
       pad.init();
 

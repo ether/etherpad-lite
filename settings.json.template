@@ -4,6 +4,8 @@
   Please edit settings.json, not settings.json.template
 */
 {
+  //Ip and port which etherpad should bind at
+  "ip": "0.0.0.0",
   "port" : 9001,
   
   //The Type of the database. You can choose between sqlite and mysql
@@ -22,9 +24,6 @@
                     "database": "store"
                   },
   */
-  
-  //if true, every http request will be loged to stdout
-  "logHTTP" : true,
   
   //the default text of a pad
   "defaultPadText" : "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n",

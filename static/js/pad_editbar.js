@@ -101,13 +101,13 @@ var padeditbar = (function()
         else if (cmd == 'embed')
         {  
           var padurl = document.location;
-          $('#embedinput').val("<iframe src='" + padurl + "' width=500 height=400>");
+          $('#embedinput').val("<iframe src='" + padurl + "' width=600 height=400>");
           self.toogleDropDown("embed");
           $('#embedinput').focus().select();
         }
         else if (cmd == 'import_export')
         {
-	  self.toogleDropDown("importexport");
+	      self.toogleDropDown("importexport");
         }
 
         else if (cmd == 'readonly')

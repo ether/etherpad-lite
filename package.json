@@ -6,18 +6,20 @@
   "author"        : "Peter 'Pita' Martischka <petermartischka@googlemail.com>",
   "contributors": [
                     { "name": "John McLear", 
-                      "name": "Hans Pinckaers"}
+                      "name": "Hans Pinckaers",
+                      "name": "Robin Buse"}
                   ],
   "dependencies"  : {
                       "socket.io"  : "0.7.7",
-                      "ueberDB"    : "0.0.10",
+                      "ueberDB"    : "0.0.12",
                       "async"      : "0.1.9",
                       "joose"      : "3.18.0",
                       "express"    : "2.4.3",
                       "clean-css"  : "0.2.4",
                       "uglify-js"  : "1.0.6",
                       "gzip"       : "0.1.0",
-                      "formidable" : "1.0.2"
+                      "formidable" : "1.0.2",
+                      "log4js"     : "0.3.7"
                     },
   "version"       : "0.0.4"
 }

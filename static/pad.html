@@ -13,6 +13,8 @@
   </script>
   <script src="../socket.io/socket.io.js"></script>
   <script src="../minified/pad.js"></script>
+  <link href="../static/custom/pad.css" rel="stylesheet">
+  <script src="../static/custom/pad.js"></script>
   <style type="text/css" title="dynamicsyntax"></style>
 </head>
 
@@ -79,17 +81,17 @@
 <ul id="menu_right">
 
 <li>
-  <a onClick="window.pad&&pad.editbarClick('readonly');return false;" title="Create a readonly link for this pad">
+  <a id="readonlylink" onClick="window.pad&&pad.editbarClick('readonly');return false;" title="Create a readonly link for this pad">
      <div class="buttonicon" style="background-position:0px -150px"></div>
   </a>
 </li>
 <li>
-  <a onClick="window.pad&&pad.editbarClick('import_export');return false;" title="Import/Export from/to different document formats">
+  <a id="exportlink" onClick="window.pad&&pad.editbarClick('import_export');return false;" title="Import/Export from/to different document formats">
     <div class="buttonicon" style="background-position:0px -68px"></div>
   </a>
 </li>
 <li>
-  <a onClick="window.pad&&pad.editbarClick('embed');return false;" title="Embed this pad">
+  <a id="embedlink" onClick="window.pad&&pad.editbarClick('embed');return false;" title="Embed this pad">
     <div class="buttonicon" style="background-position:0px -18px"></div>
   </a>
 </li>
@@ -219,7 +221,7 @@ We removed this feature cause its not worth the space it needs in the editbar
   <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
   <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
   <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
-  <a id="exportwordlea" target="_blank" onClick="loadCont();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
+  <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
   <form id="wordlepost" name="wall" action="http://wordle.net/advanced" method="POST" style="margin-left:0px;"> 
     <div id="hidetext" style=""><textarea id="text" name="text" id="text" style="display:none;">Coming soon!</textarea></div> 
   </form> 

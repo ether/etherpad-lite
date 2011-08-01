@@ -8,7 +8,13 @@
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
-  <script src="../../static/js/jquery.min.js"></script>
+  
+  <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="../../minified/timeslider.js"></script>
+  
+  <link href="../../static/custom/timeslider.css" rel="stylesheet">
+  <script src="../../static/custom/timeslider.js"></script>
+  
   <script>
 // <![CDATA[
   var clientVars = {};
@@ -37,7 +43,7 @@
   }
 
   function randomString() {
-	  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	  var string_length = 20;
 	  var randomstring = '';
 	  for (var i=0; i<string_length; i++) {
@@ -49,8 +55,11 @@
 
   var socket, token, padId;
 
-  $(window).load(function () 
+  $(document).ready(function () 
   {
+    //start the costum js
+    if(costumStart) costumStart();
+    
     //get the padId out of the url 
     var urlParts= document.location.pathname.split("/");
     padId = urlParts[urlParts.length-2];
@@ -133,26 +142,6 @@
 
   // ]]>
   </script>
-  <script type="text/javascript" src="../../static/js/plugins.js"></script>
-  <script type="text/javascript" src="../../static/js/undo-xpopup.js"></script>
-  <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-  <script type="text/javascript" src="../../static/js/json2.js"></script>
-  <script type="text/javascript" src="../../static/js/colorutils.js"></script>
-  <script type="text/javascript" src="../../static/js/draggable.js"></script>
-  <script type="text/javascript" src="../../static/js/pad_utils.js"></script>
-  <script type="text/javascript" src="../../static/js/pad_cookie.js"></script>
-  <script type="text/javascript" src="../../static/js/pad_editor.js"></script>
-  <script type="text/javascript" src="../../static/js/pad_editbar.js"></script>
-  <script type="text/javascript" src="../../static/js/pad_docbar.js"></script>
-  <script type="text/javascript" src="../../static/js/pad_modals.js"></script>
-  <script type="text/javascript" src="../../static/js/easysync2_client.js"></script>
-  <script type="text/javascript" src="../../static/js/domline_client.js"></script>
-  <script type="text/javascript" src="../../static/js/linestylefilter_client.js"></script>
-  <script type="text/javascript" src="../../static/js/cssmanager_client.js"></script>
-  <script type="text/javascript" src="../../static/js/broadcast.js"></script>
-  <script type="text/javascript" src="../../static/js/broadcast_slider.js"></script>
-  <script type="text/javascript" src="../../static/js/broadcast_revisions.js">
-</script>
 </head>
 
 <body id="padbody" class="timeslider limwidth nonpropad nonprouser">

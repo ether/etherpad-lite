@@ -24,14 +24,15 @@ require('joose');
 
 var socketio = require('socket.io');
 var fs = require('fs');
-var settings = require('./settings');
-var socketIORouter = require("./SocketIORouter");
-var db = require('./db');
+var settings = require('./utils/Settings');
+var socketIORouter = require("./handler/SocketIORouter");
+var db = require('./db/DB');
 var async = require('async');
 var express = require('express');
 var path = require('path');
-var minify = require('./minify');
+var minify = require('./utils/Minify');
 var formidable = require('formidable');
+var log4js = require('log4js');
 var exportHandler;
 var importHandler;
 var exporthtml;
@@ -48,7 +49,7 @@ try
 }
 catch(e) 
 {
-  console.error("Can't get git version for server header\n" + e.message)
+  console.warn("Can't get git version for server header\n" + e.message)
 }
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
@@ -69,14 +70,17 @@ async.waterfall([
     var app = express.createServer();
     
     //load modules that needs a initalized db
-    readOnlyManager = require("./ReadOnlyManager");
-    exporthtml = require("./exporters/exporthtml");
-    exportHandler = require('./ExportHandler');
-    importHandler = require('./ImportHandler');
+    readOnlyManager = require("./db/ReadOnlyManager");
+    exporthtml = require("./utils/ExportHtml");
+    exportHandler = require('./handler/ExportHandler');
+    importHandler = require('./handler/ImportHandler');
     
-    //set logging
-    if(settings.logHTTP)
-      app.use(express.logger({ format: ':date: :status, :method :url' }));
+    //install logging      
+    var httpLogger = log4js.getLogger("http");
+    app.configure(function() 
+    {
+      app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+    });
     
     //serve static files
     app.get('/static/*', function(req, res)
@@ -87,19 +91,19 @@ async.waterfall([
     });
     
     //serve minified files
-    app.get('/minified/:id', function(req, res)
+    app.get('/minified/:id', function(req, res, next)
     { 
       res.header("Server", serverName);
       
       var id = req.params.id;
       
-      if(id == "pad.js")
+      if(id == "pad.js" || id == "timeslider.js")
       {
-        minify.padJS(req,res);
+        minify.minifyJS(req,res,id);
       }
       else
       {
-        res.send('404 - Not Found', 404);
+        next();
       }
     });
     
@@ -224,7 +228,7 @@ async.waterfall([
     {
       new formidable.IncomingForm().parse(req, function(err, fields, files) 
       { 
-        console.log(new Date().toUTCString() + ": DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
+        console.log("DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
         res.end("OK");
       });
     });
@@ -254,8 +258,8 @@ async.waterfall([
     });
     
     //let the server listen
-    app.listen(settings.port);
-    console.log("Server is listening at port " + settings.port);
+    app.listen(settings.port, settings.ip);
+    console.log("Server is listening at " + settings.ip + ":" + settings.port);
 
     //init socket.io and redirect all requests to the MessageHandler
     var io = socketio.listen(app);
@@ -264,11 +268,33 @@ async.waterfall([
     //we should remove this when the new socket.io version is more stable
     io.set('transports', ['xhr-polling']);
     
-    //reduce the log level
-    io.set('log level', 2);
+    var socketIOLogger = log4js.getLogger("socket.io");
+    io.set('logger', {
+      debug: function (str)
+      {
+        //supress debug messages
+        //socketIOLogger.debug(str);
+      }, 
+      info: function (str)
+      {
+        socketIOLogger.info(str);
+      },
+      warn: function (str)
+      {
+        socketIOLogger.warn(str);
+      },
+      error: function (str)
+      {
+        socketIOLogger.error(str);
+      },
+    });
     
-    var padMessageHandler = require("./PadMessageHandler");
-    var timesliderMessageHandler = require("./TimesliderMessageHandler");
+    //minify socket.io javascript
+    if(settings.minify)
+      io.enable('browser client minification');
+    
+    var padMessageHandler = require("./handler/PadMessageHandler");
+    var timesliderMessageHandler = require("./handler/TimesliderMessageHandler");
     
     //Initalize the Socket.IO Router
     socketIORouter.setSocketIO(io);
