@@ -29,8 +29,8 @@ Visit <http://pitapoison.de:9001> to test it live. You can find the same instanc
 </table>
 
 # Installation
-1. Download latest node.js version from <http://nodejs.org/> and build it with this instructions <https://github.com/joyent/node/wiki/Installation>. <br>
-The Node.js version of your Linux repository might be too old/new. Please compile from the source to get sure you have the correct version. We support node.js version 0.4.*
+1. Download the latest 0.4.x node.js release from <http://nodejs.org/#download> and build it with this instructions <https://github.com/joyent/node/wiki/Installation>. <br>
+The Node.js version of your Linux repository might be too old/new. Please compile from the source to get sure you have the correct version. 
 2. Install npm `curl http://npmjs.org/install.sh | sh`
 3. Ensure you have installed the sqlite develob libraries, gzip and git `apt-get install libsqlite3-dev gzip git-core`
 4. Clone the git repository `git clone 'git://github.com/Pita/etherpad-lite.git'`
@@ -40,11 +40,11 @@ The Node.js version of your Linux repository might be too old/new. Please compil
 # Next Steps
 You can modify the settings in the file settings.json
 
-You can update to the latest version with `git pull origin && npm install`
+You can update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies
 
-You can debug with `bin/runDebug.sh`
+You can debug with `bin/debugRun.sh`
 
-Look at the Wiki: [How to put Etherpad Lite behind a reverse Proxy](https://github.com/Pita/etherpad-lite/wiki/How-to-put-Etherpad-Lite-behind-a-reverse-Proxy), [How to deploy Etherpad Lite as a service](https://github.com/Pita/etherpad-lite/wiki/How-to-deploy-Etherpad-Lite-as-a-service). Feel free to improve these wiki pages
+You can find more information in the [wiki](https://github.com/Pita/etherpad-lite/wiki). Feel free to improve these wiki pages
 
 # Develop
 If you're new to git and github, start here <http://learn.github.com/p/intro.html>.
@@ -57,6 +57,14 @@ You know all this and just want to know how you can help? Look at the [TODO list
 You can join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) or go to the freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)
 
 You also help the project, if you only host a ep-lite instance and share your experience with us.
+
+Look at our [FAQ Page](https://github.com/Pita/etherpad-lite/wiki/FAQ)
+
+# Modules created for this project
+
+* [ueberDB](https://github.com/Pita/ueberDB) "transforms every database into a object key value store" - manages all database access
+* [doc.md](https://github.com/Pita/doc.md) "A simple JSDoc documenation tool that creates markdown for node.js modules exports" - is used to generate the docs
+* [channels](https://github.com/Pita/channels) "Event channels in node.js" - ensures that ueberDB operations are atomic and in series for each key
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
