@@ -30,7 +30,7 @@ $(document).ready(function()
   }
 
   //start the costum js
-  if(costumStart) costumStart();
+  if(typeof costumStart == "function") costumStart();
 
   handshake();
 });

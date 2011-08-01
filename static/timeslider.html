@@ -58,7 +58,7 @@
   $(document).ready(function () 
   {
     //start the costum js
-    if(costumStart) costumStart();
+    if(typeof costumStart == "function") costumStart();
     
     //get the padId out of the url 
     var urlParts= document.location.pathname.split("/");
