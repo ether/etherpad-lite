@@ -4,7 +4,7 @@ We're reusing the well tested Etherpad easysync library to make it really realti
 is based on node.js what makes it much ligther and more stable than the original Etherpad. Our hope 
 is that this will encourage more users to install a realtime collaborative editor. A smaller and well 
 documented codebase makes it easier for developers to improve the code. Etherpad Lite is optimized 
-to be easy embeddable
+to be easy embeddable. Look at our [FAQ Page](https://github.com/Pita/etherpad-lite/wiki/FAQ)
 
 **Online demo**<br>
 Visit <http://pitapoison.de:9001> to test it live. You can find the same instance behind a nginx, with ssl and in a subpath here -> [https://pad.pitapoison.de/pad/](https://pad.pitapoison.de/pad/)
@@ -29,20 +29,39 @@ Visit <http://pitapoison.de:9001> to test it live. You can find the same instanc
 </table>
 
 # Installation
-1. Download the latest 0.4.x node.js release from <http://nodejs.org/#download> and build it with this instructions <https://github.com/joyent/node/wiki/Installation>. <br>
+**As root:**
+
+1. Download the latest **0.4.x** node.js release from <http://nodejs.org/#download>, extract it and build it with `./configure && make && make install`. <br>
 The Node.js version of your Linux repository might be too old/new. Please compile from the source to get sure you have the correct version. 
 2. Install npm `curl http://npmjs.org/install.sh | sh`
 3. Ensure you have installed the sqlite develob libraries, gzip and git `apt-get install libsqlite3-dev gzip git-core`
+
+**As any user (we recommend creating a seperate user called etherpad-lite):**
+
 4. Clone the git repository `git clone 'git://github.com/Pita/etherpad-lite.git'`
 5. Start it with `bin/run.sh` (the first run will install all dependencies)
 6. Open your web browser and visit <http://localhost:9001>
 
-# Next Steps
+## Troubleshooting
+
+### It fails while installing the sqlite dependency
+The sqlite package of some linux versions (including debian lenny) is too old. You have to use a PPA or debian backports
+
+### It fails while installing the express dependency, it says my node version is wrong
+You might have installed node.js version 0.5. You can check that with `node --version`. Please reinstall node 0.4.x
+
+### I stopped the installing process, now it doesn't work anymore, what can I do?
+Remove the node_modules folder. This forces run.sh to reinstall all dependencies
+
+## Next Steps
 You can modify the settings in the file settings.json
 
 You can update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies
 
-You can debug with `bin/debugRun.sh`
+Look at this wiki pages: 
+* [How to deploy Etherpad Lite as a service](https://github.com/Pita/etherpad-lite/wiki/How-to-deploy-Etherpad-Lite-as-a-service)
+* [How to put Etherpad Lite behind a reverse Proxy](https://github.com/Pita/etherpad-lite/wiki/How-to-put-Etherpad-Lite-behind-a-reverse-Proxy)
+* [How to customize your Etherpad Lite installation](https://github.com/Pita/etherpad-lite/wiki/How-to-customize-your-Etherpad-Lite-installation)
 
 You can find more information in the [wiki](https://github.com/Pita/etherpad-lite/wiki). Feel free to improve these wiki pages
 
@@ -51,14 +70,14 @@ If you're new to git and github, start here <http://learn.github.com/p/intro.htm
 
 If you're new to node.js, start with this video <http://youtu.be/jo_B4LTHi3I>.
 
+You can debug with `bin/debugRun.sh`
+
 If you wanna find out how Etherpads Easysync works (the library that makes it really realtime), start with this [PDF](https://github.com/Pita/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading it).
 
 You know all this and just want to know how you can help? Look at the [TODO list](https://github.com/Pita/etherpad-lite/wiki/TODO).
 You can join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) or go to the freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)
 
-You also help the project, if you only host a ep-lite instance and share your experience with us.
-
-Look at our [FAQ Page](https://github.com/Pita/etherpad-lite/wiki/FAQ)
+You also help the project, if you only host a Etherpad Lite instance and share your experience with us.
 
 # Modules created for this project
 
