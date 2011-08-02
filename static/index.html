@@ -57,14 +57,8 @@
             #button:active {
              box-shadow: inset 0 1px 12px rgba(0, 0, 0, 0.9);
              background: #444;
-             /*
-              background: -webkit-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
-              background:    -moz-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
-              background:     -ms-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
-              background:      -o-linear-gradient(#565656, #4C4C4C 50%, #424242 51%, #2D2D2D);
-             */
             }
-            .label {
+            #label {
               text-align: left;
               margin: 0 auto;
               width: 300px;
@@ -86,13 +80,13 @@
         <div id="container"> 
             <div id="button" onclick="go2Random()">New Pad</div> 
             <br> 
-            <div class="label">or create/open a Pad with the name</div>
+            <div id="label">or create/open a Pad with the name</div>
             <form action="#" onsubmit="go2Name();return false;"> 
                     <input type="text" id="padname" autofocus> 
                     <input type="submit" value="OK"> 
             </form> 
-        </div> 
-        <script> 
+        </div>
+        <script>
             function go2Name() 
             {
                 var padname = document.getElementById("padname").value;
