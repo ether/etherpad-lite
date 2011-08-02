@@ -11,9 +11,14 @@ fi
 
 #Stop the script if its started as root
 if [ "$(id -u)" -eq 0 ]; then
-   echo "You shouldn't start Etherpad-Lite as root!" 1>&2
-   echo "Use authbind if you want to use a port lower than 1024 -> http://en.wikipedia.org/wiki/Authbind" 1>&2
-   exit 1
+   echo "You shouldn't start Etherpad-Lite as root!"
+   echo "Please type 'Etherpad Lite rocks my socks' if you still want to start it as root"
+   read rocks
+   if [ ! $rocks = "Etherpad Lite rocks my socks" ]
+   then
+     echo "You're input was wrong"
+     exit 1
+   fi
 fi
 
 #prepare the enviroment
