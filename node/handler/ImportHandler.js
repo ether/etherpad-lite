@@ -24,10 +24,19 @@ var async = require("async");
 var fs = require("fs");
 var settings = require('../utils/Settings');
 var formidable = require('formidable');
+var os = require("os");
 
 //load abiword only if its enabled
 if(settings.abiword != null)
   var abiword = require("../utils/Abiword");
+
+var tempDirectory = "/tmp/";
+
+//tempDirectory changes if the operating system is windows
+if(os.type().indexOf("Windows") > -1)
+{
+  tempDirectory = "c:\\Temp\\";
+}
   
 /**
  * do a requested import
@@ -48,6 +57,7 @@ exports.doImport = function(req, res, padId)
     {
       var form = new formidable.IncomingForm();
       form.keepExtensions = true;
+      form.uploadDir = tempDirectory;
       
       form.parse(req, function(err, fields, files) 
       { 
@@ -94,7 +104,7 @@ exports.doImport = function(req, res, padId)
     function(callback)
     {
       var randNum = Math.floor(Math.random()*new Date().getTime());
-      destFile = "/tmp/eplite_import_" + randNum + ".txt";
+      destFile = tempDirectory + "eplite_import_" + randNum + ".txt";
       abiword.convertFile(srcFile, destFile, "txt", callback);
     },
     
@@ -114,7 +124,13 @@ exports.doImport = function(req, res, padId)
       fs.readFile(destFile, "utf8", function(err, _text)
       {
         text = _text;
-        callback(err);
+        
+        //node on windows has a delay on releasing of the file lock.  
+        //We add a 100ms delay to work around this
+        setTimeout(function()
+        {
+          callback(err);
+        }, 100);
       });
     },
     
