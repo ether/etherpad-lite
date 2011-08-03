@@ -77,7 +77,7 @@ for(var i in settings)
   //test if the setting start with a low character
   if(i.charAt(0).search("[a-z]") !== 0)
   {
-    console.error("WARNING: Settings should start with a low character: '" + i + "'");
+    console.warn("Settings should start with a low character: '" + i + "'");
   }
 
   //we know this setting, so we overwrite it
@@ -88,7 +88,7 @@ for(var i in settings)
   //this setting is unkown, output a warning and throw it away
   else
   {
-    console.error("WARNING: Unkown Setting: '" + i + "'");
-    console.error("This setting doesn't exist or it was removed");
+    console.warn("Unkown Setting: '" + i + "'");
+    console.warn("This setting doesn't exist or it was removed");
   }
 }
