@@ -1,8 +1,7 @@
 #!/bin/sh
 
 #Move to the folder where ep-lite is installed
-FOLDER=$(dirname $(readlink -f $0))
-cd $FOLDER 
+cd `dirname $0`
 
 #Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
@@ -16,7 +15,7 @@ if [ "$(id -u)" -eq 0 ]; then
    read rocks
    if [ ! $rocks = "Etherpad Lite rocks my socks" ]
    then
-     echo "You're input was wrong"
+     echo "Your input was incorrect"
      exit 1
    fi
 fi

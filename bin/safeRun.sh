@@ -18,8 +18,7 @@ TIME_BETWEEN_EMAILS=600 # 10 minutes
 LAST_EMAIL_SEND=0
 
 #Move to the folder where ep-lite is installed
-FOLDER=$(dirname $(readlink -f $0))
-cd $FOLDER 
+cd `dirname $0`
 
 #Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
