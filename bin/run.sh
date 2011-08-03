@@ -15,7 +15,7 @@ if [ "$(id -u)" -eq 0 ]; then
    read rocks
    if [ ! $rocks = "Etherpad Lite rocks my socks" ]
    then
-     echo "You're input was wrong"
+     echo "Your input was incorrect"
      exit 1
    fi
 fi

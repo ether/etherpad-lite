@@ -20,7 +20,7 @@ hash node-inspector > /dev/null 2>&1 || {
 
 node-inspector &
 
-echo "If you new to node-inspector, take a look at this video: http://youtu.be/AOnK3NVnxL8"
+echo "If you are new to node-inspector, take a look at this video: http://youtu.be/AOnK3NVnxL8"
 
 cd "node"
 node --debug server.js
