@@ -23,11 +23,20 @@ var padManager = require("../db/PadManager");
 var async = require("async");
 var fs = require("fs");
 var settings = require('../utils/Settings');
+var os = require('os');
 
 //load abiword only if its enabled
 if(settings.abiword != null)
   var abiword = require("../utils/Abiword");
 
+var tempDirectory = "/tmp";
+
+//tempDirectory changes if the operating system is windows 
+if(os.type().indexOf("Windows") > -1)
+{
+  tempDirectory = "c:\\Temp";
+}
+  
 /**
  * do a requested export
  */ 
@@ -52,7 +61,7 @@ exports.doExport = function(req, res, padId, type)
     var html;
     var randNum;
     var srcFile, destFile;
-  
+
     async.series([
       //render the html document
       function(callback)
@@ -76,7 +85,7 @@ exports.doExport = function(req, res, padId, type)
         else
         {
           randNum = Math.floor(Math.random()*new Date().getTime());
-          srcFile = "/tmp/eplite_export_" + randNum + ".html";
+          srcFile = tempDirectory + "/eplite_export_" + randNum + ".html";
           fs.writeFile(srcFile, html, callback); 
         }
       },
@@ -86,7 +95,7 @@ exports.doExport = function(req, res, padId, type)
         //ensure html can be collected by the garbage collector
         html = null;
       
-        destFile = "/tmp/eplite_export_" + randNum + "." + type;
+        destFile = tempDirectory + "/eplite_export_" + randNum + "." + type;
         abiword.convertFile(srcFile, destFile, type, callback);
       },
       //send the file
@@ -104,7 +113,11 @@ exports.doExport = function(req, res, padId, type)
           },
           function(callback)
           {
-            fs.unlink(destFile, callback);
+            //100ms delay to accomidate for slow windows fs
+            setTimeout(function() 
+            {
+              fs.unlink(destFile, callback);
+            }, 100);
           }
         ], callback);
       }
