@@ -22,6 +22,7 @@
 
 require('joose');
 
+var log4js = require('log4js');
 var socketio = require('socket.io');
 var fs = require('fs');
 var settings = require('./utils/Settings');
@@ -32,7 +33,7 @@ var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
 var formidable = require('formidable');
-var log4js = require('log4js');
+var apiHandler;
 var exportHandler;
 var importHandler;
 var exporthtml;
@@ -74,6 +75,7 @@ async.waterfall([
     exporthtml = require("./utils/ExportHtml");
     exportHandler = require('./handler/ExportHandler');
     importHandler = require('./handler/ImportHandler');
+    apiHandler = require('./handler/APIHandler');
     
     //install logging      
     var httpLogger = log4js.getLogger("http");
@@ -222,8 +224,28 @@ async.waterfall([
       importHandler.doImport(req, res, req.params.pad);
     });
     
+    //This is a api call, collect all post informations and pass it to the apiHandler
+    app.all('/api/1/:func', function(req, res)
+    {
+      //check if this is a post request
+      if(req.method == "POST")
+      {
+        new formidable.IncomingForm().parse(req, function(err, fields, files) 
+        { 
+          if(err) throw err;
+          
+          //call the api handler
+          apiHandler.handle(req.params.func, fields, req, res);
+        });
+      }
+      //say goodbye if this is not a post request
+      else
+      {
+        res.send({code: 5, message: "no POST request", data: null});
+      }
+    });
+    
     //The Etherpad client side sends information about how a disconnect happen
-    //I don't know how to use them, but maybe there usefull, so we should print them out to the log
     app.post('/ep/pad/connection-diagnostic-info', function(req, res)
     {
       new formidable.IncomingForm().parse(req, function(err, fields, files) 

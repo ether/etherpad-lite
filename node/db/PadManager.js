@@ -19,6 +19,7 @@
  */
 
 require("../db/Pad");
+var db = require("./DB").db;
 
 /**
  * A Array with all known Pads
@@ -58,6 +59,13 @@ exports.getPad = function(id, callback)
       }
     });
   }
-  
-  //globalPads[id].timestamp = new Date().getTime();
+}
+
+//checks if a pad exists
+exports.doesPadExists = function(padId, callback)
+{
+  db.get("pad:"+padId, function(err, value)
+  {
+    callback(err, value != null);  
+  });
 }
