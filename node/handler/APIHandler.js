@@ -50,8 +50,8 @@ var functions = {
 //  "deleteAllSessionsOfGroup"  : ["groupID"], 
 //  "deleteAllSessionsOfAuthor" : ["authorID"], 
   "getText"                   : ["padID", "rev"],
-  "setText"                   : ["padID", "text"]
-//  "getRevisionsCount"         : ["padID"], 
+  "setText"                   : ["padID", "text"],
+  "getRevisionsCount"         : ["padID"], 
 //  "deletePad"                 : ["padID"], 
 //  "getReadOnlyLink"           : ["padID"], 
 //  "setPublicStatus"           : ["padID", "publicStatus"], 

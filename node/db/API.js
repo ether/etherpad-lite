@@ -360,13 +360,17 @@ Example returns:
 */
 exports.getRevisionsCount = function(padID, callback)
 {
-  //check if this is a valid padID
-  var notValidReason = isValidPadID(padID);
-  if(notValidReason != null)
+  //get the pad
+  getPadSafe(padID, function(err, pad)
   {
-    callback(notValidReason);
-    return;
-  }
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    callback(null, {revisions: pad.getHeadRevisionNumber()});
+  });
 }
 
 /**
@@ -379,13 +383,17 @@ Example returns:
 */
 exports.deletePad = function(padID, callback)
 {
-  //check if this is a valid padID
-  var notValidReason = isValidPadID(padID);
-  if(notValidReason != null)
+  //get the pad
+  getPadSafe(padID, function(err, pad)
   {
-    callback(notValidReason);
-    return;
-  }
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    
+  });
 }
 
 /**
@@ -398,13 +406,7 @@ Example returns:
 */
 exports.getReadOnlyLink = function(padID, callback)
 {
-  //check if this is a valid padID
-  var notValidReason = isValidPadID(padID);
-  if(notValidReason != null)
-  {
-    callback(notValidReason);
-    return;
-  }
+  
 }
 
 /**
@@ -417,13 +419,17 @@ Example returns:
 */
 exports.setPublicStatus = function(padID, publicStatus, callback)
 {
-  //check if this is a valid padID
-  var notValidReason = isValidPadID(padID);
-  if(notValidReason != null)
+  //get the pad
+  getPadSafe(padID, function(err, pad)
   {
-    callback(notValidReason);
-    return;
-  }
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    
+  });
 }
 
 /**
@@ -436,13 +442,17 @@ Example returns:
 */
 exports.getPublicStatus = function(padID, callback)
 {
-  //check if this is a valid padID
-  var notValidReason = isValidPadID(padID);
-  if(notValidReason != null)
+  //get the pad
+  getPadSafe(padID, function(err, pad)
   {
-    callback(notValidReason);
-    return;
-  }
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    
+  });
 }
 
 /**
@@ -455,13 +465,17 @@ Example returns:
 */
 exports.setPassword = function(padID, password, callback)
 {
-  //check if this is a valid padID
-  var notValidReason = isValidPadID(padID);
-  if(notValidReason != null)
+  //get the pad
+  getPadSafe(padID, function(err, pad)
   {
-    callback(notValidReason);
-    return;
-  }
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    
+  });
 }
 
 /**
@@ -474,13 +488,17 @@ Example returns:
 */
 exports.isPasswordProtected = function(padID, callback)
 {
-  //check if this is a valid padID
-  var notValidReason = isValidPadID(padID);
-  if(notValidReason != null)
+  //get the pad
+  getPadSafe(padID, function(err, pad)
   {
-    callback(notValidReason);
-    return;
-  }
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    
+  });
 }
 
 /******************************/
