@@ -108,7 +108,10 @@ exports.handle = function(functionName, fields, req, res)
     // no error happend, everything is fine
     if(err == null)
     {
-      res.send({code: 0, message: null, data: data});
+      if(!data)
+        data = null;
+    
+      res.send({code: 0, message: "ok", data: data});
     }
     // parameters were wrong and the api stopped execution, pass the error
     else if(err.stop)
