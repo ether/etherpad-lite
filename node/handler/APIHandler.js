@@ -49,8 +49,8 @@ var functions = {
 //  "listSessionsOfAuthor"      : ["authorID"], 
 //  "deleteAllSessionsOfGroup"  : ["groupID"], 
 //  "deleteAllSessionsOfAuthor" : ["authorID"], 
-  "getText"                   : ["padID", "rev"]
-//  "setText"                   : ["padID", "text"]
+  "getText"                   : ["padID", "rev"],
+  "setText"                   : ["padID", "text"]
 //  "getRevisionsCount"         : ["padID"], 
 //  "deletePad"                 : ["padID"], 
 //  "getReadOnlyLink"           : ["padID"], 
