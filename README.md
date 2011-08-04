@@ -7,7 +7,7 @@ documented codebase makes it easier for developers to improve the code. Etherpad
 to be easy embeddable. Look at our [FAQ Page](https://github.com/Pita/etherpad-lite/wiki/FAQ)
 
 **Online demo**<br>
-Visit <http://pitapoison.de:9001> to test it live. You can find the same instance behind a nginx, with ssl and in a subpath here -> [https://pad.pitapoison.de/pad/](https://pad.pitapoison.de/pad/)
+Visit <http://pitapoison.de:9001> to test it live. <br>You can find the same instance behind a nginx, with ssl and in a subpath here -> [https://pad.pitapoison.de/pad/](https://pad.pitapoison.de/pad/)
 
 # Etherpad vs Etherpad Lite
 <table>
@@ -31,26 +31,36 @@ Visit <http://pitapoison.de:9001> to test it live. You can find the same instanc
 # Installation
 **As root:**
 
-1. Download the latest **0.4.x** node.js release from <http://nodejs.org/#download>, extract it and build it with `./configure && make && make install`. <br>
-The Node.js version of your Linux repository might be too old/new. Please compile from the source to get sure you have the correct version. 
-2. Install npm `curl http://npmjs.org/install.sh | sh`
-3. Ensure you have installed the sqlite develob libraries, gzip and git `apt-get install libsqlite3-dev gzip git-core`
+<ol>
+  <li>Install all dependencies. We need the sqlite develob libraries, gzip, git, curl, wget, libssl develop libraries and python <br><code>apt-get install libsqlite3-dev gzip git-core curl wget python libssl-dev</code></li><br>
+  <li>Install node.js 
+    <ol type="a">
+      <li>Download the latest <b>0.4.x</b> node.js release from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
+      <li>Extract it with <code>tar xf node-v0.4*</code></li>
+      <li>move into the node folder <code>cd node-v0.4*</code> and build node with <code>./configure && make && make install</code></li>
+    </ol>
+  </li>
+  <li>Install npm <code>curl http://npmjs.org/install.sh | sh</code></li>
+</ol>
 
 **As any user (we recommend creating a seperate user called etherpad-lite):**
 
-4. Clone the git repository `git clone 'git://github.com/Pita/etherpad-lite.git'`
-5. Start it with `bin/run.sh` (the first run will install all dependencies)
-6. Open your web browser and visit <http://localhost:9001>
+<ol start="4">
+  <li> Clone the git repository <code>git clone 'git://github.com/Pita/etherpad-lite.git'</code><br>&nbsp;</li>
+  <li> Install the dependencies with <code>bin/installDeps.sh</code> <i>(if you have problems at this step, look at the section Troubleshooting below)</i><br>&nbsp;</li>
+  <li> Start it with <code>bin/run.sh</code><br>&nbsp;</li>
+  <li> Open your web browser and visit <a href="http://localhost:9001">http://localhost:9001</a>. You like it? Look at the 'Next Steps' section below</li>
+</ol>
 
 ## Troubleshooting
 
 ### It fails while installing the sqlite dependency
-The sqlite package of some linux versions (including debian lenny) is too old. You have to use a PPA or debian backports
+The sqlite package of some linux versions (including debian lenny) is too old. We need sqlite >=3.6. You have to use a PPA or debian backports. You find sqlite packages for Ubuntu Hardy [here](https://launchpad.net/~mirabilos/+archive/ppa/+sourcepub/1304941/+listing-archive-extra), Debian Backports can be found [here](http://backports-master.debian.org/Instructions/#index1h2)
 
 ### It fails while installing the express dependency, it says my node version is wrong
 You might have installed node.js version 0.5. You can check that with `node --version`. Please reinstall node 0.4.x
 
-### I stopped the installing process, now it doesn't work anymore, what can I do?
+### My installation process stopped, now it doesn't work anymore, what can I do?
 Remove the node_modules folder. This forces run.sh to reinstall all dependencies
 
 ## Next Steps
@@ -59,6 +69,7 @@ You can modify the settings in the file settings.json
 You can update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies
 
 Look at this wiki pages: 
+
 * [How to deploy Etherpad Lite as a service](https://github.com/Pita/etherpad-lite/wiki/How-to-deploy-Etherpad-Lite-as-a-service)
 * [How to put Etherpad Lite behind a reverse Proxy](https://github.com/Pita/etherpad-lite/wiki/How-to-put-Etherpad-Lite-behind-a-reverse-Proxy)
 * [How to customize your Etherpad Lite installation](https://github.com/Pita/etherpad-lite/wiki/How-to-customize-your-Etherpad-Lite-installation)
