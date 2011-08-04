@@ -29,6 +29,7 @@ var path = require('path');
 var Buffer = require('buffer').Buffer;
 var gzip = require('gzip');
 var server = require('../server');
+var os = require('os');
 
 var padJS = ["jquery.min.js", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js"];
 
@@ -222,11 +223,20 @@ exports.minifyJS = function(req, res, jsFilename)
           //write the results compressed in a file
           function(callback)
           {
-            gzip(result, 9, function(err, compressedResult){
-              if(err) {callback(err); return}
-              
-              fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);  
-            });
+            //spawn a gzip process if we're on a unix system
+            if(os.type().indexOf("Windows") == -1)
+            {
+              gzip(result, 9, function(err, compressedResult){
+                if(err) {callback(err); return}
+                
+                fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);  
+              });
+            }
+            //skip this step on windows
+            else
+            {
+              callback();
+            }
           }
         ],callback);
       }
@@ -238,7 +248,7 @@ exports.minifyJS = function(req, res, jsFilename)
       var gzipSupport = req.header('Accept-Encoding', '').indexOf('gzip') != -1;
       
       var pathStr;
-      if(gzipSupport)
+      if(gzipSupport && os.type().indexOf("Windows") == -1)
       {
         pathStr = path.normalize(__dirname + "/../../var/minified_" + jsFilename + ".gz");
         res.header('Content-Encoding', 'gzip');
