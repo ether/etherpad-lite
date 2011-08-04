@@ -310,9 +310,15 @@ Class('Pad', {
       });
     },
     
-    init : function (callback) 
+    init : function (text, callback) 
     {    
       var _this = this;
+      
+      //replace text with default text if text isn't set
+      if(text == null)
+      {
+        text = settings.defaultPadText;
+      }
     
       //try to load the pad  
       db.get("pad:"+this.id, function(err, value)
@@ -338,7 +344,7 @@ Class('Pad', {
         //this pad doesn't exist, so create it
         else
         {
-          var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(settings.defaultPadText));                      
+          var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(text));                      
       
           _this.appendRevision(firstChangeset, '');
         }

@@ -31,10 +31,17 @@ globalPads = [];
  * @param id A String with the id of the pad
  * @param {Function} callback 
  */
-exports.getPad = function(id, callback)
+exports.getPad = function(id, text, callback)
 {    
   if(!exports.isValidPadId(id))
     throw new Error(id + " is not a valid padId");
+  
+  //make text an optional parameter
+  if(typeof text == "function")
+  {
+    callback = text;
+    text = null;
+  }
   
   var pad = globalPads[id];
   
@@ -49,7 +56,7 @@ exports.getPad = function(id, callback)
     pad = new Pad(id);
     
     //initalize the pad
-    pad.init(function(err)
+    pad.init(text, function(err)
     {
       if(err)
       {

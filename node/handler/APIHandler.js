@@ -39,7 +39,7 @@ var functions = {
 //  "getMappedGroup4"           : ["groupMapper"], 
 //  "deleteGroup"               : ["groupID"], 
 //  "listPads"                  : ["groupID"], 
-//  "createPad"                 : ["padName", "text"], 
+  "createPad"                 : ["padID", "text"], 
 //  "createGroupPad"            : ["groupID", "padName", "text"],
 //  "createAuthor"              : ["name"], 
 //  "getMappedAuthor4"          : ["authorMapper" , "name"], 
@@ -54,7 +54,7 @@ var functions = {
   "setText"                   : ["padID", "text"],
   "getRevisionsCount"         : ["padID"], 
 //  "deletePad"                 : ["padID"], 
-  "getReadOnlyID"             : ["padID"], 
+  "getReadOnlyID"             : ["padID"] 
 //  "setPublicStatus"           : ["padID", "publicStatus"], 
 //  "getPublicStatus"           : ["padID"], 
 //  "setPassword"               : ["padID", "password"], 

@@ -78,7 +78,7 @@ exports.listPads = function(groupID, callback)
 }
 
 /**
-createPad(groupID, padName [, text]) creates a new pad in this group 
+createGroupPad(groupID, padName [, text]) creates a new pad in this group 
 
 Example returns:
 
@@ -86,7 +86,7 @@ Example returns:
 {code: 1, message:"pad does already exist", data: null}
 {code: 1, message:"There is no group for this groupID", data: null}
 */
-exports.createPad = function(groupID, padName, text, callback)
+exports.createGroupPad = function(groupID, padName, text, callback)
 {
 
 }
@@ -268,7 +268,7 @@ exports.getText = function(padID, rev, callback)
   }
   
   //get the pad
-  getPadSafe(padID, function(err, pad)
+  getPadSafe(padID, true, function(err, pad)
   {
     if(err)
     {
@@ -316,22 +316,16 @@ Example returns:
 */
 exports.setText = function(padID, text, callback)
 {  
-  //check if text is a string
-  if(typeof text != "string")
+  //check the text
+  var textCheck = checkPadText(text);
+  if(textCheck != null)
   {
-    callback({stop: "text is not a string"});
-    return;
-  }
-  
-  //check if text is less than 100k chars
-  if(text.length > 100000)
-  {
-    callback({stop: "text must be less than 100k chars"})
+    callback(textCheck);
     return;
   }
   
   //get the pad
-  getPadSafe(padID, function(err, pad)
+  getPadSafe(padID, true, function(err, pad)
   {
     if(err)
     {
@@ -362,7 +356,7 @@ Example returns:
 exports.getRevisionsCount = function(padID, callback)
 {
   //get the pad
-  getPadSafe(padID, function(err, pad)
+  getPadSafe(padID, true, function(err, pad)
   {
     if(err)
     {
@@ -371,6 +365,41 @@ exports.getRevisionsCount = function(padID, callback)
     }
     
     callback(null, {revisions: pad.getHeadRevisionNumber()});
+  });
+}
+
+/**
+createPad(padName [, text]) creates a new pad in this group 
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"pad does already exist", data: null}
+*/
+exports.createPad = function(padID, text, callback)
+{
+  if(text)
+  {
+    //check the text
+    var textCheck = checkPadText(text);
+    if(textCheck != null)
+    {
+      callback(textCheck);
+      return;
+    }
+  }
+  
+  //ensure there is no $ in the padID
+  if(padID.indexOf("$") != -1)
+  {
+    callback({stop: "createPad can't create group pads"});
+    return;
+  }
+  
+  //create pad
+  getPadSafe(padID, false, text, function(err)
+  {
+    callback(err);
   });
 }
 
@@ -385,7 +414,7 @@ Example returns:
 exports.deletePad = function(padID, callback)
 {
   //get the pad
-  getPadSafe(padID, function(err, pad)
+  getPadSafe(padID, true, function(err, pad)
   {
     if(err)
     {
@@ -408,7 +437,7 @@ Example returns:
 exports.getReadOnlyID = function(padID, callback)
 {
   //we don't need the pad object, but this function does all the security stuff for us
-  getPadSafe(padID, function(err)
+  getPadSafe(padID, true, function(err)
   {
     if(err)
     {
@@ -435,7 +464,7 @@ Example returns:
 exports.setPublicStatus = function(padID, publicStatus, callback)
 {
   //get the pad
-  getPadSafe(padID, function(err, pad)
+  getPadSafe(padID, true, function(err, pad)
   {
     if(err)
     {
@@ -458,7 +487,7 @@ Example returns:
 exports.getPublicStatus = function(padID, callback)
 {
   //get the pad
-  getPadSafe(padID, function(err, pad)
+  getPadSafe(padID, true, function(err, pad)
   {
     if(err)
     {
@@ -481,7 +510,7 @@ Example returns:
 exports.setPassword = function(padID, password, callback)
 {
   //get the pad
-  getPadSafe(padID, function(err, pad)
+  getPadSafe(padID, true, function(err, pad)
   {
     if(err)
     {
@@ -504,7 +533,7 @@ Example returns:
 exports.isPasswordProtected = function(padID, callback)
 {
   //get the pad
-  getPadSafe(padID, function(err, pad)
+  getPadSafe(padID, true, function(err, pad)
   {
     if(err)
     {
@@ -526,9 +555,32 @@ function is_int(value)
   return (parseFloat(value) == parseInt(value)) && !isNaN(value)
 }
 
-//gets a pad safe
-function getPadSafe(padID, callback)
+function checkPadText(text)
 {
+  //check if text is a string
+  if(typeof text != "string")
+  {
+    return {stop: "text is not a string"};
+  }
+  
+  //check if text is less than 100k chars
+  if(text.length > 100000)
+  {
+    return {stop: "text must be less than 100k chars"};
+  }
+  
+  return null;
+}
+
+//gets a pad safe
+function getPadSafe(padID, shouldExist, text, callback)
+{
+  if(typeof text == "function")
+  {
+    callback = text;
+    text = null;
+  }
+
   //check if padID is a string
   if(typeof padID != "string")
   {
@@ -551,15 +603,20 @@ function getPadSafe(padID, callback)
     {
       callback(err);
     }
-    //does not exists
-    else if(exists == false)
+    //does not exist, but should
+    else if(exists == false && shouldExist == true)
     {
       callback({stop: "padID does not exist"});
+    }
+    //does exists, but shouldn't
+    else if(exists == true && shouldExist == false)
+    {
+      callback({stop: "padID does already exist"});
     }
     //pad exists, let's get it
     else
     {
-      padManager.getPad(padID, callback);
+      padManager.getPad(padID, text, callback);
     }
   });
 }
