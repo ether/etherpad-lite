@@ -20,6 +20,7 @@
 
 var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
+var readOnlyManager = require("./ReadOnlyManager");
 var async = require("async");
 
 /**********************/
@@ -404,9 +405,23 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getReadOnlyLink = function(padID, callback)
+exports.getReadOnlyID = function(padID, callback)
 {
-  
+  //we don't need the pad object, but this function does all the security stuff for us
+  getPadSafe(padID, function(err)
+  {
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    //get the readonlyId
+    readOnlyManager.getReadOnlyId(padID, function(err, readOnlyId)
+    {
+      callback(err, {readOnlyID: readOnlyId});
+    });
+  });
 }
 
 /**
