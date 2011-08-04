@@ -33,6 +33,9 @@ globalPads = [];
  */
 exports.getPad = function(id, callback)
 {    
+  if(!exports.isValidPadId(id))
+    throw new Error(id + " is not a valid padId");
+  
   var pad = globalPads[id];
   
   //return pad if its already loaded
@@ -69,3 +72,9 @@ exports.doesPadExists = function(padId, callback)
     callback(err, value != null);  
   });
 }
+
+exports.isValidPadId = function(padId)
+{
+  return /^([0-9]+\$)?[^$]{1,50}$/.test(padId);
+}
+

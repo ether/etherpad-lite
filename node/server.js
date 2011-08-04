@@ -38,6 +38,7 @@ var exportHandler;
 var importHandler;
 var exporthtml;
 var readOnlyManager;
+var padManager;
 
 //try to get the git version
 var version = "";
@@ -76,6 +77,7 @@ async.waterfall([
     exportHandler = require('./handler/ExportHandler');
     importHandler = require('./handler/ImportHandler');
     apiHandler = require('./handler/APIHandler');
+    padManager = require('./db/PadManager');
     
     //install logging      
     var httpLogger = log4js.getLogger("http");
@@ -162,7 +164,7 @@ async.waterfall([
     app.get('/p/:pad', function(req, res, next)
     {    
       //ensure the padname is valid and the url doesn't end with a /
-      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
         next();
         return;
@@ -177,7 +179,7 @@ async.waterfall([
     app.get('/p/:pad/timeslider', function(req, res, next)
     {
       //ensure the padname is valid and the url doesn't end with a /
-      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
         next();
         return;
@@ -191,6 +193,13 @@ async.waterfall([
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/export/:type', function(req, res, next)
     {
+      //ensure the padname is valid and the url doesn't end with a /
+      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
+      {
+        next();
+        return;
+      }
+    
       var types = ["pdf", "doc", "txt", "html", "odt"];
       //send a 404 if we don't support this filetype
       if(types.indexOf(req.params.type) == -1)
@@ -213,6 +222,13 @@ async.waterfall([
     //handle import requests
     app.post('/p/:pad/import', function(req, res, next)
     {
+      //ensure the padname is valid and the url doesn't end with a /
+      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
+      {
+        next();
+        return;
+      }
+      
       //if abiword is disabled, skip handling this request
       if(settings.abiword == null)
       {
@@ -326,12 +342,3 @@ async.waterfall([
     callback(null);  
   }
 ]);
-
-function isValidPadname(padname)
-{
-  //ensure there is no dollar sign in the pad name
-  if(padname.indexOf("$")!=-1)
-    return false;
-  
-  return true;
-}
