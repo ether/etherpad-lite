@@ -240,6 +240,8 @@ async.waterfall([
       importHandler.doImport(req, res, req.params.pad);
     });
     
+    var apiLogger = log4js.getLogger("API");
+    
     //This is a api call, collect all post informations and pass it to the apiHandler
     app.all('/api/1/:func', function(req, res)
     {
@@ -251,6 +253,17 @@ async.waterfall([
         new formidable.IncomingForm().parse(req, function(err, fields, files) 
         { 
           if(err) throw err;
+          
+          apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
+          
+          //wrap the send function so we can log the response
+          res._send = res.send;
+          res.send = function(response)
+          {
+            response = JSON.stringify(response);
+            apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
+            res._send(response);
+          }
           
           //call the api handler
           apiHandler.handle(req.params.func, fields, req, res);
