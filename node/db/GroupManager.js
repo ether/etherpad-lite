@@ -20,6 +20,7 @@
  
 var db = require("./DB").db;
 var async = require("async");
+var padManager = require("./PadManager");
  
 exports.doesGroupExist = function(groupID, callback)
 {
@@ -102,6 +103,7 @@ exports.getMappedGroup4 = function(groupMapper, callback)
          
          //create the mapper entry for this group
          db.set("mapper2group:"+groupMapper, responseObj.groupID);
+         
          callback(null, responseObj);
        });
      }
@@ -113,5 +115,102 @@ exports.getMappedGroup4 = function(groupMapper, callback)
   });
 }
 
+exports.createGroupPad = function(groupID, padName, text, callback)
+{
+  //create the padID
+  var padID = groupID + "$" + padName;
 
+  async.series([
+    //ensure group exists 
+    function (callback)
+    {
+      exports.doesGroupExist(groupID, function(err, exists)
+      {
+        //error
+        if(err) 
+        {
+          callback(err);
+        }
+        //group does not exist
+        else if(exists == false)
+        {
+          callback({stop: "groupID does not exist"});
+        }
+        //group exists, everything is fine
+        else
+        {
+          callback();
+        }
+      });
+    },
+    //ensure pad does not exists
+    function (callback)
+    {
+      padManager.doesPadExists(padID, function(err, exists)
+      {
+        //error
+        if(err) 
+        {
+          callback(err);
+        }
+        //pad exists already
+        else if(exists == true)
+        {
+          callback({stop: "padName does already exist"});
+        }
+        //pad does not exist, everything is fine
+        else
+        {
+          callback();
+        }
+      });
+    },
+    //create the pad
+    function (callback)
+    {
+      padManager.getPad(padID, text, function(err)
+      {
+        callback(err);
+      });
+    },
+    //create an entry in the group for this pad
+    function (callback)
+    {
+      db.setSub("group:" + groupID, ["pads", padID], 1);
+      callback();
+    }
+  ], function(err)
+  {
+    callback(err, {padID: padID});
+  });
 
+  //check if groupID exists
+  //check if pad already exists
+  //create the pad
+  //create the subentry in the padobject
+}
+
+exports.listPads = function(groupID, callback)
+{
+  exports.doesGroupExist(groupID, function(err, exists)
+  {
+    //error
+    if(err) 
+    {
+      callback(err);
+    }
+    //group does not exist
+    else if(exists == false)
+    {
+      callback({stop: "groupID does not exist"});
+    }
+    //group exists, let's get the pads
+    else
+    {
+      db.getSub("group:" + groupID, ["pads"], function(err, pads)
+      {
+        callback(err, {padIDs: pads});
+      });
+    }
+  });
+}

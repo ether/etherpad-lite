@@ -33,14 +33,36 @@ globalPads = [];
  */
 exports.getPad = function(id, text, callback)
 {    
+  //check if this is a valid padId
   if(!exports.isValidPadId(id))
-    throw new Error(id + " is not a valid padId");
+  {
+    callback({stop: id + " is not a valid padId"});
+    return;
+  }
   
   //make text an optional parameter
   if(typeof text == "function")
   {
     callback = text;
     text = null;
+  }
+  
+  //check if this is a valid text
+  if(text != null)
+  {
+    //check if text is a string
+    if(typeof text != "string")
+    {
+      callback({stop: "text is not a string"});
+      return;
+    }
+    
+    //check if text is less than 100k chars
+    if(text.length > 100000)
+    {
+      callback({stop: "text must be less than 100k chars"});
+      return;
+    }
   }
   
   var pad = globalPads[id];

@@ -67,10 +67,7 @@ Example returns:
 {code: 0, message:"ok", data: {padIDs : ["3$test", "3$test2"]}
 {code: 1, message:"There is no group for this groupID", data: null}
 */
-exports.listPads = function(groupID, callback)
-{
-
-}
+exports.listPads = groupManager.listPads;
 
 /**
 createGroupPad(groupID, padName [, text]) creates a new pad in this group 
@@ -81,10 +78,7 @@ Example returns:
 {code: 1, message:"pad does already exist", data: null}
 {code: 1, message:"There is no group for this groupID", data: null}
 */
-exports.createGroupPad = function(groupID, padName, text, callback)
-{
-
-}
+exports.createGroupPad = groupManager.createGroupPad;
 
 /**********************/
 /**AUTHOR FUNCTIONS****/
@@ -310,15 +304,7 @@ Example returns:
 {code: 1, message:"text too long", data: null}
 */
 exports.setText = function(padID, text, callback)
-{  
-  //check the text
-  var textCheck = checkPadText(text);
-  if(textCheck != null)
-  {
-    callback(textCheck);
-    return;
-  }
-  
+{    
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
@@ -372,18 +358,7 @@ Example returns:
 {code: 1, message:"pad does already exist", data: null}
 */
 exports.createPad = function(padID, text, callback)
-{
-  if(text)
-  {
-    //check the text
-    var textCheck = checkPadText(text);
-    if(textCheck != null)
-    {
-      callback(textCheck);
-      return;
-    }
-  }
-  
+{  
   //ensure there is no $ in the padID
   if(padID.indexOf("$") != -1)
   {
@@ -548,23 +523,6 @@ exports.isPasswordProtected = function(padID, callback)
 function is_int(value)
 { 
   return (parseFloat(value) == parseInt(value)) && !isNaN(value)
-}
-
-function checkPadText(text)
-{
-  //check if text is a string
-  if(typeof text != "string")
-  {
-    return {stop: "text is not a string"};
-  }
-  
-  //check if text is less than 100k chars
-  if(text.length > 100000)
-  {
-    return {stop: "text must be less than 100k chars"};
-  }
-  
-  return null;
 }
 
 //gets a pad safe
