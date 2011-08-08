@@ -243,37 +243,23 @@ async.waterfall([
     var apiLogger = log4js.getLogger("API");
     
     //This is a api call, collect all post informations and pass it to the apiHandler
-    app.all('/api/1/:func', function(req, res)
+    app.get('/api/1/:func', function(req, res)
     {
       res.header("Server", serverName);
     
-      //check if this is a post request
-      if(req.method == "POST")
+      apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(req.query));
+      
+      //wrap the send function so we can log the response
+      res._send = res.send;
+      res.send = function(response)
       {
-        new formidable.IncomingForm().parse(req, function(err, fields, files) 
-        { 
-          if(err) throw err;
-          
-          apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
-          
-          //wrap the send function so we can log the response
-          res._send = res.send;
-          res.send = function(response)
-          {
-            response = JSON.stringify(response);
-            apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
-            res._send(response);
-          }
-          
-          //call the api handler
-          apiHandler.handle(req.params.func, fields, req, res);
-        });
+        response = JSON.stringify(response);
+        apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
+        res._send(response);
       }
-      //say goodbye if this is not a post request
-      else
-      {
-        res.send({code: 5, message: "no POST request", data: null});
-      }
+      
+      //call the api handler
+      apiHandler.handle(req.params.func, req.query, req, res);
     });
     
     //The Etherpad client side sends information about how a disconnect happen
