@@ -35,8 +35,8 @@ catch(e)
 
 //a list of all functions
 var functions = {
-//  "createGroup"               : [],
-//  "getMappedGroup4"           : ["groupMapper"], 
+  "createGroup"               : [],
+  "getMappedGroup4"           : ["groupMapper"], 
 //  "deleteGroup"               : ["groupID"], 
 //  "listPads"                  : ["groupID"], 
   "createPad"                 : ["padID", "text"], 

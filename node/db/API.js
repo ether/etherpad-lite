@@ -21,6 +21,7 @@
 var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
 var readOnlyManager = require("./ReadOnlyManager");
+var groupManager = require("./GroupManager");
 var async = require("async");
 
 /**********************/
@@ -34,10 +35,7 @@ Example returns:
 
 {code: 0, message:"ok", data: {groupID: 5}}
 */
-exports.createGroup = function (callback)
-{
-
-}
+exports.createGroup = groupManager.createGroup;
 
 /**
 getMappedGroup4(groupMapper) this functions helps you to map your application group ids to etherpad lite group ids 
@@ -46,10 +44,7 @@ Example returns:
 
 {code: 0, message:"ok", data: {groupID: 7}}
 */
-exports.getMappedGroup4 = function (groupMapper, callback)
-{
-
-}
+exports.getMappedGroup4 = groupManager.getMappedGroup4;
 
 /**
 deleteGroup(groupID) deletes a group 
