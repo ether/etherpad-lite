@@ -243,6 +243,8 @@ async.waterfall([
     //This is a api call, collect all post informations and pass it to the apiHandler
     app.all('/api/1/:func', function(req, res)
     {
+      res.header("Server", serverName);
+    
       //check if this is a post request
       if(req.method == "POST")
       {
