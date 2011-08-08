@@ -51,7 +51,7 @@ Maps an external application identifier to an internal author
 ### group:$GROUPID
 a group of pads
 
-* **pads** - object with pad names in it, values are null
+* **pads** - object with pad names in it, values are 1
 ### session:$SESSIONID
 a session between an author and a group
 
@@ -62,8 +62,8 @@ a session between an author and a group
 ### author2sessions:$AUTHORID
 saves the sessions of an author
 
-* **sessions** - object with sessionIDs in it, values are null
+* **sessions** - object with sessionIDs in it, values are 1
 
 ### group2sessions:$GROUPID
 
-* **sessions** - object with sessionIDs in it, values are null
+* **sessions** - object with sessionIDs in it, values are 1
