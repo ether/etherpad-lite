@@ -22,6 +22,18 @@ var db = require("./DB").db;
 var async = require("async");
 
 /**
+ * Checks if the author exists
+ */
+exports.doesAuthorExists = function (authorID, callback)
+{
+  //check if the database entry of this author exists
+  db.get("globalAuthor:" + authorID, function (err, author)
+  {
+    callback(err, author != null);
+  });
+}
+
+/**
  * Returns the AuthorID for a token. 
  * @param {String} token The token 
  * @param {Function} callback callback (err, author) 

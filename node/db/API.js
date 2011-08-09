@@ -23,6 +23,7 @@ var padMessageHandler = require("../handler/PadMessageHandler");
 var readOnlyManager = require("./ReadOnlyManager");
 var groupManager = require("./GroupManager");
 var authorManager = require("./AuthorManager");
+var sessionManager = require("./SessionManager");
 var async = require("async");
 
 /**********************/
@@ -118,10 +119,7 @@ Example returns:
 {code: 1, message:"authorID doesn't exist", data: null}
 {code: 1, message:"validUntil is in the past", data: null}
 */
-exports.createSession = function(groupID, authorID, validUntil, callback)
-{
-
-}
+exports.createSession = sessionManager.createSession;
 
 /**
 deleteSession(sessionID) deletes a session 
@@ -144,10 +142,7 @@ Example returns:
 {code: 0, message:"ok", data: {authorID: 5, groupID: 7, validUntil: 1312201246}}
 {code: 1, message:"sessionID does not exist", data: null}
 */
-exports.getSessionInfo = function(sessionID, callback)
-{
-
-}
+exports.getSessionInfo = sessionManager.getSessionInfo;
 
 /**
 listSessionsOfGroup(groupID) returns all sessions of a group 
