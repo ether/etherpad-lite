@@ -42,7 +42,7 @@ var functions = {
   "createPad"                 : ["padID", "text"], 
   "createGroupPad"            : ["groupID", "padName", "text"],
   "createAuthor"              : ["name"], 
-//  "getMappedAuthor4"          : ["authorMapper" , "name"], 
+  "getMappedAuthor4"          : ["authorMapper" , "name"], 
 //  "createSession"             : ["groupID", "authorID", "validUntil"], 
 //  "deleteSession"             : ["sessionID"], 
 //  "getSessionInfo"            : ["sessionID"], 

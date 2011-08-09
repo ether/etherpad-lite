@@ -102,10 +102,7 @@ Example returns:
 
 {code: 0, message:"ok", data: {authorID: 5}}
 */
-exports.getMappedAuthor4 = function(authorMapper ,name, callback)
-{
-
-}
+exports.getMappedAuthor4 = authorManager.getMappedAuthor4;
 
 /**********************/
 /**SESSION FUNCTIONS***/

@@ -22,59 +22,91 @@ var db = require("./DB").db;
 var async = require("async");
 
 /**
- * Returns the Author Id for a token. If the token is unkown, 
- * it creates a author for the token
+ * Returns the AuthorID for a token. 
  * @param {String} token The token 
  * @param {Function} callback callback (err, author) 
- * The callback function that is called when the result is here 
  */
 exports.getAuthor4Token = function (token, callback)
-{  
-  var author;
-  
-  async.series([
-    //try to get the author for this token
-    function(callback)
-    {
-      db.get("token2author:" + token, function (err, _author)
-      {
-        author = _author;
-        callback(err);
-      });
-    },
-    function(callback)
-    {
-      //there is no author with this token, so create one
-      if(author == null)
-      {
-        exports.createAuthor(null, function(err, _author)
-        {
-          //error?
-          if(err)
-          {
-            callback(err);
-            return;
-          }
-        
-          author = _author.authorID;
-          
-          //create the token2author relation
-          db.set("token2author:" + token, author);
-          
-          callback();
-        });
-      }
-      //there is a author with this token
-      else
-      {
-        //update the timestamp of this author
-        db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
-        callback();
-      }
-    }
-  ], function(err)
+{
+  mapAuthorWithDBKey("token2author", token, function(err, author)
   {
-    callback(err, author);
+    //return only the sub value authorID
+    callback(err, author ? author.authorID : author);
+  });
+}
+
+/**
+ * Returns the AuthorID for a mapper. 
+ * @param {String} token The mapper
+ * @param {Function} callback callback (err, author) 
+ */
+exports.getMappedAuthor4 = function (authorMapper, name, callback)
+{
+  mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
+  {
+    //error?
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    //set the name of this author
+    if(name)
+      exports.setAuthorName(author.authorID, name);
+      
+    //return the authorID
+    callback(null, author);
+  });
+}
+
+/**
+ * Returns the AuthorID for a mapper. We can map using a mapperkey,
+ * so far this is token2author and mapper2author
+ * @param {String} mapperkey The database key name for this mapper 
+ * @param {String} mapper The mapper
+ * @param {Function} callback callback (err, author) 
+ */
+function mapAuthorWithDBKey (mapperkey, mapper, callback)
+{  
+  //try to map to an author
+  db.get(mapperkey + ":" + mapper, function (err, author)
+  {
+    //error?
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+  
+    //there is no author with this mapper, so create one
+    if(author == null)
+    {
+      exports.createAuthor(null, function(err, author)
+      {
+        //error?
+        if(err)
+        {
+          callback(err);
+          return;
+        }
+        
+        //create the token2author relation
+        db.set(mapperkey + ":" + mapper, author.authorID);
+        
+        //return the author
+        callback(null, author);
+      });
+    }
+    //there is a author with this mapper
+    else
+    {
+      //update the timestamp of this author
+      db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
+      
+      //return the author
+      callback(null, {authorID: author});
+    }
   });
 }
 
