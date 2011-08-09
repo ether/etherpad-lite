@@ -33,7 +33,10 @@ if [ ! -f "settings.json" ]; then
 fi
 
 echo "Ensure that all dependencies are up to date..."
-npm install || rm -rf node_modules; exit 1
+npm install || { 
+  rm -rf node_modules
+  exit 1 
+}
 
 echo "Ensure jQuery is downloaded and up to date..."
 DOWNLOAD_JQUERY="true"
