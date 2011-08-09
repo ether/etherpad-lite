@@ -32,7 +32,7 @@ Visit <http://pitapoison.de:9001> to test it live. <br>You can find the same ins
 **As root:**
 
 <ol>
-  <li>Install all dependencies. We need the sqlite develob libraries, gzip, git, curl, wget, libssl develop libraries and python <br><code>apt-get install libsqlite3-dev gzip git-core curl wget python libssl-dev</code></li><br>
+  <li>Install all dependencies. We need the sqlite develob libraries, gzip, git, curl, libssl develop libraries and python <br><code>apt-get install libsqlite3-dev gzip git-core curl python libssl-dev</code></li><br>
   <li>Install node.js 
     <ol type="a">
       <li>Download the latest <b>0.4.x</b> node.js release from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
