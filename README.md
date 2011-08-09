@@ -1,7 +1,7 @@
 # About
 Etherpad lite is a really-real time collaborative editor spawned from the Hell fire of Etherpad. 
 We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad Lite 
-is based on node.js what makes it much ligther and more stable than the original Etherpad. Our hope 
+is based on node.js what makes it much lighter and more stable than the original Etherpad. Our hope 
 is that this will encourage more users to install a realtime collaborative editor. A smaller and well 
 documented codebase makes it easier for developers to improve the code. Etherpad Lite is optimized 
 to be easy embeddable. Look at our [FAQ Page](https://github.com/Pita/etherpad-lite/wiki/FAQ)
@@ -32,7 +32,7 @@ Visit <http://pitapoison.de:9001> to test it live. <br>You can find the same ins
 **As root:**
 
 <ol>
-  <li>Install all dependencies. We need the sqlite develob libraries, gzip, git, curl, libssl develop libraries and python <br><code>apt-get install libsqlite3-dev gzip git-core curl python libssl-dev</code></li><br>
+  <li>Install all dependencies. We need the sqlite development libraries, gzip, git, curl, libssl develop libraries and python <br><code>apt-get install libsqlite3-dev gzip git-core curl python libssl-dev</code></li><br>
   <li>Install node.js 
     <ol type="a">
       <li>Download the latest <b>0.4.x</b> node.js release from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
@@ -43,7 +43,7 @@ Visit <http://pitapoison.de:9001> to test it live. <br>You can find the same ins
   <li>Install npm <code>curl http://npmjs.org/install.sh | sh</code></li>
 </ol>
 
-**As any user (we recommend creating a seperate user called etherpad-lite):**
+**As any user (we recommend creating a separate user called etherpad-lite):**
 
 <ol start="4">
   <li> Clone the git repository <code>git clone 'git://github.com/Pita/etherpad-lite.git'</code><br>&nbsp;</li>
@@ -55,7 +55,7 @@ Visit <http://pitapoison.de:9001> to test it live. <br>You can find the same ins
 ## Troubleshooting
 
 ### It fails while installing the sqlite dependency
-The sqlite package of some linux versions (including debian lenny) is too old. We need sqlite >=3.6. You have to use a PPA or debian backports. You find sqlite packages for Ubuntu Hardy [here](https://launchpad.net/~mirabilos/+archive/ppa/+sourcepub/1304941/+listing-archive-extra), Debian Backports can be found [here](http://backports-master.debian.org/Instructions/#index1h2)
+The sqlite package of some Linux versions (including debian lenny) is too old. We need sqlite >=3.6. You have to use a PPA or debian backports. You find sqlite packages for Ubuntu Hardy [here](https://launchpad.net/~mirabilos/+archive/ppa/+sourcepub/1304941/+listing-archive-extra), Debian Backports can be found [here](http://backports-master.debian.org/Instructions/#index1h2)
 
 ### It fails while installing the express dependency, it says my node version is wrong
 You might have installed node.js version 0.5. You can check that with `node --version`. Please reinstall node 0.4.x
@@ -93,7 +93,7 @@ You also help the project, if you only host a Etherpad Lite instance and share y
 # Modules created for this project
 
 * [ueberDB](https://github.com/Pita/ueberDB) "transforms every database into a object key value store" - manages all database access
-* [doc.md](https://github.com/Pita/doc.md) "A simple JSDoc documenation tool that creates markdown for node.js modules exports" - is used to generate the docs
+* [doc.md](https://github.com/Pita/doc.md) "A simple JSDoc documentation tool that creates markdown for node.js modules exports" - is used to generate the docs
 * [channels](https://github.com/Pita/channels) "Event channels in node.js" - ensures that ueberDB operations are atomic and in series for each key
 
 # License
