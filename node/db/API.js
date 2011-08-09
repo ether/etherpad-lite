@@ -30,138 +30,27 @@ var async = require("async");
 /**GROUP FUNCTIONS*****/
 /**********************/
 
-/**
-createGroup() creates a new group 
-
-Example returns:
-
-{code: 0, message:"ok", data: {groupID: 5}}
-*/
 exports.createGroup = groupManager.createGroup;
-
-/**
-getMappedGroup4(groupMapper) this functions helps you to map your application group ids to etherpad lite group ids 
-
-Example returns:
-
-{code: 0, message:"ok", data: {groupID: 7}}
-*/
 exports.getMappedGroup4 = groupManager.getMappedGroup4;
-
-/**
-deleteGroup(groupID) deletes a group 
-
-Example returns:
-
-{code: 0, message:"ok", data: null}
-{code: 1, message:"There is no group for this groupID", data: null}
-*/
-exports.deleteGroup = function(groupID, callback)
-{
-
-}
-
-/**
-listPads(groupID) returns all pads of this group
-
-Example returns:
-
-{code: 0, message:"ok", data: {padIDs : ["3$test", "3$test2"]}
-{code: 1, message:"There is no group for this groupID", data: null}
-*/
+exports.deleteGroup = groupManager.deleteGroup;
 exports.listPads = groupManager.listPads;
-
-/**
-createGroupPad(groupID, padName [, text]) creates a new pad in this group 
-
-Example returns:
-
-{code: 0, message:"ok", data: null}
-{code: 1, message:"pad does already exist", data: null}
-{code: 1, message:"There is no group for this groupID", data: null}
-*/
 exports.createGroupPad = groupManager.createGroupPad;
 
 /**********************/
 /**AUTHOR FUNCTIONS****/
 /**********************/
 
-
-/**
-createAuthor([name]) creates a new author 
-
-Example returns:
-
-{code: 0, message:"ok", data: {authorID: 5}}
-*/
 exports.createAuthor = authorManager.createAuthor;
-
-/**
-getMappedAuthor4(authorMapper [, name]) this functions helps you to map your application author ids to etherpad lite author ids 
-
-Example returns:
-
-{code: 0, message:"ok", data: {authorID: 5}}
-*/
 exports.getMappedAuthor4 = authorManager.getMappedAuthor4;
 
 /**********************/
 /**SESSION FUNCTIONS***/
 /**********************/
 
-/**
-createSession(groupID, authorID, validUntil) creates a new session 
-
-Example returns:
-
-{code: 0, message:"ok", data: {sessionID: 5}}
-{code: 1, message:"groupID doesn't exist", data: null}
-{code: 1, message:"authorID doesn't exist", data: null}
-{code: 1, message:"validUntil is in the past", data: null}
-*/
 exports.createSession = sessionManager.createSession;
-
-/**
-deleteSession(sessionID) deletes a session 
-
-Example returns:
-
-{code: 1, message:"ok", data: null}
-{code: 1, message:"sessionID does not exist", data: null}
-*/
-exports.deleteSession = function(sessionID, callback)
-{
-
-}
-
-/**
-getSessionInfo(sessionID) returns informations about a session 
-
-Example returns:
-
-{code: 0, message:"ok", data: {authorID: 5, groupID: 7, validUntil: 1312201246}}
-{code: 1, message:"sessionID does not exist", data: null}
-*/
+exports.deleteSession = sessionManager.deleteSession;
 exports.getSessionInfo = sessionManager.getSessionInfo;
-
-/**
-listSessionsOfGroup(groupID) returns all sessions of a group 
-
-Example returns:
-
-{code: 0, message:"ok", data: {32: {authorID: 5, groupID: 7, validUntil: 1312201246}, 53: {authorID: 3, groupID: 2, validUntil: 1312201216}}}
-{code: 1, message:"groupID does not exist", data: null}
-*/
 exports.listSessionsOfGroup = sessionManager.listSessionsOfGroup;
-
-/**
-listSessionsOfAuthor(authorID) returns all sessions of an author 
-
-Example returns:
-
-{code: 0, message:"ok", data: {32: {authorID: 5, groupID: 7, validUntil: 1312201246}, 53: {authorID: 3, groupID: 2, validUntil: 1312201216}}}
-{code: 1, message:"authorID does not exist", data: null}
-*/
 exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 
 /************************/
