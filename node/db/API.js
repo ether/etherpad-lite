@@ -152,10 +152,7 @@ Example returns:
 {code: 0, message:"ok", data: {32: {authorID: 5, groupID: 7, validUntil: 1312201246}, 53: {authorID: 3, groupID: 2, validUntil: 1312201216}}}
 {code: 1, message:"groupID does not exist", data: null}
 */
-exports.listSessionsOfGroup = function(groupID, callback)
-{
-
-}
+exports.listSessionsOfGroup = sessionManager.listSessionsOfGroup;
 
 /**
 listSessionsOfAuthor(authorID) returns all sessions of an author 
@@ -165,36 +162,7 @@ Example returns:
 {code: 0, message:"ok", data: {32: {authorID: 5, groupID: 7, validUntil: 1312201246}, 53: {authorID: 3, groupID: 2, validUntil: 1312201216}}}
 {code: 1, message:"authorID does not exist", data: null}
 */
-exports.listSessionsOfAuthor = function(authorID, callback)
-{
-
-}
-
-/**
-deleteAllSessionsOfGroup(groupID) deletes all sessions of a group 
-
-Example returns:
-
-{code: 0, message:"ok", data: null}
-{code: 1, message:"groupID does not exist", data: null}
-*/
-exports.deleteAllSessionsOfGroup = function(groupID, callback)
-{
-  
-}
-
-/**
-deleteAllSessionsOfAuthor(authorID) deletes all sessions of an author 
-
-Example returns:
-
-{code: 0, message:"ok", data: null}
-{code: 1, message:"authorID does not exist", data: null}
-*/
-exports.deleteAllSessionsOfAuthor = function(authorID, callback)
-{
-
-}
+exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 
 /************************/
 /**PAD CONTENT FUNCTIONS*/

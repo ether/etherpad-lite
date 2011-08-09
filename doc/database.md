@@ -62,8 +62,8 @@ a session between an author and a group
 ### author2sessions:$AUTHORID
 saves the sessions of an author
 
-* **sessions** - object with sessionIDs in it, values are 1
+* **sessionsIDs** - object with sessionIDs in it, values are 1
 
 ### group2sessions:$GROUPID
 
-* **sessions** - object with sessionIDs in it, values are 1
+* **sessionsIDs** - object with sessionIDs in it, values are 1

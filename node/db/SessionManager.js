@@ -87,7 +87,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
     //check validUntil and create the session db entry
     function(callback)
     {
-      //check if validUntil is a number
+      //check if rev is a number
       if(typeof validUntil != "number")
       {
         //try to parse the number
@@ -117,7 +117,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
       }
     
       //check if validUntil is in the future
-      if(new Date().getTime()/1000 > validUntil)
+      if(Math.floor(new Date().getTime()/1000) > validUntil)
       {
         callback({stop: "validUntil is in the past"});
         return;
@@ -147,11 +147,14 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
         //the entry doesn't exist so far, let's create it
         if(group2sessions == null)
         {
-          group2sessions = {sessions : {}};
+          group2sessions = {sessionIDs : {}};
         }
         
         //add the entry for this session
-        group2sessions.sessions[sessionID] = 1;
+        group2sessions.sessionIDs[sessionID] = 1;
+        
+        //save the new element back
+        db.set("group2sessions:" + groupID, group2sessions);
         
         callback();
       });
@@ -172,11 +175,14 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
         //the entry doesn't exist so far, let's create it
         if(author2sessions == null)
         {
-          author2sessions = {sessions : {}};
+          author2sessions = {sessionIDs : {}};
         }
         
         //add the entry for this session
-        author2sessions.sessions[sessionID] = 1;
+        author2sessions.sessionIDs[sessionID] = 1;
+        
+        //save the new element back
+        db.set("author2sessions:" + authorID, author2sessions);
         
         callback();
       });
@@ -222,60 +228,87 @@ exports.deleteSession = function(sessionID, callback)
   //delete author2sessions
 }
 
-/**
-returns all sessions of a group 
-
-Example returns:
-
-{code: 0, message:"ok", data: {32: {authorID: 5, groupID: 7, validUntil: 1312201246}, 53: {authorID: 3, groupID: 2, validUntil: 1312201216}}}
-{code: 1, message:"groupID does not exist", data: null}
-*/
 exports.listSessionsOfGroup = function(groupID, callback)
 {
-  //check if group exists
-  //get the group2sessions entry
+  groupMangager.doesGroupExist(groupID, function(err, exists)
+  {
+    //error
+    if(err)
+    {
+      callback(err);
+    }
+    //group does not exist
+    else if(exists == false)
+    {
+      callback({stop: "groupID does not exist"});
+    }
+    //everything is fine, continue
+    else
+    {
+      listSessionsWithDBKey("group2sessions:" + groupID, callback);
+    }
+  });
 }
 
-/**
-listSessionsOfAuthor(authorID) returns all sessions of an author 
-
-Example returns:
-
-{code: 0, message:"ok", data: {32: {authorID: 5, groupID: 7, validUntil: 1312201246}, 53: {authorID: 3, groupID: 2, validUntil: 1312201216}}}
-{code: 1, message:"authorID does not exist", data: null}
-*/
 exports.listSessionsOfAuthor = function(authorID, callback)
 {
-  //check if author exists
-  //get the author2sessions entry
+  authorMangager.doesAuthorExists(authorID, function(err, exists)
+  {
+    //error
+    if(err)
+    {
+      callback(err);
+    }
+    //group does not exist
+    else if(exists == false)
+    {
+      callback({stop: "authorID does not exist"});
+    }
+    //everything is fine, continue
+    else
+    {
+      listSessionsWithDBKey("author2sessions:" + authorID, callback);
+    }
+  });
 }
 
-/**
-deleteAllSessionsOfGroup(groupID) deletes all sessions of a group 
-
-Example returns:
-
-{code: 0, message:"ok", data: null}
-{code: 1, message:"groupID does not exist", data: null}
-*/
-exports.deleteAllSessionsOfGroup = function(groupID, callback)
+function listSessionsWithDBKey (dbkey, callback)
 {
-  //call listsessionsofgroup
-  //foreach the group and delete the sessions
-}
+  var sessions;
 
-/**
-deleteAllSessionsOfAuthor(authorID) deletes all sessions of an author 
-
-Example returns:
-
-{code: 0, message:"ok", data: null}
-{code: 1, message:"authorID does not exist", data: null}
-*/
-exports.deleteAllSessionsOfAuthor = function(authorID, callback)
-{
-  //call listsessionsofauthor
-  //foreach the group and delete the sessions
+  async.series([
+    function(callback)
+    {
+      //get the group2sessions entry
+      db.get(dbkey, function(err, sessionObject)
+      {
+        sessions = sessionObject ? sessionObject.sessionIDs : null;
+        callback(err);
+      });
+    },
+    function(callback)
+    {        
+      //collect all sessionIDs in an arrary
+      var sessionIDs = [];
+      for (var i in sessions)
+      {
+        sessionIDs.push(i);
+      }
+      
+      //foreach trough the sessions and get the sessioninfos
+      async.forEach(sessionIDs, function(sessionID, callback)
+      {
+        exports.getSessionInfo(sessionID, function(err, sessionInfo)
+        {
+          sessions[sessionID] = sessionInfo;
+          callback(err);
+        });
+      }, callback);
+    }
+  ], function(err)
+  {
+    callback(err, sessions);
+  });
 }
 
 /**
