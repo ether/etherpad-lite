@@ -47,33 +47,29 @@ exports.getAuthor4Token = function (token, callback)
       //there is no author with this token, so create one
       if(author == null)
       {
-        createAuthor(token, function(err, _author)
+        createAuthor(null, function(err, _author)
         {
+          //error?
+          if(err)
+          {
+            callback(err);
+            return;
+          }
+        
           author = _author;
-          callback(err);
+          
+          //create the token2author relation
+          db.set("token2author:" + token, author);
+          
+          callback();
         });
       }
       //there is a author with this token
       else
       {
-        //check if there is also an author object for this token, if not, create one
-        db.get("globalAuthor:" + author, function(err, authorObject)
-        {
-          if(authorObject == null)
-          {
-            createAuthor(token, function(err, _author)
-            {
-              author = _author;
-              callback(err);
-            });
-          }
-          //the author exists, update the timestamp of this author
-          else
-          {
-            db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
-            callback();
-          }
-        });
+        //update the timestamp of this author
+        db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
+        callback();
       }
     }
   ], function(err)
@@ -86,30 +82,18 @@ exports.getAuthor4Token = function (token, callback)
  * Internal function that creates the database entry for an author 
  * @param {String} token The token 
  */
-function createAuthor (token, callback)
+function createAuthor (name, callback)
 {
   //create the new author name
   var author = "g." + _randomString(16);
         
   //create the globalAuthors db entry
-  var authorObj = {colorId : Math.floor(Math.random()*32), name: null, timestamp: new Date().getTime()};
+  var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
         
-  //we do this in series to ensure this db entries are written in the correct order
-  async.series([
-    //set the global author db entry
-    function(callback)
-    {
-      db.set("globalAuthor:" + author, authorObj, callback); 
-    },
-    //set the token2author db entry
-    function(callback)
-    {
-      db.set("token2author:" + token, author, callback);
-    }
-  ], function(err)
-  {
-    callback(err, author);
-  });
+  //set the global author db entry
+  db.set("globalAuthor:" + author, authorObj);
+  
+  callback(null, author);
 }
 
 /**
