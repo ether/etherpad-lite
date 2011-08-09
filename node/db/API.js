@@ -22,6 +22,7 @@ var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
 var readOnlyManager = require("./ReadOnlyManager");
 var groupManager = require("./GroupManager");
+var authorManager = require("./AuthorManager");
 var async = require("async");
 
 /**********************/
@@ -92,10 +93,7 @@ Example returns:
 
 {code: 0, message:"ok", data: {authorID: 5}}
 */
-exports.createAuthor = function(name, callback)
-{
-
-}
+exports.createAuthor = authorManager.createAuthor;
 
 /**
 getMappedAuthor4(authorMapper [, name]) this functions helps you to map your application author ids to etherpad lite author ids 

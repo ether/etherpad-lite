@@ -41,7 +41,7 @@ var functions = {
   "listPads"                  : ["groupID"], 
   "createPad"                 : ["padID", "text"], 
   "createGroupPad"            : ["groupID", "padName", "text"],
-//  "createAuthor"              : ["name"], 
+  "createAuthor"              : ["name"], 
 //  "getMappedAuthor4"          : ["authorMapper" , "name"], 
 //  "createSession"             : ["groupID", "authorID", "validUntil"], 
 //  "deleteSession"             : ["sessionID"], 

@@ -47,7 +47,7 @@ exports.getAuthor4Token = function (token, callback)
       //there is no author with this token, so create one
       if(author == null)
       {
-        createAuthor(null, function(err, _author)
+        exports.createAuthor(null, function(err, _author)
         {
           //error?
           if(err)
@@ -56,7 +56,7 @@ exports.getAuthor4Token = function (token, callback)
             return;
           }
         
-          author = _author;
+          author = _author.authorID;
           
           //create the token2author relation
           db.set("token2author:" + token, author);
@@ -80,9 +80,9 @@ exports.getAuthor4Token = function (token, callback)
 
 /**
  * Internal function that creates the database entry for an author 
- * @param {String} token The token 
+ * @param {String} name The name of the author 
  */
-function createAuthor (name, callback)
+exports.createAuthor = function(name, callback)
 {
   //create the new author name
   var author = "g." + _randomString(16);
@@ -93,7 +93,7 @@ function createAuthor (name, callback)
   //set the global author db entry
   db.set("globalAuthor:" + author, authorObj);
   
-  callback(null, author);
+  callback(null, {authorID: author});
 }
 
 /**
