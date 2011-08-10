@@ -289,7 +289,14 @@ exports.setPublicStatus = function(padID, publicStatus, callback)
       return;
     }
     
+    //convert string to boolean
+    if(typeof publicStatus == "string")
+      publicStatus = publicStatus == "true" ? true : false;
     
+    //set the password
+    pad.setPublicStatus(publicStatus);
+    
+    callback();
   });
 }
 
@@ -312,7 +319,7 @@ exports.getPublicStatus = function(padID, callback)
       return;
     }
     
-    
+    callback(null, {publicStatus: pad.getPublicStatus()});
   });
 }
 
@@ -335,7 +342,10 @@ exports.setPassword = function(padID, password, callback)
       return;
     }
     
+    //set the password
+    pad.setPassword(password);
     
+    callback();
   });
 }
 
@@ -358,7 +368,7 @@ exports.isPasswordProtected = function(padID, callback)
       return;
     }
     
-    
+    callback(null, {isPasswordProtected: pad.isPasswordProtected()});
   });
 }
 

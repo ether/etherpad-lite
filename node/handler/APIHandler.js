@@ -52,11 +52,11 @@ var functions = {
   "setText"                   : ["padID", "text"],
   "getRevisionsCount"         : ["padID"], 
 //  "deletePad"                 : ["padID"], 
-  "getReadOnlyID"             : ["padID"] 
-//  "setPublicStatus"           : ["padID", "publicStatus"], 
-//  "getPublicStatus"           : ["padID"], 
-//  "setPassword"               : ["padID", "password"], 
-//  "isPasswordProtected"       : ["padID"]
+  "getReadOnlyID"             : ["padID"],
+  "setPublicStatus"           : ["padID", "publicStatus"], 
+  "getPublicStatus"           : ["padID"], 
+  "setPassword"               : ["padID", "password"], 
+  "isPasswordProtected"       : ["padID"]
 };
 
 /**
