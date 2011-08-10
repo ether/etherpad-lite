@@ -3,16 +3,29 @@ var chat = (function()
   var self = {
     show: function () 
     {      
-      $("#chaticon").hide("slide", { direction: "down" }, 500, function()
+      $("#chaticon").hide("slide", {
+        direction: "down"
+      }, 500, function ()
       {
-        $("#chatbox").show("slide", { direction: "down" }, 750, self.scrollDown);
- 	$("#chatbox").resizable({ handles: 'nw', start: function(event,ui){
-	  $("#editorcontainer").hide();
-        }, stop: function(event,ui){
-          $("#editorcontainer").show();
- 	  self.scrollDown();
-        }});
-
+        $("#chatbox").show("slide", {
+          direction: "down"
+        }, 750, self.scrollDown);
+        $("#chatbox").resizable(
+        {
+          handles: 'nw',
+          start: function (event, ui)
+          {
+            $("#editorcontainer").hide();
+          },
+          stop: function (event, ui)
+          {
+            $("#editorcontainer").show();
+            
+            $("#chatbox").css({right: "20px", bottom: "0px", left: "", top: ""});
+            
+            self.scrollDown();
+          }
+        });
       });
     },
     hide: function () 
