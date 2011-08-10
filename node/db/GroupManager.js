@@ -71,7 +71,7 @@ exports.createGroup = function(callback)
   );
 }
 
-exports.getMappedGroup4 = function(groupMapper, callback)
+exports.createGroupIfNotExistsFor = function(groupMapper, callback)
 {
   //ensure mapper is optional
   if(typeof groupMapper != "string")

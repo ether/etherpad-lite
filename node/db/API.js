@@ -31,7 +31,7 @@ var async = require("async");
 /**********************/
 
 exports.createGroup = groupManager.createGroup;
-exports.getMappedGroup4 = groupManager.getMappedGroup4;
+exports.createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
 exports.deleteGroup = groupManager.deleteGroup;
 exports.listPads = groupManager.listPads;
 exports.createGroupPad = groupManager.createGroupPad;
@@ -41,7 +41,7 @@ exports.createGroupPad = groupManager.createGroupPad;
 /**********************/
 
 exports.createAuthor = authorManager.createAuthor;
-exports.getMappedAuthor4 = authorManager.getMappedAuthor4;
+exports.createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
 
 /**********************/
 /**SESSION FUNCTIONS***/

@@ -52,7 +52,7 @@ exports.getAuthor4Token = function (token, callback)
  * @param {String} token The mapper
  * @param {Function} callback callback (err, author) 
  */
-exports.getMappedAuthor4 = function (authorMapper, name, callback)
+exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
 {
   mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
   {
