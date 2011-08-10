@@ -916,24 +916,14 @@ position: relative;
 } 
 
 .ui-resizable-nw {
-  /*width:16px;
-  height:16px;
-  background-image:url('../../static/img/etherpad_lite_icons.gif');
-  background-repeat: no-repeat;
-  background-position: 0px -455px;
-  cursor: nw-resize; 
-  width: 22px; 
-  height: 22px; 
-  left: 2px; top: 1px; 
-  background-size: 80% auto;*/
   background-image: url("../img/nw-resize.png");
-    background-repeat: no-repeat;
-    background-size: 100% auto;
-    cursor: nw-resize;
-    height: 22px;
-    left: 0;
-    top: 0;
-    width: 22px;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  cursor: nw-resize;
+  height: 22px;
+  left: 0;
+  top: 0;
+  width: 22px;
 } 
 
 .ui-resizable-ne 
