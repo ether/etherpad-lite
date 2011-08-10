@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>API Test and Examples Page</title>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
   <style type="text/css">
     body {
       font-size:9pt;
@@ -16,6 +16,7 @@
       background: -webkit-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
       background:     -ms-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
       background:      -o-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
+      width: 1000px;
     }
     .define, #template {
       display: none;
@@ -42,6 +43,10 @@
     }
     .test_group table {
       width: 100%;
+    }
+    
+    #apikeyDIV {
+      width: 100%
     }
   </style>
   <script type="text/javascript">
@@ -75,7 +80,7 @@
                           '<td style="width:200px"><input type="text" size="10" name="' + el + '" /></td></tr>');
         });
 
-        $template.show();
+        $template.css({display: "block"});
         $template.appendTo('body');
       });
     });
@@ -106,6 +111,9 @@
     function callFunction(memberName, results_node, params) 
     {
       $('#result').text('Calling ' + memberName + "()...");
+      
+      params["apikey"]=$("#apikey").val();
+      
       $.ajax({
         type: "GET",
         url: "/api/1/" + memberName,
@@ -121,6 +129,7 @@
   </script>
 </head>
 <body>
+  <div id="apikeyDIV" class="test_group"><b>APIKEY: </b><input type="text" id="apikey"></div>
   <div class="test_group" id="template">
     <h2>createGroup()</h2>
     <table>
