@@ -61,6 +61,7 @@ a img
   padding: 4px 5px;
   
   height: 18px;
+  width: 18px;
 
   cursor: pointer;
   
@@ -94,6 +95,7 @@ a img
   border: inherit;
   background: inherit;
   visibility:hidden;
+  width: 0px;
 }
 #editbar ul li a
 {
@@ -308,7 +310,13 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 .hidesidebar #padeditor { right: 0; }
 
 #vdraggie {
-  background: url(static/img/vdraggie.gif) no-repeat top center;
+/*  background: url(static/img/vdraggie.gif) no-repeat top center;*/
+  width:16px;
+  height:16px;
+  background-image:url('../../static/img/etherpad_lite_icons.gif');
+  background-repeat: no-repeat;
+  background-position: 0px -300px;
+
   cursor: W-resize;
   bottom:0;
   position:absolute;
@@ -812,7 +820,6 @@ ul#colorpickerswatches li:hover
 
 #chatlabel
 {
-  cursor: default;
   font-size:13px;
   line-height:16px;
   font-weight:bold;
@@ -842,6 +849,7 @@ ul#colorpickerswatches li:hover
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color:#fff;
+  cursor: pointer;
 }
 
 #chaticon a
@@ -876,10 +884,11 @@ ul#colorpickerswatches li:hover
 
 #titlecross
 {
-  font-size:16px;
+  font-size:25px;
   float:right;
   text-align: right;
   text-decoration: none;
+  cursor: pointer;
   color:#555;
 }
 
@@ -906,22 +915,26 @@ position: relative;
   display: block;
     
 } 
-/*
-.ui-resizable-disabled .ui-resizable-handle, .ui-resizable- autohide .ui-resizable-handle { display: none; } 
-*/
 
 .ui-resizable-nw {
-  cursor: nw-resize; 
-  width: 22px; 
-  height: 22px; 
-  left: 0px; top: 0px; 
-  background-size: 100% auto;
   background-image: url("../img/nw-resize.png");
   background-repeat: no-repeat;
-/*  background-position: -5px -5px;*/
+  background-size: 100% auto;
+  cursor: nw-resize;
+  height: 22px;
+  left: 0;
+  top: 0;
+  width: 22px;
 } 
-.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: 
--5px; top: -5px;} 
+
+.ui-resizable-ne 
+{ 
+  cursor: ne-resize; 
+  width: 9px; 
+  height: 9px; 
+  right: -5px; 
+  top: -5px;
+} 
 
 #importexport{
   position:absolute;
@@ -1045,4 +1058,31 @@ padding: 10px;
 -moz-border-radius: 6px;
 border-radius: 6px;
 opacity:.8;
+}
+
+.buttonicon{
+width:16px;
+height:16px;
+background-image:url('../../static/img/etherpad_lite_icons.gif');
+background-repeat: no-repeat;
+margin-left: 1px;
+margin-top: 1px;
+}
+
+#usericon
+{
+width:27px !important;
+}
+
+#focusprotector
+{
+  z-index: 100;
+  position: absolute;
+  bottom: 0px;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  background-color: white;
+  opacity:0.01;
+  display:none;
 }
