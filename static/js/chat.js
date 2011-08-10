@@ -15,11 +15,11 @@ var chat = (function()
           handles: 'nw',
           start: function (event, ui)
           {
-            $("#editorcontainer").hide();
+            $("#focusprotector").show();
           },
           stop: function (event, ui)
           {
-            $("#editorcontainer").show();
+            $("#focusprotector").hide();
             
             $("#chatbox").css({right: "20px", bottom: "0px", left: "", top: ""});
             

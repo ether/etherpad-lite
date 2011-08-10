@@ -1072,3 +1072,16 @@ margin-top: 1px;
 {
 width:27px !important;
 }
+
+#focusprotector
+{
+  z-index: 100;
+  position: absolute;
+  bottom: 0px;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  background-color: white;
+  opacity:0.01;
+  display:none;
+}
