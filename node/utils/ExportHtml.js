@@ -402,9 +402,15 @@ function _escapeHTML(s)
       '>': '&gt;',
     };
   }
-  return s.replace(re, function (c)
+  
+  s = s.replace(re, function (c)
   {
     return re.MAP[c];
+  });
+  
+  return s.replace(/[^\x21-\x7E\s\t\n\r]/g, function(c)
+  {
+    return "&#" +c.charCodeAt(0) + ";"
   });
 }
 
