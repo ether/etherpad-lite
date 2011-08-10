@@ -222,10 +222,73 @@ exports.getSessionInfo = function(sessionID, callback)
  */
 exports.deleteSession = function(sessionID, callback)
 {
-  //check if session exits
-  //delete session
-  //delete group2sessions
-  //delete author2sessions
+  var authorID, groupID;
+  var group2sessions, author2sessions;
+
+  async.series([
+    function(callback)
+    {
+      //get the session entry
+      db.get("session:" + sessionID, function (err, session)
+      {
+        //error
+        if(err)
+        {
+          callback(err);
+        }
+        //session does not exists
+        else if(session == null)
+        {
+          callback({stop: "sessionID does not exist"})
+        }
+        //everything is fine, return the sessioninfos
+        else
+        {
+          authorID = session.authorID;
+          groupID = session.groupID;
+          
+          callback();
+        }
+      });
+    },
+    //get the group2sessions entry
+    function(callback)
+    {
+      db.get("group2sessions:" + groupID, function (err, _group2sessions)
+      {
+        group2sessions = _group2sessions;
+        callback(err);
+      });
+    },
+    //get the author2sessions entry
+    function(callback)
+    {
+      db.get("author2sessions:" + authorID, function (err, _author2sessions)
+      {
+        author2sessions = _author2sessions;
+        callback(err);
+      });
+    },
+    //remove the values from the database
+    function(callback)
+    {
+      //remove the session
+      db.remove("session:" + sessionID);
+      
+      //remove session from group2sessions
+      delete group2sessions.sessionIDs[sessionID];
+      db.set("group2sessions:" + groupID, group2sessions);
+      
+      //remove session from author2sessions
+      delete author2sessions.sessionIDs[sessionID];
+      db.set("author2sessions:" + authorID, author2sessions);
+      
+      callback();
+    }
+  ], function(err)
+  {
+    callback(err);
+  })
 }
 
 exports.listSessionsOfGroup = function(groupID, callback)
@@ -251,7 +314,7 @@ exports.listSessionsOfGroup = function(groupID, callback)
 }
 
 exports.listSessionsOfAuthor = function(authorID, callback)
-{
+{  
   authorMangager.doesAuthorExists(authorID, function(err, exists)
   {
     //error
@@ -272,6 +335,7 @@ exports.listSessionsOfAuthor = function(authorID, callback)
   });
 }
 
+//this function is basicly the code listSessionsOfAuthor and listSessionsOfGroup has in common
 function listSessionsWithDBKey (dbkey, callback)
 {
   var sessions;
@@ -287,7 +351,7 @@ function listSessionsWithDBKey (dbkey, callback)
       });
     },
     function(callback)
-    {        
+    {           
       //collect all sessionIDs in an arrary
       var sessionIDs = [];
       for (var i in sessions)
