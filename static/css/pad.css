@@ -820,7 +820,6 @@ ul#colorpickerswatches li:hover
 
 #chatlabel
 {
-  cursor: default;
   font-size:13px;
   line-height:16px;
   font-weight:bold;
@@ -850,6 +849,7 @@ ul#colorpickerswatches li:hover
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color:#fff;
+  cursor: pointer;
 }
 
 #chaticon a
@@ -884,10 +884,11 @@ ul#colorpickerswatches li:hover
 
 #titlecross
 {
-  font-size:16px;
+  font-size:25px;
   float:right;
   text-align: right;
   text-decoration: none;
+  cursor: pointer;
   color:#555;
 }
 
