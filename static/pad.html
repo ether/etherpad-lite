@@ -25,76 +25,75 @@
 <ul id="menu_left">
 <li>
   <a onClick="window.pad&&pad.editbarClick('bold');return false" title="Bold (ctrl-B)">
-    <img src="../static/img/editbar_bold.gif" width="16" height="16" />
+    <div class="buttonicon" style="background-position:0px -116px"></div>
   </a>
 </li>
 <li>
-	<a onClick="window.pad&&pad.editbarClick('italic'); return false;" title="Italics (ctrl-I)">
-	  <img src="../static/img/editbar_italic.gif" width="16" height="16" />
-	</a>
+  <a onClick="window.pad&&pad.editbarClick('italic'); return false;" title="Italics (ctrl-I)">
+    <div class="buttonicon" style="background-position:0px 0px"></div>
+  </a>
 </li>
 <li>
   <a onClick="window.pad&&pad.editbarClick('underline');return false;" title="Underline (ctrl-U)">
-    <img src="../static/img/editbar_underline.gif" width="16" height="16" />
+    <div class="buttonicon" style="background-position:0px -236px;margin-top:1px;"></div>
   </a>
 </li>
 <li>
-	<a onClick="window.pad&&pad.editbarClick('strikethrough');return false;" title="Strikethrough">
-	  <img src="../static/img/editbar_strikethrough.gif" width="16" height="16" />
-	</a>
+  <a onClick="window.pad&&pad.editbarClick('strikethrough');return false;" title="Strikethrough">
+    <div class="buttonicon" style="background-position:0px -200px"></div>
+  </a>
 </li>
 <li class="separator"></li>
 <li>
   <a onClick="window.pad&&pad.editbarClick('insertunorderedlist');return false;" title="Toggle Bullet List">
-    <img src="../static/img/editbar_insertunorderedlist.gif" width="16" height="16" />
+    <div class="buttonicon" style="background-position:0px -34px"></div>
   </a>
 </li>
 <li>
   <a onClick="window.pad&&pad.editbarClick('indent');return false;" title="Indent List">
-    <img src="../static/img/editbar_indent.gif" width="16" height="16" />
+    <div class="buttonicon" style="background-position:0px -52px"></div>
   </a>
 </li>
 <li>
-	<a onClick="window.pad&&pad.editbarClick('outdent');return false;" title="Unindent List">
-	  <img src="../static/img/editbar_outdent.gif" width="16" height="16" />
+  <a onClick="window.pad&&pad.editbarClick('outdent');return false;" title="Unindent List">
+    <div class="buttonicon" style="background-position:0px -134px"></div>
 	</a>
 </li>
 <li class="separator"></li>
 <li>
-	<a onClick="window.pad&&pad.editbarClick('undo');return false;" title="Undo (ctrl-Z)">
-	  <img src="../static/img/editbar_undo.gif" width="16" height="16" />
-	</a>
+  <a onClick="window.pad&&pad.editbarClick('undo');return false;" title="Undo (ctrl-Z)">
+    <div class="buttonicon" style="background-position:0px -255px"></div>
+  </a>
 </li>
 <li>
 	<a onClick="window.pad&&pad.editbarClick('redo');return false;" title="Redo (ctrl-Y)">
-	  <img src="../static/img/editbar_redo.gif" width="16" height="16" />
-	</a>
+    <div class="buttonicon" style="background-position:0px -166px"></div>
+  </a>
 </li>
 <li class="separator"></li>
 <li>
-	<a onClick="window.pad&&pad.editbarClick('clearauthorship');return false;" title="Clear Authorship Colors">
-	  <img src="../static/img/editbar_clearauthorship.gif" width="16" height="16" />
-	</a>
+  <a onClick="window.pad&&pad.editbarClick('clearauthorship');return false;" title="Clear Authorship Colors">
+    <div class="buttonicon" style="background-position:0px -86px"></div>
+  </a>
 </li>
 </ul>
 
 <ul id="menu_right">
 
 <li>
-	<a id="readonlylink" onClick="window.pad&&pad.editbarClick('readonly');return false;" title="Create a readonly link for this pad">
-	  <img src="../static/img/editbar_readonly.gif" width="16" height="16" />
-	</a>
+  <a id="readonlylink" onClick="window.pad&&pad.editbarClick('readonly');return false;" title="Create a readonly link for this pad">
+     <div class="buttonicon" style="background-position:0px -150px"></div>
+  </a>
 </li>
 <li>
-	<a id="exportlink" onClick="window.pad&&pad.editbarClick('import_export');return false;"
-	title="Import/Export from/to different document formats">
-	  <img src="../static/img/editbar_import_export.gif" width="16" height="16" />
-	</a>
+  <a id="exportlink" onClick="window.pad&&pad.editbarClick('import_export');return false;" title="Import/Export from/to different document formats">
+    <div class="buttonicon" style="background-position:0px -68px"></div>
+  </a>
 </li>
 <li>
-	<a id="embedlink" onClick="window.pad&&pad.editbarClick('embed');return false;" title="Embed this pad">
-	  <img src="../static/img/editbar_embed.gif" width="16" height="16" />
-	</a>
+  <a id="embedlink" onClick="window.pad&&pad.editbarClick('embed');return false;" title="Embed this pad">
+    <div class="buttonicon" style="background-position:0px -18px"></div>
+  </a>
 </li>
 <!--
 We removed this feature cause its not worth the space it needs in the editbar
@@ -109,23 +108,18 @@ We removed this feature cause its not worth the space it needs in the editbar
 	</select>
 </li>-->
 <li class="separator"></li>
-<!--<li>
-	<a onClick="window.pad&&pad.editbarClick('chat'); return false;"
-	title="(Placeholder, not implemented so far) Open the chat for this pad">
-	  <img src="../static/img/editbar_chat.gif" width="16" height="16" />
-	</a>
-</li>-->
 <li>
   <a id="timesliderlink" title="Show the history of this pad">
     <script>
       document.getElementById('timesliderlink').href = document.location+ '/timeslider';
     </script>
-    <img src="../static/img/editbar_timeslider.gif" width="16" height="16" />
+    <div class="buttonicon" style="background-position:0px -218px"></div>
   </a>
 </li>
 <li>
   <a onClick="window.pad&&pad.editbarClick('showusers');return false;" title="Show connected users">
-    <img id="showusersicon" src="../static/img/editbar_showusers.gif" width="16" height="16" /> <span id="online_count">1</span>
+    <div class="buttonicon" style="background-position:0px -184px;display:inline-block;"></div>
+ <span id="online_count">1</span>
   </a>
 </li>
 </ul>
@@ -256,7 +250,7 @@ Use this link to share a read-only version of your pad:<input id="readonlyInput"
 <a onClick="chat.show();return false;"
 	title="Open the chat for this pad">
 	  <span id="chatlabel">Chat</span>
-	  <img src="../static/img/editbar_chat.gif" width="16" height="16" />
+          <div class="buttonicon" style="background-position:0px -104px;display:inline-block;"></div>
 </a>
 <span id="chatcounter">0</span>
 </div>
