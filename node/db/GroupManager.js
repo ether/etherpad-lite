@@ -34,41 +34,11 @@ exports.doesGroupExist = function(groupID, callback)
 exports.createGroup = function(callback)
 {
   //search for non existing groupID
-  var groupID;
-  var foundNonExistingGroupID = false;
-  async.whilst(
-    function () { return !foundNonExistingGroupID; },
-    function (callback) 
-    {
-       //generate a random 10 digit groupID
-       groupID = "";
-       for(var i=0;i<10;i++)
-       {
-         groupID+=Math.floor(Math.random()*10);
-       }
-       
-       //check if this groupID already exisits
-       exports.doesGroupExist(groupID, function(err, exists)
-       {
-         foundNonExistingGroupID = !exists;
-         callback(err);
-       })
-    },
-    //we found a non existing groupID or an error happend
-    function (err) 
-    {
-      //check for errors
-      if(err)
-      {
-        callback(err);
-        return;
-      }
-      
-      //create the group
-      db.set("group:" + groupID, {pads: {}});
-      callback(null, {groupID: groupID});
-    }
-  );
+  var groupID = "g." + randomString(16);
+  
+  //create the group
+  db.set("group:" + groupID, {pads: {}});
+  callback(null, {groupID: groupID});
 }
 
 exports.createGroupIfNotExistsFor = function(groupMapper, callback)
@@ -183,11 +153,6 @@ exports.createGroupPad = function(groupID, padName, text, callback)
   {
     callback(err, {padID: padID});
   });
-
-  //check if groupID exists
-  //check if pad already exists
-  //create the pad
-  //create the subentry in the padobject
 }
 
 exports.listPads = function(groupID, callback)
@@ -213,4 +178,19 @@ exports.listPads = function(groupID, callback)
       });
     }
   });
+}
+
+/**
+ * Generates a random String with the given length. Is needed to generate the Author Ids
+ */
+function randomString(len) 
+{
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  var randomstring = '';
+  for (var i = 0; i < len; i++)
+  {
+    var rnum = Math.floor(Math.random() * chars.length);
+    randomstring += chars.substring(rnum, rnum + 1);
+  }
+  return randomstring;
 }

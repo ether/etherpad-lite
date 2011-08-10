@@ -129,7 +129,7 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
 exports.createAuthor = function(name, callback)
 {
   //create the new author name
-  var author = "g." + _randomString(16);
+  var author = "a." + randomString(16);
         
   //create the globalAuthors db entry
   var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
@@ -193,11 +193,14 @@ exports.setAuthorName = function (author, name, callback)
 /**
  * Generates a random String with the given length. Is needed to generate the Author Ids
  */
-function _randomString(len) {
-  // use only numbers and lowercase letters
-  var pieces = [];
-  for(var i=0;i<len;i++) {
-    pieces.push(Math.floor(Math.random()*36).toString(36).slice(-1));
+function randomString(len) 
+{
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  var randomstring = '';
+  for (var i = 0; i < len; i++)
+  {
+    var rnum = Math.floor(Math.random() * chars.length);
+    randomstring += chars.substring(rnum, rnum + 1);
   }
-  return pieces.join('');
+  return randomstring;
 }
