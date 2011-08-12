@@ -32,10 +32,10 @@ Visit <http://pitapoison.de:9001> to test it live. <br>You can find the same ins
 
 # Windows
 
-1) Download <http://etherpad.org/etherpad-lite-win.zip>
-2) Extract the file
-3) Open the extracted folder and double click `start.bat`
-4) Open your web browser and browse to <http://localhost:9001>
+1. Download <http://etherpad.org/etherpad-lite-win.zip>
+2. Extract the file
+3. Open the extracted folder and double click `start.bat`
+4. Open your web browser and browse to <http://localhost:9001>
 
 # Linux
 
