@@ -24,12 +24,14 @@ var async = require("async");
 var settings = require("./Settings");
 var os = require('os');
 
+var doConvertTask;
+
 //on windows we have to spawn a process for each convertion, cause the plugin abicommand doesn't exist on this platform
 if(os.type().indexOf("Windows") > -1)
 {
   var stdoutBuffer = "";
 
-  function doConvertTask(task, callback)
+  doConvertTask = function(task, callback)
   {
     //span an abiword process to perform the conversion
     var abiword = spawn(settings.abiword, ["--to=" + task.destFile, task.srcFile]);
@@ -123,7 +125,7 @@ else
     }
   }
 
-  function doConvertTask(task, callback)
+  doConvertTask = function(task, callback)
   {
     abiword.stdin.write("convert " + task.srcFile + " " + task.destFile + " " + task.type + "\n");
     
