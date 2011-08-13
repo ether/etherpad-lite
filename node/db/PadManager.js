@@ -104,6 +104,6 @@ exports.doesPadExists = function(padId, callback)
 
 exports.isValidPadId = function(padId)
 {
-  return /^([0-9]+\$)?[^$]{1,50}$/.test(padId);
+  return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
 }
 
