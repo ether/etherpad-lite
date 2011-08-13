@@ -18,6 +18,7 @@
 
 var socket;
 var LineNumbersDisabled = false;
+var useMonospaceFontGlobal = false;
 var globalUserName = false;
 
 $(document).ready(function()
@@ -77,6 +78,7 @@ function getParams()
   var showChat = getUrlVars()["showChat"];
   var userName = getUrlVars()["userName"];
   var showLineNumbers = getUrlVars()["showLineNumbers"];
+  var useMonospaceFont = getUrlVars()["useMonospaceFont"];
   if(showControls)
   {
     if(showControls == "false")
@@ -101,6 +103,15 @@ function getParams()
       LineNumbersDisabled = true;
     }
   }
+
+  if(useMonospaceFont)
+  {
+    if(useMonospaceFont == "true")
+    {
+      useMonospaceFontGlobal = true;
+    }
+  }
+
 
   if(userName)
   {
@@ -181,6 +192,12 @@ function handshake()
       if (LineNumbersDisabled == true)
       {
         pad.changeViewOption('showLineNumbers', false);
+      }
+
+      // If the Monospacefont value is set to true then change it to monospace.
+      if (useMonospaceFontGlobal == true)
+      {
+        pad.changeViewOption('useMonospaceFont', true);
       }
 
       // if the globalUserName value is set we need to tell the server and the client about the new authorname
@@ -403,7 +420,8 @@ var pad = {
     };
     options.view[key] = value;
     pad.handleOptionsChange(options);
-    if (key != "showLineNumbers")
+    // if the request isn't to hide line numbers then broadcast this to other users
+    if (key != "showLineNumbers" && key != "useMonospaceFont")
     {
       pad.collabClient.sendClientMessage(
       {
