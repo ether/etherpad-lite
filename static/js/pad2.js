@@ -17,21 +17,13 @@
 /* global $, window */
 
 var socket;
+var LineNumbersDisabled = false;
 
 $(document).ready(function()
 {
-  //test if the url is proper, means without any ? or # that doesn't belong to a url
-  //if it isn't proper, clean the url a do a redirect
-  var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);  
-  var expectedURL = document.location.href.substring(0,document.location.href.lastIndexOf("/") ) + "/" + padId;
-  if(expectedURL != document.location.href)
-  {
-    document.location = expectedURL;
-  }
-
   //start the costum js
   if(typeof costumStart == "function") costumStart();
-
+  getParams();
   handshake();
 });
 
@@ -78,6 +70,52 @@ function randomString()
   return "t." + randomstring;
 }
 
+function getParams()
+{
+  var showControls = getUrlVars()["showControls"];
+  var showChat = getUrlVars()["showChat"];
+  var userName = getUrlVars()["userName"];
+  var showLineNumbers = getUrlVars()["showLineNumbers"];
+  if(showControls)
+  {
+    if(showControls == "false")
+    { 
+      $('#editbar').hide();
+      $('#editorcontainer').css({"top":"0px"});
+    }
+  }
+
+  if(showChat)
+  {
+    if(showChat == "false")
+    {
+      $('#chaticon').hide();
+    }
+  }
+
+  if(showLineNumbers)
+  {
+    if(showLineNumbers == "false")
+    {
+      // pad.changeViewOption('showLineNumbers', false); 	  				 	 	 	   	 	  	   		  	     
+      LineNumbersDisabled = true;
+    }
+  }
+}
+
+function getUrlVars()
+{
+  var vars = [], hash;
+  var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+  for(var i = 0; i < hashes.length; i++)
+  {
+    hash = hashes[i].split('=');
+    vars.push(hash[0]);
+    vars[hash[0]] = hash[1];
+  }
+  return vars;
+}
+
 function handshake()
 {
   var loc = document.location;
@@ -95,7 +133,6 @@ function handshake()
   socket.once('connect', function()
   {
     var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
-    
     document.title = document.title + " | " + padId;
 
     var token = readCookie("token");
@@ -112,7 +149,6 @@ function handshake()
       "token": token,
       "protocolVersion": 2
     };
-
     socket.json.send(msg);
   });
 
@@ -133,8 +169,11 @@ function handshake()
       clientVars.collab_client_vars.clientAgent = "Anonymous";
 
       pad.init();
-
       initalized = true;
+      if (LineNumbersDisabled == true)
+      {
+        pad.changeViewOption('showLineNumbers', false);                                                                                                              $
+      }
     }
     //This handles every Message after the clientVars
     else
@@ -348,12 +387,15 @@ var pad = {
     };
     options.view[key] = value;
     pad.handleOptionsChange(options);
-    pad.collabClient.sendClientMessage(
+    if (key != "showLineNumbers")
     {
-      type: 'padoptions',
-      options: options,
-      changedBy: pad.myUserInfo.name || "unnamed"
-    });
+      pad.collabClient.sendClientMessage(
+      {
+        type: 'padoptions',
+        options: options,
+        changedBy: pad.myUserInfo.name || "unnamed"
+      });
+    }
   },
   handleOptionsChange: function(opts)
   {
