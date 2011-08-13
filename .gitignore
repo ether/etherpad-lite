@@ -4,3 +4,4 @@ static/js/jquery.min.js
 bin/abiword.exe
 bin/node.exe
 etherpad-lite-win.zip
+var/dirty.db
