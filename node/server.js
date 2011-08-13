@@ -166,7 +166,7 @@ async.waterfall([
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
-        next();
+        res.send('Such a padname is forbidden', 404);
         return;
       }
       
@@ -181,7 +181,7 @@ async.waterfall([
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
-        next();
+        res.send('Such a padname is forbidden', 404);
         return;
       }
       
@@ -196,7 +196,7 @@ async.waterfall([
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
-        next();
+        res.send('Such a padname is forbidden', 404);
         return;
       }
     
@@ -225,10 +225,10 @@ async.waterfall([
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
-        next();
+        res.send('Such a padname is forbidden', 404);
         return;
       }
-      
+    
       //if abiword is disabled, skip handling this request
       if(settings.abiword == null)
       {
