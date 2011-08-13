@@ -18,6 +18,7 @@
 
 var socket;
 var LineNumbersDisabled = false;
+var globalUserName = false;
 
 $(document).ready(function()
 {
@@ -97,9 +98,14 @@ function getParams()
   {
     if(showLineNumbers == "false")
     {
-      // pad.changeViewOption('showLineNumbers', false); 	  				 	 	 	   	 	  	   		  	     
       LineNumbersDisabled = true;
     }
+  }
+
+  if(userName)
+  {
+    // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
+    globalUserName = userName;
   }
 }
 
@@ -170,10 +176,20 @@ function handshake()
 
       pad.init();
       initalized = true;
+
+      // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
       if (LineNumbersDisabled == true)
       {
-        pad.changeViewOption('showLineNumbers', false);                                                                                                              $
+        pad.changeViewOption('showLineNumbers', false);
       }
+
+      // if the globalUserName value is set we need to tell the server and the client about the new authorname
+      if (globalUserName !== false)
+      {
+        pad.notifyChangeName(globalUserName); // Notifies the server
+        $('#myusernameedit').attr({"value":globalUserName}); // Updates the current users UI
+      }
+
     }
     //This handles every Message after the clientVars
     else
