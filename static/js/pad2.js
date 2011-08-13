@@ -172,7 +172,6 @@ function handshake()
       initalized = true;
       if (LineNumbersDisabled == true)
       {
-        // cake
         pad.changeViewOption('showLineNumbers', false);                                                                                                              $
       }
     }
