@@ -162,7 +162,7 @@ async.waterfall([
       //ensure the padname is valid and the url doesn't end with a /
       if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
       {
-        next();
+        res.send('Such a padname is forbidden', 404);
         return;
       }
       
@@ -177,7 +177,7 @@ async.waterfall([
       //ensure the padname is valid and the url doesn't end with a /
       if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
       {
-        next();
+        res.send('Such a padname is forbidden', 404);
         return;
       }
       
@@ -189,6 +189,13 @@ async.waterfall([
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/export/:type', function(req, res, next)
     {
+      //ensure the padname is valid and the url doesn't end with a /
+      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      {
+        res.send('Such a padname is forbidden', 404);
+        return;
+      }
+    
       var types = ["pdf", "doc", "txt", "html", "odt"];
       //send a 404 if we don't support this filetype
       if(types.indexOf(req.params.type) == -1)
@@ -211,6 +218,13 @@ async.waterfall([
     //handle import requests
     app.post('/p/:pad/import', function(req, res, next)
     {
+      //ensure the padname is valid and the url doesn't end with a /
+      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      {
+        res.send('Such a padname is forbidden', 404);
+        return;
+      }
+    
       //if abiword is disabled, skip handling this request
       if(settings.abiword == null)
       {
