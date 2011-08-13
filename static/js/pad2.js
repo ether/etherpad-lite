@@ -104,11 +104,14 @@ function handshake()
       token = randomString();
       createCookie("token", token, 60);
     }
+    
+    var sessionID = readCookie("sessionID");
 
     var msg = {
       "component": "pad",
       "type": "CLIENT_READY",
       "padId": padId,
+      "sessionID": sessionID,
       "token": token,
       "protocolVersion": 2
     };
