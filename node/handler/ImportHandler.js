@@ -35,7 +35,7 @@ var tempDirectory = "/tmp/";
 //tempDirectory changes if the operating system is windows
 if(os.type().indexOf("Windows") > -1)
 {
-  tempDirectory = "c:\\Temp\\";
+  tempDirectory = process.env.TEMP;
 }
   
 /**
