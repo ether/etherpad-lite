@@ -17,6 +17,7 @@
 /* global $, window */
 
 var socket;
+var LineNumbersDisabled = false;
 
 $(document).ready(function()
 {
@@ -74,6 +75,7 @@ function getParams()
   var showControls = getUrlVars()["showControls"];
   var showChat = getUrlVars()["showChat"];
   var userName = getUrlVars()["userName"];
+  var showLineNumbers = getUrlVars()["showLineNumbers"];
   if(showControls)
   {
     if(showControls == "false")
@@ -85,11 +87,20 @@ function getParams()
 
   if(showChat)
   {
-    if(showChat == "false"){$('#chaticon').hide();}
-
-//cake
+    if(showChat == "false")
+    {
+      $('#chaticon').hide();
+    }
   }
 
+  if(showLineNumbers)
+  {
+    if(showLineNumbers == "false")
+    {
+      // pad.changeViewOption('showLineNumbers', false); 	  				 	 	 	   	 	  	   		  	     
+      LineNumbersDisabled = true;
+    }
+  }
 }
 
 function getUrlVars()
@@ -138,7 +149,6 @@ function handshake()
       "token": token,
       "protocolVersion": 2
     };
-
     socket.json.send(msg);
   });
 
@@ -159,8 +169,12 @@ function handshake()
       clientVars.collab_client_vars.clientAgent = "Anonymous";
 
       pad.init();
-
       initalized = true;
+      if (LineNumbersDisabled == true)
+      {
+        // cake
+        pad.changeViewOption('showLineNumbers', false);                                                                                                              $
+      }
     }
     //This handles every Message after the clientVars
     else
@@ -374,12 +388,15 @@ var pad = {
     };
     options.view[key] = value;
     pad.handleOptionsChange(options);
-    pad.collabClient.sendClientMessage(
+    if (key != "showLineNumbers")
     {
-      type: 'padoptions',
-      options: options,
-      changedBy: pad.myUserInfo.name || "unnamed"
-    });
+      pad.collabClient.sendClientMessage(
+      {
+        type: 'padoptions',
+        options: options,
+        changedBy: pad.myUserInfo.name || "unnamed"
+      });
+    }
   },
   handleOptionsChange: function(opts)
   {
