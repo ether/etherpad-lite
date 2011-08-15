@@ -39,6 +39,7 @@ var importHandler;
 var exporthtml;
 var readOnlyManager;
 var padManager;
+var securityManager;
 
 //try to get the git version
 var version = "";
@@ -78,12 +79,14 @@ async.waterfall([
     importHandler = require('./handler/ImportHandler');
     apiHandler = require('./handler/APIHandler');
     padManager = require('./db/PadManager');
+    securityManager = require('./db/SecurityManager');
     
     //install logging      
     var httpLogger = log4js.getLogger("http");
     app.configure(function() 
     {
       app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+      app.use(express.cookieParser());
     });
     
     //serve static files
@@ -160,6 +163,26 @@ async.waterfall([
       });
     });
     
+    //checks for padAccess
+    function hasPadAccess(req, res, callback)
+    {
+      securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj)
+      {
+        if(err) throw err;
+        
+        //there is access, continue
+        if(accessObj.accessStatus == "grant")
+        {
+          callback();
+        }
+        //no access
+        else
+        {
+          res.send("403 - Can't touch this", 403);
+        }
+      });
+    }
+    
     //serve pad.html under /p
     app.get('/p/:pad', function(req, res, next)
     {    
@@ -217,7 +240,11 @@ async.waterfall([
       
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Server", serverName);
-      exportHandler.doExport(req, res, req.params.pad, req.params.type);
+      
+      hasPadAccess(req, res, function()
+      {
+        exportHandler.doExport(req, res, req.params.pad, req.params.type);
+      });
     });
     
     //handle import requests
@@ -238,7 +265,11 @@ async.waterfall([
       }
       
       res.header("Server", serverName);
-      importHandler.doImport(req, res, req.params.pad);
+      
+      hasPadAccess(req, res, function()
+      {
+        importHandler.doImport(req, res, req.params.pad);
+      });
     });
     
     var apiLogger = log4js.getLogger("API");
