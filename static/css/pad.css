@@ -448,7 +448,7 @@ a#hidetopmsg
 }
 #vdraggie
 {
-	background-image: url('../../static/img/etherpad_lite_icons.gif');
+	background-image: url('../../static/img/etherpad_lite_icons.png');
 	background-position: 0px -300px;
 	background-repeat: no-repeat;
 	bottom: 0;
@@ -1544,7 +1544,7 @@ ul#colorpickerswatches li:hover
 }
 .buttonicon
 {
-	background-image: url('../../static/img/etherpad_lite_icons.gif');
+	background-image: url('../../static/img/etherpad_lite_icons.png');
 	background-repeat: no-repeat;
 	height: 16px;
 	margin-left: 1px;
