@@ -34,7 +34,7 @@ $(window).unload(function()
   pad.dispose();
 });
 
-function createCookie(name, value, days)
+function createCookie(name, value, days, path)
 {
   if (days)
   {
@@ -43,7 +43,11 @@ function createCookie(name, value, days)
     var expires = "; expires=" + date.toGMTString();
   }
   else var expires = "";
-  document.cookie = name + "=" + value + expires + "; path=/";
+  
+  if(!path)
+    path = "/";
+  
+  document.cookie = name + "=" + value + expires + "; path=" + path;
 }
 
 function readCookie(name)
@@ -133,6 +137,14 @@ function getUrlVars()
   return vars;
 }
 
+function savePassword()
+{
+  //set the password cookie
+  createCookie("password",$("#passwordinput").val(),null,document.location.pathname);
+  //reload
+  document.location=document.location;
+}
+
 function handshake()
 {
   var loc = document.location;
@@ -162,12 +174,14 @@ function handshake()
     }
     
     var sessionID = readCookie("sessionID");
+    var password = readCookie("password");
 
     var msg = {
       "component": "pad",
       "type": "CLIENT_READY",
       "padId": padId,
       "sessionID": sessionID,
+      "password": password,
       "token": token,
       "protocolVersion": 2
     };
@@ -179,17 +193,41 @@ function handshake()
 
   socket.on('message', function(obj)
   {
-    //if we haven't recieved the clientVars yet, then this message should it be
-    if (!receivedClientVars)
+    //the access was not granted, give the user a message
+    if(!receivedClientVars && obj.accessStatus)
     {
+      if(obj.accessStatus == "deny")
+      {
+        $("#editorloadingbox").html("<b>You have no permission to access this pad</b>");
+      }
+      else if(obj.accessStatus == "needPassword")
+      {
+        $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
+                                    "<input id='passwordinput' type='password' name='password'>"+
+                                    "<button type='button' onclick='savePassword()'>ok</button>");
+      }
+      else if(obj.accessStatus == "wrongPassword")
+      {
+        $("#editorloadingbox").html("<b>You're password was wrong</b><br>" +
+                                    "<input id='passwordinput' type='password' name='password'>"+
+                                    "<button type='button' onclick='savePassword()'>ok</button>");
+      }
+    }
+    
+    //if we haven't recieved the clientVars yet, then this message should it be
+    else if (!receivedClientVars)
+    {
+      //log the message
       if (window.console) console.log(obj);
 
       receivedClientVars = true;
 
+      //set some client vars
       clientVars = obj;
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
 
+      //initalize the pad
       pad.init();
       initalized = true;
 
@@ -198,20 +236,17 @@ function handshake()
       {
         pad.changeViewOption('showLineNumbers', false);
       }
-
       // If the Monospacefont value is set to true then change it to monospace.
       if (useMonospaceFontGlobal == true)
       {
         pad.changeViewOption('useMonospaceFont', true);
       }
-
       // if the globalUserName value is set we need to tell the server and the client about the new authorname
       if (globalUserName !== false)
       {
         pad.notifyChangeName(globalUserName); // Notifies the server
         $('#myusernameedit').attr({"value":globalUserName}); // Updates the current users UI
       }
-
     }
     //This handles every Message after the clientVars
     else

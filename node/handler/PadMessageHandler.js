@@ -602,7 +602,7 @@ function handleClientReady(client, message)
         //no access, send the client a message that tell him why
         else
         {
-          client.send({accessStatus: statusObject.accessStatus})
+          client.json.send({accessStatus: statusObject.accessStatus})
         }
       });
     }, 
