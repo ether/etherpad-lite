@@ -150,6 +150,8 @@ function handshake()
   socket.once('connect', function()
   {
     var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
+    padId = unescape(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
+
     document.title = document.title + " | " + padId;
 
     var token = readCookie("token");
@@ -158,7 +160,7 @@ function handshake()
       token = randomString();
       createCookie("token", token, 60);
     }
-
+    
     var msg = {
       "component": "pad",
       "type": "CLIENT_READY",
