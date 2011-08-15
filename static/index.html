@@ -2,123 +2,119 @@
 <html>   
         <title>Etherpad Lite</title> 
         <style> 
-            * { margin: 0; padding: 0; }
+            *{
+                margin:0;
+                padding:0;
+            }
             body {
-             background: rgba(0, 0, 0, .05);
-             color: #333;
-             text-shadow: 0 1px 0 #fff;
-             font: 14px helvetica,sans-serif;
-             background: #ccc;
-             background:    -moz-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
-             background: -webkit-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
-             background:     -ms-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
-             background:      -o-radial-gradient(circle, #aaa, #eee) no-repeat center center fixed;
-             overflow-x: hidden;
+                background: rgba(0,0,0,.05);
+                color: #333;
+                font: 14px helvetica,sans-serif;
+                background: #ccc;
+                background: -webkit-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+                background: -moz-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+                background: -ms-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+                background: -o-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+                overflow-x: hidden;
+                border-top: 8px solid rgba(51,51,51,.8)
             }
             #container {
-             border-top: 1px solid #999;
-             margin-top: 160px;
-             width: 100%;
-             text-align: center;
-             padding: 15px;
-             background: #eee;
-             background: -webkit-linear-gradient(#fff, #ccc);
-             background:    -moz-linear-gradient(#fff, #ccc);
-             background:     -ms-linear-gradient(#fff, #ccc);
-             background:      -o-linear-gradient(#fff, #ccc);
-             opacity: .9;
-             box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.3);
+                text-shadow: 0 1px 1px #fff;
+                border-top: 1px solid #999;
+                margin-top: 160px;
+                width: 100%;
+                text-align: center;
+                padding: 15px;
+                background: #eee;
+                background: -webkit-linear-gradient(#fff,#ccc);
+                background: -moz-linear-gradient(#fff,#ccc);
+                background: -ms-linear-gradient(#fff,#ccc);
+                background: -o-linear-gradient(#fff,#ccc);
+                opacity: .9;
+                box-shadow: 0px 1px 8px rgba(0,0,0,0.3)
             }
             #button {
-             margin: 0 auto;
-             border-radius: 3px;
-             text-align: center;
-             font: 36px verdana,arial,sans-serif;
-             color: white;
-             text-shadow: 0 -1px 0 rgba(0,0,0,.8);
-             height: 70px;
-             line-height: 70px;
-             width: 300px;
-             background: #555;
-             background: -webkit-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
-             background:    -moz-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
-             background:     -ms-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
-             background:      -o-linear-gradient(#5F5F5F, #565656 50%, #4C4C4C 51%, #373737);
-             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
-            } 
+                margin: 0 auto;
+                border-radius: 3px;
+                text-align: center;
+                font: 36px verdana,arial,sans-serif;
+                color: white;
+                text-shadow: 0 -1px 0 rgba(0,0,0,.8);
+                height: 70px;
+                line-height: 70px;
+                width: 300px;
+                background: #555;
+                background: -webkit-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
+                background: -moz-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
+                background: -ms-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
+                background: -o-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
+                box-shadow: inset 0 1px 3px rgba(0,0,0,0.9)
+            }
             #button:hover {
-             cursor: pointer;
-             background: #666;
-             background: -webkit-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
-             background:    -moz-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
-             background:     -ms-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
-             background:      -o-linear-gradient(#707070, #666666 50%, #5B5B5B 51%, #474747);
+                cursor: pointer;
+                background: #666;
+                background: -webkit-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
+                background: -moz-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
+                background: -ms-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
+                background: -o-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747)
             }
             #button:active {
-             box-shadow: inset 0 1px 12px rgba(0, 0, 0, 0.9);
-             background: #444;
+                box-shadow: inset 0 1px 12px rgba(0,0,0,0.9);
+                background: #444
             }
             #label {
-              text-align: left;
-              margin: 0 auto;
-              width: 300px;
+                text-align: left;
+                margin: 0 auto;
+                width: 300px
+            }
+            input {
+                vertical-align: middle;
+                font-weight: bold;
+                font-size: 15px
             }
             input[type="text"] {
-             font-weight: bold;
-             font-size: 17px;
-             padding: 5px;
-             width: 245px;
-             outline: none;
-            }  
+                width: 196px;
+                padding: 8px 95px 8px 10px;
+                background: #fff;
+                border: 1px solid #bbb;
+                outline: none;
+                border-radius: 3px;
+                text-shadow: 0 0 1px #fff;
+                font-size: 17px
+            }
             input[type="submit"] {
-             height: 35px;
-             width: 40px;
+                width: 45px;
+                margin-left: -50px;
+                padding: 7px
+            }
+            input[type="submit"]::-moz-focus-inner {
+                border: 0
             }
         </style> 
-        <link href="static/custom/index.css" rel="stylesheet">
+        <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
         <div id="container"> 
-            <div id="button" onclick="go2Random()">New Pad</div> 
-            <br> 
-            <div id="label">or create/open a Pad with the name</div>
+            <div id="button" onclick="go2Random()">New Pad</div><br><div id="label">or create/open a Pad with the name</div> 
             <form action="#" onsubmit="go2Name();return false;"> 
                     <input type="text" id="padname" autofocus> 
                     <input type="submit" value="OK"> 
             </form> 
-        </div>
-        <script>
-            function go2Name() 
-            {
-                var padname = document.getElementById("padname").value;
-                if (padname.length > 0) 
-                {
-                    window.location = "p/" + padname;
-                }
-                else
-                {
-                    alert("Please enter a name");
-                }
+        </div> 
+        <script> 
+            function go2Name() {
+                var a = document.getElementById("padname").value;
+                a.length > 0 ? window.location = "p/" + a : alert("Please enter a name")
             }
- 
-            function go2Random() 
-            {
-                window.location = "p/" + randomPadName();
+            function go2Random() {
+                window.location = "p/" + randomPadName()
             }
- 
-            function randomPadName() 
-            {
-                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-                var string_length = 10;
-                var randomstring = '';
-                for (var i = 0; i < string_length; i++) 
-                {
-                    var rnum = Math.floor(Math.random() * chars.length);
-                    randomstring += chars.substring(rnum, rnum + 1);
+            function randomPadName() {
+                for (var a = "", b = 0; b < 10; b++) {
+                    var c = Math.floor(Math.random() * 62);
+                    a += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".substring(c, c + 1)
                 }
-                return randomstring;
+                return a
             }
-            
-            //start the costum js
-            if(typeof costumStart == "function") costumStart();
-        </script>
+            typeof costumStart == "function" && costumStart();
+        </script> 
 </html>
