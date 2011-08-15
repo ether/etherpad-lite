@@ -215,6 +215,7 @@ async.waterfall([
         return;
       }
       
+      res.header("Access-Control-Allow-Origin", "*");
       res.header("Server", serverName);
       exportHandler.doExport(req, res, req.params.pad, req.params.type);
     });
