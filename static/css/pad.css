@@ -1,1096 +1,1577 @@
-*,html,body,p{ margin: 0; padding: 0; }
-.clear { clear: both; }
-html { font-size: 62.5%; }
-body { background: #fff;}
-body, textarea { font-family: Helvetica, Arial, sans-serif; }
-iframe {position:absolute;}
-
+*
+{
+  margin: 0;
+	padding: 0;
+}
+.clear
+{
+	clear: both;
+}
+html
+{
+	font-size: 62.5%;
+}
+body
+{
+	background: #fff;
+}
+body, textarea
+{
+	font-family: Helvetica, Arial, sans-serif;
+}
+iframe
+{
+	position: absolute;
+}
 #users
 {
-  position: absolute;
-  z-index: 10;
-  background-color: #000;
-  background-color: rgba(0,0,0,0.7);
-  width: 160px;
-  right: 20px;
-  top: 40px;
-  color: #fff;
-  padding: 5px;
-  -moz-border-radius: 6px;
-  border-radius: 6px; 
+	background-color: #000;
+	background-color: rgba(0,0,0,0.7);
+	border-radius: 6px;
+	color: #fff;
+	padding: 5px;
+	position: absolute;
+	right: 20px;
+	top: 40px;
+	width: 160px;
+	z-index: 10;
 }
-
 a img
 {
-  border: 0;
+	border: 0;
 }
-
-/* menu */
 #editbar ul
 {
-  position: relative;
-  list-style: none;
-  padding-right: 3px;
-  padding-left: 1px;
-  z-index: 2;
-  height: 31px;
-    overflow: hidden;
-
+	list-style: none;
+	overflow: hidden;
+	padding-left: 1px;
+	padding-right: 3px;
+	position: relative;
+	z-index: 2;
 }
-
 #editbar
 {
-  background-color: #F3F7F9;
-  width: 100%;
-  height: 31px;
-  padding-top: 4px;
   border-bottom: 1px solid #ccc;
-  overflow: hidden;
+  background: #f7f7f7;
+  background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
+	height: 32px;
+	overflow: hidden;
+	padding-top: 3px;
+	width: 100%;
 }
-
 #editbar ul li
 {
-  float: left;
-  margin-left: 2px;
-  background-color: #fff;
-  
-  -moz-border-radius: 4px;
-  border-radius: 4px; 
-  
-  border: 1px solid #ccc;
-  padding: 4px 5px;
-  
-  height: 18px;
-  width: 18px;
-
-  cursor: pointer;
-  
-  overflow: hidden;
-  
-  background: white; /* fallback for older/unsupporting browsers */  
-  background: -moz-linear-gradient(top, #eee, white 20%, white 20%);  
-  background: -webkit-gradient(linear, 0 0, 0 100%, from(#eee), color-stop(20%, white), color-stop(20%, white));  
+	background: #fff;
+  background: -webkit-linear-gradient(#fff, #f0f0f0);  
+  background: -moz-linear-gradient(#fff, #f0f0f0);  
+  background: -ma-linear-gradient(#fff, #f0f0f0);  
+  background: -o-linear-gradient(#fff, #f0f0f0); 
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	cursor: pointer;
+	float: left;
+	height: 18px;
+	margin-left: 2px;
+	overflow: hidden;
+	padding: 4px 5px;
+	width: 18px;
 }
-
 #editbar ul li a
 {
-  text-decoration: none;
-  color: #ccc;
+	color: #ccc;
+	text-decoration: none;
 }
-
 #editbar ul li a span
 {
-  position: relative;
-  top:-2px
+	position: relative;
+	top: -2px;
 }
-
-#editbar ul li:hover
+#editbar ul li:active
 {
-  border: 1px solid #888;
-  background: #fff;
+  background: #eee;
+  background: -webkit-linear-gradient(#ddd, #fff);  
+  background: -moz-linear-gradient(#ddd, #fff);
+  background: -ms-linear-gradient(#ddd, #fff);  
+  background: -o-linear-gradient(#ddd, #fff); 
 }
-
 #editbar ul li.separator
 {
-  border: inherit;
-  background: inherit;
-  visibility:hidden;
-  width: 0px;
+	background: inherit;
+	border: inherit;
+	visibility: hidden;
+	width: 0px;
 }
 #editbar ul li a
 {
-  display: block;
+	display: block;
 }
 #editbar ul li a img
 {
-  padding: 1px;
+	padding: 1px;
 }
-
-
 #editbar ul
 {
-  float: left;
+	float: left;
 }
 #editbar ul#menu_right
 {
-  float: right;
+	float: right;
 }
-
 #users
 {
-  display: none;
+	display: none;
 }
-
-#editorcontainer 
+#editorcontainer
 {
-  position: absolute;
-  
-  width: 100%;
-  
-  top: 36px;
-  left: 0px;  
-  bottom: 0px;
-
-  z-index: 1;
+	bottom: 0px;
+	left: 0px;
+	position: absolute;
+	top: 36px;
+	width: 100%;
+	z-index: 1;
 }
-
-#editorcontainer iframe {
-  height: 100%;
-  width: 100%; 
-  padding: 0; 
-  margin: 0; 
+#editorcontainer iframe
+{
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	width: 100%;
 }
-
-#editorloadingbox { padding-top: 100px; padding-bottom: 100px; font-size: 2.5em;  color: #aaa;
-   text-align: center; position: absolute; width: 100%; height: 30px; z-index: 100; }
-
-#editorcontainerbox{
-  position:absolute;
-  bottom:0;
-  top:0;
-  width:100%;
+#editorloadingbox
+{
+	color: #aaa;
+	font-size: 2.5em;
+	height: 30px;
+	padding-bottom: 100px;
+	padding-top: 100px;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+	z-index: 100;
 }
-
-
-#padpage {
- position: absolute;
- top: 0px;
- bottom: 0px;
- width: 100%;
+#editorcontainerbox
+{
+	bottom: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
 }
-
-.maximized #padpage {
- left: 8px;
- right: 8px;
- width: auto;
- margin-left: 0;
+#padpage
+{
+	bottom: 0px;
+	position: absolute;
+	top: 0px;
+	width: 100%;
 }
-
-body.fullwidth #padpage { width: auto; margin-left: 6px; margin-right: 6px; }
-body.squish1width #padpage { width: 800px; }
-body.squish2width #padpage { width: 700px; }
-
-a#backtoprosite, #accountnav {
-  display: block; position: absolute; height: 15px; line-height: 15px;
-  width: auto; top: 5px; font-size: 1.2em; display:none;
+.maximized #padpage
+{
+	left: 8px;
+	margin-left: 0;
+	right: 8px;
+	width: auto;
 }
-a#backtoprosite, #accountnav a { color: #cde7ff; text-decoration: underline; }
-
-a#backtoprosite { padding-left: 20px; left: 6px;
-  background: url(static/img/protop.gif) no-repeat -5px -6px; }
-#accountnav { right: 30px; color: #fff; }
-  
-.propad a#topbaretherpad { background: url(static/img/protop.gif) no-repeat -397px -3px; }
-
-#specialkeyarea { top: 5px; left: 250px; color: yellow; font-weight: bold;
-  font-size: 1.5em; position: absolute; }
-
-#alertbar {
-  margin-top: 6px;
-  opacity: 0;
-  filter: alpha(opacity = 0); /* IE */
-  display: none;
-  position:absolute;
-  left:0;
-  right:0;
-  z-index:53;
+body.fullwidth #padpage
+{
+	margin-left: 6px;
+	margin-right: 6px;
+	width: auto;
 }
-
-#servermsg { position: relative; zoom: 1; border: 1px solid #992;
-  background: #ffc; padding: 0.8em; font-size: 1.2em; }
-#servermsg h3 { font-weight: bold; margin-right: 10px;
-  margin-bottom: 1em; float: left; width: auto; }
-#servermsg #servermsgdate { font-style: italic; font-weight: normal; color: #666; }
-a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
-
-#shuttingdown { position: relative; zoom: 1; border: 1px solid #992;
-  background: #ffc; padding: 0.6em; font-size: 1.2em; margin-top: 6px; }
-
-#docbar { margin-top: 6px; height: 25px; position: relative; zoom: 1;
-  background: #fbfbfb url(static/img/padtopback2.gif) repeat-x 0 -31px; }
-
+body.squish1width #padpage
+{
+	width: 800px;
+}
+body.squish2width #padpage
+{
+	width: 700px;
+}
+a#backtoprosite, #accountnav
+{
+	display: block;
+	display: none;
+	font-size: 1.2em;
+	height: 15px;
+	line-height: 15px;
+	position: absolute;
+	top: 5px;
+	width: auto;
+}
+a#backtoprosite, #accountnav a
+{
+	color: #cde7ff;
+	text-decoration: underline;
+}
+a#backtoprosite
+{
+	background: url(static/img/protop.gif) no-repeat -5px -6px;
+	left: 6px;
+	padding-left: 20px;
+}
+#accountnav
+{
+	color: #fff;
+	right: 30px;
+}
+.propad a#topbaretherpad
+{
+	background: url(static/img/protop.gif) no-repeat -397px -3px;
+}
+#specialkeyarea
+{
+	color: yellow;
+	font-size: 1.5em;
+	font-weight: bold;
+	left: 250px;
+	position: absolute;
+	top: 5px;
+}
+#alertbar
+{
+	display: none;
+	filter: alpha(opacity = 0);
+	left: 0;
+	margin-top: 6px;
+	opacity: 0;
+	position: absolute;
+	right: 0;
+	z-index: 53;
+}
+#servermsg
+{
+	background: #ffc;
+	border: 1px solid #992;
+	font-size: 1.2em;
+	padding: 0.8em;
+	position: relative;
+	zoom: 1;
+}
+#servermsg h3
+{
+	float: left;
+	font-weight: bold;
+	margin-bottom: 1em;
+	margin-right: 10px;
+	width: auto;
+}
+#servermsg #servermsgdate
+{
+	color: #666;
+	font-style: italic;
+	font-weight: normal;
+}
+a#hidetopmsg
+{
+	bottom: 5px;
+	position: absolute;
+	right: 5px;
+}
+#shuttingdown
+{
+	background: #ffc;
+	border: 1px solid #992;
+	font-size: 1.2em;
+	margin-top: 6px;
+	padding: 0.6em;
+	position: relative;
+	zoom: 1;
+}
+#docbar
+{
+	background: #fbfbfb url(static/img/padtopback2.gif) repeat-x 0 -31px;
+	height: 25px;
+	margin-top: 6px;
+	position: relative;
+	zoom: 1;
+}
 .docbarbutton
 {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 4px;
-  padding-right: 4px;
-  border-left: 1px solid #CCC;
-  white-space: nowrap;
+	border-left: 1px solid #CCC;
+	padding-bottom: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 2px;
+	white-space: nowrap;
 }
-
 .docbarbutton img
 {
-  border: 0px;
-  width: 13px;
-  margin-right: 2px;
-  vertical-align: middle;
-  margin-top: 3px;
-  margin-bottom: 2px;
+	border: 0px;
+	margin-bottom: 2px;
+	margin-right: 2px;
+	margin-top: 3px;
+	vertical-align: middle;
+	width: 13px;
 }
-
 .menu,
-.menu ul {
-  font-size: 10pt;
-  list-style-type: none;
+.menu ul
+{
+	font-size: 10pt;
+	list-style-type: none;
 }
-
-.menu ul {
-  padding-left: 20px;
+.menu ul
+{
+	padding-left: 20px;
 }
-
-.menu a {
-  font-size: 10px;
-  line-height: 18px;
-  text-decoration: none;
-  color: #444;
-  font-weight: bold;
+.menu a
+{
+	color: #444;
+	font-size: 10px;
+	font-weight: bold;
+	line-height: 18px;
+	text-decoration: none;
 }
-
 .docbarbutton.highlight
 {
-  background-color: #fef2bd;
-  border: 1px solid #CCC;
-  border-right: 0px;
+	background-color: #fef2bd;
+	border: 1px solid #CCC;
+	border-right: 0px;
 }
-
-#docbarleft { position: absolute; left: 0; top: 0; height: 100%;
-  overflow: hidden;
-  background: url(static/img/padtop5.gif) no-repeat left -31px; width: 7px; }
-
-
-  
-#docbarpadtitle { position: absolute; height: auto; left: 9px;
-  width: 280px; font-size: 1.6em; color: #444; font-weight: normal;
-  line-height: 22px; margin-left: 2px; height: 22px; top: 2px;
-  overflow: hidden; text-overflow: ellipsis /*not supported in FF*/;
-  white-space:nowrap; }
-.docbar-public #docbarpadtitle { padding-left: 22px;
-  background: url(static/img/public.gif) no-repeat left center; }
-  
-#docbarrenamelink { position: absolute; top: 6px;
-  font-size: 1.1em; display: none; }
-#docbarrenamelink a { color: #999; }
-#docbarrenamelink a:hover { color: #48d; }
-#padtitlebuttons { position: absolute; width: 74px; zoom: 1;
-  height: 17px; top: 4px; left: 170px; display: none;
-  background: url(static/img/ok_or_cancel.gif) 0px 0px; }
-#padtitlesave { position: absolute; display: block;
-  height: 0; padding-top: 17px; overflow: hidden;
-  width: 23px; left: 0; top: 0; }
-#padtitlecancel { position: absolute; display: block;
-  height: 0; padding-top: 17px; overflow: hidden;
-  width: 35px; right: 0; top: 0; }
-#padtitleedit { position: absolute; top: 2px; left: 5px;
-  height: 15px; padding: 2px; font-size: 1.4em;
-  background: white; border-left: 1px solid #c3c3c3;
-  border-top: 1px solid #c3c3c3;
-  border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
-  width: 150px; display: none;
+#docbarleft
+{
+	background: url(static/img/padtop5.gif) no-repeat left -31px;
+	height: 100%;
+	left: 0;
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	width: 7px;
 }
-  
-#padmain {
-  margin-top: 0px;
-  position: absolute;
-  top: 63px !important;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  zoom: 1;
+#docbarpadtitle
+{
+	color: #444;
+	font-size: 1.6em;
+	font-weight: normal;
+	height: 22px;
+	height: auto;
+	left: 9px;
+	line-height: 22px;
+	margin-left: 2px;
+	overflow: hidden;
+	position: absolute;
+	text-overflow: ellipsis;
+	top: 2px;
+	white-space: nowrap;
+	width: 280px;
 }
-
-#padeditor {
-  bottom:0px;
-  left:0;
-  position:absolute;
-  right:0px;
-  top:0;
-  zoom: 1;
+.docbar-public #docbarpadtitle
+{
+	background: url(static/img/public.gif) no-repeat left center;
+	padding-left: 22px;
 }
-.hidesidebar #padeditor { right: 0; }
-
-#vdraggie {
-/*  background: url(static/img/vdraggie.gif) no-repeat top center;*/
-  width:16px;
-  height:16px;
-  background-image:url('../../static/img/etherpad_lite_icons.gif');
-  background-repeat: no-repeat;
-  background-position: 0px -300px;
-
-  cursor: W-resize;
-  bottom:0;
-  position:absolute;
-  right:268px;
-  top:0;
-  width:56px;
-  z-index: 10;
+#docbarrenamelink
+{
+	display: none;
+	font-size: 1.1em;
+	position: absolute;
+	top: 6px;
 }
-
+#docbarrenamelink a
+{
+	color: #999;
+}
+#docbarrenamelink a:hover
+{
+	color: #48d;
+}
+#padtitlebuttons
+{
+	background: url(static/img/ok_or_cancel.gif) 0px 0px;
+	display: none;
+	height: 17px;
+	left: 170px;
+	position: absolute;
+	top: 4px;
+	width: 74px;
+	zoom: 1;
+}
+#padtitlesave
+{
+	display: block;
+	height: 0;
+	left: 0;
+	overflow: hidden;
+	padding-top: 17px;
+	position: absolute;
+	top: 0;
+	width: 23px;
+}
+#padtitlecancel
+{
+	display: block;
+	height: 0;
+	overflow: hidden;
+	padding-top: 17px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 35px;
+}
+#padtitleedit
+{
+	background: white;
+	border-bottom: 1px solid #e6e6e6;
+	border-left: 1px solid #c3c3c3;
+	border-right: 1px solid #e6e6e6;
+	border-top: 1px solid #c3c3c3;
+	display: none;
+	font-size: 1.4em;
+	height: 15px;
+	left: 5px;
+	padding: 2px;
+	position: absolute;
+	top: 2px;
+	width: 150px;
+}
+#padmain
+{
+	bottom: 0px;
+	left: 0px;
+	margin-top: 0px;
+	position: absolute;
+	right: 0px;
+	top: 63px !important;
+	zoom: 1;
+}
+#padeditor
+{
+	bottom: 0px;
+	left: 0;
+	position: absolute;
+	right: 0px;
+	top: 0;
+	zoom: 1;
+}
+.hidesidebar #padeditor
+{
+	right: 0;
+}
+#vdraggie
+{
+	background-image: url('../../static/img/etherpad_lite_icons.gif');
+	background-position: 0px -300px;
+	background-repeat: no-repeat;
+	bottom: 0;
+	cursor: W-resize;
+	height: 16px;
+	position: absolute;
+	right: 268px;
+	top: 0;
+	width: 16px;
+	width: 56px;
+	z-index: 10;
+}
 #editbarsavetable
 {
-  position:absolute;
-  top: 6px;
-  right: 8px;
-  height: 24px;
+	height: 24px;
+	position: absolute;
+	right: 8px;
+	top: 6px;
 }
-
 #editbarsavetable td, #editbartable td
 {
-  white-space: nowrap;
+	white-space: nowrap;
 }
-
-#myswatchbox { position: absolute; left: 5px; top: 5px; width: 22px; height: 22px;
-  border: 1px solid #fff;
-  padding: 1px; background: transparent; cursor: pointer; 
-  -moz-border-radius: 3px;
-  border-radius: 3px; 
-  }
-
-#myswatch { width: 100%; height: 100%; background: transparent;/*...initially*/ }
-#mycolorpicker {
-  background: url(../img/colorpicker.gif) no-repeat left top;
-  width: 232px; height: 140px;
-  position: absolute;
-  left: -240px; top: 0px; z-index: 101;
-  display: none;/*...initially*/
+#myswatchbox
+{
+	background: transparent;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	cursor: pointer;
+	height: 22px;
+	left: 5px;
+	moz-border-radius: 3px;
+	padding: 1px;
+	position: absolute;
+	top: 5px;
+	width: 22px;
 }
-
+#myswatch
+{
+	background: transparent;
+	height: 100%;
+	width: 100%;
+}
+#mycolorpicker
+{
+	background: url(../img/colorpicker.gif) no-repeat left top;
+	display: none;
+	height: 140px;
+	left: -240px;
+	position: absolute;
+	top: 0px;
+	width: 232px;
+	z-index: 101;
+}
 #mycolorpicker ul li
 {
-  float: left;
+	float: left;
 }
-#mycolorpicker .picked { border: 1px solid #000 !important; }
-
-#mycolorpicker .picked .pickerswatch { border: 1px solid #fff; }
-#mycolorpickersave { position: absolute; left: 14px; top: 102px;
-  width: 47px; height: 0; padding-top: 20px; overflow: hidden;
-  cursor: pointer; }
-#mycolorpickercancel { position: absolute; left: 87px; top: 102px;
-  width: 44px; height: 0; padding-top: 20px; overflow: hidden;
-  cursor: pointer; }
-#myusernameform { margin-left: 35px; }
-#myusernameedit { font-size: 1.3em; color: #fff;
-  padding: 3px; height: 18px; margin: 0; border: 0;
-  width: 117px; background: transparent; }
-#myusernameform input.editable { border: 1px solid #444; }
-#myuser .myusernameedithoverable:hover { background: white; color: black}
-#mystatusform { margin-left: 35px; margin-top: 5px; }
-#mystatusedit { font-size: 1.2em; color: #777;
-  font-style: italic; display: none;
-  padding: 2px; height: 14px; margin: 0; border: 1px solid #bbb;
-  width: 199px; background: transparent; }
-#myusernameform .editactive, #myusernameform .editempty {
-  background: white;  border-left: 1px solid #c3c3c3;
-  border-top: 1px solid #c3c3c3;
-  border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
-  color: #000
+#mycolorpicker .picked
+{
+	border: 1px solid #000 !important;
 }
-#myusernameform .editempty { color: #ef641e; }
-  
-table#otheruserstable { display: none; }
-#nootherusers { padding: 10px; font-size: 1.2em; color: #eee; font-weight: bold;}
-#nootherusers a { color: #3C88FF; }
-
-#otheruserstable td {
-  border-top: 1px solid #555;
-  height: 26px;
-  vertical-align: middle;
-  padding: 0 2px;
-  color: #fff;
+#mycolorpicker .picked .pickerswatch
+{
+	border: 1px solid #fff;
 }
-
-#otheruserstable .swatch {
-  border: 1px solid #000; width: 13px; height: 13px; overflow: hidden;
-  margin: 0 4px;
+#mycolorpickersave
+{
+	cursor: pointer;
+	height: 0;
+	left: 14px;
+	overflow: hidden;
+	padding-top: 20px;
+	position: absolute;
+	top: 102px;
+	width: 47px;
 }
-
-.usertdswatch { width: 1%; }
-.usertdname { font-size: 1.3em; color: #444; }
-.usertdstatus { font-size: 1.1em; font-style: italic; color: #999; }
-.usertdactivity { font-size: 1.1em; color: #777; }
-
-.usertdname input { border: 1px solid #bbb; width: 80px; padding: 2px; }
-.usertdname input.editactive, .usertdname input.editempty {
-  background: white;  border-left: 1px solid #c3c3c3;
-  border-top: 1px solid #c3c3c3;
-  border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
+#mycolorpickercancel
+{
+	cursor: pointer;
+	height: 0;
+	left: 87px;
+	overflow: hidden;
+	padding-top: 20px;
+	position: absolute;
+	top: 102px;
+	width: 44px;
 }
-.usertdname input.editempty { color: #888; font-style: italic;}
-  
+#myusernameform
+{
+	margin-left: 35px;
+}
+#myusernameedit
+{
+	background: transparent;
+	border: 0;
+	color: #fff;
+	font-size: 1.3em;
+	height: 18px;
+	margin: 0;
+	padding: 3px;
+	width: 117px;
+}
+#myusernameform input.editable
+{
+	border: 1px solid #444;
+}
+#myuser .myusernameedithoverable:hover
+{
+	background: white;
+	color: black;
+}
+#mystatusform
+{
+	margin-left: 35px;
+	margin-top: 5px;
+}
+#mystatusedit
+{
+	background: transparent;
+	border: 1px solid #bbb;
+	color: #777;
+	display: none;
+	font-size: 1.2em;
+	font-style: italic;
+	height: 14px;
+	margin: 0;
+	padding: 2px;
+	width: 199px;
+}
+#myusernameform .editactive, #myusernameform .editempty
+{
+	background: white;
+	border-bottom: 1px solid #e6e6e6;
+	border-left: 1px solid #c3c3c3;
+	border-right: 1px solid #e6e6e6;
+	border-top: 1px solid #c3c3c3;
+	color: #000;
+}
+#myusernameform .editempty
+{
+	color: #ef641e;
+}
+table#otheruserstable
+{
+	display: none;
+}
+#nootherusers
+{
+	color: #eee;
+	font-size: 1.2em;
+	font-weight: bold;
+	padding: 10px;
+}
+#nootherusers a
+{
+	color: #3C88FF;
+}
+#otheruserstable td
+{
+	border-top: 1px solid #555;
+	color: #fff;
+	height: 26px;
+	padding: 0 2px;
+	vertical-align: middle;
+}
+#otheruserstable .swatch
+{
+	border: 1px solid #000;
+	height: 13px;
+	margin: 0 4px;
+	overflow: hidden;
+	width: 13px;
+}
+.usertdswatch
+{
+	width: 1%;
+}
+.usertdname
+{
+	color: #444;
+	font-size: 1.3em;
+}
+.usertdstatus
+{
+	color: #999;
+	font-size: 1.1em;
+	font-style: italic;
+}
+.usertdactivity
+{
+	color: #777;
+	font-size: 1.1em;
+}
+.usertdname input
+{
+	border: 1px solid #bbb;
+	padding: 2px;
+	width: 80px;
+}
+.usertdname input.editactive, .usertdname input.editempty
+{
+	background: white;
+	border-bottom: 1px solid #e6e6e6;
+	border-left: 1px solid #c3c3c3;
+	border-right: 1px solid #e6e6e6;
+	border-top: 1px solid #c3c3c3;
+}
+.usertdname input.editempty
+{
+	color: #888;
+	font-style: italic;
+}
 .modaldialog.cboxreconnecting .modaldialog-inner,
-.modaldialog.cboxconnecting .modaldialog-inner {
-  background: url(static/img/connectingbar.gif) no-repeat center 60px;
-  height: 100px;
+.modaldialog.cboxconnecting .modaldialog-inner
+{
+	background: url(static/img/connectingbar.gif) no-repeat center 60px;
+	height: 100px;
 }
-.modaldialog.cboxreconnecting {
-  background: #fed;
+.modaldialog.cboxreconnecting
+{
+	background: #fed;
 }
 .modaldialog.cboxconnecting,
-.modaldialog.cboxdisconnected {
-  background: #fdd;
+.modaldialog.cboxdisconnected
+{
+	background: #fdd;
 }
-.cboxdisconnected #connectionboxinner div { display: none; }
-.cboxdisconnected_userdup #connectionboxinner #disconnected_userdup { display: block; }
-.cboxdisconnected_initsocketfail #connectionboxinner #disconnected_initsocketfail { display: block; }
-.cboxdisconnected_looping #connectionboxinner #disconnected_looping { display: block; }
-.cboxdisconnected_slowcommit #connectionboxinner #disconnected_slowcommit { display: block; }
-.cboxdisconnected_unauth #connectionboxinner #disconnected_unauth { display: block; }
-.cboxdisconnected_unknown #connectionboxinner #disconnected_unknown { display: block; }
+.cboxdisconnected #connectionboxinner div
+{
+	display: none;
+}
+.cboxdisconnected_userdup #connectionboxinner #disconnected_userdup
+{
+	display: block;
+}
+.cboxdisconnected_initsocketfail #connectionboxinner #disconnected_initsocketfail
+{
+	display: block;
+}
+.cboxdisconnected_looping #connectionboxinner #disconnected_looping
+{
+	display: block;
+}
+.cboxdisconnected_slowcommit #connectionboxinner #disconnected_slowcommit
+{
+	display: block;
+}
+.cboxdisconnected_unauth #connectionboxinner #disconnected_unauth
+{
+	display: block;
+}
+.cboxdisconnected_unknown #connectionboxinner #disconnected_unknown
+{
+	display: block;
+}
 .cboxdisconnected_initsocketfail #connectionboxinner #reconnect_advise,
 .cboxdisconnected_looping #connectionboxinner #reconnect_advise,
 .cboxdisconnected_slowcommit #connectionboxinner #reconnect_advise,
-.cboxdisconnected_unknown #connectionboxinner #reconnect_advise { display: block; }
-.cboxdisconnected div#reconnect_form { display: block; }
-.cboxdisconnected .disconnected h2 { display: none; }
-.cboxdisconnected .disconnected .h2_disconnect { display: block; }
-.cboxdisconnected_userdup .disconnected h2.h2_disconnect { display: none; }
-.cboxdisconnected_userdup .disconnected h2.h2_userdup { display: block; }
-.cboxdisconnected_unauth .disconnected h2.h2_disconnect { display: none; }
-.cboxdisconnected_unauth .disconnected h2.h2_unauth { display: block; }
-
-#connectionstatus {
-  position: absolute; width: 37px; height: 41px; overflow: hidden;
-  right: 0;
-  z-index: 11;
+.cboxdisconnected_unknown #connectionboxinner #reconnect_advise
+{
+	display: block;
 }
-#connectionboxinner .connecting {
-  margin-top: 20px;
-  font-size: 2.0em; color: #555;
-  text-align: center; display: none;
+.cboxdisconnected div#reconnect_form
+{
+	display: block;
 }
-.cboxconnecting #connectionboxinner .connecting { display: block; }
-
-#connectionboxinner .disconnected h2 {
-  font-size: 1.8em; color: #333;
-  text-align: left;
-  margin-top: 10px; margin-left: 10px; margin-right: 10px;
-  margin-bottom: 10px;
+.cboxdisconnected .disconnected h2
+{
+	display: none;
 }
-#connectionboxinner .disconnected p {
-  margin: 10px 10px;
-  font-size: 1.2em;
-  line-height: 1.1;
-  color: #333;
+.cboxdisconnected .disconnected .h2_disconnect
+{
+	display: block;
 }
-#connectionboxinner .disconnected { display: none; }
-.cboxdisconnected #connectionboxinner .disconnected { display: block; }
-
-#connectionboxinner .reconnecting {
-  margin-top: 20px;
-  font-size: 1.6em; color: #555;
-  text-align: center; display: none;
+.cboxdisconnected_userdup .disconnected h2.h2_disconnect
+{
+	display: none;
 }
-.cboxreconnecting #connectionboxinner .reconnecting { display: block; }
-
-#reconnect_form button {
-  font-size: 12pt;
-  padding: 5px;
+.cboxdisconnected_userdup .disconnected h2.h2_userdup
+{
+	display: block;
 }
-
-/* We give docbar a higher z-index than its descendant impexp-wrapper in
-   order to allow the Import/Export panel to be on top of stuff lower
-   down on the page in IE.  Strange but it works! */
-#docbar { z-index: 52; }
-
-#impexp-wrapper { width: 650px; right: 10px; }
-#impexp-panel { height: 160px; }
-.docbarimpexp-closing #impexp-wrapper { z-index: 50; }
-
-#savedrevs-wrapper { width: 100%; left: 0; }
-#savedrevs-panel { height: 79px; }
-.docbarsavedrevs-closing #savedrevs-wrapper { z-index: 50; }
-#savedrevs-wrapper .dbpanel-rightedge { background-position: 0 -10px; }
-
-#options-wrapper { width: 340px; right: 200px; }
-#options-panel { height: 114px; }
-.docbaroptions-closing #options-wrapper { z-index: 50; }
-
-#security-wrapper { width: 320px; right: 300px; }
-#security-panel { height: 130px; }
-.docbarsecurity-closing #security-wrapper { z-index: 50; }
-
-#revision-notifier { position: absolute; right: 8px; top: 25px;
-  width: auto; height: auto; font-size: 1.2em; background: #ffc;
-  border: 1px solid #aaa; color: #444; padding: 3px 5px;
-  display: none; z-index: 55; }
-#revision-notifier .label { color: #777; font-weight: bold; }
-
-/* We don't ever actually hide the wrapper, even when the panel is
-   cloased, so that its contents can always be manipulated accurately. */
-
-
-#padoptions { position: absolute; top: 0; left: 0; font-size: 1.2em;
-  color: #444; height: 100%; width: 100%; line-height: 15px; }
-#options-viewhead { font-weight: bold; position: absolute; top: 10px; left: 15px;
-  width: auto; height: auto; }
-#padoptions label { display: block; }
-#padoptions input { padding: 0; margin: 0; }
-#options-colorscheck { position: absolute; left: 15px; top: 34px; width: 15px; height: 15px; }
-#options-colorslabel { position: absolute; left: 35px; top: 34px; }
-#options-linenoscheck { position: absolute; left: 15px; top: 57px; width: 15px; height: 15px; }
-#options-linenoslabel { position: absolute; left: 35px; top: 57px; }
-#options-fontlabel { position: absolute; left: 15px; top: 82px; }
-#viewfontmenu { position: absolute; top: 80px; left: 90px; width: 110px; }
-#options-viewexplain { position: absolute; left: 215px; top: 15px; width: 100px; height: 70px; font-size: .7em;
-  padding-left: 10px; padding-top: 10px; border-left: 1px solid #ccc;
-  line-height: 20px; font-weight: bold; color: #999; }
-#options-close { display: block; position: absolute; right: 7px; bottom: 8px;
-  width: auto; height: auto; font-size: 85%; color: #444; }
-
-#mainmodals { z-index: 600; /* higher than the modals themselves
-                              so that modals are on top in IE */ }
-.modalfield { font-size: 1.2em; padding: 1px; border: 1px solid #bbb;}
-#mainmodals .editempty { color: #aaa; }
-
-.expand-collapse {
-  height: 22px;
-  background-image: url(static/img/sharedistri.gif);
-  background-repeat: no-repeat;
-  background-position: 0 3px;
-  padding-left: 17px;
-  text-decoration: none;
+.cboxdisconnected_unauth .disconnected h2.h2_disconnect
+{
+	display: none;
 }
-.expand-collapse.expanded {
-  background-position: 0 -31px;
+.cboxdisconnected_unauth .disconnected h2.h2_unauth
+{
+	display: block;
 }
-
-
-.modaldialog {
-  position: absolute;
-  top: 100px;
-  left:50%;
-  margin-left:-243px;
-  width: 485px;
-  display: none;
-  z-index: 501;
-  zoom: 1;
-  overflow: hidden;
-  background: white;
- border: 1px solid #999;
+#connectionstatus
+{
+	height: 41px;
+	overflow: hidden;
+	position: absolute;
+	right: 0;
+	width: 37px;
+	z-index: 11;
 }
-.modaldialog .modaldialog-inner { padding: 10pt; }
-.modaldialog .modaldialog-hide {
-  float: right;
-  background-repeat: no-repeat;
-  background-image: url(static/img/sharebox4.gif);
-  display: block;
-  width: 22px; height: 22px;
-  background-position: -454px -6px;
-  margin-right:-5px;
-  margin-top:-5px;
+#connectionboxinner .connecting
+{
+	color: #555;
+	display: none;
+	font-size: 2.0em;
+	margin-top: 20px;
+	text-align: center;
 }
-
+.cboxconnecting #connectionboxinner .connecting
+{
+	display: block;
+}
+#connectionboxinner .disconnected h2
+{
+	color: #333;
+	font-size: 1.8em;
+	margin-bottom: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-top: 10px;
+	text-align: left;
+}
+#connectionboxinner .disconnected p
+{
+	color: #333;
+	font-size: 1.2em;
+	line-height: 1.1;
+	margin: 10px 10px;
+}
+#connectionboxinner .disconnected
+{
+	display: none;
+}
+.cboxdisconnected #connectionboxinner .disconnected
+{
+	display: block;
+}
+#connectionboxinner .reconnecting
+{
+	color: #555;
+	display: none;
+	font-size: 1.6em;
+	margin-top: 20px;
+	text-align: center;
+}
+.cboxreconnecting #connectionboxinner .reconnecting
+{
+	display: block;
+}
+#reconnect_form button
+{
+	font-size: 12pt;
+	padding: 5px;
+}
+#docbar
+{
+	z-index: 52;
+}
+#impexp-wrapper
+{
+	right: 10px;
+	width: 650px;
+}
+#impexp-panel
+{
+	height: 160px;
+}
+.docbarimpexp-closing #impexp-wrapper
+{
+	z-index: 50;
+}
+#savedrevs-wrapper
+{
+	left: 0;
+	width: 100%;
+}
+#savedrevs-panel
+{
+	height: 79px;
+}
+.docbarsavedrevs-closing #savedrevs-wrapper
+{
+	z-index: 50;
+}
+#savedrevs-wrapper .dbpanel-rightedge
+{
+	background-position: 0 -10px;
+}
+#options-wrapper
+{
+	right: 200px;
+	width: 340px;
+}
+#options-panel
+{
+	height: 114px;
+}
+.docbaroptions-closing #options-wrapper
+{
+	z-index: 50;
+}
+#security-wrapper
+{
+	right: 300px;
+	width: 320px;
+}
+#security-panel
+{
+	height: 130px;
+}
+.docbarsecurity-closing #security-wrapper
+{
+	z-index: 50;
+}
+#revision-notifier
+{
+	background: #ffc;
+	border: 1px solid #aaa;
+	color: #444;
+	display: none;
+	font-size: 1.2em;
+	height: auto;
+	padding: 3px 5px;
+	position: absolute;
+	right: 8px;
+	top: 25px;
+	width: auto;
+	z-index: 55;
+}
+#revision-notifier .label
+{
+	color: #777;
+	font-weight: bold;
+}
+#padoptions
+{
+	color: #444;
+	font-size: 1.2em;
+	height: 100%;
+	left: 0;
+	line-height: 15px;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+#options-viewhead
+{
+	font-weight: bold;
+	height: auto;
+	left: 15px;
+	position: absolute;
+	top: 10px;
+	width: auto;
+}
+#padoptions label
+{
+	display: block;
+}
+#padoptions input
+{
+	margin: 0;
+	padding: 0;
+}
+#options-colorscheck
+{
+	height: 15px;
+	left: 15px;
+	position: absolute;
+	top: 34px;
+	width: 15px;
+}
+#options-colorslabel
+{
+	left: 35px;
+	position: absolute;
+	top: 34px;
+}
+#options-linenoscheck
+{
+	height: 15px;
+	left: 15px;
+	position: absolute;
+	top: 57px;
+	width: 15px;
+}
+#options-linenoslabel
+{
+	left: 35px;
+	position: absolute;
+	top: 57px;
+}
+#options-fontlabel
+{
+	left: 15px;
+	position: absolute;
+	top: 82px;
+}
+#viewfontmenu
+{
+	left: 90px;
+	position: absolute;
+	top: 80px;
+	width: 110px;
+}
+#options-viewexplain
+{
+	border-left: 1px solid #ccc;
+	color: #999;
+	font-size: .7em;
+	font-weight: bold;
+	height: 70px;
+	left: 215px;
+	line-height: 20px;
+	padding-left: 10px;
+	padding-top: 10px;
+	position: absolute;
+	top: 15px;
+	width: 100px;
+}
+#options-close
+{
+	bottom: 8px;
+	color: #444;
+	display: block;
+	font-size: 85%;
+	height: auto;
+	position: absolute;
+	right: 7px;
+	width: auto;
+}
+#mainmodals
+{
+	z-index: 600;
+}
+.modalfield
+{
+	border: 1px solid #bbb;
+	font-size: 1.2em;
+	padding: 1px;
+}
+#mainmodals .editempty
+{
+	color: #aaa;
+}
+.expand-collapse
+{
+	background-image: url(static/img/sharedistri.gif);
+	background-position: 0 3px;
+	background-repeat: no-repeat;
+	height: 22px;
+	padding-left: 17px;
+	text-decoration: none;
+}
+.expand-collapse.expanded
+{
+	background-position: 0 -31px;
+}
+.modaldialog
+{
+	background: white;
+	border: 1px solid #999;
+	display: none;
+	left: 50%;
+	margin-left: -243px;
+	overflow: hidden;
+	position: absolute;
+	top: 100px;
+	width: 485px;
+	z-index: 501;
+	zoom: 1;
+}
+.modaldialog .modaldialog-inner
+{
+	padding: 10pt;
+}
+.modaldialog .modaldialog-hide
+{
+	background-image: url(static/img/sharebox4.gif);
+	background-position: -454px -6px;
+	background-repeat: no-repeat;
+	display: block;
+	float: right;
+	height: 22px;
+	margin-right: -5px;
+	margin-top: -5px;
+	width: 22px;
+}
 .modaldialog label,
-.modaldialog h1 {
-  color:#222222;
-  font-size:125%;
-  font-weight:bold;
+.modaldialog h1
+{
+	color: #222222;
+	font-size: 125%;
+	font-weight: bold;
 }
-
-.modaldialog th {
-  vertical-align: top;
-  text-align: left;
+.modaldialog th
+{
+	text-align: left;
+	vertical-align: top;
 }
-
-.nonprouser #sharebox-stripe { display: none; }
-
-.sharebox-url {
-  width: 440px; height: 18px;
-  text-align: left;
-  font-size: 1.3em;
-  line-height: 18px;
-  padding: 2px;
+.nonprouser #sharebox-stripe
+{
+	display: none;
 }
-
-#sharebox-send {
-  float: right;
-  background-repeat: no-repeat;
-  background-image: url(static/img/sharebox4.gif);
-  display: block;
-  width: 87px; height: 22px;
-  background-position: -383px -289px;
+.sharebox-url
+{
+	font-size: 1.3em;
+	height: 18px;
+	line-height: 18px;
+	padding: 2px;
+	text-align: left;
+	width: 440px;
 }
-
-
-#viewbarcontents { display: none; }
-#viewzoomtitle {
-  position: absolute; left: 10px; top: 4px; height: 20px; line-height: 20px;
-  width: auto;
+#sharebox-send
+{
+	background-image: url(static/img/sharebox4.gif);
+	background-position: -383px -289px;
+	background-repeat: no-repeat;
+	display: block;
+	float: right;
+	height: 22px;
+	width: 87px;
 }
-#viewzoommenu {
-  width: 65px;
+#viewbarcontents
+{
+	display: none;
 }
-#bottomarea {
-  height: 28px;
-  overflow: hidden;
-  position: absolute;
-  height: 28px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  font-size: 1.2em;
-  color: #444;
+#viewzoomtitle
+{
+	height: 20px;
+	left: 10px;
+	line-height: 20px;
+	position: absolute;
+	top: 4px;
+	width: auto;
 }
-#widthprefcheck { position: absolute;
-  background-image: url(static/img/layoutbuttons.gif);
-  background-repeat: no-repeat; cursor: pointer;
-  width: 86px; height: 20px; top: 4px; right: 2px; }
-.widthprefunchecked { background-position: -1px -1px; }
-.widthprefchecked { background-position: -1px -23px; }
-#sidebarcheck { position: absolute;
-  background-image: url(static/img/layoutbuttons.gif);
-  background-repeat: no-repeat; cursor: pointer;
-  width: 86px; height: 20px; top: 4px; right: 90px; }
-.sidebarunchecked { background-position: -1px -45px; }
-.sidebarchecked { background-position: -1px -67px; }
-#feedbackbutton { display: block; position: absolute; width: 68px;
-  height: 0; padding-top: 17px; overflow: hidden;
-  background: url(static/img/bottomareagfx.gif);
-  top: 5px; right: 220px;
+#viewzoommenu
+{
+	width: 65px;
 }
-
-#modaloverlay {
-  z-index: 500; display: none;
-  background-repeat: repeat-both;
-  width: 100%; position: absolute;
-  height: 100%; left: 0; top: 0;
+#bottomarea
+{
+	bottom: 0px;
+	color: #444;
+	font-size: 1.2em;
+	height: 28px;
+	left: 0px;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
 }
-
-* html #modaloverlay { /* for IE 6+ */
-  opacity: 1; /* in case this is looked at */
-  background-image: none;
-  background-repeat: no-repeat;
-  /* scale the image */
+#widthprefcheck
+{
+	background-image: url(static/img/layoutbuttons.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+	height: 20px;
+	position: absolute;
+	right: 2px;
+	top: 4px;
+	width: 86px;
 }
-
-a#topbarmaximize {
- float: right;
- width: 16px;
- height: 16px;
- margin-right:-143px;
- margin-top:4px;
- background: url(static/img/maximize_normal.png);
+.widthprefunchecked
+{
+	background-position: -1px -1px;
 }
-
-.maximized a#topbarmaximize {
- background: url(static/img/maximize_maximized.png);
+.widthprefchecked
+{
+	background-position: -1px -23px;
 }
-
-#editbarinner h1 {
- line-height: 29px;
- font-size: 16px;
- padding-left: 6pt;
- margin-top: 0;
+#sidebarcheck
+{
+	background-image: url(static/img/layoutbuttons.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+	height: 20px;
+	position: absolute;
+	right: 90px;
+	top: 4px;
+	width: 86px;
 }
-
-#editbarinner h1 a {
- font-size: 12px;
+.sidebarunchecked
+{
+	background-position: -1px -45px;
 }
-
-.bigbutton {
- display: block;
- background-color: #a3bde0;
- color: #555555;
- border-style: solid;
- border-width: 2px;
- border-left-color: #d6e2f1;
- border-right-color: #86aee1;
- border-top-color: #d6e2f1;
- border-bottom-color: #86aee1;
- margin: 10pt;
- text-align: center;
- text-decoration: none;
- padding: 50pt;
- font-size: 20pt;
- -moz-border-radius-topleft: 3pt;
- -moz-border-radius-topright: 3pt;
- -moz-border-radius-bottomleft: 3pt;
- -moz-border-radius-bottomright: 3pt;
- -webkit-border-top-left-radius: 3pt;
- -webkit-border-top-right-radius: 3pt;
- -webkit-border-bottom-left-radius: 3pt;
- -webkit-border-bottom-right-radius: 3pt;
+.sidebarchecked
+{
+	background-position: -1px -67px;
 }
-
-.modaldialog .bigbutton {
- padding-left: 0;
- padding-right: 0;
- width: 100%;
+#feedbackbutton
+{
+	background: url(static/img/bottomareagfx.gif);
+	display: block;
+	height: 0;
+	overflow: hidden;
+	padding-top: 17px;
+	position: absolute;
+	right: 220px;
+	top: 5px;
+	width: 68px;
 }
-
-#embed, #readonly {
-display:none;
-position:absolute;
-top:40px;
-font-size:14px;
-width:400px;
-right: 20px;
-z-index: 500;
-background-color: #000;
-color: white;
-background-color: rgb(0,0,0);
-background-color: rgba(0,0,0,0.7);
-padding: 10px;
--moz-border-radius: 6px;
-border-radius: 6px; 
+#modaloverlay
+{
+	background-repeat: repeat-both;
+	display: none;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: 500;
 }
-
-#embedcode, #readonlyUrl {
-margin-left:10px;
+* html #modaloverlay
+{
+	background-image: none;
+	background-repeat: no-repeat;
+	opacity: 1;
 }
-
-#embedinput, #readonlyInput{
-width:375px;
-height:24px;
-display:inline;
-margin-top: 10px;
-padding-left:4px;
+a#topbarmaximize
+{
+	background: url(static/img/maximize_normal.png);
+	float: right;
+	height: 16px;
+	margin-right: -143px;
+	margin-top: 4px;
+	width: 16px;
 }
-
+.maximized a#topbarmaximize
+{
+	background: url(static/img/maximize_maximized.png);
+}
+#editbarinner h1
+{
+	font-size: 16px;
+	line-height: 29px;
+	margin-top: 0;
+	padding-left: 6pt;
+}
+#editbarinner h1 a
+{
+	font-size: 12px;
+}
+.bigbutton
+{
+	background-color: #a3bde0;
+	border-bottom-color: #86aee1;
+	border-left-color: #d6e2f1;
+	border-right-color: #86aee1;
+	border-style: solid;
+	border-top-color: #d6e2f1;
+	border-width: 2px;
+	color: #555555;
+	display: block;
+	font-size: 20pt;
+	margin: 10pt;
+	moz-border-radius-bottomleft: 3pt;
+	moz-border-radius-bottomright: 3pt;
+	moz-border-radius-topleft: 3pt;
+	moz-border-radius-topright: 3pt;
+	padding: 50pt;
+	text-align: center;
+	text-decoration: none;
+	webkit-border-bottom-left-radius: 3pt;
+	webkit-border-bottom-right-radius: 3pt;
+	webkit-border-top-left-radius: 3pt;
+	webkit-border-top-right-radius: 3pt;
+}
+.modaldialog .bigbutton
+{
+	padding-left: 0;
+	padding-right: 0;
+	width: 100%;
+}
+#embed, #readonly
+{
+	background-color: #000;
+	background-color: rgb(0,0,0);
+	background-color: rgba(0,0,0,0.7);
+	border-radius: 6px;
+	color: white;
+	display: none;
+	font-size: 14px;
+	moz-border-radius: 6px;
+	padding: 10px;
+	position: absolute;
+	right: 20px;
+	top: 40px;
+	width: 400px;
+	z-index: 500;
+}
+#embedcode, #readonlyUrl
+{
+	margin-left: 10px;
+}
+#embedinput, #readonlyInput
+{
+	display: inline;
+	height: 24px;
+	margin-top: 10px;
+	padding-left: 4px;
+	width: 375px;
+}
 ul#colorpickerswatches
 {
-  padding-left: 3px;
-  padding-top: 5px;
+	padding-left: 3px;
+	padding-top: 5px;
 }
-
-ul#colorpickerswatches li 
+ul#colorpickerswatches li
 {
-  border: 1px solid #ccc; 
-  width: 14px; 
-  height: 14px; 
-  overflow: hidden;
-  margin: 3px 6px;
-  padding: 0px;
+	border: 1px solid #ccc;
+	height: 14px;
+	margin: 3px 6px;
+	overflow: hidden;
+	padding: 0px;
+	width: 14px;
 }
-
 ul#colorpickerswatches li:hover
 {
-  border: 1px solid #000; 
-  cursor: pointer;
+	border: 1px solid #000;
+	cursor: pointer;
 }
-
-
-
 #chatbox
 {
-  position:absolute;
-  bottom:0px;
-  right: 20px;
-  width: 180px;
-  height: 200px;
-  z-index: 400;
-  background-color:#f3f7f9;
-  border-left: 1px solid #999;
-  border-right: 1px solid #999;
-  border-top: 1px solid #999;
-  padding: 3px;
-  padding-bottom: 10px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  display:none;
+	background-color: #f3f7f9;
+	border-left: 1px solid #999;
+	border-right: 1px solid #999;
+	border-top: 1px solid #999;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	bottom: 0px;
+	display: none;
+	height: 200px;
+	padding: 3px;
+	padding-bottom: 10px;
+	position: absolute;
+	right: 20px;
+	width: 180px;
+	z-index: 400;
 }
-
 #chattext
 {
-  background-color: white;
-  border: 1px solid white;
-  overflow-y:scroll;
-  font-size: 12px;
-  position:absolute;
-  right:0px;
-  left:0px;
-  top:25px;
-  bottom:25px;
+	background-color: white;
+	border: 1px solid white;
+	bottom: 25px;
+	font-size: 12px;
+	left: 0px;
+	overflow-y: scroll;
+	position: absolute;
+	right: 0px;
+	top: 25px;
 }
-
 #chattext p
 {
-  padding: 3px;
-  overflow-x: hidden;
+	overflow-x: hidden;
+	padding: 3px;
 }
-
 #chatinputbox
 {
-  padding: 3px 2px;
-  position: absolute;
-  bottom:0px;
-  right:0px;
-  left:3px;
+	bottom: 0px;
+	left: 3px;
+	padding: 3px 2px;
+	position: absolute;
+	right: 0px;
 }
-
 #chatlabel
 {
-  font-size:13px;
-  line-height:16px;
-  font-weight:bold;
-  color:#555;
-  text-decoration: none;
-  position: relative;
-  bottom: 3px;
+	bottom: 3px;
+	color: #555;
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 16px;
+	position: relative;
+	text-decoration: none;
 }
-
 #chatinput
 {
-  border: 1px solid #BBBBBB;
-  width: 100%;
-  float:right;
+	border: 1px solid #BBBBBB;
+	float: right;
+	width: 100%;
 }
-
 #chaticon
 {
-  z-index: 400;
-  position:absolute;
-  bottom:0px;
-  right: 20px;
-  padding: 5px;
-  border-left: 1px solid #999;
-  border-right: 1px solid #999;
-  border-top: 1px solid #999;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  background-color:#fff;
-  cursor: pointer;
+	background-color: #fff;
+	border-left: 1px solid #999;
+	border-right: 1px solid #999;
+	border-top: 1px solid #999;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	bottom: 0px;
+	cursor: pointer;
+	padding: 5px;
+	position: absolute;
+	right: 20px;
+	z-index: 400;
 }
-
 #chaticon a
 {
-  text-decoration: none;
+	text-decoration: none;
 }
-
 #chatcounter
 {
-  color:#555;
-  font-size:9px;
-  position:relative;
-  bottom: 2px;
+	bottom: 2px;
+	color: #555;
+	font-size: 9px;
+	position: relative;
 }
-
 #titlebar
 {
-  line-height:16px;
-  font-weight:bold;
-  color:#555;
-  position: relative;
-  bottom: 2px;
-} 
-
+	bottom: 2px;
+	color: #555;
+	font-weight: bold;
+	line-height: 16px;
+	position: relative;
+}
 #titlelabel
 {
-  font-size:13px;
-  margin-left:20px;
-  padding-top:3px;
-  position:absolute;
-} 
-
+	font-size: 13px;
+	margin-left: 20px;
+	padding-top: 3px;
+	position: absolute;
+}
 #titlecross
 {
-  font-size:25px;
-  float:right;
-  text-align: right;
-  text-decoration: none;
-  cursor: pointer;
-  color:#555;
+	color: #555;
+	cursor: pointer;
+	float: right;
+	font-size: 25px;
+	text-align: right;
+	text-decoration: none;
 }
-
 .time
 {
-  float:right;
-  color:#333;
-  font-style:italic;
-  font-size: 10px;
-  margin-left: 3px;
-  margin-right: 3px;
-  margin-top:2px;
+	color: #333;
+	float: right;
+	font-size: 10px;
+	font-style: italic;
+	margin-left: 3px;
+	margin-right: 3px;
+	margin-top: 2px;
 }
-
-
-/* resizable stuff for chat */
-.ui-resizable {
-position: relative;
-} 
-.ui-resizable-handle { 
-  position: absolute;
-  font-size: 0.1px;
-  z-index: 99999;
-  display: block;
-    
-} 
-
-.ui-resizable-nw {
-  background-image: url("../img/nw-resize.png");
-  background-repeat: no-repeat;
-  background-size: 100% auto;
-  cursor: nw-resize;
-  height: 22px;
-  left: 0;
-  top: 0;
-  width: 22px;
-} 
-
-.ui-resizable-ne 
-{ 
-  cursor: ne-resize; 
-  width: 9px; 
-  height: 9px; 
-  right: -5px; 
-  top: -5px;
-} 
-
-#importexport{
-  position:absolute;
-  top:40px;
-  font-size:14px;
-  width:450px;
-  right: 20px;
-  z-index: 500;
-  background-color: #000;
-  color: white;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.7);
-  padding: 10px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  height:170px;
-  display:none;
+.ui-resizable
+{
+	position: relative;
 }
-
-#import{
-  position:absolute;
-  width:250px;
-  left:10px;
-  line-height:20px;
+.ui-resizable-handle
+{
+	display: block;
+	font-size: 0.1px;
+	position: absolute;
+	z-index: 99999;
 }
-
-#export{
-  position:absolute;
-  width:180px;
-  right:10px;
-  line-height:20px;
+.ui-resizable-nw
+{
+	background-image: url("../img/nw-resize.png");
+	background-repeat: no-repeat;
+	background-size: 100% auto;
+	cursor: nw-resize;
+	height: 22px;
+	left: 0;
+	top: 0;
+	width: 22px;
 }
-
-.exporttype{
-  line-height:25px;
-  background-repeat:no-repeat;
-  padding-left:25px;
-  background-image: url("../img/fileicons.gif");
-  color:#fff;
-  text-decoration:none;
+.ui-resizable-ne
+{
+	cursor: ne-resize;
+	height: 9px;
+	right: -5px;
+	top: -5px;
+	width: 9px;
 }
-
-#importexportline{
-  border: dotted 1px;
-  height: 165px;
-  position:absolute;
-  width:0px;
-  left:260px;
-  opacity:.8;
+#importexport
+{
+	background-color: #000;
+	background-color: rgb(0,0,0);
+	background-color: rgba(0,0,0,0.7);
+	border-radius: 6px;
+	color: white;
+	display: none;
+	font-size: 14px;
+	height: 170px;
+	moz-border-radius: 6px;
+	padding: 10px;
+	position: absolute;
+	right: 20px;
+	top: 40px;
+	width: 450px;
+	z-index: 500;
 }
-
-.impexpbutton{
-  background-image: -moz-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
-  padding:3px;
+#import
+{
+	left: 10px;
+	line-height: 20px;
+	position: absolute;
+	width: 250px;
 }
-
-#exporthtml{
-  background-position: 2px -25px;
+#export
+{
+	line-height: 20px;
+	position: absolute;
+	right: 10px;
+	width: 180px;
 }
-
-#exportplain{
-  background-position: 2px -121px;
+.exporttype
+{
+	background-image: url("../img/fileicons.gif");
+	background-repeat: no-repeat;
+	color: #fff;
+	line-height: 25px;
+	padding-left: 25px;
+	text-decoration: none;
 }
-
-#exportword{
-  background-position: 2px -0px;
+#importexportline
+{
+	border: dotted 1px;
+	height: 165px;
+	left: 260px;
+	opacity: .8;
+	position: absolute;
+	width: 0px;
 }
-
-#exportpdf{
-  background-position: 2px -97px;
+.impexpbutton
+{
+	background-image: -moz-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
+	padding: 3px;
 }
-
-#exportopen{
-  background-position: 2px -74px;
+#exporthtml
+{
+	background-position: 2px -25px;
 }
-
-#exportwordle{
-  background-position: 2px -49px;
+#exportplain
+{
+	background-position: 2px -121px;
 }
-
-#export a{
-  text-decoration: none;
+#exportword
+{
+	background-position: 2px -0px;
 }
-
-#importstatusball{
-  display:none;
+#exportpdf
+{
+	background-position: 2px -97px;
 }
-
-#importarrow{
-  display:none;
+#exportopen
+{
+	background-position: 2px -74px;
 }
-
-#importmessagesuccess{
-  display:none;
+#exportwordle
+{
+	background-position: 2px -49px;
 }
-
-#importsubmitinput{
-  height:25px;
-  width:85px;
-  margin-top:12px;
+#export a
+{
+	text-decoration: none;
 }
-
-#importstatusball{
-  height:50px;
+#importstatusball
+{
+	display: none;
 }
-
-#chatthrob{
-display:none;
-position:absolute;
-bottom:40px;
-font-size:14px;
-width:150px;
-height:40px;
-right: 20px;
-z-index: 200;
-background-color: #000;
-color: white;
-background-color: rgb(0,0,0);
-background-color: rgba(0,0,0,0.7);
-padding: 10px;
--moz-border-radius: 6px;
-border-radius: 6px;
-opacity:.8;
+#importarrow
+{
+	display: none;
 }
-
-.buttonicon{
-width:16px;
-height:16px;
-background-image:url('../../static/img/etherpad_lite_icons.gif');
-background-repeat: no-repeat;
-margin-left: 1px;
-margin-top: 1px;
+#importmessagesuccess
+{
+	display: none;
 }
-
+#importsubmitinput
+{
+	height: 25px;
+	margin-top: 12px;
+	width: 85px;
+}
+#importstatusball
+{
+	height: 50px;
+}
+#chatthrob
+{
+	background-color: #000;
+	background-color: rgb(0,0,0);
+	background-color: rgba(0,0,0,0.7);
+	border-radius: 6px;
+	bottom: 40px;
+	color: white;
+	display: none;
+	font-size: 14px;
+	height: 40px;
+	moz-border-radius: 6px;
+	opacity: .8;
+	padding: 10px;
+	position: absolute;
+	right: 20px;
+	width: 150px;
+	z-index: 200;
+}
+.buttonicon
+{
+	background-image: url('../../static/img/etherpad_lite_icons.gif');
+	background-repeat: no-repeat;
+	height: 16px;
+	margin-left: 1px;
+	margin-top: 1px;
+	width: 16px;
+}
 #usericon
 {
-width:27px !important;
+	width: 27px !important;
 }
-
 #focusprotector
 {
-  z-index: 100;
-  position: absolute;
-  bottom: 0px;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  background-color: white;
-  opacity:0.01;
-  display:none;
+	background-color: white;
+	bottom: 0px;
+	display: none;
+	left: 0px;
+	opacity: 0.01;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	z-index: 100;
 }
-
-#showhistorylabel{
-  position:absolute;
-  left:58px;
-  top:4px;
-  cursor: hand;
-  cursor: pointer;
+#showhistorylabel
+{
+	cursor: hand;
+	cursor: pointer;
+	left: 58px;
+	position: absolute;
+	top: 4px;
 }
