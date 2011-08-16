@@ -1298,6 +1298,7 @@ ul#colorpickerswatches li:hover
 }
 ::-webkit-scrollbar-thumb {
     background: #bbb;
+    border-radius: 3px;
     cursor: pointer;
 }
 #chattext
