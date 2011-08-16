@@ -1294,7 +1294,7 @@ ul#colorpickerswatches li:hover
     width: 9px;
 }
 ::-webkit-scrollbar-track {
-    background: #eee;
+    background: #f5f5f5;
 }
 ::-webkit-scrollbar-thumb {
     background: #bbb;
