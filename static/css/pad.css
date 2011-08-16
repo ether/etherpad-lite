@@ -1275,12 +1275,11 @@ ul#colorpickerswatches li:hover
 }
 #chatbox
 {
-	background-color: #f3f7f9;
+	background-color: #f7f7f7;
 	border-left: 1px solid #999;
 	border-right: 1px solid #999;
 	border-top: 1px solid #999;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
+        border-radius: 5px 5px 0 0;
 	bottom: 0px;
 	display: none;
 	height: 200px;
@@ -1290,6 +1289,16 @@ ul#colorpickerswatches li:hover
 	right: 20px;
 	width: 180px;
 	z-index: 400;
+}
+::-webkit-scrollbar {
+    width: 9px;
+}
+::-webkit-scrollbar-track {
+    background: #eee;
+}
+::-webkit-scrollbar-thumb {
+    background: #bbb;
+    cursor: pointer;
 }
 #chattext
 {
