@@ -67,7 +67,7 @@ a img
 	background: #fff;
   background: -webkit-linear-gradient(#fff, #f0f0f0);  
   background: -moz-linear-gradient(#fff, #f0f0f0);  
-  background: -ma-linear-gradient(#fff, #f0f0f0);  
+  background: -ms-linear-gradient(#fff, #f0f0f0);  
   background: -o-linear-gradient(#fff, #f0f0f0); 
 	border: 1px solid #ccc;
 	border-radius: 4px;
