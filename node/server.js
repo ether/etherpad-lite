@@ -279,6 +279,7 @@ async.waterfall([
     app.get('/api/1/:func', function(req, res)
     {
       res.header("Server", serverName);
+      res.header("Content-Type", "application/json");
     
       apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(req.query));
       
