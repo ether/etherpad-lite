@@ -89,6 +89,10 @@ a img
 	position: relative;
 	top: -2px;
 }
+#editbar ul li:hover
+{
+  background: #fff;
+}
 #editbar ul li:active
 {
   background: #eee;
@@ -96,10 +100,6 @@ a img
   background: -moz-linear-gradient(#ddd, #fff);
   background: -ms-linear-gradient(#ddd, #fff);  
   background: -o-linear-gradient(#ddd, #fff); 
-}
-#editbar ul li:hover
-{
-  background: #fff;
 }
 #editbar ul li.separator
 {
