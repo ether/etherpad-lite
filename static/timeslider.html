@@ -105,17 +105,26 @@
       {
         changesetLoader.handleSocketResponse(message);
       }
+      else if(message.accessStatus)
+      {
+        $("body").html("<h2>You have no permission to access this pad</h2>")
+      }
     });
   });
   
   //sends a message over the socket
   function sendSocketMsg(type, data)
   {
+    var sessionID = readCookie("sessionID");
+    var password = readCookie("password");
+    
     var msg = { "component" : "timeslider",
                 "type": type,
                 "data": data, 
                 "padId": padId,
                 "token": token,
+                "sessionID": sessionID,
+                "password": password,
                 "protocolVersion": 2};
     
     socket.json.send(msg);

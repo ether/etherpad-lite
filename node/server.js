@@ -26,7 +26,6 @@ var log4js = require('log4js');
 var socketio = require('socket.io');
 var fs = require('fs');
 var settings = require('./utils/Settings');
-var socketIORouter = require("./handler/SocketIORouter");
 var db = require('./db/DB');
 var async = require('async');
 var express = require('express');
@@ -40,6 +39,7 @@ var exporthtml;
 var readOnlyManager;
 var padManager;
 var securityManager;
+var socketIORouter;
 
 //try to get the git version
 var version = "";
@@ -80,6 +80,7 @@ async.waterfall([
     apiHandler = require('./handler/APIHandler');
     padManager = require('./db/PadManager');
     securityManager = require('./db/SecurityManager');
+    socketIORouter = require("./handler/SocketIORouter");
     
     //install logging      
     var httpLogger = log4js.getLogger("http");
