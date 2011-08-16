@@ -1579,3 +1579,6 @@ ul#colorpickerswatches li:hover
 	position: absolute;
 	top: 4px;
 }
+input[type="file"] {
+        color: #fff;	
+}
