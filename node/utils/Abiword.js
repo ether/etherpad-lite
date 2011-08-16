@@ -74,9 +74,6 @@ if(os.type().indexOf("Windows") > -1)
 //thats much faster, about factor 10
 else
 {
-  //Queue with the converts we have to do
-  var queue = async.queue(doConvertTask, 1);
-
   //spawn the abiword process
   var abiword = spawn(settings.abiword, ["--plugin", "AbiCommand"]);
 
@@ -136,6 +133,9 @@ else
       task.callback(err);
     };
   }
+  
+  //Queue with the converts we have to do
+  var queue = async.queue(doConvertTask, 1);
   
   exports.convertFile = function(srcFile, destFile, type, callback)
   {	
