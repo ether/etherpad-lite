@@ -280,6 +280,13 @@ Example returns:
 */
 exports.setPublicStatus = function(padID, publicStatus, callback)
 {
+  //ensure this is a group pad
+  if(padID.indexOf("$") == -1)
+  {
+    callback({stop: "You can only get/set the publicStatus of pads that belong to a group"});
+    return;
+  }
+
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
@@ -310,6 +317,13 @@ Example returns:
 */
 exports.getPublicStatus = function(padID, callback)
 {
+  //ensure this is a group pad
+  if(padID.indexOf("$") == -1)
+  {
+    callback({stop: "You can only get/set the publicStatus of pads that belong to a group"});
+    return;
+  }
+  
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
@@ -333,6 +347,13 @@ Example returns:
 */
 exports.setPassword = function(padID, password, callback)
 {
+  //ensure this is a group pad
+  if(padID.indexOf("$") == -1)
+  {
+    callback({stop: "You can only get/set the password of pads that belong to a group"});
+    return;
+  }
+  
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
@@ -359,6 +380,13 @@ Example returns:
 */
 exports.isPasswordProtected = function(padID, callback)
 {
+  //ensure this is a group pad
+  if(padID.indexOf("$") == -1)
+  {
+    callback({stop: "You can only get/set the password of pads that belong to a group"});
+    return;
+  }
+
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
