@@ -114,7 +114,7 @@ var padeditbar = (function()
         {
           var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
           var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
-          $('#readonlyImage').attr("src","https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + padurl);
+          $('#readonlyImage').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + padurl);
           $('#readonlyInput').val(readonlyLink);
           self.toogleDropDown("readonly");
           $('#readonlyInput').focus().select();
