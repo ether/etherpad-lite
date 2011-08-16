@@ -101,7 +101,6 @@ var padeditbar = (function()
         else if (cmd == 'embed')
         {  
           var padurl = document.location;
-          $('#embedimg').attr("src","https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=" + padurl);
           $('#embedinput').val("<iframe src='" + padurl + "' width=600 height=400>");
           self.toogleDropDown("embed");
           $('#embedinput').focus().select();
@@ -115,6 +114,7 @@ var padeditbar = (function()
         {
           var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
           var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
+          $('#readonlyImage').attr("src","https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + padurl);
           $('#readonlyInput').val(readonlyLink);
           self.toogleDropDown("readonly");
           $('#readonlyInput').focus().select();
