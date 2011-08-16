@@ -251,10 +251,11 @@ function handshake()
     //This handles every Message after the clientVars
     else
     {
+      //this message advices the client to disconnect
       if (obj.disconnect)
       {
+        padconnectionstatus.disconnected(obj.disconnect);
         socket.disconnect();
-        padconnectionstatus.disconnected("userdup");
         return;
       }
       else

@@ -46,15 +46,19 @@ var padconnectionstatus = (function()
     },
     disconnected: function(msg)
     {
+      if(status.what == "disconnected")
+        return;
+      
       status = {
         what: 'disconnected',
         why: msg
       };
       var k = String(msg).toLowerCase(); // known reason why
-      if (!(k == 'userdup' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth'))
+      if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth'))
       {
         k = 'unknown';
       }
+      
       var cls = 'modaldialog cboxdisconnected cboxdisconnected_' + k;
       $("#connectionbox").get(0).className = cls;
       padmodals.showModal("#connectionbox", 500);

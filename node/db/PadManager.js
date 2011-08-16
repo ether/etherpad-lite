@@ -107,3 +107,9 @@ exports.isValidPadId = function(padId)
   return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
 }
 
+//removes a pad from the array
+exports.unloadPad = function(padId)
+{
+  if(globalPads[padId])
+    delete globalPads[padId];
+}

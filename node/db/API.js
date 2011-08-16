@@ -230,7 +230,6 @@ Example returns:
 */
 exports.deletePad = function(padID, callback)
 {
-  //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
     if(err)
@@ -239,7 +238,7 @@ exports.deletePad = function(padID, callback)
       return;
     }
     
-    
+    pad.remove(callback);
   });
 }
 

@@ -8,6 +8,9 @@ var db = require("./DB").db;
 var async = require("async");
 var settings = require('../utils/Settings');
 var authorManager = require("./AuthorManager");
+var padManager = require("./PadManager");
+var padMessageHandler = require("../handler/PadMessageHandler");
+var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
 
 /**
@@ -381,6 +384,97 @@ Class('Pad', {
         
         callback(null);
       });
+    },
+    remove: function(callback)
+    {
+      var padID = this.id;
+      var _this = this;
+      
+      //kick everyone from this pad
+      padMessageHandler.kickSessionsFromPad(padID);
+      
+      async.series([
+        //delete all relations
+        function(callback)
+        {
+          async.parallel([
+            //is it a group pad? -> delete the entry of this pad in the group
+            function(callback)
+            {
+              //is it a group pad?
+              if(padID.indexOf("$")!=-1)
+              {
+                var groupID = padID.substring(0,padID.indexOf("$"));
+                
+                db.get("group:" + groupID, function (err, group)
+                {
+                  if(err) {callback(err); return}
+                  
+                  //remove the pad entry
+                  delete group.pads[padID];
+                  
+                  //set the new value
+                  db.set("group:" + groupID, group);
+                  
+                  callback();
+                });
+              }
+              //its no group pad, nothing to do here
+              else
+              {
+                callback();
+              }
+            },
+            //remove the readonly entries
+            function(callback)
+            {
+              readOnlyManager.getReadOnlyId(padID, function(err, readonlyID)
+              {
+                if(err) {callback(err); return}
+                
+                db.remove("pad2readonly:" + padID);
+                db.remove("readonly2pad:" + readonlyID);
+                
+                callback();
+              });
+            },
+            //delete all chat messages
+            function(callback)
+            {
+              var chatHead = _this.chatHead;
+              
+              for(var i=0;i<=chatHead;i++)
+              {
+                db.remove("pad:"+padID+":chat:"+i);
+              }
+              
+              callback();
+            },
+            //delete all revisions
+            function(callback)
+            {
+              var revHead = _this.head;
+              
+              for(var i=0;i<=revHead;i++)
+              {
+                db.remove("pad:"+padID+":revs:"+i);
+              }
+              
+              callback();
+            }
+          ], callback);
+        },
+        //delete the pad entry and delete pad from padManager
+        function(callback)
+        {
+          db.remove("pad:"+padID);
+          padManager.unloadPad(padID);
+          callback();
+        }
+      ], function(err)
+      {
+        callback(err);
+      })
     },
     //set in db
     setPublicStatus: function(publicStatus)

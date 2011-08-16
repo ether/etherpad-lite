@@ -431,6 +431,7 @@ table#otheruserstable { display: none; }
 }
 .cboxdisconnected #connectionboxinner div { display: none; }
 .cboxdisconnected_userdup #connectionboxinner #disconnected_userdup { display: block; }
+.cboxdisconnected_deleted #connectionboxinner #disconnected_deleted { display: block; }
 .cboxdisconnected_initsocketfail #connectionboxinner #disconnected_initsocketfail { display: block; }
 .cboxdisconnected_looping #connectionboxinner #disconnected_looping { display: block; }
 .cboxdisconnected_slowcommit #connectionboxinner #disconnected_slowcommit { display: block; }

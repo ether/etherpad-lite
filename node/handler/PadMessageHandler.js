@@ -74,6 +74,23 @@ exports.handleConnect = function(client)
 }
 
 /**
+ * Kicks all sessions from a pad
+ * @param client the new client
+ */
+exports.kickSessionsFromPad = function(padID)
+{
+  //skip if there is nobody on this pad
+  if(!pad2sessions[padID])
+    return;
+
+  //disconnect everyone from this pad
+  for(var i in pad2sessions[padID])
+  {
+    socketio.sockets.sockets[pad2sessions[padID][i]].json.send({disconnect:"deleted"});
+  }
+}
+
+/**
  * Handles the disconnection of a user
  * @param client the client that leaves
  */
@@ -687,7 +704,7 @@ function handleClientReady(client, message)
         {
           if(sessioninfos[pad2sessions[message.padId][i]].author == author)
           {
-            socketio.sockets.sockets[pad2sessions[message.padId][i]].json.send({disconnect:"doublelogin"});
+            socketio.sockets.sockets[pad2sessions[message.padId][i]].json.send({disconnect:"userdup"});
           }
         }
       }
