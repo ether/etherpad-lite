@@ -51,12 +51,12 @@ a img
 }
 #editbar
 {
-  border-bottom: 1px solid #ccc;
-  background: #f7f7f7;
-  background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
+        border-bottom: 1px solid #ccc;
+        background: #f7f7f7;
+        background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+        background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
+        background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
+        background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
 	height: 32px;
 	overflow: hidden;
 	padding-top: 3px;
@@ -96,6 +96,10 @@ a img
   background: -moz-linear-gradient(#ddd, #fff);
   background: -ms-linear-gradient(#ddd, #fff);  
   background: -o-linear-gradient(#ddd, #fff); 
+}
+#editbar ul li:hover
+{
+  background: #fff;
 }
 #editbar ul li.separator
 {
