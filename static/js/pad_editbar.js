@@ -101,6 +101,7 @@ var padeditbar = (function()
         else if (cmd == 'embed')
         {  
           var padurl = document.location;
+          $('#embedimg').attr("src","https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=" + padurl);
           $('#embedinput').val("<iframe src='" + padurl + "' width=600 height=400>");
           self.toogleDropDown("embed");
           $('#embedinput').focus().select();
