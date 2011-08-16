@@ -5,7 +5,7 @@
  */
 
 /*
- * 2011 Peter 'Pita' Martischka
+ * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,21 +22,24 @@
 
 require('joose');
 
+var log4js = require('log4js');
 var socketio = require('socket.io');
 var fs = require('fs');
 var settings = require('./utils/Settings');
-var socketIORouter = require("./handler/SocketIORouter");
 var db = require('./db/DB');
 var async = require('async');
 var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
 var formidable = require('formidable');
-var log4js = require('log4js');
+var apiHandler;
 var exportHandler;
 var importHandler;
 var exporthtml;
 var readOnlyManager;
+var padManager;
+var securityManager;
+var socketIORouter;
 
 //try to get the git version
 var version = "";
@@ -74,12 +77,17 @@ async.waterfall([
     exporthtml = require("./utils/ExportHtml");
     exportHandler = require('./handler/ExportHandler');
     importHandler = require('./handler/ImportHandler');
+    apiHandler = require('./handler/APIHandler');
+    padManager = require('./db/PadManager');
+    securityManager = require('./db/SecurityManager');
+    socketIORouter = require("./handler/SocketIORouter");
     
     //install logging      
     var httpLogger = log4js.getLogger("http");
     app.configure(function() 
     {
       app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+      app.use(express.cookieParser());
     });
     
     //serve static files
@@ -156,11 +164,31 @@ async.waterfall([
       });
     });
     
+    //checks for padAccess
+    function hasPadAccess(req, res, callback)
+    {
+      securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj)
+      {
+        if(err) throw err;
+        
+        //there is access, continue
+        if(accessObj.accessStatus == "grant")
+        {
+          callback();
+        }
+        //no access
+        else
+        {
+          res.send("403 - Can't touch this", 403);
+        }
+      });
+    }
+    
     //serve pad.html under /p
     app.get('/p/:pad', function(req, res, next)
     {    
       //ensure the padname is valid and the url doesn't end with a /
-      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
         res.send('Such a padname is forbidden', 404);
         return;
@@ -175,7 +203,7 @@ async.waterfall([
     app.get('/p/:pad/timeslider', function(req, res, next)
     {
       //ensure the padname is valid and the url doesn't end with a /
-      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
         res.send('Such a padname is forbidden', 404);
         return;
@@ -190,7 +218,7 @@ async.waterfall([
     app.get('/p/:pad/export/:type', function(req, res, next)
     {
       //ensure the padname is valid and the url doesn't end with a /
-      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
         res.send('Such a padname is forbidden', 404);
         return;
@@ -213,14 +241,18 @@ async.waterfall([
       
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Server", serverName);
-      exportHandler.doExport(req, res, req.params.pad, req.params.type);
+      
+      hasPadAccess(req, res, function()
+      {
+        exportHandler.doExport(req, res, req.params.pad, req.params.type);
+      });
     });
     
     //handle import requests
     app.post('/p/:pad/import', function(req, res, next)
     {
       //ensure the padname is valid and the url doesn't end with a /
-      if(!isValidPadname(req.params.pad) || /\/$/.test(req.url))
+      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
         res.send('Such a padname is forbidden', 404);
         return;
@@ -234,11 +266,36 @@ async.waterfall([
       }
       
       res.header("Server", serverName);
-      importHandler.doImport(req, res, req.params.pad);
+      
+      hasPadAccess(req, res, function()
+      {
+        importHandler.doImport(req, res, req.params.pad);
+      });
+    });
+    
+    var apiLogger = log4js.getLogger("API");
+    
+    //This is a api call, collect all post informations and pass it to the apiHandler
+    app.get('/api/1/:func', function(req, res)
+    {
+      res.header("Server", serverName);
+    
+      apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(req.query));
+      
+      //wrap the send function so we can log the response
+      res._send = res.send;
+      res.send = function(response)
+      {
+        response = JSON.stringify(response);
+        apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
+        res._send(response);
+      }
+      
+      //call the api handler
+      apiHandler.handle(req.params.func, req.query, req, res);
     });
     
     //The Etherpad client side sends information about how a disconnect happen
-    //I don't know how to use them, but maybe there usefull, so we should print them out to the log
     app.post('/ep/pad/connection-diagnostic-info', function(req, res)
     {
       new formidable.IncomingForm().parse(req, function(err, fields, files) 
@@ -319,12 +376,3 @@ async.waterfall([
     callback(null);  
   }
 ]);
-
-function isValidPadname(padname)
-{
-  //ensure there is no dollar sign in the pad name
-  if(padname.indexOf("$")!=-1)
-    return false;
-  
-  return true;
-}

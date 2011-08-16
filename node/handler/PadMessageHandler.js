@@ -3,7 +3,7 @@
  */ 
 
 /*
- * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka
+ * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ var AttributePoolFactory = require("../utils/AttributePoolFactory");
 var authorManager = require("../db/AuthorManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
 var settings = require('../utils/Settings');
+var securityManager = require("../db/SecurityManager");
 
 /**
  * A associative array that translates a session to a pad
@@ -585,51 +586,65 @@ function handleClientReady(client, message)
   var chatMessages;
 
   async.series([
+    //check permissions
+    function(callback)
+    {
+      securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+      {
+        if(err) {callback(err); return}
+        
+        //access was granted
+        if(statusObject.accessStatus == "grant")
+        {
+          author = statusObject.authorID;
+          callback();
+        }
+        //no access, send the client a message that tell him why
+        else
+        {
+          client.json.send({accessStatus: statusObject.accessStatus})
+        }
+      });
+    }, 
     //get all authordata of this new user
     function(callback)
     {
-      //Ask the author Manager for a author of this token. 
-      authorManager.getAuthor4Token(message.token, function(err,value)
-      {
-        author = value;
-        
-        async.parallel([
-          //get colorId
-          function(callback)
+      async.parallel([
+        //get colorId
+        function(callback)
+        {
+          authorManager.getAuthorColorId(author, function(err, value)
           {
-            authorManager.getAuthorColorId(author, function(err, value)
-            {
-              authorColorId = value;
-              callback(err);
-            });
-          },
-          //get author name
-          function(callback)
+            authorColorId = value;
+            callback(err);
+          });
+        },
+        //get author name
+        function(callback)
+        {
+          authorManager.getAuthorName(author, function(err, value)
           {
-            authorManager.getAuthorName(author, function(err, value)
-            {
-              authorName = value;
-              callback(err);
-            });
-          },
-          function(callback)
+            authorName = value;
+            callback(err);
+          });
+        },
+        function(callback)
+        {
+          padManager.getPad(message.padId, function(err, value)
           {
-            padManager.getPad(message.padId, function(err, value)
-            {
-              pad = value;
-              callback(err);
-            });
-          },
-          function(callback)
+            pad = value;
+            callback(err);
+          });
+        },
+        function(callback)
+        {
+          readOnlyManager.getReadOnlyId(message.padId, function(err, value)
           {
-            readOnlyManager.getReadOnlyId(message.padId, function(err, value)
-            {
-              readOnlyId = value;
-              callback(err);
-            });
-          }
-        ], callback);
-      });
+            readOnlyId = value;
+            callback(err);
+          });
+        }
+      ], callback);
     },
     //these db requests all need the pad object
     function(callback)

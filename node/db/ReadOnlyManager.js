@@ -3,7 +3,7 @@
  */
 
 /*
- * 2011 Peter 'Pita' Martischka
+ * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ exports.getReadOnlyId = function (padId, callback)
       //there is no readOnly Entry in the database, let's create one
       if(dbReadOnlyId == null)
       {
-        readOnlyId = randomString(10);
+        readOnlyId = "r." + randomString(16);
         
         db.set("pad2readonly:" + padId, readOnlyId);
         db.set("readonly2pad:" + readOnlyId, padId);
@@ -74,10 +74,12 @@ exports.getPadId = function(readOnlyId, callback)
  */
 function randomString(len) 
 {
-  // use only numbers and lowercase letters
-  var pieces = [];
-  for(var i=0;i<len;i++) {
-    pieces.push(Math.floor(Math.random()*36).toString(36).slice(-1));
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  var randomstring = '';
+  for (var i = 0; i < len; i++)
+  {
+    var rnum = Math.floor(Math.random() * chars.length);
+    randomstring += chars.substring(rnum, rnum + 1);
   }
-  return pieces.join('');
+  return randomstring;
 }

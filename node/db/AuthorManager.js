@@ -3,7 +3,7 @@
  */
 
 /*
- * 2011 Peter 'Pita' Martischka
+ * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,94 +22,122 @@ var db = require("./DB").db;
 var async = require("async");
 
 /**
- * Returns the Author Id for a token. If the token is unkown, 
- * it creates a author for the token
+ * Checks if the author exists
+ */
+exports.doesAuthorExists = function (authorID, callback)
+{
+  //check if the database entry of this author exists
+  db.get("globalAuthor:" + authorID, function (err, author)
+  {
+    callback(err, author != null);
+  });
+}
+
+/**
+ * Returns the AuthorID for a token. 
  * @param {String} token The token 
  * @param {Function} callback callback (err, author) 
- * The callback function that is called when the result is here 
  */
 exports.getAuthor4Token = function (token, callback)
-{  
-  var author;
-  
-  async.series([
-    //try to get the author for this token
-    function(callback)
-    {
-      db.get("token2author:" + token, function (err, _author)
-      {
-        author = _author;
-        callback(err);
-      });
-    },
-    function(callback)
-    {
-      //there is no author with this token, so create one
-      if(author == null)
-      {
-        createAuthor(token, function(err, _author)
-        {
-          author = _author;
-          callback(err);
-        });
-      }
-      //there is a author with this token
-      else
-      {
-        //check if there is also an author object for this token, if not, create one
-        db.get("globalAuthor:" + author, function(err, authorObject)
-        {
-          if(authorObject == null)
-          {
-            createAuthor(token, function(err, _author)
-            {
-              author = _author;
-              callback(err);
-            });
-          }
-          //the author exists, update the timestamp of this author
-          else
-          {
-            db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
-            callback();
-          }
-        });
-      }
-    }
-  ], function(err)
+{
+  mapAuthorWithDBKey("token2author", token, function(err, author)
   {
-    callback(err, author);
+    //return only the sub value authorID
+    callback(err, author ? author.authorID : author);
+  });
+}
+
+/**
+ * Returns the AuthorID for a mapper. 
+ * @param {String} token The mapper
+ * @param {Function} callback callback (err, author) 
+ */
+exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
+{
+  mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
+  {
+    //error?
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    //set the name of this author
+    if(name)
+      exports.setAuthorName(author.authorID, name);
+      
+    //return the authorID
+    callback(null, author);
+  });
+}
+
+/**
+ * Returns the AuthorID for a mapper. We can map using a mapperkey,
+ * so far this is token2author and mapper2author
+ * @param {String} mapperkey The database key name for this mapper 
+ * @param {String} mapper The mapper
+ * @param {Function} callback callback (err, author) 
+ */
+function mapAuthorWithDBKey (mapperkey, mapper, callback)
+{  
+  //try to map to an author
+  db.get(mapperkey + ":" + mapper, function (err, author)
+  {
+    //error?
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+  
+    //there is no author with this mapper, so create one
+    if(author == null)
+    {
+      exports.createAuthor(null, function(err, author)
+      {
+        //error?
+        if(err)
+        {
+          callback(err);
+          return;
+        }
+        
+        //create the token2author relation
+        db.set(mapperkey + ":" + mapper, author.authorID);
+        
+        //return the author
+        callback(null, author);
+      });
+    }
+    //there is a author with this mapper
+    else
+    {
+      //update the timestamp of this author
+      db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
+      
+      //return the author
+      callback(null, {authorID: author});
+    }
   });
 }
 
 /**
  * Internal function that creates the database entry for an author 
- * @param {String} token The token 
+ * @param {String} name The name of the author 
  */
-function createAuthor (token, callback)
+exports.createAuthor = function(name, callback)
 {
   //create the new author name
-  var author = "g." + _randomString(16);
+  var author = "a." + randomString(16);
         
   //create the globalAuthors db entry
-  var authorObj = {colorId : Math.floor(Math.random()*32), name: null, timestamp: new Date().getTime()};
+  var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
         
-  //we do this in series to ensure this db entries are written in the correct order
-  async.series([
-    //set the global author db entry
-    function(callback)
-    {
-      db.set("globalAuthor:" + author, authorObj, callback); 
-    },
-    //set the token2author db entry
-    function(callback)
-    {
-      db.set("token2author:" + token, author, callback);
-    }
-  ], function(err)
-  {
-    callback(err, author);
-  });
+  //set the global author db entry
+  db.set("globalAuthor:" + author, authorObj);
+  
+  callback(null, {authorID: author});
 }
 
 /**
@@ -165,11 +193,14 @@ exports.setAuthorName = function (author, name, callback)
 /**
  * Generates a random String with the given length. Is needed to generate the Author Ids
  */
-function _randomString(len) {
-  // use only numbers and lowercase letters
-  var pieces = [];
-  for(var i=0;i<len;i++) {
-    pieces.push(Math.floor(Math.random()*36).toString(36).slice(-1));
+function randomString(len) 
+{
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  var randomstring = '';
+  for (var i = 0; i < len; i++)
+  {
+    var rnum = Math.floor(Math.random() * chars.length);
+    randomstring += chars.substring(rnum, rnum + 1);
   }
-  return pieces.join('');
+  return randomstring;
 }

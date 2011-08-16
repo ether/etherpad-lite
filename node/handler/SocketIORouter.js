@@ -4,7 +4,7 @@
  */
 
 /*
- * 2011 Peter 'Pita' Martischka
+ * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
+var securityManager = require("../db/SecurityManager");
 
 /**
  * Saves all components
@@ -53,11 +54,13 @@ exports.setSocketIO = function(_socket)
   
   socket.sockets.on('connection', function(client)
   {
+    var clientAuthorized = false;
+    
     //wrap the original send function to log the messages
     client._send = client.send;
     client.send = function(message)
     {
-      messageLogger.info("to " + client.id + ": " + JSON.stringify(message));
+      messageLogger.info("to " + client.id + ": " + stringifyWithoutPassword(message));
       client._send(message);
     }
   
@@ -67,38 +70,93 @@ exports.setSocketIO = function(_socket)
       components[i].handleConnect(client);
     }
       
-    client.on('message', function(message)
+    //try to handle the message of this client
+    function handleMessage(message)
     {
-      if(message.protocolVersion && message.protocolVersion != 2)
-      {
-        messageLogger.warn("Protocolversion header is not correct:" + JSON.stringify(message));
-        return;
-      }
-    
-      //route this message to the correct component, if possible
       if(message.component && components[message.component])
       {
-        messageLogger.info("from " + client.id + ": " + JSON.stringify(message));
-
         //check if component is registered in the components array        
         if(components[message.component])
         {
+          messageLogger.info("from " + client.id + ": " + stringifyWithoutPassword(message));
           components[message.component].handleMessage(client, message);
         }
       }
       else
       {
-        messageLogger.error("Can't route the message:" + JSON.stringify(message));
+        messageLogger.error("Can't route the message:" + stringifyWithoutPassword(message));
+      }
+    }  
+      
+    client.on('message', function(message)
+    {
+      if(message.protocolVersion && message.protocolVersion != 2)
+      {
+        messageLogger.warn("Protocolversion header is not correct:" + stringifyWithoutPassword(message));
+        return;
+      }
+
+      //client is authorized, everything ok
+      if(clientAuthorized)
+      {
+        handleMessage(message);
+      }
+      //try to authorize the client
+      else
+      {
+        //this message has everything to try an authorization
+        if(message.padId !== undefined && message.sessionID !== undefined && message.token !== undefined && message.password !== undefined)
+        {
+          securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+          {
+            if(err) throw err;
+            
+            //access was granted, mark the client as authorized and handle the message
+            if(statusObject.accessStatus == "grant")
+            {
+              clientAuthorized = true;
+              handleMessage(message);
+            }
+            //no access, send the client a message that tell him why
+            else
+            {
+              messageLogger.warn("Authentication try failed:" + stringifyWithoutPassword(message));
+              client.json.send({accessStatus: statusObject.accessStatus});
+            }
+          });
+        }
+        //drop message
+        else
+        {
+          messageLogger.warn("Droped message cause of bad permissions:" + stringifyWithoutPassword(message));
+        }
       }
     });
 
     client.on('disconnect', function()
     {
-       //tell all components about this disconnect
+      //tell all components about this disconnect
       for(var i in components)
       {
         components[i].handleDisconnect(client);
       }
     });
   });
+}
+
+//returns a stringified representation of a message, removes the password
+//this ensures there are no passwords in the log
+function stringifyWithoutPassword(message)
+{
+  var newMessage = {};
+  
+  for(var i in message)
+  {
+    if(i == "password" && message[i] != null)
+      newMessage["password"] = "xxx";
+    else
+      newMessage[i]=message[i];
+  }
+  
+  return JSON.stringify(newMessage);
 }
