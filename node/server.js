@@ -312,6 +312,16 @@ async.waterfall([
       });
     });
     
+    //The Etherpad client side sends information about client side javscript errors
+    app.post('/jserror', function(req, res)
+    {
+      new formidable.IncomingForm().parse(req, function(err, fields, files) 
+      { 
+        console.error("CLIENT SIDE JAVASCRIPT ERROR: " + fields.errorInfo);
+        res.end("OK");
+      });
+    });
+    
     //serve index.html under /
     app.get('/', function(req, res)
     {
