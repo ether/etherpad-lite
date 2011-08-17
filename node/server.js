@@ -334,6 +334,40 @@ async.waterfall([
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
 
+    var onShutdown = false;
+    var gracefulShutdown = function(err)
+    {
+      if(err && err.stack)
+      {
+        console.error(err.stack);
+      }
+      else if(err)
+      {
+        console.error(err);
+      }
+      
+      //ensure there is only one graceful shutdown running
+      if(onShutdown) return;
+      onShutdown = true;
+    
+      console.log("graceful shutdown...");
+      
+      //stop the http server
+      app.close();
+
+      //do the db shutdown
+      db.db.doShutdown(function()
+      {
+        console.log("db sucessfully closed.");
+        
+        process.exit(0);
+      });
+    }
+
+    //connect graceful shutdown with sigint and uncaughtexception
+    process.on('SIGINT', gracefulShutdown);
+    process.on('uncaughtException', gracefulShutdown);
+
     //init socket.io and redirect all requests to the MessageHandler
     var io = socketio.listen(app);
     
