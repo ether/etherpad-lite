@@ -1,7 +1,6 @@
 *,html,body,p{ margin: 0; padding: 0; }
 .clear { clear: both; }
 html { font-size: 62.5%; }
-body { background: #fff;}
 body, textarea { font-family: Helvetica, Arial, sans-serif; }
 iframe {position:absolute;}
 
