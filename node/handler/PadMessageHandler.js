@@ -688,7 +688,7 @@ function handleClientReady(client, message)
         //get the latest chat messages
         function(callback)
         {
-          pad.getLastChatMessages(20, function(err, _chatMessages)
+          pad.getLastChatMessages(100, function(err, _chatMessages)
           {
             chatMessages = _chatMessages;
             callback(err);
