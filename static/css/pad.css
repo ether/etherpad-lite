@@ -320,7 +320,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 /*  background: url(static/img/vdraggie.gif) no-repeat top center;*/
   width:16px;
   height:16px;
-  background-image:url('../../static/img/etherpad_lite_icons.gif');
+  background-image:url('../../static/img/etherpad_lite_icons.png');
   background-repeat: no-repeat;
   background-position: 0px -300px;
 
@@ -1071,7 +1071,7 @@ opacity:.8;
 .buttonicon{
 width:16px;
 height:16px;
-background-image:url('../../static/img/etherpad_lite_icons.gif');
+background-image:url('../../static/img/etherpad_lite_icons.png');
 background-repeat: no-repeat;
 margin-left: 1px;
 margin-top: 1px;
