@@ -26,6 +26,8 @@ var authorManager = require("../db/AuthorManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
 var settings = require('../utils/Settings');
 var securityManager = require("../db/SecurityManager");
+var log4js = require('log4js');
+var messageLogger = log4js.getLogger("message");
 
 /**
  * A associative array that translates a session to a pad
@@ -64,10 +66,7 @@ exports.setSocketIO = function(socket_io)
  * @param client the new client
  */
 exports.handleConnect = function(client)
-{
-  //check if all ok
-  throwExceptionIfClientOrIOisInvalid(client);
-  
+{  
   //Initalize session2pad and sessioninfos for this new session
   session2pad[client.id]=null;  
   sessioninfos[client.id]={};
@@ -95,10 +94,7 @@ exports.kickSessionsFromPad = function(padID)
  * @param client the client that leaves
  */
 exports.handleDisconnect = function(client)
-{
-  //check if all ok
-  throwExceptionIfClientOrIOisInvalid(client);
-  
+{  
   //save the padname of this session
   var sessionPad=session2pad[client.id];
   
@@ -156,9 +152,6 @@ exports.handleDisconnect = function(client)
  */
 exports.handleMessage = function(client, message)
 { 
-  //check if all ok
-  throwExceptionIfClientOrIOisInvalid(client);
-  
   if(message == null)
   {
     throw "Message is null!";
@@ -197,7 +190,7 @@ exports.handleMessage = function(client, message)
   //if the message type is unkown, throw an exception
   else
   {
-    throw "unkown Message Type: '" + message.type + "'";
+    messageLogger.warn("Droped message, unkown Message Type " + message.type);
   }
 }
 
@@ -276,11 +269,13 @@ function handleSuggestUserName(client, message)
   //check if all ok
   if(message.data.payload.newName == null)
   {
-    throw "suggestUserName Message has no newName!";
+    messageLogger.warn("Droped message, suggestUserName Message has no newName!");
+    return;
   }
   if(message.data.payload.unnamedId == null)
   {
-    throw "suggestUserName Message has no unnamedId!";
+    messageLogger.warn("Droped message, suggestUserName Message has no unnamedId!");
+    return;
   }
   
   var padId = session2pad[client.id];
@@ -306,7 +301,8 @@ function handleUserInfoUpdate(client, message)
   //check if all ok
   if(message.data.userInfo.colorId == null)
   {
-    throw "USERINFO_UPDATE Message has no colorId!";
+    messageLogger.warn("Droped message, USERINFO_UPDATE Message has no colorId!");
+    return;
   }
   
   //Find out the author name of this session
@@ -349,15 +345,18 @@ function handleUserChanges(client, message)
   //check if all ok
   if(message.data.baseRev == null)
   {
-    throw "USER_CHANGES Message has no baseRev!";
+    messageLogger.warn("Droped message, USER_CHANGES Message has no baseRev!");
+    return;
   }
   if(message.data.apool == null)
   {
-    throw "USER_CHANGES Message has no apool!";
+    messageLogger.warn("Droped message, USER_CHANGES Message has no apool!");
+    return;
   }
   if(message.data.changeset == null)
   {
-    throw "USER_CHANGES Message has no changeset!";
+    messageLogger.warn("Droped message, USER_CHANGES Message has no changeset!");
+    return;
   }
   
   //get all Vars we need
@@ -579,19 +578,23 @@ function handleClientReady(client, message)
   //check if all ok
   if(!message.token)
   {
-    throw "CLIENT_READY Message has no token!";
+    messageLogger.warn("Droped message, CLIENT_READY Message has no token!");
+    return;
   }
   if(!message.padId)
   {
-    throw "CLIENT_READY Message has no padId!";
+    messageLogger.warn("Droped message, CLIENT_READY Message has no padId!");
+    return;
   }
   if(!message.protocolVersion)
   {
-    throw "CLIENT_READY Message has no protocolVersion!";
+    messageLogger.warn("Droped message, CLIENT_READY Message has no protocolVersion!");
+    return;
   }
   if(message.protocolVersion != 2)
   {
-    throw "CLIENT_READY Message has a unkown protocolVersion '" + message.protocolVersion + "'!";
+    messageLogger.warn("Droped message, CLIENT_READY Message has a unkown protocolVersion '" + message.protocolVersion + "'!");
+    return;
   }
 
   var author;
@@ -861,19 +864,4 @@ function handleClientReady(client, message)
   {
     if(err) throw err;
   });
-}
-
-/**
- * A internal function that simply checks if client or socketio is null and throws a exception if yes
- */
-function throwExceptionIfClientOrIOisInvalid(client)
-{
-  if(client == null)
-  {
-    throw "Client is null!";
-  }
-  if(socketio == null)
-  {
-    throw "SocketIO is not set or null! Please use setSocketIO(io) to set it";
-  }
 }

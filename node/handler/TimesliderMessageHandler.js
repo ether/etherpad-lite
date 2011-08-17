@@ -23,6 +23,8 @@ var padManager = require("../db/PadManager");
 var Changeset = require("../utils/Changeset");
 var AttributePoolFactory = require("../utils/AttributePoolFactory");
 var authorManager = require("../db/AuthorManager");
+var log4js = require('log4js');
+var messageLogger = log4js.getLogger("message");
 
 /**
  * Saves the Socket class we need to send and recieve data from the client
@@ -75,12 +77,18 @@ exports.handleMessage = function(client, message)
   //if the message type is unkown, throw an exception
   else
   {
-    throw "unkown Message Type: '" + message.type + "'";
+    messageLogger.warn("Droped message, unkown Message Type: '" + message.type + "'");
   }
 }
 
 function handleClientReady(client, message)
 {
+  if(message.padId == null)
+  {
+    messageLogger.warn("Droped message, changeset request has no padId!");
+    return;
+  }
+  
   //send the timeslider client the clientVars, with this values its able to start
   createTimesliderClientVars (message.padId, function(err, clientVars)
   {
@@ -95,6 +103,33 @@ function handleClientReady(client, message)
  */
 function handleChangesetRequest(client, message)
 {
+  //check if all ok
+  if(message.data == null)
+  {
+    messageLogger.warn("Droped message, changeset request has no data!");
+    return;
+  }
+  if(message.padId == null)
+  {
+    messageLogger.warn("Droped message, changeset request has no padId!");
+    return;
+  }
+  if(message.data.granularity == null)
+  {
+    messageLogger.warn("Droped message, changeset request has no granularity!");
+    return;
+  }
+  if(message.data.start == null)
+  {
+    messageLogger.warn("Droped message, changeset request has no start!");
+    return;
+  }
+  if(message.data.requestID == null)
+  {
+    messageLogger.warn("Droped message, changeset request has no requestID!");
+    return;
+  }
+  
   var granularity = message.data.granularity;
   var start = message.data.start;
   var end = start + (100 * granularity);

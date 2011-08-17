@@ -21,9 +21,10 @@
 
 var ueberDB = require("ueberDB");
 var settings = require("../utils/Settings");
+var log4js = require('log4js');
 
 //set database settings
-var db = new ueberDB.database(settings.dbType, settings.dbSettings);
+var db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
 
 /**
  * The UeberDB Object that provides the database functions
