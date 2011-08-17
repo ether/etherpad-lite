@@ -34,5 +34,8 @@
   
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to enable the import/export of pads*/  
-  "abiword" : null
+  "abiword" : null,
+  
+  /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
+  "loglevel": "INFO"
 }

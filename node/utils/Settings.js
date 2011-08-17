@@ -52,6 +52,11 @@ exports.minify = true;
  */
 exports.abiword = null;
 
+/**
+ * The log level of log4js
+ */
+exports.loglevel = "INFO";
+
 //read the settings sync
 var settingsStr = fs.readFileSync("../settings.json").toString();
 

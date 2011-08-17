@@ -60,6 +60,9 @@ var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 //cache 6 hours
 exports.maxAge = 1000*60*60*6;
 
+//set loglevel
+log4js.setGlobalLogLevel(settings.loglevel);
+
 async.waterfall([
   //initalize the database
   function (callback)
