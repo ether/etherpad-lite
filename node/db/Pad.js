@@ -2,6 +2,8 @@
  * The pad object, defined with joose
  */
 
+require('joose');
+
 var Changeset = require("../utils/Changeset");
 var AttributePoolFactory = require("../utils/AttributePoolFactory");
 var db = require("./DB").db;
