@@ -192,13 +192,9 @@ float:right;
   line-height: 29px;
   margin-top: 0;
   padding-right: 6pt;
+  color: #222;
 }
 
-
-
-  padding: 0;
-  margin: 0;
-}
 ul { margin-left: 1.5em; }
 ul ul { margin-left: 0 !important; }
 ul.list-bullet1 { margin-left: 1.5em; }
