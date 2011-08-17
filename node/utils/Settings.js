@@ -33,11 +33,11 @@ exports.port = 9001;
 /*
  * The Type of the database
  */
-exports.dbType = "sqlite";
+exports.dbType = "dirty";
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-exports.dbSettings = { "filename" : "../var/sqlite.db" };
+exports.dbSettings = { "filename" : "../var/dirty.db" };
 /**
  * The default Text of a new pad
  */
