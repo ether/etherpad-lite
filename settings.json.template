@@ -9,10 +9,10 @@
   "port" : 9001,
   
   //The Type of the database. You can choose between sqlite and mysql
-  "dbType" : "sqlite",
+  "dbType" : "dirty",
   //the database specific settings
   "dbSettings" : {
-                   "filename" : "../var/sqlite.db"
+                   "filename" : "../var/dirty.db"
                  },
                  
   /* An Example of MySQL Configuration
