@@ -96,20 +96,31 @@
             </form> 
         </div> 
         <script> 
-            function go2Name() {
-                var a = document.getElementById("padname").value;
-                a.length > 0 ? window.location = "p/" + a : alert("Please enter a name")
+            function go2Name() 
+            {
+                var padname = document.getElementById("padname").value;
+                padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
             }
-            function go2Random() {
-                window.location = "p/" + randomPadName()
+ 
+            function go2Random() 
+            {
+                window.location = "p/" + randomPadName();
             }
-            function randomPadName() {
-                for (var a = "", b = 0; b < 10; b++) {
-                    var c = Math.floor(Math.random() * 62);
-                    a += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".substring(c, c + 1)
+ 
+            function randomPadName() 
+            {
+                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+                var string_length = 10;
+                var randomstring = '';
+                for (var i = 0; i < string_length; i++) 
+                {
+                    var rnum = Math.floor(Math.random() * chars.length);
+                    randomstring += chars.substring(rnum, rnum + 1);
                 }
-                return a
+                return randomstring;
             }
-            typeof costumStart == "function" && costumStart();
+            
+            //start the costum js
+            if(typeof costumStart == "function") costumStart();
         </script> 
 </html>
