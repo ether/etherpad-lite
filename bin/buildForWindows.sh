@@ -30,7 +30,7 @@ hash unzip > /dev/null 2>&1 || {
 
 START_FOLDER=$(pwd);
 
-echo "create a clean enviroment in /tmp/etherpad-lite-win..." 
+echo "create a clean environment in /tmp/etherpad-lite-win..." 
 rm -rf /tmp/etherpad-lite-win
 cp -ar . /tmp/etherpad-lite-win
 cd /tmp/etherpad-lite-win
@@ -70,4 +70,4 @@ mv etherpad-lite-win.zip $START_FOLDER
 echo "clean up..."
 rm -rf /tmp/etherpad-lite-win
 
-echo "finished. You can find the zip in the etherpad lite root folder, its called etherpad-lite-win.zip"
+echo "Finished. You can find the zip in the Etherpad Lite root folder, it's called etherpad-lite-win.zip"
