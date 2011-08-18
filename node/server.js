@@ -21,6 +21,7 @@
  */
 
 var log4js = require('log4js');
+var os = require("os");
 var socketio = require('socket.io');
 var fs = require('fs');
 var settings = require('./utils/Settings');
