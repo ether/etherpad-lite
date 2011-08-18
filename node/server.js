@@ -395,8 +395,7 @@ async.waterfall([
     io.set('logger', {
       debug: function (str)
       {
-        //supress debug messages
-        //socketIOLogger.debug(str);
+        socketIOLogger.debug(str);
       }, 
       info: function (str)
       {
