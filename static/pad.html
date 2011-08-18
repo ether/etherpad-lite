@@ -23,56 +23,56 @@
 <div id="editbar">
 
 <ul id="menu_left">
-<li>
-  <a onClick="window.pad&&pad.editbarClick('bold');return false" title="Bold (ctrl-B)">
+<li onClick="window.pad&&pad.editbarClick('bold');return false" >
+  <a title="Bold (ctrl-B)">
     <div class="buttonicon" style="background-position:0px -116px"></div>
   </a>
 </li>
-<li>
-  <a onClick="window.pad&&pad.editbarClick('italic'); return false;" title="Italics (ctrl-I)">
+<li onClick="window.pad&&pad.editbarClick('italic'); return false;" >
+  <a title="Italics (ctrl-I)">
     <div class="buttonicon" style="background-position:0px 0px"></div>
   </a>
 </li>
-<li>
-  <a onClick="window.pad&&pad.editbarClick('underline');return false;" title="Underline (ctrl-U)">
+<li onClick="window.pad&&pad.editbarClick('underline');return false;" >
+  <a title="Underline (ctrl-U)">
     <div class="buttonicon" style="background-position:0px -236px;margin-top:1px;"></div>
   </a>
 </li>
-<li>
-  <a onClick="window.pad&&pad.editbarClick('strikethrough');return false;" title="Strikethrough">
+<li onClick="window.pad&&pad.editbarClick('strikethrough');return false;" >
+  <a title="Strikethrough">
     <div class="buttonicon" style="background-position:0px -200px"></div>
   </a>
 </li>
 <li class="separator"></li>
-<li>
-  <a onClick="window.pad&&pad.editbarClick('insertunorderedlist');return false;" title="Toggle Bullet List">
+<li onClick="window.pad&&pad.editbarClick('insertunorderedlist');return false;" >
+  <a title="Toggle Bullet List">
     <div class="buttonicon" style="background-position:0px -34px"></div>
   </a>
 </li>
-<li>
-  <a onClick="window.pad&&pad.editbarClick('indent');return false;" title="Indent List">
+<li onClick="window.pad&&pad.editbarClick('indent');return false;" >
+  <a title="Indent List">
     <div class="buttonicon" style="background-position:0px -52px"></div>
   </a>
 </li>
-<li>
-  <a onClick="window.pad&&pad.editbarClick('outdent');return false;" title="Unindent List">
+<li onClick="window.pad&&pad.editbarClick('outdent');return false;" >
+  <a title="Unindent List">
     <div class="buttonicon" style="background-position:0px -134px"></div>
 	</a>
 </li>
 <li class="separator"></li>
-<li>
-  <a onClick="window.pad&&pad.editbarClick('undo');return false;" title="Undo (ctrl-Z)">
+<li onClick="window.pad&&pad.editbarClick('undo');return false;" >
+  <a title="Undo (ctrl-Z)">
     <div class="buttonicon" style="background-position:0px -255px"></div>
   </a>
 </li>
-<li>
-	<a onClick="window.pad&&pad.editbarClick('redo');return false;" title="Redo (ctrl-Y)">
+<li onClick="window.pad&&pad.editbarClick('redo');return false;" >
+	<a title="Redo (ctrl-Y)">
     <div class="buttonicon" style="background-position:0px -166px"></div>
   </a>
 </li>
 <li class="separator"></li>
-<li>
-  <a onClick="window.pad&&pad.editbarClick('clearauthorship');return false;" title="Clear Authorship Colors">
+<li onClick="window.pad&&pad.editbarClick('clearauthorship');return false;" >
+  <a title="Clear Authorship Colors">
     <div class="buttonicon" style="background-position:0px -86px"></div>
   </a>
 </li>
@@ -80,44 +80,29 @@
 
 <ul id="menu_right">
 
-<li>
-  <a id="readonlylink" onClick="window.pad&&pad.editbarClick('readonly');return false;" title="Create a readonly link for this pad">
+<li onClick="window.pad&&pad.editbarClick('readonly');return false;" >
+  <a id="readonlylink" title="Create a readonly link for this pad">
      <div class="buttonicon" style="background-position:0px -150px"></div>
   </a>
 </li>
-<li>
-  <a id="exportlink" onClick="window.pad&&pad.editbarClick('import_export');return false;" title="Import/Export from/to different document formats">
+<li onClick="window.pad&&pad.editbarClick('import_export');return false;">
+  <a id="exportlink" title="Import/Export from/to different document formats">
     <div class="buttonicon" style="background-position:0px -68px"></div>
   </a>
 </li>
-<li>
-  <a id="embedlink" onClick="window.pad&&pad.editbarClick('embed');return false;" title="Embed this pad">
+<li onClick="window.pad&&pad.editbarClick('embed');return false;" >
+  <a id="embedlink" title="Embed this pad">
     <div class="buttonicon" style="background-position:0px -18px"></div>
   </a>
 </li>
-<!--
-We removed this feature cause its not worth the space it needs in the editbar
-<li>
-	<select id="viewzoommenu">
-		<option value="z85">85%</option>
-		<option value="z100">100%</option>
-		<option value="z115">115%</option>
-		<option value="z150">150%</option>
-		<option value="z200">200%</option>
-		<option value="z300">300%</option>
-	</select>
-</li>-->
 <li class="separator"></li>
-<li>
-  <a id="timesliderlink" title="Show the history of this pad">
-    <script>
-      document.getElementById('timesliderlink').href = document.location+ '/timeslider';
-    </script>
+<li id="timesliderlink" onClick="document.location = document.location+ '/timeslider'">
+  <a title="Show the history of this pad">
     <div class="buttonicon" style="background-position:0px -218px"></div>
   </a>
 </li>
-<li id="usericon">
-  <a onClick="window.pad&&pad.editbarClick('showusers');return false;" title="Show connected users">
+<li id="usericon" onClick="window.pad&&pad.editbarClick('showusers');return false;" >
+  <a title="Show connected users">
     <div class="buttonicon" style="background-position:0px -184px;display:inline-block;"></div>
  <span id="online_count">1</span>
   </a>
