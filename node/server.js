@@ -378,6 +378,10 @@ async.waterfall([
         
         process.exit(0);
       });
+      
+      setTimeout(function(){
+        process.exit(1);
+      }, 3000);
     }
 
     //connect graceful shutdown with sigint and uncaughtexception
