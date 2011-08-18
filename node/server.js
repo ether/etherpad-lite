@@ -385,7 +385,13 @@ async.waterfall([
     }
 
     //connect graceful shutdown with sigint and uncaughtexception
-    process.on('SIGINT', gracefulShutdown);
+    if(os.type().indexOf("Windows") == -1)
+    {
+      //sigint is so far not working on windows
+      //https://github.com/joyent/node/issues/1553
+      process.on('SIGINT', gracefulShutdown);
+    }
+    
     process.on('uncaughtException', gracefulShutdown);
 
     //init socket.io and redirect all requests to the MessageHandler
