@@ -1,0 +1,21 @@
+{
+  "etherpad-db": 
+  {
+    "host": "localhost",
+    "port": 3306,
+    "database": "etherpad",
+    "user": "etherpaduser",
+    "password": "yourpassword"
+  },
+  "etherpad-lite-db":
+  {
+    "dbType" : "mysql",
+    "dbSettings" : 
+    {
+      "user"    : "root", 
+      "host"    : "localhost", 
+      "password": "", 
+      "database": "store"
+    }
+  }
+}
