@@ -460,6 +460,13 @@ function handleUserChanges(client, message)
 
 exports.updatePadClients = function(pad, callback)
 {       
+  //skip this step if noone is on this pad
+  if(!pad2sessions[pad.id])
+  {
+    callback();
+    return;
+  }
+  
   //go trough all sessions on this pad
   async.forEach(pad2sessions[pad.id], function(session, callback)
   {
