@@ -21,6 +21,7 @@
  */
 
 var log4js = require('log4js');
+var os = require("os");
 var socketio = require('socket.io');
 var fs = require('fs');
 var settings = require('./utils/Settings');
@@ -280,7 +281,7 @@ async.waterfall([
     app.get('/api/1/:func', function(req, res)
     {
       res.header("Server", serverName);
-      res.header("Content-Type", "application/json");
+      res.header("Content-Type", "application/json; charset=utf-8");
     
       apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(req.query));
       
@@ -378,10 +379,20 @@ async.waterfall([
         
         process.exit(0);
       });
+      
+      setTimeout(function(){
+        process.exit(1);
+      }, 3000);
     }
 
     //connect graceful shutdown with sigint and uncaughtexception
-    process.on('SIGINT', gracefulShutdown);
+    if(os.type().indexOf("Windows") == -1)
+    {
+      //sigint is so far not working on windows
+      //https://github.com/joyent/node/issues/1553
+      process.on('SIGINT', gracefulShutdown);
+    }
+    
     process.on('uncaughtException', gracefulShutdown);
 
     //init socket.io and redirect all requests to the MessageHandler
@@ -395,8 +406,7 @@ async.waterfall([
     io.set('logger', {
       debug: function (str)
       {
-        //supress debug messages
-        //socketIOLogger.debug(str);
+        socketIOLogger.debug(str);
       }, 
       info: function (str)
       {
