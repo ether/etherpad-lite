@@ -47,7 +47,8 @@ try
   var ref = fs.readFileSync("../.git/HEAD", "utf-8");
   var refPath = "../.git/" + ref.substring(5, ref.indexOf("\n"));
   version = fs.readFileSync(refPath, "utf-8");
-  version = version.substring(0, 8);
+  version = version.substring(0, 7);
+  console.log("Your Etherpad Lite git version is " + version);
 }
 catch(e) 
 {
