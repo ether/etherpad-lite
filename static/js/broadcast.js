@@ -741,13 +741,10 @@ function loadBroadcastJS()
     for (var author in newAuthorData)
     {
       var data = newAuthorData[author];
-      if ((typeof data.colorId) == 'number')
+      var bgcolor = data.colorId;
+      if (bgcolor && dynamicCSS)
       {
-        var bgcolor = clientVars.colorPalette[data.colorId];
-        if (bgcolor && dynamicCSS)
-        {
-          dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author)).backgroundColor = bgcolor;
-        }
+        dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author)).backgroundColor = bgcolor;
       }
       authorData[author] = data;
     }
