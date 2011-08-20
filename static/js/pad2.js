@@ -226,6 +226,12 @@ function handshake()
       clientVars = obj;
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
+      
+      //translate old colorIDs to RGB strings
+      if(typeof clientVars.userColor == "number")
+      {
+        clientVars.userColor = clientVars.colorPalette[clientVars.userColor];
+      }
 
       //initalize the pad
       pad.init();
@@ -264,6 +270,9 @@ function handshake()
       }
     }
   });
+
+  // Bind the colorpicker
+  var fb = $('#colorpicker').farbtastic({ callback: '#mycolorpickerpreview', width: 220});
 }
 
 var pad = {
@@ -363,6 +372,7 @@ var pad = {
       colorId: clientVars.userColor,
       userAgent: pad.getDisplayUserAgent()
     };
+
     if (clientVars.specialKey)
     {
       pad.myUserInfo.specialKey = clientVars.specialKey;
@@ -786,7 +796,7 @@ var pad = {
   },
   preloadImages: function()
   {
-    var images = ['../static/img/colorpicker.gif'];
+    var images = []; // Removed as we now use CSS and JS for colorpicker
 
     function loadNextImage()
     {

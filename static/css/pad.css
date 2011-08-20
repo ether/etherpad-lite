@@ -353,14 +353,21 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   }
 
 #myswatch { width: 100%; height: 100%; background: transparent;/*...initially*/ }
+
 #mycolorpicker {
-  background: url(../img/colorpicker.gif) no-repeat left top;
-  width: 232px; height: 140px;
+  width: 232px; height: 265px;
   position: absolute;
   left: -240px; top: 0px; z-index: 101;
   display: none;/*...initially*/
+  border-style: solid;
+  border-radius: 5px;
+  border-color: #000;
+  background: #fff; 
+  border-width:1px;
+  padding-left:10px;
+  padding-top:10px;
 }
-
+/*
 #mycolorpicker ul li
 {
   float: left;
@@ -368,12 +375,16 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 #mycolorpicker .picked { border: 1px solid #000 !important; }
 
 #mycolorpicker .picked .pickerswatch { border: 1px solid #fff; }
-#mycolorpickersave { position: absolute; left: 14px; top: 102px;
-  width: 47px; height: 0; padding-top: 20px; overflow: hidden;
-  cursor: pointer; }
-#mycolorpickercancel { position: absolute; left: 87px; top: 102px;
-  width: 44px; height: 0; padding-top: 20px; overflow: hidden;
-  cursor: pointer; }
+*/
+#mycolorpickersave { position: absolute; left: 10px; top: 240px;
+  width: 80px; padding: 4px; overflow: hidden; color: #000;
+  cursor: pointer; color:#000; font-size:13px; border-radius:5px; border-style:solid; border-color:#000; border-width:1px;text-align:center;background-color:lightgrey;}
+#mycolorpickercancel { position: absolute; left: 107px; top: 240px;
+  width: 60px; padding: 4px; overflow: hidden; color: #000;  
+  cursor: pointer; color:#000; font-size:13px; border-radius:5px; border-style:solid; border-color:#000; border-width:1px;text-align:center;background-color:lightgrey;}
+#mycolorpickerpreview { position: absolute; left: 207px; top: 240px; width:15px; padding:4px; overflow: hidden; color: #fff; border-radius:5px; border-style: solid; border-width:1px;border-color:#000; height:15px;}
+
+
 #myusernameform { margin-left: 35px; }
 #myusernameedit { font-size: 1.3em; color: #fff;
   padding: 3px; height: 18px; margin: 0; border: 0;
@@ -1101,3 +1112,4 @@ width:27px !important;
   cursor: hand;
   cursor: pointer;
 }
+
