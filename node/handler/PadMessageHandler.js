@@ -154,11 +154,13 @@ exports.handleMessage = function(client, message)
 { 
   if(message == null)
   {
-    throw "Message is null!";
+    messageLogger.warn("Message is null!");
+    return;
   }
   if(!message.type)
   {
-    throw "Message has no type attribute!";
+    messageLogger.warn("Message has no type attribute!");
+    return;
   }
   
   //Check what type of message we get and delegate to the other methodes
