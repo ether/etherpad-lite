@@ -345,25 +345,26 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   white-space: nowrap;
 }
 
-#myswatchbox { position: absolute; left: 5px; top: 5px; width: 22px; height: 22px;
-  border: 1px solid #fff;
-  padding: 1px; background: transparent; cursor: pointer; 
-  -moz-border-radius: 3px;
-  border-radius: 3px; 
-  }
+#myswatchbox { 
+  position: absolute; 
+  left: 5px; 
+  top: 5px; 
+  width: 24px;
+  height: 24px;
+  border: 1px solid #000;
+  background: transparent; 
+  cursor: pointer;  
+}
 
 #myswatch { width: 100%; height: 100%; background: transparent;/*...initially*/ }
 
 #mycolorpicker {
   width: 232px; height: 265px;
   position: absolute;
-  left: -240px; top: 0px; z-index: 101;
-  display: none;/*...initially*/
-  border-style: solid;
+  left: -250px; top: 0px; z-index: 101;
+  display: none;
   border-radius: 5px;
-  border-color: #000;
-  background: #fff; 
-  border-width:1px;
+  background: rgba(0, 0, 0, 0.7); 
   padding-left:10px;
   padding-top:10px;
 }
@@ -376,13 +377,45 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 
 #mycolorpicker .picked .pickerswatch { border: 1px solid #fff; }
 */
-#mycolorpickersave { position: absolute; left: 10px; top: 240px;
-  width: 80px; padding: 4px; overflow: hidden; color: #000;
-  cursor: pointer; color:#000; font-size:13px; border-radius:5px; border-style:solid; border-color:#000; border-width:1px;text-align:center;background-color:lightgrey;}
-#mycolorpickercancel { position: absolute; left: 107px; top: 240px;
-  width: 60px; padding: 4px; overflow: hidden; color: #000;  
-  cursor: pointer; color:#000; font-size:13px; border-radius:5px; border-style:solid; border-color:#000; border-width:1px;text-align:center;background-color:lightgrey;}
-#mycolorpickerpreview { position: absolute; left: 207px; top: 240px; width:15px; padding:4px; overflow: hidden; color: #fff; border-radius:5px; border-style: solid; border-width:1px;border-color:#000; height:15px;}
+#mycolorpickersave { 
+  left: 10px; 
+  font-weight: bold;
+}
+
+#mycolorpickercancel { 
+  left: 85px; 
+}
+
+#mycolorpickersave, #mycolorpickercancel {
+  background: #fff;
+  background: -moz-linear-gradient(#fff, #ccc);
+  background: -ms-linear-gradient(#fff, #ccc);
+  background: -o-linear-gradient(#fff, #ccc);
+  background: -webkit-linear-gradient(#fff, #ccc);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size:12px; 
+  cursor: pointer; 
+  color:#000; 
+  overflow: hidden; 
+  padding: 4px; 
+  top: 240px;
+  text-align:center;
+  position: absolute; 
+  width: 60px; 
+}
+
+#mycolorpickerpreview { 
+  position: absolute; 
+  left: 207px; 
+  top: 240px; 
+  width:16px; 
+  height:16px;
+  padding:4px; 
+  overflow: hidden; 
+  color: #fff; 
+  border-radius:5px;
+}
 
 
 #myusernameform { margin-left: 35px; }
@@ -402,7 +435,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
   color: #000
 }
-#myusernameform .editempty { color: #ef641e; }
+#myusernameform .editempty { color: #333; }
   
 table#otheruserstable { display: none; }
 #nootherusers { padding: 10px; font-size: 1.2em; color: #eee; font-weight: bold;}
@@ -1112,4 +1145,3 @@ width:27px !important;
   cursor: hand;
   cursor: pointer;
 }
-
