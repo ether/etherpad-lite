@@ -382,12 +382,24 @@ function handleUserChanges(client, message)
       //ex. _checkChangesetAndPool
   
       //Copied from Etherpad, don't know what it does exactly
-      Changeset.checkRep(changeset);
-      Changeset.eachAttribNumber(changeset, function(n) {
-        if (! wireApool.getAttrib(n)) {
-          throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
-        }
-      });
+      try
+      {
+        //this looks like a changeset check, it throws errors sometimes
+        Changeset.checkRep(changeset);
+      
+        Changeset.eachAttribNumber(changeset, function(n) {
+          if (! wireApool.getAttrib(n)) {
+            throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
+          }
+        });
+      }
+      //there is an error in this changeset, so just refuse it
+      catch(e)
+      {
+        console.warn("Can't apply USER_CHANGES "+changeset+", cause it faild checkRep");
+        client.json.send({disconnect:"badChangeset"});
+        return;
+      }
         
       //ex. adoptChangesetAttribs
         
