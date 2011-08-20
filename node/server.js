@@ -344,8 +344,16 @@ async.waterfall([
     app.get('/favicon.ico', function(req, res)
     {
       res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/favicon.ico");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
+      var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
+      res.sendfile(filePath, { maxAge: exports.maxAge }, function(err)
+      {
+        //there is no custom favicon, send the default favicon
+        if(err)
+        {
+          filePath = path.normalize(__dirname + "/../static/favicon.ico");
+          res.sendfile(filePath, { maxAge: exports.maxAge });
+        }
+      });
     });
     
     //let the server listen
