@@ -198,7 +198,7 @@ function handshake()
     {
       if(obj.accessStatus == "deny")
       {
-        $("#editorloadingbox").html("<b>You have no permission to access this pad</b>");
+        $("#editorloadingbox").html("<b>You do not have permission to access this pad</b>");
       }
       else if(obj.accessStatus == "needPassword")
       {
