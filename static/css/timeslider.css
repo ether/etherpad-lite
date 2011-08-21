@@ -130,7 +130,7 @@ div #timeslider div#steppers div#rightstar {
 div #timeslider div#steppers div#leftstep {
   position: absolute;
   right: 34px;
-  top: 33px;
+  top: 20px;
   width:30px;
   height:21px;
   background: url(../../static/img/stepper_buttons.png) 0px 22px;
@@ -140,7 +140,7 @@ div #timeslider div#steppers div#leftstep {
 div #timeslider div#steppers div#rightstep {
   position: absolute;
   right: 5px;
-  top: 33px;
+  top: 20px;
   width:29px;
   height:21px;
   background: url(../../static/img/stepper_buttons.png) 29px 22px;
