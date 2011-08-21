@@ -100,8 +100,8 @@ var padeditbar = (function()
         }
         else if (cmd == 'embed')
         {  
-          var padurl = document.location;
-          $('#embedinput').val("<iframe src='" + padurl + "' width=600 height=400>");
+          var padurl = window.location.href.split("?")[0];
+          $('#embedinput').val("<iframe src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
           self.toogleDropDown("embed");
           $('#embedinput').focus().select();
         }
