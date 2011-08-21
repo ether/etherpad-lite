@@ -1,7 +1,7 @@
 // Farbtastic 2.0 alpha
 (function ($) {
   
-var __debug = true;
+var __debug = false;
 var __factor = 0.5;
 
 $.fn.farbtastic = function (options) {
