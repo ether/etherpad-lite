@@ -74,7 +74,7 @@ $._farbtastic = function (container, options) {
     convertedHSL[1] = hsl[1]*__factor+((1-__factor)/2);
     convertedHSL[2] = hsl[2]*__factor+((1-__factor)/2);
 
-    fb.rgb = fb.HSLToRGB(hsl);
+    fb.rgb = fb.HSLToRGB(convertedHSL);
     fb.color = fb.pack(fb.rgb);
     fb.updateDisplay();
     return this;
