@@ -4,7 +4,7 @@
 Etherpad lite is a really-real time collaborative editor spawned from the Hell fire of Etherpad. 
 We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad Lite 
 is based on node.js ergo is much lighter and more stable than the original Etherpad. Our hope 
-is that this will encourage more users to use and install a realtime collaborative editor. A smaller, managable and well 
+is that this will encourage more users to use and install a realtime collaborative editor. A smaller, manageable and well 
 documented codebase makes it easier for developers to improve the code and contribute towards the project. 
 
 Etherpad Lite is optimized to be easy embeddable. It provides a [HTTP API](https://github.com/Pita/etherpad-lite/wiki/HTTP-API) 
@@ -83,7 +83,8 @@ Look at this wiki pages:
 * [How to customize your Etherpad Lite installation](https://github.com/Pita/etherpad-lite/wiki/How-to-customize-your-Etherpad-Lite-installation)
 * [How to use Etherpad-Lite with jQuery](https://github.com/Pita/etherpad-lite/wiki/How-to-use-Etherpad-Lite-with-jQuery)
 * [How to use Etherpad Lite with MySQL](https://github.com/Pita/etherpad-lite/wiki/How-to-use-Etherpad-Lite-with-MySQL)
-* [Sites that run Etherpad Lite](https://github.com/Pita/etherpad-lite/wiki/Sites-that-run-Etherpad-Lite))
+* [Sites that run Etherpad Lite](https://github.com/Pita/etherpad-lite/wiki/Sites-that-run-Etherpad-Lite)
+* [How to migrate the database from Etherpad to Etherpad Lite](https://github.com/Pita/etherpad-lite/wiki/How-to-migrate-the-database-from-Etherpad-to-Etherpad-Lite)
 
 You can find more information in the [wiki](https://github.com/Pita/etherpad-lite/wiki). Feel free to improve these wiki pages
 
