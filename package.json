@@ -14,12 +14,12 @@
                       "ueberDB"    : "0.1.1",
                       "async"      : "0.1.9",
                       "joose"      : "3.18.0",
-                      "express"    : "2.4.4",
+                      "express"    : "2.4.5",
                       "clean-css"  : "0.2.4",
-                      "uglify-js"  : "1.0.6",
+                      "uglify-js"  : "1.0.7",
                       "gzip"       : "0.1.0",
                       "formidable" : "1.0.2",
-                      "log4js"     : "0.3.7"
+                      "log4js"     : "0.3.8"
                     },
   "version"       : "0.0.4"
 }
