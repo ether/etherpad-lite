@@ -1,7 +1,5 @@
 # Database structure
 
-## Used so far
-
 ### pad:$PADID
 Saves all informations about pads
 
@@ -9,9 +7,6 @@ Saves all informations about pads
 * **pool** - the attribute pool
 * **head** - the number of the latest revision
 * **chatHead** - the number of the latest chat entry
-
-*planed:*
-
 * **public** - flag that disables security for this pad
 * **passwordHash** - string that contains a bcrypt hashed password for this pad
 
@@ -41,8 +36,6 @@ Information about an author
 
 * **name** - the name of this author as shown in the pad
 * **colorID** - the colorID of this author as shown in the pad
-
-## Planed
 
 ### mapper2group:$MAPPER
 Maps an external application identifier to an internal group 
