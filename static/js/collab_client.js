@@ -407,6 +407,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
     {
       var userInfo = msg.userInfo;
       var id = userInfo.userId;
+      
       if (userSet[id])
       {
         userSet[id] = userInfo;
@@ -471,6 +472,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
 
   function tellAceAuthorInfo(userId, colorId, inactive)
   {
+    if(typeof colorId == "number")
+    {
+      colorId = clientVars.colorPalette[colorId];
+    }
+    
     var cssColor = colorId;
     if (inactive)
     {

@@ -741,7 +741,7 @@ function loadBroadcastJS()
     for (var author in newAuthorData)
     {
       var data = newAuthorData[author];
-      var bgcolor = data.colorId;
+      var bgcolor = typeof data.colorId == "number" ? clientVars.colorPalette[data.colorId] : data.colorId;
       if (bgcolor && dynamicCSS)
       {
         dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author)).backgroundColor = bgcolor;

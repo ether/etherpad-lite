@@ -226,12 +226,6 @@ function handshake()
       clientVars = obj;
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
-      
-      //translate old colorIDs to RGB strings
-      if(typeof clientVars.userColor == "number")
-      {
-        clientVars.userColor = clientVars.colorPalette[clientVars.userColor];
-      }
 
       //initalize the pad
       pad.init();

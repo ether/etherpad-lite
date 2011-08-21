@@ -499,6 +499,12 @@ var paduserlist = (function()
     },
     setMyUserInfo: function(info)
     {
+      //translate the colorId
+      if(typeof info.colorId == "number")
+      {
+        info.colorId = clientVars.colorPalette[info.colorId];
+      }
+      
       myUserInfo = $.extend(
       {}, info);
 
@@ -513,7 +519,7 @@ var paduserlist = (function()
       }
 
       var userData = {};
-      userData.color = info.colorId;
+      userData.color = typeof info.colorId == "number" ? clientVars.colorPalette[info.colorId] : info.colorId;
       userData.name = info.name;
       userData.status = '';
       userData.activity = '';
