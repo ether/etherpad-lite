@@ -55,6 +55,8 @@ catch(e)
   console.warn("Can't get git version for server header\n" + e.message)
 }
 
+console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
+
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 
 //cache 6 hours
