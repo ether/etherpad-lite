@@ -118,55 +118,6 @@ async.waterfall([
       }
     });
     
-    //serve read only pad
-    app.get('/ro/:id', function(req, res)
-    { 
-      res.header("Server", serverName);
-      
-      var html;
-      var padId;
-      var pad;
-      
-      async.series([
-        //translate the read only pad to a padId
-        function(callback)
-        {
-          readOnlyManager.getPadId(req.params.id, function(err, _padId)
-          {
-            padId = _padId;
-            callback(err);
-          });
-        },
-        //render the html document
-        function(callback)
-        {
-          //return if the there is no padId
-          if(padId == null)
-          {
-            callback("notfound");
-            return;
-          }
-          
-          //render the html document
-          exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
-          {
-            html = _html;
-            callback(err);
-          });
-        }
-      ], function(err)
-      {
-        //throw any unexpected error
-        if(err && err != "notfound")
-          throw err;
-          
-        if(err == "notfound")
-          res.send('404 - Not Found', 404);
-        else
-          res.send(html);
-      });
-    });
-    
     //checks for padAccess
     function hasPadAccess(req, res, callback)
     {
@@ -187,6 +138,62 @@ async.waterfall([
       });
     }
     
+    //serve read only pad
+    app.get('/ro/:id', function(req, res)
+    { 
+      res.header("Server", serverName);
+      
+      var html;
+      var padId;
+      var pad;
+      
+      async.series([
+        //translate the read only pad to a padId
+        function(callback)
+        {
+          readOnlyManager.getPadId(req.params.id, function(err, _padId)
+          {
+            padId = _padId;
+            
+            //we need that to tell hasPadAcess about the pad  
+            req.params.pad = padId; 
+            
+            callback(err);
+          });
+        },
+        //render the html document
+        function(callback)
+        {
+          //return if the there is no padId
+          if(padId == null)
+          {
+            callback("notfound");
+            return;
+          }
+          
+          hasPadAccess(req, res, function()
+          {
+            //render the html document
+            exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
+            {
+              html = _html;
+              callback(err);
+            });
+          });
+        }
+      ], function(err)
+      {
+        //throw any unexpected error
+        if(err && err != "notfound")
+          throw err;
+          
+        if(err == "notfound")
+          res.send('404 - Not Found', 404);
+        else
+          res.send(html);
+      });
+    });
+        
     //serve pad.html under /p
     app.get('/p/:pad', function(req, res, next)
     {    
