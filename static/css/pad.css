@@ -1122,7 +1122,7 @@ margin-top: 1px;
 
 #usericon
 {
-width:27px !important;
+width:33px !important;
 }
 
 #focusprotector
@@ -1144,4 +1144,8 @@ width:27px !important;
   top:4px;
   cursor: hand;
   cursor: pointer;
+}
+
+#online_count{
+  color: #999;
 }
