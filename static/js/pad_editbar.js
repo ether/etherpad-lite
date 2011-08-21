@@ -171,6 +171,10 @@ var padeditbar = (function()
       {
         for(var i=0;i<modules.length;i++)
         {
+          //skip the userlist
+          if(modules[i] == "users")
+            continue;
+          
           var module = $("#" + modules[i]);
         
           if(module.css('display') != "none")
