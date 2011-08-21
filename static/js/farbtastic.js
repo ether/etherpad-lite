@@ -1,8 +1,7 @@
 // Farbtastic 2.0 alpha
 (function ($) {
   
-var __debug = false;
-
+var __debug = true;
 var __factor = 0.5;
 
 $.fn.farbtastic = function (options) {
@@ -68,21 +67,30 @@ $._farbtastic = function (container, options) {
   /**
    * Change color with HSL triplet [0..1, 0..1, 0..1]
    */
-  fb.setHSL = function (hsl) {    
+  fb.setHSL = function (hsl) {
     fb.hsl = hsl;
-    
+
     var convertedHSL = [hsl[0]]
     convertedHSL[1] = hsl[1]*__factor+((1-__factor)/2);
     convertedHSL[2] = hsl[2]*__factor+((1-__factor)/2);
-    
-    fb.rgb = fb.HSLToRGB(convertedHSL);
+
+    fb.rgb = fb.HSLToRGB(hsl);
     fb.color = fb.pack(fb.rgb);
     fb.updateDisplay();
-    
     return this;
   }
 
   /////////////////////////////////////////////////////
+  //excanvas-compatible building of canvases
+  fb._makeCanvas = function(className){
+    var c = document.createElement('canvas');
+    if (!c.getContext) { // excanvas hack
+        c = window.G_vmlCanvasManager.initElement(c);
+        c.getContext(); //this creates the excanvas children
+    }
+    $(c).addClass(className);
+    return c;
+  }
 
   /**
    * Initialize the color picker widget.
@@ -98,26 +106,14 @@ $._farbtastic = function (container, options) {
       .html(
         '<div class="farbtastic" style="position: relative">' +
           '<div class="farbtastic-solid"></div>' +
-          '<canvas class="farbtastic-mask"></canvas>' +
-          '<canvas class="farbtastic-overlay"></canvas>' +
         '</div>'
       )
+      .children('.farbtastic')
+        .append(fb._makeCanvas('farbtastic-mask'))
+        .append(fb._makeCanvas('farbtastic-overlay'))
+      .end()
       .find('*').attr(dim).css(dim).end()
       .find('div>*').css('position', 'absolute');
-
-    // IE Fix: Recreate canvas elements with doc.createElement and excanvas.
-    $.browser.msie && $('canvas', container).each(function () {
-      // Fetch info.
-      var attr = { 'class': $(this).attr('class'), style: this.getAttribute('style') },
-          e = document.createElement('canvas');
-      // Replace element.
-      $(this).before($(e).attr(attr)).remove();
-      // Init with explorerCanvas.
-      G_vmlCanvasManager && G_vmlCanvasManager.initElement(e);
-      // Set explorerCanvas elements dimensions and absolute positioning.
-      $(e).attr(dim).css(dim).css('position', 'absolute')
-        .find('*').attr(dim).css(dim);
-    });
 
     // Determine layout
     fb.radius = (options.width - options.wheelWidth) / 2 - 1;
@@ -223,7 +219,6 @@ $._farbtastic = function (container, options) {
     var size = fb.square * 2, sq = fb.square;
     function calculateMask(sizex, sizey, outputPixel) {
       var isx = 1 / sizex, isy = 1 / sizey;
-      
       for (var y = 0; y <= sizey; ++y) {
         var l = 1 - y * isy;
         for (var x = 0; x <= sizex; ++x) {
@@ -231,10 +226,10 @@ $._farbtastic = function (container, options) {
           // From sat/lum to alpha and color (grayscale)
           var a = 1 - 2 * Math.min(l * s, (1 - l) * s);
           var c = (a > 0) ? ((2 * l - 1 + a) * .5 / a) : 0;
-          
+
           a = a*__factor+(1-__factor)/2;
           c = c*__factor+(1-__factor)/2;
-          
+
           outputPixel(x, y, c, a);
         }
       }      
@@ -317,7 +312,6 @@ $._farbtastic = function (container, options) {
         y2 = 2 * fb.square * (.5 - fb.hsl[2]),
         c1 = fb.invert ? '#fff' : '#000',
         c2 = fb.invert ? '#000' : '#fff';
-        
     var circles = [
       { x: x1, y: y1, r: r,             c: '#000', lw: lw + 1 },
       { x: x1, y: y1, r: fb.markerSize, c: '#fff', lw: lw },
@@ -417,7 +411,6 @@ $._farbtastic = function (container, options) {
     else {
       var sat = Math.max(0, Math.min(1, -(pos.x / fb.square / 2) + .5));
       var lum = Math.max(0, Math.min(1, -(pos.y / fb.square / 2) + .5));
-      
       fb.setHSL([fb.hsl[0], sat, lum]);
     }
     return false;
