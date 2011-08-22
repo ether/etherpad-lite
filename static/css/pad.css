@@ -1138,14 +1138,6 @@ width:33px !important;
   display:none;
 }
 
-#showhistorylabel{
-  position:absolute;
-  left:58px;
-  top:4px;
-  cursor: hand;
-  cursor: pointer;
-}
-
 #online_count{
   color: #999;
 }

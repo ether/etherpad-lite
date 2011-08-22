@@ -237,17 +237,14 @@ Use this link to share a read-only version of your pad:<input id="readonlyInput"
 <div id="chaticon">
 <a onClick="chat.show();return false;"
 	title="Open the chat for this pad">
-	  <span id="chatlabel">Chat</span> 
+	  <span id="chatlabel">Chat</span>
           <div class="buttonicon" style="background-position:0px -102px;display:inline-block;"></div>
 </a>
 <span id="chatcounter">0</span>
 </div>
 
 <div id="chatbox">
-  <div id="titlebar"><span id="titlelabel">Chat |</span>
-    <a id="showhistorylabel" onClick="chat.showHistory();return false;">Show History</a>
-    <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
-  </div>
+  <div id="titlebar"><span id ="titlelabel">Chat</span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
   <div id="chattext" class="authorColors"></div>
   <div id="chatinputbox">
     <form>

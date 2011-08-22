@@ -44,13 +44,6 @@ var chat = (function()
         });
       });
     },
-    showHistory: function()
-    {
-      // this is a placeholder for the showHistory function
-      // load the messages from the server
-      // append them to the UI using addMessage
-      self.scrollDown(); // scroll down to the bottom of the chat
-    },
     hide: function () 
     {
       $("#chatcounter").text("0");
