@@ -37,7 +37,7 @@ catch(e)
 var functions = {
   "createGroup"               : [],
   "createGroupIfNotExistsFor"  : ["groupMapper"], 
-//  "deleteGroup"               : ["groupID"], 
+  "deleteGroup"               : ["groupID"], 
   "listPads"                  : ["groupID"], 
   "createPad"                 : ["padID", "text"], 
   "createGroupPad"            : ["groupID", "padName", "text"],

@@ -21,6 +21,95 @@
 var db = require("./DB").db;
 var async = require("async");
 var padManager = require("./PadManager");
+var sessionManager = require("./SessionManager");
+ 
+exports.deleteGroup = function(groupID, callback)
+{
+  var group;
+
+  async.series([
+    //ensure group exists 
+    function (callback)
+    {
+      //try to get the group entry
+      db.get("group:" + groupID, function (err, _group)
+      {
+        //error
+        if(err) 
+        {
+          callback(err);
+        }
+        //group does not exist
+        else if(_group == null)
+        {
+          callback({stop: "groupID does not exist"});
+        }
+        //group exists, everything is fine
+        else
+        {
+          group = _group;
+          callback();
+        }
+      });
+    },
+    //iterate trough all pads of this groups and delete them
+    function(callback)
+    {
+      //collect all padIDs in an array, that allows us to use async.forEach
+      var padIDs = [];
+      for(var i in group.pads)
+      {
+        padIDs.push(i);
+      }
+      
+      //loop trough all pads and delete them 
+      async.forEach(padIDs, function(padID, callback)
+      {
+        padManager.getPad(padID, function(err, pad)
+        {
+          if(err) {callback(err); return}
+          
+          pad.remove(callback);
+        });
+      }, callback);
+    },
+    //iterate trough group2sessions and delete all sessions
+    function(callback)
+    {
+      //try to get the group entry
+      db.get("group2sessions:" + groupID, function (err, group2sessions)
+      {
+        if(err) {callback(err); return}
+        
+        //skip if there is no group2sessions entry
+        if(group2sessions == null) {callback(); return}
+        
+        //collect all sessions in an array, that allows us to use async.forEach
+        var sessions = [];
+        for(var i in group2sessions.sessionsIDs)
+        {
+          sessions.push(i);
+        }
+        
+        //loop trough all sessions and delete them 
+        async.forEach(sessions, function(session, callback)
+        {
+          sessionManager.deleteSession(session, callback);
+        }, callback);
+      });
+    },
+    //remove group and group2sessions entry
+    function(callback)
+    {
+      db.remove("group2sessions:" + groupID);
+      db.remove("group:" + groupID);
+      callback();
+    }
+  ], function(err)
+  {
+    callback(err);
+  });
+}
  
 exports.doesGroupExist = function(groupID, callback)
 {
