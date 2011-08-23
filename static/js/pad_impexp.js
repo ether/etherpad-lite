@@ -231,9 +231,9 @@ var padimpexp = (function()
     init: function()
     {
       // build the export links
-      $("#exporthtmla").attr("href", document.location.href + "/export/html");
-      $("#exportplaina").attr("href", document.location.href + "/export/txt");
-      $("#exportwordlea").attr("href", document.location.href + "/export/wordle");
+      $("#exporthtmla").attr("href", document.location.pathname + "/export/html");
+      $("#exportplaina").attr("href", document.location.pathname + "/export/txt");
+      $("#exportwordlea").attr("href", document.location.pathname + "/export/wordle");
       
       //hide stuff thats not avaible if abiword is disabled
       if(clientVars.abiwordAvailable == "no")
@@ -249,8 +249,8 @@ var padimpexp = (function()
       {
         $("#exportpdfa").remove();
         
-        $("#exportworda").attr("href", document.location.href + "/export/doc");
-        $("#exportopena").attr("href", document.location.href + "/export/odt");
+        $("#exportworda").attr("href", document.location.pathname + "/export/doc");
+        $("#exportopena").attr("href", document.location.pathname + "/export/odt");
         
         $("#importexport").css({"height":"142px"});
         $("#importexportline").css({"height":"142px"});
@@ -259,11 +259,11 @@ var padimpexp = (function()
       }
       else
       {
-        $("#exportworda").attr("href", document.location.href + "/export/doc");
-        $("#exportpdfa").attr("href", document.location.href + "/export/pdf");
-        $("#exportopena").attr("href", document.location.href + "/export/odt");
+        $("#exportworda").attr("href", document.location.pathname + "/export/doc");
+        $("#exportpdfa").attr("href", document.location.pathname + "/export/pdf");
+        $("#exportopena").attr("href", document.location.pathname + "/export/odt");
         
-        $("#importform").get(0).setAttribute('action', document.location.href + "/import"); 
+        $("#importform").get(0).setAttribute('action', document.location.pathname + "/import"); 
       }
     
       $("#impexp-close").click(function()
