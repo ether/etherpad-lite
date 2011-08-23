@@ -14,7 +14,7 @@ You can use this [PHP Client](https://github.com/TomNomNom/etherpad-lite-client)
 There is also a [jQuery plugin](https://github.com/johnyma22/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website
 
 **Online demo**<br>
-Visit <http://beta.etherpad.org> to test it live. <br>You can find the same instance behind a nginx, with ssl and in a subpath here -> [https://pad.pitapoison.de/pad/](https://pad.pitapoison.de/pad/)
+Visit <http://beta.etherpad.org> to test it live
 
 Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 
@@ -30,10 +30,10 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
     <td align="right">Languages used server side</td><td>Javascript (Rhino), Java, Scala</td><td>Javascript (node.js)</td>
   </tr>
   <tr>
-    <td align="right">Lines of server side Javascript code</td><td>101410</td><td>5330</td>
+    <td align="right">Lines of server side Javascript code</td><td>~101k</td><td>~9k</td>
   </tr>
   <tr>
-    <td align="right">RAM Usage immediately after start</td><td>257 MB</td><td>16 MB</td>
+    <td align="right">RAM Usage immediately after start</td><td>257 MB (grows to ~1GB)</td><td>16 MB (grows to ~30MB)</td>
   </tr>
 </table>
 
