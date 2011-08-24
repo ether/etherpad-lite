@@ -1141,3 +1141,9 @@ width:33px !important;
 #online_count{
   color: #999;
 }
+
+@media screen and (max-width: 600px) {
+  #editbar ul li {
+    padding: 4px 1px;
+  }
+}
