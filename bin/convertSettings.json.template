@@ -1,5 +1,5 @@
 {
-  "etherpad-db": 
+  "etherpadDB": 
   {
     "host": "localhost",
     "port": 3306,
