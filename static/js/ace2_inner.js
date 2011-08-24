@@ -424,7 +424,7 @@ function OUTER(gscope)
             else parenModule.notifyTick();
           }
           recolorModule.recolorLines();
-          if (cs.selectionAffected)
+          if (cs.selectionAffected && !(browser.safari && (type == "applyChangesToBase" || type == "idleWorkTimer")))
           {
             updateBrowserSelectionFromRep();
           }
