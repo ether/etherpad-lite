@@ -57,6 +57,11 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
+/**
+ * The language of the user interface
+ */
+exports.language = "en";
+
 //read the settings sync
 var settingsStr = fs.readFileSync("../settings.json").toString();
 

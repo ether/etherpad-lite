@@ -699,7 +699,7 @@ var paduserlist = (function()
       }
       else
       {
-        $("#myusernameedit").addClass("editempty").val("Enter your name");
+        $("#myusernameedit").addClass("editempty").val(translate("Enter your name"));
       }
       if (colorPickerOpen)
       {

@@ -109,6 +109,8 @@
 </li>
 </ul>
 
+<script>DOMTranslate("#editbar a", "title");</script>
+
 </div>
 
 <div id="users">
@@ -120,15 +122,11 @@
   
      <div id="mycolorpicker">
         <div id="colorpicker"></div>
-<!--
-     	<ul id="colorpickerswatches">
-     	</ul>
--->
      	<span id="mycolorpickersave">
-     		<a onclick="closeColorPicker()">Save</a>
+     		<a onclick="closeColorPicker()" class="translate">Save</a>
      	</span>
      	<span id="mycolorpickercancel">
-     		<a onclick="closeColorPicker()">Cancel</a>
+     		<a onclick="closeColorPicker()" class="translate">Cancel</a>
      	</span>
         <span id="mycolorpickerpreview" class="myswatchboxhoverable"></span>
    </div>
@@ -181,13 +179,13 @@
 <div id="importexport">
 
 <div id="import">
-  Import from text file, HTML, PDF, Word, ODT or RTF:<br/><br/>
+  <span id="importtext"  class="translate">Import from text file, HTML, PDF, Word, ODT or RTF:</span><br/><br/>
   <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
     <div class="importformdiv" id="importformfilediv"> 
       <input type="file" name="file" size="15" id="importfileinput" /> 
       <div class="importmessage" id="importmessagefail"></div> 
     </div> 
-  <div class="importmessage" id="importmessagesuccess">Successful!</div> 
+  <div class="importmessage translate" id="importmessagesuccess">Successful!</div> 
   <div class="importformdiv" id="importformsubmitdiv"> 
     <input type="hidden" name="padId" value="blpmaXT35R" /> 
     <span class="nowrap"> 
@@ -202,13 +200,13 @@
 <div id="importexportline"></div>
 
 <div id="export">
-  Export current pad as:
-  <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
-  <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
-  <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
-  <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
-  <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
-  <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
+  <span id="exporttext" class="translate">Export current pad as:</span>
+  <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype translate" id="exporthtml">HTML</div></a>
+  <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype translate" id="exportplain">Plain text</div></a>
+  <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype translate" id="exportword">Microsoft Word</div></a>
+  <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype translate" id="exportpdf">PDF</div></a>
+  <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype translate" id="exportopen">OpenDocument</div></a>
+  <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype translate" id="exportwordle">Wordle</div></a>
   <form id="wordlepost" name="wall" action="http://wordle.net/advanced" method="POST" style="margin-left:0px;"> 
     <div id="hidetext" style=""><textarea id="text" name="text" id="text" style="display:none;">Coming soon!</textarea></div> 
   </form> 
@@ -218,14 +216,14 @@
 <!-- the embed code -->
 <div id="embed">
 <div id="embedcode">
-Embed code:<input id="embedinput" type="text" value="">
+<span id="embedtext" class="translate">Embed code:</span><input id="embedinput" type="text" value="">
 </div>
 </div>
 
 <!-- the embed code -->
 <div id="readonly">
 <div id="readonlyUrl">
-Use this link to share a read-only version of your pad:<input id="readonlyInput" type="text" value="">
+<span id="readonlytext" class="translate">Use this link to share a read-only version of your pad:</span><input id="readonlyInput" type="text" value="">
 <img id="readonlyImage" src="" alt="" style="margin: 10px 90px">
 </div>
 </div>
@@ -237,14 +235,14 @@ Use this link to share a read-only version of your pad:<input id="readonlyInput"
 <div id="chaticon">
 <a onClick="chat.show();return false;"
 	title="Open the chat for this pad">
-	  <span id="chatlabel">Chat</span>
+	  <span id="chatlabel" class="translate">Chat</span>
           <div class="buttonicon" style="background-position:0px -102px;display:inline-block;"></div>
 </a>
 <span id="chatcounter">0</span>
 </div>
 
 <div id="chatbox">
-  <div id="titlebar"><span id ="titlelabel">Chat</span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
+  <div id="titlebar"><span id ="titlelabel" class="translate">Chat</span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
   <div id="chattext" class="authorColors"></div>
   <div id="chatinputbox">
     <form>
@@ -266,10 +264,10 @@ Use this link to share a read-only version of your pad:<input id="readonlyInput"
 <div id="connectionbox" class="modaldialog">
 <div id="connectionboxinner" class="modaldialog-inner">
 <div class="connecting">
-	 Connecting...
+	 <span class="translate">Connecting...</span>
 </div>
 <div class="reconnecting">
-	 Reestablishing connection...
+	 <span class="translate">Reestablishing connection...</span>
 </div>
 <div class="disconnected">
 	<h2 class="h2_disconnect">Disconnected.</h2>
@@ -277,49 +275,49 @@ Use this link to share a read-only version of your pad:<input id="readonlyInput"
 	<h2 class="h2_unauth">No Authorization.</h2>
 	<div id="disconnected_looping">
 		<p>
-			<b>We're having trouble talking to the EtherPad lite synchronization server.</b>
-			You may be connecting through an incompatible firewall or proxy server.
+			<b><span class="translate">We're having trouble talking to the EtherPad lite synchronization server.</span></b>
+			<span class="translate">You may be connecting through an incompatible firewall or proxy server.</span>
 		</p>
 	</div>
 	<div id="disconnected_initsocketfail">
 		<p>
-			<b>We were unable to connect to the EtherPad lite synchronization server.</b>
-			This may be due to an incompatibility with your web browser or internet connection.
+			<b><span class="translate">We were unable to connect to the EtherPad lite synchronization server.</span></b>
+			<span class="translate">This may be due to an incompatibility with your web browser or internet connection.</span>
 		</p>
 	</div>
 	<div id="disconnected_userdup">
 		<p>
-			<b>You seem to have opened this pad in another browser window.</b>
-			If you'd like to use this window instead, you can reconnect.
+			<b><span class="translate">You seem to have opened this pad in another browser window.</span></b>
+			<span class="translate">If you'd like to use this window instead, you can reconnect.</span>
 		</p>
 	</div>
 	<div id="disconnected_unknown">
 		<p>
-			<b>Lost connection with the EtherPad lite synchronization server.</b> This may be due to a loss of network connectivity.
+			<b><span class="translate">Lost connection with the EtherPad lite synchronization server.</b> This may be due to a loss of network connectivity.</span>
 		</p>
 	</div>
 	<div id="disconnected_slowcommit">
 		<p>
-			<b>Server not responding.</b> This may be due to network connectivity issues or high load on the server.
+			<b><span class="translate">Server not responding.</span></b> <span class="translate">This may be due to network connectivity issues or high load on the server.</span>
 		</p>
 	</div>
 	<div id="disconnected_unauth">
 		<p>
-			Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.
+			<span class="translate">Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</span>
 		</p>
 	</div>
 	<div id="disconnected_deleted">
 		<p>
-			This pad was deleted.
+			<span class="translate">This pad was deleted.</span>
 		</p>
 	</div>
 	<div id="reconnect_advise">
 		<p>
-			If this continues to happen, please let us know
+			<span class="translate">If this continues to happen, please let us know</span>
 		</p>
 	</div>
 	<div id="reconnect_form">
-		<button id="forcereconnect">Reconnect Now</button>
+		<button id="forcereconnect"><span class="translate">Reconnect Now</span></button>
 	</div>
 </div>
 </div>

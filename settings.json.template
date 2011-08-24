@@ -37,5 +37,8 @@
   "abiword" : null,
   
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
-  "loglevel": "INFO"
+  "loglevel": "INFO",
+  
+  /* The language of the user interface */
+  "language": "en"
 }

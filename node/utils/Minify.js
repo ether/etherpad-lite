@@ -31,7 +31,7 @@ var gzip = require('gzip');
 var server = require('../server');
 var os = require('os');
 
-var padJS = ["jquery.min.js", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js", "excanvas.js", "farbtastic.js"];
+var padJS = ["jquery.min.js", "translate.js", "LANGUAGE", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js", "excanvas.js", "farbtastic.js"];
 
 var timesliderJS = ["jquery.min.js", "plugins.js", "undo-xpopup.js", "json2.js", "colorutils.js", "draggable.js", "pad_utils.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "easysync2_client.js", "domline_client.js", "linestylefilter_client.js", "cssmanager_client.js", "broadcast.js", "broadcast_slider.js", "broadcast_revisions.js"];
 
@@ -129,8 +129,31 @@ exports.minifyJS = function(req, res, jsFilename)
       {
         async.forEach(jsFiles, function (item, callback)
         {
-          fs.readFile("../static/js/" + item, "utf-8", function(err, data)
-          {            
+          var fileName = "../static/js/" + item;
+        
+          //if this is the language file, take the correct one
+          if(item == "LANGUAGE")
+          {
+            //skip if this is english, we don't need a language file for that
+            if(settings.language == "en")
+            {
+              fileValues[item] = "";
+              callback();
+              return;
+            }
+          
+            //replace it with the translation file
+            fileName = "../translation/" + settings.language + "/pad.json";
+          }
+        
+          fs.readFile(fileName, "utf-8", function(err, data)
+          {      
+            //add this prefix for language files      
+            if(item == "LANGUAGE")
+            {
+              data = "var language = '" + settings.language + "'; var translation = {};\ntranslation['" + settings.language + "'] = " + data;
+            }
+          
             fileValues[item] = data;
             callback(err);
           });
@@ -269,8 +292,31 @@ exports.minifyJS = function(req, res, jsFilename)
     //read all js files
     async.forEach(jsFiles, function (item, callback)
     {
-      fs.readFile("../static/js/" + item, "utf-8", function(err, data)
+      var fileName = "../static/js/" + item;
+      
+      //if this is the language file, take the correct one
+      if(item == "LANGUAGE")
+      {
+        //skip if this is english, we don't need a language file for that
+        if(settings.language == "en")
+        {
+          fileValues[item] = "";
+          callback();
+          return;
+        }
+      
+        //replace it with the translation file
+        fileName = "../translation/" + settings.language + "/pad.json";
+      }
+    
+      fs.readFile(fileName, "utf-8", function(err, data)
       {            
+        //add this prefix for language files      
+        if(item == "LANGUAGE")
+        {
+          data = "var language = '" + settings.language + "'; var translation = {};\ntranslation['" + settings.language + "'] = " + data;
+        }
+      
         fileValues[item] = data;
         callback(err);
       });
