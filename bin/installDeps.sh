@@ -24,7 +24,7 @@ hash node > /dev/null 2>&1 || {
 NODE_VERSION=$(node --version)
 if [ ! $(echo $NODE_VERSION | cut -d "." -f 1-2) = "v0.4" ]; then
   echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.4.x" >&2
-  exit 1 
+  # exit 1 
 fi
 
 #Is npm installed?
