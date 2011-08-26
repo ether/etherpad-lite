@@ -336,9 +336,10 @@ function loadBroadcastJS()
         
         
         
-    $('#timer').html(dateFormat());
-
-    var revisionDate = ["Saved", ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"][date.getMonth()], date.getDate() + ",", date.getFullYear()].join(" ")
+    $('#timer').html(date.toLocaleString());
+    
+    var revisionDate = translate("Saved at") + " " + date.toLocaleDateString();
+    
     $('#revision_date').html(revisionDate)
 
   }

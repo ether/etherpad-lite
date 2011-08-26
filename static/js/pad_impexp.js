@@ -62,7 +62,7 @@ var padimpexp = (function()
   function fileInputSubmit()
   {
     $('#importmessagefail').fadeOut("fast");
-    var ret = window.confirm("Importing a file will overwrite the current text of the pad." + " Are you sure you want to proceed?");
+    var ret = window.confirm(translate("Importing a file will overwrite the current text of the pad. Are you sure you want to proceed?"));
     if (ret)
     {        
       hidePanelCall = paddocbar.hideLaterIfNoOtherInteraction();
@@ -78,7 +78,7 @@ var padimpexp = (function()
       $('#importsubmitinput').attr(
       {
         disabled: true
-      }).val("Importing...");
+      }).val(translate("Importing..."));
       window.setTimeout(function()
       {
         $('#importfileinput').attr(
@@ -106,7 +106,7 @@ var padimpexp = (function()
 
   function importDone()
   {
-    $('#importsubmitinput').removeAttr('disabled').val("Import Now");
+    $('#importsubmitinput').removeAttr('disabled').val(translate("Import Now"));
     window.setTimeout(function()
     {
       $('#importfileinput').removeAttr('disabled');
@@ -243,7 +243,7 @@ var padimpexp = (function()
         $("#exportopena").remove();
         $("#importexport").css({"height":"95px"});
         $("#importexportline").css({"height":"95px"});
-        $("#import").html("Import is not available");
+        $("#import").html(translate("Import is not available"));
       }
       else if(clientVars.abiwordAvailable == "withoutPDF")
       {

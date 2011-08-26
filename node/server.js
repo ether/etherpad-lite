@@ -110,7 +110,7 @@ async.waterfall([
       
       var id = req.params.id;
       
-      if(id == "pad.js" || id == "timeslider.js")
+      if(id == "pad.js" || id == "timeslider.js" || id == "index.js")
       {
         minify.minifyJS(req,res,id);
       }

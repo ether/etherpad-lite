@@ -169,9 +169,7 @@
 <div id="editorcontainer">
   <!-- -->
 </div>
-<div id="editorloadingbox">
-  Loading...
-</div>
+<div id="editorloadingbox" class="translate">Loading...</div>
 
 </div>
 
@@ -196,6 +194,8 @@
   </div> 
 </form>
 </div>
+
+<script>DOMTranslate("#importsubmitinput", "value");</script>
 
 <div id="importexportline"></div>
 
@@ -270,9 +270,9 @@
 	 <span class="translate">Reestablishing connection...</span>
 </div>
 <div class="disconnected">
-	<h2 class="h2_disconnect">Disconnected.</h2>
-	<h2 class="h2_userdup">Opened in another window.</h2>
-	<h2 class="h2_unauth">No Authorization.</h2>
+	<h2 class="h2_disconnect translate">Disconnected.</h2>
+	<h2 class="h2_userdup translate">Opened in another window.</h2>
+	<h2 class="h2_unauth translate">No Authorization.</h2>
 	<div id="disconnected_looping">
 		<p>
 			<b><span class="translate">We're having trouble talking to the EtherPad lite synchronization server.</span></b>

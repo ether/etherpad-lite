@@ -198,19 +198,19 @@ function handshake()
     {
       if(obj.accessStatus == "deny")
       {
-        $("#editorloadingbox").html("<b>You do not have permission to access this pad</b>");
+        $("#editorloadingbox").html("<b>" + translate("You do not have permission to access this pad") + "</b>");
       }
       else if(obj.accessStatus == "needPassword")
       {
-        $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
+        $("#editorloadingbox").html("<b>" + translate("You need a password to access this pad") + "</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword()'>ok</button>");
+                                    "<button type='button' onclick='savePassword()'>" + translate("ok") + "</button>");
       }
       else if(obj.accessStatus == "wrongPassword")
       {
-        $("#editorloadingbox").html("<b>You're password was wrong</b><br>" +
+        $("#editorloadingbox").html("<b>" + translate("You're password was wrong") + "</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword()'>ok</button>");
+                                    "<button type='button' onclick='savePassword()'>" + translate("ok") + "</button>");
       }
     }
     

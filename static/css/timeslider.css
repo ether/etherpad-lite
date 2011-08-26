@@ -19,7 +19,7 @@
   position: absolute;
   left:0px;
   background-image: url(../../static/img/timeslider_left.png);
-  width: 134px;
+  width: 200px;
   height: 63px;
 }
 
@@ -164,7 +164,7 @@ div #timeslider div#steppers div#rightstep {
   font-family: Arial, sans-serif;
   left: 7px;
   top: 9px;
-  width: 122px;
+  width: 188px;
   text-align: center;
   color: white;
   font-size: 11px;

@@ -33,7 +33,9 @@ var os = require('os');
 
 var padJS = ["jquery.min.js", "translate.js", "LANGUAGE", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js", "excanvas.js", "farbtastic.js"];
 
-var timesliderJS = ["jquery.min.js", "plugins.js", "undo-xpopup.js", "json2.js", "colorutils.js", "draggable.js", "pad_utils.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "easysync2_client.js", "domline_client.js", "linestylefilter_client.js", "cssmanager_client.js", "broadcast.js", "broadcast_slider.js", "broadcast_revisions.js"];
+var timesliderJS = ["jquery.min.js", "translate.js", "LANGUAGE", "plugins.js", "undo-xpopup.js", "json2.js", "colorutils.js", "draggable.js", "pad_utils.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "easysync2_client.js", "domline_client.js", "linestylefilter_client.js", "cssmanager_client.js", "broadcast.js", "broadcast_slider.js", "broadcast_revisions.js"];
+
+var indexJS = ["jquery.min.js", "translate.js", "LANGUAGE"];
 
 /**
  * creates the minifed javascript for the given minified name
@@ -53,6 +55,10 @@ exports.minifyJS = function(req, res, jsFilename)
   {
     jsFiles = timesliderJS;
   }
+  else if(jsFilename == "index.js")
+  {
+    jsFiles = indexJS;
+  }
   else
   {
     throw new Error("there is no profile for creating " + name);
@@ -70,6 +76,12 @@ exports.minifyJS = function(req, res, jsFilename)
       function(callback)
       {        
         var folders2check = ["../static/css","../static/js"];
+        
+        //check the language folder for changes too, expect this is english
+        if(settings.language != "en")
+        {
+          folders2check.push("../translation/" + settings.language);
+        }
         
         //go trough this two folders
         async.forEach(folders2check, function(path, callback)
@@ -143,7 +155,7 @@ exports.minifyJS = function(req, res, jsFilename)
             }
           
             //replace it with the translation file
-            fileName = "../translation/" + settings.language + "/pad.json";
+            fileName = "../translation/" + settings.language + "/" + jsFilename.split(".")[0] + ".json";
           }
         
           fs.readFile(fileName, "utf-8", function(err, data)
