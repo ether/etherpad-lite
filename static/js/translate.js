@@ -3,16 +3,12 @@ function translate(str)
 {
   var translated = str;
   
-  //skip if there is no language defined
-  if(typeof language === "undefined")
-    return;
-  
   //return translation if avaiable
-  if(translation != null && translation[language][str] != null)
+  if(typeof language !== "undefined" && translation != null && translation[language][str] != null)
   {
     translated = translation[language][str];
   }
-  else if(window.console)
+  else if(window.console && typeof language !== "undefined")
   {
     window.console.log("No " + language + " translation for '" + str + "'");
   }
