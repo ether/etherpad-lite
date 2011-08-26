@@ -41,7 +41,7 @@ exports.dbSettings = { "filename" : "../var/dirty.db" };
 /**
  * The default Text of a new pad
  */
-exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
+exports.defaultPadText = "default";
 /**
  * A flag that shows if minification is enabled or not
  */
@@ -102,3 +102,18 @@ for(var i in settings)
     console.warn("This setting doesn't exist or it was removed");
   }
 }
+
+//replace default text with the language text
+if(exports.defaultPadText == "default")
+{
+  //set the english default text
+  if(exports.language == "en")
+  {
+    exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
+  }
+  //read the translation
+  else
+  {
+    exports.defaultPadText = fs.readFileSync("../translation/" + exports.language + "/defaultText.txt").toString();
+  }
+} 

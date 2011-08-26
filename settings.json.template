@@ -26,7 +26,8 @@
   */
   
   //the default text of a pad
-  "defaultPadText" : "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n",
+  //default means the standart text of the used language will be used
+  "defaultPadText" : "default",
   
   /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly, 
      but makes it impossible to debug the javascript/css */

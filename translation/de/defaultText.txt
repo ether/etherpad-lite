@@ -1,0 +1,6 @@
+Willkommen bei Etherpad Lite!
+
+Während du schreibst wird dieser Text mit dem Server synchronisiert, was bedeutet, dass jeder der diese Seite betrachtet, denselben Text sieht. 
+Diese Technik erlaubt dir kollaboratives bzw. gemeinschaftliches Arbeiten an Dokumenten in Echtzeit!
+
+Etherpad Lite findest du auf Github: http://j.mp/ep-lite
