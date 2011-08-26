@@ -306,8 +306,24 @@ function OUTER(gscope)
 
     if (currentCallStack)
     {
-      console.error("Can't enter callstack " + type + ", already in " + currentCallStack.type);
+      window.console.log("Can't enter callstack " + type + ", already in " + currentCallStack.type);
+
+      return;
     }
+    
+    currentCallStack = {
+      type: type,
+      docTextChanged: false,
+      selectionAffected: false,
+      userChangedSelection: false,
+      domClean: false,
+      profileRest: profileRest,
+      isUserChange: false,
+      // is this a "user change" type of call-stack
+      repChanged: false,
+      editEvent: newEditEvent(type),
+      startNewEvent: startNewEvent
+    };
 
     var profiling = false;
 
@@ -378,77 +394,59 @@ function OUTER(gscope)
       return oldEvent;
     }
 
-    currentCallStack = {
-      type: type,
-      docTextChanged: false,
-      selectionAffected: false,
-      userChangedSelection: false,
-      domClean: false,
-      profileRest: profileRest,
-      isUserChange: false,
-      // is this a "user change" type of call-stack
-      repChanged: false,
-      editEvent: newEditEvent(type),
-      startNewEvent: startNewEvent
-    };
     var cleanExit = false;
     var result;
-    try
+
+
+    var cs = currentCallStack;
+      
+    // window.console.log("doing action: "+action);  
+
+    result = action();
+    cleanExit = true;
+
+    if (cleanExit)
     {
-      result = action();
-      //console.log("Just did action for: "+type);
-      cleanExit = true;
-    }
-    catch (e)
-    {
-      caughtErrors.push(
+      submitOldEvent(cs.editEvent);
+      if (cs.domClean && cs.type != "setup")
       {
-        error: e,
-        time: +new Date()
-      });
-      dmesg(e.toString());
-      throw e;
-    }
-    finally
-    {
-      var cs = currentCallStack;
-      //console.log("Finished action for: "+type);
-      if (cleanExit)
-      {
-        submitOldEvent(cs.editEvent);
-        if (cs.domClean && cs.type != "setup")
+        if (cs.isUserChange)
         {
-          if (cs.isUserChange)
-          {
-            if (cs.repChanged) parenModule.notifyChange();
-            else parenModule.notifyTick();
-          }
-          recolorModule.recolorLines();
-          if (cs.selectionAffected)
-          {
-            updateBrowserSelectionFromRep();
-          }
-          if ((cs.docTextChanged || cs.userChangedSelection) && cs.type != "applyChangesToBase")
-          {
-            scrollSelectionIntoView();
-          }
-          if (cs.docTextChanged && cs.type.indexOf("importText") < 0)
-          {
-            outsideNotifyDirty();
-          }
+          if (cs.repChanged) parenModule.notifyChange();
+          else parenModule.notifyTick();
+        }
+        recolorModule.recolorLines();
+        if (cs.selectionAffected && !(browser.safari && (type == "applyChangesToBase" || type == "idleWorkTimer")))
+        {
+          updateBrowserSelectionFromRep();
+          updateLineNumbers();
+        }
+        if ((cs.docTextChanged || cs.userChangedSelection) && cs.type != "applyChangesToBase")
+        {
+          scrollSelectionIntoView();
+        }
+        if (cs.docTextChanged && cs.type.indexOf("importText") < 0)
+        {
+          outsideNotifyDirty();
         }
       }
-      else
+    }
+    else
+    {
+      // non-clean exit
+      if (currentCallStack.type == "idleWorkTimer")
       {
-        // non-clean exit
-        if (currentCallStack.type == "idleWorkTimer")
-        {
-          idleWorkTimer.atLeast(1000);
-        }
+        window.console.log("set idle work timer");
+      
+        idleWorkTimer.atLeast(1000);
       }
+    }
+
       currentCallStack = null;
       if (profiling) console.profileEnd();
-    }
+
+  //}, 0);
+    
     return result;
   }
   editorInfo.ace_inCallStack = inCallStack;
@@ -916,6 +914,7 @@ function OUTER(gscope)
 
     performSelectionChange([0, rep.lines.atIndex(0).lineMarker], [0, rep.lines.atIndex(0).lineMarker]);
 
+    window.console.log("set idle work timer");
     idleWorkTimer.atMost(100);
 
     if (rep.alltext != atext.text)
@@ -1340,56 +1339,60 @@ function OUTER(gscope)
       return;
     }
 
-    inCallStack("idleWorkTimer", function()
-    {
+    // inCallStack("idleWorkTimer", function()
+    // {
 
-      var isTimeUp = newTimeLimit(250);
+    //   var isTimeUp = newTimeLimit(250);
 
-      //console.time("idlework");
-      var finishedImportantWork = false;
-      var finishedWork = false;
+    //   //console.time("idlework");
+    //   var finishedImportantWork = false;
+    //   var finishedWork = false;
 
-      try
-      {
+    //   try
+    //   {
 
-        // isTimeUp() is a soft constraint for incorporateUserChanges,
-        // which always renormalizes the DOM, no matter how long it takes,
-        // but doesn't necessarily lex and highlight it
-        incorporateUserChanges(isTimeUp);
+    //     // isTimeUp() is a soft constraint for incorporateUserChanges,
+    //     // which always renormalizes the DOM, no matter how long it takes,
+    //     // but doesn't necessarily lex and highlight it
+    //     incorporateUserChanges(isTimeUp);
 
-        if (isTimeUp()) return;
+    //     if (isTimeUp()) return;
 
-        updateLineNumbers(); // update line numbers if any time left
-        if (isTimeUp()) return;
+    //     updateLineNumbers(); // update line numbers if any time left
+    //     if (isTimeUp()) return;
 
-        var visibleRange = getVisibleCharRange();
-        var docRange = [0, rep.lines.totalWidth()];
-        //console.log("%o %o", docRange, visibleRange);
-        finishedImportantWork = true;
-        finishedWork = true;
-      }
-      finally
-      {
-        //console.timeEnd("idlework");
-        if (finishedWork)
-        {
-          idleWorkTimer.atMost(1000);
-        }
-        else if (finishedImportantWork)
-        {
-          // if we've finished highlighting the view area,
-          // more highlighting could be counter-productive,
-          // e.g. if the user just opened a triple-quote and will soon close it.
-          idleWorkTimer.atMost(500);
-        }
-        else
-        {
-          var timeToWait = Math.round(isTimeUp.elapsed() / 2);
-          if (timeToWait < 100) timeToWait = 100;
-          idleWorkTimer.atMost(timeToWait);
-        }
-      }
-    });
+    //     var visibleRange = getVisibleCharRange();
+    //     var docRange = [0, rep.lines.totalWidth()];
+    //     //console.log("%o %o", docRange, visibleRange);
+    //     finishedImportantWork = true;
+    //     finishedWork = true;
+    //   }
+    //   finally
+    //   {
+    //     //console.timeEnd("idlework");
+    //     if (finishedWork)
+    //     {
+    //       // window.console.log("set idle work timer");        
+    //       // COMMENTED OUT!
+    //       // idleWorkTimer.atMost(1000);
+    //     }
+    //     else if (finishedImportantWork)
+    //     {
+    //       // if we've finished highlighting the view area,
+    //       // more highlighting could be counter-productive,
+    //       // e.g. if the user just opened a triple-quote and will soon close it.
+    //       window.console.log("set idle work timer");
+    //       idleWorkTimer.atMost(500);
+    //     }
+    //     else
+    //     {
+    //       window.console.log("set idle work timer");
+    //       var timeToWait = Math.round(isTimeUp.elapsed() / 2);
+    //       if (timeToWait < 100) timeToWait = 100;
+    //       idleWorkTimer.atMost(timeToWait);
+    //     }
+    //   }
+    // });
 
     //if (! top.AFTER) top.AFTER = [];
     //top.AFTER.push(magicdom.root.dom.innerHTML);
@@ -1753,6 +1756,8 @@ function OUTER(gscope)
           if (browser.msie)
           {
             // try to undo IE's pesky and overzealous linkification
+            window.console.log("try here!");
+
             try
             {
               n.createTextRange().execCommand("unlink", false, null);
@@ -1983,10 +1988,12 @@ function OUTER(gscope)
       else p2.literal(0, "nonopt");
       lastEntry = entry;
       p2.mark("spans");
+
       getSpansForLine(entry, function(tokenText, tokenClass)
       {
-        info.appendSpan(tokenText, tokenClass);
+          info.appendSpan(tokenText, tokenClass);
       }, lineStartOffset, isTimeUp());
+ 
       //else if (entry.text.length > 0) {
       //info.appendSpan(entry.text, 'dirty');
       //}
@@ -3103,7 +3110,9 @@ function OUTER(gscope)
         // an object property doesn't
         setAssoc(lineElem, "unpasted", {});
       };
+      
       var lineClass = 'ace-line';
+
       result.appendSpan = function(txt, cls)
       {
         if ((!txt) && cls)
@@ -3111,7 +3120,7 @@ function OUTER(gscope)
           // gain a whole-line style (currently to show insertion point in CSS)
           lineClass = domline.addToLineClass(lineClass, cls);
         }
-        // otherwise, ignore appendSpan, this is an empty line
+        // // otherwise, ignore appendSpan, this is an empty line
       };
       result.clearSpans = function()
       {
@@ -3475,7 +3484,7 @@ function OUTER(gscope)
   
     inCallStack("handleClick", function()
     {
-      idleWorkTimer.atMost(200);
+      // idleWorkTimer.atMost(200);
     });
 
     // only want to catch left-click
@@ -3495,6 +3504,8 @@ function OUTER(gscope)
       }
       if (n && isLink(n))
       {
+        window.console.log("try here!");
+
         try
         {
           var newWindow = window.open(n.href, '_blank');
@@ -3739,7 +3750,6 @@ function OUTER(gscope)
 
   function handleKeyEvent(evt)
   {
-    // if (DEBUG && window.DONT_INCORP) return;
     if (!isEditable) return;
 
     var type = evt.type;
@@ -3747,188 +3757,195 @@ function OUTER(gscope)
     var keyCode = evt.keyCode;
     var which = evt.which;
 
-    //dmesg("keyevent type: "+type+", which: "+which);
-    // Don't take action based on modifier keys going up and down.
-    // Modifier keys do not generate "keypress" events.
-    // 224 is the command-key under Mac Firefox.
-    // 91 is the Windows key in IE; it is ASCII for open-bracket but isn't the keycode for that key
-    // 20 is capslock in IE.
-    var isModKey = ((!charCode) && ((type == "keyup") || (type == "keydown")) && (keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 20 || keyCode == 224 || keyCode == 91));
-    if (isModKey) return;
+    // TEST FOR KEYBOARD RESPONSE IPAD
+    //setTimeout(function(){
+      // if (DEBUG && window.DONT_INCORP) return;
 
-    var specialHandled = false;
-    var isTypeForSpecialKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
-    var isTypeForCmdKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
+      // Don't take action based on modifier keys going up and down.
+      // Modifier keys do not generate "keypress" events.
+      // 224 is the command-key under Mac Firefox.
+      // 91 is the Windows key in IE; it is ASCII for open-bracket but isn't the keycode for that key
+      // 20 is capslock in IE.
+      var isModKey = ((!charCode) && ((type == "keyup") || (type == "keydown")) && (keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 20 || keyCode == 224 || keyCode == 91));
+      if (isModKey) return;
 
-    var stopped = false;
+      var specialHandled = false;
+      var isTypeForSpecialKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
+      var isTypeForCmdKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
 
-    inCallStack("handleKeyEvent", function()
-    {
+      var stopped = false;
 
-      if (type == "keypress" || (isTypeForSpecialKey && keyCode == 13 /*return*/ ))
+      inCallStack("handleKeyEvent", function()
       {
-        // in IE, special keys don't send keypress, the keydown does the action
-        if (!outsideKeyPress(evt))
-        {
-          evt.preventDefault();
-          stopped = true;
-        }
-      }
-      else if (type == "keydown")
-      {
-        outsideKeyDown(evt);
-      }
 
-      if (!stopped)
-      {
-        if (isTypeForSpecialKey && keyCode == 8)
+        if (type == "keypress" || (isTypeForSpecialKey && keyCode == 13 /*return*/ ))
         {
-          // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
-          // or else deleting a blank line can take two delete presses.
-          // --
-          // we do deletes completely customly now:
-          //  - allows consistent (and better) meta-delete behavior
-          //  - normalizing and then allowing default behavior confused IE
-          //  - probably eliminates a few minor quirks
-          fastIncorp(3);
-          evt.preventDefault();
-          doDeleteKey(evt);
-          specialHandled = true;
-        }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 13)
-        {
-          // return key, handle specially;
-          // note that in mozilla we need to do an incorporation for proper return behavior anyway.
-          fastIncorp(4);
-          evt.preventDefault();
-          doReturnKey();
-          //scrollSelectionIntoView();
-          scheduler.setTimeout(function()
+          // in IE, special keys don't send keypress, the keydown does the action
+          if (!outsideKeyPress(evt))
           {
-            outerWin.scrollBy(-100, 0);
-          }, 0);
-          specialHandled = true;
+            evt.preventDefault();
+            stopped = true;
+          }
         }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 9 && !(evt.metaKey || evt.ctrlKey))
+        else if (type == "keydown")
         {
-          // tab
-          fastIncorp(5);
-          evt.preventDefault();
-          doTabKey(evt.shiftKey);
-          //scrollSelectionIntoView();
-          specialHandled = true;
+          outsideKeyDown(evt);
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "z" && (evt.metaKey || evt.ctrlKey))
+
+        if (!stopped)
         {
-          // cmd-Z (undo)
-          fastIncorp(6);
-          evt.preventDefault();
-          if (evt.shiftKey)
+          if (isTypeForSpecialKey && keyCode == 8)
           {
+            // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
+            // or else deleting a blank line can take two delete presses.
+            // --
+            // we do deletes completely customly now:
+            //  - allows consistent (and better) meta-delete behavior
+            //  - normalizing and then allowing default behavior confused IE
+            //  - probably eliminates a few minor quirks
+            fastIncorp(3);
+            evt.preventDefault();
+            doDeleteKey(evt);
+            specialHandled = true;
+          }
+          if ((!specialHandled) && isTypeForSpecialKey && keyCode == 13)
+          {
+            // return key, handle specially;
+            // note that in mozilla we need to do an incorporation for proper return behavior anyway.
+            fastIncorp(4);
+            evt.preventDefault();
+            doReturnKey();
+            //scrollSelectionIntoView();
+            scheduler.setTimeout(function()
+            {
+              outerWin.scrollBy(-100, 0);
+            }, 0);
+            specialHandled = true;
+          }
+          if ((!specialHandled) && isTypeForSpecialKey && keyCode == 9 && !(evt.metaKey || evt.ctrlKey))
+          {
+            // tab
+            fastIncorp(5);
+            evt.preventDefault();
+            doTabKey(evt.shiftKey);
+            //scrollSelectionIntoView();
+            specialHandled = true;
+          }
+          if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "z" && (evt.metaKey || evt.ctrlKey))
+          {
+            // cmd-Z (undo)
+            fastIncorp(6);
+            evt.preventDefault();
+            if (evt.shiftKey)
+            {
+              doUndoRedo("redo");
+            }
+            else
+            {
+              doUndoRedo("undo");
+            }
+            specialHandled = true;
+          }
+          if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "y" && (evt.metaKey || evt.ctrlKey))
+          {
+            // cmd-Y (redo)
+            fastIncorp(10);
+            evt.preventDefault();
             doUndoRedo("redo");
+            specialHandled = true;
           }
-          else
+          if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "b" && (evt.metaKey || evt.ctrlKey))
           {
-            doUndoRedo("undo");
+            // cmd-B (bold)
+            fastIncorp(13);
+            evt.preventDefault();
+            toggleAttributeOnSelection('bold');
+            specialHandled = true;
           }
-          specialHandled = true;
-        }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "y" && (evt.metaKey || evt.ctrlKey))
-        {
-          // cmd-Y (redo)
-          fastIncorp(10);
-          evt.preventDefault();
-          doUndoRedo("redo");
-          specialHandled = true;
-        }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "b" && (evt.metaKey || evt.ctrlKey))
-        {
-          // cmd-B (bold)
-          fastIncorp(13);
-          evt.preventDefault();
-          toggleAttributeOnSelection('bold');
-          specialHandled = true;
-        }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "i" && (evt.metaKey || evt.ctrlKey))
-        {
-          // cmd-I (italic)
-          fastIncorp(14);
-          evt.preventDefault();
-          toggleAttributeOnSelection('italic');
-          specialHandled = true;
-        }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "u" && (evt.metaKey || evt.ctrlKey))
-        {
-          // cmd-U (underline)
-          fastIncorp(15);
-          evt.preventDefault();
-          toggleAttributeOnSelection('underline');
-          specialHandled = true;
-        }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "h" && (evt.ctrlKey))
-        {
-          // cmd-H (backspace)
-          fastIncorp(20);
-          evt.preventDefault();
-          doDeleteKey();
-          specialHandled = true;
+          if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "i" && (evt.metaKey || evt.ctrlKey))
+          {
+            // cmd-I (italic)
+            fastIncorp(14);
+            evt.preventDefault();
+            toggleAttributeOnSelection('italic');
+            specialHandled = true;
+          }
+          if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "u" && (evt.metaKey || evt.ctrlKey))
+          {
+            // cmd-U (underline)
+            fastIncorp(15);
+            evt.preventDefault();
+            toggleAttributeOnSelection('underline');
+            specialHandled = true;
+          }
+          if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "h" && (evt.ctrlKey))
+          {
+            // cmd-H (backspace)
+            fastIncorp(20);
+            evt.preventDefault();
+            doDeleteKey();
+            specialHandled = true;
+          }
+
+          if (mozillaFakeArrows && mozillaFakeArrows.handleKeyEvent(evt))
+          {
+            evt.preventDefault();
+            specialHandled = true;
+          }
         }
 
-        if (mozillaFakeArrows && mozillaFakeArrows.handleKeyEvent(evt))
-        {
-          evt.preventDefault();
-          specialHandled = true;
-        }
-      }
-
-      if (type == "keydown")
-      {
-        idleWorkTimer.atLeast(500);
-      }
-      else if (type == "keypress")
-      {
-        if ((!specialHandled) && parenModule.shouldNormalizeOnChar(charCode))
-        {
-          idleWorkTimer.atMost(0);
-        }
-        else
+        if (type == "keydown")
         {
           idleWorkTimer.atLeast(500);
         }
-      }
-      else if (type == "keyup")
-      {
-        var wait = 200;
-        idleWorkTimer.atLeast(wait);
-        idleWorkTimer.atMost(wait);
-      }
-
-      // Is part of multi-keystroke international character on Firefox Mac
-      var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode == 0 && keyCode == 0);
-
-      // Is part of multi-keystroke international character on Safari Mac
-      var isSafariHalfCharacter = (browser.safari && evt.altKey && keyCode == 229);
-
-      if (thisKeyDoesntTriggerNormalize || isFirefoxHalfCharacter || isSafariHalfCharacter)
-      {
-        idleWorkTimer.atLeast(3000); // give user time to type
-        // if this is a keydown, e.g., the keyup shouldn't trigger a normalize
-        thisKeyDoesntTriggerNormalize = true;
-      }
-
-      if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!inInternationalComposition))
-      {
-        if (type != "keyup" || !incorpIfQuick())
+        else if (type == "keypress")
         {
-          observeChangesAroundSelection();
+          if ((!specialHandled) && parenModule.shouldNormalizeOnChar(charCode))
+          {
+            idleWorkTimer.atMost(0);
+          }
+          else
+          {
+            // window.console.log("set idle work timer");
+            // idleWorkTimer.atLeast(500);
+          }
         }
-      }
+        else if (type == "keyup")
+        {
+          var wait = 200;
+          // window.console.log("set idle work timer");
+          idleWorkTimer.atLeast(wait);
+          idleWorkTimer.atMost(wait);
+        }
 
-      if (type == "keyup")
-      {
-        thisKeyDoesntTriggerNormalize = false;
-      }
-    });
+        // Is part of multi-keystroke international character on Firefox Mac
+        var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode == 0 && keyCode == 0);
+
+        // Is part of multi-keystroke international character on Safari Mac
+        var isSafariHalfCharacter = (browser.safari && evt.altKey && keyCode == 229);
+
+        if (thisKeyDoesntTriggerNormalize || isFirefoxHalfCharacter || isSafariHalfCharacter)
+        {          
+          idleWorkTimer.atLeast(3000); // give user time to type
+          // if this is a keydown, e.g., the keyup shouldn't trigger a normalize
+          thisKeyDoesntTriggerNormalize = true;
+        }
+
+        if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!inInternationalComposition))
+        {
+          if (type != "keyup" || !incorpIfQuick())
+          {
+            observeChangesAroundSelection();
+          }
+        }
+
+        if (type == "keyup")
+        {
+          thisKeyDoesntTriggerNormalize = false;
+        }
+      });
+
+    // }, 10); //setTimeout (performance??);
   }
 
   var thisKeyDoesntTriggerNormalize = false;
@@ -4024,6 +4041,9 @@ function OUTER(gscope)
   function hasIESelection()
   {
     var browserSelection;
+
+    window.console.log("try here!");
+
     try
     {
       browserSelection = doc.selection;
@@ -4053,6 +4073,9 @@ function OUTER(gscope)
     if (browser.msie)
     {
       var browserSelection;
+
+      window.console.log("try here!");
+
       try
       {
         browserSelection = doc.selection;
@@ -4386,10 +4409,10 @@ function OUTER(gscope)
           moveToElementText(s, n);
           // work around for issue that caret at beginning of line
           // somehow ends up at end of previous line
-          if (s.move('character', 1))
-          {
-            s.move('character', -1);
-          }
+          // if (s.move('character', 1))
+          // {
+          //   s.move('character', -1);
+          // }
           s.collapse(true); // to start
         }
       }
@@ -4749,8 +4772,11 @@ function OUTER(gscope)
 
   function setDesignMode(newVal)
   {
-    try
-    {
+    
+    // window.console.log("try here!");
+
+    // try
+    // {
       function setIfNecessary(target, prop, val)
       {
         if (String(target[prop]).toLowerCase() != val)
@@ -4774,11 +4800,11 @@ function OUTER(gscope)
         }
       }
       return true;
-    }
-    catch (e)
-    {
-      return false;
-    }
+    // }
+    // catch (e)
+    // {
+    //  return false;
+    // }
   }
 
   var iePastedLines = null;
@@ -4824,10 +4850,16 @@ function OUTER(gscope)
   function bindTheEventHandlers()
   {
     bindEventHandler(window, "unload", teardown);
-    bindEventHandler(document, "keydown", handleKeyEvent);
-    bindEventHandler(document, "keypress", handleKeyEvent);
+    // bindEventHandler(document, "keydown", handleKeyEvent);
+    // bindEventHandler(document, "keypress", handleKeyEvent);
+
+    // added
+    bindEventHandler(document, "paste", handleKeyEvent);
+    bindEventHandler(document, "cut", handleKeyEvent);
+
     bindEventHandler(document, "keyup", handleKeyEvent);
     bindEventHandler(document, "click", handleClick);
+
     bindEventHandler(root, "blur", handleBlur);
     if (browser.msie)
     {
@@ -4936,6 +4968,8 @@ function OUTER(gscope)
       if (browser.msie)
       {
         // cache CSS background images
+        window.console.log("try here!");
+
         try
         {
           doc.execCommand("BackgroundImageCache", false, true);
@@ -5248,334 +5282,9 @@ function OUTER(gscope)
   }
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
 
-  var mozillaFakeArrows = (browser.mozilla && (function()
-  {
-    // In Firefox 2, arrow keys are unstable while DOM-manipulating
-    // operations are going on.  Specifically, if an operation
-    // (computation that ties up the event queue) is going on (in the
-    // call-stack of some event, like a timeout) that at some point
-    // mutates nodes involved in the selection, then the arrow
-    // keypress may (randomly) move the caret to the beginning or end
-    // of the document.  If the operation also mutates the selection
-    // range, the old selection or the new selection may be used, or
-    // neither.
-    // As long as the arrow is pressed during the busy operation, it
-    // doesn't seem to matter that the keydown and keypress events
-    // aren't generated until afterwards, or that the arrow movement
-    // can still be stopped (meaning it hasn't been performed yet);
-    // Firefox must be preserving some old information about the
-    // selection or the DOM from when the key was initially pressed.
-    // However, it also doesn't seem to matter when the key was
-    // actually pressed relative to the time of the mutation within
-    // the prolonged operation.  Also, even in very controlled tests
-    // (like a mutation followed by a long period of busyWaiting), the
-    // problem shows up often but not every time, with no discernable
-    // pattern.  Who knows, it could have something to do with the
-    // caret-blinking timer, or DOM changes not being applied
-    // immediately.
-    // This problem, mercifully, does not show up at all in IE or
-    // Safari.  My solution is to have my own, full-featured arrow-key
-    // implementation for Firefox.
-    // Note that the problem addressed here is potentially very subtle,
-    // especially if the operation is quick and is timed to usually happen
-    // when the user is idle.
-    // features:
-    // - 'up' and 'down' arrows preserve column when passing through shorter lines
-    // - shift-arrows extend the "focus" point, which may be start or end of range
-    // - the focus point is kept horizontally and vertically scrolled into view
-    // - arrows without shift cause caret to move to beginning or end of selection (left,right)
-    //   or move focus point up or down a line (up,down)
-    // - command-(left,right,up,down) on Mac acts like (line-start, line-end, doc-start, doc-end)
-    // - takes wrapping into account when doesWrap is true, i.e. up-arrow and down-arrow move
-    //   between the virtual lines within a wrapped line; this was difficult, and unfortunately
-    //   requires mutating the DOM to get the necessary information
-    var savedFocusColumn = 0; // a value of 0 has no effect
-    var updatingSelectionNow = false;
-
-    function getVirtualLineView(lineNum)
-    {
-      var lineNode = rep.lines.atIndex(lineNum).lineNode;
-      while (lineNode.firstChild && isBlockElement(lineNode.firstChild))
-      {
-        lineNode = lineNode.firstChild;
-      }
-      return makeVirtualLineView(lineNode);
-    }
-
-    function markerlessLineAndChar(line, chr)
-    {
-      return [line, chr - rep.lines.atIndex(line).lineMarker];
-    }
-
-    function markerfulLineAndChar(line, chr)
-    {
-      return [line, chr + rep.lines.atIndex(line).lineMarker];
-    }
-
-    return {
-      notifySelectionChanged: function()
-      {
-        if (!updatingSelectionNow)
-        {
-          savedFocusColumn = 0;
-        }
-      },
-      handleKeyEvent: function(evt)
-      {
-        // returns "true" if handled
-        if (evt.type != "keypress") return false;
-        var keyCode = evt.keyCode;
-        if (keyCode < 37 || keyCode > 40) return false;
-        incorporateUserChanges();
-
-        if (!(rep.selStart && rep.selEnd)) return true;
-
-        // {byWord,toEnd,normal}
-        var moveMode = (evt.altKey ? "byWord" : (evt.ctrlKey ? "byWord" : (evt.metaKey ? "toEnd" : "normal")));
-
-        var anchorCaret = markerlessLineAndChar(rep.selStart[0], rep.selStart[1]);
-        var focusCaret = markerlessLineAndChar(rep.selEnd[0], rep.selEnd[1]);
-        var wasCaret = isCaret();
-        if (rep.selFocusAtStart)
-        {
-          var tmp = anchorCaret;
-          anchorCaret = focusCaret;
-          focusCaret = tmp;
-        }
-        var K_UP = 38,
-            K_DOWN = 40,
-            K_LEFT = 37,
-            K_RIGHT = 39;
-        var dontMove = false;
-        if (wasCaret && !evt.shiftKey)
-        {
-          // collapse, will mutate both together
-          anchorCaret = focusCaret;
-        }
-        else if ((!wasCaret) && (!evt.shiftKey))
-        {
-          if (keyCode == K_LEFT)
-          {
-            // place caret at beginning
-            if (rep.selFocusAtStart) anchorCaret = focusCaret;
-            else focusCaret = anchorCaret;
-            if (moveMode == "normal") dontMove = true;
-          }
-          else if (keyCode == K_RIGHT)
-          {
-            // place caret at end
-            if (rep.selFocusAtStart) focusCaret = anchorCaret;
-            else anchorCaret = focusCaret;
-            if (moveMode == "normal") dontMove = true;
-          }
-          else
-          {
-            // collapse, will mutate both together
-            anchorCaret = focusCaret;
-          }
-        }
-        if (!dontMove)
-        {
-          function lineLength(i)
-          {
-            var entry = rep.lines.atIndex(i);
-            return entry.text.length - entry.lineMarker;
-          }
-
-          function lineText(i)
-          {
-            var entry = rep.lines.atIndex(i);
-            return entry.text.substring(entry.lineMarker);
-          }
-
-          if (keyCode == K_UP || keyCode == K_DOWN)
-          {
-            var up = (keyCode == K_UP);
-            var canChangeLines = ((up && focusCaret[0]) || ((!up) && focusCaret[0] < rep.lines.length() - 1));
-            var virtualLineView, virtualLineSpot, canChangeVirtualLines = false;
-            if (doesWrap)
-            {
-              virtualLineView = getVirtualLineView(focusCaret[0]);
-              virtualLineSpot = virtualLineView.getVLineAndOffsetForChar(focusCaret[1]);
-              canChangeVirtualLines = ((up && virtualLineSpot.vline > 0) || ((!up) && virtualLineSpot.vline < (
-              virtualLineView.getNumVirtualLines() - 1)));
-            }
-            var newColByVirtualLineChange;
-            if (moveMode == "toEnd")
-            {
-              if (up)
-              {
-                focusCaret[0] = 0;
-                focusCaret[1] = 0;
-              }
-              else
-              {
-                focusCaret[0] = rep.lines.length() - 1;
-                focusCaret[1] = lineLength(focusCaret[0]);
-              }
-            }
-            else if (moveMode == "byWord")
-            {
-              // move by "paragraph", a feature that Firefox lacks but IE and Safari both have
-              if (up)
-              {
-                if (focusCaret[1] == 0 && canChangeLines)
-                {
-                  focusCaret[0]--;
-                  focusCaret[1] = 0;
-                }
-                else focusCaret[1] = 0;
-              }
-              else
-              {
-                var lineLen = lineLength(focusCaret[0]);
-                if (browser.windows)
-                {
-                  if (canChangeLines)
-                  {
-                    focusCaret[0]++;
-                    focusCaret[1] = 0;
-                  }
-                  else
-                  {
-                    focusCaret[1] = lineLen;
-                  }
-                }
-                else
-                {
-                  if (focusCaret[1] == lineLen && canChangeLines)
-                  {
-                    focusCaret[0]++;
-                    focusCaret[1] = lineLength(focusCaret[0]);
-                  }
-                  else
-                  {
-                    focusCaret[1] = lineLen;
-                  }
-                }
-              }
-              savedFocusColumn = 0;
-            }
-            else if (canChangeVirtualLines)
-            {
-              var vline = virtualLineSpot.vline;
-              var offset = virtualLineSpot.offset;
-              if (up) vline--;
-              else vline++;
-              if (savedFocusColumn > offset) offset = savedFocusColumn;
-              else
-              {
-                savedFocusColumn = offset;
-              }
-              var newSpot = virtualLineView.getCharForVLineAndOffset(vline, offset);
-              focusCaret[1] = newSpot.lineChar;
-            }
-            else if (canChangeLines)
-            {
-              if (up) focusCaret[0]--;
-              else focusCaret[0]++;
-              var offset = focusCaret[1];
-              if (doesWrap)
-              {
-                offset = virtualLineSpot.offset;
-              }
-              if (savedFocusColumn > offset) offset = savedFocusColumn;
-              else
-              {
-                savedFocusColumn = offset;
-              }
-              if (doesWrap)
-              {
-                var newLineView = getVirtualLineView(focusCaret[0]);
-                var vline = (up ? newLineView.getNumVirtualLines() - 1 : 0);
-                var newSpot = newLineView.getCharForVLineAndOffset(vline, offset);
-                focusCaret[1] = newSpot.lineChar;
-              }
-              else
-              {
-                var lineLen = lineLength(focusCaret[0]);
-                if (offset > lineLen) offset = lineLen;
-                focusCaret[1] = offset;
-              }
-            }
-            else
-            {
-              if (up) focusCaret[1] = 0;
-              else focusCaret[1] = lineLength(focusCaret[0]);
-              savedFocusColumn = 0;
-            }
-          }
-          else if (keyCode == K_LEFT || keyCode == K_RIGHT)
-          {
-            var left = (keyCode == K_LEFT);
-            if (left)
-            {
-              if (moveMode == "toEnd") focusCaret[1] = 0;
-              else if (focusCaret[1] > 0)
-              {
-                if (moveMode == "byWord")
-                {
-                  focusCaret[1] = moveByWordInLine(lineText(focusCaret[0]), focusCaret[1], false);
-                }
-                else
-                {
-                  focusCaret[1]--;
-                }
-              }
-              else if (focusCaret[0] > 0)
-              {
-                focusCaret[0]--;
-                focusCaret[1] = lineLength(focusCaret[0]);
-                if (moveMode == "byWord")
-                {
-                  focusCaret[1] = moveByWordInLine(lineText(focusCaret[0]), focusCaret[1], false);
-                }
-              }
-            }
-            else
-            {
-              var lineLen = lineLength(focusCaret[0]);
-              if (moveMode == "toEnd") focusCaret[1] = lineLen;
-              else if (focusCaret[1] < lineLen)
-              {
-                if (moveMode == "byWord")
-                {
-                  focusCaret[1] = moveByWordInLine(lineText(focusCaret[0]), focusCaret[1], true);
-                }
-                else
-                {
-                  focusCaret[1]++;
-                }
-              }
-              else if (focusCaret[0] < rep.lines.length() - 1)
-              {
-                focusCaret[0]++;
-                focusCaret[1] = 0;
-                if (moveMode == "byWord")
-                {
-                  focusCaret[1] = moveByWordInLine(lineText(focusCaret[0]), focusCaret[1], true);
-                }
-              }
-            }
-            savedFocusColumn = 0;
-          }
-        }
-
-        var newSelFocusAtStart = ((focusCaret[0] < anchorCaret[0]) || (focusCaret[0] == anchorCaret[0] && focusCaret[1] < anchorCaret[1]));
-        var newSelStart = (newSelFocusAtStart ? focusCaret : anchorCaret);
-        var newSelEnd = (newSelFocusAtStart ? anchorCaret : focusCaret);
-        updatingSelectionNow = true;
-        performSelectionChange(markerfulLineAndChar(newSelStart[0], newSelStart[1]), markerfulLineAndChar(newSelEnd[0], newSelEnd[1]), newSelFocusAtStart);
-        updatingSelectionNow = false;
-        currentCallStack.userChangedSelection = true;
-        return true;
-      }
-    };
-  })());
-
+  var mozillaFakeArrows = "";
 
   // stolen from jquery-1.2.1
-
 
   function fixEvent(event)
   {
