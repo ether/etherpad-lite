@@ -3,8 +3,12 @@ function translate(str)
 {
   var translated = str;
   
+  //skip if there is no language defined
+  if(typeof language === "undefined")
+    return;
+  
   //return translation if avaiable
-  if(language != null && translation != null && translation[language][str] != null)
+  if(translation != null && translation[language][str] != null)
   {
     translated = translation[language][str];
   }
@@ -19,7 +23,7 @@ function translate(str)
 function DOMTranslate(selector, attribute)
 {
   //skip translation if its english
-  if(language === "en")
+  if(typeof language === "undefined")
    return;
    
   //loop trough all elements
