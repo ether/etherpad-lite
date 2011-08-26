@@ -54,5 +54,6 @@
 "Import is not available":"Import ist nicht verfügbar",
 "Importing a file will overwrite the current text of the pad. Are you sure you want to proceed?":"Der Import einer Datei wird den aktuellen Padinhalt überschreiben. Fortfahren?",
 "Import Now":"Jetzt importieren",
-"Importing...":"Importieren..."
+"Importing...":"Importieren...",
+"toggle the font between monospace and normal":"Feste Zeichenbreite ein/ausschalten"
 }
