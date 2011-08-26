@@ -122,6 +122,10 @@ var padeditbar = (function()
         else if (cmd == 'save')
         {
           padsavedrevs.saveNow();
+        } 
+        else if (cmd == 'tglfont') 
+        {
+            pad.changeViewOption('useMonospaceFont', !(pad.padOptions.view&&pad.padOptions.view.useMonospaceFont));
         }
         else
         {
