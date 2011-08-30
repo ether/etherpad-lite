@@ -271,7 +271,11 @@
               <!-- termporary place holder--> 
               <a id = "returnbutton">Return to pad</a>
               <script>
-                $("#returnbutton").attr("href", document.referrer);
+              	if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
+                  $("#returnbutton").attr("href", document.referrer);
+              	} else {
+                  $("#returnbutton").attr("href", document.location.href.substring(0,document.location.href.lastIndexOf("/")));
+              	}
               </script>
             </div>
 
