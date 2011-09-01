@@ -100,7 +100,7 @@ async.waterfall([
     { 
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/.." +
-                                    req.url.replace(/\./g, '').split("?")[0]);
+                                    req.url.replace(/\.\./g, '').split("?")[0]);
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
