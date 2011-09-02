@@ -80,7 +80,7 @@ function getParams()
 {
   var showControls = getUrlVars()["showControls"];
   var showChat = getUrlVars()["showChat"];
-  var userName = getUrlVars()["userName"];
+  var userName = unescape(getUrlVars()["userName"]);
   var showLineNumbers = getUrlVars()["showLineNumbers"];
   var useMonospaceFont = getUrlVars()["useMonospaceFont"];
   if(showControls)
@@ -245,6 +245,7 @@ function handshake()
       if (globalUserName !== false)
       {
         pad.notifyChangeName(globalUserName); // Notifies the server
+	pad.myUserInfo.name = globalUserName;
         $('#myusernameedit').attr({"value":globalUserName}); // Updates the current users UI
       }
     }
