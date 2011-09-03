@@ -1,0 +1,6 @@
+Vítejte v Etherpadu Lite!
+
+Během psaní je tento Pad synchronizován se serverem, takže každý, kdo si prohlíží tuto stránku, vídí stejný text.
+Tato technika umožňuje ucelenou spolupráci na dokumentech.
+
+Etherpad Lite naleznete na Githubu: http://j.mp/ep-lite
