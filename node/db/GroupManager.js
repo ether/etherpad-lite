@@ -244,7 +244,7 @@ exports.createGroupPad = function(groupID, padName, text, callback)
   });
 }
 
-exports.listPads = function(groupID, callback)
+exports.listGroupPads = function(groupID, callback)
 {
   exports.doesGroupExist(groupID, function(err, exists)
   {

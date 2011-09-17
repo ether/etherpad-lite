@@ -33,7 +33,7 @@ var async = require("async");
 exports.createGroup = groupManager.createGroup;
 exports.createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
 exports.deleteGroup = groupManager.deleteGroup;
-exports.listPads = groupManager.listPads;
+exports.listGroupPads = groupManager.listGroupPads;
 exports.createGroupPad = groupManager.createGroupPad;
 
 /**********************/
@@ -56,6 +56,15 @@ exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 /************************/
 /**PAD CONTENT FUNCTIONS*/
 /************************/
+
+
+exports.listAllPads = function(callback)
+{
+	padManager.listAllPads(callback);
+
+}
+
+
 
 /**
 getText(padID, [rev]) returns the text of a pad 

@@ -113,3 +113,18 @@ exports.unloadPad = function(padId)
   if(globalPads[padId])
     delete globalPads[padId];
 }
+
+exports.listAllPads = function(callback)
+{
+	db.get("allpads",function(err,data) 
+	{
+		if(err) callback(err);
+		if(data){
+			callback(err,data);
+		}
+		else callback(err,[]);
+
+	});
+
+
+}
