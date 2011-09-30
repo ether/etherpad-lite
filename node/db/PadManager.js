@@ -21,10 +21,20 @@
 require("../db/Pad");
 var db = require("./DB").db;
 
-/**
- * A Array with all known Pads
+/** 
+ * An Object containing all known Pads. Provides "get" and "set" functions,
+ * which should be used instead of indexing with brackets. These prepend a
+ * colon to the key, to avoid conflicting with built-in Object methods or with
+ * these functions themselves.
+ *
+ * If this is needed in other places, it would be wise to make this a prototype
+ * that's defined somewhere more sensible.
  */
-globalPads = [];
+globalPads = {
+    get: function (name) { return this[':'+name]; },
+    set: function (name, value) { this[':'+name] = value; },
+    remove: function (name) { delete this[':'+name]; }
+};
 
 /**
  * Returns a Pad Object with the callback
@@ -65,7 +75,7 @@ exports.getPad = function(id, text, callback)
     }
   }
   
-  var pad = globalPads[id];
+  var pad = globalPads.get(id);
   
   //return pad if its already loaded
   if(pad != null)
@@ -86,7 +96,7 @@ exports.getPad = function(id, text, callback)
       }
       else
       {
-        globalPads[id] = pad;
+        globalPads.set(id, pad);
         callback(null, pad);
       }
     });
@@ -110,6 +120,6 @@ exports.isValidPadId = function(padId)
 //removes a pad from the array
 exports.unloadPad = function(padId)
 {
-  if(globalPads[padId])
-    delete globalPads[padId];
+  if(globalPads.get(padId))
+    globalPads.remove(padId);
 }
