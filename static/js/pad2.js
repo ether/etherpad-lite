@@ -18,6 +18,7 @@
 
 var socket;
 var LineNumbersDisabled = false;
+var noColors = false;
 var useMonospaceFontGlobal = false;
 var globalUserName = false;
 
@@ -80,9 +81,18 @@ function getParams()
 {
   var showControls = getUrlVars()["showControls"];
   var showChat = getUrlVars()["showChat"];
-  var userName = getUrlVars()["userName"];
+  var userName = unescape(getUrlVars()["userName"]);
   var showLineNumbers = getUrlVars()["showLineNumbers"];
   var useMonospaceFont = getUrlVars()["useMonospaceFont"];
+  var IsnoColors = getUrlVars()["noColors"];
+
+  if(IsnoColors)
+  {
+    if(IsnoColors == "true")
+    {
+      noColors = true;
+    }
+  }
   if(showControls)
   {
     if(showControls == "false")
@@ -236,6 +246,13 @@ function handshake()
       {
         pad.changeViewOption('showLineNumbers', false);
       }
+
+      // If the noColors value is set to true then we need to hide the backround colors on the ace spans
+      if (noColors == true)
+      {
+        pad.changeViewOption('noColors', true);
+      }
+
       // If the Monospacefont value is set to true then change it to monospace.
       if (useMonospaceFontGlobal == true)
       {
@@ -245,6 +262,7 @@ function handshake()
       if (globalUserName !== false)
       {
         pad.notifyChangeName(globalUserName); // Notifies the server
+	pad.myUserInfo.name = globalUserName;
         $('#myusernameedit').attr({"value":globalUserName}); // Updates the current users UI
       }
     }

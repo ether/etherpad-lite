@@ -51,7 +51,7 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 **As root:**
 
 <ol>
-  <li>Install the dependencies. We need the gzip, git, curl, libssl develop libraries and python <br><code>apt-get install gzip git-core curl python libssl-dev</code></li><br>
+  <li>Install the dependencies. We need the gzip, git, curl, libssl develop libraries and python <br><code>apt-get install gzip git-core curl python libssl-dev build-essential</code></li><br>
   <li>Install node.js 
     <ol type="a">
       <li>Download the latest <b>0.4.x</b> node.js release from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
