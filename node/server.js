@@ -91,7 +91,8 @@ async.waterfall([
     var httpLogger = log4js.getLogger("http");
     app.configure(function() 
     {
-      app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+      if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
+        app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
       app.use(express.cookieParser());
     });
     
