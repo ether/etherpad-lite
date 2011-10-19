@@ -61,10 +61,19 @@ exports.doImport = function(req, res, padId)
       
       form.parse(req, function(err, fields, files) 
       { 
-        //save the path of the uploaded file
-        srcFile = files.file.path;
-        
-        callback(err);
+        //the upload failed, stop at this point
+        if(err || files.file === undefined)
+        {
+          console.warn("Uploading Error: " + err.stack);
+          callback("uploadFailed");
+        }
+        //everything ok, continue
+        else 
+        {
+          //save the path of the uploaded file
+          srcFile = files.file.path;
+          callback();
+        }
       });
     },
     
@@ -157,6 +166,13 @@ exports.doImport = function(req, res, padId)
     }
   ], function(err)
   {
+    //the upload failed, there is nothing we can do, send a 500
+    if(err == "uploadFailed")
+    {
+      res.send(500);
+      return;
+    }
+
     if(err) throw err;
   
     //close the connection
