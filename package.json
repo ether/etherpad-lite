@@ -3,7 +3,7 @@
   "description"   : "A Etherpad based on node.js",
   "homepage"      : "https://github.com/Pita/etherpad-lite",
   "keywords"      : ["etherpad", "realtime", "collaborative", "editor"],
-  "author"        : "Peter 'Pita' Martischka <petermartischka@googlemail.com>",
+  "author"        : "Peter 'Pita' Martischka <petermartischka@googlemail.com> - Primary Technology Ltd",
   "contributors": [
                     { "name": "John McLear", 
                       "name": "Hans Pinckaers",
