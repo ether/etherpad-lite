@@ -50,6 +50,7 @@ var functions = {
   "listSessionsOfAuthor"      : ["authorID"], 
   "getText"                   : ["padID", "rev"],
   "setText"                   : ["padID", "text"],
+  "getHTML"                   : ["padID", "rev"],
   "getRevisionsCount"         : ["padID"], 
   "deletePad"                 : ["padID"], 
   "getReadOnlyID"             : ["padID"],
