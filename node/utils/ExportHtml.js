@@ -257,8 +257,13 @@ function getHTMLFromAtext(pad, atext)
         {
           chars--; // exclude newline at end of line, if present
         }
+        
         var s = taker.take(chars);
-
+        
+        //removes the characters with the code 12. Don't know where they come 
+        //from but they break the abiword parser and are completly useless
+        s = s.replace(String.fromCharCode(12), "");
+        
         assem.append(_escapeHTML(s));
       } // end iteration over spans in line
       
