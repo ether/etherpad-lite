@@ -193,7 +193,7 @@ exports.handleMessage = function(client, message)
   //if the message type is unkown, throw an exception
   else
   {
-    messageLogger.warn("Droped message, unkown Message Type " + message.type);
+    messageLogger.warn("Dropped message, unkown Message Type " + message.type);
   }
 }
 
@@ -272,12 +272,12 @@ function handleSuggestUserName(client, message)
   //check if all ok
   if(message.data.payload.newName == null)
   {
-    messageLogger.warn("Droped message, suggestUserName Message has no newName!");
+    messageLogger.warn("Dropped message, suggestUserName Message has no newName!");
     return;
   }
   if(message.data.payload.unnamedId == null)
   {
-    messageLogger.warn("Droped message, suggestUserName Message has no unnamedId!");
+    messageLogger.warn("Dropped message, suggestUserName Message has no unnamedId!");
     return;
   }
   
@@ -304,7 +304,7 @@ function handleUserInfoUpdate(client, message)
   //check if all ok
   if(message.data.userInfo.colorId == null)
   {
-    messageLogger.warn("Droped message, USERINFO_UPDATE Message has no colorId!");
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no colorId!");
     return;
   }
   
@@ -348,17 +348,17 @@ function handleUserChanges(client, message)
   //check if all ok
   if(message.data.baseRev == null)
   {
-    messageLogger.warn("Droped message, USER_CHANGES Message has no baseRev!");
+    messageLogger.warn("Dropped message, USER_CHANGES Message has no baseRev!");
     return;
   }
   if(message.data.apool == null)
   {
-    messageLogger.warn("Droped message, USER_CHANGES Message has no apool!");
+    messageLogger.warn("Dropped message, USER_CHANGES Message has no apool!");
     return;
   }
   if(message.data.changeset == null)
   {
-    messageLogger.warn("Droped message, USER_CHANGES Message has no changeset!");
+    messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
     return;
   }
   
@@ -600,22 +600,22 @@ function handleClientReady(client, message)
   //check if all ok
   if(!message.token)
   {
-    messageLogger.warn("Droped message, CLIENT_READY Message has no token!");
+    messageLogger.warn("Dropped message, CLIENT_READY message has no token!");
     return;
   }
   if(!message.padId)
   {
-    messageLogger.warn("Droped message, CLIENT_READY Message has no padId!");
+    messageLogger.warn("Dropped message, CLIENT_READY message has no padId!");
     return;
   }
   if(!message.protocolVersion)
   {
-    messageLogger.warn("Droped message, CLIENT_READY Message has no protocolVersion!");
+    messageLogger.warn("Dropped message, CLIENT_READY message has no protocolVersion!");
     return;
   }
   if(message.protocolVersion != 2)
   {
-    messageLogger.warn("Droped message, CLIENT_READY Message has a unkown protocolVersion '" + message.protocolVersion + "'!");
+    messageLogger.warn("Dropped message, CLIENT_READY message has an unkown protocolVersion '" + message.protocolVersion + "'!");
     return;
   }
 
