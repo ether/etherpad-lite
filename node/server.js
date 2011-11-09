@@ -196,24 +196,27 @@ async.waterfall([
           res.send(html);
       });
     });
-        
-    //serve pad.html under /p
-    app.get('/p/:pad', function(req, res, next)
+    
+    //serve pad.html under / and /p for compatibility
+    app.get( "(/p)?/:pad", function(req, res, next)
     {    
-      //ensure the padname is valid and the url doesn't end with a /
-      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
-      {
-        res.send('Such a padname is forbidden', 404);
+      // ensure the padname is valid and the url doesn't end with a /
+      // and that reserved pathnames are served as files, not as pads
+      if( !padManager.isValidPadId(req.params.pad) || /\/+$/.test(req.url)) {
+        res.send('Such a padname is forbidden.', 404);
         return;
+      } else if ( /(favicon\.ico|robots\.txt)/.test(req.url) )
+      {
+        next();
+	return;
       }
-      
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/pad.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
-    
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', function(req, res, next)
+        
+    //serve timeslider.html under /$padname/timeslider
+    app.get('/:pad/timeslider', function(req, res, next)
     {
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
@@ -226,9 +229,9 @@ async.waterfall([
       var filePath = path.normalize(__dirname + "/../static/timeslider.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
-    
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/export/:type', function(req, res, next)
+
+    //serve export files under /$padname/export
+    app.get('/:pad/export/:type', function(req, res, next)
     {
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
@@ -262,7 +265,7 @@ async.waterfall([
     });
     
     //handle import requests
-    app.post('/p/:pad/import', function(req, res, next)
+    app.post('/:pad/import', function(req, res, next)
     {
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
@@ -341,9 +344,9 @@ async.waterfall([
       var filePath = path.normalize(__dirname + "/../static/index.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
-    
+	       
     //serve robots.txt
-    app.get('/robots.txt', function(req, res)
+    app.get( /.*\/robots.txt/, function(req, res)
     {
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/robots.txt");
@@ -351,7 +354,7 @@ async.waterfall([
     });
     
     //serve favicon.ico
-    app.get('/favicon.ico', function(req, res)
+    app.get( /.*\/favicon\.ico/, function(req, res)
     {
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
@@ -365,7 +368,7 @@ async.waterfall([
         }
       });
     });
-    
+
     //let the server listen
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
