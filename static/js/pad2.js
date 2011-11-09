@@ -72,7 +72,7 @@ function randomString()
   for (var i = 0; i < string_length; i++)
   {
     var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
+    randomstring += chars[rnum];
   }
   return "t." + randomstring;
 }
@@ -147,10 +147,22 @@ function getUrlVars()
   return vars;
 }
 
-function savePassword()
+function hash(password, salt)
+{
+	return sha512(password + salt) + "$" + salt;
+}
+
+/* Generate the "timed hash" used to get access.
+ * The password is hashed with the database's salt, afterwards it is hashed again with a timestamp a few days in the future as "salt".
+ * The server checks the two hashe's equality as usual, but also checks whether this timestamp is still in the future (grant access)
+ * or if it has passed (deny access). This provides an saved-password expiry mechanism which is a) independent of the browser's cookie
+ * retention and b) provides some level of security against "cookie stealing" (be it by xss or otherwise): If Eve steals a cookie, she
+ * does "only" get a timed-hash lifetime access to the pad, but *not* the actual password.
+ */
+function savePassword(pwsalt)
 {
   //set the password cookie
-  createCookie("password",$("#passwordinput").val(),null,document.location.pathname);
+  createCookie("password",hash(hash($("#passwordinput").val(), pwsalt), new Date().getTime() + 14 * 24 * 3600 * 1000),null,document.location.pathname); //FIXME some means of configuring this threshold would be really great
   //reload
   document.location=document.location;
 }
@@ -214,13 +226,13 @@ function handshake()
       {
         $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword()'>ok</button>");
+                                    "<button type='button' onclick='savePassword("+obj.passwordSalt+")'>ok</button>");
       }
       else if(obj.accessStatus == "wrongPassword")
       {
-        $("#editorloadingbox").html("<b>You're password was wrong</b><br>" +
+        $("#editorloadingbox").html("<b>Your password was wrong</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword()'>ok</button>");
+                                    "<button type='button' onclick='savePassword("+obj.passwordSalt+")'>ok</button>");
       }
     }
     

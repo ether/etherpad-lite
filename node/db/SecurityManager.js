@@ -51,6 +51,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
   var groupID = padID.split("$")[0];
   var padExists = false;
   var validSession = false;
+  var pwsalt;
   var sessionAuthor;
   var tokenAuthor;
   var isPublic;
@@ -131,6 +132,9 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         
         //is it password protected?
         isPasswordProtected = pad.isPasswordProtected();
+
+		//get the password salt used by the hash function
+		pwsalt = pad.getPasswordSalt();
         
         //is password correct?
         if(isPasswordProtected && password && pad.isCorrectPassword(password))
@@ -162,13 +166,14 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         else if(isPasswordProtected && passwordStatus == "wrong")
         {
           //--> deny access, ask for new password and tell them that the password is wrong
-          statusObject = {accessStatus: "wrongPassword"};
+		  //The salt can be safely shared since it is not secret. It does its job (improving resistence against rainbow table attacks) even when public.
+          statusObject = {accessStatus: "wrongPassword", passwordSalt: pwsalt};
         }
         //- the pad is password protected but no password given
         else if(isPasswordProtected && passwordStatus == "notGiven")
         {
           //--> ask for password
-          statusObject = {accessStatus: "needPassword"};
+          statusObject = {accessStatus: "needPassword", passwordSalt: pwsalt};
         }
         else
         {
