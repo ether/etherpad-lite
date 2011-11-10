@@ -89,18 +89,8 @@
         <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
 	<script>
-            function go2Name() 
-            {
-                var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = /** "p/" + **/ padname : alert("Please enter a name")
-            }
- 
-            function go2Random() 
-            {
-                window.location = /** "p/" + **/ randomPadName();
-            }
- 
-            function randomPadName() 
+
+	    function randomPadName() 
             {
                 var chars = "23456789ABCDEFGHJKLMNPQRSTUWXYZabcdefghijkmnopqrstuwxyz";
                 var string_length = 16;
@@ -112,7 +102,31 @@
                 }
                 return randomstring;
             }
-            
+
+            function go2Name() 
+            {
+                var padname = document.getElementById("padname").value;
+                padname.length > 0 ? window.location = /** "p/" + **/ padname : alert("Please enter a name")
+            }
+ 
+            function go2Random() 
+            {
+		var rnd = randomPadName();
+		var prefixedName = prompt( "You can prefix or modify your random pad name with some reasonable characters.\nSpecial characters will be removed or escaped.\n\n", "-"+rnd );
+		if ( prefixedName == "-" + rnd ) prefixedName = rnd;
+		var escPrefixedName = encodeURIComponent( prefixedName.replace( /\//, "" ) );
+		if ( prefixedName == null ) return;
+		if ( prefixedName == decodeURIComponent( escPrefixedName )
+		     || ( prefixedName != escPrefixedName 
+			&& confirm( "You have used characters which are not allowed in Urls, and the padname will therefore be modified to "
+			+ decodeURIComponent( escPrefixedName ) 
+			+ ".\nDo you want to use this modifed name?" ) ) ) {
+			window.location = /** "p/" + **/ escPrefixedName;
+		} else {
+			return;
+		}
+            }
+           
             //start the costum js
             if(typeof costumStart == "function") costumStart();
         </script> 
