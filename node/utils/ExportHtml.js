@@ -85,6 +85,8 @@ function getPadHTML(pad, revNum, callback)
   });
 }
 
+exports.getPadHTML = getPadHTML;
+
 function getHTMLFromAtext(pad, atext)
 {
   var apool = pad.apool();
