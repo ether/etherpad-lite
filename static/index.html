@@ -89,7 +89,7 @@
         <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
 	<script>
-            function go2Name() 
+	function go2Name() 
             {
                 var padname = document.getElementById("padname").value;
                 padname.length > 0 ? window.location = /** "p/" + **/ padname : alert("Please enter a name")
@@ -116,11 +116,13 @@
             //start the costum js
             if(typeof costumStart == "function") costumStart();
         </script> 
+<body onload= "document.mainform.padname.focus();" >
         <div id="container"> 
             <div id="button" onclick="go2Random()" title="open a new pad with a generated random name like 'B3GYd74mn2yBH6'">create new random pad</div><br><div id="label">open an existing pad or create a new pad with the name</div> 
-            <form action="#" onsubmit="go2Name();return false;"> 
-                    <input type="text" id="padname" autofocus> 
+            <form action="#" name="mainform" onsubmit="go2Name();return false;"> 
+                    <input type="text" name="padname" id="padname" autofocus> 
                     <input type="submit" value="OK"> 
             </form> 
         </div> 
+</body>
 </html>
