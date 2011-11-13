@@ -1,6 +1,6 @@
 <!doctype html>
 <html>   
-        <title>Etherpad</title> 
+        <title>Etherpad Lite</title> 
         <style> 
             *{ margin:0;padding:0; }
             body {
@@ -70,7 +70,7 @@
               font-size: 15px
             }
             input[type="text"] {
-              width: 443px; /* 243px */
+              width: 443px;
               padding: 10px 47px 10px 10px;
               background: #fff;
               border: 1px solid #bbb;
@@ -86,9 +86,17 @@
             input[type="submit"]::-moz-focus-inner { border: 0 }
             @-moz-document url-prefix() { input[type="submit"] { padding: 7px } }
         </style> 
+        <body onload="document.mainform.padname.focus();">
         <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
-	<script>
+        <div id="container"> 
+            <div id="button" onclick="go2Random()">New Pad</div><br><div id="label">or create/open a Pad with the name</div> 
+            <form action="#" name="mainform" onsubmit="go2Name();return false;"> 
+                    <input type="text" name="padname" id="padname" autofocus> 
+                    <input type="submit" value="OK"> 
+            </form> 
+        </div> 
+        <script> 
 	function go2Name() 
             {
                 var padname = document.getElementById("padname").value;
@@ -116,13 +124,5 @@
             //start the costum js
             if(typeof costumStart == "function") costumStart();
         </script> 
-<body onload= "document.mainform.padname.focus();" >
-        <div id="container"> 
-            <div id="button" onclick="go2Random()" title="open a new pad with a generated random name like 'B3GYd74mn2yBH6'">create new random pad</div><br><div id="label">open an existing pad or create a new pad with the name</div> 
-            <form action="#" name="mainform" onsubmit="go2Name();return false;"> 
-                    <input type="text" name="padname" id="padname" autofocus> 
-                    <input type="submit" value="OK"> 
-            </form> 
-        </div> 
 </body>
 </html>
