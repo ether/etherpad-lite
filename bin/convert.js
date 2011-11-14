@@ -156,7 +156,15 @@ function convertPad(padId, callback)
               //parse the pages
               for(var i=0,length=results.length;i<length;i++)
               {
-                parsePage(chatMessages, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, true);
+                try
+                {
+                  parsePage(chatMessages, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, true);
+                }
+                catch (xerr)
+                {
+                  console.log("Could not parse PAD_CHAT_TEXT for padid:", padId);
+                  throw(xerr);
+                }
               }
             }
             
@@ -194,7 +202,15 @@ function convertPad(padId, callback)
               //parse the pages
               for(var i=0,length=results.length;i<length;i++)
               {
-                parsePage(changesetsMeta, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, true);
+                try
+                {
+                  parsePage(changesetsMeta, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, true);
+                }
+                catch (xerr)
+                {
+                  console.log("Could not parse PAD_REVMETA_TEXT for padid:", padId);
+                  throw(xerr);
+                }
               }
             }
             
@@ -228,7 +244,15 @@ function convertPad(padId, callback)
               //parse the pages
               for(var i=0, length=results.length;i<length;i++)
               {
-                parsePage(authors, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, true);
+                try
+                {
+                  parsePage(authors, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, true);
+                }
+                catch (xerr)
+                {
+                  console.log("Could not parse PAD_AUTHORS_TEXT for padid:", padId);
+                  throw(xerr);
+                }
               }
             }
             
