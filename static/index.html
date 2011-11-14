@@ -90,25 +90,14 @@
         <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
         <div id="container"> 
-            <div id="button" onclick="go2Random()">New Pad</div><br><div id="label">or create/open a Pad with the name</div> 
+            <div id="button" onclick="go2Random()" title="open a new pad with a generated random name like 'B3GYd74mn2yBH6'">create new random pad</div><br><div id="label">open an existing pad or create a new pad with the name</div> 
             <form action="#" name="mainform" onsubmit="go2Name();return false;"> 
                     <input type="text" name="padname" id="padname" autofocus> 
                     <input type="submit" value="OK"> 
             </form> 
         </div> 
         <script> 
-	function go2Name() 
-            {
-                var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = /** "p/" + **/ padname : alert("Please enter a name")
-            }
- 
-            function go2Random() 
-            {
-                window.location = /** "p/" + **/ randomPadName();
-            }
- 
-            function randomPadName() 
+	    function randomPadName() 
             {
                 var chars = "23456789ABCDEFGHJKLMNPQRSTUWXYZabcdefghijkmnopqrstuwxyz";
                 var string_length = 16;
@@ -119,6 +108,30 @@
                     randomstring += chars.substring(rnum, rnum + 1);
                 }
                 return randomstring;
+            }
+
+            function go2Name() 
+            {
+                var padname = document.getElementById("padname").value;
+                padname.length > 0 ? window.location = /** "p/" + **/ padname : alert("Please enter a name")
+            }
+ 
+            function go2Random() 
+            {
+		var rnd = randomPadName();
+		var prefixedName = prompt( "You can prefix or modify your random pad name with some reasonable characters.\nSpecial characters will be removed or escaped.\n\n", "-"+rnd );
+		if ( prefixedName == "-" + rnd ) prefixedName = rnd;
+		var escPrefixedName = encodeURIComponent( prefixedName.replace( /\//, "" ) );
+		if ( prefixedName == null ) return;
+		if ( prefixedName == decodeURIComponent( escPrefixedName )
+		     || ( prefixedName != escPrefixedName 
+			&& confirm( "You have used characters which are not allowed in Urls, and the padname will therefore be modified to "
+			+ decodeURIComponent( escPrefixedName ) 
+			+ ".\nDo you want to use this modifed name?" ) ) ) {
+			window.location = /** "p/" + **/ escPrefixedName;
+		} else {
+			return;
+		}
             }
             
             //start the costum js
