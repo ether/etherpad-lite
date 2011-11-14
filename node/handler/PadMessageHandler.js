@@ -809,15 +809,10 @@ function handleClientReady(client, message)
       //Send the clientVars to the Client
       client.json.send(clientVars);
       
-      //sometimes the client disconnects very early and the session of it is already removed
-      //thats why we have to check that case
-      if(sessioninfos[client.id] !== undefined)
-      {
-        //Save the revision and the author id in sessioninfos
-        sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
-        sessioninfos[client.id].author = author;
-      }
-
+      //Save the revision and the author id in sessioninfos
+      sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+      sessioninfos[client.id].author = author;
+      
       //prepare the notification for the other users on the pad, that this user joined
       var messageToTheOtherUsers = {
         "type": "COLLABROOM",
