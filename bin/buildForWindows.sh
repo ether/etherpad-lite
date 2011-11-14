@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NODE_VERSION="0.5.4"
+NODE_VERSION="0.6.1"
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
