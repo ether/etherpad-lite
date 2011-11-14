@@ -136,7 +136,7 @@ exports.handleDisconnect = function(client)
   {
     if(pad2sessions[sessionPad][i] == client.id)
     {
-      delete pad2sessions[sessionPad][i];  
+      pad2sessions[sessionPad].splice(i, 1);
       break;
     }
   }
