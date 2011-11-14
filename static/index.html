@@ -86,12 +86,13 @@
             input[type="submit"]::-moz-focus-inner { border: 0 }
             @-moz-document url-prefix() { input[type="submit"] { padding: 7px } }
         </style> 
+        <body onload="document.mainform.padname.focus();">
         <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
         <div id="container"> 
             <div id="button" onclick="go2Random()">New Pad</div><br><div id="label">or create/open a Pad with the name</div> 
-            <form action="#" onsubmit="go2Name();return false;"> 
-                    <input type="text" id="padname" autofocus> 
+            <form action="#" name="mainform" onsubmit="go2Name();return false;"> 
+                    <input type="text" name="padname" id="padname" autofocus> 
                     <input type="submit" value="OK"> 
             </form> 
         </div> 
@@ -123,4 +124,5 @@
             //start the costum js
             if(typeof costumStart == "function") costumStart();
         </script> 
+</body>
 </html>
