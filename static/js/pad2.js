@@ -79,12 +79,13 @@ function randomString()
 
 function getParams()
 {
-  var showControls = getUrlVars()["showControls"];
-  var showChat = getUrlVars()["showChat"];
-  var userName = getUrlVars()["userName"];
-  var showLineNumbers = getUrlVars()["showLineNumbers"];
-  var useMonospaceFont = getUrlVars()["useMonospaceFont"];
-  var IsnoColors = getUrlVars()["noColors"];
+  var params = getUrlVars()
+  var showControls = params["showControls"];
+  var showChat = params["showChat"];
+  var userName = params["userName"];
+  var showLineNumbers = params["showLineNumbers"];
+  var useMonospaceFont = params["useMonospaceFont"];
+  var IsnoColors = params["noColors"];
 
   if(IsnoColors)
   {
