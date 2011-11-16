@@ -65,7 +65,7 @@
     padId = decodeURIComponent(urlParts[urlParts.length-2]);
         
     //set the title
-    document.title = document.title + " | " + padId;
+    document.title = document.title + " | " + padId.replace( /_/g, " ");
         
     //ensure we have a token
     token = readCookie("token");
