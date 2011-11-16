@@ -79,12 +79,13 @@ function randomString()
 
 function getParams()
 {
-  var showControls = getUrlVars()["showControls"];
-  var showChat = getUrlVars()["showChat"];
-  var userName = unescape(getUrlVars()["userName"]);
-  var showLineNumbers = getUrlVars()["showLineNumbers"];
-  var useMonospaceFont = getUrlVars()["useMonospaceFont"];
-  var IsnoColors = getUrlVars()["noColors"];
+var params = getUrlVars()
+var showControls = params["showControls"];
+var showChat = params["showChat"];
+var userName = params["userName"];
+var showLineNumbers = params["showLineNumbers"];
+var useMonospaceFont = params["useMonospaceFont"];
+var IsnoColors = params["noColors"];
 
   if(IsnoColors)
   {
@@ -130,7 +131,7 @@ function getParams()
   if(userName)
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
-    globalUserName = userName;
+    globalUserName = unescape( userName );
   }
 }
 
