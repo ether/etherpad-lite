@@ -91,7 +91,10 @@ async.waterfall([
     var httpLogger = log4js.getLogger("http");
     app.configure(function() 
     {
-      app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+      // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
+      // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
+      if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
+        app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
       app.use(express.cookieParser());
     });
     
