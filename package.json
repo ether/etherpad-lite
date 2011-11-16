@@ -19,7 +19,8 @@
                       "uglify-js"  : "1.0.7",
                       "gzip"       : "0.1.0",
                       "formidable" : "1.0.2",
-                      "log4js"     : "0.3.8"
+                      "log4js"     : "0.3.8",
+                      "jsdom"      : "0.2.9"
                     },
   "version"       : "1.0.0"
 }
