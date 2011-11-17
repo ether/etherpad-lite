@@ -26,6 +26,8 @@ var authorManager = require("./AuthorManager");
 var sessionManager = require("./SessionManager");
 var async = require("async");
 var exportHtml = require("../utils/ExportHtml");
+var importHtml = require("../utils/ImportHtml");
+var cleanText = require("./Pad").cleanText;
 
 /**********************/
 /**GROUP FUNCTIONS*****/
@@ -251,6 +253,26 @@ exports.getHTML = function(padID, rev, callback)
         callback(err, data);
       });
     }
+  });
+}
+
+exports.setHTML = function(padID, html, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+
+    // add a new changeset with the new html to the pad
+    importHtml.setPadHTML(pad, cleanText(html));
+
+    //update the clients on the pad
+    padMessageHandler.updatePadClients(pad, callback);
+
   });
 }
 
