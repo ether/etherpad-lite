@@ -9,8 +9,14 @@ documented codebase makes it easier for developers to improve the code and contr
 
 Etherpad Lite is optimized to be easy embeddable. It provides a [HTTP API](https://github.com/Pita/etherpad-lite/wiki/HTTP-API) 
 that allows your web application to manage pads, users and groups. 
-You can use this [PHP Client](https://github.com/TomNomNom/etherpad-lite-client) to work with the API 
-(If you don't want to use PHP, feel free to create a client for your favourite web development language). 
+There are several clients in for this API:
+
+* [PHP](https://github.com/TomNomNom/etherpad-lite-client), thx to [TomNomNom](https://github.com/TomNomNom)
+* [.Net](https://github.com/ja-jo/EtherpadLiteDotNet), thx to [ja-jo](https://github.com/ja-jo)
+* [Node.js](https://github.com/tomassedovic/etherpad-lite-client-js), thx to [tomassedovic](https://github.com/tomassedovic)
+* [Ruby](https://github.com/jhollinger/ruby-etherpad-lite), thx to [jhollinger](https://github.com/jhollinger)
+* [Python](https://github.com/devjones/PyEtherpadLite), thx to [devjones](https://github.com/devjones)
+
 There is also a [jQuery plugin](https://github.com/johnyma22/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website
 
 **Online demo**<br>
@@ -51,12 +57,14 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 **As root:**
 
 <ol>
-  <li>Install the dependencies. We need the gzip, git, curl, libssl develop libraries and python <br><code>apt-get install gzip git-core curl python libssl-dev build-essential</code></li><br>
+  <li>Install the dependencies. We need gzip, git, curl, libssl develop libraries, python and gcc. <br><i>For Debian/Ubuntu</i> <code>apt-get install gzip git-core curl python libssl-dev build-essential</code><br>
+  <i>For Fedora/CentOS</i> <code>yum install gzip git-core curl python openssl-dev && yum groupinstall "Development Tools"</code>
+  </li><br>
   <li>Install node.js 
     <ol type="a">
-      <li>Download the latest <b>0.4.x</b> node.js release from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
-      <li>Extract it with <code>tar xf node-v0.4*</code></li>
-      <li>Move into the node folder <code>cd node-v0.4*</code> and build node with <code>./configure && make && make install</code></li>
+      <li>Download the latest <b>0.6.x</b> node.js release from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
+      <li>Extract it with <code>tar xf node-v0.6*</code></li>
+      <li>Move into the node folder <code>cd node-v0.6*</code> and build node with <code>./configure && make && make install</code></li>
     </ol>
   </li>
   <li>Install npm <code>curl http://npmjs.org/install.sh | sh</code></li>
