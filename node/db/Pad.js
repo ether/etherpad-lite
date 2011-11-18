@@ -380,7 +380,19 @@ Class('Pad', {
         else
         {
           var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(text));                      
-      
+     	  db.get("allpads",function(err,data) 
+		{
+		if(err) callback(err);
+		if(data){
+			data.push(_this.id);
+			db.set("allpads",data);	
+
+		}
+		else {
+			db.set("allpads",[_this.id]);
+		}
+
+		});
           _this.appendRevision(firstChangeset, '');
         }
         
@@ -471,6 +483,21 @@ Class('Pad', {
         {
           db.remove("pad:"+padID);
           padManager.unloadPad(padID);
+
+	  // delete entry from allpads
+	  db.get("allpads",function(err,data)
+		{
+			if(err) callback(err);
+			if(data){
+				delete data[padID];
+				db.set("allpads",data);
+			}
+			else{
+				//nothing to do, although there should be an entry
+			}
+
+		});
+
           callback();
         }
       ], function(err)

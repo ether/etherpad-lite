@@ -123,3 +123,18 @@ exports.unloadPad = function(padId)
   if(globalPads.get(padId))
     globalPads.remove(padId);
 }
+
+exports.listAllPads = function(callback)
+{
+	db.get("allpads",function(err,data) 
+	{
+		if(err) callback(err);
+		if(data){
+			callback(err,data);
+		}
+		else callback(err,[]);
+
+	});
+
+
+}
