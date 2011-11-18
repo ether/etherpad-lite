@@ -18,7 +18,7 @@ var chat = (function()
 {
   var self = {
     show: function () 
-    {      
+    {
       $("#chaticon").hide("slide", {
         direction: "down"
       }, 500, function ()
@@ -55,9 +55,10 @@ var chat = (function()
     scrollDown: function()
     {
       //console.log($('#chatbox').css("display"));
-    
-      if($('#chatbox').css("display") != "none")
+      if($('#chatbox').css("display") != "none") {
         $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
+        $("#chatinput").focus();
+      }
     }, 
     send: function()
     {
@@ -98,7 +99,7 @@ var chat = (function()
         var count = Number($("#chatcounter").text());
         count++;
         $("#chatcounter").text(count);
-        // chat throb stuff -- Just make it throb in for ~2 secs then fadeotu
+        // chat throb stuff -- Just make it throb in for ~2 secs then fadeout
         $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
         $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},2000);
       }
@@ -108,6 +109,13 @@ var chat = (function()
     },
     init: function()
     {
+      $("#chaticon").mouseenter(function(){
+        self.show();
+      });
+      $("#chatbox").mouseenter(function(evt){
+        if ( !$("#chatinput").is(":focus") ) $("#chatinput").focus();
+      });
+      
       $("#chatinput").keypress(function(evt)
       {
         //if the user typed enter, fire the send
