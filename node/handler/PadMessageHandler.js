@@ -136,7 +136,7 @@ exports.handleDisconnect = function(client)
   {
     if(pad2sessions[sessionPad][i] == client.id)
     {
-      pad2sessions[sessionPad].splice(i, 1);
+      delete pad2sessions[sessionPad][i];  
       break;
     }
   }
@@ -190,10 +190,10 @@ exports.handleMessage = function(client, message)
   {
     handleSuggestUserName(client, message);
   }
-  //if the message type is unkown, throw an exception
+  //if the message type is unknown, throw an exception
   else
   {
-    messageLogger.warn("Dropped message, unkown Message Type " + message.type + ": " + JSON.stringify(message));
+    messageLogger.warn("Dropped message, unknown Message Type " + message.type);
   }
 }
 
@@ -600,22 +600,22 @@ function handleClientReady(client, message)
   //check if all ok
   if(!message.token)
   {
-    messageLogger.warn("Dropped message, CLIENT_READY message has no token!");
+    messageLogger.warn("Dropped message, CLIENT_READY Message has no token!");
     return;
   }
   if(!message.padId)
   {
-    messageLogger.warn("Dropped message, CLIENT_READY message has no padId!");
+    messageLogger.warn("Dropped message, CLIENT_READY Message has no padId!");
     return;
   }
   if(!message.protocolVersion)
   {
-    messageLogger.warn("Dropped message, CLIENT_READY message has no protocolVersion!");
+    messageLogger.warn("Dropped message, CLIENT_READY Message has no protocolVersion!");
     return;
   }
   if(message.protocolVersion != 2)
   {
-    messageLogger.warn("Dropped message, CLIENT_READY message has an unkown protocolVersion '" + message.protocolVersion + "'!");
+    messageLogger.warn("Dropped message, CLIENT_READY Message has a unknown protocolVersion '" + message.protocolVersion + "'!");
     return;
   }
 
