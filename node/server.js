@@ -290,14 +290,13 @@ async.waterfall([
     });
     
     var apiLogger = log4js.getLogger("API");
-    
-    //This is a api call, collect all post informations and pass it to the apiHandler
-    app.get('/api/1/:func', function(req, res)
-    {
+
+    //This is for making an api call, collecting all post information and passing it to the apiHandler
+    var apiCaller = function(req, res, fields) {
       res.header("Server", serverName);
       res.header("Content-Type", "application/json; charset=utf-8");
     
-      apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(req.query));
+      apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
       
       //wrap the send function so we can log the response
       res._send = res.send;
@@ -314,7 +313,22 @@ async.waterfall([
       }
       
       //call the api handler
-      apiHandler.handle(req.params.func, req.query, req, res);
+      apiHandler.handle(req.params.func, fields, req, res);
+    }
+    
+    //This is a api GET call, collect all post informations and pass it to the apiHandler
+    app.get('/api/1/:func', function(req, res)
+    {
+      apiCaller(req, res, req.query)
+    });
+
+    //This is a api POST call, collect all post informations and pass it to the apiHandler
+    app.post('/api/1/:func', function(req, res)
+    {
+      new formidable.IncomingForm().parse(req, function(err, fields, files) 
+      {
+        apiCaller(req, res, fields)
+      });
     });
     
     //The Etherpad client side sends information about how a disconnect happen
