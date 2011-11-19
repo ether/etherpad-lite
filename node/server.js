@@ -436,25 +436,25 @@ async.waterfall([
     
     //this is only a workaround to ensure it works with all browers behind a proxy
     //we should remove this when the new socket.io version is more stable
-    io.set('transports', ['xhr-polling']);
+    //io.set('transports', ['xhr-polling']);
     
     var socketIOLogger = log4js.getLogger("socket.io");
     io.set('logger', {
       debug: function (str)
       {
-        socketIOLogger.debug(str);
+        socketIOLogger.debug.apply(socketIOLogger, arguments);
       }, 
       info: function (str)
       {
-        socketIOLogger.info(str);
+        socketIOLogger.info.apply(socketIOLogger, arguments);
       },
       warn: function (str)
       {
-        socketIOLogger.warn(str);
+        socketIOLogger.warn.apply(socketIOLogger, arguments);
       },
       error: function (str)
       {
-        socketIOLogger.error(str);
+        socketIOLogger.error.apply(socketIOLogger, arguments);
       },
     });
     
