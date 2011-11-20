@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
 
-  <title>Etherpad Lite Timeslider</title>
+  <title>Etherpad Timeslider</title>
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
@@ -62,10 +62,10 @@
     
     //get the padId out of the url 
     var urlParts= document.location.pathname.split("/");
-    padId = urlParts[urlParts.length-2];
+    padId = decodeURIComponent(urlParts[urlParts.length-2]);
         
     //set the title
-    document.title = document.title + " | " + padId;
+    document.title = padId.replace( /_/g, " ") + " | " + document.title;
         
     //ensure we have a token
     token = readCookie("token");

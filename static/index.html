@@ -1,6 +1,6 @@
 <!doctype html>
 <html>   
-        <title>Etherpad Lite</title> 
+        <title>Etherpad</title> 
         <style> 
             *{ margin:0;padding:0; }
             body {
@@ -39,7 +39,7 @@
               text-shadow: 0 -1px 0 rgba(0,0,0,.8);
               height: 70px;
               line-height: 70px;
-              width: 300px;
+              width: 500px;
               background: #555;
               background: -webkit-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
               background: -moz-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
@@ -62,7 +62,7 @@
             #label {
               text-align: left;
               margin: 0 auto;
-              width: 300px
+              width: 500px
             }
             input {
               vertical-align: middle;
@@ -70,7 +70,7 @@
               font-size: 15px
             }
             input[type="text"] {
-              width: 243px;
+              width: 443px;
               padding: 10px 47px 10px 10px;
               background: #fff;
               border: 1px solid #bbb;
@@ -90,28 +90,20 @@
         <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
         <div id="container"> 
-            <div id="button" onclick="go2Random()">New Pad</div><br><div id="label">or create/open a Pad with the name</div> 
+            <div id="button" onclick="go2Random()" title="open a new pad with a generated random name like 'B3GYd74mn2yBH6'">create new random pad</div><br><div id="label">open an existing pad or create a new pad with the name</div> 
             <form action="#" name="mainform" onsubmit="go2Name();return false;"> 
                     <input type="text" name="padname" id="padname" autofocus> 
                     <input type="submit" value="OK"> 
             </form> 
         </div> 
-        <script> 
-            function go2Name() 
+        <script>
+	    // var pathName = "p/";
+	    var pathName = "";
+	    
+	    function randomPadName() 
             {
-                var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
-            }
- 
-            function go2Random() 
-            {
-                window.location = "p/" + randomPadName();
-            }
- 
-            function randomPadName() 
-            {
-                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-                var string_length = 10;
+                var chars = "23456789ABCDEFGHJKLMNPQRSTUWXYZabcdefghijkmnopqrstuwxyz";
+                var string_length = 16;
                 var randomstring = '';
                 for (var i = 0; i < string_length; i++) 
                 {
@@ -119,6 +111,34 @@
                     randomstring += chars.substring(rnum, rnum + 1);
                 }
                 return randomstring;
+            }
+
+	    function encodeSanitizedName( name ) {
+		return encodeURIComponent( name.replace( /[\/ ]/g, "_") );
+	    }
+	    
+            function go2Name() 
+            {
+                var padname = document.getElementById("padname").value;
+                padname.length > 0 ? window.location = pathName + encodeSanitizedName( padname ) : alert("Please enter a name")
+            }
+ 
+            function go2Random() 
+            {
+		var rnd = randomPadName();
+		var prefixedName = prompt( "You can prefix or modify your random pad name with some reasonable characters.\nSpecial characters will be removed or escaped.\n\n", "-"+rnd );
+		if ( prefixedName == "-" + rnd ) prefixedName = rnd;
+		var escPrefixedName = encodeSanitizedName( prefixedName );
+		if ( prefixedName == null ) return;
+		if ( prefixedName == decodeURIComponent( escPrefixedName )
+		     || ( prefixedName != escPrefixedName 
+			&& confirm( "You have used characters which are not allowed in Urls, and the padname will therefore be modified to "
+			+ decodeURIComponent( escPrefixedName ) 
+			+ ".\nDo you want to use this modifed name?" ) ) ) {
+			window.location = pathName + escPrefixedName;
+		} else {
+			return;
+		}
             }
             
             //start the costum js
