@@ -3580,9 +3580,15 @@ function OUTER(gscope)
 
   function doTabKey(shiftDown)
   {
-    if (!doIndentOutdent(shiftDown))
+    if (shiftDown === true){
+       doDeleteKey();
+    }
+    else
     {
-      performDocumentReplaceSelection(THE_TAB);
+      if (!doIndentOutdent(shiftDown))
+      {
+        performDocumentReplaceSelection(THE_TAB);
+      }
     }
   }
 
