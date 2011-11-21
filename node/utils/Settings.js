@@ -42,6 +42,12 @@ exports.dbSettings = { "filename" : "../var/dirty.db" };
  * The default Text of a new pad
  */
 exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
+
+/**
+ * A flag that requires any user to have a valid session (via the api) before accessing a pad
+ */
+exports.requireSession = false;
+
 /**
  * A flag that shows if minification is enabled or not
  */

@@ -23,6 +23,7 @@ var async = require("async");
 var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
+var settings = require("../utils/Settings")
 
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
@@ -34,18 +35,32 @@ var sessionManager = require("./SessionManager");
  */ 
 exports.checkAccess = function (padID, sessionID, token, password, callback)
 { 
-  // it's not a group pad, means we can grant access
-  if(padID.indexOf("$") == -1)
+  // a valid session is required (api-only mode)
+  if(settings.requireSession)
   {
-    //get author for this token
-    authorManager.getAuthor4Token(token, function(err, author)
+    // no sessionID, access is denied
+    if(!sessionID)
     {
-      // grant access, with author of token
-      callback(err, {accessStatus: "grant", authorID: author});
-    })
-    
-    //don't continue
-    return;
+      callback(null, {accessStatus: "deny"});
+      return;
+    }
+  }
+  // a session is not required, so we'll check if it's a public pad
+  else
+  {
+    // it's not a group pad, means we can grant access
+    if(padID.indexOf("$") == -1)
+    {
+      //get author for this token
+      authorManager.getAuthor4Token(token, function(err, author)
+      {
+        // grant access, with author of token
+        callback(err, {accessStatus: "grant", authorID: author});
+      })
+      
+      //don't continue
+      return;
+    }
   }
    
   var groupID = padID.split("$")[0];
