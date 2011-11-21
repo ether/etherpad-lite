@@ -70,7 +70,7 @@ var functions = {
 exports.handle = function(functionName, fields, req, res)
 {
   //check the api key!
-  if(fields["apikey"] != apikey)
+  if(fields["apikey"] != apikey.trim())
   {
     res.send({code: 4, message: "no or wrong API Key", data: null});
     return;
