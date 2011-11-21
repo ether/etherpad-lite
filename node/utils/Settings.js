@@ -49,6 +49,11 @@ exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchron
 exports.requireSession = false;
 
 /**
+ * A flag that prevents users from creating new pads
+ */
+exports.editOnly = false;
+
+/**
  * A flag that shows if minification is enabled or not
  */
 exports.minify = true;

@@ -35,6 +35,8 @@ var settings = require("../utils/Settings")
  */ 
 exports.checkAccess = function (padID, sessionID, token, password, callback)
 { 
+  var statusObject;
+
   // a valid session is required (api-only mode)
   if(settings.requireSession)
   {
@@ -54,8 +56,26 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
       //get author for this token
       authorManager.getAuthor4Token(token, function(err, author)
       {
-        // grant access, with author of token
-        callback(err, {accessStatus: "grant", authorID: author});
+        // assume user has access
+        statusObject = {accessStatus: "grant", authorID: author};
+        // user can't create pads
+        if(settings.editOnly)
+        {
+          // check if pad exists
+          padManager.doesPadExists(padID, function(err, exists)
+          {
+            // pad doesn't exist - user can't have access
+            if(!exists) statusObject.accessStatus = "deny";
+            // grant or deny access, with author of token
+            callback(err, statusObject);
+          });
+        }
+        // user may create new pads - no need to check anything
+        else
+        {
+          // grant access, with author of token
+          callback(err, statusObject);
+        }
       })
       
       //don't continue
@@ -71,8 +91,6 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
   var isPublic;
   var isPasswordProtected;
   var passwordStatus = password == null ? "notGiven" : "wrong"; // notGiven, correct, wrong
-
-  var statusObject;
 
   async.series([
     //get basic informations from the database 
@@ -195,6 +213,8 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
       {
         //--> grant access
         statusObject = {accessStatus: "grant", authorID: sessionAuthor};
+        //--> deny access if user isn't allowed to create the pad
+        if(settings.editOnly) statusObject.accessStatus = "deny";
       }
       // there is no valid session avaiable AND pad exists
       else if(!validSession && padExists)
