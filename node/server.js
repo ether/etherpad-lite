@@ -210,12 +210,9 @@ async.waterfall([
         return;
       }
       
-      hasPadAccess(req, res, function()
-      {
-        res.header("Server", serverName);
-        var filePath = path.normalize(__dirname + "/../static/pad.html");
-        res.sendfile(filePath, { maxAge: exports.maxAge });
-      });
+      res.header("Server", serverName);
+      var filePath = path.normalize(__dirname + "/../static/pad.html");
+      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve timeslider.html under /p/$padname/timeslider
@@ -228,12 +225,9 @@ async.waterfall([
         return;
       }
       
-      hasPadAccess(req, res, function()
-      {
-        res.header("Server", serverName);
-        var filePath = path.normalize(__dirname + "/../static/timeslider.html");
-        res.sendfile(filePath, { maxAge: exports.maxAge });
-      });
+      res.header("Server", serverName);
+      var filePath = path.normalize(__dirname + "/../static/timeslider.html");
+      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve timeslider.html under /p/$padname/timeslider
