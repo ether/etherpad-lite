@@ -18,6 +18,7 @@
 
 var socket;
 var LineNumbersDisabled = false;
+var noColors = false;
 var useMonospaceFontGlobal = false;
 var globalUserName = false;
 
@@ -78,11 +79,21 @@ function randomString()
 
 function getParams()
 {
-  var showControls = getUrlVars()["showControls"];
-  var showChat = getUrlVars()["showChat"];
-  var userName = getUrlVars()["userName"];
-  var showLineNumbers = getUrlVars()["showLineNumbers"];
-  var useMonospaceFont = getUrlVars()["useMonospaceFont"];
+  var params = getUrlVars()
+  var showControls = params["showControls"];
+  var showChat = params["showChat"];
+  var userName = params["userName"];
+  var showLineNumbers = params["showLineNumbers"];
+  var useMonospaceFont = params["useMonospaceFont"];
+  var IsnoColors = params["noColors"];
+
+  if(IsnoColors)
+  {
+    if(IsnoColors == "true")
+    {
+      noColors = true;
+    }
+  }
   if(showControls)
   {
     if(showControls == "false")
@@ -120,7 +131,7 @@ function getParams()
   if(userName)
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
-    globalUserName = userName;
+    globalUserName = unescape(userName);
   }
 }
 
@@ -236,6 +247,13 @@ function handshake()
       {
         pad.changeViewOption('showLineNumbers', false);
       }
+
+      // If the noColors value is set to true then we need to hide the backround colors on the ace spans
+      if (noColors == true)
+      {
+        pad.changeViewOption('noColors', true);
+      }
+
       // If the Monospacefont value is set to true then change it to monospace.
       if (useMonospaceFontGlobal == true)
       {
@@ -245,6 +263,7 @@ function handshake()
       if (globalUserName !== false)
       {
         pad.notifyChangeName(globalUserName); // Notifies the server
+	pad.myUserInfo.name = globalUserName;
         $('#myusernameedit').attr({"value":globalUserName}); // Updates the current users UI
       }
     }

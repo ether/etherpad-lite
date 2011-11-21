@@ -77,7 +77,7 @@ exports.handleMessage = function(client, message)
   //if the message type is unkown, throw an exception
   else
   {
-    messageLogger.warn("Droped message, unkown Message Type: '" + message.type + "'");
+    messageLogger.warn("Dropped message, unknown Message Type: '" + message.type + "'");
   }
 }
 
@@ -85,7 +85,7 @@ function handleClientReady(client, message)
 {
   if(message.padId == null)
   {
-    messageLogger.warn("Droped message, changeset request has no padId!");
+    messageLogger.warn("Dropped message, changeset request has no padId!");
     return;
   }
   
@@ -106,27 +106,27 @@ function handleChangesetRequest(client, message)
   //check if all ok
   if(message.data == null)
   {
-    messageLogger.warn("Droped message, changeset request has no data!");
+    messageLogger.warn("Dropped message, changeset request has no data!");
     return;
   }
   if(message.padId == null)
   {
-    messageLogger.warn("Droped message, changeset request has no padId!");
+    messageLogger.warn("Dropped message, changeset request has no padId!");
     return;
   }
   if(message.data.granularity == null)
   {
-    messageLogger.warn("Droped message, changeset request has no granularity!");
+    messageLogger.warn("Dropped message, changeset request has no granularity!");
     return;
   }
   if(message.data.start == null)
   {
-    messageLogger.warn("Droped message, changeset request has no start!");
+    messageLogger.warn("Dropped message, changeset request has no start!");
     return;
   }
   if(message.data.requestID == null)
   {
-    messageLogger.warn("Droped message, changeset request has no requestID!");
+    messageLogger.warn("Dropped message, changeset request has no requestID!");
     return;
   }
   

@@ -81,10 +81,9 @@ exports.doExport = function(req, res, padId, type)
           res.send(html);
           callback("stop");  
         }
-        //write the html export to a file
-        else
+        else //write the html export to a file
         {
-          randNum = Math.floor(Math.random()*new Date().getTime());
+          randNum = Math.floor(Math.random()*0xFFFFFFFF);
           srcFile = tempDirectory + "/eplite_export_" + randNum + ".html";
           fs.writeFile(srcFile, html, callback); 
         }
@@ -114,10 +113,13 @@ exports.doExport = function(req, res, padId, type)
           function(callback)
           {
             //100ms delay to accomidate for slow windows fs
-            setTimeout(function() 
-            {
-              fs.unlink(destFile, callback);
-            }, 100);
+			if(os.type().indexOf("Windows") > -1)
+			{
+			  setTimeout(function() 
+			  {
+			    fs.unlink(destFile, callback);
+			  }, 100);
+			}
           }
         ], callback);
       }

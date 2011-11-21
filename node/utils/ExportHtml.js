@@ -85,6 +85,8 @@ function getPadHTML(pad, revNum, callback)
   });
 }
 
+exports.getPadHTML = getPadHTML;
+
 function getHTMLFromAtext(pad, atext)
 {
   var apool = pad.apool();
@@ -119,8 +121,10 @@ function getHTMLFromAtext(pad, atext)
     var taker = Changeset.stringIterator(text);
     var assem = Changeset.stringAssembler();
 
+    var openTags = [];
     function emitOpenTag(i)
     {
+      openTags.unshift(i);
       assem.append('<');
       assem.append(tags[i]);
       assem.append('>');
@@ -128,9 +132,26 @@ function getHTMLFromAtext(pad, atext)
 
     function emitCloseTag(i)
     {
+      openTags.shift();
       assem.append('</');
       assem.append(tags[i]);
       assem.append('>');
+    }
+    
+    function orderdCloseTags(tags2close)
+    {
+      for(var i=0;i<openTags.length;i++)
+      {
+        for(var j=0;j<tags2close.length;j++)
+        {
+          if(tags2close[j] == openTags[i])
+          {
+            emitCloseTag(tags2close[j]);
+            i--;
+            break;
+          }
+        }
+      }
     }
 
     var urls = _findURLs(text);
@@ -204,18 +225,25 @@ function getHTMLFromAtext(pad, atext)
             }
           }
 
+          var tags2close = [];
+
           for (var i = propVals.length - 1; i >= 0; i--)
           {
             if (propVals[i] === LEAVE)
             {
-              emitCloseTag(i);
+              //emitCloseTag(i);
+              tags2close.push(i);
               propVals[i] = false;
             }
             else if (propVals[i] === STAY)
             {
-              emitCloseTag(i);
+              //emitCloseTag(i);
+              tags2close.push(i);
             }
           }
+          
+          orderdCloseTags(tags2close);
+          
           for (var i = 0; i < propVals.length; i++)
           {
             if (propVals[i] === ENTER || propVals[i] === STAY)
@@ -231,18 +259,27 @@ function getHTMLFromAtext(pad, atext)
         {
           chars--; // exclude newline at end of line, if present
         }
+        
         var s = taker.take(chars);
-
+        
+        //removes the characters with the code 12. Don't know where they come 
+        //from but they break the abiword parser and are completly useless
+        s = s.replace(String.fromCharCode(12), "");
+        
         assem.append(_escapeHTML(s));
       } // end iteration over spans in line
+      
+      var tags2close = [];
       for (var i = propVals.length - 1; i >= 0; i--)
       {
         if (propVals[i])
         {
-          emitCloseTag(i);
+          tags2close.push(i);
           propVals[i] = false;
         }
       }
+      
+      orderdCloseTags(tags2close);
     } // end processNextChars
     if (urls)
     {
