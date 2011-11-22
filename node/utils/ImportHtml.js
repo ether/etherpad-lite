@@ -31,7 +31,7 @@ function setPadHTML(pad, html, callback)
   var padText = pad.text();
 
   // Parse the incoming HTML with jsdom
-  var doc = jsdom(html);
+  var doc = jsdom(html.replace(/>\n+</g, '><');
   apiLogger.debug('html:');
   apiLogger.debug(html);
 
