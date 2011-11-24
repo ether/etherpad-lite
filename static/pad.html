@@ -217,21 +217,16 @@
 
 <!-- the embed code -->
 <div id="embed">
-  Share editable versions:
+  <div id="embedreadonly">
+    <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();"/><label for="readonlyinput">Read only</label>
+  </div>
+  Share:
   <br/>
   <div id="linkcode">
     Link:<input id="linkinput" type="text" value="">
   </div>
   <div id="embedcode">
     Embed code:<input id="embedinput" type="text" value="">
-  </div>
-  <br/><hr><br/>
-  Share non-editable versions:(Read only)
-  <div id="linkcode">
-    Read only Link:<input id="rolinkinput" type="text" value="">
-  </div>
-  <div id="embedcode">
-    Read only Embed code:<input id="roembedinput" type="text" value="">
   </div>
 </div>
 
