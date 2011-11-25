@@ -469,7 +469,7 @@ table#otheruserstable { display: none; }
   
 .modaldialog.cboxreconnecting .modaldialog-inner,
 .modaldialog.cboxconnecting .modaldialog-inner {
-  background: url(static/img/connectingbar.gif) no-repeat center 60px;
+  background: url(../../static/img/connectingbar.gif) no-repeat center 60px;
   height: 100px;
 }
 .modaldialog.cboxreconnecting {

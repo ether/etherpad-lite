@@ -167,15 +167,17 @@ function handshake()
   var resource = loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "socket.io";
   //connect
   socket = io.connect(url, {
-    resource: resource
+    resource: resource,
+    'max reconnection attempts': 3
   });
 
-  socket.once('connect', function()
+  function sendClientReady(isReconnect)
   {
     var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
     padId = unescape(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
-    document.title = document.title + " | " + padId;
+    if(!isReconnect)
+      document.title = document.title + " | " + padId;
 
     var token = readCookie("token");
     if (token == null)
@@ -196,7 +198,43 @@ function handshake()
       "token": token,
       "protocolVersion": 2
     };
+    
+    //this is a reconnect, lets tell the server our revisionnumber
+    if(isReconnect == true)
+    {
+      msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
+      msg.reconnect=true;
+    }
+    
     socket.json.send(msg);
+  };
+
+  var disconnectTimeout;
+
+  socket.once('connect', function () {
+    sendClientReady(false);
+  });
+  
+  socket.on('reconnect', function () {
+    //reconnect is before the timeout, lets stop the timeout
+    if(disconnectTimeout)
+    {
+      clearTimeout(disconnectTimeout);
+    }
+
+    pad.collabClient.setChannelState("CONNECTED");
+    sendClientReady(true);
+  });
+  
+  socket.on('disconnect', function () {
+    function disconnectEvent()
+    {
+      pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
+    }
+    
+    pad.collabClient.setChannelState("RECONNECTING");
+    
+    disconnectTimeout = setTimeout(disconnectEvent, 10000);
   });
 
   var receivedClientVars = false;
@@ -352,7 +390,6 @@ var pad = {
   
     //initialize the chat
     chat.init();
-    pad.diagnosticInfo.uniqueId = padutils.uniqueId();
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
@@ -649,7 +686,22 @@ var pad = {
     else if (newState == "DISCONNECTED")
     {
       pad.diagnosticInfo.disconnectedMessage = message;
-      pad.diagnosticInfo.padInitTime = pad.initTime;
+      pad.diagnosticInfo.padId = pad.getPadId();
+      pad.diagnosticInfo.socket = {};
+      
+      //we filter non objects from the socket object and put them in the diagnosticInfo 
+      //this ensures we have no cyclic data - this allows us to stringify the data
+      for(var i in socket.socket)
+      {
+        var value = socket.socket[i];
+        var type = typeof value;
+        
+        if(type == "string" || type == "number")
+        {
+          pad.diagnosticInfo.socket[i] = value;
+        }
+      }
+    
       pad.asyncSendDiagnosticInfo();
       if (typeof window.ajlog == "string")
       {
@@ -721,7 +773,6 @@ var pad = {
   },
   asyncSendDiagnosticInfo: function()
   {
-    pad.diagnosticInfo.collabDiagnosticInfo = pad.collabClient.getDiagnosticInfo();
     window.setTimeout(function()
     {
       $.ajax(
@@ -729,7 +780,6 @@ var pad = {
         type: 'post',
         url: '/ep/pad/connection-diagnostic-info',
         data: {
-          padId: pad.getPadId(),
           diagnosticInfo: JSON.stringify(pad.diagnosticInfo)
         },
         success: function()
@@ -809,7 +859,7 @@ var pad = {
   },
   preloadImages: function()
   {
-    var images = []; // Removed as we now use CSS and JS for colorpicker
+    var images = ["../static/img/connectingbar.gif"];
 
     function loadNextImage()
     {
