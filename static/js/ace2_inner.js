@@ -3560,10 +3560,10 @@ function OUTER(gscope)
           foundLists = true;
           var t = listType[1];
           var level = Number(listType[2]);
-          var newLevel = Math.max(1, Math.min(MAX_LIST_LEVEL, level + (isOut ? -1 : 1)));
+          var newLevel = Math.max(0, Math.min(MAX_LIST_LEVEL, level + (isOut ? -1 : 1)));
           if (level != newLevel)
           {
-            mods.push([n, t + newLevel]);
+            mods.push([n, (newLevel > 0) ? t + newLevel : '']);
           }
         }
       }
