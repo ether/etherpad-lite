@@ -5235,7 +5235,8 @@ function OUTER(gscope)
     var allLinesAreList = true;
     for (var n = firstLine; n <= lastLine; n++)
     {
-      if (!getLineListType(n))
+      var listType = getLineListType(n);
+      if (!listType || listType.slice(0, 'bullet'.length) != 'bullet')
       {
         allLinesAreList = false;
         break;
@@ -5245,8 +5246,16 @@ function OUTER(gscope)
     var mods = [];
     for (var n = firstLine; n <= lastLine; n++)
     {
+      var t = '';
+      var level = 0;
+      var listType = /([a-z]+)([12345678])/.exec(getLineListType(n));
+      if (listType)
+      {
+        t = listType[1];
+        level = Number(listType[2]);
+      }
       var t = getLineListType(n);
-      mods.push([n, allLinesAreList ? '' : (t ? t : 'bullet1')]);
+      mods.push([n, allLinesAreList ? 'indent' + level : (t ? 'bullet' + level : 'bullet1')]);
     }
     setLineListTypes(mods);
   }
