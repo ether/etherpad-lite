@@ -3538,7 +3538,8 @@ function OUTER(gscope)
 
   function doIndentOutdent(isOut)
   {
-    if (!(rep.selStart && rep.selEnd))
+    if (!(rep.selStart && rep.selEnd) ||
+        ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) &&  rep.selEnd[1] > 1))
     {
       return false;
     }
