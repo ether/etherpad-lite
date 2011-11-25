@@ -3548,24 +3548,24 @@ function OUTER(gscope)
     lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] == 0) ? 1 : 0));
 
     var mods = [];
-    var foundLists = false;
     for (var n = firstLine; n <= lastLine; n++)
     {
       var listType = getLineListType(n);
+      var t = 'indent';
+      var level = 0;
       if (listType)
       {
         listType = /([a-z]+)([12345678])/.exec(listType);
         if (listType)
         {
-          foundLists = true;
-          var t = listType[1];
-          var level = Number(listType[2]);
-          var newLevel = Math.max(0, Math.min(MAX_LIST_LEVEL, level + (isOut ? -1 : 1)));
-          if (level != newLevel)
-          {
-            mods.push([n, (newLevel > 0) ? t + newLevel : '']);
-          }
+          t = listType[1];
+          level = Number(listType[2]);
         }
+      }
+      var newLevel = Math.max(0, Math.min(MAX_LIST_LEVEL, level + (isOut ? -1 : 1)));
+      if (level != newLevel)
+      {
+        mods.push([n, (newLevel > 0) ? t + newLevel : '']);
       }
     }
 
@@ -3574,7 +3574,7 @@ function OUTER(gscope)
       setLineListTypes(mods);
     }
 
-    return foundLists;
+    return true;
   }
   editorInfo.ace_doIndentOutdent = doIndentOutdent;
 
