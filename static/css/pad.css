@@ -1167,6 +1167,9 @@ label[for=readonlyinput] {
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 600px) {
+  #editbar ul li {
+    padding: 4px 3px;
+  }  
   #chaticon {
     opacity: .8;
   }
