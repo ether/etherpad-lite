@@ -786,11 +786,15 @@ padding: 10px;
 border-radius: 6px; 
 }
 
-#embedcode, #readonlyUrl {
+#embedreadonly {
+float:right;
+}
+
+#embedcode, #readonlyUrl, #linkcode {
 margin-left:10px;
 }
 
-#embedinput, #readonlyInput{
+#embedinput, #readonlyInput, #linkinput {
 width:375px;
 height:24px;
 display:inline;

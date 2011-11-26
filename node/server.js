@@ -442,19 +442,19 @@ async.waterfall([
     io.set('logger', {
       debug: function (str)
       {
-        socketIOLogger.debug(str);
+        socketIOLogger.debug.apply(socketIOLogger, arguments);
       }, 
       info: function (str)
       {
-        socketIOLogger.info(str);
+        socketIOLogger.info.apply(socketIOLogger, arguments);
       },
       warn: function (str)
       {
-        socketIOLogger.warn(str);
+        socketIOLogger.warn.apply(socketIOLogger, arguments);
       },
       error: function (str)
       {
-        socketIOLogger.error(str);
+        socketIOLogger.error.apply(socketIOLogger, arguments);
       },
     });
     
