@@ -532,5 +532,5 @@ function timeSensitiveCompare(hashStr, password)
 {
   var timestamp = password.split("$")[1];
   return password === hash(hashStr, timestamp)
-    && timestamp - new Date().getTime() > 0;
+    && timestamp > new Date().getTime();
 }
