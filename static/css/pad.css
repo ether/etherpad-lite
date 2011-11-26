@@ -473,11 +473,11 @@ table#otheruserstable { display: none; }
   height: 100px;
 }
 .modaldialog.cboxreconnecting {
-  background: #fed;
+  background: #8FCDE0;
 }
 .modaldialog.cboxconnecting,
 .modaldialog.cboxdisconnected {
-  background: #fdd;
+  background: #8FCDE0;
 }
 .cboxdisconnected #connectionboxinner div { display: none; }
 .cboxdisconnected_userdup #connectionboxinner #disconnected_userdup { display: block; }
@@ -1146,8 +1146,84 @@ width:33px !important;
   color: #999;
 }
 
+label[for=readonlyinput] {
+  margin: 0 10px 0 2px;
+}
+
+@media screen and (max-width: 960px) {
+  .modaldialog {
+    position: relative;
+    margin: 0 auto;
+    width: 80%;
+    top: 40px;
+    left: 0;
+  }
+}
+
 @media screen and (max-width: 600px) {
-  #editbar ul li {
+   #editbar ul li {
     padding: 4px 1px;
+  }  
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 600px) {
+  #chaticon {
+    opacity: .8;
+  }
+  #users {
+    right: none;
+    left: 30px;
+  }
+  #mycolorpicker {
+    right: 0;
+    top: 70px;
+    left: 0 !important;
+  }
+  #embed, #readonly, #importexport {
+    width: 80%;
+    right: 0;
+    left: 30px;
+  }
+  #embedinput, #readonlyInput, #linkinput {
+    display: block;
+    width: 90%;
+  }
+  #importexport {
+    height: auto !important;
+  }
+  #importexportline {
+    display: none;
+  }
+  #import, #export {
+    position: initial;
+    display: block;
+  }
+  #editorcontainer {
+    margin-bottom: 33px;
+  }
+  #editbar ul#menu_right  {
+    float: left;
+  }
+  #editbar ul#menu_left  {
+    background: #f7f7f7;
+    background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    width: 100%;
+    overflow: hidden;
+    height: 32px;
+    position: fixed;
+    bottom: 0;
+    border-top: 1px solid #ccc;
+  }
+  #editbar ul#menu_left > li {
+    margin-top: 2px;
+  }
+  #chaticon, #chatbox {
+    bottom: 33px;
+    right: 0;
+    border-right: none;
+    border-top-right-radius: 0;
   }
 }
