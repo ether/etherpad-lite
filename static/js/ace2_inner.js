@@ -3097,11 +3097,7 @@ function OUTER(gscope)
         // Such a div is what IE 6 creates naturally when you make a blank line
         // in a document of divs.  However, when copy-and-pasted the div will
         // contain a space, so we note its emptiness with a property.
-        if(browser.version < 9) {
-          lineElem.innerHTML = "";
-        } else {
-          lineElem.innerHTML = "<hr style=\"border:none; color:#fff; height:1px; display:none\"/>";
-        }
+        lineElem.innerHTML = "";
         // a primitive-valued property survives copy-and-paste
         setAssoc(lineElem, "shouldBeEmpty", true);
         // an object property doesn't
