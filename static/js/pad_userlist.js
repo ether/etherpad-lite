@@ -711,6 +711,7 @@ var paduserlist = (function()
       }
       
       $("#myswatch").css({'background-color': myUserInfo.colorId});
+      $("#usericonback").css({'background-color': myUserInfo.colorId});
     }
   };
   return self;
