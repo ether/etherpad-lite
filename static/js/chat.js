@@ -87,6 +87,17 @@ var chat = (function()
       });
 
       var text = padutils.escapeHtmlWithClickableLinks(padutils.escapeHtml(msg.text), "_blank");
+
+      /* Performs an action if your name is mentioned */
+      var myName = $('#myusernameedit').val();
+      myName = myName.toLowerCase();
+      var chatText = text.toLowerCase();
+      var wasMentioned = false;
+      if (chatText.indexOf(myName) !== -1 && myName != "undefined"){
+        wasMentioned = true;
+      }
+      /* End of new action */
+
       var authorName = msg.userName == null ? "unnamed" : padutils.escapeHtml(msg.userName); 
       
       var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time'>" + timeStr + "</span> " + text + "</p>";
@@ -98,9 +109,18 @@ var chat = (function()
         var count = Number($("#chatcounter").text());
         count++;
         $("#chatcounter").text(count);
-        // chat throb stuff -- Just make it throb in for ~2 secs then fadeotu
-        $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
-        $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},2000);
+        // chat throb stuff -- Just make it throw for twice as long
+        if(wasMentioned)
+        { // If the user was mentioned show for twice as long and flash the browser window
+          $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
+          $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},4000);
+          document.title = "You were mentioned in a chat: " + document.title;
+        }
+        else
+        {
+          $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
+          $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},2000);
+        }
       }
       
       self.scrollDown();
