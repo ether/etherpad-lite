@@ -63,6 +63,7 @@
     //get the padId out of the url 
     var urlParts= document.location.pathname.split("/");
     padId = urlParts[urlParts.length-2];
+    padId = unescape(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
         
     //set the title
     document.title = document.title + " | " + padId;
@@ -271,7 +272,11 @@
               <!-- termporary place holder--> 
               <a id = "returnbutton">Return to pad</a>
               <script>
-                $("#returnbutton").attr("href", document.referrer);
+              	if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
+                  $("#returnbutton").attr("href", document.referrer);
+              	} else {
+                  $("#returnbutton").attr("href", document.location.href.substring(0,document.location.href.lastIndexOf("/")));
+              	}
               </script>
             </div>
 
