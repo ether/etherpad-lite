@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+var chatAnimationIsStarted = false;
+
 var chat = (function()
 {
   var self = {
     show: function () 
-    {      
+    { if (chatAnimationIsStarted) return;
       $("#chaticon").hide("slide", {
         direction: "down"
       }, 500, function ()
@@ -46,19 +48,25 @@ var chat = (function()
     },
     hide: function () 
     {
+      if (chatAnimationIsStarted) return;
       $("#chatcounter").text("0");
       $("#chatbox").hide("slide", { direction: "down" }, 750, function()
       {
-        $("#chaticon").show("slide", { direction: "down" }, 500);
+        $("#chaticon").show("slide", { direction: "down" }, 500, function()
+        {
+          chatAnimationIsStarted = false;
+        });
       });
     },
     scrollDown: function()
     {
       //console.log($('#chatbox').css("display"));
-    
-      if($('#chatbox').css("display") != "none")
+
+      if($('#chatbox').css("display") != "none") {
         $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
-    }, 
+      }
+      chatAnimationIsStarted = false;
+    },
     send: function()
     {
       var text = $("#chatinput").val();
@@ -98,7 +106,7 @@ var chat = (function()
         var count = Number($("#chatcounter").text());
         count++;
         $("#chatcounter").text(count);
-        // chat throb stuff -- Just make it throb in for ~2 secs then fadeotu
+        // chat throb stuff -- Just make it throb in for ~2 secs then fadeout
         $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
         $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},2000);
       }
@@ -108,6 +116,15 @@ var chat = (function()
     },
     init: function()
     {
+      $("#chaticon").mouseenter(function(){
+        if (!chatAnimationIsStarted) self.show();
+      });
+      $("#titlecross").mouseenter(function(){
+        if (!chatAnimationIsStarted) self.hide();
+      });
+      $("#chatbox").mouseenter(function(){
+        if (!chatAnimationIsStarted) $("#chatinput").focus();
+      });
       $("#chatinput").keypress(function(evt)
       {
         //if the user typed enter, fire the send
