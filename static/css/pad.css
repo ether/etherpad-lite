@@ -1169,7 +1169,11 @@ label[for=readonlyinput] {
 @media only screen and (min-device-width: 320px) and (max-device-width: 600px) {
   #editbar ul li {
     padding: 4px 3px;
-  }  
+  }
+  #editbar ul#menu_right > li {
+    padding: 4px 8px;
+    margin-top: 2px;
+  }
   #chaticon {
     opacity: .8;
   }
@@ -1205,9 +1209,6 @@ label[for=readonlyinput] {
     margin-bottom: 33px;
   }
   #editbar ul#menu_right  {
-    float: left;
-  }
-  #editbar ul#menu_left  {
     background: #f7f7f7;
     background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
     background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
@@ -1219,9 +1220,6 @@ label[for=readonlyinput] {
     position: fixed;
     bottom: 0;
     border-top: 1px solid #ccc;
-  }
-  #editbar ul#menu_left > li {
-    margin-top: 2px;
   }
   #chaticon, #chatbox {
     bottom: 33px;
