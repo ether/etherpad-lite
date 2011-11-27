@@ -21,6 +21,7 @@ var chat = (function()
   var self = {
     show: function () 
     { if (chatAnimationIsStarted) return;
+      chatAnimationIsStarted = true;
       $("#chaticon").hide("slide", {
         direction: "down"
       }, 500, function ()
@@ -49,6 +50,7 @@ var chat = (function()
     hide: function () 
     {
       if (chatAnimationIsStarted) return;
+      chatAnimationIsStarted = true;
       $("#chatcounter").text("0");
       $("#chatbox").hide("slide", { direction: "down" }, 750, function()
       {
