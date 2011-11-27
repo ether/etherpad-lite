@@ -711,6 +711,7 @@ var paduserlist = (function()
       }
       
       $("#myswatch").css({'background-color': myUserInfo.colorId});
+      $("#usericon").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId});
     }
   };
   return self;

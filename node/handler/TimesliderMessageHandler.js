@@ -77,7 +77,7 @@ exports.handleMessage = function(client, message)
   //if the message type is unkown, throw an exception
   else
   {
-    messageLogger.warn("Dropped message, unkown Message Type: '" + message.type + "'");
+    messageLogger.warn("Dropped message, unknown Message Type: '" + message.type + "'");
   }
 }
 
