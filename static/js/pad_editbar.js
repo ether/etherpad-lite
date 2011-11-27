@@ -109,15 +109,6 @@ var padeditbar = (function()
 	      self.toogleDropDown("importexport");
         }
 
-        else if (cmd == 'readonly')
-        {
-          var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
-          var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
-          $('#readonlyImage').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + readonlyLink);
-          $('#readonlyInput').val(readonlyLink);
-          self.toogleDropDown("readonly");
-          $('#readonlyInput').focus().select();
-        }
         else if (cmd == 'save')
         {
           padsavedrevs.saveNow();
@@ -215,6 +206,7 @@ var padeditbar = (function()
     {
       if ($('#readonlyinput').is(':checked'))
       {
+        $('#qrcode').show();
         var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
         var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
         $('#embedinput').val("<iframe src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
@@ -222,9 +214,11 @@ var padeditbar = (function()
       }
       else
       {
+        $('#qrcode').hide();
         var padurl = window.location.href.split("?")[0];
         $('#embedinput').val("<iframe src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(padurl);
+        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + padurl);
       }
     }
   };

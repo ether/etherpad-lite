@@ -80,11 +80,6 @@
 
 <ul id="menu_right">
 
-<li onClick="window.pad&&pad.editbarClick('readonly');return false;" >
-  <a id="readonlylink" title="Create a readonly link for this pad">
-     <div class="buttonicon" style="background-position:0px -150px"></div>
-  </a>
-</li>
 <li onClick="window.pad&&pad.editbarClick('import_export');return false;">
   <a id="exportlink" title="Import/Export from/to different document formats">
     <div class="buttonicon" style="background-position:0px -68px"></div>
@@ -223,10 +218,14 @@
   Share:
   <br/>
   <div id="linkcode">
-    Link:<input id="linkinput" type="text" value="">
-  </div>
+    <label for="linkinput">Link:</label><input id="linkinput" type="text" value="">
+  </div><br/>
   <div id="embedcode">
-    Embed code:<input id="embedinput" type="text" value="">
+    <label for="embedinput">Embed code:</label><input id="embedinput" type="text" value="">
+  </div><br/>
+  <div id="qrcode">
+    <label for="embedreadonlyqr">QR code:</label><br/>
+    <img id="embedreadonlyqr">
   </div>
 </div>
 

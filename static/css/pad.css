@@ -1151,3 +1151,12 @@ width:33px !important;
     padding: 4px 1px;
   }
 }
+
+#embedreadonlyqr{
+  padding-top:20px;
+  margin-left:100px;
+}
+
+#qrcode{
+  margin-left:10px;
+}
