@@ -1160,3 +1160,10 @@ width:33px !important;
 #qrcode{
   margin-left:10px;
 }
+
+#innerdocbody img, #innerdocbody video, #innerdocbody audio {
+ padding: 2px;
+ margin-bottom: 4px;
+ box-shadow: 0 0 4px #aaa;
+ background: #fff;
+}
