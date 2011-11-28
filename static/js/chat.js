@@ -16,6 +16,8 @@
 
 var chat = (function()
 {
+  var chatMentions = 0;
+  var title = document.title;
   var self = {
     show: function () 
     {      
@@ -43,6 +45,8 @@ var chat = (function()
           }
         });
       });
+      chatMentions = 0;
+      document.title = title;
     },
     hide: function () 
     {
@@ -54,8 +58,6 @@ var chat = (function()
     },
     scrollDown: function()
     {
-      //console.log($('#chatbox').css("display"));
-    
       if($('#chatbox').css("display") != "none")
         $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
     }, 
@@ -112,9 +114,13 @@ var chat = (function()
         // chat throb stuff -- Just make it throw for twice as long
         if(wasMentioned)
         { // If the user was mentioned show for twice as long and flash the browser window
+          if (chatMentions == 0){
+            title = document.title;
+          }
           $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
           $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},4000);
-          document.title = "You were mentioned in a chat: " + document.title;
+          chatMentions++;
+          document.title = "("+chatMentions+") " + title;
         }
         else
         {
