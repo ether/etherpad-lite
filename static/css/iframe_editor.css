@@ -32,6 +32,23 @@ ul.list-bullet6 { list-style-type: square; }
 ul.list-bullet7 { list-style-type: disc; }
 ul.list-bullet8 { list-style-type: circle; }
 
+ul.list-indent1 { margin-left: 1.5em; }
+ul.list-indent2 { margin-left: 3em; }
+ul.list-indent3 { margin-left: 4.5em; }
+ul.list-indent4 { margin-left: 6em; }
+ul.list-indent5 { margin-left: 7.5em; }
+ul.list-indent6 { margin-left: 9em; }
+ul.list-indent7 { margin-left: 10.5em; }
+ul.list-indent8 { margin-left: 12em; }
+
+ul.list-indent1 { list-style-type: none; }
+ul.list-indent2 { list-style-type: none; }
+ul.list-indent3 { list-style-type: none; }
+ul.list-indent4 { list-style-type: none; }
+ul.list-indent5 { list-style-type: none; }
+ul.list-indent6 { list-style-type: none; }
+ul.list-indent7 { list-style-type: none; }
+ul.list-indent8 { list-style-type: none; }
 
 body {
   margin: 0;
