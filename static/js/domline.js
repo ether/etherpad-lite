@@ -152,12 +152,43 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     {
       if (href)
       {
-        if(!~href.indexOf("http")) // if the url doesn't include http or https etc prefix it.
+        
+         // if the url doesn't include http or https prefix it
+        if(!~href.indexOf("http"))
         {
           href = "http://"+href;
         }
-        extraOpenTags = extraOpenTags + '<a href="' + href.replace(/\"/g, '&quot;') + '">';
-        extraCloseTags = '</a>' + extraCloseTags;
+        
+        // check extension and decide, whether it's media (image,audio,video) or a simple link
+        var href_ext = href.slice(-4);
+        var mtype = null;
+        
+        // images
+        if (href_ext==".jpg" || href_ext==".png" || href_ext==".gif" || href_ext==".svg") { mtype = 1; }
+        
+        // music
+        if (href_ext==".mp3" || href_ext==".wav" || href_ext==".oga") {  mtype = 2; }
+        
+        // video
+        if (href_ext==".mp4" || href_ext==".ogv" || href_ext==".ogg" || href.slice(-5)==".webm" || href_ext==".mov") { mtype = 3; }  
+        
+        switch (mtype) {
+          case 1:
+            extraOpenTags = extraOpenTags + '<img src="' + href.replace(/\"/g, '&quot;') + '"><br>';
+            break;
+          case 2:
+            extraOpenTags = extraOpenTags + '<audio controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></audio><br>';
+            break;
+          case 3:
+            extraOpenTags = extraOpenTags + '<video controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></video><br>';
+            break;
+          // if nothing applies, consider it as a normal link
+          default:
+            extraOpenTags = extraOpenTags + '<a href="' + href.replace(/\"/g, '&quot;') + '">';
+            extraCloseTags = '</a>' + extraCloseTags;
+            break;
+        }
+        
       }
       if (simpleTags)
       {
