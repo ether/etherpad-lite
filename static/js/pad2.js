@@ -174,7 +174,7 @@ function handshake()
   function sendClientReady(isReconnect)
   {
     var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
-    padId = unescape(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
+    padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
     if(!isReconnect)
       document.title = document.title + " | " + padId;
