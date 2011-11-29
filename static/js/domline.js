@@ -171,6 +171,11 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         
         // video
         if (href_ext==".mp4" || href_ext==".ogv" || href_ext==".ogg" || href.slice(-5)==".webm" || href_ext==".mov") { mtype = 3; }  
+
+        // YouTube
+        if (href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/) != null) { mtype = 4; }
+        // Vimeo
+        if (href.match(/[http|https]\:\/\/vimeo\.com\/(\d{8})/) != null) { mtype = 5; }
         
         switch (mtype) {
           case 1:
@@ -181,6 +186,16 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
             break;
           case 3:
             extraOpenTags = extraOpenTags + '<video controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></video><br>';
+            break;
+          case 4:
+            var youtube_id = href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/)[1];
+            txt = 'https://www.youtube.com/watch?v=' + youtube_id;
+            extraOpenTags = extraOpenTags + '<div style="height:385px"><iframe width=640 height=385 src="https://www.youtube.com/embed/' + youtube_id + '"></iframe></div><br>';
+            break;
+          case 5:
+            var vimeo_id = href.match(/[http|https]\:\/\/vimeo\.com\/(\d{8})/)[1];
+            txt = 'https://vimeo.com/' + vimeo_id;
+            extraOpenTags = extraOpenTags + '<div style="height:338px"><iframe width=640 height=338 src="https://player.vimeo.com/video/' + vimeo_id + '?title=0&byline=0&portrait=0"></iframe></div><br>';
             break;
           // if nothing applies, consider it as a normal link
           default:
