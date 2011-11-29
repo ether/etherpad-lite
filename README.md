@@ -67,7 +67,6 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
       <li>Move into the node folder <code>cd node-v0.6*</code> and build node with <code>./configure && make && make install</code></li>
     </ol>
   </li>
-  <li>Install npm <code>curl http://npmjs.org/install.sh | sh</code></li>
 </ol>
 
 **As any user (we recommend creating a separate user called etherpad-lite):**
