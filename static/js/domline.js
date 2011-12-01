@@ -161,48 +161,41 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         
         // check extension and decide, whether it's media (image,audio,video) or a simple link
         var href_ext = href.slice(-4);
-        var mtype = null;
-        
+
         // images
-        if (href_ext==".jpg" || href_ext==".png" || href_ext==".gif" || href_ext==".svg") { mtype = 1; }
+        if (href_ext==".jpg" || href_ext==".png" || href_ext==".gif" || href_ext==".svg") {
+          extraOpenTags = extraOpenTags + '<img src="' + href.replace(/\"/g, '&quot;') + '"><br>';
+        }
         
         // music
-        if (href_ext==".mp3" || href_ext==".wav" || href_ext==".oga") {  mtype = 2; }
+        if (href_ext==".mp3" || href_ext==".wav" || href_ext==".oga") {
+          extraOpenTags = extraOpenTags + '<audio controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></audio><br>';
+        }
         
         // video
-        if (href_ext==".mp4" || href_ext==".ogv" || href_ext==".ogg" || href.slice(-5)==".webm" || href_ext==".mov") { mtype = 3; }  
+        if (href_ext==".mp4" || href_ext==".ogv" || href_ext==".ogg" || href.slice(-5)==".webm" || href_ext==".mov") {
+          extraOpenTags = extraOpenTags + '<video controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></video><br>';
+        }  
 
         // YouTube
-        if (href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/) != null) { mtype = 4; }
+        if (href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/) != null) {
+          var youtube_id = href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/)[1];
+          txt = 'https://www.youtube.com/watch?v=' + youtube_id;
+          extraOpenTags = extraOpenTags + '<div style="height:385px"><iframe width=640 height=385 src="https://www.youtube.com/embed/' + youtube_id + '"></iframe></div><br>';
+        }
         // Vimeo
-        if (href.match(/[http|https]\:\/\/vimeo\.com\/(\d{8})/) != null) { mtype = 5; }
+        if (href.match(/[http|https]\:\/\/vimeo\.com\/(\d{8})/) != null) {
+          var vimeo_id = href.match(/[http|https]\:\/\/vimeo\.com\/(\d{8})/)[1];
+          txt = 'https://vimeo.com/' + vimeo_id;
+          extraOpenTags = extraOpenTags + '<div style="height:338px"><iframe width=640 height=338 src="https://player.vimeo.com/video/' + vimeo_id + '?title=0&byline=0&portrait=0"></iframe></div><br>';
+        }
         
-        switch (mtype) {
-          case 1:
-            extraOpenTags = extraOpenTags + '<img src="' + href.replace(/\"/g, '&quot;') + '"><br>';
-            break;
-          case 2:
-            extraOpenTags = extraOpenTags + '<audio controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></audio><br>';
-            break;
-          case 3:
-            extraOpenTags = extraOpenTags + '<video controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></video><br>';
-            break;
-          case 4:
-            var youtube_id = href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/)[1];
-            txt = 'https://www.youtube.com/watch?v=' + youtube_id;
-            extraOpenTags = extraOpenTags + '<div style="height:385px"><iframe width=640 height=385 src="https://www.youtube.com/embed/' + youtube_id + '"></iframe></div><br>';
-            break;
-          case 5:
-            var vimeo_id = href.match(/[http|https]\:\/\/vimeo\.com\/(\d{8})/)[1];
-            txt = 'https://vimeo.com/' + vimeo_id;
-            extraOpenTags = extraOpenTags + '<div style="height:338px"><iframe width=640 height=338 src="https://player.vimeo.com/video/' + vimeo_id + '?title=0&byline=0&portrait=0"></iframe></div><br>';
-            break;
-          // if nothing applies, consider it as a normal link
-          default:
+        // If nothing applies, consider it as a normal url
+        if (extraOpenTags.length == 0) {
             extraOpenTags = extraOpenTags + '<a href="' + href.replace(/\"/g, '&quot;') + '">';
             extraCloseTags = '</a>' + extraCloseTags;
-            break;
         }
+        
         
       }
       if (simpleTags)
