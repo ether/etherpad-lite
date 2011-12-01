@@ -5218,7 +5218,7 @@ function OUTER(gscope)
     }
   }
 
-  function doInsertUnorderedList(type)
+  function doInsertList(type)
   {
     if (!(rep.selStart && rep.selEnd))
     {
