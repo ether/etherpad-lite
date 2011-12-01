@@ -45,4 +45,8 @@
   
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO"
+  
+  /* This setting is used if you need http basic auth */
+  // "httpAuth" : "user:pass"
+  
 }
