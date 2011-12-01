@@ -32,6 +32,25 @@ ul.list-bullet6 { list-style-type: square; }
 ul.list-bullet7 { list-style-type: disc; }
 ul.list-bullet8 { list-style-type: circle; }
 
+ul.list-number1 { margin-left: 1.5em; }
+ul.list-number2 { margin-left: 3em; }
+ul.list-number3 { margin-left: 4.5em; }
+ul.list-number4 { margin-left: 6em; }
+ul.list-number5 { margin-left: 7.5em; }
+ul.list-number6 { margin-left: 9em; }
+ul.list-number7 { margin-left: 10.5em; }
+ul.list-number8 { margin-left: 12em; }
+
+ul { list-style-type: disc; }
+ul.list-number1 { list-style-type: decimal; }
+ul.list-number2 { list-style-type: lower-latin; }
+ul.list-number3 { list-style-type: lower-roman; }
+ul.list-number4 { list-style-type: decimal; }
+ul.list-number5 { list-style-type: lower-latin; }
+ul.list-number6 { list-style-type: lower-roman; }
+ul.list-number7 { list-style-type: decimal; }
+ul.list-number8 { list-style-type: lower-latin; }
+
 ul.list-indent1 { margin-left: 1.5em; }
 ul.list-indent2 { margin-left: 3em; }
 ul.list-indent3 { margin-left: 4.5em; }

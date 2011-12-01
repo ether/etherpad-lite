@@ -5218,7 +5218,7 @@ function OUTER(gscope)
     }
   }
 
-  function doInsertUnorderedList()
+  function doInsertUnorderedList(type)
   {
     if (!(rep.selStart && rep.selEnd))
     {
@@ -5233,7 +5233,7 @@ function OUTER(gscope)
     for (var n = firstLine; n <= lastLine; n++)
     {
       var listType = getLineListType(n);
-      if (!listType || listType.slice(0, 'bullet'.length) != 'bullet')
+      if (!listType || listType.slice(0, type.length) != type)
       {
         allLinesAreList = false;
         break;
@@ -5252,11 +5252,19 @@ function OUTER(gscope)
         level = Number(listType[2]);
       }
       var t = getLineListType(n);
-      mods.push([n, allLinesAreList ? 'indent' + level : (t ? 'bullet' + level : 'bullet1')]);
+      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
     setLineListTypes(mods);
   }
+  
+  function doInsertUnorderedList(){
+    doInsertList('bullet');
+  }
+  function doInsertOrderedList(){
+    doInsertList('number');
+  }
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
+  editorInfo.ace_doInsertOrderedList = doInsertOrderedList;
 
   var mozillaFakeArrows = (browser.mozilla && (function()
   {
