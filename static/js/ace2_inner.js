@@ -5169,7 +5169,74 @@ function OUTER(gscope)
       [lineNum, listType]
     ]);
   }
-
+  
+  function renumberList(lineNum){
+    //1-check we are in a list
+    if(!getLineListType(lineNum))
+    {
+      return null;
+    }
+    
+    //2-find the first line of the list
+    while(lineNum-1 >= 0 && getLineListType(lineNum-1))
+    {
+      lineNum--;
+    }
+    
+    //3-renumber every list item of the same level from the beginning, level 1
+    //IMPORTANT: never skip a level because there imbrication may be arbitrary
+    var builder = Changeset.builder(rep.lines.totalWidth());
+    loc = [0,0];
+    function applyNumberList(line, level)
+    {
+      //init
+      var position = 1;
+      var curLevel = level;
+      var listType;
+      //loop over the lines
+      while(listType = getLineListType(line))
+      {
+        //apply new num
+        curLevel = /[a-z]+([12345678])/.exec(listType);
+        curLevel = Number(curLevel[1]);
+        if(isNaN(curLevel))
+        {
+          return line;
+        }
+        else if(curLevel == level)
+        {
+          buildKeepRange(builder, loc, (loc = [line, 0]));
+          buildKeepRange(builder, loc, (loc = [line, 1]), [
+            ['start', position]
+          ], rep.apool);
+          
+          position++;
+          line++;
+        }
+        else if(curLevel < level)
+        {
+          return line;//back to parent
+        }
+        else
+        {
+          line = applyNumberList(line, level+1);//recursive call
+        }
+      }
+      return line;
+    }
+    
+    applyNumberList(lineNum, 1);
+    var cs = builder.toString();
+    if (!Changeset.isIdentity(cs))
+    {
+      performDocumentApplyChangeset(cs);
+    }
+    
+    //4-apply the modifications
+    
+    
+  }
+  
   function setLineListTypes(lineNumTypePairsInOrder)
   {
     var loc = [0, 0];
@@ -5216,6 +5283,8 @@ function OUTER(gscope)
     {
       performDocumentApplyChangeset(cs);
     }
+    
+    renumberList(lineNum);
   }
 
   function doInsertList(type)

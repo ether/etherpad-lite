@@ -89,12 +89,14 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     if (cls.indexOf('list') >= 0)
     {
       var listType = /(?:^| )list:(\S+)/.exec(cls);
+      var start = /(?:^| )start:(\S+)/.exec(cls);
       if (listType)
       {
         listType = listType[1];
+        start = start?'start="'+start[1]+'"':'';
         if (listType)
         {
-          preHtml = '<ul class="list-' + listType + '"><li>';
+          preHtml = '<ul '+start+' class="list-' + listType + '"><li>';
           postHtml = '</li></ul>';
         }
         result.lineMarker += txt.length;

@@ -84,6 +84,10 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
             {
               classes += ' list:' + value;
             }
+            else if (key == 'start')
+            {
+              classes += ' start:' + value;
+            }
             else if (linestylefilter.ATTRIB_CLASSES[key])
             {
               classes += ' ' + linestylefilter.ATTRIB_CLASSES[key];
