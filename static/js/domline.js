@@ -96,8 +96,16 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         start = start?'start="'+start[1]+'"':'';
         if (listType)
         {
-          preHtml = '<ul '+start+' class="list-' + listType + '"><li>';
-          postHtml = '</li></ul>';
+          if(listType.indexOf("number") < 0)
+          {
+            preHtml = '<ul class="list-' + listType + '"><li>';
+            postHtml = '</li></ul>';
+          }
+          else
+          {
+            preHtml = '<ol '+start+' class="list-' + listType + '"><li>';
+            postHtml = '</li></ol>';
+          }
         }
         result.lineMarker += txt.length;
         return; // don't append any text
