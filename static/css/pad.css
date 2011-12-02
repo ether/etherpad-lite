@@ -1152,9 +1152,9 @@ width:33px !important;
   }
 }
 
-#embedreadonlyqr{
-  padding-top:20px;
-  margin-left:100px;
+#qr_center {
+  margin: 10px auto 0;
+  text-align: center;
 }
 
 #qrcode{
