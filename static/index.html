@@ -1,6 +1,7 @@
 <!doctype html>
 <html>   
         <title>Etherpad Lite</title> 
+        <meta name="viewport" content="initial-scale=1.0">
         <style> 
             *{ margin:0;padding:0; }
             body {
@@ -13,13 +14,12 @@
               background: -ms-radial-gradient(circle,#aaa,#eee 60%) center fixed;
               background: -o-radial-gradient(circle,#aaa,#eee 60%) center fixed;
               overflow-x: hidden;
-              border-top: 8px solid rgba(51,51,51,.8)
+              border-top: 8px solid rgba(51,51,51,.8);
             }
             #container {
               text-shadow: 0 1px 1px #fff;
               border-top: 1px solid #999;
               margin-top: 160px;
-              width: 100%;
               text-align: center;
               padding: 15px;
               background: #eee;
@@ -28,7 +28,7 @@
               background: -ms-linear-gradient(#fff,#ccc);
               background: -o-linear-gradient(#fff,#ccc);
               opacity: .9;
-              box-shadow: 0px 1px 8px rgba(0,0,0,0.3)
+              box-shadow: 0px 1px 8px rgba(0,0,0,0.3);
             }
             #button {
               margin: 0 auto;
@@ -45,7 +45,7 @@
               background: -moz-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
               background: -ms-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
               background: -o-linear-gradient(#5F5F5F,#565656 50%,#4C4C4C 51%,#373737);
-              box-shadow: inset 0 1px 3px rgba(0,0,0,0.9)
+              box-shadow: inset 0 1px 3px rgba(0,0,0,0.9);
             }
             #button:hover {
               cursor: pointer;
@@ -53,21 +53,21 @@
               background: -webkit-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
               background: -moz-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
               background: -ms-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
-              background: -o-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747)
+              background: -o-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
             }
             #button:active {
               box-shadow: inset 0 1px 12px rgba(0,0,0,0.9);
-              background: #444
+              background: #444;
             }
             #label {
               text-align: left;
               margin: 0 auto;
-              width: 300px
+              width: 300px;
             }
             input {
               vertical-align: middle;
               font-weight: bold;
-              font-size: 15px
+              font-size: 15px;
             }
             input[type="text"] {
               width: 243px;
@@ -76,23 +76,43 @@
               border: 1px solid #bbb;
               outline: none;
               border-radius: 3px;
-              text-shadow: 0 0 1px #fff
+              text-shadow: 0 0 1px #fff;
             }
             input[type="submit"] {
               width: 45px;
               margin-left: -50px;
-              padding: 8px
+              padding: 8px;
             }
             input[type="submit"]::-moz-focus-inner { border: 0 }
-            @-moz-document url-prefix() { input[type="submit"] { padding: 7px } }
+            @-moz-document url-prefix() { input[type="submit"] { padding: 7px } }     
+            @media only screen and (min-device-width: 320px) and (max-device-width: 600px) {
+              body {
+                background: #bbb;
+                background: -webkit-linear-gradient(#aaa,#eee 60%) center fixed;
+                height: 100%;
+              }
+              #container {
+                margin-top: 0;
+                text-align: left;
+              }
+              #button, #label {
+                text-align: center;
+                width: 95%;        
+              }
+              form {
+               text-align: center;
+              }
+              input[type=text] {
+                width: 75%;
+              }
+            }
         </style> 
-        <body onload="document.mainform.padname.focus();">
         <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
         <div id="container"> 
-            <div id="button" onclick="go2Random()">New Pad</div><br><div id="label">or create/open a Pad with the name</div> 
-            <form action="#" name="mainform" onsubmit="go2Name();return false;"> 
-                    <input type="text" name="padname" id="padname" autofocus> 
+            <div id="button" onclick="go2Random()" class="translate">New Pad</div><br><div id="label" class="translate">or create/open a Pad with the name</div> 
+            <form action="#" onsubmit="go2Name();return false;"> 
+                    <input type="text" id="padname" autofocus> 
                     <input type="submit" value="OK"> 
             </form> 
         </div> 
@@ -124,5 +144,4 @@
             //start the costum js
             if(typeof costumStart == "function") costumStart();
         </script> 
-</body>
 </html>
