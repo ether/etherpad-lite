@@ -68,6 +68,11 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
+/**
+ * Http basic auth, with "user:password" format
+ */
+exports.httpAuth = null;
+
 //read the settings sync
 var settingsStr = fs.readFileSync("../settings.json").toString();
 
