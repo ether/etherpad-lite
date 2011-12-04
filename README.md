@@ -71,7 +71,7 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 
 **As any user (we recommend creating a separate user called etherpad-lite):**
 
-<ol start="4">
+<ol start="3">
   <li>Move to a folder where you want to install Etherpad Lite. Clone the git repository <code>git clone 'git://github.com/Pita/etherpad-lite.git'</code><br>&nbsp;</li>
   <li>Install the dependencies with <code>bin/installDeps.sh</code><br>&nbsp;</li>
   <li>Start it with <code>bin/run.sh</code><br>&nbsp;</li>
