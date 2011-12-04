@@ -168,7 +168,7 @@ async.waterfall([
       if (req.headers.authorization) {
         setTimeout(function () {
           res.send('Authentication required', 401);
-        }, 5000);
+        }, 1000);
       } else {
         res.send('Authentication required', 401);
       }
