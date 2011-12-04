@@ -21,6 +21,7 @@ var LineNumbersDisabled = false;
 var noColors = false;
 var useMonospaceFontGlobal = false;
 var globalUserName = false;
+var hideQRCode = false;
 
 $(document).ready(function()
 {
@@ -86,6 +87,7 @@ function getParams()
   var showLineNumbers = params["showLineNumbers"];
   var useMonospaceFont = params["useMonospaceFont"];
   var IsnoColors = params["noColors"];
+  var hideQRCode = params["hideQRCode"];
 
   if(IsnoColors)
   {
@@ -128,6 +130,10 @@ function getParams()
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
     globalUserName = unescape(userName);
+  }
+  if(hideQRCode)
+  {
+    $('#qrcode').hide();
   }
 }
 
