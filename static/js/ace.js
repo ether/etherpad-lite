@@ -96,7 +96,9 @@ function Ace2Editor()
   });
   editor.setEditable = pendingInit(function(newVal)
   {
-    info.ace_setEditable(newVal);
+    //window.console.log("yaya");
+    //window.console.log(newVal);
+    //info.ace_setEditable(newVal);
   });
   editor.getFormattedCode = function()
   {
@@ -117,7 +119,9 @@ function Ace2Editor()
 
   editor.setProperty = pendingInit(function(key, value)
   {
-    info.ace_setProperty(key, value);
+    if (info){
+      info.ace_setProperty(key, value);
+    }
   });
   editor.getDebugProperty = function(prop)
   {
