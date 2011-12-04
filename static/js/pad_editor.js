@@ -89,6 +89,7 @@ var padeditor = (function()
 
       self.ace.setProperty("showsauthorcolors", noColors);
 
+      self.ace.setProperty("rtlIsTrue", rtlIsTrue);
     },
     initViewZoom: function()
     {

@@ -1164,3 +1164,7 @@ label[for=readonlyinput] {
 #qrcode{
   margin-left:10px;
 }
+
+.rtl{
+  direction:RTL;
+} 
