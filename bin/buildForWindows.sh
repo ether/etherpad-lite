@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NODE_VERSION="0.5.4"
+NODE_VERSION="0.6.1"
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
@@ -47,16 +47,6 @@ echo "resolve symbolic links..."
 cp -rL node_modules node_modules_resolved
 rm -rf node_modules
 mv node_modules_resolved node_modules
-
-echo "remove sqlite, cause we can't use it with windows..."
-rm -rf node_modules/ueberDB/node_modules/sqlite3
-
-echo "replace log4js with a patched log4js, this log4js runs on windows too..."
-rm -rf node_modules/log4js/* 
-wget https://github.com/Pita/log4js-node/zipball/master -O log4js.zip
-unzip log4js.zip
-mv Pita-log4js-node*/* node_modules/log4js
-rm -rf log4js.zip Pita-log4js-node*
 
 echo "download windows node..."
 cd bin

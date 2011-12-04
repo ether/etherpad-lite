@@ -61,10 +61,19 @@ exports.doImport = function(req, res, padId)
       
       form.parse(req, function(err, fields, files) 
       { 
-        //save the path of the uploaded file
-        srcFile = files.file.path;
-        
-        callback(err);
+        //the upload failed, stop at this point
+        if(err || files.file === undefined)
+        {
+          console.warn("Uploading Error: " + err.stack);
+          callback("uploadFailed");
+        }
+        //everything ok, continue
+        else 
+        {
+          //save the path of the uploaded file
+          srcFile = files.file.path;
+          callback();
+        }
       });
     },
     
@@ -72,7 +81,7 @@ exports.doImport = function(req, res, padId)
     //this allows us to accept source code files like .c or .java
     function(callback)
     {
-      var fileEnding = srcFile.split(".")[1];
+      var fileEnding = srcFile.split(".")[1].toLowerCase();
       var knownFileEndings = ["txt", "doc", "docx", "pdf", "odt", "html", "htm"];
       
       //find out if this is a known file ending
@@ -103,7 +112,7 @@ exports.doImport = function(req, res, padId)
     //convert file to text
     function(callback)
     {
-      var randNum = Math.floor(Math.random()*new Date().getTime());
+      var randNum = Math.floor(Math.random()*0xFFFFFFFF);
       destFile = tempDirectory + "eplite_import_" + randNum + ".txt";
       abiword.convertFile(srcFile, destFile, "txt", callback);
     },
@@ -127,10 +136,13 @@ exports.doImport = function(req, res, padId)
         
         //node on windows has a delay on releasing of the file lock.  
         //We add a 100ms delay to work around this
-        setTimeout(function()
-        {
-          callback(err);
-        }, 100);
+		if(os.type().indexOf("Windows") > -1)
+		{
+          setTimeout(function()
+          {
+            callback(err);
+          }, 100);
+		}
       });
     },
     
@@ -157,6 +169,13 @@ exports.doImport = function(req, res, padId)
     }
   ], function(err)
   {
+    //the upload failed, there is nothing we can do, send a 500
+    if(err == "uploadFailed")
+    {
+      res.send(500);
+      return;
+    }
+
     if(err) throw err;
   
     //close the connection

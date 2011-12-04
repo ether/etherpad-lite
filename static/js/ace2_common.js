@@ -74,8 +74,15 @@ function isArray(testObject)
   return testObject && typeof testObject === 'object' && !(testObject.propertyIsEnumerable('length')) && typeof testObject.length === 'number';
 }
 
+if (typeof exports !== "undefined")
+{
+  userAgent = "node-js";
+}
+else
+{
+  userAgent = navigator.userAgent.toLowerCase();
+}
 // Figure out what browser is being used (stolen from jquery 1.2.1)
-var userAgent = navigator.userAgent.toLowerCase();
 var browser = {
   version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
   safari: /webkit/.test(userAgent),
@@ -84,6 +91,7 @@ var browser = {
   mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent),
   windows: /windows/.test(userAgent) // dgreensp
 };
+
 
 function getAssoc(obj, name)
 {
@@ -129,4 +137,9 @@ function binarySearchInfinite(expectedLength, func)
 function htmlPrettyEscape(str)
 {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\r?\n/g, '\\n');
+}
+
+if (typeof exports !== "undefined")
+{
+  exports.map = map;
 }

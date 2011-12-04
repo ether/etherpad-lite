@@ -25,6 +25,9 @@ var groupManager = require("./GroupManager");
 var authorManager = require("./AuthorManager");
 var sessionManager = require("./SessionManager");
 var async = require("async");
+var exportHtml = require("../utils/ExportHtml");
+var importHtml = require("../utils/ImportHtml");
+var cleanText = require("./Pad").cleanText;
 
 /**********************/
 /**GROUP FUNCTIONS*****/
@@ -166,6 +169,110 @@ exports.setText = function(padID, text, callback)
     
     //update the clients on the pad
     padMessageHandler.updatePadClients(pad, callback);
+  });
+}
+
+/**
+getHTML(padID, [rev]) returns the html of a pad 
+
+Example returns:
+
+{code: 0, message:"ok", data: {text:"Welcome <strong>Text</strong>"}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getHTML = function(padID, rev, callback)
+{
+  if(typeof rev == "function")
+  {
+    callback = rev;
+    rev = undefined; 
+  }
+
+  if (rev !== undefined && typeof rev != "number")
+  {
+    if (!isNaN(parseInt(rev)))
+    {
+      rev = parseInt(rev);
+    }
+    else
+    {
+      callback({stop: "rev is not a number"});
+      return;
+    }
+  }
+
+  if(rev !== undefined && rev < 0)
+  {
+     callback({stop: "rev is a negative number"});
+     return;
+  }
+
+  if(rev !== undefined && !is_int(rev))
+  {
+    callback({stop: "rev is a float value"});
+    return;
+  }
+
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+    
+    //the client asked for a special revision
+    if(rev !== undefined)
+    {
+      //check if this is a valid revision
+      if(rev > pad.getHeadRevisionNumber())
+      {
+        callback({stop: "rev is higher than the head revision of the pad"});
+        return;
+      }
+     
+      //get the html of this revision 
+      exportHtml.getPadHTML(pad, rev, function(err, html)
+      {
+          if(!err)
+          {
+            data = {html: html};
+          }
+          callback(err, data);
+      });
+    }
+    //the client wants the latest text, lets return it to him
+    else
+    {
+      exportHtml.getPadHTML(pad, undefined, function (err, html)
+      {
+        if(!err)
+        {
+          data = {html: html};
+        }
+        callback(err, data);
+      });
+    }
+  });
+}
+
+exports.setHTML = function(padID, html, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(err)
+    {
+      callback(err);
+      return;
+    }
+
+    // add a new changeset with the new html to the pad
+    importHtml.setPadHTML(pad, cleanText(html));
+
+    //update the clients on the pad
+    padMessageHandler.updatePadClients(pad, callback);
+
   });
 }
 

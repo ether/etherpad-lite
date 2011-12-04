@@ -50,6 +50,8 @@ var functions = {
   "listSessionsOfAuthor"      : ["authorID"], 
   "getText"                   : ["padID", "rev"],
   "setText"                   : ["padID", "text"],
+  "getHTML"                   : ["padID", "rev"],
+  "setHTML"                   : ["padID", "html"],
   "getRevisionsCount"         : ["padID"], 
   "deletePad"                 : ["padID"], 
   "getReadOnlyID"             : ["padID"],
@@ -69,7 +71,7 @@ var functions = {
 exports.handle = function(functionName, fields, req, res)
 {
   //check the api key!
-  if(fields["apikey"] != apikey)
+  if(fields["apikey"] != apikey.trim())
   {
     res.send({code: 4, message: "no or wrong API Key", data: null});
     return;

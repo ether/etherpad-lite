@@ -50,12 +50,12 @@
   </a>
 </li>
 <li onClick="window.pad&&pad.editbarClick('indent');return false;" >
-  <a title="Indent List">
+  <a title="Indent">
     <div class="buttonicon" style="background-position:0px -52px"></div>
   </a>
 </li>
 <li onClick="window.pad&&pad.editbarClick('outdent');return false;" >
-  <a title="Unindent List">
+  <a title="Unindent">
     <div class="buttonicon" style="background-position:0px -134px"></div>
 	</a>
 </li>
@@ -80,18 +80,13 @@
 
 <ul id="menu_right">
 
-<li onClick="window.pad&&pad.editbarClick('readonly');return false;" >
-  <a id="readonlylink" title="Create a readonly link for this pad">
-     <div class="buttonicon" style="background-position:0px -150px"></div>
-  </a>
-</li>
 <li onClick="window.pad&&pad.editbarClick('import_export');return false;">
   <a id="exportlink" title="Import/Export from/to different document formats">
     <div class="buttonicon" style="background-position:0px -68px"></div>
   </a>
 </li>
 <li onClick="window.pad&&pad.editbarClick('embed');return false;" >
-  <a id="embedlink" title="Embed this pad">
+  <a id="embedlink" title="Share and Embed this pad">
     <div class="buttonicon" style="background-position:0px -18px"></div>
   </a>
 </li>
@@ -103,7 +98,7 @@
 </li>
 <li id="usericon" onClick="window.pad&&pad.editbarClick('showusers');return false;" >
   <a title="Show connected users">
-    <div class="buttonicon" style="background-position:0px -184px;display:inline-block;"></div>
+    <div class="buttonicon" id="usericonback" style="background-position:0px -184px;display:inline-block;"></div>
  <span id="online_count">1</span>
   </a>
 </li>
@@ -217,17 +212,21 @@
 
 <!-- the embed code -->
 <div id="embed">
-<div id="embedcode">
-Embed code:<input id="embedinput" type="text" value="">
-</div>
-</div>
-
-<!-- the embed code -->
-<div id="readonly">
-<div id="readonlyUrl">
-Use this link to share a read-only version of your pad:<input id="readonlyInput" type="text" value="">
-<img id="readonlyImage" src="" alt="" style="margin: 10px 90px">
-</div>
+  <div id="embedreadonly">
+    <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();"/><label for="readonlyinput">Read only</label>
+  </div>
+  Share:
+  <br/>
+  <div id="linkcode">
+    <label for="linkinput">Link:</label><input id="linkinput" type="text" value="">
+  </div><br/>
+  <div id="embedcode">
+    <label for="embedinput">Embed code:</label><input id="embedinput" type="text" value="">
+  </div><br/>
+  <div id="qrcode">
+    <label for="embedreadonlyqr">QR code:</label><br/>
+    <div id="qr_center"><img id="embedreadonlyqr"></div>
+  </div>
 </div>
 
 <div id="chatthrob">
