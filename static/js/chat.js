@@ -108,19 +108,23 @@ var chat = (function()
       //should we increment the counter??
       if(increment)
       {
-        var count = Number($("#chatcounter").text());
-        count++;
-        $("#chatcounter").text(count);
-        // chat throb stuff -- Just make it throw for twice as long
-        if(wasMentioned)
-        { // If the user was mentioned show for twice as long and flash the browser window
-          if (chatMentions == 0){
-            title = document.title;
+        // Only increment if the chat window is not already open
+        if(!$('#chattext').is(':visible'))
+        {
+          var count = Number($("#chatcounter").text());
+          count++;
+          $("#chatcounter").text(count);
+          // chat throb stuff -- Just make it throw for twice as long
+          if(wasMentioned)
+          { // If the user was mentioned show for twice as long and flash the browser window
+            if (chatMentions == 0){
+              title = document.title;
+            }
+            $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
+            $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},4000);
+            chatMentions++;
+            document.title = "("+chatMentions+") " + title;
           }
-          $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text);
-          $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},4000);
-          chatMentions++;
-          document.title = "("+chatMentions+") " + title;
         }
         else
         {
