@@ -98,6 +98,12 @@ async.waterfall([
       app.use(express.cookieParser());
     });
     
+    app.error(function(err, req, res, next){
+      res.send(500);
+      console.error(err.stack ? err.stack : err.toString());
+      gracefulShutdown();
+    });
+    
     //serve static files
     app.get('/static/*', function(req, res)
     { 
@@ -110,6 +116,7 @@ async.waterfall([
     //serve minified files
     app.get('/minified/:id', function(req, res, next)
     { 
+      throw new Error();
       res.header("Server", serverName);
       
       var id = req.params.id;
