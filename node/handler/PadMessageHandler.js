@@ -808,23 +808,26 @@ function handleClientReady(client, message)
         clientVars.userName = authorName;
       }
       
-      //This is a reconnect, so we don't have to send the client the ClientVars again
-      if(message.reconnect == true)
+      if(sessioninfos[client.id] !== undefined)
       {
-        //Save the revision in sessioninfos, we take the revision from the info the client send to us
-        sessioninfos[client.id].rev = message.client_rev;
+        //This is a reconnect, so we don't have to send the client the ClientVars again
+        if(message.reconnect == true)
+        {
+          //Save the revision in sessioninfos, we take the revision from the info the client send to us
+          sessioninfos[client.id].rev = message.client_rev;
+        }
+        //This is a normal first connect
+        else
+        {
+          //Send the clientVars to the Client
+          client.json.send(clientVars);
+          //Save the revision in sessioninfos
+          sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+        }
+        
+        //Save the revision and the author id in sessioninfos
+        sessioninfos[client.id].author = author;
       }
-      //This is a normal first connect
-      else
-      {
-        //Send the clientVars to the Client
-        client.json.send(clientVars);
-        //Save the revision in sessioninfos
-        sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
-      }
-      
-      //Save the revision and the author id in sessioninfos
-      sessioninfos[client.id].author = author;
       
       //prepare the notification for the other users on the pad, that this user joined
       var messageToTheOtherUsers = {
