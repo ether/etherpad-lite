@@ -17,7 +17,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
 var authorManager = require("./AuthorManager");
@@ -56,6 +57,8 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
       //get author for this token
       authorManager.getAuthor4Token(token, function(err, author)
       {
+        if(ERR(err, callback)) return;
+        
         // assume user has access
         statusObject = {accessStatus: "grant", authorID: author};
         // user can't create pads
@@ -64,17 +67,19 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
           // check if pad exists
           padManager.doesPadExists(padID, function(err, exists)
           {
+            if(ERR(err, callback)) return;
+            
             // pad doesn't exist - user can't have access
             if(!exists) statusObject.accessStatus = "deny";
             // grant or deny access, with author of token
-            callback(err, statusObject);
+            callback(null, statusObject);
           });
         }
         // user may create new pads - no need to check anything
         else
         {
           // grant access, with author of token
-          callback(err, statusObject);
+          callback(null, statusObject);
         }
       })
       
@@ -102,8 +107,9 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         {
           padManager.doesPadExists(padID, function(err, exists)
           {
+            if(ERR(err, callback)) return;
             padExists = exists;
-            callback(err);
+            callback();
           });
         },
         //get informations about this session
@@ -118,7 +124,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
               return;
             }
             
-            if(err) {callback(err); return}
+            if(ERR(err, callback)) return;
             
             var now = Math.floor(new Date().getTime()/1000);
             
@@ -139,8 +145,9 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
           //get author for this token
           authorManager.getAuthor4Token(token, function(err, author)
           {
+            if(ERR(err, callback)) return;
             tokenAuthor = author;
-            callback(err);
+            callback();
           });
         }
       ], callback);
@@ -157,7 +164,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
       
       padManager.getPad(padID, function(err, pad)
       {
-        if(err) {callback(err); return}
+        if(ERR(err, callback)) return;
         
         //is it a public pad?
         isPublic = pad.getPublicStatus();
@@ -265,6 +272,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
     }
   ], function(err)
   {
-    callback(err, statusObject);
+    if(ERR(err, callback)) return;
+    callback(null, statusObject);
   });
 }

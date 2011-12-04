@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
 var padManager = require("../db/PadManager");
 var async = require("async");
@@ -50,8 +51,7 @@ exports.doExport = function(req, res, padId, type)
   {
     padManager.getPad(padId, function(err, pad)
     {
-      if(err)
-        throw err;
+      ERR(err);
          
       res.send(pad.text());
     });
@@ -68,8 +68,9 @@ exports.doExport = function(req, res, padId, type)
       {
         exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
         {
+          if(ERR(err, callback)) return;
           html = _html;
-          callback(err);
+          callback();
         });   
       },
       //decide what to do with the html export
@@ -113,19 +114,23 @@ exports.doExport = function(req, res, padId, type)
           function(callback)
           {
             //100ms delay to accomidate for slow windows fs
-			if(os.type().indexOf("Windows") > -1)
-			{
-			  setTimeout(function() 
-			  {
-			    fs.unlink(destFile, callback);
-			  }, 100);
-			}
+            if(os.type().indexOf("Windows") > -1)
+            {
+              setTimeout(function() 
+              {
+                fs.unlink(destFile, callback);
+              }, 100);
+            }
+            else
+            {
+              fs.unlink(destFile, callback);
+            }
           }
         ], callback);
       }
     ], function(err)
     {
-      if(err && err != "stop") throw err;
+      if(err && err != "stop") ERR(err);
     })
   }
 };

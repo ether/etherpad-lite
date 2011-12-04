@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 var log4js = require('log4js');
 var os = require("os");
 var socketio = require('socket.io');
@@ -116,7 +117,6 @@ async.waterfall([
     //serve minified files
     app.get('/minified/:id', function(req, res, next)
     { 
-      throw new Error();
       res.header("Server", serverName);
       
       var id = req.params.id;
@@ -136,7 +136,7 @@ async.waterfall([
     {
       securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj)
       {
-        if(err) throw err;
+        if(ERR(err, callback)) return;
         
         //there is access, continue
         if(accessObj.accessStatus == "grant")
@@ -166,12 +166,14 @@ async.waterfall([
         {
           readOnlyManager.getPadId(req.params.id, function(err, _padId)
           {
+            if(ERR(err, callback)) return;
+            
             padId = _padId;
             
             //we need that to tell hasPadAcess about the pad  
             req.params.pad = padId; 
             
-            callback(err);
+            callback();
           });
         },
         //render the html document
@@ -189,8 +191,9 @@ async.waterfall([
             //render the html document
             exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
             {
+              if(ERR(err, callback)) return;
               html = _html;
-              callback(err);
+              callback();
             });
           });
         }
@@ -198,7 +201,7 @@ async.waterfall([
       {
         //throw any unexpected error
         if(err && err != "notfound")
-          throw err;
+          ERR(err);
           
         if(err == "notfound")
           res.send('404 - Not Found', 404);

@@ -4,6 +4,7 @@
 
 require('joose');
 
+var ERR = require("async-stacktrace");
 var Changeset = require("../utils/Changeset");
 var AttributePoolFactory = require("../utils/AttributePoolFactory");
 var db = require("./DB").db;
@@ -164,8 +165,9 @@ Class('Pad', {
             {
               db.getSub("pad:"+_this.id+":revs:"+keyRev, ["meta", "atext"], function(err, _atext)
               {
+                if(ERR(err, callback)) return;
                 atext = Changeset.cloneAText(_atext);
-                callback(err);
+                callback();
               });
             },
             //get all needed changesets
@@ -175,8 +177,9 @@ Class('Pad', {
               {
                 _this.getRevisionChangeset(item, function(err, changeset)
                 {
+                  if(ERR(err, callback)) return;
                   changesets[item] = changeset;
-                  callback(err);
+                  callback();
                 });
               }, callback);
             }
@@ -199,7 +202,8 @@ Class('Pad', {
         }  
       ], function(err)
       {
-        callback(err, atext);
+        if(ERR(err, callback)) return;
+        callback(null, atext);
       });
     },
     
@@ -247,8 +251,9 @@ Class('Pad', {
         {
           db.get("pad:"+_this.id+":chat:"+entryNum, function(err, _entry)
           {
+            if(ERR(err, callback)) return;
             entry = _entry;
-            callback(err);
+            callback();
           });
         },
         //add the authorName
@@ -264,13 +269,15 @@ Class('Pad', {
           //get the authorName
           authorManager.getAuthorName(entry.userId, function(err, authorName)
           {
+            if(ERR(err, callback)) return;
             entry.userName = authorName;
-            callback(err);
+            callback();
           });
         }
       ], function(err)
       {
-        callback(err, entry);
+        if(ERR(err, callback)) return;
+        callback(null, entry);
       });
     },
     
@@ -311,11 +318,14 @@ Class('Pad', {
       {
         _this.getChatMessage(entryObject.entryNum, function(err, entry)
         {
+          if(ERR(err, callback)) return;
           entries[entryObject.order] = entry;
-          callback(err);
+          callback();
         });
       }, function(err)
       {
+        if(ERR(err, callback)) return;
+        
         //sort out broken chat entries
         //it looks like in happend in the past that the chat head was 
         //incremented, but the chat message wasn't added
@@ -328,7 +338,7 @@ Class('Pad', {
             console.warn("WARNING: Found broken chat entry in pad " + _this.id);
         }
       
-        callback(err, cleanedEntries);
+        callback(null, cleanedEntries);
       });
     },
     
@@ -345,11 +355,7 @@ Class('Pad', {
       //try to load the pad  
       db.get("pad:"+this.id, function(err, value)
       {
-        if(err)
-        {
-          callback(err, null);
-          return;
-        }  
+        if(ERR(err, callback)) return;
         
         //if this pad exists, load it
         if(value != null)
@@ -410,7 +416,7 @@ Class('Pad', {
                 
                 db.get("group:" + groupID, function (err, group)
                 {
-                  if(err) {callback(err); return}
+                  if(ERR(err, callback)) return;
                   
                   //remove the pad entry
                   delete group.pads[padID];
@@ -432,7 +438,7 @@ Class('Pad', {
             {
               readOnlyManager.getReadOnlyId(padID, function(err, readonlyID)
               {
-                if(err) {callback(err); return}
+                if(ERR(err, callback)) return;
                 
                 db.remove("pad2readonly:" + padID);
                 db.remove("readonly2pad:" + readonlyID);
@@ -475,7 +481,8 @@ Class('Pad', {
         }
       ], function(err)
       {
-        callback(err);
+        if(ERR(err, callback)) return;
+        callback();
       })
     },
     //set in db
