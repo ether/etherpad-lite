@@ -102,7 +102,6 @@ function getParams()
       $('#editorcontainer').css({"top":"0px"});
     }
   }
-
   if(showChat)
   {
     if(showChat == "false")
@@ -110,7 +109,6 @@ function getParams()
       $('#chaticon').hide();
     }
   }
-
   if(showLineNumbers)
   {
     if(showLineNumbers == "false")
@@ -118,7 +116,6 @@ function getParams()
       LineNumbersDisabled = true;
     }
   }
-
   if(useMonospaceFont)
   {
     if(useMonospaceFont == "true")
@@ -126,8 +123,6 @@ function getParams()
       useMonospaceFontGlobal = true;
     }
   }
-
-
   if(userName)
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
