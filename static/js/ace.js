@@ -96,9 +96,10 @@ function Ace2Editor()
   });
   editor.setEditable = pendingInit(function(newVal)
   {
-    //window.console.log("yaya");
-    //window.console.log(newVal);
-    //info.ace_setEditable(newVal);
+    if(info)
+    {
+      info.ace_setEditable(newVal);
+    }
   });
   editor.getFormattedCode = function()
   {
