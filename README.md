@@ -114,8 +114,8 @@ You also help the project, if you only host a Etherpad Lite instance and share y
 # Modules created for this project
 
 * [ueberDB](https://github.com/Pita/ueberDB) "transforms every database into a object key value store" - manages all database access
-* [doc.md](https://github.com/Pita/doc.md) "A simple JSDoc documentation tool that creates markdown for node.js modules exports" - is used to generate the docs
 * [channels](https://github.com/Pita/channels) "Event channels in node.js" - ensures that ueberDB operations are atomic and in series for each key
+* [async-stacktrace](https://github.com/Pita/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
