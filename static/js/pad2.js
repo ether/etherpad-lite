@@ -21,6 +21,7 @@ var LineNumbersDisabled = false;
 var noColors = false;
 var useMonospaceFontGlobal = false;
 var globalUserName = false;
+var hideQRCode = false;
 
 $(document).ready(function()
 {
@@ -86,12 +87,14 @@ function getParams()
   var showLineNumbers = params["showLineNumbers"];
   var useMonospaceFont = params["useMonospaceFont"];
   var IsnoColors = params["noColors"];
+  var hideQRCode = params["hideQRCode"];
 
   if(IsnoColors)
   {
     if(IsnoColors == "true")
     {
       noColors = true;
+      $('#clearAuthorship').hide();
     }
   }
   if(showControls)
@@ -102,7 +105,6 @@ function getParams()
       $('#editorcontainer').css({"top":"0px"});
     }
   }
-
   if(showChat)
   {
     if(showChat == "false")
@@ -110,7 +112,6 @@ function getParams()
       $('#chaticon').hide();
     }
   }
-
   if(showLineNumbers)
   {
     if(showLineNumbers == "false")
@@ -118,7 +119,6 @@ function getParams()
       LineNumbersDisabled = true;
     }
   }
-
   if(useMonospaceFont)
   {
     if(useMonospaceFont == "true")
@@ -126,12 +126,14 @@ function getParams()
       useMonospaceFontGlobal = true;
     }
   }
-
-
   if(userName)
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
     globalUserName = unescape(userName);
+  }
+  if(hideQRCode)
+  {
+    $('#qrcode').hide();
   }
 }
 
