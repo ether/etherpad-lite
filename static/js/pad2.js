@@ -92,6 +92,7 @@ function getParams()
     if(IsnoColors == "true")
     {
       noColors = true;
+      $('#clearAuthorship').hide();
     }
   }
   if(showControls)
