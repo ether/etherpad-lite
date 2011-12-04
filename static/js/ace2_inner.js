@@ -1127,6 +1127,10 @@ function OUTER(gscope)
     {
       setTextSize(value);
     }
+    else if (k == 'rtlistrue')
+    {
+      setClassPresence(root, "rtl", !! value);
+    }
   }
 
   editorInfo.ace_setBaseText = function(txt)

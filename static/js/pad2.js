@@ -22,6 +22,7 @@ var noColors = false;
 var useMonospaceFontGlobal = false;
 var globalUserName = false;
 var hideQRCode = false;
+var rtlIsTrue = false;
 
 $(document).ready(function()
 {
@@ -88,6 +89,7 @@ function getParams()
   var useMonospaceFont = params["useMonospaceFont"];
   var IsnoColors = params["noColors"];
   var hideQRCode = params["hideQRCode"];
+  var rtl = params["rtl"];
 
   if(IsnoColors)
   {
@@ -134,6 +136,13 @@ function getParams()
   if(hideQRCode)
   {
     $('#qrcode').hide();
+  }
+  if(rtl)
+  {
+    if(rtl == "true")
+    {
+      rtlIsTrue = true
+    }
   }
 }
 
@@ -292,6 +301,11 @@ function handshake()
       if (noColors == true)
       {
         pad.changeViewOption('noColors', true);
+      }
+      
+      if (rtlIsTrue == true)
+      {
+        pad.changeViewOption('rtl', true);
       }
 
       // If the Monospacefont value is set to true then change it to monospace.
