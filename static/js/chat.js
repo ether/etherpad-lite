@@ -31,6 +31,8 @@ var chat = (function()
         $("#chatbox").resizable(
         {
           handles: 'nw',
+          minHeight: 40,
+          minWidth: 80,
           start: function (event, ui)
           {
             $("#focusprotector").show();
