@@ -35,7 +35,7 @@ var sessionManager = require("./SessionManager");
 exports.checkAccess = function (padID, sessionID, token, password, callback)
 { 
   // it's not a group pad, means we can grant access
-  if(padID.indexOf("$") == -1)
+  /*if(padID.indexOf("$") == -1)
   {
     //get author for this token
     authorManager.getAuthor4Token(token, function(err, author)
@@ -46,7 +46,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
     
     //don't continue
     return;
-  }
+  }*/
    
   var groupID = padID.split("$")[0];
   var padExists = false;

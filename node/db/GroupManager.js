@@ -202,7 +202,7 @@ exports.createGroupPad = function(groupID, padName, text, callback)
         }
       });
     },
-    //ensure pad does not exists
+    //ensure pad does not exist
     function (callback)
     {
       padManager.doesPadExists(padID, function(err, exists)
@@ -278,8 +278,7 @@ function randomString(len)
   var randomstring = '';
   for (var i = 0; i < len; i++)
   {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
+    randomstring += chars[Math.floor(Math.random() * chars.length)];
   }
   return randomstring;
 }
