@@ -133,8 +133,8 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         //is it password protected?
         isPasswordProtected = pad.isPasswordProtected();
 
-		//get the password salt used by the hash function
-		pwsalt = pad.getPasswordSalt();
+        //get the password salt used by the hash function
+        pwsalt = pad.getPasswordSalt();
         
         //is password correct?
         if(isPasswordProtected && password && pad.isCorrectPassword(password))
@@ -205,18 +205,19 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         else if(isPublic && isPasswordProtected && passwordStatus == "wrong")
         {
           //--> deny access, ask for new password and tell them that the password is wrong
-          statusObject = {accessStatus: "wrongPassword"};
+          statusObject = {accessStatus: "wrongPassword", passwordSalt: pwsalt};
         }
         //- its public and the pad is password protected but no password given
         else if(isPublic && isPasswordProtected && passwordStatus == "notGiven")
         {
           //--> ask for password
-          statusObject = {accessStatus: "needPassword"};
+          statusObject = {accessStatus: "needPassword", passwordSalt: pwsalt};
         }
         //- its not public
         else if(!isPublic)
         {
           //--> deny access
+          console.log("not public");
           statusObject = {accessStatus: "deny"};
         }
         else
@@ -228,6 +229,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
       else
       {
          //--> deny access
+         console.log("imaginary pad");
          statusObject = {accessStatus: "deny"};
       }
       

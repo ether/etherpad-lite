@@ -495,7 +495,7 @@ Class('Pad', {
     }, 
 	getPasswordSalt: function()
 	{
-		return this.passwordHash.split("$")[1];
+		return this.passwordHash == null? null:this.passwordHash.split("$")[1];
 	},
     isCorrectPassword: function(password)
     {
@@ -512,7 +512,7 @@ Class('Pad', {
 
 function hash(password, salt)
 {
-  var shasum = crypto.createHash('sha512');
+  var shasum = crypto.createHash('sha256');
   shasum.update(password + salt);
   return shasum.digest("hex") + "$" + salt;
 }
@@ -524,7 +524,7 @@ function generateSalt()
   var randomstring = '';
   for (var i = 0; i < len; i++)
   {
-    randomstring += chars[Math.floor(Math.random() * chars.length)];
+    randomstring += charset[Math.floor(Math.random() * charset.length)];
   }
   return randomstring;
 }

@@ -644,7 +644,7 @@ function handleClientReady(client, message)
         //no access, send the client a message that tell him why
         else
         {
-          client.json.send({accessStatus: statusObject.accessStatus})
+          client.json.send({accessStatus: statusObject.accessStatus, passwordSalt: statusObject.passwordSalt})
         }
       });
     }, 

@@ -71,8 +71,7 @@ function randomString()
   var randomstring = '';
   for (var i = 0; i < string_length; i++)
   {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars[rnum];
+    randomstring += chars[Math.floor(Math.random() * chars.length)];
   }
   return "t." + randomstring;
 }
@@ -149,7 +148,7 @@ function getUrlVars()
 
 function hash(password, salt)
 {
-	return sha512(password + salt) + "$" + salt;
+	return $.sha256(password + salt) + "$" + salt;
 }
 
 /* Generate the "timed hash" used to get access.
@@ -226,13 +225,15 @@ function handshake()
       {
         $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword("+obj.passwordSalt+")'>ok</button>");
+                                    "<button type='button' onclick='savePassword(\""+obj.passwordSalt+"\")'>ok</button>");
+        console.log("passwordSalt: "+obj.passwordSalt);
       }
       else if(obj.accessStatus == "wrongPassword")
       {
         $("#editorloadingbox").html("<b>Your password was wrong</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword("+obj.passwordSalt+")'>ok</button>");
+                                    "<button type='button' onclick='savePassword(\""+obj.passwordSalt+"\")'>ok</button>");
+        console.log("passwordSalt: "+obj.passwordSalt);
       }
     }
     

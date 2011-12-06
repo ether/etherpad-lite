@@ -92,7 +92,7 @@ exports.setSocketIO = function(_socket)
     {
       if(message.protocolVersion && message.protocolVersion != 2)
       {
-        messageLogger.warn("Protocolversion header is not correct:" + stringifyWithoutPassword(message));
+        messageLogger.warn("Protocol version header is not correct:" + stringifyWithoutPassword(message));
         return;
       }
 
@@ -121,14 +121,14 @@ exports.setSocketIO = function(_socket)
             else
             {
               messageLogger.warn("Authentication try failed:" + stringifyWithoutPassword(message));
-              client.json.send({accessStatus: statusObject.accessStatus});
+              client.json.send({accessStatus: statusObject.accessStatus, passwordSalt: statusObject.passwordSalt});
             }
           });
         }
         //drop message
         else
         {
-          messageLogger.warn("Droped message cause of bad permissions:" + stringifyWithoutPassword(message));
+          messageLogger.warn("Dropped message cause of insufficient permissions:" + stringifyWithoutPassword(message));
         }
       }
     });

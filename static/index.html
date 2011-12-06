@@ -119,7 +119,9 @@
 					}
 					else
 					{
-						window.location = "p/" + padname;
+						$.get("api/1/createPad", {apikey: "o8PJ496RtbcwoMQGgDyjoOmyq5wJ8dON", padID: padname}, function(data){
+              window.location = "p/" + padname;
+            });
 					}
 				}
 				else
