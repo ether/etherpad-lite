@@ -52,7 +52,7 @@ Class('Pad', {
     
     publicStatus : {
       is: 'rw',
-      init: false,
+      init: true,
       getterName : 'getPublicStatus'
     }, //publicStatus
     
@@ -486,7 +486,11 @@ Class('Pad', {
     },
     setPassword: function(password)
     {
-      this.passwordHash = password == null ? null : hash(password, generateSalt());
+      if(password == null){  
+        this.passwordHash = null;
+      }else{
+        this.passwordHash = hash(password, generateSalt());
+      }
       db.setSub("pad:"+this.id, ["passwordHash"], this.passwordHash);
     }, 
     isCorrectPassword: function(password)
@@ -516,8 +520,7 @@ function generateSalt()
   var randomstring = '';
   for (var i = 0; i < len; i++)
   {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
+    randomstring += chars[Math.floor(Math.random() * chars.length)];
   }
   return randomstring;
 }
