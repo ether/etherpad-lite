@@ -152,12 +152,51 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     {
       if (href)
       {
-        if(!~href.indexOf("http")) // if the url doesn't include http or https etc prefix it.
+        
+         // if the url doesn't include http or https prefix it
+        if(!~href.indexOf("http"))
         {
           href = "http://"+href;
         }
-        extraOpenTags = extraOpenTags + '<a href="' + href.replace(/\"/g, '&quot;') + '">';
-        extraCloseTags = '</a>' + extraCloseTags;
+        
+        // check extension and decide, whether it's media (image,audio,video) or a simple link
+        var href_ext = href.slice(-4);
+
+        // images
+        if (href_ext==".jpg" || href_ext==".png" || href_ext==".gif" || href_ext==".svg") {
+          extraOpenTags = extraOpenTags + '<img src="' + href.replace(/\"/g, '&quot;') + '"><br>';
+        }
+        
+        // music
+        if (href_ext==".mp3" || href_ext==".wav" || href_ext==".oga") {
+          extraOpenTags = extraOpenTags + '<audio controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></audio><br>';
+        }
+        
+        // video
+        if (href_ext==".mp4" || href_ext==".ogv" || href_ext==".ogg" || href.slice(-5)==".webm" || href_ext==".mov") {
+          extraOpenTags = extraOpenTags + '<video controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></video><br>';
+        }  
+
+        // YouTube
+        if (href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/) != null) {
+          var youtube_id = href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/)[1];
+          txt = 'https://www.youtube.com/watch?v=' + youtube_id;
+          extraOpenTags = extraOpenTags + '<div style="height:385px"><iframe width=640 height=385 src="https://www.youtube.com/embed/' + youtube_id + '"></iframe></div><br>';
+        }
+        // Vimeo
+        if (href.match(/[http|https]\:\/\/vimeo\.com\/(\d{8})/) != null) {
+          var vimeo_id = href.match(/[http|https]\:\/\/vimeo\.com\/(\d{8})/)[1];
+          txt = 'https://vimeo.com/' + vimeo_id;
+          extraOpenTags = extraOpenTags + '<div style="height:338px"><iframe width=640 height=338 src="https://player.vimeo.com/video/' + vimeo_id + '?title=0&byline=0&portrait=0"></iframe></div><br>';
+        }
+        
+        // If nothing applies, consider it as a normal url
+        if (extraOpenTags.length == 0) {
+            extraOpenTags = extraOpenTags + '<a href="' + href.replace(/\"/g, '&quot;') + '">';
+            extraCloseTags = '</a>' + extraCloseTags;
+        }
+        
+        
       }
       if (simpleTags)
       {
