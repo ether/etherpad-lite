@@ -200,7 +200,7 @@ ul ul { margin-left: 0 !important; }
 ul.list-bullet1 { margin-left: 3em; }
 ul.list-bullet2 { margin-left: 4.5em; }
 ul.list-bullet3 { margin-left: 6em; }
-ul.list-bullet3 { margin-left: 7.5em; }
+ul.list-bullet4 { margin-left: 7.5em; }
 ul.list-bullet5 { margin-left: 9em; }
 ul.list-bullet6 { margin-left: 10.5em; }
 ul.list-bullet7 { margin-left: 12em; }
@@ -219,7 +219,7 @@ ul.list-bullet8 { list-style-type: circle; }
 ol.list-number1 { margin-left: 3em; }
 ol.list-number2 { margin-left: 4.5em; }
 ol.list-number3 { margin-left: 6em; }
-ol.list-number3 { margin-left: 7.5em; }
+ol.list-number4 { margin-left: 7.5em; }
 ol.list-number5 { margin-left: 9em; }
 ol.list-number6 { margin-left: 10.5em; }
 ol.list-number7 { margin-left: 12em; }
@@ -238,7 +238,7 @@ ol.list-number8 { list-style-type: lower-latin; }
 ul.list-number1 { margin-left: 3em; }
 ul.list-number2 { margin-left: 4.5em; }
 ul.list-number3 { margin-left: 6em; }
-ul.list-number3 { margin-left: 7.5em; }
+ul.list-number4 { margin-left: 7.5em; }
 ul.list-number5 { margin-left: 9em; }
 ul.list-number6 { margin-left: 10.5em; }
 ul.list-number7 { margin-left: 12em; }
