@@ -5178,8 +5178,11 @@ function OUTER(gscope)
     }
     
     //2-find the first line of the list
-    while(lineNum-1 >= 0 && getLineListType(lineNum-1))
+    while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
     {
+      type = /([a-z]+)[12345678]/.exec(type);
+      if(type[1] == "indent")
+        break;
       lineNum--;
     }
     
@@ -5197,9 +5200,9 @@ function OUTER(gscope)
       while(listType = getLineListType(line))
       {
         //apply new num
-        curLevel = /[a-z]+([12345678])/.exec(listType);
-        curLevel = Number(curLevel[1]);
-        if(isNaN(curLevel))
+        listType = /([a-z]+)([12345678])/.exec(listType);
+        curLevel = Number(listType[2]);
+        if(isNaN(curLevel) || listType[0] == "indent")
         {
           return line;
         }
