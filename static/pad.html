@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
   <title>RPG Write</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <!-- CSS -->
   <link href="../static/css/pad.css" rel="stylesheet">
   <!-- javascript -->
@@ -50,14 +51,14 @@
   </a>
 </li>
 <li onClick="window.pad&&pad.editbarClick('indent');return false;" >
-  <a title="Indent List">
+  <a title="Indent">
     <div class="buttonicon" style="background-position:0px -52px"></div>
   </a>
 </li>
 <li onClick="window.pad&&pad.editbarClick('outdent');return false;" >
-  <a title="Unindent List">
+  <a title="Unindent">
     <div class="buttonicon" style="background-position:0px -134px"></div>
-	</a>
+        </a>
 </li>
 <li class="separator"></li>
 <li onClick="window.pad&&pad.editbarClick('undo');return false;" >
@@ -71,7 +72,7 @@
   </a>
 </li>
 <li class="separator"></li>
-<li onClick="window.pad&&pad.editbarClick('clearauthorship');return false;" >
+<li id="clearAuthorship" onClick="window.pad&&pad.editbarClick('clearauthorship');return false;" >
   <a title="Clear Authorship Colors">
     <div class="buttonicon" style="background-position:0px -86px"></div>
   </a>
@@ -86,7 +87,7 @@
   </a>
 </li>
 <li onClick="window.pad&&pad.editbarClick('embed');return false;" >
-  <a id="embedlink" title="Embed this pad">
+  <a id="embedlink" title="Share and Embed this pad">
     <div class="buttonicon" style="background-position:0px -18px"></div>
   </a>
 </li>
@@ -225,7 +226,7 @@
   </div><br/>
   <div id="qrcode">
     <label for="embedreadonlyqr">QR code:</label><br/>
-    <img id="embedreadonlyqr">
+    <div id="qr_center"><img id="embedreadonlyqr"></div>
   </div>
 </div>
 

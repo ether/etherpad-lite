@@ -472,12 +472,10 @@ table#otheruserstable { display: none; }
   background: url(../../static/img/connectingbar.gif) no-repeat center 60px;
   height: 100px;
 }
-.modaldialog.cboxreconnecting {
-  background: #fed;
-}
+.modaldialog.cboxreconnecting, 
 .modaldialog.cboxconnecting,
 .modaldialog.cboxdisconnected {
-  background: #fdd;
+  background: #8FCDE0;
 }
 .cboxdisconnected #connectionboxinner div { display: none; }
 .cboxdisconnected_userdup #connectionboxinner #disconnected_userdup { display: block; }
@@ -1146,17 +1144,106 @@ width:33px !important;
   color: #999;
 }
 
-@media screen and (max-width: 600px) {
-  #editbar ul li {
-    padding: 4px 1px;
-  }
+label[for=readonlyinput] {
+  margin: 0 10px 0 2px;
 }
 
-#embedreadonlyqr{
-  padding-top:20px;
-  margin-left:100px;
+
+#qr_center {
+  margin: 10px 10px auto 0;
+  text-align: center;
 }
 
 #qrcode{
   margin-left:10px;
+}
+
+
+@media screen and (max-width: 960px) {
+  .modaldialog {
+    position: relative;
+    margin: 0 auto;
+    width: 80%;
+    top: 40px;
+    left: 0;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #editbar ul li {
+    padding: 4px 1px;
+  }  
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 600px) {
+  #editbar ul li {
+    padding: 4px 3px;
+  }
+  #editbar ul#menu_right > li {
+    padding: 4px 8px;
+    margin-top: 2px;
+  }
+  #chaticon {
+    opacity: .8;
+  }
+  #users {
+    right: none;
+    left: 30px;
+  }
+  #mycolorpicker {
+    right: 0;
+    left: 0 !important;
+  }
+  #editorcontainer {
+    margin-bottom: 33px;
+  }
+  #editbar ul#menu_right  {
+    background: #f7f7f7;
+    background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    width: 100%;
+    overflow: hidden;
+    height: 32px;
+    position: fixed;
+    bottom: 0;
+    border-top: 1px solid #ccc;
+  }
+  #editbar ul#menu_right li:not(:last-child) {
+    display: none;
+  }
+  #editbar ul#menu_right li:last-child {
+    height: 24px;
+    border-radius: 0;
+    margin-top: 0;
+    border: 0;
+    float: right;
+  }
+  #chaticon {
+    bottom: 0;
+    right: 55px;
+    border-right: none;
+    border-radius: 0;
+    background: #f7f7f7;
+    background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    border: 0;
+  }
+  #chatbox {
+    bottom: 32px;
+    right: 0;
+    border-top-right-radius: 0;
+  }
+  #editbar ul li a span {
+    top: -3px;
+  }
+  #usericonback {
+    margin-top: 4px;
+  }
+  #sidediv {
+    display:none;
+  }
 }

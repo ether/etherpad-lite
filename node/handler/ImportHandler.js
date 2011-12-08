@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 var padManager = require("../db/PadManager");
 var padMessageHandler = require("./PadMessageHandler");
 var async = require("async");
@@ -122,8 +123,9 @@ exports.doImport = function(req, res, padId)
     {
       padManager.getPad(padId, function(err, _pad)
       {
+        if(ERR(err, callback)) return;
         pad = _pad;
-        callback(err);
+        callback();
       });
     },
     
@@ -132,17 +134,22 @@ exports.doImport = function(req, res, padId)
     {
       fs.readFile(destFile, "utf8", function(err, _text)
       {
+        if(ERR(err, callback)) return;
         text = _text;
         
         //node on windows has a delay on releasing of the file lock.  
         //We add a 100ms delay to work around this
-		if(os.type().indexOf("Windows") > -1)
-		{
+	      if(os.type().indexOf("Windows") > -1)
+	      {
           setTimeout(function()
           {
-            callback(err);
+            callback();
           }, 100);
-		}
+	      }
+	      else
+	      {
+	        callback();
+	      }
       });
     },
     
@@ -176,7 +183,7 @@ exports.doImport = function(req, res, padId)
       return;
     }
 
-    if(err) throw err;
+    ERR(err);
   
     //close the connection
     res.send("ok");

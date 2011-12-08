@@ -3534,7 +3534,8 @@ function OUTER(gscope)
 
   function doIndentOutdent(isOut)
   {
-    if (!(rep.selStart && rep.selEnd))
+    if (!(rep.selStart && rep.selEnd) ||
+        ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) &&  rep.selEnd[1] > 1))
     {
       return false;
     }
@@ -3544,24 +3545,24 @@ function OUTER(gscope)
     lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] == 0) ? 1 : 0));
 
     var mods = [];
-    var foundLists = false;
     for (var n = firstLine; n <= lastLine; n++)
     {
       var listType = getLineListType(n);
+      var t = 'indent';
+      var level = 0;
       if (listType)
       {
         listType = /([a-z]+)([12345678])/.exec(listType);
         if (listType)
         {
-          foundLists = true;
-          var t = listType[1];
-          var level = Number(listType[2]);
-          var newLevel = Math.max(1, Math.min(MAX_LIST_LEVEL, level + (isOut ? -1 : 1)));
-          if (level != newLevel)
-          {
-            mods.push([n, t + newLevel]);
-          }
+          t = listType[1];
+          level = Number(listType[2]);
         }
+      }
+      var newLevel = Math.max(0, Math.min(MAX_LIST_LEVEL, level + (isOut ? -1 : 1)));
+      if (level != newLevel)
+      {
+        mods.push([n, (newLevel > 0) ? t + newLevel : '']);
       }
     }
 
@@ -3570,7 +3571,7 @@ function OUTER(gscope)
       setLineListTypes(mods);
     }
 
-    return foundLists;
+    return true;
   }
   editorInfo.ace_doIndentOutdent = doIndentOutdent;
 
@@ -5231,7 +5232,8 @@ function OUTER(gscope)
     var allLinesAreList = true;
     for (var n = firstLine; n <= lastLine; n++)
     {
-      if (!getLineListType(n))
+      var listType = getLineListType(n);
+      if (!listType || listType.slice(0, 'bullet'.length) != 'bullet')
       {
         allLinesAreList = false;
         break;
@@ -5241,8 +5243,16 @@ function OUTER(gscope)
     var mods = [];
     for (var n = firstLine; n <= lastLine; n++)
     {
+      var t = '';
+      var level = 0;
+      var listType = /([a-z]+)([12345678])/.exec(getLineListType(n));
+      if (listType)
+      {
+        t = listType[1];
+        level = Number(listType[2]);
+      }
       var t = getLineListType(n);
-      mods.push([n, allLinesAreList ? '' : (t ? t : 'bullet1')]);
+      mods.push([n, allLinesAreList ? 'indent' + level : (t ? 'bullet' + level : 'bullet1')]);
     }
     setLineListTypes(mods);
   }
@@ -5647,31 +5657,17 @@ function OUTER(gscope)
   {
     var newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
-    if (newNumLines != lineNumbersShown)
-    {
-      var container = sideDivInner;
-      var odoc = outerWin.document;
-      while (lineNumbersShown < newNumLines)
-      {
-        lineNumbersShown++;
-        var n = lineNumbersShown;
-        var div = odoc.createElement("DIV");
-        div.appendChild(odoc.createTextNode(String(n)));
-        container.appendChild(div);
-      }
-      while (lineNumbersShown > newNumLines)
-      {
-        container.removeChild(container.lastChild);
-        lineNumbersShown--;
-      }
-    }
-
+	//update height of all current line numbers
     if (currentCallStack && currentCallStack.domClean)
     {
       var a = sideDivInner.firstChild;
       var b = doc.body.firstChild;
+      var n = 0;
       while (a && b)
       {
+	if(n > lineNumbersShown) //all updated, break
+	  break;
+
         var h = (b.clientHeight || b.offsetHeight);
         if (b.nextSibling)
         {
@@ -5685,10 +5681,42 @@ function OUTER(gscope)
         if (h)
         {
           var hpx = h + "px";
-          if (a.style.height != hpx) a.style.height = hpx;
+          if (a.style.height != hpx) {
+	    a.style.height = hpx;
+	  }
         }
         a = a.nextSibling;
         b = b.nextSibling;
+	n++;
+      }
+    }	
+	
+    if (newNumLines != lineNumbersShown)
+    {
+      var container = sideDivInner;
+      var odoc = outerWin.document;
+      var fragment = odoc.createDocumentFragment();
+      while (lineNumbersShown < newNumLines)
+      {
+        lineNumbersShown++;
+        var n = lineNumbersShown;
+        var div = odoc.createElement("DIV");	
+	//calculate height for new line number
+	var h = (b.clientHeight || b.offsetHeight);
+	if (b.nextSibling)
+	  h = b.nextSibling.offsetTop - b.offsetTop;
+	if(h) // apply style to div
+	  div.style.height = h +"px";
+			
+        div.appendChild(odoc.createTextNode(String(n)));
+	fragment.appendChild(div);
+	b = b.nextSibling;
+      }
+      container.appendChild(fragment);
+      while (lineNumbersShown > newNumLines)
+      {
+        container.removeChild(container.lastChild);
+        lineNumbersShown--;
       }
     }
   }

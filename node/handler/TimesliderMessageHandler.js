@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 var async = require("async");
 var padManager = require("../db/PadManager");
 var Changeset = require("../utils/Changeset");
@@ -92,7 +93,7 @@ function handleClientReady(client, message)
   //send the timeslider client the clientVars, with this values its able to start
   createTimesliderClientVars (message.padId, function(err, clientVars)
   {
-    if(err) throw err;
+    ERR(err);
     
     client.json.send({type: "CLIENT_VARS", data: clientVars});
   })
@@ -138,7 +139,7 @@ function handleChangesetRequest(client, message)
   //build the requested rough changesets and send them back
   getChangesetInfo(padId, start, end, granularity, function(err, changesetInfo)
   {
-    if(err) throw err;
+    ERR(err);
     
     var data = changesetInfo;
     data.requestID = message.data.requestID;
@@ -171,8 +172,9 @@ function createTimesliderClientVars (padId, callback)
     {
       padManager.getPad(padId, function(err, _pad)
       {        
+        if(ERR(err, callback)) return;
         pad = _pad;
-        callback(err);
+        callback();
       });
     },
     //get all authors and add them to 
@@ -187,15 +189,17 @@ function createTimesliderClientVars (padId, callback)
       {
         authorManager.getAuthor(authorId, function(err, author)
         {
+          if(ERR(err, callback)) return;
           historicalAuthorData[authorId] = author;
-          callback(err);
+          callback();
         });
       }, function(err)
       {
+        if(ERR(err, callback)) return;
         //add historicalAuthorData to the clientVars and continue
         clientVars.historicalAuthorData = historicalAuthorData;
         clientVars.initialStyledContents.historicalAuthorData = historicalAuthorData;
-        callback(err);
+        callback();
       });
     },
     //get the timestamp of the last revision
@@ -203,8 +207,9 @@ function createTimesliderClientVars (padId, callback)
     {
       pad.getRevisionDate(pad.getHeadRevisionNumber(), function(err, date)
       {
+        if(ERR(err, callback)) return;
         clientVars.currentTime = date;
-        callback(err);
+        callback();
       });
     },
     function(callback)
@@ -235,14 +240,16 @@ function createTimesliderClientVars (padId, callback)
                          Math.floor(lastRev / topGranularity)*topGranularity+topGranularity, granularity, 
                          function(err, changeset)
         {
+          if(ERR(err, callback)) return;
           clientVars.initialChangesets.push(changeset);
-          callback(err);
+          callback();
         });
       }, callback);
     }
   ], function(err)
   {
-    callback(err, clientVars);
+    if(ERR(err, callback)) return;
+    callback(null, clientVars);
   });
 }
 
@@ -267,8 +274,9 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
     {
       padManager.getPad(padId, function(err, _pad)
       {        
+        if(ERR(err, callback)) return;
         pad = _pad;
-        callback(err);
+        callback();
       });
     },
     function(callback)
@@ -309,8 +317,9 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
           {
             composePadChangesets(padId, item.start, item.end, function(err, changeset)
             {
+              if(ERR(err, callback)) return;
               composedChangesets[item.start + "/" + item.end] = changeset;
-              callback(err);
+              callback();
             });
           }, callback);
         },
@@ -321,8 +330,9 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
           {
             pad.getRevisionDate(revNum, function(err, revDate)
             {
+              if(ERR(err, callback)) return;
               revisionDate[revNum] = Math.floor(revDate/1000);
-              callback(err);
+              callback();
             });
           }, callback);
         },
@@ -331,8 +341,9 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
         {
           getPadLines(padId, startNum-1, function(err, _lines)
           {
+            if(ERR(err, callback)) return;
             lines = _lines;
-            callback(err);
+            callback();
           }); 
         }
       ], callback);
@@ -383,20 +394,15 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
     }
   ], function(err)
   {
-    if(err)
-    {
-      callback(err);
-    }
-    else
-    {
-      callback(null, {forwardsChangesets: forwardsChangesets,
-                      backwardsChangesets: backwardsChangesets,
-                      apool: apool.toJsonable(),
-                      actualEndNum: endNum,
-                      timeDeltas: timeDeltas,
-                      start: startNum,
-                      granularity: granularity });
-    }
+    if(ERR(err, callback)) return;
+    
+    callback(null, {forwardsChangesets: forwardsChangesets,
+                    backwardsChangesets: backwardsChangesets,
+                    apool: apool.toJsonable(),
+                    actualEndNum: endNum,
+                    timeDeltas: timeDeltas,
+                    start: startNum,
+                    granularity: granularity });
   });
 }
 
@@ -416,8 +422,9 @@ function getPadLines(padId, revNum, callback)
     {
       padManager.getPad(padId, function(err, _pad)
       {        
+        if(ERR(err, callback)) return;
         pad = _pad;
-        callback(err);
+        callback();
       });
     },
     //get the atext
@@ -427,8 +434,9 @@ function getPadLines(padId, revNum, callback)
       {
         pad.getInternalRevisionAText(revNum, function(err, _atext)
         {
+          if(ERR(err, callback)) return;
           atext = _atext;
-          callback(err);
+          callback();
         });
       }
       else
@@ -445,7 +453,8 @@ function getPadLines(padId, revNum, callback)
     }
   ], function(err)
   {
-    callback(err, result);
+    if(ERR(err, callback)) return;
+    callback(null, result);
   });
 }
 
@@ -465,8 +474,9 @@ function composePadChangesets(padId, startNum, endNum, callback)
     {
       padManager.getPad(padId, function(err, _pad)
       {        
+        if(ERR(err, callback)) return;
         pad = _pad;
-        callback(err);
+        callback();
       });
     },
     //fetch all changesets we need
@@ -486,8 +496,9 @@ function composePadChangesets(padId, startNum, endNum, callback)
       {
         pad.getRevisionChangeset(revNum, function(err, value)
         {
+          if(ERR(err, callback)) return;
           changesets[revNum] = value;
-          callback(err);
+          callback();
         });
       },callback);
     },
@@ -509,7 +520,7 @@ function composePadChangesets(padId, startNum, endNum, callback)
   //return err and changeset
   function(err)
   {
-    if(err) throw err;
-    callback(err, changeset);
+    if(ERR(err, callback)) return;
+    callback(null, changeset);
   });
 }

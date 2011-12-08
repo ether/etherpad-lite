@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 require("../db/Pad");
 var db = require("./DB").db;
 
@@ -90,15 +91,10 @@ exports.getPad = function(id, text, callback)
     //initalize the pad
     pad.init(text, function(err)
     {
-      if(err)
-      {
-        callback(err, null);
-      }
-      else
-      {
-        globalPads.set(id, pad);
-        callback(null, pad);
-      }
+      if(ERR(err, callback)) return;
+      
+      globalPads.set(id, pad);
+      callback(null, pad);
     });
   }
 }
@@ -108,7 +104,8 @@ exports.doesPadExists = function(padId, callback)
 {
   db.get("pad:"+padId, function(err, value)
   {
-    callback(err, value != null);  
+    if(ERR(err, callback)) return;
+    callback(null, value != null);  
   });
 }
 

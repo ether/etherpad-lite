@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var jsdom = require('jsdom').jsdom;
+var jsdom = require('jsdom-nocontextifiy').jsdom;
 var log4js = require('log4js');
 
 var Changeset = require("./Changeset");

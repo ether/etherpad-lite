@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
 
@@ -55,8 +56,9 @@ exports.getReadOnlyId = function (padId, callback)
     }
   ], function(err)
   {
+    if(ERR(err, callback)) return;
     //return the results
-    callback(err, readOnlyId);
+    callback(null, readOnlyId);
   })
 }
 
