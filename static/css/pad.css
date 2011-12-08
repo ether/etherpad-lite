@@ -769,7 +769,7 @@ a#topbarmaximize {
  width: 100%;
 }
 
-#embed, #readonly {
+#embed, #readonly, #setpassword {
 display:none;
 position:absolute;
 top:40px;

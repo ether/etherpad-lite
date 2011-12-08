@@ -51,6 +51,11 @@ function createCookie(name, value, days, path)
   document.cookie = name + "=" + value + expires + "; path=" + path;
 }
 
+function setPassword(){
+  console.log("setting password");
+  pad.setPassword($("#setpasswordfield").val());
+}
+
 function readCookie(name)
 {
   var nameEQ = name + "=";
@@ -487,6 +492,13 @@ var pad = {
       type: 'padoptions',
       options: options,
       changedBy: pad.myUserInfo.name || "unnamed"
+    });
+  },
+  setPassword: function(newPassword){
+    pad.collabClient.sendClientMessage(
+    {
+      type: "setPassword",
+      password: newPassword
     });
   },
   changeViewOption: function(key, value)

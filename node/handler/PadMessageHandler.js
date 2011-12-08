@@ -190,6 +190,12 @@ exports.handleMessage = function(client, message)
   {
     handleSuggestUserName(client, message);
   }
+  else if(message.type == "COLLABROOM" && 
+          message.data.type == "CLIENT_MESSAGE" &&
+          message.data.payload.type == "setPassword")
+  {
+    handleSetPadPassword(client, message);
+  }
   //if the message type is unkown, throw an exception
   else
   {
@@ -292,6 +298,13 @@ function handleSuggestUserName(client, message)
       break;
     }
   }
+}
+
+function handleSetPadPassword(client, message){
+  var padId = session2pad[client.id];
+  padManager.getPad(padId, function(err, value){
+    value.setPassword(message.data.payload.password);
+  });
 }
 
 /**

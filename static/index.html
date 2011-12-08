@@ -69,7 +69,7 @@
               font-weight: bold;
               font-size: 15px
             }
-            input[type="text"], input[type="password"] {
+            input[type="text"] {
               width: 243px;
               padding: 10px 47px 10px 10px;
               background: #fff;
@@ -78,13 +78,7 @@
               border-radius: 3px;
               text-shadow: 0 0 1px #fff
             }
-			#usepwlabel {
-			  display: inline;
-			}
-			#usePasswordContainer {
-			  margin: 10px 0 5px 0
-			}
-			input[type="submit"] {
+            input[type="submit"] {
               width: 45px;
               margin-left: -50px;
               padding: 8px
@@ -100,8 +94,6 @@
             <form action="#" onsubmit="go2Name();return false;"> 
                     <input type="text" id="padname" autofocus/> 
 					<input type="submit" value="OK"/><br/>
-					<div id="usePasswordContainer"><input type="checkbox" id="usePassword" onclick="updatePasswordField()"/><label for="usePassword"><div id="usepwlabel">Use password</div></label></div>
-					<div id="passwordFieldContainer"><input type="password" id="passwordField"/></div>
             </form> 
         </div> 
         <script> 
@@ -109,20 +101,7 @@
             {
                 var padname = $("#padname").val();
 				if(padname.length > 0){
-					if($("#passwordField").val().length>0)
-					{
-						$.get("api/1/createPad", {apikey: "o8PJ496RtbcwoMQGgDyjoOmyq5wJ8dON", padID: padname}, function(data){
-							$.get("api/1/setPassword", {apikey: "o8PJ496RtbcwoMQGgDyjoOmyq5wJ8dON", padID: padname, password: $("#passwordField").val()}, function(data){
-								window.location = "p/" + padname;
-							});
-						});
-					}
-					else
-					{
-						$.get("api/1/createPad", {apikey: "o8PJ496RtbcwoMQGgDyjoOmyq5wJ8dON", padID: padname}, function(data){
-              window.location = "p/" + padname;
-            });
-					}
+            window.location = "p/" + padname;
 				}
 				else
 				{
@@ -146,18 +125,6 @@
                 }
                 return randomstring;
 			}
-
-			function updatePasswordField()
-			{
-				if($("#usePassword:checked").val()){
-					$("#passwordFieldContainer").css("display", "block");
-				}
-				else
-				{
-					$("#passwordFieldContainer").css("display", "none");
-				}
-			}
-			updatePasswordField();
             if(typeof customStart == "function") customStart();
         </script> 
 </html>

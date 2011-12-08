@@ -96,6 +96,11 @@
     <div class="buttonicon" style="background-position:0px -18px"></div>
   </a>
 </li>
+<li onClick="window.pad&&pad.editbarClick('password');return false;" >
+  <a id="setpasswordlink" title="Set the password of this pad">
+    <div class="buttonicon" style="background-position:0px -18px"></div>
+  </a>
+</li>
 <li class="separator"></li>
 <li id="timesliderlink" onClick="document.location = document.location.pathname+ '/timeslider'">
   <a title="Show the history of this pad">
@@ -176,6 +181,15 @@
   Loading...
 </div>
 
+</div>
+
+<!-- password setting code -->
+
+<div id="setpassword">
+  <form id="setpasswordform" action="">
+    <input type="password" id="setpasswordfield">
+    <input type="submit" value="Set" id="setpasswordsubmit" onClick="setPassword()">
+  </form>
 </div>
 
 <!-- import export code -->

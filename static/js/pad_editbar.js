@@ -96,18 +96,18 @@ var padeditbar = (function()
       {
         if(cmd == "showusers")
         {
-          self.toogleDropDown("users");
+          self.toggleDropDown("users");
         }
         else if (cmd == 'embed')
         {  
           var padurl = window.location.href.split("?")[0];
           $('#embedinput').val("<iframe src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
-          self.toogleDropDown("embed");
+          self.toggleDropDown("embed");
           $('#embedinput').focus().select();
         }
         else if (cmd == 'import_export')
         {
-	      self.toogleDropDown("importexport");
+	      self.toggleDropDown("importexport");
         }
 
         else if (cmd == 'readonly')
@@ -116,12 +116,15 @@ var padeditbar = (function()
           var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
           $('#readonlyImage').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + readonlyLink);
           $('#readonlyInput').val(readonlyLink);
-          self.toogleDropDown("readonly");
+          self.toggleDropDown("readonly");
           $('#readonlyInput').focus().select();
         }
         else if (cmd == 'save')
         {
           padsavedrevs.saveNow();
+        }
+        else if (cmd == 'password'){
+          self.toggleDropDown("setpassword");
         }
         else
         {
@@ -162,9 +165,9 @@ var padeditbar = (function()
       }
       padeditor.ace.focus();
     },
-    toogleDropDown: function(moduleName)
+    toggleDropDown: function(moduleName)
     {
-      var modules = ["embed", "users", "readonly", "importexport"];
+      var modules = ["embed", "users", "readonly", "importexport", "setpassword"];
       
       //hide all modules
       if(moduleName == "none")

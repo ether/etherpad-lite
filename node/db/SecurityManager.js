@@ -217,7 +217,6 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         else if(!isPublic)
         {
           //--> deny access
-          console.log("not public");
           statusObject = {accessStatus: "deny"};
         }
         else
@@ -228,9 +227,8 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
       // there is no valid session avaiable AND pad doesn't exists
       else
       {
-         //--> deny access
-         console.log("imaginary pad");
-         statusObject = {accessStatus: "deny"};
+         //grant access so he pad can be generated
+         statusObject = {accessStatus: "grant", authorID: tokenAuthor};
       }
       
       callback();
