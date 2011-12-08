@@ -3518,16 +3518,36 @@ function OUTER(gscope)
     var lineNum = rep.selStart[0];
     var listType = getLineListType(lineNum);
 
-    performDocumentReplaceSelection('\n');
     if (listType)
     {
-      if (lineNum + 1 < rep.lines.length())
+      var text = rep.lines.atIndex(lineNum).text;
+      listType = /([a-z]+)([12345678])/.exec(listType);
+      var type  = listType[1];
+      var level = Number(listType[2]);
+      
+      //detect empty list item; exclude indentation
+      if(text === '*' && type !== "indent")
       {
-        setLineListType(lineNum + 1, listType);
+        //if not already on the highest level
+        if(level > 1)
+        {
+          setLineListType(lineNum, type+(level-1));//automatically decrease the level
+        }
+        else
+        {
+          setLineListType(lineNum, '');//remove the list
+          renumberList(lineNum + 1);//trigger renumbering of list that may be right after
+        }
+      }
+      else if (lineNum + 1 < rep.lines.length())
+      {
+        performDocumentReplaceSelection('\n');
+        setLineListType(lineNum + 1, type+level);
       }
     }
     else
     {
+      performDocumentReplaceSelection('\n');
       handleReturnIndentation();
     }
   }
