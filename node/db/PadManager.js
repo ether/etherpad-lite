@@ -31,7 +31,7 @@ var db = require("./DB").db;
  * If this is needed in other places, it would be wise to make this a prototype
  * that's defined somewhere more sensible.
  */
-globalPads = {
+var globalPads = {
     get: function (name) { return this[':'+name]; },
     set: function (name, value) { this[':'+name] = value; },
     remove: function (name) { delete this[':'+name]; }
