@@ -306,13 +306,14 @@ function getHTMLFromAtext(pad, atext)
   // People might use weird indenting, e.g. skip a level,
   // so we want to do something reasonable there.  We also
   // want to deal gracefully with blank lines.
+  // => keeps track of the parents level of indentation
   var lists = []; // e.g. [[1,'bullet'], [3,'bullet'], ...]
   for (var i = 0; i < textLines.length; i++)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
-
-    if (line.listLevel || lists.length > 0)
+            
+    if (line.listLevel)//If we are inside a list
     {
       // do list stuff
       var whichList = -1; // index into lists or -1
@@ -328,41 +329,89 @@ function getHTMLFromAtext(pad, atext)
         }
       }
 
-      if (whichList >= lists.length)
+      if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
       {
         lists.push([line.listLevel, line.listTypeName]);
-        pieces.push('<ul><li>', lineContent || '<br>');
+        if(line.listTypeName == "number")
+        {
+          pieces.push('<ol><li>', lineContent || '<br>');
+        }
+        else
+        {
+          pieces.push('<ul><li>', lineContent || '<br>');
+        }
       }
-      else if (whichList == -1)
+      //the following code *seems* dead after my patch.
+      //I keep it just in case I'm wrong...
+      /*else if (whichList == -1)//means we are not inside a list
       {
         if (line.text)
         {
+          console.log('trace 1');
           // non-blank line, end all lists
-          pieces.push(new Array(lists.length + 1).join('</li></ul\n>'));
+          if(line.listTypeName == "number")
+          {
+            pieces.push(new Array(lists.length + 1).join('</li></ol>'));
+          }
+          else
+          {
+            pieces.push(new Array(lists.length + 1).join('</li></ul>'));
+          }
           lists.length = 0;
           pieces.push(lineContent, '<br>');
         }
         else
         {
+          console.log('trace 2');
           pieces.push('<br><br>');
         }
-      }
-      else
+      }*/
+      else//means we are getting closer to the lowest level of indentation
       {
         while (whichList < lists.length - 1)
         {
-          pieces.push('</li></ul>');
+          if(lists[lists.length - 1][1] == "number")
+          {
+            pieces.push('</li></ol>');
+          }
+          else
+          {
+            pieces.push('</li></ul>');
+          }
           lists.length--;
         }
         pieces.push('</li><li>', lineContent || '<br>');
       }
     }
-    else
+    else//outside any list
     {
+      while (lists.length > 0)//if was in a list: close it before
+      {
+        if(lists[lists.length - 1][1] == "number")
+        {
+          pieces.push('</li></ol>');
+        }
+        else
+        {
+          pieces.push('</li></ul>');
+        }
+        lists.length--;
+      }      
       pieces.push(lineContent, '<br>');
     }
   }
-  pieces.push(new Array(lists.length + 1).join('</li></ul>'));
+  
+  for (var k = lists.length - 1; k >= 0; k--)
+  {
+    if(lists[k][1] == "number")
+    {
+      pieces.push('</li></ol>');
+    }
+    else
+    {
+      pieces.push('</li></ul>');
+    }
+  }
 
   return pieces.join('');
 }
