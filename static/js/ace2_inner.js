@@ -3691,6 +3691,15 @@ function OUTER(gscope)
         }
       }
     }
+     //if the list has been removed, it is necessary to renumber
+    //starting from the *next* line because the list may have been
+    //separated. If it returns null, it means that the list was not cut, try
+    //from the current one.
+    var line = caretLine();
+    if(line != -1 && renumberList(line+1)==null)
+    {
+      renumberList(line);
+    }
   }
 
   // set of "letter or digit" chars is based on section 20.5.16 of the original Java Language Spec
@@ -5192,7 +5201,13 @@ function OUTER(gscope)
   
   function renumberList(lineNum){
     //1-check we are in a list
-    if(!getLineListType(lineNum))
+    var type = getLineListType(lineNum);
+    if(!type)
+    {
+      return null;
+    }
+    type = /([a-z]+)[12345678]/.exec(type);
+    if(type[1] == "indent")
     {
       return null;
     }
@@ -5307,7 +5322,14 @@ function OUTER(gscope)
       performDocumentApplyChangeset(cs);
     }
     
-    renumberList(lineNum);
+    //if the list has been removed, it is necessary to renumber
+    //starting from the *next* line because the list may have been
+    //separated. If it returns null, it means that the list was not cut, try
+    //from the current one.
+    if(renumberList(lineNum+1)==null)
+    {
+      renumberList(lineNum);
+    }
   }
 
   function doInsertList(type)
