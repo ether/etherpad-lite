@@ -118,7 +118,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
           sessionManager.getSessionInfo(sessionID, function(err, sessionInfo)
           {
             //skip session validation if the session doesn't exists
-            if(err && err.stop == "sessionID does not exist")
+            if(err && err.message == "sessionID does not exist")
             {
               callback();
               return;

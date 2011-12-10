@@ -19,6 +19,7 @@
  */
  
 var ERR = require("async-stacktrace");
+var customError = require("../utils/customError");
 var db = require("./DB").db;
 var async = require("async");
 var padManager = require("./PadManager");
@@ -40,7 +41,7 @@ exports.deleteGroup = function(groupID, callback)
         //group does not exist
         if(_group == null)
         {
-          callback({stop: "groupID does not exist"});
+          callback(new customError("groupID does not exist","apierror"));
         }
         //group exists, everything is fine
         else
@@ -135,7 +136,7 @@ exports.createGroupIfNotExistsFor = function(groupMapper, callback)
   //ensure mapper is optional
   if(typeof groupMapper != "string")
   {
-    callback({stop: "groupMapper is no string"});
+    callback(new customError("groupMapper is no string","apierror"));
     return;
   }
   
@@ -182,7 +183,7 @@ exports.createGroupPad = function(groupID, padName, text, callback)
         //group does not exist
         if(exists == false)
         {
-          callback({stop: "groupID does not exist"});
+          callback(new customError("groupID does not exist","apierror"));
         }
         //group exists, everything is fine
         else
@@ -201,7 +202,7 @@ exports.createGroupPad = function(groupID, padName, text, callback)
         //pad exists already
         if(exists == true)
         {
-          callback({stop: "padName does already exist"});
+          callback(new customError("padName does already exist","apierror"));
         }
         //pad does not exist, everything is fine
         else
@@ -241,7 +242,7 @@ exports.listPads = function(groupID, callback)
     //group does not exist
     if(exists == false)
     {
-      callback({stop: "groupID does not exist"});
+      callback(new customError("groupID does not exist","apierror"));
     }
     //group exists, let's get the pads
     else

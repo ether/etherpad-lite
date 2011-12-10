@@ -19,6 +19,7 @@
  */
  
 var ERR = require("async-stacktrace");
+var customError = require("../utils/customError");
 var db = require("./DB").db;
 var async = require("async");
 var groupMangager = require("./GroupManager");
@@ -52,7 +53,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
         //group does not exist
         if(exists == false)
         {
-          callback({stop: "groupID does not exist"});
+          callback(new customError("groupID does not exist","apierror"));
         }
         //everything is fine, continue
         else
@@ -71,7 +72,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
         //author does not exist
         if(exists == false)
         {
-          callback({stop: "authorID does not exist"});
+          callback(new customError("authorID does not exist","apierror"));
         }
         //everything is fine, continue
         else
@@ -93,7 +94,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
         }
         else
         {
-          callback({stop: "validUntil is not a number"});
+          callback(new customError("validUntil is not a number","apierror"));
           return;
         }
       }
@@ -101,21 +102,21 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
       //ensure this is not a negativ number
       if(validUntil < 0)
       {
-        callback({stop: "validUntil is a negativ number"});
+        callback(new customError("validUntil is a negativ number","apierror"));
         return;
       }
       
       //ensure this is not a float value
       if(!is_int(validUntil))
       {
-        callback({stop: "validUntil is a float value"});
+        callback(new customError("validUntil is a float value","apierror"));
         return;
       }
     
       //check if validUntil is in the future
       if(Math.floor(new Date().getTime()/1000) > validUntil)
       {
-        callback({stop: "validUntil is in the past"});
+        callback(new customError("validUntil is in the past","apierror"));
         return;
       }
       
@@ -192,7 +193,7 @@ exports.getSessionInfo = function(sessionID, callback)
     //session does not exists
     if(session == null)
     {
-      callback({stop: "sessionID does not exist"})
+      callback(new customError("sessionID does not exist","apierror"))
     }
     //everything is fine, return the sessioninfos
     else
@@ -221,7 +222,7 @@ exports.deleteSession = function(sessionID, callback)
         //session does not exists
         if(session == null)
         {
-          callback({stop: "sessionID does not exist"})
+          callback(new customError("sessionID does not exist","apierror"))
         }
         //everything is fine, return the sessioninfos
         else
@@ -285,7 +286,7 @@ exports.listSessionsOfGroup = function(groupID, callback)
     //group does not exist
     if(exists == false)
     {
-      callback({stop: "groupID does not exist"});
+      callback(new customError("groupID does not exist","apierror"));
     }
     //everything is fine, continue
     else
@@ -304,7 +305,7 @@ exports.listSessionsOfAuthor = function(authorID, callback)
     //group does not exist
     if(exists == false)
     {
-      callback({stop: "authorID does not exist"});
+      callback(new customError("authorID does not exist","apierror"));
     }
     //everything is fine, continue
     else
