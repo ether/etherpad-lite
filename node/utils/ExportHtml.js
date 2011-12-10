@@ -334,11 +334,11 @@ function getHTMLFromAtext(pad, atext)
         lists.push([line.listLevel, line.listTypeName]);
         if(line.listTypeName == "number")
         {
-          pieces.push('<ol><li>', lineContent || '<br>');
+          pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
         else
         {
-          pieces.push('<ul><li>', lineContent || '<br>');
+          pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
       }
       //the following code *seems* dead after my patch.
@@ -465,7 +465,24 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
       return;
     }
 
-    var head = (noDocType ? '' : '<!doctype html>\n') + '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + '<meta charset="utf-8">\n' + '<style> * { font-family: arial, sans-serif;\n' + 'font-size: 13px;\n' + 'line-height: 17px; }</style>\n' + '</head>\n') + '<body>';
+    var head = 
+      (noDocType ? '' : '<!doctype html>\n') + 
+      '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+        '<meta charset="utf-8">\n' + 
+        '<style> * { font-family: arial, sans-serif;\n' + 
+          'font-size: 13px;\n' + 
+          'line-height: 17px; }' + 
+          'ul.indent { list-style-type: none; }' +
+          'ol { list-style-type: decimal; }' +
+          'ol ol { list-style-type: lower-latin; }' +
+          'ol ol ol { list-style-type: lower-roman; }' +
+          'ol ol ol ol { list-style-type: decimal; }' +
+          'ol ol ol ol ol { list-style-type: lower-latin; }' +
+          'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
+          'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
+          'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+          '</style>\n' + '</head>\n') + 
+      '<body>';
 
     var foot = '</body>\n</html>\n';
 
