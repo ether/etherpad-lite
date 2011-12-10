@@ -472,6 +472,14 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             cc.doAttrib(state, "strikethrough");
           }
+          if (tname == "h1" )
+          {
+            cc.doAttrib(state, "heading1");
+          }
+          if (tname == "h2")
+          {
+            cc.doAttrib(state, "heading2");
+          }
           if (tname == "ul")
           {
             var type;

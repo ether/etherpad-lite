@@ -25,7 +25,9 @@ linestylefilter.ATTRIB_CLASSES = {
   'bold': 'tag:b',
   'italic': 'tag:i',
   'underline': 'tag:u',
-  'strikethrough': 'tag:s'
+  'strikethrough': 'tag:s',
+  'heading1': 'tag:h1',
+  'heading2': 'tag:h2'
 };
 
 linestylefilter.getAuthorClassName = function(author)
