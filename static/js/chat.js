@@ -20,18 +20,24 @@ var chat = (function()
   var isAndroid = ua.indexOf("android") > -1;
   var isMobileSafari = ua.indexOf("mobile") > -1;
   var bottomMargin = "0px";
+  var sDuration = 500;
+  var hDuration = 750;
   var chatMentions = 0;
   var title = document.title;
+  if (isAndroid || isMobileSafari){
+   sDuration = 0;
+   hDuration = 0;
+  }
   var self = {
     show: function () 
     {      
       $("#chaticon").hide("slide", {
         direction: "down"
-      }, 500, function ()
+      }, hDuration, function ()
       {
         $("#chatbox").show("slide", {
           direction: "down"
-        }, 750, self.scrollDown);
+        }, sDuration, self.scrollDown);
         $("#chatbox").resizable(
         {
           handles: 'nw',
@@ -60,14 +66,10 @@ var chat = (function()
     hide: function () 
     {
       $("#chatcounter").text("0");
-      if(isAndroid || isMobileSafari) {
-        $("#chatbox").toggle();
-      }
-      else
+      $("#chatbox").hide("slide", { direction: "down" }, sDuration, function()
       {
-        $("#chatbox").toggle("slide", { direction: "down" }, 625);
-      }
-
+        $("#chaticon").show("slide", { direction: "down" }, hDuration);
+      });
     },
     scrollDown: function()
     {
