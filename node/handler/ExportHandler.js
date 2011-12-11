@@ -20,6 +20,7 @@
 
 var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
+var exportdokuwiki = require("../utils/ExportDokuWiki");
 var padManager = require("../db/PadManager");
 var async = require("async");
 var fs = require("fs");
@@ -54,6 +55,26 @@ exports.doExport = function(req, res, padId, type)
       ERR(err);
          
       res.send(pad.text());
+    });
+  }
+  else if(type == 'dokuwiki')
+  {
+    var randNum;
+    var srcFile, destFile;
+
+    async.series([
+      //render the dokuwiki document
+      function(callback)
+      {
+        exportdokuwiki.getPadDokuWikiDocument(padId, null, function(err, dokuwiki)
+        {
+          res.send(dokuwiki);
+          callback("stop");
+        });
+      },
+    ], function(err)
+    {
+      if(err && err != "stop") throw err;
     });
   }
   else

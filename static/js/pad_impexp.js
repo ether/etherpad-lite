@@ -234,6 +234,7 @@ var padimpexp = (function()
       $("#exporthtmla").attr("href", document.location.pathname + "/export/html");
       $("#exportplaina").attr("href", document.location.pathname + "/export/txt");
       $("#exportwordlea").attr("href", document.location.pathname + "/export/wordle");
+      $("#exportdokuwikia").attr("href", document.location.pathname + "/export/dokuwiki");
       
       //hide stuff thats not avaible if abiword is disabled
       if(clientVars.abiwordAvailable == "no")
@@ -241,8 +242,8 @@ var padimpexp = (function()
         $("#exportworda").remove();
         $("#exportpdfa").remove();
         $("#exportopena").remove();
-        $("#importexport").css({"height":"95px"});
-        $("#importexportline").css({"height":"95px"});
+        $("#importexport").css({"height":"115px"});
+        $("#importexportline").css({"height":"115px"});
         $("#import").html("Import is not available");
       }
       else if(clientVars.abiwordAvailable == "withoutPDF")
