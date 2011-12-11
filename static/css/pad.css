@@ -1003,7 +1003,7 @@ position: relative;
   padding: 10px;
   -moz-border-radius: 6px;
   border-radius: 6px;
-  height:170px;
+  height:190px;
   display:none;
 }
 
@@ -1032,7 +1032,7 @@ position: relative;
 
 #importexportline{
   border: dotted 1px;
-  height: 165px;
+  height: 185px;
   position:absolute;
   width:0px;
   left:260px;
