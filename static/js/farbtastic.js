@@ -2,7 +2,7 @@
 (function ($) {
   
 var __debug = false;
-var __factor = 0.5;
+var __factor = 0.9;
 
 $.fn.farbtastic = function (options) {
   $.farbtastic(this, options);
