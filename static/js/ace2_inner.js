@@ -2571,6 +2571,16 @@ function OUTER(gscope)
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
 
+  function toggleAttributeOnSelectedLine(attributeName)
+  {
+      //set the full line to be selected
+      rep.selStart[1]=0;
+      rep.selEnd[1]=rep.lines.atIndex(rep.selEnd[0]).text.length
+      toggleAttributeOnSelection(attributeName)
+  }
+  editorInfo.ace_toggleAttributeOnSelectedLine = toggleAttributeOnSelectedLine;
+
+
   function toggleAttributeOnSelection(attributeName)
   {
     if (!(rep.selStart && rep.selEnd)) return;
@@ -2585,7 +2595,6 @@ function OUTER(gscope)
     {
       return withItRegex.test(attribs);
     }
-
     var selStartLine = rep.selStart[0];
     var selEndLine = rep.selEnd[0];
     for (var n = selStartLine; n <= selEndLine; n++)
