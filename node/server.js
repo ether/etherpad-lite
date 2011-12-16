@@ -232,101 +232,108 @@ async.waterfall([
           res.send(html);
       });
     });
-        
-    //serve pad.html under /p
-    app.get('/p/:pad', function(req, res, next)
-    {    
+    
+    //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
+    function goToPad(req, res, go) {
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
       {
         res.send('Such a padname is forbidden', 404);
-        return;
       }
-      
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/pad.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
+      else
+      {
+        padManager.sanitizePadId(req.params.pad, function(padId) {
+          //redirect to the actual pad's id
+          if(padId != req.params.pad)
+          {
+            var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + padId);
+            res.header('Location', real_path);
+            res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
+          }
+          //render the pad html
+          else
+          {
+            go();
+          }
+        });
+      }
+    }
+    
+    //serve pad.html under /p
+    app.get('/p/:pad', function(req, res, next)
+    {    
+      goToPad(req, res, function() {
+        res.header("Server", serverName);
+        var filePath = path.normalize(__dirname + "/../static/pad.html");
+        res.sendfile(filePath, { maxAge: exports.maxAge });
+      });
     });
     
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/timeslider', function(req, res, next)
     {
-      //ensure the padname is valid and the url doesn't end with a /
-      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
-      {
-        res.send('Such a padname is forbidden', 404);
-        return;
-      }
-      
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/timeslider.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
+      goToPad(req, res, function() {
+        res.header("Server", serverName);
+        var filePath = path.normalize(__dirname + "/../static/timeslider.html");
+        res.sendfile(filePath, { maxAge: exports.maxAge });
+      });
     });
     
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/export/:type', function(req, res, next)
     {
-      //ensure the padname is valid and the url doesn't end with a /
-      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
-      {
-        res.send('Such a padname is forbidden', 404);
-        return;
-      }
-    
-      var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
-      //send a 404 if we don't support this filetype
-      if(types.indexOf(req.params.type) == -1)
-      {
-        next();
-        return;
-      }
-      
-      //if abiword is disabled, and this is a format we only support with abiword, output a message
-      if(settings.abiword == null &&
-         ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1)
-      {
-        res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
-        return;
-      }
-      
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Server", serverName);
-      
-      hasPadAccess(req, res, function()
-      {
-        exportHandler.doExport(req, res, req.params.pad, req.params.type);
+      goToPad(req, res, function() {
+        var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
+        //send a 404 if we don't support this filetype
+        if(types.indexOf(req.params.type) == -1)
+        {
+          next();
+          return;
+        }
+        
+        //if abiword is disabled, and this is a format we only support with abiword, output a message
+        if(settings.abiword == null &&
+           ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1)
+        {
+          res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
+          return;
+        }
+        
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Server", serverName);
+        
+        hasPadAccess(req, res, function()
+        {
+          exportHandler.doExport(req, res, req.params.pad, req.params.type);
+        });
       });
     });
     
     //handle import requests
     app.post('/p/:pad/import', function(req, res, next)
     {
-      //ensure the padname is valid and the url doesn't end with a /
-      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
-      {
-        res.send('Such a padname is forbidden', 404);
-        return;
-      }
-    
-      //if abiword is disabled, skip handling this request
-      if(settings.abiword == null)
-      {
-        next();
-        return; 
-      }
+      goToPad(req, res, function() {
+        //if abiword is disabled, skip handling this request
+        if(settings.abiword == null)
+        {
+          next();
+          return; 
+        }
       
-      res.header("Server", serverName);
-      
-      hasPadAccess(req, res, function()
-      {
-        importHandler.doImport(req, res, req.params.pad);
+        res.header("Server", serverName);
+        
+        hasPadAccess(req, res, function()
+        {
+          importHandler.doImport(req, res, req.params.pad);
+        });
       });
     });
     
     var apiLogger = log4js.getLogger("API");
 
     //This is for making an api call, collecting all post information and passing it to the apiHandler
-    var apiCaller = function(req, res, fields) {
+    var apiCaller = function(req, res, fields)
+    {
       res.header("Server", serverName);
       res.header("Content-Type", "application/json; charset=utf-8");
     
