@@ -53,8 +53,16 @@ exports.doExport = function(req, res, padId, type)
     padManager.getPad(padId, function(err, pad)
     {
       ERR(err);
-         
-      res.send(pad.text());
+      if(req.params.rev){
+        pad.getInternalRevisionAText(req.params.rev, function(junk, text)
+        {
+          res.send(text.text ? text.text : null);
+        });
+      }
+      else
+      {
+        res.send(pad.text());
+      }
     });
   }
   else if(type == 'dokuwiki')
@@ -66,7 +74,7 @@ exports.doExport = function(req, res, padId, type)
       //render the dokuwiki document
       function(callback)
       {
-        exportdokuwiki.getPadDokuWikiDocument(padId, null, function(err, dokuwiki)
+        exportdokuwiki.getPadDokuWikiDocument(padId, req.params.rev, function(err, dokuwiki)
         {
           res.send(dokuwiki);
           callback("stop");
@@ -87,7 +95,7 @@ exports.doExport = function(req, res, padId, type)
       //render the html document
       function(callback)
       {
-        exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
+        exporthtml.getPadHTMLDocument(padId, req.params.rev, false, function(err, _html)
         {
           if(ERR(err, callback)) return;
           html = _html;
