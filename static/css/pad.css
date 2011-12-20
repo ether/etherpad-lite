@@ -1003,7 +1003,7 @@ position: relative;
   padding: 10px;
   -moz-border-radius: 6px;
   border-radius: 6px;
-  height:170px;
+  height:190px;
   display:none;
 }
 
@@ -1032,7 +1032,7 @@ position: relative;
 
 #importexportline{
   border: dotted 1px;
-  height: 165px;
+  height: 185px;
   position:absolute;
   width:0px;
   left:260px;
@@ -1066,6 +1066,10 @@ position: relative;
 
 #exportwordle{
   background-position: 2px -49px;
+}
+
+#exportdokuwiki{
+  background-position: 2px -144px;
 }
 
 #export a{
@@ -1158,7 +1162,6 @@ label[for=readonlyinput] {
   margin-left:10px;
 }
 
-
 @media screen and (max-width: 960px) {
   .modaldialog {
     position: relative;
@@ -1247,3 +1250,6 @@ label[for=readonlyinput] {
     display:none;
   }
 }
+.rtl{
+  direction:RTL;
+} 

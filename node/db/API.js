@@ -19,6 +19,7 @@
  */
 
 var ERR = require("async-stacktrace");
+var customError = require("../utils/customError");
 var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
 var readOnlyManager = require("./ReadOnlyManager");
@@ -88,7 +89,7 @@ exports.getText = function(padID, rev, callback)
     }
     else
     {
-      callback({stop: "rev is not a number"});
+      callback(new customError("rev is not a number", "apierror"));
       return;
     }
   }
@@ -96,14 +97,14 @@ exports.getText = function(padID, rev, callback)
   //ensure this is not a negativ number
   if(rev !== undefined && rev < 0)
   {
-    callback({stop: "rev is a negativ number"});
+    callback(new customError("rev is a negativ number","apierror"));
     return;
   }
   
   //ensure this is not a float value
   if(rev !== undefined && !is_int(rev))
   {
-    callback({stop: "rev is a float value"});
+    callback(new customError("rev is a float value","apierror"));
     return;
   }
   
@@ -118,7 +119,7 @@ exports.getText = function(padID, rev, callback)
       //check if this is a valid revision
       if(rev > pad.getHeadRevisionNumber())
       {
-        callback({stop: "rev is higher than the head revision of the pad"});
+        callback(new customError("rev is higher than the head revision of the pad","apierror"));
         return;
       }
       
@@ -188,20 +189,20 @@ exports.getHTML = function(padID, rev, callback)
     }
     else
     {
-      callback({stop: "rev is not a number"});
+      callback(new customError("rev is not a number","apierror"));
       return;
     }
   }
 
   if(rev !== undefined && rev < 0)
   {
-     callback({stop: "rev is a negative number"});
+     callback(new customError("rev is a negative number","apierror"));
      return;
   }
 
   if(rev !== undefined && !is_int(rev))
   {
-    callback({stop: "rev is a float value"});
+    callback(new customError("rev is a float value","apierror"));
     return;
   }
 
@@ -215,7 +216,7 @@ exports.getHTML = function(padID, rev, callback)
       //check if this is a valid revision
       if(rev > pad.getHeadRevisionNumber())
       {
-        callback({stop: "rev is higher than the head revision of the pad"});
+        callback(new customError("rev is higher than the head revision of the pad","apierror"));
         return;
       }
      
@@ -294,7 +295,7 @@ exports.createPad = function(padID, text, callback)
   //ensure there is no $ in the padID
   if(padID.indexOf("$") != -1)
   {
-    callback({stop: "createPad can't create group pads"});
+    callback(new customError("createPad can't create group pads","apierror"));
     return;
   }
   
@@ -361,7 +362,7 @@ exports.setPublicStatus = function(padID, publicStatus, callback)
   //ensure this is a group pad
   if(padID.indexOf("$") == -1)
   {
-    callback({stop: "You can only get/set the publicStatus of pads that belong to a group"});
+    callback(new customError("You can only get/set the publicStatus of pads that belong to a group","apierror"));
     return;
   }
 
@@ -394,7 +395,7 @@ exports.getPublicStatus = function(padID, callback)
   //ensure this is a group pad
   if(padID.indexOf("$") == -1)
   {
-    callback({stop: "You can only get/set the publicStatus of pads that belong to a group"});
+    callback(new customError("You can only get/set the publicStatus of pads that belong to a group","apierror"));
     return;
   }
   
@@ -420,7 +421,7 @@ exports.setPassword = function(padID, password, callback)
   //ensure this is a group pad
   if(padID.indexOf("$") == -1)
   {
-    callback({stop: "You can only get/set the password of pads that belong to a group"});
+    callback(new customError("You can only get/set the password of pads that belong to a group","apierror"));
     return;
   }
   
@@ -449,7 +450,7 @@ exports.isPasswordProtected = function(padID, callback)
   //ensure this is a group pad
   if(padID.indexOf("$") == -1)
   {
-    callback({stop: "You can only get/set the password of pads that belong to a group"});
+    callback(new customError("You can only get/set the password of pads that belong to a group","apierror"));
     return;
   }
 
@@ -484,14 +485,14 @@ function getPadSafe(padID, shouldExist, text, callback)
   //check if padID is a string
   if(typeof padID != "string")
   {
-    callback({stop: "padID is not a string"});
+    callback(new customError("padID is not a string","apierror"));
     return;
   }
   
   //check if the padID maches the requirements
   if(!padManager.isValidPadId(padID))
   {
-    callback({stop: "padID did not match requirements"});
+    callback(new customError("padID did not match requirements","apierror"));
     return;
   }
   
@@ -503,12 +504,12 @@ function getPadSafe(padID, shouldExist, text, callback)
     //does not exist, but should
     if(exists == false && shouldExist == true)
     {
-      callback({stop: "padID does not exist"});
+      callback(new customError("padID does not exist","apierror"));
     }
     //does exists, but shouldn't
     else if(exists == true && shouldExist == false)
     {
-      callback({stop: "padID does already exist"});
+      callback(new customError("padID does already exist","apierror"));
     }
     //pad exists, let's get it
     else

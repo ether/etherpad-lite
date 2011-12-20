@@ -1,4 +1,10 @@
 /**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
+/**
  * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +28,7 @@ var noColors = false;
 var useMonospaceFontGlobal = false;
 var globalUserName = false;
 var hideQRCode = false;
+var rtlIsTrue = false;
 
 $(document).ready(function()
 {
@@ -88,6 +95,7 @@ function getParams()
   var useMonospaceFont = params["useMonospaceFont"];
   var IsnoColors = params["noColors"];
   var hideQRCode = params["hideQRCode"];
+  var rtl = params["rtl"];
 
   if(IsnoColors)
   {
@@ -134,6 +142,13 @@ function getParams()
   if(hideQRCode)
   {
     $('#qrcode').hide();
+  }
+  if(rtl)
+  {
+    if(rtl == "true")
+    {
+      rtlIsTrue = true
+    }
   }
 }
 
@@ -292,6 +307,11 @@ function handshake()
       if (noColors == true)
       {
         pad.changeViewOption('noColors', true);
+      }
+      
+      if (rtlIsTrue == true)
+      {
+        pad.changeViewOption('rtl', true);
       }
 
       // If the Monospacefont value is set to true then change it to monospace.

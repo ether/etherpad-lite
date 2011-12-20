@@ -273,7 +273,7 @@ async.waterfall([
         return;
       }
     
-      var types = ["pdf", "doc", "txt", "html", "odt"];
+      var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
       //send a 404 if we don't support this filetype
       if(types.indexOf(req.params.type) == -1)
       {
@@ -282,7 +282,8 @@ async.waterfall([
       }
       
       //if abiword is disabled, and this is a format we only support with abiword, output a message
-      if(settings.abiword == null && req.params.type != "html" && req.params.type != "txt" )
+      if(settings.abiword == null &&
+         ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1)
       {
         res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
         return;

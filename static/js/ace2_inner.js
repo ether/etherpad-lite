@@ -1,4 +1,10 @@
 /**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
+/**
  * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1126,6 +1132,10 @@ function OUTER(gscope)
     else if (k == 'textsize')
     {
       setTextSize(value);
+    }
+    else if (k == 'rtlistrue')
+    {
+      setClassPresence(root, "rtl", !! value);
     }
   }
 

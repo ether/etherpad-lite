@@ -19,6 +19,7 @@
  */
 
 var ERR = require("async-stacktrace");
+var customError = require("../utils/customError");
 require("../db/Pad");
 var db = require("./DB").db;
 
@@ -31,7 +32,7 @@ var db = require("./DB").db;
  * If this is needed in other places, it would be wise to make this a prototype
  * that's defined somewhere more sensible.
  */
-globalPads = {
+var globalPads = {
     get: function (name) { return this[':'+name]; },
     set: function (name, value) { this[':'+name] = value; },
     remove: function (name) { delete this[':'+name]; }
@@ -47,7 +48,7 @@ exports.getPad = function(id, text, callback)
   //check if this is a valid padId
   if(!exports.isValidPadId(id))
   {
-    callback({stop: id + " is not a valid padId"});
+    callback(new customError(id + " is not a valid padId","apierror"));
     return;
   }
   
@@ -64,14 +65,14 @@ exports.getPad = function(id, text, callback)
     //check if text is a string
     if(typeof text != "string")
     {
-      callback({stop: "text is not a string"});
+      callback(new customError("text is not a string","apierror"));
       return;
     }
     
     //check if text is less than 100k chars
     if(text.length > 100000)
     {
-      callback({stop: "text must be less than 100k chars"});
+      callback(new customError("text must be less than 100k chars","apierror"));
       return;
     }
   }

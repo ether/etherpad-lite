@@ -1,4 +1,10 @@
 /**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
+/**
  * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -234,6 +240,7 @@ var padimpexp = (function()
       $("#exporthtmla").attr("href", document.location.pathname + "/export/html");
       $("#exportplaina").attr("href", document.location.pathname + "/export/txt");
       $("#exportwordlea").attr("href", document.location.pathname + "/export/wordle");
+      $("#exportdokuwikia").attr("href", document.location.pathname + "/export/dokuwiki");
       
       //hide stuff thats not avaible if abiword is disabled
       if(clientVars.abiwordAvailable == "no")
@@ -241,8 +248,8 @@ var padimpexp = (function()
         $("#exportworda").remove();
         $("#exportpdfa").remove();
         $("#exportopena").remove();
-        $("#importexport").css({"height":"95px"});
-        $("#importexportline").css({"height":"95px"});
+        $("#importexport").css({"height":"115px"});
+        $("#importexportline").css({"height":"115px"});
         $("#import").html("Import is not available");
       }
       else if(clientVars.abiwordAvailable == "withoutPDF")
