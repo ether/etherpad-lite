@@ -1,7 +1,7 @@
 /**
- * This Module manages all /minified/* requests. It controls the 
- * minification && compression of Javascript and CSS. 
- */ 
+ * This Module manages all /minified/* requests. It controls the
+ * minification && compression of Javascript and CSS.
+ */
 
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
@@ -28,7 +28,7 @@ var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
 var Buffer = require('buffer').Buffer;
-var gzip = require('gzip');
+var zlib = require('zlib');
 var server = require('../server');
 var os = require('os');
 
@@ -44,7 +44,7 @@ var timesliderJS = ["jquery.min.js", "plugins.js", "undo-xpopup.js", "json2.js",
 exports.minifyJS = function(req, res, jsFilename)
 {
   res.header("Content-Type","text/javascript");
-  
+
   //choose the js files we need
   if(jsFilename == "pad.js")
   {
@@ -58,20 +58,20 @@ exports.minifyJS = function(req, res, jsFilename)
   {
     throw new Error("there is no profile for creating " + name);
   }
-  
+
   //minifying is enabled
   if(settings.minify)
   {
     var fileValues = {};
     var embeds = {};
     var latestModification = 0;
-    
+
     async.series([
       //find out the highest modification date
       function(callback)
-      {        
+      {
         var folders2check = ["../static/css","../static/js"];
-        
+
         //go trough this two folders
         async.forEach(folders2check, function(path, callback)
         {
@@ -79,27 +79,27 @@ exports.minifyJS = function(req, res, jsFilename)
           fs.readdir(path, function(err, files)
           {
             if(ERR(err, callback)) return;
-            
+
             //we wanna check the directory itself for changes too
             files.push(".");
-            
+
             //go trough all files in this folder
-            async.forEach(files, function(filename, callback) 
+            async.forEach(files, function(filename, callback)
             {
               //get the stat data of this file
               fs.stat(path + "/" + filename, function(err, stats)
               {
                 if(ERR(err, callback)) return;
-              
+
                 //get the modification time
                 var modificationTime = stats.mtime.getTime();
-              
+
                 //compare the modification time to the highest found
                 if(modificationTime > latestModification)
                 {
                   latestModification = modificationTime;
                 }
-                
+
                 callback();
               });
             }, callback);
@@ -116,7 +116,7 @@ exports.minifyJS = function(req, res, jsFilename)
             ERR(err, callback);
             return;
           }
-        
+
           //there is no minfied file or there new changes since this file was generated, so continue generating this file
           if((err && err.code == "ENOENT") || stats.mtime.getTime() < latestModification)
           {
@@ -128,48 +128,48 @@ exports.minifyJS = function(req, res, jsFilename)
             callback("stop");
           }
         });
-      }, 
+      },
       //load all js files
       function (callback)
       {
         async.forEach(jsFiles, function (item, callback)
         {
           fs.readFile("../static/js/" + item, "utf-8", function(err, data)
-          {            
+          {
             if(ERR(err, callback)) return;
             fileValues[item] = data;
             callback();
           });
         }, callback);
       },
-      //find all includes in ace.js and embed them 
+      //find all includes in ace.js and embed them
       function(callback)
-      {        
+      {
         //if this is not the creation of pad.js, skip this part
         if(jsFilename != "pad.js")
         {
           callback();
           return;
         }
-      
+
         var founds = fileValues["ace.js"].match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"]+\)/gi);
-        
+
         //go trough all includes
         async.forEach(founds, function (item, callback)
         {
           var filename = item.match(/"[^"]*"/g)[0].substr(1);
           filename = filename.substr(0,filename.length-1);
-        
+
           var type = item.match(/INCLUDE_[A-Z]+/g)[0].substr("INCLUDE_".length);
-        
+
           var quote = item.search("_Q") != -1;
-        
+
           //read the included file
           fs.readFile(filename, "utf-8", function(err, data)
-          {         
+          {
             if(ERR(err, callback)) return;
-            
-            //compress the file               
+
+            //compress the file
             if(type == "JS")
             {
               embeds[item] = "<script>\n" + compressJS([data])+ "\n\\x3c/script>";
@@ -178,36 +178,36 @@ exports.minifyJS = function(req, res, jsFilename)
             {
               embeds[item] = "<style>" + compressCSS([data])+ "</style>";
             }
-            
+
             //do the first escape
             embeds[item] = JSON.stringify(embeds[item]).replace(/'/g, "\\'").replace(/\\"/g, "\"");
             embeds[item] = embeds[item].substr(1);
             embeds[item] = embeds[item].substr(0, embeds[item].length-1);
-            
+
             //add quotes, if wished
             if(quote)
             {
               embeds[item] = "'" + embeds[item] + "'";
             }
-            
+
             //do the second escape
             embeds[item] = JSON.stringify(embeds[item]).replace(/'/g, "\\'").replace(/\"/g, "\"");
             embeds[item] = embeds[item].substr(1);
             embeds[item] = embeds[item].substr(0, embeds[item].length-1);
             embeds[item] = "'" + embeds[item] + "'";
-            
+
             callback();
           });
         }, function(err)
         {
           if(ERR(err, callback)) return;
-          
+
           //replace the include command with the include
           for(var i in embeds)
           {
             fileValues["ace.js"]=fileValues["ace.js"].replace(i, embeds[i]);
           }
-          
+
           callback();
         });
       },
@@ -220,29 +220,27 @@ exports.minifyJS = function(req, res, jsFilename)
         {
           values.push(fileValues[jsFiles[i]]);
         }
-        
+
         //minify all javascript files to one
         var result = compressJS(values);
-        
+
         async.parallel([
           //write the results plain in a file
           function(callback)
           {
-            fs.writeFile("../var/minified_" + jsFilename, result, "utf8", callback);  
+            fs.writeFile("../var/minified_" + jsFilename, result, "utf8", callback);
           },
           //write the results compressed in a file
           function(callback)
           {
-            //spawn a gzip process if we're on a unix system
+            //gzip file if we're on a unix system
             if(os.type().indexOf("Windows") == -1)
             {
-              gzip(result, 9, function(err, compressedResult){
-                //weird gzip bug that returns 0 instead of null if everything is ok
-                err = err === 0 ? null : err;
-              
+              zlib.gzip(result, function(err, compressedResult){
+
                 if(ERR(err, callback)) return;
-                
-                fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);  
+
+                fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);
               });
             }
             //skip this step on windows
@@ -259,10 +257,10 @@ exports.minifyJS = function(req, res, jsFilename)
       {
         if(ERR(err)) return;
       }
-      
+
       //check if gzip is supported by this browser
       var gzipSupport = req.header('Accept-Encoding', '').indexOf('gzip') != -1;
-      
+
       var pathStr;
       if(gzipSupport && os.type().indexOf("Windows") == -1)
       {
@@ -273,7 +271,7 @@ exports.minifyJS = function(req, res, jsFilename)
       {
         pathStr = path.normalize(__dirname + "/../../var/minified_" + jsFilename );
       }
-      
+
       res.sendfile(pathStr, { maxAge: server.maxAge });
     })
   }
@@ -281,29 +279,29 @@ exports.minifyJS = function(req, res, jsFilename)
   else
   {
     var fileValues = {};
-  
+
     //read all js files
     async.forEach(jsFiles, function (item, callback)
     {
       fs.readFile("../static/js/" + item, "utf-8", function(err, data)
-      {          
-        if(ERR(err, callback)) return;  
+      {
+        if(ERR(err, callback)) return;
         fileValues[item] = data;
         callback();
       });
-    }, 
+    },
     //send all files together
     function(err)
     {
       if(ERR(err)) return;
-      
+
       for(var i=0;i<jsFiles.length;i++)
       {
         var fileName = jsFiles[i];
         res.write("\n\n\n/*** File: static/js/" + fileName + " ***/\n\n\n");
         res.write(fileValues[fileName]);
       }
-      
+
       res.end();
     });
   }
