@@ -233,21 +233,12 @@ exports.minifyJS = function(req, res, jsFilename)
           //write the results compressed in a file
           function(callback)
           {
-            //gzip file if we're on a unix system
-            if(os.type().indexOf("Windows") == -1)
-            {
-              zlib.gzip(result, function(err, compressedResult){
+            zlib.gzip(result, function(err, compressedResult){
 
-                if(ERR(err, callback)) return;
+              if(ERR(err, callback)) return;
 
-                fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);
-              });
-            }
-            //skip this step on windows
-            else
-            {
-              callback();
-            }
+              fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);
+            });
           }
         ],callback);
       }
