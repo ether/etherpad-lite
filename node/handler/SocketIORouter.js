@@ -1,5 +1,5 @@
 /**
- * This is the Socket.IO Router. It routes the Messages between the 
+ * This is the Socket.IO Router. It routes the Messages between the
  * components of the Server. The components are at the moment: pad and timeslider
  */
 
@@ -28,11 +28,11 @@ var securityManager = require("../db/SecurityManager");
  * Saves all components
  * key is the component name
  * value is the component module
- */ 
+ */
 var components = {};
 
 var socket;
- 
+
 /**
  * adds a component
  */
@@ -40,10 +40,10 @@ exports.addComponent = function(moduleName, module)
 {
   //save the component
   components[moduleName] = module;
-  
+
   //give the module the socket
   module.setSocketIO(socket);
-}
+};
 
 /**
  * sets the socket.io and adds event functions for routing
@@ -52,31 +52,31 @@ exports.setSocketIO = function(_socket)
 {
   //save this socket internaly
   socket = _socket;
-  
+
   socket.sockets.on('connection', function(client)
   {
     var clientAuthorized = false;
-    
+
     //wrap the original send function to log the messages
     client._send = client.send;
     client.send = function(message)
     {
       messageLogger.info("to " + client.id + ": " + stringifyWithoutPassword(message));
       client._send(message);
-    }
-  
+    };
+
     //tell all components about this connect
     for(var i in components)
     {
       components[i].handleConnect(client);
     }
-      
+
     //try to handle the message of this client
     function handleMessage(message)
     {
       if(message.component && components[message.component])
       {
-        //check if component is registered in the components array        
+        //check if component is registered in the components array
         if(components[message.component])
         {
           messageLogger.info("from " + client.id + ": " + stringifyWithoutPassword(message));
@@ -87,8 +87,8 @@ exports.setSocketIO = function(_socket)
       {
         messageLogger.error("Can't route the message:" + stringifyWithoutPassword(message));
       }
-    }  
-      
+    }
+
     client.on('message', function(message)
     {
       if(message.protocolVersion && message.protocolVersion != 2)
@@ -111,7 +111,7 @@ exports.setSocketIO = function(_socket)
           securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
           {
             ERR(err);
-            
+
             //access was granted, mark the client as authorized and handle the message
             if(statusObject.accessStatus == "grant")
             {
@@ -143,21 +143,21 @@ exports.setSocketIO = function(_socket)
       }
     });
   });
-}
+};
 
 //returns a stringified representation of a message, removes the password
 //this ensures there are no passwords in the log
 function stringifyWithoutPassword(message)
 {
   var newMessage = {};
-  
+
   for(var i in message)
   {
-    if(i == "password" && message[i] != null)
-      newMessage["password"] = "xxx";
+    if(i == "password" && message[i])
+      newMessage.password = "xxx";
     else
       newMessage[i]=message[i];
   }
-  
+
   return JSON.stringify(newMessage);
 }
