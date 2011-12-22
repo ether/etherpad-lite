@@ -89,8 +89,6 @@ else
     throw "Abiword died with exit code " + code;
   });
 
-  //delegate the processing of stdout to a other function
-  abiword.stdout.on('data',onAbiwordStdout);
 
   var stdoutCallback = null;
   var stdoutBuffer = "";
@@ -121,6 +119,9 @@ else
       firstPrompt = false;
     }
   };
+
+  //delegate the processing of stdout to a other function
+  abiword.stdout.on('data',onAbiwordStdout);
 
   doConvertTask = function(task, callback)
   {
