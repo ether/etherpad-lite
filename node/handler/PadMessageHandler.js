@@ -767,7 +767,7 @@ function handleClientReady(client, message)
       atext.attribs = attribsForWire.translated;
 
       //check if abiword is avaiable
-      var abiwordAvailable = settings.abiword = null ? "yes" : "no";
+      var abiwordAvailable = settings.abiword ? "yes" : "no";
       if(settings.abiword && os.type().indexOf("Windows") != -1)
       {
         abiwordAvailable = "withoutPDF";
