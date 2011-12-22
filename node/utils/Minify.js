@@ -1,5 +1,5 @@
 /**
- * This Module manages all /minified/* requests. It controls the
+ * This Module manages all /minified/\* requests. It controls the
  * minification && compression of Javascript and CSS.
  */
 
@@ -59,10 +59,12 @@ exports.minifyJS = function(req, res, jsFilename)
     throw new Error("there is no profile for creating " + name);
   }
 
+  var fileValues;
+
   //minifying is enabled
   if(settings.minify)
   {
-    var fileValues = {};
+    fileValues = {};
     var embeds = {};
     var latestModification = 0;
 
@@ -264,12 +266,12 @@ exports.minifyJS = function(req, res, jsFilename)
       }
 
       res.sendfile(pathStr, { maxAge: server.maxAge });
-    })
+    });
   }
   //minifying is disabled, so put the files together in one file
   else
   {
-    var fileValues = {};
+    fileValues = {};
 
     //read all js files
     async.forEach(jsFiles, function (item, callback)
@@ -296,7 +298,7 @@ exports.minifyJS = function(req, res, jsFilename)
       res.end();
     });
   }
-}
+};
 
 function compressJS(values)
 {
