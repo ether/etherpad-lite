@@ -293,7 +293,7 @@ Example returns:
 exports.createPad = function(padID, text, callback)
 {  
   //ensure there is no $ in the padID
-  if(padID.indexOf("$") != -1)
+  if(padID && padID.indexOf("$") != -1)
   {
     callback(new customError("createPad can't create group pads","apierror"));
     return;
@@ -360,7 +360,7 @@ Example returns:
 exports.setPublicStatus = function(padID, publicStatus, callback)
 {
   //ensure this is a group pad
-  if(padID.indexOf("$") == -1)
+  if(padID && padID.indexOf("$") == -1)
   {
     callback(new customError("You can only get/set the publicStatus of pads that belong to a group","apierror"));
     return;
@@ -393,7 +393,7 @@ Example returns:
 exports.getPublicStatus = function(padID, callback)
 {
   //ensure this is a group pad
-  if(padID.indexOf("$") == -1)
+  if(padID && padID.indexOf("$") == -1)
   {
     callback(new customError("You can only get/set the publicStatus of pads that belong to a group","apierror"));
     return;
@@ -419,7 +419,7 @@ Example returns:
 exports.setPassword = function(padID, password, callback)
 {
   //ensure this is a group pad
-  if(padID.indexOf("$") == -1)
+  if(padID && padID.indexOf("$") == -1)
   {
     callback(new customError("You can only get/set the password of pads that belong to a group","apierror"));
     return;
@@ -448,7 +448,7 @@ Example returns:
 exports.isPasswordProtected = function(padID, callback)
 {
   //ensure this is a group pad
-  if(padID.indexOf("$") == -1)
+  if(padID && padID.indexOf("$") == -1)
   {
     callback(new customError("You can only get/set the password of pads that belong to a group","apierror"));
     return;
