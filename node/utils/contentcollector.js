@@ -358,6 +358,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     if (isBlock) _ensureColumnZero(state);
     var startLine = lines.length() - 1;
     _reachBlockPoint(node, 0, state);
+
+    var i;
+
     if (dom.isNodeText(node))
     {
       var txt = dom.nodeValue(node);
@@ -425,6 +428,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     }
     else
     {
+      var c;
+
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
       if (tname == "br")
       {
@@ -488,9 +493,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
             var classes = cls.match(/\S+/g);
             if (classes && classes.length > 0)
             {
-              for (var i = 0; i < classes.length; i++)
+              for (i = 0; i < classes.length; i++)
               {
-                var c = classes[i];
+                c = classes[i];
                 var a = className2Author(c);
                 if (a)
                 {
@@ -503,9 +508,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         }
 
         var nc = dom.nodeNumChildren(node);
-        for (var i = 0; i < nc; i++)
+        for (i = 0; i < nc; i++)
         {
-          var c = dom.nodeChild(node, i);
+          c = dom.nodeChild(node, i);
           cc.collectContent(c, state);
         }
 
@@ -523,7 +528,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         if (isPre) cc.decrementFlag(state, 'preMode');
         if (state.localAttribs)
         {
-          for (var i = 0; i < state.localAttribs.length; i++)
+          for (i = 0; i < state.localAttribs.length; i++)
           {
             cc.decrementAttrib(state, state.localAttribs[i]);
           }
