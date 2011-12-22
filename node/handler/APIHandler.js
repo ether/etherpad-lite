@@ -28,7 +28,7 @@ try
 {
   apikey = fs.readFileSync("../APIKEY.txt","utf8");
 }
-catch(e) 
+catch(e)
 {
   apikey = randomString(32);
   fs.writeFileSync("../APIKEY.txt",apikey,"utf8");
@@ -37,28 +37,28 @@ catch(e)
 //a list of all functions
 var functions = {
   "createGroup"               : [],
-  "createGroupIfNotExistsFor"  : ["groupMapper"], 
-  "deleteGroup"               : ["groupID"], 
-  "listPads"                  : ["groupID"], 
-  "createPad"                 : ["padID", "text"], 
+  "createGroupIfNotExistsFor"  : ["groupMapper"],
+  "deleteGroup"               : ["groupID"],
+  "listPads"                  : ["groupID"],
+  "createPad"                 : ["padID", "text"],
   "createGroupPad"            : ["groupID", "padName", "text"],
-  "createAuthor"              : ["name"], 
-  "createAuthorIfNotExistsFor": ["authorMapper" , "name"], 
-  "createSession"             : ["groupID", "authorID", "validUntil"], 
-  "deleteSession"             : ["sessionID"], 
-  "getSessionInfo"            : ["sessionID"], 
-  "listSessionsOfGroup"       : ["groupID"], 
-  "listSessionsOfAuthor"      : ["authorID"], 
+  "createAuthor"              : ["name"],
+  "createAuthorIfNotExistsFor": ["authorMapper" , "name"],
+  "createSession"             : ["groupID", "authorID", "validUntil"],
+  "deleteSession"             : ["sessionID"],
+  "getSessionInfo"            : ["sessionID"],
+  "listSessionsOfGroup"       : ["groupID"],
+  "listSessionsOfAuthor"      : ["authorID"],
   "getText"                   : ["padID", "rev"],
   "setText"                   : ["padID", "text"],
   "getHTML"                   : ["padID", "rev"],
   "setHTML"                   : ["padID", "html"],
-  "getRevisionsCount"         : ["padID"], 
-  "deletePad"                 : ["padID"], 
+  "getRevisionsCount"         : ["padID"],
+  "deletePad"                 : ["padID"],
   "getReadOnlyID"             : ["padID"],
-  "setPublicStatus"           : ["padID", "publicStatus"], 
-  "getPublicStatus"           : ["padID"], 
-  "setPassword"               : ["padID", "password"], 
+  "setPublicStatus"           : ["padID", "publicStatus"],
+  "getPublicStatus"           : ["padID"],
+  "setPassword"               : ["padID", "password"],
   "isPasswordProtected"       : ["padID"]
 };
 
@@ -72,12 +72,12 @@ var functions = {
 exports.handle = function(functionName, fields, req, res)
 {
   //check the api key!
-  if(fields["apikey"] != apikey.trim())
+  if(fields.apikey != apikey.trim())
   {
     res.send({code: 4, message: "no or wrong API Key", data: null});
     return;
   }
-  
+
   //check if this is a valid function name
   var isKnownFunctionname = false;
   for(var knownFunctionname in functions)
@@ -88,30 +88,30 @@ exports.handle = function(functionName, fields, req, res)
       break;
     }
   }
-  
+
   //say goodbye if this is a unkown function
   if(!isKnownFunctionname)
   {
     res.send({code: 3, message: "no such function", data: null});
     return;
   }
-  
+
   //put the function parameters in an array
   var functionParams = [];
   for(var i=0;i<functions[functionName].length;i++)
   {
     functionParams.push(fields[functions[functionName][i]]);
   }
-  
+
   //add a callback function to handle the response
   functionParams.push(function(err, data)
-  {  
+  {
     // no error happend, everything is fine
-    if(err == null)
+    if(!err)
     {
       if(!data)
         data = null;
-    
+
       res.send({code: 0, message: "ok", data: data});
     }
     // parameters were wrong and the api stopped execution, pass the error
@@ -126,15 +126,15 @@ exports.handle = function(functionName, fields, req, res)
       ERR(err);
     }
   });
-  
+
   //call the api function
   api[functionName](functionParams[0],functionParams[1],functionParams[2],functionParams[3],functionParams[4]);
-}
+};
 
 /**
  * Generates a random String with the given length. Is needed to generate the Author Ids
  */
-function randomString(len) 
+function randomString(len)
 {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var randomstring = '';
