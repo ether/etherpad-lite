@@ -22,5 +22,8 @@
                       "jsdom-nocontextifiy" : "0.2.10",
                       "async-stacktrace"    : "0.0.2"
                     },
+  "devDependencies"  :  {
+                          "jshint"  : "0.5.5"
+                        },
   "version"       : "1.0.0"
 }
