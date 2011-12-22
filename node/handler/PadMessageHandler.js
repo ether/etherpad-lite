@@ -186,10 +186,21 @@ exports.handleMessage = function(client, message)
     handleChatMessage(client, message);
   }
   else if(message.type == "COLLABROOM" &&
-          message.data.type == "CLIENT_MESSAGE" &&
-          message.data.payload.type == "suggestUserName")
+          message.data.type == "CLIENT_MESSAGE")
   {
-    handleSuggestUserName(client, message);
+    if(message.data.payload.type == "suggestUserName")
+    {
+      handleSuggestUserName(client, message);
+    }
+    else if (message.data.payload.type == "padoptions")
+    {
+      messageLogger.info("Handler not implemented for payload type: " + message.data.payload.type);
+      //handlePadOptions
+    }
+    else
+    {
+      messageLogger.warn("Dropped COLLABROOM CLIENT_MESSAGE message, unknown Message Type " + message.type);
+    }
   }
   //if the message type is unknown, throw an exception
   else
