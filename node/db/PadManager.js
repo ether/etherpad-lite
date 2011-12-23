@@ -20,7 +20,7 @@
 
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
-require("../db/Pad");
+var Pad = require("../db/Pad").Pad;
 var db = require("./DB").db;
 
 /**
