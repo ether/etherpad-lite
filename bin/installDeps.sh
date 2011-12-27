@@ -16,7 +16,7 @@ hash curl > /dev/null 2>&1 || {
 
 #Is node installed?
 hash node > /dev/null 2>&1 || { 
-  echo "Please install node.js ( http://nodesjs.org )" >&2
+  echo "Please install node.js ( http://nodejs.org )" >&2
   exit 1 
 }
 
