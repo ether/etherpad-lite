@@ -1178,7 +1178,7 @@ label[for=readonlyinput] {
   }  
 }
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 600px) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
   #editbar ul li {
     padding: 4px 3px;
   }
@@ -1190,12 +1190,10 @@ label[for=readonlyinput] {
     opacity: .8;
   }
   #users {
-    right: none;
-    left: 30px;
+    right: 4px;
   }
   #mycolorpicker {
-    right: 0;
-    left: 0 !important;
+    left: -72px; /* #mycolorpicker:width - #users:width */
   }
   #editorcontainer {
     margin-bottom: 33px;
