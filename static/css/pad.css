@@ -1246,9 +1246,6 @@ label[for=readonlyinput] {
   #usericonback {
     margin-top: 4px;
   }
-  #sidediv {
-    display:none;
-  }
 }
 .rtl{
   direction:RTL;
