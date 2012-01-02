@@ -216,3 +216,40 @@ ul.list-bullet6 { list-style-type: square; }
 ul.list-bullet7 { list-style-type: disc; }
 ul.list-bullet8 { list-style-type: circle; }
 
+ol.list-number1 { margin-left: 1.5em; }
+ol.list-number2 { margin-left: 3em; }
+ol.list-number3 { margin-left: 4.5em; }
+ol.list-number4 { margin-left: 6em; }
+ol.list-number5 { margin-left: 7.5em; }
+ol.list-number6 { margin-left: 9em; }
+ol.list-number7 { margin-left: 10.5em; }
+ol.list-number8 { margin-left: 12em; }
+
+ol { list-style-type: decimal; }
+ol.list-number1 { list-style-type: decimal; }
+ol.list-number2 { list-style-type: lower-latin; }
+ol.list-number3 { list-style-type: lower-roman; }
+ol.list-number4 { list-style-type: decimal; }
+ol.list-number5 { list-style-type: lower-latin; }
+ol.list-number6 { list-style-type: lower-roman; }
+ol.list-number7 { list-style-type: decimal; }
+ol.list-number8 { list-style-type: lower-latin; }
+
+ul.list-indent1 { margin-left: 1.5em; }
+ul.list-indent2 { margin-left: 3em; }
+ul.list-indent3 { margin-left: 4.5em; }
+ul.list-indent4 { margin-left: 6em; }
+ul.list-indent5 { margin-left: 7.5em; }
+ul.list-indent6 { margin-left: 9em; }
+ul.list-indent7 { margin-left: 10.5em; }
+ul.list-indent8 { margin-left: 12em; }
+
+ul.list-indent1 { list-style-type: none; }
+ul.list-indent2 { list-style-type: none; }
+ul.list-indent3 { list-style-type: none; }
+ul.list-indent4 { list-style-type: none; }
+ul.list-indent5 { list-style-type: none; }
+ul.list-indent6 { list-style-type: none; }
+ul.list-indent7 { list-style-type: none; }
+ul.list-indent8 { list-style-type: none; }
+

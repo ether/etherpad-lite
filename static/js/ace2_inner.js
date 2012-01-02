@@ -3528,16 +3528,36 @@ function OUTER(gscope)
     var lineNum = rep.selStart[0];
     var listType = getLineListType(lineNum);
 
-    performDocumentReplaceSelection('\n');
     if (listType)
     {
-      if (lineNum + 1 < rep.lines.length())
+      var text = rep.lines.atIndex(lineNum).text;
+      listType = /([a-z]+)([12345678])/.exec(listType);
+      var type  = listType[1];
+      var level = Number(listType[2]);
+      
+      //detect empty list item; exclude indentation
+      if(text === '*' && type !== "indent")
       {
-        setLineListType(lineNum + 1, listType);
+        //if not already on the highest level
+        if(level > 1)
+        {
+          setLineListType(lineNum, type+(level-1));//automatically decrease the level
+        }
+        else
+        {
+          setLineListType(lineNum, '');//remove the list
+          renumberList(lineNum + 1);//trigger renumbering of list that may be right after
+        }
+      }
+      else if (lineNum + 1 < rep.lines.length())
+      {
+        performDocumentReplaceSelection('\n');
+        setLineListType(lineNum + 1, type+level);
       }
     }
     else
     {
+      performDocumentReplaceSelection('\n');
       handleReturnIndentation();
     }
   }
@@ -3680,6 +3700,15 @@ function OUTER(gscope)
           performDocumentReplaceSelection('');
         }
       }
+    }
+     //if the list has been removed, it is necessary to renumber
+    //starting from the *next* line because the list may have been
+    //separated. If it returns null, it means that the list was not cut, try
+    //from the current one.
+    var line = caretLine();
+    if(line != -1 && renumberList(line+1)==null)
+    {
+      renumberList(line);
     }
   }
 
@@ -5179,7 +5208,83 @@ function OUTER(gscope)
       [lineNum, listType]
     ]);
   }
-
+  
+  function renumberList(lineNum){
+    //1-check we are in a list
+    var type = getLineListType(lineNum);
+    if(!type)
+    {
+      return null;
+    }
+    type = /([a-z]+)[12345678]/.exec(type);
+    if(type[1] == "indent")
+    {
+      return null;
+    }
+    
+    //2-find the first line of the list
+    while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
+    {
+      type = /([a-z]+)[12345678]/.exec(type);
+      if(type[1] == "indent")
+        break;
+      lineNum--;
+    }
+    
+    //3-renumber every list item of the same level from the beginning, level 1
+    //IMPORTANT: never skip a level because there imbrication may be arbitrary
+    var builder = Changeset.builder(rep.lines.totalWidth());
+    loc = [0,0];
+    function applyNumberList(line, level)
+    {
+      //init
+      var position = 1;
+      var curLevel = level;
+      var listType;
+      //loop over the lines
+      while(listType = getLineListType(line))
+      {
+        //apply new num
+        listType = /([a-z]+)([12345678])/.exec(listType);
+        curLevel = Number(listType[2]);
+        if(isNaN(curLevel) || listType[0] == "indent")
+        {
+          return line;
+        }
+        else if(curLevel == level)
+        {
+          buildKeepRange(builder, loc, (loc = [line, 0]));
+          buildKeepRange(builder, loc, (loc = [line, 1]), [
+            ['start', position]
+          ], rep.apool);
+          
+          position++;
+          line++;
+        }
+        else if(curLevel < level)
+        {
+          return line;//back to parent
+        }
+        else
+        {
+          line = applyNumberList(line, level+1);//recursive call
+        }
+      }
+      return line;
+    }
+    
+    applyNumberList(lineNum, 1);
+    var cs = builder.toString();
+    if (!Changeset.isIdentity(cs))
+    {
+      performDocumentApplyChangeset(cs);
+    }
+    
+    //4-apply the modifications
+    
+    
+  }
+  
   function setLineListTypes(lineNumTypePairsInOrder)
   {
     var loc = [0, 0];
@@ -5226,9 +5331,18 @@ function OUTER(gscope)
     {
       performDocumentApplyChangeset(cs);
     }
+    
+    //if the list has been removed, it is necessary to renumber
+    //starting from the *next* line because the list may have been
+    //separated. If it returns null, it means that the list was not cut, try
+    //from the current one.
+    if(renumberList(lineNum+1)==null)
+    {
+      renumberList(lineNum);
+    }
   }
 
-  function doInsertUnorderedList()
+  function doInsertList(type)
   {
     if (!(rep.selStart && rep.selEnd))
     {
@@ -5243,7 +5357,7 @@ function OUTER(gscope)
     for (var n = firstLine; n <= lastLine; n++)
     {
       var listType = getLineListType(n);
-      if (!listType || listType.slice(0, 'bullet'.length) != 'bullet')
+      if (!listType || listType.slice(0, type.length) != type)
       {
         allLinesAreList = false;
         break;
@@ -5262,11 +5376,19 @@ function OUTER(gscope)
         level = Number(listType[2]);
       }
       var t = getLineListType(n);
-      mods.push([n, allLinesAreList ? 'indent' + level : (t ? 'bullet' + level : 'bullet1')]);
+      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
     setLineListTypes(mods);
   }
+  
+  function doInsertUnorderedList(){
+    doInsertList('bullet');
+  }
+  function doInsertOrderedList(){
+    doInsertList('number');
+  }
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
+  editorInfo.ace_doInsertOrderedList = doInsertOrderedList;
 
   var mozillaFakeArrows = (browser.mozilla && (function()
   {

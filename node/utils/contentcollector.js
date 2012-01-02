@@ -472,10 +472,10 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             cc.doAttrib(state, "strikethrough");
           }
-          if (tname == "ul")
+          if (tname == "ul" || tname == "ol")
           {
             var type;
-            var rr = cls && /(?:^| )list-(bullet[12345678])\b/.exec(cls);
+            var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);
             type = rr && rr[1] || "bullet" + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
