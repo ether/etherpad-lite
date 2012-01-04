@@ -66,6 +66,14 @@ body.grayedout { background-color: #eee !important }
   line-height: 16px; /* overridden by body.style */
 }
 
+span.h1 {
+ line-height: 30px;
+}
+
+span.h2 {
+ line-height: 25px;
+}
+
 body.doesWrap {
   white-space: normal;
 }
