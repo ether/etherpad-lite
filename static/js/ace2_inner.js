@@ -2573,10 +2573,11 @@ function OUTER(gscope)
 
   function toggleAttributeOnSelectedLine(attributeName)
   {
+      if (!(rep.selStart && rep.selEnd)) return;
       //set the full line to be selected
       rep.selStart[1]=0;
-      rep.selEnd[1]=rep.lines.atIndex(rep.selEnd[0]).text.length
-      toggleAttributeOnSelection(attributeName)
+      rep.selEnd[1]=rep.lines.atIndex(rep.selEnd[0]).text.length;
+      toggleAttributeOnSelection(attributeName);
   }
   editorInfo.ace_toggleAttributeOnSelectedLine = toggleAttributeOnSelectedLine;
 
