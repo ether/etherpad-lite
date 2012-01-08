@@ -31,14 +31,14 @@ exports.doesAuthorExists = function (authorID, callback)
   db.get("globalAuthor:" + authorID, function (err, author)
   {
     if(ERR(err, callback)) return;
-    callback(null, author != null);
+    callback(null, author ? true : false);
   });
-}
+};
 
 /**
- * Returns the AuthorID for a token. 
- * @param {String} token The token 
- * @param {Function} callback callback (err, author) 
+ * Returns the AuthorID for a token.
+ * @param {String} token The token
+ * @param {Function} callback callback (err, author)
  */
 exports.getAuthor4Token = function (token, callback)
 {
@@ -48,52 +48,54 @@ exports.getAuthor4Token = function (token, callback)
     //return only the sub value authorID
     callback(null, author ? author.authorID : author);
   });
-}
+};
 
 /**
- * Returns the AuthorID for a mapper. 
+ * Returns the AuthorID for a mapper.
  * @param {String} token The mapper
- * @param {Function} callback callback (err, author) 
+ * @param {Function} callback callback (err, author)
  */
 exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
 {
   mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
   {
     if(ERR(err, callback)) return;
-    
+
     //set the name of this author
     if(name)
+     {
       exports.setAuthorName(author.authorID, name);
-      
+    }
+
     //return the authorID
     callback(null, author);
   });
-}
+};
 
 /**
  * Returns the AuthorID for a mapper. We can map using a mapperkey,
  * so far this is token2author and mapper2author
- * @param {String} mapperkey The database key name for this mapper 
+ * @param {String} mapperkey The database key name for this mapper
  * @param {String} mapper The mapper
- * @param {Function} callback callback (err, author) 
+ * @param {Function} callback callback (err, author)
  */
 function mapAuthorWithDBKey (mapperkey, mapper, callback)
-{  
+{
   //try to map to an author
   db.get(mapperkey + ":" + mapper, function (err, author)
   {
     if(ERR(err, callback)) return;
-  
+
     //there is no author with this mapper, so create one
-    if(author == null)
+    if(!author)
     {
       exports.createAuthor(null, function(err, author)
       {
         if(ERR(err, callback)) return;
-        
+
         //create the token2author relation
         db.set(mapperkey + ":" + mapper, author.authorID);
-        
+
         //return the author
         callback(null, author);
       });
@@ -103,7 +105,7 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
     {
       //update the timestamp of this author
       db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
-      
+
       //return the author
       callback(null, {authorID: author});
     }
@@ -111,22 +113,22 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
 }
 
 /**
- * Internal function that creates the database entry for an author 
- * @param {String} name The name of the author 
+ * Internal function that creates the database entry for an author
+ * @param {String} name The name of the author
  */
 exports.createAuthor = function(name, callback)
 {
   //create the new author name
   var author = "a." + randomString(16);
-        
+
   //create the globalAuthors db entry
   var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
-        
+
   //set the global author db entry
   db.set("globalAuthor:" + author, authorObj);
-  
+
   callback(null, {authorID: author});
-}
+};
 
 /**
  * Returns the Author Obj of the author
@@ -136,7 +138,7 @@ exports.createAuthor = function(name, callback)
 exports.getAuthor = function (author, callback)
 {
   db.get("globalAuthor:" + author, callback);
-}
+};
 
 /**
  * Returns the color Id of the author
@@ -146,7 +148,7 @@ exports.getAuthor = function (author, callback)
 exports.getAuthorColorId = function (author, callback)
 {
   db.getSub("globalAuthor:" + author, ["colorId"], callback);
-}
+};
 
 /**
  * Sets the color Id of the author
@@ -156,7 +158,7 @@ exports.getAuthorColorId = function (author, callback)
 exports.setAuthorColorId = function (author, colorId, callback)
 {
   db.setSub("globalAuthor:" + author, ["colorId"], colorId, callback);
-}
+};
 
 /**
  * Returns the name of the author
@@ -166,7 +168,7 @@ exports.setAuthorColorId = function (author, colorId, callback)
 exports.getAuthorName = function (author, callback)
 {
   db.getSub("globalAuthor:" + author, ["name"], callback);
-}
+};
 
 /**
  * Sets the name of the author
@@ -176,12 +178,12 @@ exports.getAuthorName = function (author, callback)
 exports.setAuthorName = function (author, name, callback)
 {
   db.setSub("globalAuthor:" + author, ["name"], name, callback);
-}
+};
 
 /**
  * Generates a random String with the given length. Is needed to generate the Author Ids
  */
-function randomString(len) 
+function randomString(len)
 {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var randomstring = '';

@@ -28,24 +28,30 @@ var settings = require('../utils/Settings');
 var os = require('os');
 
 //load abiword only if its enabled
-if(settings.abiword != null)
+if(settings.abiword)
+{
   var abiword = require("../utils/Abiword");
+}
 
 var tempDirectory = "/tmp";
 
-//tempDirectory changes if the operating system is windows 
+//tempDirectory changes if the operating system is windows
 if(os.type().indexOf("Windows") > -1)
 {
   tempDirectory = process.env.TEMP;
 }
-  
+
 /**
  * do a requested export
- */ 
+ */
 exports.doExport = function(req, res, padId, type)
 {
   //tell the browser that this is a downloadable file
   res.attachment(padId + "." + type);
+
+  var randNum;
+  var srcFile;
+  var destFile;
 
   //if this is a plain text export, we can do this directly
   if(type == "txt")
@@ -53,14 +59,12 @@ exports.doExport = function(req, res, padId, type)
     padManager.getPad(padId, function(err, pad)
     {
       ERR(err);
-         
+
       res.send(pad.text());
     });
   }
   else if(type == 'dokuwiki')
   {
-    var randNum;
-    var srcFile, destFile;
 
     async.series([
       //render the dokuwiki document
@@ -71,7 +75,7 @@ exports.doExport = function(req, res, padId, type)
           res.send(dokuwiki);
           callback("stop");
         });
-      },
+      }
     ], function(err)
     {
       if(err && err != "stop") throw err;
@@ -80,8 +84,6 @@ exports.doExport = function(req, res, padId, type)
   else
   {
     var html;
-    var randNum;
-    var srcFile, destFile;
 
     async.series([
       //render the html document
@@ -92,7 +94,7 @@ exports.doExport = function(req, res, padId, type)
           if(ERR(err, callback)) return;
           html = _html;
           callback();
-        });   
+        });
       },
       //decide what to do with the html export
       function(callback)
@@ -101,13 +103,13 @@ exports.doExport = function(req, res, padId, type)
         if(type == "html")
         {
           res.send(html);
-          callback("stop");  
+          callback("stop");
         }
         else //write the html export to a file
         {
           randNum = Math.floor(Math.random()*0xFFFFFFFF);
           srcFile = tempDirectory + "/eplite_export_" + randNum + ".html";
-          fs.writeFile(srcFile, html, callback); 
+          fs.writeFile(srcFile, html, callback);
         }
       },
       //send the convert job to abiword
@@ -115,7 +117,7 @@ exports.doExport = function(req, res, padId, type)
       {
         //ensure html can be collected by the garbage collector
         html = null;
-      
+
         destFile = tempDirectory + "/eplite_export_" + randNum + "." + type;
         abiword.convertFile(srcFile, destFile, type, callback);
       },
@@ -137,7 +139,7 @@ exports.doExport = function(req, res, padId, type)
             //100ms delay to accomidate for slow windows fs
             if(os.type().indexOf("Windows") > -1)
             {
-              setTimeout(function() 
+              setTimeout(function()
               {
                 fs.unlink(destFile, callback);
               }, 100);
@@ -152,6 +154,6 @@ exports.doExport = function(req, res, padId, type)
     ], function(err)
     {
       if(err && err != "stop") ERR(err);
-    })
+    });
   }
 };

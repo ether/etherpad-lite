@@ -173,7 +173,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   function _isEmpty(node, state)
   {
     // consider clean blank lines pasted in IE to be empty
-    if (dom.nodeNumChildren(node) == 0) return true;
+    if (dom.nodeNumChildren(node) === 0) return true;
     if (dom.nodeNumChildren(node) == 1 && getAssoc(node, "shouldBeEmpty") && dom.optNodeInnerHTML(node) == "&nbsp;" && !getAssoc(node, "unpasted"))
     {
       if (state)
@@ -191,7 +191,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   {
     var ln = lines.length() - 1;
     var chr = lines.textOfLine(ln).length;
-    if (chr == 0 && state.listType && state.listType != 'none')
+    if (chr === 0 && state.listType && state.listType != 'none')
     {
       chr += 1; // listMarker
     }
@@ -218,11 +218,11 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   cc.incrementFlag = function(state, flagName)
   {
     state.flags[flagName] = (state.flags[flagName] || 0) + 1;
-  }
+  };
   cc.decrementFlag = function(state, flagName)
   {
     state.flags[flagName]--;
-  }
+  };
   cc.incrementAttrib = function(state, attribName)
   {
     if (!state.attribs[attribName])
@@ -234,12 +234,12 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       state.attribs[attribName]++;
     }
     _recalcAttribString(state);
-  }
+  };
   cc.decrementAttrib = function(state, attribName)
   {
     state.attribs[attribName]--;
     _recalcAttribString(state);
-  }
+  };
 
   function _enterList(state, listType)
   {
@@ -315,14 +315,14 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   {
     if (state)
     {
-      var atBeginningOfLine = lines.textOfLine(lines.length() - 1).length == 0;
+      var atBeginningOfLine = lines.textOfLine(lines.length() - 1).length === 0;
       if (atBeginningOfLine && state.listType && state.listType != 'none')
       {
         _produceListMarker(state);
       }
     }
     lines.startNew();
-  }
+  };
   cc.notifySelection = function(sel)
   {
     if (sel)
@@ -358,12 +358,15 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     if (isBlock) _ensureColumnZero(state);
     var startLine = lines.length() - 1;
     _reachBlockPoint(node, 0, state);
+
+    var i;
+
     if (dom.isNodeText(node))
     {
       var txt = dom.nodeValue(node);
       var rest = '';
       var x = 0; // offset into original text
-      if (txt.length == 0)
+      if (txt.length === 0)
       {
         if (startPoint && node == startPoint.node)
         {
@@ -404,7 +407,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           // removing "\n" from pasted HTML will collapse words together.
           txt2 = "";
         }
-        var atBeginningOfLine = lines.textOfLine(lines.length() - 1).length == 0;
+        var atBeginningOfLine = lines.textOfLine(lines.length() - 1).length === 0;
         if (atBeginningOfLine)
         {
           // newlines in the source mustn't become spaces at beginning of line box
@@ -425,6 +428,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     }
     else
     {
+      var c;
+
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
       if (tname == "br")
       {
@@ -472,9 +477,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             cc.doAttrib(state, "strikethrough");
           }
+          var type;
           if (tname == "ul")
           {
-            var type;
             var rr = cls && /(?:^| )list-(bullet[12345678])\b/.exec(cls);
             type = rr && rr[1] || "bullet" + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             oldListTypeOrNull = (_enterList(state, type) || 'none');
@@ -488,9 +493,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
             var classes = cls.match(/\S+/g);
             if (classes && classes.length > 0)
             {
-              for (var i = 0; i < classes.length; i++)
+              for (i = 0; i < classes.length; i++)
               {
-                var c = classes[i];
+                c = classes[i];
                 var a = className2Author(c);
                 if (a)
                 {
@@ -503,9 +508,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         }
 
         var nc = dom.nodeNumChildren(node);
-        for (var i = 0; i < nc; i++)
+        for (i = 0; i < nc; i++)
         {
-          var c = dom.nodeChild(node, i);
+          c = dom.nodeChild(node, i);
           cc.collectContent(c, state);
         }
 
@@ -523,7 +528,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         if (isPre) cc.decrementFlag(state, 'preMode');
         if (state.localAttribs)
         {
-          for (var i = 0; i < state.localAttribs.length; i++)
+          for (i = 0; i < state.localAttribs.length; i++)
           {
             cc.decrementAttrib(state, state.localAttribs[i]);
           }
@@ -612,6 +617,30 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       var buffer = 10; // chars allowed over before wrapping
       var linesWrapped = 0;
       var numLinesAfter = 0;
+
+      var fixLineNumber = function fixLineNumber(lineChar)
+      {
+        if (lineChar[0] < 0) return;
+        var n = lineChar[0];
+        var c = lineChar[1];
+        if (n > i)
+        {
+          n += (newStrings.length - 1);
+        }
+        else if (n == i)
+        {
+          var a = 0;
+          while (c > newStrings[a].length)
+          {
+            c -= newStrings[a].length;
+            a++;
+          }
+          n += a;
+        }
+        lineChar[0] = n;
+        lineChar[1] = c;
+      };
+
       for (var i = lineStrings.length - 1; i >= 0; i--)
       {
         var oldString = lineStrings[i];
@@ -620,6 +649,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         {
           var newStrings = [];
           var newAttribStrings = [];
+
+
           while (oldString.length > lineLimit)
           {
             //var semiloc = oldString.lastIndexOf(';', lineLimit-1);
@@ -636,28 +667,6 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
             newAttribStrings.push(oldAttribString);
           }
 
-          function fixLineNumber(lineChar)
-          {
-            if (lineChar[0] < 0) return;
-            var n = lineChar[0];
-            var c = lineChar[1];
-            if (n > i)
-            {
-              n += (newStrings.length - 1);
-            }
-            else if (n == i)
-            {
-              var a = 0;
-              while (c > newStrings[a].length)
-              {
-                c -= newStrings[a].length;
-                a++;
-              }
-              n += a;
-            }
-            lineChar[0] = n;
-            lineChar[1] = c;
-          }
           fixLineNumber(ss);
           fixLineNumber(se);
           linesWrapped++;
@@ -684,7 +693,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       lines: lineStrings,
       lineAttribs: lineAttribs
     };
-  }
+  };
 
   return cc;
 }

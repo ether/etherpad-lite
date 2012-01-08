@@ -24,18 +24,18 @@ var async = require("async");
 var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
-var settings = require("../utils/Settings")
+var settings = require("../utils/Settings");
 
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
  * @param padID the pad the user wants to access
  * @param sesssionID the session the user has (set via api)
  * @param token the token of the author (randomly generated at client side, used for public pads)
- * @param password the password the user has given to access this pad, can be null 
+ * @param password the password the user has given to access this pad, can be null
  * @param callback will be called with (err, {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx})
- */ 
+ */
 exports.checkAccess = function (padID, sessionID, token, password, callback)
-{ 
+{
   var statusObject;
 
   // a valid session is required (api-only mode)
@@ -58,7 +58,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
       authorManager.getAuthor4Token(token, function(err, author)
       {
         if(ERR(err, callback)) return;
-        
+
         // assume user has access
         statusObject = {accessStatus: "grant", authorID: author};
         // user can't create pads
@@ -68,7 +68,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
           padManager.doesPadExists(padID, function(err, exists)
           {
             if(ERR(err, callback)) return;
-            
+
             // pad doesn't exist - user can't have access
             if(!exists) statusObject.accessStatus = "deny";
             // grant or deny access, with author of token
@@ -81,13 +81,13 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
           // grant access, with author of token
           callback(null, statusObject);
         }
-      })
-      
+      });
+
       //don't continue
       return;
     }
   }
-   
+
   var groupID = padID.split("$")[0];
   var padExists = false;
   var validSession = false;
@@ -95,10 +95,10 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
   var tokenAuthor;
   var isPublic;
   var isPasswordProtected;
-  var passwordStatus = password == null ? "notGiven" : "wrong"; // notGiven, correct, wrong
+  var passwordStatus = password === null ? "notGiven" : "wrong"; // notGiven, correct, wrong
 
   async.series([
-    //get basic informations from the database 
+    //get basic informations from the database
     function(callback)
     {
       async.parallel([
@@ -123,19 +123,19 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
               callback();
               return;
             }
-            
+
             if(ERR(err, callback)) return;
-            
+
             var now = Math.floor(new Date().getTime()/1000);
-            
+
             //is it for this group? and is validUntil still ok? --> validSession
             if(sessionInfo.groupID == groupID && sessionInfo.validUntil > now)
             {
               validSession = true;
             }
-            
+
             sessionAuthor = sessionInfo.authorID;
-            
+
             callback();
           });
         },
@@ -156,28 +156,28 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
     function(callback)
     {
       //skip this if the pad doesn't exists
-      if(padExists == false) 
+      if(!padExists)
       {
         callback();
         return;
       }
-      
+
       padManager.getPad(padID, function(err, pad)
       {
         if(ERR(err, callback)) return;
-        
+
         //is it a public pad?
         isPublic = pad.getPublicStatus();
-        
+
         //is it password protected?
         isPasswordProtected = pad.isPasswordProtected();
-        
+
         //is password correct?
         if(isPasswordProtected && password && pad.isCorrectPassword(password))
         {
           passwordStatus = "correct";
         }
-        
+
         callback();
       });
     },
@@ -214,7 +214,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         {
           throw new Error("Ops, something wrong happend");
         }
-      } 
+      }
       //- a valid session for this group avaible but pad doesn't exists
       else if(validSession && !padExists)
       {
@@ -238,7 +238,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
           //--> grant access, with author of token
           statusObject = {accessStatus: "grant", authorID: tokenAuthor};
         }
-        //- its public and the pad is password protected but wrong password given 
+        //- its public and the pad is password protected but wrong password given
         else if(isPublic && isPasswordProtected && passwordStatus == "wrong")
         {
           //--> deny access, ask for new password and tell them that the password is wrong
@@ -260,14 +260,14 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         {
           throw new Error("Ops, something wrong happend");
         }
-      }    
+      }
       // there is no valid session avaiable AND pad doesn't exists
       else
       {
          //--> deny access
          statusObject = {accessStatus: "deny"};
       }
-      
+
       callback();
     }
   ], function(err)
@@ -275,4 +275,4 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
     if(ERR(err, callback)) return;
     callback(null, statusObject);
   });
-}
+};

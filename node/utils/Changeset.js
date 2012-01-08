@@ -1,10 +1,10 @@
 /*
  * This is the Changeset library copied from the old Etherpad with some modifications to use it in node.js
  * Can be found in https://github.com/ether/pad/blob/master/infrastructure/ace/www/easysync2.js
- */ 
+ */
 
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -66,7 +66,7 @@ exports.newLen = function (cs) {
 
 exports.opIterator = function (opsStr, optStartIndex) {
   //print(opsStr);
-  var regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
+  var regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([\-+=])([0-9a-z]+)|\?|/g;
   var startIndex = (optStartIndex || 0);
   var curIndex = startIndex;
   var prevIndex = curIndex;
@@ -195,12 +195,10 @@ exports.checkRep = function (cs) {
       exports.assert(oldPos < oldLen, oldPos, " >= ", oldLen, " in ", cs);
       break;
     case '+':
-      {
-        calcNewLen += o.chars;
-        numInserted += o.chars;
-        exports.assert(calcNewLen < newLen, calcNewLen, " >= ", newLen, " in ", cs);
-        break;
-      }
+      calcNewLen += o.chars;
+      numInserted += o.chars;
+      exports.assert(calcNewLen < newLen, calcNewLen, " >= ", newLen, " in ", cs);
+      break;
     }
     assem.append(o);
   }
@@ -216,7 +214,7 @@ exports.checkRep = function (cs) {
   exports.assert(normalized == cs, normalized, ' != ', cs);
 
   return cs;
-}
+};
 
 exports.smartOpAssembler = function () {
   // Like opAssembler but able to produce conforming exportss
@@ -387,7 +385,7 @@ if (_opt) {
             bufOp.chars += bufOpAdditionalCharsAfterNewline + op.chars;
             bufOp.lines += op.lines;
             bufOpAdditionalCharsAfterNewline = 0;
-          } else if (bufOp.lines == 0) {
+          } else if (bufOp.lines === 0) {
             // both bufOp and op are in-line
             bufOp.chars += op.chars;
           } else {
@@ -635,9 +633,9 @@ exports.textLinesMutator = function (lines) {
       }
       //print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" / "+curSplice[1]+" / "+lines.length);
 /*if (inSplice && (! isCurLineInSplice()) && (curSplice[0] + curSplice[1] < lines.length)) {
-	  print("BLAH");
-	  putCurLineInSplice();
-	}*/
+      print("BLAH");
+      putCurLineInSplice();
+    }*/
       // tests case foo in remove(), which isn't otherwise covered in current impl
     }
     //debugPrint("skip");
@@ -667,13 +665,13 @@ exports.textLinesMutator = function (lines) {
         enterSplice();
       }
 
-      function nextKLinesText(k) {
+      var nextKLinesText = function nextKLinesText(k) {
         var m = curSplice[0] + curSplice[1];
         return lines_slice(m, m + k).join('');
-      }
+      };
       if (isCurLineInSplice()) {
         //print(curCol);
-        if (curCol == 0) {
+        if (curCol === 0) {
           removed = curSplice[curSplice.length - 1];
           // print("FOO"); // case foo
           curSplice.length--;
@@ -719,6 +717,7 @@ exports.textLinesMutator = function (lines) {
       if (!inSplice) {
         enterSplice();
       }
+      var sline;
       if (L) {
         var newLines = exports.splitTextLines(text);
         if (isCurLineInSplice()) {
@@ -729,7 +728,7 @@ exports.textLinesMutator = function (lines) {
           //curLine += newLines.length;
           //}
           //else {
-          var sline = curSplice.length - 1;
+          sline = curSplice.length - 1;
           var theLine = curSplice[sline];
           var lineCol = curCol;
           curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
@@ -745,7 +744,7 @@ exports.textLinesMutator = function (lines) {
           curLine += newLines.length;
         }
       } else {
-        var sline = putCurLineInSplice();
+        sline = putCurLineInSplice();
         curSplice[sline] = curSplice[sline].substring(0, curCol) + text + curSplice[sline].substring(curCol);
         curCol += text.length;
       }
@@ -949,74 +948,66 @@ exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
   } else {
     switch (csOp.opcode) {
     case '-':
-      {
-        if (csOp.chars <= attOp.chars) {
-          // delete or delete part
-          if (attOp.opcode == '=') {
-            opOut.opcode = '-';
-            opOut.chars = csOp.chars;
-            opOut.lines = csOp.lines;
-            opOut.attribs = '';
-          }
-          attOp.chars -= csOp.chars;
-          attOp.lines -= csOp.lines;
-          csOp.opcode = '';
-          if (!attOp.chars) {
-            attOp.opcode = '';
-          }
-        } else {
-          // delete and keep going
-          if (attOp.opcode == '=') {
-            opOut.opcode = '-';
-            opOut.chars = attOp.chars;
-            opOut.lines = attOp.lines;
-            opOut.attribs = '';
-          }
-          csOp.chars -= attOp.chars;
-          csOp.lines -= attOp.lines;
-          attOp.opcode = '';
-        }
-        break;
-      }
-    case '+':
-      {
-        // insert
-        exports.copyOp(csOp, opOut);
-        csOp.opcode = '';
-        break;
-      }
-    case '=':
-      {
-        if (csOp.chars <= attOp.chars) {
-          // keep or keep part
-          opOut.opcode = attOp.opcode;
+      if (csOp.chars <= attOp.chars) {
+        // delete or delete part
+        if (attOp.opcode == '=') {
+          opOut.opcode = '-';
           opOut.chars = csOp.chars;
           opOut.lines = csOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
-          csOp.opcode = '';
-          attOp.chars -= csOp.chars;
-          attOp.lines -= csOp.lines;
-          if (!attOp.chars) {
-            attOp.opcode = '';
-          }
-        } else {
-          // keep and keep going
-          opOut.opcode = attOp.opcode;
+          opOut.attribs = '';
+        }
+        attOp.chars -= csOp.chars;
+        attOp.lines -= csOp.lines;
+        csOp.opcode = '';
+        if (!attOp.chars) {
+          attOp.opcode = '';
+        }
+      } else {
+        // delete and keep going
+        if (attOp.opcode == '=') {
+          opOut.opcode = '-';
           opOut.chars = attOp.chars;
           opOut.lines = attOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
-          attOp.opcode = '';
-          csOp.chars -= attOp.chars;
-          csOp.lines -= attOp.lines;
+          opOut.attribs = '';
         }
-        break;
-      }
-    case '':
-      {
-        exports.copyOp(attOp, opOut);
+        csOp.chars -= attOp.chars;
+        csOp.lines -= attOp.lines;
         attOp.opcode = '';
-        break;
       }
+      break;
+    case '+':
+      // insert
+      exports.copyOp(csOp, opOut);
+      csOp.opcode = '';
+      break;
+    case '=':
+      if (csOp.chars <= attOp.chars) {
+        // keep or keep part
+        opOut.opcode = attOp.opcode;
+        opOut.chars = csOp.chars;
+        opOut.lines = csOp.lines;
+        opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+        csOp.opcode = '';
+        attOp.chars -= csOp.chars;
+        attOp.lines -= csOp.lines;
+        if (!attOp.chars) {
+          attOp.opcode = '';
+        }
+      } else {
+        // keep and keep going
+        opOut.opcode = attOp.opcode;
+        opOut.chars = attOp.chars;
+        opOut.lines = attOp.lines;
+        opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+        attOp.opcode = '';
+        csOp.chars -= attOp.chars;
+        csOp.lines -= attOp.lines;
+      }
+      break;
+    case '':
+      exports.copyOp(attOp, opOut);
+      attOp.opcode = '';
+      break;
     }
   }
 };
@@ -1470,7 +1461,7 @@ exports.appendATextToAssembler = function (atext, assem) {
 };
 
 exports.prepareForWire = function (cs, pool) {
-  var newPool = AttributePoolFactory.createAttributePool();;
+  var newPool = AttributePoolFactory.createAttributePool();
   var newCs = exports.moveOpsToNewPool(cs, pool, newPool);
   return {
     translated: newCs,
@@ -1480,7 +1471,7 @@ exports.prepareForWire = function (cs, pool) {
 
 exports.isIdentity = function (cs) {
   var unpacked = exports.unpack(cs);
-  return unpacked.ops == "" && unpacked.oldLen == unpacked.newLen;
+  return unpacked.ops === "" && unpacked.oldLen == unpacked.newLen;
 };
 
 exports.opAttributeValue = function (op, key, pool) {

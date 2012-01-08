@@ -28,8 +28,10 @@ var formidable = require('formidable');
 var os = require("os");
 
 //load abiword only if its enabled
-if(settings.abiword != null)
+if(settings.abiword)
+{
   var abiword = require("../utils/Abiword");
+}
 
 var tempDirectory = "/tmp/";
 
@@ -38,20 +40,20 @@ if(os.type().indexOf("Windows") > -1)
 {
   tempDirectory = process.env.TEMP;
 }
-  
+
 /**
  * do a requested import
- */ 
+ */
 exports.doImport = function(req, res, padId)
 {
   //pipe to a file
   //convert file to text via abiword
   //set text in the pad
-  
+
   var srcFile, destFile;
   var pad;
   var text;
-  
+
   async.series([
     //save the uploaded file to /tmp
     function(callback)
@@ -59,9 +61,9 @@ exports.doImport = function(req, res, padId)
       var form = new formidable.IncomingForm();
       form.keepExtensions = true;
       form.uploadDir = tempDirectory;
-      
-      form.parse(req, function(err, fields, files) 
-      { 
+
+      form.parse(req, function(err, fields, files)
+      {
         //the upload failed, stop at this point
         if(err || files.file === undefined)
         {
@@ -69,7 +71,7 @@ exports.doImport = function(req, res, padId)
           callback("uploadFailed");
         }
         //everything ok, continue
-        else 
+        else
         {
           //save the path of the uploaded file
           srcFile = files.file.path;
@@ -77,14 +79,14 @@ exports.doImport = function(req, res, padId)
         }
       });
     },
-    
+
     //ensure this is a file ending we know, else we change the file ending to .txt
     //this allows us to accept source code files like .c or .java
     function(callback)
     {
       var fileEnding = srcFile.split(".")[1].toLowerCase();
       var knownFileEndings = ["txt", "doc", "docx", "pdf", "odt", "html", "htm"];
-      
+
       //find out if this is a known file ending
       var fileEndingKnown = false;
       for(var i in knownFileEndings)
@@ -94,7 +96,7 @@ exports.doImport = function(req, res, padId)
           fileEndingKnown = true;
         }
       }
-      
+
       //if the file ending is known, continue as normal
       if(fileEndingKnown)
       {
@@ -105,11 +107,11 @@ exports.doImport = function(req, res, padId)
       {
         var oldSrcFile = srcFile;
         srcFile = srcFile.split(".")[0] + ".txt";
-        
+
         fs.rename(oldSrcFile, srcFile, callback);
       }
     },
-    
+
     //convert file to text
     function(callback)
     {
@@ -117,7 +119,7 @@ exports.doImport = function(req, res, padId)
       destFile = tempDirectory + "eplite_import_" + randNum + ".txt";
       abiword.convertFile(srcFile, destFile, "txt", callback);
     },
-    
+
     //get the pad object
     function(callback)
     {
@@ -128,7 +130,7 @@ exports.doImport = function(req, res, padId)
         callback();
       });
     },
-    
+
     //read the text
     function(callback)
     {
@@ -136,30 +138,30 @@ exports.doImport = function(req, res, padId)
       {
         if(ERR(err, callback)) return;
         text = _text;
-        
-        //node on windows has a delay on releasing of the file lock.  
+
+        //node on windows has a delay on releasing of the file lock.
         //We add a 100ms delay to work around this
-	      if(os.type().indexOf("Windows") > -1)
-	      {
+          if(os.type().indexOf("Windows") > -1)
+          {
           setTimeout(function()
           {
             callback();
           }, 100);
-	      }
-	      else
-	      {
-	        callback();
-	      }
+          }
+          else
+          {
+            callback();
+          }
       });
     },
-    
+
     //change text of the pad and broadcast the changeset
     function(callback)
     {
       pad.setText(text);
       padMessageHandler.updatePadClients(pad, callback);
     },
-    
+
     //clean up temporary files
     function(callback)
     {
@@ -184,8 +186,8 @@ exports.doImport = function(req, res, padId)
     }
 
     ERR(err);
-  
+
     //close the connection
     res.send("ok");
   });
-}
+};

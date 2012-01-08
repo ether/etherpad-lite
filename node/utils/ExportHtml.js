@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,7 +55,7 @@ function getPadHTML(pad, revNum, callback)
 
   function (callback)
   {
-    if (revNum != undefined)
+    if (revNum)
     {
       pad.getInternalRevisionAText(revNum, function (err, revisionAtext)
       {
@@ -140,7 +140,7 @@ function getHTMLFromAtext(pad, atext)
       assem.append(tags[i]);
       assem.append('>');
     }
-    
+
     function orderdCloseTags(tags2close)
     {
       for(var i=0;i<openTags.length;i++)
@@ -171,6 +171,8 @@ function getHTMLFromAtext(pad, atext)
       var iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
+      var tags2close;
+
       while (iter.hasNext())
       {
         var o = iter.next();
@@ -191,7 +193,9 @@ function getHTMLFromAtext(pad, atext)
             }
           }
         });
-        for (var i = 0; i < propVals.length; i++)
+
+        var i;
+        for (i = 0; i < propVals.length; i++)
         {
           if (propVals[i] === true)
           {
@@ -209,7 +213,7 @@ function getHTMLFromAtext(pad, atext)
         {
           // leaving bold (e.g.) also leaves italics, etc.
           var left = false;
-          for (var i = 0; i < propVals.length; i++)
+          for (i = 0; i < propVals.length; i++)
           {
             var v = propVals[i];
             if (!left)
@@ -228,9 +232,9 @@ function getHTMLFromAtext(pad, atext)
             }
           }
 
-          var tags2close = [];
+          tags2close = [];
 
-          for (var i = propVals.length - 1; i >= 0; i--)
+          for (i = propVals.length - 1; i >= 0; i--)
           {
             if (propVals[i] === LEAVE)
             {
@@ -244,10 +248,10 @@ function getHTMLFromAtext(pad, atext)
               tags2close.push(i);
             }
           }
-          
+
           orderdCloseTags(tags2close);
-          
-          for (var i = 0; i < propVals.length; i++)
+
+          for (i = 0; i < propVals.length; i++)
           {
             if (propVals[i] === ENTER || propVals[i] === STAY)
             {
@@ -262,26 +266,26 @@ function getHTMLFromAtext(pad, atext)
         {
           chars--; // exclude newline at end of line, if present
         }
-        
+
         var s = taker.take(chars);
-        
-        //removes the characters with the code 12. Don't know where they come 
+
+        //removes the characters with the code 12. Don't know where they come
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
-        
+
         assem.append(_escapeHTML(s));
       } // end iteration over spans in line
-      
-      var tags2close = [];
-      for (var i = propVals.length - 1; i >= 0; i--)
+
+      tags2close = [];
+      for (var x = propVals.length - 1; x >= 0; x--)
       {
-        if (propVals[i])
+        if (propVals[x])
         {
-          tags2close.push(i);
-          propVals[i] = false;
+          tags2close.push(x);
+          propVals[x] = false;
         }
       }
-      
+
       orderdCloseTags(tags2close);
     } // end processNextChars
     if (urls)
@@ -425,7 +429,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
       callback(null, head + html + foot);
     });
   });
-}
+};
 
 function _escapeHTML(s)
 {
@@ -436,18 +440,18 @@ function _escapeHTML(s)
     re.MAP = {
       '&': '&amp;',
       '<': '&lt;',
-      '>': '&gt;',
+      '>': '&gt;'
     };
   }
-  
+
   s = s.replace(re, function (c)
   {
     return re.MAP[c];
   });
-  
+
   return s.replace(/[^\x21-\x7E\s\t\n\r]/g, function(c)
   {
-    return "&#" +c.charCodeAt(0) + ";"
+    return "&#" +c.charCodeAt(0) + ";";
   });
 }
 
@@ -467,15 +471,19 @@ function _processSpaces(s)
   {
     parts.push(m);
   });
+
+  var i;
+  var p;
+
   if (doesWrap)
   {
     var endOfLine = true;
     var beforeSpace = false;
     // last space in a run is normal, others are nbsp,
     // end of line is nbsp
-    for (var i = parts.length - 1; i >= 0; i--)
+    for (i = parts.length - 1; i >= 0; i--)
     {
-      var p = parts[i];
+      p = parts[i];
       if (p == " ")
       {
         if (endOfLine || beforeSpace) parts[i] = '&nbsp;';
@@ -489,9 +497,9 @@ function _processSpaces(s)
       }
     }
     // beginning of line is nbsp
-    for (var i = 0; i < parts.length; i++)
+    for (i = 0; i < parts.length; i++)
     {
-      var p = parts[i];
+      p = parts[i];
       if (p == " ")
       {
         parts[i] = '&nbsp;';
@@ -505,9 +513,9 @@ function _processSpaces(s)
   }
   else
   {
-    for (var i = 0; i < parts.length; i++)
+    for (i = 0; i < parts.length; i++)
     {
-      var p = parts[i];
+      p = parts[i];
       if (p == " ")
       {
         parts[i] = '&nbsp;';
@@ -521,7 +529,7 @@ function _processSpaces(s)
 // copied from ACE
 var _REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;
 var _REGEX_SPACE = /\s/;
-var _REGEX_URLCHAR = new RegExp('(' + /[-:@a-zA-Z0-9_.,~%+\/\\?=&#;()$]/.source + '|' + _REGEX_WORDCHAR.source + ')');
+var _REGEX_URLCHAR = new RegExp('(' + (/[\-:@a-zA-Z0-9_.,~%+\/\\?=&#;()$]/).source + '|' + _REGEX_WORDCHAR.source + ')');
 var _REGEX_URL = new RegExp(/(?:(?:https?|s?ftp|ftps|file|smb|afp|nfs|(x-)?man|gopher|txmt):\/\/|mailto:)/.source + _REGEX_URLCHAR.source + '*(?![:.,;])' + _REGEX_URLCHAR.source, 'g');
 
 // returns null if no URLs, or [[startIndex1, url1], [startIndex2, url2], ...]

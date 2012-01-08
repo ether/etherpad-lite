@@ -20,10 +20,10 @@
 
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
-require("../db/Pad");
+var Pad = require("../db/Pad").Pad;
 var db = require("./DB").db;
 
-/** 
+/**
  * An Object containing all known Pads. Provides "get" and "set" functions,
  * which should be used instead of indexing with brackets. These prepend a
  * colon to the key, to avoid conflicting with built-in Object methods or with
@@ -41,26 +41,26 @@ var globalPads = {
 /**
  * Returns a Pad Object with the callback
  * @param id A String with the id of the pad
- * @param {Function} callback 
+ * @param {Function} callback
  */
 exports.getPad = function(id, text, callback)
-{    
+{
   //check if this is a valid padId
   if(!exports.isValidPadId(id))
   {
     callback(new customError(id + " is not a valid padId","apierror"));
     return;
   }
-  
+
   //make text an optional parameter
-  if(typeof text == "function")
+  if(typeof text === "function")
   {
     callback = text;
     text = null;
   }
-  
+
   //check if this is a valid text
-  if(text != null)
+  if(text)
   {
     //check if text is a string
     if(typeof text != "string")
@@ -68,7 +68,7 @@ exports.getPad = function(id, text, callback)
       callback(new customError("text is not a string","apierror"));
       return;
     }
-    
+
     //check if text is less than 100k chars
     if(text.length > 100000)
     {
@@ -76,11 +76,11 @@ exports.getPad = function(id, text, callback)
       return;
     }
   }
-  
+
   var pad = globalPads.get(id);
-  
+
   //return pad if its already loaded
-  if(pad != null)
+  if(pad)
   {
     callback(null, pad);
   }
@@ -88,17 +88,17 @@ exports.getPad = function(id, text, callback)
   else
   {
     pad = new Pad(id);
-    
+
     //initalize the pad
     pad.init(text, function(err)
     {
       if(ERR(err, callback)) return;
-      
+
       globalPads.set(id, pad);
       callback(null, pad);
     });
   }
-}
+};
 
 //checks if a pad exists
 exports.doesPadExists = function(padId, callback)
@@ -106,18 +106,18 @@ exports.doesPadExists = function(padId, callback)
   db.get("pad:"+padId, function(err, value)
   {
     if(ERR(err, callback)) return;
-    callback(null, value != null);  
+    callback(null, value ? true : false);
   });
-}
+};
 
 exports.isValidPadId = function(padId)
 {
-  return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
-}
+  return (/^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/).test(padId);
+};
 
 //removes a pad from the array
 exports.unloadPad = function(padId)
 {
   if(globalPads.get(padId))
     globalPads.remove(padId);
-}
+};

@@ -27,9 +27,9 @@ var async = require("async");
  * @param {String} padId the id of the pad
  */
 exports.getReadOnlyId = function (padId, callback)
-{  
+{
   var readOnlyId;
-  
+
   async.waterfall([
     //check if there is a pad2readonly entry
     function(callback)
@@ -39,10 +39,10 @@ exports.getReadOnlyId = function (padId, callback)
     function(dbReadOnlyId, callback)
     {
       //there is no readOnly Entry in the database, let's create one
-      if(dbReadOnlyId == null)
+      if(!dbReadOnlyId)
       {
         readOnlyId = "r." + randomString(16);
-        
+
         db.set("pad2readonly:" + padId, readOnlyId);
         db.set("readonly2pad:" + readOnlyId, padId);
       }
@@ -51,7 +51,7 @@ exports.getReadOnlyId = function (padId, callback)
       {
         readOnlyId = dbReadOnlyId;
       }
-      
+
       callback();
     }
   ], function(err)
@@ -59,8 +59,8 @@ exports.getReadOnlyId = function (padId, callback)
     if(ERR(err, callback)) return;
     //return the results
     callback(null, readOnlyId);
-  })
-}
+  });
+};
 
 /**
  * returns a the padId for a read only id
@@ -69,12 +69,12 @@ exports.getReadOnlyId = function (padId, callback)
 exports.getPadId = function(readOnlyId, callback)
 {
   db.get("readonly2pad:" + readOnlyId, callback);
-}
+};
 
 /**
  * Generates a random String with the given length. Is needed to generate the read only ids
  */
-function randomString(len) 
+function randomString(len)
 {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var randomstring = '';
