@@ -124,6 +124,7 @@ var padeditbar = (function()
           padeditor.ace.callWithAce(function(ace)
           {
             if (cmd == 'bold' || cmd == 'italic' || cmd == 'underline' || cmd == 'strikethrough') ace.ace_toggleAttributeOnSelection(cmd);
+            else if (cmd == 'heading1' || cmd == 'heading2') ace.ace_toggleAttributeOnSelectedLine(cmd);
             else if (cmd == 'undo' || cmd == 'redo') ace.ace_doUndoRedo(cmd);
             else if (cmd == 'insertunorderedlist') ace.ace_doInsertUnorderedList();
             else if (cmd == 'indent')
