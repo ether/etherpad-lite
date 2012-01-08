@@ -156,7 +156,7 @@ var padeditbar = (function()
           }, cmd, true);
         }
       }
-      padeditor.ace.focus();
+      if(padeditor.ace) padeditor.ace.focus();
     },
     toogleDropDown: function(moduleName)
     {

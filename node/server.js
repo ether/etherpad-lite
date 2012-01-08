@@ -264,7 +264,7 @@ async.waterfall([
     });
     
     //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/export/:type', function(req, res, next)
+    app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
     {
       //ensure the padname is valid and the url doesn't end with a /
       if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
