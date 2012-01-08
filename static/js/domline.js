@@ -175,8 +175,21 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         // video
         if (href_ext==".mp4" || href_ext==".ogv" || href_ext==".ogg" || href.slice(-5)==".webm" || href_ext==".mov") {
           extraOpenTags = extraOpenTags + '<video controls preload="metadata" src="' + href.replace(/\"/g, '&quot;') + '"></video><br>';
-        }  
+        } 
+        
+        // Imgur
+        if (href.match(/[http|https]\:\/\/imgur\.com\/([A-Za-z0-9]{5})/) != null) {
+          var imgur_id = href.match(/[http|https]\:\/\/imgur\.com\/([A-Za-z0-9]{5})/)[1];
+          extraOpenTags = extraOpenTags + '<img src="http://i.imgur.com/' + imgur_id + '.png"><br>';
+        }
 
+        // Twitpic
+        if (href.match(/[http|https]\:\/\/twitpic\.com\/([A-Za-z0-9]+)/) != null) {
+          var twitpic_id = href.match(/[http|https]\:\/\/twitpic\.com\/([A-Za-z0-9]+)/)[1];
+          extraOpenTags = extraOpenTags + '<img src="https://twitpic.com/show/full/' + twitpic_id + '"><br>';
+        }
+
+        /* not working in Firefox
         // YouTube
         if (href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/) != null) {
           var youtube_id = href.match(/[http|https]\:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-_]{11})/)[1];
@@ -189,6 +202,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
           txt = 'https://vimeo.com/' + vimeo_id;
           extraOpenTags = extraOpenTags + '<div style="height:338px"><iframe width=640 height=338 src="https://player.vimeo.com/video/' + vimeo_id + '?title=0&byline=0&portrait=0"></iframe></div><br>';
         }
+        */
         
         // If nothing applies, consider it as a normal url
         if (extraOpenTags.length == 0) {
