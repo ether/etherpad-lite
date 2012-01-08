@@ -10,7 +10,8 @@
   <!-- javascript -->
   <script type="text/javascript">
   // <![CDATA[
-  var clientVars = {};  // ]]>
+  var clientVars = {};  
+  // ]]>
   </script>
   <script src="../socket.io/socket.io.js"></script>
   <script src="../minified/pad.js"></script>
@@ -24,55 +25,55 @@
 <div id="editbar">
 
 <ul id="menu_left">
-<li onClick="window.pad&&pad.editbarClick('bold');return false" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false" >
   <a title="Bold (ctrl-B)">
     <div class="buttonicon" style="background-position:0px -116px"></div>
   </a>
 </li>
-<li onClick="window.pad&&pad.editbarClick('italic'); return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('italic'); return false;" >
   <a title="Italics (ctrl-I)">
     <div class="buttonicon" style="background-position:0px 0px"></div>
   </a>
 </li>
-<li onClick="window.pad&&pad.editbarClick('underline');return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('underline');return false;" >
   <a title="Underline (ctrl-U)">
     <div class="buttonicon" style="background-position:0px -236px;margin-top:1px;"></div>
   </a>
 </li>
-<li onClick="window.pad&&pad.editbarClick('strikethrough');return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('strikethrough');return false;" >
   <a title="Strikethrough">
     <div class="buttonicon" style="background-position:0px -200px"></div>
   </a>
 </li>
 <li class="separator"></li>
-<li onClick="window.pad&&pad.editbarClick('insertunorderedlist');return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('insertunorderedlist');return false;" >
   <a title="Toggle Bullet List">
     <div class="buttonicon" style="background-position:0px -34px"></div>
   </a>
 </li>
-<li onClick="window.pad&&pad.editbarClick('indent');return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('indent');return false;" >
   <a title="Indent">
     <div class="buttonicon" style="background-position:0px -52px"></div>
   </a>
 </li>
-<li onClick="window.pad&&pad.editbarClick('outdent');return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('outdent');return false;" >
   <a title="Unindent">
     <div class="buttonicon" style="background-position:0px -134px"></div>
         </a>
 </li>
 <li class="separator"></li>
-<li onClick="window.pad&&pad.editbarClick('undo');return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('undo');return false;" >
   <a title="Undo (ctrl-Z)">
     <div class="buttonicon" style="background-position:0px -255px"></div>
   </a>
 </li>
-<li onClick="window.pad&&pad.editbarClick('redo');return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('redo');return false;" >
 	<a title="Redo (ctrl-Y)">
     <div class="buttonicon" style="background-position:0px -166px"></div>
   </a>
 </li>
 <li class="separator"></li>
-<li id="clearAuthorship" onClick="window.pad&&pad.editbarClick('clearauthorship');return false;" >
+<li id="clearAuthorship" onClick="window.pad&amp;&amp;pad.editbarClick('clearauthorship');return false;" >
   <a title="Clear Authorship Colors">
     <div class="buttonicon" style="background-position:0px -86px"></div>
   </a>
@@ -81,12 +82,12 @@
 
 <ul id="menu_right">
 
-<li onClick="window.pad&&pad.editbarClick('import_export');return false;">
+<li onClick="window.pad&amp;&amp;pad.editbarClick('import_export');return false;">
   <a id="exportlink" title="Import/Export from/to different document formats">
     <div class="buttonicon" style="background-position:0px -68px"></div>
   </a>
 </li>
-<li onClick="window.pad&&pad.editbarClick('embed');return false;" >
+<li onClick="window.pad&amp;&amp;pad.editbarClick('embed');return false;" >
   <a id="embedlink" title="Share and Embed this pad">
     <div class="buttonicon" style="background-position:0px -18px"></div>
   </a>
@@ -97,7 +98,7 @@
     <div class="buttonicon" style="background-position:0px -218px"></div>
   </a>
 </li>
-<li id="usericon" onClick="window.pad&&pad.editbarClick('showusers');return false;" >
+<li id="usericon" onClick="window.pad&amp;&amp;pad.editbarClick('showusers');return false;" >
   <a title="Show connected users">
     <div class="buttonicon" id="usericonback" style="background-position:0px -184px;display:inline-block;"></div>
  <span id="online_count">1</span>
@@ -207,7 +208,7 @@
   <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
   <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
   <form id="wordlepost" name="wall" action="http://wordle.net/advanced" method="POST" style="margin-left:0px;"> 
-    <div id="hidetext" style=""><textarea id="text" name="text" id="text" style="display:none;">Coming soon!</textarea></div> 
+    <div id="hidetext" style=""><textarea id="text" name="text" style="display:none;">Coming soon!</textarea></div> 
   </form> 
 </div>
 </div>
