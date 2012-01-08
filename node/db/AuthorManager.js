@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
 
@@ -29,7 +30,8 @@ exports.doesAuthorExists = function (authorID, callback)
   //check if the database entry of this author exists
   db.get("globalAuthor:" + authorID, function (err, author)
   {
-    callback(err, author != null);
+    if(ERR(err, callback)) return;
+    callback(null, author != null);
   });
 }
 
@@ -42,8 +44,9 @@ exports.getAuthor4Token = function (token, callback)
 {
   mapAuthorWithDBKey("token2author", token, function(err, author)
   {
+    if(ERR(err, callback)) return;
     //return only the sub value authorID
-    callback(err, author ? author.authorID : author);
+    callback(null, author ? author.authorID : author);
   });
 }
 
@@ -56,12 +59,7 @@ exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
 {
   mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
   {
-    //error?
-    if(err)
-    {
-      callback(err);
-      return;
-    }
+    if(ERR(err, callback)) return;
     
     //set the name of this author
     if(name)
@@ -84,24 +82,14 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
   //try to map to an author
   db.get(mapperkey + ":" + mapper, function (err, author)
   {
-    //error?
-    if(err)
-    {
-      callback(err);
-      return;
-    }
+    if(ERR(err, callback)) return;
   
     //there is no author with this mapper, so create one
     if(author == null)
     {
       exports.createAuthor(null, function(err, author)
       {
-        //error?
-        if(err)
-        {
-          callback(err);
-          return;
-        }
+        if(ERR(err, callback)) return;
         
         //create the token2author relation
         db.set(mapperkey + ":" + mapper, author.authorID);

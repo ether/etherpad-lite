@@ -1,4 +1,10 @@
 /**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
+/**
  * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +22,33 @@
 
 var chat = (function()
 {
+  var ua = navigator.userAgent.toLowerCase();
+  var isAndroid = ua.indexOf("android") > -1;
+  var isMobileSafari = ua.indexOf("mobile") > -1;
+  var bottomMargin = "0px";
+  var sDuration = 500;
+  var hDuration = 750;
   var chatMentions = 0;
   var title = document.title;
+  if (isAndroid || isMobileSafari){
+   sDuration = 0;
+   hDuration = 0;
+  }
   var self = {
     show: function () 
     {      
       $("#chaticon").hide("slide", {
         direction: "down"
-      }, 500, function ()
+      }, hDuration, function ()
       {
         $("#chatbox").show("slide", {
           direction: "down"
-        }, 750, self.scrollDown);
+        }, sDuration, self.scrollDown);
         $("#chatbox").resizable(
         {
           handles: 'nw',
+          minHeight: 40,
+          minWidth: 80,
           start: function (event, ui)
           {
             $("#focusprotector").show();
@@ -39,7 +57,10 @@ var chat = (function()
           {
             $("#focusprotector").hide();
             
-            $("#chatbox").css({right: "20px", bottom: "0px", left: "", top: ""});
+            if(isAndroid || isMobileSafari)
+              bottommargin = "32px";
+            
+            $("#chatbox").css({right: "20px", bottom: bottomMargin, left: "", top: ""});
             
             self.scrollDown();
           }
@@ -51,9 +72,9 @@ var chat = (function()
     hide: function () 
     {
       $("#chatcounter").text("0");
-      $("#chatbox").hide("slide", { direction: "down" }, 750, function()
+      $("#chatbox").hide("slide", { direction: "down" }, sDuration, function()
       {
-        $("#chaticon").show("slide", { direction: "down" }, 500);
+        $("#chaticon").show("slide", { direction: "down" }, hDuration);
       });
     },
     scrollDown: function()

@@ -1,4 +1,10 @@
 /**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
+/**
  * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -711,7 +717,14 @@ var paduserlist = (function()
       }
       
       $("#myswatch").css({'background-color': myUserInfo.colorId});
-      $("#usericon").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId});
+      
+      if ($.browser.msie && parseInt($.browser.version) <= 8) {
+        $("#usericon").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
+      }
+      else
+      {
+        $("#usericon").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId});
+      }
     }
   };
   return self;

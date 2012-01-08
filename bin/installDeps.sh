@@ -16,7 +16,7 @@ hash curl > /dev/null 2>&1 || {
 
 #Is node installed?
 hash node > /dev/null 2>&1 || { 
-  echo "Please install node.js ( http://nodesjs.org )" >&2
+  echo "Please install node.js ( http://nodejs.org )" >&2
   exit 1 
 }
 
@@ -28,8 +28,8 @@ hash npm > /dev/null 2>&1 || {
 
 #check npm version
 NPM_VERSION=$(npm --version)
-if [ ! $(echo $NPM_VERSION | cut -d "." -f 1-2) = "1.0" ]; then
-  echo "You're running a wrong version of npm, you're using $NPM_VERSION, we need 1.0.x" >&2
+if [ ! $(echo $NPM_VERSION | cut -d "." -f 1) = "1" ]; then
+  echo "You're running a wrong version of npm, you're using $NPM_VERSION, we need 1.x" >&2
   exit 1 
 fi
 

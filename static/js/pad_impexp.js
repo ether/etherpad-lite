@@ -1,4 +1,10 @@
 /**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
+/**
  * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -230,10 +236,16 @@ var padimpexp = (function()
   var self = {
     init: function()
     {
+      //get /p/padname
+      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname)
+      //get http://example.com/p/padname
+      var pad_root_url = document.location.href.replace(document.location.pathname, pad_root_path)
+
       // build the export links
-      $("#exporthtmla").attr("href", document.location.pathname + "/export/html");
-      $("#exportplaina").attr("href", document.location.pathname + "/export/txt");
-      $("#exportwordlea").attr("href", document.location.pathname + "/export/wordle");
+      $("#exporthtmla").attr("href", pad_root_path + "/export/html");
+      $("#exportplaina").attr("href", pad_root_path + "/export/txt");
+      $("#exportwordlea").attr("href", pad_root_path + "/export/wordle");
+      $("#exportdokuwikia").attr("href", pad_root_path + "/export/dokuwiki");
       
       //hide stuff thats not avaible if abiword is disabled
       if(clientVars.abiwordAvailable == "no")
@@ -241,29 +253,29 @@ var padimpexp = (function()
         $("#exportworda").remove();
         $("#exportpdfa").remove();
         $("#exportopena").remove();
-        $("#importexport").css({"height":"95px"});
-        $("#importexportline").css({"height":"95px"});
+        $("#importexport").css({"height":"115px"});
+        $("#importexportline").css({"height":"115px"});
         $("#import").html("Import is not available");
       }
       else if(clientVars.abiwordAvailable == "withoutPDF")
       {
         $("#exportpdfa").remove();
         
-        $("#exportworda").attr("href", document.location.pathname + "/export/doc");
-        $("#exportopena").attr("href", document.location.pathname + "/export/odt");
+        $("#exportworda").attr("href", pad_root_path + "/export/doc");
+        $("#exportopena").attr("href", pad_root_path + "/export/odt");
         
         $("#importexport").css({"height":"142px"});
         $("#importexportline").css({"height":"142px"});
         
-        $("#importform").get(0).setAttribute('action', document.location.href + "/import"); 
+        $("#importform").attr('action', pad_root_url + "/import"); 
       }
       else
       {
-        $("#exportworda").attr("href", document.location.pathname + "/export/doc");
-        $("#exportpdfa").attr("href", document.location.pathname + "/export/pdf");
-        $("#exportopena").attr("href", document.location.pathname + "/export/odt");
+        $("#exportworda").attr("href", pad_root_path + "/export/doc");
+        $("#exportpdfa").attr("href", pad_root_path + "/export/pdf");
+        $("#exportopena").attr("href", pad_root_path + "/export/odt");
         
-        $("#importform").get(0).setAttribute('action', document.location.pathname + "/import"); 
+        $("#importform").attr('action', pad_root_path + "/import"); 
       }
     
       $("#impexp-close").click(function()
@@ -301,7 +313,7 @@ var padimpexp = (function()
     },
     export2Wordle: function()
     {
-      var padUrl = document.location.href + "/export/txt";
+      var padUrl = $('#exportwordlea').attr('href').replace(/\/wordle$/, '/txt')
       
       $.get(padUrl, function(data) 
       {

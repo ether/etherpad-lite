@@ -1,4 +1,10 @@
 /**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
+/**
  * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -79,6 +85,11 @@ function OUTER(gscope)
   var doesWrap = true;
   var hasLineNumbers = true;
   var isStyled = true;
+  
+  // check for mobile os presence
+  var ua = navigator.userAgent.toLowerCase();
+  var isAndroid = ua.indexOf("android") > -1;
+  var isMobileSafari = ua.indexOf("mobile") > -1;
 
   // space around the innermost iframe element
   var iframePadLeft = MIN_LINEDIV_WIDTH + LINE_NUMBER_PADDING_RIGHT + EDIT_BODY_PADDING_LEFT;
@@ -1099,6 +1110,8 @@ function OUTER(gscope)
     else if (k == "showslinenumbers")
     {
       hasLineNumbers = !! value;
+      // disable line numbers on mobile devices
+      if(isAndroid || isMobileSafari) hasLineNumbers = false;
       setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
       fixView();
     }
@@ -1126,6 +1139,10 @@ function OUTER(gscope)
     else if (k == 'textsize')
     {
       setTextSize(value);
+    }
+    else if (k == 'rtlistrue')
+    {
+      setClassPresence(root, "rtl", !! value);
     }
   }
 
@@ -4069,8 +4086,6 @@ function OUTER(gscope)
     catch (e)
     {}
     if (!origSelectionRange) return false;
-    var selectionParent = origSelectionRange.parentElement();
-    if (selectionParent.ownerDocument != doc) return false;
     return true;
   }
 
@@ -5779,31 +5794,17 @@ function OUTER(gscope)
   {
     var newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
-    if (newNumLines != lineNumbersShown)
-    {
-      var container = sideDivInner;
-      var odoc = outerWin.document;
-      while (lineNumbersShown < newNumLines)
-      {
-        lineNumbersShown++;
-        var n = lineNumbersShown;
-        var div = odoc.createElement("DIV");
-        div.appendChild(odoc.createTextNode(String(n)));
-        container.appendChild(div);
-      }
-      while (lineNumbersShown > newNumLines)
-      {
-        container.removeChild(container.lastChild);
-        lineNumbersShown--;
-      }
-    }
-
+	//update height of all current line numbers
     if (currentCallStack && currentCallStack.domClean)
     {
       var a = sideDivInner.firstChild;
       var b = doc.body.firstChild;
+      var n = 0;
       while (a && b)
       {
+	if(n > lineNumbersShown) //all updated, break
+	  break;
+
         var h = (b.clientHeight || b.offsetHeight);
         if (b.nextSibling)
         {
@@ -5817,10 +5818,42 @@ function OUTER(gscope)
         if (h)
         {
           var hpx = h + "px";
-          if (a.style.height != hpx) a.style.height = hpx;
+          if (a.style.height != hpx) {
+	    a.style.height = hpx;
+	  }
         }
         a = a.nextSibling;
         b = b.nextSibling;
+	n++;
+      }
+    }	
+	
+    if (newNumLines != lineNumbersShown)
+    {
+      var container = sideDivInner;
+      var odoc = outerWin.document;
+      var fragment = odoc.createDocumentFragment();
+      while (lineNumbersShown < newNumLines)
+      {
+        lineNumbersShown++;
+        var n = lineNumbersShown;
+        var div = odoc.createElement("DIV");	
+	//calculate height for new line number
+	var h = (b.clientHeight || b.offsetHeight);
+	if (b.nextSibling)
+	  h = b.nextSibling.offsetTop - b.offsetTop;
+	if(h) // apply style to div
+	  div.style.height = h +"px";
+			
+        div.appendChild(odoc.createTextNode(String(n)));
+	fragment.appendChild(div);
+	b = b.nextSibling;
+      }
+      container.appendChild(fragment);
+      while (lineNumbersShown > newNumLines)
+      {
+        container.removeChild(container.lastChild);
+        lineNumbersShown--;
       }
     }
   }

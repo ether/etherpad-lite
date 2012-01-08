@@ -18,6 +18,8 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
+var customError = require("../utils/customError");
 require("../db/Pad");
 var db = require("./DB").db;
 
@@ -30,11 +32,19 @@ var db = require("./DB").db;
  * If this is needed in other places, it would be wise to make this a prototype
  * that's defined somewhere more sensible.
  */
-globalPads = {
+var globalPads = {
     get: function (name) { return this[':'+name]; },
     set: function (name, value) { this[':'+name] = value; },
     remove: function (name) { delete this[':'+name]; }
 };
+
+/**
+ * An array of padId transformations. These represent changes in pad name policy over
+ * time, and allow us to "play back" these changes so legacy padIds can be found.
+ */
+var padIdTransforms = [
+  [/\s+/g, '_']
+];
 
 /**
  * Returns a Pad Object with the callback
@@ -46,7 +56,7 @@ exports.getPad = function(id, text, callback)
   //check if this is a valid padId
   if(!exports.isValidPadId(id))
   {
-    callback({stop: id + " is not a valid padId"});
+    callback(new customError(id + " is not a valid padId","apierror"));
     return;
   }
   
@@ -63,14 +73,14 @@ exports.getPad = function(id, text, callback)
     //check if text is a string
     if(typeof text != "string")
     {
-      callback({stop: "text is not a string"});
+      callback(new customError("text is not a string","apierror"));
       return;
     }
     
     //check if text is less than 100k chars
     if(text.length > 100000)
     {
-      callback({stop: "text must be less than 100k chars"});
+      callback(new customError("text must be less than 100k chars","apierror"));
       return;
     }
   }
@@ -90,15 +100,10 @@ exports.getPad = function(id, text, callback)
     //initalize the pad
     pad.init(text, function(err)
     {
-      if(err)
-      {
-        callback(err, null);
-      }
-      else
-      {
-        globalPads.set(id, pad);
-        callback(null, pad);
-      }
+      if(ERR(err, callback)) return;
+      
+      globalPads.set(id, pad);
+      callback(null, pad);
     });
   }
 }
@@ -108,8 +113,42 @@ exports.doesPadExists = function(padId, callback)
 {
   db.get("pad:"+padId, function(err, value)
   {
-    callback(err, value != null);  
+    if(ERR(err, callback)) return;
+    callback(null, value != null);  
   });
+}
+
+//returns a sanitized padId, respecting legacy pad id formats
+exports.sanitizePadId = function(padId, callback) {
+  var transform_index = arguments[2] || 0;
+  //we're out of possible transformations, so just return it
+  if(transform_index >= padIdTransforms.length)
+  {
+    callback(padId);
+  }
+  //check if padId exists
+  else
+  {
+    exports.doesPadExists(padId, function(junk, exists)
+    {
+      if(exists)
+      {
+        callback(padId);
+      }
+      else
+      {
+        //get the next transformation *that's different*
+        var transformedPadId = padId;
+        while(transformedPadId == padId && transform_index < padIdTransforms.length)
+        {
+          transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
+          transform_index += 1;
+        }
+        //check the next transform
+        exports.sanitizePadId(transformedPadId, callback, transform_index);
+      }
+    });
+  }
 }
 
 exports.isValidPadId = function(padId)

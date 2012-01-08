@@ -53,7 +53,7 @@
 	  return "t." + randomstring;
   }
 
-  var socket, token, padId;
+  var socket, token, padId, export_links;
 
   $(document).ready(function () 
   {
@@ -65,7 +65,7 @@
     padId = decodeURIComponent(urlParts[urlParts.length-2]);
         
     //set the title
-    document.title = document.title + " | " + padId;
+    document.title = document.title + " | " + padId.replace(/_+/g, ' ');
         
     //ensure we have a token
     token = readCookie("token");
@@ -110,6 +110,9 @@
         $("body").html("<h2>You have no permission to access this pad</h2>")
       }
     });
+
+    //get all the export links
+    export_links = $('#export > .exportlink')
   });
   
   //sends a message over the socket
@@ -141,6 +144,19 @@
     loadBroadcastSliderJS();
     loadBroadcastRevisionsJS();
     loadBroadcastJS();
+
+    //initialize export ui
+    padimpexp.init();
+
+    //change export urls when the slider moves
+    var export_rev_regex = /(\/\d+)?\/export/
+    BroadcastSlider.onSlider(function(revno)
+    {
+      export_links.each(function()
+      {
+        this.setAttribute('href', this.href.replace(export_rev_regex, '/' + revno + '/export'));
+      });
+    });
     
     //fire all start functions of these scripts, formerly fired with window.load
     for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
@@ -269,6 +285,13 @@
 
             <div id="editbarright" class="editbarright">
               <!-- termporary place holder--> 
+              <ul>
+                <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
+                  <a id="exportlink" title="Export to different document formats">
+                    <div class="buttonicon" style="background-position:0px -68px"></div>
+                  </a>
+                </li>
+              </ul>
               <a id = "returnbutton">Return to pad</a>
               <script>
               	if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
@@ -320,6 +343,24 @@
   </div>
 
   <div id="mainmodals"></div>
+
+<!-- export code -->
+<div id="importexport">
+
+<div id="export">
+  Export current version as:
+  <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
+  <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
+  <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
+  <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
+  <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
+  <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
+  <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
+  <form id="wordlepost" name="wall" action="http://wordle.net/advanced" method="POST" style="margin-left:0px;"> 
+    <div id="hidetext" style=""><textarea id="text" name="text" id="text" style="display:none;">Coming soon!</textarea></div> 
+  </form> 
+</div>
+</div>
 </body>
 </html>
 

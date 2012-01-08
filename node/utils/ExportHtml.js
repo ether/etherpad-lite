@@ -17,6 +17,7 @@
 var async = require("async");
 var Changeset = require("./Changeset");
 var padManager = require("../db/PadManager");
+var ERR = require("async-stacktrace");
 
 function getPadPlainText(pad, revNum)
 {
@@ -58,8 +59,9 @@ function getPadHTML(pad, revNum, callback)
     {
       pad.getInternalRevisionAText(revNum, function (err, revisionAtext)
       {
+        if(ERR(err, callback)) return;
         atext = revisionAtext;
-        callback(err);
+        callback();
       });
     }
     else
@@ -81,7 +83,8 @@ function getPadHTML(pad, revNum, callback)
 
   function (err)
   {
-    callback(err, html);
+    if(ERR(err, callback)) return;
+    callback(null, html);
   });
 }
 
@@ -459,11 +462,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
 {
   padManager.getPad(padId, function (err, pad)
   {
-    if (err)
-    {
-      callback(err);
-      return;
-    }
+    if(ERR(err, callback)) return;
 
     var head = 
       (noDocType ? '' : '<!doctype html>\n') + 
@@ -488,7 +487,8 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
 
     getPadHTML(pad, revNum, function (err, html)
     {
-      callback(err, head + html + foot);
+      if(ERR(err, callback)) return;
+      callback(null, head + html + foot);
     });
   });
 }

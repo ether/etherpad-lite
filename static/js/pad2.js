@@ -1,4 +1,10 @@
 /**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
+/**
  * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +27,8 @@ var LineNumbersDisabled = false;
 var noColors = false;
 var useMonospaceFontGlobal = false;
 var globalUserName = false;
+var hideQRCode = false;
+var rtlIsTrue = false;
 
 $(document).ready(function()
 {
@@ -86,12 +94,15 @@ function getParams()
   var showLineNumbers = params["showLineNumbers"];
   var useMonospaceFont = params["useMonospaceFont"];
   var IsnoColors = params["noColors"];
+  var hideQRCode = params["hideQRCode"];
+  var rtl = params["rtl"];
 
   if(IsnoColors)
   {
     if(IsnoColors == "true")
     {
       noColors = true;
+      $('#clearAuthorship').hide();
     }
   }
   if(showControls)
@@ -102,7 +113,6 @@ function getParams()
       $('#editorcontainer').css({"top":"0px"});
     }
   }
-
   if(showChat)
   {
     if(showChat == "false")
@@ -110,7 +120,6 @@ function getParams()
       $('#chaticon').hide();
     }
   }
-
   if(showLineNumbers)
   {
     if(showLineNumbers == "false")
@@ -118,7 +127,6 @@ function getParams()
       LineNumbersDisabled = true;
     }
   }
-
   if(useMonospaceFont)
   {
     if(useMonospaceFont == "true")
@@ -126,12 +134,21 @@ function getParams()
       useMonospaceFontGlobal = true;
     }
   }
-
-
   if(userName)
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
     globalUserName = unescape(userName);
+  }
+  if(hideQRCode)
+  {
+    $('#qrcode').hide();
+  }
+  if(rtl)
+  {
+    if(rtl == "true")
+    {
+      rtlIsTrue = true
+    }
   }
 }
 
@@ -177,7 +194,7 @@ function handshake()
     padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
     if(!isReconnect)
-      document.title = document.title + " | " + padId;
+      document.title = document.title + " | " + padId.replace(/_+/g, ' ');
 
     var token = readCookie("token");
     if (token == null)
@@ -290,6 +307,11 @@ function handshake()
       if (noColors == true)
       {
         pad.changeViewOption('noColors', true);
+      }
+      
+      if (rtlIsTrue == true)
+      {
+        pad.changeViewOption('rtl', true);
       }
 
       // If the Monospacefont value is set to true then change it to monospace.

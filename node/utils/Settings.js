@@ -20,6 +20,7 @@
  */
 
 var fs = require("fs");
+var os = require("os");
 
 /**
  * The IP ep-lite should listen to
@@ -67,6 +68,24 @@ exports.abiword = null;
  * The log level of log4js
  */
 exports.loglevel = "INFO";
+
+/**
+ * Http basic auth, with "user:password" format
+ */
+exports.httpAuth = null;
+
+//checks if abiword is avaiable
+exports.abiwordAvailable = function()
+{
+  if(exports.abiword != null)
+  {
+    return os.type().indexOf("Windows") != -1 ? "withoutPDF" : "yes";
+  }
+  else
+  {
+    return "no";
+  }
+}
 
 //read the settings sync
 var settingsStr = fs.readFileSync("../settings.json").toString();

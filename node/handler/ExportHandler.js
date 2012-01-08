@@ -18,7 +18,9 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
+var exportdokuwiki = require("../utils/ExportDokuWiki");
 var padManager = require("../db/PadManager");
 var async = require("async");
 var fs = require("fs");
@@ -50,10 +52,37 @@ exports.doExport = function(req, res, padId, type)
   {
     padManager.getPad(padId, function(err, pad)
     {
-      if(err)
-        throw err;
-         
-      res.send(pad.text());
+      ERR(err);
+      if(req.params.rev){
+        pad.getInternalRevisionAText(req.params.rev, function(junk, text)
+        {
+          res.send(text.text ? text.text : null);
+        });
+      }
+      else
+      {
+        res.send(pad.text());
+      }
+    });
+  }
+  else if(type == 'dokuwiki')
+  {
+    var randNum;
+    var srcFile, destFile;
+
+    async.series([
+      //render the dokuwiki document
+      function(callback)
+      {
+        exportdokuwiki.getPadDokuWikiDocument(padId, req.params.rev, function(err, dokuwiki)
+        {
+          res.send(dokuwiki);
+          callback("stop");
+        });
+      },
+    ], function(err)
+    {
+      if(err && err != "stop") throw err;
     });
   }
   else
@@ -66,10 +95,11 @@ exports.doExport = function(req, res, padId, type)
       //render the html document
       function(callback)
       {
-        exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
+        exporthtml.getPadHTMLDocument(padId, req.params.rev, false, function(err, _html)
         {
+          if(ERR(err, callback)) return;
           html = _html;
-          callback(err);
+          callback();
         });   
       },
       //decide what to do with the html export
@@ -113,19 +143,23 @@ exports.doExport = function(req, res, padId, type)
           function(callback)
           {
             //100ms delay to accomidate for slow windows fs
-			if(os.type().indexOf("Windows") > -1)
-			{
-			  setTimeout(function() 
-			  {
-			    fs.unlink(destFile, callback);
-			  }, 100);
-			}
+            if(os.type().indexOf("Windows") > -1)
+            {
+              setTimeout(function() 
+              {
+                fs.unlink(destFile, callback);
+              }, 100);
+            }
+            else
+            {
+              fs.unlink(destFile, callback);
+            }
           }
         ], callback);
       }
     ], function(err)
     {
-      if(err && err != "stop") throw err;
+      if(err && err != "stop") ERR(err);
     })
   }
 };

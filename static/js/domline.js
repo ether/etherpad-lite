@@ -1,3 +1,9 @@
+/**
+ * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This helps other people to understand this code better and helps them to improve it.
+ * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
+ */
+
 // THIS FILE IS ALSO AN APPJET MODULE: etherpad.collab.ace.domline
 // %APPJET%: import("etherpad.admin.plugins");
 /**

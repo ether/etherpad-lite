@@ -19,6 +19,7 @@
  * limitations under the License.
  */
 
+var ERR = require("async-stacktrace");
 var settings = require('./Settings');
 var async = require('async');
 var fs = require('fs');
@@ -33,7 +34,7 @@ var os = require('os');
 
 var padJS = ["jquery.min.js", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js", "excanvas.js", "farbtastic.js"];
 
-var timesliderJS = ["jquery.min.js", "plugins.js", "undo-xpopup.js", "json2.js", "colorutils.js", "draggable.js", "pad_utils.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "easysync2_client.js", "domline_client.js", "linestylefilter_client.js", "cssmanager_client.js", "broadcast.js", "broadcast_slider.js", "broadcast_revisions.js"];
+var timesliderJS = ["jquery.min.js", "plugins.js", "undo-xpopup.js", "json2.js", "colorutils.js", "draggable.js", "pad_utils.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "pad_impexp.js", "easysync2_client.js", "domline_client.js", "linestylefilter_client.js", "cssmanager_client.js", "broadcast.js", "broadcast_slider.js", "broadcast_revisions.js"];
 
 /**
  * creates the minifed javascript for the given minified name
@@ -77,7 +78,7 @@ exports.minifyJS = function(req, res, jsFilename)
           //read the files in the folder
           fs.readdir(path, function(err, files)
           {
-            if(err) { callback(err); return; }
+            if(ERR(err, callback)) return;
             
             //we wanna check the directory itself for changes too
             files.push(".");
@@ -88,7 +89,7 @@ exports.minifyJS = function(req, res, jsFilename)
               //get the stat data of this file
               fs.stat(path + "/" + filename, function(err, stats)
               {
-                if(err) { callback(err); return; }
+                if(ERR(err, callback)) return;
               
                 //get the modification time
                 var modificationTime = stats.mtime.getTime();
@@ -110,7 +111,11 @@ exports.minifyJS = function(req, res, jsFilename)
         //check the modification time of the minified js
         fs.stat("../var/minified_" + jsFilename, function(err, stats)
         {
-          if(err && err.code != "ENOENT") callback(err);
+          if(err && err.code != "ENOENT")
+          {
+            ERR(err, callback);
+            return;
+          }
         
           //there is no minfied file or there new changes since this file was generated, so continue generating this file
           if((err && err.code == "ENOENT") || stats.mtime.getTime() < latestModification)
@@ -131,8 +136,9 @@ exports.minifyJS = function(req, res, jsFilename)
         {
           fs.readFile("../static/js/" + item, "utf-8", function(err, data)
           {            
+            if(ERR(err, callback)) return;
             fileValues[item] = data;
-            callback(err);
+            callback();
           });
         }, callback);
       },
@@ -161,6 +167,8 @@ exports.minifyJS = function(req, res, jsFilename)
           //read the included file
           fs.readFile(filename, "utf-8", function(err, data)
           {         
+            if(ERR(err, callback)) return;
+            
             //compress the file               
             if(type == "JS")
             {
@@ -188,17 +196,19 @@ exports.minifyJS = function(req, res, jsFilename)
             embeds[item] = embeds[item].substr(0, embeds[item].length-1);
             embeds[item] = "'" + embeds[item] + "'";
             
-            callback(err);
+            callback();
           });
         }, function(err)
         {
+          if(ERR(err, callback)) return;
+          
           //replace the include command with the include
           for(var i in embeds)
           {
             fileValues["ace.js"]=fileValues["ace.js"].replace(i, embeds[i]);
           }
           
-          callback(err);
+          callback();
         });
       },
       //put all together and write it into a file
@@ -227,7 +237,10 @@ exports.minifyJS = function(req, res, jsFilename)
             if(os.type().indexOf("Windows") == -1)
             {
               gzip(result, 9, function(err, compressedResult){
-                if(err) {callback(err); return}
+                //weird gzip bug that returns 0 instead of null if everything is ok
+                err = err === 0 ? null : err;
+              
+                if(ERR(err, callback)) return;
                 
                 fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);  
               });
@@ -242,7 +255,10 @@ exports.minifyJS = function(req, res, jsFilename)
       }
     ], function(err)
     {
-      if(err && err != "stop") throw err;
+      if(err && err != "stop")
+      {
+        if(ERR(err)) return;
+      }
       
       //check if gzip is supported by this browser
       var gzipSupport = req.header('Accept-Encoding', '').indexOf('gzip') != -1;
@@ -270,15 +286,16 @@ exports.minifyJS = function(req, res, jsFilename)
     async.forEach(jsFiles, function (item, callback)
     {
       fs.readFile("../static/js/" + item, "utf-8", function(err, data)
-      {            
+      {          
+        if(ERR(err, callback)) return;  
         fileValues[item] = data;
-        callback(err);
+        callback();
       });
     }, 
     //send all files together
     function(err)
     {
-      if(err) throw err;
+      if(ERR(err)) return;
       
       for(var i=0;i<jsFiles.length;i++)
       {
