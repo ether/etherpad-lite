@@ -4050,8 +4050,6 @@ function OUTER(gscope)
     catch (e)
     {}
     if (!origSelectionRange) return false;
-    var selectionParent = origSelectionRange.parentElement();
-    if (selectionParent.ownerDocument != doc) return false;
     return true;
   }
 
