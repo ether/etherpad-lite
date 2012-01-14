@@ -92,10 +92,6 @@ a img
   background: -webkit-linear-gradient(#ddd, #fff);
 }
 
-input[type="file"] {
- color: #000;
-}
-
 #editbar ul li.separator
 {
   border: inherit;
