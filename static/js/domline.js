@@ -162,7 +162,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         {
           href = "http://"+href;
         }
-        extraOpenTags = extraOpenTags + '<a href="' + href.replace(/\"/g, '&quot;') + '">';
+        extraOpenTags = extraOpenTags + '<a href="' + domline.escapeHTML(href) + '">';
         extraCloseTags = '</a>' + extraCloseTags;
       }
       if (simpleTags)
@@ -229,7 +229,7 @@ domline.escapeHTML = function(s)
       '&': '&amp;',
       '<': '&lt;',
       '>': '&gt;',
-      '"': '&#34;',
+      '"': '&quot;',
       "'": '&#39;'
     };
   }

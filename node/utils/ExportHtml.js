@@ -292,7 +292,7 @@ function getHTMLFromAtext(pad, atext)
         var url = urlData[1];
         var urlLength = url.length;
         processNextChars(startIndex - idx);
-        assem.append('<a href="' + url.replace(/\"/g, '&quot;') + '">');
+        assem.append('<a href="' + _escapeHTML(url) + '">');
         processNextChars(urlLength);
         assem.append('</a>');
       });
@@ -429,14 +429,15 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
 
 function _escapeHTML(s)
 {
-  var re = /[&<>]/g;
+  var re = /[&"<>]/g;
   if (!re.MAP)
   {
     // persisted across function calls!
     re.MAP = {
       '&': '&amp;',
+      '"': '&quot;',
       '<': '&lt;',
-      '>': '&gt;',
+      '>': '&gt;'
     };
   }
   
