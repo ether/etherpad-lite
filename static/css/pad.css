@@ -970,14 +970,15 @@ position: relative;
 } 
 
 .ui-resizable-nw {
-  background-image: url("../img/nw-resize.png");
+  background-image: url("../../static/img/etherpad_lite_icons.png");
+  background-position: 0 -416px;
   background-repeat: no-repeat;
   background-size: 100% auto;
   cursor: nw-resize;
-  height: 22px;
-  left: 0;
-  top: 0;
-  width: 22px;
+  height: 17px;
+  left: 3px;
+  top: 3px;
+  width: 17px;
 } 
 
 .ui-resizable-ne 
@@ -1022,10 +1023,10 @@ position: relative;
 }
 
 .exporttype{
-  line-height:25px;
+  line-height:20px;
   background-repeat:no-repeat;
   padding-left:25px;
-  background-image: url("../img/fileicons.gif");
+  background-image: url("../../static/img/etherpad_lite_icons.png");
   color:#fff;
   text-decoration:none;
 }
@@ -1045,31 +1046,31 @@ position: relative;
 }
 
 #exporthtml{
-  background-position: 2px -25px;
+  background-position: 0px -299px;
 }
 
 #exportplain{
-  background-position: 2px -121px;
+  background-position: 0px -395px;
 }
 
 #exportword{
-  background-position: 2px -0px;
+  background-position: 0px -275px;
 }
 
 #exportpdf{
-  background-position: 2px -97px;
+  background-position: 0px -371px;
 }
 
 #exportopen{
-  background-position: 2px -74px;
+  background-position: 0px -347px;
 }
 
 #exportwordle{
-  background-position: 2px -49px;
+  background-position: 0px -323px;
 }
 
 #exportdokuwiki{
-  background-position: 2px -144px;
+  background-position: 0px -459px;
 }
 
 #export a{
