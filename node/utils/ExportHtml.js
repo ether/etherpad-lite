@@ -429,14 +429,15 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
 
 function _escapeHTML(s)
 {
-  var re = /[&<>]/g;
+  var re = /[&"<>]/g;
   if (!re.MAP)
   {
     // persisted across function calls!
     re.MAP = {
       '&': '&amp;',
+      '"': '&quot;',
       '<': '&lt;',
-      '>': '&gt;',
+      '>': '&gt;'
     };
   }
   

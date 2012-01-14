@@ -229,7 +229,7 @@ domline.escapeHTML = function(s)
       '&': '&amp;',
       '<': '&lt;',
       '>': '&gt;',
-      '"': '&#34;',
+      '"': '&quot;',
       "'": '&#39;'
     };
   }

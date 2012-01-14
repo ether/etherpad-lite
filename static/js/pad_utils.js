@@ -23,7 +23,14 @@
 var padutils = {
   escapeHtml: function(x)
   {
-    return String(x).replace(/\</g, '&lt;').replace(/\>/g, '&gt;');
+    return String(x).replace(/[&"<>]/g, function (c) {
+      return {
+        '&': '&amp;',
+        '"': '&quot;',
+        '<': '&lt;',
+        '>': '&gt;'
+      }[c] || c;
+    });
   },
   uniqueId: function()
   {
