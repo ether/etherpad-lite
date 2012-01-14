@@ -142,7 +142,14 @@ function binarySearchInfinite(expectedLength, func)
 
 function htmlPrettyEscape(str)
 {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\r?\n/g, '\\n');
+  return str.replace(/[&"<>]/g, function (c) {
+    return {
+      '&': '&amp;',
+      '"': '&quot;',
+      '<': '&lt;',
+      '>': '&gt;'
+    }[c] || c;
+  }).replace(/\r?\n/g, '\\n');
 }
 
 if (typeof exports !== "undefined")
