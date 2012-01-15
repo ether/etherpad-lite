@@ -217,15 +217,6 @@ function Ace2Editor()
   var $$INCLUDE_JS_DEV = $$INCLUDE_JS;
   var $$INCLUDE_CSS_DEV = $$INCLUDE_CSS;
 
-  var $$INCLUDE_CSS_Q = function(fileName) {
-    return JSON.stringify(($$INCLUDE_CSS)(fileName));
-  };
-  var $$INCLUDE_JS_Q = function(fileName) {
-    return JSON.stringify(($$INCLUDE_JS)(fileName));
-  };
-  var $$INCLUDE_JS_Q_DEV = $$INCLUDE_JS_Q;
-  var $$INCLUDE_CSS_Q_DEV = $$INCLUDE_CSS_Q;
-
   editor.destroy = pendingInit(function()
   {
     info.ace_dispose();
@@ -250,34 +241,44 @@ function Ace2Editor()
     {
       var doctype = "<!doctype html>";
 
-      var iframeHTML = ["'" + doctype + "<html><head>'"];
+      var iframeHTML = [];
 
+      iframeHTML.push(doctype);
+      iframeHTML.push("<html><head>");
+
+      // For compatability's sake transform in and out.
+      for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
+        iframeHTML[i] = JSON.stringify(iframeHTML[i]);
+      }
       plugins.callHook("aceInitInnerdocbodyHead", {
         iframeHTML: iframeHTML
       });
+      for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
+        iframeHTML[i] = JSON.parse(iframeHTML[i]);
+      }
 
       // these lines must conform to a specific format because they are passed by the build script:      
-      iframeHTML.push($$INCLUDE_CSS_Q("../static/css/iframe_editor.css"));
-      iframeHTML.push($$INCLUDE_CSS_Q("../static/css/pad.css"));
-      iframeHTML.push($$INCLUDE_CSS_Q("../static/custom/pad.css"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/ace2_common.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/skiplist.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/virtual_lines.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/easysync2.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/cssmanager.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/colorutils.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/undomodule.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/contentcollector.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/changesettracker.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/linestylefilter.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/domline.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/ace2_inner.js"));
+      iframeHTML.push($$INCLUDE_CSS("../static/css/iframe_editor.css"));
+      iframeHTML.push($$INCLUDE_CSS("../static/css/pad.css"));
+      iframeHTML.push($$INCLUDE_CSS("../static/custom/pad.css"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/ace2_common.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/skiplist.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/virtual_lines.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/easysync2.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/cssmanager.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/colorutils.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/undomodule.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/contentcollector.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/changesettracker.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/linestylefilter.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/domline.js"));
+      iframeHTML.push($$INCLUDE_JS("../static/js/ace2_inner.js"));
 
-      iframeHTML.push('\'\\n<style type="text/css" title="dynamicsyntax"></style>\\n\'');
-      iframeHTML.push('\'</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>\'');
+      iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
+      iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
       var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); ' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
-      'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + iframeHTML.join('+') + ');doc.write(text); doc.close(); ' + '}, 0); }';
+      'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');doc.write(text); doc.close(); ' + '}, 0); }';
 
       var outerHTML = [doctype, '<html><head>', $$INCLUDE_CSS("../static/css/iframe_editor.css"), $$INCLUDE_CSS("../static/css/pad.css"), $$INCLUDE_CSS("../static/custom/pad.css"),
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
