@@ -93,7 +93,7 @@ body.doesWrap {
   padding-top: 1px; /* important for some reason? */
   padding-right: 10px;
   padding-bottom: 8px;
-  padding-left: 10px /* prevents characters from looking chopped off in FF3 */;
+  padding-left: 1px /* prevents characters from looking chopped off in FF3 -- Removed because it added too much whitespace */;
   overflow: hidden;
   /* blank 1x1 gif, so that IE8 doesn't consider the body transparent */
   background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);
