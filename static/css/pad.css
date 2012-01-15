@@ -1069,6 +1069,10 @@ position: relative;
   background-position: 0px -459px;
 }
 
+#exportdokuwiki{
+  background-position: 2px -144px;
+}
+
 #export a{
   text-decoration: none;
 }
