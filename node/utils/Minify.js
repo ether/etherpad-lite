@@ -155,52 +155,36 @@ exports.minifyJS = function(req, res, jsFilename)
         
           var type = item.match(/INCLUDE_[A-Z]+/g)[0].substr("INCLUDE_".length);
         
-          var quote = item.search("_Q") != -1;
-        
           //read the included file
           fs.readFile(filename, "utf-8", function(err, data)
           {         
             if(ERR(err, callback)) return;
-            
-            //compress the file               
+
             if(type == "JS")
             {
-              embeds[item] = "<script>\n" + compressJS([data])+ "\n\\x3c/script>";
+              embeds[filename] = compressJS([data]);
             }
             else
             {
-              embeds[item] = "<style>" + compressCSS([data])+ "</style>";
+              embeds[filename] = compressCSS([data]);
             }
-            
-            //do the first escape
-            embeds[item] = JSON.stringify(embeds[item]).replace(/'/g, "\\'").replace(/\\"/g, "\"");
-            embeds[item] = embeds[item].substr(1);
-            embeds[item] = embeds[item].substr(0, embeds[item].length-1);
-            
-            //add quotes, if wished
-            if(quote)
-            {
-              embeds[item] = "'" + embeds[item] + "'";
-            }
-            
-            //do the second escape
-            embeds[item] = JSON.stringify(embeds[item]).replace(/'/g, "\\'").replace(/\"/g, "\"");
-            embeds[item] = embeds[item].substr(1);
-            embeds[item] = embeds[item].substr(0, embeds[item].length-1);
-            embeds[item] = "'" + embeds[item] + "'";
-            
+
             callback();
           });
         }, function(err)
         {
           if(ERR(err, callback)) return;
-          
-          //replace the include command with the include
-          for(var i in embeds)
+
+          fileValues["ace.js"] += ';\n'
+          fileValues["ace.js"] +=
+              'Ace2Editor.EMBEDED = Ace2Editor.EMBED || {};\n'
+          for (var filename in embeds)
           {
-            fileValues["ace.js"]=fileValues["ace.js"].replace(i, embeds[i]);
+            fileValues["ace.js"] +=
+                'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
+              + JSON.stringify(embeds[filename]) + ';\n';
           }
-          
+
           callback();
         });
       },

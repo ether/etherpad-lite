@@ -200,25 +200,29 @@ function Ace2Editor()
   // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
   // and compressed, putting the compressed code from the named file directly into the
   // source here.
-  var $$INCLUDE_CSS = function(fileName)
-    {
-      return '<link rel="stylesheet" type="text/css" href="' + fileName + '"/>';
-      };
-  var $$INCLUDE_JS = function(fileName)
-    {
-      return '\x3cscript type="text/javascript" src="' + fileName + '">\x3c/script>';
-      };
+  var $$INCLUDE_CSS = function(fileName) {
+    if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[fileName]) {
+      return '<style type="text/css">' + Ace2Editor.EMBEDED[fileName] + '<\/style>';
+    } else {
+      return '<link rel="stylesheet" type="text/css" href="' + fileName + '"\/>';
+    }
+  }
+  var $$INCLUDE_JS = function(fileName) {
+    if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[fileName]) {
+      return '<script type="text/javascript">' + Ace2Editor.EMBEDED[fileName].replace(/<\//g, '<\\/') + '<\/script>';
+    } else {
+      return '<script type="text/javascript" src="' + fileName + '"><\/script>';
+    };
+  }
   var $$INCLUDE_JS_DEV = $$INCLUDE_JS;
   var $$INCLUDE_CSS_DEV = $$INCLUDE_CSS;
 
-  var $$INCLUDE_CSS_Q = function(fileName)
-    {
-      return '\'<link rel="stylesheet" type="text/css" href="' + fileName + '"/>\'';
-      };
-  var $$INCLUDE_JS_Q = function(fileName)
-    {
-      return '\'\\x3cscript type="text/javascript" src="' + fileName + '">\\x3c/script>\'';
-      };
+  var $$INCLUDE_CSS_Q = function(fileName) {
+    return JSON.stringify(($$INCLUDE_CSS)(fileName));
+  };
+  var $$INCLUDE_JS_Q = function(fileName) {
+    return JSON.stringify(($$INCLUDE_JS)(fileName));
+  };
   var $$INCLUDE_JS_Q_DEV = $$INCLUDE_JS_Q;
   var $$INCLUDE_CSS_Q_DEV = $$INCLUDE_CSS_Q;
 
@@ -273,12 +277,12 @@ function Ace2Editor()
       iframeHTML.push('\'</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>\'');
 
       var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); ' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
-      'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + iframeHTML.join('+') + ').replace(/\\\\x3c/g, \'<\');doc.write(text); doc.close(); ' + '}, 0); }';
+      'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + iframeHTML.join('+') + ');doc.write(text); doc.close(); ' + '}, 0); }';
 
       var outerHTML = [doctype, '<html><head>', $$INCLUDE_CSS("../static/css/iframe_editor.css"), $$INCLUDE_CSS("../static/css/pad.css"), $$INCLUDE_CSS("../static/custom/pad.css"),
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
-      '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript, '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>'];
+      '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript.replace(/<\//g, '<\\/'), '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>'];
 
       if (!Array.prototype.map) Array.prototype.map = function(fun)
       { //needed for IE
