@@ -196,31 +196,62 @@ function Ace2Editor()
     info.ace_replaceRange(start, end, text);
   });
 
+  function sortFilesByEmbeded(files) {
+    var embededFiles = [];
+    var remoteFiles = [];
 
-  // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-  // and compressed, putting the compressed code from the named file directly into the
-  // source here.
-  var $$INCLUDE_CSS = function(fileName)
-    {
-      return '<link rel="stylesheet" type="text/css" href="' + fileName + '"/>';
-      };
-  var $$INCLUDE_JS = function(fileName)
-    {
-      return '\x3cscript type="text/javascript" src="' + fileName + '">\x3c/script>';
-      };
-  var $$INCLUDE_JS_DEV = $$INCLUDE_JS;
-  var $$INCLUDE_CSS_DEV = $$INCLUDE_CSS;
+    if (Ace2Editor.EMBEDED) {
+      for (var i = 0, ii = files.length; i < ii; i++) {
+        var file = files[i];
+        if (Object.prototype.hasOwnProperty.call(Ace2Editor.EMBEDED, file)) {
+          embededFiles.push(file);
+        } else {
+          remoteFiles.push(file);
+        }
+      }
+    } else {
+      remoteFiles = files;
+    }
 
-  var $$INCLUDE_CSS_Q = function(fileName)
-    {
-      return '\'<link rel="stylesheet" type="text/css" href="' + fileName + '"/>\'';
-      };
-  var $$INCLUDE_JS_Q = function(fileName)
-    {
-      return '\'\\x3cscript type="text/javascript" src="' + fileName + '">\\x3c/script>\'';
-      };
-  var $$INCLUDE_JS_Q_DEV = $$INCLUDE_JS_Q;
-  var $$INCLUDE_CSS_Q_DEV = $$INCLUDE_CSS_Q;
+    return {embeded: embededFiles, remote: remoteFiles};
+  }
+  function pushScriptTagsFor(buffer, files) {
+    var sorted = sortFilesByEmbeded(files);
+    var embededFiles = sorted.embeded;
+    var remoteFiles = sorted.remote;
+
+    if (embededFiles.length > 0) {
+      buffer.push('<script type="text/javascript">');
+      for (var i = 0, ii = embededFiles.length; i < ii; i++) {
+        var file = embededFiles[i];
+        buffer.push(Ace2Editor.EMBEDED[file].replace(/<\//g, '<\\/'));
+        buffer.push(';\n');
+      }
+      buffer.push('<\/script>');
+    }
+    for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
+      var file = remoteFiles[i];
+      buffer.push('<script type="application/javascript" src="' + file + '"><\/script>');
+    }
+  }
+  function pushStyleTagsFor(buffer, files) {
+    var sorted = sortFilesByEmbeded(files);
+    var embededFiles = sorted.embeded;
+    var remoteFiles = sorted.remote;
+
+    if (embededFiles.length > 0) {
+      buffer.push('<style type="text/css">');
+      for (var i = 0, ii = embededFiles.length; i < ii; i++) {
+        var file = embededFiles[i];
+        buffer.push(Ace2Editor.EMBEDED[file].replace(/<\//g, '<\\/'));
+      }
+      buffer.push('<\/style>');
+    }
+    for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
+      var file = remoteFiles[i];
+      buffer.push('<link rel="stylesheet" type="text/css" href="' + file + '"\/>');
+    }
+  }
 
   editor.destroy = pendingInit(function()
   {
@@ -246,39 +277,67 @@ function Ace2Editor()
     {
       var doctype = "<!doctype html>";
 
-      var iframeHTML = ["'" + doctype + "<html><head>'"];
+      var iframeHTML = [];
 
+      iframeHTML.push(doctype);
+      iframeHTML.push("<html><head>");
+
+      // For compatability's sake transform in and out.
+      for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
+        iframeHTML[i] = JSON.stringify(iframeHTML[i]);
+      }
       plugins.callHook("aceInitInnerdocbodyHead", {
         iframeHTML: iframeHTML
       });
+      for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
+        iframeHTML[i] = JSON.parse(iframeHTML[i]);
+      }
 
+      // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
+      // and compressed, putting the compressed code from the named file directly into the
+      // source here.
       // these lines must conform to a specific format because they are passed by the build script:      
-      iframeHTML.push($$INCLUDE_CSS_Q("../static/css/iframe_editor.css"));
-      iframeHTML.push($$INCLUDE_CSS_Q("../static/css/pad.css"));
-      iframeHTML.push($$INCLUDE_CSS_Q("../static/custom/pad.css"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/ace2_common.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/skiplist.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/virtual_lines.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/easysync2.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/cssmanager.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/colorutils.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/undomodule.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/contentcollector.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/changesettracker.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/linestylefilter.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/domline.js"));
-      iframeHTML.push($$INCLUDE_JS_Q("../static/js/ace2_inner.js"));
+      var includedCSS = [];
+      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
+      $$INCLUDE_CSS("../static/css/iframe_editor.css");
+      $$INCLUDE_CSS("../static/css/pad.css");
+      $$INCLUDE_CSS("../static/custom/pad.css");
+      pushStyleTagsFor(iframeHTML, includedCSS);
 
-      iframeHTML.push('\'\\n<style type="text/css" title="dynamicsyntax"></style>\\n\'');
-      iframeHTML.push('\'</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>\'');
+      var includedJS = [];
+      var $$INCLUDE_JS = function(filename) {includedJS.push(filename)};
+      $$INCLUDE_JS("../static/js/ace2_common.js");
+      $$INCLUDE_JS("../static/js/skiplist.js");
+      $$INCLUDE_JS("../static/js/virtual_lines.js");
+      $$INCLUDE_JS("../static/js/easysync2.js");
+      $$INCLUDE_JS("../static/js/cssmanager.js");
+      $$INCLUDE_JS("../static/js/colorutils.js");
+      $$INCLUDE_JS("../static/js/undomodule.js");
+      $$INCLUDE_JS("../static/js/contentcollector.js");
+      $$INCLUDE_JS("../static/js/changesettracker.js");
+      $$INCLUDE_JS("../static/js/linestylefilter.js");
+      $$INCLUDE_JS("../static/js/domline.js");
+      $$INCLUDE_JS("../static/js/ace2_inner.js");
+      pushScriptTagsFor(iframeHTML, includedJS);
+
+      iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
+      iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
       var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); ' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
-      'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + iframeHTML.join('+') + ').replace(/\\\\x3c/g, \'<\');doc.write(text); doc.close(); ' + '}, 0); }';
+      'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');doc.write(text); doc.close(); ' + '}, 0); }';
 
-      var outerHTML = [doctype, '<html><head>', $$INCLUDE_CSS("../static/css/iframe_editor.css"), $$INCLUDE_CSS("../static/css/pad.css"), $$INCLUDE_CSS("../static/custom/pad.css"),
+      var outerHTML = [doctype, '<html><head>']
+
+      var includedCSS = [];
+      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
+      $$INCLUDE_CSS("../static/css/iframe_editor.css");
+      $$INCLUDE_CSS("../static/css/pad.css");
+      $$INCLUDE_CSS("../static/custom/pad.css");
+      pushStyleTagsFor(outerHTML, includedCSS);
+
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
-      '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript, '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>'];
+      outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript.replace(/<\//g, '<\\/'), '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>');
 
       if (!Array.prototype.map) Array.prototype.map = function(fun)
       { //needed for IE
