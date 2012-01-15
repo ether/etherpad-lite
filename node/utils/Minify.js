@@ -32,9 +32,8 @@ var gzip = require('gzip');
 var server = require('../server');
 var os = require('os');
 
-var padJS = ["jquery.min.js", "pad_utils.js", "plugins.js", "undo-xpopup.js", "json2.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "ace.js", "collab_client.js", "pad_userlist.js", "pad_impexp.js", "pad_savedrevs.js", "pad_connectionstatus.js", "pad2.js", "jquery-ui.js", "chat.js", "excanvas.js", "farbtastic.js"];
-
-var timesliderJS = ["jquery.min.js", "plugins.js", "undo-xpopup.js", "json2.js", "colorutils.js", "draggable.js", "pad_utils.js", "pad_cookie.js", "pad_editor.js", "pad_editbar.js", "pad_docbar.js", "pad_modals.js", "pad_impexp.js", "easysync2_client.js", "domline_client.js", "linestylefilter_client.js", "cssmanager_client.js", "broadcast.js", "broadcast_slider.js", "broadcast_revisions.js"];
+var TAR_PATH = path.join(__dirname, 'tar.json');
+var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 /**
  * creates the minifed javascript for the given minified name
@@ -46,16 +45,10 @@ exports.minifyJS = function(req, res, jsFilename)
   res.header("Content-Type","text/javascript");
   
   //choose the js files we need
-  if(jsFilename == "pad.js")
-  {
-    jsFiles = padJS;
-  }
-  else if(jsFilename == "timeslider.js")
-  {
-    jsFiles = timesliderJS;
-  }
-  else
-  {
+  var jsFiles = undefined;
+  if (Object.prototype.hasOwnProperty.call(tar, jsFilename)) {
+    jsFiles = tar[jsFilename];
+  } else {
     throw new Error("there is no profile for creating " + name);
   }
   
@@ -162,52 +155,36 @@ exports.minifyJS = function(req, res, jsFilename)
         
           var type = item.match(/INCLUDE_[A-Z]+/g)[0].substr("INCLUDE_".length);
         
-          var quote = item.search("_Q") != -1;
-        
           //read the included file
           fs.readFile(filename, "utf-8", function(err, data)
           {         
             if(ERR(err, callback)) return;
-            
-            //compress the file               
+
             if(type == "JS")
             {
-              embeds[item] = "<script>\n" + compressJS([data])+ "\n\\x3c/script>";
+              embeds[filename] = compressJS([data]);
             }
             else
             {
-              embeds[item] = "<style>" + compressCSS([data])+ "</style>";
+              embeds[filename] = compressCSS([data]);
             }
-            
-            //do the first escape
-            embeds[item] = JSON.stringify(embeds[item]).replace(/'/g, "\\'").replace(/\\"/g, "\"");
-            embeds[item] = embeds[item].substr(1);
-            embeds[item] = embeds[item].substr(0, embeds[item].length-1);
-            
-            //add quotes, if wished
-            if(quote)
-            {
-              embeds[item] = "'" + embeds[item] + "'";
-            }
-            
-            //do the second escape
-            embeds[item] = JSON.stringify(embeds[item]).replace(/'/g, "\\'").replace(/\"/g, "\"");
-            embeds[item] = embeds[item].substr(1);
-            embeds[item] = embeds[item].substr(0, embeds[item].length-1);
-            embeds[item] = "'" + embeds[item] + "'";
-            
+
             callback();
           });
         }, function(err)
         {
           if(ERR(err, callback)) return;
-          
-          //replace the include command with the include
-          for(var i in embeds)
+
+          fileValues["ace.js"] += ';\n'
+          fileValues["ace.js"] +=
+              'Ace2Editor.EMBEDED = Ace2Editor.EMBED || {};\n'
+          for (var filename in embeds)
           {
-            fileValues["ace.js"]=fileValues["ace.js"].replace(i, embeds[i]);
+            fileValues["ace.js"] +=
+                'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
+              + JSON.stringify(embeds[filename]) + ';\n';
           }
-          
+
           callback();
         });
       },
