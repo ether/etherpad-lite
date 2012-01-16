@@ -32,6 +32,9 @@ settings.globalUserName = false;
 settings.hideQRCode = false;
 settings.rtlIsTrue = false;
 
+var chat = require('/chat').chat;
+var getCollabClient = require('/collab_client').getCollabClient;
+
 $(document).ready(function()
 {
   //start the costum js

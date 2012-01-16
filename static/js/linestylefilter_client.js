@@ -25,6 +25,9 @@
 // requires: top
 // requires: plugins
 // requires: undefined
+
+var Changeset = require('/easysync2_client').Changeset
+
 var linestylefilter = {};
 
 linestylefilter.ATTRIB_CLASSES = {

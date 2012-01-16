@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var Ace2Editor = require('/ace').Ace2Editor;
 
 var padeditor = (function()
 {

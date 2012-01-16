@@ -25,6 +25,8 @@
 
 var _MAX_LIST_LEVEL = 8;
 
+var Changeset = require('/easysync2').Changeset
+
 function sanitizeUnicode(s)
 {
   return s.replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');

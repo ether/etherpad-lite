@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+var padutils = require('/pad_utils').padutils;
+
 var chat = (function()
 {
   var bottomMargin = "0px";
