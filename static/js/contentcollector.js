@@ -26,6 +26,12 @@
 var _MAX_LIST_LEVEL = 8;
 
 var Changeset = require('/easysync2').Changeset
+var plugins = undefined;
+try {
+  plugins = require('/plugins').plugins;
+} catch (e) {
+  // silence
+}
 
 function sanitizeUnicode(s)
 {

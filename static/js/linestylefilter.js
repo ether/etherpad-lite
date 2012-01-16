@@ -29,6 +29,12 @@
 // requires: undefined
 
 var Changeset = require('/easysync2').Changeset
+var plugins = undefined;
+try {
+  plugins = require('/plugins').plugins;
+} catch (e) {
+  // silence
+}
 
 var linestylefilter = {};
 
