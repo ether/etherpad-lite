@@ -303,8 +303,11 @@ function tarCode(filesInOrder, files, write) {
 
 // Wrap the following code in a self executing function and assign exports to
 // global. This is a first step towards removing symbols from the global scope.
+// exports is global and require is a function that returns global.
 function isolateJS(code) {
-  return '(function (exports) {'+code+'\n}(function () {return this}()));\n';
+  return '(function (exports, require) {'
+    + code + '\n'
+    + '}(function () {return this}(), (function (path) {return (function () {return this}())})));\n';
 }
 
 function compressJS(values)

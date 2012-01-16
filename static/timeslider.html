@@ -19,6 +19,8 @@
 // <![CDATA[
   var clientVars = {};
 
+  var require = (function (path) {return (function () {return this}())});
+
   function createCookie(name,value,days) 
   {
 	  if (days) {
