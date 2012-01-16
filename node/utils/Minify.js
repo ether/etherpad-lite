@@ -29,6 +29,7 @@ var pro = require("uglify-js").uglify;
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var gzip = require('gzip');
+var RequireKernel = require('require-kernel');
 var server = require('../server');
 var os = require('os');
 
@@ -173,22 +174,31 @@ function _handle(req, res, jsFilename, jsFiles) {
           var type = item.match(/INCLUDE_[A-Z]+/g)[0].substr("INCLUDE_".length);
         
           //read the included file
-          fs.readFile(ROOT_DIR + filename, "utf-8", function(err, data)
+          var shortFilename = filename.replace(/^..\/static\/js\//, '');
+          if (shortFilename == 'require-kernel.js') {
+            // the kernel isn’t actually on the file system.
+            handleEmbed(null, requireDefinition());
+          } else {
+            fs.readFile(ROOT_DIR + filename, "utf-8", handleEmbed);
+          }
+          function handleEmbed(err, data)
           {         
             if(ERR(err, callback)) return;
 
             if(type == "JS")
             {
-              var shortFilename = filename.replace(/^..\/static\/js\//, '');
-              embeds[filename] = compressJS([isolateJS(data, shortFilename)]);
+              if (shortFilename == 'require-kernel.js') {
+                embeds[filename] = compressJS([data]);
+              } else {
+                embeds[filename] = compressJS([isolateJS(data, shortFilename)]);
+              }
             }
             else
             {
               embeds[filename] = compressCSS([data]);
             }
-
             callback();
-          });
+          }
         }, function(err)
         {
           if(ERR(err, callback)) return;
@@ -294,11 +304,21 @@ function _handle(req, res, jsFilename, jsFiles) {
   }
 }
 
+exports.requireDefinition = requireDefinition;
+function requireDefinition() {
+  return 'var require = ' + RequireKernel.kernelSource + ';\n';
+}
+
 function tarCode(filesInOrder, files, write) {
   for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
     var filename = filesInOrder[i];
     write("\n\n\n/*** File: static/js/" + filename + " ***/\n\n\n");
     write(isolateJS(files[filename], filename));
+  }
+
+  for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
+    var filename = filesInOrder[i];
+    write('require(' + JSON.stringify('/' + filename.replace(/^\/+/, '')) + ');\n');
   }
 }
 
@@ -306,9 +326,13 @@ function tarCode(filesInOrder, files, write) {
 // global. This is a first step towards removing symbols from the global scope.
 // exports is global and require is a function that returns global.
 function isolateJS(code, filename) {
-  return '(function (exports, require) {'
-    + code + '\n'
-    + '}(function () {return this}(), (function (path) {return (function () {return this}())})));\n';
+  var srcPath = JSON.stringify('/' + filename);
+  var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
+  return 'require.define({'
+    + srcPath + ': '
+      + 'function (require, exports, module) {' + code + '}'
+    + (srcPath != srcPathAbbv ? '\n,' + srcPathAbbv + ': null' : '')
+    + '});\n';
 }
 
 function compressJS(values)

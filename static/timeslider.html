@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
   
+  <script type="text/javascript" src="../../static/js/require-kernel.js"></script>
   <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
   <script type="text/javascript" src="../../minified/timeslider.js"></script>
   
@@ -18,8 +19,6 @@
   <script>
 // <![CDATA[
   var clientVars = {};
-
-  var require = (function (path) {return (function () {return this}())});
 
   /* TODO: These globals shouldn't exist. */
   padeditbar = require('/pad_editbar').padeditbar;
