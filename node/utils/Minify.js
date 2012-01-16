@@ -162,7 +162,7 @@ function _handle(req, res, jsFilename, jsFiles) {
           return;
         }
       
-        var founds = fileValues["ace.js"].match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"]+\)/gi);
+        var founds = fileValues["ace.js"].match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
         
         //go trough all includes
         async.forEach(founds, function (item, callback)
