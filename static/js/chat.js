@@ -82,13 +82,13 @@ var chat = (function()
     send: function()
     {
       var text = $("#chatinput").val();
-      pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
+      this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
     addMessage: function(msg, increment)
     {    
       //correct the time
-      msg.time += pad.clientTimeOffset; 
+      msg.time += this._pad.clientTimeOffset;
       
       //create the time string
       var minutes = "" + new Date(msg.time).getMinutes();
@@ -150,8 +150,9 @@ var chat = (function()
       self.scrollDown();
 
     },
-    init: function()
+    init: function(pad)
     {
+      this._pad = pad;
       $("#chatinput").keypress(function(evt)
       {
         //if the user typed enter, fire the send

@@ -413,7 +413,7 @@ var pad = {
     pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
   
     //initialize the chat
-    chat.init();
+    chat.init(this);
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
