@@ -68,7 +68,7 @@ var padeditor = (function()
         pad.changeViewOption('useMonospaceFont', $("#viewfontmenu").val() == 'monospace');
       });
 
-      noColors = !noColors; // Inversed so we can pass it to showauthorcolors
+      settings.noColors = !settings.noColors; // Inversed so we can pass it to showauthorcolors
     },
     setViewOptions: function(newOptions)
     {
@@ -93,9 +93,9 @@ var padeditor = (function()
       self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
       $("#viewfontmenu").val(v ? "monospace" : "normal");
 
-      self.ace.setProperty("showsauthorcolors", noColors);
+      self.ace.setProperty("showsauthorcolors", settings.noColors);
 
-      self.ace.setProperty("rtlIsTrue", rtlIsTrue);
+      self.ace.setProperty("rtlIsTrue", settings.rtlIsTrue);
     },
     initViewZoom: function()
     {
