@@ -21,6 +21,10 @@
 
   var require = (function (path) {return (function () {return this}())});
 
+  /* TODO: These globals shouldn't exist. */
+  padeditbar = require('/pad_editbar').padeditbar;
+  padimpexp = require('/pad_impexp').padimpexp;
+
   function createCookie(name,value,days) 
   {
 	  if (days) {
@@ -143,9 +147,9 @@
     clientVars = message.data;
     
     //load all script that doesn't work without the clientVars
-    loadBroadcastSliderJS();
-    loadBroadcastRevisionsJS();
-    loadBroadcastJS();
+    require('/broadcast_slider').loadBroadcastSliderJS();
+    require('/broadcast_revisions').loadBroadcastRevisionsJS();
+    require('/broadcast').loadBroadcastJS();
 
     //initialize export ui
     padimpexp.init();
