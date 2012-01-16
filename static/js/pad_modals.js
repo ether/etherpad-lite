@@ -20,6 +20,9 @@
  * limitations under the License.
  */
 
+var padutils = require('/pad_utils').padutils;
+var paddocbar = require('/pad_docbar').paddocbar;
+
 var padmodals = (function()
 {
 
@@ -70,9 +73,12 @@ var padmodals = (function()
     clearShareBoxTo();
   }
 
+  var pad = undefined;
   var self = {
     init: function()
     {
+      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
+
       self.initFeedback();
       self.initShareBox();
     },

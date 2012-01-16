@@ -34,6 +34,16 @@ settings.rtlIsTrue = false;
 
 var chat = require('/chat').chat;
 var getCollabClient = require('/collab_client').getCollabClient;
+var padconnectionstatus = require('/pad_connectionstatus').padconnectionstatus;
+var padcookie = require('/pad_cookie').padcookie;
+var paddocbar = require('/pad_docbar').paddocbar;
+var padeditbar = require('/pad_editbar').padeditbar;
+var padeditor = require('/pad_editor').padeditor;
+var padimpexp = require('/pad_impexp').padimpexp;
+var padmodals = require('/pad_modals').padmodals;
+var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
+var paduserlist = require('/pad_userlist').paduserlist;
+var padutils = require('/pad_utils').padutils;
 
 $(document).ready(function()
 {
@@ -275,13 +285,13 @@ function handshake()
       {
         $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword()'>ok</button>");
+                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
       }
       else if(obj.accessStatus == "wrongPassword")
       {
         $("#editorloadingbox").html("<b>You're password was wrong</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword()'>ok</button>");
+                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
       }
     }
     

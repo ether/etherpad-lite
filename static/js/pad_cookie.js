@@ -85,9 +85,12 @@ var padcookie = (function()
   var alreadyWarnedAboutNoCookies = false;
   var inited = false;
 
+  var pad = undefined;
   var self = {
     init: function(prefsToSet)
     {
+      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
+
       var rawCookie = getRawCookie();
       if (rawCookie)
       {

@@ -20,16 +20,23 @@
  * limitations under the License.
  */
 
-var Ace2Editor = require('/ace').Ace2Editor;
+var padcookie = require('/pad_cookie').padcookie;
+var padutils = require('/pad_utils').padutils;
 
 var padeditor = (function()
 {
+  var Ace2Editor = undefined;
+  var pad = undefined;
+  var settings = undefined;
   var self = {
     ace: null,
     // this is accessed directly from other files
     viewZoom: 100,
     init: function(readyFunc, initialViewOptions)
     {
+      Ace2Editor = require('/ace').Ace2Editor;
+      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
+      settings = require('/pad2').settings;
 
       function aceReady()
       {
