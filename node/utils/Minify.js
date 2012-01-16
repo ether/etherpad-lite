@@ -179,7 +179,7 @@ function _handle(req, res, jsFilename, jsFiles) {
 
             if(type == "JS")
             {
-              embeds[filename] = compressJS([data]);
+              embeds[filename] = compressJS([isolateJS(data)]);
             }
             else
             {
@@ -297,8 +297,14 @@ function tarCode(filesInOrder, files, write) {
   for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
     var filename = filesInOrder[i];
     write("\n\n\n/*** File: static/js/" + filename + " ***/\n\n\n");
-    write(files[filename]);
+    write(isolateJS(files[filename]));
   }
+}
+
+// Wrap the following code in a self executing function and assign exports to
+// global. This is a first step towards removing symbols from the global scope.
+function isolateJS(code) {
+  return '(function (exports) {'+code+'\n}(function () {return this}()));\n';
 }
 
 function compressJS(values)
