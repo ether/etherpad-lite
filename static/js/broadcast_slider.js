@@ -496,3 +496,7 @@ function loadBroadcastSliderJS()
     $("#viewlatest").html(loc == BroadcastSlider.getSliderLength() ? "Viewing latest content" : "View latest content");
   })
 }
+
+if (typeof exports !== 'undefined') {
+exports.loadBroadcastSliderJS = loadBroadcastSliderJS;
+}

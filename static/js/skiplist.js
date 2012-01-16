@@ -488,3 +488,7 @@ that is a string.
   }
   return self;
 }
+
+if (typeof exports !== 'undefined') {
+exports.newSkipList = newSkipList;
+}

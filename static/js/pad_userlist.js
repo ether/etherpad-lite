@@ -805,3 +805,7 @@ function showColorPicker()
     $($("#colorpickerswatches li")[myUserInfo.colorId]).addClass("picked"); //seems weird
   }
 }
+
+if (typeof exports !== 'undefined') {
+exports.paduserlist = paduserlist;
+}

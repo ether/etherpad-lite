@@ -21,7 +21,7 @@
  */
 
 
-undoModule = (function()
+var undoModule = (function()
 {
   var stack = (function()
   {
@@ -329,3 +329,7 @@ undoModule = (function()
     apool: null
   }; // apool is filled in by caller
 })();
+
+if (typeof exports !== 'undefined') {
+exports.undoModule = undoModule;
+}

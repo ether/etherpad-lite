@@ -486,3 +486,7 @@ window.onerror = function test (msg, url, linenumber)
  
  return false;
 };
+
+if (typeof exports !== 'undefined') {
+exports.padutils = padutils;
+}

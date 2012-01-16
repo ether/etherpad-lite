@@ -172,3 +172,7 @@ var chat = (function()
 
   return self;
 }());
+
+if (typeof exports !== 'undefined') {
+exports.chat = chat;
+}

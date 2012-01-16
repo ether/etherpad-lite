@@ -119,3 +119,7 @@ colorutils.blend = function(c1, c2, t)
 {
   return [colorutils.scale(t, c1[0], c2[0]), colorutils.scale(t, c1[1], c2[1]), colorutils.scale(t, c1[2], c2[2])];
 }
+
+if (typeof exports !== 'undefined') {
+exports.colorutils = colorutils;
+}

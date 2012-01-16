@@ -518,3 +518,7 @@ var padsavedrevs = (function()
   };
   return self;
 }());
+
+if (typeof exports !== 'undefined') {
+exports.padsavedrevs = padsavedrevs;
+}

@@ -456,3 +456,7 @@ var paddocbar = (function()
   };
   return self;
 }());
+
+if (typeof exports !== 'undefined') {
+exports.paddocbar = paddocbar;
+}

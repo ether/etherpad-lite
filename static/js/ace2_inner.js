@@ -5858,3 +5858,7 @@ function OUTER(gscope)
 };
 
 OUTER(this);
+
+if (typeof exports !== 'undefined') {
+exports.OUTER = OUTER; // This is probably unimportant.
+}

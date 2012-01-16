@@ -722,3 +722,8 @@ function selectElementContents(elem)
     }
   }
 }
+
+if (typeof exports !== 'undefined') {
+exports.getCollabClient = getCollabClient;
+exports.selectElementContents = selectElementContents;
+}
