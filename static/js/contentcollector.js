@@ -701,7 +701,5 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   return cc;
 }
 
-if (typeof exports !== 'undefined') {
 exports.sanitizeUnicode = sanitizeUnicode;
 exports.makeContentCollector = makeContentCollector;
-}

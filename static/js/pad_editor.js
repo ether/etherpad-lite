@@ -159,6 +159,4 @@ var padeditor = (function()
   return self;
 }());
 
-if (typeof exports !== 'undefined') {
 exports.padeditor = padeditor;
-}

@@ -811,6 +811,4 @@ function showColorPicker()
   }
 }
 
-if (typeof exports !== 'undefined') {
 exports.paduserlist = paduserlist;
-}

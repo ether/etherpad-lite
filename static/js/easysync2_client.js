@@ -2270,7 +2270,5 @@ Changeset.inverse = function(cs, lines, alines, pool)
   return Changeset.checkRep(builder.toString());
 };
 
-if (typeof exports !== 'undefined') {
 exports.Changeset = Changeset;
 exports.AttribPool = AttribPool;
-}

@@ -332,6 +332,4 @@ var undoModule = (function()
   }; // apool is filled in by caller
 })();
 
-if (typeof exports !== 'undefined') {
 exports.undoModule = undoModule;
-}

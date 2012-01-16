@@ -319,6 +319,4 @@ domline.processSpaces = function(s, doesWrap)
   return parts.join('');
 };
 
-if (typeof exports !== 'undefined') {
 exports.domline = domline;
-}

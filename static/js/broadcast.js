@@ -765,6 +765,4 @@ function loadBroadcastJS()
   receiveAuthorData(clientVars.historicalAuthorData);
 }
 
-if (typeof exports !== 'undefined') {
 exports.loadBroadcastJS = loadBroadcastJS;
-}

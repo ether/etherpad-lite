@@ -385,6 +385,4 @@ function makeVirtualLineView(lineNode)
 
 }
 
-if (typeof exports !== 'undefined') {
 exports.makeVirtualLineView = makeVirtualLineView;
-}

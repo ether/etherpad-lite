@@ -210,6 +210,4 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 
 }
 
-if (typeof exports !== 'undefined') {
 exports.makeChangesetTracker = makeChangesetTracker;
-}

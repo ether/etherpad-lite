@@ -360,6 +360,4 @@ linestylefilter.populateDomLine = function(textLine, aline, apool, domLineObj)
   func(text, '');
 };
 
-if (typeof exports !== 'undefined') {
 exports.linestylefilter = linestylefilter;
-}

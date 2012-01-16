@@ -334,6 +334,4 @@ var padimpexp = (function()
   return self;
 }());
 
-if (typeof exports !== 'undefined') {
 exports.padimpexp = padimpexp;
-}

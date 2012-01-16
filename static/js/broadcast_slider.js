@@ -497,6 +497,4 @@ function loadBroadcastSliderJS()
   })
 }
 
-if (typeof exports !== 'undefined') {
 exports.loadBroadcastSliderJS = loadBroadcastSliderJS;
-}

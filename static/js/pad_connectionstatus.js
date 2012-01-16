@@ -88,6 +88,4 @@ var padconnectionstatus = (function()
   return self;
 }());
 
-if (typeof exports !== 'undefined') {
 exports.padconnectionstatus = padconnectionstatus;
-}

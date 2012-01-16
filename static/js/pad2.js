@@ -967,7 +967,6 @@ var alertBar = (function()
   return self;
 }());
 
-if (typeof exports !== 'undefined') {
 exports.settings = settings;
 exports.createCookie = createCookie;
 exports.readCookie = readCookie;
@@ -978,4 +977,3 @@ exports.savePassword = savePassword;
 exports.handshake = handshake;
 exports.pad = pad;
 exports.alertBar = alertBar;
-}

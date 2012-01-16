@@ -32,6 +32,4 @@ plugins = {
   }
 };
 
-if (typeof exports !== 'undefined') {
 exports.plugins = plugins;
-}

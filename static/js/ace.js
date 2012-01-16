@@ -391,6 +391,4 @@ function Ace2Editor()
   return editor;
 }
 
-if (typeof exports !== 'undefined') {
 exports.Ace2Editor = Ace2Editor;
-}

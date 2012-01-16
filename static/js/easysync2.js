@@ -2509,7 +2509,5 @@ Changeset.followAttributes = function(att1, att2, pool)
   return buf.toString();
 };
 
-if (typeof exports !== 'undefined') {
 exports.Changeset = Changeset;
 exports.AttribPool = AttribPool;
-}
