@@ -3867,7 +3867,7 @@ function OUTER(gscope)
           //scrollSelectionIntoView();
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "z" && (evt.metaKey || evt.ctrlKey))
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "z" && (evt.metaKey || evt.ctrlKey) && !evt.altKey)
         {
           // cmd-Z (undo)
           fastIncorp(6);
