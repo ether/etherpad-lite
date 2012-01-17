@@ -123,19 +123,7 @@ async.waterfall([
     });
     
     //serve minified files
-    app.get('/minified/:id', function(req, res, next)
-    { 
-      var id = req.params.id;
-      
-      if(id == "pad.js" || id == "timeslider.js")
-      {
-        minify.minifyJS(req,res,id);
-      }
-      else
-      {
-        next();
-      }
-    });
+    app.get('/minified/:filename', minify.minifyJS);
     
     //checks for padAccess
     function hasPadAccess(req, res, callback)

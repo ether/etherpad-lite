@@ -40,20 +40,22 @@ var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
  * @param req the Express request
  * @param res the Express response
  */
-exports.minifyJS = function(req, res, jsFilename)
+exports.minifyJS = function(req, res, next)
 {
-  res.header("Content-Type","text/javascript");
+  var jsFilename = req.params['filename'];
   
   //choose the js files we need
   var jsFiles = undefined;
   if (Object.prototype.hasOwnProperty.call(tar, jsFilename)) {
     jsFiles = tar[jsFilename];
   } else {
-    throw new Error("there is no profile for creating " + name);
+    return next();
   }
 
   var rootPath = path.normalize(__dirname + "/../../" );
 
+  res.header("Content-Type","text/javascript");
+  
   //minifying is enabled
   if(settings.minify)
   {
