@@ -24,7 +24,7 @@ var makeCSSManager = require('/cssmanager_client').makeCSSManager;
 var domline = require('/domline').domline;
 var AttribPool = require('/AttributePoolFactory').createAttributePool;
 var Changeset = require('/Changeset');
-var linestylefilter = require('/linestylefilter_client').linestylefilter;
+var linestylefilter = require('/linestylefilter').linestylefilter;
 var colorutils = require('/colorutils').colorutils;
 
 // These parameters were global, now they are injected. A reference to the

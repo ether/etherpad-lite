@@ -42,7 +42,7 @@
   , "AttributePoolFactory.js"
   , "Changeset.js"
   , "domline.js"
-  , "linestylefilter_client.js"
+  , "linestylefilter.js"
   , "cssmanager_client.js"
   , "broadcast.js"
   , "broadcast_slider.js"
