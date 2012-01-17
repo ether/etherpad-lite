@@ -41,7 +41,7 @@
   , "pad_impexp.js"
   , "AttributePoolFactory.js"
   , "Changeset.js"
-  , "domline_client.js"
+  , "domline.js"
   , "linestylefilter_client.js"
   , "cssmanager_client.js"
   , "broadcast.js"
