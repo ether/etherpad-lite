@@ -43,7 +43,7 @@
   , "Changeset.js"
   , "domline.js"
   , "linestylefilter.js"
-  , "cssmanager_client.js"
+  , "cssmanager.js"
   , "broadcast.js"
   , "broadcast_slider.js"
   , "broadcast_revisions.js"
