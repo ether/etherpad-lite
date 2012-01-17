@@ -185,7 +185,7 @@ function handshake()
   //find out in which subfolder we are
   var resource = loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "socket.io";
   //connect
-  socket = io.connect(url, {
+  socket = pad.socket = io.connect(url, {
     resource: resource,
     'max reconnection attempts': 3
   });
@@ -474,7 +474,7 @@ var pad = {
 
     pad.collabClient = getCollabClient(padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo, {
       colorPalette: pad.getColorPalette()
-    });
+    }, pad);
     pad.collabClient.setOnUserJoin(pad.handleUserJoin);
     pad.collabClient.setOnUpdateUserInfo(pad.handleUserUpdate);
     pad.collabClient.setOnUserLeave(pad.handleUserLeave);
