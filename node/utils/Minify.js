@@ -52,10 +52,21 @@ exports.minifyJS = function(req, res, next)
   var jsFiles = undefined;
   if (Object.prototype.hasOwnProperty.call(tar, jsFilename)) {
     jsFiles = tar[jsFilename];
+    _handle(req, res, jsFilename, jsFiles)
   } else {
-    return next();
+    // Not in tar list, but try anyways, if it fails, pass to `next`.
+    jsFiles = [jsFilename];
+    fs.stat(JS_DIR + jsFilename, function (error, stats) {
+      if (error || !stats.isFile()) {
+        next();
+      } else {
+        _handle(req, res, jsFilename, jsFiles);
+      }
+    });
   }
+}
 
+function _handle(req, res, jsFilename, jsFiles) {
   res.header("Content-Type","text/javascript");
   
   //minifying is enabled

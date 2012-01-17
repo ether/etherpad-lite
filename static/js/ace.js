@@ -230,6 +230,7 @@ function Ace2Editor()
     }
     for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
       var file = remoteFiles[i];
+      file = file.replace(/^\.\.\/static\/js\//, '../minified/');
       buffer.push('<script type="application/javascript" src="' + file + '"><\/script>');
     }
   }
