@@ -208,14 +208,9 @@ function _handle(req, res, jsFilename, jsFiles) {
       //put all together and write it into a file
       function(callback)
       {
-        //put all javascript files in an array
-        var values = [];
-        for(var i in jsFiles)
-        {
-          values.push(fileValues[jsFiles[i]]);
-        }
-        
         //minify all javascript files to one
+        var values = [];
+        tarCode(jsFiles, fileValues, function (content) {values.push(content)});
         var result = compressJS(values);
         
         async.parallel([
@@ -291,15 +286,18 @@ function _handle(req, res, jsFilename, jsFiles) {
     {
       if(ERR(err)) return;
       
-      for(var i=0;i<jsFiles.length;i++)
-      {
-        var fileName = jsFiles[i];
-        res.write("\n\n\n/*** File: static/js/" + fileName + " ***/\n\n\n");
-        res.write(fileValues[fileName]);
-      }
+      tarCode(jsFiles, fileValues, function (content) {res.write(content)});
       
       res.end();
     });
+  }
+}
+
+function tarCode(filesInOrder, files, write) {
+  for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
+    var filename = filesInOrder[i];
+    write("\n\n\n/*** File: static/js/" + filename + " ***/\n\n\n");
+    write(files[filename]);
   }
 }
 
