@@ -15,7 +15,8 @@ var log4js = require("log4js");
 log4js.setGlobalLogLevel("INFO");
 var async = require("async");
 var db = require('../node/db/DB');
-var Changeset = require('../node/utils/Changeset');
+var CommonCode = require('../node/utils/common_code');
+var Changeset = CommonCode.require("/Changeset");
 var padManager;
 
 async.series([

@@ -25,7 +25,7 @@
 
 var _MAX_LIST_LEVEL = 8;
 
-var Changeset = require('/easysync2').Changeset
+var Changeset = require('/easysync2').Changeset;
 var plugins = require('/plugins').plugins;
 
 function sanitizeUnicode(s)

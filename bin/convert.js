@@ -1,11 +1,12 @@
+var CommonCode = require('../node/utils/common_code');
 var startTime = new Date().getTime();
 var fs = require("fs");
 var ueberDB = require("ueberDB");
 var mysql = require("mysql");
 var async = require("async");
-var Changeset = require("../node/utils/Changeset");
+var Changeset = CommonCode.require("/Changeset");
 var randomString = require("../node/utils/randomstring");
-var AttributePoolFactory = require("../node/utils/AttributePoolFactory");
+var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
 
 var settingsFile = process.argv[2];
 var sqlOutputFile = process.argv[3];

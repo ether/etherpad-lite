@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+var CommonCode = require('./common_code');
 var async = require("async");
-var Changeset = require("./Changeset");
+var Changeset = CommonCode.require("/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
 

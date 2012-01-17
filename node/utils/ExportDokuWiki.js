@@ -15,7 +15,8 @@
  */
 
 var async = require("async");
-var Changeset = require("./Changeset");
+var CommonCode = require('./common_code');
+var Changeset = CommonCode.require("/Changeset");
 var padManager = require("../db/PadManager");
 
 function getPadDokuWiki(pad, revNum, callback)

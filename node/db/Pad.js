@@ -2,9 +2,10 @@
  * The pad object, defined with joose
  */
 
+var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
-var Changeset = require("../utils/Changeset");
-var AttributePoolFactory = require("../utils/AttributePoolFactory");
+var Changeset = CommonCode.require("/Changeset");
+var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
 var db = require("./DB").db;
 var async = require("async");
 var settings = require('../utils/Settings');

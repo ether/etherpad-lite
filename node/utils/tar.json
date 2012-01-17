@@ -39,6 +39,8 @@
   , "pad_modals.js"
   , "pad_savedrevs.js"
   , "pad_impexp.js"
+  , "AttributePoolFactory.js"
+  , "Changeset.js"
   , "easysync2_client.js"
   , "domline_client.js"
   , "linestylefilter_client.js"
@@ -50,6 +52,8 @@
   ]
 , "ace2_inner.js": [
     "ace2_common.js"
+  , "AttributePoolFactory.js"
+  , "Changeset.js"
   , "skiplist.js"
   , "virtual_lines.js"
   , "easysync2.js"
