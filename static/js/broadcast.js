@@ -22,8 +22,8 @@
 
 var makeCSSManager = require('/cssmanager_client').makeCSSManager;
 var domline = require('/domline_client').domline;
-var Changeset = require('/easysync2_client').Changeset;
-var AttribPool = require('/easysync2_client').AttribPool;
+var AttribPool = require('/AttributePoolFactory').createAttributePool;
+var Changeset = require('/Changeset');
 var linestylefilter = require('/linestylefilter_client').linestylefilter;
 var colorutils = require('/colorutils').colorutils;
 

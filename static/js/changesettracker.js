@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-var Changeset = require('/easysync2').Changeset;
-var AttribPool = require('/easysync2').AttribPool;
+var AttribPool = require('/AttributePoolFactory').createAttributePool;
+var Changeset = require('/Changeset');
 
 function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 {
