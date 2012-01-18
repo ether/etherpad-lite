@@ -19,6 +19,7 @@ var async = require("async");
 var Changeset = CommonCode.require("/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
+var Security = CommonCode.require('/security');
 
 function getPadPlainText(pad, revNum)
 {
@@ -270,7 +271,7 @@ function getHTMLFromAtext(pad, atext)
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
         
-        assem.append(_escapeHTML(s));
+        assem.append(_encodeWhitespace(Security.escapeHTML(s)));
       } // end iteration over spans in line
       
       var tags2close = [];
@@ -293,7 +294,7 @@ function getHTMLFromAtext(pad, atext)
         var url = urlData[1];
         var urlLength = url.length;
         processNextChars(startIndex - idx);
-        assem.append('<a href="' + _escapeHTML(url) + '">');
+        assem.append('<a href="' + Security.escapeHTMLAttribute(url) + '">');
         processNextChars(urlLength);
         assem.append('</a>');
       });
@@ -494,25 +495,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
   });
 }
 
-function _escapeHTML(s)
-{
-  var re = /[&"<>]/g;
-  if (!re.MAP)
-  {
-    // persisted across function calls!
-    re.MAP = {
-      '&': '&amp;',
-      '"': '&quot;',
-      '<': '&lt;',
-      '>': '&gt;'
-    };
-  }
-  
-  s = s.replace(re, function (c)
-  {
-    return re.MAP[c];
-  });
-  
+function _encodeWhitespace(s) {
   return s.replace(/[^\x21-\x7E\s\t\n\r]/g, function(c)
   {
     return "&#" +c.charCodeAt(0) + ";"

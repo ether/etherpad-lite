@@ -1,6 +1,7 @@
 {
   "pad.js": [
     "jquery.js"
+  , "security.js"
   , "pad.js"
   , "ace2_common.js"
   , "pad_utils.js"
@@ -25,6 +26,7 @@
   ]
 , "timeslider.js": [
     "jquery.js"
+  , "security.js"
   , "plugins.js"
   , "undo-xpopup.js"
   , "json2.js"
@@ -53,6 +55,7 @@
     "ace2_common.js"
   , "AttributePoolFactory.js"
   , "Changeset.js"
+  , "security.js"
   , "skiplist.js"
   , "virtual_lines.js"
   , "cssmanager.js"

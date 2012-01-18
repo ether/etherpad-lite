@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+var Security = require('/security');
+
 /**
  * Generates a random String with the given length. Is needed to generate the Author, Group, readonly, session Ids
  */
@@ -69,14 +71,7 @@ function readCookie(name)
 var padutils = {
   escapeHtml: function(x)
   {
-    return String(x).replace(/[&"<>]/g, function (c) {
-      return {
-        '&': '&amp;',
-        '"': '&quot;',
-        '<': '&lt;',
-        '>': '&gt;'
-      }[c] || c;
-    });
+    return Security.escapeHTML(String(x));
   },
   uniqueId: function()
   {
@@ -205,7 +200,7 @@ var padutils = {
     {
       if (i > idx)
       {
-        pieces.push(padutils.escapeHtml(text.substring(idx, i)));
+        pieces.push(Security.escapeHTML(text.substring(idx, i)));
         idx = i;
       }
     }
@@ -216,7 +211,7 @@ var padutils = {
         var startIndex = urls[j][0];
         var href = urls[j][1];
         advanceTo(startIndex);
-        pieces.push('<a ', (target ? 'target="' + target + '" ' : ''), 'href="', padutils.escapeHtml(href), '">');
+        pieces.push('<a ', (target ? 'target="' + Security.escapeHTMLAttribute(target) + '" ' : ''), 'href="', Security.escapeHTMLAttribute(href), '">');
         advanceTo(startIndex + href.length);
         pieces.push('</a>');
       }
