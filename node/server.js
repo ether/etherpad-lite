@@ -355,6 +355,42 @@ function postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, im
     });
   }
 }
+function apiCallerCombinator(serverName, apiLogger, apiHandler){
+  return function apiCaller(req, res, fields){
+      res.header("Server", serverName);
+      res.header("Content-Type", "application/json; charset=utf-8");
+    
+      apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
+      
+      //wrap the send function so we can log the response
+      res._send = res.send;
+      res.send = function(response)
+      {
+        response = JSON.stringify(response);
+        apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
+        
+        //is this a jsonp call, if yes, add the function call
+        if(req.query.jsonp)
+          response = req.query.jsonp + "(" + response + ")";
+        
+        res._send(response);
+      }
+      
+      //call the api handler
+      apiHandler.handle(req.params.func, fields, req, res);
+  }
+}
+function logOkPostCombinator(prefix, consoleFn, field){
+  return function(req, res){
+    new formidable.IncomingForm().parse(
+      req,
+      function(err, fields, files){
+	  console[consoleFn](prefix + ": " + fields[field]);
+	  res.end("OK");
+      }
+    );
+  }
+}
 
 async.waterfall([
   //initalize the database
@@ -476,30 +512,7 @@ async.waterfall([
     var apiLogger = log4js.getLogger("API");
 
     //This is for making an api call, collecting all post information and passing it to the apiHandler
-    var apiCaller = function(req, res, fields)
-    {
-      res.header("Server", serverName);
-      res.header("Content-Type", "application/json; charset=utf-8");
-    
-      apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
-      
-      //wrap the send function so we can log the response
-      res._send = res.send;
-      res.send = function(response)
-      {
-        response = JSON.stringify(response);
-        apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
-        
-        //is this a jsonp call, if yes, add the function call
-        if(req.query.jsonp)
-          response = req.query.jsonp + "(" + response + ")";
-        
-        res._send(response);
-      }
-      
-      //call the api handler
-      apiHandler.handle(req.params.func, fields, req, res);
-    }
+    var apiCaller = apiCallerCombinator(serverName, apiLogger, apiHandler);
     
     //This is a api GET call, collect all post informations and pass it to the apiHandler
     app.get('/api/1/:func', function(req, res)
@@ -517,45 +530,21 @@ async.waterfall([
     });
     
     //The Etherpad client side sends information about how a disconnect happen
-    app.post('/ep/pad/connection-diagnostic-info', function(req, res)
-    {
-      new formidable.IncomingForm().parse(req, function(err, fields, files) 
-      { 
-        console.log("DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
-        res.end("OK");
-      });
-    });
+      app.post('/ep/pad/connection-diagnostic-info', logOkPostCombinator("DIAGNOSTIC-INFO", "log", "diagnosticInfo"));
     
     //The Etherpad client side sends information about client side javscript errors
-    app.post('/jserror', function(req, res)
-    {
-      new formidable.IncomingForm().parse(req, function(err, fields, files) 
-      { 
-        console.error("CLIENT SIDE JAVASCRIPT ERROR: " + fields.errorInfo);
-        res.end("OK");
-      });
-    });
+      app.post('/jserror', logOkPostCombinator("CLIENT SIDE JAVASCRIPT ERROR", "error", "errorInfo"));
     
     //serve index.html under /
     app.get('/', function(req, res)
     {
       return sendStatic(path, res, "index.html");
-/*
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/index.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-*/
     });
     
     //serve robots.txt
     app.get('/robots.txt', function(req, res)
     {
       return sendStatic(path, res, "robots.txt");
-/*
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/robots.txt");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-*/
     });
     
     //serve favicon.ico
@@ -563,12 +552,6 @@ async.waterfall([
     {
      return sendStatic(path, res, "custom/favicon.ico",
       function(err){
-/*
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
-      res.sendfile(filePath, { maxAge: exports.maxAge }, function(err)
-      {
-*/
         //there is no custom favicon, send the default favicon
         if(err)
         {
