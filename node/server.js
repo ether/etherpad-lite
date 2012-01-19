@@ -426,6 +426,30 @@ function basic_auth (req, res, next) {
   }
 }
 
+function gotoPadCombinator(checkPadName, padManager){
+  return function gotoPad(req, res, render){
+    return checkPadName(
+      padManager, req, res,
+      function callback(){
+        padManager.sanitizePadId(req.params.pad, function(padId) {
+          //the pad id was sanitized, so we redirect to the sanitized version
+          if(padId != req.params.pad)
+          {
+            var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + padId);
+            res.header('Location', real_path);
+            res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
+          }
+          //the pad id was fine, so just render it
+          else
+          {
+            render();
+          }
+        });
+      }
+    );
+  }
+}
+
 async.waterfall([
   //initalize the database
   setupDb,
@@ -447,20 +471,8 @@ async.waterfall([
     
     //install logging      
     var httpLogger = log4js.getLogger("http");
-    app.configure(configureCombinator(app, settings, basic_auth, log4js, httpLogger));
-    
-    app.error(function(err, req, res, next){
-      res.send(500);
-      console.error(err.stack ? err.stack : err.toString());
-      gracefulShutdown();
-    });
-    
-    //serve static files
-    app.get('/static/*', getStatic);
-    
-    //serve minified files
-    app.get('/minified/:id', getMinified);
-    
+    var apiLogger = log4js.getLogger("API");
+
     //checks for padAccess
     function hasPadAccess(req, res, callback)
     {
@@ -472,35 +484,31 @@ async.waterfall([
         }
       );
     }
+    //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
+      var goToPad = gotoPadCombinator(checkPadName, padManager);
+
+
+    app.configure(configureCombinator(app, settings, basic_auth, log4js, httpLogger));
+    
+    app.error(function(err, req, res, next){
+      res.send(500);
+      console.error(err.stack ? err.stack : err.toString());
+      gracefulShutdown();
+    });
+
+
 
     
+    //serve static files
+    app.get('/static/*', getStatic);
+    
+    //serve minified files
+    app.get('/minified/:id', getMinified);
     
     //serve read only pad
       app.get('/ro/:id', getRoCombinator(serverName, {ro: readOnlyManager}, hasPadAccess, ERR, exporthtml));
-    
-    //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
-    function goToPad(req, res, render) {
-     return checkPadName(
-       padManager, req, res,
-       function callback(){
-        padManager.sanitizePadId(req.params.pad, function(padId) {
-          //the pad id was sanitized, so we redirect to the sanitized version
-          if(padId != req.params.pad)
-          {
-            var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + padId);
-            res.header('Location', real_path);
-            res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
-          }
-          //the pad id was fine, so just render it
-          else
-          {
-            render();
-          }
-        });
-       }
-     );
-    }
-    
+
+        
     //serve pad.html under /p
     app.get('/p/:pad', sendStaticIfPad(goToPad, padManager, path, "pad.html"));
     
@@ -515,7 +523,6 @@ async.waterfall([
     //handle import requests
       app.post('/p/:pad/import', postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler));
     
-    var apiLogger = log4js.getLogger("API");
 
     //This is for making an api call, collecting all post information and passing it to the apiHandler
     var apiCaller = apiCallerCombinator(serverName, apiLogger, apiHandler);
