@@ -46,5 +46,6 @@
   , "broadcast.js"
   , "broadcast_slider.js"
   , "broadcast_revisions.js"
+  , "timeslider.js"
   ]
 }
