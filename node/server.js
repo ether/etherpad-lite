@@ -450,7 +450,8 @@ function gotoPadCombinator(checkPadName, padManager){
   }
 }
 
-async.waterfall([
+function init(additionalSetup){
+ async.waterfall([
   //initalize the database
   setupDb,
   //initalize the http server
@@ -486,6 +487,9 @@ async.waterfall([
     }
     //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
       var goToPad = gotoPadCombinator(checkPadName, padManager);
+    //This is for making an api call, collecting all post information and passing it to the apiHandler
+    var apiCaller = apiCallerCombinator(serverName, apiLogger, apiHandler);
+
 
 
     app.configure(configureCombinator(app, settings, basic_auth, log4js, httpLogger));
@@ -498,7 +502,7 @@ async.waterfall([
 
 
 
-    
+    var gets = {};
     //serve static files
     app.get('/static/*', getStatic);
     
@@ -507,14 +511,12 @@ async.waterfall([
     
     //serve read only pad
       app.get('/ro/:id', getRoCombinator(serverName, {ro: readOnlyManager}, hasPadAccess, ERR, exporthtml));
-
         
     //serve pad.html under /p
     app.get('/p/:pad', sendStaticIfPad(goToPad, padManager, path, "pad.html"));
     
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/timeslider', sendStaticIfPad(goToPad, padManager, path, "timeslider.html"));
-
     
     //serve timeslider.html under /p/$padname/timeslider
     //the above comment is wrong
@@ -522,11 +524,7 @@ async.waterfall([
     
     //handle import requests
       app.post('/p/:pad/import', postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler));
-    
-
-    //This is for making an api call, collecting all post information and passing it to the apiHandler
-    var apiCaller = apiCallerCombinator(serverName, apiLogger, apiHandler);
-    
+        
     //This is a api GET call, collect all post informations and pass it to the apiHandler
     app.get('/api/1/:func', function(req, res)
     {
@@ -574,6 +572,9 @@ async.waterfall([
       });
     });
     
+
+    additionalSetup();
+
     //let the server listen
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
@@ -584,4 +585,9 @@ async.waterfall([
     
     callback(null);  
   }
-]);
+ ]);
+
+}
+
+this.init = init;
+init(function(){});
