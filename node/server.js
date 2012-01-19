@@ -1,5 +1,5 @@
 /**
- * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server. 
+ * This module is included by serve.js, which bin/run.sh invokes. It sets up a Express HTTP and a Socket.IO Server. 
  * Static file Requests are answered directly from this module, Socket.IO messages are passed 
  * to MessageHandler and minfied requests are passed to minified.
  */
@@ -605,5 +605,5 @@ function init(additionalSetup){
 
 }
 
-this.init = init;
+
 init(function(app, gets, posts, managers, handlers, db){});

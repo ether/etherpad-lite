@@ -26,4 +26,4 @@ bin/installDeps.sh || exit 1
 #Move to the node folder and start
 echo "start..."
 cd "node"
-node server.js
+node serve.js
