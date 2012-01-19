@@ -66,12 +66,62 @@ exports.maxAge = 1000*60*60*6;
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
 
+function setupDb(callback){
+  db.init(callback);
+}
+
+function padAccessCombinator(securityManager, req, res, callback, errorback){
+  function checkback(err, accessObj){
+    if(err) return errorback(err);
+    if("grant" == accessObj.accessStatus) return callback();
+    return res.send("403 - Can't touch this", 403);
+  }
+  //works great for one session
+  //but what if there are multiple?
+  //if(!("sessionIDs" in req.cookies))
+  return securityManager.checkAccess(
+    req.params.pad,
+    req.cookies.sessionid,
+    req.cookies.token,
+    req.cookies.password,
+    checkback
+  );
+  /*sessIds = JSON.parse(req.cookies.sessionIDs);
+  var tasks = [];
+  function createTask(sid){
+    return function(cb){
+      return securityManager.checkAccess(
+        req.params.pad,
+        sid,
+        req.cookies.token,
+        req.cookies.password,
+        cb//function(err, accessObj){return cb(err, accessObj);}
+      );
+    }
+  }
+  for(var i = 0; i < sessIds.length; i++)
+    tasks[i] = createTasks(sessIds[i]);
+  return async.parallel(
+    tasks,
+    function(err, obs){
+      if(err) return errorback(err);
+      for(var i = 0; i < obs.length; i++)
+        if("grant" == obs[i].accessStatus) return callback(null);
+      return res.send("none of those IDs worked", 403);
+    }
+  )*/
+}
+function getStatic(req, res){
+ res.header("Server", serverName);
+ var filePath = path.normalize(
+  __dirname + "/.." +
+   req.url.replace(/\.\./g, '').split("?")[0]
+ );
+ res.sendfile(filePath, { maxAge: exports.maxAge });
+}
 async.waterfall([
   //initalize the database
-  function (callback)
-  {
-    db.init(callback);
-  },
+  setupDb,
   //initalize the http server
   function (callback)
   {
@@ -137,6 +187,14 @@ async.waterfall([
     //checks for padAccess
     function hasPadAccess(req, res, callback)
     {
+      return padAccessCombinator(
+        securityManager, req, res,
+        callback,
+        function errorback(err, accessObj){
+           return (ERR(err, callback));
+        }
+      );
+/*
       securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj)
       {
         if(ERR(err, callback)) return;
@@ -152,6 +210,7 @@ async.waterfall([
           res.send("403 - Can't touch this", 403);
         }
       });
+*/
     }
 
     //checks for basic http auth
