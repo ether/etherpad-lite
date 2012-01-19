@@ -232,7 +232,7 @@ function sendStatic(path, res, filename, callback){
   var filePath = path.normalize(__dirname + "/../static/" + filename);
   return res.sendfile(filePath, { maxAge: exports.maxAge }, callback);
 }
-function translateRoCombinator(managers, req, ERR, callback){
+function translateRoCombinator(managers, req, ERR){
   return function translateRo(callback){
     function padBack(err, padId){
       if(ERR(err, callback)) return;
@@ -347,24 +347,7 @@ async.waterfall([
       var pad;
       
       async.waterfall([
-        //translate the read only pad to a padId
-        function(callback)
-        {
-          return translateRoCombinater({ro: readOnlyManager}, req, ERR, callback);
-/*
-          readOnlyManager.getPadId(req.params.id, function(err, _padId)
-          {
-            if(ERR(err, callback)) return;
-            
-            //padId = _padId;
-            
-            //we need that to tell hasPadAcess about the pad  
-            req.params.pad = _padId; 
-            
-            callback(null, _padId);
-          });
-*/
-        },
+        translateRoCombinater({ro: readOnlyManager}, req, ERR),
         //render the html document
         function(padId, callback)
         {
