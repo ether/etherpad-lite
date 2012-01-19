@@ -504,33 +504,67 @@ function init(additionalSetup){
 
     var gets = {};
     //serve static files
-    app.get('/static/*', getStatic);
-    
+    gets['/static/*'] = getStatic;
     //serve minified files
-    app.get('/minified/:id', getMinified);
-    
+    gets['/minified/:id'] = getMinified;
     //serve read only pad
-      app.get('/ro/:id', getRoCombinator(serverName, {ro: readOnlyManager}, hasPadAccess, ERR, exporthtml));
-        
+    gets['/ro/:id'] = getRoCombinator(
+      serverName,
+      {ro: readOnlyManager},
+      hasPadAccess,
+      ERR,
+      exporthtml
+    );
     //serve pad.html under /p
-    app.get('/p/:pad', sendStaticIfPad(goToPad, padManager, path, "pad.html"));
-    
+    gets['/p/:pad'] = sendStaticIfPad(
+      goToPad,
+      padManager,
+      path,
+      "pad.html"
+    );
     //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', sendStaticIfPad(goToPad, padManager, path, "timeslider.html"));
+    gets['/p/:pad/timeslider'] = sendStaticIfPad(
+      goToPad, padManager, path, "timeslider.html"
+    );
     
     //serve timeslider.html under /p/$padname/timeslider
     //the above comment is wrong
-    app.get('/p/:pad/:rev?/export/:type', getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler, serverName));
-    
-    //handle import requests
-      app.post('/p/:pad/import', postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler));
-        
+    gets['/p/:pad/:rev?/export/:type'] = getExportPadCombinator(
+      goToPad, settings, hasPadAccess, exportHandler, serverName
+    );
     //This is a api GET call, collect all post informations and pass it to the apiHandler
-    app.get('/api/1/:func', function(req, res)
+    gets['/api/1/:func'] = function(req, res)
     {
       apiCaller(req, res, req.query)
-    });
+    }
+    //serve index.html under /
+    gets['/'] = function(req, res)
+    {
+      return sendStatic(path, res, "index.html");
+    }
+    //serve robots.txt
+    gets['/robots.txt'] = function(req, res)
+    {
+      return sendStatic(path, res, "robots.txt");
+    }
+    //serve favicon.ico
+    gets['/favicon.ico'] = function(req, res)
+    {
+     return sendStatic(path, res, "custom/favicon.ico",
+      function(err){
+        //there is no custom favicon, send the default favicon
+        if(err)
+        {
+          filePath = path.normalize(__dirname + "/../static/favicon.ico");
+          res.sendfile(filePath, { maxAge: exports.maxAge });
+        }
+      });
+    };
+    
+    for(var key in gets) app.get(key, gets[key]);
 
+    //handle import requests
+      app.post('/p/:pad/import', postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler));
     //This is a api POST call, collect all post informations and pass it to the apiHandler
     app.post('/api/1/:func', function(req, res)
     {
@@ -545,32 +579,6 @@ function init(additionalSetup){
     
     //The Etherpad client side sends information about client side javscript errors
       app.post('/jserror', logOkPostCombinator("CLIENT SIDE JAVASCRIPT ERROR", "error", "errorInfo"));
-    
-    //serve index.html under /
-    app.get('/', function(req, res)
-    {
-      return sendStatic(path, res, "index.html");
-    });
-    
-    //serve robots.txt
-    app.get('/robots.txt', function(req, res)
-    {
-      return sendStatic(path, res, "robots.txt");
-    });
-    
-    //serve favicon.ico
-    app.get('/favicon.ico', function(req, res)
-    {
-     return sendStatic(path, res, "custom/favicon.ico",
-      function(err){
-        //there is no custom favicon, send the default favicon
-        if(err)
-        {
-          filePath = path.normalize(__dirname + "/../static/favicon.ico");
-          res.sendfile(filePath, { maxAge: exports.maxAge });
-        }
-      });
-    });
     
 
     additionalSetup();
