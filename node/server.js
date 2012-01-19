@@ -181,6 +181,51 @@ function setupIo(socketio, log4js, settings, socketIORouter, app){
   socketIORouter.addComponent("timeslider", timesliderMessageHandler);
   return io;
 }
+function setupShutdown(db, app){
+  var onShutdown = false;
+  var gracefulShutdown = function(err)
+  {
+    if(err && err.stack)
+    {
+      console.error(err.stack);
+    }
+    else if(err)
+    {
+      console.error(err);
+    }
+      
+    //ensure there is only one graceful shutdown running
+    if(onShutdown) return;
+    onShutdown = true;
+  
+    console.log("graceful shutdown...");
+    
+    //stop the http server
+    app.close();
+
+    //do the db shutdown
+    db.db.doShutdown(function()
+    {
+      console.log("db sucessfully closed.");
+      
+      process.exit(0);
+    });
+    
+    setTimeout(function(){
+      process.exit(1);
+    }, 3000);
+  }
+
+  //connect graceful shutdown with sigint and uncaughtexception
+  if(os.type().indexOf("Windows") == -1)
+  {
+    //sigint is so far not working on windows
+    //https://github.com/joyent/node/issues/1553
+    process.on('SIGINT', gracefulShutdown);
+  }
+  
+  return process.on('uncaughtException', gracefulShutdown);
+}
 async.waterfall([
   //initalize the database
   setupDb,
@@ -526,49 +571,7 @@ async.waterfall([
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
 
-    var onShutdown = false;
-    var gracefulShutdown = function(err)
-    {
-      if(err && err.stack)
-      {
-        console.error(err.stack);
-      }
-      else if(err)
-      {
-        console.error(err);
-      }
-      
-      //ensure there is only one graceful shutdown running
-      if(onShutdown) return;
-      onShutdown = true;
-    
-      console.log("graceful shutdown...");
-      
-      //stop the http server
-      app.close();
-
-      //do the db shutdown
-      db.db.doShutdown(function()
-      {
-        console.log("db sucessfully closed.");
-        
-        process.exit(0);
-      });
-      
-      setTimeout(function(){
-        process.exit(1);
-      }, 3000);
-    }
-
-    //connect graceful shutdown with sigint and uncaughtexception
-    if(os.type().indexOf("Windows") == -1)
-    {
-      //sigint is so far not working on windows
-      //https://github.com/joyent/node/issues/1553
-      process.on('SIGINT', gracefulShutdown);
-    }
-    
-    process.on('uncaughtException', gracefulShutdown);
+    setupShutdown(db, app);
 
     var io = setupIo(socketio, log4js, settings, socketIORouter, app);
     
