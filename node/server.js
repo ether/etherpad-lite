@@ -451,6 +451,8 @@ function gotoPadCombinator(checkPadName, padManager){
 }
 
 function init(additionalSetup){
+ if("function" != typeof additionalSetup)
+  additionalSetup = function(){};
  async.waterfall([
   //initalize the database
   setupDb,
@@ -484,6 +486,7 @@ function init(additionalSetup){
     //install logging      
     var httpLogger = log4js.getLogger("http");
     var apiLogger = log4js.getLogger("API");
+
 
     //checks for padAccess
     function hasPadAccess(req, res, callback)
@@ -561,27 +564,28 @@ function init(additionalSetup){
     };
 
     var posts = {
-
-    //handle import requests
-	'/p/:pad/import': postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler)
-    //This is a api POST call, collect all post informations and pass it to the apiHandler
-	'/api/1/:func': function(req, res)
-    {
-      new formidable.IncomingForm().parse(req, function(err, fields, files) 
-      {
-        apiCaller(req, res, fields)
-      });
-    },
-    
-    //The Etherpad client side sends information about how a disconnect happen
-	'/ep/pad/connection-diagnostic-info': logOkPostCombinator("DIAGNOSTIC-INFO", "log", "diagnosticInfo"),
-    
-    //The Etherpad client side sends information about client side javscript errors
-	'/jserror': logOkPostCombinator("CLIENT SIDE JAVASCRIPT ERROR", "error", "errorInfo")
+      '/p/:pad/import': postImportPadCombinator(
+        goToPad, settings, serverName, hasPadAccess, importHandler
+      ),
+      '/api/1/:func': function(req, res){
+        new formidable.IncomingForm().parse(
+          req,
+          function(err, fields, files) 
+          {
+            apiCaller(req, res, fields)
+          });
+      },
+      '/ep/pad/connection-diagnostic-info': logOkPostCombinator(
+        "DIAGNOSTIC-INFO", "log", "diagnosticInfo"
+      ),
+      '/jserror': logOkPostCombinator(        
+        "CLIENT SIDE JAVASCRIPT ERROR", "error", "errorInfo"
+      )
     };
-    
+ 
+   
 
-    additionalSetup(app, gets, posts);
+    additionalSetup(app, gets, posts, managers, handlers, db);
 
     
     for(var key in gets) app.get(key, gets[key]);
@@ -602,4 +606,4 @@ function init(additionalSetup){
 }
 
 this.init = init;
-init(function(app, gets, posts){});
+init(function(app, gets, posts, managers, handlers, db){});
