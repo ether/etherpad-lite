@@ -140,6 +140,47 @@ function checkPadName(padManager, req, res, callback){
     return res.send("Such a padname is forbidden", 404);
   return callback();
 }
+function setupIo(socketio, log4js, settings, socketIORouter, app){
+  //init socket.io and redirect all requests to the MessageHandler
+  var io = socketio.listen(app);
+  
+  //this is only a workaround to ensure it works with all browers behind a proxy
+  //we should remove this when the new socket.io version is more stable
+  io.set('transports', ['xhr-polling']);
+  
+  var socketIOLogger = log4js.getLogger("socket.io");
+  io.set('logger', {
+    debug: function (str)
+    {
+      socketIOLogger.debug.apply(socketIOLogger, arguments);
+    }, 
+    info: function (str)
+    {
+      socketIOLogger.info.apply(socketIOLogger, arguments);
+    },
+    warn: function (str)
+    {
+      socketIOLogger.warn.apply(socketIOLogger, arguments);
+    },
+    error: function (str)
+    {
+      socketIOLogger.error.apply(socketIOLogger, arguments);
+    },
+  });
+  
+  //minify socket.io javascript
+  if(settings.minify)
+    io.enable('browser client minification');
+  
+  var padMessageHandler = require("./handler/PadMessageHandler");
+  var timesliderMessageHandler = require("./handler/TimesliderMessageHandler");
+  
+  //Initalize the Socket.IO Router
+  socketIORouter.setSocketIO(io);
+  socketIORouter.addComponent("pad", padMessageHandler);
+  socketIORouter.addComponent("timeslider", timesliderMessageHandler);
+  return io;
+}
 async.waterfall([
   //initalize the database
   setupDb,
@@ -529,44 +570,7 @@ async.waterfall([
     
     process.on('uncaughtException', gracefulShutdown);
 
-    //init socket.io and redirect all requests to the MessageHandler
-    var io = socketio.listen(app);
-    
-    //this is only a workaround to ensure it works with all browers behind a proxy
-    //we should remove this when the new socket.io version is more stable
-    io.set('transports', ['xhr-polling']);
-    
-    var socketIOLogger = log4js.getLogger("socket.io");
-    io.set('logger', {
-      debug: function (str)
-      {
-        socketIOLogger.debug.apply(socketIOLogger, arguments);
-      }, 
-      info: function (str)
-      {
-        socketIOLogger.info.apply(socketIOLogger, arguments);
-      },
-      warn: function (str)
-      {
-        socketIOLogger.warn.apply(socketIOLogger, arguments);
-      },
-      error: function (str)
-      {
-        socketIOLogger.error.apply(socketIOLogger, arguments);
-      },
-    });
-    
-    //minify socket.io javascript
-    if(settings.minify)
-      io.enable('browser client minification');
-    
-    var padMessageHandler = require("./handler/PadMessageHandler");
-    var timesliderMessageHandler = require("./handler/TimesliderMessageHandler");
-    
-    //Initalize the Socket.IO Router
-    socketIORouter.setSocketIO(io);
-    socketIORouter.addComponent("pad", padMessageHandler);
-    socketIORouter.addComponent("timeslider", timesliderMessageHandler);
+    var io = setupIo(socketio, log4js, settings, socketIORouter, app);
     
     callback(null);  
   }
