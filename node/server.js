@@ -502,66 +502,75 @@ function init(additionalSetup){
 
 
 
-    var gets = {};
+    var gets = {
     //serve static files
-    gets['/static/*'] = getStatic;
+      '/static/*': getStatic,
+
     //serve minified files
-    gets['/minified/:id'] = getMinified;
+      '/minified/:id': getMinified,
+
     //serve read only pad
-    gets['/ro/:id'] = getRoCombinator(
-      serverName,
-      {ro: readOnlyManager},
-      hasPadAccess,
-      ERR,
-      exporthtml
-    );
+      '/ro/:id': getRoCombinator(
+        serverName,
+        {ro: readOnlyManager},
+        hasPadAccess,
+        ERR,
+        exporthtml
+      ),
+
     //serve pad.html under /p
-    gets['/p/:pad'] = sendStaticIfPad(
-      goToPad,
-      padManager,
-      path,
-      "pad.html"
-    );
+      '/p/:pad': sendStaticIfPad(
+        goToPad,
+        padManager,
+        path,
+        "pad.html"
+      )
+
     //serve timeslider.html under /p/$padname/timeslider
-    gets['/p/:pad/timeslider'] = sendStaticIfPad(
-      goToPad, padManager, path, "timeslider.html"
-    );
+      '/p/:pad/timeslider': sendStaticIfPad(
+        goToPad, padManager, path, "timeslider.html"
+      ),
     
     //serve timeslider.html under /p/$padname/timeslider
     //the above comment is wrong
-    gets['/p/:pad/:rev?/export/:type'] = getExportPadCombinator(
-      goToPad, settings, hasPadAccess, exportHandler, serverName
-    );
+      '/p/:pad/:rev?/export/:type': getExportPadCombinator(
+        goToPad, settings, hasPadAccess, exportHandler, serverName
+      ),
+
     //This is a api GET call, collect all post informations and pass it to the apiHandler
-    gets['/api/1/:func'] = function(req, res)
-    {
-      apiCaller(req, res, req.query)
-    }
+      '/api/1/:func': function(req, res)
+      {
+        apiCaller(req, res, req.query)
+      },
+
     //serve index.html under /
-    gets['/'] = function(req, res)
-    {
-      return sendStatic(path, res, "index.html");
-    }
+      '/': function(req, res)
+      {
+        return sendStatic(path, res, "index.html");
+      },
+
     //serve robots.txt
-    gets['/robots.txt'] = function(req, res)
-    {
-      return sendStatic(path, res, "robots.txt");
-    }
+      '/robots.txt': function(req, res)
+      {
+        return sendStatic(path, res, "robots.txt");
+      },
+
     //serve favicon.ico
-    gets['/favicon.ico'] = function(req, res)
-    {
-     return sendStatic(path, res, "custom/favicon.ico",
-      function(err){
-        //there is no custom favicon, send the default favicon
-        if(err)
-        {
-          filePath = path.normalize(__dirname + "/../static/favicon.ico");
-          res.sendfile(filePath, { maxAge: exports.maxAge });
-        }
-      });
+      '/favicon.ico': function(req, res)
+      {
+        return sendStatic(path, res, "custom/favicon.ico",
+          function(err){
+            //there is no custom favicon, send the default favicon
+            if(err)
+            {
+              filePath = path.normalize(__dirname + "/../static/favicon.ico");
+              res.sendfile(filePath, { maxAge: exports.maxAge });
+            }
+          });
+      }
     };
-    
-    for(var key in gets) app.get(key, gets[key]);
+
+    var posts = {};
 
     //handle import requests
       app.post('/p/:pad/import', postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler));
@@ -581,7 +590,10 @@ function init(additionalSetup){
       app.post('/jserror', logOkPostCombinator("CLIENT SIDE JAVASCRIPT ERROR", "error", "errorInfo"));
     
 
-    additionalSetup();
+    additionalSetup(app, gets);
+
+    
+    for(var key in gets) app.get(key, gets[key]);
 
     //let the server listen
     app.listen(settings.port, settings.ip);
