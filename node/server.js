@@ -306,9 +306,9 @@ function sendStaticIfPad(goToPad, padManager, path, filename){
     );
   };
 }
-function getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler){
-  return function(req, res, next){
-    goToPad(req, res, function() {
+function getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler, serverName){
+  return function getExportPad(req, res, next){
+    goToPad(req, res, function padback() {
       var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
       //send a 404 if we don't support this filetype
       if(types.indexOf(req.params.type) == -1)
@@ -335,6 +335,27 @@ function getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler){
     });
   }
 }
+
+function postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler){
+  return function postImportPad(req, res, next){
+    goToPad(req, res, function padback() {
+      //if abiword is disabled, skip handling this request
+      if(settings.abiword == null)
+      {
+        next();
+        return; 
+      }
+    
+      res.header("Server", serverName);
+      
+      hasPadAccess(req, res, function()
+      {
+        importHandler.doImport(req, res, req.params.pad);
+      });
+    });
+  }
+}
+
 async.waterfall([
   //initalize the database
   setupDb,
@@ -447,27 +468,10 @@ async.waterfall([
     
     //serve timeslider.html under /p/$padname/timeslider
     //the above comment is wrong
-    app.get('/p/:pad/:rev?/export/:type', getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler));
+    app.get('/p/:pad/:rev?/export/:type', getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler, serverName));
     
     //handle import requests
-    app.post('/p/:pad/import', function(req, res, next)
-    {
-      goToPad(req, res, function() {
-        //if abiword is disabled, skip handling this request
-        if(settings.abiword == null)
-        {
-          next();
-          return; 
-        }
-      
-        res.header("Server", serverName);
-        
-        hasPadAccess(req, res, function()
-        {
-          importHandler.doImport(req, res, req.params.pad);
-        });
-      });
-    });
+      app.post('/p/:pad/import', postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler));
     
     var apiLogger = log4js.getLogger("API");
 
