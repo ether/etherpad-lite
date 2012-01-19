@@ -306,6 +306,35 @@ function sendStaticIfPad(goToPad, padManager, path, filename){
     );
   };
 }
+function getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler){
+  return function(req, res, next){
+    goToPad(req, res, function() {
+      var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
+      //send a 404 if we don't support this filetype
+      if(types.indexOf(req.params.type) == -1)
+      {
+        next();
+        return;
+      }
+      
+      //if abiword is disabled, and this is a format we only support with abiword, output a message
+      if(settings.abiword == null &&
+         ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1)
+      {
+        res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
+        return;
+      }
+        
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Server", serverName);
+      
+      hasPadAccess(req, res, function()
+      {
+        exportHandler.doExport(req, res, req.params.pad, req.params.type);
+      });
+    });
+  }
+}
 async.waterfall([
   //initalize the database
   setupDb,
@@ -417,34 +446,8 @@ async.waterfall([
 
     
     //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
-    {
-      goToPad(req, res, function() {
-        var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
-        //send a 404 if we don't support this filetype
-        if(types.indexOf(req.params.type) == -1)
-        {
-          next();
-          return;
-        }
-        
-        //if abiword is disabled, and this is a format we only support with abiword, output a message
-        if(settings.abiword == null &&
-           ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1)
-        {
-          res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
-          return;
-        }
-        
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Server", serverName);
-        
-        hasPadAccess(req, res, function()
-        {
-          exportHandler.doExport(req, res, req.params.pad, req.params.type);
-        });
-      });
-    });
+    //the above comment is wrong
+    app.get('/p/:pad/:rev?/export/:type', getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler));
     
     //handle import requests
     app.post('/p/:pad/import', function(req, res, next)
