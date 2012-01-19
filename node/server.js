@@ -226,6 +226,12 @@ function setupShutdown(db, app){
   
   return process.on('uncaughtException', gracefulShutdown);
 }
+function sendStatic(path, res, filename, callback){
+  if("function" != typeof callback) callback = function(){};
+  res.header("Server", serverName);
+  var filePath = path.normalize(__dirname + "/../static/" + filename);
+  return res.sendfile(filePath, { maxAge: exports.maxAge }, callback);
+}
 async.waterfall([
   //initalize the database
   setupDb,
@@ -406,9 +412,12 @@ async.waterfall([
     app.get('/p/:pad', function(req, res, next)
     {    
       goToPad(req, res, function() {
+        return sendStatic(path, res, "pad.html");
+/*
         res.header("Server", serverName);
         var filePath = path.normalize(__dirname + "/../static/pad.html");
         res.sendfile(filePath, { maxAge: exports.maxAge });
+*/
       });
     });
     
@@ -416,9 +425,12 @@ async.waterfall([
     app.get('/p/:pad/timeslider', function(req, res, next)
     {
       goToPad(req, res, function() {
+        return sendStatic(path, res "timeslider.html");
+/*
         res.header("Server", serverName);
         var filePath = path.normalize(__dirname + "/../static/timeslider.html");
         res.sendfile(filePath, { maxAge: exports.maxAge });
+*/
       });
     });
     
@@ -538,26 +550,36 @@ async.waterfall([
     //serve index.html under /
     app.get('/', function(req, res)
     {
+      return sendStatic(path, res, "index.html");
+/*
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/index.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
+*/
     });
     
     //serve robots.txt
     app.get('/robots.txt', function(req, res)
     {
+      return sendStatic(path, res, "robots.txt");
+/*
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/robots.txt");
       res.sendfile(filePath, { maxAge: exports.maxAge });
+*/
     });
     
     //serve favicon.ico
     app.get('/favicon.ico', function(req, res)
     {
+     return sendStatic(path, res, "custom/favicon.ico",
+      function(err){
+/*
       res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
       res.sendfile(filePath, { maxAge: exports.maxAge }, function(err)
       {
+*/
         //there is no custom favicon, send the default favicon
         if(err)
         {
