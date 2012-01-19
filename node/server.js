@@ -243,6 +243,32 @@ function translateRoCombinator(managers, req, ERR){
     managers.ro.getPadID(req.params.id, padBack);
   };
 }
+function roAsyncOutCombinator(ERR, callback){
+  return function(err, data){
+    if(ERR(err, callback)) return;
+    callback(err, data);
+  }
+}
+function roAccessbackCombinator(exporthtml, padId, callback){
+  return function(){
+    exporthtml.getPadHTMLDocument(padId, null, false, callback);
+  }
+}
+function roRenderCombinator(padAccessp, req, res, exporthtml, ERR){
+  return function(padId, callback){
+    if(null == padId)
+     return callback("notfound");
+    padAccessp(
+      req, res,
+      roAccessbackCombinator(
+        exporthtml, padId,
+        roAsyncOutCombinator(
+          ERR, callback
+        )
+      )
+    );
+  }
+}
 async.waterfall([
   //initalize the database
   setupDb,
@@ -348,27 +374,7 @@ async.waterfall([
       
       async.waterfall([
         translateRoCombinater({ro: readOnlyManager}, req, ERR),
-        //render the html document
-        function(padId, callback)
-        {
-          //return if the there is no padId
-          if(padId == null)
-          {
-            callback("notfound");
-            return;
-          }
-          
-          hasPadAccess(req, res, function()
-          {
-            //render the html document
-            exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
-            {
-              if(ERR(err, callback)) return;
-              //html = _html;
-              callback(null, _html);
-            });
-          });
-        },
+        roRenderCombinator(hasPadAccess, req, res, exporthtml, ERR),
         function(html, callback)
         {
           res.send(html);
