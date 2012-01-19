@@ -296,6 +296,16 @@ function getRoCombinator(serverName, managers, padAccessp, ERR, exporthtml){
     )
   }
 }
+function sendStaticIfPad(goToPad, padManager, path, filename){
+  return function staticSender(req, res, next){
+    return goToPad(
+      req, res,
+      function goBack(){
+        return sendStatic(path, res, filename);
+      }
+    );
+  };
+}
 async.waterfall([
   //initalize the database
   setupDb,
@@ -351,23 +361,6 @@ async.waterfall([
            return ERR(err, callback);
         }
       );
-/*
-      securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj)
-      {
-        if(ERR(err, callback)) return;
-        
-        //there is access, continue
-        if(accessObj.accessStatus == "grant")
-        {
-          callback();
-        }
-        //no access
-        else
-        {
-          res.send("403 - Can't touch this", 403);
-        }
-      });
-*/
     }
 
     //checks for basic http auth
@@ -417,30 +410,11 @@ async.waterfall([
     }
     
     //serve pad.html under /p
-    app.get('/p/:pad', function(req, res, next)
-    {    
-      goToPad(req, res, function() {
-        return sendStatic(path, res, "pad.html");
-/*
-        res.header("Server", serverName);
-        var filePath = path.normalize(__dirname + "/../static/pad.html");
-        res.sendfile(filePath, { maxAge: exports.maxAge });
-*/
-      });
-    });
+    app.get('/p/:pad', sendStaticIfPad(goToPad, padManager, path, "pad.html"));
     
     //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', function(req, res, next)
-    {
-      goToPad(req, res, function() {
-        return sendStatic(path, res "timeslider.html");
-/*
-        res.header("Server", serverName);
-        var filePath = path.normalize(__dirname + "/../static/timeslider.html");
-        res.sendfile(filePath, { maxAge: exports.maxAge });
-*/
-      });
-    });
+    app.get('/p/:pad/timeslider', sendStaticIfPad(goToPad, padManager, path, "timeslider.html"));
+
     
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
