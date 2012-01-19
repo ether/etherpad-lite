@@ -459,7 +459,8 @@ function init(additionalSetup){
   {
     //create server
     var app = express.createServer();
-    
+
+
     //load modules that needs a initalized db
     readOnlyManager = require("./db/ReadOnlyManager");
     exporthtml = require("./utils/ExportHtml");
@@ -469,7 +470,17 @@ function init(additionalSetup){
     padManager = require('./db/PadManager');
     securityManager = require('./db/SecurityManager');
     socketIORouter = require("./handler/SocketIORouter");
-    
+
+    var managers = {
+      ro: readOnlyManager,
+      security: securityManager
+    };
+    var handlers = {
+      "export": exportHandler,
+      "import": importHandler,
+      api: apiHandler
+    };
+
     //install logging      
     var httpLogger = log4js.getLogger("http");
     var apiLogger = log4js.getLogger("API");
@@ -503,13 +514,8 @@ function init(additionalSetup){
 
 
     var gets = {
-    //serve static files
       '/static/*': getStatic,
-
-    //serve minified files
       '/minified/:id': getMinified,
-
-    //serve read only pad
       '/ro/:id': getRoCombinator(
         serverName,
         {ro: readOnlyManager},
@@ -517,45 +523,29 @@ function init(additionalSetup){
         ERR,
         exporthtml
       ),
-
-    //serve pad.html under /p
       '/p/:pad': sendStaticIfPad(
         goToPad,
         padManager,
         path,
         "pad.html"
       )
-
-    //serve timeslider.html under /p/$padname/timeslider
       '/p/:pad/timeslider': sendStaticIfPad(
         goToPad, padManager, path, "timeslider.html"
       ),
-    
-    //serve timeslider.html under /p/$padname/timeslider
-    //the above comment is wrong
       '/p/:pad/:rev?/export/:type': getExportPadCombinator(
         goToPad, settings, hasPadAccess, exportHandler, serverName
-      ),
-
-    //This is a api GET call, collect all post informations and pass it to the apiHandler
       '/api/1/:func': function(req, res)
       {
         apiCaller(req, res, req.query)
       },
-
-    //serve index.html under /
       '/': function(req, res)
       {
         return sendStatic(path, res, "index.html");
       },
-
-    //serve robots.txt
       '/robots.txt': function(req, res)
       {
         return sendStatic(path, res, "robots.txt");
       },
-
-    //serve favicon.ico
       '/favicon.ico': function(req, res)
       {
         return sendStatic(path, res, "custom/favicon.ico",
@@ -570,30 +560,32 @@ function init(additionalSetup){
       }
     };
 
-    var posts = {};
+    var posts = {
 
     //handle import requests
-      app.post('/p/:pad/import', postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler));
+	'/p/:pad/import': postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler)
     //This is a api POST call, collect all post informations and pass it to the apiHandler
-    app.post('/api/1/:func', function(req, res)
+	'/api/1/:func': function(req, res)
     {
       new formidable.IncomingForm().parse(req, function(err, fields, files) 
       {
         apiCaller(req, res, fields)
       });
-    });
+    },
     
     //The Etherpad client side sends information about how a disconnect happen
-      app.post('/ep/pad/connection-diagnostic-info', logOkPostCombinator("DIAGNOSTIC-INFO", "log", "diagnosticInfo"));
+	'/ep/pad/connection-diagnostic-info': logOkPostCombinator("DIAGNOSTIC-INFO", "log", "diagnosticInfo"),
     
     //The Etherpad client side sends information about client side javscript errors
-      app.post('/jserror', logOkPostCombinator("CLIENT SIDE JAVASCRIPT ERROR", "error", "errorInfo"));
+	'/jserror': logOkPostCombinator("CLIENT SIDE JAVASCRIPT ERROR", "error", "errorInfo")
+    };
     
 
-    additionalSetup(app, gets);
+    additionalSetup(app, gets, posts);
 
     
     for(var key in gets) app.get(key, gets[key]);
+    for(var key in posts) app.post(key, posts[key]);
 
     //let the server listen
     app.listen(settings.port, settings.ip);
@@ -610,4 +602,4 @@ function init(additionalSetup){
 }
 
 this.init = init;
-init(function(){});
+init(function(app, gets, posts){});
