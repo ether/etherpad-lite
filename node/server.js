@@ -232,6 +232,17 @@ function sendStatic(path, res, filename, callback){
   var filePath = path.normalize(__dirname + "/../static/" + filename);
   return res.sendfile(filePath, { maxAge: exports.maxAge }, callback);
 }
+function translateRoCombinator(managers, req, ERR, callback){
+  return function translateRo(callback){
+    function padBack(err, padId){
+      if(ERR(err, callback)) return;
+      //we need that to tell hasPadAccess about the pad
+      req.params.pad = padId;
+      callback(err, padId);
+    }
+    managers.ro.getPadID(req.params.id, padBack);
+  };
+}
 async.waterfall([
   //initalize the database
   setupDb,
@@ -284,7 +295,7 @@ async.waterfall([
         securityManager, req, res,
         callback,
         function errorback(err, accessObj){
-           return (ERR(err, callback));
+           return ERR(err, callback);
         }
       );
 /*
@@ -331,28 +342,31 @@ async.waterfall([
     { 
       res.header("Server", serverName);
       
-      var html;
-      var padId;
+      //var html;
+      //var padId;
       var pad;
       
-      async.series([
+      async.waterfall([
         //translate the read only pad to a padId
         function(callback)
         {
+          return translateRoCombinater({ro: readOnlyManager}, req, ERR, callback);
+/*
           readOnlyManager.getPadId(req.params.id, function(err, _padId)
           {
             if(ERR(err, callback)) return;
             
-            padId = _padId;
+            //padId = _padId;
             
             //we need that to tell hasPadAcess about the pad  
-            req.params.pad = padId; 
+            req.params.pad = _padId; 
             
-            callback();
+            callback(null, _padId);
           });
+*/
         },
         //render the html document
-        function(callback)
+        function(padId, callback)
         {
           //return if the there is no padId
           if(padId == null)
@@ -367,10 +381,15 @@ async.waterfall([
             exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
             {
               if(ERR(err, callback)) return;
-              html = _html;
-              callback();
+              //html = _html;
+              callback(null, _html);
             });
           });
+        },
+        function(html, callback)
+        {
+          res.send(html);
+          return callback(null);
         }
       ], function(err)
       {
@@ -380,8 +399,6 @@ async.waterfall([
           
         if(err == "notfound")
           res.send('404 - Not Found', 404);
-        else
-          res.send(html);
       });
     });
     
