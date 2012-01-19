@@ -238,27 +238,27 @@ function translateRoCombinator(managers, req, ERR){
       if(ERR(err, callback)) return;
       //we need that to tell hasPadAccess about the pad
       req.params.pad = padId;
-      callback(err, padId);
+      return callback(err, padId);
     }
-    managers.ro.getPadID(req.params.id, padBack);
+    return managers.ro.getPadID(req.params.id, padBack);
   };
 }
 function roAsyncOutCombinator(ERR, callback){
   return function(err, data){
     if(ERR(err, callback)) return;
-    callback(err, data);
+    return callback(err, data);
   }
 }
 function roAccessbackCombinator(exporthtml, padId, callback){
-  return function(){
-    exporthtml.getPadHTMLDocument(padId, null, false, callback);
+  return function accessBack(){
+    return exporthtml.getPadHTMLDocument(padId, null, false, callback);
   }
 }
 function roRenderCombinator(padAccessp, req, res, exporthtml, ERR){
   return function(padId, callback){
     if(null == padId)
      return callback("notfound");
-    padAccessp(
+    return padAccessp(
       req, res,
       roAccessbackCombinator(
         exporthtml, padId,
@@ -267,6 +267,33 @@ function roRenderCombinator(padAccessp, req, res, exporthtml, ERR){
         )
       )
     );
+  }
+}
+function roBindSendBackCombinator(res){
+  return function(html, callback){
+   res.send(html);
+   return callback(null);
+  }
+}
+function roErrBackCombinator(ERR, res){
+  return function(err){
+    if(!err) return
+    if("notfound" == err)
+	return res.send("404 - Not Found", 404);
+    return ERR(err);
+  }
+}
+function getRoCombinator(serverName, managers, padAccessp, ERR, exporthtml){
+  return function(req, res){
+    res.header("Server", serverName);
+    return async.waterfall(
+      [
+        translateRoCombinator(managers),
+          roRenderCombinator(padAccessp, req, res, exporthtml, ERR),
+        roBindSendBackCombinator(res)
+      ],
+      roErrBackCombinator(ERR, res))
+    )
   }
 }
 async.waterfall([
@@ -364,32 +391,7 @@ async.waterfall([
     }
     
     //serve read only pad
-    app.get('/ro/:id', function(req, res)
-    { 
-      res.header("Server", serverName);
-      
-      //var html;
-      //var padId;
-      var pad;
-      
-      async.waterfall([
-        translateRoCombinater({ro: readOnlyManager}, req, ERR),
-        roRenderCombinator(hasPadAccess, req, res, exporthtml, ERR),
-        function(html, callback)
-        {
-          res.send(html);
-          return callback(null);
-        }
-      ], function(err)
-      {
-        //throw any unexpected error
-        if(err && err != "notfound")
-          ERR(err);
-          
-        if(err == "notfound")
-          res.send('404 - Not Found', 404);
-      });
-    });
+      app.get('/ro/:id', getRoCombinator(serverName, {ro: readOnlyManager}, hasPadAccess, ERR, exporthtml));
     
     //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
     function goToPad(req, res, render) {
