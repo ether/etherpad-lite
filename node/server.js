@@ -112,12 +112,33 @@ function padAccessCombinator(securityManager, req, res, callback, errorback){
   )*/
 }
 function getStatic(req, res){
- res.header("Server", serverName);
- var filePath = path.normalize(
-  __dirname + "/.." +
-   req.url.replace(/\.\./g, '').split("?")[0]
- );
- res.sendfile(filePath, { maxAge: exports.maxAge });
+  res.header("Server", serverName);
+  var filePath = path.normalize(
+    __dirname + "/.." +
+      req.url.replace(/\.\./g, '').split("?")[0]
+  );
+  res.sendfile(filePath, { maxAge: exports.maxAge });
+}
+function getMinified(req, res, next)
+{
+  res.header("Server", serverName);
+  
+  var id = req.params.id;
+  
+  if(id == "pad.js" || id == "timeslider.js")
+  {
+    minify.minifyJS(req,res,id);
+  }
+  else
+  {
+    next();
+  }
+}
+function checkPadName(padManager, req, res, callback){
+  //ensure the padname is valid and the url doesn't end with a /
+  if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
+    return res.send("Such a padname is forbidden", 404);
+  return callback();
 }
 async.waterfall([
   //initalize the database
@@ -159,30 +180,10 @@ async.waterfall([
     });
     
     //serve static files
-    app.get('/static/*', function(req, res)
-    { 
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/.." +
-                                    req.url.replace(/\.\./g, '').split("?")[0]);
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
+    app.get('/static/*', getStatic);
     
     //serve minified files
-    app.get('/minified/:id', function(req, res, next)
-    { 
-      res.header("Server", serverName);
-      
-      var id = req.params.id;
-      
-      if(id == "pad.js" || id == "timeslider.js")
-      {
-        minify.minifyJS(req,res,id);
-      }
-      else
-      {
-        next();
-      }
-    });
+    app.get('/minified/:id', getMinified);
     
     //checks for padAccess
     function hasPadAccess(req, res, callback)
@@ -294,13 +295,9 @@ async.waterfall([
     
     //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
     function goToPad(req, res, render) {
-      //ensure the padname is valid and the url doesn't end with a /
-      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
-      {
-        res.send('Such a padname is forbidden', 404);
-      }
-      else
-      {
+     return checkPadName(
+       padManager, req, res,
+       function callback(){
         padManager.sanitizePadId(req.params.pad, function(padId) {
           //the pad id was sanitized, so we redirect to the sanitized version
           if(padId != req.params.pad)
@@ -315,7 +312,8 @@ async.waterfall([
             render();
           }
         });
-      }
+       }
+     );
     }
     
     //serve pad.html under /p
