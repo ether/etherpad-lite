@@ -1106,7 +1106,7 @@ function OUTER(gscope)
     {
       hasLineNumbers = !! value;
       // disable line numbers on mobile devices
-      if (mobile.browser) hasLineNumbers = false;
+      if (browser.mobile) hasLineNumbers = false;
       setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
       fixView();
     }
