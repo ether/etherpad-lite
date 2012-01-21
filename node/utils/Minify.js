@@ -35,11 +35,6 @@ var os = require('os');
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
-module.exports = function(opts) {
-  settings = opts;
-  return exports;
-}
-
 /**
  * creates the minifed javascript for the given minified name
  * @param req the Express request
