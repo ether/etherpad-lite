@@ -86,11 +86,6 @@ function OUTER(gscope)
   var hasLineNumbers = true;
   var isStyled = true;
   
-  // check for mobile os presence
-  var ua = navigator.userAgent.toLowerCase();
-  var isAndroid = ua.indexOf("android") > -1;
-  var isMobileSafari = ua.indexOf("mobile") > -1;
-
   // space around the innermost iframe element
   var iframePadLeft = MIN_LINEDIV_WIDTH + LINE_NUMBER_PADDING_RIGHT + EDIT_BODY_PADDING_LEFT;
   var iframePadTop = EDIT_BODY_PADDING_TOP;
@@ -1111,7 +1106,7 @@ function OUTER(gscope)
     {
       hasLineNumbers = !! value;
       // disable line numbers on mobile devices
-      if(isAndroid || isMobileSafari) hasLineNumbers = false;
+      if (mobile.browser) hasLineNumbers = false;
       setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
       fixView();
     }
