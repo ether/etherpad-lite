@@ -20,17 +20,35 @@
  * limitations under the License.
  */
 
+//export app and handle mounting
+var express = require('express');
+var app = express.createServer();
+var fs = require('fs');
+var ioApp = app;
+
+
+var settings = require('./utils/Settings');
+var minify = require('./utils/Minify');
+var db = require('./db/DB');
+
+exports.helpExpress = function(opts) {
+  console.log('helping express', opts);
+  if (opts.basepath) app.set('basepath',opts.basepath);
+  if (opts.settings) { 
+    fs.writeFile(__dirname+'/../settings.json',JSON.stringify(opts.settings))
+  }
+  settings = require('./utils/Settings');
+  minify = require('./utils/Minify');
+  db = require('./db/DB');
+  return app;
+}
+ 
 var ERR = require("async-stacktrace");
 var log4js = require('log4js');
 var os = require("os");
 var socketio = require('socket.io');
-var fs = require('fs');
-var settings = require('./utils/Settings');
-var db = require('./db/DB');
 var async = require('async');
-var express = require('express');
 var path = require('path');
-var minify = require('./utils/Minify');
 var formidable = require('formidable');
 var apiHandler;
 var exportHandler;
@@ -59,20 +77,6 @@ catch(e)
 console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
-
-//export app and handle mounting
-var app = express.createServer();
-var ioApp = app;
-
-exports.helpExpress = function(opts) {
-  console.log('helping express', opts);
-  if (opts.basepath) app.set('basepath',opts.basepath);
-  if (opts.settings) { 
-    settings = opts.settings;
-    minify = require('./utils/Minify')(opts.settings);
-  }
-  return app;
-}
 
 app.mounted(function(other){
   ioApp = other;
