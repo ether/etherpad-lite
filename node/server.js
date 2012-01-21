@@ -60,6 +60,25 @@ console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 
+//export app and handle mounting
+var app = express.createServer();
+var ioApp = app;
+
+exports.helpExpress = function(opts) {
+  console.log('helping express', opts);
+  if (opts.basepath) app.set('basepath',opts.basepath);
+  if (opts.settings) { 
+    settings = opts.settings;
+    minify = require('./utils/Minify')(opts.settings);
+  }
+  return app;
+}
+
+app.mounted(function(other){
+  ioApp = other;
+  console.log('mounted pad');
+});
+
 //cache 6 hours
 exports.maxAge = 1000*60*60*6;
 
@@ -76,7 +95,7 @@ async.waterfall([
   function (callback)
   {
     //create server
-    var app = express.createServer();
+    //var app = express.createServer();
     
     //load modules that needs a initalized db
     readOnlyManager = require("./db/ReadOnlyManager");
@@ -425,9 +444,10 @@ async.waterfall([
     });
     
     //let the server listen
-    app.listen(settings.port, settings.ip);
-    console.log("Server is listening at " + settings.ip + ":" + settings.port);
-
+    if (!module.parent) {
+      app.listen(settings.port, settings.ip);
+      console.log("Server is listening at " + settings.ip + ":" + settings.port);
+    }
     var onShutdown = false;
     var gracefulShutdown = function(err)
     {
@@ -447,7 +467,9 @@ async.waterfall([
       console.log("graceful shutdown...");
       
       //stop the http server
-      app.close();
+      if(!module.parent) {
+        app.close();
+      }
 
       //do the db shutdown
       db.db.doShutdown(function()
@@ -473,7 +495,7 @@ async.waterfall([
     process.on('uncaughtException', gracefulShutdown);
 
     //init socket.io and redirect all requests to the MessageHandler
-    var io = socketio.listen(app);
+    var io = socketio.listen(ioApp);
     
     //this is only a workaround to ensure it works with all browers behind a proxy
     //we should remove this when the new socket.io version is more stable
@@ -510,7 +532,7 @@ async.waterfall([
     socketIORouter.setSocketIO(io);
     socketIORouter.addComponent("pad", padMessageHandler);
     socketIORouter.addComponent("timeslider", timesliderMessageHandler);
-    
+
     callback(null);  
   }
 ]);
