@@ -87,11 +87,20 @@ exports.abiwordAvailable = function()
   }
 }
 
-//read the settings sync
-var settingsStr = fs.readFileSync(__dirname+"/../../settings.json").toString();
+var settingsStr = '{}';
 
-//remove all comments
-settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
+try
+{
+  //read the settings sync
+  settingsStr = fs.readFileSync(__dirname+"/../../settings.json").toString();
+  
+  //remove all comments
+  settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
+}
+catch(e)
+{
+  console.warn('could not read '+__dirname+"/../../settings.json")
+}
 
 //try to parse the settings
 var settings;
