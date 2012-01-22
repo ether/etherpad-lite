@@ -13,6 +13,7 @@
   var clientVars = {};  
   // ]]>
   </script>
+  <script src="../static/js/require-kernel.js"></script>
   <script src="../socket.io/socket.io.js"></script>
   <script src="../minified/pad.js"></script>
   <link href="../static/custom/pad.css" rel="stylesheet">
@@ -336,6 +337,14 @@
 <input type="hidden" class="diagnosticInfo" name="diagnosticInfo"/>
 <input type="hidden" class="missedChanges" name="missedChanges"/>
 </form>
+
+<script>
+  /* TODO: These globals shouldn't exist. */
+  pad = require('/pad2').pad;
+  chat = require('/chat').chat;
+  padeditbar = require('/pad_editbar').padeditbar;
+  padimpexp = require('/pad_impexp').padimpexp;
+</script>
 
 </body>
 </html>

@@ -28,6 +28,8 @@ Ace2Editor.registry = {
   nextId: 1
 };
 
+var plugins = require('/plugins').plugins;
+
 function Ace2Editor()
 {
   var ace2 = Ace2Editor;
@@ -214,24 +216,41 @@ function Ace2Editor()
 
     return {embeded: embededFiles, remote: remoteFiles};
   }
+  function pushRequireScriptTo(buffer) {
+    /* Folling is for packaging regular expression. */
+    /* $$INCLUDE_JS("../static/js/require-kernel.js"); */
+    var KERNEL_SOURCE = '../static/js/require-kernel.js';
+    if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
+      buffer.push('<script type="text/javascript">');
+      buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
+      buffer.push('<\/script>');
+    } else {
+      buffer.push('<script type="application/javascript" src="'+KERNEL_SOURCE+'"><\/script>');
+    }
+  }
   function pushScriptTagsFor(buffer, files) {
     var sorted = sortFilesByEmbeded(files);
     var embededFiles = sorted.embeded;
     var remoteFiles = sorted.remote;
 
-    if (embededFiles.length > 0) {
-      buffer.push('<script type="text/javascript">');
-      for (var i = 0, ii = embededFiles.length; i < ii; i++) {
-        var file = embededFiles[i];
-        buffer.push(Ace2Editor.EMBEDED[file].replace(/<\//g, '<\\/'));
-        buffer.push(';\n');
-      }
-      buffer.push('<\/script>');
-    }
     for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
       var file = remoteFiles[i];
+      file = file.replace(/^\.\.\/static\/js\//, '../minified/');
       buffer.push('<script type="application/javascript" src="' + file + '"><\/script>');
     }
+
+    buffer.push('<script type="text/javascript">');
+    for (var i = 0, ii = embededFiles.length; i < ii; i++) {
+      var file = embededFiles[i];
+      buffer.push(Ace2Editor.EMBEDED[file].replace(/<\//g, '<\\/'));
+      buffer.push(';\n');
+    }
+    for (var i = 0, ii = files.length; i < ii; i++) {
+      var file = files[i];
+      file = file.replace(/^\.\.\/static\/js\//, '');
+      buffer.push('require('+ JSON.stringify('/' + file) + ');\n');
+    }
+    buffer.push('<\/script>');
   }
   function pushStyleTagsFor(buffer, files) {
     var sorted = sortFilesByEmbeded(files);
@@ -317,6 +336,7 @@ function Ace2Editor()
       $$INCLUDE_JS("../static/js/linestylefilter.js");
       $$INCLUDE_JS("../static/js/domline.js");
       $$INCLUDE_JS("../static/js/ace2_inner.js");
+      pushRequireScriptTo(iframeHTML);
       pushScriptTagsFor(iframeHTML, includedJS);
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
@@ -370,3 +390,5 @@ function Ace2Editor()
 
   return editor;
 }
+
+exports.Ace2Editor = Ace2Editor;

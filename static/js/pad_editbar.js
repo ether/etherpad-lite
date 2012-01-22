@@ -20,6 +20,10 @@
  * limitations under the License.
  */
 
+var padutils = require('/pad_utils').padutils;
+var padeditor = require('/pad_editor').padeditor;
+var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
+
 var padeditbar = (function()
 {
 
@@ -230,3 +234,5 @@ var padeditbar = (function()
   };
   return self;
 }());
+
+exports.padeditbar = padeditbar;

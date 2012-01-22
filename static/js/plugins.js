@@ -31,3 +31,5 @@ plugins = {
     }).join(sep || "");
   }
 };
+
+exports.plugins = plugins;

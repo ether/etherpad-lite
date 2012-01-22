@@ -147,7 +147,17 @@ function htmlPrettyEscape(str)
   }).replace(/\r?\n/g, '\\n');
 }
 
-if (typeof exports !== "undefined")
-{
-  exports.map = map;
-}
+exports.isNodeText = isNodeText;
+exports.object = object;
+exports.extend = extend;
+exports.forEach = forEach;
+exports.map = map;
+exports.filter = filter;
+exports.isArray = isArray;
+exports.browser = browser;
+exports.getAssoc = getAssoc;
+exports.setAssoc = setAssoc;
+exports.binarySearch = binarySearch;
+exports.binarySearchInfinite = binarySearchInfinite;
+exports.htmlPrettyEscape = htmlPrettyEscape;
+exports.map = map;
