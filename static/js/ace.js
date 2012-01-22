@@ -30,7 +30,6 @@ Ace2Editor.registry = {
 
 function Ace2Editor()
 {
-  var thisFunctionsName = "Ace2Editor";
   var ace2 = Ace2Editor;
 
   var editor = {};
@@ -322,6 +321,10 @@ function Ace2Editor()
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
       iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
+
+      // Expose myself to global for my child frame.
+      var thisFunctionsName = "ChildAccessibleAce2Editor";
+      (function () {return this}())[thisFunctionsName] = Ace2Editor;
 
       var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); ' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
       'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');doc.write(text); doc.close(); ' + '}, 0); }';
