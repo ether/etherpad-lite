@@ -516,7 +516,12 @@ exports.updatePadClients = function(pad, callback)
         ], function(err)
         {
           if(ERR(err, callback)) return;
-            
+          // next if session has not been deleted
+          if(sessioninfos[session] == null)
+          {
+            callback(null);
+            return;
+          }
           if(author == sessioninfos[session].author)
           {
             socketio.sockets.sockets[session].json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
@@ -538,7 +543,10 @@ exports.updatePadClients = function(pad, callback)
       callback
     );
       
-    sessioninfos[session].rev = pad.getHeadRevisionNumber();
+    if(sessioninfos[session] != null)
+    {
+      sessioninfos[session].rev = pad.getHeadRevisionNumber();
+    }
   },callback);  
 }
 
