@@ -111,6 +111,9 @@ You can join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev)
 
 You also help the project, if you only host a Etherpad Lite instance and share your experience with us.
 
+Please consider using [jshint](http://www.jshint.com/about/) if you plan to
+contribute to Etherpad Lite.
+
 # Modules created for this project
 
 * [ueberDB](https://github.com/Pita/ueberDB) "transforms every database into a object key value store" - manages all database access
