@@ -34,6 +34,7 @@ var padutils = {
   },
   uniqueId: function()
   {
+    var pad = require('/pad2').pad; // Sidestep circular dependency
     function encodeNum(n, width)
     {
       // returns string that is exactly 'width' chars, padding with zeros
@@ -226,6 +227,7 @@ var padutils = {
   },
   timediff: function(d)
   {
+    var pad = require('/pad2').pad; // Sidestep circular dependency
     function format(n, word)
     {
       n = Math.round(n);
@@ -486,3 +488,5 @@ window.onerror = function test (msg, url, linenumber)
  
  return false;
 };
+
+exports.padutils = padutils;

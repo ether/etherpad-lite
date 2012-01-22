@@ -114,7 +114,15 @@ async.waterfall([
       gracefulShutdown();
     });
     
+    //serve minified files
+    app.get('/minified/:filename', minify.minifyJS);
+
     //serve static files
+    app.get('/static/js/require-kernel.js', function (req, res, next) {
+      res.header("Content-Type","application/javascript; charset: utf-8");
+      res.write(minify.requireDefinition());
+      res.end();
+    });
     app.get('/static/*', function(req, res)
     { 
       var filePath = path.normalize(__dirname + "/.." +

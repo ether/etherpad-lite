@@ -25,6 +25,14 @@
 // requires: top
 // requires: plugins
 // requires: undefined
+
+var plugins = undefined;
+try {
+  plugins = require('/plugins').plugins;
+} catch (e) {
+  // silence
+}
+
 var domline = {};
 domline.noop = function()
 {};
@@ -310,3 +318,5 @@ domline.processSpaces = function(s, doesWrap)
   }
   return parts.join('');
 };
+
+exports.domline = domline;

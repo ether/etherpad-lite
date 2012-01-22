@@ -35,6 +35,7 @@
   , "pad_editbar.js"
   , "pad_docbar.js"
   , "pad_modals.js"
+  , "pad_savedrevs.js"
   , "pad_impexp.js"
   , "easysync2_client.js"
   , "domline_client.js"

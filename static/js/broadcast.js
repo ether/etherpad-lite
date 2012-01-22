@@ -22,6 +22,12 @@
 
 var global = this;
 
+var makeCSSManager = require('/cssmanager_client').makeCSSManager;
+var domline = require('/domline_client').domline;
+var Changeset = require('/easysync2_client').Changeset;
+var AttribPool = require('/easysync2_client').AttribPool;
+var linestylefilter = require('/linestylefilter_client').linestylefilter;
+
 function loadBroadcastJS()
 {
   // just in case... (todo: this must be somewhere else in the client code.)
@@ -758,3 +764,5 @@ function loadBroadcastJS()
 
   receiveAuthorData(clientVars.historicalAuthorData);
 }
+
+exports.loadBroadcastJS = loadBroadcastJS;

@@ -2508,3 +2508,6 @@ Changeset.followAttributes = function(att1, att2, pool)
   }
   return buf.toString();
 };
+
+exports.Changeset = Changeset;
+exports.AttribPool = AttribPool;

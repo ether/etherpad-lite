@@ -29,6 +29,7 @@ var pro = require("uglify-js").uglify;
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var gzip = require('gzip');
+var RequireKernel = require('require-kernel');
 var server = require('../server');
 var os = require('os');
 
@@ -52,10 +53,21 @@ exports.minifyJS = function(req, res, next)
   var jsFiles = undefined;
   if (Object.prototype.hasOwnProperty.call(tar, jsFilename)) {
     jsFiles = tar[jsFilename];
+    _handle(req, res, jsFilename, jsFiles)
   } else {
-    return next();
+    // Not in tar list, but try anyways, if it fails, pass to `next`.
+    jsFiles = [jsFilename];
+    fs.stat(JS_DIR + jsFilename, function (error, stats) {
+      if (error || !stats.isFile()) {
+        next();
+      } else {
+        _handle(req, res, jsFilename, jsFiles);
+      }
+    });
   }
+}
 
+function _handle(req, res, jsFilename, jsFiles) {
   res.header("Content-Type","text/javascript");
   
   //minifying is enabled
@@ -151,7 +163,7 @@ exports.minifyJS = function(req, res, next)
           return;
         }
       
-        var founds = fileValues["ace.js"].match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"]+\)/gi);
+        var founds = fileValues["ace.js"].match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
         
         //go trough all includes
         async.forEach(founds, function (item, callback)
@@ -162,21 +174,31 @@ exports.minifyJS = function(req, res, next)
           var type = item.match(/INCLUDE_[A-Z]+/g)[0].substr("INCLUDE_".length);
         
           //read the included file
-          fs.readFile(ROOT_DIR + filename, "utf-8", function(err, data)
+          var shortFilename = filename.replace(/^..\/static\/js\//, '');
+          if (shortFilename == 'require-kernel.js') {
+            // the kernel isn’t actually on the file system.
+            handleEmbed(null, requireDefinition());
+          } else {
+            fs.readFile(ROOT_DIR + filename, "utf-8", handleEmbed);
+          }
+          function handleEmbed(err, data)
           {         
             if(ERR(err, callback)) return;
 
             if(type == "JS")
             {
-              embeds[filename] = compressJS([data]);
+              if (shortFilename == 'require-kernel.js') {
+                embeds[filename] = compressJS([data]);
+              } else {
+                embeds[filename] = compressJS([isolateJS(data, shortFilename)]);
+              }
             }
             else
             {
               embeds[filename] = compressCSS([data]);
             }
-
             callback();
-          });
+          }
         }, function(err)
         {
           if(ERR(err, callback)) return;
@@ -197,14 +219,9 @@ exports.minifyJS = function(req, res, next)
       //put all together and write it into a file
       function(callback)
       {
-        //put all javascript files in an array
-        var values = [];
-        for(var i in jsFiles)
-        {
-          values.push(fileValues[jsFiles[i]]);
-        }
-        
         //minify all javascript files to one
+        var values = [];
+        tarCode(jsFiles, fileValues, function (content) {values.push(content)});
         var result = compressJS(values);
         
         async.parallel([
@@ -280,16 +297,42 @@ exports.minifyJS = function(req, res, next)
     {
       if(ERR(err)) return;
       
-      for(var i=0;i<jsFiles.length;i++)
-      {
-        var fileName = jsFiles[i];
-        res.write("\n\n\n/*** File: static/js/" + fileName + " ***/\n\n\n");
-        res.write(fileValues[fileName]);
-      }
+      tarCode(jsFiles, fileValues, function (content) {res.write(content)});
       
       res.end();
     });
   }
+}
+
+exports.requireDefinition = requireDefinition;
+function requireDefinition() {
+  return 'var require = ' + RequireKernel.kernelSource + ';\n';
+}
+
+function tarCode(filesInOrder, files, write) {
+  for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
+    var filename = filesInOrder[i];
+    write("\n\n\n/*** File: static/js/" + filename + " ***/\n\n\n");
+    write(isolateJS(files[filename], filename));
+  }
+
+  for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
+    var filename = filesInOrder[i];
+    write('require(' + JSON.stringify('/' + filename.replace(/^\/+/, '')) + ');\n');
+  }
+}
+
+// Wrap the following code in a self executing function and assign exports to
+// global. This is a first step towards removing symbols from the global scope.
+// exports is global and require is a function that returns global.
+function isolateJS(code, filename) {
+  var srcPath = JSON.stringify('/' + filename);
+  var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
+  return 'require.define({'
+    + srcPath + ': '
+      + 'function (require, exports, module) {' + code + '}'
+    + (srcPath != srcPathAbbv ? '\n,' + srcPathAbbv + ': null' : '')
+    + '});\n';
 }
 
 function compressJS(values)

@@ -25,6 +25,8 @@ $(window).bind("load", function()
   getCollabClient.windowLoaded = true;
 });
 
+var chat = require('/chat').chat;
+
 // Dependency fill on init. This exists for `pad.socket` only.
 // TODO: bind directly to the socket.
 var pad = undefined;
@@ -722,3 +724,6 @@ function selectElementContents(elem)
     }
   }
 }
+
+exports.getCollabClient = getCollabClient;
+exports.selectElementContents = selectElementContents;

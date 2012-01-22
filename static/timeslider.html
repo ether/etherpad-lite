@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
   
+  <script type="text/javascript" src="../../static/js/require-kernel.js"></script>
   <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
   <script type="text/javascript" src="../../minified/timeslider.js"></script>
   
@@ -18,6 +19,10 @@
   <script>
 // <![CDATA[
   var clientVars = {};
+
+  /* TODO: These globals shouldn't exist. */
+  padeditbar = require('/pad_editbar').padeditbar;
+  padimpexp = require('/pad_impexp').padimpexp;
 
   function createCookie(name,value,days) 
   {
@@ -141,9 +146,9 @@
     clientVars = message.data;
     
     //load all script that doesn't work without the clientVars
-    loadBroadcastSliderJS();
-    loadBroadcastRevisionsJS();
-    loadBroadcastJS();
+    require('/broadcast_slider').loadBroadcastSliderJS();
+    require('/broadcast_revisions').loadBroadcastRevisionsJS();
+    require('/broadcast').loadBroadcastJS();
 
     //initialize export ui
     padimpexp.init();
