@@ -95,7 +95,8 @@ var browser = {
   opera: /opera/.test(userAgent),
   msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
   mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent),
-  windows: /windows/.test(userAgent) // dgreensp
+  windows: /windows/.test(userAgent)
+  mobile: /mobile/.test(userAgent) || /android/.test(userAgent);
 };
 
 
