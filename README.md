@@ -98,9 +98,7 @@ Look at this wiki pages:
 You can find more information in the [wiki](https://github.com/Pita/etherpad-lite/wiki). Feel free to improve these wiki pages
 
 # Develop
-<iframe width="560" height="315" src="http://www.youtube.com/embed/67-Q26YH97E" frameborder="0" allowfullscreen></iframe>
-
-If you're new to git and github, start here <http://learn.github.com/p/intro.html>.
+If you're new to git and github, start by watching [this video](http://youtu.be/67-Q26YH97E) then read this [git guide](http://learn.github.com/p/intro.html).
 
 If you're new to node.js, start with this video <http://youtu.be/jo_B4LTHi3I>.
 
