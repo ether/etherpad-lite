@@ -10,4 +10,4 @@ Module file names starts with a capital letter and uses camelCase
 
 # Where does it start?
 
-server.js is started directly
+serve.js invokes init in server.js

@@ -1,2 +1,2 @@
 cd node
-..\bin\node server.js
+..\bin\node serve.js

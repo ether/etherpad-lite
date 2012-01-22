@@ -1,5 +1,5 @@
 /**
- * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server. 
+ * This module is included by serve.js, which bin/run.sh invokes. It sets up a Express HTTP and a Socket.IO Server. 
  * Static file Requests are answered directly from this module, Socket.IO messages are passed 
  * to MessageHandler and minfied requests are passed to minified.
  */
@@ -66,274 +66,297 @@ exports.maxAge = 1000*60*60*6;
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
 
-async.waterfall([
-  //initalize the database
-  function (callback)
-  {
-    db.init(callback);
-  },
-  //initalize the http server
-  function (callback)
-  {
-    //create server
-    var app = express.createServer();
-    
-    //load modules that needs a initalized db
-    readOnlyManager = require("./db/ReadOnlyManager");
-    exporthtml = require("./utils/ExportHtml");
-    exportHandler = require('./handler/ExportHandler');
-    importHandler = require('./handler/ImportHandler');
-    apiHandler = require('./handler/APIHandler');
-    padManager = require('./db/PadManager');
-    securityManager = require('./db/SecurityManager');
-    socketIORouter = require("./handler/SocketIORouter");
-    
-    //install logging      
-    var httpLogger = log4js.getLogger("http");
-    app.configure(function() 
-    {
-      // Activate http basic auth if it has been defined in settings.json
-      if(settings.httpAuth != null) app.use(basic_auth);
+function setupDb(callback){
+  db.init(callback);
+}
 
-      // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
-      // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
-      if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
-        app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
-      app.use(express.cookieParser());
-    });
-    
-    app.error(function(err, req, res, next){
-      res.send(500);
-      console.error(err.stack ? err.stack : err.toString());
-      gracefulShutdown();
-    });
-    
-    //serve static files
-    app.get('/static/*', function(req, res)
-    { 
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/.." +
-                                    req.url.replace(/\.\./g, '').split("?")[0]);
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve minified files
-    app.get('/minified/:id', function(req, res, next)
-    { 
-      res.header("Server", serverName);
+function padAccessCombinator(securityManager, req, res, callback, errorback){
+  function checkback(err, accessObj){
+    if(err) return errorback(err);
+    if("grant" == accessObj.accessStatus) return callback();
+    return res.send("403 - Can't touch this", 403);
+  }
+  //works great for one session
+  //but what if there are multiple?
+  //if(!("sessionIDs" in req.cookies))
+  return securityManager.checkAccess(
+    req.params.pad,
+    req.cookies.sessionid,
+    req.cookies.token,
+    req.cookies.password,
+    checkback
+  );
+  /*sessIds = JSON.parse(req.cookies.sessionIDs);
+  var tasks = [];
+  function createTask(sid){
+    return function(cb){
+      return securityManager.checkAccess(
+        req.params.pad,
+        sid,
+        req.cookies.token,
+        req.cookies.password,
+        cb//function(err, accessObj){return cb(err, accessObj);}
+      );
+    }
+  }
+  for(var i = 0; i < sessIds.length; i++)
+    tasks[i] = createTasks(sessIds[i]);
+  return async.parallel(
+    tasks,
+    function(err, obs){
+      if(err) return errorback(err);
+      for(var i = 0; i < obs.length; i++)
+        if("grant" == obs[i].accessStatus) return callback(null);
+      return res.send("none of those IDs worked", 403);
+    }
+  )*/
+}
+function getStatic(req, res){
+  res.header("Server", serverName);
+  var filePath = path.normalize(
+    __dirname + "/.." +
+      req.url.replace(/\.\./g, '').split("?")[0]
+  );
+  res.sendfile(filePath, { maxAge: exports.maxAge });
+}
+function getMinified(req, res, next)
+{
+  res.header("Server", serverName);
+  
+  var id = req.params.id;
+  
+  if(id == "pad.js" || id == "timeslider.js")
+  {
+    minify.minifyJS(req,res,id);
+  }
+  else
+  {
+    next();
+  }
+}
+function checkPadName(padManager, req, res, callback){
+  //ensure the padname is valid and the url doesn't end with a /
+  if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
+    return res.send("Such a padname is forbidden", 404);
+  return callback();
+}
+function setupIo(socketio, log4js, settings, socketIORouter, app){
+  //init socket.io and redirect all requests to the MessageHandler
+  var io = socketio.listen(app);
+  
+  //this is only a workaround to ensure it works with all browers behind a proxy
+  //we should remove this when the new socket.io version is more stable
+  io.set('transports', ['xhr-polling']);
+  
+  var socketIOLogger = log4js.getLogger("socket.io");
+  io.set('logger', {
+    debug: function (str)
+    {
+      socketIOLogger.debug.apply(socketIOLogger, arguments);
+    }, 
+    info: function (str)
+    {
+      socketIOLogger.info.apply(socketIOLogger, arguments);
+    },
+    warn: function (str)
+    {
+      socketIOLogger.warn.apply(socketIOLogger, arguments);
+    },
+    error: function (str)
+    {
+      socketIOLogger.error.apply(socketIOLogger, arguments);
+    },
+  });
+  
+  //minify socket.io javascript
+  if(settings.minify)
+    io.enable('browser client minification');
+  
+  var padMessageHandler = require("./handler/PadMessageHandler");
+  var timesliderMessageHandler = require("./handler/TimesliderMessageHandler");
+  
+  //Initalize the Socket.IO Router
+  socketIORouter.setSocketIO(io);
+  socketIORouter.addComponent("pad", padMessageHandler);
+  socketIORouter.addComponent("timeslider", timesliderMessageHandler);
+  return io;
+}
+function setupShutdown(db, app){
+  var onShutdown = false;
+  var gracefulShutdown = function(err)
+  {
+    if(err && err.stack)
+    {
+      console.error(err.stack);
+    }
+    else if(err)
+    {
+      console.error(err);
+    }
       
-      var id = req.params.id;
+    //ensure there is only one graceful shutdown running
+    if(onShutdown) return;
+    onShutdown = true;
+  
+    console.log("graceful shutdown...");
+    
+    //stop the http server
+    app.close();
+
+    //do the db shutdown
+    db.db.doShutdown(function()
+    {
+      console.log("db sucessfully closed.");
       
-      if(id == "pad.js" || id == "timeslider.js")
-      {
-        minify.minifyJS(req,res,id);
+      process.exit(0);
+    });
+    
+    setTimeout(function(){
+      process.exit(1);
+    }, 3000);
+  }
+
+  //connect graceful shutdown with sigint and uncaughtexception
+  if(os.type().indexOf("Windows") == -1)
+  {
+    //sigint is so far not working on windows
+    //https://github.com/joyent/node/issues/1553
+    process.on('SIGINT', gracefulShutdown);
+  }
+  
+  return process.on('uncaughtException', gracefulShutdown);
+}
+function sendStatic(path, res, filename, callback){
+  if("function" != typeof callback) callback = function(){};
+  res.header("Server", serverName);
+  var filePath = path.normalize(__dirname + "/../static/" + filename);
+  return res.sendfile(filePath, { maxAge: exports.maxAge }, callback);
+}
+function translateRoCombinator(managers, req, ERR){
+  return function translateRo(callback){
+    function padBack(err, padId){
+      if(ERR(err, callback)) return;
+      //we need that to tell hasPadAccess about the pad
+      req.params.pad = padId;
+      return callback(err, padId);
+    }
+    return managers.ro.getPadID(req.params.id, padBack);
+  };
+}
+function roAsyncOutCombinator(ERR, callback){
+  return function(err, data){
+    if(ERR(err, callback)) return;
+    return callback(err, data);
+  }
+}
+function roAccessbackCombinator(exporthtml, padId, callback){
+  return function accessBack(){
+    return exporthtml.getPadHTMLDocument(padId, null, false, callback);
+  }
+}
+function roRenderCombinator(padAccessp, req, res, exporthtml, ERR){
+  return function(padId, callback){
+    if(null == padId)
+     return callback("notfound");
+    return padAccessp(
+      req, res,
+      roAccessbackCombinator(
+        exporthtml, padId,
+        roAsyncOutCombinator(
+          ERR, callback
+        )
+      )
+    );
+  }
+}
+function roBindSendBackCombinator(res){
+  return function(html, callback){
+   res.send(html);
+   return callback(null);
+  }
+}
+function roErrBackCombinator(ERR, res){
+  return function(err){
+    if(!err) return
+    if("notfound" == err)
+	return res.send("404 - Not Found", 404);
+    return ERR(err);
+  }
+}
+function getRoCombinator(serverName, managers, padAccessp, ERR, exporthtml){
+  return function(req, res){
+    res.header("Server", serverName);
+    return async.waterfall(
+      [
+        translateRoCombinator(managers),
+          roRenderCombinator(padAccessp, req, res, exporthtml, ERR),
+        roBindSendBackCombinator(res)
+      ],
+      roErrBackCombinator(ERR, res))
+    )
+  }
+}
+function sendStaticIfPad(goToPad, padManager, path, filename){
+  return function staticSender(req, res, next){
+    return goToPad(
+      req, res,
+      function goBack(){
+        return sendStatic(path, res, filename);
       }
-      else
+    );
+  };
+}
+function getExportPadCombinator(goToPad, settings, hasPadAccess, exportHandler, serverName){
+  return function getExportPad(req, res, next){
+    goToPad(req, res, function padback() {
+      var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
+      //send a 404 if we don't support this filetype
+      if(types.indexOf(req.params.type) == -1)
       {
         next();
-      }
-    });
-    
-    //checks for padAccess
-    function hasPadAccess(req, res, callback)
-    {
-      securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj)
-      {
-        if(ERR(err, callback)) return;
-        
-        //there is access, continue
-        if(accessObj.accessStatus == "grant")
-        {
-          callback();
-        }
-        //no access
-        else
-        {
-          res.send("403 - Can't touch this", 403);
-        }
-      });
-    }
-
-    //checks for basic http auth
-    function basic_auth (req, res, next) {
-      if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-        // fetch login and password
-        if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() == settings.httpAuth) {
-          next();
-          return;
-        }
+        return;
       }
       
-      res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
-      if (req.headers.authorization) {
-        setTimeout(function () {
-          res.send('Authentication required', 401);
-        }, 1000);
-      } else {
-        res.send('Authentication required', 401);
+      //if abiword is disabled, and this is a format we only support with abiword, output a message
+      if(settings.abiword == null &&
+         ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1)
+      {
+        res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
+        return;
       }
-    }
-    
-    //serve read only pad
-    app.get('/ro/:id', function(req, res)
-    { 
+        
+      res.header("Access-Control-Allow-Origin", "*");
       res.header("Server", serverName);
       
-      var html;
-      var padId;
-      var pad;
-      
-      async.series([
-        //translate the read only pad to a padId
-        function(callback)
-        {
-          readOnlyManager.getPadId(req.params.id, function(err, _padId)
-          {
-            if(ERR(err, callback)) return;
-            
-            padId = _padId;
-            
-            //we need that to tell hasPadAcess about the pad  
-            req.params.pad = padId; 
-            
-            callback();
-          });
-        },
-        //render the html document
-        function(callback)
-        {
-          //return if the there is no padId
-          if(padId == null)
-          {
-            callback("notfound");
-            return;
-          }
-          
-          hasPadAccess(req, res, function()
-          {
-            //render the html document
-            exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
-            {
-              if(ERR(err, callback)) return;
-              html = _html;
-              callback();
-            });
-          });
-        }
-      ], function(err)
+      hasPadAccess(req, res, function()
       {
-        //throw any unexpected error
-        if(err && err != "notfound")
-          ERR(err);
-          
-        if(err == "notfound")
-          res.send('404 - Not Found', 404);
-        else
-          res.send(html);
+        exportHandler.doExport(req, res, req.params.pad, req.params.type);
       });
     });
-    
-    //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
-    function goToPad(req, res, render) {
-      //ensure the padname is valid and the url doesn't end with a /
-      if(!padManager.isValidPadId(req.params.pad) || /\/$/.test(req.url))
-      {
-        res.send('Such a padname is forbidden', 404);
-      }
-      else
-      {
-        padManager.sanitizePadId(req.params.pad, function(padId) {
-          //the pad id was sanitized, so we redirect to the sanitized version
-          if(padId != req.params.pad)
-          {
-            var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + padId);
-            res.header('Location', real_path);
-            res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
-          }
-          //the pad id was fine, so just render it
-          else
-          {
-            render();
-          }
-        });
-      }
-    }
-    
-    //serve pad.html under /p
-    app.get('/p/:pad', function(req, res, next)
-    {    
-      goToPad(req, res, function() {
-        res.header("Server", serverName);
-        var filePath = path.normalize(__dirname + "/../static/pad.html");
-        res.sendfile(filePath, { maxAge: exports.maxAge });
-      });
-    });
-    
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', function(req, res, next)
-    {
-      goToPad(req, res, function() {
-        res.header("Server", serverName);
-        var filePath = path.normalize(__dirname + "/../static/timeslider.html");
-        res.sendfile(filePath, { maxAge: exports.maxAge });
-      });
-    });
-    
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
-    {
-      goToPad(req, res, function() {
-        var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
-        //send a 404 if we don't support this filetype
-        if(types.indexOf(req.params.type) == -1)
-        {
-          next();
-          return;
-        }
-        
-        //if abiword is disabled, and this is a format we only support with abiword, output a message
-        if(settings.abiword == null &&
-           ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1)
-        {
-          res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
-          return;
-        }
-        
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Server", serverName);
-        
-        hasPadAccess(req, res, function()
-        {
-          exportHandler.doExport(req, res, req.params.pad, req.params.type);
-        });
-      });
-    });
-    
-    //handle import requests
-    app.post('/p/:pad/import', function(req, res, next)
-    {
-      goToPad(req, res, function() {
-        //if abiword is disabled, skip handling this request
-        if(settings.abiword == null)
-        {
-          next();
-          return; 
-        }
-      
-        res.header("Server", serverName);
-        
-        hasPadAccess(req, res, function()
-        {
-          importHandler.doImport(req, res, req.params.pad);
-        });
-      });
-    });
-    
-    var apiLogger = log4js.getLogger("API");
+  }
+}
 
-    //This is for making an api call, collecting all post information and passing it to the apiHandler
-    var apiCaller = function(req, res, fields)
-    {
+function postImportPadCombinator(goToPad, settings, serverName, hasPadAccess, importHandler){
+  return function postImportPad(req, res, next){
+    goToPad(req, res, function padback() {
+      //if abiword is disabled, skip handling this request
+      if(settings.abiword == null)
+      {
+        next();
+        return; 
+      }
+    
+      res.header("Server", serverName);
+      
+      hasPadAccess(req, res, function()
+      {
+        importHandler.doImport(req, res, req.params.pad);
+      });
+    });
+  }
+}
+function apiCallerCombinator(serverName, apiLogger, apiHandler){
+  return function apiCaller(req, res, fields){
       res.header("Server", serverName);
       res.header("Content-Type", "application/json; charset=utf-8");
     
@@ -355,162 +378,232 @@ async.waterfall([
       
       //call the api handler
       apiHandler.handle(req.params.func, fields, req, res);
+  }
+}
+function logOkPostCombinator(prefix, consoleFn, field){
+  return function(req, res){
+    new formidable.IncomingForm().parse(
+      req,
+      function(err, fields, files){
+	  console[consoleFn](prefix + ": " + fields[field]);
+	  res.end("OK");
+      }
+    );
+  }
+}
+
+function configureCombinator(app, settings, basic_auth, log4js, httpLogger){
+  return function configBack() 
+  {
+    // Activate http basic auth if it has been defined in settings.json
+    if(settings.httpAuth != null) app.use(basic_auth);
+
+    // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
+    // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
+    if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
+      app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+    app.use(express.cookieParser());
+  };
+}
+
+//checks for basic http auth
+function basic_auth (req, res, next) {
+  if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
+    // fetch login and password
+    if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() == settings.httpAuth) {
+      next();
+      return;
     }
-    
-    //This is a api GET call, collect all post informations and pass it to the apiHandler
-    app.get('/api/1/:func', function(req, res)
+  }
+  
+  res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
+  if (req.headers.authorization) {
+    setTimeout(function () {
+      res.send('Authentication required', 401);
+    }, 1000);
+  } else {
+    res.send('Authentication required', 401);
+  }
+}
+
+function gotoPadCombinator(checkPadName, padManager){
+  return function gotoPad(req, res, render){
+    return checkPadName(
+      padManager, req, res,
+      function callback(){
+        padManager.sanitizePadId(req.params.pad, function(padId) {
+          //the pad id was sanitized, so we redirect to the sanitized version
+          if(padId != req.params.pad)
+          {
+            var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + padId);
+            res.header('Location', real_path);
+            res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
+          }
+          //the pad id was fine, so just render it
+          else
+          {
+            render();
+          }
+        });
+      }
+    );
+  }
+}
+
+function init(additionalSetup){
+ if("function" != typeof additionalSetup)
+  additionalSetup = function(){};
+ async.waterfall([
+  //initalize the database
+  setupDb,
+  //initalize the http server
+  function (callback)
+  {
+    //create server
+    var app = express.createServer();
+
+
+    //load modules that needs a initalized db
+    readOnlyManager = require("./db/ReadOnlyManager");
+    exporthtml = require("./utils/ExportHtml");
+    exportHandler = require('./handler/ExportHandler');
+    importHandler = require('./handler/ImportHandler');
+    apiHandler = require('./handler/APIHandler');
+    padManager = require('./db/PadManager');
+    securityManager = require('./db/SecurityManager');
+    socketIORouter = require("./handler/SocketIORouter");
+
+    var managers = {
+      ro: readOnlyManager,
+      security: securityManager
+    };
+    var handlers = {
+      "export": exportHandler,
+      "import": importHandler,
+      api: apiHandler
+    };
+
+    //install logging      
+    var httpLogger = log4js.getLogger("http");
+    var apiLogger = log4js.getLogger("API");
+
+
+    //checks for padAccess
+    function hasPadAccess(req, res, callback)
     {
-      apiCaller(req, res, req.query)
+      return padAccessCombinator(
+        securityManager, req, res,
+        callback,
+        function errorback(err, accessObj){
+           return ERR(err, callback);
+        }
+      );
+    }
+    //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
+      var goToPad = gotoPadCombinator(checkPadName, padManager);
+    //This is for making an api call, collecting all post information and passing it to the apiHandler
+    var apiCaller = apiCallerCombinator(serverName, apiLogger, apiHandler);
+
+
+
+    app.configure(configureCombinator(app, settings, basic_auth, log4js, httpLogger));
+    
+    app.error(function(err, req, res, next){
+      res.send(500);
+      console.error(err.stack ? err.stack : err.toString());
+      gracefulShutdown();
     });
 
-    //This is a api POST call, collect all post informations and pass it to the apiHandler
-    app.post('/api/1/:func', function(req, res)
-    {
-      new formidable.IncomingForm().parse(req, function(err, fields, files) 
+
+
+    var gets = {
+      '/static/*': getStatic,
+      '/minified/:id': getMinified,
+      '/ro/:id': getRoCombinator(
+        serverName,
+        {ro: readOnlyManager},
+        hasPadAccess,
+        ERR,
+        exporthtml
+      ),
+      '/p/:pad': sendStaticIfPad(
+        goToPad,
+        padManager,
+        path,
+        "pad.html"
+      )
+      '/p/:pad/timeslider': sendStaticIfPad(
+        goToPad, padManager, path, "timeslider.html"
+      ),
+      '/p/:pad/:rev?/export/:type': getExportPadCombinator(
+        goToPad, settings, hasPadAccess, exportHandler, serverName
+      '/api/1/:func': function(req, res)
       {
-        apiCaller(req, res, fields)
-      });
-    });
-    
-    //The Etherpad client side sends information about how a disconnect happen
-    app.post('/ep/pad/connection-diagnostic-info', function(req, res)
-    {
-      new formidable.IncomingForm().parse(req, function(err, fields, files) 
-      { 
-        console.log("DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
-        res.end("OK");
-      });
-    });
-    
-    //The Etherpad client side sends information about client side javscript errors
-    app.post('/jserror', function(req, res)
-    {
-      new formidable.IncomingForm().parse(req, function(err, fields, files) 
-      { 
-        console.error("CLIENT SIDE JAVASCRIPT ERROR: " + fields.errorInfo);
-        res.end("OK");
-      });
-    });
-    
-    //serve index.html under /
-    app.get('/', function(req, res)
-    {
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/index.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve robots.txt
-    app.get('/robots.txt', function(req, res)
-    {
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/robots.txt");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve favicon.ico
-    app.get('/favicon.ico', function(req, res)
-    {
-      res.header("Server", serverName);
-      var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
-      res.sendfile(filePath, { maxAge: exports.maxAge }, function(err)
+        apiCaller(req, res, req.query)
+      },
+      '/': function(req, res)
       {
-        //there is no custom favicon, send the default favicon
-        if(err)
-        {
-          filePath = path.normalize(__dirname + "/../static/favicon.ico");
-          res.sendfile(filePath, { maxAge: exports.maxAge });
-        }
-      });
-    });
+        return sendStatic(path, res, "index.html");
+      },
+      '/robots.txt': function(req, res)
+      {
+        return sendStatic(path, res, "robots.txt");
+      },
+      '/favicon.ico': function(req, res)
+      {
+        return sendStatic(path, res, "custom/favicon.ico",
+          function(err){
+            //there is no custom favicon, send the default favicon
+            if(err)
+            {
+              filePath = path.normalize(__dirname + "/../static/favicon.ico");
+              res.sendfile(filePath, { maxAge: exports.maxAge });
+            }
+          });
+      }
+    };
+
+    var posts = {
+      '/p/:pad/import': postImportPadCombinator(
+        goToPad, settings, serverName, hasPadAccess, importHandler
+      ),
+      '/api/1/:func': function(req, res){
+        new formidable.IncomingForm().parse(
+          req,
+          function(err, fields, files) 
+          {
+            apiCaller(req, res, fields)
+          });
+      },
+      '/ep/pad/connection-diagnostic-info': logOkPostCombinator(
+        "DIAGNOSTIC-INFO", "log", "diagnosticInfo"
+      ),
+      '/jserror': logOkPostCombinator(        
+        "CLIENT SIDE JAVASCRIPT ERROR", "error", "errorInfo"
+      )
+    };
+ 
+   
+
+    additionalSetup(app, gets, posts, managers, handlers, db);
+
     
+    for(var key in gets) app.get(key, gets[key]);
+    for(var key in posts) app.post(key, posts[key]);
+
     //let the server listen
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
 
-    var onShutdown = false;
-    var gracefulShutdown = function(err)
-    {
-      if(err && err.stack)
-      {
-        console.error(err.stack);
-      }
-      else if(err)
-      {
-        console.error(err);
-      }
-      
-      //ensure there is only one graceful shutdown running
-      if(onShutdown) return;
-      onShutdown = true;
-    
-      console.log("graceful shutdown...");
-      
-      //stop the http server
-      app.close();
+    setupShutdown(db, app);
 
-      //do the db shutdown
-      db.db.doShutdown(function()
-      {
-        console.log("db sucessfully closed.");
-        
-        process.exit(0);
-      });
-      
-      setTimeout(function(){
-        process.exit(1);
-      }, 3000);
-    }
-
-    //connect graceful shutdown with sigint and uncaughtexception
-    if(os.type().indexOf("Windows") == -1)
-    {
-      //sigint is so far not working on windows
-      //https://github.com/joyent/node/issues/1553
-      process.on('SIGINT', gracefulShutdown);
-    }
-    
-    process.on('uncaughtException', gracefulShutdown);
-
-    //init socket.io and redirect all requests to the MessageHandler
-    var io = socketio.listen(app);
-    
-    //this is only a workaround to ensure it works with all browers behind a proxy
-    //we should remove this when the new socket.io version is more stable
-    io.set('transports', ['xhr-polling']);
-    
-    var socketIOLogger = log4js.getLogger("socket.io");
-    io.set('logger', {
-      debug: function (str)
-      {
-        socketIOLogger.debug.apply(socketIOLogger, arguments);
-      }, 
-      info: function (str)
-      {
-        socketIOLogger.info.apply(socketIOLogger, arguments);
-      },
-      warn: function (str)
-      {
-        socketIOLogger.warn.apply(socketIOLogger, arguments);
-      },
-      error: function (str)
-      {
-        socketIOLogger.error.apply(socketIOLogger, arguments);
-      },
-    });
-    
-    //minify socket.io javascript
-    if(settings.minify)
-      io.enable('browser client minification');
-    
-    var padMessageHandler = require("./handler/PadMessageHandler");
-    var timesliderMessageHandler = require("./handler/TimesliderMessageHandler");
-    
-    //Initalize the Socket.IO Router
-    socketIORouter.setSocketIO(io);
-    socketIORouter.addComponent("pad", padMessageHandler);
-    socketIORouter.addComponent("timeslider", timesliderMessageHandler);
+    var io = setupIo(socketio, log4js, settings, socketIORouter, app);
     
     callback(null);  
   }
-]);
+ ]);
+
+}
+
+
+init(function(app, gets, posts, managers, handlers, db){});
