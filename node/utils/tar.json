@@ -1,6 +1,6 @@
 {
   "pad.js": [
-    "jquery.min.js"
+    "jquery.js"
   , "pad_utils.js"
   , "plugins.js"
   , "undo-xpopup.js"
@@ -23,7 +23,7 @@
   , "farbtastic.js"
   ]
 , "timeslider.js": [
-    "jquery.min.js"
+    "jquery.js"
   , "plugins.js"
   , "undo-xpopup.js"
   , "json2.js"

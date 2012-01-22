@@ -80,14 +80,8 @@ function isArray(testObject)
   return testObject && typeof testObject === 'object' && !(testObject.propertyIsEnumerable('length')) && typeof testObject.length === 'number';
 }
 
-if (typeof exports !== "undefined")
-{
-  userAgent = "node-js";
-}
-else
-{
-  userAgent = navigator.userAgent.toLowerCase();
-}
+var userAgent = (((function () {return this;})().navigator || {}).userAgent || 'node-js').toLowerCase();
+
 // Figure out what browser is being used (stolen from jquery 1.2.1)
 var browser = {
   version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],

@@ -32,6 +32,10 @@ var gzip = require('gzip');
 var server = require('../server');
 var os = require('os');
 
+var ROOT_DIR = path.normalize(__dirname + "/../" );
+var JS_DIR = ROOT_DIR + '../static/js/';
+var CSS_DIR = ROOT_DIR + '../static/css/';
+var CACHE_DIR = ROOT_DIR + '../var/';
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
@@ -40,20 +44,20 @@ var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
  * @param req the Express request
  * @param res the Express response
  */
-exports.minifyJS = function(req, res, jsFilename)
+exports.minifyJS = function(req, res, next)
 {
-  res.header("Content-Type","text/javascript");
+  var jsFilename = req.params['filename'];
   
   //choose the js files we need
   var jsFiles = undefined;
   if (Object.prototype.hasOwnProperty.call(tar, jsFilename)) {
     jsFiles = tar[jsFilename];
   } else {
-    throw new Error("there is no profile for creating " + name);
+    return next();
   }
 
-  var rootPath = path.normalize(__dirname + "/../../" );
-
+  res.header("Content-Type","text/javascript");
+  
   //minifying is enabled
   if(settings.minify)
   {
@@ -65,7 +69,7 @@ exports.minifyJS = function(req, res, jsFilename)
       //find out the highest modification date
       function(callback)
       {        
-        var folders2check = [rootPath + "static/css", rootPath + "static/js"];
+        var folders2check = [CSS_DIR, JS_DIR];
         
         //go trough this two folders
         async.forEach(folders2check, function(path, callback)
@@ -104,7 +108,7 @@ exports.minifyJS = function(req, res, jsFilename)
       function(callback)
       {
         //check the modification time of the minified js
-        fs.stat(rootPath + "var/minified_" + jsFilename, function(err, stats)
+        fs.stat(CACHE_DIR + "/minified_" + jsFilename, function(err, stats)
         {
           if(err && err.code != "ENOENT")
           {
@@ -129,7 +133,7 @@ exports.minifyJS = function(req, res, jsFilename)
       {
         async.forEach(jsFiles, function (item, callback)
         {
-          fs.readFile(rootPath + "static/js/" + item, "utf-8", function(err, data)
+          fs.readFile(JS_DIR + item, "utf-8", function(err, data)
           {            
             if(ERR(err, callback)) return;
             fileValues[item] = data;
@@ -158,7 +162,7 @@ exports.minifyJS = function(req, res, jsFilename)
           var type = item.match(/INCLUDE_[A-Z]+/g)[0].substr("INCLUDE_".length);
         
           //read the included file
-          fs.readFile(filename, "utf-8", function(err, data)
+          fs.readFile(ROOT_DIR + filename, "utf-8", function(err, data)
           {         
             if(ERR(err, callback)) return;
 
@@ -207,7 +211,7 @@ exports.minifyJS = function(req, res, jsFilename)
           //write the results plain in a file
           function(callback)
           {
-            fs.writeFile(rootPath + "var/minified_" + jsFilename, result, "utf8", callback);  
+            fs.writeFile(CACHE_DIR + "minified_" + jsFilename, result, "utf8", callback);
           },
           //write the results compressed in a file
           function(callback)
@@ -221,7 +225,7 @@ exports.minifyJS = function(req, res, jsFilename)
               
                 if(ERR(err, callback)) return;
                 
-                fs.writeFile(rootPath + "var/minified_" + jsFilename + ".gz", compressedResult, callback);  
+                fs.writeFile(CACHE_DIR + "minified_" + jsFilename + ".gz", compressedResult, callback);
               });
             }
             //skip this step on windows
@@ -245,12 +249,12 @@ exports.minifyJS = function(req, res, jsFilename)
       var pathStr;
       if(gzipSupport && os.type().indexOf("Windows") == -1)
       {
-        pathStr = path.normalize(rootPath + "var/minified_" + jsFilename + ".gz");
+        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename + ".gz");
         res.header('Content-Encoding', 'gzip');
       }
       else
       {
-        pathStr = path.normalize(rootPath + "var/minified_" + jsFilename );
+        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename );
       }
       
       res.sendfile(pathStr, { maxAge: server.maxAge });
@@ -264,7 +268,7 @@ exports.minifyJS = function(req, res, jsFilename)
     //read all js files
     async.forEach(jsFiles, function (item, callback)
     {
-      fs.readFile(rootPath + "static/js/" + item, "utf-8", function(err, data)
+      fs.readFile(JS_DIR + item, "utf-8", function(err, data)
       {          
         if(ERR(err, callback)) return;  
         fileValues[item] = data;
