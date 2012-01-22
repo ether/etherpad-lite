@@ -121,12 +121,12 @@
             function go2Name() 
             {
                 var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
+                padname.length > 0 ? window.location = window.location + "/p/" + padname : alert("Please enter a name")
             }
  
             function go2Random() 
             {
-                window.location = "p/" + randomPadName();
+                window.location = window.location + "/p/" + randomPadName();
             }
  
             function randomPadName() 

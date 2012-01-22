@@ -183,8 +183,9 @@ function handshake()
   //find out in which subfolder we are
   var resource = loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "socket.io";
   //connect
+  console.log('create socket',url,resource)
   socket = io.connect(url, {
-    resource: resource,
+    resource: 'socket.io',
     'max reconnection attempts': 3
   });
 
