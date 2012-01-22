@@ -51,7 +51,9 @@ exports.minifyJS = function(req, res, jsFilename)
   } else {
     throw new Error("there is no profile for creating " + name);
   }
-  
+
+  var rootPath = path.normalize(__dirname + "/../../" );
+
   //minifying is enabled
   if(settings.minify)
   {
@@ -63,7 +65,7 @@ exports.minifyJS = function(req, res, jsFilename)
       //find out the highest modification date
       function(callback)
       {        
-        var folders2check = ["../static/css","../static/js"];
+        var folders2check = [rootPath + "static/css", rootPath + "static/js"];
         
         //go trough this two folders
         async.forEach(folders2check, function(path, callback)
@@ -102,7 +104,7 @@ exports.minifyJS = function(req, res, jsFilename)
       function(callback)
       {
         //check the modification time of the minified js
-        fs.stat("../var/minified_" + jsFilename, function(err, stats)
+        fs.stat(rootPath + "var/minified_" + jsFilename, function(err, stats)
         {
           if(err && err.code != "ENOENT")
           {
@@ -127,7 +129,7 @@ exports.minifyJS = function(req, res, jsFilename)
       {
         async.forEach(jsFiles, function (item, callback)
         {
-          fs.readFile("../static/js/" + item, "utf-8", function(err, data)
+          fs.readFile(rootPath + "static/js/" + item, "utf-8", function(err, data)
           {            
             if(ERR(err, callback)) return;
             fileValues[item] = data;
@@ -205,7 +207,7 @@ exports.minifyJS = function(req, res, jsFilename)
           //write the results plain in a file
           function(callback)
           {
-            fs.writeFile("../var/minified_" + jsFilename, result, "utf8", callback);  
+            fs.writeFile(rootPath + "var/minified_" + jsFilename, result, "utf8", callback);  
           },
           //write the results compressed in a file
           function(callback)
@@ -219,7 +221,7 @@ exports.minifyJS = function(req, res, jsFilename)
               
                 if(ERR(err, callback)) return;
                 
-                fs.writeFile("../var/minified_" + jsFilename + ".gz", compressedResult, callback);  
+                fs.writeFile(rootPath + "var/minified_" + jsFilename + ".gz", compressedResult, callback);  
               });
             }
             //skip this step on windows
@@ -243,12 +245,12 @@ exports.minifyJS = function(req, res, jsFilename)
       var pathStr;
       if(gzipSupport && os.type().indexOf("Windows") == -1)
       {
-        pathStr = path.normalize(__dirname + "/../../var/minified_" + jsFilename + ".gz");
+        pathStr = path.normalize(rootPath + "var/minified_" + jsFilename + ".gz");
         res.header('Content-Encoding', 'gzip');
       }
       else
       {
-        pathStr = path.normalize(__dirname + "/../../var/minified_" + jsFilename );
+        pathStr = path.normalize(rootPath + "var/minified_" + jsFilename );
       }
       
       res.sendfile(pathStr, { maxAge: server.maxAge });
@@ -262,7 +264,7 @@ exports.minifyJS = function(req, res, jsFilename)
     //read all js files
     async.forEach(jsFiles, function (item, callback)
     {
-      fs.readFile("../static/js/" + item, "utf-8", function(err, data)
+      fs.readFile(rootPath + "static/js/" + item, "utf-8", function(err, data)
       {          
         if(ERR(err, callback)) return;  
         fileValues[item] = data;
