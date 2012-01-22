@@ -27,7 +27,7 @@ var chat = (function()
   var hDuration = 750;
   var chatMentions = 0;
   var title = document.title;
-  if (isAndroid || isMobileSafari){
+  if ($.browser.mobile){
    sDuration = 0;
    hDuration = 0;
   }
@@ -54,7 +54,7 @@ var chat = (function()
           {
             $("#focusprotector").hide();
             
-            if(browser.mobile)
+            if($.browser.mobile)
               bottommargin = "32px";
             
             $("#chatbox").css({right: "20px", bottom: bottomMargin, left: "", top: ""});
