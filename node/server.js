@@ -66,6 +66,8 @@ exports.maxAge = 1000*60*60*6;
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
 
+function init(additionalSetup){
+ if("function" != typeof additionalSetup) additionalSetup = function(){};
 async.waterfall([
   //initalize the database
   function (callback)
@@ -423,6 +425,20 @@ async.waterfall([
         }
       });
     });
+
+    additionalSetup(
+      app, db,
+      {
+        ro: readOnlyManager,
+        pad: padManager,
+        security: securityManager
+      },
+      {
+        "export": exportHandler,
+        "import": importHandler,
+        api: apiHandler
+      }
+    );
     
     //let the server listen
     app.listen(settings.port, settings.ip);
@@ -514,3 +530,5 @@ async.waterfall([
     callback(null);  
   }
 ]);
+}
+init(function(){});
