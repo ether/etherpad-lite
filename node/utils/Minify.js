@@ -74,7 +74,6 @@ function _handle(req, res, jsFilename, jsFiles) {
   if(settings.minify)
   {
     var fileValues = {};
-    var embeds = {};
     var latestModification = 0;
     
     async.series([
@@ -145,76 +144,19 @@ function _handle(req, res, jsFilename, jsFiles) {
       {
         async.forEach(jsFiles, function (item, callback)
         {
-          fs.readFile(JS_DIR + item, "utf-8", function(err, data)
-          {            
+          if (item == 'ace.js') {
+            getAceFile(handleFile);
+          } else {
+            fs.readFile(JS_DIR + item, "utf-8", handleFile);
+          }
+
+          function handleFile(err, data)
+          {
             if(ERR(err, callback)) return;
             fileValues[item] = data;
             callback();
-          });
+          }
         }, callback);
-      },
-      //find all includes in ace.js and embed them 
-      function(callback)
-      {        
-        //if this is not the creation of pad.js, skip this part
-        if(jsFilename != "pad.js")
-        {
-          callback();
-          return;
-        }
-      
-        var founds = fileValues["ace.js"].match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
-        
-        //go trough all includes
-        async.forEach(founds, function (item, callback)
-        {
-          var filename = item.match(/"[^"]*"/g)[0].substr(1);
-          filename = filename.substr(0,filename.length-1);
-        
-          var type = item.match(/INCLUDE_[A-Z]+/g)[0].substr("INCLUDE_".length);
-        
-          //read the included file
-          var shortFilename = filename.replace(/^..\/static\/js\//, '');
-          if (shortFilename == 'require-kernel.js') {
-            // the kernel isn’t actually on the file system.
-            handleEmbed(null, requireDefinition());
-          } else {
-            fs.readFile(ROOT_DIR + filename, "utf-8", handleEmbed);
-          }
-          function handleEmbed(err, data)
-          {         
-            if(ERR(err, callback)) return;
-
-            if(type == "JS")
-            {
-              if (shortFilename == 'require-kernel.js') {
-                embeds[filename] = compressJS([data]);
-              } else {
-                embeds[filename] = compressJS([isolateJS(data, shortFilename)]);
-              }
-            }
-            else
-            {
-              embeds[filename] = compressCSS([data]);
-            }
-            callback();
-          }
-        }, function(err)
-        {
-          if(ERR(err, callback)) return;
-
-          fileValues["ace.js"] += ';\n'
-          fileValues["ace.js"] +=
-              'Ace2Editor.EMBEDED = Ace2Editor.EMBED || {};\n'
-          for (var filename in embeds)
-          {
-            fileValues["ace.js"] +=
-                'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-              + JSON.stringify(embeds[filename]) + ';\n';
-          }
-
-          callback();
-        });
       },
       //put all together and write it into a file
       function(callback)
@@ -293,6 +235,65 @@ function _handle(req, res, jsFilename, jsFiles) {
       res.end();
     });
   }
+}
+
+// find all includes in ace.js and embed them.
+function getAceFile(callback) {
+  fs.readFile(JS_DIR + 'ace.js', "utf8", function(err, data) {
+    if(ERR(err, callback)) return;
+
+    // Find all includes in ace.js and embed them
+    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
+    if (!settings.minify) {
+      founds = [];
+    }
+
+    data += ';\n';
+    data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
+
+    //go trough all includes
+    async.forEach(founds, function (item, callback) {
+      var filename = item.match(/"([^"]*)"/)[1];
+      var type = item.match(/INCLUDE_([A-Z]+)/)[1];
+      var shortFilename = (filename.match(/^..\/static\/js\/(.*)$/, '')||[])[1];
+
+      //read the included files
+      if (shortFilename) {
+        if (shortFilename == 'require-kernel.js') {
+          // the kernel isn’t actually on the file system.
+          handleEmbed(null, requireDefinition());
+        } else {
+          fs.readFile(ROOT_DIR + filename, "utf8", function (error, data) {
+            handleEmbed(error, isolateJS(data, shortFilename));
+          });
+        }
+      } else {
+        fs.readFile(ROOT_DIR + filename, "utf8", handleEmbed);
+      }
+
+      function handleEmbed(error, data_) {
+        if (error) {
+          return; // Don't bother to include it.
+        }
+        if (settings.minify) {
+          if (type == "JS") {
+            try {
+              data_ = compressJS([data_]);
+            } catch (e) {
+              // Ignore, include uncompresseed, which will break in browser.
+            }
+          } else {
+            data_ = compressCSS([data_]);
+          }
+        }
+        data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
+            + JSON.stringify(data_) + ';\n';
+        callback();
+      }
+    }, function(error) {
+      callback(error, data);
+    });
+  });
 }
 
 exports.requireDefinition = requireDefinition;
