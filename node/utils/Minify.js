@@ -78,43 +78,11 @@ function _handle(req, res, jsFilename, jsFiles) {
     
     async.series([
       //find out the highest modification date
-      function(callback)
-      {        
-        var folders2check = [CSS_DIR, JS_DIR];
-        
-        //go trough this two folders
-        async.forEach(folders2check, function(path, callback)
-        {
-          //read the files in the folder
-          fs.readdir(path, function(err, files)
-          {
-            if(ERR(err, callback)) return;
-            
-            //we wanna check the directory itself for changes too
-            files.push(".");
-            
-            //go trough all files in this folder
-            async.forEach(files, function(filename, callback) 
-            {
-              //get the stat data of this file
-              fs.stat(path + "/" + filename, function(err, stats)
-              {
-                if(ERR(err, callback)) return;
-              
-                //get the modification time
-                var modificationTime = stats.mtime.getTime();
-              
-                //compare the modification time to the highest found
-                if(modificationTime > latestModification)
-                {
-                  latestModification = modificationTime;
-                }
-                
-                callback();
-              });
-            }, callback);
-          });
-        }, callback);
+      function (callback) {
+        lastModifiedDate(function (date) {
+          latestModification = date;
+          callback()
+        });
       },
       function(callback)
       {
@@ -277,6 +245,46 @@ function getAceFile(callback) {
     }, function(error) {
       callback(error, data);
     });
+  });
+}
+
+function lastModifiedDate(callback) {
+  var folders2check = [CSS_DIR, JS_DIR];
+  var latestModification = 0;
+  //go trough this two folders
+  async.forEach(folders2check, function(path, callback)
+  {
+    //read the files in the folder
+    fs.readdir(path, function(err, files)
+    {
+      if(ERR(err, callback)) return;
+
+      //we wanna check the directory itself for changes too
+      files.push(".");
+
+      //go trough all files in this folder
+      async.forEach(files, function(filename, callback)
+      {
+        //get the stat data of this file
+        fs.stat(path + "/" + filename, function(err, stats)
+        {
+          if(ERR(err, callback)) return;
+
+          //get the modification time
+          var modificationTime = stats.mtime.getTime();
+
+          //compare the modification time to the highest found
+          if(modificationTime > latestModification)
+          {
+            latestModification = modificationTime;
+          }
+
+          callback();
+        });
+      }, callback);
+    });
+  }, function () {
+    callback(latestModification);
   });
 }
 
