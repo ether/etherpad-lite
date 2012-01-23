@@ -23,12 +23,27 @@
 /* global $, window */
 
 var socket;
-var LineNumbersDisabled = false;
-var noColors = false;
-var useMonospaceFontGlobal = false;
-var globalUserName = false;
-var hideQRCode = false;
-var rtlIsTrue = false;
+
+var settings = {};
+settings.LineNumbersDisabled = false;
+settings.noColors = false;
+settings.useMonospaceFontGlobal = false;
+settings.globalUserName = false;
+settings.hideQRCode = false;
+settings.rtlIsTrue = false;
+
+var chat = require('/chat').chat;
+var getCollabClient = require('/collab_client').getCollabClient;
+var padconnectionstatus = require('/pad_connectionstatus').padconnectionstatus;
+var padcookie = require('/pad_cookie').padcookie;
+var paddocbar = require('/pad_docbar').paddocbar;
+var padeditbar = require('/pad_editbar').padeditbar;
+var padeditor = require('/pad_editor').padeditor;
+var padimpexp = require('/pad_impexp').padimpexp;
+var padmodals = require('/pad_modals').padmodals;
+var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
+var paduserlist = require('/pad_userlist').paduserlist;
+var padutils = require('/pad_utils').padutils;
 
 $(document).ready(function()
 {
@@ -101,7 +116,7 @@ function getParams()
   {
     if(IsnoColors == "true")
     {
-      noColors = true;
+      settings.noColors = true;
       $('#clearAuthorship').hide();
     }
   }
@@ -124,20 +139,20 @@ function getParams()
   {
     if(showLineNumbers == "false")
     {
-      LineNumbersDisabled = true;
+      settings.LineNumbersDisabled = true;
     }
   }
   if(useMonospaceFont)
   {
     if(useMonospaceFont == "true")
     {
-      useMonospaceFontGlobal = true;
+      settings.useMonospaceFontGlobal = true;
     }
   }
   if(userName)
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
-    globalUserName = unescape(userName);
+    settings.globalUserName = unescape(userName);
   }
   if(hideQRCode)
   {
@@ -147,7 +162,7 @@ function getParams()
   {
     if(rtl == "true")
     {
-      rtlIsTrue = true
+      settings.rtlIsTrue = true
     }
   }
 }
@@ -183,7 +198,7 @@ function handshake()
   //find out in which subfolder we are
   var resource = loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "socket.io";
   //connect
-  socket = io.connect(url, {
+  socket = pad.socket = io.connect(url, {
     resource: resource,
     'max reconnection attempts': 3
   });
@@ -270,13 +285,13 @@ function handshake()
       {
         $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword()'>ok</button>");
+                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
       }
       else if(obj.accessStatus == "wrongPassword")
       {
         $("#editorloadingbox").html("<b>You're password was wrong</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick='savePassword()'>ok</button>");
+                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
       }
     }
     
@@ -298,33 +313,33 @@ function handshake()
       initalized = true;
 
       // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
-      if (LineNumbersDisabled == true)
+      if (settings.LineNumbersDisabled == true)
       {
         pad.changeViewOption('showLineNumbers', false);
       }
 
       // If the noColors value is set to true then we need to hide the backround colors on the ace spans
-      if (noColors == true)
+      if (settings.noColors == true)
       {
         pad.changeViewOption('noColors', true);
       }
       
-      if (rtlIsTrue == true)
+      if (settings.rtlIsTrue == true)
       {
         pad.changeViewOption('rtl', true);
       }
 
       // If the Monospacefont value is set to true then change it to monospace.
-      if (useMonospaceFontGlobal == true)
+      if (settings.useMonospaceFontGlobal == true)
       {
         pad.changeViewOption('useMonospaceFont', true);
       }
       // if the globalUserName value is set we need to tell the server and the client about the new authorname
-      if (globalUserName !== false)
+      if (settings.globalUserName !== false)
       {
-        pad.notifyChangeName(globalUserName); // Notifies the server
-	pad.myUserInfo.name = globalUserName;
-        $('#myusernameedit').attr({"value":globalUserName}); // Updates the current users UI
+        pad.notifyChangeName(settings.globalUserName); // Notifies the server
+        pad.myUserInfo.name = settings.globalUserName;
+        $('#myusernameedit').attr({"value":settings.globalUserName}); // Updates the current users UI
       }
     }
     //This handles every Message after the clientVars
@@ -411,7 +426,7 @@ var pad = {
     pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
   
     //initialize the chat
-    chat.init();
+    chat.init(this);
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
@@ -472,7 +487,7 @@ var pad = {
 
     pad.collabClient = getCollabClient(padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo, {
       colorPalette: pad.getColorPalette()
-    });
+    }, pad);
     pad.collabClient.setOnUserJoin(pad.handleUserJoin);
     pad.collabClient.setOnUpdateUserInfo(pad.handleUserUpdate);
     pad.collabClient.setOnUserLeave(pad.handleUserLeave);
@@ -951,3 +966,14 @@ var alertBar = (function()
   };
   return self;
 }());
+
+exports.settings = settings;
+exports.createCookie = createCookie;
+exports.readCookie = readCookie;
+exports.randomString = randomString;
+exports.getParams = getParams;
+exports.getUrlVars = getUrlVars;
+exports.savePassword = savePassword;
+exports.handshake = handshake;
+exports.pad = pad;
+exports.alertBar = alertBar;

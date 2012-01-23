@@ -384,3 +384,5 @@ function makeVirtualLineView(lineNode)
   }
 
 }
+
+exports.makeVirtualLineView = makeVirtualLineView;

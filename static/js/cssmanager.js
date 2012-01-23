@@ -118,3 +118,5 @@ function makeCSSManager(emptyStylesheetTitle, top)
     }
   };
 }
+
+exports.makeCSSManager = makeCSSManager;

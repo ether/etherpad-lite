@@ -45,8 +45,9 @@ var socketIORouter;
 var version = "";
 try
 {
-  var ref = fs.readFileSync("../.git/HEAD", "utf-8");
-  var refPath = "../.git/" + ref.substring(5, ref.indexOf("\n"));
+  var rootPath = path.normalize(__dirname + "/../")
+  var ref = fs.readFileSync(rootPath + ".git/HEAD", "utf-8");
+  var refPath = rootPath + ".git/" + ref.substring(5, ref.indexOf("\n"));
   version = fs.readFileSync(refPath, "utf-8");
   version = version.substring(0, 7);
   console.log("Your Etherpad Lite git version is " + version);
@@ -79,7 +80,12 @@ async.waterfall([
   {
     //create server
     var app = express.createServer();
-    
+
+    app.use(function (req, res, next) {
+      res.header("Server", serverName);
+      next();
+    });
+
     //load modules that needs a initalized db
     readOnlyManager = require("./db/ReadOnlyManager");
     exporthtml = require("./utils/ExportHtml");
@@ -110,31 +116,24 @@ async.waterfall([
       gracefulShutdown();
     });
     
+    //serve minified files
+    app.get('/minified/:filename', minify.minifyJS);
+
     //serve static files
+    app.get('/static/js/require-kernel.js', function (req, res, next) {
+      res.header("Content-Type","application/javascript; charset: utf-8");
+      res.write(minify.requireDefinition());
+      res.end();
+    });
     app.get('/static/*', function(req, res)
     { 
-      res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/.." +
                                     req.url.replace(/\.\./g, '').split("?")[0]);
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve minified files
-    app.get('/minified/:id', function(req, res, next)
-    { 
-      res.header("Server", serverName);
-      
-      var id = req.params.id;
-      
-      if(id == "pad.js" || id == "timeslider.js")
-      {
-        minify.minifyJS(req,res,id);
-      }
-      else
-      {
-        next();
-      }
-    });
+    app.get('/minified/:filename', minify.minifyJS);
     
     //checks for padAccess
     function hasPadAccess(req, res, callback)
@@ -179,8 +178,6 @@ async.waterfall([
     //serve read only pad
     app.get('/ro/:id', function(req, res)
     { 
-      res.header("Server", serverName);
-      
       var html;
       var padId;
       var pad;
@@ -265,7 +262,6 @@ async.waterfall([
     app.get('/p/:pad', function(req, res, next)
     {    
       goToPad(req, res, function() {
-        res.header("Server", serverName);
         var filePath = path.normalize(__dirname + "/../static/pad.html");
         res.sendfile(filePath, { maxAge: exports.maxAge });
       });
@@ -275,7 +271,6 @@ async.waterfall([
     app.get('/p/:pad/timeslider', function(req, res, next)
     {
       goToPad(req, res, function() {
-        res.header("Server", serverName);
         var filePath = path.normalize(__dirname + "/../static/timeslider.html");
         res.sendfile(filePath, { maxAge: exports.maxAge });
       });
@@ -302,7 +297,6 @@ async.waterfall([
         }
         
         res.header("Access-Control-Allow-Origin", "*");
-        res.header("Server", serverName);
         
         hasPadAccess(req, res, function()
         {
@@ -322,8 +316,6 @@ async.waterfall([
           return; 
         }
       
-        res.header("Server", serverName);
-        
         hasPadAccess(req, res, function()
         {
           importHandler.doImport(req, res, req.params.pad);
@@ -336,7 +328,6 @@ async.waterfall([
     //This is for making an api call, collecting all post information and passing it to the apiHandler
     var apiCaller = function(req, res, fields)
     {
-      res.header("Server", serverName);
       res.header("Content-Type", "application/json; charset=utf-8");
     
       apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
@@ -397,7 +388,6 @@ async.waterfall([
     //serve index.html under /
     app.get('/', function(req, res)
     {
-      res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/index.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
@@ -405,7 +395,6 @@ async.waterfall([
     //serve robots.txt
     app.get('/robots.txt', function(req, res)
     {
-      res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/robots.txt");
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
@@ -413,7 +402,6 @@ async.waterfall([
     //serve favicon.ico
     app.get('/favicon.ico', function(req, res)
     {
-      res.header("Server", serverName);
       var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
       res.sendfile(filePath, { maxAge: exports.maxAge }, function(err)
       {

@@ -25,12 +25,22 @@ $(window).bind("load", function()
   getCollabClient.windowLoaded = true;
 });
 
+var chat = require('/chat').chat;
+
+// Dependency fill on init. This exists for `pad.socket` only.
+// TODO: bind directly to the socket.
+var pad = undefined;
+function getSocket() {
+  return pad && pad.socket;
+}
+
 /** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
     ACE's ready callback does not need to have fired yet.
     "serverVars" are from calling doc.getCollabClientVars() on the server. */
-function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
+function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 {
   var editor = ace2editor;
+  pad = _pad; // Inject pad to avoid a circular dependency.
 
   var rev = serverVars.rev;
   var padId = serverVars.padId;
@@ -81,7 +91,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
 
   $(window).bind("unload", function()
   {
-    if (socket)
+    if (getSocket())
     {
       setChannelState("DISCONNECTED", "unload");
     }
@@ -111,7 +121,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
 
   function handleUserChanges()
   {
-    if ((!socket) || channelState == "CONNECTING")
+    if ((!getSocket()) || channelState == "CONNECTING")
     {
       if (channelState == "CONNECTING" && (((+new Date()) - initialStartConnectTime) > 20000))
       {
@@ -295,7 +305,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
 
   function sendMessage(msg)
   {
-    socket.json.send(
+    getSocket().json.send(
     {
       type: "COLLABROOM",
       component: "pad",
@@ -337,7 +347,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
   {
     if (window.console) console.log(evt);
 
-    if (!socket) return;
+    if (!getSocket()) return;
     if (!evt.data) return;
     var wrapper = evt;
     if (wrapper.type != "COLLABROOM") return;
@@ -442,7 +452,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options)
     userInfo.userId = userId;
     userSet[userId] = userInfo;
     tellAceActiveAuthorInfo(userInfo);
-    if (!socket) return;
+    if (!getSocket()) return;
     sendMessage(
     {
       type: "USERINFO_UPDATE",
@@ -714,3 +724,6 @@ function selectElementContents(elem)
     }
   }
 }
+
+exports.getCollabClient = getCollabClient;
+exports.selectElementContents = selectElementContents;

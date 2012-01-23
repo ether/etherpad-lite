@@ -20,17 +20,16 @@
  * limitations under the License.
  */
 
+var padutils = require('/pad_utils').padutils;
+
 var chat = (function()
 {
-  var ua = navigator.userAgent.toLowerCase();
-  var isAndroid = ua.indexOf("android") > -1;
-  var isMobileSafari = ua.indexOf("mobile") > -1;
   var bottomMargin = "0px";
   var sDuration = 500;
   var hDuration = 750;
   var chatMentions = 0;
   var title = document.title;
-  if (isAndroid || isMobileSafari){
+  if ($.browser.mobile){
    sDuration = 0;
    hDuration = 0;
   }
@@ -57,7 +56,7 @@ var chat = (function()
           {
             $("#focusprotector").hide();
             
-            if(isAndroid || isMobileSafari)
+            if($.browser.mobile)
               bottommargin = "32px";
             
             $("#chatbox").css({right: "20px", bottom: bottomMargin, left: "", top: ""});
@@ -85,13 +84,13 @@ var chat = (function()
     send: function()
     {
       var text = $("#chatinput").val();
-      pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
+      this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
     addMessage: function(msg, increment)
     {    
       //correct the time
-      msg.time += pad.clientTimeOffset; 
+      msg.time += this._pad.clientTimeOffset;
       
       //create the time string
       var minutes = "" + new Date(msg.time).getMinutes();
@@ -153,8 +152,9 @@ var chat = (function()
       self.scrollDown();
 
     },
-    init: function()
+    init: function(pad)
     {
+      this._pad = pad;
       $("#chatinput").keypress(function(evt)
       {
         //if the user typed enter, fire the send
@@ -175,3 +175,5 @@ var chat = (function()
 
   return self;
 }());
+
+exports.chat = chat;

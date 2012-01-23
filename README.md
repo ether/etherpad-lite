@@ -98,7 +98,7 @@ Look at this wiki pages:
 You can find more information in the [wiki](https://github.com/Pita/etherpad-lite/wiki). Feel free to improve these wiki pages
 
 # Develop
-If you're new to git and github, start here <http://learn.github.com/p/intro.html>.
+If you're new to git and github, start by watching [this video](http://youtu.be/67-Q26YH97E) then read this [git guide](http://learn.github.com/p/intro.html).
 
 If you're new to node.js, start with this video <http://youtu.be/jo_B4LTHi3I>.
 
@@ -110,6 +110,9 @@ You know all this and just want to know how you can help? Look at the [TODO list
 You can join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) or go to the freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)
 
 You also help the project, if you only host a Etherpad Lite instance and share your experience with us.
+
+Please consider using [jshint](http://www.jshint.com/about/) if you plan to
+contribute to Etherpad Lite.
 
 # Modules created for this project
 

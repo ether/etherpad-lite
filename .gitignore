@@ -1,6 +1,6 @@
 node_modules
 settings.json
-static/js/jquery.min.js
+static/js/jquery.js
 APIKEY.txt
 bin/abiword.exe
 bin/node.exe

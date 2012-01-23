@@ -21,6 +21,7 @@
 
 var fs = require("fs");
 var os = require("os");
+var path = require('path');
 
 /**
  * The IP ep-lite should listen to
@@ -88,7 +89,8 @@ exports.abiwordAvailable = function()
 }
 
 //read the settings sync
-var settingsStr = fs.readFileSync("../settings.json").toString();
+var settingsPath = path.normalize(__dirname + "/../../");
+var settingsStr = fs.readFileSync(settingsPath + "settings.json").toString();
 
 //remove all comments
 settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
