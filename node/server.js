@@ -531,4 +531,4 @@ async.waterfall([
   }
 ]);
 }
-init(function(){});
+this.init = init;
