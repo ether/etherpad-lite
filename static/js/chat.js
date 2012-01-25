@@ -79,7 +79,7 @@ var chat = (function()
         isStuck = true;
       }
       else{  // Unstick it
-        $('#chatbox').css({"right":"0px", "top":"auto", "border-top-radius":"5px", "height":"200px"});
+        $('#chatbox').css({"right":"20px", "top":"auto", "border-top-left-radius":"5px", "border-top-right-radius":"5px", "height":"200px"});
         $('#editorcontainer').css({"right":"0px", "width":"100%"});
         isStuck = false;
       }
