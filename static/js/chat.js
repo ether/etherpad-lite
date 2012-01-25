@@ -24,6 +24,7 @@ var padutils = require('/pad_utils').padutils;
 
 var chat = (function()
 {
+  var isStuck = false;
   var bottomMargin = "0px";
   var sDuration = 500;
   var hDuration = 750;
@@ -68,6 +69,22 @@ var chat = (function()
       chatMentions = 0;
       document.title = title;
     },
+    stickToScreen: function() // Make chat stick to right hand side of screen
+    {
+      console.log(isStuck);
+      chat.show();
+      if(!isStuck){ // Stick it to 
+        $('#chatbox').css({"right":"0px", "top":"35px", "border-radius":"0px", "height":"auto"});
+        $('#editorcontainer').css({"right":"170px", "width":"auto"});
+        isStuck = true;
+      }
+      else{  // Unstick it
+        $('#chatbox').css({"right":"0px", "top":"auto", "border-top-radius":"5px", "height":"200px"});
+        $('#editorcontainer').css({"right":"0px", "width":"100%"});
+        isStuck = false;
+      }
+    }
+    ,
     hide: function () 
     {
       $("#chatcounter").text("0");
