@@ -1,8 +1,11 @@
-
 <!doctype html>
-<html>   
-        <title>Etherpad Lite</title> 
+<html>
+
+        <title>Etherpad Lite</title>
+
+        <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
         <style> 
             *{ margin:0;padding:0; }
             body {
@@ -108,15 +111,18 @@
               }
             }
         </style> 
+
         <link href="static/custom/index.css" rel="stylesheet"> 
         <script src="static/custom/index.js"></script>
+
         <div id="container"> 
             <div id="button" onclick="go2Random()" class="translate">New Pad</div><br><div id="label" class="translate">or create/open a Pad with the name</div> 
             <form action="#" onsubmit="go2Name();return false;"> 
-                    <input type="text" id="padname" autofocus> 
+                    <input type="text" id="padname" autofocus x-webkit-speech> 
                     <input type="submit" value="OK"> 
             </form> 
-        </div> 
+        </div>
+
         <script> 
             function go2Name() 
             {
@@ -144,5 +150,6 @@
             
             //start the costum js
             if(typeof costumStart == "function") costumStart();
-        </script> 
+        </script>
+
 </html>

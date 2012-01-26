@@ -1,13 +1,13 @@
 *,html,body,p{ margin: 0; padding: 0; }
 .clear { clear: both; }
-html { font-size: 62.5%; }
+html { font-size: 62.5%; width: 100%; }
 body, textarea { font-family: Helvetica, Arial, sans-serif; }
 iframe {position:absolute;}
 
 #users
 {
   position: absolute;
-  z-index: 10;
+  z-index:500;
   background-color: #000;
   background-color: rgba(0,0,0,0.7);
   width: 160px;
@@ -560,28 +560,6 @@ table#otheruserstable { display: none; }
   display: none; z-index: 55; }
 #revision-notifier .label { color: #777; font-weight: bold; }
 
-/* We don't ever actually hide the wrapper, even when the panel is
-   cloased, so that its contents can always be manipulated accurately. */
-
-
-#padoptions { position: absolute; top: 0; left: 0; font-size: 1.2em;
-  color: #444; height: 100%; width: 100%; line-height: 15px; }
-#options-viewhead { font-weight: bold; position: absolute; top: 10px; left: 15px;
-  width: auto; height: auto; }
-#padoptions label { display: block; }
-#padoptions input { padding: 0; margin: 0; }
-#options-colorscheck { position: absolute; left: 15px; top: 34px; width: 15px; height: 15px; }
-#options-colorslabel { position: absolute; left: 35px; top: 34px; }
-#options-linenoscheck { position: absolute; left: 15px; top: 57px; width: 15px; height: 15px; }
-#options-linenoslabel { position: absolute; left: 35px; top: 57px; }
-#options-fontlabel { position: absolute; left: 15px; top: 82px; }
-#viewfontmenu { position: absolute; top: 80px; left: 90px; width: 110px; }
-#options-viewexplain { position: absolute; left: 215px; top: 15px; width: 100px; height: 70px; font-size: .7em;
-  padding-left: 10px; padding-top: 10px; border-left: 1px solid #ccc;
-  line-height: 20px; font-weight: bold; color: #999; }
-#options-close { display: block; position: absolute; right: 7px; bottom: 8px;
-  width: auto; height: auto; font-size: 85%; color: #444; }
-
 #mainmodals { z-index: 600; /* higher than the modals themselves
                               so that modals are on top in IE */ }
 .modalfield { font-size: 1.2em; padding: 1px; border: 1px solid #bbb;}
@@ -763,7 +741,26 @@ a#topbarmaximize {
  width: 100%;
 }
 
-#embed, #readonly {
+#settingsmenu {
+  position:absolute;
+  top:40px;
+  right:20px;
+  width:400px;
+  z-index:500;
+  padding:10px;
+  border-radius:6px;
+  background:black;
+  background:rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size:14px;
+  display:none;
+}
+#settingsmenu p {
+  margin: 5px 0; 
+}
+
+
+#embed {
 display:none;
 position:absolute;
 top:40px;
@@ -780,20 +777,17 @@ padding: 10px;
 border-radius: 6px; 
 }
 
-#embedreadonly {
+.right {
 float:right;
 }
 
-#embedcode, #readonlyUrl, #linkcode {
-margin-left:10px;
-}
-
-#embedinput, #readonlyInput, #linkinput {
-width:375px;
-height:24px;
-display:inline;
+#embed input[type=text] {
+width: 100%;
+padding: 5px;
+box-sizing: border-box;
+-moz-box-sizing: border-box;
+display:block;
 margin-top: 10px;
-padding-left:4px;
 }
 
 ul#colorpickerswatches
@@ -850,6 +844,7 @@ ul#colorpickerswatches li:hover
   left:0px;
   top:25px;
   bottom:25px;
+  z-index:1002;
 }
 
 #chattext p
@@ -1006,7 +1001,7 @@ position: relative;
 
 #import{
   position:absolute;
-  width:250px;
+  width:240px;
   left:10px;
   line-height:20px;
 }
@@ -1019,7 +1014,7 @@ position: relative;
 }
 
 .exporttype{
-  line-height:20px;
+  margin-top: 2px;
   background-repeat:no-repeat;
   padding-left:25px;
   background-image: url("../../static/img/etherpad_lite_icons.png");
@@ -1028,8 +1023,8 @@ position: relative;
 }
 
 #importexportline{
-  border: dotted 1px;
-  height: 185px;
+  border-left: 1px solid #fff;
+  height: 190px;
   position:absolute;
   width:0px;
   left:260px;
@@ -1149,14 +1144,22 @@ label[for=readonlyinput] {
   margin: 0 10px 0 2px;
 }
 
-
 #qr_center {
   margin: 10px 10px auto 0;
   text-align: center;
 }
 
-#qrcode{
-  margin-left:10px;
+#embedreadonlyqr {
+  box-shadow: 0 0 10px #000;
+  border-radius: 3px;
+  -webkit-transition: all .2s ease-in-out;
+  -moz-transition: all .2s ease-in-out;
+}
+
+#embedreadonlyqr:hover {
+  cursor: none;
+  -moz-transform: scale(1.5);
+  -webkit-transform: scale(1.5);
 }
 
 @media screen and (max-width: 960px) {
