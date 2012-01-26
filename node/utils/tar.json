@@ -1,6 +1,7 @@
 {
   "pad.js": [
     "jquery.js"
+  , "ace2_common.js"
   , "pad_utils.js"
   , "plugins.js"
   , "undo-xpopup.js"
@@ -29,6 +30,7 @@
   , "json2.js"
   , "colorutils.js"
   , "draggable.js"
+  , "ace2_common.js"
   , "pad_utils.js"
   , "pad_cookie.js"
   , "pad_editor.js"

@@ -87,6 +87,11 @@ var padeditor = (function()
         if (value == "false") return false;
         return defaultValue;
       }
+
+      self.ace.setProperty("showsauthorcolors", settings.noColors);
+
+      self.ace.setProperty("rtlIsTrue", settings.rtlIsTrue);
+
       var v;
 
       v = getOption('showLineNumbers', true);
@@ -100,10 +105,6 @@ var padeditor = (function()
       v = getOption('useMonospaceFont', false);
       self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
       $("#viewfontmenu").val(v ? "monospace" : "normal");
-
-      self.ace.setProperty("showsauthorcolors", settings.noColors);
-
-      self.ace.setProperty("rtlIsTrue", settings.rtlIsTrue);
     },
     initViewZoom: function()
     {
