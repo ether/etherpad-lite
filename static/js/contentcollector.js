@@ -25,6 +25,14 @@
 
 var _MAX_LIST_LEVEL = 8;
 
+var Changeset = require('/easysync2').Changeset
+var plugins = undefined;
+try {
+  plugins = require('/plugins').plugins;
+} catch (e) {
+  // silence
+}
+
 function sanitizeUnicode(s)
 {
   return s.replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
@@ -692,3 +700,6 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 
   return cc;
 }
+
+exports.sanitizeUnicode = sanitizeUnicode;
+exports.makeContentCollector = makeContentCollector;

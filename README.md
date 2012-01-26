@@ -58,7 +58,7 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 
 <ol>
   <li>Install the dependencies. We need gzip, git, curl, libssl develop libraries, python and gcc. <br><i>For Debian/Ubuntu</i> <code>apt-get install gzip git-core curl python libssl-dev build-essential</code><br>
-  <i>For Fedora/CentOS</i> <code>yum install gzip git-core curl python openssl-dev && yum groupinstall "Development Tools"</code>
+  <i>For Fedora/CentOS</i> <code>yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"</code>
   </li><br>
   <li>Install node.js 
     <ol type="a">
@@ -98,7 +98,7 @@ Look at this wiki pages:
 You can find more information in the [wiki](https://github.com/Pita/etherpad-lite/wiki). Feel free to improve these wiki pages
 
 # Develop
-If you're new to git and github, start here <http://learn.github.com/p/intro.html>.
+If you're new to git and github, start by watching [this video](http://youtu.be/67-Q26YH97E) then read this [git guide](http://learn.github.com/p/intro.html).
 
 If you're new to node.js, start with this video <http://youtu.be/jo_B4LTHi3I>.
 

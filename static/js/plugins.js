@@ -7,7 +7,8 @@
 plugins = {
   callHook: function(hookName, args)
   {
-    var hook = clientVars.hooks[hookName];
+    var global = (function () {return this}());
+    var hook = ((global.clientVars || {}).hooks || {})[hookName];
     if (hook === undefined) return [];
     var res = [];
     for (var i = 0, N = hook.length; i < N; i++)
@@ -30,3 +31,5 @@ plugins = {
     }).join(sep || "");
   }
 };
+
+exports.plugins = plugins;

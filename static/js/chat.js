@@ -20,8 +20,11 @@
  * limitations under the License.
  */
 
+var padutils = require('/pad_utils').padutils;
+
 var chat = (function()
 {
+  var isStuck = false;
   var bottomMargin = "0px";
   var sDuration = 500;
   var hDuration = 750;
@@ -66,6 +69,22 @@ var chat = (function()
       chatMentions = 0;
       document.title = title;
     },
+    stickToScreen: function() // Make chat stick to right hand side of screen
+    {
+      console.log(isStuck);
+      chat.show();
+      if(!isStuck){ // Stick it to 
+        $('#chatbox').css({"right":"0px", "top":"35px", "border-radius":"0px", "height":"auto"});
+        $('#editorcontainer').css({"right":"170px", "width":"auto"});
+        isStuck = true;
+      }
+      else{  // Unstick it
+        $('#chatbox').css({"right":"20px", "top":"auto", "border-top-left-radius":"5px", "border-top-right-radius":"5px", "height":"200px"});
+        $('#editorcontainer').css({"right":"0px", "width":"100%"});
+        isStuck = false;
+      }
+    }
+    ,
     hide: function () 
     {
       $("#chatcounter").text("0");
@@ -82,13 +101,13 @@ var chat = (function()
     send: function()
     {
       var text = $("#chatinput").val();
-      pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
+      this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
     addMessage: function(msg, increment)
     {    
       //correct the time
-      msg.time += pad.clientTimeOffset; 
+      msg.time += this._pad.clientTimeOffset;
       
       //create the time string
       var minutes = "" + new Date(msg.time).getMinutes();
@@ -150,8 +169,9 @@ var chat = (function()
       self.scrollDown();
 
     },
-    init: function()
+    init: function(pad)
     {
+      this._pad = pad;
       $("#chatinput").keypress(function(evt)
       {
         //if the user typed enter, fire the send
@@ -172,3 +192,5 @@ var chat = (function()
 
   return self;
 }());
+
+exports.chat = chat;

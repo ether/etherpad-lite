@@ -125,3 +125,5 @@ function loadBroadcastRevisionsJS()
     };
   }
 }
+
+exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;

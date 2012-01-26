@@ -20,6 +20,35 @@
  * limitations under the License.
  */
 
+var Ace2Common = require('/ace2_common');
+// Extract useful method defined in the other module.
+var isNodeText = Ace2Common.isNodeText;
+var object = Ace2Common.object;
+var extend = Ace2Common.extend;
+var forEach = Ace2Common.forEach;
+var map = Ace2Common.map;
+var filter = Ace2Common.filter;
+var isArray = Ace2Common.isArray;
+var browser = Ace2Common.browser;
+var getAssoc = Ace2Common.getAssoc;
+var setAssoc = Ace2Common.setAssoc;
+var binarySearch = Ace2Common.binarySearch;
+var binarySearchInfinite = Ace2Common.binarySearchInfinite;
+var htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
+var map = Ace2Common.map;
+
+var makeChangesetTracker = require('/changesettracker').makeChangesetTracker;
+var colorutils = require('/colorutils').colorutils;
+var makeContentCollector = require('/contentcollector').makeContentCollector;
+var makeCSSManager = require('/cssmanager').makeCSSManager;
+var domline = require('/domline').domline;
+var AttribPool = require('/easysync2').AttribPool;
+var Changeset = require('/easysync2').Changeset;
+var linestylefilter = require('/linestylefilter').linestylefilter;
+var newSkipList = require('/skiplist').newSkipList;
+var undoModule = require('/undomodule').undoModule;
+var makeVirtualLineView = require('/virtual_lines').makeVirtualLineView;
+
 function OUTER(gscope)
 {
 
@@ -5868,3 +5897,5 @@ function OUTER(gscope)
 };
 
 OUTER(this);
+
+exports.OUTER = OUTER; // This is probably unimportant.

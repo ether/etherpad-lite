@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var paddocbar = require('/pad_docbar').paddocbar;
 
 var padimpexp = (function()
 {
@@ -233,9 +234,16 @@ var padimpexp = (function()
   }
 
   /////
+  var pad = undefined;
   var self = {
     init: function()
     {
+      try {
+      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
+      } catch (e) {
+        // skip (doesn't require pad when required by timeslider)
+      }
+
       //get /p/padname
       var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname)
       //get http://example.com/p/padname
@@ -325,3 +333,5 @@ var padimpexp = (function()
   };
   return self;
 }());
+
+exports.padimpexp = padimpexp;

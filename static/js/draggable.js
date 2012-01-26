@@ -193,3 +193,5 @@ function makeResizableHPane(left, sep, right, minLeft, minRight, sepWidth, sepOf
     }
   });
 }
+
+exports.makeDraggable = makeDraggable;
