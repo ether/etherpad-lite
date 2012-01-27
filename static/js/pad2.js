@@ -448,9 +448,13 @@ var pad = {
 
     // order of inits is important here:
     padcookie.init(clientVars.cookiePrefsToSet);
-
+  
     $("#widthprefcheck").click(pad.toggleWidthPref);
     $("#sidebarcheck").click(pad.toggleSidebar);
+    $("#settingswarning").click(function(){
+      $("#settingswarning").hide();
+      $("#settingseveryoneitems").show();
+    });
 
     pad.myUserInfo = {
       userId: clientVars.userId,

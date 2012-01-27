@@ -746,6 +746,7 @@ a#topbarmaximize {
   top:40px;
   right:20px;
   width:400px;
+  height:135px;
   z-index:500;
   padding:10px;
   border-radius:6px;
@@ -1248,3 +1249,38 @@ label[for=readonlyinput] {
 .rtl{
   direction:RTL;
 } 
+
+#settingslocal{
+  left:10px;
+  position:absolute;
+  width:200px;
+}
+
+#settingseveryone{
+  position:absolute;
+  right:10px;
+  width:200px;
+}
+
+#settingsline{
+  border-left: 1px solid #fff;
+  height: 110px;
+  position:absolute;
+  width:0px;
+  left:200px;
+  opacity:.8;
+}
+
+.warning{
+  padding:10px;
+  background-color:#FFA4A4;
+  opacity:.8;
+}
+
+#settingseveryoneitems{
+  display:none;
+}
+
+#settingswarning{
+  mouse:cursor;
+}
