@@ -24,14 +24,6 @@
 
 var socket;
 
-var settings = {};
-settings.LineNumbersDisabled = false;
-settings.noColors = false;
-settings.useMonospaceFontGlobal = false;
-settings.globalUserName = false;
-settings.hideQRCode = false;
-settings.rtlIsTrue = false;
-
 var chat = require('/chat').chat;
 var getCollabClient = require('/collab_client').getCollabClient;
 var padconnectionstatus = require('/pad_connectionstatus').padconnectionstatus;
@@ -980,6 +972,18 @@ var alertBar = (function()
   };
   return self;
 }());
+
+
+var settings = {
+  LineNumbersDisabled: false
+, noColors: false
+, useMonospaceFontGlobal: false
+, globalUserName: false
+, hideQRCode: false
+, rtlIsTrue: false
+};
+
+pad.settings = settings;
 
 exports.settings = settings;
 exports.createCookie = createCookie;
