@@ -19,10 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var global = this;
 
-function loadBroadcastSliderJS()
+ // These parameters were global, now they are injected. A reference to the
+ // Timeslider controller would probably be more appropriate.
+function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 {
+  var BroadcastSlider;
 
   (function()
   { // wrap this code in its own namespace
@@ -203,7 +205,7 @@ function loadBroadcastSliderJS()
       }
     }
 
-    global.BroadcastSlider = {
+    BroadcastSlider = {
       onSlider: onSlider,
       getSliderPosition: getSliderPosition,
       setSliderPosition: setSliderPosition,
@@ -495,6 +497,8 @@ function loadBroadcastSliderJS()
   {
     $("#viewlatest").html(loc == BroadcastSlider.getSliderLength() ? "Viewing latest content" : "View latest content");
   })
+
+  return BroadcastSlider;
 }
 
 exports.loadBroadcastSliderJS = loadBroadcastSliderJS;

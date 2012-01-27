@@ -140,15 +140,16 @@
   
   var fireWhenAllScriptsAreLoaded = [];
   
+  var BroadcastSlider, changesetLoader;
   function handleClientVars(message)
   {
     //save the client Vars
     clientVars = message.data;
     
     //load all script that doesn't work without the clientVars
-    require('/broadcast_slider').loadBroadcastSliderJS();
+    BroadcastSlider = require('/broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
     require('/broadcast_revisions').loadBroadcastRevisionsJS();
-    require('/broadcast').loadBroadcastJS();
+    changesetLoader = require('/broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
     //initialize export ui
     padimpexp.init();
