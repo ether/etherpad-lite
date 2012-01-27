@@ -15,18 +15,6 @@
   
   <link href="../../static/custom/timeslider.css" rel="stylesheet">
   <script src="../../static/custom/timeslider.js"></script>
-  
-  <script>
-  var clientVars = {};
-
-  /* TODO: These globals shouldn't exist. */
-  padeditbar = require('/pad_editbar').padeditbar;
-  padimpexp = require('/pad_impexp').padimpexp;
-
-  (function () {
-    var TimeSlider = require('/timeslider').init();
-  })();
-  </script>
 </head>
 
 <body id="padbody" class="timeslider limwidth nonpropad nonprouser">
@@ -214,6 +202,18 @@
   </form> 
 </div>
 </div>
+
+<script>
+  var clientVars = {};
+
+  /* TODO: These globals shouldn't exist. */
+  padeditbar = require('/pad_editbar').padeditbar;
+  padimpexp = require('/pad_impexp').padimpexp;
+
+  (function () {
+    var TimeSlider = require('/timeslider').init();
+  })();
+</script>
 </body>
 </html>
 
