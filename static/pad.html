@@ -302,6 +302,10 @@
             chat = require('/chat').chat;
             padeditbar = require('/pad_editbar').padeditbar;
             padimpexp = require('/pad_impexp').padimpexp;
+
+            (function () {
+              require('/pad').init();
+            }());
         </script>
         
 </html>

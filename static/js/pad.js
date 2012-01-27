@@ -37,19 +37,6 @@ var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
 var paduserlist = require('/pad_userlist').paduserlist;
 var padutils = require('/pad_utils').padutils;
 
-$(document).ready(function()
-{
-  //start the costum js
-  if(typeof costumStart == "function") costumStart();
-  getParams();
-  handshake();
-});
-
-$(window).unload(function()
-{
-  pad.dispose();
-});
-
 function createCookie(name, value, days, path)
 {
   if (days)
@@ -301,7 +288,7 @@ function handshake()
       clientVars.collab_client_vars.clientAgent = "Anonymous";
 
       //initalize the pad
-      pad.init();
+      pad._afterHandshake();
       initalized = true;
 
       // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
@@ -413,6 +400,21 @@ var pad = {
   },
 
   init: function()
+  {
+    $(document).ready(function()
+    {
+      //start the costum js
+      if(typeof costumStart == "function") costumStart();
+      getParams();
+      handshake();
+    });
+
+    $(window).unload(function()
+    {
+      pad.dispose();
+    });
+  },
+  _afterHandshake: function()
   {
     pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
   
@@ -973,6 +975,9 @@ var alertBar = (function()
   return self;
 }());
 
+function init() {
+  return pad.init();
+}
 
 var settings = {
   LineNumbersDisabled: false
@@ -994,4 +999,5 @@ exports.getUrlVars = getUrlVars;
 exports.savePassword = savePassword;
 exports.handshake = handshake;
 exports.pad = pad;
+exports.init = init;
 exports.alertBar = alertBar;
