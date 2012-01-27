@@ -438,7 +438,7 @@ var pad = {
     }
 
     // order of inits is important here:
-    padcookie.init(clientVars.cookiePrefsToSet);
+    padcookie.init(clientVars.cookiePrefsToSet, this);
   
     $("#widthprefcheck").click(pad.toggleWidthPref);
     // $("#sidebarcheck").click(pad.togglewSidebar);
@@ -465,16 +465,16 @@ var pad = {
       initialTitle: clientVars.initialTitle,
       initialPassword: clientVars.initialPassword,
       guestPolicy: pad.padOptions.guestPolicy
-    });
-    padimpexp.init();
-    padsavedrevs.init(clientVars.initialRevisionList);
+    }, this);
+    padimpexp.init(this);
+    padsavedrevs.init(clientVars.initialRevisionList, this);
 
-    padeditor.init(postAceInit, pad.padOptions.view || {});
+    padeditor.init(postAceInit, pad.padOptions.view || {}, this);
 
-    paduserlist.init(pad.myUserInfo);
+    paduserlist.init(pad.myUserInfo, this);
     //    padchat.init(clientVars.chatHistory, pad.myUserInfo);
     padconnectionstatus.init();
-    padmodals.init();
+    padmodals.init(this);
 
     pad.collabClient = getCollabClient(padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo, {
       colorPalette: pad.getColorPalette()

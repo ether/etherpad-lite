@@ -464,9 +464,9 @@ var paduserlist = (function()
 
   var pad = undefined;
   var self = {
-    init: function(myInitialUserInfo)
+    init: function(myInitialUserInfo, _pad)
     {
-      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
+      pad = _pad;
 
       self.setMyUserInfo(myInitialUserInfo);
 
