@@ -1,6 +1,7 @@
 {
   "pad.js": [
     "jquery.js"
+  , "pad.js"
   , "ace2_common.js"
   , "pad_utils.js"
   , "plugins.js"
@@ -17,7 +18,6 @@
   , "pad_impexp.js"
   , "pad_savedrevs.js"
   , "pad_connectionstatus.js"
-  , "pad2.js"
   , "jquery-ui.js"
   , "chat.js"
   , "excanvas.js"
