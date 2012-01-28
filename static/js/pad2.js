@@ -451,10 +451,6 @@ var pad = {
   
     $("#widthprefcheck").click(pad.toggleWidthPref);
     $("#sidebarcheck").click(pad.toggleSidebar);
-    $("#settingswarning").click(function(){
-      $("#settingswarning").hide();
-      $("#settingseveryoneitems").show();
-    });
 
     pad.myUserInfo = {
       userId: clientVars.userId,
