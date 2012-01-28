@@ -24,6 +24,15 @@
 
 var socket;
 
+// These jQuery things should create local references, but for now `require()`
+// assigns to the global `$` and augments it with plugins.
+require('/jquery');
+require('/jquery-ui');
+require('/farbtastic');
+require('/excanvas');
+require('/json2');
+require('/undo-xpopup');
+
 var chat = require('/chat').chat;
 var getCollabClient = require('/collab_client').getCollabClient;
 var padconnectionstatus = require('/pad_connectionstatus').padconnectionstatus;
