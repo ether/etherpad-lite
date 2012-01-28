@@ -1231,7 +1231,7 @@ label {
  display: none;
 }
 
-#settingsmenu .right_menu {
+#settingsmenu .right_popup {
   float:none;
 }
 
@@ -1240,4 +1240,3 @@ label {
  font-size: 11px;
  font-weight: bold;
 }
-
