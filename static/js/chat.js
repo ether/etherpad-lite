@@ -22,6 +22,7 @@
 
 var padutils = require('/pad_utils').padutils;
 var browser = require('/ace2_common').browser;
+var padcookie = require('/pad_cookie').padcookie;
 
 var chat = (function()
 {
@@ -69,16 +70,17 @@ var chat = (function()
       chatMentions = 0;
       document.title = title;
     },
-    stickToScreen: function() // Make chat stick to right hand side of screen
+    stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
-      console.log(isStuck);
       chat.show();
-      if(!isStuck) { // Stick it to
+      if(!isStuck || fromInitialCall) { // Stick it to
+        padcookie.setPref("chatAlwaysVisible", true);
         $('#chatbox').css({"right":"0px", "top":"36px", "border-radius":"0px", "height":"auto", "border-right":"none", "border-left":"1px solid #ccc", "border-top":"none", "background-color":"#f1f1f1", "width":"185px"});
         $('#chattext').css({"top":"0px"});
         $('#editorcontainer').css({"right":"192px", "width":"auto"});
         isStuck = true;
       } else { // Unstick it
+        padcookie.setPref("chatAlwaysVisible", false);
         $('#chatbox').css({"right":"20px", "top":"auto", "border-top-left-radius":"5px", "border-top-right-radius":"5px", "border-right":"1px solid #999", "height":"200px", "border-top":"1px solid #999", "background-color":"#f7f7f7"});
         $('#chattext').css({"top":"25px"});
         $('#editorcontainer').css({"right":"0px", "width":"100%"});

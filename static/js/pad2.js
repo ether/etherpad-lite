@@ -358,7 +358,6 @@ function handshake()
       }
     }
   });
-
   // Bind the colorpicker
   var fb = $('#colorpicker').farbtastic({ callback: '#mycolorpickerpreview', width: 220});
 }
@@ -450,7 +449,7 @@ var pad = {
     padcookie.init(clientVars.cookiePrefsToSet);
   
     $("#widthprefcheck").click(pad.toggleWidthPref);
-    $("#sidebarcheck").click(pad.toggleSidebar);
+    // $("#sidebarcheck").click(pad.togglewSidebar);
 
     pad.myUserInfo = {
       userId: clientVars.userId,
@@ -775,15 +774,17 @@ var pad = {
 
     padsavedrevs.handleIsFullyConnected(isConnected);
 
-    pad.determineSidebarVisibility(isConnected && !isInitialConnect);
+    // pad.determineSidebarVisibility(isConnected && !isInitialConnect);
+    pad.determineChatVisibility(isConnected && !isInitialConnect);
+
   },
-  determineSidebarVisibility: function(asNowConnectedFeedback)
+/*  determineSidebarVisibility: function(asNowConnectedFeedback)
   {
     if (pad.isFullyConnected())
     {
       var setSidebarVisibility = padutils.getCancellableAction("set-sidebar-visibility", function()
       {
-        $("body").toggleClass('hidesidebar', !! padcookie.getPref('hideSidebar'));
+        // $("body").toggleClass('hidesidebar', !! padcookie.getPref('hideSidebar'));
       });
       window.setTimeout(setSidebarVisibility, asNowConnectedFeedback ? 3000 : 0);
     }
@@ -791,6 +792,17 @@ var pad = {
     {
       padutils.cancelActions("set-sidebar-visibility");
       $("body").removeClass('hidesidebar');
+    }
+  },
+*/
+  determineChatVisibility: function(asNowConnectedFeedback){
+    var chatVisCookie = padcookie.getPref('chatAlwaysVisible');
+    if(chatVisCookie){ // if the cookie is set for chat always visible
+      chat.stickToScreen(true); // stick it to the screen
+      $('#options-stickychat').prop("checked", true); // set the checkbox to on
+    }
+    else{
+      $('#options-stickychat').prop("checked", false); // set the checkbox for off
     }
   },
   handleCollabAction: function(action)
@@ -841,6 +853,7 @@ var pad = {
     $("#widthprefcheck").toggleClass('widthprefchecked', !! newValue).toggleClass('widthprefunchecked', !newValue);
     pad.handleWidthChange();
   },
+/*
   toggleSidebar: function()
   {
     var newValue = !padcookie.getPref('hideSidebar');
@@ -848,6 +861,7 @@ var pad = {
     $("#sidebarcheck").toggleClass('sidebarchecked', !newValue).toggleClass('sidebarunchecked', !! newValue);
     pad.determineSidebarVisibility();
   },
+*/
   handleWidthChange: function()
   {
     var isFullWidth = padcookie.getPref('fullWidth');
