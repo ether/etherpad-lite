@@ -139,18 +139,21 @@
             <div id="editorloadingbox">Loading...</div>
         </div>
 
-        <div id="settingsmenu">
-            <h3>Pad settings</h3>
-            <div id="settingslocal">
-                <h4>My view only</h4>
+        <div id="settingsmenu" class="popup">
+            <h1>Pad settings</h1>
+            <div class="left_popup">
+                <h2>My view</h2>
                 <p>
-                    <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();"> Chat always on screen
+                    <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
+                    <label for="options-stickychat">Chat always on screen</label>
                 </p>
                 <p>
-                   <input type="checkbox" id="options-colorscheck" checked> Authorship colors
+                    <input type="checkbox" id="options-colorscheck" checked>
+                    <label for="options-colorscheck">Authorship colors</label>
                 </p>
                 <p>
-                     <input type="checkbox" id="options-linenoscheck" checked> Line numbers
+                    <input type="checkbox" id="options-linenoscheck" checked>
+                    <label for="options-linenoscheck">Line numbers</label>
                 </p>
                 <p>
                     Font type:
@@ -159,21 +162,17 @@
                         <option value="monospace">Monospaced</option>
                     </select>
                 </p>
-
             </div>
-            <div id="settingsline"></div>
-            <div id="settingseveryone">
-                <h4>Everyones view</h4>
-                <p><div id=settingswarning class=warning>Warning:<br/>These options affect everyone viewing this pad.</div></p>
-                <div id="settingseveryoneitems">There are no settings currently available to alter everyones view</div>
+            <div class="right_popup">
+                <h2>Global view</h2>
+                <p>Currently nothing.</p>
+                <p class="note">These options affect everyone viewing this pad.</p>
             </div>
-       </div>
+        </div>
 
-        <div id="importexport">
-            <div id="import">
-                <h3>Import/Export</h3>
-                Import from text file, HTML, PDF, Word, ODT or RTF:
-                <br><br>
+        <div id="importexport" class="popup">
+            <div class="left_popup">
+                <h2>Import from text file, HTML, PDF, Word, ODT or RTF</h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
                     <div class="importformdiv" id="importformfilediv"> 
                         <input type="file" name="file" size="15" id="importfileinput"> 
@@ -190,9 +189,8 @@
                     </div> 
                 </form>
             </div>
-            <div id="importexportline"></div>
-            <div id="export">
-                Export current pad as:
+            <div class="right_popup">
+                <h2>Export current pad as</h2>
                 <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
                 <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
                 <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
@@ -203,21 +201,24 @@
             </div>
         </div>
 
-        <div id="embed">
+        <div id="embed" class="popup">
             <div id="embedreadonly" class="right">
-                <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();"> Read only
+                <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();">
+                <label for="readonlyinput">Read only</label>
             </div>
-            <h3>Share this pad</h3>
+            <h1>Share this pad</h1>
             <div id="linkcode">
-                <label for="linkinput">Link</label><input id="linkinput" type="text" value="">
+                <h2>Link</h2>
+                <input id="linkinput" type="text" value="">
             </div>
             <br>
             <div id="embedcode">
-                <label for="embedinput">Embed URL</label><input id="embedinput" type="text" value="">
+                <h2>Embed URL</h2>
+                <input id="embedinput" type="text" value="">
             </div>
             <br>
             <div id="qrcode">
-                <label for="embedreadonlyqr">QR code</label><br/>
+                <h2>QR code</h2>
                 <div id="qr_center"><img id="embedreadonlyqr"></div>
             </div>
         </div>

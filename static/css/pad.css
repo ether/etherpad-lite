@@ -741,55 +741,8 @@ a#topbarmaximize {
  width: 100%;
 }
 
-#settingsmenu {
-  position:absolute;
-  top:40px;
-  right:20px;
-  width:400px;
-  height:135px;
-  z-index:500;
-  padding:10px;
-  border-radius:6px;
-  background:black;
-  background:rgba(0, 0, 0, 0.7);
-  color: #fff;
-  font-size:14px;
-  display:none;
-}
-#settingsmenu p {
-  margin: 5px 0; 
 }
 
-
-#embed {
-display:none;
-position:absolute;
-top:40px;
-font-size:14px;
-width:400px;
-right: 20px;
-z-index: 500;
-background-color: #000;
-color: white;
-background-color: rgb(0,0,0);
-background-color: rgba(0,0,0,0.7);
-padding: 10px;
--moz-border-radius: 6px;
-border-radius: 6px; 
-}
-
-.right {
-float:right;
-}
-
-#embed input[type=text] {
-width: 100%;
-padding: 5px;
-box-sizing: border-box;
--moz-box-sizing: border-box;
-display:block;
-margin-top: 10px;
-}
 
 ul#colorpickerswatches
 {
@@ -982,38 +935,6 @@ position: relative;
   top: -5px;
 } 
 
-#importexport{
-  position:absolute;
-  top:40px;
-  font-size:14px;
-  width:450px;
-  right: 20px;
-  z-index: 500;
-  background-color: #000;
-  color: white;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.7);
-  padding: 10px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  height:190px;
-  display:none;
-}
-
-#import{
-  position:absolute;
-  width:240px;
-  left:10px;
-  line-height:20px;
-}
-
-#export{
-  position:absolute;
-  width:180px;
-  right:10px;
-  line-height:20px;
-}
-
 .exporttype{
   margin-top: 2px;
   background-repeat:no-repeat;
@@ -1063,10 +984,6 @@ position: relative;
 
 #exportdokuwiki{
   background-position: 0px -459px;
-}
-
-#export a{
-  text-decoration: none;
 }
 
 #importstatusball{
@@ -1139,10 +1056,6 @@ width:33px !important;
 
 #online_count{
   color: #999;
-}
-
-label[for=readonlyinput] {
-  margin: 0 10px 0 2px;
 }
 
 #qr_center {
@@ -1250,43 +1163,81 @@ label[for=readonlyinput] {
   direction:RTL;
 } 
 
-#settingslocal{
-  left:10px;
-  position:absolute;
-  width:200px;
+#chattext p {
+ word-wrap: break-word;
 }
 
-#settingseveryone{
-  position:absolute;
-  right:10px;
-  width:200px;
+/* fix for misaligned labels */
+label {
+ position: relative;
+ bottom: 1px;
 }
 
-#settingsline{
-  border-left: 1px solid #fff;
-  height: 110px;
-  position:absolute;
-  width:0px;
-  left:200px;
-  opacity:.8;
+.right {
+ float:right;
 }
 
-.warning{
-  padding:10px;
-  background-color:#FFA4A4;
-  opacity:.8;
+.popup {
+ font-size: 14px;
+ width: 400px;
+ z-index: 500;
+ padding: 10px;
+ border-radius: 6px;
+ background: #222;
+ background: rgba(0,0,0,.7);
+ background: -webkit-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
+ background: -moz-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
+ box-shadow: 0 0 8px #888;
+ color: #fff;
 }
 
-#settingseveryoneitems{
-  display:none;
+.popup input[type=text] {
+ width: 100%;
+ padding: 5px;
+ box-sizing: border-box;
+ -moz-box-sizing: border-box;
+ display:block;
+ margin-top: 10px;
 }
 
-#settingswarning{
-  cursor: pointer;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
+.popup a {
+  text-decoration: none;
 }
+
+.popup h1 {
+ font-size: 18px;
+}
+.popup h2 {
+ font-size: 15px;
+}
+.popup p {
+ margin: 5px 0;
+}
+
+.left_popup {
+ float: left;
+ width: 50%;
+}
+
+.right_popup {
+ float: left;
+ padding-left: 10px;
+}
+
+#settingsmenu, #importexport, #embed {
+ position: absolute;
+ top: 55px;
+ right: 20px;
+ display: none;
+}
+
+#settingsmenu .right_menu {
+  float:none;
+}
+
+.note {
+ color: #ddd;
+ font-size: 11px;
+ font-weight: bold;
+}
+
