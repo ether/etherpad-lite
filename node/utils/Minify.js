@@ -27,16 +27,12 @@ var cleanCSS = require('clean-css');
 var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
-var Buffer = require('buffer').Buffer;
-var zlib = require('zlib');
 var RequireKernel = require('require-kernel');
 var server = require('../server');
-var os = require('os');
 
 var ROOT_DIR = path.normalize(__dirname + "/../" );
 var JS_DIR = ROOT_DIR + '../static/js/';
 var CSS_DIR = ROOT_DIR + '../static/css/';
-var CACHE_DIR = ROOT_DIR + '../var/';
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
@@ -110,96 +106,24 @@ function _handle(req, res, jsFilename, jsFiles) {
   function respondMinified()
   {
     var result = undefined;
-    var latestModification = new Date(res.getHeader('last-modified'));
-    
-    async.series([
-      function(callback)
-      {
-        //check the modification time of the minified js
-        fs.stat(CACHE_DIR + "/minified_" + jsFilename, function(err, stats)
-        {
-          if(err && err.code != "ENOENT")
-          {
-            ERR(err, callback);
-            return;
-          }
-        
-          //there is no minfied file or there new changes since this file was generated, so continue generating this file
-          if((err && err.code == "ENOENT") || stats.mtime.getTime() < latestModification)
-          {
-            callback();
-          }
-          //the minified file is still up to date, stop minifying
-          else
-          {
-            callback("stop");
-          }
-        });
-      }, 
-      //load all js files
-      function (callback)
-      {
-        var values = [];
-        tarCode(
-          jsFiles
-        , function (content) {values.push(content)}
-        , function (err) {
-          if(ERR(err)) return;
-
-          result = values.join('');
-          callback();
-        });
-      },
-      //put all together and write it into a file
-      function(callback)
-      {
-        async.parallel([
-          //write the results plain in a file
-          function(callback)
-          {
-            fs.writeFile(CACHE_DIR + "minified_" + jsFilename, result, "utf8", callback);
-          },
-          //write the results compressed in a file
-          function(callback)
-          {
-            zlib.gzip(result, function(err, compressedResult){
-              //weird gzip bug that returns 0 instead of null if everything is ok
-              err = err === 0 ? null : err;
-            
-              if(ERR(err, callback)) return;
-              
-              fs.writeFile(CACHE_DIR + "minified_" + jsFilename + ".gz", compressedResult, callback);
-            });
-          }
-        ],callback);
-      }
-    ], function(err)
-    {
-      if(err && err != "stop")
-      {
+    var values = [];
+    res.writeHead(200, {});
+    tarCode(
+      jsFiles
+    , function (content) {values.push(content)}
+    , function (err) {
         if(ERR(err)) return;
+
+        result = values.join('');
+        res.write(result);
+        res.end();
       }
-      
-      //check if gzip is supported by this browser
-      var gzipSupport = req.header('Accept-Encoding', '').indexOf('gzip') != -1;
-      
-      var pathStr;
-      if(gzipSupport && os.type().indexOf("Windows") == -1)
-      {
-        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename + ".gz");
-        res.header('Content-Encoding', 'gzip');
-      }
-      else
-      {
-        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename );
-      }
-      
-      res.sendfile(pathStr, { maxAge: server.maxAge });
-    })
+    );
   }
   //minifying is disabled, so put the files together in one file
   function respondRaw()
   {
+    res.writeHead(200, {});
     tarCode(
       jsFiles
     , function (content) {res.write(content)}

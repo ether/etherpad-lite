@@ -31,6 +31,7 @@ var async = require('async');
 var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
+var CachingMiddleware = require('./utils/caching_middleware');
 var formidable = require('formidable');
 var apiHandler;
 var exportHandler;
@@ -154,7 +155,8 @@ async.waterfall([
     });
     
     //serve minified files
-    app.all('/minified/:filename', minify.minifyJS);
+    var assetCache = new CachingMiddleware;
+    app.all('/minified/:filename', assetCache.handle, minify.minifyJS);
     
     //checks for padAccess
     function hasPadAccess(req, res, callback)
