@@ -85,10 +85,18 @@ function _handle(req, res, jsFilename, jsFiles) {
         res.writeHead(304, {});
         res.end();
       } else {
-        if (settings.minify) {
-          respondMinified();
+        if (req.method == 'HEAD') {
+          res.writeHead(200, {});
+          res.end();
+        } else if (req.method == 'GET') {
+          if (settings.minify) {
+            respondMinified();
+          } else {
+            respondRaw();
+          }
         } else {
-          respondRaw();
+          res.writeHead(405, {'allow': 'HEAD, GET'});
+          res.end();
         }
       }
     });

@@ -155,7 +155,7 @@ async.waterfall([
     });
     
     //serve minified files
-    app.get('/minified/:filename', minify.minifyJS);
+    app.all('/minified/:filename', minify.minifyJS);
     
     //checks for padAccess
     function hasPadAccess(req, res, callback)
