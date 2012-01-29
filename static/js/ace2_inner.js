@@ -236,12 +236,19 @@ function OUTER(gscope)
           {
             bgcolor = fadeColor(bgcolor, info.fade);
           }
-
-          dynamicCSS.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author))).backgroundColor = bgcolor;
           
-          dynamicCSSTop.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author))).backgroundColor = bgcolor;
+          // Text color
+          var txtcolor = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.45) ? '#ffffff' : '#000000';
+          
+          var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
+          getAuthorClassName(author)));
+          authorStyle.backgroundColor = bgcolor;
+          authorStyle.color = txtcolor;
+          
+          var authorStyleTop = dynamicCSSTop.selectorStyle(getAuthorColorClassSelector(
+          getAuthorClassName(author)));
+          authorStyleTop.backgroundColor = bgcolor;
+          authorStyleTop.color = txtcolor;
         }
       }
     }
