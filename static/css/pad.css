@@ -1068,6 +1068,9 @@ margin-top: 1px;
 .buttonicon-clearauthorship {
   background-position: 0px -86px;
 }
+.buttonicon-settings {
+  background-position: 0px -436px;
+}
 .buttonicon-import_export {
   background-position: 0px -68px;
 }
@@ -1079,9 +1082,11 @@ margin-top: 1px;
 }
 .buttonicon-chat {
   background-position: 0px -102px;
+  display: inline-block;
 }
 .buttonicon-showusers {
   background-position: 0px -183px;
+  display: inline-block;
 }
 
 #usericon
@@ -1227,7 +1232,7 @@ label {
 
 .popup {
  font-size: 14px;
- width: 400px;
+ width: 450px;
  z-index: 500;
  padding: 10px;
  border-radius: 6px;
@@ -1269,6 +1274,8 @@ label {
 
 .right_popup {
  float: left;
+ width: 50%;
+ box-sizing: border-box;
  padding-left: 10px;
 }
 
@@ -1277,10 +1284,6 @@ label {
  top: 55px;
  right: 20px;
  display: none;
-}
-
-#settingsmenu .right_popup {
-  float:none;
 }
 
 .note {
