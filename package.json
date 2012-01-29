@@ -10,6 +10,7 @@
                         "name": "Robin Buse" }
                      ],
   "dependencies"   : {
+                      "yajsml"              : "1.1.1",
                       "require-kernel"      : "1.0.3",
                       "socket.io"           : "0.8.7",
                       "ueberDB"             : "0.1.7",

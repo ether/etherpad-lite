@@ -238,7 +238,7 @@ function Ace2Editor()
     } else {
       file = ACE_SOURCE;
       file = file.replace(/^\.\.\/static\/js\//, '../minified/');
-      buffer.push('<script type="application/javascript" src="' + file + '"><\/script>');
+      buffer.push('<script type="application/javascript" src="' + file + '?callback=require.define"><\/script>');
       buffer.push('<script type="text/javascript">');
       buffer.push('require("/ace2_inner");');
       buffer.push('<\/script>');

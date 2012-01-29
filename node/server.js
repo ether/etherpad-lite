@@ -32,6 +32,7 @@ var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
 var CachingMiddleware = require('./utils/caching_middleware');
+var Yajsml = require('yajsml');
 var formidable = require('formidable');
 var apiHandler;
 var exportHandler;
@@ -147,6 +148,8 @@ async.waterfall([
       res.write(minify.requireDefinition());
       res.end();
     });
+    var assetCache = new CachingMiddleware;
+    app.all('/static/js/:filename', assetCache.handle, minify.minifyJS);
     app.get('/static/*', function(req, res)
     { 
       var filePath = path.normalize(__dirname + "/.." +
@@ -155,8 +158,18 @@ async.waterfall([
     });
     
     //serve minified files
-    var assetCache = new CachingMiddleware;
-    app.all('/minified/:filename', assetCache.handle, minify.minifyJS);
+    var jsServer = new (Yajsml.Server)({
+      rootPath: 'minified/'
+    , rootURI: 'http://' + settings.ip + ":" + settings.port + '/static/js/'
+    });
+    var StaticAssociator = Yajsml.associators.StaticAssociator;
+    var associations =
+      Yajsml.associators.associationsForSimpleMapping(minify.tar);
+    var associator = new StaticAssociator(associations);
+    jsServer.setAssociator(associator);
+    var assetCache_other = new CachingMiddleware;
+    app.all('/minified/:filename', assetCache_other.handle);
+    app.use(jsServer);
     
     //checks for padAccess
     function hasPadAccess(req, res, callback)

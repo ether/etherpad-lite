@@ -36,6 +36,14 @@ var CSS_DIR = ROOT_DIR + '../static/css/';
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
+exports.tar = {};
+for (var key in tar) {
+  exports.tar['/' + key] =
+    tar[key].map(function (p) {return '/' + p}).concat(
+      tar[key].map(function (p) {return '/' + p.replace(/\.js$/, '')})
+    );
+}
+
 /**
  * creates the minifed javascript for the given minified name
  * @param req the Express request
@@ -43,21 +51,7 @@ var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
  */
 exports.minifyJS = function(req, res, next)
 {
-  var jsFilename = req.params['filename'];
-  
-  //choose the js files we need
-  var jsFiles = undefined;
-  if (Object.prototype.hasOwnProperty.call(tar, jsFilename)) {
-    jsFiles = tar[jsFilename];
-    _handle(req, res, jsFilename, jsFiles)
-  } else {
-    // Not in tar list, but try anyways, if it fails, pass to `next`.
-    jsFiles = [jsFilename];
-    _handle(req, res, jsFilename, jsFiles);
-  }
-}
-
-function _handle(req, res, jsFilename, jsFiles) {
+  var filename = req.params['filename'];
   res.header("Content-Type","text/javascript");
 
   lastModifiedDate(function (date) {
@@ -70,7 +64,7 @@ function _handle(req, res, jsFilename, jsFiles) {
       res.setHeader('cache-control', 'max-age=' + server.maxAge);
     }
 
-    fs.stat(JS_DIR + jsFiles[0], function (error, stats) {
+    fs.stat(JS_DIR + filename, function (error, stats) {
       if (error) {
         if (error.code == "ENOENT") {
           res.writeHead(404, {});
@@ -90,17 +84,12 @@ function _handle(req, res, jsFilename, jsFiles) {
           res.writeHead(200, {});
           res.end();
         } else if (req.method == 'GET') {
-          res.writeHead(200, {});
-          tarCode(
-            jsFiles
-          , function (content) {
-              res.write(content);
-            }
-          , function (err) {
-              if(ERR(err)) return;
-              res.end();
-            }
-          );
+          getFileCompressed(filename, function (error, content) {
+            if(ERR(error)) return;
+            res.writeHead(200, {});
+            res.write(content);
+            res.end();
+          });
         } else {
           res.writeHead(405, {'allow': 'HEAD, GET'});
           res.end();
@@ -222,15 +211,36 @@ function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
 }
 
+function getFileCompressed(filename, callback) {
+  getFile(filename, function (error, content) {
+    if (error || !content) {
+      callback(error, content);
+    } else {
+      if (settings.minify) {
+        try {
+          content = compressJS([content])
+        } catch (error) {
+          // silence
+        }
+      }
+      callback(null, content);
+    }
+  });
+}
+
+function getFile(filename, callback) {
+  if (filename == 'ace.js') {
+    getAceFile(callback);
+  } else {
+    fs.readFile(JS_DIR + filename, "utf8", callback);
+  }
+}
+
 function tarCode(jsFiles, write, callback) {
   write('require.define({');
   var initialEntry = true;
   async.forEach(jsFiles, function (filename, callback){
-    if (filename == 'ace.js') {
-      getAceFile(handleFile);
-    } else {
-      fs.readFile(JS_DIR + filename, "utf8", handleFile);
-    }
+    getFile(filename, handleFile)
 
     function handleFile(err, data) {
       if(ERR(err, callback)) return;
