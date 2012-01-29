@@ -23,88 +23,88 @@
             <ul id="menu_left">
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false" >
                     <a title="Bold (ctrl-B)">
-                        <div class="buttonicon" style="background-position:0px -116px"></div>
+                        <div class="buttonicon buttonicon-bold"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('italic'); return false;" >
                     <a title="Italics (ctrl-I)">
-                        <div class="buttonicon" style="background-position:0px 0px"></div>
+                        <div class="buttonicon buttonicon-italic"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('underline');return false;" >
                     <a title="Underline (ctrl-U)">
-                        <div class="buttonicon" style="background-position:0px -236px;margin-top:1px;"></div>
+                        <div class="buttonicon buttonicon-underline" style="margin-top:1px;"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('strikethrough');return false;" >
                     <a title="Strikethrough">
-                        <div class="buttonicon" style="background-position:0px -200px"></div>
+                        <div class="buttonicon buttonicon-strikethrough"></div>
                     </a>
                 </li>
                 <li class="separator"></li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('insertorderedlist');return false;" >
                     <a title="Toggle Ordered List">
-                        <div class="buttonicon" style="background-position:0px -477px"></div>
+                        <div class="buttonicon buttonicon-insertorderedlist"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('insertunorderedlist');return false;" >
                     <a title="Toggle Bullet List">
-                        <div class="buttonicon" style="background-position:0px -34px"></div>
+                        <div class="buttonicon buttonicon-insertunorderedlist"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('indent');return false;" >
                     <a title="Indent">
-                        <div class="buttonicon" style="background-position:0px -52px"></div>
+                        <div class="buttonicon buttonicon-indent"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('outdent');return false;" >
                     <a title="Unindent">
-                        <div class="buttonicon" style="background-position:0px -134px"></div>
+                        <div class="buttonicon buttonicon-outdent"></div>
                     </a>
                 </li>
                 <li class="separator"></li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('undo');return false;" >
                     <a title="Undo (ctrl-Z)">
-                        <div class="buttonicon" style="background-position:0px -255px"></div>
+                        <div class="buttonicon buttonicon-undo"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('redo');return false;" >
                     <a title="Redo (ctrl-Y)">
-                        <div class="buttonicon" style="background-position:0px -166px"></div>
+                        <div class="buttonicon buttonicon-redo"></div>
                     </a>
                 </li>
                 <li class="separator"></li>
                 <li id="clearAuthorship" onClick="window.pad&amp;&amp;pad.editbarClick('clearauthorship');return false;" >
                     <a title="Clear Authorship Colors">
-                        <div class="buttonicon" style="background-position:0px -86px"></div>
+                        <div class="buttonicon buttonicon-clearauthorship"></div>
                     </a>
                 </li>
             </ul>    
             <ul id="menu_right">
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;">
                     <a id="settingslink" title="Settings of this pad">
-                        <div class="buttonicon" style="background-position:0px -436px"></div>
+                        <div class="buttonicon buttonicon-settings"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('import_export');return false;">
                     <a id="exportlink" title="Import/Export from/to different document formats">
-                        <div class="buttonicon" style="background-position:0px -68px"></div>
+                        <div class="buttonicon buttonicon-import_export"></div>
                     </a>
                 </li>
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('embed');return false;" >
                     <a id="embedlink" title="Share and Embed this pad">
-                        <div class="buttonicon" style="background-position:0px -18px"></div>
+                        <div class="buttonicon buttonicon-embed"></div>
                     </a>
                 </li>
                 <li class="separator"></li>
                 <li id="timesliderlink" onClick="document.location = document.location.pathname+ '/timeslider'">
                     <a title="Show the history of this pad">
-                        <div class="buttonicon" style="background-position:0px -218px"></div>
+                        <div class="buttonicon buttonicon-history"></div>
                     </a>
                 </li>
                 <li id="usericon" onClick="window.pad&amp;&amp;pad.editbarClick('showusers');return false;" >
                     <a title="Show connected users">
-                        <div class="buttonicon" id="usericonback" style="background-position:0px -183px;display:inline-block;"></div>
+                        <div class="buttonicon buttonicon-showusers" id="usericonback" style="display:inline-block;"></div>
                         <span id="online_count">1</span>
                     </a>
                 </li>
@@ -228,7 +228,7 @@
         <div id="chaticon">
             <a onClick="chat.show();return false;" title="Open the chat for this pad">
                 <span id="chatlabel">Chat</span>
-                <div class="buttonicon" style="background-position:0px -102px;display:inline-block;"></div>
+                <div class="buttonicon buttonicon-chat" style="display:inline-block;"></div>
             </a>
             <span id="chatcounter">0</span>
         </div>
