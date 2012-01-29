@@ -69,21 +69,28 @@ exports.minifyJS = function(req, res, next)
 
 function _handle(req, res, jsFilename, jsFiles) {
   res.header("Content-Type","text/javascript");
-  
-  //minifying is enabled
-  if(settings.minify)
+
+  lastModifiedDate(function (date) {
+    date = new Date(date);
+    res.setHeader('last-modified', date.toUTCString());
+    res.setHeader('date', (new Date()).toUTCString());
+
+    if (new Date(req.headers['if-modified-since']) >= date) {
+      res.writeHead(304, {});
+      res.end();
+    } else if (settings.minify) {
+      respondMinified();
+    } else {
+      respondRaw();
+    }
+  });
+
+  function respondMinified()
   {
     var result = undefined;
-    var latestModification = 0;
+    var latestModification = new Date(res.getHeader('last-modified'));
     
     async.series([
-      //find out the highest modification date
-      function (callback) {
-        lastModifiedDate(function (date) {
-          latestModification = date;
-          callback()
-        });
-      },
       function(callback)
       {
         //check the modification time of the minified js
@@ -169,7 +176,7 @@ function _handle(req, res, jsFilename, jsFiles) {
     })
   }
   //minifying is disabled, so put the files together in one file
-  else
+  function respondRaw()
   {
     tarCode(
       jsFiles
