@@ -57,13 +57,7 @@ exports.minifyJS = function(req, res, next)
   } else {
     // Not in tar list, but try anyways, if it fails, pass to `next`.
     jsFiles = [jsFilename];
-    fs.stat(JS_DIR + jsFilename, function (error, stats) {
-      if (error || !stats.isFile()) {
-        next();
-      } else {
-        _handle(req, res, jsFilename, jsFiles);
-      }
-    });
+    _handle(req, res, jsFilename, jsFiles);
   }
 }
 
@@ -75,14 +69,29 @@ function _handle(req, res, jsFilename, jsFiles) {
     res.setHeader('last-modified', date.toUTCString());
     res.setHeader('date', (new Date()).toUTCString());
 
-    if (new Date(req.headers['if-modified-since']) >= date) {
-      res.writeHead(304, {});
-      res.end();
-    } else if (settings.minify) {
-      respondMinified();
-    } else {
-      respondRaw();
-    }
+    fs.stat(JS_DIR + jsFiles[0], function (error, stats) {
+      if (error) {
+        if (error.code == "ENOENT") {
+          res.writeHead(404, {});
+          res.end();
+        } else {
+          res.writeHead(500, {});
+          res.end();
+        }
+      } else if (!stats.isFile()) {
+        res.writeHead(404, {});
+        res.end();
+      } else if (new Date(req.headers['if-modified-since']) >= date) {
+        res.writeHead(304, {});
+        res.end();
+      } else {
+        if (settings.minify) {
+          respondMinified();
+        } else {
+          respondRaw();
+        }
+      }
+    });
   });
 
   function respondMinified()
