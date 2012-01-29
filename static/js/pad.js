@@ -401,6 +401,8 @@ var pad = {
 
   init: function()
   {
+    padutils.setupGlobalExceptionHandler();
+
     $(document).ready(function()
     {
       //start the costum js
