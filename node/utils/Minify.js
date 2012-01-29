@@ -73,7 +73,7 @@ function _handle(req, res, jsFilename, jsFiles) {
   //minifying is enabled
   if(settings.minify)
   {
-    var fileValues = {};
+    var result = undefined;
     var latestModification = 0;
     
     async.series([
@@ -142,30 +142,20 @@ function _handle(req, res, jsFilename, jsFiles) {
       //load all js files
       function (callback)
       {
-        async.forEach(jsFiles, function (item, callback)
-        {
-          if (item == 'ace.js') {
-            getAceFile(handleFile);
-          } else {
-            fs.readFile(JS_DIR + item, "utf-8", handleFile);
-          }
+        var values = [];
+        tarCode(
+          jsFiles
+        , function (content) {values.push(content)}
+        , function (err) {
+          if(ERR(err)) return;
 
-          function handleFile(err, data)
-          {
-            if(ERR(err, callback)) return;
-            fileValues[item] = data;
-            callback();
-          }
-        }, callback);
+          result = values.join('');
+          callback();
+        });
       },
       //put all together and write it into a file
       function(callback)
       {
-        //minify all javascript files to one
-        var values = [];
-        tarCode(jsFiles, fileValues, function (content) {values.push(content)});
-        var result = compressJS(values);
-        
         async.parallel([
           //write the results plain in a file
           function(callback)
@@ -213,25 +203,11 @@ function _handle(req, res, jsFilename, jsFiles) {
   //minifying is disabled, so put the files together in one file
   else
   {
-    var fileValues = {};
-  
-    //read all js files
-    async.forEach(jsFiles, function (item, callback)
-    {
-      fs.readFile(JS_DIR + item, "utf-8", function(err, data)
-      {          
-        if(ERR(err, callback)) return;  
-        fileValues[item] = data;
-        callback();
-      });
-    }, 
-    //send all files together
-    function(err)
-    {
+    tarCode(
+      jsFiles
+    , function (content) {res.write(content)}
+    , function (err) {
       if(ERR(err)) return;
-      
-      tarCode(jsFiles, fileValues, function (content) {res.write(content)});
-      
       res.end();
     });
   }
@@ -301,12 +277,25 @@ function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
 }
 
-function tarCode(filesInOrder, files, write) {
-  for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
-    var filename = filesInOrder[i];
-    write("\n\n\n/*** File: static/js/" + filename + " ***/\n\n\n");
-    write(isolateJS(files[filename], filename));
-  }
+function tarCode(jsFiles, write, callback) {
+  async.forEach(jsFiles, function (item, callback){
+    if (item == 'ace.js') {
+      getAceFile(handleFile);
+    } else {
+      fs.readFile(JS_DIR + item, "utf8", handleFile);
+    }
+
+    function handleFile(err, data) {
+      if(ERR(err, callback)) return;
+      write("\n\n\n/*** File: static/js/" + item + " ***/\n\n\n");
+      if (settings.minify) {
+        write(compressJS([isolateJS(data, item)]) + ';\n');
+      } else {
+        write(isolateJS(data, item));
+      }
+      callback();
+    }
+  }, callback);
 }
 
 // Wrap the following code in a self executing function and assign exports to
