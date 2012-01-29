@@ -28,17 +28,7 @@ require('/undo-xpopup');
 
 var createCookie = require('/pad_utils').createCookie;
 var readCookie = require('/pad_utils').readCookie;
-
-function randomString() {
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var string_length = 20;
-  var randomstring = '';
-  for (var i=0; i<string_length; i++) {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum,rnum+1);
-  }
-  return "t." + randomstring;
-}
+var randomString = require('/pad_utils').randomString;
 
 var socket, token, padId, export_links;
 
@@ -59,7 +49,7 @@ function init() {
     token = readCookie("token");
     if(token == null)
     {
-      token = randomString();
+      token = "t." + randomString();
       createCookie("token", token, 60);
     }
 

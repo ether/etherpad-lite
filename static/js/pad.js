@@ -48,19 +48,7 @@ var padutils = require('/pad_utils').padutils;
 
 var createCookie = require('/pad_utils').createCookie;
 var readCookie = require('/pad_utils').readCookie;
-
-function randomString()
-{
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var string_length = 20;
-  var randomstring = '';
-  for (var i = 0; i < string_length; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return "t." + randomstring;
-}
+var randomString = require('/pad_utils').randomString;
 
 function getParams()
 {
@@ -184,7 +172,7 @@ function handshake()
     var token = readCookie("token");
     if (token == null)
     {
-      token = randomString();
+      token = "t." + randomString();
       createCookie("token", token, 60);
     }
     

@@ -6,6 +6,7 @@ var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var Changeset = CommonCode.require("/Changeset");
 var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
+var randomString = CommonCode.require('/pad_utils').randomString;
 var db = require("./DB").db;
 var async = require("async");
 var settings = require('../utils/Settings');
@@ -478,15 +479,7 @@ function hash(password, salt)
 
 function generateSalt()
 {
-  var len = 86;
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz./";
-  var randomstring = '';
-  for (var i = 0; i < len; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return randomstring;
+  return randomstring(86);
 }
 
 function compare(hashStr, password)

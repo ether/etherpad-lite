@@ -5,7 +5,7 @@ var ueberDB = require("ueberDB");
 var mysql = require("mysql");
 var async = require("async");
 var Changeset = CommonCode.require("/Changeset");
-var randomString = require("../node/utils/randomstring");
+var randomString = CommonCode.require('/pad_utils').randomString;
 var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
 
 var settingsFile = process.argv[2];

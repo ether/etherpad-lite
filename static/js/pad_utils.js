@@ -20,6 +20,23 @@
  * limitations under the License.
  */
 
+/**
+ * Generates a random String with the given length. Is needed to generate the Author, Group, readonly, session Ids
+ */
+
+function randomString(len)
+{
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  var randomstring = '';
+  len = len || 20
+  for (var i = 0; i < len; i++)
+  {
+    var rnum = Math.floor(Math.random() * chars.length);
+    randomstring += chars.substring(rnum, rnum + 1);
+  }
+  return randomstring;
+}
+
 function createCookie(name, value, days, path)
 {
   if (days)
@@ -510,6 +527,7 @@ padutils.setupGlobalExceptionHandler = setupGlobalExceptionHandler;
 
 padutils.binarySearch = require('/ace2_common').binarySearch;
 
+exports.randomString = randomString;
 exports.createCookie = createCookie;
 exports.readCookie = readCookie;
 exports.padutils = padutils;
