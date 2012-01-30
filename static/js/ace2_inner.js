@@ -236,12 +236,19 @@ function OUTER(gscope)
           {
             bgcolor = fadeColor(bgcolor, info.fade);
           }
-
-          dynamicCSS.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author))).backgroundColor = bgcolor;
           
-          dynamicCSSTop.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author))).backgroundColor = bgcolor;
+          // Text color
+          var txtcolor = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.45) ? '#ffffff' : '#000000';
+          
+          var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
+          getAuthorClassName(author)));
+          authorStyle.backgroundColor = bgcolor;
+          authorStyle.color = txtcolor;
+          
+          var authorStyleTop = dynamicCSSTop.selectorStyle(getAuthorColorClassSelector(
+          getAuthorClassName(author)));
+          authorStyleTop.backgroundColor = bgcolor;
+          authorStyleTop.color = txtcolor;
         }
       }
     }
@@ -3138,11 +3145,12 @@ function OUTER(gscope)
         // Such a div is what IE 6 creates naturally when you make a blank line
         // in a document of divs.  However, when copy-and-pasted the div will
         // contain a space, so we note its emptiness with a property.
-        lineElem.innerHTML = "";
+        lineElem.innerHTML = " "; // Frist we set a value that isnt blank
         // a primitive-valued property survives copy-and-paste
         setAssoc(lineElem, "shouldBeEmpty", true);
         // an object property doesn't
         setAssoc(lineElem, "unpasted", {});
+        lineElem.innerHTML = ""; // Then we make it blank..  New line and no space = Awesome :)
       };
       var lineClass = 'ace-line';
       result.appendSpan = function(txt, cls)

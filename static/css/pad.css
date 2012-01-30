@@ -1035,6 +1035,59 @@ background-repeat: no-repeat;
 margin-left: 1px;
 margin-top: 1px;
 }
+.buttonicon-bold {
+  background-position: 0px -116px;
+}
+.buttonicon-italic {
+  background-position: 0px 0px;
+}
+.buttonicon-underline {
+  background-position: 0px -236px;
+}
+.buttonicon-strikethrough {
+  background-position: 0px -200px;
+}
+.buttonicon-insertorderedlist {
+  background-position: 0px -477px
+}
+.buttonicon-insertunorderedlist {
+  background-position: 0px -34px;
+}
+.buttonicon-indent {
+  background-position: 0px -52px;
+}
+.buttonicon-outdent {
+  background-position: 0px -134px;
+}
+.buttonicon-undo {
+  background-position: 0px -255px;
+}
+.buttonicon-redo {
+  background-position :0px -166px;
+}
+.buttonicon-clearauthorship {
+  background-position: 0px -86px;
+}
+.buttonicon-settings {
+  background-position: 0px -436px;
+}
+.buttonicon-import_export {
+  background-position: 0px -68px;
+}
+.buttonicon-embed {
+  background-position: 0px -18px;
+}
+.buttonicon-history {
+  background-position: 0px -218px;
+}
+.buttonicon-chat {
+  background-position: 0px -102px;
+  display: inline-block;
+}
+.buttonicon-showusers {
+  background-position: 0px -183px;
+  display: inline-block;
+}
 
 #usericon
 {
@@ -1179,7 +1232,7 @@ label {
 
 .popup {
  font-size: 14px;
- width: 400px;
+ width: 450px;
  z-index: 500;
  padding: 10px;
  border-radius: 6px;
@@ -1221,6 +1274,8 @@ label {
 
 .right_popup {
  float: left;
+ width: 50%;
+ box-sizing: border-box;
  padding-left: 10px;
 }
 
@@ -1229,10 +1284,6 @@ label {
  top: 55px;
  right: 20px;
  display: none;
-}
-
-#settingsmenu .right_popup {
-  float:none;
 }
 
 .note {
