@@ -34,7 +34,7 @@ var padutils = {
   },
   uniqueId: function()
   {
-    var pad = require('/pad2').pad; // Sidestep circular dependency
+    var pad = require('/pad').pad; // Sidestep circular dependency
     function encodeNum(n, width)
     {
       // returns string that is exactly 'width' chars, padding with zeros
@@ -209,7 +209,7 @@ var padutils = {
   },
   timediff: function(d)
   {
-    var pad = require('/pad2').pad; // Sidestep circular dependency
+    var pad = require('/pad').pad; // Sidestep circular dependency
     function format(n, word)
     {
       n = Math.round(n);
@@ -459,17 +459,25 @@ var padutils = {
   }
 };
 
-//send javascript errors to the server
-window.onerror = function test (msg, url, linenumber)
-{
- var errObj = {errorInfo: JSON.stringify({msg: msg, url: url, linenumber: linenumber, userAgent: navigator.userAgent})};
- var loc = document.location;
- var url = loc.protocol + "//" + loc.hostname + ":" + loc.port + "/" + loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "jserror";
+var globalExceptionHandler = undefined;
+function setupGlobalExceptionHandler() {
+  //send javascript errors to the server
+  if (!globalExceptionHandler) {
+    globalExceptionHandler = function test (msg, url, linenumber)
+    {
+     var errObj = {errorInfo: JSON.stringify({msg: msg, url: url, linenumber: linenumber, userAgent: navigator.userAgent})};
+     var loc = document.location;
+     var url = loc.protocol + "//" + loc.hostname + ":" + loc.port + "/" + loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "jserror";
  
- $.post(url, errObj);
+     $.post(url, errObj);
  
- return false;
-};
+     return false;
+    };
+    window.onerror = globalExceptionHandler;
+  }
+}
+
+padutils.setupGlobalExceptionHandler = setupGlobalExceptionHandler;
 
 padutils.binarySearch = require('/ace2_common').binarySearch;
 

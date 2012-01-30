@@ -22,7 +22,6 @@
 // revision info is a skip list whos entries represent a particular revision
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
-var global = this;
 
 function loadBroadcastRevisionsJS()
 {
