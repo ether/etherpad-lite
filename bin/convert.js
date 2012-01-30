@@ -4,6 +4,7 @@ var ueberDB = require("ueberDB");
 var mysql = require("mysql");
 var async = require("async");
 var Changeset = require("../node/utils/Changeset");
+var randomString = require("../node/utils/randomstring");
 var AttributePoolFactory = require("../node/utils/AttributePoolFactory");
 
 var settingsFile = process.argv[2];
@@ -449,19 +450,4 @@ function parsePage(array, pageStart, offsets, data, json)
     //update start
     start+=unitLength;
   }
-}
-
-/**
- * Generates a random String with the given length. Is needed to generate the Author Ids
- */
-function randomString(len) 
-{
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var randomstring = '';
-  for (var i = 0; i < len; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return randomstring;
 }

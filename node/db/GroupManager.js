@@ -20,6 +20,7 @@
  
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
+var randomString = require("../utils/randomstring");
 var db = require("./DB").db;
 var async = require("async");
 var padManager = require("./PadManager");
@@ -254,19 +255,4 @@ exports.listPads = function(groupID, callback)
       });
     }
   });
-}
-
-/**
- * Generates a random String with the given length. Is needed to generate the Author Ids
- */
-function randomString(len) 
-{
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var randomstring = '';
-  for (var i = 0; i < len; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return randomstring;
 }
