@@ -141,6 +141,7 @@ var padeditor = (function()
       if (self.ace)
       {
         self.ace.destroy();
+        self.ace = null;
       }
     },
     disable: function()

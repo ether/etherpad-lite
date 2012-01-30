@@ -30,7 +30,7 @@ require('/jquery');
 require('/jquery-ui');
 require('/farbtastic');
 require('/excanvas');
-require('/json2');
+JSON = require('/json2');
 require('/undo-xpopup');
 
 var chat = require('/chat').chat;
