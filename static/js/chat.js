@@ -21,17 +21,18 @@
  */
 
 var padutils = require('/pad_utils').padutils;
+var browser = require('/ace2_common').browser;
+var padcookie = require('/pad_cookie').padcookie;
 
 var chat = (function()
 {
-  var bottomMargin = "0px";
+  var isStuck = false;
   var sDuration = 500;
   var hDuration = 750;
   var chatMentions = 0;
   var title = document.title;
-  if ($.browser.mobile){
-   sDuration = 0;
-   hDuration = 0;
+  if (browser.mobile){
+   sDuration = hDuration = 0;
   }
   var self = {
     show: function () 
@@ -56,17 +57,35 @@ var chat = (function()
           {
             $("#focusprotector").hide();
             
-            if($.browser.mobile)
-              bottommargin = "32px";
-            
-            $("#chatbox").css({right: "20px", bottom: bottomMargin, left: "", top: ""});
-            
+            if(browser.mobile) {
+              $("#chatbox").css({right: "0px", bottom: "32px", left: "", top: ""});
+            } else {
+              $("#chatbox").css({right: "20px", bottom: "0px", left: "", top: ""});
+            }
+
             self.scrollDown();
           }
         });
       });
       chatMentions = 0;
       document.title = title;
+    },
+    stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
+    {
+      chat.show();
+      if(!isStuck || fromInitialCall) { // Stick it to
+        padcookie.setPref("chatAlwaysVisible", true);
+        $('#chatbox').css({"right":"0px", "top":"36px", "border-radius":"0px", "height":"auto", "border-right":"none", "border-left":"1px solid #ccc", "border-top":"none", "background-color":"#f1f1f1", "width":"185px"});
+        $('#chattext').css({"top":"0px"});
+        $('#editorcontainer').css({"right":"192px", "width":"auto"});
+        isStuck = true;
+      } else { // Unstick it
+        padcookie.setPref("chatAlwaysVisible", false);
+        $('#chatbox').css({"right":"20px", "top":"auto", "border-top-left-radius":"5px", "border-top-right-radius":"5px", "border-right":"1px solid #999", "height":"200px", "border-top":"1px solid #999", "background-color":"#f7f7f7"});
+        $('#chattext').css({"top":"25px"});
+        $('#editorcontainer').css({"right":"0px", "width":"100%"});
+        isStuck = false;
+      }
     },
     hide: function () 
     {
@@ -177,3 +196,4 @@ var chat = (function()
 }());
 
 exports.chat = chat;
+

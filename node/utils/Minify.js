@@ -28,7 +28,7 @@ var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
 var Buffer = require('buffer').Buffer;
-var gzip = require('gzip');
+var zlib = require('zlib');
 var RequireKernel = require('require-kernel');
 var server = require('../server');
 var os = require('os');
@@ -233,23 +233,14 @@ function _handle(req, res, jsFilename, jsFiles) {
           //write the results compressed in a file
           function(callback)
           {
-            //spawn a gzip process if we're on a unix system
-            if(os.type().indexOf("Windows") == -1)
-            {
-              gzip(result, 9, function(err, compressedResult){
-                //weird gzip bug that returns 0 instead of null if everything is ok
-                err = err === 0 ? null : err;
+            zlib.gzip(result, function(err, compressedResult){
+              //weird gzip bug that returns 0 instead of null if everything is ok
+              err = err === 0 ? null : err;
+            
+              if(ERR(err, callback)) return;
               
-                if(ERR(err, callback)) return;
-                
-                fs.writeFile(CACHE_DIR + "minified_" + jsFilename + ".gz", compressedResult, callback);
-              });
-            }
-            //skip this step on windows
-            else
-            {
-              callback();
-            }
+              fs.writeFile(CACHE_DIR + "minified_" + jsFilename + ".gz", compressedResult, callback);
+            });
           }
         ],callback);
       }
@@ -314,11 +305,6 @@ function tarCode(filesInOrder, files, write) {
     var filename = filesInOrder[i];
     write("\n\n\n/*** File: static/js/" + filename + " ***/\n\n\n");
     write(isolateJS(files[filename], filename));
-  }
-
-  for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
-    var filename = filesInOrder[i];
-    write('require(' + JSON.stringify('/' + filename.replace(/^\/+/, '')) + ');\n');
   }
 }
 

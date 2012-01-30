@@ -108,17 +108,20 @@ var padeditbar = (function()
         {
           self.toogleDropDown("users");
         }
+        else if (cmd == 'settings')
+        {
+              self.toogleDropDown("settingsmenu");
+        }
         else if (cmd == 'embed')
         {
           self.setEmbedLinks();
-          $('#embedinput').focus().select();
+          $('#linkinput').focus().select();
           self.toogleDropDown("embed");
         }
         else if (cmd == 'import_export')
         {
 	      self.toogleDropDown("importexport");
         }
-
         else if (cmd == 'save')
         {
           padsavedrevs.saveNow();
@@ -165,7 +168,7 @@ var padeditbar = (function()
     },
     toogleDropDown: function(moduleName)
     {
-      var modules = ["embed", "users", "readonly", "importexport"];
+      var modules = ["embed", "users", "readonly", "importexport", "settingsmenu"];
       
       //hide all modules
       if(moduleName == "none")

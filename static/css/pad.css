@@ -1,13 +1,13 @@
 *,html,body,p{ margin: 0; padding: 0; }
 .clear { clear: both; }
-html { font-size: 62.5%; }
+html { font-size: 62.5%; width: 100%; }
 body, textarea { font-family: Helvetica, Arial, sans-serif; }
 iframe {position:absolute;}
 
 #users
 {
   position: absolute;
-  z-index: 10;
+  z-index:500;
   background-color: #000;
   background-color: rgba(0,0,0,0.7);
   width: 160px;
@@ -560,28 +560,6 @@ table#otheruserstable { display: none; }
   display: none; z-index: 55; }
 #revision-notifier .label { color: #777; font-weight: bold; }
 
-/* We don't ever actually hide the wrapper, even when the panel is
-   cloased, so that its contents can always be manipulated accurately. */
-
-
-#padoptions { position: absolute; top: 0; left: 0; font-size: 1.2em;
-  color: #444; height: 100%; width: 100%; line-height: 15px; }
-#options-viewhead { font-weight: bold; position: absolute; top: 10px; left: 15px;
-  width: auto; height: auto; }
-#padoptions label { display: block; }
-#padoptions input { padding: 0; margin: 0; }
-#options-colorscheck { position: absolute; left: 15px; top: 34px; width: 15px; height: 15px; }
-#options-colorslabel { position: absolute; left: 35px; top: 34px; }
-#options-linenoscheck { position: absolute; left: 15px; top: 57px; width: 15px; height: 15px; }
-#options-linenoslabel { position: absolute; left: 35px; top: 57px; }
-#options-fontlabel { position: absolute; left: 15px; top: 82px; }
-#viewfontmenu { position: absolute; top: 80px; left: 90px; width: 110px; }
-#options-viewexplain { position: absolute; left: 215px; top: 15px; width: 100px; height: 70px; font-size: .7em;
-  padding-left: 10px; padding-top: 10px; border-left: 1px solid #ccc;
-  line-height: 20px; font-weight: bold; color: #999; }
-#options-close { display: block; position: absolute; right: 7px; bottom: 8px;
-  width: auto; height: auto; font-size: 85%; color: #444; }
-
 #mainmodals { z-index: 600; /* higher than the modals themselves
                               so that modals are on top in IE */ }
 .modalfield { font-size: 1.2em; padding: 1px; border: 1px solid #bbb;}
@@ -763,38 +741,8 @@ a#topbarmaximize {
  width: 100%;
 }
 
-#embed, #readonly {
-display:none;
-position:absolute;
-top:40px;
-font-size:14px;
-width:400px;
-right: 20px;
-z-index: 500;
-background-color: #000;
-color: white;
-background-color: rgb(0,0,0);
-background-color: rgba(0,0,0,0.7);
-padding: 10px;
--moz-border-radius: 6px;
-border-radius: 6px; 
 }
 
-#embedreadonly {
-float:right;
-}
-
-#embedcode, #readonlyUrl, #linkcode {
-margin-left:10px;
-}
-
-#embedinput, #readonlyInput, #linkinput {
-width:375px;
-height:24px;
-display:inline;
-margin-top: 10px;
-padding-left:4px;
-}
 
 ul#colorpickerswatches
 {
@@ -850,6 +798,7 @@ ul#colorpickerswatches li:hover
   left:0px;
   top:25px;
   bottom:25px;
+  z-index:1002;
 }
 
 #chattext p
@@ -986,40 +935,8 @@ position: relative;
   top: -5px;
 } 
 
-#importexport{
-  position:absolute;
-  top:40px;
-  font-size:14px;
-  width:450px;
-  right: 20px;
-  z-index: 500;
-  background-color: #000;
-  color: white;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.7);
-  padding: 10px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  height:190px;
-  display:none;
-}
-
-#import{
-  position:absolute;
-  width:250px;
-  left:10px;
-  line-height:20px;
-}
-
-#export{
-  position:absolute;
-  width:180px;
-  right:10px;
-  line-height:20px;
-}
-
 .exporttype{
-  line-height:20px;
+  margin-top: 2px;
   background-repeat:no-repeat;
   padding-left:25px;
   background-image: url("../../static/img/etherpad_lite_icons.png");
@@ -1028,8 +945,8 @@ position: relative;
 }
 
 #importexportline{
-  border: dotted 1px;
-  height: 185px;
+  border-left: 1px solid #fff;
+  height: 190px;
   position:absolute;
   width:0px;
   left:260px;
@@ -1067,10 +984,6 @@ position: relative;
 
 #exportdokuwiki{
   background-position: 0px -459px;
-}
-
-#export a{
-  text-decoration: none;
 }
 
 #importstatusball{
@@ -1122,6 +1035,59 @@ background-repeat: no-repeat;
 margin-left: 1px;
 margin-top: 1px;
 }
+.buttonicon-bold {
+  background-position: 0px -116px;
+}
+.buttonicon-italic {
+  background-position: 0px 0px;
+}
+.buttonicon-underline {
+  background-position: 0px -236px;
+}
+.buttonicon-strikethrough {
+  background-position: 0px -200px;
+}
+.buttonicon-insertorderedlist {
+  background-position: 0px -477px
+}
+.buttonicon-insertunorderedlist {
+  background-position: 0px -34px;
+}
+.buttonicon-indent {
+  background-position: 0px -52px;
+}
+.buttonicon-outdent {
+  background-position: 0px -134px;
+}
+.buttonicon-undo {
+  background-position: 0px -255px;
+}
+.buttonicon-redo {
+  background-position :0px -166px;
+}
+.buttonicon-clearauthorship {
+  background-position: 0px -86px;
+}
+.buttonicon-settings {
+  background-position: 0px -436px;
+}
+.buttonicon-import_export {
+  background-position: 0px -68px;
+}
+.buttonicon-embed {
+  background-position: 0px -18px;
+}
+.buttonicon-history {
+  background-position: 0px -218px;
+}
+.buttonicon-chat {
+  background-position: 0px -102px;
+  display: inline-block;
+}
+.buttonicon-showusers {
+  background-position: 0px -183px;
+  display: inline-block;
+}
 
 #usericon
 {
@@ -1145,18 +1111,22 @@ width:33px !important;
   color: #999;
 }
 
-label[for=readonlyinput] {
-  margin: 0 10px 0 2px;
-}
-
-
 #qr_center {
   margin: 10px 10px auto 0;
   text-align: center;
 }
 
-#qrcode{
-  margin-left:10px;
+#embedreadonlyqr {
+  box-shadow: 0 0 10px #000;
+  border-radius: 3px;
+  -webkit-transition: all .2s ease-in-out;
+  -moz-transition: all .2s ease-in-out;
+}
+
+#embedreadonlyqr:hover {
+  cursor: none;
+  -moz-transform: scale(1.5);
+  -webkit-transform: scale(1.5);
 }
 
 @media screen and (max-width: 960px) {
@@ -1245,3 +1215,78 @@ label[for=readonlyinput] {
 .rtl{
   direction:RTL;
 } 
+
+#chattext p {
+ word-wrap: break-word;
+}
+
+/* fix for misaligned labels */
+label {
+ position: relative;
+ bottom: 1px;
+}
+
+.right {
+ float:right;
+}
+
+.popup {
+ font-size: 14px;
+ width: 450px;
+ z-index: 500;
+ padding: 10px;
+ border-radius: 6px;
+ background: #222;
+ background: rgba(0,0,0,.7);
+ background: -webkit-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
+ background: -moz-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
+ box-shadow: 0 0 8px #888;
+ color: #fff;
+}
+
+.popup input[type=text] {
+ width: 100%;
+ padding: 5px;
+ box-sizing: border-box;
+ -moz-box-sizing: border-box;
+ display:block;
+ margin-top: 10px;
+}
+
+.popup a {
+  text-decoration: none;
+}
+
+.popup h1 {
+ font-size: 18px;
+}
+.popup h2 {
+ font-size: 15px;
+}
+.popup p {
+ margin: 5px 0;
+}
+
+.left_popup {
+ float: left;
+ width: 50%;
+}
+
+.right_popup {
+ float: left;
+ width: 50%;
+ box-sizing: border-box;
+}
+
+#settingsmenu, #importexport, #embed {
+ position: absolute;
+ top: 55px;
+ right: 20px;
+ display: none;
+}
+
+.note {
+ color: #ddd;
+ font-size: 11px;
+ font-weight: bold;
+}

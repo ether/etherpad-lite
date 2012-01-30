@@ -195,10 +195,8 @@ float:right;
   color: #222;
 }
 
-#importexport{
-  top:103px;
-  width:185px;
-}
+#importexport { top: 118px; }
+#importexport .popup { width: 185px; }
 
 ul { margin-left: 1.5em; }
 ul ul { margin-left: 0 !important; }

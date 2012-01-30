@@ -33,6 +33,13 @@ if [ ! $(echo $NPM_VERSION | cut -d "." -f 1) = "1" ]; then
   exit 1 
 fi
 
+#check node version
+NODE_VERSION=$(node --version)
+if [ ! $(echo $NODE_VERSION | cut -d "." -f 1-2) = "v0.6" ]; then
+  echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.6.x" >&2
+  exit 1 
+fi
+
 #Does a settings.json exist? if no copy the template
 if [ ! -f "settings.json" ]; then
   echo "Copy the settings template to settings.json..."
