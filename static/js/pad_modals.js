@@ -75,9 +75,9 @@ var padmodals = (function()
 
   var pad = undefined;
   var self = {
-    init: function()
+    init: function(_pad)
     {
-      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
+      pad = _pad;
 
       self.initFeedback();
       self.initShareBox();

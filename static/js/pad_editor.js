@@ -32,11 +32,11 @@ var padeditor = (function()
     ace: null,
     // this is accessed directly from other files
     viewZoom: 100,
-    init: function(readyFunc, initialViewOptions)
+    init: function(readyFunc, initialViewOptions, _pad)
     {
       Ace2Editor = require('/ace').Ace2Editor;
-      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
-      settings = require('/pad2').settings;
+      pad = _pad;
+      settings = pad.settings;
 
       function aceReady()
       {

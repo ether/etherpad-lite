@@ -236,13 +236,9 @@ var padimpexp = (function()
   /////
   var pad = undefined;
   var self = {
-    init: function()
+    init: function(_pad)
     {
-      try {
-      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
-      } catch (e) {
-        // skip (doesn't require pad when required by timeslider)
-      }
+      pad = _pad;
 
       //get /p/padname
       var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname)

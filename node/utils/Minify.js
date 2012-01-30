@@ -306,11 +306,6 @@ function tarCode(filesInOrder, files, write) {
     write("\n\n\n/*** File: static/js/" + filename + " ***/\n\n\n");
     write(isolateJS(files[filename], filename));
   }
-
-  for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
-    var filename = filesInOrder[i];
-    write('require(' + JSON.stringify('/' + filename.replace(/^\/+/, '')) + ');\n');
-  }
 }
 
 // Wrap the following code in a self executing function and assign exports to

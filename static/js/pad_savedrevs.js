@@ -349,9 +349,9 @@ var padsavedrevs = (function()
 
   var pad = undefined;
   var self = {
-    init: function(initialRevisions)
+    init: function(initialRevisions, _pad)
     {
-      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
+      pad = _pad;
       self.newRevisionList(initialRevisions, true);
 
       $("#savedrevs-savenow").click(function()
