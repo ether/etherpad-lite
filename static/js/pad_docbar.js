@@ -118,9 +118,9 @@ var paddocbar = (function()
   var self = {
     title: null,
     password: null,
-    init: function(opts)
+    init: function(opts, _pad)
     {
-      pad = require('/pad2').pad; // Sidestep circular dependency (should be injected).
+      pad = _pad;
 
       panels = {
         impexp: {

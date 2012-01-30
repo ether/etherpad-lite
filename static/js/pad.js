@@ -24,13 +24,14 @@
 
 var socket;
 
-var settings = {};
-settings.LineNumbersDisabled = false;
-settings.noColors = false;
-settings.useMonospaceFontGlobal = false;
-settings.globalUserName = false;
-settings.hideQRCode = false;
-settings.rtlIsTrue = false;
+// These jQuery things should create local references, but for now `require()`
+// assigns to the global `$` and augments it with plugins.
+require('/jquery');
+require('/jquery-ui');
+require('/farbtastic');
+require('/excanvas');
+require('/json2');
+require('/undo-xpopup');
 
 var chat = require('/chat').chat;
 var getCollabClient = require('/collab_client').getCollabClient;
@@ -44,19 +45,6 @@ var padmodals = require('/pad_modals').padmodals;
 var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
 var paduserlist = require('/pad_userlist').paduserlist;
 var padutils = require('/pad_utils').padutils;
-
-$(document).ready(function()
-{
-  //start the costum js
-  if(typeof costumStart == "function") costumStart();
-  getParams();
-  handshake();
-});
-
-$(window).unload(function()
-{
-  pad.dispose();
-});
 
 function createCookie(name, value, days, path)
 {
@@ -309,7 +297,7 @@ function handshake()
       clientVars.collab_client_vars.clientAgent = "Anonymous";
 
       //initalize the pad
-      pad.init();
+      pad._afterHandshake();
       initalized = true;
 
       // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
@@ -422,6 +410,23 @@ var pad = {
 
   init: function()
   {
+    padutils.setupGlobalExceptionHandler();
+
+    $(document).ready(function()
+    {
+      //start the costum js
+      if(typeof costumStart == "function") costumStart();
+      getParams();
+      handshake();
+    });
+
+    $(window).unload(function()
+    {
+      pad.dispose();
+    });
+  },
+  _afterHandshake: function()
+  {
     pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
   
     //initialize the chat
@@ -446,7 +451,7 @@ var pad = {
     }
 
     // order of inits is important here:
-    padcookie.init(clientVars.cookiePrefsToSet);
+    padcookie.init(clientVars.cookiePrefsToSet, this);
   
     $("#widthprefcheck").click(pad.toggleWidthPref);
     // $("#sidebarcheck").click(pad.togglewSidebar);
@@ -473,16 +478,16 @@ var pad = {
       initialTitle: clientVars.initialTitle,
       initialPassword: clientVars.initialPassword,
       guestPolicy: pad.padOptions.guestPolicy
-    });
-    padimpexp.init();
-    padsavedrevs.init(clientVars.initialRevisionList);
+    }, this);
+    padimpexp.init(this);
+    padsavedrevs.init(clientVars.initialRevisionList, this);
 
-    padeditor.init(postAceInit, pad.padOptions.view || {});
+    padeditor.init(postAceInit, pad.padOptions.view || {}, this);
 
-    paduserlist.init(pad.myUserInfo);
+    paduserlist.init(pad.myUserInfo, this);
     //    padchat.init(clientVars.chatHistory, pad.myUserInfo);
     padconnectionstatus.init();
-    padmodals.init();
+    padmodals.init(this);
 
     pad.collabClient = getCollabClient(padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo, {
       colorPalette: pad.getColorPalette()
@@ -981,6 +986,21 @@ var alertBar = (function()
   return self;
 }());
 
+function init() {
+  return pad.init();
+}
+
+var settings = {
+  LineNumbersDisabled: false
+, noColors: false
+, useMonospaceFontGlobal: false
+, globalUserName: false
+, hideQRCode: false
+, rtlIsTrue: false
+};
+
+pad.settings = settings;
+
 exports.settings = settings;
 exports.createCookie = createCookie;
 exports.readCookie = readCookie;
@@ -990,4 +1010,5 @@ exports.getUrlVars = getUrlVars;
 exports.savePassword = savePassword;
 exports.handshake = handshake;
 exports.pad = pad;
+exports.init = init;
 exports.alertBar = alertBar;
