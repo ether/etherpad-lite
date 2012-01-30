@@ -26,6 +26,8 @@ var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings")
 
+var randomString = require("../utils/randomstring");
+
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
  * @param padID the pad the user wants to access
