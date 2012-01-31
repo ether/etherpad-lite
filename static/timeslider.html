@@ -204,7 +204,9 @@
 <script type="text/javascript" >
   var clientVars = {};
   (function () {
-    var TimeSlider = require('/timeslider').init();
+    require.setRootURI("../minified/");
+    require.setGlobalKeyPath("require");
+    require('/timeslider').init();
 
     /* TODO: These globals shouldn't exist. */
     padeditbar = require('/pad_editbar').padeditbar;

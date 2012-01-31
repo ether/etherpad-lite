@@ -218,9 +218,11 @@ function Ace2Editor()
   }
   function pushRequireScriptTo(buffer) {
     var KERNEL_SOURCE = '../static/js/require-kernel.js';
+    var KERNEL_BOOT = 'require.setRootURI("../minified/");\nrequire.setGlobalKeyPath("require");'
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
+      buffer.push(KERNEL_BOOT);
       buffer.push('<\/script>');
     }
   }
