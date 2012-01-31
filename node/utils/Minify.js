@@ -287,7 +287,7 @@ function tarCode(jsFiles, write, callback) {
 
     function handleFile(err, data) {
       if(ERR(err, callback)) return;
-      write("\n\n\n/*** File: static/js/" + item + " ***/\n\n\n");
+      data = ("\n\n\n/*** File: static/js/" + item + " ***/\n\n\n") + data;
       if (settings.minify) {
         write(compressJS([isolateJS(data, item)]) + ';\n');
       } else {
