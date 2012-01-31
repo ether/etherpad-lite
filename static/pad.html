@@ -11,9 +11,6 @@
         <link href="../static/custom/pad.css" rel="stylesheet">
         <style title="dynamicsyntax"></style>
 
-        <script>
-            var clientVars = {};  
-        </script>
         <script src="../static/js/require-kernel.js"></script>
         <script src="../socket.io/socket.io.js"></script>
         <script src="../minified/pad.js"></script>
@@ -297,14 +294,15 @@
         </div>
 
         <script>
-            /* TODO: These globals shouldn't exist. */
-            pad = require('/pad').pad;
-            chat = require('/chat').chat;
-            padeditbar = require('/pad_editbar').padeditbar;
-            padimpexp = require('/pad_impexp').padimpexp;
-
+            var clientVars = {};
             (function () {
               require('/pad').init();
+
+              /* TODO: These globals shouldn't exist. */
+              pad = require('/pad').pad;
+              chat = require('/chat').chat;
+              padeditbar = require('/pad_editbar').padeditbar;
+              padimpexp = require('/pad_impexp').padimpexp;
             }());
         </script>
         
