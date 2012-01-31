@@ -278,37 +278,41 @@ function requireDefinition() {
 }
 
 function tarCode(jsFiles, write, callback) {
-  async.forEach(jsFiles, function (item, callback){
-    if (item == 'ace.js') {
+  write('require.define({');
+  var initialEntry = true;
+  async.forEach(jsFiles, function (filename, callback){
+    if (filename == 'ace.js') {
       getAceFile(handleFile);
     } else {
-      fs.readFile(JS_DIR + item, "utf8", handleFile);
+      fs.readFile(JS_DIR + filename, "utf8", handleFile);
     }
 
     function handleFile(err, data) {
       if(ERR(err, callback)) return;
-      data = ("\n\n\n/*** File: static/js/" + item + " ***/\n\n\n") + data;
-      if (settings.minify) {
-        write(compressJS([isolateJS(data, item)]) + ';\n');
+      var srcPath = JSON.stringify('/' + filename);
+      var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
+      if (!initialEntry) {
+        write('\n,');
       } else {
-        write(isolateJS(data, item));
+        initialEntry = false;
       }
+      write(srcPath + ': ')
+      data = '(function (require, exports, module) {' + data + '})';
+      if (settings.minify) {
+        write(compressJS([data]));
+      } else {
+        write(data);
+      }
+      if (srcPath != srcPathAbbv) {
+        write('\n,' + srcPathAbbv + ': null');
+      }
+
       callback();
     }
-  }, callback);
-}
-
-// Wrap the following code in a self executing function and assign exports to
-// global. This is a first step towards removing symbols from the global scope.
-// exports is global and require is a function that returns global.
-function isolateJS(code, filename) {
-  var srcPath = JSON.stringify('/' + filename);
-  var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
-  return 'require.define({'
-    + srcPath + ': '
-      + 'function (require, exports, module) {' + code + '}'
-    + (srcPath != srcPathAbbv ? '\n,' + srcPathAbbv + ': null' : '')
-    + '});\n';
+  }, function () {
+    write('});\n');
+    callback();
+  });
 }
 
 function compressJS(values)
