@@ -73,7 +73,7 @@ function init() {
     padId = decodeURIComponent(urlParts[urlParts.length-2]);
 
     //set the title
-    document.title = document.title + " | " + padId.replace(/_+/g, ' ');
+    document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
 
     //ensure we have a token
     token = readCookie("token");

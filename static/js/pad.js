@@ -197,7 +197,7 @@ function handshake()
     padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
     if(!isReconnect)
-      document.title = document.title + " | " + padId.replace(/_+/g, ' ');
+      document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
 
     var token = readCookie("token");
     if (token == null)
