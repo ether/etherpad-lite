@@ -223,6 +223,7 @@ function getAceFile(callback) {
     if (!settings.minify) {
       founds = [];
     }
+    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
 
     data += ';\n';
     data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';

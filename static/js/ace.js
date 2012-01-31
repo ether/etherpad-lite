@@ -217,15 +217,11 @@ function Ace2Editor()
     return {embeded: embededFiles, remote: remoteFiles};
   }
   function pushRequireScriptTo(buffer) {
-    /* Folling is for packaging regular expression. */
-    /* $$INCLUDE_JS("../static/js/require-kernel.js"); */
     var KERNEL_SOURCE = '../static/js/require-kernel.js';
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
       buffer.push('<\/script>');
-    } else {
-      buffer.push('<script type="application/javascript" src="'+KERNEL_SOURCE+'"><\/script>');
     }
   }
   function pushScriptsTo(buffer) {
