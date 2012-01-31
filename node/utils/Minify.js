@@ -239,9 +239,15 @@ function getAceFile(callback) {
           // the kernel isn’t actually on the file system.
           handleEmbed(null, requireDefinition());
         } else {
-          fs.readFile(ROOT_DIR + filename, "utf8", function (error, data) {
-            handleEmbed(error, isolateJS(data, shortFilename));
-          });
+          var contents = '';
+          tarCode(tar[shortFilename] || shortFilename
+          , function (content) {
+              contents += content;
+            }
+          , function () {
+              handleEmbed(null, contents);
+            }
+          );
         }
       } else {
         fs.readFile(ROOT_DIR + filename, "utf8", handleEmbed);
