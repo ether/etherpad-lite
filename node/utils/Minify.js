@@ -90,11 +90,17 @@ function _handle(req, res, jsFilename, jsFiles) {
           res.writeHead(200, {});
           res.end();
         } else if (req.method == 'GET') {
-          if (settings.minify) {
-            respondMinified();
-          } else {
-            respondRaw();
-          }
+          res.writeHead(200, {});
+          tarCode(
+            jsFiles
+          , function (content) {
+              res.write(content);
+            }
+          , function (err) {
+              if(ERR(err)) return;
+              res.end();
+            }
+          );
         } else {
           res.writeHead(405, {'allow': 'HEAD, GET'});
           res.end();
@@ -102,36 +108,6 @@ function _handle(req, res, jsFilename, jsFiles) {
       }
     });
   });
-
-  function respondMinified()
-  {
-    var result = undefined;
-    var values = [];
-    res.writeHead(200, {});
-    tarCode(
-      jsFiles
-    , function (content) {values.push(content)}
-    , function (err) {
-        if(ERR(err)) return;
-
-        result = values.join('');
-        res.write(result);
-        res.end();
-      }
-    );
-  }
-  //minifying is disabled, so put the files together in one file
-  function respondRaw()
-  {
-    res.writeHead(200, {});
-    tarCode(
-      jsFiles
-    , function (content) {res.write(content)}
-    , function (err) {
-      if(ERR(err)) return;
-      res.end();
-    });
-  }
 }
 
 // find all includes in ace.js and embed them.
