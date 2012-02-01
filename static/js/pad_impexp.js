@@ -240,9 +240,9 @@ var padimpexp = (function()
     {
       pad = _pad;
 
-      //get /p/padname
-      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname)
-      //get http://example.com/p/padname
+      //get /p/padname or /padname
+      var pad_root_path = new RegExp(/.*\/[^\/]+/).exec(document.location.pathname)
+      //get http://example.com/p/padname or http://example.com/padname
       var pad_root_url = document.location.href.replace(document.location.pathname, pad_root_path)
 
       // build the export links

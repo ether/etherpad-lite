@@ -257,22 +257,23 @@ async.waterfall([
       });
     });
     
-    //serve pad.html under /p
-    app.get('/p/:pad', function(req, res, next)
+    //serve pad.html under / and /p for compatibility
+    app.get( '(/p)?/:pad', function(req, res, next)
     {    
       var filePath = path.normalize(__dirname + "/../static/pad.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', function(req, res, next)
+    //serve timeslider.html under /$padname/timeslider or /p/$padname/timeslider
+    app.get('(/p)?/:pad/timeslider', function(req, res, next)
     {
       var filePath = path.normalize(__dirname + "/../static/timeslider.html");
       res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
+    //handle export requests
+    // app.get('(/p)?/:pad/:rev?/export/:type', function(req, res, next)
+    app.get('/:pad/:rev?/export/:type', function(req, res, next)
     {
       var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
       //send a 404 if we don't support this filetype
