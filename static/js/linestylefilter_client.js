@@ -28,6 +28,7 @@
 
 var Changeset = require('/easysync2_client').Changeset
 var plugins = require('/plugins').plugins;
+var map = require('/ace2_common').map;
 
 var linestylefilter = {};
 
@@ -303,7 +304,7 @@ linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
     linestylefilter: linestylefilter,
     browser: browser
   });
-  hookFilters.map(function(hookFilter)
+  map(hookFilters, function(hookFilter)
   {
     func = hookFilter(lineText, func);
   });

@@ -26,6 +26,7 @@
 // requires: undefined
 
 var plugins = require('/plugins').plugins;
+var map = require('/ace2_common').map;
 
 var domline = {};
 domline.noop = function()
@@ -144,10 +145,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
 
     var plugins_ = plugins;
 
-    plugins_.callHook("aceCreateDomLine", {
+    map(plugins_.callHook("aceCreateDomLine", {
       domline: domline,
       cls: cls
-    }).map(function(modifier)
+    }), function(modifier)
     {
       cls = modifier.cls;
       extraOpenTags = extraOpenTags + modifier.extraOpenTags;

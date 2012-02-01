@@ -371,19 +371,6 @@ function Ace2Editor()
       // (throbs busy while typing)
       outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript.replace(/<\//g, '<\\/'), '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>');
 
-      if (!Array.prototype.map) Array.prototype.map = function(fun)
-      { //needed for IE
-        if (typeof fun != "function") throw new TypeError();
-        var len = this.length;
-        var res = new Array(len);
-        var thisp = arguments[1];
-        for (var i = 0; i < len; i++)
-        {
-          if (i in this) res[i] = fun.call(thisp, this[i], i, this);
-        }
-        return res;
-      };
-
       var outerFrame = document.createElement("IFRAME");
       outerFrame.frameBorder = 0; // for IE
       info.frame = outerFrame;
