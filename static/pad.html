@@ -11,11 +11,6 @@
         <link href="../static/custom/pad.css" rel="stylesheet">
         <style title="dynamicsyntax"></style>
 
-        <script src="../static/js/require-kernel.js"></script>
-        <script src="../socket.io/socket.io.js"></script>
-        <script src="../minified/pad.js"></script>
-        <script src="../static/custom/pad.js"></script>
-
         <div id="editbar">
             <ul id="menu_left">
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false" >
@@ -293,7 +288,11 @@
             
         </div>
 
-        <script>
+        <script type="text/javascript" src="../static/js/require-kernel.js"></script>
+        <script type="text/javascript" src="../socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="../minified/pad.js"></script>
+        <script type="text/javascript" src="../static/custom/pad.js"></script>
+        <script type="text/javascript">
             var clientVars = {};
             (function () {
               require('/pad').init();
