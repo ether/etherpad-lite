@@ -37,14 +37,10 @@ var chat = (function()
   var self = {
     show: function () 
     {      
-      $("#chaticon").hide("slide", {
-        direction: "down"
-      }, hDuration, function ()
+      $("#chaticon").hide(function ()
       {
-        $("#chatbox").show("slide", {
-          direction: "down"
-        }, sDuration, self.scrollDown);
-        $("#chatbox").resizable(
+        $("#chatbox").show();
+/*      $("#chatbox").resizable(
         {
           handles: 'nw',
           minHeight: 40,
@@ -66,6 +62,7 @@ var chat = (function()
             self.scrollDown();
           }
         });
+*/
       });
       chatMentions = 0;
       document.title = title;
@@ -90,10 +87,8 @@ var chat = (function()
     hide: function () 
     {
       $("#chatcounter").text("0");
-      $("#chatbox").hide("slide", { direction: "down" }, sDuration, function()
-      {
-        $("#chaticon").show("slide", { direction: "down" }, hDuration);
-      });
+      $("#chatbox").hide();
+      $("#chaticon").show();
     },
     scrollDown: function()
     {
