@@ -1290,3 +1290,18 @@ label {
  font-size: 11px;
  font-weight: bold;
 }
+
+#chattextholder{
+  text-align:center;
+  padding-top:40px;  
+  font-size: 15px;
+  color: #ddd;
+}
+
+#chattextholder button{
+  width:100%;
+  font-size: 11px;
+  position:absolute;
+  bottom:0px;
+  left:0px;
+}

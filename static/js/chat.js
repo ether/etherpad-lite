@@ -75,6 +75,7 @@ var chat = (function()
       var text = $("#chatinput").val();
       this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
+      $('#chattextholder').hide();
     },
     addMessage: function(msg, increment)
     {    
@@ -137,7 +138,7 @@ var chat = (function()
           $('#chatthrob').effect("pulsate", {times:1,mode:"hide"},2000);
         }
       }
-      
+      $('#chattextholder').hide();
       self.scrollDown();
 
     },
