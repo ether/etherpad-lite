@@ -16,7 +16,7 @@
                       "async"               : "0.1.15",
                       "express"             : "2.5.0",
                       "clean-css"           : "0.2.4",
-                      "uglify-js"           : "1.1.1",
+                      "uglify-js"           : "1.2.5",
                       "formidable"          : "1.0.7",
                       "log4js"              : "0.4.1",
                       "jsdom-nocontextifiy" : "0.2.10",
