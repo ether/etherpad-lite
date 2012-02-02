@@ -37,33 +37,8 @@ var chat = (function()
   var self = {
     show: function () 
     {      
-      $("#chaticon").hide(function ()
-      {
-        $("#chatbox").show();
-/*      $("#chatbox").resizable(
-        {
-          handles: 'nw',
-          minHeight: 40,
-          minWidth: 80,
-          start: function (event, ui)
-          {
-            $("#focusprotector").show();
-          },
-          stop: function (event, ui)
-          {
-            $("#focusprotector").hide();
-            
-            if(browser.mobile) {
-              $("#chatbox").css({right: "0px", bottom: "32px", left: "", top: ""});
-            } else {
-              $("#chatbox").css({right: "20px", bottom: "0px", left: "", top: ""});
-            }
-
-            self.scrollDown();
-          }
-        });
-*/
-      });
+      $("#chaticon").hide();
+      $("#chatbox").show();
       chatMentions = 0;
       document.title = title;
     },
