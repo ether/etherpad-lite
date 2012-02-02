@@ -272,7 +272,6 @@ async.waterfall([
     });
     
     //handle export requests
-    // app.get('(/p)?/:pad/:rev?/export/:type', function(req, res, next)
     app.get('/:pad/:rev?/export/:type', function(req, res, next)
     {
       var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
@@ -300,7 +299,8 @@ async.waterfall([
     });
     
     //handle import requests
-    app.post('/p/:pad/import', function(req, res, next)
+    // app.post('/p/:pad/import', function(req, res, next)
+    app.post('/:pad/import', function(req, res, next)
     {
       //if abiword is disabled, skip handling this request
       if(settings.abiword == null)
