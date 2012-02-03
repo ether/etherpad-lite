@@ -18,7 +18,6 @@
   , "pad_impexp.js"
   , "pad_savedrevs.js"
   , "pad_connectionstatus.js"
-  , "jquery-ui.js"
   , "chat.js"
   , "excanvas.js"
   , "farbtastic.js"
