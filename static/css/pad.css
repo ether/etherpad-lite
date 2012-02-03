@@ -1292,9 +1292,9 @@ label {
 }
 
 .selected {
- background: #eee;
- background: -webkit-linear-gradient(#EEE, #F0F0F0);
- background: -moz-linear-gradient(#EEE, #F0F0F0);
- background: -ms-linear-gradient(#EEE, #F0F0F0);
- background: -o-linear-gradient(#EEE, #F0F0F0);
+ background: #eee !important;
+ background: -webkit-linear-gradient(#EEE, #F0F0F0) !important;
+ background: -moz-linear-gradient(#EEE, #F0F0F0) !important;
+ background: -ms-linear-gradient(#EEE, #F0F0F0) !important;
+ background: -o-linear-gradient(#EEE, #F0F0F0) !important;
 }
