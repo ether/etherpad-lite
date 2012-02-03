@@ -875,8 +875,7 @@ ul#colorpickerswatches li:hover
 #titlelabel
 {
   font-size:13px;
-  margin-left:20px;
-  padding-top:3px;
+  margin:4px 0 0 4px
   position:absolute;
 } 
 
