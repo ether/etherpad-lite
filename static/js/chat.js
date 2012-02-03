@@ -21,7 +21,6 @@
  */
 
 var padutils = require('/pad_utils').padutils;
-var browser = require('/ace2_common').browser;
 var padcookie = require('/pad_cookie').padcookie;
 
 var chat = (function()
