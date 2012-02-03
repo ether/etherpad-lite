@@ -33,6 +33,7 @@ var chat = (function()
     {      
       $("#chaticon").hide();
       $("#chatbox").show();
+      self.scrollDown();
       chatMentions = 0;
       document.title = title;
     },
