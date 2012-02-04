@@ -15,7 +15,6 @@ iframe {position:absolute;}
   top: 40px;
   color: #fff;
   padding: 5px;
-  -moz-border-radius: 6px;
   border-radius: 6px; 
 }
 
@@ -39,10 +38,7 @@ a img
 #editbar 
 {
   background: #f7f7f7;
-  background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: linear-gradient(#f7f7f7, #f1f1f1 80%);
   border-bottom: 1px solid #ccc;
   height: 32px;
   overflow: hidden;
@@ -53,10 +49,7 @@ a img
 #editbar ul li 
 {
   background: #fff;
-  background: -moz-linear-gradient(#fff, #f0f0f0);
-  background: -ms-linear-gradient(#fff, #f0f0f0);
-  background: -o-linear-gradient(#fff, #f0f0f0);
-  background: -webkit-linear-gradient(#fff, #f0f0f0);
+  background: linear-gradient(#fff, #f0f0f0);
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
@@ -86,10 +79,7 @@ a img
 
 #editbar ul li:active {
   background: #eee;
-  background: -moz-linear-gradient(#ddd, #fff);
-  background: -ms-linear-gradient(#ddd, #fff);
-  background: -o-linear-gradient(#ddd, #fff);
-  background: -webkit-linear-gradient(#ddd, #fff);
+  background: linear-gradient(#ddd, #fff);
 }
 
 #editbar ul li.separator
@@ -190,7 +180,6 @@ a#backtoprosite { padding-left: 20px; left: 6px;
 #alertbar {
   margin-top: 6px;
   opacity: 0;
-  filter: alpha(opacity = 0); /* IE */
   display: none;
   position:absolute;
   left:0;
@@ -384,10 +373,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 
 #mycolorpickersave, #mycolorpickercancel {
   background: #fff;
-  background: -moz-linear-gradient(#fff, #ccc);
-  background: -ms-linear-gradient(#fff, #ccc);
-  background: -o-linear-gradient(#fff, #ccc);
-  background: -webkit-linear-gradient(#fff, #ccc);
+  background: linear-gradient(#fff, #ccc);
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size:12px; 
@@ -725,14 +711,7 @@ a#topbarmaximize {
  text-decoration: none;
  padding: 50pt;
  font-size: 20pt;
- -moz-border-radius-topleft: 3pt;
- -moz-border-radius-topright: 3pt;
- -moz-border-radius-bottomleft: 3pt;
- -moz-border-radius-bottomright: 3pt;
- -webkit-border-top-left-radius: 3pt;
- -webkit-border-top-right-radius: 3pt;
- -webkit-border-bottom-left-radius: 3pt;
- -webkit-border-bottom-right-radius: 3pt;
+ border-radius: 3pt;
 }
 
 .modaldialog .bigbutton {
@@ -953,7 +932,7 @@ position: relative;
 }
 
 .impexpbutton{
-  background-image: -moz-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
+  background-image: linear-gradient(center top , #EEEEEE, white 20%, white 20%);
   padding:3px;
 }
 
@@ -1021,7 +1000,6 @@ color: white;
 background-color: rgb(0,0,0);
 background-color: rgba(0,0,0,0.7);
 padding: 10px;
--moz-border-radius: 6px;
 border-radius: 6px;
 opacity:.8;
 }
@@ -1118,14 +1096,12 @@ width:33px !important;
 #embedreadonlyqr {
   box-shadow: 0 0 10px #000;
   border-radius: 3px;
-  -webkit-transition: all .2s ease-in-out;
-  -moz-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 #embedreadonlyqr:hover {
   cursor: none;
-  -moz-transform: scale(1.5);
-  -webkit-transform: scale(1.5);
+  transform: scale(1.5);
 }
 
 @media screen and (max-width: 960px) {
@@ -1166,10 +1142,7 @@ width:33px !important;
   }
   #editbar ul#menu_right  {
     background: #f7f7f7;
-    background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
     width: 100%;
     overflow: hidden;
     height: 32px;
@@ -1193,10 +1166,7 @@ width:33px !important;
     border-right: none;
     border-radius: 0;
     background: #f7f7f7;
-    background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
     border: 0;
   }
   #chatbox {
@@ -1237,8 +1207,7 @@ label {
  border-radius: 6px;
  background: #222;
  background: rgba(0,0,0,.7);
- background: -webkit-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
- background: -moz-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
+ background: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
  box-shadow: 0 0 8px #888;
  color: #fff;
 }
@@ -1247,7 +1216,6 @@ label {
  width: 100%;
  padding: 5px;
  box-sizing: border-box;
- -moz-box-sizing: border-box;
  display:block;
  margin-top: 10px;
 }
@@ -1292,8 +1260,5 @@ label {
 
 .selected {
  background: #eee !important;
- background: -webkit-linear-gradient(#EEE, #F0F0F0) !important;
- background: -moz-linear-gradient(#EEE, #F0F0F0) !important;
- background: -ms-linear-gradient(#EEE, #F0F0F0) !important;
- background: -o-linear-gradient(#EEE, #F0F0F0) !important;
+ background: linear-gradient(#EEE, #F0F0F0) !important;
 }
