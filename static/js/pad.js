@@ -31,7 +31,7 @@ require('/farbtastic');
 require('/excanvas');
 JSON = require('/json2');
 require('/undo-xpopup');
-require('prefixfree');
+require('/prefixfree');
 
 var chat = require('/chat').chat;
 var getCollabClient = require('/collab_client').getCollabClient;
