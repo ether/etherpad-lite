@@ -168,11 +168,12 @@ var padeditbar = (function()
     },
     toogleDropDown: function(moduleName)
     {
-      var modules = ["embed", "users", "readonly", "importexport", "settingsmenu"];
+      var modules = ["settingsmenu", "importexport", "embed", "users"];
       
       //hide all modules
       if(moduleName == "none")
       {
+        $("#editbar ul#menu_right > li").removeClass("selected");
         for(var i=0;i<modules.length;i++)
         {
           //skip the userlist
@@ -189,6 +190,11 @@ var padeditbar = (function()
       }
       else 
       {
+      	var nth_child = modules.indexOf(moduleName) + 1;
+      	if (nth_child > 0 && nth_child <= 3) {
+          $("#editbar ul#menu_right li:not(:nth-child(" + nth_child + "))").removeClass("selected");
+          $("#editbar ul#menu_right li:nth-child(" + nth_child + ")").toggleClass("selected");
+      	}
         //hide all modules that are not selected and show the selected one
         for(var i=0;i<modules.length;i++)
         {
