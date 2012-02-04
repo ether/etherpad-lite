@@ -73,13 +73,13 @@ NEEDED_VERSION="1.0.4"
 if [ -f "static/js/prefixfree.js" ]; then
   VERSION=$(cat static/js/prefixfree.js | grep "PrefixFree" | grep -o "[0-9].[0-9].[0-9]");
   
-  if [ ${VERSION#v} = $NEEDED_VERSION ]; then
+  if [ $VERSION = $NEEDED_VERSION ]; then
     DOWNLOAD_PREFIXFREE="false"
   fi
 fi
 
 if [ $DOWNLOAD_PREFIXFREE = "true" ]; then
-  curl -lo static/js/prefixfree.js https://raw.github.com/LeaVerou/prefixfree/master/prefixfree.min.js || exit 1
+  curl -lo static/js/prefixfree.js https://raw.github.com/LeaVerou/prefixfree/master/prefixfree.js || exit 1
 fi
 
 #Remove all minified data to force node creating it new
