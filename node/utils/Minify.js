@@ -201,7 +201,6 @@ function lastModifiedDate(callback) {
   });
 }
 
-exports.requireDefinition = requireDefinition;
 function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
 }
@@ -226,23 +225,29 @@ function getFileCompressed(filename, callback) {
 function getFile(filename, callback) {
   if (filename == 'ace.js') {
     getAceFile(callback);
+  } else if (filename == 'require-kernel.js') {
+    callback(undefined, requireDefinition());
   } else {
     fs.readFile(JS_DIR + filename, "utf8", callback);
   }
 }
 
 function fileExists(filename, callback) {
-  fs.stat(JS_DIR + filename, function (error, stats) {
-    if (error) {
-      if (error.code == "ENOENT") {
-        callback(undefined, false);
+  if (filename == 'require-kernel.js') {
+    callback(undefined, true);
+  } else {
+    fs.stat(JS_DIR + filename, function (error, stats) {
+      if (error) {
+        if (error.code == "ENOENT") {
+          callback(undefined, false);
+        } else {
+          callback(error, undefined);
+        }
       } else {
-        callback(error, undefined);
+        callback(undefined, stats.isFile());
       }
-    } else {
-      callback(undefined, stats.isFile());
-    }
-  })
+    });
+  }
 }
 
 function tarCode(jsFiles, write, callback) {

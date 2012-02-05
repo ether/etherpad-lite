@@ -143,11 +143,6 @@ async.waterfall([
     });
     
     //serve static files
-    app.get('/static/js/require-kernel.js', function (req, res, next) {
-      res.header("Content-Type","application/javascript; charset: utf-8");
-      res.write(minify.requireDefinition());
-      res.end();
-    });
     var assetCache = new CachingMiddleware;
     app.all('/static/js/:filename', assetCache.handle, minify.minifyJS);
     app.get('/static/*', function(req, res)
