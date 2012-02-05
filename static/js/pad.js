@@ -27,11 +27,11 @@ var socket;
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
 require('/jquery');
-require('/jquery-ui');
 require('/farbtastic');
 require('/excanvas');
-require('/json2');
+JSON = require('/json2');
 require('/undo-xpopup');
+require('/prefixfree');
 
 var chat = require('/chat').chat;
 var getCollabClient = require('/collab_client').getCollabClient;
@@ -197,7 +197,7 @@ function handshake()
     padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
     if(!isReconnect)
-      document.title = document.title + " | " + padId.replace(/_+/g, ' ');
+      document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
 
     var token = readCookie("token");
     if (token == null)
