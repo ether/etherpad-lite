@@ -54,7 +54,7 @@ exports.minifyJS = function(req, res, next)
   var filename = req.params['filename'];
   res.header("Content-Type","text/javascript");
 
-  lastModifiedDate(function (date) {
+  lastModifiedDateOf(filename, function (error, date) {
     date = new Date(date);
     res.setHeader('last-modified', date.toUTCString());
     res.setHeader('date', (new Date()).toUTCString());
@@ -161,7 +161,30 @@ function getAceFile(callback) {
   });
 }
 
-function lastModifiedDate(callback) {
+function lastModifiedDateOf(filename, callback) {
+  if (filename == 'ace.js') {
+    lastModifiedDateOfEverything(callback);
+  } else {
+    fs.stat(JS_DIR + filename, function (error, stats) {
+      if (error) {
+        if (error.code == "ENOENT") { // Stat the directory instead.
+          fs.stat(JS_DIR, function (error, stats) {
+            if (error) {
+              callback(error);
+            } else {
+              callback(null, stats.mtime.getTime());
+            }
+          });
+        } else {
+          callback(error);
+        }
+      } else {
+        callback(null, stats.mtime.getTime());
+      }
+    });
+  }
+}
+function lastModifiedDateOfEverything(callback) {
   var folders2check = [CSS_DIR, JS_DIR];
   var latestModification = 0;
   //go trough this two folders
@@ -197,7 +220,7 @@ function lastModifiedDate(callback) {
       }, callback);
     });
   }, function () {
-    callback(latestModification);
+    callback(null, latestModification);
   });
 }
 
