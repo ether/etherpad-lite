@@ -29,12 +29,7 @@
 // requires: undefined
 
 var Changeset = require('/easysync2').Changeset
-var plugins = undefined;
-try {
-  plugins = require('/plugins').plugins;
-} catch (e) {
-  // silence
-}
+var plugins = require('/plugins').plugins;
 
 var linestylefilter = {};
 
@@ -59,15 +54,7 @@ linestylefilter.getAuthorClassName = function(author)
 linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFunc, apool)
 {
 
-  var plugins_;
-  if (typeof(plugins) != 'undefined')
-  {
-    plugins_ = plugins;
-  }
-  else
-  {
-    plugins_ = parent.parent.plugins;
-  }
+  var plugins_ = plugins;
 
   if (lineLength == 0) return textAndClassFunc;
 
@@ -312,15 +299,7 @@ linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
 {
   var func = linestylefilter.getURLFilter(lineText, textAndClassFunc);
 
-  var plugins_;
-  if (typeof(plugins) != 'undefined')
-  {
-    plugins_ = plugins;
-  }
-  else
-  {
-    plugins_ = parent.parent.plugins;
-  }
+  var plugins_ = plugins;
 
   var hookFilters = plugins_.callHook("aceGetFilterStack", {
     linestylefilter: linestylefilter,

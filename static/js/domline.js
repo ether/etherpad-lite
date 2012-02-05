@@ -26,12 +26,7 @@
 // requires: plugins
 // requires: undefined
 
-var plugins = undefined;
-try {
-  plugins = require('/plugins').plugins;
-} catch (e) {
-  // silence
-}
+var plugins = require('/plugins').plugins;
 
 var domline = {};
 domline.noop = function()
@@ -148,15 +143,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     var extraOpenTags = "";
     var extraCloseTags = "";
 
-    var plugins_;
-    if (typeof(plugins) != 'undefined')
-    {
-      plugins_ = plugins;
-    }
-    else
-    {
-      plugins_ = parent.parent.plugins;
-    }
+    var plugins_ = plugins;
 
     plugins_.callHook("aceCreateDomLine", {
       domline: domline,

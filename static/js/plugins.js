@@ -4,7 +4,7 @@
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
 
-plugins = {
+var plugins = {
   callHook: function(hookName, args)
   {
     var global = (function () {return this}());

@@ -337,6 +337,15 @@ function Ace2Editor()
       $$INCLUDE_JS("../static/js/domline.js");
       $$INCLUDE_JS("../static/js/ace2_inner.js");
       pushRequireScriptTo(iframeHTML);
+      // Inject my plugins into my child.
+      iframeHTML.push('\
+<script type="text/javascript">\
+  require.define("/plugins", null);\n\
+  require.define("/plugins.js", function (require, exports, module) {\
+    module.exports = parent.parent.require("/plugins");\
+  });\
+</script>\
+');
       pushScriptTagsFor(iframeHTML, includedJS);
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
