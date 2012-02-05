@@ -99,6 +99,7 @@ function getParams()
   var IsnoColors = params["noColors"];
   var hideQRCode = params["hideQRCode"];
   var rtl = params["rtl"];
+  var alwaysShowChat = params["alwaysShowChat"];
 
   if(IsnoColors)
   {
@@ -151,6 +152,13 @@ function getParams()
     if(rtl == "true")
     {
       settings.rtlIsTrue = true
+    }
+  }
+  if(alwaysShowChat)
+  {
+    if(alwaysShowChat == "true")
+    {
+      chat.stickToScreen();
     }
   }
 }
