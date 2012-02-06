@@ -79,7 +79,7 @@ if [ -f "static/js/prefixfree.js" ]; then
 fi
 
 if [ $DOWNLOAD_PREFIXFREE = "true" ]; then
-  curl -lo static/js/prefixfree.js https://raw.github.com/LeaVerou/prefixfree/master/prefixfree.js || exit 1
+  curl -lo static/js/prefixfree.js -k https://raw.github.com/LeaVerou/prefixfree/master/prefixfree.js || exit 1
 fi
 
 #Remove all minified data to force node creating it new
