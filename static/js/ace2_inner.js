@@ -238,7 +238,7 @@ function OUTER(gscope)
           }
           
           // Text color
-          var txtcolor = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.45) ? '#ffffff' : '#000000';
+          var txtcolor = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5) ? '#ffffff' : '#000000';
           
           var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author)));
