@@ -63,7 +63,7 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
   <li>Install node.js 
     <ol type="a">
       <li>Download the latest <b>0.6.x</b> node.js release from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
-      <li>Extract it with <code>tar xf node-v0.6*</code></li>
+      <li>Extract it with <code>tar -zxvf node-v0.6*</code></li>
       <li>Move into the node folder <code>cd node-v0.6*</code> and build node with <code>./configure && make && make install</code></li>
     </ol>
   </li>
