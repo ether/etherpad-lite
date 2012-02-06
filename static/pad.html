@@ -11,14 +11,6 @@
         <link href="../static/custom/pad.css" rel="stylesheet">
         <style title="dynamicsyntax"></style>
 
-        <script>
-            var clientVars = {};  
-        </script>
-        <script src="../static/js/require-kernel.js"></script>
-        <script src="../socket.io/socket.io.js"></script>
-        <script src="../minified/pad.js"></script>
-        <script src="../static/custom/pad.js"></script>
-
         <div id="editbar">
             <ul id="menu_left">
                 <li onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false" >
@@ -296,15 +288,22 @@
             
         </div>
 
-        <script>
-            /* TODO: These globals shouldn't exist. */
-            pad = require('/pad').pad;
-            chat = require('/chat').chat;
-            padeditbar = require('/pad_editbar').padeditbar;
-            padimpexp = require('/pad_impexp').padimpexp;
-
+        <script type="text/javascript" src="../static/js/require-kernel.js"></script>
+        <script type="text/javascript" src="../socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="../minified/pad.js"></script>
+        <script type="text/javascript" src="../static/custom/pad.js"></script>
+        <script type="text/javascript">
+            var clientVars = {};
             (function () {
+              require.setRootURI("../minified/");
+              require.setGlobalKeyPath("require");
               require('/pad').init();
+
+              /* TODO: These globals shouldn't exist. */
+              pad = require('/pad').pad;
+              chat = require('/chat').chat;
+              padeditbar = require('/pad_editbar').padeditbar;
+              padimpexp = require('/pad_impexp').padimpexp;
             }());
         </script>
         

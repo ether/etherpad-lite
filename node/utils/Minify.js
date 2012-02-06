@@ -73,8 +73,7 @@ function _handle(req, res, jsFilename, jsFiles) {
   //minifying is enabled
   if(settings.minify)
   {
-    var fileValues = {};
-    var embeds = {};
+    var result = undefined;
     var latestModification = 0;
     
     async.series([
@@ -143,87 +142,20 @@ function _handle(req, res, jsFilename, jsFiles) {
       //load all js files
       function (callback)
       {
-        async.forEach(jsFiles, function (item, callback)
-        {
-          fs.readFile(JS_DIR + item, "utf-8", function(err, data)
-          {            
-            if(ERR(err, callback)) return;
-            fileValues[item] = data;
-            callback();
-          });
-        }, callback);
-      },
-      //find all includes in ace.js and embed them 
-      function(callback)
-      {        
-        //if this is not the creation of pad.js, skip this part
-        if(jsFilename != "pad.js")
-        {
-          callback();
-          return;
-        }
-      
-        var founds = fileValues["ace.js"].match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
-        
-        //go trough all includes
-        async.forEach(founds, function (item, callback)
-        {
-          var filename = item.match(/"[^"]*"/g)[0].substr(1);
-          filename = filename.substr(0,filename.length-1);
-        
-          var type = item.match(/INCLUDE_[A-Z]+/g)[0].substr("INCLUDE_".length);
-        
-          //read the included file
-          var shortFilename = filename.replace(/^..\/static\/js\//, '');
-          if (shortFilename == 'require-kernel.js') {
-            // the kernel isn’t actually on the file system.
-            handleEmbed(null, requireDefinition());
-          } else {
-            fs.readFile(ROOT_DIR + filename, "utf-8", handleEmbed);
-          }
-          function handleEmbed(err, data)
-          {         
-            if(ERR(err, callback)) return;
+        var values = [];
+        tarCode(
+          jsFiles
+        , function (content) {values.push(content)}
+        , function (err) {
+          if(ERR(err)) return;
 
-            if(type == "JS")
-            {
-              if (shortFilename == 'require-kernel.js') {
-                embeds[filename] = compressJS([data]);
-              } else {
-                embeds[filename] = compressJS([isolateJS(data, shortFilename)]);
-              }
-            }
-            else
-            {
-              embeds[filename] = compressCSS([data]);
-            }
-            callback();
-          }
-        }, function(err)
-        {
-          if(ERR(err, callback)) return;
-
-          fileValues["ace.js"] += ';\n'
-          fileValues["ace.js"] +=
-              'Ace2Editor.EMBEDED = Ace2Editor.EMBED || {};\n'
-          for (var filename in embeds)
-          {
-            fileValues["ace.js"] +=
-                'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-              + JSON.stringify(embeds[filename]) + ';\n';
-          }
-
+          result = values.join('');
           callback();
         });
       },
       //put all together and write it into a file
       function(callback)
       {
-        //minify all javascript files to one
-        var values = [];
-        tarCode(jsFiles, fileValues, function (content) {values.push(content)});
-        var result = compressJS(values);
-        
         async.parallel([
           //write the results plain in a file
           function(callback)
@@ -271,28 +203,80 @@ function _handle(req, res, jsFilename, jsFiles) {
   //minifying is disabled, so put the files together in one file
   else
   {
-    var fileValues = {};
-  
-    //read all js files
-    async.forEach(jsFiles, function (item, callback)
-    {
-      fs.readFile(JS_DIR + item, "utf-8", function(err, data)
-      {          
-        if(ERR(err, callback)) return;  
-        fileValues[item] = data;
-        callback();
-      });
-    }, 
-    //send all files together
-    function(err)
-    {
+    tarCode(
+      jsFiles
+    , function (content) {res.write(content)}
+    , function (err) {
       if(ERR(err)) return;
-      
-      tarCode(jsFiles, fileValues, function (content) {res.write(content)});
-      
       res.end();
     });
   }
+}
+
+// find all includes in ace.js and embed them.
+function getAceFile(callback) {
+  fs.readFile(JS_DIR + 'ace.js', "utf8", function(err, data) {
+    if(ERR(err, callback)) return;
+
+    // Find all includes in ace.js and embed them
+    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
+    if (!settings.minify) {
+      founds = [];
+    }
+    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
+
+    data += ';\n';
+    data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
+
+    //go trough all includes
+    async.forEach(founds, function (item, callback) {
+      var filename = item.match(/"([^"]*)"/)[1];
+      var type = item.match(/INCLUDE_([A-Z]+)/)[1];
+      var shortFilename = (filename.match(/^..\/static\/js\/(.*)$/, '')||[])[1];
+
+      //read the included files
+      if (shortFilename) {
+        if (shortFilename == 'require-kernel.js') {
+          // the kernel isn’t actually on the file system.
+          handleEmbed(null, requireDefinition());
+        } else {
+          var contents = '';
+          tarCode(tar[shortFilename] || shortFilename
+          , function (content) {
+              contents += content;
+            }
+          , function () {
+              handleEmbed(null, contents);
+            }
+          );
+        }
+      } else {
+        fs.readFile(ROOT_DIR + filename, "utf8", handleEmbed);
+      }
+
+      function handleEmbed(error, data_) {
+        if (error) {
+          return; // Don't bother to include it.
+        }
+        if (settings.minify) {
+          if (type == "JS") {
+            try {
+              data_ = compressJS([data_]);
+            } catch (e) {
+              // Ignore, include uncompresseed, which will break in browser.
+            }
+          } else {
+            data_ = compressCSS([data_]);
+          }
+        }
+        data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
+            + JSON.stringify(data_) + ';\n';
+        callback();
+      }
+    }, function(error) {
+      callback(error, data);
+    });
+  });
 }
 
 exports.requireDefinition = requireDefinition;
@@ -300,25 +284,42 @@ function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
 }
 
-function tarCode(filesInOrder, files, write) {
-  for(var i = 0, ii = filesInOrder.length; i < filesInOrder.length; i++) {
-    var filename = filesInOrder[i];
-    write("\n\n\n/*** File: static/js/" + filename + " ***/\n\n\n");
-    write(isolateJS(files[filename], filename));
-  }
-}
+function tarCode(jsFiles, write, callback) {
+  write('require.define({');
+  var initialEntry = true;
+  async.forEach(jsFiles, function (filename, callback){
+    if (filename == 'ace.js') {
+      getAceFile(handleFile);
+    } else {
+      fs.readFile(JS_DIR + filename, "utf8", handleFile);
+    }
 
-// Wrap the following code in a self executing function and assign exports to
-// global. This is a first step towards removing symbols from the global scope.
-// exports is global and require is a function that returns global.
-function isolateJS(code, filename) {
-  var srcPath = JSON.stringify('/' + filename);
-  var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
-  return 'require.define({'
-    + srcPath + ': '
-      + 'function (require, exports, module) {' + code + '}'
-    + (srcPath != srcPathAbbv ? '\n,' + srcPathAbbv + ': null' : '')
-    + '});\n';
+    function handleFile(err, data) {
+      if(ERR(err, callback)) return;
+      var srcPath = JSON.stringify('/' + filename);
+      var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
+      if (!initialEntry) {
+        write('\n,');
+      } else {
+        initialEntry = false;
+      }
+      write(srcPath + ': ')
+      data = '(function (require, exports, module) {' + data + '})';
+      if (settings.minify) {
+        write(compressJS([data]));
+      } else {
+        write(data);
+      }
+      if (srcPath != srcPathAbbv) {
+        write('\n,' + srcPathAbbv + ': null');
+      }
+
+      callback();
+    }
+  }, function () {
+    write('});\n');
+    callback();
+  });
 }
 
 function compressJS(values)
