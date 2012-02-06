@@ -24,6 +24,15 @@ var padutils = require('/pad_utils').padutils;
 var padeditor = require('/pad_editor').padeditor;
 var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
 
+function indexOf(array, value) {
+  for (var i = 0, ii = array.length; i < ii; i++) {
+    if (array[i] == value) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 var padeditbar = (function()
 {
 
@@ -190,7 +199,7 @@ var padeditbar = (function()
       }
       else 
       {
-      	var nth_child = modules.indexOf(moduleName) + 1;
+        var nth_child = indexOf(modules, moduleName) + 1;
       	if (nth_child > 0 && nth_child <= 3) {
           $("#editbar ul#menu_right li:not(:nth-child(" + nth_child + "))").removeClass("selected");
           $("#editbar ul#menu_right li:nth-child(" + nth_child + ")").toggleClass("selected");
