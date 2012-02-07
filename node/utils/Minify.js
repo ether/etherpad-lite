@@ -64,16 +64,11 @@ exports.minifyJS = function(req, res, next)
       res.setHeader('cache-control', 'max-age=' + server.maxAge);
     }
 
-    fs.stat(JS_DIR + filename, function (error, stats) {
+    fileExists(filename, function (error, exists) {
       if (error) {
-        if (error.code == "ENOENT") {
-          res.writeHead(404, {});
-          res.end();
-        } else {
-          res.writeHead(500, {});
-          res.end();
-        }
-      } else if (!stats.isFile()) {
+        res.writeHead(500, {});
+        res.end();
+      } else if (!exists) {
         res.writeHead(404, {});
         res.end();
       } else if (new Date(req.headers['if-modified-since']) >= date) {
@@ -234,6 +229,20 @@ function getFile(filename, callback) {
   } else {
     fs.readFile(JS_DIR + filename, "utf8", callback);
   }
+}
+
+function fileExists(filename, callback) {
+  fs.stat(JS_DIR + filename, function (error, stats) {
+    if (error) {
+      if (error.code == "ENOENT") {
+        callback(undefined, false);
+      } else {
+        callback(error, undefined);
+      }
+    } else {
+      callback(undefined, stats.isFile());
+    }
+  })
 }
 
 function tarCode(jsFiles, write, callback) {
