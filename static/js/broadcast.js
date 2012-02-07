@@ -25,6 +25,7 @@ var domline = require('/domline_client').domline;
 var Changeset = require('/easysync2_client').Changeset;
 var AttribPool = require('/easysync2_client').AttribPool;
 var linestylefilter = require('/linestylefilter_client').linestylefilter;
+var colorutils = require('/colorutils').colorutils;
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
@@ -757,7 +758,9 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       var bgcolor = typeof data.colorId == "number" ? clientVars.colorPalette[data.colorId] : data.colorId;
       if (bgcolor && dynamicCSS)
       {
-        dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author)).backgroundColor = bgcolor;
+        var selector = dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author));
+        selector.backgroundColor = bgcolor
+        selector.color = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5) ? '#ffffff' : '#000000'; //see ace2_inner.js for the other part
       }
       authorData[author] = data;
     }

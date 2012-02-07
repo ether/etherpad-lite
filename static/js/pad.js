@@ -99,6 +99,7 @@ function getParams()
   var IsnoColors = params["noColors"];
   var hideQRCode = params["hideQRCode"];
   var rtl = params["rtl"];
+  var alwaysShowChat = params["alwaysShowChat"];
 
   if(IsnoColors)
   {
@@ -151,6 +152,13 @@ function getParams()
     if(rtl == "true")
     {
       settings.rtlIsTrue = true
+    }
+  }
+  if(alwaysShowChat)
+  {
+    if(alwaysShowChat == "true")
+    {
+      chat.stickToScreen();
     }
   }
 }
@@ -414,8 +422,8 @@ var pad = {
 
     $(document).ready(function()
     {
-      //start the costum js
-      if(typeof costumStart == "function") costumStart();
+      // start the custom js
+      if (typeof customStart == "function") customStart();
       getParams();
       handshake();
     });

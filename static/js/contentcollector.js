@@ -26,12 +26,7 @@
 var _MAX_LIST_LEVEL = 8;
 
 var Changeset = require('/easysync2').Changeset
-var plugins = undefined;
-try {
-  plugins = require('/plugins').plugins;
-} catch (e) {
-  // silence
-}
+var plugins = require('/plugins').plugins;
 
 function sanitizeUnicode(s)
 {
@@ -42,15 +37,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 {
   browser = browser || {};
 
-  var plugins_;
-  if (typeof(plugins) != 'undefined')
-  {
-    plugins_ = plugins;
-  }
-  else
-  {
-    plugins_ = parent.parent.plugins;
-  }
+  var plugins_ = plugins;
 
   var dom = domInterface || {
     isNodeText: function(n)

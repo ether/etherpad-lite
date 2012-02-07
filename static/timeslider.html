@@ -7,14 +7,8 @@
   <title>Etherpad Lite Timeslider</title>
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
+  <link rel="stylesheet" href="../../static/custom/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
-  
-  <script type="text/javascript" src="../../static/js/require-kernel.js"></script>
-  <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-  <script type="text/javascript" src="../../minified/timeslider.js"></script>
-  
-  <link href="../../static/custom/timeslider.css" rel="stylesheet">
-  <script src="../../static/custom/timeslider.js"></script>
 </head>
 
 <body id="padbody" class="timeslider limwidth nonpropad nonprouser">
@@ -203,15 +197,20 @@
 </div>
 </div>
 
-<script>
+<script type="text/javascript" src="../../static/js/require-kernel.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+<script type="text/javascript" src="../../minified/timeslider.js"></script>
+<script type="text/javascript" src="../../static/custom/timeslider.js"></script>
+<script type="text/javascript" >
   var clientVars = {};
-
-  /* TODO: These globals shouldn't exist. */
-  padeditbar = require('/pad_editbar').padeditbar;
-  padimpexp = require('/pad_impexp').padimpexp;
-
   (function () {
-    var TimeSlider = require('/timeslider').init();
+    require.setRootURI("../minified/");
+    require.setGlobalKeyPath("require");
+    require('/timeslider').init();
+
+    /* TODO: These globals shouldn't exist. */
+    padeditbar = require('/pad_editbar').padeditbar;
+    padimpexp = require('/pad_impexp').padimpexp;
   })();
 </script>
 </body>

@@ -106,7 +106,7 @@ var chat = (function()
 
       var authorName = msg.userName == null ? "unnamed" : padutils.escapeHtml(msg.userName); 
       
-      var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time'>" + timeStr + "</span> " + text + "</p>";
+      var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
       $("#chattext").append(html);
       
       //should we increment the counter??

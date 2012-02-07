@@ -141,9 +141,6 @@ async.waterfall([
       gracefulShutdown();
     });
     
-    //serve minified files
-    app.get('/minified/:filename', minify.minifyJS);
-
     //serve static files
     app.get('/static/js/require-kernel.js', function (req, res, next) {
       res.header("Content-Type","application/javascript; charset: utf-8");

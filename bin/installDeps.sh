@@ -56,7 +56,7 @@ echo "Ensure jQuery is downloaded and up to date..."
 DOWNLOAD_JQUERY="true"
 NEEDED_VERSION="1.7.1"
 if [ -f "static/js/jquery.js" ]; then
-  VERSION=$(cat static/js/jquery.js | head -n 3 | grep -o "v[0-9].[0-9]");
+  VERSION=$(cat static/js/jquery.js | head -n 3 | grep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?");
   
   if [ ${VERSION#v} = $NEEDED_VERSION ]; then
     DOWNLOAD_JQUERY="false"
@@ -79,7 +79,7 @@ if [ -f "static/js/prefixfree.js" ]; then
 fi
 
 if [ $DOWNLOAD_PREFIXFREE = "true" ]; then
-  curl -lo static/js/prefixfree.js https://raw.github.com/LeaVerou/prefixfree/master/prefixfree.js || exit 1
+  curl -lo static/js/prefixfree.js -k https://raw.github.com/LeaVerou/prefixfree/master/prefixfree.js || exit 1
 fi
 
 #Remove all minified data to force node creating it new

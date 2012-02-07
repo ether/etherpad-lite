@@ -65,8 +65,8 @@ var socket, token, padId, export_links;
 function init() {
   $(document).ready(function ()
   {
-    //start the costum js
-    if(typeof costumStart == "function") costumStart();
+    // start the custom js
+    if (typeof customStart == "function") customStart();
 
     //get the padId out of the url
     var urlParts= document.location.pathname.split("/");
