@@ -199,7 +199,46 @@ async.waterfall([
         res.send('Authentication required', 401);
       }
     }
+
+    //The Etherpad client side sends information about client side javscript errors
+    app.post('/jserror', function(req, res)
+    {
+      new formidable.IncomingForm().parse(req, function(err, fields, files) 
+      { 
+        console.error("CLIENT SIDE JAVASCRIPT ERROR: " + fields.errorInfo);
+        res.end("OK");
+      });
+    });
     
+    //serve index.html under /
+    app.get('/', function(req, res)
+    {
+      var filePath = path.normalize(__dirname + "/../static/index.html");
+      res.sendfile(filePath, { maxAge: exports.maxAge });
+    });
+    
+    //serve robots.txt
+    app.get('/robots.txt', function(req, res)
+    {
+      var filePath = path.normalize(__dirname + "/../static/robots.txt");
+      res.sendfile(filePath, { maxAge: exports.maxAge });
+    });
+    
+    //serve favicon.ico
+    app.get('/favicon.ico', function(req, res)
+    {
+      var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
+      res.sendfile(filePath, { maxAge: exports.maxAge }, function(err)
+      {
+        //there is no custom favicon, send the default favicon
+        if(err)
+        {
+          filePath = path.normalize(__dirname + "/../static/favicon.ico");
+          res.sendfile(filePath, { maxAge: exports.maxAge });
+        }
+      });
+    });
+        
     //serve read only pad
     app.get('/ro/:id', function(req, res)
     { 
@@ -364,45 +403,6 @@ async.waterfall([
       { 
         console.log("DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
         res.end("OK");
-      });
-    });
-    
-    //The Etherpad client side sends information about client side javscript errors
-    app.post('/jserror', function(req, res)
-    {
-      new formidable.IncomingForm().parse(req, function(err, fields, files) 
-      { 
-        console.error("CLIENT SIDE JAVASCRIPT ERROR: " + fields.errorInfo);
-        res.end("OK");
-      });
-    });
-    
-    //serve index.html under /
-    app.get('/', function(req, res)
-    {
-      var filePath = path.normalize(__dirname + "/../static/index.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve robots.txt
-    app.get('/robots.txt', function(req, res)
-    {
-      var filePath = path.normalize(__dirname + "/../static/robots.txt");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve favicon.ico
-    app.get('/favicon.ico', function(req, res)
-    {
-      var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
-      res.sendfile(filePath, { maxAge: exports.maxAge }, function(err)
-      {
-        //there is no custom favicon, send the default favicon
-        if(err)
-        {
-          filePath = path.normalize(__dirname + "/../static/favicon.ico");
-          res.sendfile(filePath, { maxAge: exports.maxAge });
-        }
       });
     });
     
