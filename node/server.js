@@ -79,6 +79,8 @@ async.waterfall([
     //create server
     var app = express.createServer();
 
+    app.maxAge = exports.maxAge;
+
     app.use(function (req, res, next) {
       res.header("Server", serverName);
       next();
@@ -146,12 +148,6 @@ async.waterfall([
       res.header("Content-Type","application/javascript; charset: utf-8");
       res.write(minify.requireDefinition());
       res.end();
-    });
-    app.get('/static/*', function(req, res)
-    { 
-      var filePath = path.normalize(__dirname + "/.." +
-                                    req.url.replace(/\.\./g, '').split("?")[0]);
-      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve minified files
@@ -254,19 +250,6 @@ async.waterfall([
       });
     });
     
-    //serve pad.html under /p
-    app.get('/p/:pad', function(req, res, next)
-    {    
-      var filePath = path.normalize(__dirname + "/../static/pad.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', function(req, res, next)
-    {
-      var filePath = path.normalize(__dirname + "/../static/timeslider.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
     
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
@@ -355,35 +338,8 @@ async.waterfall([
 
     require('./routes/debug')(app);
 
-    //serve index.html under /
-    app.get('/', function(req, res)
-    {
-      var filePath = path.normalize(__dirname + "/../static/index.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve robots.txt
-    app.get('/robots.txt', function(req, res)
-    {
-      var filePath = path.normalize(__dirname + "/../static/robots.txt");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve favicon.ico
-    app.get('/favicon.ico', function(req, res)
-    {
-      var filePath = path.normalize(__dirname + "/../static/custom/favicon.ico");
-      res.sendfile(filePath, { maxAge: exports.maxAge }, function(err)
-      {
-        //there is no custom favicon, send the default favicon
-        if(err)
-        {
-          filePath = path.normalize(__dirname + "/../static/favicon.ico");
-          res.sendfile(filePath, { maxAge: exports.maxAge });
-        }
-      });
-    });
-    
+    require('./routes/static')(app);
+
     //let the server listen
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
