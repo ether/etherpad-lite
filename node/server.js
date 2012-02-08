@@ -32,12 +32,7 @@ var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
 var formidable = require('formidable');
-var exportHandler;
-var importHandler;
-var exporthtml;
-var readOnlyManager;
 var padManager;
-var securityManager;
 var socketIORouter;
 
 //try to get the git version
@@ -79,6 +74,7 @@ async.waterfall([
     var app = express.createServer();
 
     app.maxAge = exports.maxAge;
+    app.settings = settings;
 
     app.use(function (req, res, next) {
       res.header("Server", serverName);
@@ -113,13 +109,13 @@ async.waterfall([
     });
 
     //load modules that needs a initalized db
-    readOnlyManager = require("./db/ReadOnlyManager");
-    exporthtml = require("./utils/ExportHtml");
-    exportHandler = require('./handler/ExportHandler');
-    importHandler = require('./handler/ImportHandler');
+    app.readOnlyManager = require("./db/ReadOnlyManager");
+    app.exporthtml = require("./utils/ExportHtml");
+    app.exportHandler = require('./handler/ExportHandler');
+    app.importHandler = require('./handler/ImportHandler');
     app.apiHandler = require('./handler/APIHandler');
     padManager = require('./db/PadManager');
-    securityManager = require('./db/SecurityManager');
+    app.securityManager = require('./db/SecurityManager');
     socketIORouter = require("./handler/SocketIORouter");
     
     //install logging      
@@ -151,26 +147,6 @@ async.waterfall([
     
     //serve minified files
     app.get('/minified/:filename', minify.minifyJS);
-    
-    //checks for padAccess
-    function hasPadAccess(req, res, callback)
-    {
-      securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj)
-      {
-        if(ERR(err, callback)) return;
-        
-        //there is access, continue
-        if(accessObj.accessStatus == "grant")
-        {
-          callback();
-        }
-        //no access
-        else
-        {
-          res.send("403 - Can't touch this", 403);
-        }
-      });
-    }
 
     //checks for basic http auth
     function basic_auth (req, res, next) {
@@ -191,107 +167,12 @@ async.waterfall([
         res.send('Authentication required', 401);
       }
     }
-    
-    //serve read only pad
-    app.get('/ro/:id', function(req, res)
-    { 
-      var html;
-      var padId;
-      var pad;
-      
-      async.series([
-        //translate the read only pad to a padId
-        function(callback)
-        {
-          readOnlyManager.getPadId(req.params.id, function(err, _padId)
-          {
-            if(ERR(err, callback)) return;
-            
-            padId = _padId;
-            
-            //we need that to tell hasPadAcess about the pad  
-            req.params.pad = padId; 
-            
-            callback();
-          });
-        },
-        //render the html document
-        function(callback)
-        {
-          //return if the there is no padId
-          if(padId == null)
-          {
-            callback("notfound");
-            return;
-          }
-          
-          hasPadAccess(req, res, function()
-          {
-            //render the html document
-            exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
-            {
-              if(ERR(err, callback)) return;
-              html = _html;
-              callback();
-            });
-          });
-        }
-      ], function(err)
-      {
-        //throw any unexpected error
-        if(err && err != "notfound")
-          ERR(err);
-          
-        if(err == "notfound")
-          res.send('404 - Not Found', 404);
-        else
-          res.send(html);
-      });
-    });
-    
-    
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
-    {
-      var types = ["pdf", "doc", "txt", "html", "odt", "dokuwiki"];
-      //send a 404 if we don't support this filetype
-      if(types.indexOf(req.params.type) == -1)
-      {
-        next();
-        return;
-      }
-      
-      //if abiword is disabled, and this is a format we only support with abiword, output a message
-      if(settings.abiword == null &&
-         ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1)
-      {
-        res.send("Abiword is not enabled at this Etherpad Lite instance. Set the path to Abiword in settings.json to enable this feature");
-        return;
-      }
-      
-      res.header("Access-Control-Allow-Origin", "*");
-      
-      hasPadAccess(req, res, function()
-      {
-        exportHandler.doExport(req, res, req.params.pad, req.params.type);
-      });
-    });
-    
-    //handle import requests
-    app.post('/p/:pad/import', function(req, res, next)
-    {
-      //if abiword is disabled, skip handling this request
-      if(settings.abiword == null)
-      {
-        next();
-        return; 
-      }
-    
-      hasPadAccess(req, res, function()
-      {
-        importHandler.doImport(req, res, req.params.pad);
-      });
-    });
+
+    require('./routes/readonly')(app);
+
+    require('./routes/import')(app);
+
+    require('./routes/export')(app);
 
     require('./routes/api')(app);
 
