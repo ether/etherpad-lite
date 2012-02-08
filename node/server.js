@@ -30,7 +30,6 @@ var async = require('async');
 var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
-var formidable = require('formidable');
 var socketIORouter;
 
 //try to get the git version
