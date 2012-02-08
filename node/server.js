@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var log4js = require('log4js');
 var os = require("os");
 var socketio = require('socket.io');
@@ -32,7 +31,6 @@ var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
 var formidable = require('formidable');
-var padManager;
 var socketIORouter;
 
 //try to get the git version
@@ -81,32 +79,8 @@ async.waterfall([
       next();
     });
 
-    
-    //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
-    app.param('pad', function (req, res, next, padId) {
-      //ensure the padname is valid and the url doesn't end with a /
-      if(!padManager.isValidPadId(padId) || /\/$/.test(req.url))
-      {
-        res.send('Such a padname is forbidden', 404);
-      }
-      else
-      {
-        padManager.sanitizePadId(padId, function(sanitizedPadId) {
-          //the pad id was sanitized, so we redirect to the sanitized version
-          if(sanitizedPadId != padId)
-          {
-            var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + sanitizedPadId);
-            res.header('Location', real_path);
-            res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
-          }
-          //the pad id was fine, so just render it
-          else
-          {
-            next();
-          }
-        });
-      }
-    });
+    //preconditions i.e. sanitize urls
+    require('./routes/preconditions')(app);
 
     //load modules that needs a initalized db
     app.readOnlyManager = require("./db/ReadOnlyManager");
@@ -114,7 +88,7 @@ async.waterfall([
     app.exportHandler = require('./handler/ExportHandler');
     app.importHandler = require('./handler/ImportHandler');
     app.apiHandler = require('./handler/APIHandler');
-    padManager = require('./db/PadManager');
+    app.padManager = require('./db/PadManager');
     app.securityManager = require('./db/SecurityManager');
     socketIORouter = require("./handler/SocketIORouter");
     
