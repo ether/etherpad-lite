@@ -21,9 +21,8 @@
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
 var Pad = require("../db/Pad").Pad;
-var db = require("./DB").db;
 
-/** 
+/**
  * An Object containing all known Pads. Provides "get" and "set" functions,
  * which should be used instead of indexing with brackets. These prepend a
  * colon to the key, to avoid conflicting with built-in Object methods or with
@@ -32,11 +31,22 @@ var db = require("./DB").db;
  * If this is needed in other places, it would be wise to make this a prototype
  * that's defined somewhere more sensible.
  */
-var globalPads = {
-    get: function (name) { return this[':'+name]; },
-    set: function (name, value) { this[':'+name] = value; },
-    remove: function (name) { delete this[':'+name]; }
+
+var PadManager = function PadManager(settings, db, authorManager, readOnlyManager) {
+    this.settings = settings;
+    this.db = db;
+    this.authorManager = authorManager;
+    this.readOnlyManager = readOnlyManager;
+
+    this.globalPads = {
+        get: function (name) { return this[':'+name]; },
+        set: function (name, value) { this[':'+name] = value; },
+        remove: function (name) { delete this[':'+name]; }
+    };
+
 };
+
+exports.PadManager = PadManager;
 
 /**
  * An array of padId transformations. These represent changes in pad name policy over
@@ -49,24 +59,27 @@ var padIdTransforms = [
 /**
  * Returns a Pad Object with the callback
  * @param id A String with the id of the pad
- * @param {Function} callback 
+ * @param {Function} callback
  */
-exports.getPad = function(id, text, callback)
-{    
+PadManager.prototype.getPad = function getPad(id, text, callback)
+{
+  var that = this;
+
+  //TODO remove api specific shit
   //check if this is a valid padId
-  if(!exports.isValidPadId(id))
+  if(!this.isValidPadId(id))
   {
     callback(new customError(id + " is not a valid padId","apierror"));
     return;
   }
-  
+
   //make text an optional parameter
   if(typeof text == "function")
   {
     callback = text;
     text = null;
   }
-  
+
   //check if this is a valid text
   if(text != null)
   {
@@ -76,7 +89,7 @@ exports.getPad = function(id, text, callback)
       callback(new customError("text is not a string","apierror"));
       return;
     }
-    
+
     //check if text is less than 100k chars
     if(text.length > 100000)
     {
@@ -84,42 +97,50 @@ exports.getPad = function(id, text, callback)
       return;
     }
   }
-  
-  var pad = globalPads.get(id);
-  
+
+  var pad = this.globalPads.get(id);
+
   //return pad if its already loaded
-  if(pad != null)
-  {
+  if(pad != null) {
     callback(null, pad);
   }
   //try to load pad
-  else
-  {
+  else {
     pad = new Pad(id);
-    
+
+    //add some references
+    //TODO is this realy nice?
+    pad.padManager = this;
+    pad.db = this.db;
+    pad.readOnlyManager = this.readOnlyManager;
+    pad.authorManager = this.authorManager;
+
     //initalize the pad
-    pad.init(text, function(err)
-    {
+    if(!text) {
+        text = this.settings.defaultPadText;
+    }
+    pad.init(text, function(err) {
       if(ERR(err, callback)) return;
-      
-      globalPads.set(id, pad);
+
+      that.globalPads.set(id, pad);
       callback(null, pad);
     });
   }
-}
+};
 
 //checks if a pad exists
-exports.doesPadExists = function(padId, callback)
+PadManager.prototype.doesPadExists = function doesPadExists(padId, callback)
 {
-  db.get("pad:"+padId, function(err, value)
+  this.db.get("pad:"+padId, function(err, value)
   {
     if(ERR(err, callback)) return;
-    callback(null, value != null);  
+    callback(null, value != null);
   });
-}
+};
 
 //returns a sanitized padId, respecting legacy pad id formats
-exports.sanitizePadId = function(padId, callback) {
+PadManager.prototype.sanitizePadId = function sanitizePadId(padId, callback) {
+  var that = this;
   var transform_index = arguments[2] || 0;
   //we're out of possible transformations, so just return it
   if(transform_index >= padIdTransforms.length)
@@ -129,7 +150,7 @@ exports.sanitizePadId = function(padId, callback) {
   //check if padId exists
   else
   {
-    exports.doesPadExists(padId, function(junk, exists)
+    this.doesPadExists(padId, function(junk, exists)
     {
       if(exists)
       {
@@ -145,20 +166,18 @@ exports.sanitizePadId = function(padId, callback) {
           transform_index += 1;
         }
         //check the next transform
-        exports.sanitizePadId(transformedPadId, callback, transform_index);
+        that.sanitizePadId(transformedPadId, callback, transform_index);
       }
     });
   }
-}
+};
 
-exports.isValidPadId = function(padId)
-{
-  return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
-}
+PadManager.prototype.isValidPadId = function(padId) {
+    return (/^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/).test(padId);
+};
 
 //removes a pad from the array
-exports.unloadPad = function(padId)
-{
-  if(globalPads.get(padId))
-    globalPads.remove(padId);
-}
+Pad.prototype.unloadPad = function unloadPad(padId) {
+  if(this.globalPads.get(padId))
+    this.globalPads.remove(padId);
+};

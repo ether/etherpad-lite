@@ -19,14 +19,19 @@
  */
 
 var ERR = require("async-stacktrace");
-var db = require("./DB").db;
 var async = require("async");
-var authorManager = require("./AuthorManager");
-var padManager = require("./PadManager");
-var sessionManager = require("./SessionManager");
-var settings = require("../utils/Settings")
 
 var randomString = require("../utils/randomstring");
+
+var SecurityManager = function SecurityManager(settings, db, authorManager, padManager, sessionManager) {
+    this.db = db;
+    this.settings = settings;
+    this.authorManager = authorManager;
+    this.padManager = padManager;
+    this.sessionManager = sessionManager;
+};
+
+exports.SecurityManager = SecurityManager;
 
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
@@ -36,12 +41,13 @@ var randomString = require("../utils/randomstring");
  * @param password the password the user has given to access this pad, can be null 
  * @param callback will be called with (err, {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx})
  */ 
-exports.checkAccess = function (padID, sessionID, token, password, callback)
+SecurityManager.prototype.checkAccess = function checkAccess(padID, sessionID, token, password, callback)
 { 
+  var that = this;
   var statusObject;
 
   // a valid session is required (api-only mode)
-  if(settings.requireSession)
+  if(this.settings.requireSession)
   {
     // no sessionID, access is denied
     if(!sessionID)
@@ -57,17 +63,17 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
     if(padID.indexOf("$") == -1)
     {
       //get author for this token
-      authorManager.getAuthor4Token(token, function(err, author)
+      this.authorManager.getAuthor4Token(token, function(err, author)
       {
         if(ERR(err, callback)) return;
         
         // assume user has access
         statusObject = {accessStatus: "grant", authorID: author};
         // user can't create pads
-        if(settings.editOnly)
+        if(that.settings.editOnly)
         {
           // check if pad exists
-          padManager.doesPadExists(padID, function(err, exists)
+          that.padManager.doesPadExists(padID, function(err, exists)
           {
             if(ERR(err, callback)) return;
             
@@ -107,7 +113,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         //does pad exists
         function(callback)
         {
-          padManager.doesPadExists(padID, function(err, exists)
+          that.padManager.doesPadExists(padID, function(err, exists)
           {
             if(ERR(err, callback)) return;
             padExists = exists;
@@ -117,7 +123,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         //get informations about this session
         function(callback)
         {
-          sessionManager.getSessionInfo(sessionID, function(err, sessionInfo)
+          that.sessionManager.getSessionInfo(sessionID, function(err, sessionInfo)
           {
             //skip session validation if the session doesn't exists
             if(err && err.message == "sessionID does not exist")
@@ -145,7 +151,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         function(callback)
         {
           //get author for this token
-          authorManager.getAuthor4Token(token, function(err, author)
+          that.authorManager.getAuthor4Token(token, function(err, author)
           {
             if(ERR(err, callback)) return;
             tokenAuthor = author;
@@ -164,7 +170,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         return;
       }
       
-      padManager.getPad(padID, function(err, pad)
+      that.padManager.getPad(padID, function(err, pad)
       {
         if(ERR(err, callback)) return;
         
@@ -223,7 +229,7 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
         //--> grant access
         statusObject = {accessStatus: "grant", authorID: sessionAuthor};
         //--> deny access if user isn't allowed to create the pad
-        if(settings.editOnly) statusObject.accessStatus = "deny";
+        if(that.settings.editOnly) statusObject.accessStatus = "deny";
       }
       // there is no valid session avaiable AND pad exists
       else if(!validSession && padExists)
@@ -277,4 +283,4 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
     if(ERR(err, callback)) return;
     callback(null, statusObject);
   });
-}
+};

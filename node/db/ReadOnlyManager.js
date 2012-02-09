@@ -19,24 +19,31 @@
  */
 
 var ERR = require("async-stacktrace");
-var db = require("./DB").db;
 var async = require("async");
 
 var randomString = require("../utils/randomstring");
+
+
+var ReadOnlyManager = function ReadOnlyManager(db) {
+    this.db = db;
+};
+
+exports.ReadOnlyManager = ReadOnlyManager;
 
 /**
  * returns a read only id for a pad
  * @param {String} padId the id of the pad
  */
-exports.getReadOnlyId = function (padId, callback)
-{  
+ReadOnlyManager.prototype.getReadOnlyId = function getReadOnlyId(padId, callback) {
+  var that = this;
+
   var readOnlyId;
-  
+
   async.waterfall([
     //check if there is a pad2readonly entry
     function(callback)
     {
-      db.get("pad2readonly:" + padId, callback);
+      that.db.get("pad2readonly:" + padId, callback);
     },
     function(dbReadOnlyId, callback)
     {
@@ -44,16 +51,16 @@ exports.getReadOnlyId = function (padId, callback)
       if(dbReadOnlyId == null)
       {
         readOnlyId = "r." + randomString(16);
-        
-        db.set("pad2readonly:" + padId, readOnlyId);
-        db.set("readonly2pad:" + readOnlyId, padId);
+
+        that.db.set("pad2readonly:" + padId, readOnlyId);
+        that.db.set("readonly2pad:" + readOnlyId, padId);
       }
       //there is a readOnly Entry in the database, let's take this one
       else
       {
         readOnlyId = dbReadOnlyId;
       }
-      
+
       callback();
     }
   ], function(err)
@@ -61,14 +68,13 @@ exports.getReadOnlyId = function (padId, callback)
     if(ERR(err, callback)) return;
     //return the results
     callback(null, readOnlyId);
-  })
-}
+  });
+};
 
 /**
  * returns a the padId for a read only id
  * @param {String} readOnlyId read only id
  */
-exports.getPadId = function(readOnlyId, callback)
-{
-  db.get("readonly2pad:" + readOnlyId, callback);
-}
+ReadOnlyManager.prototype.getPadId = function(readOnlyId, callback) {
+  this.db.get("readonly2pad:" + readOnlyId, callback);
+};

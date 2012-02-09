@@ -1,5 +1,5 @@
 /**
- * This is the Socket.IO Router. It routes the Messages between the 
+ * This is the Socket.IO Router. It routes the Messages between the
  * components of the Server. The components are at the moment: pad and timeslider
  */
 
@@ -24,71 +24,78 @@ var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var securityManager = require("../db/SecurityManager");
 
-/**
- * Saves all components
- * key is the component name
- * value is the component module
- */ 
-var components = {};
+var SocketIORouter = function SocketIORouter(securityManager) {
+    this.securityManager = securityManager;
+    /**
+     * Saves all components
+     * key is the component name
+     * value is the component module
+     */
+    this.components = {};
 
-var socket;
- 
-/**
- * adds a component
- */
-exports.addComponent = function(moduleName, module)
+    this.socket = undefined;
+
+    /**
+     * adds a component
+     */
+};
+
+exports.SocketIORouter = SocketIORouter;
+
+SocketIORouter.prototype.addComponent = function(moduleName, module)
 {
   //save the component
-  components[moduleName] = module;
-  
+  this.components[moduleName] = module;
+
   //give the module the socket
-  module.setSocketIO(socket);
-}
+  module.setSocketIO(this.socket);
+};
 
 /**
  * sets the socket.io and adds event functions for routing
  */
-exports.setSocketIO = function(_socket)
+SocketIORouter.prototype.setSocketIO = function(_socket)
 {
+  var that = this;
   //save this socket internaly
-  socket = _socket;
-  
-  socket.sockets.on('connection', function(client)
+  this.socket = _socket;
+
+  this.socket.sockets.on('connection', function(client)
   {
     var clientAuthorized = false;
-    
+
     //wrap the original send function to log the messages
     client._send = client.send;
     client.send = function(message)
     {
       messageLogger.info("to " + client.id + ": " + stringifyWithoutPassword(message));
       client._send(message);
-    }
-  
+    };
+
     //tell all components about this connect
-    for(var i in components)
+    for(var i in that.components)
     {
-      components[i].handleConnect(client);
+      that.components[i].handleConnect(client);
     }
-      
+
     //try to handle the message of this client
     function handleMessage(message)
     {
-      if(message.component && components[message.component])
+      if(message.component && that.components[message.component])
       {
-        //check if component is registered in the components array        
-        if(components[message.component])
+        //check if component is registered in the components array
+        if(that.components[message.component])
         {
           messageLogger.info("from " + client.id + ": " + stringifyWithoutPassword(message));
-          components[message.component].handleMessage(client, message);
+          that.components[message.component].handleMessage(client, message);
         }
       }
       else
       {
         messageLogger.error("Can't route the message:" + stringifyWithoutPassword(message));
       }
-    }  
-      
+    }
+
     client.on('message', function(message)
     {
       if(message.protocolVersion && message.protocolVersion != 2)
@@ -108,10 +115,10 @@ exports.setSocketIO = function(_socket)
         //this message has everything to try an authorization
         if(message.padId !== undefined && message.sessionID !== undefined && message.token !== undefined && message.password !== undefined)
         {
-          securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+          that.securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
           {
             ERR(err);
-            
+
             //access was granted, mark the client as authorized and handle the message
             if(statusObject.accessStatus == "grant")
             {
@@ -137,27 +144,30 @@ exports.setSocketIO = function(_socket)
     client.on('disconnect', function()
     {
       //tell all components about this disconnect
-      for(var i in components)
+      for(var i in that.components)
       {
-        components[i].handleDisconnect(client);
+        that.components[i].handleDisconnect(client);
       }
     });
   });
-}
+};
+
 
 //returns a stringified representation of a message, removes the password
 //this ensures there are no passwords in the log
 function stringifyWithoutPassword(message)
 {
   var newMessage = {};
-  
+  //FIXME LOL
   for(var i in message)
   {
-    if(i == "password" && message[i] != null)
+    if(i == "password" && message[i] != null) {
       newMessage["password"] = "xxx";
-    else
+    }
+    else {
       newMessage[i]=message[i];
+    }
   }
-  
+
   return JSON.stringify(newMessage);
 }
