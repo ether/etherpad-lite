@@ -570,16 +570,6 @@ var pad = {
     };
     options.view[key] = value;
     pad.handleOptionsChange(options);
-    // if the request isn't to hide line numbers then broadcast this to other users
-    if (key != "showLineNumbers" && key != "useMonospaceFont")
-    {
-      pad.collabClient.sendClientMessage(
-      {
-        type: 'padoptions',
-        options: options,
-        changedBy: pad.myUserInfo.name || "unnamed"
-      });
-    }
   },
   handleOptionsChange: function(opts)
   {
