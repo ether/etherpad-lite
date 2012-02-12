@@ -68,6 +68,11 @@ function _handle(req, res, jsFilename, jsFiles) {
     date = new Date(date);
     res.setHeader('last-modified', date.toUTCString());
     res.setHeader('date', (new Date()).toUTCString());
+    if (server.maxAge) {
+      var expiresDate = new Date((new Date()).getTime() + server.maxAge*1000);
+      res.setHeader('expires', expiresDate.toUTCString());
+      res.setHeader('cache-control', 'max-age=' + server.maxAge);
+    }
 
     fs.stat(JS_DIR + jsFiles[0], function (error, stats) {
       if (error) {
