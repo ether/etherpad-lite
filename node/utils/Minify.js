@@ -232,7 +232,8 @@ function getAceFile(callback) {
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
       var type = item.match(/INCLUDE_([A-Z]+)/)[1];
-      var shortFilename = (filename.match(/^..\/static\/js\/(.*)$/, '')||[])[1];
+      var shortFilename =
+          (filename.match(/^\.\.\/static\/js\/(.*)$/, '') || [])[1];
 
       //read the included files
       if (shortFilename) {
