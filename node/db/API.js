@@ -35,6 +35,7 @@ var cleanText = require("./Pad").cleanText;
 /**GROUP FUNCTIONS*****/
 /**********************/
 
+exports.listGroups = groupManager.listGroups;
 exports.createGroup = groupManager.createGroup;
 exports.createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
 exports.deleteGroup = groupManager.deleteGroup;

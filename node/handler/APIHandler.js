@@ -38,6 +38,7 @@ catch(e)
 
 //a list of all functions
 var functions = {
+  "listGroups"                : [],
   "createGroup"               : [],
   "createGroupIfNotExistsFor"  : ["groupMapper"], 
   "deleteGroup"               : ["groupID"], 

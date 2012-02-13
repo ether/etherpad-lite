@@ -111,6 +111,16 @@ exports.deleteGroup = function(groupID, callback)
     callback();
   });
 }
+
+exports.listGroups = function(callback)
+{
+  //try to get the groups entry
+  db.get("groups", function (err, groups)
+  {
+    if(ERR(err, callback)) return;
+    callback(null, groups);
+  });
+}
  
 exports.doesGroupExist = function(groupID, callback)
 {
@@ -124,8 +134,35 @@ exports.doesGroupExist = function(groupID, callback)
 
 exports.createGroup = function(callback)
 {
+  // load all existing groups from db
+  existingGroups = [];
+  
+  exports.listGroups(function(err, responseGroups)
+  {
+    if(ERR(err, callback)) return;
+    if(responseGroups != undefined)
+    {
+        for(var key in responseGroups['groups'])
+        {
+            existingGroups.push(responseGroups['groups'][key]);
+        }
+    }
+  });
+  
   //search for non existing groupID
   var groupID = "g." + randomString(16);
+  
+  // check if group already exisits
+  exports.doesGroupExist(groupID, function(err, groupExist)
+  {
+    if(groupExist) return;
+  });
+  
+  // add the new group to the array
+  existingGroups.push(groupID);
+  
+  // update the entry to the db, which hold all groups
+  db.set("groups", {groups: existingGroups});
   
   //create the group
   db.set("group:" + groupID, {pads: {}});
