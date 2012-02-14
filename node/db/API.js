@@ -469,7 +469,7 @@ listAllPads() returns a array with all pads
 
 Example returns:
 
-{code: 0, message:"ok", data: ["pad1", "pad2"]}
+{code: 0, message:"ok", data: {padIDs: []}}
 */
 exports.listAllPads = function(callback)
 {

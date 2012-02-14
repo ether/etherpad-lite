@@ -354,7 +354,6 @@ Pad.prototype.init = function init(text, callback) {
       if(_this.id.indexOf("$")==-1)
       {
         groupID = "g.defaultGroupName";
-        console.log(groupManager);
         groupManager.doesGroupExist(groupID, function(err, exists)
         {
             if(!exists)
