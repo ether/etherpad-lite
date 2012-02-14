@@ -101,8 +101,33 @@ exports.deleteGroup = function(groupID, callback)
     //remove group and group2sessions entry
     function(callback)
     {
+      // remove group from groups entry
+      db.get("groups", function (err, groups)
+      {
+        if(ERR(err, callback)) return;
+
+            if(ERR(err, callback)) return;
+            
+            existingGroups = [];
+            
+            if(groups != undefined)
+            {
+                for(var key in groups['groups'])
+                {
+                    if(groupID != groups['groups'][key]) 
+                    {
+                        existingGroups.push(groups['groups'][key]);
+                    }
+                }
+            }
+            
+            db.set("groups", {groups: existingGroups});
+      });
+
       db.remove("group2sessions:" + groupID);
       db.remove("group:" + groupID);
+      
+
       callback();
     }
   ], function(err)
