@@ -350,10 +350,7 @@ Pad.prototype.init = function init(text, callback) {
     {
       var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(text));
       
-      console.log(_this);
-      console.log(this);
-      console.log(_this.id);
-      
+      // if this is a non group pad, add this to the defaultGroup
       if(_this.id.indexOf("$")==-1)
       {
         groupID = "g.defaultGroupName";
