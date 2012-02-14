@@ -469,11 +469,11 @@ listAllPads() returns a array with all pads
 
 Example returns:
 
-{code: 0, message:"ok", data: {padIDs: []}}
+{code: 0, message:"ok", data: {padIDs: {}}}
 */
 exports.listAllPads = function(callback)
 {
-    allPads = [];
+    allPads = {};
     
     var defaultGroup = "g.defaultGroupName";
     
@@ -489,13 +489,14 @@ exports.listAllPads = function(callback)
                 groups.push(defaultGroup);
             }
         });
+
         for(var group in groups)
         {
             groupManager.listPads(groups[group], function(err, pads)
             {
-                for(var pad in pads)
+                for(var pad in pads["padIDs"])
                 {
-                    allPads.push(pads[pad]);
+                    allPads[pad] = pads["padIDs"][pad];
                 }
             });
         }
