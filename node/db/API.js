@@ -464,6 +464,46 @@ exports.isPasswordProtected = function(padID, callback)
   });
 }
 
+/**
+listAllPads() returns a array with all pads 
+
+Example returns:
+
+{code: 0, message:"ok", data: ["pad1", "pad2"]}
+*/
+exports.listAllPads = function(callback)
+{
+    allPads = [];
+    
+    var defaultGroup = "g.defaultGroupName";
+    
+    //get all groups
+    groupManager.listGroups(function (err, groups)
+    {
+        groups=groups["groups"];
+        // if defaultGroup exists add this too, becaus ists not listed in groupManager.listGroups
+        groupManager.doesGroupExist(defaultGroup, function(err, exists)
+        {
+            if(exists)
+            {
+                groups.push(defaultGroup);
+            }
+        });
+        for(var group in groups)
+        {
+            groupManager.listPads(groups[group], function(err, pads)
+            {
+                for(var pad in pads)
+                {
+                    allPads.push(pads[pad]);
+                }
+            });
+        }
+    });
+    
+    callback(null, {padIDs: allPads});
+}
+
 /******************************/
 /** INTERNAL HELPER FUNCTIONS */
 /******************************/
