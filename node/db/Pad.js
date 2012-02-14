@@ -479,7 +479,7 @@ function hash(password, salt)
 
 function generateSalt()
 {
-  return randomstring(86);
+  return randomString(86);
 }
 
 function compare(hashStr, password)
