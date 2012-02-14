@@ -143,9 +143,9 @@ exports.listGroups = function(callback)
   //try to get the groups entry
   db.get("groups", function (err, groups)
   {
-    if(groups == null) groups = [];
+    if(groups == null) groups["groups"] = [];
     if(ERR(err, callback)) return;
-    callback(null, groups);
+    callback(null, {groupIDs: groups["groups"]});
   });
 }
  

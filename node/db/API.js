@@ -480,7 +480,7 @@ exports.listAllPads = function(callback)
     //get all groups
     groupManager.listGroups(function (err, groups)
     {
-        groups=groups["groups"];
+        groups=groups["groupIDs"];
         // if defaultGroup exists add this too, becaus ists not listed in groupManager.listGroups
         groupManager.doesGroupExist(defaultGroup, function(err, exists)
         {
