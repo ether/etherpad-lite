@@ -1,10 +1,10 @@
 /*
  * This is the Changeset library copied from the old Etherpad with some modifications to use it in node.js
  * Can be found in https://github.com/ether/pad/blob/master/infrastructure/ace/www/easysync2.js
- */ 
+ */
 
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -25,7 +25,7 @@
  * limitations under the License.
  */
 
-var AttributePoolFactory = require("./AttributePoolFactory");
+var AttributePoolFactory = require("/AttributePoolFactory");
 
 var _opt = null;
 

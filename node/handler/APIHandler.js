@@ -18,11 +18,12 @@
  * limitations under the License.
  */
 
+var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var fs = require("fs");
 var api = require("../db/API");
 var padManager = require("../db/PadManager");
-var randomString = require("../utils/randomstring");
+var randomString = CommonCode.require('/pad_utils').randomString;
 
 //ensure we have an apikey
 var apikey = null;
