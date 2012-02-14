@@ -144,13 +144,7 @@ async.waterfall([
     
     //serve static files
     var assetCache = new CachingMiddleware;
-    app.all('/static/js/:filename', assetCache.handle, minify.minifyJS);
-    app.get('/static/*', function(req, res)
-    { 
-      var filePath = path.normalize(__dirname + "/.." +
-                                    req.url.replace(/\.\./g, '').split("?")[0]);
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
+    app.all('/static/:filename(*)', assetCache.handle, minify.minify);
     
     //serve minified files
     var jsServer = new (Yajsml.Server)({

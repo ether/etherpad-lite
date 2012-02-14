@@ -30,9 +30,7 @@ var path = require('path');
 var RequireKernel = require('require-kernel');
 var server = require('../server');
 
-var ROOT_DIR = path.normalize(__dirname + "/../" );
-var JS_DIR = path.normalize(ROOT_DIR + '../static/js/');
-var CSS_DIR = ROOT_DIR + '../static/css/';
+var ROOT_DIR = path.normalize(__dirname + "/../../static/");
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
@@ -49,21 +47,40 @@ for (var key in tar) {
  * @param req the Express request
  * @param res the Express response
  */
-exports.minifyJS = function(req, res, next)
+exports.minify = function(req, res, next)
 {
   var filename = req.params['filename'];
 
   // No relative paths, especially if they may go up the file hierarchy.
-  filename = path.normalize(path.join(JS_DIR, filename));
-  if (filename.indexOf(JS_DIR) == 0) {
-    filename = filename.slice(JS_DIR.length);
+  filename = path.normalize(path.join(ROOT_DIR, filename));
+  if (filename.indexOf(ROOT_DIR) == 0) {
+    filename = filename.slice(ROOT_DIR.length);
   } else {
     res.writeHead(404, {});
     res.end();
     return; 
   }
 
-  res.header("Content-Type","text/javascript");
+  // What content type should this be?
+  // TODO: This should use a MIME module.
+  var contentType;
+  if (filename.match(/\.js$/)) {
+    contentType = "text/javascript";
+  } else if (filename.match(/\.css$/)) {
+    contentType = "text/css";
+  } else if (filename.match(/\.html$/)) {
+    contentType = "text/html";
+  } else if (filename.match(/\.txt$/)) {
+    contentType = "text/plain";
+  } else if (filename.match(/\.png$/)) {
+    contentType = "image/png";
+  } else if (filename.match(/\.gif$/)) {
+    contentType = "image/gif";
+  } else if (filename.match(/\.ico$/)) {
+    contentType = "image/x-icon";
+  } else {
+    contentType = "application/octet-stream";
+  }
 
   statFile(filename, function (error, date, exists) {
     if (date) {
@@ -88,11 +105,13 @@ exports.minifyJS = function(req, res, next)
       res.end();
     } else {
       if (req.method == 'HEAD') {
+        res.header("Content-Type", contentType);
         res.writeHead(200, {});
         res.end();
       } else if (req.method == 'GET') {
-        getFileCompressed(filename, function (error, content) {
+        getFileCompressed(filename, contentType, function (error, content) {
           if(ERR(error)) return;
+          res.header("Content-Type", contentType);
           res.writeHead(200, {});
           res.write(content);
           res.end();
@@ -107,7 +126,7 @@ exports.minifyJS = function(req, res, next)
 
 // find all includes in ace.js and embed them.
 function getAceFile(callback) {
-  fs.readFile(JS_DIR + 'ace.js', "utf8", function(err, data) {
+  fs.readFile(ROOT_DIR + 'js/ace.js', "utf8", function(err, data) {
     if(ERR(err, callback)) return;
 
     // Find all includes in ace.js and embed them
@@ -173,18 +192,18 @@ function getAceFile(callback) {
 }
 
 function statFile(filename, callback) {
-  if (filename == 'ace.js') {
+  if (filename == 'js/ace.js') {
     lastModifiedDateOfEverything(function (error, date) {
       callback(error, date, !error);
     });
   } else {
-    fs.stat(JS_DIR + filename, function (error, stats) {
+    fs.stat(ROOT_DIR + filename, function (error, stats) {
       if (error) {
         if (error.code == "ENOENT") { // Stat the directory instead.
-          fs.stat(JS_DIR, function (error, stats) {
+          fs.stat(path.dirname(ROOT_DIR + filename), function (error, stats) {
             if (error) {
               callback(error);
-            } else if (filename == 'require-kernel.js') {
+            } else if (filename == 'js/require-kernel.js') {
               callback(null, stats.mtime.getTime(), true);
             } else {
               callback(null, stats.mtime.getTime(), false);
@@ -200,7 +219,7 @@ function statFile(filename, callback) {
   }
 }
 function lastModifiedDateOfEverything(callback) {
-  var folders2check = [CSS_DIR, JS_DIR];
+  var folders2check = [ROOT_DIR + 'js/', ROOT_DIR + 'css/'];
   var latestModification = 0;
   //go trough this two folders
   async.forEach(folders2check, function(path, callback)
@@ -243,16 +262,20 @@ function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
 }
 
-function getFileCompressed(filename, callback) {
+function getFileCompressed(filename, contentType, callback) {
   getFile(filename, function (error, content) {
     if (error || !content) {
       callback(error, content);
     } else {
       if (settings.minify) {
-        try {
-          content = compressJS([content])
-        } catch (error) {
-          // silence
+        if (contentType == 'text/javascript') {
+          try {
+            content = compressJS([content]);
+          } catch (error) {
+            // silence
+          }
+        } else if (contentType == 'text/css') {
+          content = compressCSS([content]);
         }
       }
       callback(null, content);
@@ -261,12 +284,12 @@ function getFileCompressed(filename, callback) {
 }
 
 function getFile(filename, callback) {
-  if (filename == 'ace.js') {
+  if (filename == 'js/ace.js') {
     getAceFile(callback);
-  } else if (filename == 'require-kernel.js') {
+  } else if (filename == 'js/require-kernel.js') {
     callback(undefined, requireDefinition());
   } else {
-    fs.readFile(JS_DIR + filename, "utf8", callback);
+    fs.readFile(ROOT_DIR + filename, callback);
   }
 }
 
