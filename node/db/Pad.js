@@ -10,6 +10,7 @@ var async = require("async");
 var settings = require('../utils/Settings');
 var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
+var groupManager = require("./GroupManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
 var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
@@ -348,7 +349,24 @@ Pad.prototype.init = function init(text, callback) {
     else
     {
       var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(text));
-
+      
+      console.log(_this);
+      console.log(this);
+      console.log(_this.id);
+      
+      if(_this.id.indexOf("$")==-1)
+      {
+        groupID = "g.defaultGroupName";
+        groupManager.doesGroupExist(groupID, function(err, exists)
+        {
+            if(!exists)
+            {
+                db.set("group:" + groupID, {pads: {}});
+            }
+        });
+        db.setSub("group:"+groupID, ["pads", _this.id], 1);
+      }
+      
       _this.appendRevision(firstChangeset, '');
     }
 
@@ -389,10 +407,23 @@ Pad.prototype.remove = function remove(callback) {
               callback();
             });
           }
-          //its no group pad, nothing to do here
+          //its no group pad, so remove this pad from the defaultGroup
           else
           {
-            callback();
+            var groupID = "g.defaultGroupName";
+
+            db.get("group:" + groupID, function (err, group)
+            {
+              if(ERR(err, callback)) return;
+
+              //remove the pad entry
+              delete group.pads[padID];
+
+              //set the new value
+              db.set("group:" + groupID, group);
+
+              callback();
+            });
           }
         },
         //remove the readonly entries
