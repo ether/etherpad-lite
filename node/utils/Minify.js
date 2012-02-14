@@ -130,7 +130,7 @@ function getAceFile(callback) {
     if(ERR(err, callback)) return;
 
     // Find all includes in ace.js and embed them
-    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
+    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\("[^"]*"\)/gi);
     if (!settings.minify) {
       founds = [];
     }
@@ -142,49 +142,19 @@ function getAceFile(callback) {
     //go trough all includes
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
-      var type = item.match(/INCLUDE_([A-Z]+)/)[1];
-      var shortFilename =
-          (filename.match(/^\.\.\/static\/js\/(.*)$/, '') || [])[1];
+      var request = require('request');
 
-      //read the included files
-      if (shortFilename) {
-        if (shortFilename == 'require-kernel.js') {
-          // the kernel isn’t actually on the file system.
-          handleEmbed(null, requireDefinition());
+      var baseURI = 'http://' + settings.ip + ":" + settings.port
+
+      request(baseURI + path.normalize(path.join('/static/', filename)), function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
+              + JSON.stringify(body || '') + ';\n';
         } else {
-          var contents = '';
-          tarCode(tar[shortFilename] || shortFilename
-          , function (content) {
-              contents += content;
-            }
-          , function () {
-              handleEmbed(null, contents);
-            }
-          );
+          // Silence?
         }
-      } else {
-        fs.readFile(ROOT_DIR + filename, "utf8", handleEmbed);
-      }
-
-      function handleEmbed(error, data_) {
-        if (error) {
-          return; // Don't bother to include it.
-        }
-        if (settings.minify) {
-          if (type == "JS") {
-            try {
-              data_ = compressJS([data_]);
-            } catch (e) {
-              // Ignore, include uncompresseed, which will break in browser.
-            }
-          } else {
-            data_ = compressCSS([data_]);
-          }
-        }
-        data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-            + JSON.stringify(data_) + ';\n';
         callback();
-      }
+      });
     }, function(error) {
       callback(error, data);
     });
@@ -295,40 +265,6 @@ function getFile(filename, callback) {
   } else {
     fs.readFile(ROOT_DIR + filename, callback);
   }
-}
-
-function tarCode(jsFiles, write, callback) {
-  write('require.define({');
-  var initialEntry = true;
-  async.forEach(jsFiles, function (filename, callback){
-    getFile(filename, handleFile)
-
-    function handleFile(err, data) {
-      if(ERR(err, callback)) return;
-      var srcPath = JSON.stringify('/' + filename);
-      var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
-      if (!initialEntry) {
-        write('\n,');
-      } else {
-        initialEntry = false;
-      }
-      write(srcPath + ': ')
-      data = '(function (require, exports, module) {' + data + '})';
-      if (settings.minify) {
-        write(compressJS([data]));
-      } else {
-        write(data);
-      }
-      if (srcPath != srcPathAbbv) {
-        write('\n,' + srcPathAbbv + ': null');
-      }
-
-      callback();
-    }
-  }, function () {
-    write('});\n');
-    callback();
-  });
 }
 
 function compressJS(values)
