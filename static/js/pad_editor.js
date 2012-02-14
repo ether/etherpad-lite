@@ -75,8 +75,6 @@ var padeditor = (function()
       {
         pad.changeViewOption('useMonospaceFont', $("#viewfontmenu").val() == 'monospace');
       });
-
-      settings.noColors = !settings.noColors; // Inversed so we can pass it to showauthorcolors
     },
     setViewOptions: function(newOptions)
     {
@@ -88,7 +86,7 @@ var padeditor = (function()
         return defaultValue;
       }
 
-      self.ace.setProperty("showsauthorcolors", settings.noColors);
+      self.ace.setProperty("showsauthorcolors", !settings.noColors);
 
       self.ace.setProperty("rtlIsTrue", settings.rtlIsTrue);
 
