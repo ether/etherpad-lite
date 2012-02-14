@@ -18,9 +18,10 @@
  * limitations under the License.
  */
  
+var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
-var randomString = require("../utils/randomstring");
+var randomString = CommonCode.require('/pad_utils').randomString;
 var db = require("./DB").db;
 var async = require("async");
 var padManager = require("./PadManager");
@@ -311,9 +312,13 @@ exports.listPads = function(groupID, callback)
     //group exists, let's get the pads
     else
     {
-      db.getSub("group:" + groupID, ["pads"], function(err, pads)
+      db.getSub("group:" + groupID, ["pads"], function(err, result)
       {
         if(ERR(err, callback)) return;
+        var pads = [];
+        for ( var padId in result ) {
+          pads.push(padId);
+        }
         callback(null, {padIDs: pads});
       });
     }

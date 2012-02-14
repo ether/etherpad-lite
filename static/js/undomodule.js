@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var Changeset = require('/easysync2').Changeset;
+var Changeset = require('/Changeset');
 var extend = require('/ace2_common').extend;
 
 var undoModule = (function()

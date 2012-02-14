@@ -28,7 +28,7 @@
 // requires: plugins
 // requires: undefined
 
-var Changeset = require('/easysync2').Changeset
+var Changeset = require('/Changeset');
 var plugins = require('/plugins').plugins;
 var map = require('/ace2_common').map;
 

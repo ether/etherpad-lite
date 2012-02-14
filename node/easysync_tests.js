@@ -20,8 +20,9 @@
  * limitations under the License.
  */
 
-var Changeset = require('./utils/Changeset');
-var AttributePoolFactory = require("./utils/AttributePoolFactory");
+var CommonCode = require('./utils/common_code');
+var Changeset = CommonCode.require("/Changeset");
+var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
 
 function random() {
   this.nextInt = function (maxValue) {

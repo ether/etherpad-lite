@@ -1,6 +1,7 @@
 {
   "pad.js": [
     "jquery.js"
+  , "security.js"
   , "pad.js"
   , "ace2_common.js"
   , "pad_utils.js"
@@ -25,6 +26,7 @@
   ]
 , "timeslider.js": [
     "jquery.js"
+  , "security.js"
   , "plugins.js"
   , "undo-xpopup.js"
   , "json2.js"
@@ -39,10 +41,11 @@
   , "pad_modals.js"
   , "pad_savedrevs.js"
   , "pad_impexp.js"
-  , "easysync2_client.js"
-  , "domline_client.js"
-  , "linestylefilter_client.js"
-  , "cssmanager_client.js"
+  , "AttributePoolFactory.js"
+  , "Changeset.js"
+  , "domline.js"
+  , "linestylefilter.js"
+  , "cssmanager.js"
   , "broadcast.js"
   , "broadcast_slider.js"
   , "broadcast_revisions.js"
@@ -50,9 +53,11 @@
   ]
 , "ace2_inner.js": [
     "ace2_common.js"
+  , "AttributePoolFactory.js"
+  , "Changeset.js"
+  , "security.js"
   , "skiplist.js"
   , "virtual_lines.js"
-  , "easysync2.js"
   , "cssmanager.js"
   , "colorutils.js"
   , "undomodule.js"
