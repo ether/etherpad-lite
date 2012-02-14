@@ -249,9 +249,13 @@ exports.listPads = function(groupID, callback)
     //group exists, let's get the pads
     else
     {
-      db.getSub("group:" + groupID, ["pads"], function(err, pads)
+      db.getSub("group:" + groupID, ["pads"], function(err, result)
       {
         if(ERR(err, callback)) return;
+        var pads = [];
+        for ( var padId in result ) {
+          pads.push(padId);
+        }
         callback(null, {padIDs: pads});
       });
     }
