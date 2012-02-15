@@ -31,7 +31,7 @@ var RequireKernel = require('require-kernel');
 var server = require('../server');
 
 var ROOT_DIR = path.normalize(__dirname + "/../" );
-var JS_DIR = ROOT_DIR + '../static/js/';
+var JS_DIR = path.normalize(ROOT_DIR + '../static/js/');
 var CSS_DIR = ROOT_DIR + '../static/css/';
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
@@ -52,6 +52,17 @@ for (var key in tar) {
 exports.minifyJS = function(req, res, next)
 {
   var filename = req.params['filename'];
+
+  // No relative paths, especially if they may go up the file hierarchy.
+  filename = path.normalize(path.join(JS_DIR, filename));
+  if (filename.indexOf(JS_DIR) == 0) {
+    filename = filename.slice(JS_DIR.length);
+  } else {
+    res.writeHead(404, {});
+    res.end();
+    return; 
+  }
+
   res.header("Content-Type","text/javascript");
 
   statFile(filename, function (error, date, exists) {
