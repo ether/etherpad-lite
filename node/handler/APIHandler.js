@@ -39,10 +39,12 @@ catch(e)
 
 //a list of all functions
 var functions = {
+  "listGroups"                : [],
   "createGroup"               : [],
   "createGroupIfNotExistsFor"  : ["groupMapper"], 
   "deleteGroup"               : ["groupID"], 
-  "listPads"                  : ["groupID"], 
+  "listPads"                  : ["groupID"],
+  "listAllPads"               : [],
   "createPad"                 : ["padID", "text"], 
   "createGroupPad"            : ["groupID", "padName", "text"],
   "createAuthor"              : ["name"], 
