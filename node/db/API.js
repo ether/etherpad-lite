@@ -473,36 +473,36 @@ Example returns:
 */
 exports.listAllPads = function(callback)
 {
-    allPads = [];
-    
-    var defaultGroup = "g.defaultGroupName";
-    
-    //get all groups
-    groupManager.listGroups(function (err, groups)
-    {
-        groups=groups["groupIDs"];
-        // if defaultGroup exists add this too, becaus ists not listed in groupManager.listGroups
-        groupManager.doesGroupExist(defaultGroup, function(err, exists)
-        {
-            if(exists)
-            {
-                groups.push(defaultGroup);
-            }
-        });
+  allPads = [];
 
-        for(var group in groups)
-        {
-            groupManager.listPads(groups[group], function(err, pads)
-            {
-                for(var pad in pads["padIDs"])
-                {
-                    allPads.push(pads["padIDs"][pad]);
-                }
-            });
-        }
+  var defaultGroup = "g.defaultGroupName";
+
+  //get all groups
+  groupManager.listGroups(function (err, groups)
+  {
+    groups=groups["groupIDs"];
+    // if defaultGroup exists add this too, becaus ists not listed in groupManager.listGroups
+    groupManager.doesGroupExist(defaultGroup, function(err, exists)
+    {
+      if(exists)
+      {
+          groups.push(defaultGroup);
+      }
     });
     
-    callback(null, {padIDs: allPads});
+    for(var group in groups)
+    {
+      groupManager.listPads(groups[group], function(err, pads)
+      {
+        for(var pad in pads["padIDs"])
+        {
+          allPads.push(pads["padIDs"][pad]);
+        }
+      });
+    }
+  });
+
+  callback(null, {padIDs: allPads});
 }
 
 /******************************/

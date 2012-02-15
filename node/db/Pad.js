@@ -351,21 +351,21 @@ Pad.prototype.init = function init(text, callback) {
     else
     {
       var firstChangeset = Changeset.makeSplice("\n", 0, 0, exports.cleanText(text));
-      
+
       // if this is a non group pad, add this to the defaultGroup
       if(_this.id.indexOf("$")==-1)
       {
         groupID = "g.defaultGroupName";
         groupManager.doesGroupExist(groupID, function(err, exists)
         {
-            if(!exists)
-            {
-                db.set("group:" + groupID, {pads: {}});
-            }
+          if(!exists)
+          {
+            db.set("group:" + groupID, {pads: {}});
+          }
         });
         db.setSub("group:"+groupID, ["pads", _this.id], 1);
       }
-      
+
       _this.appendRevision(firstChangeset, '');
     }
 

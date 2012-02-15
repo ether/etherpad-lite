@@ -106,29 +106,25 @@ exports.deleteGroup = function(groupID, callback)
       db.get("groups", function (err, groups)
       {
         if(ERR(err, callback)) return;
-
-            if(ERR(err, callback)) return;
+        
+          existingGroups = [];
             
-            existingGroups = [];
-            
-            if(groups != undefined)
+          if(groups != undefined)
+          {
+            for(var key in groups['groups'])
             {
-                for(var key in groups['groups'])
-                {
-                    if(groupID != groups['groups'][key]) 
-                    {
-                        existingGroups.push(groups['groups'][key]);
-                    }
-                }
+              if(groupID != groups['groups'][key]) 
+              {
+                existingGroups.push(groups['groups'][key]);
+              }
             }
+          }
             
-            db.set("groups", {groups: existingGroups});
+        db.set("groups", {groups: existingGroups});
       });
-
+      
       db.remove("group2sessions:" + groupID);
       db.remove("group:" + groupID);
-      
-
       callback();
     }
   ], function(err)
@@ -169,10 +165,10 @@ exports.createGroup = function(callback)
     if(ERR(err, callback)) return;
     if(responseGroups != undefined)
     {
-        for(var key in responseGroups['groups'])
-        {
-            existingGroups.push(responseGroups['groups'][key]);
-        }
+      for(var key in responseGroups['groups'])
+      {
+        existingGroups.push(responseGroups['groups'][key]);
+      }
     }
   });
   
