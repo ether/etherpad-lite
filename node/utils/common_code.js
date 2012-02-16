@@ -15,8 +15,10 @@
  */
 
 var RequireKernel = require('require-kernel/');
+var path = require('path');
 
-var CLIENT_JS_SRC = __dirname + '/../../static/js/';
-var client_require = RequireKernel.requireForPaths('file://' + CLIENT_JS_SRC);
+var CLIENT_JS_SRC = path.normalize(__dirname + '/../../static/js/');
+var client_require = RequireKernel.requireForPaths(
+    'file://' + (CLIENT_JS_SRC.charAt(0) == '/' ? '' : '/') + encodeURI(CLIENT_JS_SRC));
 
 exports.require = client_require;
