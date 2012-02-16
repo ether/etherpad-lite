@@ -10,7 +10,7 @@
                         "name": "Robin Buse" }
                      ],
   "dependencies"   : {
-                      "require-kernel"      : "1.0.2",
+                      "require-kernel"      : "1.0.3",
                       "socket.io"           : "0.8.7",
                       "ueberDB"             : "0.1.7",
                       "async"               : "0.1.15",
