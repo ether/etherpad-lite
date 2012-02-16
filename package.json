@@ -20,8 +20,7 @@
                       "formidable"          : "1.0.7",
                       "log4js"              : "0.4.1",
                       "jsdom-nocontextifiy" : "0.2.10",
-                      "async-stacktrace"    : "0.0.2",
-                      "optimist"            : "0.3.1"
+                      "async-stacktrace"    : "0.0.2"
                      },
   "devDependencies": {
                       "jshint"  : "*"

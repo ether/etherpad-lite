@@ -22,11 +22,7 @@
 var fs = require("fs");
 var os = require("os");
 var path = require('path');
-
-/**
- * Read in cli args
- */
-exports.argv = require('optimist').argv;
+var cli = require('./Cli');
 
 /**
  * The IP ep-lite should listen to
@@ -94,7 +90,7 @@ exports.abiwordAvailable = function()
 }
 
 // Discover where the settings file lives
-var settingsFilename = exports.argv.settings || exports.argv.s || "settings.json";
+var settingsFilename = cli.argv.settings || "settings.json";
 var settingsPath = settingsFilename.charAt(0) == '/' ? '' : path.normalize(__dirname + "/../../");
 
 //read the settings sync

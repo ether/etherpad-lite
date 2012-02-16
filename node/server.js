@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var cli = require('./utils/Cli');
 var ERR = require("async-stacktrace");
 var log4js = require('log4js');
 var os = require("os");

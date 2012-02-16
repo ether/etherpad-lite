@@ -20,10 +20,18 @@ if [ "$(id -u)" -eq 0 ]; then
    fi
 fi
 
+prep=1
+#If merely looking for help, don't prep the environment
+for arg in $*; do
+  if [ "$arg" = "--help" ] || [ "$arg" = "-h" ]; then prep=0; fi
+done
+
 #prepare the enviroment
-bin/installDeps.sh $* || exit 1
+if [ $prep -eq 1 ]; then
+  bin/installDeps.sh $* || exit 1
+  echo "start..."
+fi
 
 #Move to the node folder and start
-echo "start..."
 cd "node"
 node server.js $*
