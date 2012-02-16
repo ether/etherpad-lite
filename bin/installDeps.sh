@@ -45,6 +45,7 @@ settings="settings.json"
 a='';
 for arg in $*; do
   if [ "$a" = "--settings" ]; then settings=$arg; fi
+  if [ "$a" = "-s" ]; then settings=$arg; fi
   a=$arg
 done
 #Does a $settings exist? if no copy the template
