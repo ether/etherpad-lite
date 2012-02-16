@@ -887,7 +887,9 @@ function handleClientReady(client, message)
           function (callback)
           {
             //Jump over, if this session is the connection session
-            if(sessionID != client.id && socketio.sockets.sockets[sessionID] !== undefined)
+            if(sessionID != client.id && 
+              socketio.sockets.sockets[sessionID] !== undefined &&
+              sessioninfos[sessionID] !== undefined)
             {
               //Send this Session the Notification about the new user
               socketio.sockets.sockets[sessionID].json.send(messageToTheOtherUsers);
