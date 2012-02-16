@@ -859,6 +859,10 @@ function handleClientReady(client, message)
           //get the authorname & colorId
           function(callback)
           {
+            if(sessioninfos[sessionID] === undefined){
+               callback();
+               return;
+            }
             async.parallel([
               function(callback)
               {
@@ -883,7 +887,7 @@ function handleClientReady(client, message)
           function (callback)
           {
             //Jump over, if this session is the connection session
-            if(sessionID != client.id)
+            if(sessionID != client.id && socketio.sockets.sockets[sessionID] !== undefined)
             {
               //Send this Session the Notification about the new user
               socketio.sockets.sockets[sessionID].json.send(messageToTheOtherUsers);
