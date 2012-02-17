@@ -853,20 +853,27 @@ function handleClientReady(client, message)
       //Run trough all sessions of this pad
       async.forEach(pad2sessions[message.padId], function(sessionID, callback)
       {
-        var sessionAuthorName, sessionAuthorColorId;
-      
+        var author, socket, sessionAuthorName, sessionAuthorColorId;
+        
+        //Since sessioninfos might change while being enumerated, check if the 
+        //sessionID is still assigned to a valid session
+        if(sessioninfos[sessionID] !== undefined &&
+          socketio.sockets.sockets[sessionID] !== undefined){
+          author = sessioninfos[sessionID].author;
+          socket = socketio.sockets.sockets[sessionID];
+        }else {
+          // If the sessionID is not valid, callback();
+          callback();
+          return;
+        }
         async.series([
           //get the authorname & colorId
           function(callback)
           {
-            if(sessioninfos[sessionID] === undefined){
-               callback();
-               return;
-            }
             async.parallel([
               function(callback)
               {
-                authorManager.getAuthorColorId(sessioninfos[sessionID].author, function(err, value)
+                authorManager.getAuthorColorId(author, function(err, value)
                 {
                   if(ERR(err, callback)) return;
                   sessionAuthorColorId = value;
@@ -875,7 +882,7 @@ function handleClientReady(client, message)
               },
               function(callback)
               {
-                authorManager.getAuthorName(sessioninfos[sessionID].author, function(err, value)
+                authorManager.getAuthorName(author, function(err, value)
                 {
                   if(ERR(err, callback)) return;
                   sessionAuthorName = value;
@@ -887,12 +894,10 @@ function handleClientReady(client, message)
           function (callback)
           {
             //Jump over, if this session is the connection session
-            if(sessionID != client.id && 
-              socketio.sockets.sockets[sessionID] !== undefined &&
-              sessioninfos[sessionID] !== undefined)
+            if(sessionID != client.id)
             {
               //Send this Session the Notification about the new user
-              socketio.sockets.sockets[sessionID].json.send(messageToTheOtherUsers);
+              socket.json.send(messageToTheOtherUsers);
             
               //Send the new User a Notification about this other user
               var messageToNotifyTheClientAboutTheOthers = {
@@ -904,7 +909,7 @@ function handleClientReady(client, message)
                     "colorId": sessionAuthorColorId,
                     "name": sessionAuthorName,
                     "userAgent": "Anonymous",
-                    "userId": sessioninfos[sessionID].author
+                    "userId": author
                   }
                 }
               };
