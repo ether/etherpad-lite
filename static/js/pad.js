@@ -103,7 +103,7 @@ function getParams()
   if(userName)
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
-    settings.globalUserName = unescape(userName);
+    settings.globalUserName = decodeURIComponent(userName);
   }
   if(hideQRCode)
   {
