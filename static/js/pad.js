@@ -46,47 +46,9 @@ var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
 var paduserlist = require('/pad_userlist').paduserlist;
 var padutils = require('/pad_utils').padutils;
 
-function createCookie(name, value, days, path)
-{
-  if (days)
-  {
-    var date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    var expires = "; expires=" + date.toGMTString();
-  }
-  else var expires = "";
-  
-  if(!path)
-    path = "/";
-  
-  document.cookie = name + "=" + value + expires + "; path=" + path;
-}
-
-function readCookie(name)
-{
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++)
-  {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
-
-function randomString()
-{
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var string_length = 20;
-  var randomstring = '';
-  for (var i = 0; i < string_length; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return "t." + randomstring;
-}
+var createCookie = require('/pad_utils').createCookie;
+var readCookie = require('/pad_utils').readCookie;
+var randomString = require('/pad_utils').randomString;
 
 function getParams()
 {
@@ -210,7 +172,7 @@ function handshake()
     var token = readCookie("token");
     if (token == null)
     {
-      token = randomString();
+      token = "t." + randomString();
       createCookie("token", token, 60);
     }
     
@@ -570,16 +532,6 @@ var pad = {
     };
     options.view[key] = value;
     pad.handleOptionsChange(options);
-    // if the request isn't to hide line numbers then broadcast this to other users
-    if (key != "showLineNumbers" && key != "useMonospaceFont")
-    {
-      pad.collabClient.sendClientMessage(
-      {
-        type: 'padoptions',
-        options: options,
-        changedBy: pad.myUserInfo.name || "unnamed"
-      });
-    }
   },
   handleOptionsChange: function(opts)
   {
