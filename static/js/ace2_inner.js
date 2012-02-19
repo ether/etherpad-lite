@@ -460,11 +460,11 @@ function OUTER(gscope)
         submitOldEvent(cs.editEvent);
         if (cs.domClean && cs.type != "setup")
         {
-          if (cs.isUserChange)
-          {
-            if (cs.repChanged) parenModule.notifyChange();
-            else parenModule.notifyTick();
-          }
+          // if (cs.isUserChange)
+          // {
+          //  if (cs.repChanged) parenModule.notifyChange();
+          //  else parenModule.notifyTick();
+          // }
           recolorModule.recolorLines();
           if (cs.selectionAffected)
           {
@@ -565,182 +565,6 @@ function OUTER(gscope)
         recolorLineByKey(k);
       }
       dirtyLineKeys = {};
-    }
-
-    return module;
-  })();
-
-  var parenModule = (function()
-  {
-    var module = {};
-    module.notifyTick = function()
-    {
-      handleFlashing(false);
-    };
-    module.notifyChange = function()
-    {
-      handleFlashing(true);
-    };
-    module.shouldNormalizeOnChar = function(c)
-    {
-      if (parenFlashRep.active)
-      {
-        // avoid highlight style from carrying on to typed text
-        return true;
-      }
-      c = String.fromCharCode(c);
-      return !!(bracketMap[c]);
-    }
-
-    var parenFlashRep = {
-      active: false,
-      whichChars: null,
-      whichLineKeys: null,
-      expireTime: null
-    };
-    var bracketMap = {
-      '(': 1,
-      ')': -1,
-      '[': 2,
-      ']': -2,
-      '{': 3,
-      '}': -3
-    };
-    var bracketRegex = /[{}\[\]()]/g;
-
-    function handleFlashing(docChanged)
-    {
-      function getSearchRange(aroundLoc)
-      {
-        var rng = getVisibleCharRange();
-        var d = 100; // minimum radius
-        var e = 3000; // maximum radius;
-        if (rng[0] > aroundLoc - d) rng[0] = aroundLoc - d;
-        if (rng[0] < aroundLoc - e) rng[0] = aroundLoc - e;
-        if (rng[0] < 0) rng[0] = 0;
-        if (rng[1] < aroundLoc + d) rng[1] = aroundLoc + d;
-        if (rng[1] > aroundLoc + e) rng[1] = aroundLoc + e;
-        if (rng[1] > rep.lines.totalWidth()) rng[1] = rep.lines.totalWidth();
-        return rng;
-      }
-
-      function findMatchingVisibleBracket(startLoc, forwards)
-      {
-        var rng = getSearchRange(startLoc);
-        var str = rep.alltext.substring(rng[0], rng[1]);
-        var bstr = str.replace(bracketRegex, '('); // handy for searching
-        var loc = startLoc - rng[0];
-        var bracketState = [];
-        var foundParen = false;
-        var goodParen = false;
-
-        function nextLoc()
-        {
-          if (loc < 0) return;
-          if (forwards) loc++;
-          else loc--;
-          if (loc < 0 || loc >= str.length) loc = -1;
-          if (loc >= 0)
-          {
-            if (forwards) loc = bstr.indexOf('(', loc);
-            else loc = bstr.lastIndexOf('(', loc);
-          }
-        }
-        while ((!foundParen) && (loc >= 0))
-        {
-          if (getCharType(loc + rng[0]) == "p")
-          {
-            var b = bracketMap[str.charAt(loc)]; // -1, 1, -2, 2, -3, 3
-            var into = forwards;
-            var typ = b;
-            if (typ < 0)
-            {
-              into = !into;
-              typ = -typ;
-            }
-            if (into) bracketState.push(typ);
-            else
-            {
-              var recent = bracketState.pop();
-              if (recent != typ)
-              {
-                foundParen = true;
-                goodParen = false;
-              }
-              else if (bracketState.length == 0)
-              {
-                foundParen = true;
-                goodParen = true;
-              }
-            }
-          }
-          //console.log(bracketState.toSource());
-          if ((!foundParen) && (loc >= 0)) nextLoc();
-        }
-        if (!foundParen) return null;
-        return {
-          chr: (loc + rng[0]),
-          good: goodParen
-        };
-      }
-
-      var r = parenFlashRep;
-      var charsToHighlight = null;
-      var linesToUnhighlight = null;
-      if (r.active && (docChanged || (now() > r.expireTime)))
-      {
-        linesToUnhighlight = r.whichLineKeys;
-        r.active = false;
-      }
-      if ((!r.active) && docChanged && isCaret() && caretColumn() > 0)
-      {
-        var caret = caretDocChar();
-        if (caret > 0 && getCharType(caret - 1) == "p")
-        {
-          var charBefore = rep.alltext.charAt(caret - 1);
-          if (bracketMap[charBefore])
-          {
-            var lookForwards = (bracketMap[charBefore] > 0);
-            var findResult = findMatchingVisibleBracket(caret - 1, lookForwards);
-            if (findResult)
-            {
-              var mateLoc = findResult.chr;
-              var mateGood = findResult.good;
-              r.active = true;
-              charsToHighlight = {};
-              charsToHighlight[caret - 1] = 'flash';
-              charsToHighlight[mateLoc] = (mateGood ? 'flash' : 'flashbad');
-              r.whichLineKeys = [];
-              r.whichLineKeys.push(getLineKeyForOffset(caret - 1));
-              r.whichLineKeys.push(getLineKeyForOffset(mateLoc));
-              r.expireTime = now() + 4000;
-              newlyActive = true;
-            }
-          }
-        }
-
-      }
-      if (linesToUnhighlight)
-      {
-        recolorLineByKey(linesToUnhighlight[0]);
-        recolorLineByKey(linesToUnhighlight[1]);
-      }
-      if (r.active && charsToHighlight)
-      {
-        function f(txt, cls, next, ofst)
-        {
-          var flashClass = charsToHighlight[ofst];
-          if (cls)
-          {
-            next(txt, cls + " " + flashClass);
-          }
-          else next(txt, cls);
-        }
-        for (var c in charsToHighlight)
-        {
-          recolorLinesInRange((+c), (+c) + 1, null, f);
-        }
-      }
     }
 
     return module;
@@ -1546,12 +1370,6 @@ function OUTER(gscope)
       text.length, aline, filteredFunc, rep.apool);
       filteredFunc(text, '');
     }
-  }
-
-
-  function getCharType(charIndex)
-  {
-    return '';
   }
 
   var observedChanges;
@@ -3968,7 +3786,7 @@ function OUTER(gscope)
       }
       else if (type == "keypress")
       {
-        if ((!specialHandled) && parenModule.shouldNormalizeOnChar(charCode))
+        if ((!specialHandled) && false /*parenModule.shouldNormalizeOnChar(charCode)*/)
         {
           idleWorkTimer.atMost(0);
         }
