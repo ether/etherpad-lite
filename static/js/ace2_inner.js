@@ -51,7 +51,7 @@ var undoModule = require('/undomodule').undoModule;
 var makeVirtualLineView = require('/virtual_lines').makeVirtualLineView;
 
 
-
+function Ace2Inner(){
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false 
   var isSetUp = false;
@@ -5653,3 +5653,7 @@ var makeVirtualLineView = require('/virtual_lines').makeVirtualLineView;
       }
     }
   }
+  
+};
+
+exports.editor = new Ace2Inner();
