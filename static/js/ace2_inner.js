@@ -122,13 +122,13 @@ function Ace2Inner(){
       iframePadRight = 0;
 
   var console = (DEBUG && window.console);
+  
   if (!window.console)
   {
     var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
     console = {};
     for (var i = 0; i < names.length; ++i)
-    console[names[i]] = function()
-    {};
+    console[names[i]] = noop;
     //console.error = function(str) { alert(str); };
   }
 
@@ -330,7 +330,7 @@ function Ace2Inner(){
   editorInfo.ace_getRep = function()
   {
     return rep;
-  }
+  };
 
   var currentCallStack = null;
 
@@ -547,7 +547,7 @@ function Ace2Inner(){
         alineLength += o.chars;
         if (opIter.hasNext())
         {
-          if (o.lines != 0) error();
+          if (o.lines !== 0) error();
         }
         else
         {
@@ -865,9 +865,9 @@ function Ace2Inner(){
   editorInfo.ace_callWithAce = function(fn, callStack, normalize)
   {
     var wrapper = function()
-      {
-        return fn(editorInfo);
-        }
+    {
+      return fn(editorInfo);
+    };
         
         
         
@@ -878,7 +878,7 @@ function Ace2Inner(){
       {
         editorInfo.ace_fastIncorp(9);
         wrapper1();
-      }
+      };
     }
 
     if (callStack !== undefined)
@@ -889,7 +889,7 @@ function Ace2Inner(){
     {
       return wrapper();
     }
-  }
+  };
 
   editorInfo.ace_setProperty = function(key, value)
   {
@@ -943,7 +943,7 @@ function Ace2Inner(){
     {
       setClassPresence(root, "rtl", !! value);
     }
-  }
+  };
 
   editorInfo.ace_setBaseText = function(txt)
   {
@@ -1042,12 +1042,12 @@ function Ace2Inner(){
           lastElapsed = elapsed;
           return false;
         }
-        }
+      };
         
     isTimeUp.elapsed = function()
     {
       return now() - startTime;
-    }
+    };
     return isTimeUp;
   }
 
@@ -1105,7 +1105,7 @@ function Ace2Inner(){
       {
         unschedule();
       }
-    }
+    };
   }
 
   function fastIncorp(n)
@@ -1297,7 +1297,7 @@ function Ace2Inner(){
     }
     var text = lineEntry.text;
     var width = lineEntry.width; // text.length+1
-    if (text.length == 0)
+    if (text.length === 0)
     {
       // allow getLineStyleFilter to set line-div styles
       var func = linestylefilter.getLineStyleFilter(
@@ -1424,17 +1424,19 @@ function Ace2Inner(){
     var p = PROFILER("getSelection", false);
     var selection = getSelection();
     p.end();
+    
+    function topLevel(n)
+    {
+      if ((!n) || n == root) return null;
+      while (n.parentNode != root)
+      {
+        n = n.parentNode;
+      }
+      return n;
+    }
+    
     if (selection)
     {
-      function topLevel(n)
-      {
-        if ((!n) || n == root) return null;
-        while (n.parentNode != root)
-        {
-          n = n.parentNode;
-        }
-        return n;
-      }
       var node1 = topLevel(selection.startPoint.node);
       var node2 = topLevel(selection.endPoint.node);
       if (node1) observeChangesAroundNode(node1);
@@ -1507,7 +1509,7 @@ function Ace2Inner(){
     {
       a = dirtyRanges[j][0];
       b = dirtyRanges[j][1];
-      if (!((a == 0 || getCleanNodeByKey(rep.lines.atIndex(a - 1).key)) && (b == rep.lines.length() || getCleanNodeByKey(rep.lines.atIndex(b).key))))
+      if (!((a === 0 || getCleanNodeByKey(rep.lines.atIndex(a - 1).key)) && (b == rep.lines.length() || getCleanNodeByKey(rep.lines.atIndex(b).key))))
       {
         dirtyRangesCheckOut = false;
         break;
@@ -1548,7 +1550,7 @@ function Ace2Inner(){
       var range = dirtyRanges[i];
       a = range[0];
       b = range[1];
-      var firstDirtyNode = (((a == 0) && root.firstChild) || getCleanNodeByKey(rep.lines.atIndex(a - 1).key).nextSibling);
+      var firstDirtyNode = (((a === 0) && root.firstChild) || getCleanNodeByKey(rep.lines.atIndex(a - 1).key).nextSibling);
       firstDirtyNode = (firstDirtyNode && isNodeDirty(firstDirtyNode) && firstDirtyNode);
       var lastDirtyNode = (((b == rep.lines.length()) && root.lastChild) || getCleanNodeByKey(rep.lines.atIndex(b).key).previousSibling);
       lastDirtyNode = (lastDirtyNode && isNodeDirty(lastDirtyNode) && lastDirtyNode);
@@ -1846,7 +1848,7 @@ function Ace2Inner(){
   function handleReturnIndentation()
   {
     // on return, indent to level of previous line
-    if (isCaret() && caretColumn() == 0 && caretLine() > 0)
+    if (isCaret() && caretColumn() === 0 && caretLine() > 0)
     {
       var lineNum = caretLine();
       var thisLine = rep.lines.atIndex(lineNum);
@@ -1928,10 +1930,10 @@ function Ace2Inner(){
     var lineNode = lineEntry.lineNode;
     var n = lineNode;
     var after = false;
-    if (charsLeft == 0)
+    if (charsLeft === 0)
     {
       var index = 0;
-      if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length == 0)
+      if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0)
       {
         // best to stay at end of last empty div in IE
         index = 1;
@@ -1995,7 +1997,7 @@ function Ace2Inner(){
     // assuming the point is not in a dirty node.
     if (point.node == root)
     {
-      if (point.index == 0)
+      if (point.index === 0)
       {
         return [0, 0];
       }
@@ -2033,7 +2035,7 @@ function Ace2Inner(){
           n = parNode;
         }
       }
-      if (n.id == "") console.debug("BAD");
+      if (n.id === "") console.debug("BAD");
       if (n.firstChild && isBlockElement(n.firstChild))
       {
         col += 1; // lineMarker
@@ -2258,7 +2260,7 @@ function Ace2Inner(){
 
   function performDocumentReplaceCharRange(startChar, endChar, newText)
   {
-    if (startChar == endChar && newText.length == 0)
+    if (startChar == endChar && newText.length === 0)
     {
       return;
     }
@@ -2275,7 +2277,7 @@ function Ace2Inner(){
         endChar--;
         newText = '\n' + newText.substring(0, newText.length - 1);
       }
-      else if (newText.length == 0)
+      else if (newText.length === 0)
       {
         // a delete at end
         startChar--;
@@ -2293,8 +2295,8 @@ function Ace2Inner(){
 
   function performDocumentReplaceRange(start, end, newText)
   {
-    if (start == undefined) start = rep.selStart;
-    if (end == undefined) end = rep.selEnd;
+    if (start === undefined) start = rep.selStart;
+    if (end === undefined) end = rep.selEnd;
 
     //dmesg(String([start.toSource(),end.toSource(),newText.toSource()]));
     // start[0]: <--- start[1] --->CCCCCCCCCCC\n
@@ -2534,7 +2536,7 @@ function Ace2Inner(){
       spliceEnd--;
       commonEnd++;
     }
-    if (shortOldText.length == 0 && spliceStart == rep.alltext.length && shortNewText.length > 0)
+    if (shortOldText.length === 0 && spliceStart == rep.alltext.length && shortNewText.length > 0)
     {
       // inserting after final newline, bad
       spliceStart--;
@@ -2542,7 +2544,7 @@ function Ace2Inner(){
       shortNewText = '\n' + shortNewText.slice(0, -1);
       shiftFinalNewlineToBeforeNewText = true;
     }
-    if (spliceEnd == rep.alltext.length && shortOldText.length > 0 && shortNewText.length == 0)
+    if (spliceEnd == rep.alltext.length && shortOldText.length > 0 && shortNewText.length === 0)
     {
       // deletion at end of rep.alltext
       if (rep.alltext.charAt(spliceStart - 1) == '\n')
@@ -2554,7 +2556,7 @@ function Ace2Inner(){
       }
     }
 
-    if (!(shortOldText.length == 0 && shortNewText.length == 0))
+    if (!(shortOldText.length === 0 && shortNewText.length === 0))
     {
       var oldDocText = rep.alltext;
       var oldLen = oldDocText.length;
@@ -2562,15 +2564,15 @@ function Ace2Inner(){
       var spliceStartLine = rep.lines.indexOfOffset(spliceStart);
       var spliceStartLineStart = rep.lines.offsetOfIndex(spliceStartLine);
 
-      function startBuilder()
+      var startBuilder = function()
       {
         var builder = Changeset.builder(oldLen);
         builder.keep(spliceStartLineStart, spliceStartLine);
         builder.keep(spliceStart - spliceStartLineStart);
         return builder;
-      }
+      };
 
-      function eachAttribRun(attribs, func /*(startInNewText, endInNewText, attribs)*/ )
+      var eachAttribRun = function(attribs, func /*(startInNewText, endInNewText, attribs)*/ )
       {
         var attribsIter = Changeset.opIterator(attribs);
         var textIndex = 0;
@@ -2586,7 +2588,7 @@ function Ace2Inner(){
           }
           textIndex = nextIndex;
         }
-      }
+      };
 
       var justApplyStyles = (shortNewText == shortOldText);
       var theChangeset;
@@ -2786,7 +2788,7 @@ function Ace2Inner(){
     var newEndIter = attribIterator(newARuns, true);
     while (commonEnd < minLen)
     {
-      if (commonEnd == 0)
+      if (commonEnd === 0)
       {
         // assume newline in common
         oldEndIter();
@@ -2929,10 +2931,11 @@ function Ace2Inner(){
         lineClass = ''; // non-null to cause update
       };
 
-      function writeClass()
+      var writeClass = function()
       {
         if (lineClass !== null) lineElem.className = lineClass;
-      }
+      };
+      
       result.prepareForAdd = writeClass;
       result.finishUpdate = writeClass;
       result.getInnerHTML = function()
@@ -3159,7 +3162,7 @@ function Ace2Inner(){
       }
     }
 
-    if (N == 0)
+    if (N === 0)
     {
       p.cancel();
       if (!isConsecutive(0))
@@ -3291,16 +3294,18 @@ function Ace2Inner(){
       idleWorkTimer.atMost(200);
     });
 
+    function isLink(n)
+    {
+      return (n.tagName || '').toLowerCase() == "a" && n.href;
+    }
+    
     // only want to catch left-click
     if ((!evt.ctrlKey) && (evt.button != 2) && (evt.button != 3))
     {
       // find A tag with HREF
 
 
-      function isLink(n)
-      {
-        return (n.tagName || '').toLowerCase() == "a" && n.href;
-      }
+
       var n = evt.target;
       while (n && n.parentNode && !isLink(n))
       {
@@ -3375,7 +3380,7 @@ function Ace2Inner(){
 
     var firstLine, lastLine;
     firstLine = rep.selStart[0];
-    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] == 0) ? 1 : 0));
+    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
 
     var mods = [];
     for (var n = firstLine; n <= lastLine; n++)
@@ -3509,7 +3514,7 @@ function Ace2Inner(){
     //separated. If it returns null, it means that the list was not cut, try
     //from the current one.
     var line = caretLine();
-    if(line != -1 && renumberList(line+1)==null)
+    if(line != -1 && renumberList(line+1) === null)
     {
       renumberList(line);
     }
@@ -3747,7 +3752,7 @@ function Ace2Inner(){
       }
 
       // Is part of multi-keystroke international character on Firefox Mac
-      var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode == 0 && keyCode == 0);
+      var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode === 0 && keyCode === 0);
 
       // Is part of multi-keystroke international character on Safari Mac
       var isSafariHalfCharacter = (browser.safari && evt.altKey && keyCode == 229);
@@ -3846,7 +3851,7 @@ function Ace2Inner(){
     {
       var text = entry.text;
       var content;
-      if (text.length == 0)
+      if (text.length === 0)
       {
         content = '<span style="color: #aaa">--</span>';
       }
@@ -3912,27 +3917,27 @@ function Ace2Inner(){
       var selectionParent = origSelectionRange.parentElement();
       if (selectionParent.ownerDocument != doc) return null;
 
-      function newRange()
+      var newRange = function()
       {
         return doc.body.createTextRange();
-      }
+      };
 
-      function rangeForElementNode(nd)
+      var rangeForElementNode = function(nd)
       {
         var rng = newRange();
         // doesn't work on text nodes
         rng.moveToElementText(nd);
         return rng;
-      }
+      };
 
-      function pointFromCollapsedRange(rng)
+      var pointFromCollapsedRange = function(rng)
       {
         var parNode = rng.parentElement();
         var elemBelow = -1;
         var elemAbove = parNode.childNodes.length;
         var rangeWithin = rangeForElementNode(parNode);
 
-        if (rng.compareEndPoints("StartToStart", rangeWithin) == 0)
+        if (rng.compareEndPoints("StartToStart", rangeWithin) === 0)
         {
           return {
             node: parNode,
@@ -3940,7 +3945,7 @@ function Ace2Inner(){
             maxIndex: 1
           };
         }
-        else if (rng.compareEndPoints("EndToEnd", rangeWithin) == 0)
+        else if (rng.compareEndPoints("EndToEnd", rangeWithin) === 0)
         {
           if (isBlockElement(parNode) && parNode.nextSibling)
           {
@@ -3958,7 +3963,7 @@ function Ace2Inner(){
             maxIndex: 1
           };
         }
-        else if (parNode.childNodes.length == 0)
+        else if (parNode.childNodes.length === 0)
         {
           return {
             node: parNode,
@@ -4067,9 +4072,10 @@ function Ace2Inner(){
           index: tn.nodeValue.length,
           maxIndex: tn.nodeValue.length
         };
-      }
+      };
+      
       var selection = {};
-      if (origSelectionRange.compareEndPoints("StartToEnd", origSelectionRange) == 0)
+      if (origSelectionRange.compareEndPoints("StartToEnd", origSelectionRange) === 0)
       {
         // collapsed
         var pnt = pointFromCollapsedRange(origSelectionRange);
@@ -4089,10 +4095,10 @@ function Ace2Inner(){
         selection.startPoint = pointFromCollapsedRange(start);
         selection.endPoint = pointFromCollapsedRange(end);
 /*if ((!selection.startPoint.node.isText) && (!selection.endPoint.node.isText)) {
-	  console.log(selection.startPoint.node.uniqueId()+","+
-		      selection.startPoint.index+" / "+
-		      selection.endPoint.node.uniqueId()+","+
-		      selection.endPoint.index);
+  console.log(selection.startPoint.node.uniqueId()+","+
+    selection.startPoint.index+" / "+
+    selection.endPoint.node.uniqueId()+","+
+    selection.endPoint.index);
 	}*/
       }
       return selection;
@@ -4135,7 +4141,7 @@ function Ace2Inner(){
               maxIndex: n.nodeValue.length
             };
           }
-          else if (childCount == 0)
+          else if (childCount === 0)
           {
             return {
               node: n,
@@ -4261,7 +4267,7 @@ function Ace2Inner(){
           setCollapsedBefore(s, n);
           s.move("character", point.index);
         }
-        else if (point.index == 0)
+        else if (point.index === 0)
         {
           setCollapsedBefore(s, n);
         }
@@ -4349,7 +4355,7 @@ function Ace2Inner(){
             while (p.node.childNodes.length > 0)
             {
               //&& (p.node == root || p.node.parentNode == root)) {
-              if (p.index == 0)
+              if (p.index === 0)
               {
                 p.node = p.node.firstChild;
                 p.maxIndex = nodeMaxIndex(p.node);
@@ -4452,7 +4458,7 @@ function Ace2Inner(){
   function fixView()
   {
     // calling this method repeatedly should be fast
-    if (getInnerWidth() == 0 || getInnerHeight() == 0)
+    if (getInnerWidth() === 0 || getInnerHeight() === 0)
     {
       return;
     }
@@ -4871,7 +4877,7 @@ function Ace2Inner(){
     }
     if (!isNodeText(node))
     {
-      if (index == 0) return leftOf(node);
+      if (index === 0) return leftOf(node);
       else return rightOf(node);
     }
     else
@@ -5152,7 +5158,7 @@ function Ace2Inner(){
 
     var firstLine, lastLine;
     firstLine = rep.selStart[0];
-    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] == 0) ? 1 : 0));
+    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
 
     var allLinesAreList = true;
     for (var n = firstLine; n <= lastLine; n++)
@@ -5362,7 +5368,7 @@ function Ace2Inner(){
               // move by "paragraph", a feature that Firefox lacks but IE and Safari both have
               if (up)
               {
-                if (focusCaret[1] == 0 && canChangeLines)
+                if (focusCaret[1] === 0 && canChangeLines)
                 {
                   focusCaret[0]--;
                   focusCaret[1] = 0;
