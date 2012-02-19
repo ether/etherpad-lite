@@ -1165,7 +1165,6 @@ label {
 .right_popup {
  float: left;
  width: 50%;
- box-sizing: border-box;
 }
 
 #settingsmenu, #importexport, #embed {
@@ -1217,13 +1216,6 @@ label {
   #editbar ul li {
     padding: 4px 3px;
   }
-  #editbar ul#menu_right > li {
-    padding: 4px 8px;
-    margin-top: 2px;
-  }
-  #chaticon {
-    opacity: .8;
-  }
   #users {
     right: 4px;
   }
@@ -1242,9 +1234,6 @@ label {
     position: fixed;
     bottom: 0;
     border-top: 1px solid #ccc;
-  }
-  #editbar ul#menu_right li:not(:last-child) {
-    display: none;
   }
   #editbar ul#menu_right li:last-child {
     height: 24px;
@@ -1273,5 +1262,34 @@ label {
   }
   #usericonback {
     margin-top: 4px;
+  }
+  #qrcode {
+    display: none;
+  }
+  #editbar ul#menu_right li:not(:last-child) {
+    display: block;
+  }
+  #editbar ul#menu_right > li {
+    background: none;
+    border: none;
+    margin-top: 4px;
+    padding: 4px 8px;
+  }
+  .selected {
+    background: none !important;
+  }
+  #timesliderlink {
+    display: none !important;
+  }
+  .popup {
+    border-radius: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #settingsmenu, #importexport, #embed {
+    left: 0;
+    top: 0;
+    bottom: 33px;
+    right: 0; 
   }
 }
