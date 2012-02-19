@@ -21,6 +21,7 @@
  */
 
 var Ace2Common = require('/ace2_common');
+
 // Extract useful method defined in the other module.
 var isNodeText = Ace2Common.isNodeText;
 var object = Ace2Common.object;
@@ -35,6 +36,7 @@ var setAssoc = Ace2Common.setAssoc;
 var binarySearchInfinite = Ace2Common.binarySearchInfinite;
 var htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
 var map = Ace2Common.map;
+var noop = Ace2Common.noop;
 
 var makeChangesetTracker = require('/changesettracker').makeChangesetTracker;
 var colorutils = require('/colorutils').colorutils;
@@ -143,14 +145,6 @@ var makeVirtualLineView = require('/virtual_lines').makeVirtualLineView;
         cancel: noop
       };
     };
-  }
-
-  function noop()
-  {}
-
-  function identity(x)
-  {
-    return x;
   }
 
   // "dmesg" is for displaying messages in the in-page output pane
