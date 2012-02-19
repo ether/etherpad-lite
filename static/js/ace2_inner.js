@@ -32,7 +32,6 @@ var isArray = Ace2Common.isArray;
 var browser = Ace2Common.browser;
 var getAssoc = Ace2Common.getAssoc;
 var setAssoc = Ace2Common.setAssoc;
-var binarySearch = Ace2Common.binarySearch;
 var binarySearchInfinite = Ace2Common.binarySearchInfinite;
 var htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
 var map = Ace2Common.map;
