@@ -125,24 +125,6 @@ function Ace2Editor()
     if (!loaded) return null;
     return info.ace_prepareUserChangeset();
   };
-  editor.applyPreparedChangesetToBase = pendingInit(
-
-  function()
-  {
-    info.ace_applyPreparedChangesetToBase();
-  });
-  editor.setUserChangeNotificationCallback = pendingInit(function(callback)
-  {
-    info.ace_setUserChangeNotificationCallback(callback);
-  });
-  editor.setAuthorInfo = pendingInit(function(author, authorInfo)
-  {
-    info.ace_setAuthorInfo(author, authorInfo);
-  });
-  editor.setAuthorSelectionRange = pendingInit(function(author, start, end)
-  {
-    info.ace_setAuthorSelectionRange(author, start, end);
-  });
 
   editor.getUnhandledErrors = function()
   {
@@ -151,19 +133,7 @@ function Ace2Editor()
     return info.ace_getUnhandledErrors();
   };
 
-  editor.callWithAce = pendingInit(function(fn, callStack, normalize)
-  {
-    return info.ace_callWithAce(fn, callStack, normalize);
-  });
 
-  editor.execCommand = pendingInit(function(cmd, arg1)
-  {
-    info.ace_execCommand(cmd, arg1);
-  });
-  editor.replaceRange = pendingInit(function(start, end, text)
-  {
-    info.ace_replaceRange(start, end, text);
-  });
 
   function sortFilesByEmbeded(files) {
     var embededFiles = [];
