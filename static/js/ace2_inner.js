@@ -457,7 +457,6 @@ var makeVirtualLineView = require('/virtual_lines').makeVirtualLineView;
           //  if (cs.repChanged) parenModule.notifyChange();
           //  else parenModule.notifyTick();
           // }
-          recolorModule.recolorLines();
           if (cs.selectionAffected)
           {
             updateBrowserSelectionFromRep();
@@ -514,54 +513,7 @@ var makeVirtualLineView = require('/virtual_lines').makeVirtualLineView;
   {
     return rep.lines.atOffset(charOffset).key;
   }
-
-  var recolorModule = (function()
-  {
-    var dirtyLineKeys = {};
-
-    var module = {};
-    module.setCharNeedsRecoloring = function(offset)
-    {
-      if (offset >= rep.alltext.length)
-      {
-        offset = rep.alltext.length - 1;
-      }
-      dirtyLineKeys[getLineKeyForOffset(offset)] = true;
-    }
-
-    module.setCharRangeNeedsRecoloring = function(offset1, offset2)
-    {
-      if (offset1 >= rep.alltext.length)
-      {
-        offset1 = rep.alltext.length - 1;
-      }
-      if (offset2 >= rep.alltext.length)
-      {
-        offset2 = rep.alltext.length - 1;
-      }
-      var firstEntry = rep.lines.atOffset(offset1);
-      var lastKey = rep.lines.atOffset(offset2).key;
-      dirtyLineKeys[lastKey] = true;
-      var entry = firstEntry;
-      while (entry && entry.key != lastKey)
-      {
-        dirtyLineKeys[entry.key] = true;
-        entry = rep.lines.next(entry);
-      }
-    }
-
-    module.recolorLines = function()
-    {
-      for (var k in dirtyLineKeys)
-      {
-        recolorLineByKey(k);
-      }
-      dirtyLineKeys = {};
-    }
-
-    return module;
-  })();
-
+  
   function dispose()
   {
     disposed = true;
