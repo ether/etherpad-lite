@@ -49,8 +49,7 @@ var newSkipList = require('/skiplist').newSkipList;
 var undoModule = require('/undomodule').undoModule;
 var makeVirtualLineView = require('/virtual_lines').makeVirtualLineView;
 
-function OUTER(gscope)
-{
+
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false 
@@ -5709,9 +5708,3 @@ function OUTER(gscope)
       }
     }
   }
-
-};
-
-OUTER(this);
-
-exports.OUTER = OUTER; // This is probably unimportant.
