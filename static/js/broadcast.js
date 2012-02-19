@@ -68,11 +68,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   }
 
-  function randomString()
-  {
-    return "_" + Math.floor(Math.random() * 1000000);
-  }
-
   // for IE
   if ($.browser.msie)
   {
@@ -84,7 +79,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     {}
   }
 
-  var userId = "hiddenUser" + randomString();
+
   var socketId;
   //var socket;
   var channelState = "DISCONNECTED";
@@ -588,53 +583,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }));
   }
 
-/*function setUpSocket()
-  {
-    // required for Comet
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
-    {
-      document.domain = document.domain; // for comet
-    }
-
-    var success = false;
-    callCatchingErrors("setUpSocket", function ()
-    {
-      appLevelDisconnectReason = null;
-
-      socketId = String(Math.floor(Math.random() * 1e12));
-      socket = new WebSocket(socketId);
-      socket.onmessage = wrapRecordingErrors("socket.onmessage", handleMessageFromServer);
-      socket.onclosed = wrapRecordingErrors("socket.onclosed", handleSocketClosed);
-      socket.onopen = wrapRecordingErrors("socket.onopen", function ()
-      {
-        setChannelState("CONNECTED");
-        var msg = {
-          type: "CLIENT_READY",
-          roomType: 'padview',
-          roomName: 'padview/' + clientVars.viewId,
-          data: {
-            lastRev: clientVars.revNum,
-            userInfo: {
-              userId: userId
-            }
-          }
-        };
-        sendMessage(msg);
-      });
-      // socket.onhiccup = wrapRecordingErrors("socket.onhiccup", handleCometHiccup);
-      // socket.onlogmessage = function(x) {debugLog(x); };
-      socket.connect();
-      success = true;
-    });
-    if (success)
-    {
-      //initialStartConnectTime = +new Date();
-    }
-    else
-    {
-      abandonConnection("initsocketfail");
-    }
-  }*/
 
   function setChannelState(newChannelState, moreInfo)
   {
