@@ -146,10 +146,12 @@ async.waterfall([
     var assetCache = new CachingMiddleware;
     app.all('/(minified|static)/*', assetCache.handle);
 
-    //serve static files
+    // Minify will serve static files compressed (minify enabled). It also has
+    // file-specific hacks for ace/require-kernel/etc.
     app.all('/static/:filename(*)', minify.minify);
 
-    //serve minified files
+    // Setup middleware that will package JavaScript files served by minify for
+    // CommonJS loader on the client-side.
     var jsServer = new (Yajsml.Server)({
       rootPath: 'minified/'
     , rootURI: 'http://' + settings.ip + ":" + settings.port + '/static/js/'

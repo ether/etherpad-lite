@@ -34,6 +34,7 @@ var ROOT_DIR = path.normalize(__dirname + "/../../static/");
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
+// Rewrite tar to include modules with no extensions and proper rooted paths.
 exports.tar = {};
 for (var key in tar) {
   exports.tar['/' + key] =
@@ -134,12 +135,14 @@ function getAceFile(callback) {
     if (!settings.minify) {
       founds = [];
     }
+    // Always include the require kernel.
     founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
 
     data += ';\n';
     data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
 
-    //go trough all includes
+    // Request the contents of the included file on the server-side and write
+    // them into the file.
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
       var request = require('request');
@@ -161,8 +164,11 @@ function getAceFile(callback) {
   });
 }
 
+// Check for the existance of the file and get the last modification date.
 function statFile(filename, callback) {
   if (filename == 'js/ace.js') {
+    // Sometimes static assets are inlined into this file, so we have to stat
+    // everything.
     lastModifiedDateOfEverything(function (error, date) {
       callback(error, date, !error);
     });
@@ -171,7 +177,8 @@ function statFile(filename, callback) {
   } else {
     fs.stat(ROOT_DIR + filename, function (error, stats) {
       if (error) {
-        if (error.code == "ENOENT") { // Stat the directory instead.
+        if (error.code == "ENOENT") {
+          // Stat the directory instead.
           fs.stat(path.dirname(ROOT_DIR + filename), function (error, stats) {
             if (error) {
               if (error.code == "ENOENT") {
