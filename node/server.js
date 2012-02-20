@@ -142,10 +142,13 @@ async.waterfall([
       gracefulShutdown();
     });
     
-    //serve static files
+    // Cache both minified and static.
     var assetCache = new CachingMiddleware;
-    app.all('/static/:filename(*)', assetCache.handle, minify.minify);
-    
+    app.all('/(minified|static)/*', assetCache.handle);
+
+    //serve static files
+    app.all('/static/:filename(*)', minify.minify);
+
     //serve minified files
     var jsServer = new (Yajsml.Server)({
       rootPath: 'minified/'
@@ -156,8 +159,6 @@ async.waterfall([
       Yajsml.associators.associationsForSimpleMapping(minify.tar);
     var associator = new StaticAssociator(associations);
     jsServer.setAssociator(associator);
-    var assetCache_other = new CachingMiddleware;
-    app.all('/minified/:filename', assetCache_other.handle);
     app.use(jsServer);
     
     //checks for padAccess
