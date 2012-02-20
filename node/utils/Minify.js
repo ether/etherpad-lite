@@ -55,13 +55,15 @@ exports.minifyJS = function(req, res, next)
   res.header("Content-Type","text/javascript");
 
   statFile(filename, function (error, date, exists) {
-    date = new Date(date);
-    res.setHeader('last-modified', date.toUTCString());
-    res.setHeader('date', (new Date()).toUTCString());
-    if (server.maxAge) {
-      var expiresDate = new Date((new Date()).getTime() + server.maxAge*1000);
-      res.setHeader('expires', expiresDate.toUTCString());
-      res.setHeader('cache-control', 'max-age=' + server.maxAge);
+    if (date) {
+      date = new Date(date);
+      res.setHeader('last-modified', date.toUTCString());
+      res.setHeader('date', (new Date()).toUTCString());
+      if (server.maxAge) {
+        var expiresDate = new Date((new Date()).getTime()+server.maxAge*1000);
+        res.setHeader('expires', expiresDate.toUTCString());
+        res.setHeader('cache-control', 'max-age=' + server.maxAge);
+      }
     }
 
     if (error) {
