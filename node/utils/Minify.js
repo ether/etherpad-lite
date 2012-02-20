@@ -54,7 +54,7 @@ exports.minifyJS = function(req, res, next)
   var filename = req.params['filename'];
   res.header("Content-Type","text/javascript");
 
-  lastModifiedDateOf(filename, function (error, date) {
+  statFile(filename, function (error, date, exists) {
     date = new Date(date);
     res.setHeader('last-modified', date.toUTCString());
     res.setHeader('date', (new Date()).toUTCString());
@@ -64,33 +64,31 @@ exports.minifyJS = function(req, res, next)
       res.setHeader('cache-control', 'max-age=' + server.maxAge);
     }
 
-    fileExists(filename, function (error, exists) {
-      if (error) {
-        res.writeHead(500, {});
+    if (error) {
+      res.writeHead(500, {});
+      res.end();
+    } else if (!exists) {
+      res.writeHead(404, {});
+      res.end();
+    } else if (new Date(req.headers['if-modified-since']) >= date) {
+      res.writeHead(304, {});
+      res.end();
+    } else {
+      if (req.method == 'HEAD') {
+        res.writeHead(200, {});
         res.end();
-      } else if (!exists) {
-        res.writeHead(404, {});
-        res.end();
-      } else if (new Date(req.headers['if-modified-since']) >= date) {
-        res.writeHead(304, {});
-        res.end();
-      } else {
-        if (req.method == 'HEAD') {
+      } else if (req.method == 'GET') {
+        getFileCompressed(filename, function (error, content) {
+          if(ERR(error)) return;
           res.writeHead(200, {});
+          res.write(content);
           res.end();
-        } else if (req.method == 'GET') {
-          getFileCompressed(filename, function (error, content) {
-            if(ERR(error)) return;
-            res.writeHead(200, {});
-            res.write(content);
-            res.end();
-          });
-        } else {
-          res.writeHead(405, {'allow': 'HEAD, GET'});
-          res.end();
-        }
+        });
+      } else {
+        res.writeHead(405, {'allow': 'HEAD, GET'});
+        res.end();
       }
-    });
+    }
   });
 }
 
@@ -161,9 +159,11 @@ function getAceFile(callback) {
   });
 }
 
-function lastModifiedDateOf(filename, callback) {
+function statFile(filename, callback) {
   if (filename == 'ace.js') {
-    lastModifiedDateOfEverything(callback);
+    lastModifiedDateOfEverything(function (error, date) {
+      callback(error, date, !error);
+    });
   } else {
     fs.stat(JS_DIR + filename, function (error, stats) {
       if (error) {
@@ -171,15 +171,17 @@ function lastModifiedDateOf(filename, callback) {
           fs.stat(JS_DIR, function (error, stats) {
             if (error) {
               callback(error);
+            } else if (filename == 'require-kernel.js') {
+              callback(null, stats.mtime.getTime(), true);
             } else {
-              callback(null, stats.mtime.getTime());
+              callback(null, stats.mtime.getTime(), false);
             }
           });
         } else {
           callback(error);
         }
       } else {
-        callback(null, stats.mtime.getTime());
+        callback(null, stats.mtime.getTime(), true);
       }
     });
   }
@@ -252,24 +254,6 @@ function getFile(filename, callback) {
     callback(undefined, requireDefinition());
   } else {
     fs.readFile(JS_DIR + filename, "utf8", callback);
-  }
-}
-
-function fileExists(filename, callback) {
-  if (filename == 'require-kernel.js') {
-    callback(undefined, true);
-  } else {
-    fs.stat(JS_DIR + filename, function (error, stats) {
-      if (error) {
-        if (error.code == "ENOENT") {
-          callback(undefined, false);
-        } else {
-          callback(error, undefined);
-        }
-      } else {
-        callback(undefined, stats.isFile());
-      }
-    });
   }
 }
 
