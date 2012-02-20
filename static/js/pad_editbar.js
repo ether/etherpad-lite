@@ -20,74 +20,56 @@
  * limitations under the License.
  */
 
-var padutils = require('/pad_utils').padutils;
-var padeditor = require('/pad_editor').padeditor;
-var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
+var padutils      = require('/pad_utils').padutils,
+    padeditor     = require('/pad_editor').padeditor,
+    padsavedrevs  = require('/pad_savedrevs').padsavedrevs;
 
 function indexOf(array, value) {
-  for (var i = 0, ii = array.length; i < ii; i++) {
-    if (array[i] == value) {
+  for (var i=0, ii=array.length; i < ii; i++) {
+    if (array[i] == value)
       return i;
-    }
   }
   return -1;
 }
 
-var padeditbar = (function()
-{
-
-  var syncAnimation = (function()
-  {
-    var SYNCING = -100;
-    var DONE = 100;
-    var state = DONE;
-    var fps = 25;
-    var step = 1 / fps;
-    var T_START = -0.5;
-    var T_FADE = 1.0;
-    var T_GONE = 1.5;
-    var animator = padutils.makeAnimationScheduler(function()
-    {
+var padeditbar = (function() {
+  var syncAnimation = (function() {
+    var SYNCING = -100,
+        DONE    = 100,
+        state   = DONE,
+        fps     = 25,
+        step    = 1 / fps,
+        T_START = -0.5,
+        T_FADE  = 1.0,
+        T_GONE  = 1.5;
+    var animator = padutils.makeAnimationScheduler(function() {
       if (state == SYNCING || state == DONE)
-      {
         return false;
-      }
-      else if (state >= T_GONE)
-      {
+      else if (state >= T_GONE) {
         state = DONE;
-        $("#syncstatussyncing").css('display', 'none');
-        $("#syncstatusdone").css('display', 'none');
+        $('#syncstatussyncing, #syncstatusdone').hide();
         return false;
-      }
-      else if (state < 0)
-      {
+      } else if (state < 0) {
         state += step;
-        if (state >= 0)
-        {
-          $("#syncstatussyncing").css('display', 'none');
-          $("#syncstatusdone").css('display', 'block').css('opacity', 1);
+        if (state >= 0) {
+          $('#syncstatussyncing').hide();
+          $('#syncstatusdone').show().css({opacity: 1});
         }
         return true;
-      }
-      else
-      {
+      } else {
         state += step;
         if (state >= T_FADE)
-        {
-          $("#syncstatusdone").css('opacity', (T_GONE - state) / (T_GONE - T_FADE));
-        }
+          $('#syncstatusdone').css('opacity', (T_GONE - state) / (T_GONE - T_FADE));
         return true;
       }
     }, step * 1000);
     return {
-      syncing: function()
-      {
+      syncing: function() {
         state = SYNCING;
-        $("#syncstatussyncing").css('display', 'block');
-        $("#syncstatusdone").css('display', 'none');
+        $('#syncstatussyncing').show();
+        $('#syncstatusdone').hide();
       },
-      done: function()
-      {
+      done: function() {
         state = T_START;
         animator.scheduleAnimation();
       }
@@ -95,158 +77,115 @@ var padeditbar = (function()
   }());
 
   var self = {
-    init: function()
-    {
-      $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
-      $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
+    init: function() {
+      $('#editbar A').attr('unselectable', 'on'); // for IE
+      $('#editbar').removeClass('disabledtoolbar').addClass('enabledtoolbar');
     },
-    isEnabled: function()
-    {
+    isEnabled: function() {
 //      return !$("#editbar").hasClass('disabledtoolbar');
       return true;
     },
-    disable: function()
-    {
-      $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
+    disable: function() {
+      $('#editbar').addClass('disabledtoolbar').removeClass('enabledtoolbar');
     },
-    toolbarClick: function(cmd)
-    {  
-      if (self.isEnabled())
-      {
-        if(cmd == "showusers")
-        {
-          self.toogleDropDown("users");
-        }
-        else if (cmd == 'settings')
-        {
-              self.toogleDropDown("settingsmenu");
-        }
-        else if (cmd == 'embed')
-        {
-          self.setEmbedLinks();
-          $('#linkinput').focus().select();
-          self.toogleDropDown("embed");
-        }
-        else if (cmd == 'import_export')
-        {
-	      self.toogleDropDown("importexport");
-        }
-        else if (cmd == 'save')
-        {
-          padsavedrevs.saveNow();
-        }
-        else
-        {
-          padeditor.ace.callWithAce(function(ace)
-          {
-            if (cmd == 'bold' || cmd == 'italic' || cmd == 'underline' || cmd == 'strikethrough') ace.ace_toggleAttributeOnSelection(cmd);
-            else if (cmd == 'undo' || cmd == 'redo') ace.ace_doUndoRedo(cmd);
-            else if (cmd == 'insertunorderedlist') ace.ace_doInsertUnorderedList();
-            else if (cmd == 'insertorderedlist') ace.ace_doInsertOrderedList();
-            else if (cmd == 'indent')
-            {
-              if (!ace.ace_doIndentOutdent(false))
-              {
+    toolbarClick: function(cmd) {
+      if (self.isEnabled()) {
+        switch(cmd) {
+          case 'showusers':
+            self.toggleDropDown('usersmenu');
+            break;
+          case 'settings':
+            self.toggleDropDown('settingsmenu');
+            break;
+          case 'embed':
+            self.setEmbedLinks();
+            self.toggleDropDown('embedmenu');
+            break;
+          case 'import_export':
+            self.toggleDropDown('importexportmenu');
+            break;
+          case 'save':
+            padsavedrevs.saveNow();
+            break;
+          default:
+            padeditor.ace.callWithAce(function(ace) {
+              if (cmd == 'bold' || cmd == 'italic' || cmd == 'underline' || cmd == 'strikethrough')
+                ace.ace_toggleAttributeOnSelection(cmd);
+              else if (cmd == 'undo' || cmd == 'redo')
+                ace.ace_doUndoRedo(cmd);
+              else if (cmd == 'insertunorderedlist')
                 ace.ace_doInsertUnorderedList();
-              }
-            }
-            else if (cmd == 'outdent')
-            {
-              ace.ace_doIndentOutdent(true);
-            }
-            else if (cmd == 'clearauthorship')
-            {
-              if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret())
-              {
-                if (window.confirm("Clear authorship colors on entire document?"))
-                {
-                  ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
-                    ['author', '']
-                  ]);
+              else if (cmd == 'insertorderedlist')
+                ace.ace_doInsertOrderedList();
+              else if (cmd == 'indent') {
+                if (!ace.ace_doIndentOutdent(false))
+                  ace.ace_doInsertUnorderedList();
+              } else if (cmd == 'outdent')
+                ace.ace_doIndentOutdent(true);
+              else if (cmd == 'clearauthorship') {
+                if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret()) {
+                  if (window.confirm("Clear authorship colors on entire document?")) {
+                    ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
+                      ['author', '']
+                    ]);
+                  }
+                } else {
+                  ace.ace_setAttributeOnSelection('author', '');
                 }
               }
-              else
-              {
-                ace.ace_setAttributeOnSelection('author', '');
-              }
-            }
-          }, cmd, true);
+            }, cmd, true);
         }
       }
-      if(padeditor.ace) padeditor.ace.focus();
+      if (padeditor.ace)
+        padeditor.ace.focus();
     },
-    toogleDropDown: function(moduleName)
-    {
-      var modules = ["settingsmenu", "importexport", "embed", "users"];
-      
-      //hide all modules
-      if(moduleName == "none")
-      {
-        $("#editbar ul#menu_right > li").removeClass("selected");
-        for(var i=0;i<modules.length;i++)
-        {
-          //skip the userlist
-          if(modules[i] == "users")
+    toggleDropDown: function(moduleName) {
+      var modules = ['settingsmenu', 'importexportmenu', 'embedmenu', 'usersmenu'];
+      // hide all modules
+      if (moduleName == 'none') {
+        $('#editbar UL.right LI').removeClass('selected');
+        for (var i=0, l=modules.length; i < l; i++) {
+          // skip the userlist
+          if (modules[i] == 'users')
             continue;
-          
-          var module = $("#" + modules[i]);
-        
-          if(module.css('display') != "none")
-          {
-            module.slideUp("fast");
-          }
+          var module = $('#' + modules[i]);
+          if (module.is(':visible'))
+            module.slideUp(250);
         }
-      }
-      else 
-      {
+      } else {
         var nth_child = indexOf(modules, moduleName) + 1;
-      	if (nth_child > 0 && nth_child <= 3) {
-          $("#editbar ul#menu_right li:not(:nth-child(" + nth_child + "))").removeClass("selected");
-          $("#editbar ul#menu_right li:nth-child(" + nth_child + ")").toggleClass("selected");
-      	}
-        //hide all modules that are not selected and show the selected one
-        for(var i=0;i<modules.length;i++)
-        {
-          var module = $("#" + modules[i]);
-        
-          if(module.css('display') != "none")
-          {
-            module.slideUp("fast");
-          }
-          else if(modules[i]==moduleName)
-          {
-            module.slideDown("fast");
-          }
+        if (nth_child > 0 && nth_child <= 3) {
+          $('#editbar UL.right LI:not(:nth-child(' + nth_child + '))').removeClass('selected');
+          $('#editbar UL.right LI:nth-child(' + nth_child + ')').toggleClass('selected');
+        }
+        // hide all modules that are not selected and show the selected one
+        for (i=0, l=modules.length; i < l; i++) {
+          module = $('#' + modules[i]);
+          if (module.is(':visible'))
+            module.slideUp(250);
+          else if (modules[i] == moduleName)
+            module.slideDown(250);
         }
       }
     },
-    setSyncStatus: function(status)
-    {
-      if (status == "syncing")
-      {
+    setSyncStatus: function(status) {
+      if (status == 'syncing')
         syncAnimation.syncing();
-      }
-      else if (status == "done")
-      {
+      else if (status == 'done')
         syncAnimation.done();
-      }
     },
-    setEmbedLinks: function()
-    {
-      if ($('#readonlyinput').is(':checked'))
-      {
-        var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
-        var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
+    setEmbedLinks: function() {
+      if ($('#readonlyinput').is(':checked')) {
+        var basePath      = document.location.href.substring(0, document.location.href.indexOf('/p/')),
+            readonlyLink  = basePath + '/ro/' + clientVars.readOnlyId;
         $('#embedinput').val("<iframe src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(readonlyLink);
-        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + readonlyLink);
-      }
-      else
-      {
-        var padurl = window.location.href.split("?")[0];
+        $('#embedreadonlyqr').attr('src', 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=' + readonlyLink);
+      } else {
+        var padurl = window.location.href.split('?')[0];
         $('#embedinput').val("<iframe src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(padurl);
-        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + padurl);
+        $('#embedreadonlyqr').attr('src', "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + padurl);
       }
     }
   };

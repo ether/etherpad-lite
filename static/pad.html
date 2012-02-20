@@ -1,310 +1,232 @@
 <!doctype html>
 <html>
+  <head>
+    <title>Etherpad Lite</title>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="../static/css/pad.css" rel="stylesheet">
+    <link href="../static/custom/pad.css" rel="stylesheet">
+    <style title="dynamicsyntax"></style>
+  </head>
+  <body>
+    <div id="editbar">
+      <ul class="left">
+        <li id="bold" class="group-start" onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false" title="Bold (ctrl-B)"></li>
+        <li id="italic" class="group-mid" onClick="window.pad&amp;&amp;pad.editbarClick('italic'); return false;" title="Italics (ctrl-I)"></li>
+        <li id="underline" class="group-mid" onClick="window.pad&amp;&amp;pad.editbarClick('underline');return false;" title="Underline (ctrl-U)"></li>
+        <li id="strikethrough" class="group-end" onClick="window.pad&amp;&amp;pad.editbarClick('strikethrough');return false;" title="Strikethrough"></li>
+        <li id="orderedlist" class="group-start" onClick="window.pad&amp;&amp;pad.editbarClick('insertorderedlist');return false;" title="Toggle Ordered List"></li>
+        <li id="unorderedlist" class="group-mid" onClick="window.pad&amp;&amp;pad.editbarClick('insertunorderedlist');return false;" title="Toggle Bullet List"></li>
+        <li id="indent" class="group-mid" onClick="window.pad&amp;&amp;pad.editbarClick('indent');return false;" title="Indent"></li>
+        <li id="outdent" class="group-end" onClick="window.pad&amp;&amp;pad.editbarClick('outdent');return false;" title="Unindent"></li>
+        <li id="undo" class="group-start" onClick="window.pad&amp;&amp;pad.editbarClick('undo');return false;" title="Undo (ctrl-Z)"></li>
+        <li id="redo" class="group-end" onClick="window.pad&amp;&amp;pad.editbarClick('redo');return false;" title="Redo (ctrl-Y)"></li>
+        <li id="clearauthorship" onClick="window.pad&amp;&amp;pad.editbarClick('clearauthorship');return false;" title="Clear Authorship Colors"></li>
+      </ul>
+      <ul class="right">
+        <li id="settings" onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;" title="Settings of this pad"></li>
+        <li id="import_export" onClick="window.pad&amp;&amp;pad.editbarClick('import_export');return false;" title="Import/Export from/to different document formats"></li>
+        <li id="embed" onClick="window.pad&amp;&amp;pad.editbarClick('embed');return false;" title="Share and Embed this pad"></li>
+        <li id="history" onClick="document.location = document.location.pathname + '/timeslider'" title="Show previous versions"></li>
+        <li id="showusers" onClick="window.pad&amp;&amp;pad.editbarClick('showusers');return false;" title="Show connected users">1</li>
+      </ul>
+    </div>
 
-        <title>Etherpad Lite</title>
-
-        <meta charset="utf-8">
-        <meta name="robots" content="noindex, nofollow">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-
-        <link href="../static/css/pad.css" rel="stylesheet">
-        <link href="../static/custom/pad.css" rel="stylesheet">
-        <style title="dynamicsyntax"></style>
-
-        <div id="editbar">
-            <ul id="menu_left">
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false" >
-                    <a title="Bold (ctrl-B)">
-                        <div class="buttonicon buttonicon-bold"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('italic'); return false;" >
-                    <a title="Italics (ctrl-I)">
-                        <div class="buttonicon buttonicon-italic"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('underline');return false;" >
-                    <a title="Underline (ctrl-U)">
-                        <div class="buttonicon buttonicon-underline"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('strikethrough');return false;" >
-                    <a title="Strikethrough">
-                        <div class="buttonicon buttonicon-strikethrough"></div>
-                    </a>
-                </li>
-                <li class="separator"></li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('insertorderedlist');return false;" >
-                    <a title="Toggle Ordered List">
-                        <div class="buttonicon buttonicon-insertorderedlist"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('insertunorderedlist');return false;" >
-                    <a title="Toggle Bullet List">
-                        <div class="buttonicon buttonicon-insertunorderedlist"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('indent');return false;" >
-                    <a title="Indent">
-                        <div class="buttonicon buttonicon-indent"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('outdent');return false;" >
-                    <a title="Unindent">
-                        <div class="buttonicon buttonicon-outdent"></div>
-                    </a>
-                </li>
-                <li class="separator"></li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('undo');return false;" >
-                    <a title="Undo (ctrl-Z)">
-                        <div class="buttonicon buttonicon-undo"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('redo');return false;" >
-                    <a title="Redo (ctrl-Y)">
-                        <div class="buttonicon buttonicon-redo"></div>
-                    </a>
-                </li>
-                <li class="separator"></li>
-                <li id="clearAuthorship" onClick="window.pad&amp;&amp;pad.editbarClick('clearauthorship');return false;" >
-                    <a title="Clear Authorship Colors">
-                        <div class="buttonicon buttonicon-clearauthorship"></div>
-                    </a>
-                </li>
-            </ul>    
-            <ul id="menu_right">
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;">
-                    <a id="settingslink" title="Settings of this pad">
-                        <div class="buttonicon buttonicon-settings"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('import_export');return false;">
-                    <a id="exportlink" title="Import/Export from/to different document formats">
-                        <div class="buttonicon buttonicon-import_export"></div>
-                    </a>
-                </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('embed');return false;" >
-                    <a id="embedlink" title="Share and Embed this pad">
-                        <div class="buttonicon buttonicon-embed"></div>
-                    </a>
-                </li>
-                <li class="separator"></li>
-                <li id="timesliderlink" onClick="document.location = document.location.pathname+ '/timeslider'">
-                    <a title="Show the history of this pad">
-                        <div class="buttonicon buttonicon-history"></div>
-                    </a>
-                </li>
-                <li id="usericon" onClick="window.pad&amp;&amp;pad.editbarClick('showusers');return false;" >
-                    <a title="Show connected users">
-                        <div class="buttonicon buttonicon-showusers" id="usericonback"></div>
-                        <span id="online_count">1</span>
-                    </a>
-                </li>
-            </ul>
+    <div id="usersmenu" class="popup">
+      <div id="connectionstatus"></div>
+      <div id="myuser">
+        <div id="mycolorpicker">
+          <div id="colorpicker"></div>
+          <button id="mycolorpickersave" class="button">Save</button>
+          <button id="mycolorpickercancel">Cancel</button>
+          <span id="mycolorpickerpreview" class="myswatchboxhoverable"></span>
         </div>
+        <div id="myswatchbox"><div id="myswatch"></div></div>
+        <div id="myusernameform"><input type="text" id="myusernameedit" disabled="disabled"></div>
+        <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled"></div>
+      </div>
+      <div id="otherusers">
+        <div id="guestprompts"></div>
+        <table id="otheruserstable" cellspacing="0" cellpadding="0" border="0">
+          <tr><td></td></tr>
+        </table>
+        <div id="nootherusers"></div>
+      </div>
+      <div id="userlistbuttonarea"></div>
+    </div>
 
-        <div id="users">
-            <div id="connectionstatus"></div>
-            <div id="myuser">
-                <div id="mycolorpicker">
-                    <div id="colorpicker"></div>
-                    <button id="mycolorpickersave">Save</button>
-                    <button id="mycolorpickercancel">Cancel</button>
-                    <span id="mycolorpickerpreview" class="myswatchboxhoverable"></span>
-                </div>   
-                <div id="myswatchbox"><div id="myswatch"></div></div>
-                <div id="myusernameform"><input type="text" id="myusernameedit" disabled="disabled"></div>
-                <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled"></div>   
+    <div id="settingsmenu" class="popup">
+      <h2>Pad settings</h2>
+      <div class="left_popup">
+        <h3>My view</h3>
+        <p>
+          <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
+          <label for="options-stickychat">Chat always on screen</label>
+        </p>
+        <p>
+          <input type="checkbox" id="options-colorscheck" checked>
+          <label for="options-colorscheck">Authorship colors</label>
+        </p>
+        <p>
+          <input type="checkbox" id="options-linenoscheck" checked>
+          <label for="options-linenoscheck">Line numbers</label>
+        </p>
+        <p>
+          Font type:
+          <select id="viewfontmenu">
+            <option value="normal">Normal</option>
+            <option value="monospace">Monospaced</option>
+          </select>
+        </p>
+      </div>
+      <div class="right_popup">
+        <h3>Global view</h3>
+        <p>Currently nothing.</p>
+        <p class="note">These options affect everyone viewing this pad.</p>
+      </div>
+    </div>
+
+    <div id="importexportmenu" class="popup">
+      <div class="left_popup">
+        <h3>Import text from file</h3>
+        <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
+          <div class="importformdiv" id="importformfilediv">
+            <input type="file" name="file" size="15" id="importfileinput">
+            <div class="importmessage" id="importmessagefail"></div>
+          </div>
+          <div class="importmessage" id="importmessagesuccess">Successful!</div>
+          <div class="importformdiv" id="importformsubmitdiv">
+            <input type="hidden" name="padId" value="blpmaXT35R">
+            <input id="importsubmitinput" class="button" type="submit" name="submit" value="Import Now" disabled="disabled">
+          </div>
+        </form>
+      </div>
+      <div class="right_popup">
+        <h3>Export current pad as</h3>
+        <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
+        <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
+        <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
+        <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
+        <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
+        <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
+        <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
+      </div>
+    </div>
+
+    <div id="embedmenu" class="popup">
+      <div id="embedreadonly" class="right">
+        <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();">
+        <label for="readonlyinput">Read only</label>
+      </div>
+      <h2>Share this pad</h2>
+      <div id="linkcode">
+        <h3>Link</h3>
+        <input id="linkinput" type="text" value="">
+      </div>
+      <br>
+      <div id="embedcode">
+        <h3>Embed URL</h3>
+        <input id="embedinput" type="text" value="">
+      </div>
+      <br>
+      <div id="qrcode">
+        <h3>QR code</h3>
+        <div id="qr_center"><img id="embedreadonlyqr"></div>
+      </div>
+    </div>
+
+    <div id="editorcontainerbox">
+      <div id="editorcontainer"></div>
+      <div id="editorloadingbox">Loading</div>
+    </div>
+
+    <div id="chatthrob"></div>
+    <div id="chaticon">
+      <a onClick="chat.show();return false;" title="Open the chat for this pad">
+        <span id="chatlabel">Chat</span>
+      </a>
+      <span id="chatcounter">0</span>
+    </div>
+    <div id="chatbox">
+      <div id="titlebar"><a id="titlecross" onClick="chat.hide();return false;"></a><span id ="titlelabel">Chat</span></div>
+      <div id="chattext" class="authorColors"></div>
+      <div id="chatinputbox">
+        <form>
+          <input id="chatinput" type="text" maxlength="140">
+        </form>
+      </div>
+    </div>
+
+    <div id="focusprotector">&nbsp;</div>
+
+    <div id="modaloverlay">
+      <div id="modaloverlay-inner"></div>
+    </div>
+
+    <div id="mainmodals">
+      <div id="connectionbox" class="modaldialog">
+        <div id="connectionboxinner" class="modaldialog-inner">
+          <div class="connecting">Connecting...</div>
+          <div class="reconnecting">Reestablishing connection...</div>
+          <div class="disconnected">
+            <h2 class="h2_disconnect">Disconnected.</h2>
+            <h2 class="h2_userdup">Opened in another window.</h2>
+            <h2 class="h2_unauth">No Authorization.</h2>
+            <div id="disconnected_looping">
+              <p><b>We're having trouble talking to the EtherPad lite synchronization server.</b> You may be connecting through an incompatible firewall or proxy server.</p>
             </div>
-            <div id="otherusers">
-                <div id="guestprompts"></div>
-                <table id="otheruserstable" cellspacing="0" cellpadding="0" border="0">
-                    <tr><td></td></tr>
-                </table>
-                <div id="nootherusers"></div>       
+            <div id="disconnected_initsocketfail">
+              <p><b>We were unable to connect to the EtherPad lite synchronization server.</b> This may be due to an incompatibility with your web browser or internet connection.</p>
             </div>
-            <div id="userlistbuttonarea"></div>
+            <div id="disconnected_userdup">
+              <p><b>You seem to have opened this pad in another browser window.</b> If you'd like to use this window instead, you can reconnect.</p>
+            </div>
+            <div id="disconnected_unknown">
+              <p><b>Lost connection with the EtherPad lite synchronization server.</b> This may be due to a loss of network connectivity.</p>
+            </div>
+            <div id="disconnected_slowcommit">
+              <p><b>Server not responding.</b> This may be due to network connectivity issues or high load on the server.</p>
+            </div>
+            <div id="disconnected_unauth">
+              <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
+            </div>
+            <div id="disconnected_deleted">
+              <p>This pad was deleted.</p>
+            </div>
+            <div id="reconnect_advise">
+              <p>If this continues to happen, please let us know</p>
+            </div>
+            <div id="reconnect_form">
+              <button id="forcereconnect">Reconnect Now</button>
+            </div>
+          </div>
         </div>
+        <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display:none;">
+          <input type="hidden" class="padId" name="padId">
+          <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
+          <input type="hidden" class="missedChanges" name="missedChanges">
+        </form>
+      </div>
+    </div>
 
-        <div id="editorcontainerbox">
-            <div id="editorcontainer"></div>
-            <div id="editorloadingbox">Loading...</div>
-        </div>
+    <script type="text/javascript" src="../static/js/require-kernel.js"></script>
+    <script type="text/javascript" src="../socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="../minified/pad.js"></script>
+    <script type="text/javascript" src="../static/custom/pad.js"></script>
+    <script type="text/javascript">
+        var clientVars = {};
+        (function () {
+          require.setRootURI("../minified/");
+          require.setGlobalKeyPath("require");
+          require('/pad').init();
 
-        <div id="settingsmenu" class="popup">
-            <h1>Pad settings</h1>
-            <div class="left_popup">
-                <h2>My view</h2>
-                <p>
-                    <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
-                    <label for="options-stickychat">Chat always on screen</label>
-                </p>
-                <p>
-                    <input type="checkbox" id="options-colorscheck" checked>
-                    <label for="options-colorscheck">Authorship colors</label>
-                </p>
-                <p>
-                    <input type="checkbox" id="options-linenoscheck" checked>
-                    <label for="options-linenoscheck">Line numbers</label>
-                </p>
-                <p>
-                    Font type:
-                    <select id="viewfontmenu">
-                        <option value="normal">Normal</option>
-                        <option value="monospace">Monospaced</option>
-                    </select>
-                </p>
-            </div>
-            <div class="right_popup">
-                <h2>Global view</h2>
-                <p>Currently nothing.</p>
-                <p class="note">These options affect everyone viewing this pad.</p>
-            </div>
-        </div>
-
-        <div id="importexport" class="popup">
-            <div class="left_popup">
-                <h2>Import from text file, HTML, PDF, Word, ODT or RTF</h2><br>
-                <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
-                    <div class="importformdiv" id="importformfilediv"> 
-                        <input type="file" name="file" size="15" id="importfileinput"> 
-                        <div class="importmessage" id="importmessagefail"></div> 
-                    </div> 
-                    <div class="importmessage" id="importmessagesuccess">Successful!</div> 
-                    <div class="importformdiv" id="importformsubmitdiv"> 
-                        <input type="hidden" name="padId" value="blpmaXT35R"> 
-                        <span class="nowrap"> 
-                            <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput"> 
-                            <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top"> 
-                            <img alt="" id="importarrow" src="../static/img/leftarrow.png" align="top"> 
-                        </span> 
-                    </div> 
-                </form>
-            </div>
-            <div class="right_popup">
-                <h2>Export current pad as</h2>
-                <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
-                <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
-                <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
-                <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
-                <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
-                <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
-                <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
-            </div>
-        </div>
-
-        <div id="embed" class="popup">
-            <div id="embedreadonly" class="right">
-                <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();">
-                <label for="readonlyinput">Read only</label>
-            </div>
-            <h1>Share this pad</h1>
-            <div id="linkcode">
-                <h2>Link</h2>
-                <input id="linkinput" type="text" value="">
-            </div>
-            <br>
-            <div id="embedcode">
-                <h2>Embed URL</h2>
-                <input id="embedinput" type="text" value="">
-            </div>
-            <br>
-            <div id="qrcode">
-                <h2>QR code</h2>
-                <div id="qr_center"><img id="embedreadonlyqr"></div>
-            </div>
-        </div>
-
-        <div id="chatthrob"></div>
-
-        <div id="chaticon">
-            <a onClick="chat.show();return false;" title="Open the chat for this pad">
-                <span id="chatlabel">Chat</span>
-                <div class="buttonicon buttonicon-chat"></div>
-            </a>
-            <span id="chatcounter">0</span>
-        </div>
-
-        <div id="chatbox">
-            <div id="titlebar"><span id ="titlelabel">Chat</span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
-            <div id="chattext" class="authorColors"></div>
-            <div id="chatinputbox">
-                <form>
-                    <input id="chatinput" type="text" maxlength="140">
-                </form>
-            </div>
-        </div>
-
-        <div id="focusprotector">&nbsp;</div>
-
-        <div id="modaloverlay">
-            <div id="modaloverlay-inner"></div>
-        </div>
-        
-        <div id="mainmodals">
-            <div id="connectionbox" class="modaldialog">
-                <div id="connectionboxinner" class="modaldialog-inner">
-                    <div class="connecting">Connecting...</div>
-                    <div class="reconnecting">Reestablishing connection...</div>
-                    <div class="disconnected">
-                        <h2 class="h2_disconnect">Disconnected.</h2>
-                        <h2 class="h2_userdup">Opened in another window.</h2>
-                        <h2 class="h2_unauth">No Authorization.</h2>
-                        <div id="disconnected_looping">
-                            <p><b>We're having trouble talking to the EtherPad lite synchronization server.</b> You may be connecting through an incompatible firewall or proxy server.</p>
-                        </div>
-                        <div id="disconnected_initsocketfail">
-                            <p><b>We were unable to connect to the EtherPad lite synchronization server.</b> This may be due to an incompatibility with your web browser or internet connection.</p>
-                        </div>
-                        <div id="disconnected_userdup">
-                            <p><b>You seem to have opened this pad in another browser window.</b> If you'd like to use this window instead, you can reconnect.</p>
-                        </div>
-                        <div id="disconnected_unknown">
-                            <p><b>Lost connection with the EtherPad lite synchronization server.</b> This may be due to a loss of network connectivity.</p>
-                        </div>
-                        <div id="disconnected_slowcommit">
-                            <p><b>Server not responding.</b> This may be due to network connectivity issues or high load on the server.</p>
-                        </div>
-                        <div id="disconnected_unauth">
-                            <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
-                        </div>
-                        <div id="disconnected_deleted">
-                            <p>This pad was deleted.</p>
-                        </div>
-                        <div id="reconnect_advise">
-                            <p>If this continues to happen, please let us know</p>
-                        </div>
-                        <div id="reconnect_form">
-                            <button id="forcereconnect">Reconnect Now</button>
-                        </div>
-                    </div>
-                </div>
-                <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
-                    <input type="hidden" class="padId" name="padId">
-                    <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
-                    <input type="hidden" class="missedChanges" name="missedChanges">
-                </form>
-            </div>
-            
-        </div>
-
-        <script type="text/javascript" src="../static/js/require-kernel.js"></script>
-        <script type="text/javascript" src="../socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="../minified/pad.js"></script>
-        <script type="text/javascript" src="../static/custom/pad.js"></script>
-        <script type="text/javascript">
-            var clientVars = {};
-            (function () {
-              require.setRootURI("../minified/");
-              require.setGlobalKeyPath("require");
-              require('/pad').init();
-
-              /* TODO: These globals shouldn't exist. */
-              pad = require('/pad').pad;
-              chat = require('/chat').chat;
-              padeditbar = require('/pad_editbar').padeditbar;
-              padimpexp = require('/pad_impexp').padimpexp;
-            }());
-        </script>
-        
+          /* TODO: These globals shouldn't exist. */
+          pad = require('/pad').pad;
+          chat = require('/chat').chat;
+          padeditbar = require('/pad_editbar').padeditbar;
+          padimpexp = require('/pad_impexp').padimpexp;
+        }());
+    </script>
+  </body>
 </html>

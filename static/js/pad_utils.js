@@ -225,7 +225,7 @@ var padutils = {
     // Use keypress instead of keyup in bindEnterAndEscape
     // Keyup event is fired on enter in IME (Input Method Editor), But
     // keypress is not. So, I changed to use keypress instead of keyup.
-    // It is work on Windows (IE8, Chrome 6.0.472), CentOs (Firefox 3.0) and Mac OSX (Firefox 3.6.10, Chrome 6.0.472, Safari 5.0).
+    // It is working on Windows (IE8, Chrome 6.0.472), CentOs (Firefox 3.0) and Mac OSX (Firefox 3.6.10, Chrome 6.0.472, Safari 5.0).
     if (onEnter)
     {
       node.keypress(function(evt)

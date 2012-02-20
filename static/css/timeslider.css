@@ -1,106 +1,51 @@
-#editorcontainerbox {overflow:auto; top:40px;}
+/* adjust page layout to show timeslider */
+.maximized #padpage {left:8px; margin-left:0; right:8px; width:auto;}
+.fullwidth #padpage {margin-left:6px; margin-right:6px; width:auto;}
+.squish1width #padpage {width:800px;}
+.squish2width #padpage {width:700px;}
 
-#padcontent {font-size:12px; padding:10px;}
+#padmain {top:59px;}
+#editorcontainerbox {overflow:auto; top:34px;}  /* #FIXME: the HTML structure is fucking destroyed! */
 
-#timeslider-wrapper {left:0; position:relative; right:0; top:0;}
-#timeslider-left {background-image:url(../../static/img/timeslider_left.png); height:63px; left:0; position:absolute; width:134px;}
-#timeslider-right {background-image:url(../../static/img/timeslider_right.png); height:63px; position:absolute; right:0; top:0; width:155px;}
-#timeslider {background-image:url(../../static/img/timeslider_background.png); height:63px; margin:0 9px;}
-#timeslider #timeslider-slider {height:61px; left:0; position:absolute; top:1px; width:100%;}
-#ui-slider-handle {
-  -khtml-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select:none;
-  -webkit-user-select:none;
-  background-image:url(../../static/img/crushed_current_location.png);
-  cursor:pointer;
-  height:61px;
-  left:0;
-  position:absolute;
-  top:0;
-  user-select:none;
-  width:13px;
-}
-#ui-slider-bar {
-  -khtml-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select:none;
-  -webkit-user-select:none;
-  cursor:pointer;
-  height:35px;
-  margin-left:5px;
-  margin-right:148px;
-  position:relative;
-  top:20px;
-  user-select:none;
-}
+/* timeslider sprite */
+#ui-slider-handle, #playpause_button, #steppers A {background:url(../../static/img/timeslider-sprite.png) 0 0 no-repeat;}
 
-#playpause_button, #playpause_button_icon {height:47px; position:absolute; width:47px;}
-#playpause_button {background-image:url(../../static/img/crushed_button_undepressed.png); right:77px; top:9px;}
-#playpause_button_icon {background-image:url(../../static/img/play.png); left:0; top:0;}
-.pause#playpause_button_icon {background-image:url(../../static/img/pause.png);}
+#timeslider {background:#f5f5f5; border-bottom:1px solid #d5d5d5; padding:6px 0; position:absolute; top:0; width:100%;}
+#timer {background-color:#aaa; border-radius:3px; color:#fff; font-family:Arial, sans-serif; font-size:11px; left:6px; min-width:101px; padding:2px 4px 1px; position:absolute; top:7px;}
+#timeslider-wrapper {float:left; width:100%;}
+#timeslider-slider {margin:0 164px 0 6px;}
+#timeslider-slider DIV {cursor:pointer;}
+#ui-slider-handle {background-position:-142px 0; height:22px; left:0; position:absolute; top:30px; width:13px;}
+#ui-slider-bar {background:#ddd; height:6px; margin-top:40px;}
 
-#leftstar, #rightstar, #leftstep, #rightstep
-  {background:url(../../static/img/stepper_buttons.png) 0 0 no-repeat; height:21px; overflow:hidden; position:absolute;}
-#leftstar {background-position:0 44px; right:34px; top:8px; width:30px;}
-#rightstar {background-position:29px 44px; right:5px; top:8px; width:29px;}
-#leftstep {background-position:0 22px; right:34px; top:20px; width:30px;}
-#rightstep {background-position:29px 22px; right:5px; top:20px; width:29px;}
+#playpause_button {background-color:#ddd; background-position:-60px 0; border-radius:30px; float:right; height:46px; width:46px;}
+#playpause_button:hover {background-position:-60px -40px;}
+#playpause_button.pause {background-position:-100px 0;}
+#playpause_button.pause:hover {background-position:-100px -40px;}
 
-#timeslider .star {
-  background-image:url(../../static/img/star.png);
-  cursor:pointer;
-  height:16px;
-  position:absolute;
-  top:40px;
-  width:15px;
-}
+#steppers {float:right; margin:0 35px 0 10px; width:60px;}
+#steppers A {border:1px solid #d5d5d5; box-shadow:0 1px 0 #fff; float:left; height:20px; margin:0 0 4px; width:28px;}
+#steppers .group-start {border-radius:3px 0 0 3px;}
+#steppers .group-end {border-radius:0 3px 3px 0; border-width:1px 1px 1px 0; width:29px;}
 
-#timeslider #timer {
-  color:#fff;
-  font-family:Arial, sans-serif;
-  font-size:11px;
-  left:7px;
-  position:absolute;
-  text-align:center;
-  top:9px;
-  width:122px;
-}
+A#leftstar, #leftstar.inactive:hover   {background-position:0 0;}
+A#rightstar, #rightstar.inactive:hover {background-position:-30px 0;}
+A#leftstep, #leftstep.inactive:hover   {background-position:0 -20px;}
+A#rightstep, #rightstep.inactive:hover {background-position:-30px -20px;}
+A#leftstar:hover   {background-position:0 -40px;}
+A#rightstar:hover  {background-position:-30px -40px;}
+A#leftstep:hover   {background-position:0 -60px;}
+A#rightstep:hover  {background-position:-30px -60px;}
 
-.topbarcenter, #docbar {display:none;}
-#padmain {top:30px;}
-#editbarright {float:right;}
-#returnbutton {color:#222; font-size:16px; line-height:29px; margin-top:0; padding-right:6px;}
-#importexport {top:118px;}
-#importexport .popup {width:185px;}
+/* #TODO: this image does not exist */
+#timeslider .star {background-image:url(../../static/img/star.png); cursor:pointer; height:16px; position:absolute; top:40px; width:15px;}
 
-/* lists */
-.list-bullet2, .list-indent2, .list-number2 {margin-left:3em;}
-.list-bullet3, .list-indent3, .list-number3 {margin-left:4.5em;}
-.list-bullet4, .list-indent4, .list-number4 {margin-left:6em;}
-.list-bullet5, .list-indent5, .list-number5 {margin-left:7.5em;}
-.list-bullet6, .list-indent6, .list-number6 {margin-left:9em;}
-.list-bullet7, .list-indent7, .list-number7 {margin-left:10.5em;}
-.list-bullet8, .list-indent8, .list-number8 {margin-left:12em;}
+.topbarcenter, #docbar {display:none;}  /* hide document title etc. */
+#editbarinner H1 {color:#999; font-size:16px; line-height:29px; margin-top:0; padding-left:6px;}
+#editbarinner H1 A {font-size:12px;}
+#revision_label {background-color:#aaa; border-radius:3px; color:#fff; padding:2px 5px;}
 
-/* unordered lists */
-UL {list-style-type:disc; margin-left:1.5em;}
-UL UL {margin-left:0 !important;}
+#editbarright #returnbutton {background:0 none; border:0 none; box-shadow:none; padding:4px 6px; width:auto;}
+#returnbutton A {color:#999; font-size:12px; line-height:20px;}
 
-.list-bullet2, .list-bullet5, .list-bullet8 {list-style-type:circle;}
-.list-bullet3, .list-bullet6 {list-style-type:square;}
-
-.list-indent1, .list-indent2, .list-indent3, .list-indent5, .list-indent5, .list-indent6, .list-indent7, .list-indent8 {list-style-type:none;}
-
-/* ordered lists */
-OL {list-style-type:decimal; margin-left:1.5em;}
-.list-number2, .list-number5, .list-number8 {list-style-type:lower-latin;}
-.list-number3, .list-number6 {list-style-type:lower-roman;}
-
-
-
-/* IE 6/7 fixes ################################################################ */
-* HTML #ui-slider-handle {background-image:url(../../static/img/current_location.gif);}
-* HTML #timeslider .star {background-image:url(../../static/img/star.gif);}
-* HTML #playpause_button_icon {background-image:url(../../static/img/play.gif);}
-* HTML .pause#playpause_button_icon {background-image:url(../../static/img/pause.gif);}
+#importexport.popup {top:95px; width:140px;}

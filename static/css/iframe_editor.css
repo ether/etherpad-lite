@@ -104,7 +104,7 @@ body.doesWrap {
   font-family: monospace;
   line-height: 16px; /* overridden by sideDiv.style */
   padding-top: 8px; /* EDIT_BODY_PADDING_TOP */
-  padding-right: 3px; /* LINE_NUMBER_PADDING_RIGHT - 1 */
+  padding-right: 4px; /* LINE_NUMBER_PADDING_RIGHT - 1 */
   position: absolute;
   width: 20px; /* MIN_LINEDIV_WIDTH */
   top: 0;
@@ -119,8 +119,8 @@ body.doesWrap {
 
 .sidedivdelayed { /* class set after sizes are set */
   background-color: #eee;
-  color: #888 !important;
-  border-right: 1px solid #999;
+  color: #aaa !important;
+  border-right: 1px solid #d5d5d5;
 }
 .sidedivhidden {
   display: none;

@@ -26,127 +26,107 @@ require('/jquery');
 JSON = require('/json2');
 require('/undo-xpopup');
 
-var createCookie = require('/pad_utils').createCookie;
-var readCookie = require('/pad_utils').readCookie;
-var randomString = require('/pad_utils').randomString;
-
-var socket, token, padId, export_links;
+var createCookie  = require('/pad_utils').createCookie,
+    readCookie    = require('/pad_utils').readCookie,
+    randomString  = require('/pad_utils').randomString,
+    socket, token, padId, export_links;
 
 function init() {
-  $(document).ready(function ()
-  {
+  $(document).ready(function () {
     // start the custom js
-    if (typeof customStart == "function") customStart();
+    if (typeof customStart == 'function')
+      customStart();
 
-    //get the padId out of the url
-    var urlParts= document.location.pathname.split("/");
-    padId = decodeURIComponent(urlParts[urlParts.length-2]);
+    // get padId from url
+    var urlParts = document.location.pathname.split('/');
+    padId = decodeURIComponent(urlParts[urlParts.length - 2]);
 
-    //set the title
-    document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
+    // set the title
+    document.title = padId.replace(/_+/g, ' ') + ' | ' + document.title;
 
-    //ensure we have a token
-    token = readCookie("token");
-    if(token == null)
-    {
-      token = "t." + randomString();
-      createCookie("token", token, 60);
+    // ensure we have a token
+    token = readCookie('token');
+    if (token == null) {
+      token = 't.' + randomString();
+      createCookie('token', token, 60);
     }
 
-    var loc = document.location;
-    //get the correct port
-    var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
-    //create the url
-    var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
-    //find out in which subfolder we are
-    var resource = loc.pathname.substr(1,loc.pathname.indexOf("/p/")) + "socket.io";
+    var loc       = document.location,
+        port      = loc.port == '' ? (loc.protocol == 'https:' ? 443 : 80) : loc.port,  // get the correct port
+        url       = loc.protocol + '//' + loc.hostname + ':' + port + '/',              // create the url
+        resource  = loc.pathname.substr(1, loc.pathname.indexOf('/p/')) + 'socket.io';  // find out in which subfolder we are
 
-    //build up the socket io connection
+    // build up the socket io connection
     socket = io.connect(url, {resource: resource});
 
-    //send the ready message once we're connected
-    socket.on('connect', function()
-    {
-      sendSocketMsg("CLIENT_READY", {});
+    // send the ready message once we're connected
+    socket.on('connect', function() {
+      sendSocketMsg('CLIENT_READY', {});
     });
 
-    //route the incoming messages
-    socket.on('message', function(message)
-    {
-      if(window.console) console.log(message);
-
-      if(message.type == "CLIENT_VARS")
-      {
+    // route the incoming messages
+    socket.on('message', function(message) {
+      if (window.console)
+        console.log(message);
+      if (message.type == 'CLIENT_VARS')
         handleClientVars(message);
-      }
-      else if(message.type == "CHANGESET_REQ")
-      {
+      else if (message.type == 'CHANGESET_REQ')
         changesetLoader.handleSocketResponse(message);
-      }
-      else if(message.accessStatus)
-      {
-        $("body").html("<h2>You have no permission to access this pad</h2>")
-      }
+      else if (message.accessStatus)
+        $('BODY').html('<h2>You have no permission to access this pad</h2>');
     });
 
-    //get all the export links
-    export_links = $('#export > .exportlink')
+    // get all export links
+    export_links = $('.exportlink');
 
-    if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
-      $("#returnbutton").attr("href", document.referrer);
-    } else {
-      $("#returnbutton").attr("href", document.location.href.substring(0,document.location.href.lastIndexOf("/")));
-    }
+    if (document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf('/') - 1, document.referrer.lastIndexOf('/')) === 'p')
+      $('#returnbutton A').attr('href', document.referrer);
+    else
+      $('#returnbutton A').attr('href', document.location.href.substring(0, document.location.href.lastIndexOf('/')));
   });
 }
 
-//sends a message over the socket
-function sendSocketMsg(type, data)
-{
-  var sessionID = readCookie("sessionID");
-  var password = readCookie("password");
-
-  var msg = { "component" : "timeslider",
-              "type": type,
-              "data": data,
-              "padId": padId,
-              "token": token,
-              "sessionID": sessionID,
-              "password": password,
-              "protocolVersion": 2};
-
+// send a message over the socket
+function sendSocketMsg(type, data) {
+  var sessionID = readCookie('sessionID'),
+      password  = readCookie('password'),
+      msg       = { 'component'       : 'timeslider',
+                    'type'            : type,
+                    'data'            : data,
+                    'padId'           : padId,
+                    'token'           : token,
+                    'sessionID'       : sessionID,
+                    'password'        : password,
+                    'protocolVersion' : 2
+                  };
   socket.json.send(msg);
 }
 
-var fireWhenAllScriptsAreLoaded = [];
-  
-var BroadcastSlider, changesetLoader;
-function handleClientVars(message)
-{
-  //save the client Vars
+var fireWhenAllScriptsAreLoaded = [],
+    BroadcastSlider, changesetLoader;
+
+function handleClientVars(message) {
+  // save the client Vars
   clientVars = message.data;
   
-  //load all script that doesn't work without the clientVars
+  // load all scripts that don't work without the clientVars
   BroadcastSlider = require('/broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
   require('/broadcast_revisions').loadBroadcastRevisionsJS();
   changesetLoader = require('/broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
-  //initialize export ui
+  // initialize export ui
   require('/pad_impexp').padimpexp.init();
 
-  //change export urls when the slider moves
-  var export_rev_regex = /(\/\d+)?\/export/
-  BroadcastSlider.onSlider(function(revno)
-  {
-    export_links.each(function()
-    {
+  // change export urls when the slider moves
+  var export_rev_regex = /(\/\d+)?\/export/;
+  BroadcastSlider.onSlider(function(revno) {
+    export_links.each(function() {
       this.setAttribute('href', this.href.replace(export_rev_regex, '/' + revno + '/export'));
     });
   });
 
-  //fire all start functions of these scripts, formerly fired with window.load
-  for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
-  {
+  // fire all start functions of these scripts, formerly fired with window.load
+  for (var i=0, l=fireWhenAllScriptsAreLoaded.length; i < l; i++) {
     fireWhenAllScriptsAreLoaded[i]();
   }
 }
