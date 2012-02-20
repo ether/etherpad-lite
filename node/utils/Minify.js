@@ -166,6 +166,8 @@ function statFile(filename, callback) {
     lastModifiedDateOfEverything(function (error, date) {
       callback(error, date, !error);
     });
+  } else if (filename == 'js/require-kernel.js') {
+    callback(null, requireLastModified(), true);
   } else {
     fs.stat(ROOT_DIR + filename, function (error, stats) {
       if (error) {
@@ -177,8 +179,6 @@ function statFile(filename, callback) {
               } else {
                 callback(error);
               }
-            } else if (filename == 'js/require-kernel.js') {
-              callback(null, stats.mtime.getTime(), true);
             } else {
               callback(null, stats.mtime.getTime(), false);
             }
@@ -232,6 +232,12 @@ function lastModifiedDateOfEverything(callback) {
   });
 }
 
+// This should be provided by the module, but until then, just use startup
+// time.
+var _requireLastModified = new Date();
+function requireLastModified() {
+  return _requireLastModified.toUTCString();
+}
 function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
 }
