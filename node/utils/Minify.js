@@ -202,7 +202,11 @@ function statFile(filename, callback) {
         if (error.code == "ENOENT") { // Stat the directory instead.
           fs.stat(path.dirname(ROOT_DIR + filename), function (error, stats) {
             if (error) {
-              callback(error);
+              if (error.code == "ENOENT") {
+                callback(null, null, false);
+              } else {
+                callback(error);
+              }
             } else if (filename == 'js/require-kernel.js') {
               callback(null, stats.mtime.getTime(), true);
             } else {
