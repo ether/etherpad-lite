@@ -1123,57 +1123,45 @@ function OUTER(gscope)
     }
   }
 
+  // This methed exposes a setter for some ace properties
+  // @param key the name of the parameter
+  // @param value the value to set to
   editorInfo.ace_setProperty = function(key, value)
   {
-    var k = key.toLowerCase();
-    if (k == "wraps")
-    {
-      setWraps(value);
-    }
-    else if (k == "showsauthorcolors")
-    {
-      setClassPresence(root, "authorColors", !! value);
-    }
-    else if (k == "showsuserselections")
-    {
-      setClassPresence(root, "userSelections", !! value);
-    }
-    else if (k == "showslinenumbers")
-    {
-      hasLineNumbers = !! value;
-      // disable line numbers on mobile devices
-      if (browser.mobile) hasLineNumbers = false;
-      setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
-      fixView();
-    }
-    else if (k == "grayedout")
-    {
-      setClassPresence(outerWin.document.body, "grayedout", !! value);
-    }
-    else if (k == "dmesg")
-    {
-      dmesg = value;
-      window.dmesg = value;
-    }
-    else if (k == 'userauthor')
-    {
-      thisAuthor = String(value);
-    }
-    else if (k == 'styled')
-    {
-      setStyled(value);
-    }
-    else if (k == 'textface')
-    {
-      setTextFace(value);
-    }
-    else if (k == 'textsize')
-    {
-      setTextSize(value);
-    }
-    else if (k == 'rtlistrue')
-    {
-      setClassPresence(root, "rtl", !! value);
+    
+    // Convinience function returning a setter for a class on an element    
+    var setClassPresenceNamed = function(element, cls){
+      return function(value){
+         setClassPresence(element, cls, !! value)
+      }
+    };
+    
+    // These properties are exposed
+    var setters = {
+      wraps: setWraps,
+      showsauthorcolors: setClassPresenceNamed(root, "authorColors"),
+      showsuserselections: setClassPresenceNamed(root, "userSelections"),
+      showslinenumbers : function(value){
+        hasLineNumbers = !! value;
+        // disable line numbers on mobile devices
+        if (browser.mobile) hasLineNumbers = false;
+        setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
+        fixView();
+      },
+      grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
+      dmesg: function(){ dmesg = window.dmesg = value; },
+      userauthor: function(value){ thisAuthor = String(value); },
+      styled: setStyled,
+      textface: setTextFace,
+      textsize: setTextSize,
+      rtlistrue: setClassPresenceNamed(root, "rtl")
+    };
+    
+    var setter = setters[key.toLowerCase();];
+    
+    // check if setter is present 
+    if(setter !== undefined){
+      setter(value)
     }
   }
 
