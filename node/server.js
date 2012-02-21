@@ -67,7 +67,15 @@ exports.maxAge = 1000*60*60*6;
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
 
-async.waterfall([
+function init(additionalSetup){
+  //additionalSetup is an optional argument that must be a function
+  //the purpose of additionalSetup is
+    //to allow whoever initializes the server to add functionality
+    //before the server begins listening
+  if("function" != typeof additionalSetup)
+    //the default value for initialSetup is a no-op
+    additionalSetup = function additionalSetup(app, db, managers, handlers){};
+ async.waterfall([
   //initalize the database
   function (callback)
   {
@@ -401,6 +409,23 @@ async.waterfall([
         }
       });
     });
+
+    //additionalSetup is a hook for modifying the app before it begins listening
+    //some things such a hook might need are the app itself, the database, and any managers and handlers it might want to use
+    //rather than passing the managers and handlers one by one, each of those collections is passed as a dictionary
+    additionalSetup(
+      app, db,
+      {
+        "ro": readOnlyManager,
+        pad: padManager,
+        security: securityManager
+      },
+      {
+        "export": exportHandler,
+        "import": importHandler,
+        api: apiHandler
+      }
+    );
     
     //let the server listen
     app.listen(settings.port, settings.ip);
@@ -492,3 +517,5 @@ async.waterfall([
     callback(null);  
   }
 ]);
+}
+this.init = init;
