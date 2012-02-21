@@ -1157,7 +1157,7 @@ function OUTER(gscope)
       rtlistrue: setClassPresenceNamed(root, "rtl")
     };
     
-    var setter = setters[key.toLowerCase();];
+    var setter = setters[key.toLowerCase()];
     
     // check if setter is present 
     if(setter !== undefined){
