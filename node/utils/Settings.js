@@ -22,6 +22,7 @@
 var fs = require("fs");
 var os = require("os");
 var path = require('path');
+var argv = require('./Cli').argv;
 
 /**
  * The IP ep-lite should listen to
@@ -88,9 +89,12 @@ exports.abiwordAvailable = function()
   }
 }
 
+// Discover where the settings file lives
+var settingsFilename = argv.settings || "settings.json";
+var settingsPath = settingsFilename.charAt(0) == '/' ? '' : path.normalize(__dirname + "/../../");
+
 //read the settings sync
-var settingsPath = path.normalize(__dirname + "/../../");
-var settingsStr = fs.readFileSync(settingsPath + "settings.json").toString();
+var settingsStr = fs.readFileSync(settingsPath + settingsFilename).toString();
 
 //remove all comments
 settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
