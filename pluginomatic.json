@@ -17,6 +17,12 @@
       "hooks": {
         "expressServer": "../padurlsanitize:expressServer"
       }
+    },
+    {
+      "name": "minified",
+      "hooks": {
+        "expressServer": "../minified:expressServer"
+      }
     }
   ]
 }
