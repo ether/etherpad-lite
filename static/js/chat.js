@@ -92,7 +92,7 @@ var chat = (function()
         return 'z' + c.charCodeAt(0) + 'z';
       });
 
-      var text = padutils.escapeHtmlWithClickableLinks(padutils.escapeHtml(msg.text), "_blank");
+      var text = padutils.escapeHtmlWithClickableLinks(msg.text, "_blank");
 
       /* Performs an action if your name is mentioned */
       var myName = $('#myusernameedit').val();

@@ -81,6 +81,8 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 ## Next Steps
 You can modify the settings in the file `settings.json`
 
+If you have multiple settings files, you may pass one to `bin/run.sh` using the `-s|--settings` option. This allows you to run multiple Etherpad Lite instances from the same installation.
+
 You should use a dedicated database such as "mysql" if you are planning on using etherpad-lite in a production environment, the "dirty" database driver is only for testing and/or development purposes.
 
 You can update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies

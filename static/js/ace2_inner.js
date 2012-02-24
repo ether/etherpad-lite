@@ -891,57 +891,45 @@ function Ace2Inner(){
     }
   };
 
+  // This methed exposes a setter for some ace properties
+  // @param key the name of the parameter
+  // @param value the value to set to
   editorInfo.ace_setProperty = function(key, value)
   {
-    var k = key.toLowerCase();
-    if (k == "wraps")
-    {
-      setWraps(value);
-    }
-    else if (k == "showsauthorcolors")
-    {
-      setClassPresence(root, "authorColors", !! value);
-    }
-    else if (k == "showsuserselections")
-    {
-      setClassPresence(root, "userSelections", !! value);
-    }
-    else if (k == "showslinenumbers")
-    {
-      hasLineNumbers = !! value;
-      // disable line numbers on mobile devices
-      if (browser.mobile) hasLineNumbers = false;
-      setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
-      fixView();
-    }
-    else if (k == "grayedout")
-    {
-      setClassPresence(outerWin.document.body, "grayedout", !! value);
-    }
-    else if (k == "dmesg")
-    {
-      dmesg = value;
-      window.dmesg = value;
-    }
-    else if (k == 'userauthor')
-    {
-      thisAuthor = String(value);
-    }
-    else if (k == 'styled')
-    {
-      setStyled(value);
-    }
-    else if (k == 'textface')
-    {
-      setTextFace(value);
-    }
-    else if (k == 'textsize')
-    {
-      setTextSize(value);
-    }
-    else if (k == 'rtlistrue')
-    {
-      setClassPresence(root, "rtl", !! value);
+    
+    // Convinience function returning a setter for a class on an element    
+    var setClassPresenceNamed = function(element, cls){
+      return function(value){
+         setClassPresence(element, cls, !! value)
+      }
+    };
+    
+    // These properties are exposed
+    var setters = {
+      wraps: setWraps,
+      showsauthorcolors: setClassPresenceNamed(root, "authorColors"),
+      showsuserselections: setClassPresenceNamed(root, "userSelections"),
+      showslinenumbers : function(value){
+        hasLineNumbers = !! value;
+        // disable line numbers on mobile devices
+        if (browser.mobile) hasLineNumbers = false;
+        setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
+        fixView();
+      },
+      grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
+      dmesg: function(){ dmesg = window.dmesg = value; },
+      userauthor: function(value){ thisAuthor = String(value); },
+      styled: setStyled,
+      textface: setTextFace,
+      textsize: setTextSize,
+      rtlistrue: setClassPresenceNamed(root, "rtl")
+    };
+    
+    var setter = setters[key.toLowerCase()];
+    
+    // check if setter is present 
+    if(setter !== undefined){
+      setter(value)
     }
   };
 
@@ -5596,16 +5584,19 @@ function Ace2Inner(){
   {
     var newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
-	//update height of all current line numbers
+    //update height of all current line numbers
+  
+    var a = sideDivInner.firstChild;
+    var b = doc.body.firstChild;
+    var n = 0;
+    
     if (currentCallStack && currentCallStack.domClean)
     {
-      var a = sideDivInner.firstChild;
-      var b = doc.body.firstChild;
-      var n = 0;
+
       while (a && b)
       {
-	if(n > lineNumbersShown) //all updated, break
-	  break;
+        if(n > lineNumbersShown) //all updated, break
+        break;
 
         var h = (b.clientHeight || b.offsetHeight);
         if (b.nextSibling)
@@ -5621,12 +5612,12 @@ function Ace2Inner(){
         {
           var hpx = h + "px";
           if (a.style.height != hpx) {
-	    a.style.height = hpx;
-	  }
+            a.style.height = hpx;
+          }
         }
         a = a.nextSibling;
         b = b.nextSibling;
-	n++;
+        n++;
       }
     }	
 	
@@ -5640,17 +5631,20 @@ function Ace2Inner(){
         lineNumbersShown++;
         var n = lineNumbersShown;
         var div = odoc.createElement("DIV");	
-	//calculate height for new line number
-	var h = (b.clientHeight || b.offsetHeight);
-	if (b.nextSibling)
-	  h = b.nextSibling.offsetTop - b.offsetTop;
-	if(h) // apply style to div
-	  div.style.height = h +"px";
+        //calculate height for new line number
+        var h = (b.clientHeight || b.offsetHeight);
+        
+        if (b.nextSibling)
+          h = b.nextSibling.offsetTop - b.offsetTop;
+        
+        if(h) // apply style to div
+          div.style.height = h +"px";
 			
         div.appendChild(odoc.createTextNode(String(n)));
-	fragment.appendChild(div);
-	b = b.nextSibling;
+        fragment.appendChild(div);
+        b = b.nextSibling;
       }
+      
       container.appendChild(fragment);
       while (lineNumbersShown > newNumLines)
       {
@@ -5659,7 +5653,7 @@ function Ace2Inner(){
       }
     }
   }
-  
-};
+
+}
 
 exports.editor = new Ace2Inner();
