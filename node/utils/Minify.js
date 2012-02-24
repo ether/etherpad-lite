@@ -213,72 +213,6 @@ function _handle(req, res, jsFilename, jsFiles) {
   }
 }
 
-// find all includes in ace.js and embed them.
-function getAceFile(callback) {
-  fs.readFile(JS_DIR + 'ace.js', "utf8", function(err, data) {
-    if(ERR(err, callback)) return;
-
-    // Find all includes in ace.js and embed them
-    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
-    if (!settings.minify) {
-      founds = [];
-    }
-    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
-
-    data += ';\n';
-    data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
-
-    //go trough all includes
-    async.forEach(founds, function (item, callback) {
-      var filename = item.match(/"([^"]*)"/)[1];
-      var type = item.match(/INCLUDE_([A-Z]+)/)[1];
-      var shortFilename = (filename.match(/^..\/static\/js\/(.*)$/, '')||[])[1];
-
-      //read the included files
-      if (shortFilename) {
-        if (shortFilename == 'require-kernel.js') {
-          // the kernel isn’t actually on the file system.
-          handleEmbed(null, requireDefinition());
-        } else {
-          var contents = '';
-          tarCode(tar[shortFilename] || shortFilename
-          , function (content) {
-              contents += content;
-            }
-          , function () {
-              handleEmbed(null, contents);
-            }
-          );
-        }
-      } else {
-        fs.readFile(ROOT_DIR + filename, "utf8", handleEmbed);
-      }
-
-      function handleEmbed(error, data_) {
-        if (error) {
-          return; // Don't bother to include it.
-        }
-        if (settings.minify) {
-          if (type == "JS") {
-            try {
-              data_ = compressJS([data_]);
-            } catch (e) {
-              // Ignore, include uncompresseed, which will break in browser.
-            }
-          } else {
-            data_ = compressCSS([data_]);
-          }
-        }
-        data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-            + JSON.stringify(data_) + ';\n';
-        callback();
-      }
-    }, function(error) {
-      callback(error, data);
-    });
-  });
-}
-
 exports.requireDefinition = requireDefinition;
 function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
@@ -288,12 +222,8 @@ function tarCode(jsFiles, write, callback) {
   write('require.define({');
   var initialEntry = true;
   async.forEach(jsFiles, function (filename, callback){
-    if (filename == 'ace.js') {
-      getAceFile(handleFile);
-    } else {
-      fs.readFile(JS_DIR + filename, "utf8", handleFile);
-    }
-
+    fs.readFile(JS_DIR + filename, "utf8", handleFile);
+    
     function handleFile(err, data) {
       if(ERR(err, callback)) return;
       var srcPath = JSON.stringify('/' + filename);
