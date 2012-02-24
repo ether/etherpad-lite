@@ -18,12 +18,14 @@ exports.flatten = function (lst) {
 }
 
 exports.callAll = function (hook_name, args) {
+  if (plugins.hooks[hook_name] === undefined) return [];
   return exports.flatten(plugins.hooks[hook_name].map(function (hook) {
     return hook.hook(hook_name, args, function (x) { return x; });
   }));
 }
 
 exports.aCallAll = function (hook_name, args, cb) {
+  if (plugins.hooks[hook_name] === undefined) cb([]);
   async.map(
     plugins.hooks[hook_name],
     function (hook, cb) {
