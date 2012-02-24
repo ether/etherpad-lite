@@ -32,6 +32,8 @@ var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
 var formidable = require('formidable');
+var plugins = require("./pluginfw/plugins");
+var hooks = require("./pluginfw/hooks");
 var apiHandler;
 var exportHandler;
 var importHandler;
@@ -68,6 +70,8 @@ exports.maxAge = 1000*60*60*6;
 log4js.setGlobalLogLevel(settings.loglevel);
 
 async.waterfall([
+  plugins.update,
+
   //initalize the database
   function (callback)
   {
@@ -78,6 +82,8 @@ async.waterfall([
   {
     //create server
     var app = express.createServer();
+
+    hooks.callAll("expressServer", {"app": app});
 
     app.use(function (req, res, next) {
       res.header("Server", serverName);
