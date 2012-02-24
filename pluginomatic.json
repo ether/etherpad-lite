@@ -1,8 +1,8 @@
 {
   "parts": [{
-    "name": "__builtin__",
+    "name": "static",
     "hooks": {
-      "expressServer": "../test:expressServer"
+      "expressServer": "../static:expressServer"
     }
  }]
 }

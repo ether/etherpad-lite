@@ -72,6 +72,13 @@ log4js.setGlobalLogLevel(settings.loglevel);
 async.waterfall([
   plugins.update,
 
+  function (callback) {
+    console.log(["plugins", plugins.plugins]);
+    console.log(["parts", plugins.parts]);
+    console.log(["hooks", plugins.hooks]);
+    callback();
+  },
+
   //initalize the database
   function (callback)
   {
@@ -145,19 +152,6 @@ async.waterfall([
       res.send(500);
       console.error(err.stack ? err.stack : err.toString());
       gracefulShutdown();
-    });
-    
-    //serve static files
-    app.get('/static/js/require-kernel.js', function (req, res, next) {
-      res.header("Content-Type","application/javascript; charset: utf-8");
-      res.write(minify.requireDefinition());
-      res.end();
-    });
-    app.get('/static/*', function(req, res)
-    { 
-      var filePath = path.normalize(__dirname + "/.." +
-                                    req.url.replace(/\.\./g, '').split("?")[0]);
-      res.sendfile(filePath, { maxAge: exports.maxAge });
     });
     
     //serve minified files
