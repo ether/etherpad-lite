@@ -32,6 +32,10 @@ exports.update = function (cb) {
 
 exports.getPlugins = function (cb) {
   exports.getPackages(function (er, packages) {
+    packages.__builtin__ = {
+      "path": path.resolve(npm.dir, "../..")
+    };
+
     var parts = {};
     var plugins = {};
     // Load plugin metadata pluginomatic.json
@@ -83,8 +87,9 @@ exports.extractHooks = function (parts) {
 }
 
 exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
+  var plugin_path = path.resolve(packages[plugin_name].path, "pluginomatic.json");
   fs.readFile(
-    path.resolve(packages[plugin_name].path, "pluginomatic.json"),
+    plugin_path,
     function (er, data) {
       var plugin = JSON.parse(data);
       plugin.package = packages[plugin_name];
