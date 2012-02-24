@@ -5828,16 +5828,19 @@ function OUTER(gscope)
   {
     var newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
-	//update height of all current line numbers
+    //update height of all current line numbers
+  
+    var a = sideDivInner.firstChild;
+    var b = doc.body.firstChild;
+    var n = 0;
+    
     if (currentCallStack && currentCallStack.domClean)
     {
-      var a = sideDivInner.firstChild;
-      var b = doc.body.firstChild;
-      var n = 0;
+
       while (a && b)
       {
-	if(n > lineNumbersShown) //all updated, break
-	  break;
+        if(n > lineNumbersShown) //all updated, break
+        break;
 
         var h = (b.clientHeight || b.offsetHeight);
         if (b.nextSibling)
@@ -5853,12 +5856,12 @@ function OUTER(gscope)
         {
           var hpx = h + "px";
           if (a.style.height != hpx) {
-	    a.style.height = hpx;
-	  }
+            a.style.height = hpx;
+          }
         }
         a = a.nextSibling;
         b = b.nextSibling;
-	n++;
+        n++;
       }
     }	
 	
@@ -5872,17 +5875,20 @@ function OUTER(gscope)
         lineNumbersShown++;
         var n = lineNumbersShown;
         var div = odoc.createElement("DIV");	
-	//calculate height for new line number
-	var h = (b.clientHeight || b.offsetHeight);
-	if (b.nextSibling)
-	  h = b.nextSibling.offsetTop - b.offsetTop;
-	if(h) // apply style to div
-	  div.style.height = h +"px";
+        //calculate height for new line number
+        var h = (b.clientHeight || b.offsetHeight);
+        
+        if (b.nextSibling)
+          h = b.nextSibling.offsetTop - b.offsetTop;
+        
+        if(h) // apply style to div
+          div.style.height = h +"px";
 			
         div.appendChild(odoc.createTextNode(String(n)));
-	fragment.appendChild(div);
-	b = b.nextSibling;
+        fragment.appendChild(div);
+        b = b.nextSibling;
       }
+      
       container.appendChild(fragment);
       while (lineNumbersShown > newNumLines)
       {
@@ -5891,8 +5897,8 @@ function OUTER(gscope)
       }
     }
   }
+}
 
-};
 
 OUTER(this);
 
