@@ -26,47 +26,16 @@ var AttribPool = require('/AttributePoolFactory').createAttributePool;
 var Changeset = require('/Changeset');
 var linestylefilter = require('/linestylefilter').linestylefilter;
 var colorutils = require('/colorutils').colorutils;
+var Ace2Common = require('./ace2_common');
+
+var map = Ace2Common.map;
+var forEach = Ace2Common.forEach;
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
 function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider)
 {
   var changesetLoader = undefined;
-  // just in case... (todo: this must be somewhere else in the client code.)
-  // Below Array#map code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_map.htm
-  if (!Array.prototype.map)
-  {
-    Array.prototype.map = function(fun /*, thisp*/ )
-    {
-      var len = this.length >>> 0;
-      if (typeof fun != "function") throw new TypeError();
-
-      var res = new Array(len);
-      var thisp = arguments[1];
-      for (var i = 0; i < len; i++)
-      {
-        if (i in this) res[i] = fun.call(thisp, this[i], i, this);
-      }
-
-      return res;
-    };
-  }
-
-  // Below Array#forEach code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_foreach.htm
-  if (!Array.prototype.forEach)
-  {
-    Array.prototype.forEach = function(fun /*, thisp*/ )
-    {
-      var len = this.length >>> 0;
-      if (typeof fun != "function") throw new TypeError();
-
-      var thisp = arguments[1];
-      for (var i = 0; i < len; i++)
-      {
-        if (i in this) fun.call(thisp, this[i], i, this);
-      }
-    };
-  }
 
   // Below Array#indexOf code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_indexof.htm
   if (!Array.prototype.indexOf)
@@ -99,11 +68,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   }
 
-  function randomString()
-  {
-    return "_" + Math.floor(Math.random() * 1000000);
-  }
-
   // for IE
   if ($.browser.msie)
   {
@@ -115,7 +79,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     {}
   }
 
-  var userId = "hiddenUser" + randomString();
+
   var socketId;
   //var socket;
   var channelState = "DISCONNECTED";
@@ -191,10 +155,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     // splice the lines
     splice: function(start, numRemoved, newLinesVA)
     {
-      var newLines = Array.prototype.slice.call(arguments, 2).map(
-
-      function(s)
-      {
+      var newLines = map(Array.prototype.slice.call(arguments, 2), function(s) {
         return s;
       });
 
@@ -316,10 +277,13 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     padContents.currentTime += timeDelta * 1000;
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
-    BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
+    
+    var authors = map(padContents.getActiveAuthors(), function(name)
     {
       return authorData[name];
-    }));
+    });
+    
+    BroadcastSlider.setAuthors(authors);
   }
 
   function updateTimer()
@@ -419,10 +383,11 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
       changesetLoader.queueUp(start, 1, update);
     }
-    BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
-    {
+    
+    var authors = map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
-    }));
+    });
+    BroadcastSlider.setAuthors(authors);
   }
 
   changesetLoader = {
@@ -561,10 +526,12 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         var authorMap = {};
         authorMap[obj.author] = obj.data;
         receiveAuthorData(authorMap);
-        BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
-        {
+        
+        var authors = map(padContents.getActiveAuthors(),function(name) {
           return authorData[name];
-        }));
+        });
+        
+        BroadcastSlider.setAuthors(authors);
       }
       else if (obj['type'] == "NEW_SAVEDREV")
       {
@@ -616,53 +583,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }));
   }
 
-/*function setUpSocket()
-  {
-    // required for Comet
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
-    {
-      document.domain = document.domain; // for comet
-    }
-
-    var success = false;
-    callCatchingErrors("setUpSocket", function ()
-    {
-      appLevelDisconnectReason = null;
-
-      socketId = String(Math.floor(Math.random() * 1e12));
-      socket = new WebSocket(socketId);
-      socket.onmessage = wrapRecordingErrors("socket.onmessage", handleMessageFromServer);
-      socket.onclosed = wrapRecordingErrors("socket.onclosed", handleSocketClosed);
-      socket.onopen = wrapRecordingErrors("socket.onopen", function ()
-      {
-        setChannelState("CONNECTED");
-        var msg = {
-          type: "CLIENT_READY",
-          roomType: 'padview',
-          roomName: 'padview/' + clientVars.viewId,
-          data: {
-            lastRev: clientVars.revNum,
-            userInfo: {
-              userId: userId
-            }
-          }
-        };
-        sendMessage(msg);
-      });
-      // socket.onhiccup = wrapRecordingErrors("socket.onhiccup", handleCometHiccup);
-      // socket.onlogmessage = function(x) {debugLog(x); };
-      socket.connect();
-      success = true;
-    });
-    if (success)
-    {
-      //initialStartConnectTime = +new Date();
-    }
-    else
-    {
-      abandonConnection("initsocketfail");
-    }
-  }*/
 
   function setChannelState(newChannelState, moreInfo)
   {
@@ -691,7 +611,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   window.onload = function ()
   {
     window['isloaded'] = true;
-    window['onloadFuncts'].forEach(function (funct)
+    forEach(window['onloadFuncts'],function (funct)
     {
       funct();
     });

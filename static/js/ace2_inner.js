@@ -21,6 +21,7 @@
  */
 
 var Ace2Common = require('/ace2_common');
+
 // Extract useful method defined in the other module.
 var isNodeText = Ace2Common.isNodeText;
 var object = Ace2Common.object;
@@ -32,10 +33,10 @@ var isArray = Ace2Common.isArray;
 var browser = Ace2Common.browser;
 var getAssoc = Ace2Common.getAssoc;
 var setAssoc = Ace2Common.setAssoc;
-var binarySearch = Ace2Common.binarySearch;
 var binarySearchInfinite = Ace2Common.binarySearchInfinite;
 var htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
 var map = Ace2Common.map;
+var noop = Ace2Common.noop;
 
 var makeChangesetTracker = require('/changesettracker').makeChangesetTracker;
 var colorutils = require('/colorutils').colorutils;
@@ -49,9 +50,8 @@ var newSkipList = require('/skiplist').newSkipList;
 var undoModule = require('/undomodule').undoModule;
 var makeVirtualLineView = require('/virtual_lines').makeVirtualLineView;
 
-function OUTER(gscope)
-{
 
+function Ace2Inner(){
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false 
   var isSetUp = false;
@@ -122,13 +122,13 @@ function OUTER(gscope)
       iframePadRight = 0;
 
   var console = (DEBUG && window.console);
+  
   if (!window.console)
   {
     var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
     console = {};
     for (var i = 0; i < names.length; ++i)
-    console[names[i]] = function()
-    {};
+    console[names[i]] = noop;
     //console.error = function(str) { alert(str); };
   }
 
@@ -145,14 +145,6 @@ function OUTER(gscope)
         cancel: noop
       };
     };
-  }
-
-  function noop()
-  {}
-
-  function identity(x)
-  {
-    return x;
   }
 
   // "dmesg" is for displaying messages in the in-page output pane
@@ -338,7 +330,7 @@ function OUTER(gscope)
   editorInfo.ace_getRep = function()
   {
     return rep;
-  }
+  };
 
   var currentCallStack = null;
 
@@ -460,12 +452,11 @@ function OUTER(gscope)
         submitOldEvent(cs.editEvent);
         if (cs.domClean && cs.type != "setup")
         {
-          if (cs.isUserChange)
-          {
-            if (cs.repChanged) parenModule.notifyChange();
-            else parenModule.notifyTick();
-          }
-          recolorModule.recolorLines();
+          // if (cs.isUserChange)
+          // {
+          //  if (cs.repChanged) parenModule.notifyChange();
+          //  else parenModule.notifyTick();
+          // }
           if (cs.selectionAffected)
           {
             updateBrowserSelectionFromRep();
@@ -522,230 +513,7 @@ function OUTER(gscope)
   {
     return rep.lines.atOffset(charOffset).key;
   }
-
-  var recolorModule = (function()
-  {
-    var dirtyLineKeys = {};
-
-    var module = {};
-    module.setCharNeedsRecoloring = function(offset)
-    {
-      if (offset >= rep.alltext.length)
-      {
-        offset = rep.alltext.length - 1;
-      }
-      dirtyLineKeys[getLineKeyForOffset(offset)] = true;
-    }
-
-    module.setCharRangeNeedsRecoloring = function(offset1, offset2)
-    {
-      if (offset1 >= rep.alltext.length)
-      {
-        offset1 = rep.alltext.length - 1;
-      }
-      if (offset2 >= rep.alltext.length)
-      {
-        offset2 = rep.alltext.length - 1;
-      }
-      var firstEntry = rep.lines.atOffset(offset1);
-      var lastKey = rep.lines.atOffset(offset2).key;
-      dirtyLineKeys[lastKey] = true;
-      var entry = firstEntry;
-      while (entry && entry.key != lastKey)
-      {
-        dirtyLineKeys[entry.key] = true;
-        entry = rep.lines.next(entry);
-      }
-    }
-
-    module.recolorLines = function()
-    {
-      for (var k in dirtyLineKeys)
-      {
-        recolorLineByKey(k);
-      }
-      dirtyLineKeys = {};
-    }
-
-    return module;
-  })();
-
-  var parenModule = (function()
-  {
-    var module = {};
-    module.notifyTick = function()
-    {
-      handleFlashing(false);
-    };
-    module.notifyChange = function()
-    {
-      handleFlashing(true);
-    };
-    module.shouldNormalizeOnChar = function(c)
-    {
-      if (parenFlashRep.active)
-      {
-        // avoid highlight style from carrying on to typed text
-        return true;
-      }
-      c = String.fromCharCode(c);
-      return !!(bracketMap[c]);
-    }
-
-    var parenFlashRep = {
-      active: false,
-      whichChars: null,
-      whichLineKeys: null,
-      expireTime: null
-    };
-    var bracketMap = {
-      '(': 1,
-      ')': -1,
-      '[': 2,
-      ']': -2,
-      '{': 3,
-      '}': -3
-    };
-    var bracketRegex = /[{}\[\]()]/g;
-
-    function handleFlashing(docChanged)
-    {
-      function getSearchRange(aroundLoc)
-      {
-        var rng = getVisibleCharRange();
-        var d = 100; // minimum radius
-        var e = 3000; // maximum radius;
-        if (rng[0] > aroundLoc - d) rng[0] = aroundLoc - d;
-        if (rng[0] < aroundLoc - e) rng[0] = aroundLoc - e;
-        if (rng[0] < 0) rng[0] = 0;
-        if (rng[1] < aroundLoc + d) rng[1] = aroundLoc + d;
-        if (rng[1] > aroundLoc + e) rng[1] = aroundLoc + e;
-        if (rng[1] > rep.lines.totalWidth()) rng[1] = rep.lines.totalWidth();
-        return rng;
-      }
-
-      function findMatchingVisibleBracket(startLoc, forwards)
-      {
-        var rng = getSearchRange(startLoc);
-        var str = rep.alltext.substring(rng[0], rng[1]);
-        var bstr = str.replace(bracketRegex, '('); // handy for searching
-        var loc = startLoc - rng[0];
-        var bracketState = [];
-        var foundParen = false;
-        var goodParen = false;
-
-        function nextLoc()
-        {
-          if (loc < 0) return;
-          if (forwards) loc++;
-          else loc--;
-          if (loc < 0 || loc >= str.length) loc = -1;
-          if (loc >= 0)
-          {
-            if (forwards) loc = bstr.indexOf('(', loc);
-            else loc = bstr.lastIndexOf('(', loc);
-          }
-        }
-        while ((!foundParen) && (loc >= 0))
-        {
-          if (getCharType(loc + rng[0]) == "p")
-          {
-            var b = bracketMap[str.charAt(loc)]; // -1, 1, -2, 2, -3, 3
-            var into = forwards;
-            var typ = b;
-            if (typ < 0)
-            {
-              into = !into;
-              typ = -typ;
-            }
-            if (into) bracketState.push(typ);
-            else
-            {
-              var recent = bracketState.pop();
-              if (recent != typ)
-              {
-                foundParen = true;
-                goodParen = false;
-              }
-              else if (bracketState.length == 0)
-              {
-                foundParen = true;
-                goodParen = true;
-              }
-            }
-          }
-          //console.log(bracketState.toSource());
-          if ((!foundParen) && (loc >= 0)) nextLoc();
-        }
-        if (!foundParen) return null;
-        return {
-          chr: (loc + rng[0]),
-          good: goodParen
-        };
-      }
-
-      var r = parenFlashRep;
-      var charsToHighlight = null;
-      var linesToUnhighlight = null;
-      if (r.active && (docChanged || (now() > r.expireTime)))
-      {
-        linesToUnhighlight = r.whichLineKeys;
-        r.active = false;
-      }
-      if ((!r.active) && docChanged && isCaret() && caretColumn() > 0)
-      {
-        var caret = caretDocChar();
-        if (caret > 0 && getCharType(caret - 1) == "p")
-        {
-          var charBefore = rep.alltext.charAt(caret - 1);
-          if (bracketMap[charBefore])
-          {
-            var lookForwards = (bracketMap[charBefore] > 0);
-            var findResult = findMatchingVisibleBracket(caret - 1, lookForwards);
-            if (findResult)
-            {
-              var mateLoc = findResult.chr;
-              var mateGood = findResult.good;
-              r.active = true;
-              charsToHighlight = {};
-              charsToHighlight[caret - 1] = 'flash';
-              charsToHighlight[mateLoc] = (mateGood ? 'flash' : 'flashbad');
-              r.whichLineKeys = [];
-              r.whichLineKeys.push(getLineKeyForOffset(caret - 1));
-              r.whichLineKeys.push(getLineKeyForOffset(mateLoc));
-              r.expireTime = now() + 4000;
-              newlyActive = true;
-            }
-          }
-        }
-
-      }
-      if (linesToUnhighlight)
-      {
-        recolorLineByKey(linesToUnhighlight[0]);
-        recolorLineByKey(linesToUnhighlight[1]);
-      }
-      if (r.active && charsToHighlight)
-      {
-        function f(txt, cls, next, ofst)
-        {
-          var flashClass = charsToHighlight[ofst];
-          if (cls)
-          {
-            next(txt, cls + " " + flashClass);
-          }
-          else next(txt, cls);
-        }
-        for (var c in charsToHighlight)
-        {
-          recolorLinesInRange((+c), (+c) + 1, null, f);
-        }
-      }
-    }
-
-    return module;
-  })();
-
+  
   function dispose()
   {
     disposed = true;
@@ -779,7 +547,7 @@ function OUTER(gscope)
         alineLength += o.chars;
         if (opIter.hasNext())
         {
-          if (o.lines != 0) error();
+          if (o.lines !== 0) error();
         }
         else
         {
@@ -1097,9 +865,9 @@ function OUTER(gscope)
   editorInfo.ace_callWithAce = function(fn, callStack, normalize)
   {
     var wrapper = function()
-      {
-        return fn(editorInfo);
-        }
+    {
+      return fn(editorInfo);
+    };
         
         
         
@@ -1110,7 +878,7 @@ function OUTER(gscope)
       {
         editorInfo.ace_fastIncorp(9);
         wrapper1();
-      }
+      };
     }
 
     if (callStack !== undefined)
@@ -1121,7 +889,7 @@ function OUTER(gscope)
     {
       return wrapper();
     }
-  }
+  };
 
   // This methed exposes a setter for some ace properties
   // @param key the name of the parameter
@@ -1163,7 +931,7 @@ function OUTER(gscope)
     if(setter !== undefined){
       setter(value)
     }
-  }
+  };
 
   editorInfo.ace_setBaseText = function(txt)
   {
@@ -1262,12 +1030,12 @@ function OUTER(gscope)
           lastElapsed = elapsed;
           return false;
         }
-        }
+      };
         
     isTimeUp.elapsed = function()
     {
       return now() - startTime;
-    }
+    };
     return isTimeUp;
   }
 
@@ -1325,7 +1093,7 @@ function OUTER(gscope)
       {
         unschedule();
       }
-    }
+    };
   }
 
   function fastIncorp(n)
@@ -1517,7 +1285,7 @@ function OUTER(gscope)
     }
     var text = lineEntry.text;
     var width = lineEntry.width; // text.length+1
-    if (text.length == 0)
+    if (text.length === 0)
     {
       // allow getLineStyleFilter to set line-div styles
       var func = linestylefilter.getLineStyleFilter(
@@ -1534,12 +1302,6 @@ function OUTER(gscope)
       text.length, aline, filteredFunc, rep.apool);
       filteredFunc(text, '');
     }
-  }
-
-
-  function getCharType(charIndex)
-  {
-    return '';
   }
 
   var observedChanges;
@@ -1650,17 +1412,19 @@ function OUTER(gscope)
     var p = PROFILER("getSelection", false);
     var selection = getSelection();
     p.end();
+    
+    function topLevel(n)
+    {
+      if ((!n) || n == root) return null;
+      while (n.parentNode != root)
+      {
+        n = n.parentNode;
+      }
+      return n;
+    }
+    
     if (selection)
     {
-      function topLevel(n)
-      {
-        if ((!n) || n == root) return null;
-        while (n.parentNode != root)
-        {
-          n = n.parentNode;
-        }
-        return n;
-      }
       var node1 = topLevel(selection.startPoint.node);
       var node2 = topLevel(selection.endPoint.node);
       if (node1) observeChangesAroundNode(node1);
@@ -1733,7 +1497,7 @@ function OUTER(gscope)
     {
       a = dirtyRanges[j][0];
       b = dirtyRanges[j][1];
-      if (!((a == 0 || getCleanNodeByKey(rep.lines.atIndex(a - 1).key)) && (b == rep.lines.length() || getCleanNodeByKey(rep.lines.atIndex(b).key))))
+      if (!((a === 0 || getCleanNodeByKey(rep.lines.atIndex(a - 1).key)) && (b == rep.lines.length() || getCleanNodeByKey(rep.lines.atIndex(b).key))))
       {
         dirtyRangesCheckOut = false;
         break;
@@ -1774,7 +1538,7 @@ function OUTER(gscope)
       var range = dirtyRanges[i];
       a = range[0];
       b = range[1];
-      var firstDirtyNode = (((a == 0) && root.firstChild) || getCleanNodeByKey(rep.lines.atIndex(a - 1).key).nextSibling);
+      var firstDirtyNode = (((a === 0) && root.firstChild) || getCleanNodeByKey(rep.lines.atIndex(a - 1).key).nextSibling);
       firstDirtyNode = (firstDirtyNode && isNodeDirty(firstDirtyNode) && firstDirtyNode);
       var lastDirtyNode = (((b == rep.lines.length()) && root.lastChild) || getCleanNodeByKey(rep.lines.atIndex(b).key).previousSibling);
       lastDirtyNode = (lastDirtyNode && isNodeDirty(lastDirtyNode) && lastDirtyNode);
@@ -2072,7 +1836,7 @@ function OUTER(gscope)
   function handleReturnIndentation()
   {
     // on return, indent to level of previous line
-    if (isCaret() && caretColumn() == 0 && caretLine() > 0)
+    if (isCaret() && caretColumn() === 0 && caretLine() > 0)
     {
       var lineNum = caretLine();
       var thisLine = rep.lines.atIndex(lineNum);
@@ -2154,10 +1918,10 @@ function OUTER(gscope)
     var lineNode = lineEntry.lineNode;
     var n = lineNode;
     var after = false;
-    if (charsLeft == 0)
+    if (charsLeft === 0)
     {
       var index = 0;
-      if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length == 0)
+      if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0)
       {
         // best to stay at end of last empty div in IE
         index = 1;
@@ -2221,7 +1985,7 @@ function OUTER(gscope)
     // assuming the point is not in a dirty node.
     if (point.node == root)
     {
-      if (point.index == 0)
+      if (point.index === 0)
       {
         return [0, 0];
       }
@@ -2259,7 +2023,7 @@ function OUTER(gscope)
           n = parNode;
         }
       }
-      if (n.id == "") console.debug("BAD");
+      if (n.id === "") console.debug("BAD");
       if (n.firstChild && isBlockElement(n.firstChild))
       {
         col += 1; // lineMarker
@@ -2484,7 +2248,7 @@ function OUTER(gscope)
 
   function performDocumentReplaceCharRange(startChar, endChar, newText)
   {
-    if (startChar == endChar && newText.length == 0)
+    if (startChar == endChar && newText.length === 0)
     {
       return;
     }
@@ -2501,7 +2265,7 @@ function OUTER(gscope)
         endChar--;
         newText = '\n' + newText.substring(0, newText.length - 1);
       }
-      else if (newText.length == 0)
+      else if (newText.length === 0)
       {
         // a delete at end
         startChar--;
@@ -2519,8 +2283,8 @@ function OUTER(gscope)
 
   function performDocumentReplaceRange(start, end, newText)
   {
-    if (start == undefined) start = rep.selStart;
-    if (end == undefined) end = rep.selEnd;
+    if (start === undefined) start = rep.selStart;
+    if (end === undefined) end = rep.selEnd;
 
     //dmesg(String([start.toSource(),end.toSource(),newText.toSource()]));
     // start[0]: <--- start[1] --->CCCCCCCCCCC\n
@@ -2760,7 +2524,7 @@ function OUTER(gscope)
       spliceEnd--;
       commonEnd++;
     }
-    if (shortOldText.length == 0 && spliceStart == rep.alltext.length && shortNewText.length > 0)
+    if (shortOldText.length === 0 && spliceStart == rep.alltext.length && shortNewText.length > 0)
     {
       // inserting after final newline, bad
       spliceStart--;
@@ -2768,7 +2532,7 @@ function OUTER(gscope)
       shortNewText = '\n' + shortNewText.slice(0, -1);
       shiftFinalNewlineToBeforeNewText = true;
     }
-    if (spliceEnd == rep.alltext.length && shortOldText.length > 0 && shortNewText.length == 0)
+    if (spliceEnd == rep.alltext.length && shortOldText.length > 0 && shortNewText.length === 0)
     {
       // deletion at end of rep.alltext
       if (rep.alltext.charAt(spliceStart - 1) == '\n')
@@ -2780,7 +2544,7 @@ function OUTER(gscope)
       }
     }
 
-    if (!(shortOldText.length == 0 && shortNewText.length == 0))
+    if (!(shortOldText.length === 0 && shortNewText.length === 0))
     {
       var oldDocText = rep.alltext;
       var oldLen = oldDocText.length;
@@ -2788,15 +2552,15 @@ function OUTER(gscope)
       var spliceStartLine = rep.lines.indexOfOffset(spliceStart);
       var spliceStartLineStart = rep.lines.offsetOfIndex(spliceStartLine);
 
-      function startBuilder()
+      var startBuilder = function()
       {
         var builder = Changeset.builder(oldLen);
         builder.keep(spliceStartLineStart, spliceStartLine);
         builder.keep(spliceStart - spliceStartLineStart);
         return builder;
-      }
+      };
 
-      function eachAttribRun(attribs, func /*(startInNewText, endInNewText, attribs)*/ )
+      var eachAttribRun = function(attribs, func /*(startInNewText, endInNewText, attribs)*/ )
       {
         var attribsIter = Changeset.opIterator(attribs);
         var textIndex = 0;
@@ -2812,7 +2576,7 @@ function OUTER(gscope)
           }
           textIndex = nextIndex;
         }
-      }
+      };
 
       var justApplyStyles = (shortNewText == shortOldText);
       var theChangeset;
@@ -3012,7 +2776,7 @@ function OUTER(gscope)
     var newEndIter = attribIterator(newARuns, true);
     while (commonEnd < minLen)
     {
-      if (commonEnd == 0)
+      if (commonEnd === 0)
       {
         // assume newline in common
         oldEndIter();
@@ -3155,10 +2919,11 @@ function OUTER(gscope)
         lineClass = ''; // non-null to cause update
       };
 
-      function writeClass()
+      var writeClass = function()
       {
         if (lineClass !== null) lineElem.className = lineClass;
-      }
+      };
+      
       result.prepareForAdd = writeClass;
       result.finishUpdate = writeClass;
       result.getInnerHTML = function()
@@ -3385,7 +3150,7 @@ function OUTER(gscope)
       }
     }
 
-    if (N == 0)
+    if (N === 0)
     {
       p.cancel();
       if (!isConsecutive(0))
@@ -3517,16 +3282,18 @@ function OUTER(gscope)
       idleWorkTimer.atMost(200);
     });
 
+    function isLink(n)
+    {
+      return (n.tagName || '').toLowerCase() == "a" && n.href;
+    }
+    
     // only want to catch left-click
     if ((!evt.ctrlKey) && (evt.button != 2) && (evt.button != 3))
     {
       // find A tag with HREF
 
 
-      function isLink(n)
-      {
-        return (n.tagName || '').toLowerCase() == "a" && n.href;
-      }
+
       var n = evt.target;
       while (n && n.parentNode && !isLink(n))
       {
@@ -3601,7 +3368,7 @@ function OUTER(gscope)
 
     var firstLine, lastLine;
     firstLine = rep.selStart[0];
-    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] == 0) ? 1 : 0));
+    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
 
     var mods = [];
     for (var n = firstLine; n <= lastLine; n++)
@@ -3735,7 +3502,7 @@ function OUTER(gscope)
     //separated. If it returns null, it means that the list was not cut, try
     //from the current one.
     var line = caretLine();
-    if(line != -1 && renumberList(line+1)==null)
+    if(line != -1 && renumberList(line+1) === null)
     {
       renumberList(line);
     }
@@ -3956,7 +3723,7 @@ function OUTER(gscope)
       }
       else if (type == "keypress")
       {
-        if ((!specialHandled) && parenModule.shouldNormalizeOnChar(charCode))
+        if ((!specialHandled) && false /*parenModule.shouldNormalizeOnChar(charCode)*/)
         {
           idleWorkTimer.atMost(0);
         }
@@ -3973,7 +3740,7 @@ function OUTER(gscope)
       }
 
       // Is part of multi-keystroke international character on Firefox Mac
-      var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode == 0 && keyCode == 0);
+      var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode === 0 && keyCode === 0);
 
       // Is part of multi-keystroke international character on Safari Mac
       var isSafariHalfCharacter = (browser.safari && evt.altKey && keyCode == 229);
@@ -4072,7 +3839,7 @@ function OUTER(gscope)
     {
       var text = entry.text;
       var content;
-      if (text.length == 0)
+      if (text.length === 0)
       {
         content = '<span style="color: #aaa">--</span>';
       }
@@ -4138,27 +3905,27 @@ function OUTER(gscope)
       var selectionParent = origSelectionRange.parentElement();
       if (selectionParent.ownerDocument != doc) return null;
 
-      function newRange()
+      var newRange = function()
       {
         return doc.body.createTextRange();
-      }
+      };
 
-      function rangeForElementNode(nd)
+      var rangeForElementNode = function(nd)
       {
         var rng = newRange();
         // doesn't work on text nodes
         rng.moveToElementText(nd);
         return rng;
-      }
+      };
 
-      function pointFromCollapsedRange(rng)
+      var pointFromCollapsedRange = function(rng)
       {
         var parNode = rng.parentElement();
         var elemBelow = -1;
         var elemAbove = parNode.childNodes.length;
         var rangeWithin = rangeForElementNode(parNode);
 
-        if (rng.compareEndPoints("StartToStart", rangeWithin) == 0)
+        if (rng.compareEndPoints("StartToStart", rangeWithin) === 0)
         {
           return {
             node: parNode,
@@ -4166,7 +3933,7 @@ function OUTER(gscope)
             maxIndex: 1
           };
         }
-        else if (rng.compareEndPoints("EndToEnd", rangeWithin) == 0)
+        else if (rng.compareEndPoints("EndToEnd", rangeWithin) === 0)
         {
           if (isBlockElement(parNode) && parNode.nextSibling)
           {
@@ -4184,7 +3951,7 @@ function OUTER(gscope)
             maxIndex: 1
           };
         }
-        else if (parNode.childNodes.length == 0)
+        else if (parNode.childNodes.length === 0)
         {
           return {
             node: parNode,
@@ -4293,9 +4060,10 @@ function OUTER(gscope)
           index: tn.nodeValue.length,
           maxIndex: tn.nodeValue.length
         };
-      }
+      };
+      
       var selection = {};
-      if (origSelectionRange.compareEndPoints("StartToEnd", origSelectionRange) == 0)
+      if (origSelectionRange.compareEndPoints("StartToEnd", origSelectionRange) === 0)
       {
         // collapsed
         var pnt = pointFromCollapsedRange(origSelectionRange);
@@ -4315,10 +4083,10 @@ function OUTER(gscope)
         selection.startPoint = pointFromCollapsedRange(start);
         selection.endPoint = pointFromCollapsedRange(end);
 /*if ((!selection.startPoint.node.isText) && (!selection.endPoint.node.isText)) {
-	  console.log(selection.startPoint.node.uniqueId()+","+
-		      selection.startPoint.index+" / "+
-		      selection.endPoint.node.uniqueId()+","+
-		      selection.endPoint.index);
+  console.log(selection.startPoint.node.uniqueId()+","+
+    selection.startPoint.index+" / "+
+    selection.endPoint.node.uniqueId()+","+
+    selection.endPoint.index);
 	}*/
       }
       return selection;
@@ -4361,7 +4129,7 @@ function OUTER(gscope)
               maxIndex: n.nodeValue.length
             };
           }
-          else if (childCount == 0)
+          else if (childCount === 0)
           {
             return {
               node: n,
@@ -4487,7 +4255,7 @@ function OUTER(gscope)
           setCollapsedBefore(s, n);
           s.move("character", point.index);
         }
-        else if (point.index == 0)
+        else if (point.index === 0)
         {
           setCollapsedBefore(s, n);
         }
@@ -4575,7 +4343,7 @@ function OUTER(gscope)
             while (p.node.childNodes.length > 0)
             {
               //&& (p.node == root || p.node.parentNode == root)) {
-              if (p.index == 0)
+              if (p.index === 0)
               {
                 p.node = p.node.firstChild;
                 p.maxIndex = nodeMaxIndex(p.node);
@@ -4678,7 +4446,7 @@ function OUTER(gscope)
   function fixView()
   {
     // calling this method repeatedly should be fast
-    if (getInnerWidth() == 0 || getInnerHeight() == 0)
+    if (getInnerWidth() === 0 || getInnerHeight() === 0)
     {
       return;
     }
@@ -5097,7 +4865,7 @@ function OUTER(gscope)
     }
     if (!isNodeText(node))
     {
-      if (index == 0) return leftOf(node);
+      if (index === 0) return leftOf(node);
       else return rightOf(node);
     }
     else
@@ -5378,7 +5146,7 @@ function OUTER(gscope)
 
     var firstLine, lastLine;
     firstLine = rep.selStart[0];
-    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] == 0) ? 1 : 0));
+    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
 
     var allLinesAreList = true;
     for (var n = firstLine; n <= lastLine; n++)
@@ -5588,7 +5356,7 @@ function OUTER(gscope)
               // move by "paragraph", a feature that Firefox lacks but IE and Safari both have
               if (up)
               {
-                if (focusCaret[1] == 0 && canChangeLines)
+                if (focusCaret[1] === 0 && canChangeLines)
                 {
                   focusCaret[0]--;
                   focusCaret[1] = 0;
@@ -5885,9 +5653,7 @@ function OUTER(gscope)
       }
     }
   }
+
 }
 
-
-OUTER(this);
-
-exports.OUTER = OUTER; // This is probably unimportant.
+exports.editor = new Ace2Inner();
