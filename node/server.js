@@ -107,6 +107,7 @@ async.waterfall([
     padManager = require('./db/PadManager');
     securityManager = require('./db/SecurityManager');
     socketIORouter = require("./handler/SocketIORouter");
+    hasPadAccess = require("./padaccess");
     
     //install logging      
     var httpLogger = log4js.getLogger("http");
@@ -128,26 +129,6 @@ async.waterfall([
       gracefulShutdown();
     });
     
-    //checks for padAccess
-    function hasPadAccess(req, res, callback)
-    {
-      securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj)
-      {
-        if(ERR(err, callback)) return;
-        
-        //there is access, continue
-        if(accessObj.accessStatus == "grant")
-        {
-          callback();
-        }
-        //no access
-        else
-        {
-          res.send("403 - Can't touch this", 403);
-        }
-      });
-    }
-
     //checks for basic http auth
     function basic_auth (req, res, next) {
       if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
@@ -167,63 +148,6 @@ async.waterfall([
         res.send('Authentication required', 401);
       }
     }
-    
-    //serve read only pad
-    app.get('/ro/:id', function(req, res)
-    { 
-      var html;
-      var padId;
-      var pad;
-      
-      async.series([
-        //translate the read only pad to a padId
-        function(callback)
-        {
-          readOnlyManager.getPadId(req.params.id, function(err, _padId)
-          {
-            if(ERR(err, callback)) return;
-            
-            padId = _padId;
-            
-            //we need that to tell hasPadAcess about the pad  
-            req.params.pad = padId; 
-            
-            callback();
-          });
-        },
-        //render the html document
-        function(callback)
-        {
-          //return if the there is no padId
-          if(padId == null)
-          {
-            callback("notfound");
-            return;
-          }
-          
-          hasPadAccess(req, res, function()
-          {
-            //render the html document
-            exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
-            {
-              if(ERR(err, callback)) return;
-              html = _html;
-              callback();
-            });
-          });
-        }
-      ], function(err)
-      {
-        //throw any unexpected error
-        if(err && err != "notfound")
-          ERR(err);
-          
-        if(err == "notfound")
-          res.send('404 - Not Found', 404);
-        else
-          res.send(html);
-      });
-    });
     
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
