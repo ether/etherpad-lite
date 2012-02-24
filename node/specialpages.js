@@ -30,4 +30,19 @@ exports.expressServer = function (hook_name, args, cb) {
       }
     });
   });
+
+  //serve pad.html under /p
+  args.app.get('/p/:pad', function(req, res, next)
+  {    
+    var filePath = path.normalize(__dirname + "/../static/pad.html");
+    res.sendfile(filePath, { maxAge: exports.maxAge });
+  });
+
+  //serve timeslider.html under /p/$padname/timeslider
+  args.app.get('/p/:pad/timeslider', function(req, res, next)
+  {
+    var filePath = path.normalize(__dirname + "/../static/timeslider.html");
+    res.sendfile(filePath, { maxAge: exports.maxAge });
+  });
+
 }

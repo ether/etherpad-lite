@@ -254,20 +254,6 @@ async.waterfall([
       });
     });
     
-    //serve pad.html under /p
-    app.get('/p/:pad', function(req, res, next)
-    {    
-      var filePath = path.normalize(__dirname + "/../static/pad.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve timeslider.html under /p/$padname/timeslider
-    app.get('/p/:pad/timeslider', function(req, res, next)
-    {
-      var filePath = path.normalize(__dirname + "/../static/timeslider.html");
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
     {
