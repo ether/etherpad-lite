@@ -1,8 +1,16 @@
 {
-  "parts": [{
-    "name": "static",
-    "hooks": {
-      "expressServer": "../static:expressServer"
+  "parts": [
+    {
+      "name": "static",
+      "hooks": {
+        "expressServer": "../static:expressServer"
+      }
+    },
+    {
+      "name": "specialpages",
+      "hooks": {
+        "expressServer": "../specialpages:expressServer"
+      }
     }
- }]
+  ]
 }
