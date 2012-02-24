@@ -21,7 +21,7 @@
                       "log4js"              : "0.4.1",
                       "jsdom-nocontextifiy" : "0.2.10",
                       "async-stacktrace"    : "0.0.2",
-		      "npm"		    : "1.1",
+		      "npm"		    : "1.1"
                      },
   "devDependencies": {
                       "jshint"  : "*"
