@@ -1,6 +1,8 @@
 {
   "parts": [{
     "name": "__builtin__",
-    "hooks": {}
+    "hooks": {
+      "expressServer": "../test:expressServer"
+    }
  }]
 }
