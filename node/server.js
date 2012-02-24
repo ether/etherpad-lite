@@ -70,6 +70,12 @@ exports.maxAge = 1000*60*60*6;
 log4js.setGlobalLogLevel(settings.loglevel);
 
 async.waterfall([
+  //initalize the database
+  function (callback)
+  {
+    db.init(callback);
+  },
+
   plugins.update,
 
   function (callback) {
@@ -79,11 +85,6 @@ async.waterfall([
     callback();
   },
 
-  //initalize the database
-  function (callback)
-  {
-    db.init(callback);
-  },
   //initalize the http server
   function (callback)
   {
@@ -95,33 +96,6 @@ async.waterfall([
     app.use(function (req, res, next) {
       res.header("Server", serverName);
       next();
-    });
-
-    
-    //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
-    app.param('pad', function (req, res, next, padId) {
-      //ensure the padname is valid and the url doesn't end with a /
-      if(!padManager.isValidPadId(padId) || /\/$/.test(req.url))
-      {
-        res.send('Such a padname is forbidden', 404);
-      }
-      else
-      {
-        padManager.sanitizePadId(padId, function(sanitizedPadId) {
-          //the pad id was sanitized, so we redirect to the sanitized version
-          if(sanitizedPadId != padId)
-          {
-            var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + sanitizedPadId);
-            res.header('Location', real_path);
-            res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
-          }
-          //the pad id was fine, so just render it
-          else
-          {
-            next();
-          }
-        });
-      }
     });
 
     //load modules that needs a initalized db

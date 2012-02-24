@@ -11,6 +11,12 @@
       "hooks": {
         "expressServer": "../specialpages:expressServer"
       }
+    },
+    {
+      "name": "padurlsanitize",
+      "hooks": {
+        "expressServer": "../padurlsanitize:expressServer"
+      }
     }
   ]
 }
