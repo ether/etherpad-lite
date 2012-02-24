@@ -30,67 +30,72 @@ exports.update = function (cb) {
   });
 }
 
-exports.loadFn = function (path) {
-  var x = path.split(":");
-  var fn = require(x[0]);
-  x[1].split(".").forEach(function (name) {
-    fn = fn[name];
+exports.getPlugins = function (cb) {
+  exports.getPackages(function (er, packages) {
+    var parts = {};
+    var plugins = {};
+    // Load plugin metadata pluginomatic.json
+    async.forEach(
+      Object.keys(packages),
+      function (plugin_name, cb) {
+        exports.loadPlugin(packages, plugin_name, plugins, parts, cb);
+      },
+      function (err) {
+        parts = exports.sortParts(parts);
+        var hooks = exports.extractHooks(parts);
+        cb(err, plugins, parts, hooks);
+      }
+    );
   });
-  return fn;
 }
 
-exports.getPlugins = function (cb) {
+exports.getPackages = function (cb) {
   // Load list of installed NPM packages, flatten it to a list, and filter out only packages with names that
   // ../.. and not just .. because current dir is like ETHERPAD_ROOT/node/node_modules (!!!!)
   var dir = path.resolve(npm.dir, "../..")
   readInstalled(dir, function (er, data) {
-    var plugins = {};
-    var parts = {};
+    if (er) cb(er, null);
+    var packages = {};
     function flatten(deps) {
       Object.keys(deps).forEach(function (name) {
         if (name.indexOf(exports.prefix) == 0) {
-          plugins[name] = deps[name];
+          packages[name] = deps[name];
 	}
 	if (deps[name].dependencies !== undefined)
 	  flatten(deps[name].dependencies);
       });
     }
     flatten([data]);
-
-    // Load plugin metadata pluginomatic.json
-    async.forEach(
-      Object.keys(plugins),
-      function (plugin_name, cb) {
-	fs.readFile(
-	  path.resolve(plugins[plugin_name].path, "pluginomatic.json"),
-          function (er, data) {
-	    plugin = JSON.parse(data);
-	    plugin.package = plugins[plugin_name];
-	    plugins[plugin_name] = plugin;
-	    plugin.parts.forEach(function (part) {
-	      part.plugin = plugin;
-              part.full_name = plugin_name + "/" + part.name;
-	      parts[part.full_name] = part;
-            });
-	    cb();
-	  }
-        );
-      },
-      function (err) {
-        parts = exports.sortParts(parts);
-        var hooks = {};
-	parts.forEach(function (part) {
-          Object.keys(part.hooks || {}).forEach(function (hook_name) {
-            if (hooks[hook_name] === undefined) hooks[hook_name] = [];
-	      var hook_fn_name = part.hooks[hook_name];
-
-	    hooks[hook_name].push({"hook": exports.loadFn(part.hooks[hook_name]), "part": part});
-	  });
-        });
-          cb(err, plugins, parts, hooks);
-      }
-    );
+    cb(null, packages);
   });
+}
+
+exports.extractHooks = function (parts) {
+  var hooks = {};
+  parts.forEach(function (part) {
+    Object.keys(part.hooks || {}).forEach(function (hook_name) {
+      if (hooks[hook_name] === undefined) hooks[hook_name] = [];
+	var hook_fn_name = part.hooks[hook_name];
+      hooks[hook_name].push({"hook": exports.loadFn(part.hooks[hook_name]), "part": part});
+    });
+  });
+  return hooks;
+}
+
+exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
+  fs.readFile(
+    path.resolve(packages[plugin_name].path, "pluginomatic.json"),
+    function (er, data) {
+      var plugin = JSON.parse(data);
+      plugin.package = packages[plugin_name];
+      plugin.parts.forEach(function (part) {
+	part.plugin = plugin;
+	part.full_name = plugin_name + "/" + part.name;
+	parts[part.full_name] = part;
+      });
+      cb();
+    }
+  );
 }
 
 exports.partsToParentChildList = function (parts) {
@@ -118,3 +123,12 @@ exports.sortParts = function(parts) {
     function (name) { return parts[name]; }
   );
 };
+
+exports.loadFn = function (path) {
+  var x = path.split(":");
+  var fn = require(x[0]);
+  x[1].split(".").forEach(function (name) {
+    fn = fn[name];
+  });
+  return fn;
+}
