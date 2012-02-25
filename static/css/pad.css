@@ -816,8 +816,8 @@ ul#colorpickerswatches li:hover
 #chaticon
 {
   z-index: 400;
-  position:absolute;
-  bottom:0px;
+  position: fixed;
+  bottom: 0px;
   right: 20px;
   padding: 5px;
   border-left: 1px solid #999;
@@ -1291,5 +1291,8 @@ label {
     top: 0;
     bottom: 33px;
     right: 0; 
+  }
+  .separator {
+    display: none;
   }
 }
