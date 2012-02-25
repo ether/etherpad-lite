@@ -7,7 +7,8 @@
     { "name": "padreadonly", "hooks": { "expressCreateServer": "../padreadonly:expressServer" } },
     { "name": "webaccess", "hooks": { "expressConfigure": "../webaccess:expressConfigure" } },
     { "name": "apicalls", "hooks": { "expressCreateServer": "../apicalls:expressCreateServer" } },
-    { "name": "importexport", "hooks": { "expressCreateServer": "../importexport:expressCreateServer" } }
+    { "name": "importexport", "hooks": { "expressCreateServer": "../importexport:expressCreateServer" } },
+    { "name": "errorhandling", "hooks": { "expressCreateServer": "../errorhandling:expressCreateServer" } }
 
   ]
 }
