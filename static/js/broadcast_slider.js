@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -20,471 +20,367 @@
  * limitations under the License.
  */
 
- // These parameters were global, now they are injected. A reference to the
- // Timeslider controller would probably be more appropriate.
-function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
-{
+// These parameters were global, now they are injected. A reference to the
+// Timeslider controller would probably be more appropriate.
+function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
   var BroadcastSlider;
 
-  (function()
-  { // wrap this code in its own namespace
-    var sliderLength = 1000;
-    var sliderPos = 0;
-    var sliderActive = false;
-    var slidercallbacks = [];
-    var savedRevisions = [];
-    var sliderPlaying = false;
+  (function() { // wrap this code in its own namespace
+    var sliderLength    = 1000,
+        sliderPos       = 0,
+        sliderActive    = false,
+        slidercallbacks = [],
+        savedRevisions  = [],
+        sliderPlaying   = false;
 
-    function disableSelection(element)
-    {
-      element.onselectstart = function()
-      {
+    function disableSelection(element) {
+      element.onselectstart = function() {
         return false;
       };
-      element.unselectable = "on";
+      element.unselectable        = "on";
       element.style.MozUserSelect = "none";
-      element.style.cursor = "default";
     }
-    var _callSliderCallbacks = function(newval)
-      {
-        sliderPos = newval;
-        for (var i = 0; i < slidercallbacks.length; i++)
-        {
-          slidercallbacks[i](newval);
-        }
-        }
-        
-        
-        
-        
-        
-    var updateSliderElements = function()
-      {
-        for (var i = 0; i < savedRevisions.length; i++)
-        {
-          var position = parseInt(savedRevisions[i].attr('pos'));
-          savedRevisions[i].css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
-        }
-        $("#ui-slider-handle").css('left', sliderPos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
-        }
-        
-        
-        
-        
-        
-    var addSavedRevision = function(position, info)
-      {
-        var newSavedRevision = $('<div></div>');
-        newSavedRevision.addClass("star");
+    var _callSliderCallbacks = function(newval) {
+      sliderPos = newval;
+      for (var i=0, l=slidercallbacks.length; i < l; i++) {
+        slidercallbacks[i](newval);
+      }
+    };
+    var updateSliderElements = function() {
+      for (var i=0, l=savedRevisions.length; i < l; i++) {
+        var position = parseInt(savedRevisions[i].attr('pos'), 10);
+        savedRevisions[i].css('left', (position * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0)) - 1);
+      }
+      $('#ui-slider-handle').css('left', sliderPos * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0));
+    };
+    var addSavedRevision = function(position, info) {
+      var newSavedRevision = $('<div></div>');
+      newSavedRevision
+      .addClass('star')
+      .attr('pos', position)
+      .css('position', 'absolute')
+      .css('left', (position * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0)) - 1);
+      $('#timeslider-slider').append(newSavedRevision);
+      newSavedRevision.mouseup(function(evt) {
+        BroadcastSlider.setSliderPosition(position);
+      });
+      savedRevisions.push(newSavedRevision);
+    };
 
-        newSavedRevision.attr('pos', position);
-        newSavedRevision.css('position', 'absolute');
-        newSavedRevision.css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
-        $("#timeslider-slider").append(newSavedRevision);
-        newSavedRevision.mouseup(function(evt)
-        {
-          BroadcastSlider.setSliderPosition(position);
-        });
-        savedRevisions.push(newSavedRevision);
-        };
+    var removeSavedRevision = function(position) {
+      var element = $('.star [pos=' + position + ']');
+      savedRevisions.remove(element);
+      element.remove();
+      return element;
+    };
 
-    var removeSavedRevision = function(position)
-      {
-        var element = $("div.star [pos=" + position + "]");
-        savedRevisions.remove(element);
-        element.remove();
-        return element;
-        };
-
-    /* Begin small 'API' */
-
-    function onSlider(callback)
-    {
+    /* small 'API' START */
+    function onSlider(callback) {
       slidercallbacks.push(callback);
     }
 
-    function getSliderPosition()
-    {
+    function getSliderPosition() {
       return sliderPos;
     }
 
-    function setSliderPosition(newpos)
-    {
+    function setSliderPosition(newpos) {
       newpos = Number(newpos);
-      if (newpos < 0 || newpos > sliderLength) return;
-      $("#ui-slider-handle").css('left', newpos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
-      $("a.tlink").map(function()
-      {
-        $(this).attr('href', $(this).attr('thref').replace("%revision%", newpos));
+      if (newpos < 0 || newpos > sliderLength)
+        return;
+      $('#ui-slider-handle').css('left', newpos * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0));
+      $('.tlink').map(function() {
+        $(this).attr('href', $(this).attr('thref').replace('%revision%', newpos));
       });
-      $("#revision_label").html("Version " + newpos);
+      $('#revision_label').html('Version ' + newpos);
 
       if (newpos == 0)
-      {
-        $("#leftstar").css('opacity', .5);
-        $("#leftstep").css('opacity', .5);
-      }
+        $('#leftstar, #leftstep').addClass('inactive');
       else
-      {
-        $("#leftstar").css('opacity', 1);
-        $("#leftstep").css('opacity', 1);
-      }
+        $('#leftstar, #leftstep').removeClass('inactive');
 
       if (newpos == sliderLength)
-      {
-        $("#rightstar").css('opacity', .5);
-        $("#rightstep").css('opacity', .5);
-      }
+        $('#rightstar, #rightstep').addClass('inactive');
       else
-      {
-        $("#rightstar").css('opacity', 1);
-        $("#rightstep").css('opacity', 1);
-      }
+        $('#rightstar, #rightstep').removeClass('inactive');
 
       sliderPos = newpos;
       _callSliderCallbacks(newpos);
     }
 
-    function getSliderLength()
-    {
+    function getSliderLength() {
       return sliderLength;
     }
 
-    function setSliderLength(newlength)
-    {
+    function setSliderLength(newlength) {
       sliderLength = newlength;
       updateSliderElements();
     }
 
-    // just take over the whole slider screen with a reconnect message
-
-    function showReconnectUI()
-    {
-      if (!clientVars.sliderEnabled || !clientVars.supportsSlider)
-      {
-        $("#padmain, #rightbars").css('top', "130px");
-        $("#timeslider").show();
-      }
+    // take over the whole slider screen with a reconnect message
+    function showReconnectUI() {
       $('#error').show();
     }
 
-    function setAuthors(authors)
-    {
-      $("#authorstable").empty();
-      var numAnonymous = 0;
-      var numNamed = 0;
-      authors.forEach(function(author)
-      {
-        if (author.name)
-        {
+    function setAuthors(authors) {
+      $('#authorstable').empty();
+      var numAnonymous  = 0,
+          numNamed      = 0,
+          html;
+      authors.forEach(function(author) {
+        if (author.name) {
           numNamed++;
-          var tr = $('<tr></tr>');
-          var swatchtd = $('<td></td>');
-          var swatch = $('<div class="swatch"></div>');
+          var tr        = $('<tr></tr>'),
+              swatchtd  = $('<td></td>'),
+              swatch    = $('<div class="swatch"></div>'),
+              nametd    = $('<td></td>');
           swatch.css('background-color', clientVars.colorPalette[author.colorId]);
           swatchtd.append(swatch);
           tr.append(swatchtd);
-          var nametd = $('<td></td>');
-          nametd.text(author.name || "unnamed");
+          nametd.text(author.name || 'unnamed');
           tr.append(nametd);
-          $("#authorstable").append(tr);
-        }
-        else
-        {
+          $('#authorstable').append(tr);
+        } else {
           numAnonymous++;
         }
       });
-      if (numAnonymous > 0)
-      {
-        var html = "<tr><td colspan=\"2\" style=\"color:#999; padding-left: 10px\">" + (numNamed > 0 ? "...and " : "") + numAnonymous + " unnamed author" + (numAnonymous > 1 ? "s" : "") + "</td></tr>";
-        $("#authorstable").append($(html));
+      if (numAnonymous > 0) {
+        html =  '<tr><td colspan="2" style="color:#999; padding-left:10px">' +
+                    (numNamed > 0 ? '...and ' : '') + numAnonymous + ' unnamed author' +
+                    (numAnonymous > 1 ? 's' : '') + '</td></tr>';
+        $('#authorstable').append($(html));
       }
-      if (authors.length == 0)
-      {
-        $("#authorstable").append($("<tr><td colspan=\"2\" style=\"color:#999; padding-left: 10px\">No Authors</td></tr>"))
+      if (authors.length == 0) {
+        html = '<tr><td colspan="2" style="color:#999; padding-left:10px">No Authors</td></tr>';
+        $('#authorstable').append($(html));
       }
     }
 
     BroadcastSlider = {
-      onSlider: onSlider,
-      getSliderPosition: getSliderPosition,
-      setSliderPosition: setSliderPosition,
-      getSliderLength: getSliderLength,
-      setSliderLength: setSliderLength,
-      isSliderActive: function()
-      {
+      onSlider          : onSlider,
+      getSliderPosition : getSliderPosition,
+      setSliderPosition : setSliderPosition,
+      getSliderLength   : getSliderLength,
+      setSliderLength   : setSliderLength,
+      isSliderActive    : function() {
         return sliderActive;
       },
-      playpause: playpause,
-      addSavedRevision: addSavedRevision,
-      showReconnectUI: showReconnectUI,
-      setAuthors: setAuthors
-    }
+      playpause         : playpause,
+      addSavedRevision  : addSavedRevision,
+      showReconnectUI   : showReconnectUI,
+      setAuthors        : setAuthors
+    };
 
-    function playButtonUpdater()
-    {
-      if (sliderPlaying)
-      {
-        if (getSliderPosition() + 1 > sliderLength)
-        {
-          $("#playpause_button_icon").toggleClass('pause');
+    function playButtonUpdater() {
+      if (sliderPlaying) {
+        if (getSliderPosition() + 1 > sliderLength) {
+          $('#playpause_button').toggleClass('pause');
           sliderPlaying = false;
           return;
         }
         setSliderPosition(getSliderPosition() + 1);
-
         setTimeout(playButtonUpdater, 100);
       }
     }
 
-    function playpause()
-    {
-      $("#playpause_button_icon").toggleClass('pause');
-
-      if (!sliderPlaying)
-      {
+    function playpause() {
+      $('#playpause_button').toggleClass('pause');
+      if (!sliderPlaying) {
         if (getSliderPosition() == sliderLength) setSliderPosition(0);
         sliderPlaying = true;
         playButtonUpdater();
-      }
-      else
-      {
+      } else {
         sliderPlaying = false;
       }
     }
 
     // assign event handlers to html UI elements after page load
-    //$(window).load(function ()
-    fireWhenAllScriptsAreLoaded.push(function()
-    {
+    fireWhenAllScriptsAreLoaded.push(function() {
       disableSelection($("#playpause_button")[0]);
       disableSelection($("#timeslider")[0]);
 
-      if (clientVars.sliderEnabled && clientVars.supportsSlider)
-      {
-        $(document).keyup(function(e)
-        {
-          var code = -1;
-          if (!e) var e = window.event;
-          if (e.keyCode) code = e.keyCode;
-          else if (e.which) code = e.which;
+      if (clientVars.sliderEnabled && clientVars.supportsSlider) {
+        $(document).keyup(function(e) {
+          var code = -1,
+              i, l, nextStar, pos;
+          if (!e)
+            var e = window.event;
+          code = (e.keyCode) ? e.keyCode : e.which;
 
-          if (code == 37)
-          { // left
-            if (!e.shiftKey)
-            {
-              setSliderPosition(getSliderPosition() - 1);
-            }
-            else
-            {
-              var nextStar = 0; // default to first revision in document
-              for (var i = 0; i < savedRevisions.length; i++)
-              {
-                var pos = parseInt(savedRevisions[i].attr('pos'));
-                if (pos < getSliderPosition() && nextStar < pos) nextStar = pos;
+          switch (code) {
+            case 37:    // left
+              if (!e.shiftKey) {
+                setSliderPosition(getSliderPosition() - 1);
+              } else {
+                nextStar = 0; // default to first revision in document
+                for (i=0, l=savedRevisions.length; i < l; i++) {
+                  pos = parseInt(savedRevisions[i].attr('pos'), 10);
+                  if (pos < getSliderPosition() && nextStar < pos)
+                    nextStar = pos;
+                }
+                setSliderPosition(nextStar);
               }
-              setSliderPosition(nextStar);
-            }
-          }
-          else if (code == 39)
-          {
-            if (!e.shiftKey)
-            {
-              setSliderPosition(getSliderPosition() + 1);
-            }
-            else
-            {
-              var nextStar = sliderLength; // default to last revision in document
-              for (var i = 0; i < savedRevisions.length; i++)
-              {
-                var pos = parseInt(savedRevisions[i].attr('pos'));
-                if (pos > getSliderPosition() && nextStar > pos) nextStar = pos;
+              break;
+            case 39:
+              if (!e.shiftKey) {
+                setSliderPosition(getSliderPosition() + 1);
+              } else {
+                nextStar = sliderLength; // default to last revision in document
+                for (i=0, l=savedRevisions.length; i < l; i++) {
+                  pos = parseInt(savedRevisions[i].attr('pos'), 10);
+                  if (pos > getSliderPosition() && nextStar > pos)
+                    nextStar = pos;
+                }
+                setSliderPosition(nextStar);
               }
-              setSliderPosition(nextStar);
-            }
+              break;
+            case 32:
+              playpause();
+              break;
           }
-          else if (code == 32) playpause();
-
         });
       }
 
-      $(window).resize(function()
-      {
+      $(window).resize(function() {
         updateSliderElements();
       });
 
-      $("#ui-slider-bar").mousedown(function(evt)
-      {
-        setSliderPosition(Math.floor((evt.clientX - $("#ui-slider-bar").offset().left) * sliderLength / 742));
-        $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
-        $("#ui-slider-handle").trigger(evt);
+      $('#ui-slider-bar')
+      .mousedown(function(evt) {
+        setSliderPosition(Math.floor((evt.clientX - $('#ui-slider-bar').offset().left) * sliderLength / 742));
+        $('#ui-slider-handle')
+        .css('left', (evt.clientX - $('#ui-slider-bar').offset().left))
+        .trigger(evt);
       });
 
-      // Slider dragging
-      $("#ui-slider-handle").mousedown(function(evt)
-      {
-        this.startLoc = evt.clientX;
-        this.currentLoc = parseInt($(this).css('left'));
+      // slider dragging
+      $('#ui-slider-handle')
+      .mousedown(function(evt) {
+        this.startLoc   = evt.clientX;
+        this.currentLoc = parseInt($(this).css('left'), 10);
         var self = this;
         sliderActive = true;
-        $(document).mousemove(function(evt2)
-        {
-          $(self).css('pointer', 'move')
-          var newloc = self.currentLoc + (evt2.clientX - self.startLoc);
-          if (newloc < 0) newloc = 0;
-          if (newloc > ($("#ui-slider-bar").width() - 2)) newloc = ($("#ui-slider-bar").width() - 2);
-          $("#revision_label").html("Version " + Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)));
+        $(document).mousemove(function(evt2) {
+          var newloc        = self.currentLoc + (evt2.clientX - self.startLoc),
+              adjustedWidth = $('#ui-slider-bar').width() - 2,
+              pos;
+          if (newloc < 0)
+            newloc = 0;
+          if (newloc > adjustedWidth)
+            newloc = adjustedWidth;
+          $('#revision_label').html('Version ' + Math.floor(newloc * sliderLength / adjustedWidth));
           $(self).css('left', newloc);
-          if (getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))) _callSliderCallbacks(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
+          pos = Math.floor(newloc * sliderLength / adjustedWidth);
+          if (getSliderPosition() != pos)
+            _callSliderCallbacks(pos);
         });
-        $(document).mouseup(function(evt2)
-        {
-          $(document).unbind('mousemove');
-          $(document).unbind('mouseup');
+        $(document).mouseup(function(evt2) {
+          $(document)
+          .unbind('mousemove')
+          .unbind('mouseup');
           sliderActive = false;
           var newloc = self.currentLoc + (evt2.clientX - self.startLoc);
-          if (newloc < 0) newloc = 0;
-          if (newloc > ($("#ui-slider-bar").width() - 2)) newloc = ($("#ui-slider-bar").width() - 2);
+          if (newloc < 0)
+            newloc = 0;
+          if (newloc > ($("#ui-slider-bar").width() - 2))
+            newloc = ($("#ui-slider-bar").width() - 2);
           $(self).css('left', newloc);
-          // if(getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width()-2)))
-          setSliderPosition(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
-          self.currentLoc = parseInt($(self).css('left'));
+          setSliderPosition(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)));
+          self.currentLoc = parseInt($(self).css('left'), 10);
         });
-      })
+      });
 
-      // play/pause toggling
-      $("#playpause_button").mousedown(function(evt)
-      {
+      // toggle play / pause
+      $('#playpause_button').mousedown(function(evt) {
         var self = this;
-
-        $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
-        $(self).mouseup(function(evt2)
-        {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+        $(self)
+        .addClass('pressed')
+        .mouseup(function(evt2) {
+          $(self).removeClass('pressed');
           $(self).unbind('mouseup');
           BroadcastSlider.playpause();
         });
-        $(document).mouseup(function(evt2)
-        {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+        $(document).mouseup(function(evt2) {
+          $(self).removeClass('pressed');
           $(document).unbind('mouseup');
         });
       });
 
-      // next/prev saved revision and changeset
-      $('.stepper').mousedown(function(evt)
-      {
+      // next / prev saved revision and changeset
+      $('#steppers A').mousedown(function(evt) {
         var self = this;
-        var origcss = $(self).css('background-position');
-        if (!origcss)
-        {
-          origcss = $(self).css('background-position-x') + " " + $(self).css('background-position-y');
-        }
-        var origpos = parseInt(origcss.split(" ")[1]);
-        var newpos = (origpos - 43);
-        if (newpos < 0) newpos += 87;
-
-        var newcss = (origcss.split(" ")[0] + " " + newpos + "px");
-        if ($(self).css('opacity') != 1.0) newcss = origcss;
-
-        $(self).css('background-position', newcss)
-
-        $(self).mouseup(function(evt2)
-        {
-          $(self).css('background-position', origcss);
-          $(self).unbind('mouseup');
+        $(self)
+        .addClass('clicked')
+        .mouseup(function(evt2) {
+          $(self)
+          .removeClass('clicked')
+          .unbind('mouseup');
           $(document).unbind('mouseup');
-          if ($(self).attr("id") == ("leftstep"))
-          {
-            setSliderPosition(getSliderPosition() - 1);
-          }
-          else if ($(self).attr("id") == ("rightstep"))
-          {
-            setSliderPosition(getSliderPosition() + 1);
-          }
-          else if ($(self).attr("id") == ("leftstar"))
-          {
-            var nextStar = 0; // default to first revision in document
-            for (var i = 0; i < savedRevisions.length; i++)
-            {
-              var pos = parseInt(savedRevisions[i].attr('pos'));
-              if (pos < getSliderPosition() && nextStar < pos) nextStar = pos;
-            }
-            setSliderPosition(nextStar);
-          }
-          else if ($(self).attr("id") == ("rightstar"))
-          {
-            var nextStar = sliderLength; // default to last revision in document
-            for (var i = 0; i < savedRevisions.length; i++)
-            {
-              var pos = parseInt(savedRevisions[i].attr('pos'));
-              if (pos > getSliderPosition() && nextStar > pos) nextStar = pos;
-            }
-            setSliderPosition(nextStar);
+          var id = $(self).attr('id'),
+              i, l, nextStar, pos;
+          switch (id) {
+            case 'leftstep':
+              setSliderPosition(getSliderPosition() - 1);
+              break;
+            case 'rightstep':
+              setSliderPosition(getSliderPosition() + 1);
+              break;
+            case 'leftstar':
+              nextStar = 0;             // default to first revision in document
+              for (i=0, l=savedRevisions.length; i < l; i++) {
+                pos = parseInt(savedRevisions[i].attr('pos'), 10);
+                if (pos < getSliderPosition() && nextStar < pos)
+                  nextStar = pos;
+              }
+              setSliderPosition(nextStar);
+              break;
+            case 'rightstar':
+              nextStar = sliderLength;  // default to last revision in document
+              for (i=0, l=savedRevisions.length; i < l; i++) {
+                pos = parseInt(savedRevisions[i].attr('pos'), 10);
+                if (pos > getSliderPosition() && nextStar > pos)
+                  nextStar = pos;
+              }
+              setSliderPosition(nextStar);
+              break;
           }
         });
-        $(document).mouseup(function(evt2)
-        {
-          $(self).css('background-position', origcss);
-          $(self).unbind('mouseup');
+        $(document).mouseup(function(evt2) {
+          $(self)
+          .removeClass('clicked')
+          .unbind('mouseup');
           $(document).unbind('mouseup');
         });
-      })
+      });
 
-      if (clientVars)
-      {
+      if (clientVars) {
         if (clientVars.fullWidth)
-        {
-          $("#padpage").css('width', '100%');
-          $("#revision").css('position', "absolute")
-          $("#revision").css('right', "20px")
-          $("#revision").css('top', "20px")
-          $("#padmain").css('left', '0px');
-          $("#padmain").css('right', '197px');
-          $("#padmain").css('width', 'auto');
-          $("#rightbars").css('right', '7px');
-          $("#rightbars").css('margin-right', '0px');
-          $("#timeslider").css('width', 'auto');
-        }
-
-        if (clientVars.disableRightBar)
-        {
-          $("#rightbars").css('display', 'none');
+          $('#padpage').addClass('full-width');
+        if (clientVars.disableRightBar) {
+          $('#rightbars').css('display', 'none');
           $('#padmain').css('width', 'auto');
-          if (clientVars.fullWidth) $("#padmain").css('right', '7px');
-          else $("#padmain").css('width', '860px');
-          $("#revision").css('position', "absolute");
-          $("#revision").css('right', "20px");
-          $("#revision").css('top', "20px");
+          if (clientVars.fullWidth)
+            $('#padmain').css({right: 7});
+          else
+            $('#padmain').css('width', '860px');
+          $('#revision').css({
+            position: 'absolute',
+            right   : 20,
+            top     : 20
+          });
         }
-
-
-        if (clientVars.sliderEnabled)
-        {
-          if (clientVars.supportsSlider)
-          {
-            $("#padmain, #rightbars").css('top', "130px");
-            $("#timeslider").show();
+        if (clientVars.sliderEnabled) {
+          if (clientVars.supportsSlider) {
             setSliderLength(clientVars.totalRevs);
             setSliderPosition(clientVars.revNum);
-            clientVars.savedRevisions.forEach(function(revision)
-            {
+            clientVars.savedRevisions.forEach(function(revision) {
               addSavedRevision(revision.revNum, revision);
-            })
-          }
-          else
-          {
+            });
+          } else {
             // slider is not supported
-            $("#padmain, #rightbars").css('top', "130px");
-            $("#timeslider").show();
-            $("#error").html("The timeslider feature is not supported on this pad. <a href=\"/ep/about/faq#disabledslider\">Why not?</a>");
-            $("#error").show();
+            $('#error').html('The timeslider feature is not supported on this pad. <a href="/ep/about/faq#disabledslider">Why not?</a>').show();
           }
-        }
-        else
-        {
-          if (clientVars.supportsSlider)
-          {
+        } else {
+          if (clientVars.supportsSlider) {
             setSliderLength(clientVars.totalRevs);
             setSliderPosition(clientVars.revNum);
           }
@@ -493,10 +389,9 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     });
   })();
 
-  BroadcastSlider.onSlider(function(loc)
-  {
-    $("#viewlatest").html(loc == BroadcastSlider.getSliderLength() ? "Viewing latest content" : "View latest content");
-  })
+  BroadcastSlider.onSlider(function(loc) {
+    $('#viewlatest').html(loc == BroadcastSlider.getSliderLength() ? 'Viewing latest content' : 'View latest content');
+  });
 
   return BroadcastSlider;
 }

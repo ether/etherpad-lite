@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -23,64 +23,51 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-function loadBroadcastRevisionsJS()
-{
-  function Revision(revNum)
-  {
+function loadBroadcastRevisionsJS() {
+
+  function Revision(revNum) {
     this.rev = revNum;
     this.changesets = [];
   }
 
-  Revision.prototype.addChangeset = function(destIndex, changeset, timeDelta)
-  {
+  Revision.prototype.addChangeset = function(destIndex, changeset, timeDelta) {
     var changesetWrapper = {
-      deltaRev: destIndex - this.rev,
-      deltaTime: timeDelta,
-      getValue: function()
-      {
-        return changeset;
-      }
+      deltaRev  : destIndex - this.rev,
+      deltaTime : timeDelta,
+      getValue  : function() {return changeset;}
     };
     this.changesets.push(changesetWrapper);
-    this.changesets.sort(function(a, b)
-    {
-      return (b.deltaRev - a.deltaRev)
+    this.changesets.sort(function(a, b) {
+      return (b.deltaRev - a.deltaRev);
     });
-  }
+  };
 
   revisionInfo = {};
-  revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta)
-  {
-    var startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
-    var endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
+  revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta) {
+    var startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex),
+        endRevision   = revisionInfo[toIndex]   || revisionInfo.createNew(toIndex);
     startRevision.addChangeset(toIndex, changeset, timeDelta);
     endRevision.addChangeset(fromIndex, backChangeset, -1 * timeDelta);
-  }
+  };
 
   revisionInfo.latest = clientVars.totalRevs || -1;
 
-  revisionInfo.createNew = function(index)
-  {
+  revisionInfo.createNew = function(index) {
     revisionInfo[index] = new Revision(index);
     if (index > revisionInfo.latest)
-    {
       revisionInfo.latest = index;
-    }
-
     return revisionInfo[index];
-  }
+  };
 
   // assuming that there is a path from fromIndex to toIndex, and that the links
   // are laid out in a skip-list format
-  revisionInfo.getPath = function(fromIndex, toIndex)
-  {
-    var changesets = [];
-    var spans = [];
-    var times = [];
-    var elem = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
-    if (elem.changesets.length != 0 && fromIndex != toIndex)
-    {
-      var reverse = !(fromIndex < toIndex)
+  revisionInfo.getPath = function(fromIndex, toIndex) {
+    var changesets  = [],
+        spans       = [],
+        times       = [],
+        elem        = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
+    if (elem.changesets.length != 0 && fromIndex != toIndex) {
+      var reverse = !(fromIndex < toIndex);
       while (((elem.rev < toIndex) && !reverse) || ((elem.rev > toIndex) && reverse))
       {
         var couldNotContinue = false;
@@ -107,22 +94,24 @@ function loadBroadcastRevisionsJS()
           }
         }
 
-        if (couldNotContinue || oldRev == elem.rev) break;
+        if (couldNotContinue || oldRev == elem.rev)
+          break;
       }
     }
 
     var status = 'partial';
-    if (elem.rev == toIndex) status = 'complete';
+    if (elem.rev == toIndex)
+      status = 'complete';
 
     return {
-      'fromRev': fromIndex,
-      'rev': elem.rev,
-      'status': status,
-      'changesets': changesets,
-      'spans': spans,
-      'times': times
+      'fromRev'     : fromIndex,
+      'rev'         : elem.rev,
+      'status'      : status,
+      'changesets'  : changesets,
+      'spans'       : spans,
+      'times'       : times
     };
-  }
+  };
 }
 
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
