@@ -1,15 +1,15 @@
 {
   "parts": [
-    { "name": "static", "hooks": { "expressCreateServer": "../static:expressCreateServer" } },
-    { "name": "specialpages", "hooks": { "expressCreateServer": "../specialpages:expressCreateServer" } },
-    { "name": "padurlsanitize", "hooks": { "expressCreateServer": "../padurlsanitize:expressCreateServer" } },
-    { "name": "minified", "hooks": { "expressCreateServer": "../minified:expressCreateServer" } },
-    { "name": "padreadonly", "hooks": { "expressCreateServer": "../padreadonly:expressCreateServer" } },
-    { "name": "webaccess", "hooks": { "expressConfigure": "../webaccess:expressConfigure" } },
-    { "name": "apicalls", "hooks": { "expressCreateServer": "../apicalls:expressCreateServer" } },
-    { "name": "importexport", "hooks": { "expressCreateServer": "../importexport:expressCreateServer" } },
-    { "name": "errorhandling", "hooks": { "expressCreateServer": "../errorhandling:expressCreateServer" } },
-    { "name": "socketio", "hooks": { "expressCreateServer": "../socketio:expressCreateServer" } }
+    { "name": "static", "hooks": { "expressCreateServer": "../hooks/express/static:expressCreateServer" } },
+    { "name": "specialpages", "hooks": { "expressCreateServer": "../hooks/express/specialpages:expressCreateServer" } },
+    { "name": "padurlsanitize", "hooks": { "expressCreateServer": "../hooks/express/padurlsanitize:expressCreateServer" } },
+    { "name": "minified", "hooks": { "expressCreateServer": "../hooks/express/minified:expressCreateServer" } },
+    { "name": "padreadonly", "hooks": { "expressCreateServer": "../hooks/express/padreadonly:expressCreateServer" } },
+    { "name": "webaccess", "hooks": { "expressConfigure": "../hooks/express/webaccess:expressConfigure" } },
+    { "name": "apicalls", "hooks": { "expressCreateServer": "../hooks/express/apicalls:expressCreateServer" } },
+    { "name": "importexport", "hooks": { "expressCreateServer": "../hooks/express/importexport:expressCreateServer" } },
+    { "name": "errorhandling", "hooks": { "expressCreateServer": "../hooks/express/errorhandling:expressCreateServer" } },
+    { "name": "socketio", "hooks": { "expressCreateServer": "../hooks/express/socketio:expressCreateServer" } }
 
   ]
 }

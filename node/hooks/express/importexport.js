@@ -1,7 +1,7 @@
-var hasPadAccess = require("./padaccess");
-var settings = require('./utils/Settings');
-var exportHandler = require('./handler/ExportHandler');
-var importHandler = require('./handler/ImportHandler');
+var hasPadAccess = require("../../padaccess");
+var settings = require('../../utils/Settings');
+var exportHandler = require('../../handler/ExportHandler');
+var importHandler = require('../../handler/ImportHandler');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/p/:pad/:rev?/export/:type', function(req, res, next) {

@@ -1,4 +1,4 @@
-var padManager = require('./db/PadManager');
+var padManager = require('../../db/PadManager');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   //redirects browser to the pad's sanitized url if needed. otherwise, renders the html

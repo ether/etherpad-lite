@@ -1,11 +1,11 @@
-var settings = require('./utils/Settings');
-var socketio = require('socket.io');
-var socketIORouter = require("./handler/SocketIORouter");
 var log4js = require('log4js');
-var hooks = require("./pluginfw/hooks");
+var socketio = require('socket.io');
+var settings = require('../../utils/Settings');
+var socketIORouter = require("../../handler/SocketIORouter");
+var hooks = require("../../pluginfw/hooks");
 
-var padMessageHandler = require("./handler/PadMessageHandler");
-var timesliderMessageHandler = require("./handler/TimesliderMessageHandler");
+var padMessageHandler = require("../../handler/PadMessageHandler");
+var timesliderMessageHandler = require("../../handler/TimesliderMessageHandler");
 
 
 exports.expressCreateServer = function (hook_name, args, cb) {

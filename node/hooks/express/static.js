@@ -1,5 +1,5 @@
 var path = require('path');
-var minify = require('./utils/Minify');
+var minify = require('../../utils/Minify');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   //serve static files
@@ -10,7 +10,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
   args.app.get('/static/*', function(req, res)
   { 
-    var filePath = path.normalize(__dirname + "/.." +
+    var filePath = path.normalize(__dirname + "/../../.." +
 				  req.url.replace(/\.\./g, '').split("?")[0]);
     res.sendfile(filePath, { maxAge: exports.maxAge });
   });

@@ -1,8 +1,8 @@
 var async = require('async');
-var readOnlyManager = require("./db/ReadOnlyManager");
-var hasPadAccess = require("./padaccess");
-var exporthtml = require("./utils/ExportHtml");
 var ERR = require("async-stacktrace");
+var readOnlyManager = require("../../db/ReadOnlyManager");
+var hasPadAccess = require("../../padaccess");
+var exporthtml = require("../../utils/ExportHtml");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   //serve read only pad

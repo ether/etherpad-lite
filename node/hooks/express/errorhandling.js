@@ -1,5 +1,5 @@
-var db = require('./db/DB');
 var os = require("os");
+var db = require('../../db/DB');
 
 
 exports.onShutdown = false;

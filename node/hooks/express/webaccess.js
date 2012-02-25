@@ -1,7 +1,7 @@
-var settings = require('./utils/Settings');
 var express = require('express');
 var log4js = require('log4js');
 var httpLogger = log4js.getLogger("http");
+var settings = require('../../utils/Settings');
 
 
 //checks for basic http auth
