@@ -10,3 +10,4 @@ var/dirty.db
 bin/convertSettings.json
 *~
 *.patch
+*.DS_Store
