@@ -6,6 +6,7 @@ var path = require("path");
 var async = require("async");
 var fs = require("fs");
 var tsort = require("./tsort");
+var util = require("util");
 
 exports.prefix = 'pluginomatic_';
 exports.loaded = false;
@@ -65,6 +66,7 @@ exports.getPlugins = function (cb) {
       function (err) {
         parts = exports.sortParts(parts);
         var hooks = exports.extractHooks(parts);
+//        console.log(util.inspect(plugins, undefined, null));
         cb(err, plugins, parts, hooks);
       }
     );
@@ -118,7 +120,7 @@ exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
       plugin.package = packages[plugin_name];
       plugins[plugin_name] = plugin;
       plugin.parts.forEach(function (part) {
-	part.plugin = plugin;
+	part.plugin = plugin_name;
 	part.full_name = plugin_name + "/" + part.name;
 	parts[part.full_name] = part;
       });
