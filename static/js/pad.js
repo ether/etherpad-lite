@@ -146,6 +146,12 @@ function savePassword()
   document.location=document.location;
 }
 
+function ieTestXMLHTTP(){
+  // Test for IE known XML HTTP issue
+  if ($.browser.msie && !window.XMLHttpRequest){
+    $("#editorloadingbox").html("You do not have XML HTTP enabled in your browser. <a target='_blank' href='https://github.com/Pita/etherpad-lite/wiki/How-to-enable-native-XMLHTTP-support-in-IE'>Fix this issue</a>");
+  }
+}
 function handshake()
 {
   var loc = document.location;
@@ -364,7 +370,6 @@ var pad = {
   {
     return clientVars.userIsGuest;
   },
-  //
   getUserId: function()
   {
     return pad.myUserInfo.userId;
@@ -384,6 +389,8 @@ var pad = {
 
     $(document).ready(function()
     {
+      // test for XML HTTP capabiites
+      ieTestXMLHTTP();
       // start the custom js
       if (typeof customStart == "function") customStart();
       getParams();
