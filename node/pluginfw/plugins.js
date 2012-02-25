@@ -80,7 +80,12 @@ exports.extractHooks = function (parts) {
     Object.keys(part.hooks || {}).forEach(function (hook_name) {
       if (hooks[hook_name] === undefined) hooks[hook_name] = [];
 	var hook_fn_name = part.hooks[hook_name];
-      hooks[hook_name].push({"hook": exports.loadFn(part.hooks[hook_name]), "part": part});
+      var hook_fn = exports.loadFn(part.hooks[hook_name]);
+      if (hook_fn) {
+        hooks[hook_name].push({"hook": hook_fn, "part": part});
+      } else {
+	console.error("Unable to load hook function for " + part.full_name + " for hook " + hook_name + ": " + part.hooks[hook_name]);
+      }	
     });
   });
   return hooks;

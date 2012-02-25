@@ -2,6 +2,16 @@ var plugins = require("./plugins");
 var async = require("async");
 
 
+var hookCallWrapper = function (hook, hook_name, args, cb) {
+  if (cb === undefined) cb = function (x) { return x; };
+  try {
+    return hook.hook(hook_name, args, cb);
+  } catch (ex) {
+    console.error([hook_name, hook.part.full_name, ex]);
+  }
+}
+
+
 /* Don't use Array.concat as it flatterns arrays within the array */
 exports.flatten = function (lst) {
   var res = [];
@@ -20,7 +30,7 @@ exports.flatten = function (lst) {
 exports.callAll = function (hook_name, args) {
   if (plugins.hooks[hook_name] === undefined) return [];
   return exports.flatten(plugins.hooks[hook_name].map(function (hook) {
-    return hook.hook(hook_name, args, function (x) { return x; });
+    return hookCallWrapper(hook, hook_name, args);
   }));
 }
 
@@ -29,7 +39,7 @@ exports.aCallAll = function (hook_name, args, cb) {
   async.map(
     plugins.hooks[hook_name],
     function (hook, cb) {
-      hook.hook(hook_name, args, function (res) { cb(null, res); });
+      hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
     function (err, res) {
       cb(exports.flatten(res));
@@ -39,10 +49,10 @@ exports.aCallAll = function (hook_name, args, cb) {
 
 exports.callFirst = function (hook_name, args) {
   if (plugins.hooks[hook_name][0] === undefined) return [];
-  return exports.flatten(plugins.hooks[hook_name][0].hook(hook_name, args, function (x) { return x; }));
+  return exports.flatten(hookCallWrapper(plugins.hooks[hook_name][0], hook_name, args));
 }
 
 exports.aCallFirst = function (hook_name, args, cb) {
   if (plugins.hooks[hook_name][0] === undefined) cb([]);
-  plugins.hooks[hook_name][0].hook(hook_name, args, function (res) { cb(exports.flatten(res)); });
+  hookCallWrapper(plugins.hooks[hook_name][0], hook_name, args, function (res) { cb(exports.flatten(res)); });
 }
