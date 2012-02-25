@@ -1,9 +1,11 @@
 {
   "parts": [
-    { "name": "static", "hooks": { "expressServer": "../static:expressServer" } },
-    { "name": "specialpages", "hooks": { "expressServer": "../specialpages:expressServer" } },
-    { "name": "padurlsanitize", "hooks": { "expressServer": "../padurlsanitize:expressServer" } },
-    { "name": "minified", "hooks": { "expressServer": "../minified:expressServer" } },
-    { "name": "padreadonly", "hooks": { "expressServer": "../padreadonly:expressServer" } }
+    { "name": "static", "hooks": { "expressCreateServer": "../static:expressServer" } },
+    { "name": "specialpages", "hooks": { "expressCreateServer": "../specialpages:expressServer" } },
+    { "name": "padurlsanitize", "hooks": { "expressCreateServer": "../padurlsanitize:expressServer" } },
+    { "name": "minified", "hooks": { "expressCreateServer": "../minified:expressServer" } },
+    { "name": "padreadonly", "hooks": { "expressCreateServer": "../padreadonly:expressServer" } },
+    { "name": "webaccess", "hooks": { "expressConfigure": "../webaccess:expressConfigure" } }
+
   ]
 }

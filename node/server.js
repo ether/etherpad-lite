@@ -90,8 +90,7 @@ async.waterfall([
   {
     //create server
     var app = express.createServer();
-
-    hooks.callAll("expressServer", {"app": app});
+    hooks.callAll("expressCreateServer", {"app": app});
 
     app.use(function (req, res, next) {
       res.header("Server", serverName);
@@ -111,43 +110,13 @@ async.waterfall([
     
     //install logging      
     var httpLogger = log4js.getLogger("http");
-    app.configure(function() 
-    {
-      // Activate http basic auth if it has been defined in settings.json
-      if(settings.httpAuth != null) app.use(basic_auth);
-
-      // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
-      // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
-      if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
-        app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
-      app.use(express.cookieParser());
-    });
+    app.configure(function() { hooks.callAll("expressConfigure", {"app": app}); });
     
     app.error(function(err, req, res, next){
       res.send(500);
       console.error(err.stack ? err.stack : err.toString());
       gracefulShutdown();
     });
-    
-    //checks for basic http auth
-    function basic_auth (req, res, next) {
-      if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-        // fetch login and password
-        if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() == settings.httpAuth) {
-          next();
-          return;
-        }
-      }
-      
-      res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
-      if (req.headers.authorization) {
-        setTimeout(function () {
-          res.send('Authentication required', 401);
-        }, 1000);
-      } else {
-        res.send('Authentication required', 401);
-      }
-    }
     
     //serve timeslider.html under /p/$padname/timeslider
     app.get('/p/:pad/:rev?/export/:type', function(req, res, next)
