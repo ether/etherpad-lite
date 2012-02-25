@@ -116,6 +116,7 @@ exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
     function (er, data) {
       var plugin = JSON.parse(data);
       plugin.package = packages[plugin_name];
+      plugins[plugin_name] = plugin;
       plugin.parts.forEach(function (part) {
 	part.plugin = plugin;
 	part.full_name = plugin_name + "/" + part.name;
