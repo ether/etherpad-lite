@@ -1,7 +1,7 @@
 var path = require('path');
 var minify = require('./utils/Minify');
 
-exports.expressServer = function (hook_name, args, cb) {
+exports.expressCreateServer = function (hook_name, args, cb) {
   //serve static files
   args.app.get('/static/js/require-kernel.js', function (req, res, next) {
     res.header("Content-Type","application/javascript; charset: utf-8");

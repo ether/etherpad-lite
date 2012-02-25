@@ -4,7 +4,7 @@ var hasPadAccess = require("./padaccess");
 var exporthtml = require("./utils/ExportHtml");
 var ERR = require("async-stacktrace");
 
-exports.expressServer = function (hook_name, args, cb) {
+exports.expressCreateServer = function (hook_name, args, cb) {
   //serve read only pad
   args.app.get('/ro/:id', function(req, res)
   { 

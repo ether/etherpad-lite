@@ -1,6 +1,6 @@
 var padManager = require('./db/PadManager');
 
-exports.expressServer = function (hook_name, args, cb) {
+exports.expressCreateServer = function (hook_name, args, cb) {
   //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
   args.app.param('pad', function (req, res, next, padId) {
     //ensure the padname is valid and the url doesn't end with a /

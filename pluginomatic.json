@@ -1,10 +1,10 @@
 {
   "parts": [
-    { "name": "static", "hooks": { "expressCreateServer": "../static:expressServer" } },
-    { "name": "specialpages", "hooks": { "expressCreateServer": "../specialpages:expressServer" } },
-    { "name": "padurlsanitize", "hooks": { "expressCreateServer": "../padurlsanitize:expressServer" } },
-    { "name": "minified", "hooks": { "expressCreateServer": "../minified:expressServer" } },
-    { "name": "padreadonly", "hooks": { "expressCreateServer": "../padreadonly:expressServer" } },
+    { "name": "static", "hooks": { "expressCreateServer": "../static:expressCreateServer" } },
+    { "name": "specialpages", "hooks": { "expressCreateServer": "../specialpages:expressCreateServer" } },
+    { "name": "padurlsanitize", "hooks": { "expressCreateServer": "../padurlsanitize:expressCreateServer" } },
+    { "name": "minified", "hooks": { "expressCreateServer": "../minified:expressCreateServer" } },
+    { "name": "padreadonly", "hooks": { "expressCreateServer": "../padreadonly:expressCreateServer" } },
     { "name": "webaccess", "hooks": { "expressConfigure": "../webaccess:expressConfigure" } },
     { "name": "apicalls", "hooks": { "expressCreateServer": "../apicalls:expressCreateServer" } },
     { "name": "importexport", "hooks": { "expressCreateServer": "../importexport:expressCreateServer" } },

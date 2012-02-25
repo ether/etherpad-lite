@@ -1,6 +1,6 @@
 var path = require('path');
 
-exports.expressServer = function (hook_name, args, cb) {
+exports.expressCreateServer = function (hook_name, args, cb) {
 
   //serve index.html under /
   args.app.get('/', function(req, res)
