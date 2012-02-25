@@ -98,7 +98,7 @@ async.waterfall([
           //the pad id was sanitized, so we redirect to the sanitized version
           if(sanitizedPadId != padId)
           {
-            var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + sanitizedPadId);
+            var real_path = req.path.replace(/^\/p\/[^\/]+/, './' + sanitizedPadId);
             res.header('Location', real_path);
             res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
           }
