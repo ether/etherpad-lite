@@ -8,7 +8,8 @@
     { "name": "webaccess", "hooks": { "expressConfigure": "../webaccess:expressConfigure" } },
     { "name": "apicalls", "hooks": { "expressCreateServer": "../apicalls:expressCreateServer" } },
     { "name": "importexport", "hooks": { "expressCreateServer": "../importexport:expressCreateServer" } },
-    { "name": "errorhandling", "hooks": { "expressCreateServer": "../errorhandling:expressCreateServer" } }
+    { "name": "errorhandling", "hooks": { "expressCreateServer": "../errorhandling:expressCreateServer" } },
+    { "name": "socketio", "hooks": { "expressCreateServer": "../socketio:expressCreateServer" } }
 
   ]
 }
