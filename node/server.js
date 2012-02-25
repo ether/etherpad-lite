@@ -96,27 +96,15 @@ async.waterfall([
       res.header("Server", serverName);
       next();
     });
-
-    //load modules that needs a initalized db
-    readOnlyManager = require("./db/ReadOnlyManager");
-    exporthtml = require("./utils/ExportHtml");
-    exportHandler = require('./handler/ExportHandler');
-    importHandler = require('./handler/ImportHandler');
-    apiHandler = require('./handler/APIHandler');
-    padManager = require('./db/PadManager');
-    securityManager = require('./db/SecurityManager');
-    socketIORouter = require("./handler/SocketIORouter");
-    hasPadAccess = require("./padaccess");
     
-    //install logging      
-    var httpLogger = log4js.getLogger("http");
     app.configure(function() { hooks.callAll("expressConfigure", {"app": app}); });
     
-    
-
     //let the server listen
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
+
+
+
 
     //init socket.io and redirect all requests to the MessageHandler
     var io = socketio.listen(app);
@@ -153,6 +141,7 @@ async.waterfall([
     var timesliderMessageHandler = require("./handler/TimesliderMessageHandler");
     
     //Initalize the Socket.IO Router
+    socketIORouter = require("./handler/SocketIORouter");
     socketIORouter.setSocketIO(io);
     socketIORouter.addComponent("pad", padMessageHandler);
     socketIORouter.addComponent("timeslider", timesliderMessageHandler);
