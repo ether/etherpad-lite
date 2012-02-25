@@ -429,7 +429,7 @@ var pad = {
 
     // order of inits is important here:
     padcookie.init(clientVars.cookiePrefsToSet, this);
-  
+      
     $("#widthprefcheck").click(pad.toggleWidthPref);
     // $("#sidebarcheck").click(pad.togglewSidebar);
 
@@ -484,6 +484,10 @@ var pad = {
       {
         padeditor.ace.focus();
       }, 0);
+      if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
+        chat.stickToScreen(true); // stick it to the screen
+        $('#options-stickychat').prop("checked", true); // set the checkbox to on
+      }
     }
   },
   dispose: function()
@@ -979,3 +983,4 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
+
