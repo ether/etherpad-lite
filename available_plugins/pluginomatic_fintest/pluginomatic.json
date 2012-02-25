@@ -25,7 +25,7 @@
       "hooks": {
 	"somehookname": "pluginomatic_fintest/otherpart:somehook",
 	"morehook": "pluginomatic_fintest/otherpart:morehook",
-	"expressServer": "pluginomatic_fintest/otherpart:expressServer"
+	"expressCreateServer": "pluginomatic_fintest/otherpart:expressServer"
       }
     }
   ]
