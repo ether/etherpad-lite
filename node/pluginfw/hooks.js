@@ -5,7 +5,7 @@ var async = require("async");
 var hookCallWrapper = function (hook, hook_name, args, cb) {
   if (cb === undefined) cb = function (x) { return x; };
   try {
-    return hook.hook(hook_name, args, cb);
+    return hook.hook_fn(hook_name, args, cb);
   } catch (ex) {
     console.error([hook_name, hook.part.full_name, ex]);
   }

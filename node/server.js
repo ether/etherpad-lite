@@ -79,9 +79,9 @@ async.waterfall([
   plugins.update,
 
   function (callback) {
-    console.log(["plugins", plugins.plugins]);
-    console.log(["parts", plugins.parts]);
-    console.log(["hooks", plugins.hooks]);
+    console.log("Installed plugins: " + plugins.formatPlugins());
+    console.log("Installed parts:\n" + plugins.formatParts());
+    console.log("Installed hooks:\n" + plugins.formatHooks());
     callback();
   },
 

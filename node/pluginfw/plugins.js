@@ -30,6 +30,24 @@ exports.update = function (cb) {
   });
 }
 
+exports.formatPlugins = function () {
+  return Object.keys(exports.plugins).join(", ");
+}
+
+exports.formatParts = function () {
+  return exports.parts.map(function (part) { return part.full_name; }).join("\n");
+}
+
+exports.formatHooks = function () {
+  var res = [];
+  Object.keys(exports.hooks).forEach(function (hook_name) {
+    exports.hooks[hook_name].forEach(function (hook) {
+      res.push(hook.hook_name + ": " + hook.hook_fn_name + " from " + hook.part.full_name);
+    });
+  });
+  return res.join("\n");
+}
+
 exports.getPlugins = function (cb) {
   exports.getPackages(function (er, packages) {
     packages.__builtin__ = {
@@ -82,7 +100,7 @@ exports.extractHooks = function (parts) {
 	var hook_fn_name = part.hooks[hook_name];
       var hook_fn = exports.loadFn(part.hooks[hook_name]);
       if (hook_fn) {
-        hooks[hook_name].push({"hook": hook_fn, "part": part});
+        hooks[hook_name].push({"hook_name": hook_name, "hook_fn": hook_fn, "hook_fn_name": hook_fn_name, "part": part});
       } else {
 	console.error("Unable to load hook function for " + part.full_name + " for hook " + hook_name + ": " + part.hooks[hook_name]);
       }	
