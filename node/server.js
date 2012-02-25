@@ -20,28 +20,15 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var log4js = require('log4js');
-var os = require("os");
-var socketio = require('socket.io');
 var fs = require('fs');
 var settings = require('./utils/Settings');
 var db = require('./db/DB');
 var async = require('async');
 var express = require('express');
 var path = require('path');
-var minify = require('./utils/Minify');
-var formidable = require('formidable');
 var plugins = require("./pluginfw/plugins");
 var hooks = require("./pluginfw/hooks");
-var apiHandler;
-var exportHandler;
-var importHandler;
-var exporthtml;
-var readOnlyManager;
-var padManager;
-var securityManager;
-var socketIORouter;
 
 //try to get the git version
 var version = "";
