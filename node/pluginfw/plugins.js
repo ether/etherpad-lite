@@ -21,16 +21,6 @@ exports.ensure = function (cb) {
     cb();
 }
 
-exports.update = function (cb) {
-  exports.getPlugins(function (er, plugins, parts, hooks) {
-    exports.plugins = plugins;
-    exports.parts = parts;
-    exports.hooks = hooks;
-    exports.loaded = true;
-    cb(er);
-  });
-}
-
 exports.formatPlugins = function () {
   return Object.keys(exports.plugins).join(", ");
 }
@@ -49,13 +39,13 @@ exports.formatHooks = function () {
   return res.join("\n");
 }
 
-exports.getPlugins = function (cb) {
+exports.update = function (cb) {
   exports.getPackages(function (er, packages) {
     packages.__builtin__ = {
       "path": path.resolve(npm.dir, "../..")
     };
 
-    var parts = {};
+    var parts = [];
     var plugins = {};
     // Load plugin metadata pluginomatic.json
     async.forEach(
@@ -64,10 +54,11 @@ exports.getPlugins = function (cb) {
         exports.loadPlugin(packages, plugin_name, plugins, parts, cb);
       },
       function (err) {
-        parts = exports.sortParts(parts);
-        var hooks = exports.extractHooks(parts);
-//        console.log(util.inspect(plugins, undefined, null));
-        cb(err, plugins, parts, hooks);
+	exports.plugins = plugins;
+        exports.parts = exports.sortParts(parts);
+        exports.hooks = exports.extractHooks(exports.parts);
+	exports.loaded = true;
+        cb(err);
       }
     );
   });
@@ -99,7 +90,7 @@ exports.extractHooks = function (parts) {
   parts.forEach(function (part) {
     Object.keys(part.hooks || {}).forEach(function (hook_name) {
       if (hooks[hook_name] === undefined) hooks[hook_name] = [];
-	var hook_fn_name = part.hooks[hook_name];
+      var hook_fn_name = part.hooks[hook_name];
       var hook_fn = exports.loadFn(part.hooks[hook_name]);
       if (hook_fn) {
         hooks[hook_name].push({"hook_name": hook_name, "hook_fn": hook_fn, "hook_fn_name": hook_fn_name, "part": part});
