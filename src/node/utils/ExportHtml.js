@@ -16,10 +16,10 @@
 
 var CommonCode = require('./common_code');
 var async = require("async");
-var Changeset = CommonCode.require("/Changeset");
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
-var Security = CommonCode.require('/security');
+var Security = require('ep_etherpad-lite/static/js/security');
 
 function getPadPlainText(pad, revNum)
 {

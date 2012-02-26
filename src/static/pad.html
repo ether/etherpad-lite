@@ -298,13 +298,13 @@
             (function () {
               require.setRootURI("../minified/");
               require.setGlobalKeyPath("require");
-              require('/pad').init();
+              require('ep_etherpad-lite/static/js/pad').init();
 
               /* TODO: These globals shouldn't exist. */
-              pad = require('/pad').pad;
-              chat = require('/chat').chat;
-              padeditbar = require('/pad_editbar').padeditbar;
-              padimpexp = require('/pad_impexp').padimpexp;
+              pad = require('ep_etherpad-lite/static/js/pad').pad;
+              chat = require('ep_etherpad-lite/static/js/chat').chat;
+              padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+              padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
             }());
         </script>
         

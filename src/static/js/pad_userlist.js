@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var padutils = require('/pad_utils').padutils;
+var padutils = require('ep_etherpad-lite/static/js/pad_utils').padutils;
 
 var myUserInfo = {};
 

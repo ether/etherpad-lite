@@ -26,9 +26,9 @@
 // requires: plugins
 // requires: undefined
 
-var Security = require('/security');
-var plugins = require('/plugins').plugins;
-var map = require('/ace2_common').map;
+var Security = require('ep_etherpad-lite/static/js/security');
+var plugins = require('ep_etherpad-lite/static/js/plugins').plugins;
+var map = require('ep_etherpad-lite/static/js/ace2_common').map;
 
 var domline = {};
 domline.noop = function()

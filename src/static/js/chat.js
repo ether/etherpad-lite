@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-var padutils = require('/pad_utils').padutils;
-var padcookie = require('/pad_cookie').padcookie;
+var padutils = require('ep_etherpad-lite/static/js/pad_utils').padutils;
+var padcookie = require('ep_etherpad-lite/static/js/pad_cookie').padcookie;
 
 var chat = (function()
 {

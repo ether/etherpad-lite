@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-var padutils = require('/pad_utils').padutils;
-var paddocbar = require('/pad_docbar').paddocbar;
+var padutils = require('ep_etherpad-lite/static/js/pad_utils').padutils;
+var paddocbar = require('ep_etherpad-lite/static/js/pad_docbar').paddocbar;
 
 var padsavedrevs = (function()
 {

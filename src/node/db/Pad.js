@@ -4,9 +4,9 @@
 
 var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
-var Changeset = CommonCode.require("/Changeset");
-var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
-var randomString = CommonCode.require('/pad_utils').randomString;
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
+var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var db = require("./DB").db;
 var async = require("async");
 var settings = require('../utils/Settings');

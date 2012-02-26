@@ -4,9 +4,9 @@ var fs = require("fs");
 var ueberDB = require("ueberDB");
 var mysql = require("mysql");
 var async = require("async");
-var Changeset = CommonCode.require("/Changeset");
-var randomString = CommonCode.require('/pad_utils').randomString;
-var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
 
 var settingsFile = process.argv[2];
 var sqlOutputFile = process.argv[3];

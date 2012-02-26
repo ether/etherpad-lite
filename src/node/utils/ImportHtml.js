@@ -18,9 +18,9 @@ var jsdom = require('jsdom-nocontextifiy').jsdom;
 var log4js = require('log4js');
 
 var CommonCode = require('../utils/common_code');
-var Changeset = CommonCode.require("/Changeset");
-var contentcollector = CommonCode.require("/contentcollector");
-var map = CommonCode.require("/ace2_common").map;
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
+var map = require("ep_etherpad-lite/static/js/ace2_common").map;
 
 function setPadHTML(pad, html, callback)
 {

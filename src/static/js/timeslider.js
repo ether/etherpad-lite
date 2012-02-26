@@ -22,13 +22,13 @@
 
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
-require('/jquery');
-JSON = require('/json2');
-require('/undo-xpopup');
+require('ep_etherpad-lite/static/js/jquery');
+JSON = require('ep_etherpad-lite/static/js/json2');
+require('ep_etherpad-lite/static/js/undo-xpopup');
 
-var createCookie = require('/pad_utils').createCookie;
-var readCookie = require('/pad_utils').readCookie;
-var randomString = require('/pad_utils').randomString;
+var createCookie = require('ep_etherpad-lite/static/js/pad_utils').createCookie;
+var readCookie = require('ep_etherpad-lite/static/js/pad_utils').readCookie;
+var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 
 var socket, token, padId, export_links;
 
@@ -127,12 +127,12 @@ function handleClientVars(message)
   clientVars = message.data;
   
   //load all script that doesn't work without the clientVars
-  BroadcastSlider = require('/broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
-  require('/broadcast_revisions').loadBroadcastRevisionsJS();
-  changesetLoader = require('/broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
+  BroadcastSlider = require('ep_etherpad-lite/static/js/broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
+  require('ep_etherpad-lite/static/js/broadcast_revisions').loadBroadcastRevisionsJS();
+  changesetLoader = require('ep_etherpad-lite/static/js/broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
   //initialize export ui
-  require('/pad_impexp').padimpexp.init();
+  require('ep_etherpad-lite/static/js/pad_impexp').padimpexp.init();
 
   //change export urls when the slider moves
   var export_rev_regex = /(\/\d+)?\/export/

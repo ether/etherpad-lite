@@ -28,7 +28,7 @@ Ace2Editor.registry = {
   nextId: 1
 };
 
-var plugins = require('/plugins').plugins;
+var plugins = require('ep_etherpad-lite/static/js/plugins').plugins;
 
 function Ace2Editor()
 {
@@ -233,14 +233,14 @@ function Ace2Editor()
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[ACE_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
-      buffer.push('require("/ace2_inner");');
+      buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
       buffer.push('<\/script>');
     } else {
       file = ACE_SOURCE;
       file = file.replace(/^\.\.\/static\/js\//, '../minified/');
       buffer.push('<script type="application/javascript" src="' + file + '"><\/script>');
       buffer.push('<script type="text/javascript">');
-      buffer.push('require("/ace2_inner");');
+      buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
       buffer.push('<\/script>');
     }
   }
@@ -322,7 +322,7 @@ function Ace2Editor()
 <script type="text/javascript">\
   require.define("/plugins", null);\n\
   require.define("/plugins.js", function (require, exports, module) {\
-    module.exports = parent.parent.require("/plugins");\
+    module.exports = parent.parent.require("ep_etherpad-lite/static/js/plugins");\
   });\
 </script>\
 ');

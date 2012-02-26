@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var Security = require('/security');
+var Security = require('ep_etherpad-lite/static/js/security');
 
 function isNodeText(node)
 {

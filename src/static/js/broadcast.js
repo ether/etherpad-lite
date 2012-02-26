@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-var makeCSSManager = require('/cssmanager').makeCSSManager;
-var domline = require('/domline').domline;
-var AttribPool = require('/AttributePoolFactory').createAttributePool;
-var Changeset = require('/Changeset');
-var linestylefilter = require('/linestylefilter').linestylefilter;
-var colorutils = require('/colorutils').colorutils;
+var makeCSSManager = require('ep_etherpad-lite/static/js/cssmanager').makeCSSManager;
+var domline = require('ep_etherpad-lite/static/js/domline').domline;
+var AttribPool = require('ep_etherpad-lite/static/js/AttributePoolFactory').createAttributePool;
+var Changeset = require('ep_etherpad-lite/static/js/Changeset');
+var linestylefilter = require('ep_etherpad-lite/static/js/linestylefilter').linestylefilter;
+var colorutils = require('ep_etherpad-lite/static/js/colorutils').colorutils;
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.

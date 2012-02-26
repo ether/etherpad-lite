@@ -28,9 +28,9 @@
 // requires: plugins
 // requires: undefined
 
-var Changeset = require('/Changeset');
-var plugins = require('/plugins').plugins;
-var map = require('/ace2_common').map;
+var Changeset = require('ep_etherpad-lite/static/js/Changeset');
+var plugins = require('ep_etherpad-lite/static/js/plugins').plugins;
+var map = require('ep_etherpad-lite/static/js/ace2_common').map;
 
 var linestylefilter = {};
 

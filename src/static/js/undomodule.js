@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-var Changeset = require('/Changeset');
-var extend = require('/ace2_common').extend;
+var Changeset = require('ep_etherpad-lite/static/js/Changeset');
+var extend = require('ep_etherpad-lite/static/js/ace2_common').extend;
 
 var undoModule = (function()
 {

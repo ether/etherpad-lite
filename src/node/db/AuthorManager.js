@@ -22,7 +22,7 @@ var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
-var randomString = CommonCode.require('/pad_utils').randomString;
+var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 
 /**
  * Checks if the author exists

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var padmodals = require('/pad_modals').padmodals;
+var padmodals = require('ep_etherpad-lite/static/js/pad_modals').padmodals;
 
 var padconnectionstatus = (function()
 {

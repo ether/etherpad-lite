@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var chat = require('/chat').chat;
+var chat = require('ep_etherpad-lite/static/js/chat').chat;
 
 // Dependency fill on init. This exists for `pad.socket` only.
 // TODO: bind directly to the socket.
