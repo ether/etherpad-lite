@@ -124,3 +124,6 @@ contribute to Etherpad Lite.
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+# Flattr
+Etherpad Foundation Flattr (http://flattr.com/thing/71378/Etherpad-Foundation)
