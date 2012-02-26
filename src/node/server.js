@@ -27,7 +27,6 @@ var db = require('./db/DB');
 var async = require('async');
 var express = require('express');
 var path = require('path');
-require("./pluginfw/require"); // Load globals
 var plugins = require("./pluginfw/plugins");
 var hooks = require("./pluginfw/hooks");
 var npm = require("npm/lib/npm.js");

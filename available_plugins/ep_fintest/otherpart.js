@@ -1,4 +1,4 @@
-test = ep_client_require("/plugins/ep_fintest/test.js");
+test = require("ep_fintest/static/js/test.js");
 console.log("FOOO:", test.foo);
 
 exports.somehook = function (hook_name, args, cb) {
