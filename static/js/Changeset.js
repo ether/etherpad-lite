@@ -29,17 +29,26 @@ var AttributePoolFactory = require("/AttributePoolFactory");
 
 var _opt = null;
 
-// ==================== General Util Functions =======================
+/**
+ * ==================== General Util Functions =======================
+ */
 
-// This method is called whenever there is an error in the sync process
+/**
+ * This method is called whenever there is an error in the sync process
+ * @param msg {string} Just some message
+ */
 exports.error = function error(msg) {
   var e = new Error(msg);
   e.easysync = true;
   throw e;
 };
 
-// This method is user for assertions with Messages 
-// if assert fails, the error function called.
+/**
+ * This method is user for assertions with Messages 
+ * if assert fails, the error function called.
+ * @param b {boolean} assertion condition
+ * @param msgParts {string} error to be passed if it fails
+ */
 exports.assert = function assert(b, msgParts) {
   if (!b) {
     var msg = Array.prototype.slice.call(arguments, 1).join('');
@@ -47,17 +56,30 @@ exports.assert = function assert(b, msgParts) {
   }
 };
 
-// Parses a number from string base 36
+/**
+ * Parses a number from string base 36
+ * @param str {string} string of the number in base 36
+ * @returns {int} number
+ */
 exports.parseNum = function (str) {
   return parseInt(str, 36);
 };
 
-// Writes a number in base 36 and puts it in a string
+/**
+ * Writes a number in base 36 and puts it in a string
+ * @param num {int} number
+ * @returns {string} string
+ */
 exports.numToString = function (num) {
   return num.toString(36).toLowerCase();
 };
 
-// Converts stuff before $ to base 10
+/**
+ * Converts stuff before $ to base 10
+ * @obsolete not really used anywhere??
+ * @param cs {string} the string
+ * @return integer 
+ */
 exports.toBaseTen = function (cs) {
   var dollarIndex = cs.indexOf('$');
   var beforeDollar = cs.substring(0, dollarIndex);
@@ -68,15 +90,33 @@ exports.toBaseTen = function (cs) {
 };
 
 
-// ==================== Changeset Functions =======================
+/**
+ * ==================== Changeset Functions =======================
+ */
 
+/**
+ * returns the required length of the text before changeset 
+ * can be applied
+ * @param cs {string} String representation of the Changeset
+ */ 
 exports.oldLen = function (cs) {
   return exports.unpack(cs).oldLen;
 };
+
+/**
+ * returns the length of the text after changeset is applied
+ * @param cs {string} String representation of the Changeset
+ */ 
 exports.newLen = function (cs) {
   return exports.unpack(cs).newLen;
 };
 
+/**
+ * this function creates an iterator which decodes string changeset operations
+ * @param opsStr {string} String encoding of the change operations to be performed 
+ * @param optStartIndex {int} from where in the string should the iterator start 
+ * @return {Op} type object iterator 
+ */
 exports.opIterator = function (opsStr, optStartIndex) {
   //print(opsStr);
   var regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
