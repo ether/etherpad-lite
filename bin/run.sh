@@ -21,8 +21,7 @@ if [ "$(id -u)" -eq 0 ]; then
 fi
 
 #prepare the enviroment
-#bin/installDeps.sh $* || exit 1
-npm link ./src
+bin/installDeps.sh $* || exit 1
 
 #Move to the node folder and start
 echo "start..."
