@@ -6,7 +6,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve static files
   args.app.get('/static/js/require-kernel.js', function (req, res, next) {
     res.header("Content-Type","application/javascript; charset: utf-8");
-    res.write(minify.requireDefinition() + "\n require.setLibraryURI('/plugins'); ");
+    res.write(minify.requireDefinition()); // + "\n require.setLibraryURI('/plugins'); ");
     res.end();
   });
 
@@ -24,6 +24,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     }
 
     var filePath = path.normalize(path.join(plugins.plugins[plugin_name].package.path, "static", url));
+
     res.sendfile(filePath, { maxAge: exports.maxAge });
   });
 
