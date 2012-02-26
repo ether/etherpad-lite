@@ -226,6 +226,7 @@ var padimpexp = (function()
         $("#exportworda").remove();
         $("#exportpdfa").remove();
         $("#exportopena").remove();
+        $(".importformdiv").remove();
         $("#import").html("Import is not available.  To enable import please install abiword");
       }
       else if(clientVars.abiwordAvailable == "withoutPDF")
