@@ -30,14 +30,15 @@ var path = require('path');
 require("./pluginfw/require"); // Load globals
 var plugins = require("./pluginfw/plugins");
 var hooks = require("./pluginfw/hooks");
+var npm = require("npm/lib/npm.js");
 
 //try to get the git version
 var version = "";
 try
 {
-  var rootPath = path.normalize(__dirname + "/../")
-  var ref = fs.readFileSync(rootPath + ".git/HEAD", "utf-8");
-  var refPath = rootPath + ".git/" + ref.substring(5, ref.indexOf("\n"));
+  var rootPath = path.resolve(npm.dir, '..');
+  var ref = fs.readFileSync(rootPath + "/.git/HEAD", "utf-8");
+  var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
   version = fs.readFileSync(refPath, "utf-8");
   version = version.substring(0, 7);
   console.log("Your Etherpad Lite git version is " + version);
