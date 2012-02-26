@@ -21,9 +21,9 @@ if [ "$(id -u)" -eq 0 ]; then
 fi
 
 #prepare the enviroment
-bin/installDeps.sh $* || exit 1
+#bin/installDeps.sh $* || exit 1
+npm link ./src
 
 #Move to the node folder and start
 echo "start..."
-cd "node"
-node server.js $*
+node node_modules/pluginomatic_etherpad-lite/node/server.js $*

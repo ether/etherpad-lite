@@ -41,10 +41,6 @@ exports.formatHooks = function () {
 
 exports.update = function (cb) {
   exports.getPackages(function (er, packages) {
-    packages.__builtin__ = {
-      "path": path.resolve(npm.dir, "../..")
-    };
-
     var parts = [];
     var plugins = {};
     // Load plugin metadata pluginomatic.json
@@ -66,8 +62,7 @@ exports.update = function (cb) {
 
 exports.getPackages = function (cb) {
   // Load list of installed NPM packages, flatten it to a list, and filter out only packages with names that
-  // ../.. and not just .. because current dir is like ETHERPAD_ROOT/node/node_modules (!!!!)
-  var dir = path.resolve(npm.dir, "../..")
+  var dir = path.resolve(npm.dir, '..');
   readInstalled(dir, function (er, data) {
     if (er) cb(er, null);
     var packages = {};
@@ -107,14 +102,22 @@ exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
   fs.readFile(
     plugin_path,
     function (er, data) {
-      var plugin = JSON.parse(data);
-      plugin.package = packages[plugin_name];
-      plugins[plugin_name] = plugin;
-      plugin.parts.forEach(function (part) {
-	part.plugin = plugin_name;
-	part.full_name = plugin_name + "/" + part.name;
-	parts[part.full_name] = part;
-      });
+      if (er) {
+	console.error("Unable to load plugin definition file " + plugin_path);
+        return cb();
+      }
+      try {
+        var plugin = JSON.parse(data);
+	plugin.package = packages[plugin_name];
+	plugins[plugin_name] = plugin;
+	plugin.parts.forEach(function (part) {
+	  part.plugin = plugin_name;
+	  part.full_name = plugin_name + "/" + part.name;
+	  parts[part.full_name] = part;
+	});
+      } catch (ex) {
+	console.error("Unable to parse plugin definition file " + plugin_path + ": " + ex.toString());
+      }
       cb();
     }
   );

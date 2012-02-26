@@ -23,6 +23,10 @@ var fs = require("fs");
 var os = require("os");
 var path = require('path');
 var argv = require('./Cli').argv;
+var npm = require("npm/lib/npm.js");
+
+/* Root path of the installation */
+exports.root = path.normalize(path.join(npm.dir, ".."));
 
 /**
  * The IP ep-lite should listen to
@@ -40,7 +44,7 @@ exports.dbType = "dirty";
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-exports.dbSettings = { "filename" : "../var/dirty.db" };
+exports.dbSettings = { "filename" : path.join(exports.root, "var/dirty.db") };
 /**
  * The default Text of a new pad
  */
@@ -91,10 +95,12 @@ exports.abiwordAvailable = function()
 
 // Discover where the settings file lives
 var settingsFilename = argv.settings || "settings.json";
-var settingsPath = settingsFilename.charAt(0) == '/' ? '' : path.normalize(__dirname + "/../../");
+if (settingsFilename.charAt(0) != '/') {
+    settingsFilename = path.normalize(path.join(root, settingsFilename));
+}
 
 //read the settings sync
-var settingsStr = fs.readFileSync(settingsPath + settingsFilename).toString();
+var settingsStr = fs.readFileSync(settingsFilename).toString();
 
 //remove all comments
 settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");

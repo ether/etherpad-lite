@@ -36,7 +36,7 @@ var os = require('os');
 var ROOT_DIR = path.normalize(__dirname + "/../" );
 var JS_DIR = ROOT_DIR + '../static/js/';
 var CSS_DIR = ROOT_DIR + '../static/css/';
-var CACHE_DIR = ROOT_DIR + '../var/';
+var CACHE_DIR = path.join(settings.root, 'var');
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
@@ -160,7 +160,7 @@ function _handle(req, res, jsFilename, jsFiles) {
           //write the results plain in a file
           function(callback)
           {
-            fs.writeFile(CACHE_DIR + "minified_" + jsFilename, result, "utf8", callback);
+            fs.writeFile(CACHE_DIR + "/minified_" + jsFilename, result, "utf8", callback);
           },
           //write the results compressed in a file
           function(callback)
@@ -171,7 +171,7 @@ function _handle(req, res, jsFilename, jsFiles) {
             
               if(ERR(err, callback)) return;
               
-              fs.writeFile(CACHE_DIR + "minified_" + jsFilename + ".gz", compressedResult, callback);
+              fs.writeFile(CACHE_DIR + "/minified_" + jsFilename + ".gz", compressedResult, callback);
             });
           }
         ],callback);
@@ -189,12 +189,12 @@ function _handle(req, res, jsFilename, jsFiles) {
       var pathStr;
       if(gzipSupport && os.type().indexOf("Windows") == -1)
       {
-        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename + ".gz");
+        pathStr = path.normalize(CACHE_DIR + "/minified_" + jsFilename + ".gz");
         res.header('Content-Encoding', 'gzip');
       }
       else
       {
-        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename );
+        pathStr = path.normalize(CACHE_DIR + "/minified_" + jsFilename );
       }
       
       res.sendfile(pathStr, { maxAge: server.maxAge });
