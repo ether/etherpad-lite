@@ -29,12 +29,26 @@ var AttributePoolFactory = require("/AttributePoolFactory");
 
 var _opt = null;
 
-//var exports = {};
+/**
+ * ==================== General Util Functions =======================
+ */
+
+/**
+ * This method is called whenever there is an error in the sync process
+ * @param msg {string} Just some message
+ */
 exports.error = function error(msg) {
   var e = new Error(msg);
   e.easysync = true;
   throw e;
 };
+
+/**
+ * This method is user for assertions with Messages 
+ * if assert fails, the error function called.
+ * @param b {boolean} assertion condition
+ * @param msgParts {string} error to be passed if it fails
+ */
 exports.assert = function assert(b, msgParts) {
   if (!b) {
     var msg = Array.prototype.slice.call(arguments, 1).join('');
@@ -42,12 +56,30 @@ exports.assert = function assert(b, msgParts) {
   }
 };
 
+/**
+ * Parses a number from string base 36
+ * @param str {string} string of the number in base 36
+ * @returns {int} number
+ */
 exports.parseNum = function (str) {
   return parseInt(str, 36);
 };
+
+/**
+ * Writes a number in base 36 and puts it in a string
+ * @param num {int} number
+ * @returns {string} string
+ */
 exports.numToString = function (num) {
   return num.toString(36).toLowerCase();
 };
+
+/**
+ * Converts stuff before $ to base 10
+ * @obsolete not really used anywhere??
+ * @param cs {string} the string
+ * @return integer 
+ */
 exports.toBaseTen = function (cs) {
   var dollarIndex = cs.indexOf('$');
   var beforeDollar = cs.substring(0, dollarIndex);
@@ -57,13 +89,34 @@ exports.toBaseTen = function (cs) {
   }) + fromDollar;
 };
 
+
+/**
+ * ==================== Changeset Functions =======================
+ */
+
+/**
+ * returns the required length of the text before changeset 
+ * can be applied
+ * @param cs {string} String representation of the Changeset
+ */ 
 exports.oldLen = function (cs) {
   return exports.unpack(cs).oldLen;
 };
+
+/**
+ * returns the length of the text after changeset is applied
+ * @param cs {string} String representation of the Changeset
+ */ 
 exports.newLen = function (cs) {
   return exports.unpack(cs).newLen;
 };
 
+/**
+ * this function creates an iterator which decodes string changeset operations
+ * @param opsStr {string} String encoding of the change operations to be performed 
+ * @param optStartIndex {int} from where in the string should the iterator start 
+ * @return {Op} type object iterator 
+ */
 exports.opIterator = function (opsStr, optStartIndex) {
   //print(opsStr);
   var regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
@@ -129,12 +182,21 @@ exports.opIterator = function (opsStr, optStartIndex) {
   };
 };
 
+/**
+ * Cleans an Op object
+ * @param {Op} object to be cleared
+ */
 exports.clearOp = function (op) {
   op.opcode = '';
   op.chars = 0;
   op.lines = 0;
   op.attribs = '';
 };
+
+/**
+ * Creates a new Op object
+ * @param optOpcode the type operation of the Op object
+ */
 exports.newOp = function (optOpcode) {
   return {
     opcode: (optOpcode || ''),
@@ -143,6 +205,11 @@ exports.newOp = function (optOpcode) {
     attribs: ''
   };
 };
+
+/**
+ * Clones an Op
+ * @param op Op to be cloned
+ */
 exports.cloneOp = function (op) {
   return {
     opcode: op.opcode,
@@ -151,12 +218,22 @@ exports.cloneOp = function (op) {
     attribs: op.attribs
   };
 };
+
+/**
+ * Copies op1 to op2
+ * @param op1 src Op
+ * @param op2 dest Op
+ */
 exports.copyOp = function (op1, op2) {
   op2.opcode = op1.opcode;
   op2.chars = op1.chars;
   op2.lines = op1.lines;
   op2.attribs = op1.attribs;
 };
+
+/**
+ * Writes the Op in a string the way that changesets need it
+ */
 exports.opString = function (op) {
   // just for debugging
   if (!op.opcode) return 'null';
@@ -164,11 +241,19 @@ exports.opString = function (op) {
   assem.append(op);
   return assem.toString();
 };
+
+/**
+ * Used just for debugging
+ */
 exports.stringOp = function (str) {
   // just for debugging
   return exports.opIterator(str).next();
 };
 
+/**
+ * Used to check if a Changeset if valid
+ * @param cs {Changeset} Changeset to be checked
+ */
 exports.checkRep = function (cs) {
   // doesn't check things that require access to attrib pool (e.g. attribute order)
   // or original string (e.g. newline positions)
@@ -218,6 +303,15 @@ exports.checkRep = function (cs) {
   return cs;
 }
 
+
+/**
+ * ==================== Util Functions =======================
+ */
+
+/**
+ * creates an object that allows you to append operations (type Op) and also
+ * compresses them if possible
+ */
 exports.smartOpAssembler = function () {
   // Like opAssembler but able to produce conforming exportss
   // from slightly looser input, at the cost of speed.
@@ -474,6 +568,10 @@ if (_opt) {
   };
 }
 
+/**
+ * A custom made String Iterator
+ * @param str {string} String to be iterated over
+ */ 
 exports.stringIterator = function (str) {
   var curIndex = 0;
 
@@ -510,6 +608,9 @@ exports.stringIterator = function (str) {
   };
 };
 
+/**
+ * A custom made StringBuffer 
+ */
 exports.stringAssembler = function () {
   var pieces = [];
 
@@ -802,6 +903,11 @@ exports.applyZip = function (in1, idx1, in2, idx2, func) {
   return assem.toString();
 };
 
+/**
+ * Unpacks a string encoded Changeset into a proper Changeset object
+ * @params cs {string} String encoded Changeset
+ * @returns {Changeset} a Changeset class
+ */
 exports.unpack = function (cs) {
   var headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
   var headerMatch = headerRegex.exec(cs);
@@ -823,6 +929,14 @@ exports.unpack = function (cs) {
   };
 };
 
+/**
+ * Packs Changeset object into a string 
+ * @params oldLen {int} Old length of the Changeset
+ * @params newLen {int] New length of the Changeset
+ * @params opsStr {string} String encoding of the changes to be made
+ * @params bank {string} Charbank of the Changeset
+ * @returns {Changeset} a Changeset class
+ */
 exports.pack = function (oldLen, newLen, opsStr, bank) {
   var lenDiff = newLen - oldLen;
   var lenDiffStr = (lenDiff >= 0 ? '>' + exports.numToString(lenDiff) : '<' + exports.numToString(-lenDiff));
@@ -831,6 +945,11 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
   return a.join('');
 };
 
+/**
+ * Applies a Changeset to a string
+ * @params cs {string} String encoded Changeset
+ * @params str {string} String to which a Changeset should be applied
+ */
 exports.applyToText = function (cs, str) {
   var unpacked = exports.unpack(cs);
   exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
@@ -1410,6 +1529,12 @@ exports.mapAttribNumbers = function (cs, func) {
   return newUpToDollar + cs.substring(dollarPos);
 };
 
+/**
+ * Create a Changeset going from Identity to a certain state
+ * @params text {string} text of the final change
+ * @attribs attribs {string} optional, operations which insert 
+ *    the text and also puts the right attributes
+ */
 exports.makeAText = function (text, attribs) {
   return {
     text: text,
