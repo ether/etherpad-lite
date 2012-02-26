@@ -182,12 +182,21 @@ exports.opIterator = function (opsStr, optStartIndex) {
   };
 };
 
+/**
+ * Cleans an Op object
+ * @param {Op} object to be cleared
+ */
 exports.clearOp = function (op) {
   op.opcode = '';
   op.chars = 0;
   op.lines = 0;
   op.attribs = '';
 };
+
+/**
+ * Creates a new Op object
+ * @param optOpcode the type operation of the Op object
+ */
 exports.newOp = function (optOpcode) {
   return {
     opcode: (optOpcode || ''),
@@ -196,6 +205,11 @@ exports.newOp = function (optOpcode) {
     attribs: ''
   };
 };
+
+/**
+ * Clones an Op
+ * @param op Op to be cloned
+ */
 exports.cloneOp = function (op) {
   return {
     opcode: op.opcode,
@@ -204,12 +218,22 @@ exports.cloneOp = function (op) {
     attribs: op.attribs
   };
 };
+
+/**
+ * Copies op1 to op2
+ * @param op1 src Op
+ * @param op2 dest Op
+ */
 exports.copyOp = function (op1, op2) {
   op2.opcode = op1.opcode;
   op2.chars = op1.chars;
   op2.lines = op1.lines;
   op2.attribs = op1.attribs;
 };
+
+/**
+ * Writes the Op in a string the way that changesets need it
+ */
 exports.opString = function (op) {
   // just for debugging
   if (!op.opcode) return 'null';
@@ -217,11 +241,19 @@ exports.opString = function (op) {
   assem.append(op);
   return assem.toString();
 };
+
+/**
+ * Used just for debugging
+ */
 exports.stringOp = function (str) {
   // just for debugging
   return exports.opIterator(str).next();
 };
 
+/**
+ * Used to check if a Changeset if valid
+ * @param cs {Changeset} Changeset to be checked
+ */
 exports.checkRep = function (cs) {
   // doesn't check things that require access to attrib pool (e.g. attribute order)
   // or original string (e.g. newline positions)
@@ -271,6 +303,10 @@ exports.checkRep = function (cs) {
   return cs;
 }
 
+
+/**
+ * ==================== Changeset Functions =======================
+ */
 exports.smartOpAssembler = function () {
   // Like opAssembler but able to produce conforming exportss
   // from slightly looser input, at the cost of speed.
