@@ -3272,11 +3272,6 @@ function Ace2Inner(){
 
   function handleClick(evt)
   {
-    //hide the dropdowns
-    if(window.top.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/Pita/etherpad-lite/issues/327
-      window.top.padeditbar.toogleDropDown("none");
-    }
-  
     inCallStack("handleClick", function()
     {
       idleWorkTimer.atMost(200);
@@ -3291,9 +3286,6 @@ function Ace2Inner(){
     if ((!evt.ctrlKey) && (evt.button != 2) && (evt.button != 3))
     {
       // find A tag with HREF
-
-
-
       var n = evt.target;
       while (n && n.parentNode && !isLink(n))
       {
@@ -3312,6 +3304,10 @@ function Ace2Inner(){
         }
         evt.preventDefault();
       }
+    }
+    //hide the dropdowns
+    if(window.top.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/Pita/etherpad-lite/issues/327
+      window.top.padeditbar.toogleDropDown("none");
     }
   }
 
