@@ -816,8 +816,8 @@ ul#colorpickerswatches li:hover
 #chaticon
 {
   z-index: 400;
-  position:absolute;
-  bottom:0px;
+  position: fixed;
+  bottom: 0px;
   right: 20px;
   padding: 5px;
   border-left: 1px solid #999;
@@ -1104,83 +1104,6 @@ width:33px !important;
   transform: scale(1.5);
 }
 
-@media screen and (max-width: 960px) {
-  .modaldialog {
-    position: relative;
-    margin: 0 auto;
-    width: 80%;
-    top: 40px;
-    left: 0;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  #editbar ul li {
-    padding: 4px 1px;
-  }  
-}
-
-@media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
-  #editbar ul li {
-    padding: 4px 3px;
-  }
-  #editbar ul#menu_right > li {
-    padding: 4px 8px;
-    margin-top: 2px;
-  }
-  #chaticon {
-    opacity: .8;
-  }
-  #users {
-    right: 4px;
-  }
-  #mycolorpicker {
-    left: -72px; /* #mycolorpicker:width - #users:width */
-  }
-  #editorcontainer {
-    margin-bottom: 33px;
-  }
-  #editbar ul#menu_right  {
-    background: #f7f7f7;
-    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
-    width: 100%;
-    overflow: hidden;
-    height: 32px;
-    position: fixed;
-    bottom: 0;
-    border-top: 1px solid #ccc;
-  }
-  #editbar ul#menu_right li:not(:last-child) {
-    display: none;
-  }
-  #editbar ul#menu_right li:last-child {
-    height: 24px;
-    border-radius: 0;
-    margin-top: 0;
-    border: 0;
-    float: right;
-  }
-  #chaticon {
-    bottom: 0;
-    right: 55px;
-    border-right: none;
-    border-radius: 0;
-    background: #f7f7f7;
-    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
-    border: 0;
-  }
-  #chatbox {
-    bottom: 32px;
-    right: 0;
-    border-top-right-radius: 0;
-  }
-  #editbar ul li a span {
-    top: -3px;
-  }
-  #usericonback {
-    margin-top: 4px;
-  }
-}
 .rtl{
   direction:RTL;
 } 
@@ -1242,7 +1165,6 @@ label {
 .right_popup {
  float: left;
  width: 50%;
- box-sizing: border-box;
 }
 
 #settingsmenu, #importexport, #embed {
@@ -1261,4 +1183,116 @@ label {
 .selected {
  background: #eee !important;
  background: linear-gradient(#EEE, #F0F0F0) !important;
+}
+
+.stickyChat {
+ background-color: #f1f1f1 !important;
+ right: 0px !important;
+ top: 36px;
+ border-radius: 0px !important;
+ height: auto !important;
+ border: none !important;
+ border-left: 1px solid #ccc !important;
+ width: 185px !important;
+}
+
+@media screen and (max-width: 960px) {
+  .modaldialog {
+    position: relative;
+    margin: 0 auto;
+    width: 80%;
+    top: 40px;
+    left: 0;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #editbar ul li {
+    padding: 4px 1px;
+  }  
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
+  #editbar ul li {
+    padding: 4px 3px;
+  }
+  #users {
+    right: 4px;
+  }
+  #mycolorpicker {
+    left: -72px; /* #mycolorpicker:width - #users:width */
+  }
+  #editorcontainer {
+    margin-bottom: 33px;
+  }
+  #editbar ul#menu_right  {
+    background: #f7f7f7;
+    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
+    width: 100%;
+    overflow: hidden;
+    height: 32px;
+    position: fixed;
+    bottom: 0;
+    border-top: 1px solid #ccc;
+  }
+  #editbar ul#menu_right li:last-child {
+    height: 24px;
+    border-radius: 0;
+    margin-top: 0;
+    border: 0;
+    float: right;
+  }
+  #chaticon {
+    bottom: 0;
+    right: 55px;
+    border-right: none;
+    border-radius: 0;
+    background: #f7f7f7;
+    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
+    border: 0;
+  }
+  #chatbox {
+    bottom: 32px;
+    right: 0;
+    border-top-right-radius: 0;
+    border-right: none;
+  }
+  #editbar ul li a span {
+    top: -3px;
+  }
+  #usericonback {
+    margin-top: 4px;
+  }
+  #qrcode {
+    display: none;
+  }
+  #editbar ul#menu_right li:not(:last-child) {
+    display: block;
+  }
+  #editbar ul#menu_right > li {
+    background: none;
+    border: none;
+    margin-top: 4px;
+    padding: 4px 8px;
+  }
+  .selected {
+    background: none !important;
+  }
+  #timesliderlink {
+    display: none !important;
+  }
+  .popup {
+    border-radius: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #settingsmenu, #importexport, #embed {
+    left: 0;
+    top: 0;
+    bottom: 33px;
+    right: 0; 
+  }
+  .separator {
+    display: none;
+  }
 }

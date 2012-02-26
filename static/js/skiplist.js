@@ -21,7 +21,7 @@
  */
 
 
-
+var noop = require('./ace2_common').noop;
 
 
 function newSkipList()
@@ -40,9 +40,6 @@ function newSkipList()
       };
     };
   }
-
-  function noop()
-  {}
 
   // if there are N elements in the skiplist, "start" is element -1 and "end" is element N
   var start = {

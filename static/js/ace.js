@@ -49,8 +49,7 @@ function Ace2Editor()
     {
       var that = this;
       var args = arguments;
-
-      function action()
+      var action = function()
       {
         func.apply(that, args);
       }
@@ -71,78 +70,47 @@ function Ace2Editor()
 
   function doActionsPendingInit()
   {
-    for (var i = 0; i < actionsPendingInit.length; i++)
-    {
-      actionsPendingInit[i]();
-    }
+    $.each(actionsPendingInit, function(i,fn){
+      fn()
+    });
     actionsPendingInit = [];
   }
-
+  
   ace2.registry[info.id] = info;
 
-  editor.importText = pendingInit(function(newCode, undoable)
-  {
-    info.ace_importText(newCode, undoable);
+  // The following functions (prefixed by 'ace_')  are exposed by editor, but
+  // execution is delayed until init is complete
+  var aceFunctionsPendingInit = ['importText', 'importAText', 'focus',
+  'setEditable', 'getFormattedCode', 'setOnKeyPress', 'setOnKeyDown',
+  'setNotifyDirty', 'setProperty', 'setBaseText', 'setBaseAttributedText',
+  'applyChangesToBase', 'applyPreparedChangesetToBase',
+  'setUserChangeNotificationCallback', 'setAuthorInfo',
+  'setAuthorSelectionRange', 'callWithAce', 'execCommand', 'replaceRange'];
+  
+  $.each(aceFunctionsPendingInit, function(i,fnName){
+    var prefix = 'ace_';
+    var name = prefix + fnName;
+    editor[fnName] = pendingInit(function(){
+      info[prefix + fnName].apply(this, arguments);
+    });
   });
-  editor.importAText = pendingInit(function(newCode, apoolJsonObj, undoable)
-  {
-    info.ace_importAText(newCode, apoolJsonObj, undoable);
-  });
+  
   editor.exportText = function()
   {
     if (!loaded) return "(awaiting init)\n";
     return info.ace_exportText();
   };
+  
   editor.getFrame = function()
   {
     return info.frame || null;
   };
-  editor.focus = pendingInit(function()
-  {
-    info.ace_focus();
-  });
-  editor.setEditable = pendingInit(function(newVal)
-  {
-    info.ace_setEditable(newVal);
-  });
-  editor.getFormattedCode = function()
-  {
-    return info.ace_getFormattedCode();
-  };
-  editor.setOnKeyPress = pendingInit(function(handler)
-  {
-    info.ace_setOnKeyPress(handler);
-  });
-  editor.setOnKeyDown = pendingInit(function(handler)
-  {
-    info.ace_setOnKeyDown(handler);
-  });
-  editor.setNotifyDirty = pendingInit(function(handler)
-  {
-    info.ace_setNotifyDirty(handler);
-  });
-
-  editor.setProperty = pendingInit(function(key, value)
-  {
-    info.ace_setProperty(key, value);
-  });
+  
   editor.getDebugProperty = function(prop)
   {
     return info.ace_getDebugProperty(prop);
   };
 
-  editor.setBaseText = pendingInit(function(txt)
-  {
-    info.ace_setBaseText(txt);
-  });
-  editor.setBaseAttributedText = pendingInit(function(atxt, apoolJsonObj)
-  {
-    info.ace_setBaseAttributedText(atxt, apoolJsonObj);
-  });
-  editor.applyChangesToBase = pendingInit(function(changes, optAuthor, apoolJsonObj)
-  {
-    info.ace_applyChangesToBase(changes, optAuthor, apoolJsonObj);
-  });
   // prepareUserChangeset:
   // Returns null if no new changes or ACE not ready.  Otherwise, bundles up all user changes
   // to the latest base text into a Changeset, which is returned (as a string if encodeAsString).
@@ -157,24 +125,6 @@ function Ace2Editor()
     if (!loaded) return null;
     return info.ace_prepareUserChangeset();
   };
-  editor.applyPreparedChangesetToBase = pendingInit(
-
-  function()
-  {
-    info.ace_applyPreparedChangesetToBase();
-  });
-  editor.setUserChangeNotificationCallback = pendingInit(function(callback)
-  {
-    info.ace_setUserChangeNotificationCallback(callback);
-  });
-  editor.setAuthorInfo = pendingInit(function(author, authorInfo)
-  {
-    info.ace_setAuthorInfo(author, authorInfo);
-  });
-  editor.setAuthorSelectionRange = pendingInit(function(author, start, end)
-  {
-    info.ace_setAuthorSelectionRange(author, start, end);
-  });
 
   editor.getUnhandledErrors = function()
   {
@@ -183,19 +133,7 @@ function Ace2Editor()
     return info.ace_getUnhandledErrors();
   };
 
-  editor.callWithAce = pendingInit(function(fn, callStack, normalize)
-  {
-    return info.ace_callWithAce(fn, callStack, normalize);
-  });
 
-  editor.execCommand = pendingInit(function(cmd, arg1)
-  {
-    info.ace_execCommand(cmd, arg1);
-  });
-  editor.replaceRange = pendingInit(function(start, end, text)
-  {
-    info.ace_replaceRange(start, end, text);
-  });
 
   function sortFilesByEmbeded(files) {
     var embededFiles = [];

@@ -146,6 +146,12 @@ function savePassword()
   document.location=document.location;
 }
 
+function ieTestXMLHTTP(){
+  // Test for IE known XML HTTP issue
+  if ($.browser.msie && !window.XMLHttpRequest){
+    $("#editorloadingbox").html("You do not have XML HTTP enabled in your browser. <a target='_blank' href='https://github.com/Pita/etherpad-lite/wiki/How-to-enable-native-XMLHTTP-support-in-IE'>Fix this issue</a>");
+  }
+}
 function handshake()
 {
   var loc = document.location;
@@ -364,7 +370,6 @@ var pad = {
   {
     return clientVars.userIsGuest;
   },
-  //
   getUserId: function()
   {
     return pad.myUserInfo.userId;
@@ -384,6 +389,8 @@ var pad = {
 
     $(document).ready(function()
     {
+      // test for XML HTTP capabiites
+      ieTestXMLHTTP();
       // start the custom js
       if (typeof customStart == "function") customStart();
       getParams();
@@ -422,7 +429,7 @@ var pad = {
 
     // order of inits is important here:
     padcookie.init(clientVars.cookiePrefsToSet, this);
-  
+      
     $("#widthprefcheck").click(pad.toggleWidthPref);
     // $("#sidebarcheck").click(pad.togglewSidebar);
 
@@ -477,6 +484,10 @@ var pad = {
       {
         padeditor.ace.focus();
       }, 0);
+      if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
+        chat.stickToScreen(true); // stick it to the screen
+        $('#options-stickychat').prop("checked", true); // set the checkbox to on
+      }
     }
   },
   dispose: function()
@@ -972,3 +983,4 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
+
