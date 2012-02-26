@@ -95,11 +95,6 @@ var padimpexp = (function()
       }, 0);
       $('#importarrow').stop(true, true).hide();
       $('#importstatusball').show();
-      
-      $("#import .importframe").load(function()
-      {
-        importDone();
-      });
     }
     return ret;
   }
@@ -107,8 +102,6 @@ var padimpexp = (function()
   function importFailed(msg)
   {
     importErrorMessage(msg);
-    importDone();
-    addImportFrames();
   }
 
   function importDone()
@@ -120,6 +113,7 @@ var padimpexp = (function()
     }, 0);
     $('#importstatusball').hide();
     importClearTimeout();
+    addImportFrames();
   }
 
   function importClearTimeout()
@@ -131,11 +125,19 @@ var padimpexp = (function()
     }
   }
 
-  function importErrorMessage(msg)
+  function importErrorMessage(status)
   {
+    var msg="";
+  
+    if(status === "convertFailed"){
+      msg = "We were not able to import this file. Please use a different document format or copy paste manually";
+    } else if(status === "uploadFailed"){
+      msg = "The upload failed, please try again";
+    }
+  
     function showError(fade)
     {
-      $('#importmessagefail').html('<strong style="color: red">Import failed:</strong> ' + (msg || 'Please try a different file.'))[(fade ? "fadeIn" : "show")]();
+      $('#importmessagefail').html('<strong style="color: red">Import failed:</strong> ' + (msg || 'Please copy paste'))[(fade ? "fadeIn" : "show")]();
     }
 
     if ($('#importexport .importmessage').is(':visible'))
@@ -172,39 +174,6 @@ var padimpexp = (function()
   function importApplicationFailed(xhr, textStatus, errorThrown)
   {
     importErrorMessage("Error during conversion.");
-    importDone();
-  }
-
-  function importApplicationSuccessful(data, textStatus)
-  {
-    if (data.substr(0, 2) == "ok")
-    {
-      if ($('#importexport .importmessage').is(':visible'))
-      {
-        $('#importexport .importmessage').hide();
-      }
-      $('#importmessagesuccess').html('<strong style="color: green">Import successful!</strong>').show();
-      $('#importformfilediv').hide();
-      window.setTimeout(function()
-      {
-        $('#importmessagesuccess').fadeOut("slow", function()
-        {
-          $('#importformfilediv').show();
-        });
-        if (hidePanelCall)
-        {
-          hidePanelCall();
-        }
-      }, 3000);
-    }
-    else if (data.substr(0, 4) == "fail")
-    {
-      importErrorMessage("Couldn't update pad contents. This can happen if your web browser has \"cookies\" disabled.");
-    }
-    else if (data.substr(0, 4) == "msg:")
-    {
-      importErrorMessage(data.substr(4));
-    }
     importDone();
   }
 
@@ -290,16 +259,14 @@ var padimpexp = (function()
       $('#importform').submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
-    handleFrameCall: function(callName, argsArray)
+    handleFrameCall: function(status)
     {
-      if (callName == 'importFailed')
+      if (status !== "ok")
       {
-        importFailed(argsArray[0]);
+        importFailed(status);
       }
-      else if (callName == 'importSuccessful')
-      {
-        importSuccessful(argsArray[0]);
-      }
+      
+      importDone();
     },
     disable: function()
     {
