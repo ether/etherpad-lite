@@ -47,28 +47,30 @@ var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
  */
 exports.minifyJS = function(req, res, next)
 {
-  var jsFilename = req.params['filename'];
+  var jsFilename = req.params[0];
   
   //choose the js files we need
   var jsFiles = undefined;
   if (Object.prototype.hasOwnProperty.call(tar, jsFilename)) {
     jsFiles = tar[jsFilename];
-    _handle(req, res, jsFilename, jsFiles)
   } else {
-    // Not in tar list, but try anyways, if it fails, pass to `next`.
+    /* Not in tar list, but try anyways, if it fails, pass to `next`.
+       Actually try, not check in filesystem here because
+       we don't want to duplicate the require.resolve() handling
+     */
     jsFiles = [jsFilename];
-    fs.stat(JS_DIR + jsFilename, function (error, stats) {
-      if (error || !stats.isFile()) {
-        next();
-      } else {
-        _handle(req, res, jsFilename, jsFiles);
-      }
-    });
   }
+  _handle(req, res, jsFilename, jsFiles, function (err) {
+    console.log("Unable to load minified file " + jsFilename + ": " + err.toString());
+    /* Throw away error and generate a 404, not 500 */
+    next();
+  });
 }
 
-function _handle(req, res, jsFilename, jsFiles) {
+function _handle(req, res, jsFilename, jsFiles, next) {
   res.header("Content-Type","text/javascript");
+
+  var cacheName = CACHE_DIR + "/minified_" + jsFilename.replace(/\//g, "_");
   
   //minifying is enabled
   if(settings.minify)
@@ -119,7 +121,7 @@ function _handle(req, res, jsFilename, jsFiles) {
       function(callback)
       {
         //check the modification time of the minified js
-        fs.stat(CACHE_DIR + "/minified_" + jsFilename, function(err, stats)
+        fs.stat(cacheName, function(err, stats)
         {
           if(err && err.code != "ENOENT")
           {
@@ -147,7 +149,7 @@ function _handle(req, res, jsFilename, jsFiles) {
           jsFiles
         , function (content) {values.push(content)}
         , function (err) {
-          if(ERR(err)) return;
+           if(ERR(err, next)) return;
 
           result = values.join('');
           callback();
@@ -160,7 +162,7 @@ function _handle(req, res, jsFilename, jsFiles) {
           //write the results plain in a file
           function(callback)
           {
-            fs.writeFile(CACHE_DIR + "/minified_" + jsFilename, result, "utf8", callback);
+            fs.writeFile(cacheName, result, "utf8", callback);
           },
           //write the results compressed in a file
           function(callback)
@@ -171,7 +173,7 @@ function _handle(req, res, jsFilename, jsFiles) {
             
               if(ERR(err, callback)) return;
               
-              fs.writeFile(CACHE_DIR + "/minified_" + jsFilename + ".gz", compressedResult, callback);
+              fs.writeFile(cacheName + ".gz", compressedResult, callback);
             });
           }
         ],callback);
@@ -189,12 +191,12 @@ function _handle(req, res, jsFilename, jsFiles) {
       var pathStr;
       if(gzipSupport && os.type().indexOf("Windows") == -1)
       {
-        pathStr = path.normalize(CACHE_DIR + "/minified_" + jsFilename + ".gz");
+        pathStr = path.normalize(cacheName + ".gz");
         res.header('Content-Encoding', 'gzip');
       }
       else
       {
-        pathStr = path.normalize(CACHE_DIR + "/minified_" + jsFilename );
+        pathStr = path.normalize(cacheName);
       }
       
       res.sendfile(pathStr, { maxAge: server.maxAge });
@@ -207,7 +209,7 @@ function _handle(req, res, jsFilename, jsFiles) {
       jsFiles
     , function (content) {res.write(content)}
     , function (err) {
-      if(ERR(err)) return;
+	if(ERR(err, next)) return;
       res.end();
     });
   }
@@ -288,16 +290,28 @@ function tarCode(jsFiles, write, callback) {
   write('require.define({');
   var initialEntry = true;
   async.forEach(jsFiles, function (filename, callback){
+    var path;
+    var srcPath;
+    if (filename.indexOf('plugins/') == 0) {
+      srcPath = filename.substring('plugins/'.length);
+      path = require.resolve(srcPath);
+    } else {
+      srcPath = '/' + filename;
+      path = JS_DIR + filename;
+    }
+
+    srcPath = JSON.stringify(srcPath);
+    var srcPathAbbv = JSON.stringify(srcPath.replace(/\.js$/, ''));
+
     if (filename == 'ace.js') {
       getAceFile(handleFile);
     } else {
-      fs.readFile(JS_DIR + filename, "utf8", handleFile);
+      fs.readFile(path, "utf8", handleFile);
     }
 
     function handleFile(err, data) {
       if(ERR(err, callback)) return;
-      var srcPath = JSON.stringify('/' + filename);
-      var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
+
       if (!initialEntry) {
         write('\n,');
       } else {
@@ -316,7 +330,8 @@ function tarCode(jsFiles, write, callback) {
 
       callback();
     }
-  }, function () {
+  }, function (err) {
+    if(ERR(err, callback)) return;
     write('});\n');
     callback();
   });

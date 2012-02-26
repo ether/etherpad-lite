@@ -297,6 +297,7 @@
             var clientVars = {};
             (function () {
               require.setRootURI("../minified/");
+              require.setLibraryURI("../minified/plugins/");
               require.setGlobalKeyPath("require");
               require('/pad').init();
 
