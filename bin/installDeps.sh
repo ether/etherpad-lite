@@ -58,8 +58,8 @@ echo "Ensure that all dependencies are up to date..."
 (
   mkdir -p node_modules
   cd node_modules
-  [ -e pluginomatic_etherpad-lite ] || ln -s ../src pluginomatic_etherpad-lite
-  cd pluginomatic_etherpad-lite
+  [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
+  cd ep_etherpad-lite
   npm install
 ) || { 
   rm -rf node_modules

@@ -1,4 +1,4 @@
-test = ep_client_require("/plugins/pluginomatic_fintest/test.js");
+test = ep_client_require("/plugins/ep_fintest/test.js");
 console.log("FOOO:", test.foo);
 
 exports.somehook = function (hook_name, args, cb) {

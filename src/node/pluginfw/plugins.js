@@ -8,7 +8,7 @@ var fs = require("fs");
 var tsort = require("./tsort");
 var util = require("util");
 
-exports.prefix = 'pluginomatic_';
+exports.prefix = 'ep_';
 exports.loaded = false;
 exports.plugins = {};
 exports.parts = [];
@@ -43,7 +43,7 @@ exports.update = function (cb) {
   exports.getPackages(function (er, packages) {
     var parts = [];
     var plugins = {};
-    // Load plugin metadata pluginomatic.json
+    // Load plugin metadata ep.json
     async.forEach(
       Object.keys(packages),
       function (plugin_name, cb) {
@@ -98,7 +98,7 @@ exports.extractHooks = function (parts) {
 }
 
 exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
-  var plugin_path = path.resolve(packages[plugin_name].path, "pluginomatic.json");
+  var plugin_path = path.resolve(packages[plugin_name].path, "ep.json");
   fs.readFile(
     plugin_path,
     function (er, data) {

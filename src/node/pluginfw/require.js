@@ -6,9 +6,9 @@ var CLIENT_JS_SRC = path.normalize(path.join(__dirname, '../../static/js'));
 
 global.ep_require = function (url) {
   if (url.indexOf("/plugins/") == 0) {
-    /* Handle paths like "/plugins/pluginomatic_myplugin/test.js"
+    /* Handle paths like "/plugins/ep_myplugin/test.js"
        by rewriting it to ROOT_PATH_OF_MYPLUGIN/test.js,
-       commonly ETHERPAD_ROOT/node_modules/pluginomatic_myplugin/test.js
+       commonly ETHERPAD_ROOT/node_modules/ep_myplugin/test.js
     */
     url = url.split("/");
     url.splice(0, 1);
@@ -24,9 +24,9 @@ global.ep_require = function (url) {
 
 global.ep_client_require = function (url) {
   if (url.indexOf("/plugins/") == 0) {
-    /* Handle paths like "/plugins/pluginomatic_myplugin/test.js"
+    /* Handle paths like "/plugins/ep_myplugin/test.js"
        by rewriting it to ROOT_PATH_OF_MYPLUGIN/static/js/test.js,
-       commonly ETHERPAD_ROOT/node_modules/pluginomatic_myplugin/static/js/test.js
+       commonly ETHERPAD_ROOT/node_modules/ep_myplugin/static/js/test.js
        For more information see hooks/express/static.js
     */
     url = url.split("/");

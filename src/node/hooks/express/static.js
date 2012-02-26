@@ -10,9 +10,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     res.end();
   });
 
-  /* Handle paths like "/static/js/plugins/pluginomatic_myplugin/test.js"
+  /* Handle paths like "/static/js/plugins/ep_myplugin/test.js"
      by rewriting it to ROOT_PATH_OF_MYPLUGIN/static/js/test.js,
-     commonly ETHERPAD_ROOT/node_modules/pluginomatic_myplugin/static/js/test.js
+     commonly ETHERPAD_ROOT/node_modules/ep_myplugin/static/js/test.js
   */
   args.app.get(/^\/static\/([^\/]+)\/plugins\/([^\/]+)\/(.*)/, function(req, res) {
     var type_dir = req.params[0].replace(/\.\./g, '').split("?")[0];
