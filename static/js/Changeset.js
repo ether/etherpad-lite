@@ -305,7 +305,12 @@ exports.checkRep = function (cs) {
 
 
 /**
- * ==================== Changeset Functions =======================
+ * ==================== Util Functions =======================
+ */
+
+/**
+ * creates an object that allows you to append operations (type Op) and also
+ * compresses them if possible
  */
 exports.smartOpAssembler = function () {
   // Like opAssembler but able to produce conforming exportss
@@ -563,6 +568,10 @@ if (_opt) {
   };
 }
 
+/**
+ * A custom made String Iterator
+ * @param str {string} String to be iterated over
+ */ 
 exports.stringIterator = function (str) {
   var curIndex = 0;
 
@@ -599,6 +608,9 @@ exports.stringIterator = function (str) {
   };
 };
 
+/**
+ * A custom made StringBuffer 
+ */
 exports.stringAssembler = function () {
   var pieces = [];
 
@@ -891,6 +903,11 @@ exports.applyZip = function (in1, idx1, in2, idx2, func) {
   return assem.toString();
 };
 
+/**
+ * Unpacks a string encoded Changeset into a proper Changeset object
+ * @params cs {string} String encoded Changeset
+ * @returns {Changeset} a Changeset class
+ */
 exports.unpack = function (cs) {
   var headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
   var headerMatch = headerRegex.exec(cs);
@@ -912,6 +929,14 @@ exports.unpack = function (cs) {
   };
 };
 
+/**
+ * Packs Changeset object into a string 
+ * @params oldLen {int} Old length of the Changeset
+ * @params newLen {int] New length of the Changeset
+ * @params opsStr {string} String encoding of the changes to be made
+ * @params bank {string} Charbank of the Changeset
+ * @returns {Changeset} a Changeset class
+ */
 exports.pack = function (oldLen, newLen, opsStr, bank) {
   var lenDiff = newLen - oldLen;
   var lenDiffStr = (lenDiff >= 0 ? '>' + exports.numToString(lenDiff) : '<' + exports.numToString(-lenDiff));
@@ -920,6 +945,11 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
   return a.join('');
 };
 
+/**
+ * Applies a Changeset to a string
+ * @params cs {string} String encoded Changeset
+ * @params str {string} String to which a Changeset should be applied
+ */
 exports.applyToText = function (cs, str) {
   var unpacked = exports.unpack(cs);
   exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
@@ -1499,6 +1529,12 @@ exports.mapAttribNumbers = function (cs, func) {
   return newUpToDollar + cs.substring(dollarPos);
 };
 
+/**
+ * Create a Changeset going from Identity to a certain state
+ * @params text {string} text of the final change
+ * @attribs attribs {string} optional, operations which insert 
+ *    the text and also puts the right attributes
+ */
 exports.makeAText = function (text, attribs) {
   return {
     text: text,
