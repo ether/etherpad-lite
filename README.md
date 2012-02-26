@@ -123,8 +123,8 @@ contribute to Etherpad Lite.
 * [async-stacktrace](https://github.com/Pita/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
 
 # Donations
-[Etherpad Foundation Flattr] (http://flattr.com/thing/71378/Etherpad-Foundation)
-[Paypal] (https://www.paypal.com/uk/cgi-bin/webscr?cmd=_flow&SESSION=TXRTE1vjRbRm3BLkUVjy905bTyvanL6f_zwKicQII2Vp8aijc2gHHd4tTgm&dispatch=5885d80a13c0db1f8e263663d3faee8d43b1bb6ca6ed6d454adc375ba2d28b99)
+*[Etherpad Foundation Flattr] (http://flattr.com/thing/71378/Etherpad-Foundation)
+*[Paypal] (https://www.paypal.com/uk/cgi-bin/webscr?cmd=_flow&SESSION=TXRTE1vjRbRm3BLkUVjy905bTyvanL6f_zwKicQII2Vp8aijc2gHHd4tTgm&dispatch=5885d80a13c0db1f8e263663d3faee8d43b1bb6ca6ed6d454adc375ba2d28b99)
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
