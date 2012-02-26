@@ -3305,9 +3305,9 @@ function Ace2Inner(){
         evt.preventDefault();
       }
     }
-    //hide the dropdowns
-    if(window.top.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/Pita/etherpad-lite/issues/327
-      window.top.padeditbar.toogleDropDown("none");
+    //hide the dropdownso
+    if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/Pita/etherpad-lite/issues/327
+      window.parent.parent.padeditbar.toogleDropDown("none");
     }
   }
 
