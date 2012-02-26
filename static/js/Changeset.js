@@ -29,12 +29,17 @@ var AttributePoolFactory = require("/AttributePoolFactory");
 
 var _opt = null;
 
-//var exports = {};
+// ==================== General Util Functions =======================
+
+// This method is called whenever there is an error in the sync process
 exports.error = function error(msg) {
   var e = new Error(msg);
   e.easysync = true;
   throw e;
 };
+
+// This method is user for assertions with Messages 
+// if assert fails, the error function called.
 exports.assert = function assert(b, msgParts) {
   if (!b) {
     var msg = Array.prototype.slice.call(arguments, 1).join('');
@@ -42,12 +47,17 @@ exports.assert = function assert(b, msgParts) {
   }
 };
 
+// Parses a number from string base 36
 exports.parseNum = function (str) {
   return parseInt(str, 36);
 };
+
+// Writes a number in base 36 and puts it in a string
 exports.numToString = function (num) {
   return num.toString(36).toLowerCase();
 };
+
+// Converts stuff before $ to base 10
 exports.toBaseTen = function (cs) {
   var dollarIndex = cs.indexOf('$');
   var beforeDollar = cs.substring(0, dollarIndex);
@@ -56,6 +66,9 @@ exports.toBaseTen = function (cs) {
     return String(exports.parseNum(s));
   }) + fromDollar;
 };
+
+
+// ==================== Changeset Functions =======================
 
 exports.oldLen = function (cs) {
   return exports.unpack(cs).oldLen;
