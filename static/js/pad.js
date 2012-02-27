@@ -282,7 +282,7 @@ function handshake()
         pad.changeViewOption('showLineNumbers', false);
       }
 
-      // If the noColors value is set to true then we need to hide the backround colors on the ace spans
+      // If the noColors value is set to true then we need to hide the background colors on the ace spans
       if (settings.noColors == true)
       {
         pad.changeViewOption('noColors', true);
@@ -487,6 +487,9 @@ var pad = {
       if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
         chat.stickToScreen(true); // stick it to the screen
         $('#options-stickychat').prop("checked", true); // set the checkbox to on
+      }
+      if(padcookie.getPref("showAuthorshipColors") == false){
+	pad.changeViewOption('showAuthorColors', false);
       }
     }
   },
@@ -752,6 +755,7 @@ var pad = {
 
     // pad.determineSidebarVisibility(isConnected && !isInitialConnect);
     pad.determineChatVisibility(isConnected && !isInitialConnect);
+    pad.determineAuthorshipColorsVisibility();
 
   },
 /*  determineSidebarVisibility: function(asNowConnectedFeedback)
@@ -779,6 +783,16 @@ var pad = {
     }
     else{
       $('#options-stickychat').prop("checked", false); // set the checkbox for off
+    }
+  },
+  determineAuthorshipColorsVisibility: function(){
+    var authColCookie = padcookie.getPref('showAuthorshipColors');
+    if (authColCookie){
+      pad.changeViewOption('showAuthorColors', true);
+      $('#options-colorscheck').prop("checked", true);
+    }
+    else {
+      $('#options-colorscheck').prop("checked", false);
     }
   },
   handleCollabAction: function(action)
