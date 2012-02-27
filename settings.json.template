@@ -41,7 +41,7 @@
 
   /* How long may clients use served javascript code? Without versioning this
     is may cause problems during deployment. */
-  "maxAge" : 1000*60*60*6, // 6 hours
+  "maxAge" : 21600000, // 6 hours
   
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to enable the import/export of pads*/  
