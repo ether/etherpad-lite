@@ -27,16 +27,12 @@ var cleanCSS = require('clean-css');
 var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
-var Buffer = require('buffer').Buffer;
-var zlib = require('zlib');
 var RequireKernel = require('require-kernel');
 var server = require('../server');
-var os = require('os');
 
 var ROOT_DIR = path.normalize(__dirname + "/../" );
 var JS_DIR = ROOT_DIR + '../static/js/';
 var CSS_DIR = ROOT_DIR + '../static/css/';
-var CACHE_DIR = ROOT_DIR + '../var/';
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
@@ -57,160 +53,61 @@ exports.minifyJS = function(req, res, next)
   } else {
     // Not in tar list, but try anyways, if it fails, pass to `next`.
     jsFiles = [jsFilename];
-    fs.stat(JS_DIR + jsFilename, function (error, stats) {
-      if (error || !stats.isFile()) {
-        next();
-      } else {
-        _handle(req, res, jsFilename, jsFiles);
-      }
-    });
+    _handle(req, res, jsFilename, jsFiles);
   }
 }
 
 function _handle(req, res, jsFilename, jsFiles) {
   res.header("Content-Type","text/javascript");
-  
-  //minifying is enabled
-  if(settings.minify)
-  {
-    var result = undefined;
-    var latestModification = 0;
-    
-    async.series([
-      //find out the highest modification date
-      function(callback)
-      {        
-        var folders2check = [CSS_DIR, JS_DIR];
-        
-        //go trough this two folders
-        async.forEach(folders2check, function(path, callback)
-        {
-          //read the files in the folder
-          fs.readdir(path, function(err, files)
-          {
-            if(ERR(err, callback)) return;
-            
-            //we wanna check the directory itself for changes too
-            files.push(".");
-            
-            //go trough all files in this folder
-            async.forEach(files, function(filename, callback) 
-            {
-              //get the stat data of this file
-              fs.stat(path + "/" + filename, function(err, stats)
-              {
-                if(ERR(err, callback)) return;
-              
-                //get the modification time
-                var modificationTime = stats.mtime.getTime();
-              
-                //compare the modification time to the highest found
-                if(modificationTime > latestModification)
-                {
-                  latestModification = modificationTime;
-                }
-                
-                callback();
-              });
-            }, callback);
-          });
-        }, callback);
-      },
-      function(callback)
-      {
-        //check the modification time of the minified js
-        fs.stat(CACHE_DIR + "/minified_" + jsFilename, function(err, stats)
-        {
-          if(err && err.code != "ENOENT")
-          {
-            ERR(err, callback);
-            return;
-          }
-        
-          //there is no minfied file or there new changes since this file was generated, so continue generating this file
-          if((err && err.code == "ENOENT") || stats.mtime.getTime() < latestModification)
-          {
-            callback();
-          }
-          //the minified file is still up to date, stop minifying
-          else
-          {
-            callback("stop");
-          }
-        });
-      }, 
-      //load all js files
-      function (callback)
-      {
-        var values = [];
-        tarCode(
-          jsFiles
-        , function (content) {values.push(content)}
-        , function (err) {
-          if(ERR(err)) return;
 
-          result = values.join('');
-          callback();
-        });
-      },
-      //put all together and write it into a file
-      function(callback)
-      {
-        async.parallel([
-          //write the results plain in a file
-          function(callback)
-          {
-            fs.writeFile(CACHE_DIR + "minified_" + jsFilename, result, "utf8", callback);
-          },
-          //write the results compressed in a file
-          function(callback)
-          {
-            zlib.gzip(result, function(err, compressedResult){
-              //weird gzip bug that returns 0 instead of null if everything is ok
-              err = err === 0 ? null : err;
-            
-              if(ERR(err, callback)) return;
-              
-              fs.writeFile(CACHE_DIR + "minified_" + jsFilename + ".gz", compressedResult, callback);
-            });
-          }
-        ],callback);
+  lastModifiedDate(function (date) {
+    date = new Date(date);
+    res.setHeader('last-modified', date.toUTCString());
+    res.setHeader('date', (new Date()).toUTCString());
+    if (server.maxAge) {
+      var expiresDate = new Date((new Date()).getTime() + server.maxAge*1000);
+      res.setHeader('expires', expiresDate.toUTCString());
+      res.setHeader('cache-control', 'max-age=' + server.maxAge);
+    }
+
+    fs.stat(JS_DIR + jsFiles[0], function (error, stats) {
+      if (error) {
+        if (error.code == "ENOENT") {
+          res.writeHead(404, {});
+          res.end();
+        } else {
+          res.writeHead(500, {});
+          res.end();
+        }
+      } else if (!stats.isFile()) {
+        res.writeHead(404, {});
+        res.end();
+      } else if (new Date(req.headers['if-modified-since']) >= date) {
+        res.writeHead(304, {});
+        res.end();
+      } else {
+        if (req.method == 'HEAD') {
+          res.writeHead(200, {});
+          res.end();
+        } else if (req.method == 'GET') {
+          res.writeHead(200, {});
+          tarCode(
+            jsFiles
+          , function (content) {
+              res.write(content);
+            }
+          , function (err) {
+              if(ERR(err)) return;
+              res.end();
+            }
+          );
+        } else {
+          res.writeHead(405, {'allow': 'HEAD, GET'});
+          res.end();
+        }
       }
-    ], function(err)
-    {
-      if(err && err != "stop")
-      {
-        if(ERR(err)) return;
-      }
-      
-      //check if gzip is supported by this browser
-      var gzipSupport = req.header('Accept-Encoding', '').indexOf('gzip') != -1;
-      
-      var pathStr;
-      if(gzipSupport && os.type().indexOf("Windows") == -1)
-      {
-        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename + ".gz");
-        res.header('Content-Encoding', 'gzip');
-      }
-      else
-      {
-        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename );
-      }
-      
-      res.sendfile(pathStr, { maxAge: server.maxAge });
-    })
-  }
-  //minifying is disabled, so put the files together in one file
-  else
-  {
-    tarCode(
-      jsFiles
-    , function (content) {res.write(content)}
-    , function (err) {
-      if(ERR(err)) return;
-      res.end();
     });
-  }
+  });
 }
 
 // find all includes in ace.js and embed them.
@@ -232,7 +129,8 @@ function getAceFile(callback) {
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
       var type = item.match(/INCLUDE_([A-Z]+)/)[1];
-      var shortFilename = (filename.match(/^..\/static\/js\/(.*)$/, '')||[])[1];
+      var shortFilename =
+          (filename.match(/^\.\.\/static\/js\/(.*)$/, '') || [])[1];
 
       //read the included files
       if (shortFilename) {
@@ -276,6 +174,46 @@ function getAceFile(callback) {
     }, function(error) {
       callback(error, data);
     });
+  });
+}
+
+function lastModifiedDate(callback) {
+  var folders2check = [CSS_DIR, JS_DIR];
+  var latestModification = 0;
+  //go trough this two folders
+  async.forEach(folders2check, function(path, callback)
+  {
+    //read the files in the folder
+    fs.readdir(path, function(err, files)
+    {
+      if(ERR(err, callback)) return;
+
+      //we wanna check the directory itself for changes too
+      files.push(".");
+
+      //go trough all files in this folder
+      async.forEach(files, function(filename, callback)
+      {
+        //get the stat data of this file
+        fs.stat(path + "/" + filename, function(err, stats)
+        {
+          if(ERR(err, callback)) return;
+
+          //get the modification time
+          var modificationTime = stats.mtime.getTime();
+
+          //compare the modification time to the highest found
+          if(modificationTime > latestModification)
+          {
+            latestModification = modificationTime;
+          }
+
+          callback();
+        });
+      }, callback);
+    });
+  }, function () {
+    callback(latestModification);
   });
 }
 

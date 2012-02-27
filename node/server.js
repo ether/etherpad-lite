@@ -31,6 +31,7 @@ var async = require('async');
 var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
+var CachingMiddleware = require('./utils/caching_middleware');
 var formidable = require('formidable');
 var apiHandler;
 var exportHandler;
@@ -61,8 +62,7 @@ console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 
-//cache 6 hours
-exports.maxAge = 1000*60*60*6;
+exports.maxAge = settings.maxAge;
 
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
@@ -155,7 +155,8 @@ async.waterfall([
     });
     
     //serve minified files
-    app.get('/minified/:filename', minify.minifyJS);
+    var assetCache = new CachingMiddleware;
+    app.all('/minified/:filename', assetCache.handle, minify.minifyJS);
     
     //checks for padAccess
     function hasPadAccess(req, res, callback)
