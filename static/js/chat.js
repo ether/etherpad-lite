@@ -20,143 +20,119 @@
  * limitations under the License.
  */
 
-var padutils = require('/pad_utils').padutils;
-var padcookie = require('/pad_cookie').padcookie;
+var padutils  = require('/pad_utils').padutils,
+    padcookie = require('/pad_cookie').padcookie;
 
-var chat = (function()
-{
-  var isStuck = false;
-  var chatMentions = 0;
-  var title = document.title;
+var chat = (function() {
+  var isStuck       = false,
+      chatMentions  = 0,
+      title         = document.title;
   var self = {
-    show: function () 
-    {      
-      $("#chaticon").hide();
-      $("#chatbox").show();
+    show: function()  {
+      $('#chaticon').hide();
+      $('#chatbox').show();
       self.scrollDown();
       chatMentions = 0;
       document.title = title;
     },
-    stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
-    {
+    stickToScreen: function(fromInitialCall) {  // make chat stick to right hand side of screen
       chat.show();
-      if(!isStuck || fromInitialCall) { // Stick it to
-        padcookie.setPref("chatAlwaysVisible", true);
-        $('#chatbox').addClass("stickyChat");
-        $('#chattext').css({"top":"0px"});
-        $('#editorcontainer').css({"right":"192px", "width":"auto"});
+      if (!isStuck || fromInitialCall) { // do stick it
+        padcookie.setPref('chatAlwaysVisible', true);
+        $('BODY').addClass('chat-visible');
         isStuck = true;
-      } else { // Unstick it
-        padcookie.setPref("chatAlwaysVisible", false);
-        $('#chatbox').removeClass("stickyChat");
-        $('#chattext').css({"top":"25px"});
-        $('#editorcontainer').css({"right":"0px", "width":"100%"});
+      } else { // unstick it
+        padcookie.setPref('chatAlwaysVisible', false);
+        $('BODY').removeClass('chat-visible');
         isStuck = false;
       }
     },
-    hide: function () 
-    {
-      $("#chatcounter").text("0");
-      $("#chaticon").show();
-      $("#chatbox").hide();
+    hide: function() {
+      $('#chatcounter').text('0');
+      $('#chaticon').show();
+      $('#chatbox').hide();
     },
-    scrollDown: function()
-    {
-      if($('#chatbox').css("display") != "none")
-        $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
+    scrollDown: function() {
+      if ($('#chatbox').is(':visible'))
+        $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, 600);
     }, 
-    send: function()
-    {
-      var text = $("#chatinput").val();
-      this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
-      $("#chatinput").val("");
+    send: function() {
+      var text = $('#chatinput').val();
+      this._pad.collabClient.sendMessage({
+        'type': 'CHAT_MESSAGE',
+        'text': text
+      });
+      $('#chatinput').val('');
     },
-    addMessage: function(msg, increment)
-    {    
-      //correct the time
+    addMessage: function(msg, increment) {
+      // correct the time
       msg.time += this._pad.clientTimeOffset;
       
-      //create the time string
-      var minutes = "" + new Date(msg.time).getMinutes();
-      var hours = "" + new Date(msg.time).getHours();
-      if(minutes.length == 1)
-        minutes = "0" + minutes ;
-      if(hours.length == 1)
-        hours = "0" + hours ;
-      var timeStr = hours + ":" + minutes;
+      // create the time string
+      var minutes = '' + new Date(msg.time).getMinutes(),
+          hours   = '' + new Date(msg.time).getHours(),
+          timeStr;
+      if (minutes.length == 1)
+        minutes = '0' + minutes;
+      if (hours.length == 1)
+        hours = '0' + hours;
+      timeStr = hours + ':' + minutes;
         
-      //create the authorclass
-      var authorClass = "author-" + msg.userId.replace(/[^a-y0-9]/g, function(c)
-      {
-        if (c == ".") return "-";
+      // create the authorclass
+      var authorClass = 'author-' + msg.userId.replace(/[^a-y0-9]/g, function(c) {
+        if (c == '.')
+          return '-';
         return 'z' + c.charCodeAt(0) + 'z';
       });
 
-      var text = padutils.escapeHtmlWithClickableLinks(msg.text, "_blank");
+      var text = padutils.escapeHtmlWithClickableLinks(padutils.escapeHtml(msg.text), '_blank');
 
-      /* Performs an action if your name is mentioned */
-      var myName = $('#myusernameedit').val();
-      myName = myName.toLowerCase();
-      var chatText = text.toLowerCase();
-      var wasMentioned = false;
-      if (chatText.indexOf(myName) !== -1 && myName != "undefined"){
+      // do something when your name is mentioned
+      var myName        = $('#myusernameedit').val().toLowerCase(),
+          chatText      = text.toLowerCase(),
+          wasMentioned  = false;
+      if (chatText.indexOf(myName) !== -1 && myName != 'undefined')
         wasMentioned = true;
-      }
-      /* End of new action */
+      // end of action
 
-      var authorName = msg.userName == null ? "unnamed" : padutils.escapeHtml(msg.userName); 
+      var authorName  = msg.userName == null ? 'unnamed' : padutils.escapeHtml(msg.userName),
+          html        = '<p class="' + authorClass + '"><strong>' + authorName + ':</strong><span class="time ' + authorClass + '">' + timeStr + '</span>' + text + '</p>';
+      $('#chattext').append(html);
       
-      var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
-      $("#chattext").append(html);
-      
-      //should we increment the counter??
-      if(increment)
-      {
-        var count = Number($("#chatcounter").text());
+      // should we increment the counter??
+      if (increment) {
+        var count = Number($('#chatcounter').text());
         count++;
-        $("#chatcounter").text(count);
+        $('#chatcounter').text(count);
         // chat throb stuff -- Just make it throw for twice as long
-        if(wasMentioned)
-        { // If the user was mentioned show for twice as long and flash the browser window
-          if (chatMentions == 0){
+        if (wasMentioned) { // If the user was mentioned, show twice as long and flash the browser window
+          if (chatMentions == 0)
             title = document.title;
-          }
-          $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(4000).hide(400);
+          $('#chatthrob').html('<b>' + authorName + '</b>' + ': ' + text).show().delay(4000).hide(400);
           chatMentions++;
-          document.title = "("+chatMentions+") " + title;
-        }
-        else
-        {
-          $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(2000).hide(400);
+          document.title = '(' + chatMentions + ') ' + title;
+        } else {
+          $('#chatthrob').html('<b>' + authorName + '</b>' + ': ' + text).show().delay(2000).hide(400);
         }
       }
-      
       self.scrollDown();
-
     },
-    init: function(pad)
-    {
+    init: function(pad) {
       this._pad = pad;
-      $("#chatinput").keypress(function(evt)
-      {
-        //if the user typed enter, fire the send
-        if(evt.which == 13)
-        {
+      $('#chatinput').keypress(function(evt) {
+        if (evt.which == 13) {  // send on enter
           evt.preventDefault();
           self.send();
         }
       });
-      
-      for(var i in clientVars.chatHistory)
-      {
+      for (var i in clientVars.chatHistory) {
         this.addMessage(clientVars.chatHistory[i], false);
       }
-      $("#chatcounter").text(clientVars.chatHistory.length);
+      $('#chatcounter').text(clientVars.chatHistory.length);
     }
-  }
+  };
 
   return self;
 }());
 
 exports.chat = chat;
-
