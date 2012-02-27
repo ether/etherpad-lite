@@ -1157,12 +1157,7 @@ label {
  margin: 5px 0;
 }
 
-.left_popup {
- float: left;
- width: 50%;
-}
-
-.right_popup {
+.column {
  float: left;
  width: 50%;
 }
