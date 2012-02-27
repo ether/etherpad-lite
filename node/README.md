@@ -6,7 +6,7 @@
 
 # Module name conventions
 
-Module file names starts with a capital letter and uses camelCase
+Module file names start with a capital letter and uses camelCase
 
 # Where does it start?
 
