@@ -27,299 +27,257 @@ var cleanCSS = require('clean-css');
 var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
-var Buffer = require('buffer').Buffer;
-var zlib = require('zlib');
 var RequireKernel = require('require-kernel');
 var server = require('../server');
-var os = require('os');
 
-var ROOT_DIR = path.normalize(__dirname + "/../" );
-var JS_DIR = ROOT_DIR + '../static/js/';
-var CSS_DIR = ROOT_DIR + '../static/css/';
-var CACHE_DIR = ROOT_DIR + '../var/';
+var ROOT_DIR = path.normalize(__dirname + "/../../static/");
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
+
+// Rewrite tar to include modules with no extensions and proper rooted paths.
+exports.tar = {};
+for (var key in tar) {
+  exports.tar['/' + key] =
+    tar[key].map(function (p) {return '/' + p}).concat(
+      tar[key].map(function (p) {return '/' + p.replace(/\.js$/, '')})
+    );
+}
 
 /**
  * creates the minifed javascript for the given minified name
  * @param req the Express request
  * @param res the Express response
  */
-exports.minifyJS = function(req, res, next)
+exports.minify = function(req, res, next)
 {
-  var jsFilename = req.params['filename'];
-  
-  //choose the js files we need
-  var jsFiles = undefined;
-  if (Object.prototype.hasOwnProperty.call(tar, jsFilename)) {
-    jsFiles = tar[jsFilename];
-    _handle(req, res, jsFilename, jsFiles)
+  var filename = req.params['filename'];
+
+  // No relative paths, especially if they may go up the file hierarchy.
+  filename = path.normalize(path.join(ROOT_DIR, filename));
+  if (filename.indexOf(ROOT_DIR) == 0) {
+    filename = filename.slice(ROOT_DIR.length);
   } else {
-    // Not in tar list, but try anyways, if it fails, pass to `next`.
-    jsFiles = [jsFilename];
-    fs.stat(JS_DIR + jsFilename, function (error, stats) {
-      if (error || !stats.isFile()) {
-        next();
-      } else {
-        _handle(req, res, jsFilename, jsFiles);
-      }
-    });
+    res.writeHead(404, {});
+    res.end();
+    return; 
   }
-}
 
-function _handle(req, res, jsFilename, jsFiles) {
-  res.header("Content-Type","text/javascript");
-  
-  //minifying is enabled
-  if(settings.minify)
-  {
-    var result = undefined;
-    var latestModification = 0;
-    
-    async.series([
-      //find out the highest modification date
-      function(callback)
-      {        
-        var folders2check = [CSS_DIR, JS_DIR];
-        
-        //go trough this two folders
-        async.forEach(folders2check, function(path, callback)
-        {
-          //read the files in the folder
-          fs.readdir(path, function(err, files)
-          {
-            if(ERR(err, callback)) return;
-            
-            //we wanna check the directory itself for changes too
-            files.push(".");
-            
-            //go trough all files in this folder
-            async.forEach(files, function(filename, callback) 
-            {
-              //get the stat data of this file
-              fs.stat(path + "/" + filename, function(err, stats)
-              {
-                if(ERR(err, callback)) return;
-              
-                //get the modification time
-                var modificationTime = stats.mtime.getTime();
-              
-                //compare the modification time to the highest found
-                if(modificationTime > latestModification)
-                {
-                  latestModification = modificationTime;
-                }
-                
-                callback();
-              });
-            }, callback);
-          });
-        }, callback);
-      },
-      function(callback)
-      {
-        //check the modification time of the minified js
-        fs.stat(CACHE_DIR + "/minified_" + jsFilename, function(err, stats)
-        {
-          if(err && err.code != "ENOENT")
-          {
-            ERR(err, callback);
-            return;
-          }
-        
-          //there is no minfied file or there new changes since this file was generated, so continue generating this file
-          if((err && err.code == "ENOENT") || stats.mtime.getTime() < latestModification)
-          {
-            callback();
-          }
-          //the minified file is still up to date, stop minifying
-          else
-          {
-            callback("stop");
-          }
-        });
-      }, 
-      //load all js files
-      function (callback)
-      {
-        var values = [];
-        tarCode(
-          jsFiles
-        , function (content) {values.push(content)}
-        , function (err) {
-          if(ERR(err)) return;
-
-          result = values.join('');
-          callback();
-        });
-      },
-      //put all together and write it into a file
-      function(callback)
-      {
-        async.parallel([
-          //write the results plain in a file
-          function(callback)
-          {
-            fs.writeFile(CACHE_DIR + "minified_" + jsFilename, result, "utf8", callback);
-          },
-          //write the results compressed in a file
-          function(callback)
-          {
-            zlib.gzip(result, function(err, compressedResult){
-              //weird gzip bug that returns 0 instead of null if everything is ok
-              err = err === 0 ? null : err;
-            
-              if(ERR(err, callback)) return;
-              
-              fs.writeFile(CACHE_DIR + "minified_" + jsFilename + ".gz", compressedResult, callback);
-            });
-          }
-        ],callback);
-      }
-    ], function(err)
-    {
-      if(err && err != "stop")
-      {
-        if(ERR(err)) return;
-      }
-      
-      //check if gzip is supported by this browser
-      var gzipSupport = req.header('Accept-Encoding', '').indexOf('gzip') != -1;
-      
-      var pathStr;
-      if(gzipSupport && os.type().indexOf("Windows") == -1)
-      {
-        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename + ".gz");
-        res.header('Content-Encoding', 'gzip');
-      }
-      else
-      {
-        pathStr = path.normalize(CACHE_DIR + "minified_" + jsFilename );
-      }
-      
-      res.sendfile(pathStr, { maxAge: server.maxAge });
-    })
+  // What content type should this be?
+  // TODO: This should use a MIME module.
+  var contentType;
+  if (filename.match(/\.js$/)) {
+    contentType = "text/javascript";
+  } else if (filename.match(/\.css$/)) {
+    contentType = "text/css";
+  } else if (filename.match(/\.html$/)) {
+    contentType = "text/html";
+  } else if (filename.match(/\.txt$/)) {
+    contentType = "text/plain";
+  } else if (filename.match(/\.png$/)) {
+    contentType = "image/png";
+  } else if (filename.match(/\.gif$/)) {
+    contentType = "image/gif";
+  } else if (filename.match(/\.ico$/)) {
+    contentType = "image/x-icon";
+  } else {
+    contentType = "application/octet-stream";
   }
-  //minifying is disabled, so put the files together in one file
-  else
-  {
-    tarCode(
-      jsFiles
-    , function (content) {res.write(content)}
-    , function (err) {
-      if(ERR(err)) return;
+
+  statFile(filename, function (error, date, exists) {
+    if (date) {
+      date = new Date(date);
+      res.setHeader('last-modified', date.toUTCString());
+      res.setHeader('date', (new Date()).toUTCString());
+      if (server.maxAge) {
+        var expiresDate = new Date((new Date()).getTime()+server.maxAge*1000);
+        res.setHeader('expires', expiresDate.toUTCString());
+        res.setHeader('cache-control', 'max-age=' + server.maxAge);
+      }
+    }
+
+    if (error) {
+      res.writeHead(500, {});
       res.end();
-    });
-  }
+    } else if (!exists) {
+      res.writeHead(404, {});
+      res.end();
+    } else if (new Date(req.headers['if-modified-since']) >= date) {
+      res.writeHead(304, {});
+      res.end();
+    } else {
+      if (req.method == 'HEAD') {
+        res.header("Content-Type", contentType);
+        res.writeHead(200, {});
+        res.end();
+      } else if (req.method == 'GET') {
+        getFileCompressed(filename, contentType, function (error, content) {
+          if(ERR(error)) return;
+          res.header("Content-Type", contentType);
+          res.writeHead(200, {});
+          res.write(content);
+          res.end();
+        });
+      } else {
+        res.writeHead(405, {'allow': 'HEAD, GET'});
+        res.end();
+      }
+    }
+  });
 }
 
 // find all includes in ace.js and embed them.
 function getAceFile(callback) {
-  fs.readFile(JS_DIR + 'ace.js', "utf8", function(err, data) {
+  fs.readFile(ROOT_DIR + 'js/ace.js', "utf8", function(err, data) {
     if(ERR(err, callback)) return;
 
     // Find all includes in ace.js and embed them
-    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\([a-zA-Z0-9.\/_"-]+\)/gi);
+    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\("[^"]*"\)/gi);
     if (!settings.minify) {
       founds = [];
     }
+    // Always include the require kernel.
     founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
 
     data += ';\n';
     data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
 
-    //go trough all includes
+    // Request the contents of the included file on the server-side and write
+    // them into the file.
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
-      var type = item.match(/INCLUDE_([A-Z]+)/)[1];
-      var shortFilename = (filename.match(/^..\/static\/js\/(.*)$/, '')||[])[1];
+      var request = require('request');
 
-      //read the included files
-      if (shortFilename) {
-        if (shortFilename == 'require-kernel.js') {
-          // the kernel isn’t actually on the file system.
-          handleEmbed(null, requireDefinition());
+      var baseURI = 'http://' + settings.ip + ":" + settings.port
+
+      request(baseURI + path.normalize(path.join('/static/', filename)), function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
+              + JSON.stringify(body || '') + ';\n';
         } else {
-          var contents = '';
-          tarCode(tar[shortFilename] || shortFilename
-          , function (content) {
-              contents += content;
-            }
-          , function () {
-              handleEmbed(null, contents);
-            }
-          );
+          // Silence?
         }
-      } else {
-        fs.readFile(ROOT_DIR + filename, "utf8", handleEmbed);
-      }
-
-      function handleEmbed(error, data_) {
-        if (error) {
-          return; // Don't bother to include it.
-        }
-        if (settings.minify) {
-          if (type == "JS") {
-            try {
-              data_ = compressJS([data_]);
-            } catch (e) {
-              // Ignore, include uncompresseed, which will break in browser.
-            }
-          } else {
-            data_ = compressCSS([data_]);
-          }
-        }
-        data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-            + JSON.stringify(data_) + ';\n';
         callback();
-      }
+      });
     }, function(error) {
       callback(error, data);
     });
   });
 }
 
-exports.requireDefinition = requireDefinition;
+// Check for the existance of the file and get the last modification date.
+function statFile(filename, callback) {
+  if (filename == 'js/ace.js') {
+    // Sometimes static assets are inlined into this file, so we have to stat
+    // everything.
+    lastModifiedDateOfEverything(function (error, date) {
+      callback(error, date, !error);
+    });
+  } else if (filename == 'js/require-kernel.js') {
+    callback(null, requireLastModified(), true);
+  } else {
+    fs.stat(ROOT_DIR + filename, function (error, stats) {
+      if (error) {
+        if (error.code == "ENOENT") {
+          // Stat the directory instead.
+          fs.stat(path.dirname(ROOT_DIR + filename), function (error, stats) {
+            if (error) {
+              if (error.code == "ENOENT") {
+                callback(null, null, false);
+              } else {
+                callback(error);
+              }
+            } else {
+              callback(null, stats.mtime.getTime(), false);
+            }
+          });
+        } else {
+          callback(error);
+        }
+      } else {
+        callback(null, stats.mtime.getTime(), true);
+      }
+    });
+  }
+}
+function lastModifiedDateOfEverything(callback) {
+  var folders2check = [ROOT_DIR + 'js/', ROOT_DIR + 'css/'];
+  var latestModification = 0;
+  //go trough this two folders
+  async.forEach(folders2check, function(path, callback)
+  {
+    //read the files in the folder
+    fs.readdir(path, function(err, files)
+    {
+      if(ERR(err, callback)) return;
+
+      //we wanna check the directory itself for changes too
+      files.push(".");
+
+      //go trough all files in this folder
+      async.forEach(files, function(filename, callback)
+      {
+        //get the stat data of this file
+        fs.stat(path + "/" + filename, function(err, stats)
+        {
+          if(ERR(err, callback)) return;
+
+          //get the modification time
+          var modificationTime = stats.mtime.getTime();
+
+          //compare the modification time to the highest found
+          if(modificationTime > latestModification)
+          {
+            latestModification = modificationTime;
+          }
+
+          callback();
+        });
+      }, callback);
+    });
+  }, function () {
+    callback(null, latestModification);
+  });
+}
+
+// This should be provided by the module, but until then, just use startup
+// time.
+var _requireLastModified = new Date();
+function requireLastModified() {
+  return _requireLastModified.toUTCString();
+}
 function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
 }
 
-function tarCode(jsFiles, write, callback) {
-  write('require.define({');
-  var initialEntry = true;
-  async.forEach(jsFiles, function (filename, callback){
-    if (filename == 'ace.js') {
-      getAceFile(handleFile);
+function getFileCompressed(filename, contentType, callback) {
+  getFile(filename, function (error, content) {
+    if (error || !content) {
+      callback(error, content);
     } else {
-      fs.readFile(JS_DIR + filename, "utf8", handleFile);
-    }
-
-    function handleFile(err, data) {
-      if(ERR(err, callback)) return;
-      var srcPath = JSON.stringify('/' + filename);
-      var srcPathAbbv = JSON.stringify('/' + filename.replace(/\.js$/, ''));
-      if (!initialEntry) {
-        write('\n,');
-      } else {
-        initialEntry = false;
-      }
-      write(srcPath + ': ')
-      data = '(function (require, exports, module) {' + data + '})';
       if (settings.minify) {
-        write(compressJS([data]));
-      } else {
-        write(data);
+        if (contentType == 'text/javascript') {
+          try {
+            content = compressJS([content]);
+          } catch (error) {
+            // silence
+          }
+        } else if (contentType == 'text/css') {
+          content = compressCSS([content]);
+        }
       }
-      if (srcPath != srcPathAbbv) {
-        write('\n,' + srcPathAbbv + ': null');
-      }
-
-      callback();
+      callback(null, content);
     }
-  }, function () {
-    write('});\n');
-    callback();
   });
+}
+
+function getFile(filename, callback) {
+  if (filename == 'js/ace.js') {
+    getAceFile(callback);
+  } else if (filename == 'js/require-kernel.js') {
+    callback(undefined, requireDefinition());
+  } else {
+    fs.readFile(ROOT_DIR + filename, callback);
+  }
 }
 
 function compressJS(values)
