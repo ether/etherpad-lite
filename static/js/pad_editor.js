@@ -69,6 +69,7 @@ var padeditor = (function()
       });
       padutils.bindCheckboxChange($("#options-colorscheck"), function()
       {
+        padcookie.setPref('showAuthorshipColors', padutils.getCheckbox("#options-colorscheck"));
         pad.changeViewOption('showAuthorColors', padutils.getCheckbox("#options-colorscheck"));
       });
       $("#viewfontmenu").change(function()
