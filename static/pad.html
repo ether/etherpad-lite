@@ -5,7 +5,7 @@
 
         <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
-        <meta name="viewport" content="width=device-width, user-scalable=0">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 
         <link href="../static/css/pad.css" rel="stylesheet">
         <link href="../static/custom/pad.css" rel="stylesheet">
@@ -133,7 +133,7 @@
 
         <div id="settingsmenu" class="popup">
             <h1>Pad settings</h1>
-            <div class="left_popup">
+            <div class="column">
                 <h2>My view</h2>
                 <p>
                     <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
@@ -155,7 +155,7 @@
                     </select>
                 </p>
             </div>
-            <div class="right_popup">
+            <div class="column">
                 <h2>Global view</h2>
                 <p>Currently nothing.</p>
                 <p class="note">These options affect everyone viewing this pad.</p>
@@ -163,7 +163,7 @@
         </div>
 
         <div id="importexport" class="popup">
-            <div class="left_popup">
+            <div class="column">
                 <h2>Import from text file, HTML, PDF, Word, ODT or RTF</h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
                     <div class="importformdiv" id="importformfilediv"> 
@@ -182,7 +182,7 @@
                     </div> 
                 </form>
             </div>
-            <div class="right_popup">
+            <div class="column">
                 <h2>Export current pad as</h2>
                 <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
                 <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
