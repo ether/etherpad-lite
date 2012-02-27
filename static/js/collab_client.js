@@ -84,13 +84,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {}
   };
 
-  $(window).bind("unload", function()
-  {
-    if (getSocket())
-    {
-      setChannelState("DISCONNECTED", "unload");
-    }
-  });
   if ($.browser.mozilla)
   {
     // Prevent "escape" from taking effect and canceling a comet connection;

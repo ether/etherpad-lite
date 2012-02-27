@@ -164,7 +164,8 @@ function handshake()
   //connect
   socket = pad.socket = io.connect(url, {
     resource: resource,
-    'max reconnection attempts': 3
+    'max reconnection attempts': 3,
+    'sync disconnect on unload' : false
   });
 
   function sendClientReady(isReconnect)
@@ -222,15 +223,19 @@ function handshake()
     sendClientReady(true);
   });
   
-  socket.on('disconnect', function () {
-    function disconnectEvent()
-    {
-      pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
+  socket.on('disconnect', function (reason) {
+    if(reason == "booted"){
+      pad.collabClient.setChannelState("DISCONNECTED");
+    } else {
+      function disconnectEvent()
+      {
+        pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
+      }
+      
+      pad.collabClient.setChannelState("RECONNECTING");
+      
+      disconnectTimeout = setTimeout(disconnectEvent, 10000);
     }
-    
-    pad.collabClient.setChannelState("RECONNECTING");
-    
-    disconnectTimeout = setTimeout(disconnectEvent, 10000);
   });
 
   var receivedClientVars = false;
@@ -395,11 +400,6 @@ var pad = {
       if (typeof customStart == "function") customStart();
       getParams();
       handshake();
-    });
-
-    $(window).unload(function()
-    {
-      pad.dispose();
     });
   },
   _afterHandshake: function()

@@ -4654,7 +4654,6 @@ function Ace2Inner(){
 
   function bindTheEventHandlers()
   {
-    bindEventHandler(window, "unload", teardown);
     bindEventHandler(document, "keydown", handleKeyEvent);
     bindEventHandler(document, "keypress", handleKeyEvent);
     bindEventHandler(document, "keyup", handleKeyEvent);
