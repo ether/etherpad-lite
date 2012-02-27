@@ -31,6 +31,8 @@ var async = require('async');
 var express = require('express');
 var path = require('path');
 var minify = require('./utils/Minify');
+var CachingMiddleware = require('./utils/caching_middleware');
+var Yajsml = require('yajsml');
 var formidable = require('formidable');
 var apiHandler;
 var exportHandler;
@@ -61,8 +63,7 @@ console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 
-//cache 6 hours
-exports.maxAge = 1000*60*60*6;
+exports.maxAge = settings.maxAge;
 
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
@@ -141,21 +142,26 @@ async.waterfall([
       gracefulShutdown();
     });
     
-    //serve static files
-    app.get('/static/js/require-kernel.js', function (req, res, next) {
-      res.header("Content-Type","application/javascript; charset: utf-8");
-      res.write(minify.requireDefinition());
-      res.end();
+    // Cache both minified and static.
+    var assetCache = new CachingMiddleware;
+    app.all('/(minified|static)/*', assetCache.handle);
+
+    // Minify will serve static files compressed (minify enabled). It also has
+    // file-specific hacks for ace/require-kernel/etc.
+    app.all('/static/:filename(*)', minify.minify);
+
+    // Setup middleware that will package JavaScript files served by minify for
+    // CommonJS loader on the client-side.
+    var jsServer = new (Yajsml.Server)({
+      rootPath: 'minified/'
+    , rootURI: 'http://' + settings.ip + ":" + settings.port + '/static/js/'
     });
-    app.get('/static/*', function(req, res)
-    { 
-      var filePath = path.normalize(__dirname + "/.." +
-                                    req.url.replace(/\.\./g, '').split("?")[0]);
-      res.sendfile(filePath, { maxAge: exports.maxAge });
-    });
-    
-    //serve minified files
-    app.get('/minified/:filename', minify.minifyJS);
+    var StaticAssociator = Yajsml.associators.StaticAssociator;
+    var associations =
+      Yajsml.associators.associationsForSimpleMapping(minify.tar);
+    var associator = new StaticAssociator(associations);
+    jsServer.setAssociator(associator);
+    app.use(jsServer);
     
     //checks for padAccess
     function hasPadAccess(req, res, callback)

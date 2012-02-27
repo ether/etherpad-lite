@@ -166,17 +166,15 @@ function Ace2Editor()
   }
   function pushScriptsTo(buffer) {
     /* Folling is for packaging regular expression. */
-    /* $$INCLUDE_JS("../static/js/ace2_inner.js"); */
-    var ACE_SOURCE = '../static/js/ace2_inner.js';
+    /* $$INCLUDE_JS("../minified/ace2_inner.js?callback=require.define"); */
+    var ACE_SOURCE = '../minified/ace2_inner.js?callback=require.define';
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[ACE_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
       buffer.push('require("/ace2_inner");');
       buffer.push('<\/script>');
     } else {
-      file = ACE_SOURCE;
-      file = file.replace(/^\.\.\/static\/js\//, '../minified/');
-      buffer.push('<script type="application/javascript" src="' + file + '"><\/script>');
+      buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
       buffer.push('<script type="text/javascript">');
       buffer.push('require("/ace2_inner");');
       buffer.push('<\/script>');
