@@ -75,11 +75,13 @@ a img
 
 #editbar ul li:hover {
   background: #fff;
+  background: linear-gradient(#f4f4f4, #e4e4e4);
 }
 
 #editbar ul li:active {
   background: #eee;
   background: linear-gradient(#ddd, #fff);
+  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
 }
 
 #editbar ul li.separator
