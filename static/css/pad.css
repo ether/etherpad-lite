@@ -65,6 +65,7 @@ a img
 {
   text-decoration: none;
   color: #ccc;
+  position: absolute;
 }
 
 #editbar ul li a span
@@ -800,12 +801,11 @@ ul#colorpickerswatches li:hover
 #chatlabel
 {
   font-size:13px;
-  line-height:16px;
   font-weight:bold;
   color:#555;
   text-decoration: none;
-  position: relative;
-  bottom: 3px;
+  margin-right: 3px;
+  vertical-align: middle;
 }
 
 #chatinput
@@ -813,6 +813,7 @@ ul#colorpickerswatches li:hover
   border: 1px solid #BBBBBB;
   width: 100%;
   float:right;
+  vertical-align: middle;
 }
 
 #chaticon
@@ -840,8 +841,7 @@ ul#colorpickerswatches li:hover
 {
   color:#555;
   font-size:9px;
-  position:relative;
-  bottom: 2px;
+  vertical-align: middle;
 }
 
 #titlebar
@@ -1062,6 +1062,8 @@ margin-top: 1px;
 .buttonicon-chat {
   background-position: 0px -102px;
   display: inline-block;
+  vertical-align: middle;
+  margin: 0 !important;
 }
 .buttonicon-showusers {
   background-position: 0px -183px;
@@ -1087,7 +1089,10 @@ width:33px !important;
 }
 
 #online_count{
-  color: #999;
+  color: #888;
+  font-size: 11px;
+  line-height: 18px;
+  position: fixed;
 }
 
 #qr_center {
@@ -1214,7 +1219,10 @@ label {
     padding: 4px 3px;
   }
   #users {
-    right: 4px;
+    right: 0;
+    top: 36px;
+    bottom: 33px;
+    border-radius: none;
   }
   #mycolorpicker {
     left: -72px; /* #mycolorpicker:width - #users:width */
@@ -1240,7 +1248,7 @@ label {
     float: right;
   }
   #chaticon {
-    bottom: 0;
+    bottom: 3px;
     right: 55px;
     border-right: none;
     border-radius: 0;
@@ -1291,5 +1299,8 @@ label {
   }
   .separator {
     display: none;
+  }
+  #online_count {
+    line-height: 24px;
   }
 }
