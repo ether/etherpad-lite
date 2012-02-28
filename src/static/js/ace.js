@@ -218,7 +218,7 @@ function Ace2Editor()
   }
   function pushRequireScriptTo(buffer) {
     var KERNEL_SOURCE = '../static/js/require-kernel.js';
-    var KERNEL_BOOT = 'require.setRootURI("../minified/");\nrequire.setGlobalKeyPath("require");'
+    var KERNEL_BOOT = 'require.setRootURI("../minified/");\nrequire.setLibraryURI("../minified/plugins/");\nrequire.setGlobalKeyPath("require");'
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
@@ -238,6 +238,7 @@ function Ace2Editor()
     } else {
       file = ACE_SOURCE;
       file = file.replace(/^\.\.\/static\/js\//, '../minified/');
+      buffer.push('<script type="application/javascript">require = parent.parent.require;<\/script>');
       buffer.push('<script type="application/javascript" src="' + file + '"><\/script>');
       buffer.push('<script type="text/javascript">');
       buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
@@ -335,7 +336,7 @@ function Ace2Editor()
       var thisFunctionsName = "ChildAccessibleAce2Editor";
       (function () {return this}())[thisFunctionsName] = Ace2Editor;
 
-      var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); ' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
+      var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); iframe.name = "ace_inner";' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
       'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');doc.write(text); doc.close(); ' + '}, 0); }';
 
       var outerHTML = [doctype, '<html><head>']
@@ -352,6 +353,7 @@ function Ace2Editor()
       outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript.replace(/<\//g, '<\\/'), '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>');
 
       var outerFrame = document.createElement("IFRAME");
+      outerFrame.name = "ace_outer";
       outerFrame.frameBorder = 0; // for IE
       info.frame = outerFrame;
       document.getElementById(containerId).appendChild(outerFrame);

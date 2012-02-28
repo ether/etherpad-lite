@@ -237,14 +237,14 @@ var padeditbar = (function()
       {
         var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
         var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
-        $('#embedinput').val("<iframe src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
+        $('#embedinput').val("<iframe name='embed_readonly' src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(readonlyLink);
         $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + readonlyLink);
       }
       else
       {
         var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val("<iframe src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
+        $('#embedinput').val("<iframe name='embed_readwrite' src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(padurl);
         $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=H|0&chl=" + padurl);
       }

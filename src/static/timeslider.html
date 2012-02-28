@@ -205,6 +205,7 @@
   var clientVars = {};
   (function () {
     require.setRootURI("../minified/");
+    require.setLibraryURI("../minified/plugins/");
     require.setGlobalKeyPath("require");
     require('ep_etherpad-lite/static/js/timeslider').init();
 
