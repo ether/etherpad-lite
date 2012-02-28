@@ -238,7 +238,10 @@ function Ace2Editor()
     } else {
       file = ACE_SOURCE;
       file = file.replace(/^\.\.\/static\/js\//, '../minified/');
-      buffer.push('<script type="application/javascript">require = parent.parent.require;<\/script>');
+      buffer.push('<script type="text/javascript" src="../static/js/require-kernel.js"><\/script>');
+      buffer.push('<script type="text/javascript">');
+      buffer.push('require.setRootURI("../minified/"); require.setLibraryURI("../minified/plugins/"); require.setGlobalKeyPath("require");');
+      buffer.push('<\/script>');
       buffer.push('<script type="application/javascript" src="' + file + '"><\/script>');
       buffer.push('<script type="text/javascript">');
       buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
@@ -320,10 +323,12 @@ function Ace2Editor()
       pushRequireScriptTo(iframeHTML);
       // Inject my plugins into my child.
       iframeHTML.push('\
+<script type="text/javascript" src="../static/js/require-kernel.js"></script>\
 <script type="text/javascript">\
+  require.setRootURI("../minified/"); require.setLibraryURI("../minified/plugins/"); require.setGlobalKeyPath("require");\
   require.define("/plugins", null);\n\
   require.define("/plugins.js", function (require, exports, module) {\
-    module.exports = parent.parent.require("ep_etherpad-lite/static/js/plugins");\
+    module.exports = require("ep_etherpad-lite/static/js/plugins");\
   });\
 </script>\
 ');
