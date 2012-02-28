@@ -2,7 +2,7 @@
  * The pad object, defined with joose
  */
 
-var CommonCode = require('../utils/common_code');
+
 var ERR = require("async-stacktrace");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");

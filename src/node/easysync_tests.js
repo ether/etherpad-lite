@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var CommonCode = require('./utils/common_code');
+
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
 

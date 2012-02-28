@@ -18,7 +18,7 @@
  * limitations under the License.
  */
  
-var CommonCode = require('../utils/common_code');
+
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;

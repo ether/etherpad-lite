@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var CommonCode = require('./common_code');
+
 var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");

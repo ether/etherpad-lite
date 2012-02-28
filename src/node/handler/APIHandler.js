@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-var CommonCode = require('../utils/common_code');
+
 var ERR = require("async-stacktrace");
 var fs = require("fs");
 var api = require("../db/API");

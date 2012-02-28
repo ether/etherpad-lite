@@ -15,7 +15,7 @@
  */
 
 var async = require("async");
-var CommonCode = require('./common_code');
+
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
 

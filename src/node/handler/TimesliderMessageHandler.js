@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-var CommonCode = require('../utils/common_code');
+
 var ERR = require("async-stacktrace");
 var async = require("async");
 var padManager = require("../db/PadManager");
