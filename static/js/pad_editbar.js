@@ -97,8 +97,15 @@ var padeditbar = (function()
   var self = {
     init: function()
     {
+      var self = this;
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
+      $("#editbar [data-key]").each(function (i, e) {
+        $(e).click(function (event) {
+          self.toolbarClick($(e).attr('data-key'));
+          event.preventDefault();
+        });
+      });
     },
     isEnabled: function()
     {
