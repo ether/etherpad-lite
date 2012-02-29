@@ -35,10 +35,9 @@ var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
-// HACK: Also use non-extension name so redirects are not encountered.
 exports.tar = {};
 for (var key in tar) {
-  exports.tar['/' + key.replace(/\.js$/, '')] =
+  exports.tar['/' + key] =
     tar[key].map(function (p) {return '/' + p}).concat(
       tar[key].map(function (p) {return '/' + p.replace(/\.js$/, '')})
     );
