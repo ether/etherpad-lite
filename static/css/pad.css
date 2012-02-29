@@ -1118,12 +1118,6 @@ width:33px !important;
  word-wrap: break-word;
 }
 
-/* fix for misaligned labels */
-label {
- position: relative;
- bottom: 1px;
-}
-
 .right {
  float:right;
 }
