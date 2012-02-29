@@ -53,7 +53,7 @@ CachingMiddleware.prototype = new function () {
     fs.stat(CACHE_DIR + 'minified_' + cacheKey, function (error, stats) {
       var modifiedSince = (req.headers['if-modified-since']
           && new Date(req.headers['if-modified-since']));
-      var lastModifiedCache = stats && stats.mtime;
+      var lastModifiedCache = !error && stats.mtime;
       if (lastModifiedCache) {
         req.headers['if-modified-since'] = lastModifiedCache.toUTCString();
       } else {
@@ -87,11 +87,10 @@ CachingMiddleware.prototype = new function () {
           // Update cache
           var buffer = '';
 
-          Object.keys(headers).forEach(function (key) {
+          Object.keys(headers || {}).forEach(function (key) {
             res.setHeader(key, headers[key]);
           });
           headers = _headers;
-          responseCache[cacheKey] = {statusCode: status, headers: headers};
 
           old_res.write = res.write;
           old_res.end = res.end;
@@ -118,7 +117,10 @@ CachingMiddleware.prototype = new function () {
                   }
                 });
               }
-            ], respond);
+            ], function () {
+              responseCache[cacheKey] = {statusCode: status, headers: headers};
+              respond();
+            });
           };
         } else if (status == 304) {
           // Nothing new changed from the cached version.
@@ -162,7 +164,7 @@ CachingMiddleware.prototype = new function () {
           res.writeHead(statusCode, headers);
           util.pump(readStream, res);
         } else {
-          res.writeHead(200, headers);
+          res.writeHead(statusCode, headers);
           res.end();
         }
       }
