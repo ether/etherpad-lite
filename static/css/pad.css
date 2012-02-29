@@ -48,25 +48,16 @@ a img
 
 #editbar ul li 
 {
-  background: #fff;
-  background: linear-gradient(#fff, #f0f0f0);
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
   float: left;
-  height: 18px;
   margin-left: 2px;
-  overflow: hidden;
-  padding: 4px 5px;
-  width: 18px;
 }
 
-#editbar ul li:hover {
+#editbar ul li a:hover {
   background: #fff;
   background: linear-gradient(#f4f4f4, #e4e4e4);
 }
 
-#editbar ul li:active {
+#editbar ul li a:active {
   background: #eee;
   background: linear-gradient(#ddd, #fff);
   box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
@@ -78,13 +69,22 @@ a img
   background: inherit;
   visibility:hidden;
   width: 0px;
+  padding: 5px;
 }
 #editbar ul li a
 {
-  text-decoration: none;
+  background-color: #fff;
+  background-color: linear-gradient(#fff, #f0f0f0);
+  border: 1px solid #ccc;
+  border-radius: 4px;
   color: #ccc;
-  display: block;
-  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+  height: 18px;
+  overflow: hidden;
+  padding: 4px 5px;
+  text-decoration: none;
+  width: 18px;
 }
 #editbar ul li a .buttonicon
 {
@@ -1021,7 +1021,7 @@ vertical-align: middle;
   background-position: 0px -183px;
 }
 
-#usericon
+#usericon a
 {
 width:33px !important;
 }
@@ -1159,13 +1159,19 @@ input[type=checkbox] {
 }
 
 @media screen and (max-width: 600px) {
-  #editbar ul li {
+  #editbar ul li.separator {
+    padding: 1px;
+  }
+  #editbar ul li a {
     padding: 4px 1px;
   }  
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
-  #editbar ul li {
+  #editbar ul li.separator {
+    padding: 3px;
+  }
+  #editbar ul li a {
     padding: 4px 3px;
   }
   #users {
