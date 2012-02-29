@@ -28,6 +28,15 @@
                     <a class="buttonicon buttonicon-strikethrough" title="Strikethrough"></a>
                 </li>
                 <li class="separator"></li>
+                <li id="style">
+                    <select onchange="window.pad&amp;&amp;pad.editbarClick('style');return false;">
+                      <option value="style-title-1">First level title</option>
+                      <option value="style-title-2">Second level title</option>
+                      <option value="style-title-3">Third level title</option>
+                      <option value="style-title-4">Fourth level title</option>
+                    </select> 
+                </li>
+                <li class="separator"></li>
                 <li id="oderedlist" onClick="window.pad&amp;&amp;pad.editbarClick('insertorderedlist');return false;">
                     <a class="buttonicon buttonicon-insertorderedlist" title="Toggle Ordered List"></a>
                 </li>

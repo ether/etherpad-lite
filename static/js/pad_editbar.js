@@ -154,6 +154,10 @@ var padeditbar = (function()
             {
               ace.ace_doIndentOutdent(true);
             }
+            else if (cmd == "style")
+            {
+              alert("TOTO");
+            }
             else if (cmd == 'clearauthorship')
             {
               if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret())
