@@ -52,12 +52,12 @@ a img
   margin-left: 2px;
 }
 
-#editbar ul li a:hover {
+#editbar ul li button:hover {
   background: #fff;
   background: linear-gradient(#f4f4f4, #e4e4e4);
 }
 
-#editbar ul li a:active {
+#editbar ul li button:active {
   background: #eee;
   background: linear-gradient(#ddd, #fff);
   box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
@@ -71,7 +71,7 @@ a img
   width: 0px;
   padding: 5px;
 }
-#editbar ul li a
+#editbar ul li button
 {
   background-color: #fff;
   background-color: linear-gradient(#fff, #f0f0f0);
@@ -80,17 +80,13 @@ a img
   color: #ccc;
   cursor: pointer;
   display: inline-block;
-  min-height: 18px;
   overflow: hidden;
-  padding: 4px 5px;
+  padding: 5px;
   text-align: center;
   text-decoration: none;
-  min-width: 18px;
 }
-#editbar ul li a .buttonicon
-{
-  position: relative;
-  top: 1px;
+#editbar ul li button .buttonicon {
+  margin: 0;
 }
 
 #editbar ul
@@ -1155,8 +1151,8 @@ input[type=checkbox] {
   #editbar ul li.separator {
     padding: 1px;
   }
-  #editbar ul li a {
-    padding: 4px 1px;
+  #editbar ul li button {
+    padding: 5px 1px;
   }  
 }
 
@@ -1164,8 +1160,8 @@ input[type=checkbox] {
   #editbar ul li.separator {
     padding: 3px;
   }
-  #editbar ul li a {
-    padding: 4px 3px;
+  #editbar ul li button {
+    padding: 5px 3px;
   }
   #users {
     right: 0;
