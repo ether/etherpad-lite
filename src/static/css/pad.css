@@ -64,25 +64,18 @@ a img {
   height: 32px;
 }
 .toolbar ul li {
-  background: #fff;
-  background: -webkit-linear-gradient(#fff, #f0f0f0);
-  background: -moz-linear-gradient(#fff, #f0f0f0);
-  background: -o-linear-gradient(#fff, #f0f0f0);
-  background: -ms-linear-gradient(#fff, #f0f0f0);
-  background: linear-gradient(#fff, #f0f0f0);
-  border: 1px solid #ccc;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  cursor: pointer;
   float: left;
-  height: 18px;
   margin-left: 2px;
-  overflow: hidden;
-  padding: 4px 5px;
+}
+.toolbar ul li a:hover {
+  text-decoration: none;
   width: 18px;
 }
-.toolbar ul li:hover {
+.toolbar ul li a span {
+  position: relative;
+  top: -2px;
+}
+.toolbar ul li a:hover {
   background: #fff;
   background: -webkit-linear-gradient(#f4f4f4, #e4e4e4);
   background: -moz-linear-gradient(#f4f4f4, #e4e4e4);
@@ -90,7 +83,7 @@ a img {
   background: -ms-linear-gradient(#f4f4f4, #e4e4e4);
   background: linear-gradient(#f4f4f4, #e4e4e4);
 }
-.toolbar ul li:active {
+.toolbar ul li a:active {
   background: #eee;
   background: -webkit-linear-gradient(#ddd, #fff);
   background: -moz-linear-gradient(#ddd, #fff);
@@ -106,12 +99,25 @@ a img {
   background: inherit;
   visibility: hidden;
   width: 0px;
+  padding: 5px;
 }
 .toolbar ul li a {
-  text-decoration: none;
+  background: #fff;
+  background: -webkit-linear-gradient(#fff, #f0f0f0);
+  background: -moz-linear-gradient(#fff, #f0f0f0);
+  background: -o-linear-gradient(#fff, #f0f0f0);
+  background: -ms-linear-gradient(#fff, #f0f0f0);
+  background: linear-gradient(#fff, #f0f0f0);
+  border: 1px solid #ccc;
+  border-radius: 4px;
   color: #ccc;
-  display: block;
-  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+  height: 18px;
+  overflow: hidden;
+  padding: 4px 5px;
+  text-decoration: none;
+  width: 18px;
 }
 .toolbar ul li a .buttonicon {
   position: relative;
@@ -1288,7 +1294,7 @@ ul#colorpickerswatches li:hover {
 .buttonicon-savedRevision {
   background-position: 0px -493px
 }
-#usericon {
+#usericon a {
   width: 33px !important
 }
 #focusprotector {
@@ -1412,11 +1418,17 @@ input[type=checkbox] {
     }
 }
 @media screen and (max-width: 600px) { 
-    .toolbar ul li {
+    .toolbar ul li.separator {
+      padding: 1px;
+    }
+    .toolbar ul li a {
       padding: 4px 1px
     }
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) { 
+    .toolbar ul li.separator {
+      padding: 3px;
+    }
     .toolbar ul li {
       padding: 4px 3px
     }
