@@ -136,8 +136,6 @@ function getAceFile(callback) {
     if (!settings.minify) {
       founds = [];
     }
-    // Always include the require kernel.
-    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
 
     data += ';\n';
     data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';

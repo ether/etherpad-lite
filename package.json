@@ -12,7 +12,7 @@
   "dependencies"   : {
                       "yajsml"              : "1.1.2",
                       "request"             : "2.9.100",
-                      "require-kernel"      : "1.0.3",
+                      "require-kernel"      : "1.0.4",
                       "socket.io"           : "0.8.7",
                       "ueberDB"             : "0.1.7",
                       "async"               : "0.1.18",
