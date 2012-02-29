@@ -683,13 +683,6 @@ var pad = {
       paduserlist.removeGuestPrompt(msg.guestId);
     }
   },
-  editbarClick: function(cmd)
-  {
-    if (padeditbar)
-    {
-      padeditbar.toolbarClick(cmd);
-    }
-  },
   dmesg: function(m)
   {
     if (pad.getIsDebugEnabled())
