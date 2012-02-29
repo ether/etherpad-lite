@@ -87,10 +87,6 @@ a img {
   color: #ccc;
   position: absolute;
 }
-.toolbar ul li a span {
-  position: relative;
-  top: -2px;
-}
 .toolbar ul li:hover {
   background: #fff;
   background: -webkit-linear-gradient(#f4f4f4, #e4e4e4);
@@ -425,6 +421,7 @@ a#hidetopmsg {
   top: 0;
   width: 56px;
   z-index: 10;
+  display: inline-block;
 }
 .toolbarsavetable {
   position: absolute;
@@ -1232,6 +1229,7 @@ ul#colorpickerswatches li:hover {
   height: 16px;
   background-image: url('../../static/img/etherpad_lite_icons.png');
   background-repeat: no-repeat;
+  display: inline-block;
   margin-left: 1px;
   margin-top: 1px;
 }
