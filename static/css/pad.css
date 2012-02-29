@@ -68,12 +68,6 @@ a img
   position: absolute;
 }
 
-#editbar ul li a span
-{
-  position: relative;
-  top:-2px
-}
-
 #editbar ul li:hover {
   background: #fff;
   background: linear-gradient(#f4f4f4, #e4e4e4);
@@ -971,6 +965,7 @@ width:16px;
 height:16px;
 background-image:url('../../static/img/etherpad_lite_icons.png');
 background-repeat: no-repeat;
+display: inline-block;
 margin-left: 1px;
 margin-top: 1px;
 }
