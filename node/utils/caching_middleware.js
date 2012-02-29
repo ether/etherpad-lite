@@ -53,7 +53,7 @@ CachingMiddleware.prototype = new function () {
     fs.stat(CACHE_DIR + 'minified_' + cacheKey, function (error, stats) {
       var modifiedSince = (req.headers['if-modified-since']
           && new Date(req.headers['if-modified-since']));
-      var lastModifiedCache = stats && stats.mtime;
+      var lastModifiedCache = !error && stats.mtime;
       if (lastModifiedCache) {
         req.headers['if-modified-since'] = lastModifiedCache.toUTCString();
       } else {
