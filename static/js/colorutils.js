@@ -120,4 +120,19 @@ colorutils.blend = function(c1, c2, t)
   return [colorutils.scale(t, c1[0], c2[0]), colorutils.scale(t, c1[1], c2[1]), colorutils.scale(t, c1[2], c2[2])];
 }
 
+colorutils.invert = function(c)
+{
+  return [1 - c[0], 1 - c[1], 1- c[2]];
+}
+
+colorutils.complementary = function(c)
+{
+  var inv = colorutils.invert(c);
+  return [
+    (inv[0] >= c[0]) ? Math.min(inv[0] * 1.30, 1) : (c[0] * 0.30),
+    (inv[1] >= c[1]) ? Math.min(inv[1] * 1.59, 1) : (c[1] * 0.59),
+    (inv[2] >= c[2]) ? Math.min(inv[2] * 1.11, 1) : (c[2] * 0.11)
+  ];
+}
+
 exports.colorutils = colorutils;
