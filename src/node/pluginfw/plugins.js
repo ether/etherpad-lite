@@ -73,6 +73,7 @@ exports.getPackages = function (cb) {
 	}
 	if (deps[name].dependencies !== undefined)
 	  flatten(deps[name].dependencies);
+	  delete deps[name].dependencies;
       });
     }
     flatten([data]);
