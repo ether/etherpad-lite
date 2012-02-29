@@ -87,7 +87,7 @@ CachingMiddleware.prototype = new function () {
           // Update cache
           var buffer = '';
 
-          Object.keys(headers).forEach(function (key) {
+          Object.keys(headers || {}).forEach(function (key) {
             res.setHeader(key, headers[key]);
           });
           headers = _headers;
