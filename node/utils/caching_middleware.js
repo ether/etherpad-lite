@@ -164,7 +164,7 @@ CachingMiddleware.prototype = new function () {
           res.writeHead(statusCode, headers);
           util.pump(readStream, res);
         } else {
-          res.writeHead(200, headers);
+          res.writeHead(statusCode, headers);
           res.end();
         }
       }
