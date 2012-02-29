@@ -35,10 +35,9 @@ var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
-// HACK: Also use non-extension name so redirects are not encountered.
 exports.tar = {};
 for (var key in tar) {
-  exports.tar['/' + key.replace(/\.js$/, '')] =
+  exports.tar['/' + key] =
     tar[key].map(function (p) {return '/' + p}).concat(
       tar[key].map(function (p) {return '/' + p.replace(/\.js$/, '')})
     );
@@ -57,6 +56,7 @@ exports.minify = function(req, res, next)
   filename = path.normalize(path.join(ROOT_DIR, filename));
   if (filename.indexOf(ROOT_DIR) == 0) {
     filename = filename.slice(ROOT_DIR.length);
+    filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
   } else {
     res.writeHead(404, {});
     res.end();
@@ -148,7 +148,7 @@ function getAceFile(callback) {
       var filename = item.match(/"([^"]*)"/)[1];
       var request = require('request');
 
-      var baseURI = 'http://' + settings.ip + ":" + settings.port
+      var baseURI = 'http://localhost:' + settings.port
 
       request(baseURI + path.normalize(path.join('/static/', filename)), function (error, response, body) {
         if (!error && response.statusCode == 200) {
