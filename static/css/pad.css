@@ -878,40 +878,6 @@ ul#colorpickerswatches li:hover
   margin-left: 3px;
   margin-right: 3px;
   margin-top:2px;
-}
-
-
-/* resizable stuff for chat */
-.ui-resizable {
-position: relative;
-} 
-.ui-resizable-handle { 
-  position: absolute;
-  font-size: 0.1px;
-  z-index: 99999;
-  display: block;
-    
-} 
-
-.ui-resizable-nw {
-  background-image: url("../../static/img/etherpad_lite_icons.png");
-  background-position: 0 -416px;
-  background-repeat: no-repeat;
-  background-size: 100% auto;
-  cursor: nw-resize;
-  height: 17px;
-  left: 3px;
-  top: 3px;
-  width: 17px;
-} 
-
-.ui-resizable-ne 
-{ 
-  cursor: ne-resize; 
-  width: 9px; 
-  height: 9px; 
-  right: -5px; 
-  top: -5px;
 } 
 
 .exporttype{
@@ -1116,6 +1082,11 @@ width:33px !important;
 
 #chattext p {
  word-wrap: break-word;
+}
+
+/* fix for misaligned checkboxes */
+input[type=checkbox] {
+ vertical-align: -1px;
 }
 
 .right {
