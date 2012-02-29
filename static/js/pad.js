@@ -42,7 +42,7 @@ var padeditbar = require('/pad_editbar').padeditbar;
 var padeditor = require('/pad_editor').padeditor;
 var padimpexp = require('/pad_impexp').padimpexp;
 var padmodals = require('/pad_modals').padmodals;
-var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
+var padsavedrevs = require('/pad_savedrevs');
 var paduserlist = require('/pad_userlist').paduserlist;
 var padutils = require('/pad_utils').padutils;
 
@@ -488,7 +488,7 @@ var pad = {
       guestPolicy: pad.padOptions.guestPolicy
     }, this);
     padimpexp.init(this);
-    padsavedrevs.init(clientVars.initialRevisionList, this);
+    padsavedrevs.init(this);
 
     padeditor.init(postAceInit, pad.padOptions.view || {}, this);
 

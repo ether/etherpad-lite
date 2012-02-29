@@ -22,7 +22,7 @@
 
 var padutils = require('/pad_utils').padutils;
 var padeditor = require('/pad_editor').padeditor;
-var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
+var padsavedrevs = require('/pad_savedrevs');
 
 function indexOf(array, value) {
   for (var i = 0, ii = array.length; i < ii; i++) {
@@ -131,7 +131,7 @@ var padeditbar = (function()
         {
 	      self.toogleDropDown("importexport");
         }
-        else if (cmd == 'save')
+        else if (cmd == 'savedRevision')
         {
           padsavedrevs.saveNow();
         }

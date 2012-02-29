@@ -446,12 +446,6 @@ var paddocbar = (function()
       enabled = false;
       self.render();
     },
-    handleResizePage: function()
-    {
-      // Side-step circular reference. This should be injected.
-      var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
-      padsavedrevs.handleResizePage();
-    },
     hideLaterIfNoOtherInteraction: function()
     {
       return padutils.getCancellableAction('hide-docbar-panel', function()

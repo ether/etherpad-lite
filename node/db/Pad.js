@@ -13,6 +13,7 @@ var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
 var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
+var randomString = require("../utils/randomstring");
 
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix line breaks and convert Tabs to spaces
@@ -32,7 +33,7 @@ var Pad = function Pad(id) {
   this.publicStatus = false;
   this.passwordHash = null;
   this.id = id;
-
+  this.savedRevisions = [];
 };
 
 exports.Pad = Pad;
@@ -464,6 +465,31 @@ Pad.prototype.isCorrectPassword = function isCorrectPassword(password) {
 
 Pad.prototype.isPasswordProtected = function isPasswordProtected() {
   return this.passwordHash != null;
+};
+
+Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, label) {
+  //if this revision is already saved, return silently
+  for(var i in this.savedRevisions){
+    if(this.savedRevisions.revNum === revNum){
+      return;
+    }
+  }
+  
+  //build the saved revision object
+  var savedRevision = {};
+  savedRevision.revNum = revNum;
+  savedRevision.savedById = savedById;
+  savedRevision.label = label || "Revision " + revNum;
+  savedRevision.timestamp = new Date().getTime();
+  savedRevision.id = randomString(10);
+  
+  //save this new saved revision
+  this.savedRevisions.push(savedRevision);
+  this.saveToDatabase();
+};
+
+Pad.prototype.getSavedRevisions = function getSavedRevisions() {
+  return this.savedRevisions;
 };
 
 /* Crypto helper methods */
