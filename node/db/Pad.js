@@ -15,6 +15,10 @@ var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
 var randomString = require("../utils/randomstring");
 
+//serialization/deserialization attributes
+var attributeBlackList = ["id"];
+var jsonableList = ["pool"];
+
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix line breaks and convert Tabs to spaces
  * @param txt
@@ -74,14 +78,27 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
     newRevData.meta.atext = this.atext;
   }
 
-  db.set("pad:"+this.id+":revs:"+newRev, newRevData);
-  db.set("pad:"+this.id, {atext: this.atext,
-                          pool: this.pool.toJsonable(),
-                          head: this.head,
-                          chatHead: this.chatHead,
-                          publicStatus: this.publicStatus,
-                          passwordHash: this.passwordHash});
+  db.set("pad:"+this.id+":revs:"+newRev, newRevData);             
+  this.saveToDatabase();
 };
+
+//save all attributes to the database
+Pad.prototype.saveToDatabase = function saveToDatabase(){
+  var dbObject = {};
+  
+  for(var attr in this){
+    if(typeof this[attr] === "function") continue;
+    if(attributeBlackList.indexOf(attr) !== -1) continue;
+    
+    dbObject[attr] = this[attr];
+    
+    if(jsonableList.indexOf(attr) !== -1){
+      dbObject[attr] = dbObject[attr].toJsonable();
+    }
+  }
+  
+  db.set("pad:"+this.id, dbObject);
+}
 
 Pad.prototype.getRevisionChangeset = function getRevisionChangeset(revNum, callback) {
   db.getSub("pad:"+this.id+":revs:"+revNum, ["changeset"], callback);
@@ -199,11 +216,10 @@ Pad.prototype.setText = function setText(newText) {
 };
 
 Pad.prototype.appendChatMessage = function appendChatMessage(text, userId, time) {
-      this.chatHead++;
-      //save the chat entry in the database
-      db.set("pad:"+this.id+":chat:"+this.chatHead, {"text": text, "userId": userId, "time": time});
-      //save the new chat head
-      db.setSub("pad:"+this.id, ["chatHead"], this.chatHead);
+  this.chatHead++;
+  //save the chat entry in the database
+  db.set("pad:"+this.id+":chat:"+this.chatHead, {"text": text, "userId": userId, "time": time});
+  this.saveToDatabase();
 };
 
 Pad.prototype.getChatMessage = function getChatMessage(entryNum, callback) {
@@ -323,27 +339,14 @@ Pad.prototype.init = function init(text, callback) {
     //if this pad exists, load it
     if(value != null)
     {
-      _this.head = value.head;
-      _this.atext = value.atext;
-      _this.pool = _this.pool.fromJsonable(value.pool);
-
-      //ensure we have a local chatHead variable
-      if(value.chatHead != null)
-        _this.chatHead = value.chatHead;
-      else
-        _this.chatHead = -1;
-
-      //ensure we have a local publicStatus variable
-      if(value.publicStatus != null)
-        _this.publicStatus = value.publicStatus;
-      else
-        _this.publicStatus = false;
-
-      //ensure we have a local passwordHash variable
-      if(value.passwordHash != null)
-        _this.passwordHash = value.passwordHash;
-      else
-        _this.passwordHash = null;
+      //copy all attr. To a transfrom via fromJsonable if necassary
+      for(var attr in value){
+        if(jsonableList.indexOf(attr) !== -1){
+          _this[attr] = _this[attr].fromJsonable(value[attr]);
+        } else {
+          _this[attr] = value[attr];
+        }
+      }
     }
     //this pad doesn't exist, so create it
     else
@@ -451,12 +454,12 @@ Pad.prototype.remove = function remove(callback) {
     //set in db
 Pad.prototype.setPublicStatus = function setPublicStatus(publicStatus) {
   this.publicStatus = publicStatus;
-  db.setSub("pad:"+this.id, ["publicStatus"], this.publicStatus);
+  this.saveToDatabase();
 };
 
 Pad.prototype.setPassword = function setPassword(password) {
   this.passwordHash = password == null ? null : hash(password, generateSalt());
-  db.setSub("pad:"+this.id, ["passwordHash"], this.passwordHash);
+  this.saveToDatabase();
 };
 
 Pad.prototype.isCorrectPassword = function isCorrectPassword(password) {
