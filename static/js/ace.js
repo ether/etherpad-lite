@@ -133,62 +133,6 @@ function Ace2Editor()
     return info.ace_getUnhandledErrors();
   };
 
-
-
-  function sortFilesByEmbeded(files) {
-    var embededFiles = [];
-    var remoteFiles = [];
-
-    if (Ace2Editor.EMBEDED) {
-      for (var i = 0, ii = files.length; i < ii; i++) {
-        var file = files[i];
-        if (Object.prototype.hasOwnProperty.call(Ace2Editor.EMBEDED, file)) {
-          embededFiles.push(file);
-        } else {
-          remoteFiles.push(file);
-        }
-      }
-    } else {
-      remoteFiles = files;
-    }
-
-    return {embeded: embededFiles, remote: remoteFiles};
-  }
-  function pushScriptsTo(buffer) {
-    /* Folling is for packaging regular expression. */
-    /* $$INCLUDE_JS("../minified/ace2_inner.js?callback=require.define"); */
-    var ACE_SOURCE = '../minified/ace2_inner.js?callback=require.define';
-    if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[ACE_SOURCE]) {
-      buffer.push('<script type="text/javascript">');
-      buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
-      buffer.push('require("/ace2_inner");');
-      buffer.push('<\/script>');
-    } else {
-      buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
-      buffer.push('<script type="text/javascript">');
-      buffer.push('require("/ace2_inner");');
-      buffer.push('<\/script>');
-    }
-  }
-  function pushStyleTagsFor(buffer, files) {
-    var sorted = sortFilesByEmbeded(files);
-    var embededFiles = sorted.embeded;
-    var remoteFiles = sorted.remote;
-
-    if (embededFiles.length > 0) {
-      buffer.push('<style type="text/css">');
-      for (var i = 0, ii = embededFiles.length; i < ii; i++) {
-        var file = embededFiles[i];
-        buffer.push(Ace2Editor.EMBEDED[file].replace(/<\//g, '<\\/'));
-      }
-      buffer.push('<\/style>');
-    }
-    for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
-      var file = remoteFiles[i];
-      buffer.push('<link rel="stylesheet" type="text/css" href="' + file + '"\/>');
-    }
-  }
-
   editor.destroy = pendingInit(function()
   {
     info.ace_dispose();
@@ -229,28 +173,28 @@ function Ace2Editor()
         iframeHTML[i] = JSON.parse(iframeHTML[i]);
       }
 
-      // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-      // and compressed, putting the compressed code from the named file directly into the
-      // source here.
-      // these lines must conform to a specific format because they are passed by the build script:      
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
-      $$INCLUDE_CSS("../static/css/iframe_editor.css");
-      $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/custom/pad.css");
-      pushStyleTagsFor(iframeHTML, includedCSS);
+      var styleTags = '\
+          <link rel="stylesheet" type="text/css" href="../static/css/iframe_editor.css"\/>\n\
+          <link rel="stylesheet" type="text/css" href="../static/css/pad.css"\/>\n\
+          <link rel="stylesheet" type="text/css" href="../static/custom/pad.css"\/>\n\
+          ';
 
-      var includedJS = [];
-      var $$INCLUDE_JS = function(filename) {includedJS.push(filename)};
-      pushRequireScriptTo(iframeHTML);
+      iframeHTML.push(styleTags);
+
       // Inject my require into my child.
       // HACK: Sharing this means that `window` can be bound cross frame.
+      // TODO: Drop script include and rely on `require` to retrieve code. This
+      //   May impact debuggability and also (ATM) breaks down due to odd
+      //   binding of `window` to parent...
       iframeHTML.push('\
 <script type="text/javascript">\
   require = parent.parent.require;
 </script>\
+<script type="application/javascript" src="../minified/ace2_inner.js?callback=require.define"></script>\n\
+<script type="text/javascript">\
+  require("/ace2_inner");
+</script>\
 ');
-      pushScriptsTo(iframeHTML);
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
       iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
@@ -264,12 +208,7 @@ function Ace2Editor()
 
       var outerHTML = [doctype, '<html><head>']
 
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
-      $$INCLUDE_CSS("../static/css/iframe_editor.css");
-      $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/custom/pad.css");
-      pushStyleTagsFor(outerHTML, includedCSS);
+      outerHTML.push(styleTags);
 
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
