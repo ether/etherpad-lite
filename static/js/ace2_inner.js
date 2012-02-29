@@ -229,18 +229,34 @@ function Ace2Inner(){
             bgcolor = fadeColor(bgcolor, info.fade);
           }
           
-          // Text color
-          var txtcolor = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5) ? '#ffffff' : '#000000';
-          
           var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author)));
-          authorStyle.backgroundColor = bgcolor;
-          authorStyle.color = txtcolor;
-          
           var authorStyleTop = dynamicCSSTop.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author)));
+          var anchorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
+          getAuthorClassName(author))+' > a')
+          
+          // author color
+          authorStyle.backgroundColor = bgcolor;
           authorStyleTop.backgroundColor = bgcolor;
-          authorStyleTop.color = txtcolor;
+          
+          // text contrast
+          if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
+          {
+            authorStyle.color = '#ffffff';
+            authorStyleTop.color = '#ffffff';
+          }else{
+            authorStyle.color = null;
+            authorStyleTop.color = null;
+          }
+          
+          // anchor text contrast
+          if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.55)
+          {
+            anchorStyle.color = colorutils.triple2css(colorutils.complementary(colorutils.css2triple(bgcolor)));
+          }else{
+            anchorStyle.color = null;
+          }
         }
       }
     }
