@@ -28,6 +28,7 @@ var authorManager = require("../db/AuthorManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
 var settings = require('../utils/Settings');
 var securityManager = require("../db/SecurityManager");
+var plugins = require("../pluginfw/plugins.js");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 
@@ -800,9 +801,12 @@ function handleClientReady(client, message)
             "hideSidebar": false
         },
         "abiwordAvailable": settings.abiwordAvailable(), 
-        "hooks": {}
+        "plugins": {
+	  "plugins": plugins.plugins,
+	  "parts": plugins.parts,
+	}
       }
-      
+
       //Add a username to the clientVars if one avaiable
       if(authorName != null)
       {
