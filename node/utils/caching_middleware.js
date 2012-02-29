@@ -91,7 +91,6 @@ CachingMiddleware.prototype = new function () {
             res.setHeader(key, headers[key]);
           });
           headers = _headers;
-          responseCache[cacheKey] = {statusCode: status, headers: headers};
 
           old_res.write = res.write;
           old_res.end = res.end;
@@ -118,7 +117,10 @@ CachingMiddleware.prototype = new function () {
                   }
                 });
               }
-            ], respond);
+            ], function () {
+              responseCache[cacheKey] = {statusCode: status, headers: headers};
+              respond();
+            });
           };
         } else if (status == 304) {
           // Nothing new changed from the cached version.
