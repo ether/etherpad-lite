@@ -154,7 +154,7 @@ async.waterfall([
     // CommonJS loader on the client-side.
     var jsServer = new (Yajsml.Server)({
       rootPath: 'minified/'
-    , rootURI: 'http://' + settings.ip + ":" + settings.port + '/static/js/'
+    , rootURI: 'http://localhost:' + settings.port + '/static/js/'
     });
     var StaticAssociator = Yajsml.associators.StaticAssociator;
     var associations =

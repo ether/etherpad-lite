@@ -148,7 +148,7 @@ function getAceFile(callback) {
       var filename = item.match(/"([^"]*)"/)[1];
       var request = require('request');
 
-      var baseURI = 'http://' + settings.ip + ":" + settings.port
+      var baseURI = 'http://localhost:' + settings.port
 
       request(baseURI + path.normalize(path.join('/static/', filename)), function (error, response, body) {
         if (!error && response.statusCode == 200) {
