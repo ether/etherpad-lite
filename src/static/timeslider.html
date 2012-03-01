@@ -197,21 +197,26 @@
 </div>
 </div>
 
-<script type="text/javascript" src="../../static/js/require-kernel.js"></script>
-<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-<script type="text/javascript" src="../../minified/timeslider.js"></script>
-<script type="text/javascript" src="../../static/custom/timeslider.js"></script>
+<script type="text/javascript" src="../../../static/js/require-kernel.js"></script>
+<script type="text/javascript" src="../../../static/js/jquery.js"></script>
+<script type="text/javascript" src="../../../socket.io/socket.io.js"></script>
+<script type="text/javascript" src="../../../minified/timeslider.js"></script>
+<script type="text/javascript" src="../../../static/custom/timeslider.js"></script>
 <script type="text/javascript" >
   var clientVars = {};
   (function () {
-    require.setRootURI("../minified/");
-    require.setLibraryURI("../minified/plugins/");
+    require.setRootURI("../../../minified/");
+    require.setLibraryURI("../../../minified/plugins/");
     require.setGlobalKeyPath("require");
-    require('ep_etherpad-lite/static/js/timeslider').init();
 
-    /* TODO: These globals shouldn't exist. */
-    padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-    padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+    var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+    plugins.update(function () {
+      require('ep_etherpad-lite/static/js/timeslider').init();
+
+      /* TODO: These globals shouldn't exist. */
+      padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+      padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+    });
   })();
 </script>
 </body>

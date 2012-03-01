@@ -5,7 +5,6 @@
   , "pad.js"
   , "ace2_common.js"
   , "pad_utils.js"
-  , "plugins.js"
   , "undo-xpopup.js"
   , "json2.js"
   , "pad_cookie.js"
@@ -27,7 +26,6 @@
 , "timeslider.js": [
     "jquery.js"
   , "security.js"
-  , "plugins.js"
   , "undo-xpopup.js"
   , "json2.js"
   , "colorutils.js"
