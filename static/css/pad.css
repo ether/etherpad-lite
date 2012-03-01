@@ -1022,11 +1022,6 @@ vertical-align: middle;
   background-position: 0px -183px;
 }
 
-#usericon a
-{
-width:33px !important;
-}
-
 #focusprotector
 {
   z-index: 100;
@@ -1042,9 +1037,6 @@ width:33px !important;
 
 #online_count{
   color: #888;
-  font-size: 11px;
-  line-height: 18px;
-  position: fixed;
 }
 
 #qr_center {
