@@ -28,7 +28,7 @@ Ace2Editor.registry = {
   nextId: 1
 };
 
-var plugins = require('ep_etherpad-lite/static/js/plugins').plugins;
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 function Ace2Editor()
 {
@@ -300,7 +300,7 @@ function Ace2Editor()
       for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
         iframeHTML[i] = JSON.stringify(iframeHTML[i]);
       }
-      plugins.callHook("aceInitInnerdocbodyHead", {
+      hooks.callAll("aceInitInnerdocbodyHead", {
         iframeHTML: iframeHTML
       });
       for (var i = 0, ii = iframeHTML.length; i < ii; i++) {

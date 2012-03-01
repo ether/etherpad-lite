@@ -26,7 +26,7 @@
 var _MAX_LIST_LEVEL = 8;
 
 var Changeset = require('ep_etherpad-lite/static/js/Changeset');
-var plugins = require('ep_etherpad-lite/static/js/plugins').plugins;
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 function sanitizeUnicode(s)
 {
@@ -36,8 +36,6 @@ function sanitizeUnicode(s)
 function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
 {
   browser = browser || {};
-
-  var plugins_ = plugins;
 
   var dom = domInterface || {
     isNodeText: function(n)
@@ -448,7 +446,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         var oldAuthorOrNull = null;
         if (collectStyles)
         {
-          plugins_.callHook('collectContentPre', {
+          hooks.callAll('collectContentPre', {
             cc: cc,
             state: state,
             tname: tname,
@@ -510,7 +508,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 
         if (collectStyles)
         {
-          plugins_.callHook('collectContentPost', {
+          hooks.callAll('collectContentPost', {
             cc: cc,
             state: state,
             tname: tname,

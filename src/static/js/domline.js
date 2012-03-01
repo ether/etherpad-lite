@@ -27,7 +27,7 @@
 // requires: undefined
 
 var Security = require('ep_etherpad-lite/static/js/security');
-var plugins = require('ep_etherpad-lite/static/js/plugins').plugins;
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var map = require('ep_etherpad-lite/static/js/ace2_common').map;
 
 var domline = {};
@@ -145,9 +145,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     var extraOpenTags = "";
     var extraCloseTags = "";
 
-    var plugins_ = plugins;
-
-    map(plugins_.callHook("aceCreateDomLine", {
+    map(hooks.callAll("aceCreateDomLine", {
       domline: domline,
       cls: cls
     }), function(modifier)

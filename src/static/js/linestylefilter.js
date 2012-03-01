@@ -29,7 +29,7 @@
 // requires: undefined
 
 var Changeset = require('ep_etherpad-lite/static/js/Changeset');
-var plugins = require('ep_etherpad-lite/static/js/plugins').plugins;
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var map = require('ep_etherpad-lite/static/js/ace2_common').map;
 
 var linestylefilter = {};
@@ -54,8 +54,6 @@ linestylefilter.getAuthorClassName = function(author)
 // but may be falsy if lineLength == 0
 linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFunc, apool)
 {
-
-  var plugins_ = plugins;
 
   if (lineLength == 0) return textAndClassFunc;
 
@@ -97,7 +95,7 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
             }
             else
             {
-              classes += plugins_.callHookStr("aceAttribsToClasses", {
+              classes += hooks.callAllStr("aceAttribsToClasses", {
                 linestylefilter: linestylefilter,
                 key: key,
                 value: value
@@ -300,9 +298,7 @@ linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
 {
   var func = linestylefilter.getURLFilter(lineText, textAndClassFunc);
 
-  var plugins_ = plugins;
-
-  var hookFilters = plugins_.callHook("aceGetFilterStack", {
+  var hookFilters = hooks.callAll("aceGetFilterStack", {
     linestylefilter: linestylefilter,
     browser: browser
   });

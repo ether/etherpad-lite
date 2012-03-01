@@ -61,3 +61,15 @@ exports.aCallFirst = function (hook_name, args, cb) {
   if (plugins.hooks[hook_name][0] === undefined) cb([]);
   hookCallWrapper(plugins.hooks[hook_name][0], hook_name, args, function (res) { cb(exports.flatten(res)); });
 }
+
+exports.callAllStr = function(hook_name, args, sep, pre, post) {
+  if (sep == undefined) sep = '';
+  if (pre == undefined) pre = '';
+  if (post == undefined) post = '';
+  var newCallhooks = [];
+  var callhooks = exports.callAll(hook_name, args);
+  for (var i = 0, ii = callhooks.length; i < ii; i++) {
+    newCallhooks[i] = pre + callhooks[i] + post;
+  }
+  return newCallhooks.join(sep || "");
+}
