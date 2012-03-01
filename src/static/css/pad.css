@@ -82,11 +82,6 @@ a img {
   padding: 4px 5px;
   width: 18px;
 }
-.toolbar ul li a {
-  text-decoration: none;
-  color: #ccc;
-  position: absolute;
-}
 .toolbar ul li:hover {
   background: #fff;
   background: -webkit-linear-gradient(#f4f4f4, #e4e4e4);
@@ -113,7 +108,14 @@ a img {
   width: 0px;
 }
 .toolbar ul li a {
-  display: block
+  text-decoration: none;
+  color: #ccc;
+  display: block;
+  text-align: center;
+}
+.toolbar ul li a .buttonicon {
+  position: relative;
+  top: 1px;
 }
 .toolbar ul {
   float: left
@@ -1230,8 +1232,7 @@ ul#colorpickerswatches li:hover {
   background-image: url('../../static/img/etherpad_lite_icons.png');
   background-repeat: no-repeat;
   display: inline-block;
-  margin-left: 1px;
-  margin-top: 1px;
+  vertical-align: middle;
 }
 .buttonicon-bold {
   background-position: 0px -116px
@@ -1280,13 +1281,9 @@ ul#colorpickerswatches li:hover {
 }
 .buttonicon-chat {
   background-position: 0px -102px;
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0 !important;
 }
 .buttonicon-showusers {
   background-position: 0px -183px;
-  display: inline-block;
 }
 .buttonicon-savedRevision {
   background-position: 0px -493px
