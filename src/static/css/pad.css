@@ -69,7 +69,6 @@ a img {
 }
 .toolbar ul li a:hover {
   text-decoration: none;
-  width: 18px;
 }
 .toolbar ul li a span {
   position: relative;
@@ -113,11 +112,12 @@ a img {
   color: #ccc;
   cursor: pointer;
   display: inline-block;
-  height: 18px;
+  min-height: 18px;
   overflow: hidden;
   padding: 4px 5px;
+  text-align: center;
   text-decoration: none;
-  width: 18px;
+  min-width: 18px;
 }
 .toolbar ul li a .buttonicon {
   position: relative;
