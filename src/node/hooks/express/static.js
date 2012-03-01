@@ -1,6 +1,6 @@
 var path = require('path');
 var minify = require('../../utils/Minify');
-var plugins = require("../../pluginfw/plugins");
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   //serve static files

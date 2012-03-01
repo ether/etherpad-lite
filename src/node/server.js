@@ -27,8 +27,8 @@ var db = require('./db/DB');
 var async = require('async');
 var express = require('express');
 var path = require('path');
-var plugins = require("./pluginfw/plugins");
-var hooks = require("./pluginfw/hooks");
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm/lib/npm.js");
 
 //try to get the git version

@@ -28,7 +28,7 @@ var authorManager = require("../db/AuthorManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
 var settings = require('../utils/Settings');
 var securityManager = require("../db/SecurityManager");
-var plugins = require("../pluginfw/plugins.js");
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins.js");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 

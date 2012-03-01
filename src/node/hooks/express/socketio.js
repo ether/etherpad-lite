@@ -2,7 +2,7 @@ var log4js = require('log4js');
 var socketio = require('socket.io');
 var settings = require('../../utils/Settings');
 var socketIORouter = require("../../handler/SocketIORouter");
-var hooks = require("../../pluginfw/hooks");
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
 var timesliderMessageHandler = require("../../handler/TimesliderMessageHandler");
