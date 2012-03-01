@@ -119,9 +119,6 @@ a img {
 .toolbar ul li a {
   display: block
 }
-.toolbar ul li a img {
-  padding: 1px
-}
 .toolbar ul {
   float: left
 }
