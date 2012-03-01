@@ -10,6 +10,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     res.end();
   });
 
+  // serve plugin definitions
+  // not very static, but served here so that client can do require("pluginfw/static/js/plugin-definitions.js");
+  args.app.get('/pluginfw/plugin-definitions.json', function (req, res, next) {
+    res.header("Content-Type","application/json; charset: utf-8");
+    res.write(JSON.stringify({"plugins": plugins.plugins, "parts": plugins.parts}));
+    res.end();
+  });
+
+
   /* Handle static files for plugins:
      paths like "/static/plugins/ep_myplugin/js/test.js"
      are rewritten into ROOT_PATH_OF_MYPLUGIN/static/js/test.js,

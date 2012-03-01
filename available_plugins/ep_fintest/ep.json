@@ -26,6 +26,9 @@
 	"somehookname": "ep_fintest/otherpart:somehook",
 	"morehook": "ep_fintest/otherpart:morehook",
 	"expressCreateServer": "ep_fintest/otherpart:expressServer"
+      },
+      "client_hooks": {
+        "somehookname": "ep_fintest/static/js/test:bar"
       }
     }
   ]
