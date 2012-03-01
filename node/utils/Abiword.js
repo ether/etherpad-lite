@@ -53,7 +53,7 @@ if(os.type().indexOf("Windows") > -1)
     abiword.on('exit', function (code)
     {
       if(code != 0) {
-        throw "Abiword died with exit code " + code;
+        return callback("Abiword died with exit code " + code);
       }
 
       if(stdoutBuffer != "")
@@ -75,52 +75,54 @@ if(os.type().indexOf("Windows") > -1)
 else
 {
   //spawn the abiword process
-  var abiword = spawn(settings.abiword, ["--plugin", "AbiCommand"]);
-
-  //append error messages to the buffer
-  abiword.stderr.on('data', function (data) 
-  {
-    stdoutBuffer += data.toString();
-  });
-
-  //throw exceptions if abiword is dieing
-  abiword.on('exit', function (code) 
-  {
-    throw "Abiword died with exit code " + code;
-  });
-
-  //delegate the processing of stdout to a other function
-  abiword.stdout.on('data',onAbiwordStdout);
-
+  var abiword;
   var stdoutCallback = null;
-  var stdoutBuffer = "";
-  var firstPrompt = true;
+  var spawnAbiword = function (){
+    abiword = spawn(settings.abiword, ["--plugin", "AbiCommand"]);
+    var stdoutBuffer = "";
+    var firstPrompt = true;  
 
-  function onAbiwordStdout(data)
-  {
-    //add data to buffer
-    stdoutBuffer+=data.toString();
-    
-    //we're searching for the prompt, cause this means everything we need is in the buffer
-    if(stdoutBuffer.search("AbiWord:>") != -1)
+    //append error messages to the buffer
+    abiword.stderr.on('data', function (data) 
     {
-      //filter the feedback message
-      var err = stdoutBuffer.search("OK") != -1 ? null : stdoutBuffer;
+      stdoutBuffer += data.toString();
+    });
+
+    //abiword died, let's restart abiword and return an error with the callback
+    abiword.on('exit', function (code) 
+    {
+      spawnAbiword();
+      stdoutCallback("Abiword died with exit code " + code);
+    });
+
+    //delegate the processing of stdout to a other function
+    abiword.stdout.on('data',function (data)
+    {
+      //add data to buffer
+      stdoutBuffer+=data.toString();
       
-      //reset the buffer
-      stdoutBuffer = "";
-      
-      //call the callback with the error message
-      //skip the first prompt
-      if(stdoutCallback != null && !firstPrompt)
+      //we're searching for the prompt, cause this means everything we need is in the buffer
+      if(stdoutBuffer.search("AbiWord:>") != -1)
       {
-        stdoutCallback(err);
-        stdoutCallback = null;
+        //filter the feedback message
+        var err = stdoutBuffer.search("OK") != -1 ? null : stdoutBuffer;
+        
+        //reset the buffer
+        stdoutBuffer = "";
+        
+        //call the callback with the error message
+        //skip the first prompt
+        if(stdoutCallback != null && !firstPrompt)
+        {
+          stdoutCallback(err);
+          stdoutCallback = null;
+        }
+        
+        firstPrompt = false;
       }
-      
-      firstPrompt = false;
-    }
+    });
   }
+  spawnAbiword();
 
   doConvertTask = function(task, callback)
   {
@@ -130,6 +132,7 @@ else
     stdoutCallback = function (err)
     {
       callback();
+      console.log("queue continue");
       task.callback(err);
     };
   }

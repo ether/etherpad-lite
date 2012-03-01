@@ -20,45 +20,22 @@
  * limitations under the License.
  */
 
-var global = this;
+var makeCSSManager = require('/cssmanager').makeCSSManager;
+var domline = require('/domline').domline;
+var AttribPool = require('/AttributePoolFactory').createAttributePool;
+var Changeset = require('/Changeset');
+var linestylefilter = require('/linestylefilter').linestylefilter;
+var colorutils = require('/colorutils').colorutils;
+var Ace2Common = require('./ace2_common');
 
-function loadBroadcastJS()
+var map = Ace2Common.map;
+var forEach = Ace2Common.forEach;
+
+// These parameters were global, now they are injected. A reference to the
+// Timeslider controller would probably be more appropriate.
+function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider)
 {
-  // just in case... (todo: this must be somewhere else in the client code.)
-  // Below Array#map code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_map.htm
-  if (!Array.prototype.map)
-  {
-    Array.prototype.map = function(fun /*, thisp*/ )
-    {
-      var len = this.length >>> 0;
-      if (typeof fun != "function") throw new TypeError();
-
-      var res = new Array(len);
-      var thisp = arguments[1];
-      for (var i = 0; i < len; i++)
-      {
-        if (i in this) res[i] = fun.call(thisp, this[i], i, this);
-      }
-
-      return res;
-    };
-  }
-
-  // Below Array#forEach code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_foreach.htm
-  if (!Array.prototype.forEach)
-  {
-    Array.prototype.forEach = function(fun /*, thisp*/ )
-    {
-      var len = this.length >>> 0;
-      if (typeof fun != "function") throw new TypeError();
-
-      var thisp = arguments[1];
-      for (var i = 0; i < len; i++)
-      {
-        if (i in this) fun.call(thisp, this[i], i, this);
-      }
-    };
-  }
+  var changesetLoader = undefined;
 
   // Below Array#indexOf code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_indexof.htm
   if (!Array.prototype.indexOf)
@@ -91,11 +68,6 @@ function loadBroadcastJS()
     }
   }
 
-  function randomString()
-  {
-    return "_" + Math.floor(Math.random() * 1000000);
-  }
-
   // for IE
   if ($.browser.msie)
   {
@@ -107,7 +79,7 @@ function loadBroadcastJS()
     {}
   }
 
-  var userId = "hiddenUser" + randomString();
+
   var socketId;
   //var socket;
   var channelState = "DISCONNECTED";
@@ -183,10 +155,7 @@ function loadBroadcastJS()
     // splice the lines
     splice: function(start, numRemoved, newLinesVA)
     {
-      var newLines = Array.prototype.slice.call(arguments, 2).map(
-
-      function(s)
-      {
+      var newLines = map(Array.prototype.slice.call(arguments, 2), function(s) {
         return s;
       });
 
@@ -308,10 +277,13 @@ function loadBroadcastJS()
     padContents.currentTime += timeDelta * 1000;
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
-    BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
+    
+    var authors = map(padContents.getActiveAuthors(), function(name)
     {
       return authorData[name];
-    }));
+    });
+    
+    BroadcastSlider.setAuthors(authors);
   }
 
   function updateTimer()
@@ -411,13 +383,14 @@ function loadBroadcastJS()
 
       changesetLoader.queueUp(start, 1, update);
     }
-    BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
-    {
+    
+    var authors = map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
-    }));
+    });
+    BroadcastSlider.setAuthors(authors);
   }
 
-  global.changesetLoader = {
+  changesetLoader = {
     running: false,
     resolved: [],
     requestQueue1: [],
@@ -553,10 +526,12 @@ function loadBroadcastJS()
         var authorMap = {};
         authorMap[obj.author] = obj.data;
         receiveAuthorData(authorMap);
-        BroadcastSlider.setAuthors(padContents.getActiveAuthors().map(function(name)
-        {
+        
+        var authors = map(padContents.getActiveAuthors(),function(name) {
           return authorData[name];
-        }));
+        });
+        
+        BroadcastSlider.setAuthors(authors);
       }
       else if (obj['type'] == "NEW_SAVEDREV")
       {
@@ -608,53 +583,6 @@ function loadBroadcastJS()
     }));
   }
 
-/*function setUpSocket()
-  {
-    // required for Comet
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
-    {
-      document.domain = document.domain; // for comet
-    }
-
-    var success = false;
-    callCatchingErrors("setUpSocket", function ()
-    {
-      appLevelDisconnectReason = null;
-
-      socketId = String(Math.floor(Math.random() * 1e12));
-      socket = new WebSocket(socketId);
-      socket.onmessage = wrapRecordingErrors("socket.onmessage", handleMessageFromServer);
-      socket.onclosed = wrapRecordingErrors("socket.onclosed", handleSocketClosed);
-      socket.onopen = wrapRecordingErrors("socket.onopen", function ()
-      {
-        setChannelState("CONNECTED");
-        var msg = {
-          type: "CLIENT_READY",
-          roomType: 'padview',
-          roomName: 'padview/' + clientVars.viewId,
-          data: {
-            lastRev: clientVars.revNum,
-            userInfo: {
-              userId: userId
-            }
-          }
-        };
-        sendMessage(msg);
-      });
-      // socket.onhiccup = wrapRecordingErrors("socket.onhiccup", handleCometHiccup);
-      // socket.onlogmessage = function(x) {debugLog(x); };
-      socket.connect();
-      success = true;
-    });
-    if (success)
-    {
-      //initialStartConnectTime = +new Date();
-    }
-    else
-    {
-      abandonConnection("initsocketfail");
-    }
-  }*/
 
   function setChannelState(newChannelState, moreInfo)
   {
@@ -683,7 +611,7 @@ function loadBroadcastJS()
   window.onload = function ()
   {
     window['isloaded'] = true;
-    window['onloadFuncts'].forEach(function (funct)
+    forEach(window['onloadFuncts'],function (funct)
     {
       funct();
     });
@@ -750,11 +678,17 @@ function loadBroadcastJS()
       var bgcolor = typeof data.colorId == "number" ? clientVars.colorPalette[data.colorId] : data.colorId;
       if (bgcolor && dynamicCSS)
       {
-        dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author)).backgroundColor = bgcolor;
+        var selector = dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author));
+        selector.backgroundColor = bgcolor
+        selector.color = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5) ? '#ffffff' : '#000000'; //see ace2_inner.js for the other part
       }
       authorData[author] = data;
     }
   }
 
   receiveAuthorData(clientVars.historicalAuthorData);
+
+  return changesetLoader;
 }
+
+exports.loadBroadcastJS = loadBroadcastJS;

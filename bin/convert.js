@@ -1,10 +1,12 @@
+var CommonCode = require('../node/utils/common_code');
 var startTime = new Date().getTime();
 var fs = require("fs");
 var ueberDB = require("ueberDB");
 var mysql = require("mysql");
 var async = require("async");
-var Changeset = require("../node/utils/Changeset");
-var AttributePoolFactory = require("../node/utils/AttributePoolFactory");
+var Changeset = CommonCode.require("/Changeset");
+var randomString = CommonCode.require('/pad_utils').randomString;
+var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
 
 var settingsFile = process.argv[2];
 var sqlOutputFile = process.argv[3];
@@ -449,19 +451,4 @@ function parsePage(array, pageStart, offsets, data, json)
     //update start
     start+=unitLength;
   }
-}
-
-/**
- * Generates a random String with the given length. Is needed to generate the Author Ids
- */
-function randomString(len) 
-{
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var randomstring = '';
-  for (var i = 0; i < len; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return randomstring;
 }

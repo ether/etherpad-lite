@@ -18,11 +18,13 @@
  * limitations under the License.
  */
 
+var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var async = require("async");
 var padManager = require("../db/PadManager");
-var Changeset = require("../utils/Changeset");
-var AttributePoolFactory = require("../utils/AttributePoolFactory");
+var Changeset = CommonCode.require("/Changeset");
+var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
+var settings = require('../utils/Settings');
 var authorManager = require("../db/AuthorManager");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
@@ -160,6 +162,7 @@ function createTimesliderClientVars (padId, callback)
     fullWidth: false,
     disableRightBar: false,
     initialChangesets: [],
+    abiwordAvailable: settings.abiwordAvailable(), 
     hooks: [],
     initialStyledContents: {}
   };

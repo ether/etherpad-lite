@@ -18,9 +18,11 @@
  * limitations under the License.
  */
 
+var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
+var randomString = CommonCode.require('/pad_utils').randomString;
 
 /**
  * Checks if the author exists
@@ -176,19 +178,4 @@ exports.getAuthorName = function (author, callback)
 exports.setAuthorName = function (author, name, callback)
 {
   db.setSub("globalAuthor:" + author, ["name"], name, callback);
-}
-
-/**
- * Generates a random String with the given length. Is needed to generate the Author Ids
- */
-function randomString(len) 
-{
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var randomstring = '';
-  for (var i = 0; i < len; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return randomstring;
 }

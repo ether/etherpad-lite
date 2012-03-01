@@ -25,6 +25,9 @@
 
 var _MAX_LIST_LEVEL = 8;
 
+var Changeset = require('/Changeset');
+var plugins = require('/plugins').plugins;
+
 function sanitizeUnicode(s)
 {
   return s.replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
@@ -34,15 +37,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 {
   browser = browser || {};
 
-  var plugins_;
-  if (typeof(plugins) != 'undefined')
-  {
-    plugins_ = plugins;
-  }
-  else
-  {
-    plugins_ = parent.parent.plugins;
-  }
+  var plugins_ = plugins;
 
   var dom = domInterface || {
     isNodeText: function(n)
@@ -476,7 +471,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             cc.doAttrib(state, "strikethrough");
           }
-          if (tname == "ul")
+          if (tname == "ul" || tname == "ol")
           {
             var type;
             var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);
@@ -692,3 +687,6 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 
   return cc;
 }
+
+exports.sanitizeUnicode = sanitizeUnicode;
+exports.makeContentCollector = makeContentCollector;

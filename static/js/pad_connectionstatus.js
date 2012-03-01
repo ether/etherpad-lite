@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+var padmodals = require('/pad_modals').padmodals;
+
 var padconnectionstatus = (function()
 {
 
@@ -85,3 +87,5 @@ var padconnectionstatus = (function()
   };
   return self;
 }());
+
+exports.padconnectionstatus = padconnectionstatus;

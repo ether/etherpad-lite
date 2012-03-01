@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+var padutils = require('/pad_utils').padutils;
+var paddocbar = require('/pad_docbar').paddocbar;
 
 var padsavedrevs = (function()
 {
@@ -39,7 +41,7 @@ var padsavedrevs = (function()
     box.find(".srauthor").html("by " + padutils.escapeHtml(revisionInfo.savedBy));
     var viewLink = '/ep/pad/view/' + pad.getPadId() + '/' + revisionInfo.id;
     box.find(".srview").attr('href', viewLink);
-    var restoreLink = 'javascript:void padsavedrevs.restoreRevision(' + rnum + ');';
+    var restoreLink = 'javascript:void(require('+JSON.stringify(module.id)+').padsavedrevs.restoreRevision(' + JSON.stringify(rnum) + ');';
     box.find(".srrestore").attr('href', restoreLink);
     box.find(".srname").click(function(evt)
     {
@@ -345,9 +347,11 @@ var padsavedrevs = (function()
     $(document).unbind('mouseup', clearScrollRepeatTimer);
   }
 
+  var pad = undefined;
   var self = {
-    init: function(initialRevisions)
+    init: function(initialRevisions, _pad)
     {
+      pad = _pad;
       self.newRevisionList(initialRevisions, true);
 
       $("#savedrevs-savenow").click(function()
@@ -518,3 +522,5 @@ var padsavedrevs = (function()
   };
   return self;
 }());
+
+exports.padsavedrevs = padsavedrevs;

@@ -20,7 +20,7 @@
 
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
-require("../db/Pad");
+var Pad = require("../db/Pad").Pad;
 var db = require("./DB").db;
 
 /** 
@@ -37,6 +37,15 @@ var globalPads = {
     set: function (name, value) { this[':'+name] = value; },
     remove: function (name) { delete this[':'+name]; }
 };
+
+/**
+ * An array of padId transformations. These represent changes in pad name policy over
+ * time, and allow us to "play back" these changes so legacy padIds can be found.
+ */
+var padIdTransforms = [
+  [/\s+/g, '_'],
+  [/:+/g, '_']
+];
 
 /**
  * Returns a Pad Object with the callback
@@ -106,8 +115,41 @@ exports.doesPadExists = function(padId, callback)
   db.get("pad:"+padId, function(err, value)
   {
     if(ERR(err, callback)) return;
-    callback(null, value != null);  
+    callback(null, value != null && value.atext);  
   });
+}
+
+//returns a sanitized padId, respecting legacy pad id formats
+exports.sanitizePadId = function(padId, callback) {
+  var transform_index = arguments[2] || 0;
+  //we're out of possible transformations, so just return it
+  if(transform_index >= padIdTransforms.length)
+  {
+    callback(padId);
+  }
+  //check if padId exists
+  else
+  {
+    exports.doesPadExists(padId, function(junk, exists)
+    {
+      if(exists)
+      {
+        callback(padId);
+      }
+      else
+      {
+        //get the next transformation *that's different*
+        var transformedPadId = padId;
+        while(transformedPadId == padId && transform_index < padIdTransforms.length)
+        {
+          transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
+          transform_index += 1;
+        }
+        //check the next transform
+        exports.sanitizePadId(transformedPadId, callback, transform_index);
+      }
+    });
+  }
 }
 
 exports.isValidPadId = function(padId)

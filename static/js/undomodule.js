@@ -20,8 +20,10 @@
  * limitations under the License.
  */
 
+var Changeset = require('/Changeset');
+var extend = require('/ace2_common').extend;
 
-undoModule = (function()
+var undoModule = (function()
 {
   var stack = (function()
   {
@@ -329,3 +331,5 @@ undoModule = (function()
     apool: null
   }; // apool is filled in by caller
 })();
+
+exports.undoModule = undoModule;

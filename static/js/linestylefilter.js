@@ -27,6 +27,11 @@
 // requires: top
 // requires: plugins
 // requires: undefined
+
+var Changeset = require('/Changeset');
+var plugins = require('/plugins').plugins;
+var map = require('/ace2_common').map;
+
 var linestylefilter = {};
 
 linestylefilter.ATTRIB_CLASSES = {
@@ -50,15 +55,7 @@ linestylefilter.getAuthorClassName = function(author)
 linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFunc, apool)
 {
 
-  var plugins_;
-  if (typeof(plugins) != 'undefined')
-  {
-    plugins_ = plugins;
-  }
-  else
-  {
-    plugins_ = parent.parent.plugins;
-  }
+  var plugins_ = plugins;
 
   if (lineLength == 0) return textAndClassFunc;
 
@@ -89,6 +86,10 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
             else if (key == 'list')
             {
               classes += ' list:' + value;
+            }
+            else if (key == 'start')
+            {
+              classes += ' start:' + value;
             }
             else if (linestylefilter.ATTRIB_CLASSES[key])
             {
@@ -299,21 +300,13 @@ linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
 {
   var func = linestylefilter.getURLFilter(lineText, textAndClassFunc);
 
-  var plugins_;
-  if (typeof(plugins) != 'undefined')
-  {
-    plugins_ = plugins;
-  }
-  else
-  {
-    plugins_ = parent.parent.plugins;
-  }
+  var plugins_ = plugins;
 
   var hookFilters = plugins_.callHook("aceGetFilterStack", {
     linestylefilter: linestylefilter,
     browser: browser
   });
-  hookFilters.map(function(hookFilter)
+  map(hookFilters, function(hookFilter)
   {
     func = hookFilter(lineText, func);
   });
@@ -348,3 +341,5 @@ linestylefilter.populateDomLine = function(textLine, aline, apool, domLineObj)
   func = linestylefilter.getLineStyleFilter(text.length, aline, func, apool);
   func(text, '');
 };
+
+exports.linestylefilter = linestylefilter;

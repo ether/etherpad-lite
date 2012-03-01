@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var padutils = require('/pad_utils').padutils;
 
 var paddocbar = (function()
 {
@@ -113,11 +114,14 @@ var paddocbar = (function()
     self.renderPassword();
   }
 
+  var pad = undefined;
   var self = {
     title: null,
     password: null,
-    init: function(opts)
+    init: function(opts, _pad)
     {
+      pad = _pad;
+
       panels = {
         impexp: {
           animator: getPanelOpenCloseAnimator("impexp", 160)
@@ -444,6 +448,8 @@ var paddocbar = (function()
     },
     handleResizePage: function()
     {
+      // Side-step circular reference. This should be injected.
+      var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
       padsavedrevs.handleResizePage();
     },
     hideLaterIfNoOtherInteraction: function()
@@ -456,3 +462,5 @@ var paddocbar = (function()
   };
   return self;
 }());
+
+exports.paddocbar = paddocbar;

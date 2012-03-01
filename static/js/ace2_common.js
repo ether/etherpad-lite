@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var Security = require('/security');
 
 function isNodeText(node)
 {
@@ -80,14 +81,8 @@ function isArray(testObject)
   return testObject && typeof testObject === 'object' && !(testObject.propertyIsEnumerable('length')) && typeof testObject.length === 'number';
 }
 
-if (typeof exports !== "undefined")
-{
-  userAgent = "node-js";
-}
-else
-{
-  userAgent = navigator.userAgent.toLowerCase();
-}
+var userAgent = (((function () {return this;})().navigator || {}).userAgent || 'node-js').toLowerCase();
+
 // Figure out what browser is being used (stolen from jquery 1.2.1)
 var browser = {
   version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
@@ -95,7 +90,8 @@ var browser = {
   opera: /opera/.test(userAgent),
   msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
   mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent),
-  windows: /windows/.test(userAgent) // dgreensp
+  windows: /windows/.test(userAgent),
+  mobile: /mobile/.test(userAgent) || /android/.test(userAgent)
 };
 
 
@@ -142,10 +138,25 @@ function binarySearchInfinite(expectedLength, func)
 
 function htmlPrettyEscape(str)
 {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\r?\n/g, '\\n');
+  return Security.escapeHTML(str).replace(/\r?\n/g, '\\n');
 }
 
-if (typeof exports !== "undefined")
-{
-  exports.map = map;
-}
+var noop = function(){};
+var identity = function(x){return x};
+
+exports.isNodeText = isNodeText;
+exports.object = object;
+exports.extend = extend;
+exports.forEach = forEach;
+exports.map = map;
+exports.filter = filter;
+exports.isArray = isArray;
+exports.browser = browser;
+exports.getAssoc = getAssoc;
+exports.setAssoc = setAssoc;
+exports.binarySearch = binarySearch;
+exports.binarySearchInfinite = binarySearchInfinite;
+exports.htmlPrettyEscape = htmlPrettyEscape;
+exports.map = map;
+exports.noop = noop;
+exports.identity = identity;

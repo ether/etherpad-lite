@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+var CommonCode = require('./common_code');
 var async = require("async");
-var Changeset = require("./Changeset");
+var Changeset = CommonCode.require("/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
+var Security = CommonCode.require('/security');
 
 function getPadPlainText(pad, revNum)
 {
@@ -269,7 +271,7 @@ function getHTMLFromAtext(pad, atext)
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
         
-        assem.append(_escapeHTML(s));
+        assem.append(_encodeWhitespace(Security.escapeHTML(s)));
       } // end iteration over spans in line
       
       var tags2close = [];
@@ -292,7 +294,7 @@ function getHTMLFromAtext(pad, atext)
         var url = urlData[1];
         var urlLength = url.length;
         processNextChars(startIndex - idx);
-        assem.append('<a href="' + url.replace(/\"/g, '&quot;') + '">');
+        assem.append('<a href="' + Security.escapeHTMLAttribute(url) + '">');
         processNextChars(urlLength);
         assem.append('</a>');
       });
@@ -309,13 +311,14 @@ function getHTMLFromAtext(pad, atext)
   // People might use weird indenting, e.g. skip a level,
   // so we want to do something reasonable there.  We also
   // want to deal gracefully with blank lines.
+  // => keeps track of the parents level of indentation
   var lists = []; // e.g. [[1,'bullet'], [3,'bullet'], ...]
   for (var i = 0; i < textLines.length; i++)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
-
-    if (line.listLevel || lists.length > 0)
+            
+    if (line.listLevel)//If we are inside a list
     {
       // do list stuff
       var whichList = -1; // index into lists or -1
@@ -331,41 +334,89 @@ function getHTMLFromAtext(pad, atext)
         }
       }
 
-      if (whichList >= lists.length)
+      if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
       {
         lists.push([line.listLevel, line.listTypeName]);
-        pieces.push('<ul><li>', lineContent || '<br>');
+        if(line.listTypeName == "number")
+        {
+          pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
+        }
+        else
+        {
+          pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
+        }
       }
-      else if (whichList == -1)
+      //the following code *seems* dead after my patch.
+      //I keep it just in case I'm wrong...
+      /*else if (whichList == -1)//means we are not inside a list
       {
         if (line.text)
         {
+          console.log('trace 1');
           // non-blank line, end all lists
-          pieces.push(new Array(lists.length + 1).join('</li></ul\n>'));
+          if(line.listTypeName == "number")
+          {
+            pieces.push(new Array(lists.length + 1).join('</li></ol>'));
+          }
+          else
+          {
+            pieces.push(new Array(lists.length + 1).join('</li></ul>'));
+          }
           lists.length = 0;
           pieces.push(lineContent, '<br>');
         }
         else
         {
+          console.log('trace 2');
           pieces.push('<br><br>');
         }
-      }
-      else
+      }*/
+      else//means we are getting closer to the lowest level of indentation
       {
         while (whichList < lists.length - 1)
         {
-          pieces.push('</li></ul>');
+          if(lists[lists.length - 1][1] == "number")
+          {
+            pieces.push('</li></ol>');
+          }
+          else
+          {
+            pieces.push('</li></ul>');
+          }
           lists.length--;
         }
         pieces.push('</li><li>', lineContent || '<br>');
       }
     }
-    else
+    else//outside any list
     {
+      while (lists.length > 0)//if was in a list: close it before
+      {
+        if(lists[lists.length - 1][1] == "number")
+        {
+          pieces.push('</li></ol>');
+        }
+        else
+        {
+          pieces.push('</li></ul>');
+        }
+        lists.length--;
+      }      
       pieces.push(lineContent, '<br>');
     }
   }
-  pieces.push(new Array(lists.length + 1).join('</li></ul>'));
+  
+  for (var k = lists.length - 1; k >= 0; k--)
+  {
+    if(lists[k][1] == "number")
+    {
+      pieces.push('</li></ol>');
+    }
+    else
+    {
+      pieces.push('</li></ul>');
+    }
+  }
 
   return pieces.join('');
 }
@@ -415,7 +466,24 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
   {
     if(ERR(err, callback)) return;
 
-    var head = (noDocType ? '' : '<!doctype html>\n') + '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + '<meta charset="utf-8">\n' + '<style> * { font-family: arial, sans-serif;\n' + 'font-size: 13px;\n' + 'line-height: 17px; }</style>\n' + '</head>\n') + '<body>';
+    var head = 
+      (noDocType ? '' : '<!doctype html>\n') + 
+      '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+        '<meta charset="utf-8">\n' + 
+        '<style> * { font-family: arial, sans-serif;\n' + 
+          'font-size: 13px;\n' + 
+          'line-height: 17px; }' + 
+          'ul.indent { list-style-type: none; }' +
+          'ol { list-style-type: decimal; }' +
+          'ol ol { list-style-type: lower-latin; }' +
+          'ol ol ol { list-style-type: lower-roman; }' +
+          'ol ol ol ol { list-style-type: decimal; }' +
+          'ol ol ol ol ol { list-style-type: lower-latin; }' +
+          'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
+          'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
+          'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+          '</style>\n' + '</head>\n') + 
+      '<body>';
 
     var foot = '</body>\n</html>\n';
 
@@ -427,24 +495,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
   });
 }
 
-function _escapeHTML(s)
-{
-  var re = /[&<>]/g;
-  if (!re.MAP)
-  {
-    // persisted across function calls!
-    re.MAP = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-    };
-  }
-  
-  s = s.replace(re, function (c)
-  {
-    return re.MAP[c];
-  });
-  
+function _encodeWhitespace(s) {
   return s.replace(/[^\x21-\x7E\s\t\n\r]/g, function(c)
   {
     return "&#" +c.charCodeAt(0) + ";"

@@ -7,150 +7,8 @@
   <title>RPG Write Timeslider</title>
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
+  <link rel="stylesheet" href="../../static/custom/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
-  
-  <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-  <script type="text/javascript" src="../../minified/timeslider.js"></script>
-  
-  <link href="../../static/custom/timeslider.css" rel="stylesheet">
-  <script src="../../static/custom/timeslider.js"></script>
-  
-  <script>
-// <![CDATA[
-  var clientVars = {};
-
-  function createCookie(name,value,days) 
-  {
-	  if (days) {
-		  var date = new Date();
-		  date.setTime(date.getTime()+(days*24*60*60*1000));
-		  var expires = "; expires="+date.toGMTString();
-	  }
-	  else var expires = "";
-	  document.cookie = name+"="+value+expires+"; path=/";
-  }
-
-  function readCookie(name) 
-  {
-	  var nameEQ = name + "=";
-	  var ca = document.cookie.split(';');
-	  for(var i=0;i < ca.length;i++) {
-		  var c = ca[i];
-		  while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		  if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	  }
-	  return null;
-  }
-
-  function randomString() {
-	  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	  var string_length = 20;
-	  var randomstring = '';
-	  for (var i=0; i<string_length; i++) {
-		  var rnum = Math.floor(Math.random() * chars.length);
-		  randomstring += chars.substring(rnum,rnum+1);
-	  }
-	  return "t." + randomstring;
-  }
-
-  var socket, token, padId;
-
-  $(document).ready(function () 
-  {
-    //start the costum js
-    if(typeof costumStart == "function") costumStart();
-    
-    //get the padId out of the url 
-    var urlParts= document.location.pathname.split("/");
-    padId = decodeURIComponent(urlParts[urlParts.length-2]);
-        
-    //set the title
-    document.title = document.title + " | " + padId;
-        
-    //ensure we have a token
-    token = readCookie("token");
-    if(token == null)
-    {
-      token = randomString();
-      createCookie("token", token, 60);
-    }
-    
-    var loc = document.location;
-    //get the correct port
-    var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
-    //create the url
-    var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
-    //find out in which subfolder we are
-    var resource = loc.pathname.substr(1,loc.pathname.indexOf("/p/")) + "socket.io";
-    
-    //build up the socket io connection
-    socket = io.connect(url, {resource: resource});
-    
-    //send the ready message once we're connected
-    socket.on('connect', function()
-    {
-      sendSocketMsg("CLIENT_READY", {});
-    });
-    
-    //route the incoming messages
-    socket.on('message', function(message)
-    {
-      if(window.console) console.log(message);
-      
-      if(message.type == "CLIENT_VARS")
-      {
-        handleClientVars(message);
-      }
-      else if(message.type == "CHANGESET_REQ")
-      {
-        changesetLoader.handleSocketResponse(message);
-      }
-      else if(message.accessStatus)
-      {
-        $("body").html("<h2>You have no permission to access this pad</h2>")
-      }
-    });
-  });
-  
-  //sends a message over the socket
-  function sendSocketMsg(type, data)
-  {
-    var sessionID = readCookie("sessionID");
-    var password = readCookie("password");
-    
-    var msg = { "component" : "timeslider",
-                "type": type,
-                "data": data, 
-                "padId": padId,
-                "token": token,
-                "sessionID": sessionID,
-                "password": password,
-                "protocolVersion": 2};
-    
-    socket.json.send(msg);
-  }
-  
-  var fireWhenAllScriptsAreLoaded = [];
-  
-  function handleClientVars(message)
-  {
-    //save the client Vars
-    clientVars = message.data;
-    
-    //load all script that doesn't work without the clientVars
-    loadBroadcastSliderJS();
-    loadBroadcastRevisionsJS();
-    loadBroadcastJS();
-    
-    //fire all start functions of these scripts, formerly fired with window.load
-    for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
-    {
-      fireWhenAllScriptsAreLoaded[i]();
-    }
-  }
-
-  // ]]>
-  </script>
 </head>
 
 <body id="padbody" class="timeslider limwidth nonpropad nonprouser">
@@ -269,14 +127,14 @@
 
             <div id="editbarright" class="editbarright">
               <!-- termporary place holder--> 
+              <ul>
+                <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
+                  <a id="exportlink" title="Export to different document formats">
+                    <div class="buttonicon buttonicon-import_export"></div>
+                  </a>
+                </li>
+              </ul>
               <a id = "returnbutton">Return to pad</a>
-              <script>
-              	if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
-                  $("#returnbutton").attr("href", document.referrer);
-              	} else {
-                  $("#returnbutton").attr("href", document.location.href.substring(0,document.location.href.lastIndexOf("/")));
-              	}
-              </script>
             </div>
 
             <div id="editbarinner" class="editbarinner">
@@ -320,6 +178,41 @@
   </div>
 
   <div id="mainmodals"></div>
+
+<!-- export code -->
+<div id="importexport">
+
+<div id="export" class="popup">
+  Export current version as:
+  <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
+  <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
+  <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
+  <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
+  <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
+  <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
+  <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
+  <form id="wordlepost" name="wall" action="http://wordle.net/advanced" method="POST" style="margin-left:0px;"> 
+    <div id="hidetext" style=""><textarea id="text" name="text" id="text" style="display:none;">Coming soon!</textarea></div> 
+  </form> 
+</div>
+</div>
+
+<script type="text/javascript" src="../../static/js/require-kernel.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+<script type="text/javascript" src="../../minified/timeslider.js?callback=require.define"></script>
+<script type="text/javascript" src="../../static/custom/timeslider.js"></script>
+<script type="text/javascript" >
+  var clientVars = {};
+  (function () {
+    require.setRootURI("../minified/");
+    require.setGlobalKeyPath("require");
+    require('/timeslider').init();
+
+    /* TODO: These globals shouldn't exist. */
+    padeditbar = require('/pad_editbar').padeditbar;
+    padimpexp = require('/pad_impexp').padimpexp;
+  })();
+</script>
 </body>
 </html>
 

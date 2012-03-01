@@ -58,7 +58,7 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 
 <ol>
   <li>Install the dependencies. We need gzip, git, curl, libssl develop libraries, python and gcc. <br><i>For Debian/Ubuntu</i> <code>apt-get install gzip git-core curl python libssl-dev build-essential</code><br>
-  <i>For Fedora/CentOS</i> <code>yum install gzip git-core curl python openssl-dev && yum groupinstall "Development Tools"</code>
+  <i>For Fedora/CentOS</i> <code>yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"</code>
   </li><br>
   <li>Install node.js 
     <ol type="a">
@@ -81,6 +81,8 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 ## Next Steps
 You can modify the settings in the file `settings.json`
 
+If you have multiple settings files, you may pass one to `bin/run.sh` using the `-s|--settings` option. This allows you to run multiple Etherpad Lite instances from the same installation.
+
 You should use a dedicated database such as "mysql" if you are planning on using etherpad-lite in a production environment, the "dirty" database driver is only for testing and/or development purposes.
 
 You can update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies
@@ -98,7 +100,7 @@ Look at this wiki pages:
 You can find more information in the [wiki](https://github.com/Pita/etherpad-lite/wiki). Feel free to improve these wiki pages
 
 # Develop
-If you're new to git and github, start here <http://learn.github.com/p/intro.html>.
+If you're new to git and github, start by watching [this video](http://youtu.be/67-Q26YH97E) then read this [git guide](http://learn.github.com/p/intro.html).
 
 If you're new to node.js, start with this video <http://youtu.be/jo_B4LTHi3I>.
 
@@ -111,11 +113,18 @@ You can join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev)
 
 You also help the project, if you only host a Etherpad Lite instance and share your experience with us.
 
+Please consider using [jshint](http://www.jshint.com/about/) if you plan to
+contribute to Etherpad Lite.
+
 # Modules created for this project
 
 * [ueberDB](https://github.com/Pita/ueberDB) "transforms every database into a object key value store" - manages all database access
 * [channels](https://github.com/Pita/channels) "Event channels in node.js" - ensures that ueberDB operations are atomic and in series for each key
 * [async-stacktrace](https://github.com/Pita/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
+
+# Donations
+* [Etherpad Foundation Flattr] (http://flattr.com/thing/71378/Etherpad-Foundation)
+* [Paypal] (http://etherpad.org) <-- Click the donate button
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)

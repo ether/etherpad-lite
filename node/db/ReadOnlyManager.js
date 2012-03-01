@@ -18,9 +18,11 @@
  * limitations under the License.
  */
 
+var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
+var randomString = CommonCode.require('/pad_utils').randomString;
 
 /**
  * returns a read only id for a pad
@@ -69,19 +71,4 @@ exports.getReadOnlyId = function (padId, callback)
 exports.getPadId = function(readOnlyId, callback)
 {
   db.get("readonly2pad:" + readOnlyId, callback);
-}
-
-/**
- * Generates a random String with the given length. Is needed to generate the read only ids
- */
-function randomString(len) 
-{
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var randomstring = '';
-  for (var i = 0; i < len; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return randomstring;
 }

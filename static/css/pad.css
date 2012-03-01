@@ -1,13 +1,13 @@
 *,html,body,p{ margin: 0; padding: 0; }
 .clear { clear: both; }
-html { font-size: 62.5%; }
+html { font-size: 62.5%; width: 100%; }
 body, textarea { font-family: Helvetica, Arial, sans-serif; }
 iframe {position:absolute;}
 
 #users
 {
   position: absolute;
-  z-index: 10;
+  z-index:500;
   background-color: #000;
   background-color: rgba(0,0,0,0.7);
   width: 160px;
@@ -15,7 +15,6 @@ iframe {position:absolute;}
   top: 40px;
   color: #fff;
   padding: 5px;
-  -moz-border-radius: 6px;
   border-radius: 6px; 
 }
 
@@ -39,10 +38,7 @@ a img
 #editbar 
 {
   background: #f7f7f7;
-  background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: linear-gradient(#f7f7f7, #f1f1f1 80%);
   border-bottom: 1px solid #ccc;
   height: 32px;
   overflow: hidden;
@@ -53,10 +49,7 @@ a img
 #editbar ul li 
 {
   background: #fff;
-  background: -moz-linear-gradient(#fff, #f0f0f0);
-  background: -ms-linear-gradient(#fff, #f0f0f0);
-  background: -o-linear-gradient(#fff, #f0f0f0);
-  background: -webkit-linear-gradient(#fff, #f0f0f0);
+  background: linear-gradient(#fff, #f0f0f0);
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
@@ -72,6 +65,7 @@ a img
 {
   text-decoration: none;
   color: #ccc;
+  position: absolute;
 }
 
 #editbar ul li a span
@@ -82,18 +76,13 @@ a img
 
 #editbar ul li:hover {
   background: #fff;
+  background: linear-gradient(#f4f4f4, #e4e4e4);
 }
 
 #editbar ul li:active {
   background: #eee;
-  background: -moz-linear-gradient(#ddd, #fff);
-  background: -ms-linear-gradient(#ddd, #fff);
-  background: -o-linear-gradient(#ddd, #fff);
-  background: -webkit-linear-gradient(#ddd, #fff);
-}
-
-input[type="file"] {
- color: #000;
+  background: linear-gradient(#ddd, #fff);
+  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
 }
 
 #editbar ul li.separator
@@ -194,7 +183,6 @@ a#backtoprosite { padding-left: 20px; left: 6px;
 #alertbar {
   margin-top: 6px;
   opacity: 0;
-  filter: alpha(opacity = 0); /* IE */
   display: none;
   position:absolute;
   left:0;
@@ -388,10 +376,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
 
 #mycolorpickersave, #mycolorpickercancel {
   background: #fff;
-  background: -moz-linear-gradient(#fff, #ccc);
-  background: -ms-linear-gradient(#fff, #ccc);
-  background: -o-linear-gradient(#fff, #ccc);
-  background: -webkit-linear-gradient(#fff, #ccc);
+  background: linear-gradient(#fff, #ccc);
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size:12px; 
@@ -564,28 +549,6 @@ table#otheruserstable { display: none; }
   display: none; z-index: 55; }
 #revision-notifier .label { color: #777; font-weight: bold; }
 
-/* We don't ever actually hide the wrapper, even when the panel is
-   cloased, so that its contents can always be manipulated accurately. */
-
-
-#padoptions { position: absolute; top: 0; left: 0; font-size: 1.2em;
-  color: #444; height: 100%; width: 100%; line-height: 15px; }
-#options-viewhead { font-weight: bold; position: absolute; top: 10px; left: 15px;
-  width: auto; height: auto; }
-#padoptions label { display: block; }
-#padoptions input { padding: 0; margin: 0; }
-#options-colorscheck { position: absolute; left: 15px; top: 34px; width: 15px; height: 15px; }
-#options-colorslabel { position: absolute; left: 35px; top: 34px; }
-#options-linenoscheck { position: absolute; left: 15px; top: 57px; width: 15px; height: 15px; }
-#options-linenoslabel { position: absolute; left: 35px; top: 57px; }
-#options-fontlabel { position: absolute; left: 15px; top: 82px; }
-#viewfontmenu { position: absolute; top: 80px; left: 90px; width: 110px; }
-#options-viewexplain { position: absolute; left: 215px; top: 15px; width: 100px; height: 70px; font-size: .7em;
-  padding-left: 10px; padding-top: 10px; border-left: 1px solid #ccc;
-  line-height: 20px; font-weight: bold; color: #999; }
-#options-close { display: block; position: absolute; right: 7px; bottom: 8px;
-  width: auto; height: auto; font-size: 85%; color: #444; }
-
 #mainmodals { z-index: 600; /* higher than the modals themselves
                               so that modals are on top in IE */ }
 .modalfield { font-size: 1.2em; padding: 1px; border: 1px solid #bbb;}
@@ -751,14 +714,7 @@ a#topbarmaximize {
  text-decoration: none;
  padding: 50pt;
  font-size: 20pt;
- -moz-border-radius-topleft: 3pt;
- -moz-border-radius-topright: 3pt;
- -moz-border-radius-bottomleft: 3pt;
- -moz-border-radius-bottomright: 3pt;
- -webkit-border-top-left-radius: 3pt;
- -webkit-border-top-right-radius: 3pt;
- -webkit-border-bottom-left-radius: 3pt;
- -webkit-border-bottom-right-radius: 3pt;
+ border-radius: 3pt;
 }
 
 .modaldialog .bigbutton {
@@ -767,38 +723,8 @@ a#topbarmaximize {
  width: 100%;
 }
 
-#embed, #readonly {
-display:none;
-position:absolute;
-top:40px;
-font-size:14px;
-width:400px;
-right: 20px;
-z-index: 500;
-background-color: #000;
-color: white;
-background-color: rgb(0,0,0);
-background-color: rgba(0,0,0,0.7);
-padding: 10px;
--moz-border-radius: 6px;
-border-radius: 6px; 
 }
 
-#embedreadonly {
-float:right;
-}
-
-#embedcode, #readonlyUrl, #linkcode {
-margin-left:10px;
-}
-
-#embedinput, #readonlyInput, #linkinput {
-width:375px;
-height:24px;
-display:inline;
-margin-top: 10px;
-padding-left:4px;
-}
 
 ul#colorpickerswatches
 {
@@ -854,6 +780,7 @@ ul#colorpickerswatches li:hover
   left:0px;
   top:25px;
   bottom:25px;
+  z-index:1002;
 }
 
 #chattext p
@@ -874,12 +801,11 @@ ul#colorpickerswatches li:hover
 #chatlabel
 {
   font-size:13px;
-  line-height:16px;
   font-weight:bold;
   color:#555;
   text-decoration: none;
-  position: relative;
-  bottom: 3px;
+  margin-right: 3px;
+  vertical-align: middle;
 }
 
 #chatinput
@@ -892,8 +818,8 @@ ul#colorpickerswatches li:hover
 #chaticon
 {
   z-index: 400;
-  position:absolute;
-  bottom:0px;
+  position: fixed;
+  bottom: 0px;
   right: 20px;
   padding: 5px;
   border-left: 1px solid #999;
@@ -914,8 +840,7 @@ ul#colorpickerswatches li:hover
 {
   color:#555;
   font-size:9px;
-  position:relative;
-  bottom: 2px;
+  vertical-align: middle;
 }
 
 #titlebar
@@ -930,8 +855,7 @@ ul#colorpickerswatches li:hover
 #titlelabel
 {
   font-size:13px;
-  margin-left:20px;
-  padding-top:3px;
+  margin:4px 0 0 4px;
   position:absolute;
 } 
 
@@ -954,85 +878,20 @@ ul#colorpickerswatches li:hover
   margin-left: 3px;
   margin-right: 3px;
   margin-top:2px;
-}
-
-
-/* resizable stuff for chat */
-.ui-resizable {
-position: relative;
 } 
-.ui-resizable-handle { 
-  position: absolute;
-  font-size: 0.1px;
-  z-index: 99999;
-  display: block;
-    
-} 
-
-.ui-resizable-nw {
-  background-image: url("../img/nw-resize.png");
-  background-repeat: no-repeat;
-  background-size: 100% auto;
-  cursor: nw-resize;
-  height: 22px;
-  left: 0;
-  top: 0;
-  width: 22px;
-} 
-
-.ui-resizable-ne 
-{ 
-  cursor: ne-resize; 
-  width: 9px; 
-  height: 9px; 
-  right: -5px; 
-  top: -5px;
-} 
-
-#importexport{
-  position:absolute;
-  top:40px;
-  font-size:14px;
-  width:450px;
-  right: 20px;
-  z-index: 500;
-  background-color: #000;
-  color: white;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.7);
-  padding: 10px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  height:190px;
-  display:none;
-}
-
-#import{
-  position:absolute;
-  width:250px;
-  left:10px;
-  line-height:20px;
-}
-
-#export{
-  position:absolute;
-  width:180px;
-  right:10px;
-  line-height:20px;
-}
 
 .exporttype{
-  line-height:25px;
+  margin-top: 2px;
   background-repeat:no-repeat;
   padding-left:25px;
-  background-image: url("../img/fileicons.gif");
+  background-image: url("../../static/img/etherpad_lite_icons.png");
   color:#fff;
   text-decoration:none;
 }
 
 #importexportline{
-  border: dotted 1px;
-  height: 185px;
+  border-left: 1px solid #fff;
+  height: 190px;
   position:absolute;
   width:0px;
   left:260px;
@@ -1040,40 +899,36 @@ position: relative;
 }
 
 .impexpbutton{
-  background-image: -moz-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
+  background-image: linear-gradient(center top , #EEEEEE, white 20%, white 20%);
   padding:3px;
 }
 
 #exporthtml{
-  background-position: 2px -25px;
+  background-position: 0px -299px;
 }
 
 #exportplain{
-  background-position: 2px -121px;
+  background-position: 0px -395px;
 }
 
 #exportword{
-  background-position: 2px -0px;
+  background-position: 0px -275px;
 }
 
 #exportpdf{
-  background-position: 2px -97px;
+  background-position: 0px -371px;
 }
 
 #exportopen{
-  background-position: 2px -74px;
+  background-position: 0px -347px;
 }
 
 #exportwordle{
-  background-position: 2px -49px;
+  background-position: 0px -323px;
 }
 
 #exportdokuwiki{
-  background-position: 2px -144px;
-}
-
-#export a{
-  text-decoration: none;
+  background-position: 0px -459px;
 }
 
 #importstatusball{
@@ -1112,7 +967,6 @@ color: white;
 background-color: rgb(0,0,0);
 background-color: rgba(0,0,0,0.7);
 padding: 10px;
--moz-border-radius: 6px;
 border-radius: 6px;
 opacity:.8;
 }
@@ -1124,6 +978,61 @@ background-image:url('../../static/img/etherpad_lite_icons.png');
 background-repeat: no-repeat;
 margin-left: 1px;
 margin-top: 1px;
+}
+.buttonicon-bold {
+  background-position: 0px -116px;
+}
+.buttonicon-italic {
+  background-position: 0px 0px;
+}
+.buttonicon-underline {
+  background-position: 0px -236px;
+}
+.buttonicon-strikethrough {
+  background-position: 0px -200px;
+}
+.buttonicon-insertorderedlist {
+  background-position: 0px -477px
+}
+.buttonicon-insertunorderedlist {
+  background-position: 0px -34px;
+}
+.buttonicon-indent {
+  background-position: 0px -52px;
+}
+.buttonicon-outdent {
+  background-position: 0px -134px;
+}
+.buttonicon-undo {
+  background-position: 0px -255px;
+}
+.buttonicon-redo {
+  background-position :0px -166px;
+}
+.buttonicon-clearauthorship {
+  background-position: 0px -86px;
+}
+.buttonicon-settings {
+  background-position: 0px -436px;
+}
+.buttonicon-import_export {
+  background-position: 0px -68px;
+}
+.buttonicon-embed {
+  background-position: 0px -18px;
+}
+.buttonicon-history {
+  background-position: 0px -218px;
+}
+.buttonicon-chat {
+  background-position: 0px -102px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 !important;
+}
+.buttonicon-showusers {
+  background-position: 0px -183px;
+  display: inline-block;
 }
 
 #usericon
@@ -1145,21 +1054,112 @@ width:33px !important;
 }
 
 #online_count{
-  color: #999;
+  color: #888;
+  font-size: 11px;
+  line-height: 18px;
+  position: fixed;
 }
-
-label[for=readonlyinput] {
-  margin: 0 10px 0 2px;
-}
-
 
 #qr_center {
   margin: 10px 10px auto 0;
   text-align: center;
 }
 
-#qrcode{
-  margin-left:10px;
+#embedreadonlyqr {
+  box-shadow: 0 0 10px #000;
+  border-radius: 3px;
+  transition: all .2s ease-in-out;
+}
+
+#embedreadonlyqr:hover {
+  cursor: none;
+  transform: scale(1.5);
+}
+
+.rtl{
+  direction:RTL;
+} 
+
+#chattext p {
+ word-wrap: break-word;
+}
+
+/* fix for misaligned checkboxes */
+input[type=checkbox] {
+ vertical-align: -1px;
+}
+
+.right {
+ float:right;
+}
+
+.popup {
+ font-size: 14px;
+ width: 450px;
+ z-index: 500;
+ padding: 10px;
+ border-radius: 6px;
+ background: #222;
+ background: rgba(0,0,0,.7);
+ background: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
+ box-shadow: 0 0 8px #888;
+ color: #fff;
+}
+
+.popup input[type=text] {
+ width: 100%;
+ padding: 5px;
+ box-sizing: border-box;
+ display:block;
+ margin-top: 10px;
+}
+
+.popup a {
+  text-decoration: none;
+}
+
+.popup h1 {
+ font-size: 18px;
+}
+.popup h2 {
+ font-size: 15px;
+}
+.popup p {
+ margin: 5px 0;
+}
+
+.column {
+ float: left;
+ width: 50%;
+}
+
+#settingsmenu, #importexport, #embed {
+ position: absolute;
+ top: 55px;
+ right: 20px;
+ display: none;
+}
+
+.note {
+ color: #ddd;
+ font-size: 11px;
+ font-weight: bold;
+}
+
+.selected {
+ background: #eee !important;
+ background: linear-gradient(#EEE, #F0F0F0) !important;
+}
+
+.stickyChat {
+ background-color: #f1f1f1 !important;
+ right: 0px !important;
+ top: 36px;
+ border-radius: 0px !important;
+ height: auto !important;
+ border: none !important;
+ border-left: 1px solid #ccc !important;
+ width: 185px !important;
 }
 
 @media screen and (max-width: 960px) {
@@ -1178,43 +1178,31 @@ label[for=readonlyinput] {
   }  
 }
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 600px) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
   #editbar ul li {
     padding: 4px 3px;
   }
-  #editbar ul#menu_right > li {
-    padding: 4px 8px;
-    margin-top: 2px;
-  }
-  #chaticon {
-    opacity: .8;
-  }
   #users {
-    right: none;
-    left: 30px;
+    right: 0;
+    top: 36px;
+    bottom: 33px;
+    border-radius: none;
   }
   #mycolorpicker {
-    right: 0;
-    left: 0 !important;
+    left: -72px; /* #mycolorpicker:width - #users:width */
   }
   #editorcontainer {
     margin-bottom: 33px;
   }
   #editbar ul#menu_right  {
     background: #f7f7f7;
-    background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
     width: 100%;
     overflow: hidden;
     height: 32px;
     position: fixed;
     bottom: 0;
     border-top: 1px solid #ccc;
-  }
-  #editbar ul#menu_right li:not(:last-child) {
-    display: none;
   }
   #editbar ul#menu_right li:last-child {
     height: 24px;
@@ -1224,21 +1212,19 @@ label[for=readonlyinput] {
     float: right;
   }
   #chaticon {
-    bottom: 0;
+    bottom: 3px;
     right: 55px;
     border-right: none;
     border-radius: 0;
     background: #f7f7f7;
-    background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
     border: 0;
   }
   #chatbox {
     bottom: 32px;
     right: 0;
     border-top-right-radius: 0;
+    border-right: none;
   }
   #editbar ul li a span {
     top: -3px;
@@ -1246,10 +1232,39 @@ label[for=readonlyinput] {
   #usericonback {
     margin-top: 4px;
   }
-  #sidediv {
-    display:none;
+  #qrcode {
+    display: none;
+  }
+  #editbar ul#menu_right li:not(:last-child) {
+    display: block;
+  }
+  #editbar ul#menu_right > li {
+    background: none;
+    border: none;
+    margin-top: 4px;
+    padding: 4px 8px;
+  }
+  .selected {
+    background: none !important;
+  }
+  #timesliderlink {
+    display: none !important;
+  }
+  .popup {
+    border-radius: 0;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #settingsmenu, #importexport, #embed {
+    left: 0;
+    top: 0;
+    bottom: 33px;
+    right: 0; 
+  }
+  .separator {
+    display: none;
+  }
+  #online_count {
+    line-height: 24px;
   }
 }
-.rtl{
-  direction:RTL;
-} 

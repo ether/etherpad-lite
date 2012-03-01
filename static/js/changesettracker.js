@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+var AttribPool = require('/AttributePoolFactory').createAttributePool;
+var Changeset = require('/Changeset');
 
 function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 {
@@ -207,3 +209,5 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
   };
 
 }
+
+exports.makeChangesetTracker = makeChangesetTracker;

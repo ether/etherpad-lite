@@ -469,3 +469,5 @@ if (!JSON)
     };
   }
 }());
+
+module.exports = JSON;

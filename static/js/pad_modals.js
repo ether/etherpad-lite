@@ -20,6 +20,9 @@
  * limitations under the License.
  */
 
+var padutils = require('/pad_utils').padutils;
+var paddocbar = require('/pad_docbar').paddocbar;
+
 var padmodals = (function()
 {
 
@@ -70,9 +73,12 @@ var padmodals = (function()
     clearShareBoxTo();
   }
 
+  var pad = undefined;
   var self = {
-    init: function()
+    init: function(_pad)
     {
+      pad = _pad;
+
       self.initFeedback();
       self.initShareBox();
     },
@@ -364,3 +370,5 @@ var padmodals = (function()
   };
   return self;
 }());
+
+exports.padmodals = padmodals;

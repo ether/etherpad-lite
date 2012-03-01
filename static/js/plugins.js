@@ -4,10 +4,11 @@
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
 
-plugins = {
+var plugins = {
   callHook: function(hookName, args)
   {
-    var hook = clientVars.hooks[hookName];
+    var global = (function () {return this}());
+    var hook = ((global.clientVars || {}).hooks || {})[hookName];
     if (hook === undefined) return [];
     var res = [];
     for (var i = 0, N = hook.length; i < N; i++)
@@ -24,9 +25,13 @@ plugins = {
     if (sep == undefined) sep = '';
     if (pre == undefined) pre = '';
     if (post == undefined) post = '';
-    return plugins.callHook(hookName, args).map(function(x)
-    {
-      return pre + x + post
-    }).join(sep || "");
+    var newCallhooks = [];
+    var callhooks = plugins.callHook(hookName, args);
+    for (var i = 0, ii = callhooks.length; i < ii; i++) {
+      newCallhooks[i] = pre + callhooks[i] + post;
+    }
+    return newCallhooks.join(sep || "");
   }
 };
+
+exports.plugins = plugins;

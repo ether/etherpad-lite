@@ -18,8 +18,10 @@
  * limitations under the License.
  */
  
+var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
+var randomString = CommonCode.require('/pad_utils').randomString;
 var db = require("./DB").db;
 var async = require("async");
 var groupMangager = require("./GroupManager");
@@ -356,21 +358,6 @@ function listSessionsWithDBKey (dbkey, callback)
     if(ERR(err, callback)) return;
     callback(null, sessions);
   });
-}
-
-/**
- * Generates a random String with the given length. Is needed to generate the SessionIDs
- */
-function randomString(len) 
-{
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var randomstring = '';
-  for (var i = 0; i < len; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return randomstring;
 }
 
 //checks if a number is an int

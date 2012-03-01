@@ -38,6 +38,10 @@
   /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly, 
      but makes it impossible to debug the javascript/css */
   "minify" : true,
+
+  /* How long may clients use served javascript code? Without versioning this
+    is may cause problems during deployment. */
+  "maxAge" : 21600000, // 6 hours
   
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to enable the import/export of pads*/  

@@ -25,13 +25,15 @@
 // requires: top
 // requires: plugins
 // requires: undefined
+
+var Security = require('/security');
+var Ace2Common = require('/ace2_common');
+var plugins = require('/plugins').plugins;
+var map = Ace2Common.map;
+var noop = Ace2Common.noop;
+var identity = Ace2Common.identity;
+
 var domline = {};
-domline.noop = function()
-{};
-domline.identity = function(x)
-{
-  return x;
-};
 
 domline.addToLineClass = function(lineClass, cls)
 {
@@ -55,11 +57,11 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
 {
   var result = {
     node: null,
-    appendSpan: domline.noop,
-    prepareForAdd: domline.noop,
-    notifyAdded: domline.noop,
-    clearSpans: domline.noop,
-    finishUpdate: domline.noop,
+    appendSpan: noop,
+    prepareForAdd: noop,
+    notifyAdded: noop,
+    clearSpans: noop,
+    finishUpdate: noop,
     lineMarker: 0
   };
 
@@ -86,7 +88,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   {
     return domline.processSpaces(s, doesWrap);
   }
-  var identity = domline.identity;
+
   var perTextNodeProcess = (doesWrap ? identity : processSpaces);
   var perHtmlLineProcess = (doesWrap ? processSpaces : identity);
   var lineClass = 'ace-line';
@@ -95,13 +97,23 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     if (cls.indexOf('list') >= 0)
     {
       var listType = /(?:^| )list:(\S+)/.exec(cls);
+      var start = /(?:^| )start:(\S+)/.exec(cls);
       if (listType)
       {
         listType = listType[1];
+        start = start?'start="'+Security.escapeHTMLAttribute(start[1])+'"':'';
         if (listType)
         {
-          preHtml = '<ul class="list-' + listType + '"><li>';
-          postHtml = '</li></ul>';
+          if(listType.indexOf("number") < 0)
+          {
+            preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            postHtml = '</li></ul>';
+          }
+          else
+          {
+            preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            postHtml = '</li></ol>';
+          }
         }
         result.lineMarker += txt.length;
         return; // don't append any text
@@ -130,20 +142,12 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     var extraOpenTags = "";
     var extraCloseTags = "";
 
-    var plugins_;
-    if (typeof(plugins) != 'undefined')
-    {
-      plugins_ = plugins;
-    }
-    else
-    {
-      plugins_ = parent.parent.plugins;
-    }
+    var plugins_ = plugins;
 
-    plugins_.callHook("aceCreateDomLine", {
+    map(plugins_.callHook("aceCreateDomLine", {
       domline: domline,
       cls: cls
-    }).map(function(modifier)
+    }), function(modifier)
     {
       cls = modifier.cls;
       extraOpenTags = extraOpenTags + modifier.extraOpenTags;
@@ -162,7 +166,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         {
           href = "http://"+href;
         }
-        extraOpenTags = extraOpenTags + '<a href="' + href.replace(/\"/g, '&quot;') + '">';
+        extraOpenTags = extraOpenTags + '<a href="' + Security.escapeHTMLAttribute(href) + '">';
         extraCloseTags = '</a>' + extraCloseTags;
       }
       if (simpleTags)
@@ -172,7 +176,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         simpleTags.reverse();
         extraCloseTags = '</' + simpleTags.join('></') + '>' + extraCloseTags;
       }
-      html.push('<span class="', cls || '', '">', extraOpenTags, perTextNodeProcess(domline.escapeHTML(txt)), extraCloseTags, '</span>');
+      html.push('<span class="', Security.escapeHTMLAttribute(cls || ''), '">', extraOpenTags, perTextNodeProcess(Security.escapeHTML(txt)), extraCloseTags, '</span>');
     }
   };
   result.clearSpans = function()
@@ -216,27 +220,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   };
 
   return result;
-};
-
-domline.escapeHTML = function(s)
-{
-  var re = /[&<>'"]/g;
-  /']/; // stupid indentation thing
-  if (!re.MAP)
-  {
-    // persisted across function calls!
-    re.MAP = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&#34;',
-      "'": '&#39;'
-    };
-  }
-  return s.replace(re, function(c)
-  {
-    return re.MAP[c];
-  });
 };
 
 domline.processSpaces = function(s, doesWrap)
@@ -300,3 +283,5 @@ domline.processSpaces = function(s, doesWrap)
   }
   return parts.join('');
 };
+
+exports.domline = domline;

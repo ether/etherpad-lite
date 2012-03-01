@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+var CommonCode = require('../utils/common_code');
 var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
@@ -25,6 +26,7 @@ var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings")
+var randomString = CommonCode.require('/pad_utils').randomString;
 
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.

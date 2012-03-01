@@ -85,9 +85,12 @@ var padcookie = (function()
   var alreadyWarnedAboutNoCookies = false;
   var inited = false;
 
+  var pad = undefined;
   var self = {
-    init: function(prefsToSet)
+    init: function(prefsToSet, _pad)
     {
+      pad = _pad;
+
       var rawCookie = getRawCookie();
       if (rawCookie)
       {
@@ -126,3 +129,5 @@ var padcookie = (function()
   };
   return self;
 }());
+
+exports.padcookie = padcookie;
