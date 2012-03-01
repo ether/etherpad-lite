@@ -2262,6 +2262,9 @@ function Ace2Inner(){
     return [lineNum, x - lineStart];
   }
 
+/* 
+ * Generic *abstract* document manipulation methods 
+ */
   function performDocumentReplaceCharRange(startChar, endChar, newText)
   {
     if (startChar == endChar && newText.length === 0)
@@ -2377,6 +2380,11 @@ function Ace2Inner(){
     }
   }
 
+/* 
+ * Text attributes manipulation (Bold, Italic, ...).
+ * They mostly apply to text ranges ie. from char A to char B
+ */
+ 
   function setAttributeOnSelection(attributeName, attributeValue)
   {
     if (!(rep.selStart && rep.selEnd)) return;
@@ -2386,7 +2394,7 @@ function Ace2Inner(){
     ]);
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
-
+  
   function toggleAttributeOnSelection(attributeName)
   {
     if (!(rep.selStart && rep.selEnd)) return;
@@ -2888,6 +2896,13 @@ function Ace2Inner(){
     //console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
   }
 
+/*
+ * DOM document manipulation functions
+ * This sections contains selection uniformisation across browsers, shortcut key
+ * handling data insertion.
+ * Note that the actual render code is in anothe file.
+ */
+
   function doCreateDomLine(nonEmpty)
   {
     if (browser.msie && (!nonEmpty))
@@ -2961,12 +2976,19 @@ function Ace2Inner(){
   }
 
   var _blockElems = {
+    //blocks and paragraphs
     "div": 1,
     "p": 1,
     "pre": 1,
+    //lists styles
     "li": 1,
     "ol": 1,
-    "ul": 1
+    "ul": 1,
+    //titling styles
+    "h1": 1,
+    "h2": 1,
+    "h3": 1,
+    "h4": 1,
   };
 
   function isBlockElement(n)
@@ -4993,6 +5015,14 @@ function Ace2Inner(){
     }
   }
 
+/*
+ * This section contains methods related to *line* types. Virtually, they are 
+ * applied to the first char of the line. This is a "*" but is never rendered.
+ * This trick saves us from the char position computation hassle.
+ * Originally, all this code was specialized in list handling. Later on titles
+ * support was added. There may remain some list specific stuffs in naming :)
+ */
+  
   function getLineListType(lineNum)
   {
     // get "list" attribute of first char of line
@@ -5148,8 +5178,21 @@ function Ace2Inner(){
     }
   }
 
-  function doInsertList(type)
+  //actual list insertion code written in common with all "paragraph" styles
+  //"type" => actual type 
+  //  -> indent (raw text indentation)
+  //  -> ordered
+  //  -> unordered
+  //  -> title
+  //"defaultLevel" => directly create at a given nesting level. This is especially 
+  //  usefull for titles wich can be created at arbitrary level (h1->hx) 
+  function doInsertList(type, defaultLevel)
   {
+    if(!defaultLevel)
+    {
+      defaultLevel = 1;
+    }
+    
     if (!(rep.selStart && rep.selEnd))
     {
       return;
@@ -5182,7 +5225,7 @@ function Ace2Inner(){
         level = Number(listType[2]);
       }
       var t = getLineListType(n);
-      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
+      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + defaultLevel)]);
     }
     setLineListTypes(mods);
   }
@@ -5193,8 +5236,18 @@ function Ace2Inner(){
   function doInsertOrderedList(){
     doInsertList('number');
   }
+  function doInsertTitle(level){
+    //check that the level value is legal
+    //we currently handle up to 4 levels (H4)
+    if(!level || level < 1)
+      level = 1
+    else if(level > 4)
+      level = 4
+    doInsertList('title', level);
+  }
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
   editorInfo.ace_doInsertOrderedList = doInsertOrderedList;
+  editorInfo.ace_doInsertTitle = doInsertTitle;
 
   var mozillaFakeArrows = (browser.mozilla && (function()
   {

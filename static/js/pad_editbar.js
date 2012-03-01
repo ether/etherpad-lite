@@ -156,7 +156,13 @@ var padeditbar = (function()
             }
             else if (cmd == "style")
             {
-              alert("TOTO");
+              var value = document.getElementById("style-select").value;
+              var style = /([a-z]+)-([12345678])/.exec(value);
+              if(style[0]=="title")
+              {
+                alert(style[1]);
+                ace.ace_doInsertTitle(Number(style[1]));
+              }
             }
             else if (cmd == 'clearauthorship')
             {
