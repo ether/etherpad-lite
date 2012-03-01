@@ -80,11 +80,12 @@ a img
   color: #ccc;
   cursor: pointer;
   display: inline-block;
-  height: 18px;
+  min-height: 18px;
   overflow: hidden;
   padding: 4px 5px;
+  text-align: center;
   text-decoration: none;
-  width: 18px;
+  min-width: 18px;
 }
 #editbar ul li a .buttonicon
 {
