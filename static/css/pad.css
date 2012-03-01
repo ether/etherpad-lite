@@ -61,13 +61,6 @@ a img
   width: 18px;
 }
 
-#editbar ul li a
-{
-  text-decoration: none;
-  color: #ccc;
-  position: absolute;
-}
-
 #editbar ul li:hover {
   background: #fff;
   background: linear-gradient(#f4f4f4, #e4e4e4);
@@ -88,7 +81,15 @@ a img
 }
 #editbar ul li a
 {
+  text-decoration: none;
+  color: #ccc;
   display: block;
+  text-align: center;
+}
+#editbar ul li a .buttonicon
+{
+  position: relative;
+  top: 1px;
 }
 
 #editbar ul
@@ -966,8 +967,7 @@ height:16px;
 background-image:url('../../static/img/etherpad_lite_icons.png');
 background-repeat: no-repeat;
 display: inline-block;
-margin-left: 1px;
-margin-top: 1px;
+vertical-align: middle;
 }
 .buttonicon-bold {
   background-position: 0px -116px;
@@ -1016,13 +1016,9 @@ margin-top: 1px;
 }
 .buttonicon-chat {
   background-position: 0px -102px;
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0 !important;
 }
 .buttonicon-showusers {
   background-position: 0px -183px;
-  display: inline-block;
 }
 
 #usericon
