@@ -157,10 +157,14 @@ var padeditbar = (function()
             else if (cmd == "style")
             {
               var value = document.getElementById("style-select").value;
-              var style = /([a-z]+)-([12345678])/.exec(value);
-              if(style[1]=="title")
+              var style = value.split('-');
+              if(style[0]=="title")
               {
-                ace.ace_doInsertTitle(Number(style[2]));
+                ace.ace_doInsertTitle(Number(style[1]));
+              }
+              else if(style[0]=="normal")
+              {
+                ace.ace_doRevertBlockStyle();
               }
             }
             else if (cmd == 'clearauthorship')

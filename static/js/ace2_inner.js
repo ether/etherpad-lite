@@ -5235,20 +5235,33 @@ function Ace2Inner(){
       //apply the list type. If a specific level is requested, force it
       if(requestLevel)
       {
-        if(type+level == type+requestLevel)
-        {
-          type = 'indent';
-          level = 0;
-        }
-        else
-        {
-          level = requestLevel;
-        }
-      }      
-      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
+        mods.push([n, type+requestLevel]);
+      }
+      else
+      {
+        mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
+      }
     }
     setLineListTypes(mods);
   }
+  
+  function doRevertBlockStyle(){
+    if (!(rep.selStart && rep.selEnd))
+    {
+      return;
+    }
+
+    var firstLine, lastLine;
+    firstLine = rep.selStart[0];
+    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
+    
+    var mods = [];
+    for (var n = firstLine; n <= lastLine; n++)
+    {
+      mods.push([n, '']);
+    }
+    setLineListTypes(mods);
+  }  
   
   function doInsertUnorderedList(){
     doInsertList('bullet');
@@ -5268,6 +5281,7 @@ function Ace2Inner(){
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
   editorInfo.ace_doInsertOrderedList = doInsertOrderedList;
   editorInfo.ace_doInsertTitle = doInsertTitle;
+  editorInfo.ace_doRevertBlockStyle = doRevertBlockStyle;
 
   var mozillaFakeArrows = (browser.mozilla && (function()
   {

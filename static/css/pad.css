@@ -58,7 +58,16 @@ a img
   margin-left: 2px;
   overflow: hidden;
   padding: 4px 5px;
+}
+
+#editbar ul li.button
+{
   width: 18px;
+}
+
+#editbar ul li.dropdown
+{
+  padding: 2px 0 8px;
 }
 
 #editbar ul li a
