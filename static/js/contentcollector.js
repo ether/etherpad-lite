@@ -74,11 +74,21 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     }
   };
 
+  //FIXME: duplicated with ace2_inner.js and lower in this file !
   var _blockElems = {
+    //blocks and paragraphs
     "div": 1,
     "p": 1,
     "pre": 1,
-    "li": 1
+    //lists styles
+    "li": 1,
+    "ol": 1,
+    "ul": 1,
+    //titling styles
+    "h1": 1,
+    "h2": 1,
+    "h3": 1,
+    "h4": 1,
   };
 
   function isBlockElement(n)
@@ -163,10 +173,22 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   var selection, startPoint, endPoint;
   var selStart = [-1, -1],
       selEnd = [-1, -1];
-  var blockElems = {
+      
+  //FIXME: duplicated with ace2_inner.js and even above !
+  var _blockElems = {
+    //blocks and paragraphs
     "div": 1,
     "p": 1,
-    "pre": 1
+    "pre": 1,
+    //lists styles
+    "li": 1,
+    "ol": 1,
+    "ul": 1,
+    //titling styles
+    "h1": 1,
+    "h2": 1,
+    "h3": 1,
+    "h4": 1,
   };
 
   function _isEmpty(node, state)

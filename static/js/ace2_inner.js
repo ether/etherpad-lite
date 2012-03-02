@@ -2975,6 +2975,7 @@ function Ace2Inner(){
     return str.replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        ');
   }
 
+  //FIXME: duplicated with contentcollector.js
   var _blockElems = {
     //blocks and paragraphs
     "div": 1,
@@ -5186,13 +5187,8 @@ function Ace2Inner(){
   //  -> title
   //"defaultLevel" => directly create at a given nesting level. This is especially 
   //  usefull for titles wich can be created at arbitrary level (h1->hx) 
-  function doInsertList(type, defaultLevel)
-  {
-    if(!defaultLevel)
-    {
-      defaultLevel = 1;
-    }
-    
+  function doInsertList(type, requestLevel)
+  {    
     if (!(rep.selStart && rep.selEnd))
     {
       return;
@@ -5202,30 +5198,56 @@ function Ace2Inner(){
     firstLine = rep.selStart[0];
     lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
 
-    var allLinesAreList = true;
-    for (var n = firstLine; n <= lastLine; n++)
+    var allLinesAreList = true && !requestLevel;
+    //if a specific level is requested, we do not care about the current status
+    if(!requestLevel)
     {
-      var listType = getLineListType(n);
-      if (!listType || listType.slice(0, type.length) != type)
+      for (var n = firstLine; n <= lastLine; n++)
       {
-        allLinesAreList = false;
-        break;
+        var listType = getLineListType(n);
+        if (!listType || listType.slice(0, type.length) != type)
+        {
+          allLinesAreList = false;
+          break;
+        }
       }
     }
-
+    
+    //compute the modification to apply for each single line in the selection
+    //we try to do only what is requested and as such to preserve the indentation
+    //level in case of list type transformation even if the list is composed of 
+    //several indentation levels
+    //In case a specific level is requested. Force it
+    //if all lines are already of this list type, we remove the list
+    //otherwise, we apply the new one
     var mods = [];
     for (var n = firstLine; n <= lastLine; n++)
     {
       var t = '';
       var level = 0;
       var listType = /([a-z]+)([12345678])/.exec(getLineListType(n));
-      if (listType)
+      if (listType)//already a list => read attributes
       {
         t = listType[1];
         level = Number(listType[2]);
       }
       var t = getLineListType(n);
-      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + defaultLevel)]);
+      //apply the list type. If a specific level is requested, force it
+      if(requestLevel)
+      {
+        if(type+level == type+requestLevel)
+        {
+          type = 'indent';
+          level = 0;
+        }
+        else
+        {
+          level = requestLevel;
+        }
+      }
+      
+      alert(allLinesAreList ? 'indent' + level : (t ? type + level : type + '1'));
+      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
     setLineListTypes(mods);
   }
