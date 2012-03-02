@@ -126,54 +126,9 @@ exports.minify = function(req, res, next)
   });
 }
 
-// find all includes in ace.js and embed them.
-function getAceFile(callback) {
-  fs.readFile(ROOT_DIR + 'js/ace.js', "utf8", function(err, data) {
-    if(ERR(err, callback)) return;
-
-    // Find all includes in ace.js and embed them
-    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\("[^"]*"\)/gi);
-    if (!settings.minify) {
-      founds = [];
-    }
-    // Always include the require kernel.
-    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
-
-    data += ';\n';
-    data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
-
-    // Request the contents of the included file on the server-side and write
-    // them into the file.
-    async.forEach(founds, function (item, callback) {
-      var filename = item.match(/"([^"]*)"/)[1];
-      var request = require('request');
-
-      var baseURI = 'http://localhost:' + settings.port
-
-      request(baseURI + path.normalize(path.join('/static/', filename)), function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-              + JSON.stringify(body || '') + ';\n';
-        } else {
-          // Silence?
-        }
-        callback();
-      });
-    }, function(error) {
-      callback(error, data);
-    });
-  });
-}
-
 // Check for the existance of the file and get the last modification date.
 function statFile(filename, callback) {
-  if (filename == 'js/ace.js') {
-    // Sometimes static assets are inlined into this file, so we have to stat
-    // everything.
-    lastModifiedDateOfEverything(function (error, date) {
-      callback(error, date, !error);
-    });
-  } else if (filename == 'js/require-kernel.js') {
+  if (filename == 'js/require-kernel.js') {
     callback(null, requireLastModified(), true);
   } else {
     fs.stat(ROOT_DIR + filename, function (error, stats) {
@@ -199,45 +154,6 @@ function statFile(filename, callback) {
       }
     });
   }
-}
-function lastModifiedDateOfEverything(callback) {
-  var folders2check = [ROOT_DIR + 'js/', ROOT_DIR + 'css/'];
-  var latestModification = 0;
-  //go trough this two folders
-  async.forEach(folders2check, function(path, callback)
-  {
-    //read the files in the folder
-    fs.readdir(path, function(err, files)
-    {
-      if(ERR(err, callback)) return;
-
-      //we wanna check the directory itself for changes too
-      files.push(".");
-
-      //go trough all files in this folder
-      async.forEach(files, function(filename, callback)
-      {
-        //get the stat data of this file
-        fs.stat(path + "/" + filename, function(err, stats)
-        {
-          if(ERR(err, callback)) return;
-
-          //get the modification time
-          var modificationTime = stats.mtime.getTime();
-
-          //compare the modification time to the highest found
-          if(modificationTime > latestModification)
-          {
-            latestModification = modificationTime;
-          }
-
-          callback();
-        });
-      }, callback);
-    });
-  }, function () {
-    callback(null, latestModification);
-  });
 }
 
 // This should be provided by the module, but until then, just use startup
@@ -272,9 +188,7 @@ function getFileCompressed(filename, contentType, callback) {
 }
 
 function getFile(filename, callback) {
-  if (filename == 'js/ace.js') {
-    getAceFile(callback);
-  } else if (filename == 'js/require-kernel.js') {
+  if (filename == 'js/require-kernel.js') {
     callback(undefined, requireDefinition());
   } else {
     fs.readFile(ROOT_DIR + filename, callback);
