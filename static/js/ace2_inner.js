@@ -5244,9 +5244,7 @@ function Ace2Inner(){
         {
           level = requestLevel;
         }
-      }
-      
-      alert(allLinesAreList ? 'indent' + level : (t ? type + level : type + '1'));
+      }      
       mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
     setLineListTypes(mods);
