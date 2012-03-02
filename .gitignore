@@ -10,4 +10,7 @@ var/dirty.db
 bin/convertSettings.json
 *~
 *.patch
+src/static/js/jquery.js
+src/static/js/prefixfree.js
+npm-debug.log
 *.DS_Store
