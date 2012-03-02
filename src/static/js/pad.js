@@ -146,6 +146,12 @@ function savePassword()
   document.location=document.location;
 }
 
+function ieTestXMLHTTP(){
+  // Test for IE known XML HTTP issue
+  if ($.browser.msie && !window.XMLHttpRequest){
+    $("#editorloadingbox").html("You do not have XML HTTP enabled in your browser. <a target='_blank' href='https://github.com/Pita/etherpad-lite/wiki/How-to-enable-native-XMLHTTP-support-in-IE'>Fix this issue</a>");
+  }
+}
 function handshake()
 {
   var loc = document.location;
@@ -158,7 +164,8 @@ function handshake()
   //connect
   socket = pad.socket = io.connect(url, {
     resource: resource,
-    'max reconnection attempts': 3
+    'max reconnection attempts': 3,
+    'sync disconnect on unload' : false
   });
 
   function sendClientReady(isReconnect)
@@ -216,15 +223,19 @@ function handshake()
     sendClientReady(true);
   });
   
-  socket.on('disconnect', function () {
-    function disconnectEvent()
-    {
-      pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
+  socket.on('disconnect', function (reason) {
+    if(reason == "booted"){
+      pad.collabClient.setChannelState("DISCONNECTED");
+    } else {
+      function disconnectEvent()
+      {
+        pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
+      }
+      
+      pad.collabClient.setChannelState("RECONNECTING");
+      
+      disconnectTimeout = setTimeout(disconnectEvent, 10000);
     }
-    
-    pad.collabClient.setChannelState("RECONNECTING");
-    
-    disconnectTimeout = setTimeout(disconnectEvent, 10000);
   });
 
   var receivedClientVars = false;
@@ -276,7 +287,7 @@ function handshake()
         pad.changeViewOption('showLineNumbers', false);
       }
 
-      // If the noColors value is set to true then we need to hide the backround colors on the ace spans
+      // If the noColors value is set to true then we need to hide the background colors on the ace spans
       if (settings.noColors == true)
       {
         pad.changeViewOption('noColors', true);
@@ -364,7 +375,6 @@ var pad = {
   {
     return clientVars.userIsGuest;
   },
-  //
   getUserId: function()
   {
     return pad.myUserInfo.userId;
@@ -384,15 +394,12 @@ var pad = {
 
     $(document).ready(function()
     {
+      // test for XML HTTP capabiites
+      ieTestXMLHTTP();
       // start the custom js
       if (typeof customStart == "function") customStart();
       getParams();
       handshake();
-    });
-
-    $(window).unload(function()
-    {
-      pad.dispose();
     });
   },
   _afterHandshake: function()
@@ -422,7 +429,7 @@ var pad = {
 
     // order of inits is important here:
     padcookie.init(clientVars.cookiePrefsToSet, this);
-  
+      
     $("#widthprefcheck").click(pad.toggleWidthPref);
     // $("#sidebarcheck").click(pad.togglewSidebar);
 
@@ -477,6 +484,13 @@ var pad = {
       {
         padeditor.ace.focus();
       }, 0);
+      if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
+        chat.stickToScreen(true); // stick it to the screen
+        $('#options-stickychat').prop("checked", true); // set the checkbox to on
+      }
+      if(padcookie.getPref("showAuthorshipColors") == false){
+	pad.changeViewOption('showAuthorColors', false);
+      }
     }
   },
   dispose: function()
@@ -741,6 +755,7 @@ var pad = {
 
     // pad.determineSidebarVisibility(isConnected && !isInitialConnect);
     pad.determineChatVisibility(isConnected && !isInitialConnect);
+    pad.determineAuthorshipColorsVisibility();
 
   },
 /*  determineSidebarVisibility: function(asNowConnectedFeedback)
@@ -768,6 +783,16 @@ var pad = {
     }
     else{
       $('#options-stickychat').prop("checked", false); // set the checkbox for off
+    }
+  },
+  determineAuthorshipColorsVisibility: function(){
+    var authColCookie = padcookie.getPref('showAuthorshipColors');
+    if (authColCookie){
+      pad.changeViewOption('showAuthorColors', true);
+      $('#options-colorscheck').prop("checked", true);
+    }
+    else {
+      $('#options-colorscheck').prop("checked", false);
     }
   },
   handleCollabAction: function(action)
@@ -972,3 +997,4 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
+

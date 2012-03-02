@@ -28,15 +28,12 @@
 
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var map = require('ep_etherpad-lite/static/js/ace2_common').map;
+var Ace2Common = require('ep_etherpad-lite/static/js/ace2_common');
+var map = Ace2Common.map;
+var noop = Ace2Common.noop;
+var identity = Ace2Common.identity;
 
 var domline = {};
-domline.noop = function()
-{};
-domline.identity = function(x)
-{
-  return x;
-};
 
 domline.addToLineClass = function(lineClass, cls)
 {
@@ -60,11 +57,11 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
 {
   var result = {
     node: null,
-    appendSpan: domline.noop,
-    prepareForAdd: domline.noop,
-    notifyAdded: domline.noop,
-    clearSpans: domline.noop,
-    finishUpdate: domline.noop,
+    appendSpan: noop,
+    prepareForAdd: noop,
+    notifyAdded: noop,
+    clearSpans: noop,
+    finishUpdate: noop,
     lineMarker: 0
   };
 
@@ -91,7 +88,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   {
     return domline.processSpaces(s, doesWrap);
   }
-  var identity = domline.identity;
+
   var perTextNodeProcess = (doesWrap ? identity : processSpaces);
   var perHtmlLineProcess = (doesWrap ? processSpaces : identity);
   var lineClass = 'ace-line';

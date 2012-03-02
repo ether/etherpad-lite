@@ -82,7 +82,7 @@ exports.doImport = function(req, res, padId)
     //this allows us to accept source code files like .c or .java
     function(callback)
     {
-      var fileEnding = srcFile.split(".")[1].toLowerCase();
+      var fileEnding = (srcFile.split(".")[1] || "").toLowerCase();
       var knownFileEndings = ["txt", "doc", "docx", "pdf", "odt", "html", "htm"];
       
       //find out if this is a known file ending
@@ -115,7 +115,15 @@ exports.doImport = function(req, res, padId)
     {
       var randNum = Math.floor(Math.random()*0xFFFFFFFF);
       destFile = tempDirectory + "eplite_import_" + randNum + ".txt";
-      abiword.convertFile(srcFile, destFile, "txt", callback);
+      abiword.convertFile(srcFile, destFile, "txt", function(err){
+        //catch convert errors
+        if(err){
+          console.warn("Converting Error:", err);
+          return callback("convertFailed");
+        } else {
+          callback();
+        }
+      });
     },
     
     //get the pad object
@@ -176,16 +184,18 @@ exports.doImport = function(req, res, padId)
     }
   ], function(err)
   {
-    //the upload failed, there is nothing we can do, send a 500
-    if(err == "uploadFailed")
+    var status = "ok";
+    
+    //check for known errors and replace the status
+    if(err == "uploadFailed" || err == "convertFailed")
     {
-      res.send(500);
-      return;
+      status = err;
+      err = null;
     }
 
     ERR(err);
   
     //close the connection
-    res.send("ok");
+    res.send("<script>document.domain = document.domain; var impexp = window.top.require('/pad_impexp').padimpexp.handleFrameCall('" + status + "'); </script>", 200);
   });
 }

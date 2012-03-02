@@ -5,100 +5,70 @@
 
         <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 
         <link href="../static/css/pad.css" rel="stylesheet">
         <link href="../static/custom/pad.css" rel="stylesheet">
         <style title="dynamicsyntax"></style>
 
+        <!-- head and body had been removed intentionally -->
+
         <div id="editbar">
             <ul id="menu_left">
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false" >
-                    <a title="Bold (ctrl-B)">
-                        <div class="buttonicon buttonicon-bold"></div>
-                    </a>
+                <li id="bold" onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false">
+                    <a class="buttonicon buttonicon-bold" title="Bold (ctrl-B)"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('italic'); return false;" >
-                    <a title="Italics (ctrl-I)">
-                        <div class="buttonicon buttonicon-italic"></div>
-                    </a>
+                <li id="italic" onClick="window.pad&amp;&amp;pad.editbarClick('italic'); return false;">
+                    <a class="buttonicon buttonicon-italic" title="Italics (ctrl-I)"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('underline');return false;" >
-                    <a title="Underline (ctrl-U)">
-                        <div class="buttonicon buttonicon-underline"></div>
-                    </a>
+                <li id="underline" onClick="window.pad&amp;&amp;pad.editbarClick('underline');return false;" >
+                    <a class="buttonicon buttonicon-underline" title="Underline (ctrl-U)"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('strikethrough');return false;" >
-                    <a title="Strikethrough">
-                        <div class="buttonicon buttonicon-strikethrough"></div>
-                    </a>
+                <li id="strikethrough" onClick="window.pad&amp;&amp;pad.editbarClick('strikethrough');return false;">
+                    <a class="buttonicon buttonicon-strikethrough" title="Strikethrough"></a>
                 </li>
                 <li class="separator"></li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('insertorderedlist');return false;" >
-                    <a title="Toggle Ordered List">
-                        <div class="buttonicon buttonicon-insertorderedlist"></div>
-                    </a>
+                <li id="oderedlist" onClick="window.pad&amp;&amp;pad.editbarClick('insertorderedlist');return false;">
+                    <a class="buttonicon buttonicon-insertorderedlist" title="Toggle Ordered List"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('insertunorderedlist');return false;" >
-                    <a title="Toggle Bullet List">
-                        <div class="buttonicon buttonicon-insertunorderedlist"></div>
-                    </a>
+                <li id="unoderedlist" onClick="window.pad&amp;&amp;pad.editbarClick('insertunorderedlist');return false;">
+                    <a class="buttonicon buttonicon-insertunorderedlist" title="Toggle Bullet List"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('indent');return false;" >
-                    <a title="Indent">
-                        <div class="buttonicon buttonicon-indent"></div>
-                    </a>
+                <li id="indent" onClick="window.pad&amp;&amp;pad.editbarClick('indent');return false;">
+                    <a class="buttonicon buttonicon-indent" title="Indent"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('outdent');return false;" >
-                    <a title="Unindent">
-                        <div class="buttonicon buttonicon-outdent"></div>
-                    </a>
+                <li id="outdent" onClick="window.pad&amp;&amp;pad.editbarClick('outdent');return false;">
+                    <a class="buttonicon buttonicon-outdent" title="Unindent"></a>
                 </li>
                 <li class="separator"></li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('undo');return false;" >
-                    <a title="Undo (ctrl-Z)">
-                        <div class="buttonicon buttonicon-undo"></div>
-                    </a>
+                <li id="undo" onClick="window.pad&amp;&amp;pad.editbarClick('undo');return false;">
+                    <a class="buttonicon buttonicon-undo" title="Undo (ctrl-Z)"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('redo');return false;" >
-                    <a title="Redo (ctrl-Y)">
-                        <div class="buttonicon buttonicon-redo"></div>
-                    </a>
+                <li id="redo" onClick="window.pad&amp;&amp;pad.editbarClick('redo');return false;">
+                    <a class="buttonicon buttonicon-redo" title="Redo (ctrl-Y)"></a>
                 </li>
                 <li class="separator"></li>
-                <li id="clearAuthorship" onClick="window.pad&amp;&amp;pad.editbarClick('clearauthorship');return false;" >
-                    <a title="Clear Authorship Colors">
-                        <div class="buttonicon buttonicon-clearauthorship"></div>
-                    </a>
+                <li id="clearAuthorship" onClick="window.pad&amp;&amp;pad.editbarClick('clearauthorship');return false;">
+                    <a class="buttonicon buttonicon-clearauthorship" title="Clear Authorship Colors"></a>
                 </li>
             </ul>    
             <ul id="menu_right">
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;">
-                    <a id="settingslink" title="Settings of this pad">
-                        <div class="buttonicon buttonicon-settings"></div>
-                    </a>
+                <li id="settingslink" onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;">
+                    <a class="buttonicon buttonicon-settings" id="settingslink" title="Settings of this pad"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('import_export');return false;">
-                    <a id="exportlink" title="Import/Export from/to different document formats">
-                        <div class="buttonicon buttonicon-import_export"></div>
-                    </a>
+                <li id="importexportlink" onClick="window.pad&amp;&amp;pad.editbarClick('import_export');return false;">
+                    <a class="buttonicon buttonicon-import_export" id="exportlink" title="Import/Export from/to different document formats"></a>
                 </li>
-                <li onClick="window.pad&amp;&amp;pad.editbarClick('embed');return false;" >
-                    <a id="embedlink" title="Share and Embed this pad">
-                        <div class="buttonicon buttonicon-embed"></div>
-                    </a>
+                <li id="embedlink" onClick="window.pad&amp;&amp;pad.editbarClick('embed');return false;" >
+                    <a class="buttonicon buttonicon-embed" id="embedlink" title="Share and Embed this pad"></a>
                 </li>
                 <li class="separator"></li>
                 <li id="timesliderlink" onClick="document.location = document.location.pathname+ '/timeslider'">
-                    <a title="Show the history of this pad">
-                        <div class="buttonicon buttonicon-history"></div>
-                    </a>
+                    <a class="buttonicon buttonicon-history" title="Show the history of this pad"></a>
                 </li>
-                <li id="usericon" onClick="window.pad&amp;&amp;pad.editbarClick('showusers');return false;" >
-                    <a title="Show connected users">
-                        <div class="buttonicon buttonicon-showusers" id="usericonback"></div>
-                        <span id="online_count">1</span>
-                    </a>
+                <li id="usericon" onClick="window.pad&amp;&amp;pad.editbarClick('showusers');return false;" title="Show connected users">
+                    <span class="buttonicon buttonicon-showusers" id="usericonback"></span>
+                    <span id="online_count">1</span>
                 </li>
             </ul>
         </div>
@@ -133,14 +103,14 @@
 
         <div id="settingsmenu" class="popup">
             <h1>Pad settings</h1>
-            <div class="left_popup">
+            <div class="column">
                 <h2>My view</h2>
                 <p>
                     <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
                     <label for="options-stickychat">Chat always on screen</label>
                 </p>
                 <p>
-                    <input type="checkbox" id="options-colorscheck" checked>
+                    <input type="checkbox" id="options-colorscheck">
                     <label for="options-colorscheck">Authorship colors</label>
                 </p>
                 <p>
@@ -155,7 +125,7 @@
                     </select>
                 </p>
             </div>
-            <div class="right_popup">
+            <div class="column">
                 <h2>Global view</h2>
                 <p>Currently nothing.</p>
                 <p class="note">These options affect everyone viewing this pad.</p>
@@ -163,7 +133,7 @@
         </div>
 
         <div id="importexport" class="popup">
-            <div class="left_popup">
+            <div class="column">
                 <h2>Import from text file, HTML, PDF, Word, ODT or RTF</h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
                     <div class="importformdiv" id="importformfilediv"> 
@@ -182,7 +152,7 @@
                     </div> 
                 </form>
             </div>
-            <div class="right_popup">
+            <div class="column">
                 <h2>Export current pad as</h2>
                 <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
                 <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
@@ -218,11 +188,9 @@
 
         <div id="chatthrob"></div>
 
-        <div id="chaticon">
-            <a onClick="chat.show();return false;" title="Open the chat for this pad">
-                <span id="chatlabel">Chat</span>
-                <div class="buttonicon buttonicon-chat"></div>
-            </a>
+        <div id="chaticon" title="Open the chat for this pad" onclick="chat.show();return false;">
+            <span id="chatlabel">Chat</span>
+            <span class="buttonicon buttonicon-chat"></span>
             <span id="chatcounter">0</span>
         </div>
 
@@ -292,7 +260,7 @@
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
         <script type="text/javascript" src="../static/js/jquery.js"></script>
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="../minified/pad.js"></script>
+        <script type="text/javascript" src="../minified/pad.js?callback=require.define"></script>
         <script type="text/javascript">
             var clientVars = {};
             (function () {

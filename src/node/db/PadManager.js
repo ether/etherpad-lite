@@ -43,7 +43,8 @@ var globalPads = {
  * time, and allow us to "play back" these changes so legacy padIds can be found.
  */
 var padIdTransforms = [
-  [/\s+/g, '_']
+  [/\s+/g, '_'],
+  [/:+/g, '_']
 ];
 
 /**
@@ -114,7 +115,7 @@ exports.doesPadExists = function(padId, callback)
   db.get("pad:"+padId, function(err, value)
   {
     if(ERR(err, callback)) return;
-    callback(null, value != null);  
+    callback(null, value != null && value.atext);  
   });
 }
 

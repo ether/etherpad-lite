@@ -141,6 +141,9 @@ function htmlPrettyEscape(str)
   return Security.escapeHTML(str).replace(/\r?\n/g, '\\n');
 }
 
+var noop = function(){};
+var identity = function(x){return x};
+
 exports.isNodeText = isNodeText;
 exports.object = object;
 exports.extend = extend;
@@ -155,3 +158,5 @@ exports.binarySearch = binarySearch;
 exports.binarySearchInfinite = binarySearchInfinite;
 exports.htmlPrettyEscape = htmlPrettyEscape;
 exports.map = map;
+exports.noop = noop;
+exports.identity = identity;

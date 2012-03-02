@@ -122,5 +122,9 @@ contribute to Etherpad Lite.
 * [channels](https://github.com/Pita/channels) "Event channels in node.js" - ensures that ueberDB operations are atomic and in series for each key
 * [async-stacktrace](https://github.com/Pita/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
 
+# Donations
+* [Etherpad Foundation Flattr] (http://flattr.com/thing/71378/Etherpad-Foundation)
+* [Paypal] (http://etherpad.org) <-- Click the donate button
+
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
