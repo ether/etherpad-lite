@@ -493,7 +493,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             cc.doAttrib(state, "strikethrough");
           }
-          if (tname == "ul" || tname == "ol")
+          if (tname == "ul" || tname == "ol" || tname == "h1" || tname == "h2" || tname == "h3" || tname == "h4")
           {
             var type;
             var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);

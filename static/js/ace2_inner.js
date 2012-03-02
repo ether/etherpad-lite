@@ -3367,7 +3367,12 @@ function Ace2Inner(){
       var level = Number(listType[2]);
       
       //detect empty list item; exclude indentation
-      if(text === '*' && type !== "indent")
+      if(type == "title")
+      {
+        performDocumentReplaceSelection('\n');
+        setLineListType(lineNum + 1, '');//remove the list
+      }
+      else if(text === '*' && type !== "indent")
       {
         //if not already on the highest level
         if(level > 1)
