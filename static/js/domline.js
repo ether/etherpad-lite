@@ -115,7 +115,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
           else if(details[1] == "title")
           {
             markup = 'h'+Number(details[2]);
-            preHtml = '<'+markup+' class="list-' + Security.escapeHTMLAttribute(listType) +' >';
+            preHtml = '<'+markup+' class="list-' + Security.escapeHTMLAttribute(listType) +'" >';
             postHtml = '</'+markup+'>';
           }
           //handle bullet lists and indentations

@@ -156,7 +156,8 @@ var padeditbar = (function()
             }
             else if (cmd == "style")
             {
-              var value = document.getElementById("style-select").value;
+              dropdown = document.getElementById("style-select");
+              var value = dropdown.value;
               var style = value.split('-');
               if(style[0]=="title")
               {
@@ -166,6 +167,7 @@ var padeditbar = (function()
               {
                 ace.ace_doRevertBlockStyle();
               }
+              dropdown.selectedIndex = 0;
             }
             else if (cmd == 'clearauthorship')
             {
