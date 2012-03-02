@@ -457,6 +457,10 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       }
       else if (!isEmpty)
       {
+        //It is interesting to notice that the rendering code of this part relies
+        //on the attributes stored in the "class" attribute of the DOM element.
+        //It means that whenever one wants to create a new attribute, he will
+        //need to put it as a class !
         var styl = dom.nodeAttr(node, "style");
         var cls = dom.nodeProp(node, "className");
 

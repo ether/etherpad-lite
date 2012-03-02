@@ -5267,7 +5267,6 @@ function Ace2Inner(){
     }
     setLineListTypes(mods);
   }  
-  
   function doInsertUnorderedList(){
     doInsertList('bullet');
   }
