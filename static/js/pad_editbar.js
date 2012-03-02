@@ -100,11 +100,9 @@ var padeditbar = (function()
       var self = this;
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
-      $("#editbar [data-key]").each(function (i, e) {
-        $(e).click(function (event) {
-          self.toolbarClick($(e).attr('data-key'));
-          event.preventDefault();
-        });
+      $("#editbar").delegate('[data-key] > button', 'click', function (event) {
+        self.toolbarClick(($(event.currentTarget).parent()).attr('data-key'));
+        event.preventDefault();
       });
     },
     isEnabled: function()
