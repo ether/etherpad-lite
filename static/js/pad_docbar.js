@@ -446,6 +446,11 @@ var paddocbar = (function()
       enabled = false;
       self.render();
     },
+    enable: function()
+    {
+      enabled = true;
+      self.render();
+    },
     handleResizePage: function()
     {
       // Side-step circular reference. This should be injected.

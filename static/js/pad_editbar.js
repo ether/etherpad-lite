@@ -109,6 +109,10 @@ var padeditbar = (function()
     {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
     },
+    enable: function()
+    {
+      $("#editbar").removeClass('disabledtoolbar').addClass("enabledtoolbar");
+    },
     toolbarClick: function(cmd)
     {  
       if (self.isEnabled())

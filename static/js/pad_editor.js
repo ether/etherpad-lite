@@ -151,6 +151,14 @@ var padeditor = (function()
         self.ace.setEditable(false);
       }
     },
+    enable: function()
+    {
+      if (self.ace)
+      {
+        self.ace.setProperty("grayedOut", false);
+        self.ace.setEditable(true);
+      }
+    },
     restoreRevisionText: function(dataFromServer)
     {
       pad.addHistoricalAuthors(dataFromServer.historicalAuthorData);
