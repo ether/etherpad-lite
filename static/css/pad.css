@@ -35,15 +35,35 @@ a img
 
 }
 
+#editbar-RO
+{
+  display: none;
+}
+
+.disabledtoolbar #editbar-RO
+{
+  display: block;
+  background-color: black;
+  opacity: 0.2;
+  z-index: 2000;
+}
+
+#editbar-RO,
+#editbar
+{
+  height: 32px;
+  overflow: hidden;
+  padding-top: 3px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+
 #editbar
 {
   background: #f7f7f7;
   background: linear-gradient(#f7f7f7, #f1f1f1 80%);
   border-bottom: 1px solid #ccc;
-  height: 32px;
-  overflow: hidden;
-  padding-top: 3px;
-  width: 100%;
 }
 
 #editbar ul li 
