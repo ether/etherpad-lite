@@ -35,7 +35,7 @@ a img
 
 }
 
-#editbar 
+#editbar
 {
   background: #f7f7f7;
   background: linear-gradient(#f7f7f7, #f1f1f1 80%);
@@ -136,8 +136,19 @@ a img
   margin: 0; 
 }
 
-#editorloadingbox { padding-top: 100px; padding-bottom: 100px; font-size: 2.5em;  color: #aaa;
-   text-align: center; position: absolute; width: 100%; height: 30px; z-index: 100; }
+#editorloadingbox { 
+  padding-top: 100px; 
+  padding-bottom: 100px; 
+  font-size: 2.5em;  
+  color: #aaa;
+  text-align: center; 
+  position: absolute; 
+  width: 100%; 
+  height: 30px; 
+  z-index: 100; 
+  
+  background: url(../../static/img/connectingbar.gif) no-repeat center 130px;
+}
 
 #editorcontainerbox{
   position:absolute;
@@ -451,11 +462,12 @@ table#otheruserstable { display: none; }
   border-right: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6;
 }
 .usertdname input.editempty { color: #888; font-style: italic;}
-  
+
 .modaldialog.cboxreconnecting .modaldialog-inner,
 .modaldialog.cboxconnecting .modaldialog-inner {
-  background: url(../../static/img/connectingbar.gif) no-repeat center 60px;
-  height: 100px;
+  background: url("../../static/img/connectingbar.gif") no-repeat scroll center bottom transparent;
+  margin-bottom: 8px;
+  padding: 4px 0 20px;
 }
 .modaldialog.cboxreconnecting, 
 .modaldialog.cboxconnecting,
@@ -488,20 +500,24 @@ table#otheruserstable { display: none; }
   z-index: 11;
 }
 #connectionboxinner .connecting {
-  margin-top: 20px;
+  /*margin-top: 20px;*/
   font-size: 2.0em; color: #555;
   text-align: center; display: none;
 }
 .cboxconnecting #connectionboxinner .connecting { display: block; }
 
+#connectionboxinner .disconnected{
+  margin: 10px;  
+}
+
 #connectionboxinner .disconnected h2 {
   font-size: 1.8em; color: #333;
   text-align: left;
-  margin-top: 10px; margin-left: 10px; margin-right: 10px;
+  /*margin-top: 10px; margin-left: 10px; margin-right: 10px;*/
   margin-bottom: 10px;
 }
 #connectionboxinner .disconnected p {
-  margin: 10px 10px;
+  margin: 10px 0;
   font-size: 1.2em;
   line-height: 1.1;
   color: #333;
@@ -510,7 +526,7 @@ table#otheruserstable { display: none; }
 .cboxdisconnected #connectionboxinner .disconnected { display: block; }
 
 #connectionboxinner .reconnecting {
-  margin-top: 20px;
+  /*margin-top: 20px;*/
   font-size: 1.6em; color: #555;
   text-align: center; display: none;
 }
@@ -569,7 +585,7 @@ table#otheruserstable { display: none; }
 
 .modaldialog {
   position: absolute;
-  top: 100px;
+  top: 35px;
   left:50%;
   margin-left:-243px;
   width: 485px;
@@ -580,7 +596,7 @@ table#otheruserstable { display: none; }
   background: white;
  border: 1px solid #999;
 }
-.modaldialog .modaldialog-inner { padding: 10pt; }
+/*.modaldialog .modaldialog-inner { padding: 10pt; }*/
 .modaldialog .modaldialog-hide {
   float: right;
   background-repeat: no-repeat;
@@ -661,19 +677,19 @@ table#otheruserstable { display: none; }
   top: 5px; right: 220px;
 }
 
-#modaloverlay {
+/*#modaloverlay {
   z-index: 500; display: none;
   background-repeat: repeat-both;
   width: 100%; position: absolute;
   height: 100%; left: 0; top: 0;
 }
 
-* html #modaloverlay { /* for IE 6+ */
-  opacity: 1; /* in case this is looked at */
+* html #modaloverlay { /* for IE 6+ *//*
+  opacity: 1; /* in case this is looked at *//*
   background-image: none;
   background-repeat: no-repeat;
-  /* scale the image */
-}
+  /* scale the image *//*
+}*/
 
 a#topbarmaximize {
  float: right;
@@ -1162,7 +1178,7 @@ input[type=checkbox] {
  width: 185px !important;
 }
 
-@media screen and (max-width: 960px) {
+/*@media screen and (max-width: 960px) {
   .modaldialog {
     position: relative;
     margin: 0 auto;
@@ -1170,7 +1186,7 @@ input[type=checkbox] {
     top: 40px;
     left: 0;
   }
-}
+}*/
 
 @media screen and (max-width: 600px) {
   #editbar ul li {

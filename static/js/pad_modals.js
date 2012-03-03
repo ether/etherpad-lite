@@ -190,13 +190,13 @@ var padmodals = (function()
       {
         'opacity': 1
       }, duration);
-      $("#modaloverlay").show().css(
+      /*$("#modaloverlay").show().css(
       {
         'opacity': 0
       }).animate(
       {
         'opacity': 1
-      }, duration);
+      }, duration);*/
     },
     hideModal: function(duration)
     {
@@ -208,15 +208,15 @@ var padmodals = (function()
         'opacity': 0
       }, duration, function()
       {
-        $("#modaloverlay").hide();
+        //$("#modaloverlay").hide();
       });
-      $("#modaloverlay").animate(
+      /*$("#modaloverlay").animate(
       {
         'opacity': 0
       }, duration, function()
       {
         $("#modaloverlay").hide();
-      });
+      });*/
     },
     hideFeedbackLaterIfNoOtherInteraction: function()
     {
