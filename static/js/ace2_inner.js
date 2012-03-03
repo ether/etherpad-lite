@@ -3424,6 +3424,8 @@ function Ace2Inner(){
         if (listType)
         {
           t = listType[1];
+          if(t=="title")
+            continue;//hackish but prevent tab from working on headings
           level = Number(listType[2]);
         }
       }
