@@ -520,7 +520,6 @@ table#otheruserstable { display: none; }
   z-index: 11;
 }
 #connectionboxinner .connecting {
-  /*margin-top: 20px;*/
   font-size: 2.0em; color: #555;
   text-align: center; display: none;
 }
@@ -533,7 +532,6 @@ table#otheruserstable { display: none; }
 #connectionboxinner .disconnected h2 {
   font-size: 1.8em; color: #333;
   text-align: left;
-  /*margin-top: 10px; margin-left: 10px; margin-right: 10px;*/
   margin-bottom: 10px;
 }
 #connectionboxinner .disconnected p {
@@ -546,7 +544,6 @@ table#otheruserstable { display: none; }
 .cboxdisconnected #connectionboxinner .disconnected { display: block; }
 
 #connectionboxinner .reconnecting {
-  /*margin-top: 20px;*/
   font-size: 1.6em; color: #555;
   text-align: center; display: none;
 }
@@ -616,7 +613,6 @@ table#otheruserstable { display: none; }
   background: white;
  border: 1px solid #999;
 }
-/*.modaldialog .modaldialog-inner { padding: 10pt; }*/
 .modaldialog .modaldialog-hide {
   float: right;
   background-repeat: no-repeat;
@@ -696,20 +692,6 @@ table#otheruserstable { display: none; }
   background: url(static/img/bottomareagfx.gif);
   top: 5px; right: 220px;
 }
-
-/*#modaloverlay {
-  z-index: 500; display: none;
-  background-repeat: repeat-both;
-  width: 100%; position: absolute;
-  height: 100%; left: 0; top: 0;
-}
-
-* html #modaloverlay { /* for IE 6+ *//*
-  opacity: 1; /* in case this is looked at *//*
-  background-image: none;
-  background-repeat: no-repeat;
-  /* scale the image *//*
-}*/
 
 a#topbarmaximize {
  float: right;
@@ -1197,16 +1179,6 @@ input[type=checkbox] {
  border-left: 1px solid #ccc !important;
  width: 185px !important;
 }
-
-/*@media screen and (max-width: 960px) {
-  .modaldialog {
-    position: relative;
-    margin: 0 auto;
-    width: 80%;
-    top: 40px;
-    left: 0;
-  }
-}*/
 
 @media screen and (max-width: 600px) {
   #editbar ul li {
