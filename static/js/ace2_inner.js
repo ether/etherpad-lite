@@ -2975,7 +2975,7 @@ function Ace2Inner(){
     return str.replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        ');
   }
 
-  //FIXME: duplicated with contentcollector.js
+  //FIXME: duplicated with contentcollector.js ?
   var _blockElems = {
     //blocks and paragraphs
     "div": 1,
@@ -2986,6 +2986,8 @@ function Ace2Inner(){
     "ol": 1,
     "ul": 1,
     //titling styles
+    //fixme: they are blocks in this file but *not* in contentcollector.js
+    // => there times were I really feal like a hacker :s
     "h1": 1,
     "h2": 1,
     "h3": 1,

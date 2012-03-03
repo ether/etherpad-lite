@@ -85,10 +85,12 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     "ol": 1,
     "ul": 1,
     //titling styles
-    "h1": 1,
-    "h2": 1,
-    "h3": 1,
-    "h4": 1,
+    //fixme: they actually *are* blocks but handling them as blocks breaks Drag&Drop
+    // => what is the real meaning of this structure ???
+    //"h1": 1,
+    //"h2": 1,
+    //"h3": 1,
+    //"h4": 1,
   };
 
   function isBlockElement(n)
@@ -185,10 +187,10 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     "ol": 1,
     "ul": 1,
     //titling styles
-    "h1": 1,
-    "h2": 1,
-    "h3": 1,
-    "h4": 1,
+    //"h1": 1,
+    //"h2": 1,
+    //"h3": 1,
+    //"h4": 1,
   };
 
   function _isEmpty(node, state)
