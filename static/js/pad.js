@@ -702,6 +702,11 @@ var pad = {
     else if (newState == "RECONNECTING")
     {
       padconnectionstatus.reconnecting();
+      
+      padeditor.disable();
+      padeditbar.disable();
+      paddocbar.disable();
+      padimpexp.disable();
     }
     else if (newState == "DISCONNECTED")
     {
