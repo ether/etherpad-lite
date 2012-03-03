@@ -533,7 +533,7 @@ table#otheruserstable { display: none; }
   margin-bottom: 10px;
 }
 #connectionboxinner .disconnected p {
-  margin: 10px 10px;
+  margin: 10px 0;
   font-size: 1.2em;
   line-height: 1.1;
   color: #333;

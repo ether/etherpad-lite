@@ -203,8 +203,13 @@ function handshake()
       msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
       msg.reconnect=true;
     }
-    
+    console.log("sending CLIENT_READY =>");
+    console.log(msg);
     socket.json.send(msg);
+    if(isReconnect == true)
+    {
+      pad.collabClient.processDisconnectedMessages();
+    }
   };
 
   var disconnectTimeout;
@@ -219,9 +224,8 @@ function handshake()
     {
       clearTimeout(disconnectTimeout);
     }
-
-    pad.collabClient.setChannelState("CONNECTED");
     sendClientReady(true);
+    pad.collabClient.setChannelState("CONNECTED");
   });
   
   socket.on('disconnect', function (reason) {
@@ -703,10 +707,10 @@ var pad = {
     {
       padconnectionstatus.reconnecting();
       
-      padeditor.disable();
+      /*padeditor.disable();
       padeditbar.disable();
       paddocbar.disable();
-      padimpexp.disable();
+      padimpexp.disable();*/
     }
     else if (newState == "DISCONNECTED")
     {

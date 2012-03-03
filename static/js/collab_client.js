@@ -277,9 +277,38 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       setChannelState("CONNECTED");
     }
   }
-
+  
+  var disconnectedMessages = [];
+  
+  function processDisconnectedMessages()
+  {
+    //assume that it is connected
+    var len = disconnectedMessages.length;
+    while(disconnectedMessages.length)
+    {
+      var msg = disconnectedMessages.shift();//remove from the array
+      _sendMessage(msg);//process.
+    }
+  }
+  
   function sendMessage(msg)
   {
+  
+    if(channelState != "CONNECTED")
+    {
+      console.log("Channel is not connected WAITING");
+      disconnectedMessages.push(msg);
+      return;
+    }
+    
+    _sendMessage(msg);
+  }
+  
+  function _sendMessage(msg)
+  {
+    console.log("sending msg =>");
+    console.log(msg);
+    
     getSocket().json.send(
     {
       type: "COLLABROOM",
@@ -287,7 +316,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       data: msg
     });
   }
-
+  
   function wrapRecordingErrors(catcher, func)
   {
     return function()
@@ -671,7 +700,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     getMissedChanges: getMissedChanges,
     callWhenNotCommitting: callWhenNotCommitting,
     addHistoricalAuthors: tellAceAboutHistoricalAuthors,
-    setChannelState: setChannelState
+    setChannelState: setChannelState,
+    processDisconnectedMessages: processDisconnectedMessages
   };
 
   $(document).ready(setUpSocket);
