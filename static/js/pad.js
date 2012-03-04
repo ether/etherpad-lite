@@ -206,10 +206,6 @@ function handshake()
     console.log("sending CLIENT_READY =>");
     console.log(msg);
     socket.json.send(msg);
-    if(isReconnect == true)
-    {
-      pad.collabClient.processDisconnectedMessages();
-    }
   };
 
   var disconnectTimeout;
@@ -707,10 +703,10 @@ var pad = {
     {
       padconnectionstatus.reconnecting();
       
-      /*padeditor.disable();
+      padeditor.disable();
       padeditbar.disable();
       paddocbar.disable();
-      padimpexp.disable();*/
+      padimpexp.disable();
     }
     else if (newState == "DISCONNECTED")
     {
