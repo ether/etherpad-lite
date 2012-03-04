@@ -55,7 +55,7 @@ CachingMiddleware.prototype = new function () {
       var modifiedSince = (req.headers['if-modified-since']
           && new Date(req.headers['if-modified-since']));
       var lastModifiedCache = !error && stats.mtime;
-      if (lastModifiedCache) {
+      if (lastModifiedCache && responseCache[cacheKey]) {
         req.headers['if-modified-since'] = lastModifiedCache.toUTCString();
       } else {
         delete req.headers['if-modified-since'];
