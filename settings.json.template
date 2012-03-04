@@ -13,7 +13,7 @@
   "dbType" : "dirty",
   //the database specific settings
   "dbSettings" : {
-                   "filename" : "../var/dirty.db"
+                   "filename" : "var/dirty.db"
                  },
                  
   /* An Example of MySQL Configuration
