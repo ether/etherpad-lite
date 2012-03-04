@@ -78,7 +78,6 @@ async.waterfall([
   {
     //create server
     var app = express.createServer();
-    hooks.callAll("expressCreateServer", {"app": app});
 
     app.use(function (req, res, next) {
       res.header("Server", serverName);
@@ -86,6 +85,8 @@ async.waterfall([
     });
     
     app.configure(function() { hooks.callAll("expressConfigure", {"app": app}); });
+    
+    hooks.callAll("expressCreateServer", {"app": app});
     
     //let the server listen
     app.listen(settings.port, settings.ip);
