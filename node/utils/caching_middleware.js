@@ -83,7 +83,7 @@ CachingMiddleware.prototype = new function () {
             && new Date(res.getHeader('last-modified')));
 
         res.writeHead = old_res.writeHead;
-        if (status == 200 || status == 404) {
+        if (status == 200) {
           // Update cache
           var buffer = '';
 
