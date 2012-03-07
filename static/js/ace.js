@@ -28,7 +28,7 @@ Ace2Editor.registry = {
   nextId: 1
 };
 
-var plugins = require('/plugins').plugins;
+var plugins = require('./plugins').plugins;
 
 function Ace2Editor()
 {

@@ -26,9 +26,9 @@
 // requires: plugins
 // requires: undefined
 
-var Security = require('/security');
-var Ace2Common = require('/ace2_common');
-var plugins = require('/plugins').plugins;
+var Security = require('./security');
+var Ace2Common = require('./ace2_common');
+var plugins = require('./plugins').plugins;
 var map = Ace2Common.map;
 var noop = Ace2Common.noop;
 var identity = Ace2Common.identity;

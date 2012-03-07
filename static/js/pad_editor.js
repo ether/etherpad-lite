@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-var padcookie = require('/pad_cookie').padcookie;
-var padutils = require('/pad_utils').padutils;
+var padcookie = require('./pad_cookie').padcookie;
+var padutils = require('./pad_utils').padutils;
 
 var padeditor = (function()
 {
@@ -34,7 +34,7 @@ var padeditor = (function()
     viewZoom: 100,
     init: function(readyFunc, initialViewOptions, _pad)
     {
-      Ace2Editor = require('/ace').Ace2Editor;
+      Ace2Editor = require('./ace').Ace2Editor;
       pad = _pad;
       settings = pad.settings;
 
