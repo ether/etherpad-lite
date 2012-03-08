@@ -23,7 +23,7 @@ var zlib = require('zlib');
 var util = require('util');
 var settings = require('./Settings');
 
-var CACHE_DIR = path.join(settings.root, 'var');
+var CACHE_DIR = path.join(settings.root, 'var/');
 
 var responseCache = {};
 
