@@ -21,9 +21,9 @@ var path = require('path');
 var server = require('../server');
 var zlib = require('zlib');
 var util = require('util');
+var settings = require('./Settings');
 
-var ROOT_DIR = path.normalize(__dirname + "/../");
-var CACHE_DIR = ROOT_DIR + '../var/';
+var CACHE_DIR = path.join(settings.root, 'var');
 
 var responseCache = {};
 
