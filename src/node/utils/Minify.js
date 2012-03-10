@@ -27,6 +27,7 @@ var cleanCSS = require('clean-css');
 var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var RequireKernel = require('require-kernel');
 var server = require('../server');
 
@@ -61,6 +62,22 @@ exports.minify = function(req, res, next)
     res.writeHead(404, {});
     res.end();
     return; 
+  }
+
+  /* Handle static files for plugins:
+     paths like "plugins/ep_myplugin/static/js/test.js"
+     are rewritten into ROOT_PATH_OF_MYPLUGIN/static/js/test.js,
+     commonly ETHERPAD_ROOT/node_modules/ep_myplugin/static/js/test.js
+  */
+  var match = filename.match(/^plugins\/([^\/]+)\/static\/(.*)/);
+  if (match) {
+    var pluginName = match[1];
+    var resourcePath = match[2];
+    var plugin = plugins.plugins[pluginName];
+    if (plugin) {
+      var pluginPath = plugin.package.realPath;
+      filename = path.relative(ROOT_DIR, pluginPath + '/static/' + resourcePath);
+    }
   }
 
   // What content type should this be?
