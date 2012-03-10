@@ -271,13 +271,13 @@
               var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
 	      plugins.update(function () {
 		require('ep_etherpad-lite/static/js/pad').init();
-
-		/* TODO: These globals shouldn't exist. */
-		pad = require('ep_etherpad-lite/static/js/pad').pad;
-		chat = require('ep_etherpad-lite/static/js/chat').chat;
-		padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-		padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
 	      });
+
+              /* TODO: These globals shouldn't exist. */
+              pad = require('ep_etherpad-lite/static/js/pad').pad;
+              chat = require('ep_etherpad-lite/static/js/chat').chat;
+              padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+              padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
             }());
         </script>
         
