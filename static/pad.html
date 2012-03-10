@@ -259,12 +259,13 @@
 
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="../minified/pad.js?callback=require.define"></script>
+        <script type="text/javascript" src="../javascripts/src/pad.js?callback=require.define"></script>
         <script type="text/javascript" src="../static/custom/pad.js"></script>
         <script type="text/javascript">
             var clientVars = {};
             (function () {
-              require.setRootURI("../minified/");
+              require.setRootURI("../javascripts/src/");
+              require.setLibraryURI("../javascripts/lib/");
               require.setGlobalKeyPath("require");
               require('/pad').init();
 

@@ -156,7 +156,11 @@ function Ace2Editor()
   }
   function pushRequireScriptTo(buffer) {
     var KERNEL_SOURCE = '../static/js/require-kernel.js';
-    var KERNEL_BOOT = 'require.setRootURI("../minified/");\nrequire.setGlobalKeyPath("require");'
+    var KERNEL_BOOT = '\
+require.setRootURI("../javascripts/src");\n\
+require.setLibraryURI("../javascripts/lib");\n\
+require.setGlobalKeyPath("require");\n\
+';
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
@@ -166,8 +170,8 @@ function Ace2Editor()
   }
   function pushScriptsTo(buffer) {
     /* Folling is for packaging regular expression. */
-    /* $$INCLUDE_JS("../minified/ace2_inner.js?callback=require.define"); */
-    var ACE_SOURCE = '../minified/ace2_inner.js?callback=require.define';
+    /* $$INCLUDE_JS("../javascripts/src/ace2_inner.js?callback=require.define"); */
+    var ACE_SOURCE = '../javascripts/src/ace2_inner.js?callback=require.define';
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[ACE_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
