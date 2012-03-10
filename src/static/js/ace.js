@@ -176,10 +176,6 @@ function Ace2Editor()
     } else {
       file = ACE_SOURCE;
       file = file.replace(/^\.\.\/static\/js\//, '../minified/');
-      buffer.push('<script type="text/javascript" src="../static/js/require-kernel.js"><\/script>');
-      buffer.push('<script type="text/javascript">');
-      buffer.push('require.setRootURI("../minified/"); require.setLibraryURI("../minified/plugins/"); require.setGlobalKeyPath("require");');
-      buffer.push('<\/script>');
       buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
       buffer.push('<script type="text/javascript">');
       buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
