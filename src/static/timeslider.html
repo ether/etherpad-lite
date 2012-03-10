@@ -200,13 +200,13 @@
 <script type="text/javascript" src="../../../static/js/require-kernel.js"></script>
 <script type="text/javascript" src="../../../static/js/jquery.js"></script>
 <script type="text/javascript" src="../../../socket.io/socket.io.js"></script>
-<script type="text/javascript" src="../../../minified/plugins/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
+<script type="text/javascript" src="../../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
 <script type="text/javascript" src="../../../static/custom/timeslider.js"></script>
 <script type="text/javascript" >
   var clientVars = {};
   (function () {
-    require.setRootURI("../../../minified/");
-    require.setLibraryURI("../../../minified/plugins/");
+    require.setRootURI("../../../javascripts/src");
+    require.setLibraryURI("../../../javascripts/lib");
     require.setGlobalKeyPath("require");
 
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');

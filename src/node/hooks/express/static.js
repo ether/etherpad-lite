@@ -13,9 +13,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
      are rewritten into ROOT_PATH_OF_MYPLUGIN/static/js/test.js,
      commonly ETHERPAD_ROOT/node_modules/ep_myplugin/static/js/test.js
   */
-  args.app.get(/^\/minified\/plugins\/([^\/]+)\/static\/(.*)/, function(req, res, next) {
+  args.app.get(/^\/javascripts\/lib\/([^\/]+)\/static\/(.*)/, function(req, res, next) {
     var plugin_name = req.params[0];
-    var modulePath = req.url.split("?")[0].substr("/minified/plugins/".length);
+    var modulePath = req.url.split("?")[0].substr("/javascripts/lib/".length);
     var fullPath = require.resolve(modulePath);
 
     if (plugins.plugins[plugin_name] == undefined) {
@@ -35,7 +35,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // Cache both minified and static.
   var assetCache = new CachingMiddleware;
-  args.app.all('/(minified|static)/*', assetCache.handle);
+  args.app.all('/(javascripts|static)/*', assetCache.handle);
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
@@ -44,7 +44,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
   var jsServer = new (Yajsml.Server)({
-    rootPath: 'minified/'
+    rootPath: 'javascripts/src/'
   , rootURI: 'http://localhost:' + settings.port + '/static/js/'
   });
 
