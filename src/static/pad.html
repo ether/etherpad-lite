@@ -269,9 +269,9 @@
               require.setGlobalKeyPath("require");
 
               var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
-	      plugins.update(function () {
-		require('ep_etherpad-lite/static/js/pad').init();
-	      });
+              plugins.update(function () {
+                require('ep_etherpad-lite/static/js/pad').init();
+              });
 
               /* TODO: These globals shouldn't exist. */
               pad = require('ep_etherpad-lite/static/js/pad').pad;
