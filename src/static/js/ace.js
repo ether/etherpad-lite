@@ -156,7 +156,7 @@ function Ace2Editor()
   }
   function pushRequireScriptTo(buffer) {
     var KERNEL_SOURCE = '../static/js/require-kernel.js';
-    var KERNEL_BOOT = 'require.setRootURI("../minified/");\nrequire.setLibraryURI("../minified/plugins/");\nrequire.setGlobalKeyPath("require");'
+    var KERNEL_BOOT = 'require.setRootURI("../javascripts/src");\nrequire.setLibraryURI("../javascripts/lib");\nrequire.setGlobalKeyPath("require");'
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
@@ -166,8 +166,8 @@ function Ace2Editor()
   }
   function pushScriptsTo(buffer) {
     /* Folling is for packaging regular expression. */
-    /* $$INCLUDE_JS("../minified/ace2_inner.js?callback=require.define"); */
-    var ACE_SOURCE = '../minified/ace2_inner.js?callback=require.define';
+    /* $$INCLUDE_JS("../javascripts/src/ace2_inner.js?callback=require.define"); */
+    var ACE_SOURCE = '../javascripts/src/ace2_inner.js?callback=require.define';
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[ACE_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
@@ -175,11 +175,6 @@ function Ace2Editor()
       buffer.push('<\/script>');
     } else {
       file = ACE_SOURCE;
-      file = file.replace(/^\.\.\/static\/js\//, '../minified/');
-      buffer.push('<script type="text/javascript" src="../static/js/require-kernel.js"><\/script>');
-      buffer.push('<script type="text/javascript">');
-      buffer.push('require.setRootURI("../minified/"); require.setLibraryURI("../minified/plugins/"); require.setGlobalKeyPath("require");');
-      buffer.push('<\/script>');
       buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
       buffer.push('<script type="text/javascript">');
       buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
@@ -261,9 +256,7 @@ function Ace2Editor()
       pushRequireScriptTo(iframeHTML);
       // Inject my plugins into my child.
       iframeHTML.push('\
-<script type="text/javascript" src="../static/js/require-kernel.js"></script>\
 <script type="text/javascript">\
-  require.setRootURI("../minified/"); require.setLibraryURI("../minified/plugins/"); require.setGlobalKeyPath("require");\
   require.define("/plugins", null);\n\
   require.define("/plugins.js", function (require, exports, module) {\
     module.exports = require("ep_etherpad-lite/static/js/plugins");\
