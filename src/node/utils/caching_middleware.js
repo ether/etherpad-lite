@@ -24,6 +24,7 @@ var util = require('util');
 
 var ROOT_DIR = path.normalize(__dirname + "/../");
 var CACHE_DIR = ROOT_DIR + '../var/';
+CACHE_DIR = path.existsSync(CACHE_DIR) || undefined;
 
 var responseCache = {};
 
@@ -37,7 +38,7 @@ function CachingMiddleware() {
 }
 CachingMiddleware.prototype = new function () {
   function handle(req, res, next) {
-    if (!(req.method == "GET" || req.method == "HEAD")) {
+    if (!(req.method == "GET" || req.method == "HEAD" || !CACHE_DIR)) {
       return next(undefined, req, res);
     }
 
