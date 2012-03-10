@@ -3,7 +3,6 @@
     { "name": "static", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static:expressCreateServer" } },
     { "name": "specialpages", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/specialpages:expressCreateServer" } },
     { "name": "padurlsanitize", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padurlsanitize:expressCreateServer" } },
-    { "name": "minified", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/minified:expressCreateServer" } },
     { "name": "padreadonly", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padreadonly:expressCreateServer" } },
     { "name": "webaccess", "hooks": { "expressConfigure": "ep_etherpad-lite/node/hooks/express/webaccess:expressConfigure" } },
     { "name": "apicalls", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/apicalls:expressCreateServer" } },
