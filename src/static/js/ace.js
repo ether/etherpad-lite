@@ -28,7 +28,7 @@ Ace2Editor.registry = {
   nextId: 1
 };
 
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+var hooks = require('./pluginfw/hooks');
 
 function Ace2Editor()
 {
@@ -156,7 +156,11 @@ function Ace2Editor()
   }
   function pushRequireScriptTo(buffer) {
     var KERNEL_SOURCE = '../static/js/require-kernel.js';
-    var KERNEL_BOOT = 'require.setRootURI("../javascripts/src");\nrequire.setLibraryURI("../javascripts/lib");\nrequire.setGlobalKeyPath("require");'
+    var KERNEL_BOOT = '\
+require.setRootURI("../javascripts/src");\n\
+require.setLibraryURI("../javascripts/lib");\n\
+require.setGlobalKeyPath("require");\n\
+';
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);

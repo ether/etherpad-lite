@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var Ace2Common = require('ep_etherpad-lite/static/js/ace2_common');
+var Ace2Common = require('./ace2_common');
 
 // Extract useful method defined in the other module.
 var isNodeText = Ace2Common.isNodeText;
@@ -38,18 +38,17 @@ var htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
 var map = Ace2Common.map;
 var noop = Ace2Common.noop;
 
-var makeChangesetTracker = require('ep_etherpad-lite/static/js/changesettracker').makeChangesetTracker;
-var colorutils = require('ep_etherpad-lite/static/js/colorutils').colorutils;
-var makeContentCollector = require('ep_etherpad-lite/static/js/contentcollector').makeContentCollector;
-var makeCSSManager = require('ep_etherpad-lite/static/js/cssmanager').makeCSSManager;
-var domline = require('ep_etherpad-lite/static/js/domline').domline;
-var AttribPool = require('ep_etherpad-lite/static/js/AttributePoolFactory').createAttributePool;
-var Changeset = require('ep_etherpad-lite/static/js/Changeset');
-var linestylefilter = require('ep_etherpad-lite/static/js/linestylefilter').linestylefilter;
-var newSkipList = require('ep_etherpad-lite/static/js/skiplist').newSkipList;
-var undoModule = require('ep_etherpad-lite/static/js/undomodule').undoModule;
-var makeVirtualLineView = require('ep_etherpad-lite/static/js/virtual_lines').makeVirtualLineView;
-
+var makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
+var colorutils = require('./colorutils').colorutils;
+var makeContentCollector = require('./contentcollector').makeContentCollector;
+var makeCSSManager = require('./cssmanager').makeCSSManager;
+var domline = require('./domline').domline;
+var AttribPool = require('./AttributePoolFactory').createAttributePool;
+var Changeset = require('./Changeset');
+var linestylefilter = require('./linestylefilter').linestylefilter;
+var newSkipList = require('./skiplist').newSkipList;
+var undoModule = require('./undomodule').undoModule;
+var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
 
 function Ace2Inner(){
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"

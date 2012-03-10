@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var paddocbar = require('ep_etherpad-lite/static/js/pad_docbar').paddocbar;
+var paddocbar = require('./pad_docbar').paddocbar;
 
 var padimpexp = (function()
 {

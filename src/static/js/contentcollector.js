@@ -25,8 +25,8 @@
 
 var _MAX_LIST_LEVEL = 8;
 
-var Changeset = require('ep_etherpad-lite/static/js/Changeset');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+var Changeset = require('./Changeset');
+var hooks = require('./pluginfw/hooks');
 
 function sanitizeUnicode(s)
 {

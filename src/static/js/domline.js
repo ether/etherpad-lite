@@ -26,9 +26,9 @@
 // requires: plugins
 // requires: undefined
 
-var Security = require('ep_etherpad-lite/static/js/security');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var Ace2Common = require('ep_etherpad-lite/static/js/ace2_common');
+var Security = require('./security');
+var hooks = require('./pluginfw/hooks');
+var Ace2Common = require('./ace2_common');
 var map = Ace2Common.map;
 var noop = Ace2Common.noop;
 var identity = Ace2Common.identity;

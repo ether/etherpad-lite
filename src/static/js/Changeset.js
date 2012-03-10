@@ -25,7 +25,7 @@
  * limitations under the License.
  */
 
-var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
+var AttributePoolFactory = require("./AttributePoolFactory");
 
 var _opt = null;
 
