@@ -257,9 +257,7 @@ function Ace2Editor()
       pushRequireScriptTo(iframeHTML);
       // Inject my plugins into my child.
       iframeHTML.push('\
-<script type="text/javascript" src="../static/js/require-kernel.js"></script>\
 <script type="text/javascript">\
-  require.setRootURI("../minified/"); require.setLibraryURI("../minified/plugins/"); require.setGlobalKeyPath("require");\
   require.define("/plugins", null);\n\
   require.define("/plugins.js", function (require, exports, module) {\
     module.exports = require("ep_etherpad-lite/static/js/plugins");\
