@@ -175,7 +175,6 @@ function Ace2Editor()
       buffer.push('<\/script>');
     } else {
       file = ACE_SOURCE;
-      file = file.replace(/^\.\.\/static\/js\//, '../minified/');
       buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
       buffer.push('<script type="text/javascript">');
       buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
