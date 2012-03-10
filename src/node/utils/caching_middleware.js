@@ -23,8 +23,9 @@ var zlib = require('zlib');
 var util = require('util');
 
 var ROOT_DIR = path.normalize(__dirname + "/../");
-var CACHE_DIR = ROOT_DIR + '../var/';
-CACHE_DIR = path.existsSync(CACHE_DIR) || undefined;
+var CACHE_DIR = path.normalize(ROOT_DIR + '../../var/');
+console.log(CACHE_DIR)
+CACHE_DIR = path.existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 var responseCache = {};
 
@@ -38,7 +39,7 @@ function CachingMiddleware() {
 }
 CachingMiddleware.prototype = new function () {
   function handle(req, res, next) {
-    if (!(req.method == "GET" || req.method == "HEAD" || !CACHE_DIR)) {
+    if (!(req.method == "GET" || req.method == "HEAD") || !CACHE_DIR) {
       return next(undefined, req, res);
     }
 
