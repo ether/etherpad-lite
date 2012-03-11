@@ -36,11 +36,14 @@ var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
+var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
 exports.tar = {};
 for (var key in tar) {
-  exports.tar['/' + key] =
-    tar[key].map(function (p) {return '/' + p}).concat(
-      tar[key].map(function (p) {return '/' + p.replace(/\.js$/, '')})
+  exports.tar[LIBRARY_PREFIX + '/' + key] =
+    tar[key].map(function (p) {return LIBRARY_PREFIX + '/' + p}).concat(
+      tar[key].map(function (p) {
+        return LIBRARY_PREFIX + '/' + p.replace(/\.js$/, '')
+      })
     );
 }
 
