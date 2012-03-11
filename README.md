@@ -57,7 +57,7 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 **As root:**
 
 <ol>
-  <li>Install the dependencies. We need gzip, git, curl, libssl develop libraries, python and gcc. <br><i>For Debian/Ubuntu</i> <code>apt-get install gzip git-core curl python libssl-dev build-essential</code><br>
+  <li>Install the dependencies. We need gzip, git, curl, libssl develop libraries, python and gcc. <br><i>For Debian/Ubuntu</i> <code>apt-get install gzip git-core curl python libssl-dev pkg-config build-essential</code><br>
   <i>For Fedora/CentOS</i> <code>yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"</code>
   </li><br>
   <li>Install node.js 
@@ -73,6 +73,7 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
 
 <ol start="3">
   <li>Move to a folder where you want to install Etherpad Lite. Clone the git repository <code>git clone 'git://github.com/Pita/etherpad-lite.git'</code><br>&nbsp;</li>
+  <li>Change into the directory containing the Etherpad Lite source code clone with <code>cd etherpad-lite</code><br> </li>
   <li>Install the dependencies with <code>bin/installDeps.sh</code><br>&nbsp;</li>
   <li>Start it with <code>bin/run.sh</code><br>&nbsp;</li>
   <li>Open your web browser and visit <a href="http://localhost:9001">http://localhost:9001</a>. You like it? Look at the 'Next Steps' section below</li>
