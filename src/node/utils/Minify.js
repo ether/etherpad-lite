@@ -169,8 +169,10 @@ function getAceFile(callback) {
       var request = require('request');
 
       var baseURI = 'http://localhost:' + settings.port
+      var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
+      resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
-      request(baseURI + path.normalize(path.join('/static/', filename)), function (error, response, body) {
+      request(resourceURI, function (error, response, body) {
         if (!error && response.statusCode == 200) {
           data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
               + JSON.stringify(body || '') + ';\n';
