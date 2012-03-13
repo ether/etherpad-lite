@@ -23,15 +23,14 @@ var ejs = require("ejs");
 var fs = require("fs");
 var path = require("path");
 
+exports.info = {
+  buf_stack: [],
+  block_stack: [],
+  blocks: {},
+  file_stack: [],
+};
+
 exports.init = function (b, recursive) {
-  if (!exports.info) {
-    exports.info = {
-      buf_stack: [],
-      block_stack: [],
-      blocks: {},
-      filestack: [],
-    }
-  }
   exports.info.buf = b;
 }
 
@@ -75,16 +74,17 @@ exports.require = function (name, args) {
   if (!exports.info)
     exports.init(null);
  
-    if ((name.indexOf("./") == 0 || name.indexOf("../") == 0) && exports.info.file_stack) {
-    name = path.join(exports.info.file_stack[exports.info.file_stack.length-1], name);
+  if ((name.indexOf("./") == 0 || name.indexOf("../") == 0) && exports.info.file_stack.length) {
+      name = path.join(path.dirname(exports.info.file_stack[exports.info.file_stack.length-1]), name);
   }
   var ejspath = require.resolve(name)
 
-  exports.info.file_stack.push(ejpath);
+  args.e = exports;
+  var template = '<%  e.init(buf); %>' + fs.readFileSync(ejspath).toString();
+
+  exports.info.file_stack.push(ejspath);
   exports.info.buf_stack.push(exports.info.buf);
-  var res = ejs.render(
-    fs.readFileSync(ejspath).toString(),
-    args);
+    var res = ejs.render(template, args);
   exports.info.buf = exports.info.buf_stack.pop();
   exports.info.file_stack.pop();
 
