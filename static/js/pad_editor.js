@@ -87,8 +87,6 @@ var padeditor = (function()
         return defaultValue;
       }
 
-      self.ace.setProperty("showsauthorcolors", !settings.noColors);
-
       self.ace.setProperty("rtlIsTrue", settings.rtlIsTrue);
 
       var v;
@@ -100,6 +98,8 @@ var padeditor = (function()
       v = getOption('showAuthorColors', true);
       self.ace.setProperty("showsauthorcolors", v);
       padutils.setCheckbox($("#options-colorscheck"), v);
+      // Override from parameters
+      self.ace.setProperty("showsauthorcolors", !settings.noColors);
 
       v = getOption('useMonospaceFont', false);
       self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
