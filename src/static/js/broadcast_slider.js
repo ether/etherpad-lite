@@ -22,6 +22,8 @@
 
  // These parameters were global, now they are injected. A reference to the
  // Timeslider controller would probably be more appropriate.
+var forEach = require('./ace2_common').forEach;
+
 function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 {
   var BroadcastSlider;
@@ -173,7 +175,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       $("#authorstable").empty();
       var numAnonymous = 0;
       var numNamed = 0;
-      authors.forEach(function(author)
+      forEach(authors, function(author)
       {
         if (author.name)
         {
@@ -467,7 +469,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
             $("#timeslider").show();
             setSliderLength(clientVars.totalRevs);
             setSliderPosition(clientVars.revNum);
-            clientVars.savedRevisions.forEach(function(revision)
+            forEach(clientVars.savedRevisions, function(revision)
             {
               addSavedRevision(revision.revNum, revision);
             })

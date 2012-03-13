@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-var AttribPool = require('ep_etherpad-lite/static/js/AttributePoolFactory').createAttributePool;
-var Changeset = require('ep_etherpad-lite/static/js/Changeset');
+var AttribPool = require('./AttributePoolFactory').createAttributePool;
+var Changeset = require('./Changeset');
 
 function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 {

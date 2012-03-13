@@ -28,9 +28,9 @@
 // requires: plugins
 // requires: undefined
 
-var Changeset = require('ep_etherpad-lite/static/js/Changeset');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var map = require('ep_etherpad-lite/static/js/ace2_common').map;
+var Changeset = require('./Changeset');
+var hooks = require('./pluginfw/hooks');
+var map = require('./ace2_common').map;
 
 var linestylefilter = {};
 
