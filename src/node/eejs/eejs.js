@@ -30,8 +30,16 @@ exports.info = {
   file_stack: [],
 };
 
-exports.init = function (b, recursive) {
+exports._init = function (b, recursive) {
+  exports.info.buf_stack.push(exports.info.buf);
   exports.info.buf = b;
+}
+
+exports._exit = function (b, recursive) {
+  exports.info.file_stack[exports.info.file_stack.length-1].inherit.forEach(function (item) {
+    exports.require(item.name, item.args);
+  });
+  exports.info.buf = exports.info.buf_stack.pop();
 }
 
 exports.begin_capture = function() {
@@ -69,23 +77,25 @@ exports.end_block = function () {
 
 exports.begin_block = exports.begin_define_block;
 
+exports.inherit = function (name, args) {
+    exports.info.file_stack[exports.info.file_stack.length-1].inherit.push({name:name, args:args});
+}
+
 exports.require = function (name, args) {
   if (args == undefined) args = {};
   if (!exports.info)
     exports.init(null);
  
   if ((name.indexOf("./") == 0 || name.indexOf("../") == 0) && exports.info.file_stack.length) {
-      name = path.join(path.dirname(exports.info.file_stack[exports.info.file_stack.length-1]), name);
+      name = path.join(path.dirname(exports.info.file_stack[exports.info.file_stack.length-1].path), name);
   }
   var ejspath = require.resolve(name)
 
   args.e = exports;
-  var template = '<%  e.init(buf); %>' + fs.readFileSync(ejspath).toString();
+  var template = '<% e._init(buf); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
 
-  exports.info.file_stack.push(ejspath);
-  exports.info.buf_stack.push(exports.info.buf);
-    var res = ejs.render(template, args);
-  exports.info.buf = exports.info.buf_stack.pop();
+  exports.info.file_stack.push({path: ejspath, inherit: []});
+  var res = ejs.render(template, args);
   exports.info.file_stack.pop();
 
   if (exports.info.buf)
