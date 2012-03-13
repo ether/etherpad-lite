@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-var padutils = require('ep_etherpad-lite/static/js/pad_utils').padutils;
-var padeditor = require('ep_etherpad-lite/static/js/pad_editor').padeditor;
-var padsavedrevs = require('ep_etherpad-lite/static/js/pad_savedrevs').padsavedrevs;
+var padutils = require('./pad_utils').padutils;
+var padeditor = require('./pad_editor').padeditor;
+var padsavedrevs = require('./pad_savedrevs').padsavedrevs;
 
 function indexOf(array, value) {
   for (var i = 0, ii = array.length; i < ii; i++) {

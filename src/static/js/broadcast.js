@@ -20,13 +20,13 @@
  * limitations under the License.
  */
 
-var makeCSSManager = require('ep_etherpad-lite/static/js/cssmanager').makeCSSManager;
-var domline = require('ep_etherpad-lite/static/js/domline').domline;
-var AttribPool = require('ep_etherpad-lite/static/js/AttributePoolFactory').createAttributePool;
-var Changeset = require('ep_etherpad-lite/static/js/Changeset');
-var linestylefilter = require('ep_etherpad-lite/static/js/linestylefilter').linestylefilter;
-var colorutils = require('ep_etherpad-lite/static/js/colorutils').colorutils;
-var Ace2Common = require('ep_etherpad-lite/static/js/ace2_common');
+var makeCSSManager = require('./cssmanager').makeCSSManager;
+var domline = require('./domline').domline;
+var AttribPool = require('./AttributePoolFactory').createAttributePool;
+var Changeset = require('./Changeset');
+var linestylefilter = require('./linestylefilter').linestylefilter;
+var colorutils = require('./colorutils').colorutils;
+var Ace2Common = require('./ace2_common');
 
 var map = Ace2Common.map;
 var forEach = Ace2Common.forEach;

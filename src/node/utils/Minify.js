@@ -27,6 +27,7 @@ var cleanCSS = require('clean-css');
 var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var RequireKernel = require('require-kernel');
 var server = require('../server');
 
@@ -35,11 +36,14 @@ var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
+var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
 exports.tar = {};
 for (var key in tar) {
-  exports.tar['/' + key] =
-    tar[key].map(function (p) {return '/' + p}).concat(
-      tar[key].map(function (p) {return '/' + p.replace(/\.js$/, '')})
+  exports.tar[LIBRARY_PREFIX + '/' + key] =
+    tar[key].map(function (p) {return LIBRARY_PREFIX + '/' + p}).concat(
+      tar[key].map(function (p) {
+        return LIBRARY_PREFIX + '/' + p.replace(/\.js$/, '')
+      })
     );
 }
 
@@ -61,6 +65,22 @@ exports.minify = function(req, res, next)
     res.writeHead(404, {});
     res.end();
     return; 
+  }
+
+  /* Handle static files for plugins:
+     paths like "plugins/ep_myplugin/static/js/test.js"
+     are rewritten into ROOT_PATH_OF_MYPLUGIN/static/js/test.js,
+     commonly ETHERPAD_ROOT/node_modules/ep_myplugin/static/js/test.js
+  */
+  var match = filename.match(/^plugins\/([^\/]+)\/static\/(.*)/);
+  if (match) {
+    var pluginName = match[1];
+    var resourcePath = match[2];
+    var plugin = plugins.plugins[pluginName];
+    if (plugin) {
+      var pluginPath = plugin.package.realPath;
+      filename = path.relative(ROOT_DIR, pluginPath + '/static/' + resourcePath);
+    }
   }
 
   // What content type should this be?
@@ -149,8 +169,10 @@ function getAceFile(callback) {
       var request = require('request');
 
       var baseURI = 'http://localhost:' + settings.port
+      var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
+      resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
-      request(baseURI + path.normalize(path.join('/static/', filename)), function (error, response, body) {
+      request(resourceURI, function (error, response, body) {
         if (!error && response.statusCode == 200) {
           data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
               + JSON.stringify(body || '') + ';\n';

@@ -21,9 +21,10 @@ var path = require('path');
 var server = require('../server');
 var zlib = require('zlib');
 var util = require('util');
+var settings = require('./Settings');
 
-var ROOT_DIR = path.normalize(__dirname + "/../");
-var CACHE_DIR = ROOT_DIR + '../var/';
+var CACHE_DIR = path.normalize(path.join(settings.root, 'var/'));
+CACHE_DIR = path.existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 var responseCache = {};
 
@@ -37,7 +38,7 @@ function CachingMiddleware() {
 }
 CachingMiddleware.prototype = new function () {
   function handle(req, res, next) {
-    if (!(req.method == "GET" || req.method == "HEAD")) {
+    if (!(req.method == "GET" || req.method == "HEAD") || !CACHE_DIR) {
       return next(undefined, req, res);
     }
 
@@ -54,7 +55,7 @@ CachingMiddleware.prototype = new function () {
       var modifiedSince = (req.headers['if-modified-since']
           && new Date(req.headers['if-modified-since']));
       var lastModifiedCache = !error && stats.mtime;
-      if (lastModifiedCache) {
+      if (lastModifiedCache && responseCache[cacheKey]) {
         req.headers['if-modified-since'] = lastModifiedCache.toUTCString();
       } else {
         delete req.headers['if-modified-since'];
@@ -83,7 +84,7 @@ CachingMiddleware.prototype = new function () {
             && new Date(res.getHeader('last-modified')));
 
         res.writeHead = old_res.writeHead;
-        if (status == 200 || status == 404) {
+        if (status == 200) {
           // Update cache
           var buffer = '';
 
