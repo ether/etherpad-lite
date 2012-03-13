@@ -29,7 +29,6 @@
 var Security = require('./security');
 var hooks = require('./pluginfw/hooks');
 var Ace2Common = require('./ace2_common');
-var map = Ace2Common.map;
 var noop = Ace2Common.noop;
 var identity = Ace2Common.identity;
 
@@ -142,10 +141,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     var extraOpenTags = "";
     var extraCloseTags = "";
 
-    map(hooks.callAll("aceCreateDomLine", {
+    hooks.callAll("aceCreateDomLine", {
       domline: domline,
       cls: cls
-    }), function(modifier)
+    }).map(function(modifier)
     {
       cls = modifier.cls;
       extraOpenTags = extraOpenTags + modifier.extraOpenTags;

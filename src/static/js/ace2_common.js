@@ -29,8 +29,7 @@ function isNodeText(node)
 
 function object(o)
 {
-  var f = function()
-    {};
+  var f = function(){};
   f.prototype = o;
   return new f();
 }
@@ -44,37 +43,32 @@ function extend(obj, props)
   return obj;
 }
 
-function forEach(array, func)
-{
-  for (var i = 0; i < array.length; i++)
+
+var forEachImpl = function(fn){
+  for (var i = 0; i < this.length; i++)
   {
-    var result = func(array[i], i);
-    if (result) break;
+    var result = func(this[i], i, this);
   }
 }
 
-function map(array, func)
+function mapImpl(fn)
 {
   var result = [];
-  // must remain compatible with "arguments" pseudo-array
-  for (var i = 0; i < array.length; i++)
+
+  for (var i = 0; i < this.length; i++)
   {
-    if (func) result.push(func(array[i], i));
-    else result.push(array[i]);
+    if (fn) result.push(fn(this[i], i, this));
+    else result.push(this[i]);
   }
+  
   return result;
 }
 
-function filter(array, func)
-{
-  var result = [];
-  // must remain compatible with "arguments" pseudo-array
-  for (var i = 0; i < array.length; i++)
-  {
-    if (func(array[i], i)) result.push(array[i]);
-  }
-  return result;
-}
+
+Array.prototype.forEach = Array.prototype.forEach || forEachImpl;
+Array.prototype.each = Array.prototype.each || forEachImpl;
+Array.prototype.map = Array.prototype.map || mapImpl;
+
 
 function isArray(testObject)
 {
@@ -147,9 +141,6 @@ var identity = function(x){return x};
 exports.isNodeText = isNodeText;
 exports.object = object;
 exports.extend = extend;
-exports.forEach = forEach;
-exports.map = map;
-exports.filter = filter;
 exports.isArray = isArray;
 exports.browser = browser;
 exports.getAssoc = getAssoc;
@@ -157,6 +148,5 @@ exports.setAssoc = setAssoc;
 exports.binarySearch = binarySearch;
 exports.binarySearchInfinite = binarySearchInfinite;
 exports.htmlPrettyEscape = htmlPrettyEscape;
-exports.map = map;
 exports.noop = noop;
 exports.identity = identity;
