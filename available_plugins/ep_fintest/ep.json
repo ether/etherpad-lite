@@ -25,7 +25,8 @@
       "hooks": {
 	"somehookname": "ep_fintest/otherpart:somehook",
 	"morehook": "ep_fintest/otherpart:morehook",
-	"expressCreateServer": "ep_fintest/otherpart:expressServer"
+	"expressCreateServer": "ep_fintest/otherpart:expressServer",
+	"eejsBlock_editbarMenuLeft": "ep_fintest/otherpart:eejsBlock_editbarMenuLeft"
       },
       "client_hooks": {
         "somehookname": "ep_fintest/static/js/test:bar"

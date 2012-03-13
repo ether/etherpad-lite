@@ -16,12 +16,13 @@
 
 /* Basic usage:
  *
- * require("./eejs").require("./examples/foo.ejs")
+ * require("./index").require("./examples/foo.ejs")
  */
 
 var ejs = require("ejs");
 var fs = require("fs");
 var path = require("path");
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
 exports.info = {
   buf_stack: [],
@@ -62,17 +63,26 @@ exports.begin_define_block = function (name) {
   exports.begin_capture();
 }
 
+exports.super = function () {
+  exports.info.buf.push('<!eejs!super!>');
+}
+
 exports.end_define_block = function () {
   content = exports.end_capture();
   var name = exports.info.block_stack.pop();
   if (typeof exports.info.blocks[name].content == "undefined")
     exports.info.blocks[name].content = content;
+  else if (typeof exports.info.blocks[name].content.indexOf('<!eejs!super!>'))
+    exports.info.blocks[name].content = exports.info.blocks[name].content.replace('<!eejs!super!>', content);
+
   return exports.info.blocks[name].content;
 }
 
 exports.end_block = function () {
-  var res = exports.end_define_block();
-  exports.info.buf.push(res);
+  var name = exports.info.block_stack[exports.info.block_stack.length-1];
+  var args = {content: exports.end_define_block()};
+  hooks.callAll("eejsBlock_" + name, args);
+  exports.info.buf.push(args.content);
 }
 
 exports.begin_block = exports.begin_define_block;

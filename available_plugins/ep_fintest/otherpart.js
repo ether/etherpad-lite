@@ -14,3 +14,12 @@ exports.expressServer = function (hook_name, args, cb) {
       res.send("<em>Abra cadabra</em>");
   });
 }
+
+exports.eejsBlock_editbarMenuLeft = function (hook_name, args, cb) {
+  args.content = args.content + '\
+		    <li id="testButton" onClick="window.pad&amp;&amp;pad.editbarClick(\'clearauthorship\');return false;">\
+			<a class="buttonicon buttonicon-test" title="Test test test"></a>\
+		    </li>\
+  ';
+  return cb();
+}
