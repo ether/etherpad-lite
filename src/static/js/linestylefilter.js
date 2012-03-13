@@ -30,7 +30,6 @@
 
 var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
-var map = require('./ace2_common').map;
 
 var linestylefilter = {};
 
@@ -302,7 +301,7 @@ linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
     linestylefilter: linestylefilter,
     browser: browser
   });
-  map(hookFilters, function(hookFilter)
+  hookFilters.map(function(hookFilter)
   {
     func = hookFilter(lineText, func);
   });

@@ -1642,7 +1642,7 @@ function Ace2Inner(){
 
     // update the representation
     p.mark("splice");
-    forEach(splicesToDo, function(splice)
+    splicesToDo.forEach(function(splice)
     {
       doIncorpLineSplice(splice[0], splice[1], splice[2], splice[3], splice[4]);
     });
@@ -2142,7 +2142,7 @@ function Ace2Inner(){
         return entry.domInfo;
       }), isTimeUp);
 
-      infoStructs.forEach(function(k)
+      keysToDelete.forEach(function(k)
       {
         var n = doc.getElementById(k);
         n.parentNode.removeChild(n);
