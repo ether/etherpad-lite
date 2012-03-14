@@ -51,6 +51,7 @@
   ]
 , "ace2_inner.js": [
     "ace2_common.js"
+  , "rjquery.js"
   , "AttributePoolFactory.js"
   , "Changeset.js"
   , "security.js"

@@ -10,6 +10,9 @@ if (!exports.isClient) {
   var fs = require("fs");
   var tsort = require("./tsort");
   var util = require("util");
+}else{
+  var $, jQuery;
+  $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").$;
 }
 
 exports.prefix = 'ep_';
