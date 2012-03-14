@@ -1,0 +1,35 @@
+{
+  "name"           : "ep_etherpad-lite",
+  "description"    : "A Etherpad based on node.js",
+  "homepage"       : "https://github.com/Pita/etherpad-lite",
+  "keywords"       : ["etherpad", "realtime", "collaborative", "editor"],
+  "author"         : "Peter 'Pita' Martischka <petermartischka@googlemail.com> - Primary Technology Ltd",
+  "contributors"   : [
+                      { "name": "John McLear", 
+                        "name": "Hans Pinckaers",
+                        "name": "Robin Buse" }
+                     ],
+  "dependencies"   : {
+                      "yajsml"              : "1.1.2",
+                      "request"             : "2.9.100",
+                      "require-kernel"      : "1.0.5",
+                      "socket.io"           : "0.8.7",
+                      "ueberDB"             : "0.1.7",
+                      "async"               : "0.1.18",
+                      "express"             : "2.5.8",
+                      "clean-css"           : "0.3.2",
+                      "uglify-js"           : "1.2.5",
+                      "formidable"          : "1.0.9",
+                      "log4js"              : "0.4.1",
+                      "jsdom-nocontextifiy" : "0.2.10",
+                      "async-stacktrace"    : "0.0.2",
+		      "npm"		    : "1.1"
+                     },
+  "devDependencies": {
+                      "jshint"  : "*"
+                     },
+  "engines"        : { "node" : ">=0.6.0",
+                       "npm"  : ">=1.0"
+                     }, 
+  "version"        : "1.0.0"
+}
