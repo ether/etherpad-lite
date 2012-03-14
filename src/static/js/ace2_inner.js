@@ -5410,67 +5410,7 @@ function Ace2Inner(){
       }
     };
   })());
-
-
-  // stolen from jquery-1.2.1
-
-
-  function fixEvent(event)
-  {
-    // store a copy of the original event object
-    // and clone to set read-only properties
-    var originalEvent = event;
-    event = extend(
-    {}, originalEvent);
-
-    // add preventDefault and stopPropagation since
-    // they will not work on the clone
-    event.preventDefault = function()
-    {
-      // if preventDefault exists run it on the original event
-      if (originalEvent.preventDefault) originalEvent.preventDefault();
-      // otherwise set the returnValue property of the original event to false (IE)
-      originalEvent.returnValue = false;
-    };
-    event.stopPropagation = function()
-    {
-      // if stopPropagation exists run it on the original event
-      if (originalEvent.stopPropagation) originalEvent.stopPropagation();
-      // otherwise set the cancelBubble property of the original event to true (IE)
-      originalEvent.cancelBubble = true;
-    };
-
-    // Fix target property, if necessary
-    if (!event.target && event.srcElement) event.target = event.srcElement;
-
-    // check if target is a textnode (safari)
-    if (browser.safari && isTextNode(event.target)) event.target = originalEvent.target.parentNode;
-
-    // Add relatedTarget, if necessary
-    if (!event.relatedTarget && event.fromElement) event.relatedTarget = event.fromElement == event.target ? event.toElement : event.fromElement;
-
-    // Calculate pageX/Y if missing and clientX/Y available
-    if (event.pageX == null && event.clientX != null)
-    {
-      var e = document.documentElement,
-          b = document.body;
-      event.pageX = event.clientX + (e && e.scrollLeft || b.scrollLeft || 0);
-      event.pageY = event.clientY + (e && e.scrollTop || b.scrollTop || 0);
-    }
-
-    // Add which for key events
-    if (!event.which && (event.charCode || event.keyCode)) event.which = event.charCode || event.keyCode;
-
-    // Add metaKey to non-Mac browsers (use ctrl for PC's and Meta for Macs)
-    if (!event.metaKey && event.ctrlKey) event.metaKey = event.ctrlKey;
-
-    // Add which for click: 1 == left; 2 == middle; 3 == right
-    // Note: button is not normalized, so don't use it
-    if (!event.which && event.button) event.which = (event.button & 1 ? 1 : (event.button & 2 ? 3 : (event.button & 4 ? 2 : 0)));
-
-    return event;
-  }
-
+  
   var lineNumbersShown;
   var sideDivInner;
 
