@@ -18,7 +18,6 @@ var async = require('async');
 var Buffer = require('buffer').Buffer;
 var fs = require('fs');
 var path = require('path');
-var server = require('../server');
 var zlib = require('zlib');
 var util = require('util');
 var settings = require('./Settings');
