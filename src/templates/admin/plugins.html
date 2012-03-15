@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <title>Plugin manager</title>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      td, th {
+        border: 1px solid black;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <% if (errors.length) { %>
+      <div class="errors">
+        <% errors.forEach(function (item) { %>
+          <div class="error"><%= item.toString() %></div>
+        <% }) %>
+      </div>
+    <% } %>
+
+
+    <h1>Installed plugins</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (var plugin_name in plugins) { %>
+          <% var plugin = plugins[plugin_name]; %>
+          <tr>
+            <td><%= plugin.package.name %></td>
+            <td><%= plugin.package.description %></td>
+            <td>
+              <form method="post">
+                <input type="hidden" name="uninstall_plugin" value="<%= plugin.package.name %>">
+                <input type="submit" value="U">
+              </form>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+
+
+    <h1>Search for plugins to install</h1>
+    <form>
+      <input type="text" name="search" value="<%= query.search %>"><input type="submit">
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (var plugin_name in search_results) { %>
+          <% var plugin = search_results[plugin_name]; %>
+          <tr>
+            <td><%= plugin.name %></td>
+            <td><%= plugin.description %></td>
+            <td>
+              <form method="post">
+                <input type="hidden" name="install_plugin" value="<%= plugin.name %>">
+                <input type="submit" value="I">
+              </form>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+
+  </body>
+</html>
