@@ -12,7 +12,90 @@
         padding-top: 2px;
         padding-bottom: 2px;
       }
+      .template {
+        display: none;
+      }
+      .dialog {
+        display: none;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 500px;
+        height: 400px;
+        margin-left: -250px;
+        margin-top: -200px;
+        border: 3px solid #999999;
+        background: #eeeeee;
+      }
+      .dialog .title {
+        margin: 0;
+        padding: 2px;
+        border-bottom: 3px solid #999999;
+        font-size: 24px;
+        line-height: 24px;
+      }
+      .dialog .title .close {
+        float: right;
+      }
+      .dialog .history {
+        background: #222222;
+        color: #eeeeee;
+        position: absolute;
+        top: 41px;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 2px;
+      }
     </style>
+    <script src="../../static/js/jquery.js"></script>
+    <script src="../../socket.io/socket.io.js"></script>
+    <script>
+      $(document).ready(function () {
+        var socket = io.connect().of("/pluginfw/installer");
+
+        $("#progress.dialog .close").click(function () {
+          $("#progress.dialog").hide();
+        });
+
+        $("#do-search").click(function () {
+          if ($("#search-query")[0].value != "")
+            socket.emit("search", $("#search-query")[0].value);
+        });
+
+        socket.on('progress', function (data) {
+          $("#progress.dialog .close").hide();
+          $("#progress.dialog").show();
+          var message = data.message;
+          if (data.error) {
+            message = "<div class='error'>" + data.error.toString() + "<div>";            
+          }
+          $("#progress.dialog .message").html(message);
+          $("#progress.dialog .history").append(message);
+
+          if (data.progress >= 1) {
+            if (data.error) {
+              $("#progress.dialog .close").show();
+            } else {
+              $("#progress.dialog").hide();
+            }
+          }
+        });
+
+        socket.on('search-result', function (data) {
+          $("#search-results *").remove();
+          for (plugin_name in data.results) {
+            var plugin = data.results[plugin_name];
+            var row = $("#search-result-template").clone();
+
+            for (attr in plugin) {
+              row.find("." + attr).html(plugin[attr]);
+            }
+            $("#search-results").append(row);
+          }
+        });
+      });
+    </script>
   </head>
   <body>
     <% if (errors.length) { %>
@@ -54,7 +137,8 @@
 
     <h1>Search for plugins to install</h1>
     <form>
-      <input type="text" name="search" value="<%= query.search %>"><input type="submit">
+      <input type="text" name="search" value="" id="search-query">
+      <input type="button" value="S" id="do-search">
     </form>
     <table>
       <thead>
@@ -64,23 +148,28 @@
           <td></td>
         </tr>
       </thead>
-      <tbody>
-        <% for (var plugin_name in search_results) { %>
-          <% var plugin = search_results[plugin_name]; %>
-          <tr>
-            <td><%= plugin.name %></td>
-            <td><%= plugin.description %></td>
-            <td>
-              <form method="post">
-                <input type="hidden" name="install_plugin" value="<%= plugin.name %>">
-                <input type="submit" value="I">
-              </form>
-            </td>
-          </tr>
-        <% } %>
+      <tbody class="template">
+        <tr id="search-result-template">
+          <td class="name"></td>
+          <td class="description"></td>
+          <td class="actions">
+            <input type="button" value="I">
+          </td>
+        </tr>
+      </tbody>
+      <tbody id="search-results">
       </tbody>
     </table>
 
+
+    <div id="progress" class="dialog">
+      <h1 class="title">
+        Please wait: <span class="message"></span>
+        <input type="button" class="close" value="Close">
+      </h1>
+
+      <div class="history"></div>
+    </div>
 
   </body>
 </html>
