@@ -12,6 +12,8 @@ if (!exports.isClient) {
   var util = require("util");
 }else{
   require("../ace2_common.js");
+  var $, jQuery;
+  $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").$;
 }
 
 exports.prefix = 'ep_';

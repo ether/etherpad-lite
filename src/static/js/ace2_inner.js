@@ -19,36 +19,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-var Ace2Common = require('./ace2_common');
-
-// Extract useful method defined in the other module.
-var isNodeText = Ace2Common.isNodeText;
-var object = Ace2Common.object;
-var extend = Ace2Common.extend;
-var isArray = Ace2Common.isArray;
-var browser = Ace2Common.browser;
-var getAssoc = Ace2Common.getAssoc;
-var setAssoc = Ace2Common.setAssoc;
-var binarySearchInfinite = Ace2Common.binarySearchInfinite;
-var htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
+var editor, $, jQuery, plugins, Ace2Common;
 
 
-var noop = Ace2Common.noop;
+Ace2Common = require('./ace2_common');
 
-var makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
-var colorutils = require('./colorutils').colorutils;
-var makeContentCollector = require('./contentcollector').makeContentCollector;
-var makeCSSManager = require('./cssmanager').makeCSSManager;
-var domline = require('./domline').domline;
-var AttribPool = require('./AttributePoolFactory').createAttributePool;
-var Changeset = require('./Changeset');
-var linestylefilter = require('./linestylefilter').linestylefilter;
-var newSkipList = require('./skiplist').newSkipList;
-var undoModule = require('./undomodule').undoModule;
-var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
+plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+$ = jQuery = require('./rjquery').$;
+
+var isNodeText = Ace2Common.isNodeText,
+  object = Ace2Common.object,
+  extend = Ace2Common.extend,
+  browser = Ace2Common.browser,
+  getAssoc = Ace2Common.getAssoc,
+  setAssoc = Ace2Common.setAssoc,
+  isTextNode = Ace2Common.isTextNode,
+  forEach = Ace2Common.forEach,
+  map = Ace2Common.map,
+  binarySearchInfinite = Ace2Common.binarySearchInfinite,
+  htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
+  noop = Ace2Common.noop;
 
 function Ace2Inner(){
+  
+  var makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
+  var colorutils = require('./colorutils').colorutils;
+  var makeContentCollector = require('./contentcollector').makeContentCollector;
+  var makeCSSManager = require('./cssmanager').makeCSSManager;
+  var domline = require('./domline').domline;
+  var AttribPool = require('./AttributePoolFactory').createAttributePool;
+  var Changeset = require('./Changeset');
+  var linestylefilter = require('./linestylefilter').linestylefilter;
+  var newSkipList = require('./skiplist').newSkipList;
+  var undoModule = require('./undomodule').undoModule;
+  var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
+  
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false 
   var isSetUp = false;
@@ -67,7 +72,6 @@ function Ace2Inner(){
   var thisAuthor = '';
 
   var disposed = false;
-
   var editorInfo = parent.editorInfo;
 
   var iframe = window.frameElement;
@@ -881,9 +885,7 @@ function Ace2Inner(){
     {
       return fn(editorInfo);
     };
-        
-        
-        
+    
     if (normalize !== undefined)
     {
       var wrapper1 = wrapper;
@@ -4527,7 +4529,7 @@ function Ace2Inner(){
 
     enforceEditability();
 
-    addClass(sideDiv, 'sidedivdelayed');
+    $(sideDiv).addClass('sidedivdelayed');
   }
 
   function getScrollXY()
@@ -4585,8 +4587,6 @@ function Ace2Inner(){
       a();
     });
   }
-
-  bindEventHandler(window, "load", setup);
 
   function setDesignMode(newVal)
   {
@@ -4664,20 +4664,20 @@ function Ace2Inner(){
 
   function bindTheEventHandlers()
   {
-    bindEventHandler(document, "keydown", handleKeyEvent);
-    bindEventHandler(document, "keypress", handleKeyEvent);
-    bindEventHandler(document, "keyup", handleKeyEvent);
-    bindEventHandler(document, "click", handleClick);
-    bindEventHandler(root, "blur", handleBlur);
+    $(document).on("keydown", handleKeyEvent);
+    $(document).on("keypress", handleKeyEvent);
+    $(document).on("keyup", handleKeyEvent);
+    $(document).on("click", handleClick);
+    $(root).on("blur", handleBlur);
     if (browser.msie)
     {
-      bindEventHandler(document, "click", handleIEOuterClick);
+      $(document).on("click", handleIEOuterClick);
     }
-    if (browser.msie) bindEventHandler(root, "paste", handleIEPaste);
+    if (browser.msie) $(root).on("paste", handleIEPaste);
     if ((!browser.msie) && document.documentElement)
     {
-      bindEventHandler(document.documentElement, "compositionstart", handleCompositionEvent);
-      bindEventHandler(document.documentElement, "compositionend", handleCompositionEvent);
+      $(document.documentElement).on("compositionstart", handleCompositionEvent);
+      $(document.documentElement).on("compositionend", handleCompositionEvent);
     }
   }
 
@@ -4724,91 +4724,10 @@ function Ace2Inner(){
     elem.className = array.join(' ');
   }
 
-  function addClass(elem, className)
-  {
-    var seen = false;
-    var cc = getClassArray(elem, function(c)
-    {
-      if (c == className) seen = true;
-      return true;
-    });
-    if (!seen)
-    {
-      cc.push(className);
-      setClassArray(elem, cc);
-    }
-  }
-
-  function removeClass(elem, className)
-  {
-    var seen = false;
-    var cc = getClassArray(elem, function(c)
-    {
-      if (c == className)
-      {
-        seen = true;
-        return false;
-      }
-      return true;
-    });
-    if (seen)
-    {
-      setClassArray(elem, cc);
-    }
-  }
-
   function setClassPresence(elem, className, present)
   {
-    if (present) addClass(elem, className);
-    else removeClass(elem, className);
-  }
-
-  function setup()
-  {
-    doc = document; // defined as a var in scope outside
-    inCallStack("setup", function()
-    {
-      var body = doc.getElementById("innerdocbody");
-      root = body; // defined as a var in scope outside
-      if (browser.mozilla) addClass(root, "mozilla");
-      if (browser.safari) addClass(root, "safari");
-      if (browser.msie) addClass(root, "msie");
-      if (browser.msie)
-      {
-        // cache CSS background images
-        try
-        {
-          doc.execCommand("BackgroundImageCache", false, true);
-        }
-        catch (e)
-        { /* throws an error in some IE 6 but not others! */
-        }
-      }
-      setClassPresence(root, "authorColors", true);
-      setClassPresence(root, "doesWrap", doesWrap);
-
-      initDynamicCSS();
-
-      enforceEditability();
-
-      // set up dom and rep
-      while (root.firstChild) root.removeChild(root.firstChild);
-      var oneEntry = createDomLineEntry("");
-      doRepLineSplice(0, rep.lines.length(), [oneEntry]);
-      insertDomLines(null, [oneEntry.domInfo], null);
-      rep.alines = Changeset.splitAttributionLines(
-      Changeset.makeAttribution("\n"), "\n");
-
-      bindTheEventHandlers();
-
-    });
-
-    scheduler.setTimeout(function()
-    {
-      parent.readyFunc(); // defined in code that sets up the inner iframe
-    }, 0);
-
-    isSetUp = true;
+    if (present) $(elem).addClass(className);
+    else $(elem).removeClass(elem, className);
   }
 
   function focus()
@@ -4825,32 +4744,6 @@ function Ace2Inner(){
       // events, though typing still affects it(!).
       setSelection(null);
     }
-  }
-
-  function bindEventHandler(target, type, func)
-  {
-    var handler;
-    if ((typeof func._wrapper) != "function")
-    {
-      func._wrapper = function(event)
-      {
-        func(fixEvent(event || window.event || {}));
-      }
-    }
-    var handler = func._wrapper;
-    if (target.addEventListener) target.addEventListener(type, handler, false);
-    else target.attachEvent("on" + type, handler);
-    _teardownActions.push(function()
-    {
-      unbindEventHandler(target, type, func);
-    });
-  }
-
-  function unbindEventHandler(target, type, func)
-  {
-    var handler = func._wrapper;
-    if (target.removeEventListener) target.removeEventListener(type, handler, false);
-    else target.detachEvent("on" + type, handler);
   }
 
   function getSelectionPointX(point)
@@ -5514,67 +5407,7 @@ function Ace2Inner(){
       }
     };
   })());
-
-
-  // stolen from jquery-1.2.1
-
-
-  function fixEvent(event)
-  {
-    // store a copy of the original event object
-    // and clone to set read-only properties
-    var originalEvent = event;
-    event = extend(
-    {}, originalEvent);
-
-    // add preventDefault and stopPropagation since
-    // they will not work on the clone
-    event.preventDefault = function()
-    {
-      // if preventDefault exists run it on the original event
-      if (originalEvent.preventDefault) originalEvent.preventDefault();
-      // otherwise set the returnValue property of the original event to false (IE)
-      originalEvent.returnValue = false;
-    };
-    event.stopPropagation = function()
-    {
-      // if stopPropagation exists run it on the original event
-      if (originalEvent.stopPropagation) originalEvent.stopPropagation();
-      // otherwise set the cancelBubble property of the original event to true (IE)
-      originalEvent.cancelBubble = true;
-    };
-
-    // Fix target property, if necessary
-    if (!event.target && event.srcElement) event.target = event.srcElement;
-
-    // check if target is a textnode (safari)
-    if (browser.safari && event.target.nodeType == 3) event.target = originalEvent.target.parentNode;
-
-    // Add relatedTarget, if necessary
-    if (!event.relatedTarget && event.fromElement) event.relatedTarget = event.fromElement == event.target ? event.toElement : event.fromElement;
-
-    // Calculate pageX/Y if missing and clientX/Y available
-    if (event.pageX == null && event.clientX != null)
-    {
-      var e = document.documentElement,
-          b = document.body;
-      event.pageX = event.clientX + (e && e.scrollLeft || b.scrollLeft || 0);
-      event.pageY = event.clientY + (e && e.scrollTop || b.scrollTop || 0);
-    }
-
-    // Add which for key events
-    if (!event.which && (event.charCode || event.keyCode)) event.which = event.charCode || event.keyCode;
-
-    // Add metaKey to non-Mac browsers (use ctrl for PC's and Meta for Macs)
-    if (!event.metaKey && event.ctrlKey) event.metaKey = event.ctrlKey;
-
-    // Add which for click: 1 == left; 2 == middle; 3 == right
-    // Note: button is not normalized, so don't use it
-    if (!event.which && event.button) event.which = (event.button & 1 ? 1 : (event.button & 2 ? 3 : (event.button & 4 ? 2 : 0)));
-
-    return event;
-  }
-
+  
   var lineNumbersShown;
   var sideDivInner;
 
@@ -5659,6 +5492,56 @@ function Ace2Inner(){
     }
   }
 
+  $(document).ready(function(){
+    doc = document; // defined as a var in scope outside
+    inCallStack("setup", function()
+    {
+      var body = doc.getElementById("innerdocbody");
+      root = body; // defined as a var in scope outside
+      if (browser.mozilla) $(root).addClass("mozilla");
+      if (browser.safari) $(root).addClass("safari");
+      if (browser.msie) $(root).addClass("msie");
+      if (browser.msie)
+      {
+        // cache CSS background images
+        try
+        {
+          doc.execCommand("BackgroundImageCache", false, true);
+        }
+        catch (e)
+        { /* throws an error in some IE 6 but not others! */
+        }
+      }
+      setClassPresence(root, "authorColors", true);
+      setClassPresence(root, "doesWrap", doesWrap);
+
+      initDynamicCSS();
+
+      enforceEditability();
+
+      // set up dom and rep
+      while (root.firstChild) root.removeChild(root.firstChild);
+      var oneEntry = createDomLineEntry("");
+      doRepLineSplice(0, rep.lines.length(), [oneEntry]);
+      insertDomLines(null, [oneEntry.domInfo], null);
+      rep.alines = Changeset.splitAttributionLines(
+      Changeset.makeAttribution("\n"), "\n");
+
+      bindTheEventHandlers();
+
+    });
+
+    scheduler.setTimeout(function()
+    {
+      parent.readyFunc(); // defined in code that sets up the inner iframe
+    }, 0);
+
+    isSetUp = true;
+  });
+
 }
 
-exports.editor = new Ace2Inner();
+// Ensure that plugins are loaded before initializing the editor
+plugins.ensure(function () {
+  var editor = new Ace2Inner();
+});
