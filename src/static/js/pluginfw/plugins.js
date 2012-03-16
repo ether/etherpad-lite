@@ -10,6 +10,8 @@ if (!exports.isClient) {
   var fs = require("fs");
   var tsort = require("./tsort");
   var util = require("util");
+}else{
+  require("../ace2_common.js");
 }
 
 exports.prefix = 'ep_';

@@ -47,7 +47,7 @@ function extend(obj, props)
 var forEachImpl = function(fn){
   for (var i = 0; i < this.length; i++)
   {
-    var result = func(this[i], i, this);
+    var result = fn(this[i], i, this);
   }
 }
 
@@ -64,11 +64,19 @@ function mapImpl(fn)
   return result;
 }
 
+// From underscore.js
+var keysImpl =function(obj) {
+  if (obj !== Object(obj)) throw new TypeError('Invalid object');
+  var keys = [];
+  for (var key in obj) if (obj.hasOwnProperty(key)) keys.push(key);
+  
+  return keys;
+};
 
 Array.prototype.forEach = Array.prototype.forEach || forEachImpl;
 Array.prototype.each = Array.prototype.each || forEachImpl;
 Array.prototype.map = Array.prototype.map || mapImpl;
-
+Object.keys = Object.keys || keysImpl;
 
 function isArray(testObject)
 {
