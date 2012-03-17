@@ -32,14 +32,24 @@ exports.socketio = function (hook_name, args, cb) {
       });
     });
 
-    socket.on("install", function (query) {
+    socket.on("install", function (plugin_name) {
+      socket.emit("progress", {progress:0, message:'Downloading and installing ' + plugin_name + "..."});
+      installer.install(plugin_name, function (er) {
+        if (er)
+          socket.emit("progress", {progress:1, error:er});
+        else
+          socket.emit("progress", {progress:1, message:'Done.'});
+      });
     });
 
-    socket.on("uninstall", function (query) {
+    socket.on("uninstall", function (plugin_name) {
+      socket.emit("progress", {progress:0, message:'Uninstalling ' + plugin_name + "..."});
+      installer.uninstall(plugin_name, function (er) {
+        if (er)
+          socket.emit("progress", {progress:1, error:er});
+        else
+          socket.emit("progress", {progress:1, message:'Done.'});
+      });
     });
-
-
-
-
   });
 }

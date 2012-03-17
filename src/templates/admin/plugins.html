@@ -54,14 +54,28 @@
       $(document).ready(function () {
         var socket = io.connect().of("/pluginfw/installer");
 
-        $("#progress.dialog .close").click(function () {
-          $("#progress.dialog").hide();
-        });
+        function updateHandlers() {
+          $("#progress.dialog .close").click(function () {
+            $("#progress.dialog").hide();
+          });
 
-        $("#do-search").click(function () {
-          if ($("#search-query")[0].value != "")
-            socket.emit("search", $("#search-query")[0].value);
-        });
+          $("#do-search").click(function () {
+            if ($("#search-query")[0].value != "")
+              socket.emit("search", $("#search-query")[0].value);
+          });
+
+          $("#do-install").click(function (e) {
+            var row = $(e.target).closest("tr");
+            socket.emit("install", row.find(".name").html());
+          });
+
+          $("#do-uninstall").click(function (e) {
+            var row = $(e.target).closest("tr");
+            socket.emit("install", row.find(".name").html());
+          });
+        }
+
+        updateHandlers();
 
         socket.on('progress', function (data) {
           $("#progress.dialog .close").hide();
@@ -93,6 +107,7 @@
             }
             $("#search-results").append(row);
           }
+          updateHandlers();
         });
       });
     </script>
@@ -120,13 +135,10 @@
         <% for (var plugin_name in plugins) { %>
           <% var plugin = plugins[plugin_name]; %>
           <tr>
-            <td><%= plugin.package.name %></td>
+            <td class="name"><%= plugin.package.name %></td>
             <td><%= plugin.package.description %></td>
             <td>
-              <form method="post">
-                <input type="hidden" name="uninstall_plugin" value="<%= plugin.package.name %>">
-                <input type="submit" value="U">
-              </form>
+              <input type="submit" value="U" class="do-uninstall">
             </td>
           </tr>
         <% } %>
@@ -153,7 +165,7 @@
           <td class="name"></td>
           <td class="description"></td>
           <td class="actions">
-            <input type="button" value="I">
+            <input type="button" value="I" class="do-install">
           </td>
         </tr>
       </tbody>
