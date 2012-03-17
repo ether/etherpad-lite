@@ -26,7 +26,7 @@ var AttribPool = require('./AttributePoolFactory').createAttributePool;
 var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
 var colorutils = require('./colorutils').colorutils;
-var Ace2Common = require('./ace2_common');
+var _ = require('./underscore');
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
@@ -152,7 +152,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     // splice the lines
     splice: function(start, numRemoved, newLinesVA)
     {
-      var newLines = Array.prototype.slice.call(arguments, 2).map(function(s) {
+      var newLines = _.map(Array.prototype.slice.call(arguments, 2), function(s) {
         return s;
       });
 
@@ -275,7 +275,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
     
-    var authors = padContents.getActiveAuthors().map(function(name)
+    var authors = _.map(padContents.getActiveAuthors(), function(name)
     {
       return authorData[name];
     });
@@ -381,7 +381,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       changesetLoader.queueUp(start, 1, update);
     }
     
-    var authors = padContents.getActiveAuthors().map(function(name){
+    var authors = _.map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
     });
     BroadcastSlider.setAuthors(authors);
@@ -524,7 +524,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         authorMap[obj.author] = obj.data;
         receiveAuthorData(authorMap);
         
-        var authors = padContents.getActiveAuthors().map(function(name) {
+        var authors = _.map(padContents.getActiveAuthors(), function(name) {
           return authorData[name];
         });
         

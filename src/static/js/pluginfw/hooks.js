@@ -1,10 +1,13 @@
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
+var _;
 
 /* FIXME: Ugly hack, in the future, use same code for server & client */
 if (plugins.isClient) {
-  var async = require("ep_etherpad-lite/static/js/pluginfw/async");
+  var async = require("ep_etherpad-lite/static/js/pluginfw/async");  
+  _ = require("underscore");
 } else {
   var async = require("async");
+  _ = require("underscore");
 }
 
 var hookCallWrapper = function (hook, hook_name, args, cb) {
@@ -34,7 +37,7 @@ exports.flatten = function (lst) {
 
 exports.callAll = function (hook_name, args) {
   if (plugins.hooks[hook_name] === undefined) return [];
-  return exports.flatten(plugins.hooks[hook_name].map(function (hook) {
+  return exports.flatten(_.map(plugins.hooks[hook_name], function (hook) {
     return hookCallWrapper(hook, hook_name, args);
   }));
 }

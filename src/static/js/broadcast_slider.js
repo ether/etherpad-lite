@@ -22,7 +22,7 @@
 
  // These parameters were global, now they are injected. A reference to the
  // Timeslider controller would probably be more appropriate.
-require('./ace2_common');
+var _ = require('./underscore');
 
 function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 {
@@ -175,7 +175,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       $("#authorstable").empty();
       var numAnonymous = 0;
       var numNamed = 0;
-      authors.forEach(function(author)
+      _.each(authors, function(author)
       {
         if (author.name)
         {
@@ -469,7 +469,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
             $("#timeslider").show();
             setSliderLength(clientVars.totalRevs);
             setSliderPosition(clientVars.revNum);
-            clientVars.savedRevisions.forEach(function(revision)
+            _.each(clientVars.savedRevisions, function(revision)
             {
               addSavedRevision(revision.revNum, revision);
             })

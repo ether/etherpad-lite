@@ -29,6 +29,7 @@ Ace2Editor.registry = {
 };
 
 var hooks = require('./pluginfw/hooks');
+var _ = require('./underscore');
 
 function Ace2Editor()
 {
@@ -70,7 +71,7 @@ function Ace2Editor()
 
   function doActionsPendingInit()
   {
-    $.each(actionsPendingInit, function(i,fn){
+    _.each(actionsPendingInit, function(fn,i){
       fn()
     });
     actionsPendingInit = [];
@@ -87,7 +88,7 @@ function Ace2Editor()
   'setUserChangeNotificationCallback', 'setAuthorInfo',
   'setAuthorSelectionRange', 'callWithAce', 'execCommand', 'replaceRange'];
   
-  $.each(aceFunctionsPendingInit, function(i,fnName){
+  _.each(aceFunctionsPendingInit, function(fnName,i){
     var prefix = 'ace_';
     var name = prefix + fnName;
     editor[fnName] = pendingInit(function(){

@@ -19,23 +19,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var editor, $, jQuery, plugins, Ace2Common;
+var editor, _, $, jQuery, plugins, Ace2Common;
 
 
 Ace2Common = require('./ace2_common');
 
 plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
 $ = jQuery = require('./rjquery').$;
+_ = require("./underscore");
 
 var isNodeText = Ace2Common.isNodeText,
-  object = Ace2Common.object,
-  extend = Ace2Common.extend,
   browser = Ace2Common.browser,
   getAssoc = Ace2Common.getAssoc,
   setAssoc = Ace2Common.setAssoc,
   isTextNode = Ace2Common.isTextNode,
-  forEach = Ace2Common.forEach,
-  map = Ace2Common.map,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
@@ -686,7 +683,7 @@ function Ace2Inner(){
     }
     else
     {
-      lines = text.split('\n').map(textify);
+      lines = _.map(text.split('\n'), textify);
     }
     var newText = "\n";
     if (lines.length > 0)
@@ -1622,7 +1619,7 @@ function Ace2Inner(){
         }
         //var fragment = magicdom.wrapDom(document.createDocumentFragment());
         domInsertsNeeded.push([nodeToAddAfter, lineNodeInfos]);
-        dirtyNodes.forEach(function(n){
+        _.each(dirtyNodes,function(n){
           toDeleteAtEnd.push(n);
         });
         var spliceHints = {};
@@ -1644,7 +1641,7 @@ function Ace2Inner(){
 
     // update the representation
     p.mark("splice");
-    splicesToDo.forEach(function(splice)
+    _.each(splicesToDo, function(splice)
     {
       doIncorpLineSplice(splice[0], splice[1], splice[2], splice[3], splice[4]);
     });
@@ -1654,14 +1651,14 @@ function Ace2Inner(){
     //var isTimeUp = newTimeLimit(100);
     // do DOM inserts
     p.mark("insert");
-    domInsertsNeeded.forEach(function(ins)
+    _.each(domInsertsNeeded,function(ins)
     {
       insertDomLines(ins[0], ins[1], isTimeUp);
     });
 
     p.mark("del");
     // delete old dom nodes
-    toDeleteAtEnd.forEach(function(n)
+    _.each(toDeleteAtEnd,function(n)
     {
       //var id = n.uniqueId();
       // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
@@ -1771,7 +1768,7 @@ function Ace2Inner(){
     var charEnd = rep.lines.offsetOfEntry(endEntry) + endEntry.width;
 
     //rep.lexer.lexCharRange([charStart, charEnd], isTimeUp);
-    infoStructs.forEach(function(info)
+    _.each(infoStructs, function(info)
     {
       var p2 = PROFILER("insertLine", false);
       var node = info.node;
@@ -2083,7 +2080,7 @@ function Ace2Inner(){
       splice: function(start, numRemoved, newLinesVA)
       {
         var args = Array.prototype.slice.call(arguments, 2);
-        domAndRepSplice(start, numRemoved, args.map(function(s){ return s.slice(0, -1); }), null);
+        domAndRepSplice(start, numRemoved, _.map(args, function(s){ return s.slice(0, -1); }), null);
       },
       get: function(i)
       {
@@ -2095,7 +2092,7 @@ function Ace2Inner(){
       },
       slice_notused: function(start, end)
       {
-        return rep.lines.slice(start, end).map(function(e)
+        return _.map(rep.lines.slice(start, end), function(e)
         {
           return e.text + '\n';
         });
@@ -2128,7 +2125,7 @@ function Ace2Inner(){
         }
       }
 
-      var lineEntries = newLineStrings.map(createDomLineEntry);
+      var lineEntries = _.map(newLineStrings, createDomLineEntry);
 
       doRepLineSplice(startLine, deleteCount, lineEntries);
 
@@ -2139,12 +2136,12 @@ function Ace2Inner(){
       }
       else nodeToAddAfter = null;
 
-      insertDomLines(nodeToAddAfter, lineEntries.map(function(entry)
+      insertDomLines(nodeToAddAfter, _.map(lineEntries, function(entry)
       {
         return entry.domInfo;
       }), isTimeUp);
 
-      keysToDelete.forEach(function(k)
+      _.each(keysToDelete, function(k)
       {
         var n = doc.getElementById(k);
         n.parentNode.removeChild(n);
@@ -2464,7 +2461,7 @@ function Ace2Inner(){
   function doRepLineSplice(startLine, deleteCount, newLineEntries)
   {
 
-    newLineEntries.forEach(function(entry)
+    _.each(newLineEntries, function(entry)
     {
       entry.width = entry.text.length + 1;
     });
@@ -2479,7 +2476,7 @@ function Ace2Inner(){
     currentCallStack.repChanged = true;
     var newRegionEnd = rep.lines.offsetOfIndex(startLine + newLineEntries.length);
 
-    var newText = newLineEntries.map(function(e)
+    var newText = _.map(newLineEntries, function(e)
     {
       return e.text + '\n';
     }).join('');
@@ -2509,7 +2506,7 @@ function Ace2Inner(){
       selEndHintChar = rep.lines.offsetOfIndex(hints.selEnd[0]) + hints.selEnd[1] - oldRegionStart;
     }
 
-    var newText = newLineEntries.map(function(e)
+    var newText = _.map(newLineEntries, function(e)
     {
       return e.text + '\n';
     }).join('');
@@ -3050,7 +3047,7 @@ function Ace2Inner(){
     {
       // returns index of cleanRange containing i, or -1 if none
       var answer = -1;
-      cleanRanges.forEach(function(r, idx)
+      _.each(cleanRanges ,function(r, idx)
       {
         if (i >= r[1]) return false; // keep looking
         if (i < r[0]) return true; // not found, stop looking
@@ -3843,7 +3840,7 @@ function Ace2Inner(){
 
   function getRepHTML()
   {
-    return rep.lines.slice().map(function(entry)
+    return _.map(rep.lines.slice(), function(entry)
     {
       var text = entry.text;
       var content;
@@ -4582,7 +4579,7 @@ function Ace2Inner(){
 
   function teardown()
   {
-    _teardownActions.forEach(function(a)
+    _.each(_teardownActions, function(a)
     {
       a();
     });
