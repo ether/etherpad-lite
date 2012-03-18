@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
+var Ace2Common = require('./ace2_common');
+var noop = Ace2Common.noop;
+var extend = Ace2Common.extend;
 
-var noop = require('./ace2_common').noop;
-
-
-function newSkipList()
+function SkipList()
 {
   var PROFILER = window.PROFILER;
   if (!PROFILER)
@@ -284,27 +284,6 @@ function newSkipList()
     }
     return dist;
   }
-/*function _debugToString() {
-    var array = [start];
-    while (array[array.length-1] !== end) {
-      array[array.length] = array[array.length-1].downPtrs[0];
-    }
-    function getIndex(node) {
-      if (!node) return null;
-      for(var i=0;i<array.length;i++) {
-	if (array[i] === node)
-	  return i-1;
-      }
-      return false;
-    }
-    var processedArray = map(array, function(node) {
-      var x = {key:node.key, levels: node.levels, downSkips: node.downSkips,
-	upPtrs: map(node.upPtrs, getIndex), downPtrs: map(node.downPtrs, getIndex),
-	downSkipWidths: node.downSkipWidths};
-      return x;
-    });
-    return map(processedArray, function (x) { return x.toSource(); }).join("\n");
-  }*/
 
   function _getNodeByKey(key)
   {
@@ -346,7 +325,7 @@ function newSkipList()
 The skip-list contains "entries", JavaScript objects that each must have a unique "key" property
 that is a string.
 */
-  var self = {
+  extend(this, {
     length: function()
     {
       return numNodes;
@@ -482,8 +461,7 @@ that is a string.
     {
       return start.levels;
     }
-  }
-  return self;
+  });
 }
 
-exports.newSkipList = newSkipList;
+module.exports = SkipList;

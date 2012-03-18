@@ -46,7 +46,7 @@ var domline = require('./domline').domline;
 var AttribPool = require('./AttributePool');
 var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
-var newSkipList = require('./skiplist').newSkipList;
+var SkipList = require('./skiplist');
 var undoModule = require('./undomodule').undoModule;
 var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
 
@@ -95,7 +95,7 @@ function Ace2Inner(){
   // native IE selections have that behavior (which we try not to interfere with).
   // Must be false if selection is collapsed!
   var rep = {
-    lines: newSkipList(),
+    lines: new SkipList(),
     selStart: null,
     selEnd: null,
     selFocusAtStart: false,
