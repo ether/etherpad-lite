@@ -22,69 +22,69 @@
  * limitations under the License.
  */
 
-exports.createAttributePool = function () {
-  var p = {};
-  p.numToAttrib = {}; // e.g. {0: ['foo','bar']}
-  p.attribToNum = {}; // e.g. {'foo,bar': 0}
-  p.nextNum = 0;
+var AttributePool = function () {
+  this.numToAttrib = {}; // e.g. {0: ['foo','bar']}
+  this.attribToNum = {}; // e.g. {'foo,bar': 0}
+  this.nextNum = 0;
+};
 
-  p.putAttrib = function (attrib, dontAddIfAbsent) {
-    var str = String(attrib);
-    if (str in p.attribToNum) {
-      return p.attribToNum[str];
-    }
-    if (dontAddIfAbsent) {
-      return -1;
-    }
-    var num = p.nextNum++;
-    p.attribToNum[str] = num;
-    p.numToAttrib[num] = [String(attrib[0] || ''), String(attrib[1] || '')];
-    return num;
+AttributePool.prototype.putAttrib = function (attrib, dontAddIfAbsent) {
+  var str = String(attrib);
+  if (str in this.attribToNum) {
+    return this.attribToNum[str];
+  }
+  if (dontAddIfAbsent) {
+    return -1;
+  }
+  var num = this.nextNum++;
+  this.attribToNum[str] = num;
+  this.numToAttrib[num] = [String(attrib[0] || ''), String(attrib[1] || '')];
+  return num;
+};
+
+AttributePool.prototype.getAttrib = function (num) {
+  var pair = this.numToAttrib[num];
+  if (!pair) {
+    return pair;
+  }
+  return [pair[0], pair[1]]; // return a mutable copy
+};
+
+AttributePool.prototype.getAttribKey = function (num) {
+  var pair = this.numToAttrib[num];
+  if (!pair) return '';
+  return pair[0];
+};
+
+AttributePool.prototype.getAttribValue = function (num) {
+  var pair = this.numToAttrib[num];
+  if (!pair) return '';
+  return pair[1];
+};
+
+AttributePool.prototype.eachAttrib = function (func) {
+  for (var n in this.numToAttrib) {
+    var pair = this.numToAttrib[n];
+    func(pair[0], pair[1]);
+  }
+};
+
+AttributePool.prototype.toJsonable = function () {
+  return {
+    numToAttrib: this.numToAttrib,
+    nextNum: this.nextNum
   };
+};
 
-  p.getAttrib = function (num) {
-    var pair = p.numToAttrib[num];
-    if (!pair) {
-      return pair;
-    }
-    return [pair[0], pair[1]]; // return a mutable copy
-  };
+AttributePool.prototype.fromJsonable = function (obj) {
+  this.numToAttrib = obj.numToAttrib;
+  this.nextNum = obj.nextNum;
+  this.attribToNum = {};
+  for (var n in this.numToAttrib) {
+    this.attribToNum[String(this.numToAttrib[n])] = Number(n);
+  }
+  return this;
+};
+  
 
-  p.getAttribKey = function (num) {
-    var pair = p.numToAttrib[num];
-    if (!pair) return '';
-    return pair[0];
-  };
-
-  p.getAttribValue = function (num) {
-    var pair = p.numToAttrib[num];
-    if (!pair) return '';
-    return pair[1];
-  };
-
-  p.eachAttrib = function (func) {
-    for (var n in p.numToAttrib) {
-      var pair = p.numToAttrib[n];
-      func(pair[0], pair[1]);
-    }
-  };
-
-  p.toJsonable = function () {
-    return {
-      numToAttrib: p.numToAttrib,
-      nextNum: p.nextNum
-    };
-  };
-
-  p.fromJsonable = function (obj) {
-    p.numToAttrib = obj.numToAttrib;
-    p.nextNum = obj.nextNum;
-    p.attribToNum = {};
-    for (var n in p.numToAttrib) {
-      p.attribToNum[String(p.numToAttrib[n])] = Number(n);
-    }
-    return p;
-  };
-
-  return p;
-}
+module.exports = AttributePool;

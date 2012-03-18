@@ -39,7 +39,7 @@
   , "pad_modals.js"
   , "pad_savedrevs.js"
   , "pad_impexp.js"
-  , "AttributePoolFactory.js"
+  , "AttributePool.js"
   , "Changeset.js"
   , "domline.js"
   , "linestylefilter.js"
@@ -51,7 +51,7 @@
   ]
 , "ace2_inner.js": [
     "ace2_common.js"
-  , "AttributePoolFactory.js"
+  , "AttributePool.js"
   , "Changeset.js"
   , "security.js"
   , "skiplist.js"

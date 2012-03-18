@@ -23,7 +23,7 @@ var ERR = require("async-stacktrace");
 var async = require("async");
 var padManager = require("../db/PadManager");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
+var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var authorManager = require("../db/AuthorManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
 var settings = require('../utils/Settings');
@@ -368,7 +368,7 @@ function handleUserChanges(client, message)
   
   //get all Vars we need
   var baseRev = message.data.baseRev;
-  var wireApool = (AttributePoolFactory.createAttributePool()).fromJsonable(message.data.apool);
+  var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
   var changeset = message.data.changeset;
       
   var r, apool, pad;

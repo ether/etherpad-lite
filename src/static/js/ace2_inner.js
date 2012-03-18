@@ -43,7 +43,7 @@ var colorutils = require('./colorutils').colorutils;
 var makeContentCollector = require('./contentcollector').makeContentCollector;
 var makeCSSManager = require('./cssmanager').makeCSSManager;
 var domline = require('./domline').domline;
-var AttribPool = require('./AttributePoolFactory').createAttributePool;
+var AttribPool = require('./AttributePool');
 var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
 var newSkipList = require('./skiplist').newSkipList;
@@ -51,6 +51,7 @@ var undoModule = require('./undomodule').undoModule;
 var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
 
 function Ace2Inner(){
+
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false 
   var isSetUp = false;

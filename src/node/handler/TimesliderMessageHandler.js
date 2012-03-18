@@ -23,7 +23,7 @@ var ERR = require("async-stacktrace");
 var async = require("async");
 var padManager = require("../db/PadManager");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
+var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var settings = require('../utils/Settings');
 var authorManager = require("../db/AuthorManager");
 var log4js = require('log4js');
@@ -265,7 +265,7 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
   var forwardsChangesets = [];
   var backwardsChangesets = [];
   var timeDeltas = [];
-  var apool = AttributePoolFactory.createAttributePool();
+  var apool = new AttributePool();
   var pad;
   var composedChangesets = {};
   var revisionDate = [];
