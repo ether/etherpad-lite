@@ -40,14 +40,14 @@ exports.callAll = function (hook_name, args) {
 }
 
 exports.aCallAll = function (hook_name, args, cb) {
-  if (plugins.hooks[hook_name] === undefined) cb([]);
+  if (plugins.hooks[hook_name] === undefined) return cb(null, []);
   async.map(
     plugins.hooks[hook_name],
     function (hook, cb) {
       hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
     function (err, res) {
-      cb(exports.flatten(res));
+      cb(null, exports.flatten(res));
     }
   );
 }
@@ -58,8 +58,8 @@ exports.callFirst = function (hook_name, args) {
 }
 
 exports.aCallFirst = function (hook_name, args, cb) {
-  if (plugins.hooks[hook_name][0] === undefined) cb([]);
-  hookCallWrapper(plugins.hooks[hook_name][0], hook_name, args, function (res) { cb(exports.flatten(res)); });
+  if (plugins.hooks[hook_name][0] === undefined) return cb(null, []);
+    hookCallWrapper(plugins.hooks[hook_name][0], hook_name, args, function (res) { cb(null, exports.flatten(res)); });
 }
 
 exports.callAllStr = function(hook_name, args, sep, pre, post) {

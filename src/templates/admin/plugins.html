@@ -20,10 +20,10 @@
         position: absolute;
         left: 50%;
         top: 50%;
-        width: 500px;
-        height: 400px;
-        margin-left: -250px;
-        margin-top: -200px;
+        width: 700px;
+        height: 500px;
+        margin-left: -350px;
+        margin-top: -250px;
         border: 3px solid #999999;
         background: #eeeeee;
       }
@@ -33,6 +33,8 @@
         border-bottom: 3px solid #999999;
         font-size: 24px;
         line-height: 24px;
+        height: 24px;
+        overflow: hidden;
       }
       .dialog .title .close {
         float: right;
@@ -46,6 +48,7 @@
         left: 10px;
         right: 10px;
         padding: 2px;
+        overflow: auto;
       }
     </style>
     <script src="../../static/js/jquery.js"></script>
@@ -53,6 +56,8 @@
     <script>
       $(document).ready(function () {
         var socket = io.connect().of("/pluginfw/installer");
+
+        var doUpdate = false;
 
         function updateHandlers() {
           $("#progress.dialog .close").click(function () {
@@ -64,14 +69,16 @@
               socket.emit("search", $("#search-query")[0].value);
           });
 
-          $("#do-install").click(function (e) {
+          $(".do-install").click(function (e) {
             var row = $(e.target).closest("tr");
+            doUpdate = true;
             socket.emit("install", row.find(".name").html());
           });
 
-          $("#do-uninstall").click(function (e) {
+          $(".do-uninstall").click(function (e) {
             var row = $(e.target).closest("tr");
-            socket.emit("install", row.find(".name").html());
+            doUpdate = true;
+            socket.emit("uninstall", row.find(".name").html());
           });
         }
 
@@ -80,17 +87,24 @@
         socket.on('progress', function (data) {
           $("#progress.dialog .close").hide();
           $("#progress.dialog").show();
-          var message = data.message;
+          var message = "Unknown status";
+          if (data.message) {
+            message = "<span class='status'>" + data.message.toString() + "</span>";
+          }
           if (data.error) {
-            message = "<div class='error'>" + data.error.toString() + "<div>";            
+            message = "<span class='error'>" + data.error.toString() + "<span>";            
           }
           $("#progress.dialog .message").html(message);
-          $("#progress.dialog .history").append(message);
+          $("#progress.dialog .history").append("<div>" + message + "</div>");
 
           if (data.progress >= 1) {
             if (data.error) {
               $("#progress.dialog .close").show();
             } else {
+              if (doUpdate) {
+                doUpdate = false;
+                socket.emit("load");
+              }
               $("#progress.dialog").hide();
             }
           }
@@ -109,6 +123,23 @@
           }
           updateHandlers();
         });
+
+        socket.on('installed-results', function (data) {
+          $("#installed-plugins *").remove();
+          for (plugin_name in data.results) {
+            var plugin = data.results[plugin_name];
+            var row = $("#installed-plugin-template").clone();
+
+            for (attr in plugin.package) {
+              row.find("." + attr).html(plugin.package[attr]);
+            }
+            $("#installed-plugins").append(row);
+          }
+          updateHandlers();
+        });
+
+        socket.emit("load");
+
       });
     </script>
   </head>
@@ -131,17 +162,16 @@
           <td></td>
         </tr>
       </thead>
-      <tbody>
-        <% for (var plugin_name in plugins) { %>
-          <% var plugin = plugins[plugin_name]; %>
-          <tr>
-            <td class="name"><%= plugin.package.name %></td>
-            <td><%= plugin.package.description %></td>
-            <td>
-              <input type="submit" value="U" class="do-uninstall">
-            </td>
-          </tr>
-        <% } %>
+      <tbody class="template">
+        <tr id="installed-plugin-template">
+          <td class="name"></td>
+          <td class="description"></td>
+          <td class="actions">
+            <input type="button" value="I" class="do-uninstall">
+          </td>
+        </tr>
+      </tbody>
+      <tbody id="installed-plugins">
       </tbody>
     </table>
 
