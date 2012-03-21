@@ -38,7 +38,7 @@ exports._init = function (b, recursive) {
 
 exports._exit = function (b, recursive) {
   exports.info.file_stack[exports.info.file_stack.length-1].inherit.forEach(function (item) {
-    exports.require(item.name, item.args);
+    exports._require(item.name, item.args);
   });
   exports.info.buf = exports.info.buf_stack.pop();
 }
@@ -93,8 +93,6 @@ exports.inherit = function (name, args) {
 
 exports.require = function (name, args) {
   if (args == undefined) args = {};
-  if (!exports.info)
-    exports.init(null);
  
   if ((name.indexOf("./") == 0 || name.indexOf("../") == 0) && exports.info.file_stack.length) {
       name = path.join(path.dirname(exports.info.file_stack[exports.info.file_stack.length-1].path), name);
@@ -108,7 +106,9 @@ exports.require = function (name, args) {
   var res = ejs.render(template, args);
   exports.info.file_stack.pop();
 
-  if (exports.info.buf)
-    exports.info.buf.push(res);
   return res;
+}
+
+exports._require = function (name, args) {
+  exports.info.buf.push(exports.require(name, args));
 }
