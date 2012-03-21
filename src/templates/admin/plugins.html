@@ -60,22 +60,22 @@
         var doUpdate = false;
 
         function updateHandlers() {
-          $("#progress.dialog .close").click(function () {
+          $("#progress.dialog .close").unbind('click').click(function () {
             $("#progress.dialog").hide();
           });
 
-          $("#do-search").click(function () {
+          $("#do-search").unbind('click').click(function () {
             if ($("#search-query")[0].value != "")
               socket.emit("search", $("#search-query")[0].value);
           });
 
-          $(".do-install").click(function (e) {
+          $(".do-install").unbind('click').click(function (e) {
             var row = $(e.target).closest("tr");
             doUpdate = true;
             socket.emit("install", row.find(".name").html());
           });
 
-          $(".do-uninstall").click(function (e) {
+          $(".do-uninstall").unbind('click').click(function (e) {
             var row = $(e.target).closest("tr");
             doUpdate = true;
             socket.emit("uninstall", row.find(".name").html());

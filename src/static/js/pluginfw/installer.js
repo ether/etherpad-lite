@@ -64,7 +64,7 @@ exports.search = function(pattern, cb) {
           if (er) return cb(er);
           var res = {};
           for (key in data) {
-              if (/*key.indexOf(plugins.prefix) == 0 &&*/ key.indexOf(pattern) != -1)
+            if (key.indexOf(plugins.prefix) == 0 && key.indexOf(pattern) != -1)
               res[key] = data[key];
           }
           cb(null, {results:res});
