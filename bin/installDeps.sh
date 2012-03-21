@@ -96,7 +96,7 @@ rm -f var/minified*
 
 echo "ensure custom css/js files are created..."
 
-for f in "index" "pad" "timeslider"
+for f in "index" "pad" "timeslider" "inner"
 do
   if [ ! -f "static/custom/$f.js" ]; then
     cp -v "static/custom/js.template" "static/custom/$f.js" || exit 1

@@ -265,6 +265,8 @@ function Ace2Editor()
       pushScriptsTo(iframeHTML);
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
+      iframeHTML.push('<link rel="stylesheet" type="text/css" href="/static/custom/inner.css"/>');
+      iframeHTML.push('<script type="text/javascript" src="/static/custom/inner.js"></script>');
       iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
       // Expose myself to global for my child frame.
