@@ -265,8 +265,8 @@ function Ace2Editor()
       pushScriptsTo(iframeHTML);
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
-      iframeHTML.push('<link rel="stylesheet" type="text/css" href="/static/custom/inner.css"/>');
-      iframeHTML.push('<script type="text/javascript" src="/static/custom/inner.js"></script>');
+      iframeHTML.push('<link rel="stylesheet" type="text/css" href="../static/custom/inner.css"/>');
+      iframeHTML.push('<script type="text/javascript" src="../static/custom/inner.js"></script>');
       iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
       // Expose myself to global for my child frame.
@@ -287,7 +287,7 @@ function Ace2Editor()
 
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
-      outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/><link rel="stylesheet" type="text/css" href="/static/custom/outer.css"/>', '\x3cscript>\n', outerScript.replace(/<\//g, '<\\/'), '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body><script type="text/javascript" src="/static/custom/outer.js"></script></html>');
+      outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/><link rel="stylesheet" type="text/css" href="../static/custom/outer.css"/>', '\x3cscript>\n', outerScript.replace(/<\//g, '<\\/'), '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body><script type="text/javascript" src="../static/custom/outer.js"></script></html>');
 
       var outerFrame = document.createElement("IFRAME");
       outerFrame.frameBorder = 0; // for IE
