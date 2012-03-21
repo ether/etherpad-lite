@@ -233,13 +233,14 @@ require.setGlobalKeyPath("require");\n\
       iframeHTML.push(doctype);
       iframeHTML.push("<html><head>");
 
+      hooks.callAll("aceInitInnerdocbodyHead", {
+        iframeHTML: iframeHTML
+      });
+
       // For compatability's sake transform in and out.
       for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
         iframeHTML[i] = JSON.stringify(iframeHTML[i]);
       }
-      hooks.callAll("aceInitInnerdocbodyHead", {
-        iframeHTML: iframeHTML
-      });
       for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
         iframeHTML[i] = JSON.parse(iframeHTML[i]);
       }
