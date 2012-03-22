@@ -846,7 +846,7 @@ function Ace2Inner(){
     var cmdArgs = Array.prototype.slice.call(arguments, 1);
     if (CMDS[cmd])
     {
-      inCallStack(cmd, function()
+      inCallStackIfNecessary(cmd, function()
       {
         fastIncorp(9);
         CMDS[cmd].apply(CMDS, cmdArgs);
@@ -856,7 +856,7 @@ function Ace2Inner(){
 
   function replaceRange(start, end, text)
   {
-    inCallStack('replaceRange', function()
+    inCallStackIfNecessary('replaceRange', function()
     {
       fastIncorp(9);
       performDocumentReplaceRange(start, end, text);
@@ -1159,7 +1159,7 @@ function Ace2Inner(){
       return;
     }
 
-    inCallStack("idleWorkTimer", function()
+    inCallStackIfNecessary("idleWorkTimer", function()
     {
 
       var isTimeUp = newTimeLimit(250);
@@ -2335,6 +2335,7 @@ function Ace2Inner(){
     var cs = builder.toString();
     performDocumentApplyChangeset(cs);
   }
+  editorInfo.ace_performDocumentApplyAttributesToRange = performDocumentApplyAttributesToRange;
 
   function buildKeepToStartOfRange(builder, start)
   {
@@ -2860,6 +2861,7 @@ function Ace2Inner(){
       currentCallStack.selectionAffected = true;
     }
   }
+  editorInfo.ace_performSelectionChange = performSelectionChange;
 
   // Change the abstract representation of the document to have a different selection.
   // Should not rely on the line representation.  Should not affect the DOM.
@@ -3287,7 +3289,7 @@ function Ace2Inner(){
 
   function handleClick(evt)
   {
-    inCallStack("handleClick", function()
+    inCallStackIfNecessary("handleClick", function()
     {
       idleWorkTimer.atMost(200);
     });
@@ -3609,7 +3611,7 @@ function Ace2Inner(){
 
     var stopped = false;
 
-    inCallStack("handleKeyEvent", function()
+    inCallStackIfNecessary("handleKeyEvent", function()
     {
 
       if (type == "keypress" || (isTypeForSpecialKey && keyCode == 13 /*return*/ ))
@@ -4698,7 +4700,7 @@ function Ace2Inner(){
     }
 
     // click below the body
-    inCallStack("handleOuterClick", function()
+    inCallStackIfNecessary("handleOuterClick", function()
     {
       // put caret at bottom of doc
       fastIncorp(11);
@@ -4771,7 +4773,7 @@ function Ace2Inner(){
   function setup()
   {
     doc = document; // defined as a var in scope outside
-    inCallStack("setup", function()
+    inCallStackIfNecessary("setup", function()
     {
       var body = doc.getElementById("innerdocbody");
       root = body; // defined as a var in scope outside
