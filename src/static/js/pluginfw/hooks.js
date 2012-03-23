@@ -4,7 +4,7 @@ var _;
 /* FIXME: Ugly hack, in the future, use same code for server & client */
 if (plugins.isClient) {
   var async = require("ep_etherpad-lite/static/js/pluginfw/async");  
-  _ = require("underscore");
+  _ = require("ep_etherpad-lite/static/js/underscore");
 } else {
   var async = require("async");
   _ = require("underscore");
