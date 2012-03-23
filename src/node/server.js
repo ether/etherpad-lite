@@ -51,8 +51,9 @@ console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 
-//cache 6 hours
-exports.maxAge = 1000*60*60*6;
+//cache 6 hours, by default
+var hour = 60*60;
+exports.maxAge = settings.maxAge || 6 * hour;
 
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
