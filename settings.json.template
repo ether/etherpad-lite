@@ -39,9 +39,9 @@
      but makes it impossible to debug the javascript/css */
   "minify" : true,
 
-  /* How long may clients use served javascript code? Without versioning this
-    is may cause problems during deployment. */
-  "maxAge" : 21600000, // 6 hours
+  /* How long may clients use served javascript code (in seconds)? Without versioning this
+    is may cause problems during deployment. Set to 0 to disable caching */
+  "maxAge" : 21600, // 6 hours
   
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to enable the import/export of pads*/  
