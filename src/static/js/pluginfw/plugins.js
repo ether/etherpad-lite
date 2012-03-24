@@ -78,6 +78,9 @@ if (exports.isClient) {
       exports.hooks = exports.extractHooks(exports.parts, "client_hooks");
       exports.loaded = true;
       cb();
+     }).error(function(xhr, s, err){
+       console.error("Failed to load plugin-definitions: " + err);
+       cb();
      });
   }
 } else {
