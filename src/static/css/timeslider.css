@@ -1,4 +1,7 @@
-#editorcontainerbox {overflow:auto; top:40px;}
+#editorcontainerbox {
+  overflow:auto; top:40px;
+  position: static;
+}
 
 #padcontent {font-size:12px; padding:10px;}
 
