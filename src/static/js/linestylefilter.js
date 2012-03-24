@@ -30,9 +30,8 @@
 
 var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
-var map = require('./ace2_common').map;
-
 var linestylefilter = {};
+var _ = require('./underscore');
 
 linestylefilter.ATTRIB_CLASSES = {
   'bold': 'tag:b',
@@ -302,7 +301,7 @@ linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
     linestylefilter: linestylefilter,
     browser: browser
   });
-  map(hookFilters, function(hookFilter)
+  _.map(hookFilters ,function(hookFilter)
   {
     func = hookFilter(lineText, func);
   });

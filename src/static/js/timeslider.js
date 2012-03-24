@@ -29,6 +29,7 @@ require('./undo-xpopup');
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
+var _ = require('./underscore');
 
 var socket, token, padId, export_links;
 
@@ -138,6 +139,7 @@ function handleClientVars(message)
   var export_rev_regex = /(\/\d+)?\/export/
   BroadcastSlider.onSlider(function(revno)
   {
+    // export_links is a jQuery Array, so .each is allowed.
     export_links.each(function()
     {
       this.setAttribute('href', this.href.replace(export_rev_regex, '/' + revno + '/export'));

@@ -29,58 +29,10 @@ function isNodeText(node)
 
 function object(o)
 {
-  var f = function()
-    {};
+  var f = function(){};
   f.prototype = o;
   return new f();
 }
-
-function extend(obj, props)
-{
-  for (var p in props)
-  {
-    obj[p] = props[p];
-  }
-  return obj;
-}
-
-function forEach(array, func)
-{
-  for (var i = 0; i < array.length; i++)
-  {
-    var result = func(array[i], i);
-    if (result) break;
-  }
-}
-
-function map(array, func)
-{
-  var result = [];
-  // must remain compatible with "arguments" pseudo-array
-  for (var i = 0; i < array.length; i++)
-  {
-    if (func) result.push(func(array[i], i));
-    else result.push(array[i]);
-  }
-  return result;
-}
-
-function filter(array, func)
-{
-  var result = [];
-  // must remain compatible with "arguments" pseudo-array
-  for (var i = 0; i < array.length; i++)
-  {
-    if (func(array[i], i)) result.push(array[i]);
-  }
-  return result;
-}
-
-function isArray(testObject)
-{
-  return testObject && typeof testObject === 'object' && !(testObject.propertyIsEnumerable('length')) && typeof testObject.length === 'number';
-}
-
 var userAgent = (((function () {return this;})().navigator || {}).userAgent || 'node-js').toLowerCase();
 
 // Figure out what browser is being used (stolen from jquery 1.2.1)
@@ -142,21 +94,13 @@ function htmlPrettyEscape(str)
 }
 
 var noop = function(){};
-var identity = function(x){return x};
 
 exports.isNodeText = isNodeText;
 exports.object = object;
-exports.extend = extend;
-exports.forEach = forEach;
-exports.map = map;
-exports.filter = filter;
-exports.isArray = isArray;
 exports.browser = browser;
 exports.getAssoc = getAssoc;
 exports.setAssoc = setAssoc;
 exports.binarySearch = binarySearch;
 exports.binarySearchInfinite = binarySearchInfinite;
 exports.htmlPrettyEscape = htmlPrettyEscape;
-exports.map = map;
 exports.noop = noop;
-exports.identity = identity;
