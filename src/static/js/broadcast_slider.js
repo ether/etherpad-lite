@@ -170,26 +170,27 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       $('#error').show();
     }
 
+    var fixPadHeight = _.throttle(function(){
+      var height = $('#timeslider-top').height();
+      $('#editorcontainerbox').css({marginTop: height});
+    }, 600);
+    
     function setAuthors(authors)
     {
-      $("#authorstable").empty();
+      var authorsList = $("#authorsList");
+      authorsList.empty();
       var numAnonymous = 0;
       var numNamed = 0;
       _.each(authors, function(author)
       {
         if (author.name)
         {
+          if (numNamed !== 0) authorsList.append(', ');
+           
+          var authorColor =  clientVars.colorPalette[author.colorId] || author.colorId;
+          var span = $('<span />').text(author.name || "unnamed").css('background-color', authorColor).addClass('author');
+          authorsList.append(span);
           numNamed++;
-          var tr = $('<tr></tr>');
-          var swatchtd = $('<td></td>');
-          var swatch = $('<div class="swatch"></div>');
-          swatch.css('background-color', clientVars.colorPalette[author.colorId]);
-          swatchtd.append(swatch);
-          tr.append(swatchtd);
-          var nametd = $('<td></td>');
-          nametd.text(author.name || "unnamed");
-          tr.append(nametd);
-          $("#authorstable").append(tr);
         }
         else
         {
@@ -198,13 +199,19 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       });
       if (numAnonymous > 0)
       {
-        var html = "<tr><td colspan=\"2\" style=\"color:#999; padding-left: 10px\">" + (numNamed > 0 ? "...and " : "") + numAnonymous + " unnamed author" + (numAnonymous > 1 ? "s" : "") + "</td></tr>";
-        $("#authorstable").append($(html));
+        var anonymousAuthorString = numAnonymous + " unnamed author" + (numAnonymous > 1 ? "s" : "")
+        if (numNamed !== 0){
+          authorsList.append(' + ' + anonymousAuthorString);
+        } else {
+          authorsList.append(anonymousAuthorString);
+        }
       }
       if (authors.length == 0)
       {
-        $("#authorstable").append($("<tr><td colspan=\"2\" style=\"color:#999; padding-left: 10px\">No Authors</td></tr>"))
+        authorsList.append("No Authors");
       }
+      
+      fixPadHeight();
     }
 
     BroadcastSlider = {
@@ -465,7 +472,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         {
           if (clientVars.supportsSlider)
           {
-            $("#padmain, #rightbars").css('top', "130px");
             $("#timeslider").show();
             setSliderLength(clientVars.totalRevs);
             setSliderPosition(clientVars.revNum);
