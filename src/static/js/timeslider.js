@@ -139,7 +139,8 @@ function handleClientVars(message)
   var export_rev_regex = /(\/\d+)?\/export/
   BroadcastSlider.onSlider(function(revno)
   {
-    _.each(export_links, function()
+    // export_links is a jQuery Array, so .each is allowed.
+    export_links.each(function()
     {
       this.setAttribute('href', this.href.replace(export_rev_regex, '/' + revno + '/export'));
     });
