@@ -181,20 +181,26 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       authorsList.empty();
       var numAnonymous = 0;
       var numNamed = 0;
+      var colorsAnonymous = [];
       _.each(authors, function(author)
       {
+        var authorColor =  clientVars.colorPalette[author.colorId] || author.colorId;
         if (author.name)
         {
           if (numNamed !== 0) authorsList.append(', ');
-           
-          var authorColor =  clientVars.colorPalette[author.colorId] || author.colorId;
-          var span = $('<span />').text(author.name || "unnamed").css('background-color', authorColor).addClass('author');
-          authorsList.append(span);
+          
+          $('<span />')
+            .text(author.name || "unnamed")
+            .css('background-color', authorColor)
+            .addClass('author')
+            .appendTo(authorsList);
+
           numNamed++;
         }
         else
         {
           numAnonymous++;
+          if(authorColor) colorsAnonymous.push(authorColor);
         }
       });
       if (numAnonymous > 0)
@@ -205,6 +211,19 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         } else {
           authorsList.append(anonymousAuthorString);
         }
+        
+        if(colorsAnonymous.length > 0){
+          authorsList.append(' (');
+          _.each(colorsAnonymous, function(color, i){
+            if( i > 0 ) authorsList.append(' '); 
+            $('<span /> ')
+              .css('background-color', color)
+              .addClass('author author-anonymous')
+              .appendTo(authorsList);
+          });
+          authorsList.append(')');
+        }
+        
       }
       if (authors.length == 0)
       {

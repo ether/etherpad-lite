@@ -116,6 +116,11 @@
   padding-right: 0.4em;
 }
 
+#authorsList .author-anonymous {
+  padding-left: 0.6em;
+  padding-right: 0.6em;
+}
+
 #padeditor {
   position: static;
 }
