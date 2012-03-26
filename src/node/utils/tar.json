@@ -1,6 +1,7 @@
 {
   "pad.js": [
     "jquery.js"
+  , "underscore.js"
   , "security.js"
   , "pad.js"
   , "ace2_common.js"
@@ -25,6 +26,7 @@
   ]
 , "timeslider.js": [
     "jquery.js"
+  , "underscore.js"
   , "security.js"
   , "undo-xpopup.js"
   , "json2.js"
@@ -51,6 +53,8 @@
   ]
 , "ace2_inner.js": [
     "ace2_common.js"
+  , "underscore.js"
+  , "rjquery.js"
   , "AttributePoolFactory.js"
   , "Changeset.js"
   , "security.js"
