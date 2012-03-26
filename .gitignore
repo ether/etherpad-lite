@@ -14,3 +14,5 @@ src/static/js/jquery.js
 src/static/js/prefixfree.js
 npm-debug.log
 *.DS_Store
+run.log
+vagrant/.vagrant
