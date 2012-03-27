@@ -2048,6 +2048,7 @@ function Ace2Inner(){
       return [lineNum, col];
     }
   }
+  editorInfo.ace_getLineAndCharForPoint = getLineAndCharForPoint;
 
   function createDomLineEntry(lineString)
   {
