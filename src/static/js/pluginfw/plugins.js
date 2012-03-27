@@ -1,5 +1,7 @@
 exports.isClient = typeof global != "object";
 
+var _;
+
 if (!exports.isClient) {
   var npm = require("npm/lib/npm.js");
   var readInstalled = require("npm/lib/utils/read-installed.js");
@@ -10,6 +12,12 @@ if (!exports.isClient) {
   var fs = require("fs");
   var tsort = require("./tsort");
   var util = require("util");
+  _ = require("underscore");
+}else{
+  var $, jQuery
+  $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").$;
+  _ = require("ep_etherpad-lite/static/js/underscore");
+  
 }
 
 exports.prefix = 'ep_';
@@ -26,17 +34,17 @@ exports.ensure = function (cb) {
 }
 
 exports.formatPlugins = function () {
-  return Object.keys(exports.plugins).join(", ");
+  return _.keys(exports.plugins).join(", ");
 }
 
 exports.formatParts = function () {
-  return exports.parts.map(function (part) { return part.full_name; }).join("\n");
+  return _.map(exports.parts, function (part) { return part.full_name; }).join("\n");
 }
 
 exports.formatHooks = function () {
   var res = [];
-  Object.keys(exports.hooks).forEach(function (hook_name) {
-    exports.hooks[hook_name].forEach(function (hook) {
+  _.chain(exports.hooks).keys().forEach(function (hook_name) {
+    _.forEach(exports.hooks[hook_name], function (hook) {
       res.push(hook.hook_name + ": " + hook.hook_fn_name + " from " + hook.part.full_name);
     });
   });
@@ -46,7 +54,7 @@ exports.formatHooks = function () {
 exports.loadFn = function (path) {
   var x = path.split(":");
   var fn = require(x[0]);
-  x[1].split(".").forEach(function (name) {
+  _.each(x[1].split("."), function (name) {
     fn = fn[name];
   });
   return fn;
@@ -54,8 +62,8 @@ exports.loadFn = function (path) {
 
 exports.extractHooks = function (parts, hook_set_name) {
   var hooks = {};
-  parts.forEach(function (part) {
-    Object.keys(part[hook_set_name] || {}).forEach(function (hook_name) {
+  _.each(parts,function (part) {
+    _.chain(part[hook_set_name] || {}).keys().each(function (hook_name) {
       if (hooks[hook_name] === undefined) hooks[hook_name] = [];
       var hook_fn_name = part[hook_set_name][hook_name];
       var hook_fn = exports.loadFn(part[hook_set_name][hook_name]);
@@ -78,6 +86,9 @@ if (exports.isClient) {
       exports.hooks = exports.extractHooks(exports.parts, "client_hooks");
       exports.loaded = true;
       cb();
+     }).error(function(xhr, s, err){
+       console.error("Failed to load plugin-definitions: " + err);
+       cb();
      });
   }
 } else {
@@ -110,7 +121,7 @@ exports.getPackages = function (cb) {
     if (er) cb(er, null);
     var packages = {};
     function flatten(deps) {
-      Object.keys(deps).forEach(function (name) {
+      _.chain(deps).keys().each(function (name) {
         if (name.indexOf(exports.prefix) == 0) {
           packages[name] = deps[name];
 	}
@@ -137,7 +148,7 @@ exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
         var plugin = JSON.parse(data);
 	plugin.package = packages[plugin_name];
 	plugins[plugin_name] = plugin;
-	plugin.parts.forEach(function (part) {
+	_.each(plugin.parts, function (part) {
 	  part.plugin = plugin_name;
 	  part.full_name = plugin_name + "/" + part.name;
 	  parts[part.full_name] = part;
@@ -152,11 +163,11 @@ exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
 
 exports.partsToParentChildList = function (parts) {
   var res = [];
-  Object.keys(parts).forEach(function (name) {
-    (parts[name].post || []).forEach(function (child_name)  {
+  _.chain(parts).keys().forEach(function (name) {
+    _.each(parts[name].post || [], function (child_name)  {
       res.push([name, child_name]);
     });
-    (parts[name].pre || []).forEach(function (parent_name)  {
+    _.each(parts[name].pre || [], function (parent_name)  {
       res.push([parent_name, name]);
     });
     if (!parts[name].pre && !parts[name].post) {
@@ -166,6 +177,8 @@ exports.partsToParentChildList = function (parts) {
   return res;
 }
 
+
+// Used only in Node, so no need for _
 exports.sortParts = function(parts) {
   return tsort(
     exports.partsToParentChildList(parts)

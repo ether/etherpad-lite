@@ -128,7 +128,11 @@ exports.handleDisconnect = function(client)
       //Go trough all user that are still on the pad, and send them the USER_LEAVE message
       for(i in pad2sessions[sessionPad])
       {
-        socketio.sockets.sockets[pad2sessions[sessionPad][i]].json.send(messageToTheOtherUsers);
+        var socket = socketio.sockets.sockets[pad2sessions[sessionPad][i]];
+        if(socket !== undefined){
+          socket.json.send(messageToTheOtherUsers);
+        }
+        
       }
     }); 
   }
@@ -738,9 +742,10 @@ function handleClientReady(client, message)
       {
         for(var i in pad2sessions[message.padId])
         {
-          if(sessioninfos[pad2sessions[message.padId][i]].author == author)
+          if(sessioninfos[pad2sessions[message.padId][i]] && sessioninfos[pad2sessions[message.padId][i]].author == author)
           {
-            socketio.sockets.sockets[pad2sessions[message.padId][i]].json.send({disconnect:"userdup"});
+            var socket = socketio.sockets.sockets[pad2sessions[message.padId][i]];
+            if(socket) socket.json.send({disconnect:"userdup"});
           }
         }
       }

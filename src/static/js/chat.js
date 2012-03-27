@@ -147,10 +147,11 @@ var chat = (function()
         }
       });
       
-      for(var i in clientVars.chatHistory)
-      {
-        this.addMessage(clientVars.chatHistory[i], false);
-      }
+      var that = this;
+      $.each(clientVars.chatHistory, function(i, o){
+        that.addMessage(o, false);
+      })
+
       $("#chatcounter").text(clientVars.chatHistory.length);
     }
   }

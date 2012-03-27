@@ -26,10 +26,7 @@ var AttribPool = require('./AttributePool');
 var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
 var colorutils = require('./colorutils').colorutils;
-var Ace2Common = require('./ace2_common');
-
-var map = Ace2Common.map;
-var forEach = Ace2Common.forEach;
+var _ = require('./underscore');
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
@@ -155,7 +152,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     // splice the lines
     splice: function(start, numRemoved, newLinesVA)
     {
-      var newLines = map(Array.prototype.slice.call(arguments, 2), function(s) {
+      var newLines = _.map(Array.prototype.slice.call(arguments, 2), function(s) {
         return s;
       });
 
@@ -278,7 +275,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
     
-    var authors = map(padContents.getActiveAuthors(), function(name)
+    var authors = _.map(padContents.getActiveAuthors(), function(name)
     {
       return authorData[name];
     });
@@ -384,7 +381,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       changesetLoader.queueUp(start, 1, update);
     }
     
-    var authors = map(padContents.getActiveAuthors(), function(name){
+    var authors = _.map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
     });
     BroadcastSlider.setAuthors(authors);
@@ -527,7 +524,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         authorMap[obj.author] = obj.data;
         receiveAuthorData(authorMap);
         
-        var authors = map(padContents.getActiveAuthors(),function(name) {
+        var authors = _.map(padContents.getActiveAuthors(), function(name) {
           return authorData[name];
         });
         
@@ -607,10 +604,13 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     setChannelState("DISCONNECTED", reason);
   }
 
+    /// Since its not used, import 'forEach' has been dropped
 /*window['onloadFuncts'] = [];
   window.onload = function ()
   {
     window['isloaded'] = true;
+    
+
     forEach(window['onloadFuncts'],function (funct)
     {
       funct();

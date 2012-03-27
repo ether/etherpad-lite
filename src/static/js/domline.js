@@ -28,10 +28,11 @@
 
 var Security = require('./security');
 var hooks = require('./pluginfw/hooks');
+var _ = require('./underscore');
+
 var Ace2Common = require('./ace2_common');
-var map = Ace2Common.map;
 var noop = Ace2Common.noop;
-var identity = Ace2Common.identity;
+
 
 var domline = {};
 
@@ -89,8 +90,8 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     return domline.processSpaces(s, doesWrap);
   }
 
-  var perTextNodeProcess = (doesWrap ? identity : processSpaces);
-  var perHtmlLineProcess = (doesWrap ? processSpaces : identity);
+  var perTextNodeProcess = (doesWrap ? _.identity : processSpaces);
+  var perHtmlLineProcess = (doesWrap ? processSpaces : _.identity);
   var lineClass = 'ace-line';
   result.appendSpan = function(txt, cls)
   {
@@ -142,7 +143,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     var extraOpenTags = "";
     var extraCloseTags = "";
 
-    map(hooks.callAll("aceCreateDomLine", {
+    _.map(hooks.callAll("aceCreateDomLine", {
       domline: domline,
       cls: cls
     }), function(modifier)
