@@ -78,14 +78,11 @@ function Ace2Inner(){
   var overlaysdiv = lineMetricsDiv.nextSibling;
   initLineNumbers();
 
-  var outsideKeyDown = function(evt)
-    {};
-  var outsideKeyPress = function(evt)
-    {
-      return true;
-      };
-  var outsideNotifyDirty = function()
-    {};
+  var outsideKeyDown = noop;
+  
+  var outsideKeyPress = function(){return true;};
+  
+  var outsideNotifyDirty = noop;
 
   // selFocusAtStart -- determines whether the selection extends "backwards", so that the focus
   // point (controlled with the arrow keys) is at the beginning; not supported in IE, though
