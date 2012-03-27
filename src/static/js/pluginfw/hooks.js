@@ -7,12 +7,18 @@ if (plugins.isClient) {
   var async = require("async");
 }
 
+exports.bubbleExceptions = true
+
 var hookCallWrapper = function (hook, hook_name, args, cb) {
   if (cb === undefined) cb = function (x) { return x; };
-  try {
+  if (exports.bubbleExceptions) {
     return hook.hook_fn(hook_name, args, cb);
-  } catch (ex) {
-    console.error([hook_name, hook.part.full_name, ex.stack || ex]);
+  } else {
+    try {
+      return hook.hook_fn(hook_name, args, cb);
+    } catch (ex) {
+      console.error([hook_name, hook.part.full_name, ex.stack || ex]);
+    }
   }
 }
 
@@ -33,6 +39,7 @@ exports.flatten = function (lst) {
 }
 
 exports.callAll = function (hook_name, args) {
+  if (!args) args = {};
   if (plugins.hooks[hook_name] === undefined) return [];
   return exports.flatten(plugins.hooks[hook_name].map(function (hook) {
     return hookCallWrapper(hook, hook_name, args);
@@ -40,6 +47,8 @@ exports.callAll = function (hook_name, args) {
 }
 
 exports.aCallAll = function (hook_name, args, cb) {
+  if (!args) args = {};
+  if (!cb) cb = function () {};
   if (plugins.hooks[hook_name] === undefined) return cb(null, []);
   async.map(
     plugins.hooks[hook_name],
@@ -53,11 +62,14 @@ exports.aCallAll = function (hook_name, args, cb) {
 }
 
 exports.callFirst = function (hook_name, args) {
+  if (!args) args = {};
   if (plugins.hooks[hook_name][0] === undefined) return [];
   return exports.flatten(hookCallWrapper(plugins.hooks[hook_name][0], hook_name, args));
 }
 
 exports.aCallFirst = function (hook_name, args, cb) {
+  if (!args) args = {};
+  if (!cb) cb = function () {};
   if (plugins.hooks[hook_name][0] === undefined) return cb(null, []);
     hookCallWrapper(plugins.hooks[hook_name][0], hook_name, args, function (res) { cb(null, exports.flatten(res)); });
 }
