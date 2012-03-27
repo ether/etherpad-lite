@@ -232,6 +232,7 @@ require.setGlobalKeyPath("require");\n\
 
       iframeHTML.push(doctype);
       iframeHTML.push("<html><head>");
+      iframeHTML.push('<script type="text/javascript" src="../static/js/jquery.js"></script>');
 
       hooks.callAll("aceInitInnerdocbodyHead", {
         iframeHTML: iframeHTML
