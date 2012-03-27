@@ -21,7 +21,7 @@
  */
 
 var Changeset = require('./Changeset');
-var extend = require('./ace2_common').extend;
+var _ = require('./underscore');
 
 var undoModule = (function()
 {
@@ -52,7 +52,7 @@ var undoModule = (function()
 
     function pushEvent(event)
     {
-      var e = extend(
+      var e = _.extend(
       {}, event);
       e.elementType = UNDOABLE_EVENT;
       stackElements.push(e);
