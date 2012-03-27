@@ -1861,55 +1861,6 @@ function Ace2Inner(){
     }
   }
 
-
-  function setupMozillaCaretHack(lineNum)
-  {
-    // This is really ugly, but by god, it works!
-    // Fixes annoying Firefox caret artifact (observed in 2.0.0.12
-    // and unfixed in Firefox 2 as of now) where mutating the DOM
-    // and then moving the caret to the beginning of a line causes
-    // an image of the caret to be XORed at the top of the iframe.
-    // The previous solution involved remembering to set the selection
-    // later, in response to the next event in the queue, which was hugely
-    // annoying.
-    // This solution: add a space character (0x20) to the beginning of the line.
-    // After setting the selection, remove the space.
-    var lineNode = rep.lines.atIndex(lineNum).lineNode;
-
-    var fc = lineNode.firstChild;
-    while (isBlockElement(fc) && fc.firstChild)
-    {
-      fc = fc.firstChild;
-    }
-    var textNode;
-    if (isNodeText(fc))
-    {
-      fc.nodeValue = " " + fc.nodeValue;
-      textNode = fc;
-    }
-    else
-    {
-      textNode = doc.createTextNode(" ");
-      fc.parentNode.insertBefore(textNode, fc);
-    }
-    markNodeClean(lineNode);
-    return {
-      unhack: function()
-      {
-        if (textNode.nodeValue == " ")
-        {
-          textNode.parentNode.removeChild(textNode);
-        }
-        else
-        {
-          textNode.nodeValue = textNode.nodeValue.substring(1);
-        }
-        markNodeClean(lineNode);
-      }
-    };
-  }
-
-
   function getPointForLineAndChar(lineAndChar)
   {
     var line = lineAndChar[0];
@@ -3812,26 +3763,17 @@ function Ace2Inner(){
       return;
     }
 
-    var mozillaCaretHack = (false && browser.mozilla && selStart && selEnd && selStart[0] == selEnd[0] && selStart[1] == rep.lines.atIndex(selStart[0]).lineMarker && selEnd[1] == rep.lines.atIndex(selEnd[0]).lineMarker && setupMozillaCaretHack(selStart[0]));
-
     var selection = {};
 
     var ss = [selStart[0], selStart[1]];
-    if (mozillaCaretHack) ss[1] += 1;
     selection.startPoint = getPointForLineAndChar(ss);
 
     var se = [selEnd[0], selEnd[1]];
-    if (mozillaCaretHack) se[1] += 1;
     selection.endPoint = getPointForLineAndChar(se);
 
     selection.focusAtStart = !! rep.selFocusAtStart;
 
     setSelection(selection);
-
-    if (mozillaCaretHack)
-    {
-      mozillaCaretHack.unhack();
-    }
   }
 
   function getRepHTML()
