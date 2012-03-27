@@ -28,7 +28,7 @@
   , "prefixfree.js"
   ]
 , "timeslider.js": [
-  , "undo-xpopup.js"
+  "undo-xpopup.js"
   , "json2.js"
   , "colorutils.js"
   , "draggable.js"
