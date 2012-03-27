@@ -1,10 +1,13 @@
 {
-  "pad.js": [
+  "util.js" : [
     "jquery.js"
-  , "underscore.js"
-  , "security.js"
+    , "rjquery.js"
+    , "ace2_common.js"
+    , "underscore.js"
+  ],
+  "pad.js": [
+  "security.js"
   , "pad.js"
-  , "ace2_common.js"
   , "pad_utils.js"
   , "undo-xpopup.js"
   , "json2.js"
@@ -25,14 +28,11 @@
   , "prefixfree.js"
   ]
 , "timeslider.js": [
-    "jquery.js"
-  , "underscore.js"
-  , "security.js"
+  "security.js"
   , "undo-xpopup.js"
   , "json2.js"
   , "colorutils.js"
   , "draggable.js"
-  , "ace2_common.js"
   , "pad_utils.js"
   , "pad_cookie.js"
   , "pad_editor.js"
@@ -52,10 +52,7 @@
   , "timeslider.js"
   ]
 , "ace2_inner.js": [
-    "ace2_common.js"
-  , "underscore.js"
-  , "rjquery.js"
-  , "AttributePoolFactory.js"
+  "AttributePoolFactory.js"
   , "Changeset.js"
   , "security.js"
   , "skiplist.js"

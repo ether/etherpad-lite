@@ -103,7 +103,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       domInfo.prepareForAdd();
       element.className = domInfo.node.className;
       element.innerHTML = domInfo.node.innerHTML;
-      element.id = Math.random();
+      element.id = _.uniqueId();
       return $(element);
     },
 
