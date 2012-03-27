@@ -20,9 +20,10 @@
  * limitations under the License.
  */
 
-var Ace2Common = require('./ace2_common');
+var Ace2Common = require('./ace2_common'),
+  _ = require('./underscore');
+
 var noop = Ace2Common.noop;
-var extend = Ace2Common.extend;
 
 function SkipList()
 {
@@ -324,8 +325,9 @@ function SkipList()
 /*
 The skip-list contains "entries", JavaScript objects that each must have a unique "key" property
 that is a string.
-*/
-  extend(this, {
+  */
+  var self = this;
+  _.extend(this, {
     length: function()
     {
       return numNodes;
