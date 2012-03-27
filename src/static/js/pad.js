@@ -50,6 +50,8 @@ var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 
+var hooks = require('./pluginfw/hooks');
+
 function getParams()
 {
   var params = getUrlVars()
@@ -491,6 +493,7 @@ var pad = {
       if(padcookie.getPref("showAuthorshipColors") == false){
 	pad.changeViewOption('showAuthorColors', false);
       }
+      hooks.aCallAll("postAceInit");
     }
   },
   dispose: function()
