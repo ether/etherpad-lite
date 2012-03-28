@@ -25,7 +25,7 @@
  * limitations under the License.
  */
 
-var AttributePoolFactory = require("./AttributePoolFactory");
+var AttributePool = require("./AttributePool");
 
 var _opt = null;
 
@@ -1731,7 +1731,7 @@ exports.appendATextToAssembler = function (atext, assem) {
  * @param pool {AtributePool}
  */
 exports.prepareForWire = function (cs, pool) {
-  var newPool = AttributePoolFactory.createAttributePool();;
+  var newPool = new AttributePool();
   var newCs = exports.moveOpsToNewPool(cs, pool, newPool);
   return {
     translated: newCs,

@@ -5,7 +5,7 @@
 
 var ERR = require("async-stacktrace");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
+var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var db = require("./DB").db;
 var async = require("async");
@@ -28,7 +28,7 @@ exports.cleanText = function (txt) {
 var Pad = function Pad(id) {
 
   this.atext = Changeset.makeAText("\n");
-  this.pool = AttributePoolFactory.createAttributePool();
+  this.pool = new AttributePool();
   this.head = -1;
   this.chatHead = -1;
   this.publicStatus = false;
