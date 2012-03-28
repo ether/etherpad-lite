@@ -18,8 +18,8 @@
 
         <!-- head and body had been removed intentionally -->
 
-        <div id="editbar">
-            <ul id="menu_left">
+        <div id="editbar" class="toolbar">
+            <ul class="menu_left">
 	        <% e.begin_block("editbarMenuLeft"); %>
 		    <li id="bold" onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false">
 			<a class="buttonicon buttonicon-bold" title="Bold (ctrl-B)"></a>
@@ -59,7 +59,7 @@
 		    </li>
 		<% e.end_block(); %>
             </ul>    
-            <ul id="menu_right">
+            <ul class="menu_right">
 	        <% e.begin_block("editbarMenuRight"); %>
 		    <li id="settingslink" onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;">
 			<a class="buttonicon buttonicon-settings" id="settingslink" title="Settings of this pad"></a>
