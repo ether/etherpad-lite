@@ -9,6 +9,165 @@
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <link rel="stylesheet" href="../../static/custom/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
+  
+  <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="../../minified/timeslider.js"></script>
+  
+  <link href="../../static/custom/timeslider.css" rel="stylesheet">
+  <script src="../../static/custom/timeslider.js"></script>
+  
+  <script>
+// <![CDATA[
+  var clientVars = {};
+
+  function createCookie(name,value,days) 
+  {
+	  if (days) {
+		  var date = new Date();
+		  date.setTime(date.getTime()+(days*24*60*60*1000));
+		  var expires = "; expires="+date.toGMTString();
+	  }
+	  else var expires = "";
+	  document.cookie = name+"="+value+expires+"; path=/";
+  }
+
+  function readCookie(name) 
+  {
+	  var nameEQ = name + "=";
+	  var ca = document.cookie.split(';');
+	  for(var i=0;i < ca.length;i++) {
+		  var c = ca[i];
+		  while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		  if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	  }
+	  return null;
+  }
+
+  function randomString() {
+	  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	  var string_length = 20;
+	  var randomstring = '';
+	  for (var i=0; i<string_length; i++) {
+		  var rnum = Math.floor(Math.random() * chars.length);
+		  randomstring += chars.substring(rnum,rnum+1);
+	  }
+	  return "t." + randomstring;
+  }
+
+  var socket, token, padId, export_links;
+
+  $(document).ready(function () 
+  {
+    //start the costum js
+    if(typeof costumStart == "function") costumStart();
+    
+    //get the padId out of the url 
+    var urlParts= document.location.pathname.split("/");
+    padId = decodeURIComponent(urlParts[urlParts.length-2]);
+        
+    //set the title
+    document.title = document.title + " | " + padId;
+        
+    //ensure we have a token
+    token = readCookie("token");
+    if(token == null)
+    {
+      token = randomString();
+      createCookie("token", token, 60);
+    }
+    
+    var loc = document.location;
+    //get the correct port
+    var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
+    //create the url
+    var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
+    //find out in which subfolder we are
+    var resource = loc.pathname.substr(1,loc.pathname.indexOf("/p/")) + "socket.io";
+    
+    //build up the socket io connection
+    socket = io.connect(url, {resource: resource});
+    
+    //send the ready message once we're connected
+    socket.on('connect', function()
+    {
+      sendSocketMsg("CLIENT_READY", {});
+    });
+    
+    //route the incoming messages
+    socket.on('message', function(message)
+    {
+      if(window.console) console.log(message);
+      
+      if(message.type == "CLIENT_VARS")
+      {
+        handleClientVars(message);
+      }
+      else if(message.type == "CHANGESET_REQ")
+      {
+        changesetLoader.handleSocketResponse(message);
+      }
+      else if(message.accessStatus)
+      {
+        $("body").html("<h2>You have no permission to access this pad</h2>")
+      }
+    });
+
+    //get all the export links
+    export_links = $('#export > .exportlink')
+  });
+  
+  //sends a message over the socket
+  function sendSocketMsg(type, data)
+  {
+    var sessionID = readCookie("sessionID");
+    var password = readCookie("password");
+    
+    var msg = { "component" : "timeslider",
+                "type": type,
+                "data": data, 
+                "padId": padId,
+                "token": token,
+                "sessionID": sessionID,
+                "password": password,
+                "protocolVersion": 2};
+    
+    socket.json.send(msg);
+  }
+  
+  var fireWhenAllScriptsAreLoaded = [];
+  
+  function handleClientVars(message)
+  {
+    //save the client Vars
+    clientVars = message.data;
+    
+    //load all script that doesn't work without the clientVars
+    loadBroadcastSliderJS();
+    loadBroadcastRevisionsJS();
+    loadBroadcastJS();
+
+    //initialize export ui
+    padimpexp.init();
+
+    //change export urls when the slider moves
+    var export_rev_regex = /(\/\d+)?\/export/
+    BroadcastSlider.onSlider(function(revno)
+    {
+      export_links.each(function()
+      {
+        this.setAttribute('href', this.href.replace(export_rev_regex, '/' + revno + '/export'));
+      });
+    });
+    
+    //fire all start functions of these scripts, formerly fired with window.load
+    for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
+    {
+      fireWhenAllScriptsAreLoaded[i]();
+    }
+  }
+
+  // ]]>
+  </script>
 </head>
 
 <body id="padbody" class="timeslider limwidth nonpropad nonprouser">
