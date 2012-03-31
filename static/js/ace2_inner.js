@@ -2262,6 +2262,9 @@ function Ace2Inner(){
     return [lineNum, x - lineStart];
   }
 
+/* 
+ * Generic *abstract* document manipulation methods 
+ */
   function performDocumentReplaceCharRange(startChar, endChar, newText)
   {
     if (startChar == endChar && newText.length === 0)
@@ -2377,6 +2380,11 @@ function Ace2Inner(){
     }
   }
 
+/* 
+ * Text attributes manipulation (Bold, Italic, ...).
+ * They mostly apply to text ranges ie. from char A to char B
+ */
+ 
   function setAttributeOnSelection(attributeName, attributeValue)
   {
     if (!(rep.selStart && rep.selEnd)) return;
@@ -2386,7 +2394,7 @@ function Ace2Inner(){
     ]);
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
-
+  
   function toggleAttributeOnSelection(attributeName)
   {
     if (!(rep.selStart && rep.selEnd)) return;
@@ -2888,6 +2896,13 @@ function Ace2Inner(){
     //console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
   }
 
+/*
+ * DOM document manipulation functions
+ * This sections contains selection uniformisation across browsers, shortcut key
+ * handling data insertion.
+ * Note that the actual render code is in anothe file.
+ */
+
   function doCreateDomLine(nonEmpty)
   {
     if (browser.msie && (!nonEmpty))
@@ -2960,13 +2975,23 @@ function Ace2Inner(){
     return str.replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        ');
   }
 
+  //FIXME: duplicated with contentcollector.js ?
   var _blockElems = {
+    //blocks and paragraphs
     "div": 1,
     "p": 1,
     "pre": 1,
+    //lists styles
     "li": 1,
     "ol": 1,
-    "ul": 1
+    "ul": 1,
+    //titling styles
+    //fixme: they are blocks in this file but *not* in contentcollector.js
+    // => there times were I really feal like a hacker :s
+    "h1": 1,
+    "h2": 1,
+    "h3": 1,
+    "h4": 1,
   };
 
   function isBlockElement(n)
@@ -3344,7 +3369,12 @@ function Ace2Inner(){
       var level = Number(listType[2]);
       
       //detect empty list item; exclude indentation
-      if(text === '*' && type !== "indent")
+      if(type == "title")
+      {
+        performDocumentReplaceSelection('\n');
+        setLineListType(lineNum + 1, '');//remove the list
+      }
+      else if(text === '*' && type !== "indent")
       {
         //if not already on the highest level
         if(level > 1)
@@ -3394,6 +3424,8 @@ function Ace2Inner(){
         if (listType)
         {
           t = listType[1];
+          if(t=="title")
+            continue;//hackish but prevent tab from working on headings
           level = Number(listType[2]);
         }
       }
@@ -4993,6 +5025,14 @@ function Ace2Inner(){
     }
   }
 
+/*
+ * This section contains methods related to *line* types. Virtually, they are 
+ * applied to the first char of the line. This is a "*" but is never rendered.
+ * This trick saves us from the char position computation hassle.
+ * Originally, all this code was specialized in list handling. Later on titles
+ * support was added. There may remain some list specific stuffs in naming :)
+ */
+  
   function getLineListType(lineNum)
   {
     // get "list" attribute of first char of line
@@ -5148,8 +5188,16 @@ function Ace2Inner(){
     }
   }
 
-  function doInsertList(type)
-  {
+  //actual list insertion code written in common with all "paragraph" styles
+  //"type" => actual type 
+  //  -> indent (raw text indentation)
+  //  -> ordered
+  //  -> unordered
+  //  -> title
+  //"defaultLevel" => directly create at a given nesting level. This is especially 
+  //  usefull for titles wich can be created at arbitrary level (h1->hx) 
+  function doInsertList(type, requestLevel)
+  {    
     if (!(rep.selStart && rep.selEnd))
     {
       return;
@@ -5159,42 +5207,89 @@ function Ace2Inner(){
     firstLine = rep.selStart[0];
     lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
 
-    var allLinesAreList = true;
-    for (var n = firstLine; n <= lastLine; n++)
+    var allLinesAreList = true && !requestLevel;
+    //if a specific level is requested, we do not care about the current status
+    if(!requestLevel)
     {
-      var listType = getLineListType(n);
-      if (!listType || listType.slice(0, type.length) != type)
+      for (var n = firstLine; n <= lastLine; n++)
       {
-        allLinesAreList = false;
-        break;
+        var listType = getLineListType(n);
+        if (!listType || listType.slice(0, type.length) != type)
+        {
+          allLinesAreList = false;
+          break;
+        }
       }
     }
-
+    
+    //compute the modification to apply for each single line in the selection
+    //we try to do only what is requested and as such to preserve the indentation
+    //level in case of list type transformation even if the list is composed of 
+    //several indentation levels
+    //In case a specific level is requested. Force it
+    //if all lines are already of this list type, we remove the list
+    //otherwise, we apply the new one
     var mods = [];
     for (var n = firstLine; n <= lastLine; n++)
     {
       var t = '';
       var level = 0;
       var listType = /([a-z]+)([12345678])/.exec(getLineListType(n));
-      if (listType)
+      if (listType)//already a list => read attributes
       {
         t = listType[1];
         level = Number(listType[2]);
       }
       var t = getLineListType(n);
-      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
+      //apply the list type. If a specific level is requested, force it
+      if(requestLevel)
+      {
+        mods.push([n, type+requestLevel]);
+      }
+      else
+      {
+        mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
+      }
     }
     setLineListTypes(mods);
   }
   
+  function doRevertBlockStyle(){
+    if (!(rep.selStart && rep.selEnd))
+    {
+      return;
+    }
+
+    var firstLine, lastLine;
+    firstLine = rep.selStart[0];
+    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
+    
+    var mods = [];
+    for (var n = firstLine; n <= lastLine; n++)
+    {
+      mods.push([n, '']);
+    }
+    setLineListTypes(mods);
+  }  
   function doInsertUnorderedList(){
     doInsertList('bullet');
   }
   function doInsertOrderedList(){
     doInsertList('number');
   }
+  function doInsertTitle(level){
+    //check that the level value is legal
+    //we currently handle up to 4 levels (H4)
+    if(!level || level < 1)
+      level = 1
+    else if(level > 4)
+      level = 4
+    doInsertList('title', level);
+  }
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
   editorInfo.ace_doInsertOrderedList = doInsertOrderedList;
+  editorInfo.ace_doInsertTitle = doInsertTitle;
+  editorInfo.ace_doRevertBlockStyle = doRevertBlockStyle;
 
   var mozillaFakeArrows = (browser.mozilla && (function()
   {

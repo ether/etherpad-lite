@@ -74,11 +74,23 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     }
   };
 
+  //FIXME: duplicated with ace2_inner.js and lower in this file !
   var _blockElems = {
+    //blocks and paragraphs
     "div": 1,
     "p": 1,
     "pre": 1,
-    "li": 1
+    //lists styles
+    "li": 1,
+    "ol": 1,
+    "ul": 1,
+    //titling styles
+    //fixme: they actually *are* blocks but handling them as blocks breaks Drag&Drop
+    // => what is the real meaning of this structure ???
+    //"h1": 1,
+    //"h2": 1,
+    //"h3": 1,
+    //"h4": 1,
   };
 
   function isBlockElement(n)
@@ -163,10 +175,22 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   var selection, startPoint, endPoint;
   var selStart = [-1, -1],
       selEnd = [-1, -1];
-  var blockElems = {
+      
+  //FIXME: duplicated with ace2_inner.js and even above !
+  var _blockElems = {
+    //blocks and paragraphs
     "div": 1,
     "p": 1,
-    "pre": 1
+    "pre": 1,
+    //lists styles
+    "li": 1,
+    "ol": 1,
+    "ul": 1,
+    //titling styles
+    //"h1": 1,
+    //"h2": 1,
+    //"h3": 1,
+    //"h4": 1,
   };
 
   function _isEmpty(node, state)
@@ -435,6 +459,10 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       }
       else if (!isEmpty)
       {
+        //It is interesting to notice that the rendering code of this part relies
+        //on the attributes stored in the "class" attribute of the DOM element.
+        //It means that whenever one wants to create a new attribute, he will
+        //need to put it as a class !
         var styl = dom.nodeAttr(node, "style");
         var cls = dom.nodeProp(node, "className");
 
@@ -471,7 +499,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             cc.doAttrib(state, "strikethrough");
           }
-          if (tname == "ul" || tname == "ol")
+          if (tname == "ul" || tname == "ol" || tname == "h1" || tname == "h2" || tname == "h3" || tname == "h4")
           {
             var type;
             var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);

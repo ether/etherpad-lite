@@ -154,6 +154,21 @@ var padeditbar = (function()
             {
               ace.ace_doIndentOutdent(true);
             }
+            else if (cmd == "style")
+            {
+              dropdown = document.getElementById("style-select");
+              var value = dropdown.value;
+              var style = value.split('-');
+              if(style[0]=="title")
+              {
+                ace.ace_doInsertTitle(Number(style[1]));
+              }
+              else if(style[0]=="normal")
+              {
+                ace.ace_doRevertBlockStyle();
+              }
+              dropdown.selectedIndex = 0;
+            }
             else if (cmd == 'clearauthorship')
             {
               if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret())

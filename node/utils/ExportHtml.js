@@ -98,8 +98,8 @@ function getHTMLFromAtext(pad, atext)
   var textLines = atext.text.slice(0, -1).split('\n');
   var attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
 
-  var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
-  var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
+  var tags = ['h1', 'h2', 'h3', 'h4', 'strong', 'em', 'u', 's'];
+  var props = ['bold', 'italic', 'underline', 'strikethrough'];
   var anumMap = {};
 
   props.forEach(function (propName, i)
@@ -341,36 +341,15 @@ function getHTMLFromAtext(pad, atext)
         {
           pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
+        else if(line.listTypeName == "title")
+        {
+          pieces.push('<h'+line.listLevel+'>', lineContent || '', '</h'+line.listLevel+'>');
+        }
         else
         {
           pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
       }
-      //the following code *seems* dead after my patch.
-      //I keep it just in case I'm wrong...
-      /*else if (whichList == -1)//means we are not inside a list
-      {
-        if (line.text)
-        {
-          console.log('trace 1');
-          // non-blank line, end all lists
-          if(line.listTypeName == "number")
-          {
-            pieces.push(new Array(lists.length + 1).join('</li></ol>'));
-          }
-          else
-          {
-            pieces.push(new Array(lists.length + 1).join('</li></ul>'));
-          }
-          lists.length = 0;
-          pieces.push(lineContent, '<br>');
-        }
-        else
-        {
-          console.log('trace 2');
-          pieces.push('<br><br>');
-        }
-      }*/
       else//means we are getting closer to the lowest level of indentation
       {
         while (whichList < lists.length - 1)
@@ -378,6 +357,10 @@ function getHTMLFromAtext(pad, atext)
           if(lists[lists.length - 1][1] == "number")
           {
             pieces.push('</li></ol>');
+          }
+          else if(line.listTypeName == "title")
+          {
+            //do nothing
           }
           else
           {
@@ -396,6 +379,10 @@ function getHTMLFromAtext(pad, atext)
         {
           pieces.push('</li></ol>');
         }
+        else if(line.listTypeName == "title")
+        {
+          //do nothing
+        }
         else
         {
           pieces.push('</li></ul>');
@@ -411,6 +398,10 @@ function getHTMLFromAtext(pad, atext)
     if(lists[k][1] == "number")
     {
       pieces.push('</li></ol>');
+    }
+    else if(line.listTypeName == "title")
+    {
+      //do nothing
     }
     else
     {
@@ -482,6 +473,10 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
           'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
           'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
           'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+          'h1{font-size: 30px;line-height: 35px;}' +
+          'h2{font-size: 25px;line-height: 30px;}' +
+          'h3{font-size: 20px;line-height: 25px;}' +
+          'h4{font-size: 15px;line-height: 20px;}' +
           '</style>\n' + '</head>\n') + 
       '<body>';
 

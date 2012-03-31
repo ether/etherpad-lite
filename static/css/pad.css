@@ -46,32 +46,28 @@ a img
   width: 100%;
 }
 
+#editbar ul
+{
+  float: left;
+}
+
 #editbar ul li 
+{
+  cursor: pointer;
+  float: left;
+  margin-left: 2px;
+  overflow: hidden;
+}
+
+#editbar ul li.button
 {
   background: #fff;
   background: linear-gradient(#fff, #f0f0f0);
   border: 1px solid #ccc;
   border-radius: 4px;
-  cursor: pointer;
-  float: left;
-  height: 18px;
-  margin-left: 2px;
-  overflow: hidden;
-  padding: 4px 5px;
   width: 18px;
-}
-
-#editbar ul li a
-{
-  text-decoration: none;
-  color: #ccc;
-  position: absolute;
-}
-
-#editbar ul li a span
-{
-  position: relative;
-  top:-2px
+  height: 18px;
+  padding: 4px 5px;
 }
 
 #editbar ul li:hover {
@@ -85,30 +81,82 @@ a img
   box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
 }
 
+#editbar ul li a
+{
+  display: block;
+  text-decoration: none;
+  color: #ccc;
+  position: absolute;
+}
+
+#editbar ul li a img
+{
+  padding: 1px;
+}
+
+#editbar ul li a span
+{
+  position: relative;
+  top:-2px
+}
+
 #editbar ul li.separator
 {
   border: inherit;
   background: inherit;
   visibility:hidden;
   width: 0px;
-}
-#editbar ul li a
-{
-  display: block;
-}
-#editbar ul li a img
-{
-  padding: 1px;
+  padding: 4px 5px;
 }
 
-
-#editbar ul
-{
-  float: left;
+#editbar ul select{
+  background: #fff;
+  background: linear-gradient(#fff, #f0f0f0);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  padding: 4px;
+  margin: 0;
+  height: 28px;
+  width: 120px;
 }
+
+#editbar ul select:hover {
+  background: #fff;
+  background: linear-gradient(#f4f4f4, #e4e4e4);
+}
+
+#editbar ul select option{
+  text-align: left;
+}
+
+#editbar ul select .dummy {
+  text-align: center;
+}
+
 #editbar ul#menu_right
 {
   float: right;
+}
+
+.list-title1{
+  font-size: 30px;
+  line-height: 36px;  
+}
+
+.list-title2{
+  font-size: 25px;
+  line-height: 31px;
+}
+
+.list-title3{
+  font-size: 20px;
+  line-height: 25px;
+}
+
+.list-title4{
+  font-size: 15px;
+  line-height: 20px;
 }
 
 #users

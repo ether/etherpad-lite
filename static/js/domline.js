@@ -104,15 +104,25 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         start = start?'start="'+Security.escapeHTMLAttribute(start[1])+'"':'';
         if (listType)
         {
-          if(listType.indexOf("number") < 0)
-          {
-            preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ul>';
-          }
-          else
+          var details = /([a-z]+)([12345678])/.exec(listType);
+          //handle numbered lists
+          if(details[1] == "number")
           {
             preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
             postHtml = '</li></ol>';
+          }
+          //handle titles
+          else if(details[1] == "title")
+          {
+            markup = 'h'+Number(details[2]);
+            preHtml = '<'+markup+' class="list-' + Security.escapeHTMLAttribute(listType) +'" >';
+            postHtml = '</'+markup+'>';
+          }
+          //handle bullet lists and indentations
+          else
+          {
+            preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            postHtml = '</li></ul>';
           }
         }
         result.lineMarker += txt.length;
