@@ -189,71 +189,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   function setUpSocket()
   {
-    //oldSocketId = String(Math.floor(Math.random()*1e12));
-    //socketId = String(Math.floor(Math.random()*1e12));
-/*socket = new io.Socket();
-    socket.connect();*/
-
-    //socket.on('connect', function(){
     hiccupCount = 0;
     setChannelState("CONNECTED");
-/*var msg = { type:"CLIENT_READY", roomType:'padpage',
-                  roomName:'padpage/'+globalPadId,
-                  data: {
-                    lastRev:rev,
-                    userInfo:userSet[userId],
-                    stats: getStats() } };
-      if (oldSocketId) {
-        msg.data.isReconnectOf = oldSocketId;
-        msg.data.isCommitPending = (state == "COMMITTING");
-      }
-      sendMessage(msg);*/
     doDeferredActions();
 
     initialStartConnectTime = +new Date();
-    // });
-/*socket.on('message', function(obj){
-      if(window.console)
-        console.log(obj);
-      handleMessageFromServer(obj);
-    });*/
-
-/*var success = false;
-    callCatchingErrors("setUpSocket", function() {
-      appLevelDisconnectReason = null;
-
-      var oldSocketId = socketId;
-      socketId = String(Math.floor(Math.random()*1e12));
-      socket = new WebSocket(socketId);
-      socket.onmessage = wrapRecordingErrors("socket.onmessage", handleMessageFromServer);
-      socket.onclosed = wrapRecordingErrors("socket.onclosed", handleSocketClosed);
-      socket.onopen = wrapRecordingErrors("socket.onopen", function() {
-        hiccupCount = 0;
-        setChannelState("CONNECTED");
-        var msg = { type:"CLIENT_READY", roomType:'padpage',
-                    roomName:'padpage/'+globalPadId,
-                    data: {
-                      lastRev:rev,
-                      userInfo:userSet[userId],
-                      stats: getStats() } };
-        if (oldSocketId) {
-          msg.data.isReconnectOf = oldSocketId;
-          msg.data.isCommitPending = (state == "COMMITTING");
-        }
-        sendMessage(msg);
-        doDeferredActions();
-      });
-      socket.onhiccup = wrapRecordingErrors("socket.onhiccup", handleCometHiccup);
-      socket.onlogmessage = dmesg;
-      socket.connect();
-      success = true;
-    });
-    if (success) {
-      initialStartConnectTime = +new Date();
-    }
-    else {
-      abandonConnection("initsocketfail");
-    }*/
   }
 
   var hiccupCount = 0;
@@ -277,7 +217,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       setChannelState("CONNECTED");
     }
   }
-
+  
   function sendMessage(msg)
   {
     getSocket().json.send(
@@ -287,7 +227,20 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       data: msg
     });
   }
-
+  
+  function _sendMessage(msg)
+  {
+    console.log("sending msg =>");
+    console.log(msg);
+    
+    getSocket().json.send(
+    {
+      type: "COLLABROOM",
+      component: "pad",
+      data: msg
+    });
+  }
+  
   function wrapRecordingErrors(catcher, func)
   {
     return function()

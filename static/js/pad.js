@@ -164,7 +164,8 @@ function handshake()
   //connect
   socket = pad.socket = io.connect(url, {
     resource: resource,
-    'max reconnection attempts': 3,
+    'reconnection limit': 1000*60,
+    'max reconnection attempts': 40,
     'sync disconnect on unload' : false
   });
 
@@ -202,7 +203,8 @@ function handshake()
       msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
       msg.reconnect=true;
     }
-    
+    console.log("sending CLIENT_READY =>");
+    console.log(msg);
     socket.json.send(msg);
   };
 
@@ -218,9 +220,8 @@ function handshake()
     {
       clearTimeout(disconnectTimeout);
     }
-
-    pad.collabClient.setChannelState("CONNECTED");
     sendClientReady(true);
+    pad.collabClient.setChannelState("CONNECTED");
   });
   
   socket.on('disconnect', function (reason) {
@@ -234,7 +235,7 @@ function handshake()
       
       pad.collabClient.setChannelState("RECONNECTING");
       
-      disconnectTimeout = setTimeout(disconnectEvent, 10000);
+      disconnectTimeout = setTimeout(disconnectEvent, 40000);
     }
   });
 
@@ -693,10 +694,19 @@ var pad = {
     if (newState == "CONNECTED")
     {
       padconnectionstatus.connected();
+      padeditor.enable();
+      padeditbar.enable();
+      paddocbar.enable();
+      padimpexp.enable();
     }
     else if (newState == "RECONNECTING")
     {
       padconnectionstatus.reconnecting();
+      
+      padeditor.disable();
+      padeditbar.disable();
+      paddocbar.disable();
+      padimpexp.disable();
     }
     else if (newState == "DISCONNECTED")
     {

@@ -190,13 +190,6 @@ var padmodals = (function()
       {
         'opacity': 1
       }, duration);
-      $("#modaloverlay").show().css(
-      {
-        'opacity': 0
-      }).animate(
-      {
-        'opacity': 1
-      }, duration);
     },
     hideModal: function(duration)
     {
@@ -206,17 +199,7 @@ var padmodals = (function()
       $(".modaldialog").animate(
       {
         'opacity': 0
-      }, duration, function()
-      {
-        $("#modaloverlay").hide();
-      });
-      $("#modaloverlay").animate(
-      {
-        'opacity': 0
-      }, duration, function()
-      {
-        $("#modaloverlay").hide();
-      });
+      }, duration);
     },
     hideFeedbackLaterIfNoOtherInteraction: function()
     {
