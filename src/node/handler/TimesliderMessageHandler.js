@@ -166,6 +166,7 @@ function createTimesliderClientVars (padId, callback)
     hooks: [],
     initialStyledContents: {}
   };
+  
   var pad;
   var initialChangesets = [];
 
@@ -179,6 +180,12 @@ function createTimesliderClientVars (padId, callback)
         pad = _pad;
         callback();
       });
+    },
+    //get all saved revisions and add them
+    function(callback)
+    {
+      clientVars.savedRevisions = pad.getSavedRevisions();
+      callback();
     },
     //get all authors and add them to 
     function(callback)

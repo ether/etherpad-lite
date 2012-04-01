@@ -191,6 +191,11 @@ exports.handleMessage = function(client, message)
     handleChatMessage(client, message);
   }
   else if(message.type == "COLLABROOM" && 
+          message.data.type == "SAVE_REVISION")
+  {
+    handleSaveRevisionMessage(client, message);
+  }
+  else if(message.type == "COLLABROOM" && 
           message.data.type == "CLIENT_MESSAGE" &&
           message.data.payload.type == "suggestUserName")
   {
@@ -201,6 +206,23 @@ exports.handleMessage = function(client, message)
   {
     messageLogger.warn("Dropped message, unknown Message Type " + message.type);
   }
+}
+
+/**
+ * Handles a save revision message
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
+function handleSaveRevisionMessage(client, message){
+  var padId = session2pad[client.id];
+  var userId = sessioninfos[client.id].author;
+  
+  padManager.getPad(padId, function(err, pad)
+  {
+    if(ERR(err)) return;
+    
+    pad.addSavedRevision(pad.head, userId);
+  });
 }
 
 /**

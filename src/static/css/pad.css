@@ -1036,6 +1036,9 @@ margin-top: 1px;
   background-position: 0px -183px;
   display: inline-block;
 }
+.buttonicon-savedRevision {
+  background-position: 0px -493px
+}
 
 #usericon
 {

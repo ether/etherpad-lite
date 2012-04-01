@@ -61,6 +61,11 @@
             </ul>    
             <ul class="menu_right">
 	        <% e.begin_block("editbarMenuRight"); %>
+                    <li onClick="window.pad&amp;&amp;pad.editbarClick('savedRevision');return false;">
+                        <a id="settingslink" title="Mark this revision as a saved revision">
+                            <div class="buttonicon buttonicon-savedRevision"></div>
+                        </a>
+                    </li>
 		    <li id="settingslink" onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;">
 			<a class="buttonicon buttonicon-settings" id="settingslink" title="Settings of this pad"></a>
 		    </li>

@@ -71,8 +71,11 @@
 #padmain {top:30px;}
 #editbarright {float:right;}
 #returnbutton {color:#222; font-size:16px; line-height:29px; margin-top:0; padding-right:6px;}
-#importexport {top:118px;}
 #importexport .popup {width:185px;}
+#importexport{
+  top:118px;
+  width:185px;
+}
 
 /* lists */
 .list-bullet2, .list-indent2, .list-number2 {margin-left:3em;}
