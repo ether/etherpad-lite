@@ -695,6 +695,7 @@ a#topbarmaximize {
  font-size: 16px;
  padding-left: 6pt;
  margin-top: 0;
+ white-space: nowrap;
 }
 
 .toolbarinner h1 a {
