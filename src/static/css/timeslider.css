@@ -42,10 +42,10 @@
 
 #leftstar, #rightstar, #leftstep, #rightstep
   {background:url(../../static/img/stepper_buttons.png) 0 0 no-repeat; height:21px; overflow:hidden; position:absolute;}
-#leftstar {background-position:0 44px; right:34px; top:8px; width:30px;}
-#rightstar {background-position:29px 44px; right:5px; top:8px; width:29px;}
-#leftstep {background-position:0 22px; right:34px; top:20px; width:30px;}
-#rightstep {background-position:29px 22px; right:5px; top:20px; width:29px;}
+#leftstar {background-position:0 -44px; right:34px; top:8px; width:30px;}
+#rightstar {background-position:-29px -44px; right:5px; top:8px; width:29px;}
+#leftstep {background-position:0 -22px; right:34px; top:20px; width:30px;}
+#rightstep {background-position:-29px -22px; right:5px; top:20px; width:29px;}
 
 #timeslider .star {
   background-image:url(../../static/img/star.png);
