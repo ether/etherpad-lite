@@ -449,7 +449,7 @@ var paddocbar = (function()
     handleResizePage: function()
     {
       // Side-step circular reference. This should be injected.
-      var padsavedrevs = require('./pad_savedrevs').padsavedrevs;
+      var padsavedrevs = require('./pad_savedrevs');
       padsavedrevs.handleResizePage();
     },
     hideLaterIfNoOtherInteraction: function()

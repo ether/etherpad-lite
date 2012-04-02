@@ -6,11 +6,19 @@ var settings = require('../../utils/Settings');
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
+  var pass = settings.httpAuth;
+  if (req.path.indexOf('/admin') == 0) {
+    var pass = settings.adminHttpAuth;
+  }
+  // Just pass if not activated in Activate http basic auth if it has been defined in settings.json
+  if (!pass) {
+    return next();
+  }
+
   if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
     // fetch login and password
-    if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() == settings.httpAuth) {
-      next();
-      return;
+    if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() == pass) {
+      return next();
     }
   }
 
@@ -25,8 +33,7 @@ exports.basicAuth = function (req, res, next) {
 }
 
 exports.expressConfigure = function (hook_name, args, cb) {
-  // Activate http basic auth if it has been defined in settings.json
-  if(settings.httpAuth != null) args.app.use(exports.basicAuth);
+  args.app.use(exports.basicAuth);
 
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
