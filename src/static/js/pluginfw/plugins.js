@@ -4,7 +4,7 @@ var _;
 
 if (!exports.isClient) {
   var npm = require("npm/lib/npm.js");
-  var readInstalled = require("npm/lib/utils/read-installed.js");
+  var readInstalled = require("./read-installed.js");
   var relativize = require("npm/lib/utils/relativize.js");
   var readJson = require("npm/lib/utils/read-json.js");
   var path = require("path");
@@ -12,12 +12,12 @@ if (!exports.isClient) {
   var fs = require("fs");
   var tsort = require("./tsort");
   var util = require("util");
+  var extend = require("node.extend");
   _ = require("underscore");
 }else{
   var $, jQuery
   $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").$;
   _ = require("ep_etherpad-lite/static/js/underscore");
-  
 }
 
 exports.prefix = 'ep_';
@@ -123,14 +123,19 @@ exports.getPackages = function (cb) {
     function flatten(deps) {
       _.chain(deps).keys().each(function (name) {
         if (name.indexOf(exports.prefix) == 0) {
-          packages[name] = deps[name];
+          packages[name] = extend({}, deps[name]);
+          // Delete anything that creates loops so that the plugin
+          // list can be sent as JSON to the web client
+          delete packages[name].dependencies;
+          delete packages[name].parent;
 	}
 	if (deps[name].dependencies !== undefined)
 	  flatten(deps[name].dependencies);
-	  delete deps[name].dependencies;
       });
     }
-    flatten([data]);
+    var tmp = {};
+    tmp[data.name] = data;
+    flatten(tmp);
     cb(null, packages);
   });
 }

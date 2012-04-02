@@ -22,7 +22,6 @@
   , "chat.js"
   , "excanvas.js"
   , "farbtastic.js"
-  , "prefixfree.js"
   ]
 , "timeslider.js": [
     "jquery.js"
