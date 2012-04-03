@@ -50,8 +50,8 @@
   /* This setting is used if you need http basic auth */
   // "httpAuth" : "user:pass",
 
-  /* This setting is used for http basic auth for admin pages */
-  "adminHttpAuth" : "user:pass",
+  /* This setting is used for http basic auth for admin pages. If not set, the admin page won't be accessible from web*/
+  // "adminHttpAuth" : "user:pass",
 
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO",
