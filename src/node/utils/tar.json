@@ -50,7 +50,7 @@
   , "timeslider.js"
   ]
 , "ace2_inner.js": [
-  , "AttributePool.js"
+  "AttributePool.js"
   , "Changeset.js"
   , "skiplist.js"
   , "virtual_lines.js"
