@@ -81,21 +81,6 @@ if [ $DOWNLOAD_JQUERY = "true" ]; then
   curl -lo src/static/js/jquery.js http://code.jquery.com/jquery-$NEEDED_VERSION.js || exit 1
 fi
 
-echo "Ensure prefixfree is downloaded and up to date..."
-DOWNLOAD_PREFIXFREE="true"
-NEEDED_VERSION="1.0.4"
-if [ -f "src/static/js/prefixfree.js" ]; then
-  VERSION=$(cat src/static/js/prefixfree.js | grep "PrefixFree" | grep -o "[0-9].[0-9].[0-9]");
-  
-  if [ $VERSION = $NEEDED_VERSION ]; then
-    DOWNLOAD_PREFIXFREE="false"
-  fi
-fi
-
-if [ $DOWNLOAD_PREFIXFREE = "true" ]; then
-  curl -lo src/static/js/prefixfree.js -k https://raw.github.com/LeaVerou/prefixfree/master/prefixfree.js || exit 1
-fi
-
 #Remove all minified data to force node creating it new
 echo "Clear minfified cache..."
 rm -f var/minified*

@@ -233,14 +233,16 @@ require.setGlobalKeyPath("require");\n\
 
       iframeHTML.push(doctype);
       iframeHTML.push("<html><head>");
+      iframeHTML.push('<script type="text/javascript" src="../static/js/jquery.js"></script>');
+
+      hooks.callAll("aceInitInnerdocbodyHead", {
+        iframeHTML: iframeHTML
+      });
 
       // For compatability's sake transform in and out.
       for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
         iframeHTML[i] = JSON.stringify(iframeHTML[i]);
       }
-      hooks.callAll("aceInitInnerdocbodyHead", {
-        iframeHTML: iframeHTML
-      });
       for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
         iframeHTML[i] = JSON.parse(iframeHTML[i]);
       }
@@ -262,6 +264,11 @@ require.setGlobalKeyPath("require");\n\
       // Inject my plugins into my child.
       iframeHTML.push('\
 <script type="text/javascript">\
+  parent_req = require("./pluginfw/parent_require.js");\
+  parent_req.getRequirementFromParent(require, "ep_etherpad-lite/static/js/pluginfw/hooks");\
+  parent_req.getRequirementFromParent(require, "ep_etherpad-lite/static/js/pluginfw/plugins");\
+  parent_req.getRequirementFromParent(require, "./pluginfw/hooks");\
+  parent_req.getRequirementFromParent(require, "./pluginfw/plugins");\
   require.define("/plugins", null);\n\
   require.define("/plugins.js", function (require, exports, module) {\
     module.exports = require("ep_etherpad-lite/static/js/plugins");\

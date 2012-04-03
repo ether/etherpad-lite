@@ -1,7 +1,5 @@
 node_modules
 settings.json
-static/js/jquery.js
-static/js/prefixfree.js
 APIKEY.txt
 bin/abiword.exe
 bin/node.exe
@@ -11,6 +9,5 @@ bin/convertSettings.json
 *~
 *.patch
 src/static/js/jquery.js
-src/static/js/prefixfree.js
 npm-debug.log
 *.DS_Store
