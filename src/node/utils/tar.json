@@ -25,7 +25,6 @@
   , "chat.js"
   , "excanvas.js"
   , "farbtastic.js"
-  , "prefixfree.js"
   ]
 , "timeslider.js": [
   "undo-xpopup.js"
@@ -40,7 +39,7 @@
   , "pad_modals.js"
   , "pad_savedrevs.js"
   , "pad_impexp.js"
-  , "AttributePoolFactory.js"
+  , "AttributePool.js"
   , "Changeset.js"
   , "domline.js"
   , "linestylefilter.js"
@@ -51,7 +50,7 @@
   , "timeslider.js"
   ]
 , "ace2_inner.js": [
-  "AttributePoolFactory.js"
+  , "AttributePool.js"
   , "Changeset.js"
   , "skiplist.js"
   , "virtual_lines.js"

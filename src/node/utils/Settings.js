@@ -85,6 +85,11 @@ exports.loglevel = "INFO";
  */
 exports.httpAuth = null;
 
+/**
+ * Http basic auth, with "user:password" format
+ */
+exports.adminHttpAuth = null;
+
 //checks if abiword is avaiable
 exports.abiwordAvailable = function()
 {

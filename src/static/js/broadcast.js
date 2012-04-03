@@ -22,7 +22,7 @@
 
 var makeCSSManager = require('./cssmanager').makeCSSManager;
 var domline = require('./domline').domline;
-var AttribPool = require('./AttributePoolFactory').createAttributePool;
+var AttribPool = require('./AttributePool');
 var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
 var colorutils = require('./colorutils').colorutils;

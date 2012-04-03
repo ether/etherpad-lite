@@ -23,7 +23,7 @@ var ERR = require("async-stacktrace");
 var async = require("async");
 var padManager = require("../db/PadManager");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
+var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var authorManager = require("../db/AuthorManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
 var settings = require('../utils/Settings');
@@ -191,6 +191,11 @@ exports.handleMessage = function(client, message)
     handleChatMessage(client, message);
   }
   else if(message.type == "COLLABROOM" && 
+          message.data.type == "SAVE_REVISION")
+  {
+    handleSaveRevisionMessage(client, message);
+  }
+  else if(message.type == "COLLABROOM" && 
           message.data.type == "CLIENT_MESSAGE" &&
           message.data.payload.type == "suggestUserName")
   {
@@ -201,6 +206,23 @@ exports.handleMessage = function(client, message)
   {
     messageLogger.warn("Dropped message, unknown Message Type " + message.type);
   }
+}
+
+/**
+ * Handles a save revision message
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
+function handleSaveRevisionMessage(client, message){
+  var padId = session2pad[client.id];
+  var userId = sessioninfos[client.id].author;
+  
+  padManager.getPad(padId, function(err, pad)
+  {
+    if(ERR(err)) return;
+    
+    pad.addSavedRevision(pad.head, userId);
+  });
 }
 
 /**
@@ -372,7 +394,7 @@ function handleUserChanges(client, message)
   
   //get all Vars we need
   var baseRev = message.data.baseRev;
-  var wireApool = (AttributePoolFactory.createAttributePool()).fromJsonable(message.data.apool);
+  var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
   var changeset = message.data.changeset;
       
   var r, apool, pad;

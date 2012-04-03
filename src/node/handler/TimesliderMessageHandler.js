@@ -23,7 +23,7 @@ var ERR = require("async-stacktrace");
 var async = require("async");
 var padManager = require("../db/PadManager");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
+var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var settings = require('../utils/Settings');
 var authorManager = require("../db/AuthorManager");
 var log4js = require('log4js');
@@ -166,6 +166,7 @@ function createTimesliderClientVars (padId, callback)
     hooks: [],
     initialStyledContents: {}
   };
+  
   var pad;
   var initialChangesets = [];
 
@@ -179,6 +180,12 @@ function createTimesliderClientVars (padId, callback)
         pad = _pad;
         callback();
       });
+    },
+    //get all saved revisions and add them
+    function(callback)
+    {
+      clientVars.savedRevisions = pad.getSavedRevisions();
+      callback();
     },
     //get all authors and add them to 
     function(callback)
@@ -265,7 +272,7 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
   var forwardsChangesets = [];
   var backwardsChangesets = [];
   var timeDeltas = [];
-  var apool = AttributePoolFactory.createAttributePool();
+  var apool = new AttributePool();
   var pad;
   var composedChangesets = {};
   var revisionDate = [];
