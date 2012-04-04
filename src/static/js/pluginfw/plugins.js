@@ -50,10 +50,12 @@ exports.formatHooks = function () {
   return res.join("\n");
 };
 
-exports.loadFn = function (path) {
+exports.loadFn = function (path, hookName) {
   var x = path.split(":");
   var fn = require(x[0]);
-  _.each(x[1].split("."), function (name) {
+  var functionName = x[1] ? x[1] : hookName;  
+  
+  _.each(functionName.split("."), function (name) {
     fn = fn[name];
   });
   return fn;
@@ -62,10 +64,14 @@ exports.loadFn = function (path) {
 exports.extractHooks = function (parts, hook_set_name) {
   var hooks = {};
   _.each(parts,function (part) {
-    _.chain(part[hook_set_name] || {}).keys().each(function (hook_name) {
+    _.chain(part[hook_set_name] || {})
+    .keys()
+    .each(function (hook_name) {
       if (hooks[hook_name] === undefined) hooks[hook_name] = [];
+      
+      
       var hook_fn_name = part[hook_set_name][hook_name];
-      var hook_fn = exports.loadFn(part[hook_set_name][hook_name]);
+      var hook_fn = exports.loadFn(hook_fn_name, hook_name);
       if (hook_fn) {
         hooks[hook_name].push({"hook_name": hook_name, "hook_fn": hook_fn, "hook_fn_name": hook_fn_name, "part": part});
       } else {
