@@ -47,6 +47,7 @@ exports.createGroupPad = groupManager.createGroupPad;
 
 exports.createAuthor = authorManager.createAuthor;
 exports.createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
+exports.listPadsOfAuthor = authorManager.listPadsOfAuthor;
 
 /**********************/
 /**SESSION FUNCTIONS***/
@@ -94,7 +95,7 @@ exports.getText = function(padID, rev, callback)
     }
   }
   
-  //ensure this is not a negativ number
+  //ensure this is not a negative number
   if(rev !== undefined && rev < 0)
   {
     callback(new customError("rev is a negativ number","apierror"));
@@ -460,6 +461,25 @@ exports.isPasswordProtected = function(padID, callback)
     if(ERR(err, callback)) return;
     
     callback(null, {isPasswordProtected: pad.isPasswordProtected()});
+  });
+}
+
+/**
+listAuthorsOfPad(padID) returns an array of authors who contributed to this pad 
+
+Example returns:
+
+{code: 0, message:"ok", data: {authorIDs : ["a.s8oes9dhwrvt0zif", "a.akf8finncvomlqva"]}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.listAuthorsOfPad = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    callback(null, {authorIDs: pad.getAllAuthors()});
   });
 }
 

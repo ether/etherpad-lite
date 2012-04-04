@@ -82,6 +82,9 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
                           chatHead: this.chatHead,
                           publicStatus: this.publicStatus,
                           passwordHash: this.passwordHash});
+  // set the author to pad
+  if(author != '')
+    authorManager.addPad(author, this.id);
 };
 
 Pad.prototype.getRevisionChangeset = function getRevisionChangeset(revNum, callback) {
@@ -431,6 +434,18 @@ Pad.prototype.remove = function remove(callback) {
           {
             db.remove("pad:"+padID+":revs:"+i);
           }
+
+          callback();
+        },
+        //remove pad from all authors who contributed
+        function(callback)
+        {
+          var authorIDs = _this.getAllAuthors();
+
+          authorIDs.forEach(function (authorID)
+          {
+        	authorManager.removePad(authorID, padID);
+          });
 
           callback();
         }
