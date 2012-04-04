@@ -131,7 +131,10 @@ exports.minify = function(req, res, next)
         res.end();
       } else if (req.method == 'GET') {
         getFileCompressed(filename, contentType, function (error, content) {
-          if(ERR(error)) return;
+          if(ERR(error, function(){
+            res.writeHead(500, {});
+            res.end();
+          })) return;
           res.header("Content-Type", contentType);
           res.writeHead(200, {});
           res.write(content);
