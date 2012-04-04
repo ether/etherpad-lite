@@ -7,6 +7,10 @@ var AttributeManager = function(rep, applyChangesetCallback)
   this.rep = rep;
   this.applyChangesetCallback = applyChangesetCallback;
   this.author = '';
+  
+  // If the first char in a line has one of the following attributes
+  // it will be considered as a line marker
+  this.lineAttributes = ['list'];
 };
 
 AttributeManager.prototype = _(AttributeManager.prototype).extend({
@@ -21,7 +25,13 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   
   lineHasMarker: function(lineNum){
     // get "list" attribute of first char of line
-    return this.getAttributeOnLine(lineNum, 'list');
+    var that = this;
+    
+    return _.find(this.lineAttributes, function(attribute){
+      return that.getAttributeOnLine(lineNum, attribute) != ''; 
+    }) !== undefined;
+    
+    
   },
   
   getAttributeOnLine: function(lineNum, attributeName){
@@ -79,8 +89,6 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
      var loc = [0,0];
      var builder = Changeset.builder(this.rep.lines.totalWidth());
      var hasMarker = this.lineHasMarker(lineNum);
-     
-     // TODO
      
      if(hasMarker){
        ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]), [

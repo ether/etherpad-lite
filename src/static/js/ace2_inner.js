@@ -3320,7 +3320,7 @@ function Ace2Inner(){
     }
 
     _.each(mods, function(mod){
-      setLineListType.apply(this, mod);
+      setLineListType(mod[0], mod[1]);
     });
     return true;
   }
@@ -4977,7 +4977,7 @@ function Ace2Inner(){
     }
     
     _.each(mods, function(mod){
-      setLineListType.apply(this, mod);
+      setLineListType(mod[0], mod[1]);
     });
   }
   
