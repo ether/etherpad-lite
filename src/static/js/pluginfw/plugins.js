@@ -12,7 +12,6 @@ if (!exports.isClient) {
   var fs = require("fs");
   var tsort = require("./tsort");
   var util = require("util");
-  var extend = require("node.extend");
   _ = require("underscore");
 }else{
   var $, jQuery
@@ -123,7 +122,7 @@ exports.getPackages = function (cb) {
     function flatten(deps) {
       _.chain(deps).keys().each(function (name) {
         if (name.indexOf(exports.prefix) == 0) {
-          packages[name] = extend({}, deps[name]);
+          packages[name] = _.clone(deps[name]);
           // Delete anything that creates loops so that the plugin
           // list can be sent as JSON to the web client
           delete packages[name].dependencies;
