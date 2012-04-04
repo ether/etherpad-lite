@@ -4845,7 +4845,6 @@ function Ace2Inner(){
 
   function setLineListType(lineNum, listType)
   {
-    debugger;
     if(listType == ''){
       documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
     }else{
