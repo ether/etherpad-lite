@@ -63,7 +63,7 @@ exports.editOnly = false;
 /**
  * Max age that responses will have (affects caching layer).
  */
-exports.maxAge = 1000*60*60*6; // 6 hours
+exports.maxAge = 60*60*6; // 6 hours
 
 /**
  * A flag that shows if minification is enabled or not
