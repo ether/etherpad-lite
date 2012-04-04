@@ -108,7 +108,7 @@ exports.minify = function(req, res, next)
       date = new Date(date);
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
-      if (settings.maxAge) {
+      if (settings.maxAge !== undefined) {
         var expiresDate = new Date((new Date()).getTime()+settings.maxAge*1000);
         res.setHeader('expires', expiresDate.toUTCString());
         res.setHeader('cache-control', 'max-age=' + settings.maxAge);
