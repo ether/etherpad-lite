@@ -45,10 +45,12 @@ function Ace2Inner(){
   var domline = require('./domline').domline;
   var AttribPool = require('./AttributePool');
   var Changeset = require('./Changeset');
+  var ChangesetUtils = require('./ChangesetUtils');
   var linestylefilter = require('./linestylefilter').linestylefilter;
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
+  var AttributeManager = require('./AttributeManager');
   
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false 
@@ -97,6 +99,7 @@ function Ace2Inner(){
     alines: [],
     apool: new AttribPool()
   };
+  
   // lines, alltext, alines, and DOM are set up in setup()
   if (undoModule.enabled)
   {
@@ -116,6 +119,7 @@ function Ace2Inner(){
       iframePadRight = 0;
 
   var console = (DEBUG && window.console);
+  var documentAttributeManager;
   
   if (!window.console)
   {
@@ -152,6 +156,7 @@ function Ace2Inner(){
 
   var textFace = 'monospace';
   var textSize = 12;
+  
 
   function textLineHeight()
   {
@@ -926,7 +931,10 @@ function Ace2Inner(){
       },
       grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
       dmesg: function(){ dmesg = window.dmesg = value; },
-      userauthor: function(value){ thisAuthor = String(value); },
+      userauthor: function(value){ 
+        thisAuthor = String(value);
+        documentAttributeManager.author = thisAuthor;
+      },
       styled: setStyled,
       textface: setTextFace,
       textsize: setTextSize,
@@ -2249,8 +2257,8 @@ function Ace2Inner(){
     //           CCCC\n
     // end[0]:   <CCC end[1] CCC>-------\n
     var builder = Changeset.builder(rep.lines.totalWidth());
-    buildKeepToStartOfRange(builder, start);
-    buildRemoveRange(builder, start, end);
+    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
+    ChangesetUtils.buildRemoveRange(rep, builder, start, end);
     builder.insert(newText, [
       ['author', thisAuthor]
     ], rep.apool);
@@ -2272,53 +2280,16 @@ function Ace2Inner(){
   function performDocumentApplyAttributesToRange(start, end, attribs)
   {
     var builder = Changeset.builder(rep.lines.totalWidth());
-    buildKeepToStartOfRange(builder, start);
-    buildKeepRange(builder, start, end, attribs, rep.apool);
+    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
+    ChangesetUtils.buildKeepRange(rep, builder, start, end, attribs, rep.apool);
     var cs = builder.toString();
     performDocumentApplyChangeset(cs);
   }
   editorInfo.ace_performDocumentApplyAttributesToRange = performDocumentApplyAttributesToRange;
 
-  function buildKeepToStartOfRange(builder, start)
-  {
-    var startLineOffset = rep.lines.offsetOfIndex(start[0]);
 
-    builder.keep(startLineOffset, start[0]);
-    builder.keep(start[1]);
-  }
-
-  function buildRemoveRange(builder, start, end)
-  {
-    var startLineOffset = rep.lines.offsetOfIndex(start[0]);
-    var endLineOffset = rep.lines.offsetOfIndex(end[0]);
-
-    if (end[0] > start[0])
-    {
-      builder.remove(endLineOffset - startLineOffset - start[1], end[0] - start[0]);
-      builder.remove(end[1]);
-    }
-    else
-    {
-      builder.remove(end[1] - start[1]);
-    }
-  }
-
-  function buildKeepRange(builder, start, end, attribs, pool)
-  {
-    var startLineOffset = rep.lines.offsetOfIndex(start[0]);
-    var endLineOffset = rep.lines.offsetOfIndex(end[0]);
-
-    if (end[0] > start[0])
-    {
-      builder.keep(endLineOffset - startLineOffset - start[1], end[0] - start[0], attribs, pool);
-      builder.keep(end[1], 0, attribs, pool);
-    }
-    else
-    {
-      builder.keep(end[1] - start[1], 0, attribs, pool);
-    }
-  }
-
+  
+  // TODO move to AttributeManager
   function setAttributeOnSelection(attributeName, attributeValue)
   {
     if (!(rep.selStart && rep.selEnd)) return;
@@ -3276,6 +3247,7 @@ function Ace2Inner(){
     {
       return;
     }
+    
     var lineNum = rep.selStart[0];
     var listType = getLineListType(lineNum);
 
@@ -3347,11 +3319,9 @@ function Ace2Inner(){
       }
     }
 
-    if (mods.length > 0)
-    {
-      setLineListTypes(mods);
-    }
-
+    _.each(mods, function(mod){
+      setLineListType.apply(this, mod);
+    });
     return true;
   }
   editorInfo.ace_doIndentOutdent = doIndentOutdent;
@@ -4865,27 +4835,31 @@ function Ace2Inner(){
       }
     }
   }
-
+  
+  var listAttributeName = 'list';
+  
   function getLineListType(lineNum)
   {
-    // get "list" attribute of first char of line
-    var aline = rep.alines[lineNum];
-    if (aline)
-    {
-      var opIter = Changeset.opIterator(aline);
-      if (opIter.hasNext())
-      {
-        return Changeset.opAttributeValue(opIter.next(), 'list', rep.apool) || '';
-      }
-    }
-    return '';
+    return documentAttributeManager.getAttributeOnLine(lineNum, listAttributeName)
   }
 
   function setLineListType(lineNum, listType)
   {
-    setLineListTypes([
-      [lineNum, listType]
-    ]);
+    debugger;
+    if(listType == ''){
+      documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
+    }else{
+      documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType);
+    }
+    
+    //if the list has been removed, it is necessary to renumber
+    //starting from the *next* line because the list may have been
+    //separated. If it returns null, it means that the list was not cut, try
+    //from the current one.
+    if(renumberList(lineNum+1)==null)
+    {
+      renumberList(lineNum);
+    }
   }
   
   function renumberList(lineNum){
@@ -4932,8 +4906,8 @@ function Ace2Inner(){
         }
         else if(curLevel == level)
         {
-          buildKeepRange(builder, loc, (loc = [line, 0]));
-          buildKeepRange(builder, loc, (loc = [line, 1]), [
+          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
+          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
             ['start', position]
           ], rep.apool);
           
@@ -4964,62 +4938,6 @@ function Ace2Inner(){
     
   }
   
-  function setLineListTypes(lineNumTypePairsInOrder)
-  {
-    var loc = [0, 0];
-    var builder = Changeset.builder(rep.lines.totalWidth());
-    for (var i = 0; i < lineNumTypePairsInOrder.length; i++)
-    {
-      var pair = lineNumTypePairsInOrder[i];
-      var lineNum = pair[0];
-      var listType = pair[1];
-      buildKeepRange(builder, loc, (loc = [lineNum, 0]));
-      if (getLineListType(lineNum))
-      {
-        // already a line marker
-        if (listType)
-        {
-          // make different list type
-          buildKeepRange(builder, loc, (loc = [lineNum, 1]), [
-            ['list', listType]
-          ], rep.apool);
-        }
-        else
-        {
-          // remove list marker
-          buildRemoveRange(builder, loc, (loc = [lineNum, 1]));
-        }
-      }
-      else
-      {
-        // currently no line marker
-        if (listType)
-        {
-          // add a line marker
-          builder.insert('*', [
-            ['author', thisAuthor],
-            ['insertorder', 'first'],
-            ['list', listType]
-          ], rep.apool);
-        }
-      }
-    }
-
-    var cs = builder.toString();
-    if (!Changeset.isIdentity(cs))
-    {
-      performDocumentApplyChangeset(cs);
-    }
-    
-    //if the list has been removed, it is necessary to renumber
-    //starting from the *next* line because the list may have been
-    //separated. If it returns null, it means that the list was not cut, try
-    //from the current one.
-    if(renumberList(lineNum+1)==null)
-    {
-      renumberList(lineNum);
-    }
-  }
 
   function doInsertList(type)
   {
@@ -5057,7 +4975,10 @@ function Ace2Inner(){
       var t = getLineListType(n);
       mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
-    setLineListTypes(mods);
+    
+    _.each(mods, function(mod){
+      setLineListType.apply(this, mod);
+    });
   }
   
   function doInsertUnorderedList(){
@@ -5477,6 +5398,11 @@ function Ace2Inner(){
       }
     }
   }
+  
+  
+  // Init documentAttributeManager
+  
+  documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
 
   $(document).ready(function(){
     doc = document; // defined as a var in scope outside
