@@ -2272,11 +2272,8 @@ function Ace2Inner(){
 
   function performDocumentApplyAttributesToCharRange(start, end, attribs)
   {
-    if (end >= rep.alltext.length)
-    {
-      end = rep.alltext.length - 1;
-    }
-    performDocumentApplyAttributesToRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
+    end = Math.min(end, rep.alltext.length - 1);
+    documentAttributeManager.setAttributesOnRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
   }
   editorInfo.ace_performDocumentApplyAttributesToCharRange = performDocumentApplyAttributesToCharRange;
   
