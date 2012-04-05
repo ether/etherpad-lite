@@ -6,22 +6,30 @@ var settings = require('../../utils/Settings');
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
-  var pass = settings.httpAuth;
+  
+  // When handling HTTP-Auth, an undefined password will lead to no authorization at all
+  var pass = settings.httpAuth || '';
+  
   if (req.path.indexOf('/admin') == 0) {
     var pass = settings.adminHttpAuth;
+    
   }
-  // Just pass if not activated in Activate http basic auth if it has been defined in settings.json
-  if (!pass) {
+  
+  // Just pass if password is an empty string
+  if (pass === '') {
     return next();
   }
-
-  if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-    // fetch login and password
-    if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() == pass) {
+  
+  
+  // If a password has been set and auth headers are present...
+  if (pass && req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
+    // ...check login and password
+    if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() === pass) {
       return next();
     }
   }
 
+  // Otherwise return Auth required Headers, delayed for 1 second, if auth failed.
   res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
   if (req.headers.authorization) {
     setTimeout(function () {

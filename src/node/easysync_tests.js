@@ -22,7 +22,7 @@
 
 
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePoolFactory = require("ep_etherpad-lite/static/js/AttributePoolFactory");
+var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 
 function random() {
   this.nextInt = function (maxValue) {
@@ -227,7 +227,7 @@ function runTests() {
       return attribs; // it's already an attrib pool
     } else {
       // assume it's an array of attrib strings to be split and added
-      var p = AttributePoolFactory.createAttributePool();
+      var p = new AttributePool();
       attribs.forEach(function (kv) {
         p.putAttrib(kv.split(','));
       });
@@ -325,7 +325,7 @@ function runTests() {
   runMutateAttributionTest(4, ['foo,bar', 'line,1', 'line,2', 'line,3', 'line,4', 'line,5'], "Z:5>1|2=2+1$x", ["?*1|1+1", "?*2|1+1", "*3|1+1", "?*4|1+1", "?*5|1+1"], ["?*1|1+1", "?*2|1+1", "+1*3|1+1", "?*4|1+1", "?*5|1+1"]);
 
   var testPoolWithChars = (function () {
-    var p = AttributePoolFactory.createAttributePool();
+    var p = new AttributePool();
     p.putAttrib(['char', 'newline']);
     for (var i = 1; i < 36; i++) {
       p.putAttrib(['char', Changeset.numToString(i)]);
@@ -560,7 +560,7 @@ function runTests() {
     var rand = new random();
     print("> testCompose#" + randomSeed);
 
-    var p = AttributePoolFactory.createAttributePool();
+    var p = new AttributePool();
 
     var startText = randomMultiline(10, 20, rand) + '\n';
 
@@ -594,7 +594,7 @@ function runTests() {
 
   (function simpleComposeAttributesTest() {
     print("> simpleComposeAttributesTest");
-    var p = AttributePoolFactory.createAttributePool();
+    var p = new AttributePool();
     p.putAttrib(['bold', '']);
     p.putAttrib(['bold', 'true']);
     var cs1 = Changeset.checkRep("Z:2>1*1+1*1=1$x");
@@ -604,7 +604,7 @@ function runTests() {
   })();
 
   (function followAttributesTest() {
-    var p = AttributePoolFactory.createAttributePool();
+    var p = new AttributePool();
     p.putAttrib(['x', '']);
     p.putAttrib(['x', 'abc']);
     p.putAttrib(['x', 'def']);
@@ -633,7 +633,7 @@ function runTests() {
     var rand = new random();
     print("> testFollow#" + randomSeed);
 
-    var p = AttributePoolFactory.createAttributePool();
+    var p = new AttributePool();
 
     var startText = randomMultiline(10, 20, rand) + '\n';
 
@@ -682,8 +682,8 @@ function runTests() {
   (function testMoveOpsToNewPool() {
     print("> testMoveOpsToNewPool");
 
-    var pool1 = AttributePoolFactory.createAttributePool();
-    var pool2 = AttributePoolFactory.createAttributePool();
+    var pool1 = new AttributePool();
+    var pool2 = new AttributePool();
 
     pool1.putAttrib(['baz', 'qux']);
     pool1.putAttrib(['foo', 'bar']);
@@ -738,7 +738,7 @@ function runTests() {
   (function testOpAttributeValue() {
     print("> testOpAttributeValue");
 
-    var p = AttributePoolFactory.createAttributePool();
+    var p = new AttributePool();
     p.putAttrib(['name', 'david']);
     p.putAttrib(['color', 'green']);
 

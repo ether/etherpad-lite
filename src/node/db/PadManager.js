@@ -115,7 +115,13 @@ exports.doesPadExists = function(padId, callback)
   db.get("pad:"+padId, function(err, value)
   {
     if(ERR(err, callback)) return;
-    callback(null, value != null && value.atext);  
+    if(value != null && value.atext){
+      callback(null, true);
+    }
+    else
+    {
+      callback(null, false); 
+    }
   });
 }
 

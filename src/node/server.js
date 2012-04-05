@@ -51,10 +51,6 @@ console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
 
 var serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 
-//cache 6 hours, by default
-var hour = 60*60;
-exports.maxAge = settings.maxAge || 6 * hour;
-
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
 
@@ -92,7 +88,12 @@ async.waterfall([
     //let the server listen
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
-
+    if(settings.adminHttpAuth){
+      console.log("Plugin admin page listening at " + settings.ip + ":" + settings.port + "/admin/plugins");
+    }
+    else{
+      console.log("Admin username and password not set in settings.json.  To access admin please uncomment and edit adminHttpAuth in settings.json");
+    }
     callback(null);  
   }
 ]);
