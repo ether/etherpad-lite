@@ -51,8 +51,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   */
   setAttributesOnRange: function(start, end, attribs)
   {
-    var builder = Changeset.builder(rep.lines.totalWidth());
-    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
+    var builder = Changeset.builder(this.rep.lines.totalWidth());
+    ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, start);
     ChangesetUtils.buildKeepRange(this.rep, builder, start, end, attribs, this.rep.apool);
     return this.applyChangeset(builder);
   },
