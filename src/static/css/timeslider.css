@@ -1,4 +1,7 @@
-#editorcontainerbox {overflow:auto; top:40px;}
+#editorcontainerbox {
+  overflow:auto; top:40px;
+  position: static;
+}
 
 #padcontent {font-size:12px; padding:10px;}
 
@@ -67,14 +70,62 @@
   width:122px;
 }
 
+
 .topbarcenter, #docbar {display:none;}
-#padmain {top:30px;}
+#padmain {top:0px !important;}
 #editbarright {float:right;}
 #returnbutton {color:#222; font-size:16px; line-height:29px; margin-top:0; padding-right:6px;}
 #importexport .popup {width:185px;}
 #importexport{
   top:118px;
   width:185px;
+}
+
+
+.timeslider-bar 
+{
+  background: #f7f7f7;
+  background: linear-gradient(#f7f7f7, #f1f1f1 80%);
+  border-bottom: 1px solid #ccc;
+  overflow: hidden;
+  padding-top: 3px;
+  width: 100%;
+}
+
+.timeslider-bar #editbar 
+{
+  border-bottom: none;
+  float: right;
+  width: 170px;
+  width: initial;
+}
+
+.timeslider-bar h1 
+{
+  margin: 5px;
+}
+.timeslider-bar p 
+{
+  margin: 5px;
+}
+#timeslider-top {
+  width: 100%;
+  position: fixed;
+  z-index: 1;
+}
+
+#authorsList .author {
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+}
+
+#authorsList .author-anonymous {
+  padding-left: 0.6em;
+  padding-right: 0.6em;
+}
+
+#padeditor {
+  position: static;
 }
 
 /* lists */
