@@ -42,9 +42,8 @@ a img
   border-bottom: 1px solid #ccc;
   overflow: hidden;
   padding-top: 3px;
-  position: absolute;
-  left: 0;
-  right: 0;
+  width: 100%;
+  white-space: nowrap;
   height: 32px;
 }
 
@@ -177,7 +176,6 @@ a#backtoprosite { padding-left: 20px; left: 6px;
   background: url(static/img/protop.gif) no-repeat -5px -6px; }
 #accountnav { right: 30px; color: #fff; }
   
-.propad a#topbaretherpad { background: url(static/img/protop.gif) no-repeat -397px -3px; }
 
 #specialkeyarea { top: 5px; left: 250px; color: yellow; font-weight: bold;
   font-size: 1.5em; position: absolute; }
@@ -605,8 +603,6 @@ table#otheruserstable { display: none; }
   vertical-align: top;
   text-align: left;
 }
-
-.nonprouser #sharebox-stripe { display: none; }
 
 .sharebox-url {
   width: 440px; height: 18px;
