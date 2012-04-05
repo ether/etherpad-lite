@@ -4,7 +4,7 @@ var _;
 
 if (!exports.isClient) {
   var npm = require("npm/lib/npm.js");
-  var readInstalled = require("npm/lib/utils/read-installed.js");
+  var readInstalled = require("./read-installed.js");
   var relativize = require("npm/lib/utils/relativize.js");
   var readJson = require("npm/lib/utils/read-json.js");
   var path = require("path");
@@ -14,10 +14,9 @@ if (!exports.isClient) {
   var util = require("util");
   _ = require("underscore");
 }else{
-  var $, jQuery
+  var $, jQuery;
   $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").$;
   _ = require("ep_etherpad-lite/static/js/underscore");
-  
 }
 
 exports.prefix = 'ep_';
@@ -31,15 +30,15 @@ exports.ensure = function (cb) {
     exports.update(cb);
   else
     cb();
-}
+};
 
 exports.formatPlugins = function () {
   return _.keys(exports.plugins).join(", ");
-}
+};
 
 exports.formatParts = function () {
   return _.map(exports.parts, function (part) { return part.full_name; }).join("\n");
-}
+};
 
 exports.formatHooks = function () {
   var res = [];
@@ -49,33 +48,39 @@ exports.formatHooks = function () {
     });
   });
   return res.join("\n");
-}
+};
 
-exports.loadFn = function (path) {
+exports.loadFn = function (path, hookName) {
   var x = path.split(":");
   var fn = require(x[0]);
-  _.each(x[1].split("."), function (name) {
+  var functionName = x[1] ? x[1] : hookName;  
+  
+  _.each(functionName.split("."), function (name) {
     fn = fn[name];
   });
   return fn;
-}
+};
 
 exports.extractHooks = function (parts, hook_set_name) {
   var hooks = {};
   _.each(parts,function (part) {
-    _.chain(part[hook_set_name] || {}).keys().each(function (hook_name) {
+    _.chain(part[hook_set_name] || {})
+    .keys()
+    .each(function (hook_name) {
       if (hooks[hook_name] === undefined) hooks[hook_name] = [];
+      
+      
       var hook_fn_name = part[hook_set_name][hook_name];
-      var hook_fn = exports.loadFn(part[hook_set_name][hook_name]);
+      var hook_fn = exports.loadFn(hook_fn_name, hook_name);
       if (hook_fn) {
         hooks[hook_name].push({"hook_name": hook_name, "hook_fn": hook_fn, "hook_fn_name": hook_fn_name, "part": part});
       } else {
-	console.error("Unable to load hook function for " + part.full_name + " for hook " + hook_name + ": " + part.hooks[hook_name]);
+        console.error("Unable to load hook function for " + part.full_name + " for hook " + hook_name + ": " + part.hooks[hook_name]);
       }	
     });
   });
   return hooks;
-}
+};
 
 
 if (exports.isClient) {
@@ -90,7 +95,7 @@ if (exports.isClient) {
        console.error("Failed to load plugin-definitions: " + err);
        cb();
      });
-  }
+  };
 } else {
 
 exports.update = function (cb) {
@@ -104,15 +109,15 @@ exports.update = function (cb) {
         exports.loadPlugin(packages, plugin_name, plugins, parts, cb);
       },
       function (err) {
-	exports.plugins = plugins;
+        exports.plugins = plugins;
         exports.parts = exports.sortParts(parts);
         exports.hooks = exports.extractHooks(exports.parts, "hooks");
-	exports.loaded = true;
+        exports.loaded = true;
         cb(err);
       }
     );
   });
-}
+  };
 
 exports.getPackages = function (cb) {
   // Load list of installed NPM packages, flatten it to a list, and filter out only packages with names that
@@ -122,44 +127,50 @@ exports.getPackages = function (cb) {
     var packages = {};
     function flatten(deps) {
       _.chain(deps).keys().each(function (name) {
-        if (name.indexOf(exports.prefix) == 0) {
-          packages[name] = deps[name];
-	}
-	if (deps[name].dependencies !== undefined)
-	  flatten(deps[name].dependencies);
-	  delete deps[name].dependencies;
+        if (name.indexOf(exports.prefix) === 0) {
+          packages[name] = _.clone(deps[name]);
+          // Delete anything that creates loops so that the plugin
+          // list can be sent as JSON to the web client
+          delete packages[name].dependencies;
+          delete packages[name].parent;
+        }
+      
+        if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
       });
     }
-    flatten([data]);
+  
+    var tmp = {};
+    tmp[data.name] = data;
+    flatten(tmp);
     cb(null, packages);
   });
-}
+  };
 
-exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
+  exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
   var plugin_path = path.resolve(packages[plugin_name].path, "ep.json");
   fs.readFile(
     plugin_path,
     function (er, data) {
       if (er) {
-	console.error("Unable to load plugin definition file " + plugin_path);
+        console.error("Unable to load plugin definition file " + plugin_path);
         return cb();
       }
       try {
         var plugin = JSON.parse(data);
-	plugin.package = packages[plugin_name];
-	plugins[plugin_name] = plugin;
-	_.each(plugin.parts, function (part) {
-	  part.plugin = plugin_name;
-	  part.full_name = plugin_name + "/" + part.name;
-	  parts[part.full_name] = part;
-	});
+        plugin['package'] = packages[plugin_name];
+        plugins[plugin_name] = plugin;
+        _.each(plugin.parts, function (part) {
+          part.plugin = plugin_name;
+          part.full_name = plugin_name + "/" + part.name;
+          parts[part.full_name] = part;
+        });
       } catch (ex) {
-	console.error("Unable to parse plugin definition file " + plugin_path + ": " + ex.toString());
+        console.error("Unable to parse plugin definition file " + plugin_path + ": " + ex.toString());
       }
       cb();
     }
   );
-}
+  };
 
 exports.partsToParentChildList = function (parts) {
   var res = [];
@@ -175,7 +186,7 @@ exports.partsToParentChildList = function (parts) {
     }
   });
   return res;
-}
+};
 
 
 // Used only in Node, so no need for _

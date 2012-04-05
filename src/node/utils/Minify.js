@@ -29,7 +29,6 @@ var pro = require("uglify-js").uglify;
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var RequireKernel = require('require-kernel');
-var server = require('../server');
 
 var ROOT_DIR = path.normalize(__dirname + "/../../static/");
 var TAR_PATH = path.join(__dirname, 'tar.json');
@@ -109,10 +108,10 @@ exports.minify = function(req, res, next)
       date = new Date(date);
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
-      if (server.maxAge) {
-        var expiresDate = new Date((new Date()).getTime()+server.maxAge*1000);
+      if (settings.maxAge !== undefined) {
+        var expiresDate = new Date((new Date()).getTime()+settings.maxAge*1000);
         res.setHeader('expires', expiresDate.toUTCString());
-        res.setHeader('cache-control', 'max-age=' + server.maxAge);
+        res.setHeader('cache-control', 'max-age=' + settings.maxAge);
       }
     }
 
@@ -132,7 +131,10 @@ exports.minify = function(req, res, next)
         res.end();
       } else if (req.method == 'GET') {
         getFileCompressed(filename, contentType, function (error, content) {
-          if(ERR(error)) return;
+          if(ERR(error, function(){
+            res.writeHead(500, {});
+            res.end();
+          })) return;
           res.header("Content-Type", contentType);
           res.writeHead(200, {});
           res.write(content);

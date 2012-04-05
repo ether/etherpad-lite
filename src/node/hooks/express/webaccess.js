@@ -6,14 +6,30 @@ var settings = require('../../utils/Settings');
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
-  if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-    // fetch login and password
-    if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() == settings.httpAuth) {
-      next();
-      return;
+  
+  // When handling HTTP-Auth, an undefined password will lead to no authorization at all
+  var pass = settings.httpAuth || '';
+  
+  if (req.path.indexOf('/admin') == 0) {
+    var pass = settings.adminHttpAuth;
+    
+  }
+  
+  // Just pass if password is an empty string
+  if (pass === '') {
+    return next();
+  }
+  
+  
+  // If a password has been set and auth headers are present...
+  if (pass && req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
+    // ...check login and password
+    if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() === pass) {
+      return next();
     }
   }
 
+  // Otherwise return Auth required Headers, delayed for 1 second, if auth failed.
   res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
   if (req.headers.authorization) {
     setTimeout(function () {
@@ -25,8 +41,7 @@ exports.basicAuth = function (req, res, next) {
 }
 
 exports.expressConfigure = function (hook_name, args, cb) {
-  // Activate http basic auth if it has been defined in settings.json
-  if(settings.httpAuth != null) args.app.use(exports.basicAuth);
+  args.app.use(exports.basicAuth);
 
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.

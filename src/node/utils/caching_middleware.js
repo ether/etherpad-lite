@@ -18,13 +18,11 @@ var async = require('async');
 var Buffer = require('buffer').Buffer;
 var fs = require('fs');
 var path = require('path');
-var server = require('../server');
 var zlib = require('zlib');
 var util = require('util');
+var settings = require('./Settings');
 
-var ROOT_DIR = path.normalize(__dirname + "/../");
-var CACHE_DIR = path.normalize(ROOT_DIR + '../../var/');
-console.log(CACHE_DIR)
+var CACHE_DIR = path.normalize(path.join(settings.root, 'var/'));
 CACHE_DIR = path.existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 var responseCache = {};

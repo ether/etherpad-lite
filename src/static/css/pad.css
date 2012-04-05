@@ -24,7 +24,7 @@ a img
 }
 
 /* menu */
-#editbar ul
+.toolbar ul
 {
   position: relative;
   list-style: none;
@@ -35,19 +35,22 @@ a img
 
 }
 
-#editbar 
+.toolbar 
 {
   background: #f7f7f7;
   background: linear-gradient(#f7f7f7, #f1f1f1 80%);
   border-bottom: 1px solid #ccc;
-  height: 32px;
   overflow: hidden;
   padding-top: 3px;
   width: 100%;
   white-space: nowrap;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 32px;
 }
 
-#editbar ul li 
+.toolbar ul li 
 {
   background: #fff;
   background: linear-gradient(#fff, #f0f0f0);
@@ -62,52 +65,52 @@ a img
   width: 18px;
 }
 
-#editbar ul li a
+.toolbar ul li a
 {
   text-decoration: none;
   color: #ccc;
   position: absolute;
 }
 
-#editbar ul li a span
+.toolbar ul li a span
 {
   position: relative;
   top:-2px
 }
 
-#editbar ul li:hover {
+.toolbar ul li:hover {
   background: #fff;
   background: linear-gradient(#f4f4f4, #e4e4e4);
 }
 
-#editbar ul li:active {
+.toolbar ul li:active {
   background: #eee;
   background: linear-gradient(#ddd, #fff);
   box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
 }
 
-#editbar ul li.separator
+.toolbar ul li.separator
 {
   border: inherit;
   background: inherit;
   visibility:hidden;
   width: 0px;
 }
-#editbar ul li a
+.toolbar ul li a
 {
   display: block;
 }
-#editbar ul li a img
+.toolbar ul li a img
 {
   padding: 1px;
 }
 
 
-#editbar ul
+.toolbar ul
 {
   float: left;
 }
-#editbar ul#menu_right
+.toolbar ul.menu_right
 {
   float: right;
 }
@@ -320,7 +323,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   z-index: 10;
 }
 
-#editbarsavetable
+.toolbarsavetable
 {
   position:absolute;
   top: 6px;
@@ -328,7 +331,7 @@ a#hidetopmsg { position: absolute; right: 5px; bottom: 5px; }
   height: 24px;
 }
 
-#editbarsavetable td, #editbartable td
+.toolbarsavetable td, .toolbartable td
 {
   white-space: nowrap;
 }
@@ -686,14 +689,15 @@ a#topbarmaximize {
  background: url(static/img/maximize_maximized.png);
 }
 
-#editbarinner h1 {
+.toolbarinner h1 {
  line-height: 29px;
  font-size: 16px;
  padding-left: 6pt;
  margin-top: 0;
+ white-space: nowrap;
 }
 
-#editbarinner h1 a {
+.toolbarinner h1 a {
  font-size: 12px;
 }
 
@@ -1032,6 +1036,9 @@ margin-top: 1px;
   background-position: 0px -183px;
   display: inline-block;
 }
+.buttonicon-savedRevision {
+  background-position: 0px -493px
+}
 
 #usericon
 {
@@ -1171,13 +1178,13 @@ input[type=checkbox] {
 }
 
 @media screen and (max-width: 600px) {
-  #editbar ul li {
+  .toolbar ul li {
     padding: 4px 1px;
   }  
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
-  #editbar ul li {
+  .toolbar ul li {
     padding: 4px 3px;
   }
   #users {
@@ -1192,7 +1199,7 @@ input[type=checkbox] {
   #editorcontainer {
     margin-bottom: 33px;
   }
-  #editbar ul#menu_right  {
+  .toolbar ul.menu_right  {
     background: #f7f7f7;
     background: linear-gradient(#f7f7f7, #f1f1f1 80%);
     width: 100%;
@@ -1202,7 +1209,7 @@ input[type=checkbox] {
     bottom: 0;
     border-top: 1px solid #ccc;
   }
-  #editbar ul#menu_right li:last-child {
+  .toolbar ul.menu_right li:last-child {
     height: 24px;
     border-radius: 0;
     margin-top: 0;
@@ -1224,7 +1231,7 @@ input[type=checkbox] {
     border-top-right-radius: 0;
     border-right: none;
   }
-  #editbar ul li a span {
+  .toolbar ul li a span {
     top: -3px;
   }
   #usericonback {
@@ -1233,10 +1240,10 @@ input[type=checkbox] {
   #qrcode {
     display: none;
   }
-  #editbar ul#menu_right li:not(:last-child) {
+  .toolbar ul.menu_right li:not(:last-child) {
     display: block;
   }
-  #editbar ul#menu_right > li {
+  .toolbar ul.menu_right > li {
     background: none;
     border: none;
     margin-top: 4px;

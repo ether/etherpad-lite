@@ -6,6 +6,7 @@ var settings = require("../../utils/Settings");
 var Yajsml = require('yajsml');
 var fs = require("fs");
 var ERR = require("async-stacktrace");
+var _ = require("underscore");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   // Cache both minified and static.
@@ -35,8 +36,22 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // serve plugin definitions
   // not very static, but served here so that client can do require("pluginfw/static/js/plugin-definitions.js");
   args.app.get('/pluginfw/plugin-definitions.json', function (req, res, next) {
+
+    var clientParts = _(plugins.parts)
+      .filter(function(part){ return _(part).has('client_hooks') });
+      
+    var clientPlugins = {};
+    
+    _(clientParts).chain()
+      .map(function(part){ return part.plugin })
+      .uniq()
+      .each(function(name){
+        clientPlugins[name] = _(plugins.plugins[name]).clone();
+        delete clientPlugins[name]['package'];
+      });
+      
     res.header("Content-Type","application/json; charset=utf-8");
-    res.write(JSON.stringify({"plugins": plugins.plugins, "parts": plugins.parts}));
+    res.write(JSON.stringify({"plugins": clientPlugins, "parts": clientParts}));
     res.end();
   });
 }
