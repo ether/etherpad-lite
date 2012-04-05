@@ -43,6 +43,20 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     return changeset;
   },
   
+  /*
+    Sets attributes on a range
+    @param start [row, col] tuple pointing to the start of the range
+    @param end [row, col] tuple pointing to the end of the range
+    @param attribute: an array of attributes
+  */
+  setAttributesOnRange: function(start, end, attribs)
+  {
+    var builder = Changeset.builder(rep.lines.totalWidth());
+    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
+    ChangesetUtils.buildKeepRange(this.rep, builder, start, end, attribs, this.rep.apool);
+    return this.applyChangeset(builder);
+  },
+
   /* 
     Returns if the line already has a line marker
     @param lineNum: the number of the line

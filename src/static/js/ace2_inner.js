@@ -2276,25 +2276,13 @@ function Ace2Inner(){
     performDocumentApplyAttributesToRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
   }
   editorInfo.ace_performDocumentApplyAttributesToCharRange = performDocumentApplyAttributesToCharRange;
-
-  function performDocumentApplyAttributesToRange(start, end, attribs)
-  {
-    var builder = Changeset.builder(rep.lines.totalWidth());
-    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
-    ChangesetUtils.buildKeepRange(rep, builder, start, end, attribs, rep.apool);
-    var cs = builder.toString();
-    performDocumentApplyChangeset(cs);
-  }
-  editorInfo.ace_performDocumentApplyAttributesToRange = performDocumentApplyAttributesToRange;
-
-
   
-  // TODO move to AttributeManager
+  
   function setAttributeOnSelection(attributeName, attributeValue)
   {
     if (!(rep.selStart && rep.selEnd)) return;
 
-    performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+    documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
       [attributeName, attributeValue]
     ]);
   }
@@ -2355,13 +2343,13 @@ function Ace2Inner(){
 
     if (selectionAllHasIt)
     {
-      performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
         [attributeName, '']
       ]);
     }
     else
     {
-      performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
         [attributeName, 'true']
       ]);
     }
@@ -5400,8 +5388,8 @@ function Ace2Inner(){
   
   
   // Init documentAttributeManager
-  
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
+  editorInfo.ace_performDocumentApplyAttributesToRange = documentAttributeManager.setAttributesOnRange;
 
   $(document).ready(function(){
     doc = document; // defined as a var in scope outside
