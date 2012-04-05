@@ -88,7 +88,12 @@ async.waterfall([
     //let the server listen
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
-
+    if(settings.adminHttpAuth){
+      console.log("Plugin admin page listening at " + settings.ip + ":" + settings.port + "/admin/plugins");
+    }
+    else{
+      console.log("Admin username and password not set in settings.json.  To access admin please uncomment and edit adminHttpAuth in settings.json");
+    }
     callback(null);  
   }
 ]);

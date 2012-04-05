@@ -1,56 +1,7 @@
 <html>
   <head>
     <title>Plugin manager</title>
-    <style>
-      table {
-        border-collapse: collapse;
-      }
-      td, th {
-        border: 1px solid black;
-        padding-left: 10px;
-        padding-right: 10px;
-        padding-top: 2px;
-        padding-bottom: 2px;
-      }
-      .template {
-        display: none;
-      }
-      .dialog {
-        display: none;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        width: 700px;
-        height: 500px;
-        margin-left: -350px;
-        margin-top: -250px;
-        border: 3px solid #999999;
-        background: #eeeeee;
-      }
-      .dialog .title {
-        margin: 0;
-        padding: 2px;
-        border-bottom: 3px solid #999999;
-        font-size: 24px;
-        line-height: 24px;
-        height: 24px;
-        overflow: hidden;
-      }
-      .dialog .title .close {
-        float: right;
-      }
-      .dialog .history {
-        background: #222222;
-        color: #eeeeee;
-        position: absolute;
-        top: 41px;
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-        padding: 2px;
-        overflow: auto;
-      }
-    </style>
+    <link href="../../static/css/admin.css" rel="stylesheet" type="text/css" />
     <script src="../../static/js/jquery.js"></script>
     <script src="../../socket.io/socket.io.js"></script>
     <script>
@@ -167,7 +118,7 @@
           <td class="name"></td>
           <td class="description"></td>
           <td class="actions">
-            <input type="button" value="I" class="do-uninstall">
+            <input type="button" value="Uninstall" class="do-uninstall">
           </td>
         </tr>
       </tbody>
@@ -180,7 +131,7 @@
     <h1>Search for plugins to install</h1>
     <form>
       <input type="text" name="search" value="" id="search-query">
-      <input type="button" value="S" id="do-search">
+      <input type="button" value="Search" id="do-search">
     </form>
     <table>
       <thead>
@@ -195,7 +146,7 @@
           <td class="name"></td>
           <td class="description"></td>
           <td class="actions">
-            <input type="button" value="I" class="do-install">
+            <input type="button" value="Install" class="do-install">
           </td>
         </tr>
       </tbody>
