@@ -2203,6 +2203,9 @@ function Ace2Inner(){
 
   }
 
+  /*
+    Converts the position of a char (index in String) into a [row, col] tuple
+  */
   function lineAndColumnFromChar(x)
   {
     var lineEntry = rep.lines.atOffset(x);
