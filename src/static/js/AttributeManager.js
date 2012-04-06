@@ -11,10 +11,10 @@ var lineMarkerAttribute = 'lmkr';
 var lineAttributes = [lineMarkerAttribute,'list'];
 
 /*
-  The Attribute manager builds changesets based on a SkipList
-  for setting and removing range or line-based Attributes.
+  The Attribute manager builds changesets based on a document 
+  representation for setting and removing range or line-based attributes.
   
-  @param rep the SkipList to be used
+  @param rep the document representation to be used
   @param applyChangesetCallback this callback will be called 
     once a changeset has been built.
 */
