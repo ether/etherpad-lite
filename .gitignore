@@ -11,3 +11,4 @@ bin/convertSettings.json
 src/static/js/jquery.js
 npm-debug.log
 *.DS_Store
+.ep_initialized

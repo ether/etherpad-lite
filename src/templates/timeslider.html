@@ -11,40 +11,14 @@
   <style type="text/css" title="dynamicsyntax"></style>
 </head>
 
-<body id="padbody" class="timeslider limwidth nonpropad nonprouser">
+<body id="padbody" class="timeslider limwidth">
   <div id="padpage">
     <div id="padtop">
-      <div class="topbar">
-        <div class="topbarleft">
-          <!-- -->
-        </div>
-
-        <div class="topbarright">
-          <!-- -->
-        </div>
-
-        <div class="topbarcenter">
-          <a href="/" class="topbarBrand">Etherpad v1.1</a> <a href="http://etherpad.org"
-          class="EtherpadLink">Etherpad is</a> <a href="../../static/LICENSE" class=
-          "Licensing">free software</a>
-
-          <div class="fullscreen" onclick="$('body').toggleClass('maximized');">
-            Full screen
-          </div><a href="javascript:void(0);" onclick=
-          "$('body').toggleClass('maximized');" class="topbarmaximize" title=
-          "Toggle maximization"></a>
-        </div>
-
-        <div class="specialkeyarea">
-          <!-- -->
-        </div>
-      </div>
       <div id="alertbar">
         <div id="servermsg">
           <h3>Server Notice<span id="servermsgdate"><!-- --></span>:</h3><a id=
           "hidetopmsg" href="javascript:%20void%20pad.hideServerMessage()" name=
           "hidetopmsg">hide</a>
-
           <p id="servermsgtext"><!-- --></p>
         </div>
       </div>
@@ -67,104 +41,56 @@
         </table>
       </div><!-- /docbar -->
     </div>
-
-    <div id="timeslider-wrapper">
-      <div id="error" style="display: none">
-        It looks like you're having connection troubles. <a href=
-        "/ep/pad/view/test/latest">Reconnect now</a>.
+    
+    <div id="timeslider-top">
+      <div id="timeslider-wrapper">
+        <div id="timeslider" unselectable="on" style="display: none">
+          <div id="timeslider-left"></div>
+          <div id="timeslider-right"></div>
+          <div id="timer"></div>
+          <div id="timeslider-slider">
+            <div id="ui-slider-handle"></div>
+            <div id="ui-slider-bar"></div>
+          </div>
+          <div id="playpause_button">
+            <div id="playpause_button_icon" class=""></div>
+          </div>
+          <div id="steppers">
+            <div class="stepper" id="leftstep"></div>
+            <div class="stepper" id="rightstep"></div>
+          </div>
+        </div>
       </div>
 
-      <div id="timeslider" unselectable="on" style="display: none">
-        <div id="timeslider-left"></div>
+      <div class="timeslider-bar">
+          <div class="editbarright toolbar" id="editbar">
+            <ul>
+              <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
+                <a id="exportlink" title="Export to different document formats">
+                  <div class="buttonicon buttonicon-import_export"></div>
+                </a>
+              </li>
+            </ul>
+            <a id="returnbutton">Return to pad</a>
+          </div>
 
-        <div id="timeslider-right"></div>
-
-        <div id="timer"></div>
-
-        <div id="timeslider-slider">
-          <div id="ui-slider-handle"></div>
-
-          <div id="ui-slider-bar"></div>
-        </div>
-
-        <div id="playpause_button">
-          <div id="playpause_button_icon" class=""></div>
-        </div>
-
-        <div id="steppers">
-          <div class="stepper" id="leftstep"></div>
-
-          <div class="stepper" id="rightstep"></div>
-        </div>
+          <div>
+              <h1>
+                <span id="revision_label"></span>
+                <span id="revision_date"></span>
+              </h1>
+              <p>Authors:
+              <span id="authorsList">
+                <span>No Authors</span>
+              </span> </p>
+          </div>
       </div>
     </div>
-    
-    <!--<div id="rightbars" style="top: 95px;">
-      <div id="rightbar"><a href="/ep/pad/view/c6fg9GM51V/latest" id="viewlatest">Viewing latest content</a><br>
-      <a thref="/ep/pad/view/c6fg9GM51V/rev.%revision%" href="/ep/pad/view/c6fg9GM51V/rev.0" class="tlink">Link to this version</a>
-      <br><a thref="/ep/pad/view/ro.fw470Orpi4T/rev.%revision%" href="/ep/pad/view/ro.fw470Orpi4T/rev.0" class="tlink">Link to read-only page</a><br><a href="/c6fg9GM51V">Edit this pad</a>
-      <h2>Download as</h2>
-      <img src="../../static/img/may09/html.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=html" href="/ep/pad/export/c6fg9GM51V/rev.0?format=html" class="tlink">HTML</a><br>
-      <img src="../../static/img/may09/txt.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=txt" href="/ep/pad/export/c6fg9GM51V/rev.0?format=txt" class="tlink">Plain text</a><br>
-      <img src="../../static/img/may09/doc.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=doc" href="/ep/pad/export/c6fg9GM51V/rev.0?format=doc" class="tlink">Microsoft Word</a><br>
-      <img src="../../static/img/may09/pdf.gif"><a thref="/ep/pad/export/c6fg9GM51V/rev.%revision%?format=pdf" href="/ep/pad/export/c6fg9GM51V/rev.0?format=pdf" class="tlink">PDF</a>
-
-
-      </div>
-      <div id="legend">
-      <h2>Authors</h2>
-      <table cellspacing="0" cellpadding="0" border="0" id="authorstable"><tbody><tr><td style="color:#999; padding-left: 10px" colspan="2">No Authors</td></tr></tbody></table>
-      </div>
-    </div>-->
 
     <div id="padmain">
       <div id="padeditor">
-        <div id="editbar" class="toolbar disabledtoolbar">
-          <div id="editbarinner" class="toolbarinner">
-            <div id="editbarleft" class="editbarleft">
-              <!-- -->
-            </div>
-
-            <div id="editbarright" class="editbarright">
-              <!-- termporary place holder--> 
-              <ul>
-                <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
-                  <a id="exportlink" title="Export to different document formats">
-                    <div class="buttonicon buttonicon-import_export"></div>
-                  </a>
-                </li>
-              </ul>
-              <a id = "returnbutton">Return to pad</a>
-            </div>
-
-            <div id="editbarinner" class="editbarinner">
-              <table cellpadding="0" cellspacing="0" border="0" id="editbartable" class=
-              "editbartable">
-                <tr>
-                  <td>
-                    <h1>
-                      <span id="revision_label"></span>
-                      <span id="revision_date"></span>
-                    </h1>
-                  </td>
-
-                  <td width="100%">&nbsp;</td>
-                </tr>
-              </table>
-
-              <table cellpadding="0" cellspacing="0" border="0" id="editbarsavetable"
-              class="editbarsavetable">
-                <tr>
-                  <td></td>
-                </tr>
-              </table>
-            </div>
-          </div>
-        </div>
-
         <div id="editorcontainerbox">
           <div id="padcontent">
-            
           </div>
         </div>
       </div><!-- /padeditor -->
@@ -203,6 +129,7 @@
 <script type="text/javascript" src="../../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
 <script type="text/javascript" src="../../../static/custom/timeslider.js"></script>
 <script type="text/javascript" >
+  document.domain = document.domain;
   var clientVars = {};
   (function () {
     require.setRootURI("../../../javascripts/src");
