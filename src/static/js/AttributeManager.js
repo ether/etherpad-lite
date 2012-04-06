@@ -29,6 +29,8 @@ var AttributeManager = function(rep, applyChangesetCallback)
   // it will be considered as a line marker
 };
 
+AttributeManager.lineAttributes = lineAttributes;
+
 AttributeManager.prototype = _(AttributeManager.prototype).extend({
   
   applyChangeset: function(changeset){
