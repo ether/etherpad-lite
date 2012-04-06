@@ -22,6 +22,12 @@
  * limitations under the License.
  */
 
+/*
+  An AttributePool maintains a mapping from [key,value] Pairs called
+  Attributes to Numbers (unsigened integers) and vice versa. These numbers are
+  used to reference Attributes in Changesets.
+*/
+
 var AttributePool = function () {
   this.numToAttrib = {}; // e.g. {0: ['foo','bar']}
   this.attribToNum = {}; // e.g. {'foo,bar': 0}
