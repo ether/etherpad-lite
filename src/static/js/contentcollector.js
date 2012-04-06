@@ -161,12 +161,6 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   var selection, startPoint, endPoint;
   var selStart = [-1, -1],
       selEnd = [-1, -1];
-  var blockElems = {
-    "div": 1,
-    "p": 1,
-    "pre": 1
-  };
-
   function _isEmpty(node, state)
   {
     // consider clean blank lines pasted in IE to be empty
