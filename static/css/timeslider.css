@@ -70,6 +70,25 @@
 .topbarcenter, #docbar {display:none;}
 #padmain {top:30px;}
 #editbarright {float:right;}
+#editbar ul > li > button
+{
+  background-color: #fff;
+  background-color: linear-gradient(#fff, #f0f0f0);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #ccc;
+  min-height: 29px;
+  cursor: pointer;
+  padding: 3px;
+  text-decoration: none;
+  min-width: 29px;
+}
+#editbar ul > li > button .buttonicon {
+  position: relative;
+  top: -1px;
+  margin: 0;
+  vertical-align: middle;
+}
 #returnbutton {color:#222; font-size:16px; line-height:29px; margin-top:0; padding-right:6px;}
 #importexport {top:118px;}
 #importexport .popup {width:185px;}
