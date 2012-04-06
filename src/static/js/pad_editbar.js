@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var readCookie = require('./pad_utils').readCookie;
 var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
 var padsavedrevs = require('./pad_savedrevs');
@@ -236,19 +237,33 @@ var padeditbar = (function()
     {
       if ($('#readonlyinput').is(':checked'))
       {
-        var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
-        var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
-        $('#embedinput').val("<iframe name='embed_readonly' src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
-        $('#linkinput').val(readonlyLink);
-        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=|0&chl=" + readonlyLink);
+        if (readCookie("parentUriReadOnly"))
+        {
+          var padLink = decodeURIComponent(readCookie("parentUriReadOnly"));
+          var embedLink = padLink;
+        }
+        else
+        {
+          var padLink = document.location.href.substring(0, document.location.href.indexOf("/p/")) + "/ro/" + clientVars.readOnlyId;
+          var embedLink = padLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false";
+        }
       }
       else
       {
-        var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val("<iframe name='embed_readwrite' src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
-        $('#linkinput').val(padurl);
-        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=|0&chl=" + padurl);
+        if (readCookie("parentUri"))
+        {
+          var padLink = decodeURIComponent(readCookie("parentUri"));
+          var embedLink = padLink;
+        }
+        else
+        {
+          var padLink = document.location.href.split("?")[0];
+          var embedLink = padLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false";
+        }
       }
+      $('#embedinput').val("<iframe name='embed_readonly' src='" + embedLink + "' width=600 height=400>");
+      $('#linkinput').val(padLink);
+      $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=|0&chl=" + padLink);
     }
   };
   return self;
