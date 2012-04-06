@@ -35,6 +35,8 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
+  var hooks = require('./pluginfw/hooks');
+  
 
 function Ace2Inner(){
   
@@ -2871,6 +2873,10 @@ function Ace2Inner(){
     "ul": 1
   };
 
+  _.each(hooks.callAll('aceRegisterBlockElements'), function(element){
+      _blockElems[element] = 1;
+  })
+
   function isBlockElement(n)
   {
     return !!_blockElems[(n.tagName || "").toLowerCase()];
@@ -5429,7 +5435,13 @@ function Ace2Inner(){
       bindTheEventHandlers();
 
     });
-
+    
+    hooks.callAll('aceInitialized', {
+      editorInfo: editorInfo,
+      rep: rep,
+      documentAttributeManager: documentAttributeManager
+    });
+    
     scheduler.setTimeout(function()
     {
       parent.readyFunc(); // defined in code that sets up the inner iframe
