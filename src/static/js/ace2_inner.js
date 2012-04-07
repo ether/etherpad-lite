@@ -2875,7 +2875,7 @@ function Ace2Inner(){
 
   _.each(hooks.callAll('aceRegisterBlockElements'), function(element){
       _blockElems[element] = 1;
-  })
+  });
 
   function isBlockElement(n)
   {
