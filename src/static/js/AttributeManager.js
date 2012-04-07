@@ -83,9 +83,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
      // TODO
      
      if(hasMarker){
-       ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]), [
-         [attributeName, attributeValue]
-       ], this.rep.apool);
+       ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
        ChangesetUtils.buildRemoveRange(this.rep, builder, loc, (loc = [lineNum, 1]));
      }
      
