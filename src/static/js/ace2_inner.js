@@ -35,6 +35,8 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
+  var hooks = require('./pluginfw/hooks');
+  
 
 function Ace2Inner(){
   
@@ -2203,6 +2205,9 @@ function Ace2Inner(){
 
   }
 
+  /*
+    Converts the position of a char (index in String) into a [row, col] tuple
+  */
   function lineAndColumnFromChar(x)
   {
     var lineEntry = rep.lines.atOffset(x);
@@ -2269,32 +2274,17 @@ function Ace2Inner(){
 
   function performDocumentApplyAttributesToCharRange(start, end, attribs)
   {
-    if (end >= rep.alltext.length)
-    {
-      end = rep.alltext.length - 1;
-    }
-    performDocumentApplyAttributesToRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
+    end = Math.min(end, rep.alltext.length - 1);
+    documentAttributeManager.setAttributesOnRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
   }
   editorInfo.ace_performDocumentApplyAttributesToCharRange = performDocumentApplyAttributesToCharRange;
-
-  function performDocumentApplyAttributesToRange(start, end, attribs)
-  {
-    var builder = Changeset.builder(rep.lines.totalWidth());
-    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
-    ChangesetUtils.buildKeepRange(rep, builder, start, end, attribs, rep.apool);
-    var cs = builder.toString();
-    performDocumentApplyChangeset(cs);
-  }
-  editorInfo.ace_performDocumentApplyAttributesToRange = performDocumentApplyAttributesToRange;
-
-
   
-  // TODO move to AttributeManager
+  
   function setAttributeOnSelection(attributeName, attributeValue)
   {
     if (!(rep.selStart && rep.selEnd)) return;
 
-    performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+    documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
       [attributeName, attributeValue]
     ]);
   }
@@ -2355,13 +2345,13 @@ function Ace2Inner(){
 
     if (selectionAllHasIt)
     {
-      performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
         [attributeName, '']
       ]);
     }
     else
     {
-      performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
         [attributeName, 'true']
       ]);
     }
@@ -2883,6 +2873,10 @@ function Ace2Inner(){
     "ul": 1
   };
 
+  _.each(hooks.callAll('aceRegisterBlockElements'), function(element){
+      _blockElems[element] = 1;
+  })
+
   function isBlockElement(n)
   {
     return !!_blockElems[(n.tagName || "").toLowerCase()];
@@ -3320,7 +3314,7 @@ function Ace2Inner(){
     }
 
     _.each(mods, function(mod){
-      setLineListType.apply(this, mod);
+      setLineListType(mod[0], mod[1]);
     });
     return true;
   }
@@ -4845,7 +4839,6 @@ function Ace2Inner(){
 
   function setLineListType(lineNum, listType)
   {
-    debugger;
     if(listType == ''){
       documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
     }else{
@@ -4977,7 +4970,7 @@ function Ace2Inner(){
     }
     
     _.each(mods, function(mod){
-      setLineListType.apply(this, mod);
+      setLineListType(mod[0], mod[1]);
     });
   }
   
@@ -5401,8 +5394,8 @@ function Ace2Inner(){
   
   
   // Init documentAttributeManager
-  
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
+  editorInfo.ace_performDocumentApplyAttributesToRange = documentAttributeManager.setAttributesOnRange;
 
   $(document).ready(function(){
     doc = document; // defined as a var in scope outside
@@ -5442,7 +5435,13 @@ function Ace2Inner(){
       bindTheEventHandlers();
 
     });
-
+    
+    hooks.callAll('aceInitialized', {
+      editorInfo: editorInfo,
+      rep: rep,
+      documentAttributeManager: documentAttributeManager
+    });
+    
     scheduler.setTimeout(function()
     {
       parent.readyFunc(); // defined in code that sets up the inner iframe

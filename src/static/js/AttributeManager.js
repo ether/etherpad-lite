@@ -2,28 +2,78 @@ var Changeset = require('./Changeset');
 var ChangesetUtils = require('./ChangesetUtils');
 var _ = require('./underscore');
 
+var lineMarkerAttribute = 'lmkr';
+
+// If one of these attributes are set to the first character of a 
+// line it is considered as a line attribute marker i.e. attributes
+// set on this marker are applied to the whole line. 
+// The list attribute is only maintained for compatibility reasons
+var lineAttributes = [lineMarkerAttribute,'list'];
+
+/*
+  The Attribute manager builds changesets based on a document 
+  representation for setting and removing range or line-based attributes.
+  
+  @param rep the document representation to be used
+  @param applyChangesetCallback this callback will be called 
+    once a changeset has been built.
+*/
+
 var AttributeManager = function(rep, applyChangesetCallback)
 {
   this.rep = rep;
   this.applyChangesetCallback = applyChangesetCallback;
   this.author = '';
+  
+  // If the first char in a line has one of the following attributes
+  // it will be considered as a line marker
 };
 
 AttributeManager.prototype = _(AttributeManager.prototype).extend({
   
   applyChangeset: function(changeset){
+    if(!this.applyChangesetCallback) return changeset;
+    
     var cs = changeset.toString();
     if (!Changeset.isIdentity(cs))
     {
       this.applyChangesetCallback(cs);
     }
+    
+    return changeset;
   },
   
+  /*
+    Sets attributes on a range
+    @param start [row, col] tuple pointing to the start of the range
+    @param end [row, col] tuple pointing to the end of the range
+    @param attribute: an array of attributes
+  */
+  setAttributesOnRange: function(start, end, attribs)
+  {
+    var builder = Changeset.builder(this.rep.lines.totalWidth());
+    ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, start);
+    ChangesetUtils.buildKeepRange(this.rep, builder, start, end, attribs, this.rep.apool);
+    return this.applyChangeset(builder);
+  },
+
+  /* 
+    Returns if the line already has a line marker
+    @param lineNum: the number of the line
+  */
   lineHasMarker: function(lineNum){
-    // get "list" attribute of first char of line
-    return this.getAttributeOnLine(lineNum, 'list');
+    var that = this;
+    
+    return _.find(lineAttributes, function(attribute){
+      return that.getAttributeOnLine(lineNum, attribute) != ''; 
+    }) !== undefined;
   },
   
+  /*
+    Gets a specified attribute on a line
+    @param lineNum: the number of the line to set the attribute for
+    @param attributeKey: the name of the attribute to get, e.g. list  
+  */
   getAttributeOnLine: function(lineNum, attributeName){
     // get  `attributeName` attribute of first char of line
     var aline = this.rep.alines[lineNum];
@@ -61,6 +111,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
         builder.insert('*', [
           ['author', this.author],
           ['insertorder', 'first'],
+          [lineMarkerAttribute, '1'],
           [attributeName, attributeValue]
         ], this.rep.apool);
     }
@@ -79,8 +130,6 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
      var loc = [0,0];
      var builder = Changeset.builder(this.rep.lines.totalWidth());
      var hasMarker = this.lineHasMarker(lineNum);
-     
-     // TODO
      
      if(hasMarker){
        ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
