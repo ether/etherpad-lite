@@ -10,7 +10,8 @@ var apiCaller = function(req, res, fields) {
   apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
 
   //wrap the send function so we can log the response
-  res._send = res.send;
+  //note: res._send seems to be already in use, so better use a "unique" name
+  res._____send = res.send;
   res.send = function (response) {
     response = JSON.stringify(response);
     apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
@@ -19,7 +20,7 @@ var apiCaller = function(req, res, fields) {
     if(req.query.jsonp)
       response = req.query.jsonp + "(" + response + ")";
 
-    res._send(response);
+    res._____send(response);
   }
 
   //call the api handler
