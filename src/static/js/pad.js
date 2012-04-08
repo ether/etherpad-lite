@@ -534,7 +534,7 @@ var pad = {
       if(padcookie.getPref("showAuthorshipColors") == false){
 	pad.changeViewOption('showAuthorColors', false);
       }
-      hooks.aCallAll("postAceInit");
+      hooks.aCallAll("postAceInit", {ace: padeditor.ace});
     }
   },
   dispose: function()
