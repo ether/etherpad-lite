@@ -17,6 +17,12 @@ var lineAttributes = [lineMarkerAttribute,'list'];
   @param rep the document representation to be used
   @param applyChangesetCallback this callback will be called 
     once a changeset has been built.
+    
+    
+  A document representation contains 
+  - an array `alines` containing 1 attributes string for each line 
+  - an Attribute pool `apool`
+  - a SkipList `lines` containing the text lines of the document.
 */
 
 var AttributeManager = function(rep, applyChangesetCallback)
