@@ -18,6 +18,12 @@ iframe {position:absolute;}
   border-radius: 6px; 
 }
 
+#otherusers
+{
+  max-height: 400px;
+  overflow: auto;
+}
+
 a img
 {
   border: 0;
