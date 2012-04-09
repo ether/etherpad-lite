@@ -2875,7 +2875,7 @@ function Ace2Inner(){
 
   _.each(hooks.callAll('aceRegisterBlockElements'), function(element){
       _blockElems[element] = 1;
-  })
+  });
 
   function isBlockElement(n)
   {
@@ -3365,6 +3365,9 @@ function Ace2Inner(){
             var thisLineListType = getLineListType(theLine);
             var prevLineEntry = (theLine > 0 && rep.lines.atIndex(theLine - 1));
             var prevLineBlank = (prevLineEntry && prevLineEntry.text.length == prevLineEntry.lineMarker);
+            
+            var thisLineHasMarker = documentAttributeManager.lineHasMarker(theLine);
+            
             if (thisLineListType)
             {
               // this line is a list
@@ -3378,6 +3381,9 @@ function Ace2Inner(){
                 // delistify
                 performDocumentReplaceRange([theLine, 0], [theLine, lineEntry.lineMarker], '');
               }
+            }else if (thisLineHasMarker && prevLineEntry){
+              // If the line has any attributes assigned, remove them by removing the marker '*'
+              performDocumentReplaceRange([theLine -1 , prevLineEntry.text.length], [theLine, lineEntry.lineMarker], '');
             }
             else if (theLine > 0)
             {

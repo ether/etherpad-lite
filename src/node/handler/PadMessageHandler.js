@@ -24,6 +24,7 @@ var async = require("async");
 var padManager = require("../db/PadManager");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
+var AttributeManager = require("ep_etherpad-lite/static/js/AttributeManager");
 var authorManager = require("../db/AuthorManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
 var settings = require('../utils/Settings');
@@ -31,6 +32,7 @@ var securityManager = require("../db/SecurityManager");
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins.js");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
+var _ = require('underscore');
 
 /**
  * A associative array that translates a session to a pad
@@ -591,8 +593,12 @@ function _correctMarkersInPad(atext, apool) {
   var offset = 0;
   while (iter.hasNext()) {
     var op = iter.next();
-    var listValue = Changeset.opAttributeValue(op, 'list', apool);
-    if (listValue) {
+    
+    var hasMarker = _.find(AttributeManager.lineAttributes, function(attribute){
+      return Changeset.opAttributeValue(op, attribute, apool);
+    }) !== undefined;
+    
+    if (hasMarker) {
       for(var i=0;i<op.chars;i++) {
         if (offset > 0 && text.charAt(offset-1) != '\n') {
           badMarkers.push(offset);
