@@ -256,6 +256,10 @@ require.setGlobalKeyPath("require");\n\
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
       $$INCLUDE_CSS("../static/css/pad.css");
       $$INCLUDE_CSS("../static/custom/pad.css");
+      
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+      includedCSS = includedCSS.concat(additionalCSS);
+      
       pushStyleTagsFor(iframeHTML, includedCSS);
 
       var includedJS = [];
@@ -294,6 +298,11 @@ require.setGlobalKeyPath("require");\n\
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
       $$INCLUDE_CSS("../static/css/pad.css");
       $$INCLUDE_CSS("../static/custom/pad.css");
+      
+      
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+      includedCSS = includedCSS.concat(additionalCSS);
+            
       pushStyleTagsFor(outerHTML, includedCSS);
 
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly

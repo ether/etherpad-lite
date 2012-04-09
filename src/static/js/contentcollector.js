@@ -27,6 +27,7 @@ var _MAX_LIST_LEVEL = 8;
 
 var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
+var _ = require('./underscore');
 
 function sanitizeUnicode(s)
 {
@@ -161,12 +162,6 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   var selection, startPoint, endPoint;
   var selStart = [-1, -1],
       selEnd = [-1, -1];
-  var blockElems = {
-    "div": 1,
-    "p": 1,
-    "pre": 1
-  };
-
   function _isEmpty(node, state)
   {
     // consider clean blank lines pasted in IE to be empty
@@ -188,7 +183,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   {
     var ln = lines.length() - 1;
     var chr = lines.textOfLine(ln).length;
-    if (chr == 0 && state.listType && state.listType != 'none')
+    if (chr == 0 && !_.isEmpty(state.lineAttributes))
     {
       chr += 1; // listMarker
     }
@@ -240,25 +235,30 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 
   function _enterList(state, listType)
   {
-    var oldListType = state.listType;
-    state.listLevel = (state.listLevel || 0) + 1;
+    var oldListType = state.lineAttributes['list'];
     if (listType != 'none')
     {
       state.listNesting = (state.listNesting || 0) + 1;
     }
-    state.listType = listType;
+    
+    if(listType === 'none' || !listType ){
+      delete state.lineAttributes['list']; 
+    }
+    else{
+      state.lineAttributes['list'] = listType;
+    }
+    
     _recalcAttribString(state);
     return oldListType;
   }
 
   function _exitList(state, oldListType)
   {
-    state.listLevel--;
-    if (state.listType != 'none')
+    if (state.lineAttributes['list'])
     {
       state.listNesting--;
     }
-    state.listType = oldListType;
+    if(oldListType) state.lineAttributes['list'] = oldListType;
     _recalcAttribString(state);
   }
 
@@ -301,21 +301,29 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     state.attribString = Changeset.makeAttribsString('+', lst, apool);
   }
 
-  function _produceListMarker(state)
+  function _produceLineAttributesMarker(state)
   {
-    lines.appendText('*', Changeset.makeAttribsString('+', [
-      ['list', state.listType],
+    // TODO: This has to go to AttributeManager.
+    var attributes = [
+      ['lmkr', '1'],
       ['insertorder', 'first']
-    ], apool));
+    ].concat(
+      _.map(state.lineAttributes,function(value,key){
+        console.log([key, value])
+        return [key, value];
+      })
+    );
+    
+    lines.appendText('*', Changeset.makeAttribsString('+', attributes , apool));
   }
   cc.startNewLine = function(state)
   {
     if (state)
     {
       var atBeginningOfLine = lines.textOfLine(lines.length() - 1).length == 0;
-      if (atBeginningOfLine && state.listType && state.listType != 'none')
+      if (atBeginningOfLine && !_.isEmpty(state.lineAttributes))
       {
-        _produceListMarker(state);
+        _produceLineAttributesMarker(state);
       }
     }
     lines.startNew();
@@ -345,7 +353,14 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         localAttribs: null,
         attribs: { /*name -> nesting counter*/
         },
-        attribString: ''
+        attribString: '',
+        // lineAttributes maintain a map from attributes to attribute values set on a line
+        lineAttributes: {
+          /*
+          example:
+          'list': 'bullet1',
+          */
+        }
       };
     }
     var localAttribs = state.localAttribs;
@@ -407,9 +422,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           // newlines in the source mustn't become spaces at beginning of line box
           txt2 = txt2.replace(/^\n*/, '');
         }
-        if (atBeginningOfLine && state.listType && state.listType != 'none')
+        if (atBeginningOfLine && !_.isEmpty(state.lineAttributes))
         {
-          _produceListMarker(state);
+          _produceLineAttributesMarker(state);
         }
         lines.appendText(textify(txt2), state.attribString);
         x += consumed;
