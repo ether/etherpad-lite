@@ -55,7 +55,13 @@ if [ ! -f $settings ]; then
 fi
 
 echo "Ensure that all dependencies are up to date..."
-npm install || { 
+(
+  mkdir -p node_modules
+  cd node_modules
+  [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
+  cd ep_etherpad-lite
+  npm install
+) || { 
   rm -rf node_modules
   exit 1 
 }
@@ -63,8 +69,8 @@ npm install || {
 echo "Ensure jQuery is downloaded and up to date..."
 DOWNLOAD_JQUERY="true"
 NEEDED_VERSION="1.7.1"
-if [ -f "static/js/jquery.js" ]; then
-  VERSION=$(cat static/js/jquery.js | head -n 3 | grep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?");
+if [ -f "src/static/js/jquery.js" ]; then
+  VERSION=$(cat src/static/js/jquery.js | head -n 3 | grep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?");
   
   if [ ${VERSION#v} = $NEEDED_VERSION ]; then
     DOWNLOAD_JQUERY="false"
@@ -72,22 +78,7 @@ if [ -f "static/js/jquery.js" ]; then
 fi
 
 if [ $DOWNLOAD_JQUERY = "true" ]; then
-  curl -lo static/js/jquery.js http://code.jquery.com/jquery-$NEEDED_VERSION.js || exit 1
-fi
-
-echo "Ensure prefixfree is downloaded and up to date..."
-DOWNLOAD_PREFIXFREE="true"
-NEEDED_VERSION="1.0.4"
-if [ -f "static/js/prefixfree.js" ]; then
-  VERSION=$(cat static/js/prefixfree.js | grep "PrefixFree" | grep -o "[0-9].[0-9].[0-9]");
-  
-  if [ $VERSION = $NEEDED_VERSION ]; then
-    DOWNLOAD_PREFIXFREE="false"
-  fi
-fi
-
-if [ $DOWNLOAD_PREFIXFREE = "true" ]; then
-  curl -lo static/js/prefixfree.js -k https://raw.github.com/LeaVerou/prefixfree/master/prefixfree.js || exit 1
+  curl -lo src/static/js/jquery.js http://code.jquery.com/jquery-$NEEDED_VERSION.js || exit 1
 fi
 
 #Remove all minified data to force node creating it new
@@ -98,12 +89,12 @@ echo "ensure custom css/js files are created..."
 
 for f in "index" "pad" "timeslider"
 do
-  if [ ! -f "static/custom/$f.js" ]; then
-    cp -v "static/custom/js.template" "static/custom/$f.js" || exit 1
+  if [ ! -f "src/static/custom/$f.js" ]; then
+    cp -v "src/static/custom/js.template" "src/static/custom/$f.js" || exit 1
   fi
   
-  if [ ! -f "static/custom/$f.css" ]; then
-    cp -v "static/custom/css.template" "static/custom/$f.css" || exit 1
+  if [ ! -f "src/static/custom/$f.css" ]; then
+    cp -v "src/static/custom/css.template" "src/static/custom/$f.css" || exit 1
   fi
 done
 

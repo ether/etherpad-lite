@@ -13,7 +13,7 @@
   "dbType" : "dirty",
   //the database specific settings
   "dbSettings" : {
-                   "filename" : "../var/dirty.db"
+                   "filename" : "var/dirty.db"
                  },
                  
   /* An Example of MySQL Configuration
@@ -39,9 +39,9 @@
      but makes it impossible to debug the javascript/css */
   "minify" : true,
 
-  /* How long may clients use served javascript code? Without versioning this
-    is may cause problems during deployment. */
-  "maxAge" : 21600000, // 6 hours
+  /* How long may clients use served javascript code (in seconds)? Without versioning this
+    is may cause problems during deployment. Set to 0 to disable caching */
+  "maxAge" : 21600, // 6 hours
   
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to enable the import/export of pads*/  
@@ -50,6 +50,12 @@
   /* This setting is used if you need http basic auth */
   // "httpAuth" : "user:pass",
 
+  /* This setting is used for http basic auth for admin pages. If not set, the admin page won't be accessible from web*/
+  // "adminHttpAuth" : "user:pass",
+
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
-  "loglevel": "INFO"
+  "loglevel": "INFO",
+
+  /* cache 6 hours = 1000*60*60*6 */
+  "maxAge": 21600000
 }
