@@ -427,7 +427,6 @@ table#otheruserstable { display: none; }
 #nootherusers a { color: #3C88FF; }
 
 #otheruserstable td {
-  border-top: 1px solid #555;
   height: 26px;
   vertical-align: middle;
   padding: 0 2px;

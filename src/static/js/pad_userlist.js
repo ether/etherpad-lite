@@ -1,4 +1,4 @@
-/**
++/**
  * This code is mostly from the old Etherpad. Please help us to comment this code. 
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
@@ -120,7 +120,7 @@ var paduserlist = (function()
         nameHtml = '<input type="text" class="editempty newinput" value="unnamed" ' + (isNameEditable(data) ? '' : 'disabled="disabled" ') + '/>';
       }
 
-      return ['<td style="height:', height, 'px" class="usertdswatch"><div class="swatch" style="background:' + data.color + '">&nbsp;</div></td>', '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="usertdstatus">', padutils.escapeHtml(data.status), '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
+      return ['<td style="height:', height, 'px" class="usertdswatch"><div class="swatch" style="background:' + data.color + '">&nbsp;</div></td>', '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
     }
 
     function getRowHtml(id, innerHtml)
