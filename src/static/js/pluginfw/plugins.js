@@ -98,6 +98,28 @@ if (exports.isClient) {
   };
 } else {
 
+exports.callInit = function (cb) {
+  var hooks = require("./hooks");
+  async.map(
+    Object.keys(exports.plugins),
+    function (plugin_name, cb) {
+      var plugin = exports.plugins[plugin_name];
+      fs.stat(path.normalize(path.join(plugin.package.path, ".ep_initialized")), function (err, stats) {
+        if (err) {
+          async.waterfall([
+            function (cb) { fs.writeFile(path.normalize(path.join(plugin.package.path, ".ep_initialized")), 'done', cb); },
+            function (cb) { hooks.aCallAll("init_" + plugin_name, {}, cb); },
+            cb,
+          ]);
+        } else {
+          cb();
+        }
+      });
+    },
+    function () { cb(); }
+  );
+}
+
 exports.update = function (cb) {
   exports.getPackages(function (er, packages) {
     var parts = [];
@@ -109,11 +131,12 @@ exports.update = function (cb) {
         exports.loadPlugin(packages, plugin_name, plugins, parts, cb);
       },
       function (err) {
-        exports.plugins = plugins;
+        if (err) cb(err);
+	exports.plugins = plugins;
         exports.parts = exports.sortParts(parts);
         exports.hooks = exports.extractHooks(exports.parts, "hooks");
-        exports.loaded = true;
-        cb(err);
+	exports.loaded = true;
+        exports.callInit(cb);
       }
     );
   });

@@ -155,6 +155,9 @@ function SkipList()
     var widthLoc = point.widthSkips[0] + point.nodes[0].downSkipWidths[0];
     var newWidth = _entryWidth(entry);
     p.mark("loop1");
+    
+    // The new node will have at least level 1
+    // With a proability of 0.01^(n-1) the nodes level will be >= n
     while (newNode.levels == 0 || Math.random() < 0.01)
     {
       var lvl = newNode.levels;

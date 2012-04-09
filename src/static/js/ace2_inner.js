@@ -35,6 +35,8 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
+  var hooks = require('./pluginfw/hooks');
+  
 
 function Ace2Inner(){
   
@@ -45,10 +47,12 @@ function Ace2Inner(){
   var domline = require('./domline').domline;
   var AttribPool = require('./AttributePool');
   var Changeset = require('./Changeset');
+  var ChangesetUtils = require('./ChangesetUtils');
   var linestylefilter = require('./linestylefilter').linestylefilter;
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
+  var AttributeManager = require('./AttributeManager');
   
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false 
@@ -78,14 +82,11 @@ function Ace2Inner(){
   var overlaysdiv = lineMetricsDiv.nextSibling;
   initLineNumbers();
 
-  var outsideKeyDown = function(evt)
-    {};
-  var outsideKeyPress = function(evt)
-    {
-      return true;
-      };
-  var outsideNotifyDirty = function()
-    {};
+  var outsideKeyDown = noop;
+  
+  var outsideKeyPress = function(){return true;};
+  
+  var outsideNotifyDirty = noop;
 
   // selFocusAtStart -- determines whether the selection extends "backwards", so that the focus
   // point (controlled with the arrow keys) is at the beginning; not supported in IE, though
@@ -100,6 +101,7 @@ function Ace2Inner(){
     alines: [],
     apool: new AttribPool()
   };
+  
   // lines, alltext, alines, and DOM are set up in setup()
   if (undoModule.enabled)
   {
@@ -119,6 +121,7 @@ function Ace2Inner(){
       iframePadRight = 0;
 
   var console = (DEBUG && window.console);
+  var documentAttributeManager;
   
   if (!window.console)
   {
@@ -155,6 +158,7 @@ function Ace2Inner(){
 
   var textFace = 'monospace';
   var textSize = 12;
+  
 
   function textLineHeight()
   {
@@ -929,7 +933,10 @@ function Ace2Inner(){
       },
       grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
       dmesg: function(){ dmesg = window.dmesg = value; },
-      userauthor: function(value){ thisAuthor = String(value); },
+      userauthor: function(value){ 
+        thisAuthor = String(value);
+        documentAttributeManager.author = thisAuthor;
+      },
       styled: setStyled,
       textface: setTextFace,
       textsize: setTextSize,
@@ -1864,55 +1871,6 @@ function Ace2Inner(){
     }
   }
 
-
-  function setupMozillaCaretHack(lineNum)
-  {
-    // This is really ugly, but by god, it works!
-    // Fixes annoying Firefox caret artifact (observed in 2.0.0.12
-    // and unfixed in Firefox 2 as of now) where mutating the DOM
-    // and then moving the caret to the beginning of a line causes
-    // an image of the caret to be XORed at the top of the iframe.
-    // The previous solution involved remembering to set the selection
-    // later, in response to the next event in the queue, which was hugely
-    // annoying.
-    // This solution: add a space character (0x20) to the beginning of the line.
-    // After setting the selection, remove the space.
-    var lineNode = rep.lines.atIndex(lineNum).lineNode;
-
-    var fc = lineNode.firstChild;
-    while (isBlockElement(fc) && fc.firstChild)
-    {
-      fc = fc.firstChild;
-    }
-    var textNode;
-    if (isNodeText(fc))
-    {
-      fc.nodeValue = " " + fc.nodeValue;
-      textNode = fc;
-    }
-    else
-    {
-      textNode = doc.createTextNode(" ");
-      fc.parentNode.insertBefore(textNode, fc);
-    }
-    markNodeClean(lineNode);
-    return {
-      unhack: function()
-      {
-        if (textNode.nodeValue == " ")
-        {
-          textNode.parentNode.removeChild(textNode);
-        }
-        else
-        {
-          textNode.nodeValue = textNode.nodeValue.substring(1);
-        }
-        markNodeClean(lineNode);
-      }
-    };
-  }
-
-
   function getPointForLineAndChar(lineAndChar)
   {
     var line = lineAndChar[0];
@@ -2247,6 +2205,9 @@ function Ace2Inner(){
 
   }
 
+  /*
+    Converts the position of a char (index in String) into a [row, col] tuple
+  */
   function lineAndColumnFromChar(x)
   {
     var lineEntry = rep.lines.atOffset(x);
@@ -2301,8 +2262,8 @@ function Ace2Inner(){
     //           CCCC\n
     // end[0]:   <CCC end[1] CCC>-------\n
     var builder = Changeset.builder(rep.lines.totalWidth());
-    buildKeepToStartOfRange(builder, start);
-    buildRemoveRange(builder, start, end);
+    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
+    ChangesetUtils.buildRemoveRange(rep, builder, start, end);
     builder.insert(newText, [
       ['author', thisAuthor]
     ], rep.apool);
@@ -2313,69 +2274,17 @@ function Ace2Inner(){
 
   function performDocumentApplyAttributesToCharRange(start, end, attribs)
   {
-    if (end >= rep.alltext.length)
-    {
-      end = rep.alltext.length - 1;
-    }
-    performDocumentApplyAttributesToRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
+    end = Math.min(end, rep.alltext.length - 1);
+    documentAttributeManager.setAttributesOnRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
   }
   editorInfo.ace_performDocumentApplyAttributesToCharRange = performDocumentApplyAttributesToCharRange;
-
-  function performDocumentApplyAttributesToRange(start, end, attribs)
-  {
-    var builder = Changeset.builder(rep.lines.totalWidth());
-    buildKeepToStartOfRange(builder, start);
-    buildKeepRange(builder, start, end, attribs, rep.apool);
-    var cs = builder.toString();
-    performDocumentApplyChangeset(cs);
-  }
-  editorInfo.ace_performDocumentApplyAttributesToRange = performDocumentApplyAttributesToRange;
-
-  function buildKeepToStartOfRange(builder, start)
-  {
-    var startLineOffset = rep.lines.offsetOfIndex(start[0]);
-
-    builder.keep(startLineOffset, start[0]);
-    builder.keep(start[1]);
-  }
-
-  function buildRemoveRange(builder, start, end)
-  {
-    var startLineOffset = rep.lines.offsetOfIndex(start[0]);
-    var endLineOffset = rep.lines.offsetOfIndex(end[0]);
-
-    if (end[0] > start[0])
-    {
-      builder.remove(endLineOffset - startLineOffset - start[1], end[0] - start[0]);
-      builder.remove(end[1]);
-    }
-    else
-    {
-      builder.remove(end[1] - start[1]);
-    }
-  }
-
-  function buildKeepRange(builder, start, end, attribs, pool)
-  {
-    var startLineOffset = rep.lines.offsetOfIndex(start[0]);
-    var endLineOffset = rep.lines.offsetOfIndex(end[0]);
-
-    if (end[0] > start[0])
-    {
-      builder.keep(endLineOffset - startLineOffset - start[1], end[0] - start[0], attribs, pool);
-      builder.keep(end[1], 0, attribs, pool);
-    }
-    else
-    {
-      builder.keep(end[1] - start[1], 0, attribs, pool);
-    }
-  }
-
+  
+  
   function setAttributeOnSelection(attributeName, attributeValue)
   {
     if (!(rep.selStart && rep.selEnd)) return;
 
-    performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+    documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
       [attributeName, attributeValue]
     ]);
   }
@@ -2436,13 +2345,13 @@ function Ace2Inner(){
 
     if (selectionAllHasIt)
     {
-      performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
         [attributeName, '']
       ]);
     }
     else
     {
-      performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [
+      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
         [attributeName, 'true']
       ]);
     }
@@ -2964,6 +2873,10 @@ function Ace2Inner(){
     "ul": 1
   };
 
+  _.each(hooks.callAll('aceRegisterBlockElements'), function(element){
+      _blockElems[element] = 1;
+  });
+
   function isBlockElement(n)
   {
     return !!_blockElems[(n.tagName || "").toLowerCase()];
@@ -3328,6 +3241,7 @@ function Ace2Inner(){
     {
       return;
     }
+    
     var lineNum = rep.selStart[0];
     var listType = getLineListType(lineNum);
 
@@ -3399,11 +3313,9 @@ function Ace2Inner(){
       }
     }
 
-    if (mods.length > 0)
-    {
-      setLineListTypes(mods);
-    }
-
+    _.each(mods, function(mod){
+      setLineListType(mod[0], mod[1]);
+    });
     return true;
   }
   editorInfo.ace_doIndentOutdent = doIndentOutdent;
@@ -3453,6 +3365,9 @@ function Ace2Inner(){
             var thisLineListType = getLineListType(theLine);
             var prevLineEntry = (theLine > 0 && rep.lines.atIndex(theLine - 1));
             var prevLineBlank = (prevLineEntry && prevLineEntry.text.length == prevLineEntry.lineMarker);
+            
+            var thisLineHasMarker = documentAttributeManager.lineHasMarker(theLine);
+            
             if (thisLineListType)
             {
               // this line is a list
@@ -3466,6 +3381,9 @@ function Ace2Inner(){
                 // delistify
                 performDocumentReplaceRange([theLine, 0], [theLine, lineEntry.lineMarker], '');
               }
+            }else if (thisLineHasMarker && prevLineEntry){
+              // If the line has any attributes assigned, remove them by removing the marker '*'
+              performDocumentReplaceRange([theLine -1 , prevLineEntry.text.length], [theLine, lineEntry.lineMarker], '');
             }
             else if (theLine > 0)
             {
@@ -3818,26 +3736,17 @@ function Ace2Inner(){
       return;
     }
 
-    var mozillaCaretHack = (false && browser.mozilla && selStart && selEnd && selStart[0] == selEnd[0] && selStart[1] == rep.lines.atIndex(selStart[0]).lineMarker && selEnd[1] == rep.lines.atIndex(selEnd[0]).lineMarker && setupMozillaCaretHack(selStart[0]));
-
     var selection = {};
 
     var ss = [selStart[0], selStart[1]];
-    if (mozillaCaretHack) ss[1] += 1;
     selection.startPoint = getPointForLineAndChar(ss);
 
     var se = [selEnd[0], selEnd[1]];
-    if (mozillaCaretHack) se[1] += 1;
     selection.endPoint = getPointForLineAndChar(se);
 
     selection.focusAtStart = !! rep.selFocusAtStart;
 
     setSelection(selection);
-
-    if (mozillaCaretHack)
-    {
-      mozillaCaretHack.unhack();
-    }
   }
 
   function getRepHTML()
@@ -4926,27 +4835,30 @@ function Ace2Inner(){
       }
     }
   }
-
+  
+  var listAttributeName = 'list';
+  
   function getLineListType(lineNum)
   {
-    // get "list" attribute of first char of line
-    var aline = rep.alines[lineNum];
-    if (aline)
-    {
-      var opIter = Changeset.opIterator(aline);
-      if (opIter.hasNext())
-      {
-        return Changeset.opAttributeValue(opIter.next(), 'list', rep.apool) || '';
-      }
-    }
-    return '';
+    return documentAttributeManager.getAttributeOnLine(lineNum, listAttributeName)
   }
 
   function setLineListType(lineNum, listType)
   {
-    setLineListTypes([
-      [lineNum, listType]
-    ]);
+    if(listType == ''){
+      documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
+    }else{
+      documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType);
+    }
+    
+    //if the list has been removed, it is necessary to renumber
+    //starting from the *next* line because the list may have been
+    //separated. If it returns null, it means that the list was not cut, try
+    //from the current one.
+    if(renumberList(lineNum+1)==null)
+    {
+      renumberList(lineNum);
+    }
   }
   
   function renumberList(lineNum){
@@ -4993,8 +4905,8 @@ function Ace2Inner(){
         }
         else if(curLevel == level)
         {
-          buildKeepRange(builder, loc, (loc = [line, 0]));
-          buildKeepRange(builder, loc, (loc = [line, 1]), [
+          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
+          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
             ['start', position]
           ], rep.apool);
           
@@ -5025,62 +4937,6 @@ function Ace2Inner(){
     
   }
   
-  function setLineListTypes(lineNumTypePairsInOrder)
-  {
-    var loc = [0, 0];
-    var builder = Changeset.builder(rep.lines.totalWidth());
-    for (var i = 0; i < lineNumTypePairsInOrder.length; i++)
-    {
-      var pair = lineNumTypePairsInOrder[i];
-      var lineNum = pair[0];
-      var listType = pair[1];
-      buildKeepRange(builder, loc, (loc = [lineNum, 0]));
-      if (getLineListType(lineNum))
-      {
-        // already a line marker
-        if (listType)
-        {
-          // make different list type
-          buildKeepRange(builder, loc, (loc = [lineNum, 1]), [
-            ['list', listType]
-          ], rep.apool);
-        }
-        else
-        {
-          // remove list marker
-          buildRemoveRange(builder, loc, (loc = [lineNum, 1]));
-        }
-      }
-      else
-      {
-        // currently no line marker
-        if (listType)
-        {
-          // add a line marker
-          builder.insert('*', [
-            ['author', thisAuthor],
-            ['insertorder', 'first'],
-            ['list', listType]
-          ], rep.apool);
-        }
-      }
-    }
-
-    var cs = builder.toString();
-    if (!Changeset.isIdentity(cs))
-    {
-      performDocumentApplyChangeset(cs);
-    }
-    
-    //if the list has been removed, it is necessary to renumber
-    //starting from the *next* line because the list may have been
-    //separated. If it returns null, it means that the list was not cut, try
-    //from the current one.
-    if(renumberList(lineNum+1)==null)
-    {
-      renumberList(lineNum);
-    }
-  }
 
   function doInsertList(type)
   {
@@ -5118,7 +4974,10 @@ function Ace2Inner(){
       var t = getLineListType(n);
       mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
-    setLineListTypes(mods);
+    
+    _.each(mods, function(mod){
+      setLineListType(mod[0], mod[1]);
+    });
   }
   
   function doInsertUnorderedList(){
@@ -5538,6 +5397,11 @@ function Ace2Inner(){
       }
     }
   }
+  
+  
+  // Init documentAttributeManager
+  documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
+  editorInfo.ace_performDocumentApplyAttributesToRange = documentAttributeManager.setAttributesOnRange;
 
   $(document).ready(function(){
     doc = document; // defined as a var in scope outside
@@ -5577,7 +5441,13 @@ function Ace2Inner(){
       bindTheEventHandlers();
 
     });
-
+    
+    hooks.callAll('aceInitialized', {
+      editorInfo: editorInfo,
+      rep: rep,
+      documentAttributeManager: documentAttributeManager
+    });
+    
     scheduler.setTimeout(function()
     {
       parent.readyFunc(); // defined in code that sets up the inner iframe

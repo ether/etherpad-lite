@@ -32,6 +32,8 @@ var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
 var linestylefilter = {};
 var _ = require('./underscore');
+var AttributeManager = require('./AttributeManager');
+
 
 linestylefilter.ATTRIB_CLASSES = {
   'bold': 'tag:b',
@@ -39,6 +41,9 @@ linestylefilter.ATTRIB_CLASSES = {
   'underline': 'tag:u',
   'strikethrough': 'tag:s'
 };
+
+var lineAttributeMarker = 'lineAttribMarker';
+exports.lineAttributeMarker = lineAttributeMarker;
 
 linestylefilter.getAuthorClassName = function(author)
 {
@@ -68,14 +73,19 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
     function attribsToClasses(attribs)
     {
       var classes = '';
+      var isLineAttribMarker = false;
+      
       Changeset.eachAttribNumber(attribs, function(n)
       {
-        var key = apool.getAttribKey(n);
+        var key = apool.getAttribKey(n);  
         if (key)
         {
           var value = apool.getAttribValue(n);
           if (value)
           {
+            if (!isLineAttribMarker && _.indexOf(AttributeManager.lineAttributes, key) >= 0){
+              isLineAttribMarker = true;
+            }
             if (key == 'author')
             {
               classes += ' ' + linestylefilter.getAuthorClassName(value);
@@ -99,10 +109,12 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
                 key: key,
                 value: value
               }, " ", " ", "");
-            }
+            }            
           }
         }
       });
+      
+      if(isLineAttribMarker) classes += ' ' + lineAttributeMarker;
       return classes.substring(1);
     }
 

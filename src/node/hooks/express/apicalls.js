@@ -4,13 +4,14 @@ var formidable = require('formidable');
 var apiHandler = require('../../handler/APIHandler');
 
 //This is for making an api call, collecting all post information and passing it to the apiHandler
-exports.apiCaller = function(req, res, fields) {
+var apiCaller = function(req, res, fields) {
   res.header("Content-Type", "application/json; charset=utf-8");
 
   apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
 
   //wrap the send function so we can log the response
-  res._send = res.send;
+  //note: res._send seems to be already in use, so better use a "unique" name
+  res._____send = res.send;
   res.send = function (response) {
     response = JSON.stringify(response);
     apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
@@ -19,13 +20,14 @@ exports.apiCaller = function(req, res, fields) {
     if(req.query.jsonp)
       response = req.query.jsonp + "(" + response + ")";
 
-    res._send(response);
+    res._____send(response);
   }
 
   //call the api handler
   apiHandler.handle(req.params.func, fields, req, res);
 }
 
+exports.apiCaller = apiCaller;
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   //This is a api GET call, collect all post informations and pass it to the apiHandler
