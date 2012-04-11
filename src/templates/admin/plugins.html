@@ -19,7 +19,7 @@
             if ($("#search-query")[0].value != "")
               socket.emit("search", $("#search-query")[0].value);
           });
-
+  
           $(".do-install").unbind('click').click(function (e) {
             var row = $(e.target).closest("tr");
             doUpdate = true;
@@ -95,74 +95,76 @@
     </script>
   </head>
   <body>
-    <% if (errors.length) { %>
-      <div class="errors">
-        <% errors.forEach(function (item) { %>
-          <div class="error"><%= item.toString() %></div>
-        <% }) %>
-      </div>
-    <% } %>
+    <div id="wrapper">
+
+      <h1>Etherpad Lite</h1>
+
+      <div class="seperator"></div>
+
+      <% if (errors.length) { %>
+        <div class="errors">
+          <% errors.forEach(function (item) { %>
+            <div class="error"><%= item.toString() %></div>
+          <% }) %>
+        </div>
+      <% } %>
 
 
-    <h1>Installed plugins</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <td></td>
-        </tr>
-      </thead>
-      <tbody class="template">
-        <tr id="installed-plugin-template">
-          <td class="name"></td>
-          <td class="description"></td>
-          <td class="actions">
-            <input type="button" value="Uninstall" class="do-uninstall">
-          </td>
-        </tr>
-      </tbody>
-      <tbody id="installed-plugins">
-      </tbody>
-    </table>
+      <h2>Installed plugins</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody class="template">
+          <tr id="installed-plugin-template">
+            <td class="name"></td>
+            <td class="description"></td>
+            <td class="actions">
+              <input type="button" value="Uninstall" class="do-uninstall">
+            </td>
+          </tr>
+        </tbody>
+        <tbody id="installed-plugins">
+        </tbody>
+      </table>
+      <div class="seperator"></div>
+      <h2>Search for plugins to install</h2>
+      <form>
+        <input type="text" name="search" placeholder="Search term" id="search-query">
+        <input type="button" value="Search" id="do-search">
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody class="template">
+          <tr id="search-result-template">
+            <td class="name"></td>
+            <td class="description"></td>
+            <td class="actions">
+              <input type="button" value="Install" class="do-install">
+           </td>
+          </tr>
+        </tbody>
+        <tbody id="search-results">
+        </tbody>
+      </table>
 
-
-
-    <h1>Search for plugins to install</h1>
-    <form>
-      <input type="text" name="search" value="" id="search-query">
-      <input type="button" value="Search" id="do-search">
-    </form>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <td></td>
-        </tr>
-      </thead>
-      <tbody class="template">
-        <tr id="search-result-template">
-          <td class="name"></td>
-          <td class="description"></td>
-          <td class="actions">
-            <input type="button" value="Install" class="do-install">
-          </td>
-        </tr>
-      </tbody>
-      <tbody id="search-results">
-      </tbody>
-    </table>
-
-
-    <div id="progress" class="dialog">
-      <h1 class="title">
-        Please wait: <span class="message"></span>
+      <div id="progress" class="dialog">
+        <h1 class="title">
+          Please wait: <span class="message"></span>
         <input type="button" class="close" value="Close">
-      </h1>
-
-      <div class="history"></div>
+        </h1>
+        <div class="history"></div>
+      </div>
     </div>
-
   </body>
 </html>
