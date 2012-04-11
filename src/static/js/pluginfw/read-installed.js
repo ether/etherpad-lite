@@ -128,7 +128,7 @@ function readInstalled_ (folder, parent, name, reqver, depth, maxDepth, cb) {
   fs.readdir(path.resolve(folder, "node_modules"), function (er, i) {
     // error indicates that nothing is installed here
     if (er) i = []
-    installed = i.filter(function (f) { return f.charAt(0) !== "." })
+    installed = i.sort().filter(function (f) { return f.charAt(0) !== "." })
     next()
   })
 
