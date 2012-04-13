@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-var padutils = require('/pad_utils').padutils;
-var padcookie = require('/pad_cookie').padcookie;
+var padutils = require('./pad_utils').padutils;
+var padcookie = require('./pad_cookie').padcookie;
 
 var chat = (function()
 {

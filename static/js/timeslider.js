@@ -22,13 +22,13 @@
 
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
-require('/jquery');
-JSON = require('/json2');
-require('/undo-xpopup');
+require('./jquery');
+JSON = require('./json2');
+require('./undo-xpopup');
 
-var createCookie = require('/pad_utils').createCookie;
-var readCookie = require('/pad_utils').readCookie;
-var randomString = require('/pad_utils').randomString;
+var createCookie = require('./pad_utils').createCookie;
+var readCookie = require('./pad_utils').readCookie;
+var randomString = require('./pad_utils').randomString;
 
 var socket, token, padId, export_links;
 
@@ -127,12 +127,12 @@ function handleClientVars(message)
   clientVars = message.data;
   
   //load all script that doesn't work without the clientVars
-  BroadcastSlider = require('/broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
-  require('/broadcast_revisions').loadBroadcastRevisionsJS();
-  changesetLoader = require('/broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
+  BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
+  require('./broadcast_revisions').loadBroadcastRevisionsJS();
+  changesetLoader = require('./broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
   //initialize export ui
-  require('/pad_impexp').padimpexp.init();
+  require('./pad_impexp').padimpexp.init();
 
   //change export urls when the slider moves
   var export_rev_regex = /(\/\d+)?\/export/

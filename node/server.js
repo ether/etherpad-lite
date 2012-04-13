@@ -142,9 +142,9 @@ async.waterfall([
       gracefulShutdown();
     });
     
-    // Cache both minified and static.
+    // Cache both packaged and static.
     var assetCache = new CachingMiddleware;
-    app.all('/(minified|static)/*', assetCache.handle);
+    app.all('/(javascripts|static)/*', assetCache.handle);
 
     // Minify will serve static files compressed (minify enabled). It also has
     // file-specific hacks for ace/require-kernel/etc.
@@ -153,7 +153,7 @@ async.waterfall([
     // Setup middleware that will package JavaScript files served by minify for
     // CommonJS loader on the client-side.
     var jsServer = new (Yajsml.Server)({
-      rootPath: 'minified/'
+      rootPath: 'javascripts/src'
     , rootURI: 'http://localhost:' + settings.port + '/static/js/'
     });
     var StaticAssociator = Yajsml.associators.StaticAssociator;

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var padutils = require('/pad_utils').padutils;
+var padutils = require('./pad_utils').padutils;
 
 var paddocbar = (function()
 {
@@ -449,7 +449,7 @@ var paddocbar = (function()
     handleResizePage: function()
     {
       // Side-step circular reference. This should be injected.
-      var padsavedrevs = require('/pad_savedrevs').padsavedrevs;
+      var padsavedrevs = require('./pad_savedrevs').padsavedrevs;
       padsavedrevs.handleResizePage();
     },
     hideLaterIfNoOtherInteraction: function()
