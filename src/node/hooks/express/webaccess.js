@@ -24,8 +24,12 @@ exports.basicAuth = function (req, res, next) {
   // If a password has been set and auth headers are present...
   if (pass && req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
     // ...check login and password
-    if (new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString() === pass) {
-      return next();
+    var userLogin = new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString();
+    settings.readConfig();
+    for (var loginIndex in pass) {
+      if (userLogin === pass[loginIndex]) {
+        return next();
+      }
     }
   }
   // Do not require auth for static paths...this could be a bit brittle

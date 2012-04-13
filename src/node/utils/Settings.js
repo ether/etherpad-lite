@@ -103,6 +103,8 @@ exports.abiwordAvailable = function()
   }
 }
 
+exports.readConfig = function()
+{
 // Discover where the settings file lives
 var settingsFilename = argv.settings || "settings.json";
 if (settingsFilename.charAt(0) != '/') {
@@ -149,3 +151,6 @@ for(var i in settings)
     console.warn("This setting doesn't exist or it was removed");
   }
 }
+}
+
+exports.readConfig();
