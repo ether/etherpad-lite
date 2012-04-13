@@ -4635,7 +4635,7 @@ function Ace2Inner(){
   function setClassPresence(elem, className, present)
   {
     if (present) $(elem).addClass(className);
-    else $(elem).removeClass(elem, className);
+    else $(elem).removeClass(className);
   }
 
   function setup()
