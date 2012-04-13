@@ -28,6 +28,11 @@ exports.basicAuth = function (req, res, next) {
       return next();
     }
   }
+  // Do not require auth for static paths...this could be a bit brittle
+  else if (req.path.match(/^\/(static|javascripts|pluginfw)/)) {
+    return next();
+  }
+
 
   // Otherwise return Auth required Headers, delayed for 1 second, if auth failed.
   res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
