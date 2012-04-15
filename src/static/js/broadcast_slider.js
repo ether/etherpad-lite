@@ -216,7 +216,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           authorsList.append(' (');
           _.each(colorsAnonymous, function(color, i){
             if( i > 0 ) authorsList.append(' '); 
-            $('<span /> ')
+            $('<span>&nbsp;</span>')
               .css('background-color', color)
               .addClass('author author-anonymous')
               .appendTo(authorsList);
