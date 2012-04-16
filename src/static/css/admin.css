@@ -47,7 +47,7 @@ button, input {
   font-size: 15px;
 }
 input[type="button"] {
-  height: 30px;
+  padding: 4px 6px;
   margin: 0;
   display: block;
 }
@@ -58,13 +58,13 @@ input[value="Uninstall"], input[value="Install"] {
 input[type="text"] {
   border-radius: 3px;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;   
+  -moz-box-sizing: border-box;
   padding: 10px;
   *padding: 0; /* IE7 hack */
   width: 100%;
   outline: none;
   border: 1px solid #ddd;
-  margin: 0 0 5px 1px;
+  margin: 0 0 5px 0;
   max-width: 500px;
 }
 button{
