@@ -291,6 +291,17 @@ function Ace2Inner(){
     return null;
   }
 
+  function className2AuthorName(className)
+  {
+    var a = className2Author(className);
+    var aname = null;
+    if (a) {
+      var ainfo = authorInfos[a];
+      aname = (ainfo) ? ainfo.name : null;
+    }
+    return aname;
+  }
+
   function getAuthorColorClassSelector(oneClassName)
   {
     return ".authorColors ." + oneClassName;
@@ -1244,7 +1255,7 @@ function Ace2Inner(){
     var curDocChar;
     var tokenFunc = function(tokenText, tokenClass)
       {
-        lineEntry.domInfo.appendSpan(tokenText, tokenClass);
+        lineEntry.domInfo.appendSpan(tokenText, tokenClass, className2AuthorName(tokenClass));
         };
     if (optModFunc)
     {
@@ -1801,7 +1812,7 @@ function Ace2Inner(){
       p2.mark("spans");
       getSpansForLine(entry, function(tokenText, tokenClass)
       {
-        info.appendSpan(tokenText, tokenClass);
+        info.appendSpan(tokenText, tokenClass, className2AuthorName(tokenClass));
       }, lineStartOffset, isTimeUp());
       //else if (entry.text.length > 0) {
       //info.appendSpan(entry.text, 'dirty');

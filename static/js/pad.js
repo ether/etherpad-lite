@@ -489,7 +489,7 @@ var pad = {
         $('#options-stickychat').prop("checked", true); // set the checkbox to on
       }
       if(padcookie.getPref("showAuthorshipColors") == false){
-	pad.changeViewOption('showAuthorColors', false);
+	    pad.changeViewOption('showAuthorColors', false);
       }
     }
   },

@@ -92,7 +92,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   var perTextNodeProcess = (doesWrap ? identity : processSpaces);
   var perHtmlLineProcess = (doesWrap ? processSpaces : identity);
   var lineClass = 'ace-line';
-  result.appendSpan = function(txt, cls)
+  result.appendSpan = function(txt, cls, aname)
   {
     if (cls.indexOf('list') >= 0)
     {
@@ -176,7 +176,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         simpleTags.reverse();
         extraCloseTags = '</' + simpleTags.join('></') + '>' + extraCloseTags;
       }
-      html.push('<span class="', Security.escapeHTMLAttribute(cls || ''), '">', extraOpenTags, perTextNodeProcess(Security.escapeHTML(txt)), extraCloseTags, '</span>');
+      html.push('<span title="', Security.escapeHTMLAttribute(aname || ''),'" class="', Security.escapeHTMLAttribute(cls || ''), '">', extraOpenTags, perTextNodeProcess(Security.escapeHTML(txt)), extraCloseTags, '</span>');
     }
   };
   result.clearSpans = function()
