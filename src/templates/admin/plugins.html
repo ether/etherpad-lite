@@ -97,10 +97,6 @@
   <body>
     <div id="wrapper">
 
-      <h1>Etherpad Lite</h1>
-
-      <div class="seperator"></div>
-
       <% if (errors.length) { %>
         <div class="errors">
           <% errors.forEach(function (item) { %>
@@ -110,7 +106,7 @@
       <% } %>
 
 
-      <h2>Installed plugins</h2>
+      <h1>Installed plugins</h1>
       <table>
         <thead>
           <tr>
@@ -131,10 +127,10 @@
         <tbody id="installed-plugins">
         </tbody>
       </table>
-      <div class="seperator"></div>
-      <h2>Search for plugins to install</h2>
+  
+      <h1>Search for plugins to install</h1>
       <form>
-        <input type="text" name="search" placeholder="Search term" id="search-query">
+        <input type="text" name="search" value="" id="search-query">
         <input type="button" value="Search" id="do-search">
       </form>
       <table>
