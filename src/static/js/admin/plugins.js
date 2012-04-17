@@ -9,8 +9,10 @@ $(document).ready(function () {
     });
 
     $("#do-search").unbind('click').click(function () {
-      if ($("#search-query")[0].value != "")
-        socket.emit("search", $("#search-query")[0].value);
+        socket.emit("search", {
+          pattern: $("#search-query")[0].value,
+          offset: $('#search-results').data('offset') || 0,
+          limit: 4});
     });
 
     $(".do-install").unbind('click').click(function (e) {
@@ -29,8 +31,13 @@ $(document).ready(function () {
   updateHandlers();
 
   socket.on('progress', function (data) {
+    if ($('#progress.dialog').data('progress') > data.progress) return;
+
     $("#progress.dialog .close").hide();
     $("#progress.dialog").show();
+
+    $('#progress.dialog').data('progress', data.progress);
+
     var message = "Unknown status";
     if (data.message) {
       message = "<span class='status'>" + data.message.toString() + "</span>";
@@ -55,16 +62,26 @@ $(document).ready(function () {
   });
 
   socket.on('search-result', function (data) {
-    $("#search-results *").remove();
+    var widget=$(".search-results");
+
+    widget.data('query', data.query);
+    widget.data('total', data.total);
+
+    widget.find('.offset').html(data.qyery.offset);
+    widget.find('.limit').html(data.qyery.offset + data.qyery.offset.limit);
+    widget.find('.total').html(data.total);
+
+    widget.find(".results *").remove();
     for (plugin_name in data.results) {
       var plugin = data.results[plugin_name];
-      var row = $("#search-result-template").clone();
+      var row = widget.find(".template tr").clone();
 
       for (attr in plugin) {
         row.find("." + attr).html(plugin[attr]);
       }
-      $("#search-results").append(row);
+      widget.find(".results").append(row);
     }
+
     updateHandlers();
   });
 

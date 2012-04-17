@@ -55,7 +55,7 @@ exports.install = function(plugin_name, cb) {
   );
 };
 
-exports.search = function(pattern, cb) {
+exports.search = function(query, cb) {
   withNpm(
     function (cb) {
       registry.get(
@@ -63,11 +63,18 @@ exports.search = function(pattern, cb) {
         function (er, data) {
           if (er) return cb(er);
           var res = {};
+          var i = 0;
           for (key in data) {
-            if (key.indexOf(plugins.prefix) == 0 && key.indexOf(pattern) != -1)
-              res[key] = data[key];
+            if (/* && key.indexOf(plugins.prefix) == 0 */ 
+                key.indexOf(query.pattern) != -1) {
+              i++;
+              if (i > query.offset
+                  && i <= query.offset + query.limit) {
+                res[key] = data[key];
+              }
+            }
           }
-          cb(null, {results:res});
+          cb(null, {results:res, query: query, total:i});
         }
       );
     },

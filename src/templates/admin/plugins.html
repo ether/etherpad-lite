@@ -40,31 +40,37 @@
         </tbody>
       </table>
   
-      <h1>Search for plugins to install</h1>
-      <form>
-        <input type="text" name="search" value="" id="search-query">
-        <input type="button" value="Search" id="do-search">
-      </form>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody class="template">
-          <tr id="search-result-template">
-            <td class="name"></td>
-            <td class="description"></td>
-            <td class="actions">
-              <input type="button" value="Install" class="do-install">
-           </td>
-          </tr>
-        </tbody>
-        <tbody id="search-results">
-        </tbody>
-      </table>
+      <div class="paged listing search-results">
+        <h1>Search for plugins to install</h1>
+        <form>
+          <input type="text" name="search" value="" id="search-query">
+          <input type="button" value="Search" id="do-search">
+        </form>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody class="template">
+            <tr>
+              <td class="name"></td>
+              <td class="description"></td>
+              <td class="actions">
+                <input type="button" value="Install" class="do-install">
+             </td>
+            </tr>
+          </tbody>
+          <tbody class="results">
+          </tbody>
+        </table>
+        <input type="button" value="<<" class="do-prev-page">
+        <span class="offset"></span>..<span class="limit"></span> of <span class="total"></span>.
+        <input type="button" value=">>" class="do-next-page">
+      </div>
+
 
       <div id="progress" class="dialog">
         <h1 class="title">
