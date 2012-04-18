@@ -67,8 +67,8 @@ $(document).ready(function () {
     widget.data('query', data.query);
     widget.data('total', data.total);
 
-    widget.find('.offset').html(data.qyery.offset);
-    widget.find('.limit').html(data.qyery.offset + data.qyery.offset.limit);
+    widget.find('.offset').html(data.query.offset);
+    widget.find('.limit').html(data.query.offset + data.query.limit);
     widget.find('.total').html(data.total);
 
     widget.find(".results *").remove();
