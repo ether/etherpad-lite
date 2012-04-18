@@ -1,7 +1,17 @@
 $(document).ready(function () {
   var socket = io.connect().of("/pluginfw/installer");
 
+  $('.search-results').data('query', {
+    pattern: '',
+    offset: 0,
+    limit: 4,
+  });
+
   var doUpdate = false;
+
+  var search = function () {
+    socket.emit("search", $('.search-results').data('query'));
+  }
 
   function updateHandlers() {
     $("#progress.dialog .close").unbind('click').click(function () {
@@ -9,10 +19,10 @@ $(document).ready(function () {
     });
 
     $("#do-search").unbind('click').click(function () {
-        socket.emit("search", {
-          pattern: $("#search-query")[0].value,
-          offset: $('#search-results').data('offset') || 0,
-          limit: 4});
+      var query = $('.search-results').data('query');
+      query.pattern = $("#search-query")[0].value;
+      query.offset = 0;
+      search();
     });
 
     $(".do-install").unbind('click').click(function (e) {
@@ -26,12 +36,29 @@ $(document).ready(function () {
       doUpdate = true;
       socket.emit("uninstall", row.find(".name").html());
     });
+
+    $(".do-prev-page").unbind('click').click(function (e) {
+      var query = $('.search-results').data('query');
+      query.offset -= query.limit;
+      if (query.offset < 0) {
+        query.offset = 0;
+      }
+      search();
+    });
+    $(".do-next-page").unbind('click').click(function (e) {
+      var query = $('.search-results').data('query');
+      var total = $('.search-results').data('total');
+      if (query.offset + query.limit < total) {
+        query.offset += query.limit;
+      }
+      search();
+    });
   }
 
   updateHandlers();
 
   socket.on('progress', function (data) {
-    if ($('#progress.dialog').data('progress') > data.progress) return;
+    if (data.progress > 0 && $('#progress.dialog').data('progress') > data.progress) return;
 
     $("#progress.dialog .close").hide();
     $("#progress.dialog").show();
@@ -100,5 +127,6 @@ $(document).ready(function () {
   });
 
   socket.emit("load");
+  search();
 
 });

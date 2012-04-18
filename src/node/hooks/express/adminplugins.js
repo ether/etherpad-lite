@@ -27,7 +27,7 @@ exports.socketio = function (hook_name, args, cb) {
 
     socket.on("search", function (query) {
       socket.emit("progress", {progress:0, message:'Fetching results...'});
-      installer.search(query, function (progress) {
+        installer.search(query, true, function (progress) {
         if (progress.results)
           socket.emit("search-result", progress);
         socket.emit("progress", progress);

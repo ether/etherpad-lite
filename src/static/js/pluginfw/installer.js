@@ -55,18 +55,33 @@ exports.install = function(plugin_name, cb) {
   );
 };
 
-exports.search = function(query, cb) {
+exports.searchCache = null;
+
+exports.search = function(query, cache, cb) {
   withNpm(
     function (cb) {
-      registry.get(
-        "/-/all", null, 600, false, true,
+      var getData = function (cb) {
+        if (cache && exports.searchCache) {
+          cb(null, exports.searchCache);
+        } else {
+          registry.get(
+            "/-/all", null, 600, false, true,
+            function (er, data) {
+              if (er) return cb(er);
+              exports.searchCache = data;
+              cb(er, data);
+            }
+          );
+        }
+      }
+      getData(
         function (er, data) {
           if (er) return cb(er);
           var res = {};
           var i = 0;
           for (key in data) {
-            if (/* && key.indexOf(plugins.prefix) == 0 */ 
-                key.indexOf(query.pattern) != -1) {
+            if (   key.indexOf(plugins.prefix) == 0
+                && key.indexOf(query.pattern) != -1) {
               i++;
               if (i > query.offset
                   && i <= query.offset + query.limit) {
