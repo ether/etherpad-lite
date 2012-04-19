@@ -46,12 +46,27 @@
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to enable the import/export of pads*/  
   "abiword" : null,
-  
-  /* This setting is used if you need http basic auth */
-  // "httpAuth" : "user:pass",
+ 
+  /* This setting is used if you require authentication of all users.
+     Note: /admin always requires authentication. */
+  "requireAuthentication": false,
 
-  /* This setting is used for http basic auth for admin pages. If not set, the admin page won't be accessible from web*/
-  // "adminHttpAuth" : "user:pass",
+  /* Require authorization by a module, or a user with is_admin set,
+     see below. Access to /admin allways requires either, regardless
+     of this setting. */
+  "requireAuthorization": false,
+
+  /* Users for basic authentication. is_admin = true gives access to /admin */
+  "users": {
+    "admin": {
+      "password": "changeme",
+      "is_admin": true
+    },
+    "user": {
+      "password": "changeme",
+      "is_admin": false
+    }
+  },
 
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO"
