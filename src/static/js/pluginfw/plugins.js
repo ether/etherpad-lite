@@ -90,7 +90,7 @@ if (exports.isClient) {
     // which appears to fix the issue.
     var callback = function () {setTimeout(cb, 0);};
 
-    jQuery.getJSON('/pluginfw/plugin-definitions.json', function(data) {
+    jQuery.getJSON('../pluginfw/plugin-definitions.json', function(data) {
       exports.plugins = data.plugins;
       exports.parts = data.parts;
       exports.hooks = exports.extractHooks(exports.parts, "client_hooks");
