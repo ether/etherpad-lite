@@ -51,22 +51,23 @@
      Note: /admin always requires authentication. */
   "requireAuthentication": false,
 
-  /* Require authorization by a module, or a user with is_admin set,
-     see below. Access to /admin allways requires either, regardless
-     of this setting. */
+  /* Require authorization by a module, or a user with is_admin set, see below. */
   "requireAuthorization": false,
 
-  /* Users for basic authentication. is_admin = true gives access to /admin */
+  /* Users for basic authentication. is_admin = true gives access to /admin.
+     If you do not uncomment this, /admin will not be available! */
+  /*
   "users": {
     "admin": {
-      "password": "changeme",
+      "password": "changeme1",
       "is_admin": true
     },
     "user": {
-      "password": "changeme",
+      "password": "changeme1",
       "is_admin": false
     }
   },
+  */
 
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO"

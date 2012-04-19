@@ -8,7 +8,13 @@ var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
- var authorize = function (cb) {
+  var hookResultMangle = function (cb) {
+    return function (err, data) {
+      return cb(!err && data.length && data[0]);
+    }
+  }
+
+  var authorize = function (cb) {
     // Do not require auth for static paths...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw)/)) return cb(true);
 
@@ -19,8 +25,7 @@ exports.basicAuth = function (req, res, next) {
 
     if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
 
-    // hooks.aCallFirst("authorize", {resource: req.path, req: req}, cb);
-    cb(false);
+    hooks.aCallFirst("authorize", {req: req, res:res, next:next, resource: req.path}, hookResultMangle(cb));
   }
 
   var authenticate = function (cb) {
@@ -35,24 +40,28 @@ exports.basicAuth = function (req, res, next) {
         req.session.user = settings.users[username];
         return cb(true);
       }
-      // return hooks.aCallFirst("authenticate", {req: req, username: username, password: password}, cb);
+        return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(cb));
     }
-    // hooks.aCallFirst("authenticate", {req: req}, cb);
-    cb(false);
+    hooks.aCallFirst("authenticate", {req: req, res:res, next:next}, hookResultMangle(cb));
   }
 
 
+  /* Authentication OR authorization failed. */
   var failure = function () {
-    /* Authentication OR authorization failed. Return Auth required
-     * Headers, delayed for 1 second, if authentication failed. */
-    res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
-    if (req.headers.authorization) {
-      setTimeout(function () {
+    return hooks.aCallFirst("authFailure", {req: req, res:res, next:next}, hookResultMangle(function (ok) {
+    if (ok) return;
+      /* No plugin handler for invalid auth. Return Auth required
+       * Headers, delayed for 1 second, if authentication failed
+       * before. */
+      res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
+      if (req.headers.authorization) {
+        setTimeout(function () {
+          res.send('Authentication required', 401);
+        }, 1000);
+      } else {
         res.send('Authentication required', 401);
-      }, 1000);
-    } else {
-      res.send('Authentication required', 401);
-    }
+      }
+    }));
   }
 
 
