@@ -17,6 +17,7 @@
                       "ueberDB"             : "0.1.7",
                       "async"               : "0.1.18",
                       "express"             : "2.5.8",
+                      "connect"             : "1.8.7",
                       "clean-css"           : "0.3.2",
                       "uglify-js"           : "1.2.5",
                       "formidable"          : "1.0.9",
