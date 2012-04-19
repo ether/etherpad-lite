@@ -21,13 +21,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 exports.socketio = function (hook_name, args, cb) {
   var io = args.io.of("/pluginfw/installer");
   io.on('connection', function (socket) {
+    if (!socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
+
     socket.on("load", function (query) {
       socket.emit("installed-results", {results: plugins.plugins});
     });
 
     socket.on("search", function (query) {
       socket.emit("progress", {progress:0, message:'Fetching results...'});
-      installer.search(query, function (progress) {
+        installer.search(query, true, function (progress) {
         if (progress.results)
           socket.emit("search-result", progress);
         socket.emit("progress", progress);

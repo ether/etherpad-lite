@@ -80,15 +80,12 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
-/**
- * Http basic auth, with "user:password" format
- */
-exports.httpAuth = null;
-
-/**
- * Http basic auth, with "user:password" format
- */
-exports.adminHttpAuth = null;
+/* This setting is used if you need authentication and/or
+ * authorization. Note: /admin always requires authentication, and
+ * either authorization by a module, or a user with is_admin set */
+exports.requireAuthentication = false;
+exports.requireAuthorization = false;
+exports.users = {};
 
 //checks if abiword is avaiable
 exports.abiwordAvailable = function()

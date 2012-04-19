@@ -30,6 +30,7 @@ var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm/lib/npm.js");
+var  _ = require("underscore");
 
 //try to get the git version
 var version = "";
@@ -88,11 +89,11 @@ async.waterfall([
     //let the server listen
     app.listen(settings.port, settings.ip);
     console.log("Server is listening at " + settings.ip + ":" + settings.port);
-    if(settings.adminHttpAuth){
+    if(!_.isEmpty(settings.users)){
       console.log("Plugin admin page listening at " + settings.ip + ":" + settings.port + "/admin/plugins");
     }
     else{
-      console.log("Admin username and password not set in settings.json.  To access admin please uncomment and edit adminHttpAuth in settings.json");
+      console.log("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
     }
     callback(null);  
   }
