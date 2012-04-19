@@ -54,18 +54,18 @@ var padIdTransforms = [
  */
 exports.getPad = function(id, text, callback)
 {    
-  //check if this is a valid padId
-  if(!exports.isValidPadId(id))
-  {
-    callback(new customError(id + " is not a valid padId","apierror"));
-    return;
-  }
-  
   //make text an optional parameter
   if(typeof text == "function")
   {
     callback = text;
     text = null;
+  }
+
+  //check if this is a valid padId
+  if(!exports.isValidPadId(id))
+  {
+    callback(new customError(id + " is not a valid padId","apierror"));
+    return;
   }
   
   //check if this is a valid text
