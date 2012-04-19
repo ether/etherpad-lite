@@ -748,13 +748,14 @@ function closeColorPicker(accept)
     var newColor = $("#mycolorpickerpreview").css("background-color");
     var parts = newColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     // parts now should be ["rgb(0, 70, 255", "0", "70", "255"]
-    delete (parts[0]);
-    for (var i = 1; i <= 3; ++i) {
-        parts[i] = parseInt(parts[i]).toString(16);
-        if (parts[i].length == 1) parts[i] = '0' + parts[i];
+    if (parts) {
+      delete (parts[0]);
+      for (var i = 1; i <= 3; ++i) {
+          parts[i] = parseInt(parts[i]).toString(16);
+          if (parts[i].length == 1) parts[i] = '0' + parts[i];
+      }
+      var newColor = "#" +parts.join(''); // "0070ff"
     }
-    var newColor = "#" +parts.join(''); // "0070ff"
-    
     myUserInfo.colorId = newColor;
     pad.notifyChangeColor(newColor);
     paduserlist.renderMyUserInfo();
