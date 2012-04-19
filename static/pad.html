@@ -51,7 +51,7 @@
                 <li id="clearAuthorship" onClick="window.pad&amp;&amp;pad.editbarClick('clearauthorship');return false;">
                     <a class="buttonicon buttonicon-clearauthorship" title="Clear Authorship Colors"></a>
                 </li>
-            </ul>    
+            </ul>
             <ul id="menu_right">
                 <li id="settingslink" onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;">
                     <a class="buttonicon buttonicon-settings" id="settingslink" title="Settings of this pad"></a>
@@ -81,17 +81,17 @@
                     <button id="mycolorpickersave">Save</button>
                     <button id="mycolorpickercancel">Cancel</button>
                     <span id="mycolorpickerpreview" class="myswatchboxhoverable"></span>
-                </div>   
+                </div>
                 <div id="myswatchbox"><div id="myswatch"></div></div>
                 <div id="myusernameform"><input type="text" id="myusernameedit" disabled="disabled"></div>
-                <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled"></div>   
+                <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled"></div>
             </div>
             <div id="otherusers">
                 <div id="guestprompts"></div>
                 <table id="otheruserstable" cellspacing="0" cellpadding="0" border="0">
                     <tr><td></td></tr>
                 </table>
-                <div id="nootherusers"></div>       
+                <div id="nootherusers"></div>
             </div>
             <div id="userlistbuttonarea"></div>
         </div>
@@ -136,20 +136,20 @@
             <div class="column">
                 <h2>Import from text file, HTML, PDF, Word, ODT or RTF</h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
-                    <div class="importformdiv" id="importformfilediv"> 
-                        <input type="file" name="file" size="15" id="importfileinput"> 
-                        <div class="importmessage" id="importmessagefail"></div> 
-                    </div> 
+                    <div class="importformdiv" id="importformfilediv">
+                        <input type="file" name="file" size="15" id="importfileinput">
+                        <div class="importmessage" id="importmessagefail"></div>
+                    </div>
                     <div id="import"></div>
-                    <div class="importmessage" id="importmessagesuccess">Successful!</div> 
-                    <div class="importformdiv" id="importformsubmitdiv"> 
-                        <input type="hidden" name="padId" value="blpmaXT35R"> 
-                        <span class="nowrap"> 
-                            <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput"> 
-                            <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top"> 
-                            <img alt="" id="importarrow" src="../static/img/leftarrow.png" align="top"> 
-                        </span> 
-                    </div> 
+                    <div class="importmessage" id="importmessagesuccess">Successful!</div>
+                    <div class="importformdiv" id="importformsubmitdiv">
+                        <input type="hidden" name="padId" value="blpmaXT35R">
+                        <span class="nowrap">
+                            <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput">
+                            <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top">
+                            <img alt="" id="importarrow" src="../static/img/leftarrow.png" align="top">
+                        </span>
+                    </div>
                 </form>
             </div>
             <div class="column">
@@ -209,7 +209,7 @@
         <div id="modaloverlay">
             <div id="modaloverlay-inner"></div>
         </div>
-        
+
         <div id="mainmodals">
             <div id="connectionbox" class="modaldialog">
                 <div id="connectionboxinner" class="modaldialog-inner">
@@ -254,7 +254,7 @@
                     <input type="hidden" class="missedChanges" name="missedChanges">
                 </form>
             </div>
-            
+
         </div>
 
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
@@ -275,5 +275,5 @@
               padimpexp = require('/pad_impexp').padimpexp;
             }());
         </script>
-        
+
 </html>
