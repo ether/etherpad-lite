@@ -4635,7 +4635,7 @@ function Ace2Inner(){
   function setClassPresence(elem, className, present)
   {
     if (present) $(elem).addClass(className);
-    else $(elem).removeClass(elem, className);
+    else $(elem).removeClass(className);
   }
 
   function setup()
@@ -5401,7 +5401,9 @@ function Ace2Inner(){
   
   // Init documentAttributeManager
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
-  editorInfo.ace_performDocumentApplyAttributesToRange = documentAttributeManager.setAttributesOnRange;
+  editorInfo.ace_performDocumentApplyAttributesToRange = function () {
+    return documentAttributeManager.setAttributesOnRange.apply(documentAttributeManager, arguments);
+  };
 
   $(document).ready(function(){
     doc = document; // defined as a var in scope outside

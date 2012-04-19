@@ -155,8 +155,6 @@ function createTimesliderClientVars (padId, callback)
   var clientVars = {
     viewId: padId,
     colorPalette: ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ff8f8f", "#ffe38f", "#c7ff8f", "#8fffab", "#8fffff", "#8fabff", "#c78fff", "#ff8fe3", "#d97979", "#d9c179", "#a9d979", "#79d991", "#79d9d9", "#7991d9", "#a979d9", "#d979c1", "#d9a9a9", "#d9cda9", "#c1d9a9", "#a9d9b5", "#a9d9d9", "#a9b5d9", "#c1a9d9", "#d9a9cd"],
-    sliderEnabled : true,
-    supportsSlider: true,
     savedRevisions: [],
     padIdForUrl: padId,
     fullWidth: false,
