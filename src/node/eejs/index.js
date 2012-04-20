@@ -23,6 +23,7 @@ var ejs = require("ejs");
 var fs = require("fs");
 var path = require("path");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
+var resolve = require("resolve");
 
 exports.info = {
   buf_stack: [],
@@ -91,13 +92,29 @@ exports.inherit = function (name, args) {
     exports.info.file_stack[exports.info.file_stack.length-1].inherit.push({name:name, args:args});
 }
 
-exports.require = function (name, args) {
+exports.require = function (name, args, mod) {
   if (args == undefined) args = {};
- 
-  if ((name.indexOf("./") == 0 || name.indexOf("../") == 0) && exports.info.file_stack.length) {
-      name = path.join(path.dirname(exports.info.file_stack[exports.info.file_stack.length-1].path), name);
+
+  var basedir = __dirname;
+  var paths = [];
+
+  if (exports.info.file_stack.length) {
+    basedir = path.dirname(exports.info.file_stack[exports.info.file_stack.length-1].path);
   }
-  var ejspath = require.resolve(name)
+  if (mod) {
+    basedir = path.dirname(mod.filename);
+    paths = mod.paths;
+  }
+
+    console.log(["looking up", name, "in", basedir, paths, mod]);
+  var ejspath = resolve.sync(
+    name,
+    {
+      paths : paths,
+      basedir : basedir,
+      extensions : [ '.html', '.ejs' ],
+    }
+  )
 
   args.e = exports;
   args.require = require;
