@@ -106,7 +106,6 @@ exports.require = function (name, args, mod) {
     paths = mod.paths;
   }
 
-    console.log(["looking up", name, "in", basedir, paths, mod]);
   var ejspath = resolve.sync(
     name,
     {
