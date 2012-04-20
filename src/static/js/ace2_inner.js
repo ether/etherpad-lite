@@ -3749,24 +3749,6 @@ function Ace2Inner(){
     setSelection(selection);
   }
 
-  function getRepHTML()
-  {
-    return _.map(rep.lines.slice(), function(entry)
-    {
-      var text = entry.text;
-      var content;
-      if (text.length === 0)
-      {
-        content = '<span style="color: #aaa">--</span>';
-      }
-      else
-      {
-        content = htmlPrettyEscape(text);
-      }
-      return '<div><code>' + content + '</div></code>';
-    }).join('');
-  }
-
   function nodeMaxIndex(nd)
   {
     if (isNodeText(nd)) return nd.nodeValue.length;
