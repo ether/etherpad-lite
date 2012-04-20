@@ -30,7 +30,6 @@ require('./jquery');
 require('./farbtastic');
 require('./excanvas');
 JSON = require('./json2');
-require('./undo-xpopup');
 
 var chat = require('./chat').chat;
 var getCollabClient = require('./collab_client').getCollabClient;
