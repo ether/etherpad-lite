@@ -152,3 +152,7 @@ for(var i in settings)
     console.warn("This setting doesn't exist or it was removed");
   }
 }
+
+if(exports.dbType === "dirty"){
+  console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
+}
