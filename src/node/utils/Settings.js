@@ -106,9 +106,15 @@ if (settingsFilename.charAt(0) != '/') {
     settingsFilename = path.normalize(path.join(root, settingsFilename));
 }
 
-//read the settings sync
-var settingsStr = fs.readFileSync(settingsFilename).toString();
-
+var settingsStr
+try{
+  //read the settings sync
+  settingsStr = fs.readFileSync(settingsFilename).toString();
+} catch(e){
+  console.warn('No settings file found. Using defaults.');
+  settingsStr = '{}';
+}
+  
 //remove all comments
 settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
 
