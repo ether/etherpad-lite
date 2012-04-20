@@ -13,6 +13,7 @@
                       "yajsml"              : "1.1.2",
                       "request"             : "2.9.100",
                       "require-kernel"      : "1.0.5",
+                      "resolve"             : "0.2.1",
                       "socket.io"           : "0.8.7",
                       "ueberDB"             : "0.1.7",
                       "async"               : "0.1.18",
