@@ -1,7 +1,8 @@
 <html>
   <head>
     <title>Plugin manager</title>
-    <link href="../../static/css/admin.css" rel="stylesheet" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" href="../../static/css/admin.css">
     <script src="../../static/js/jquery.js"></script>
     <script src="../../socket.io/socket.io.js"></script>
     <script src="../../static/js/admin/plugins.js"></script>
@@ -18,7 +19,9 @@
       <% } %>
 
 
-      <h1>Installed plugins</h1>
+      <h1>Etherpad Lite</h1>
+      <div class="seperator"></div> 
+      <h2>Installed plugins</h2>
       <table>
         <thead>
           <tr>
@@ -39,11 +42,12 @@
         <tbody id="installed-plugins">
         </tbody>
       </table>
-  
+
       <div class="paged listing search-results">
-        <h1>Search for plugins to install</h1>
+        <div class="seperator"></div> 
+        <h2>Search for plugins to install</h2>
         <form>
-          <input type="text" name="search" value="" id="search-query">
+          <input type="text" name="search" placeholder="Search term" id="search-query">
           <input type="button" value="Search" id="do-search">
         </form>
         <table>
@@ -70,7 +74,6 @@
         <span class="offset"></span>..<span class="limit"></span> of <span class="total"></span>.
         <input type="button" value=">>" class="do-next-page">
       </div>
-
 
       <div id="progress" class="dialog">
         <h1 class="title">

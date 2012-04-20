@@ -182,7 +182,7 @@ var padeditbar = (function()
       //hide all modules
       if(moduleName == "none")
       {
-        $("#editbar ul#menu_right > li").removeClass("selected");
+        $(".toolbar ul.menu_right li").removeClass("selected");
         for(var i=0;i<modules.length;i++)
         {
           //skip the userlist
@@ -200,11 +200,11 @@ var padeditbar = (function()
       else 
       {
         var nth_child = indexOf(modules, moduleName) + 1;
-      	if (nth_child > 0 && nth_child <= (modules.length-1)) {
-          $("#editbar ul#menu_right li:not(:nth-child(" + nth_child + "))").removeClass("selected");
-          $("#editbar ul#menu_right li:nth-child(" + nth_child + ")").toggleClass("selected");
-      	}
-      	if(modules[modules.length-1] === moduleName) $("#editbar ul#menu_right li").removeClass("selected");
+        if (nth_child > 0 && nth_child <= (modules.length-1)) {
+          $(".toolbar ul.menu_right li:not(:nth-child(" + nth_child + "))").removeClass("selected");
+          $(".toolbar ul.menu_right li:nth-child(" + nth_child + ")").toggleClass("selected");
+        }
+        if(modules[modules.length-1] === moduleName) $(".toolbar ul.menu_right li").removeClass("selected");
         //hide all modules that are not selected and show the selected one
         for(var i=0;i<modules.length;i++)
         {

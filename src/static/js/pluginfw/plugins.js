@@ -61,7 +61,7 @@ exports.loadFn = function (path, hookName) {
   return fn;
 };
 
-exports.extractHooks = function (parts, hook_set_name) {
+exports.extractHooks = function (parts, hook_set_name, plugins) {
   var hooks = {};
   _.each(parts,function (part) {
     _.chain(part[hook_set_name] || {})
@@ -69,14 +69,27 @@ exports.extractHooks = function (parts, hook_set_name) {
     .each(function (hook_name) {
       if (hooks[hook_name] === undefined) hooks[hook_name] = [];
       
-      
       var hook_fn_name = part[hook_set_name][hook_name];
-      var hook_fn = exports.loadFn(hook_fn_name, hook_name);
+
+      /* On the server side, you can't just
+       * require("pluginname/whatever") if the plugin is installed as
+       * a dependency of another plugin! Bah, pesky little details of
+       * npm... */
+      if (!exports.isClient) {
+        hook_fn_name = path.normalize(path.join(path.dirname(exports.plugins[part.plugin].package.path), hook_fn_name));
+      }
+
+      try {
+        var hook_fn = exports.loadFn(hook_fn_name, hook_name);
+        if (!hook_fn) {
+          throw "Not a function";
+        }
+      } catch (exc) {
+        console.error("Failed to load '" + hook_fn_name + "' for '" + part.full_name + "/" + hook_set_name + "/" + hook_name + "': " + exc.toString())
+      }
       if (hook_fn) {
         hooks[hook_name].push({"hook_name": hook_name, "hook_fn": hook_fn, "hook_fn_name": hook_fn_name, "part": part});
-      } else {
-        console.error("Unable to load hook function for " + part.full_name + " for hook " + hook_name + ": " + part.hooks[hook_name]);
-      }	
+      }
     });
   });
   return hooks;
@@ -90,7 +103,7 @@ if (exports.isClient) {
     // which appears to fix the issue.
     var callback = function () {setTimeout(cb, 0);};
 
-    jQuery.getJSON('/pluginfw/plugin-definitions.json', function(data) {
+    jQuery.getJSON('../pluginfw/plugin-definitions.json', function(data) {
       exports.plugins = data.plugins;
       exports.parts = data.parts;
       exports.hooks = exports.extractHooks(exports.parts, "client_hooks");
@@ -139,7 +152,7 @@ exports.update = function (cb) {
         if (err) cb(err);
 	exports.plugins = plugins;
         exports.parts = exports.sortParts(parts);
-        exports.hooks = exports.extractHooks(exports.parts, "hooks");
+          exports.hooks = exports.extractHooks(exports.parts, "hooks");
 	exports.loaded = true;
         exports.callInit(cb);
       }
