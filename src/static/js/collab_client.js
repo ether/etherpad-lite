@@ -302,13 +302,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       {
         userSet[id] = userInfo;
         callbacks.onUpdateUserInfo(userInfo);
-        dmesgUsers();
       }
       else
       {
         userSet[id] = userInfo;
         callbacks.onUserJoin(userInfo);
-        dmesgUsers();
       }
       tellAceActiveAuthorInfo(userInfo);
     }
@@ -321,7 +319,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         delete userSet[userInfo.userId];
         fadeAceAuthorInfo(userInfo);
         callbacks.onUserLeave(userInfo);
-        dmesgUsers();
       }
     }
     else if (msg.type == "DISCONNECT_REASON")
@@ -403,11 +400,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         tellAceAuthorInfo(author, data.colorId, true);
       }
     }
-  }
-
-  function dmesgUsers()
-  {
-    //pad.dmesg($.map(getConnectedUsers(), function(u) { return u.userId.slice(-2); }).join(','));
   }
 
   function setChannelState(newChannelState, moreInfo)
