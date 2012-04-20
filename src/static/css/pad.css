@@ -894,9 +894,7 @@ down on the page in IE.  Strange but it works! */
   line-height: 20px;
   width: auto;
 }
-#viewzoommenu {
-  width: 65px
-}
+
 #bottomarea {
   height: 28px;
   overflow: hidden;
