@@ -19,6 +19,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+var padutils = require('./pad_utils').padutils;
 
 var padmodals = (function()
 {
