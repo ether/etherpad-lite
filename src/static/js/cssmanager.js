@@ -20,15 +20,12 @@
  * limitations under the License.
  */
 
-function makeCSSManager(emptyStylesheetTitle, top)
+function makeCSSManager(emptyStylesheetTitle)
 {
 
-  function getSheetByTitle(title, top)
+  function getSheetByTitle(title)
   {
-    if(top)
-      var allSheets = window.parent.parent.document.styleSheets;
-    else 
-      var allSheets = document.styleSheets;
+    var allSheets = document.styleSheets;
     
     for (var i = 0; i < allSheets.length; i++)
     {
@@ -41,7 +38,7 @@ function makeCSSManager(emptyStylesheetTitle, top)
     return null;
   }
   
-  var browserSheet = getSheetByTitle(emptyStylesheetTitle, top);
+  var browserSheet = getSheetByTitle(emptyStylesheetTitle);
 
   function browserRules()
   {
