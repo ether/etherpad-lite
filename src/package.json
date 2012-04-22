@@ -13,6 +13,7 @@
                       "yajsml"              : "1.1.2",
                       "request"             : "2.9.100",
                       "require-kernel"      : "1.0.5",
+                      "resolve"             : "0.2.1",
                       "socket.io"           : "0.8.7",
                       "ueberDB"             : "0.1.7",
                       "async"               : "0.1.18",
@@ -29,8 +30,7 @@
                       "graceful-fs"         : "1.1.5",
                       "slide"               : "1.1.3",
                       "semver"              : "1.0.13",
-                      "underscore"          : "1.3.1",
-                      "resolve"             : "0.2.1"
+                      "underscore"          : "1.3.1"
                      },
   "devDependencies": {
                       "jshint"  : "*"
