@@ -35,18 +35,17 @@ var messageLogger = log4js.getLogger("message");
 var _ = require('underscore');
 
 /**
- * A associative array that translates a session to a pad
- */
-var session2pad = {};
-/**
  * A associative array that saves which sessions belong to a pad
  */
 var pad2sessions = {};
 
 /**
- * A associative array that saves some general informations about a session
+ * A associative array that saves informations about a session
  * key = sessionId
- * values = author, rev
+ * values = padId, readonlyPadId, readonly, author, rev
+ *   padId = the real padId of the pad
+ *   readonlyPadId = The readonly pad id of the pad
+ *   readonly = Wether the client has only read access (true) or read/write access (false)
  *   rev = That last revision that was send to this client
  *   author = the author name of this session
  */
@@ -72,8 +71,7 @@ exports.setSocketIO = function(socket_io)
  */
 exports.handleConnect = function(client)
 {  
-  //Initalize session2pad and sessioninfos for this new session
-  session2pad[client.id]=null;  
+  //Initalize sessioninfos for this new session
   sessioninfos[client.id]={};
 }
 
@@ -101,7 +99,7 @@ exports.kickSessionsFromPad = function(padID)
 exports.handleDisconnect = function(client)
 {  
   //save the padname of this session
-  var sessionPad=session2pad[client.id];
+  var sessionPad=sessioninfos[client.id].padId;
   
   //if this connection was already etablished with a handshake, send a disconnect message to the others
   if(sessioninfos[client.id] && sessioninfos[client.id].author)
@@ -149,8 +147,7 @@ exports.handleDisconnect = function(client)
     }
   }
   
-  //Delete the session2pad and sessioninfos entrys of this session
-  delete session2pad[client.id]; 
+  //Delete the sessioninfos entrys of this session
   delete sessioninfos[client.id]; 
 }
 
@@ -173,43 +170,28 @@ exports.handleMessage = function(client, message)
   }
   
   //Check what type of message we get and delegate to the other methodes
-  if(message.type == "CLIENT_READY")
-  {
+  if(message.type == "CLIENT_READY") {
     handleClientReady(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "USER_CHANGES")
-  {
-    handleUserChanges(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "USERINFO_UPDATE")
-  {
-    handleUserInfoUpdate(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "CHAT_MESSAGE")
-  {
-    handleChatMessage(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "SAVE_REVISION")
-  {
-    handleSaveRevisionMessage(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "CLIENT_MESSAGE" &&
-          message.data.payload.type == "suggestUserName")
-  {
-    handleSuggestUserName(client, message);
-  }
-  else if(message.type == "CHANGESET_REQ")
-  {
+  } else if(message.type == "CHANGESET_REQ") {
     handleChangesetRequest(client, message);
-  }
-  //if the message type is unknown, throw an exception
-  else
-  {
+  } else if(message.type == "COLLABROOM") {
+    if (sessioninfos[client.id].readonly) {
+      messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
+    } else if (message.data.type == "USER_CHANGES") {
+      handleUserChanges(client, message);
+    } else if (message.data.type == "USERINFO_UPDATE") {
+      handleUserInfoUpdate(client, message);
+    } else if (message.data.type == "CHAT_MESSAGE") {
+      handleChatMessage(client, message);
+    } else if (message.data.type == "SAVE_REVISION") {
+      handleSaveRevisionMessage(client, message);
+    } else if (message.data.type == "CLIENT_MESSAGE" &&
+               message.data.payload.type == "suggestUserName") {
+      handleSuggestUserName(client, message);
+    } else {
+      messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
+    }
+  } else {
     messageLogger.warn("Dropped message, unknown Message Type " + message.type);
   }
 }
@@ -221,7 +203,7 @@ exports.handleMessage = function(client, message)
  * @param message the message from the client
  */
 function handleSaveRevisionMessage(client, message){
-  var padId = session2pad[client.id];
+  var padId = sessioninfos[client.id].padId;
   var userId = sessioninfos[client.id].author;
   
   padManager.getPad(padId, function(err, pad)
@@ -242,7 +224,7 @@ function handleChatMessage(client, message)
   var time = new Date().getTime();
   var userId = sessioninfos[client.id].author;
   var text = message.data.text;
-  var padId = session2pad[client.id];
+  var padId = sessioninfos[client.id].padId;
   
   var pad;
   var userName;
@@ -318,7 +300,7 @@ function handleSuggestUserName(client, message)
     return;
   }
   
-  var padId = session2pad[client.id];
+  var padId = sessioninfos[client.id].padId;
   
   //search the author and send him this message
   for(var i in pad2sessions[padId])
@@ -352,7 +334,7 @@ function handleUserInfoUpdate(client, message)
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
   
-  var padId = session2pad[client.id];
+  var padId = sessioninfos[client.id].padId;
   
   //set a null name, when there is no name set. cause the client wants it null
   if(message.data.userInfo.name == null)
@@ -398,7 +380,7 @@ function handleUserChanges(client, message)
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
     return;
   }
-  
+ 
   //get all Vars we need
   var baseRev = message.data.baseRev;
   var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
@@ -410,7 +392,7 @@ function handleUserChanges(client, message)
     //get the pad
     function(callback)
     {
-      padManager.getPad(session2pad[client.id], function(err, value)
+      padManager.getPad(sessioninfos[client.id].padId, function(err, value)
       {
         if(ERR(err, callback)) return;
         pad = value;
@@ -680,14 +662,28 @@ function handleClientReady(client, message)
   var pad;
   var historicalAuthorData = {};
   var currentTime;
-  var readOnlyId;
   var chatMessages;
+  var padIds;
 
   async.series([
+    // Get ro/rw id:s
+    function (callback) {
+      readOnlyManager.getIds(message.padId, function(err, value) {
+        if(ERR(err, callback)) return;
+        padIds = value;
+        callback();
+      });
+    },
+
     //check permissions
     function(callback)
     {
-      securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+      // Note: message.sessionID is an entierly different kind of
+      // session from the sessions we use here! Beware! FIXME: Call
+      // our "sessions" "connections".
+      // FIXME: Use a hook instead
+      // FIXME: Allow to override readwrite access with readonly
+      securityManager.checkAccess (padIds.padId, message.sessionID, message.token, message.password, function(err, statusObject)
       {
         if(ERR(err, callback)) return;
         
@@ -730,19 +726,10 @@ function handleClientReady(client, message)
         },
         function(callback)
         {
-          padManager.getPad(message.padId, function(err, value)
+          padManager.getPad(padIds.padId, function(err, value)
           {
             if(ERR(err, callback)) return;
             pad = value;
-            callback();
-          });
-        },
-        function(callback)
-        {
-          readOnlyManager.getReadOnlyId(message.padId, function(err, value)
-          {
-            if(ERR(err, callback)) return;
-            readOnlyId = value;
             callback();
           });
         }
@@ -794,30 +781,32 @@ function handleClientReady(client, message)
     function(callback)
     {
       //Check if this author is already on the pad, if yes, kick the other sessions!
-      if(pad2sessions[message.padId])
+      if(pad2sessions[padIds.padId])
       {
-        for(var i in pad2sessions[message.padId])
+        for(var i in pad2sessions[padIds.padId])
         {
-          if(sessioninfos[pad2sessions[message.padId][i]] && sessioninfos[pad2sessions[message.padId][i]].author == author)
+          if(sessioninfos[pad2sessions[padIds.padId][i]] && sessioninfos[pad2sessions[padIds.padId][i]].author == author)
           {
-            var socket = socketio.sockets.sockets[pad2sessions[message.padId][i]];
+            var socket = socketio.sockets.sockets[pad2sessions[padIds.padId][i]];
             if(socket) socket.json.send({disconnect:"userdup"});
           }
         }
       }
       
-      //Save in session2pad that this session belonges to this pad
+      //Save in sessioninfos that this session belonges to this pad
       var sessionId=String(client.id);
-      session2pad[sessionId] = message.padId;
+      sessioninfos[sessionId].padId = padIds.padId;
+      sessioninfos[sessionId].readOnlyPadId = padIds.readOnlyPadId;
+      sessioninfos[sessionId].readonly = padIds.readonly;
       
       //check if there is already a pad2sessions entry, if not, create one
-      if(!pad2sessions[message.padId])
+      if(!pad2sessions[padIds.padId])
       {
-        pad2sessions[message.padId] = [];
+        pad2sessions[padIds.padId] = [];
       }
       
       //Saves in pad2sessions that this session belongs to this pad
-      pad2sessions[message.padId].push(sessionId);
+      pad2sessions[padIds.padId].push(sessionId);
       
       //prepare all values for the wire
       var atext = Changeset.cloneAText(pad.atext);
@@ -825,6 +814,9 @@ function handleClientReady(client, message)
       var apool = attribsForWire.pool.toJsonable();
       atext.attribs = attribsForWire.translated;
       
+      // Warning: never ever send padIds.padId to the client. If the
+      // client is read only you would open a security hole 1 swedish
+      // mile wide...
       var clientVars = {
         "accountPrivs": {
             "maxRevisions": 100
@@ -853,9 +845,9 @@ function handleClientReady(client, message)
         "initialTitle": "Pad: " + message.padId,
         "opts": {},
         "chatHistory": chatMessages,
-        "numConnectedUsers": pad2sessions[message.padId].length,
+        "numConnectedUsers": pad2sessions[padIds.padId].length,
         "isProPad": false,
-        "readOnlyId": readOnlyId,
+        "readOnlyId": padIds.readOnlyPadId,
         "serverTimestamp": new Date().getTime(),
         "globalPadId": message.padId,
         "userId": author,
@@ -920,7 +912,7 @@ function handleClientReady(client, message)
       }
       
       //Run trough all sessions of this pad
-      async.forEach(pad2sessions[message.padId], function(sessionID, callback)
+      async.forEach(pad2sessions[padIds.padId], function(sessionID, callback)
       {
         var author, socket, sessionAuthorName, sessionAuthorColorId;
         
