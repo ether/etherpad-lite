@@ -87,6 +87,9 @@ function init() {
       else if(message.accessStatus)
       {
         $("body").html("<h2>You have no permission to access this pad</h2>")
+      } else {
+          console.warn("Unknown message type: " + message.type);
+          console.warn(["XXX", message]);
       }
     });
 
@@ -107,7 +110,7 @@ function sendSocketMsg(type, data)
   var sessionID = readCookie("sessionID");
   var password = readCookie("password");
 
-  var msg = { "component" : "timeslider",
+  var msg = { "component" : "pad", // FIXME: Remove this stupidity!
               "type": type,
               "data": data,
               "padId": padId,

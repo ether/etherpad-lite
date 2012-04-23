@@ -316,7 +316,7 @@ function handshake()
       receivedClientVars = true;
 
       //set some client vars
-      clientVars = obj;
+      clientVars = obj.data;
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
 

@@ -84,14 +84,14 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   var appLevelDisconnectReason = null;
 
   var padContents = {
-    currentRevision: clientVars.revNum,
-    currentTime: clientVars.currentTime,
-    currentLines: Changeset.splitTextLines(clientVars.initialStyledContents.atext.text),
+    currentRevision: clientVars.collab_client_vars.rev,
+    currentTime: clientVars.collab_client_vars.time,
+    currentLines: Changeset.splitTextLines(clientVars.collab_client_vars.initialAttributedText.text),
     currentDivs: null,
     // to be filled in once the dom loads
-    apool: (new AttribPool()).fromJsonable(clientVars.initialStyledContents.apool),
+    apool: (new AttribPool()).fromJsonable(clientVars.collab_client_vars.apool),
     alines: Changeset.splitAttributionLines(
-    clientVars.initialStyledContents.atext.attribs, clientVars.initialStyledContents.atext.text),
+    clientVars.collab_client_vars.initialAttributedText.attribs, clientVars.collab_client_vars.initialAttributedText.text),
 
     // generates a jquery element containing HTML for a line
     lineToElement: function(line, aline)
@@ -432,19 +432,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       var start = request.rev;
       var requestID = Math.floor(Math.random() * 100000);
 
-/*var msg = { "component" : "timeslider",
-                  "type":"CHANGESET_REQ", 
-                  "padId": padId,
-                  "token": token,
-                  "protocolVersion": 2, 
-                  "data"
-                  {
-                    "start": start,
-                    "granularity": granularity
-                  }};
-    
-      socket.send(msg);*/
-
       sendSocketMsg("CHANGESET_REQ", {
         "start": start,
         "granularity": granularity,
@@ -452,19 +439,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       });
 
       self.reqCallbacks[requestID] = callback;
-
-/*debugLog("loadinging revision", start, "through ajax");
-      $.getJSON("/ep/pad/changes/" + clientVars.padIdForUrl + "?s=" + start + "&g=" + granularity, function (data, textStatus)
-      {
-        if (textStatus !== "success")
-        {
-          console.log(textStatus);
-          BroadcastSlider.showReconnectUI();
-        }
-        self.handleResponse(data, start, granularity, callback);
-
-        setTimeout(self.loadFromQueue, 10); // load the next ajax function
-      });*/
     },
     handleSocketResponse: function(message)
     {
@@ -493,7 +467,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         revisionInfo.addChangeset(astart, aend, forwardcs, backwardcs, data.timeDeltas[i]);
       }
       if (callback) callback(start - 1, start + data.forwardsChangesets.length * granularity - 1);
-    }
+    } 
   };
 
   function handleMessageFromServer()
@@ -686,7 +660,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   }
 
-  receiveAuthorData(clientVars.historicalAuthorData);
+  receiveAuthorData(clientVars.collab_client_vars.historicalAuthorData);
 
   return changesetLoader;
 }

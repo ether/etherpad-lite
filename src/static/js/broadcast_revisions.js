@@ -57,7 +57,7 @@ function loadBroadcastRevisionsJS()
     endRevision.addChangeset(fromIndex, backChangeset, -1 * timeDelta);
   }
 
-  revisionInfo.latest = clientVars.totalRevs || -1;
+  revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
   revisionInfo.createNew = function(index)
   {
