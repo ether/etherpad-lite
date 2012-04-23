@@ -316,13 +316,17 @@ function handshake()
       receivedClientVars = true;
 
       //set some client vars
-      clientVars = obj;
+      clientVars = obj.data;
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
-
+ 
       //initalize the pad
       pad._afterHandshake();
       initalized = true;
+
+      padeditor.ace.callWithAce(function (ace) {
+        ace.ace_setEditable(!clientVars.readonly);
+      });
 
       // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
       if (settings.LineNumbersDisabled == true)
@@ -360,6 +364,8 @@ function handshake()
       //this message advices the client to disconnect
       if (obj.disconnect)
       {
+        console.warn("FORCED TO DISCONNECT");
+        console.warn(obj);
         padconnectionstatus.disconnected(obj.disconnect);
         socket.disconnect();
         return;
