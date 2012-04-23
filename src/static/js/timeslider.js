@@ -71,6 +71,11 @@ function init() {
       sendSocketMsg("CLIENT_READY", {});
     });
 
+    socket.on('disconnect', function()
+    {
+      BroadcastSlider.showReconnectUI();
+    });
+
     //route the incoming messages
     socket.on('message', function(message)
     {
@@ -96,6 +101,12 @@ function init() {
     } else {
       $("#returnbutton").attr("href", document.location.href.substring(0,document.location.href.lastIndexOf("/")));
     }
+
+    $('button#forcereconnect').click(function()
+    {
+      window.location.reload();
+    });
+
   });
 }
 

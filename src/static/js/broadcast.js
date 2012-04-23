@@ -519,81 +519,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   };
 
-  function handleSocketClosed(params)
-  {
-    debugLog("socket closed!", params);
-    socket = null;
-
-    BroadcastSlider.showReconnectUI();
-    // var reason = appLevelDisconnectReason || params.reason;
-    // var shouldReconnect = params.reconnect;
-    // if (shouldReconnect) {
-    //   // determine if this is a tight reconnect loop due to weird connectivity problems
-    //   // reconnectTimes.push(+new Date());
-    //   var TOO_MANY_RECONNECTS = 8;
-    //   var TOO_SHORT_A_TIME_MS = 10000;
-    //   if (reconnectTimes.length >= TOO_MANY_RECONNECTS &&
-    //       ((+new Date()) - reconnectTimes[reconnectTimes.length-TOO_MANY_RECONNECTS]) <
-    //       TOO_SHORT_A_TIME_MS) {
-    //      setChannelState("DISCONNECTED", "looping");
-    //   }
-    //   else {
-    //      setChannelState("RECONNECTING", reason);
-    //      setUpSocket();
-    //   }
-    // }
-    // else {
-    //   BroadcastSlider.showReconnectUI();
-    //   setChannelState("DISCONNECTED", reason);
-    // }
-  }
-
-  function sendMessage(msg)
-  {
-    socket.postMessage(JSON.stringify(
-    {
-      type: "COLLABROOM",
-      data: msg
-    }));
-  }
-
-
-  function setChannelState(newChannelState, moreInfo)
-  {
-    if (newChannelState != channelState)
-    {
-      channelState = newChannelState;
-      // callbacks.onChannelStateChange(channelState, moreInfo);
-    }
-  }
-
-  function abandonConnection(reason)
-  {
-    if (socket)
-    {
-      socket.onclosed = function()
-      {};
-      socket.onhiccup = function()
-      {};
-      socket.disconnect();
-    }
-    socket = null;
-    setChannelState("DISCONNECTED", reason);
-  }
-
-    /// Since its not used, import 'forEach' has been dropped
-/*window['onloadFuncts'] = [];
-  window.onload = function ()
-  {
-    window['isloaded'] = true;
-    
-
-    forEach(window['onloadFuncts'],function (funct)
-    {
-      funct();
-    });
-  };*/
-
   // to start upon window load, just push a function onto this array
   //window['onloadFuncts'].push(setUpSocket);
   //window['onloadFuncts'].push(function ()
@@ -614,35 +539,18 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   // this is necessary to keep infinite loops of events firing,
   // since goToRevision changes the slider position
   var goToRevisionIfEnabledCount = 0;
-  var goToRevisionIfEnabled = function()
+  var goToRevisionIfEnabled = function() {
+    if (goToRevisionIfEnabledCount > 0)
     {
-      if (goToRevisionIfEnabledCount > 0)
-      {
-        goToRevisionIfEnabledCount--;
-      }
-      else
-      {
-        goToRevision.apply(goToRevision, arguments);
-      }
-      }
-      
-      
-      
-      
+      goToRevisionIfEnabledCount--;
+    }
+    else
+    {
+      goToRevision.apply(goToRevision, arguments);
+    }
+  }
       
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
-
-  (function()
-  {
-    for (var i = 0; i < clientVars.initialChangesets.length; i++)
-    {
-      var csgroup = clientVars.initialChangesets[i];
-      var start = clientVars.initialChangesets[i].start;
-      var granularity = clientVars.initialChangesets[i].granularity;
-      debugLog("loading changest on startup: ", start, granularity, csgroup);
-      changesetLoader.handleResponse(csgroup, start, granularity, null);
-    }
-  })();
 
   var dynamicCSS = makeCSSManager('dynamicsyntax');
   var authorData = {};

@@ -23,6 +23,7 @@
  // These parameters were global, now they are injected. A reference to the
  // Timeslider controller would probably be more appropriate.
 var _ = require('./underscore');
+var padmodals = require('./pad_modals').padmodals;
 
 function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 {
@@ -54,11 +55,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         {
           slidercallbacks[i](newval);
         }
-        }
-        
-        
-        
-        
+      }
         
     var updateSliderElements = function()
       {
@@ -68,12 +65,8 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           savedRevisions[i].css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
         }
         $("#ui-slider-handle").css('left', sliderPos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
-        }
-        
-        
-        
-        
-        
+      }  
+
     var addSavedRevision = function(position, info)
       {
         var newSavedRevision = $('<div></div>');
@@ -88,7 +81,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           BroadcastSlider.setSliderPosition(position);
         });
         savedRevisions.push(newSavedRevision);
-        };
+      };
 
     var removeSavedRevision = function(position)
       {
@@ -96,7 +89,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         savedRevisions.remove(element);
         element.remove();
         return element;
-        };
+      };
 
     /* Begin small 'API' */
 
@@ -162,9 +155,9 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
     function showReconnectUI()
     {
-      $("#padmain, #rightbars").css('top', "130px");
-      $("#timeslider").show();
-      $('#error').show();
+      var cls = 'modaldialog cboxdisconnected cboxdisconnected_unknown';
+      $("#connectionbox").get(0).className = cls;
+      padmodals.showModal("#connectionbox", 500);
     }
 
     var fixPadHeight = _.throttle(function(){
