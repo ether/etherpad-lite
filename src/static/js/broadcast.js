@@ -271,7 +271,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     Changeset.mutateTextLines(changeset, padContents);
     padContents.currentRevision = revision;
-    padContents.currentTime += timeDelta * 1000;
+    padContents.currentTime += timeDelta;
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
     

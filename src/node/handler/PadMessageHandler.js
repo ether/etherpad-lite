@@ -517,17 +517,15 @@ exports.updatePadClients = function(pad, callback)
   //go trough all sessions on this pad
   async.forEach(pad2sessions[pad.id], function(session, callback)
   {
-    var lastRev = sessioninfos[session].rev;
-    
+
     //https://github.com/caolan/async#whilst
     //send them all new changesets
     async.whilst(
-      function (){ return lastRev < pad.getHeadRevisionNumber()},
+      function (){ return sessioninfos[session].rev < pad.getHeadRevisionNumber()},
       function(callback)
-      {
-        var author, revChangeset;
-      
-        var r = ++lastRev;
+      {      
+        var author, revChangeset, currentTime;
+        var r = sessioninfos[session].rev + 1;
       
         async.parallel([
           function (callback)
@@ -547,6 +545,15 @@ exports.updatePadClients = function(pad, callback)
               revChangeset = value;
               callback();
             });
+          },
+          function (callback)
+          {
+            pad.getRevisionDate(r, function(err, date)
+            {
+              if(ERR(err, callback)) return;
+              currentTime = date;
+              callback();
+            });
           }
         ], function(err)
         {
@@ -564,24 +571,30 @@ exports.updatePadClients = function(pad, callback)
           else
           {
             var forWire = Changeset.prepareForWire(revChangeset, pad.pool);
-            var wireMsg = {"type":"COLLABROOM","data":{type:"NEW_CHANGES", newRev:r,
-                         changeset: forWire.translated,
-                         apool: forWire.pool,
-                         author: author}};        
+            var wireMsg = {"type":"COLLABROOM",
+                           "data":{type:"NEW_CHANGES",
+                                   newRev:r,
+                                   changeset: forWire.translated,
+                                   apool: forWire.pool,
+                                   author: author,
+                                   currentTime: currentTime,
+                                   timeDelta: currentTime - sessioninfos[session].time
+                                  }};        
                          
             socketio.sockets.sockets[session].json.send(wireMsg);
           }
+
+           if(sessioninfos[session] != null)
+           {
+             sessioninfos[session].time = currentTime;
+             sessioninfos[session].rev = r;
+           }
           
           callback(null);
         });
       },
       callback
     );
-      
-    if(sessioninfos[session] != null)
-    {
-      sessioninfos[session].rev = pad.getHeadRevisionNumber();
-    }
   },callback);  
 }
 
