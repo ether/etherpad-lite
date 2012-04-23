@@ -360,6 +360,8 @@ function handshake()
       //this message advices the client to disconnect
       if (obj.disconnect)
       {
+        console.warn("FORCED TO DISCONNECT");
+        console.warn(obj);
         padconnectionstatus.disconnected(obj.disconnect);
         socket.disconnect();
         return;

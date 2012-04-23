@@ -467,54 +467,57 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         revisionInfo.addChangeset(astart, aend, forwardcs, backwardcs, data.timeDeltas[i]);
       }
       if (callback) callback(start - 1, start + data.forwardsChangesets.length * granularity - 1);
-    } 
+    },
+    handleMessageFromServer: function (obj)
+    {
+      debugLog("handleMessage:", arguments);
+
+      if (obj.type == "COLLABROOM")
+      {
+        obj = obj.data;
+
+        if (obj.type == "NEW_CHANGES")
+        {
+          debugLog(obj);
+          var changeset = Changeset.moveOpsToNewPool(
+            obj.changeset, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
+
+          var changesetBack = Changeset.inverse(
+            obj.changeset, padContents.currentLines, padContents.alines, padContents.apool);
+
+          var changesetBack = Changeset.moveOpsToNewPool(
+            changesetBack, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
+
+          loadedNewChangeset(changeset, changesetBack, obj.newRev - 1, obj.timeDelta);
+        }
+        else if (obj.type == "NEW_AUTHORDATA")
+        {
+          var authorMap = {};
+          authorMap[obj.author] = obj.data;
+          receiveAuthorData(authorMap);
+
+          var authors = _.map(padContents.getActiveAuthors(), function(name) {
+            return authorData[name];
+          });
+
+          BroadcastSlider.setAuthors(authors);
+        }
+        else if (obj.type == "NEW_SAVEDREV")
+        {
+          var savedRev = obj.savedRev;
+          BroadcastSlider.addSavedRevision(savedRev.revNum, savedRev);
+        }
+      }
+      else if(obj.type == "CHANGESET_REQ")
+      {
+        changesetLoader.handleSocketResponse(obj);
+      }
+      else
+      {
+        debugLog("Unknown message type: " + obj.type);
+      }
+    }
   };
-
-  function handleMessageFromServer()
-  {
-    debugLog("handleMessage:", arguments);
-    var obj = arguments[0]['data'];
-    var expectedType = "COLLABROOM";
-
-    obj = JSON.parse(obj);
-    if (obj['type'] == expectedType)
-    {
-      obj = obj['data'];
-
-      if (obj['type'] == "NEW_CHANGES")
-      {
-        debugLog(obj);
-        var changeset = Changeset.moveOpsToNewPool(
-        obj.changeset, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
-
-        var changesetBack = Changeset.moveOpsToNewPool(
-        obj.changesetBack, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
-
-        loadedNewChangeset(changeset, changesetBack, obj.newRev - 1, obj.timeDelta);
-      }
-      else if (obj['type'] == "NEW_AUTHORDATA")
-      {
-        var authorMap = {};
-        authorMap[obj.author] = obj.data;
-        receiveAuthorData(authorMap);
-        
-        var authors = _.map(padContents.getActiveAuthors(), function(name) {
-          return authorData[name];
-        });
-        
-        BroadcastSlider.setAuthors(authors);
-      }
-      else if (obj['type'] == "NEW_SAVEDREV")
-      {
-        var savedRev = obj.savedRev;
-        BroadcastSlider.addSavedRevision(savedRev.revNum, savedRev);
-      }
-    }
-    else
-    {
-      debugLog("incorrect message type: " + obj['type'] + ", expected " + expectedType);
-    }
-  }
 
   function handleSocketClosed(params)
   {

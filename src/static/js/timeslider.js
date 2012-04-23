@@ -80,16 +80,11 @@ function init() {
       {
         handleClientVars(message);
       }
-      else if(message.type == "CHANGESET_REQ")
-      {
-        changesetLoader.handleSocketResponse(message);
-      }
       else if(message.accessStatus)
       {
         $("body").html("<h2>You have no permission to access this pad</h2>")
       } else {
-          console.warn("Unknown message type: " + message.type);
-          console.warn(["XXX", message]);
+        changesetLoader.handleMessageFromServer(message);
       }
     });
 
