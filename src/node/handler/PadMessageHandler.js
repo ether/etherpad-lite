@@ -820,6 +820,7 @@ function handleClientReady(client, message)
         "initialOptions": {
             "guestPolicy": "deny"
         },
+        "savedRevisions": pad.getSavedRevisions(),
         "collab_client_vars": {
             "initialAttributedText": atext,
             "clientIp": "127.0.0.1",
