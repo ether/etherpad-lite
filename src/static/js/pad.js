@@ -319,10 +319,14 @@ function handshake()
       clientVars = obj.data;
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
-
+ 
       //initalize the pad
       pad._afterHandshake();
       initalized = true;
+
+      padeditor.ace.callWithAce(function (ace) {
+        ace.ace_setEditable(!clientVars.readonly);
+      });
 
       // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
       if (settings.LineNumbersDisabled == true)

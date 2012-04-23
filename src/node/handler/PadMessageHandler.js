@@ -848,6 +848,7 @@ function handleClientReady(client, message)
         "numConnectedUsers": pad2sessions[padIds.padId].length,
         "isProPad": false,
         "readOnlyId": padIds.readOnlyPadId,
+        "readonly": padIds.readonly,
         "serverTimestamp": new Date().getTime(),
         "globalPadId": message.padId,
         "userId": author,
