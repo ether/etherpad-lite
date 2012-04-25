@@ -279,13 +279,19 @@
             document.domain = document.domain;
             var clientVars = {};
             (function () {
-              require.setRootURI("../javascripts/src");
-              require.setLibraryURI("../javascripts/lib");
+              
+              var baseURL = '../';
+              
+              require.setRootURI(baseURL + "javascripts/src");
+              require.setLibraryURI(baseURL + "javascripts/lib");
               require.setGlobalKeyPath("require");
 
               var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+              plugins.baseURL = baseURL;
               plugins.update(function () {
-                require('ep_etherpad-lite/static/js/pad').init();
+                var pad = require('ep_etherpad-lite/static/js/pad');
+                pad.baseURL = baseURL;
+                pad.init();
               });
 
               /* TODO: These globals shouldn't exist. */
