@@ -60,8 +60,8 @@ function init() {
     //create the url
     var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
     //find out in which subfolder we are
-    var resource = loc.pathname.substr(1,loc.pathname.indexOf("/p/")) + "socket.io";
-
+    var resource = exports.baseURL + 'socket.io';
+    
     //build up the socket io connection
     socket = io.connect(url, {resource: resource});
 
@@ -153,4 +153,5 @@ function handleClientVars(message)
   }
 }
 
+exports.baseURL = '';
 exports.init = init;
