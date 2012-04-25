@@ -164,22 +164,30 @@
 </div>
 </div>
 
-<script type="text/javascript" src="../../../static/js/require-kernel.js"></script>
-<script type="text/javascript" src="../../../static/js/jquery.js"></script>
-<script type="text/javascript" src="../../../socket.io/socket.io.js"></script>
-<script type="text/javascript" src="../../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
-<script type="text/javascript" src="../../../static/custom/timeslider.js"></script>
+<script type="text/javascript" src="../../static/js/require-kernel.js"></script>
+<script type="text/javascript" src="../../static/js/jquery.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
+<script type="text/javascript" src="../../static/custom/timeslider.js"></script>
+
 <script type="text/javascript" >
   document.domain = document.domain;
   var clientVars = {};
+  
   (function () {
-    require.setRootURI("../../../javascripts/src");
-    require.setLibraryURI("../../../javascripts/lib");
+    var baseURL = '../../';
+    
+    require.setRootURI(baseURL + "javascripts/src");
+    require.setLibraryURI(baseURL + "javascripts/lib");
     require.setGlobalKeyPath("require");
 
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+    plugins.baseURL = baseURL;
+    
     plugins.update(function () {
-      require('ep_etherpad-lite/static/js/timeslider').init();
+      var timeslider = require('ep_etherpad-lite/static/js/timeslider')
+      timeslider.baseURL = baseURL;
+      timeslider.init();
 
       /* TODO: These globals shouldn't exist. */
       padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;

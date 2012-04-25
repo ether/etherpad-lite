@@ -203,7 +203,8 @@ function handshake()
   //create the url
   var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
   //find out in which subfolder we are
-  var resource = loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "socket.io";
+  var resource = exports.baseURL + "socket.io";
+  
   //connect
   socket = pad.socket = io.connect(url, {
     resource: resource,
@@ -1035,7 +1036,7 @@ var settings = {
 };
 
 pad.settings = settings;
-
+exports.baseURL = '';
 exports.settings = settings;
 exports.createCookie = createCookie;
 exports.readCookie = readCookie;
