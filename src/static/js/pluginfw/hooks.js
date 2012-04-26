@@ -68,7 +68,6 @@ exports.mapFirst = function (lst, fn, cb) {
   @return an array of callback functions, an empty array if no callbacks are registered
 */
 exports.registeredCallbacks = function (hook_name){
-  console.log(plugins.hooks[hook_name])
   return (plugins.hooks[hook_name] !== undefined) ? plugins.hooks[hook_name] : [];
 }
 
