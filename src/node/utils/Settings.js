@@ -80,11 +80,11 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
-/* This setting is used if you need authentication and/or
- * authorization. Note: /admin always requires authentication, and
- * either authorization by a module, or a user with is_admin set */
+/* This setting is used if you need authentication.
+ * Note: /admin always requires authentication, and
+ * either authorization by a module, or a user with is_admin set.
+ * Plugins may override this behavior */
 exports.requireAuthentication = false;
-exports.requireAuthorization = false;
 exports.users = {};
 
 //checks if abiword is avaiable

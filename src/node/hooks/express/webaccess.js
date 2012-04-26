@@ -8,19 +8,24 @@ var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
+  
   var hookResultMangle = function (cb) {
     return function (err, data) {
-      return cb(!err && data.length && data[0]);
+      // If data has 1 or more element, use the first one to decide if a user
+      // is authenticated, if its empty or undefined, no plugin gave its 'ok'
+      return cb(!err && data !== undefined && data.length < 1 && data[0]);
     }
   }
 
   var authorize = function (cb) {
     // Do not require auth for static paths...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw)/)) return cb(true);
+    
+    var requirePluginAuthorization = hooks.registeredCallbacks('authorize').length > 0;
 
     if (req.path.indexOf('/admin') != 0) {
       if (!settings.requireAuthentication) return cb(true);
-      if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
+      if (!requirePluginAuthorization && req.session && req.session.user) return cb(true);
     }
 
     if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
@@ -40,7 +45,7 @@ exports.basicAuth = function (req, res, next) {
         req.session.user = settings.users[username];
         return cb(true);
       }
-        return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(cb));
+      return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(cb));
     }
     hooks.aCallFirst("authenticate", {req: req, res:res, next:next}, hookResultMangle(cb));
   }
