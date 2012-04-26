@@ -62,35 +62,33 @@ exports.mapFirst = function (lst, fn, cb) {
 }
 
 
-/* Don't use Array.concat as it flatterns arrays within the array */
-exports.flatten = function (lst) {
-  var res = [];
-  if (lst != undefined && lst != null) {
-    for (var i = 0; i < lst.length; i++) {
-      if (lst[i] != undefined && lst[i] != null) {
-        for (var j = 0; j < lst[i].length; j++) {
-          res.push(lst[i][j]);
-	}
-      }
-    }
-  }
-  return res;
+/*
+  Returns all registered callbacks of a hook
+  @param string hook_name the hook to retrieve the callbacks for.
+  @return an array of callback functions, an empty array if no callbacks are registered
+*/
+exports.registeredCallbacks = function (hook_name){
+  console.log(plugins.hooks[hook_name])
+  return (plugins.hooks[hook_name] !== undefined) ? plugins.hooks[hook_name] : [];
 }
 
 exports.callAll = function (hook_name, args) {
   if (!args) args = {};
-  if (plugins.hooks[hook_name] === undefined) return [];
-  return _.flatten(_.map(plugins.hooks[hook_name], function (hook) {
-    return hookCallWrapper(hook, hook_name, args);
-  }), true);
+  var callbacks = exports.registeredCallbacks(hook_name);
+  
+  return _.flatten(
+    _.map(callbacks, function (hook) {
+      return hookCallWrapper(hook, hook_name, args);
+    }), true);
 }
 
 exports.aCallAll = function (hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
-  if (plugins.hooks[hook_name] === undefined) return cb(null, []);
+  var callbacks = exports.registeredCallbacks(hook_name);
+  
   async.map(
-    plugins.hooks[hook_name],
+    callbacks,
     function (hook, cb) {
       hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
@@ -102,18 +100,21 @@ exports.aCallAll = function (hook_name, args, cb) {
 
 exports.callFirst = function (hook_name, args) {
   if (!args) args = {};
-  if (plugins.hooks[hook_name][0] === undefined) return [];
-  return exports.syncMapFirst(plugins.hooks[hook_name], function (hook) {
-    return hookCallWrapper(hook, hook_name, args);
+  var callbacks = exports.registeredCallbacks(hook_name);
+  
+  return exports.syncMapFirst(callbacks, function (hook) {
+    var res = hookCallWrapper(hook, hook_name, args);
+    return res !== undefined ? res : [];
   });
 }
 
 exports.aCallFirst = function (hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
-  if (plugins.hooks[hook_name] === undefined) return cb(null, []);
+  var callbacks = exports.registeredCallbacks(hook_name);
+  
   exports.mapFirst(
-    plugins.hooks[hook_name],
+    callbacks,
     function (hook, cb) {
       hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
