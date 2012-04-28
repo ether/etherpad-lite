@@ -1402,7 +1402,7 @@ input[type=checkbox] {
   float: left;
   width: 50%;
 }
-#settingsmenu,
+#settings,
 #importexport,
 #embed {
   position: absolute;
