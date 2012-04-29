@@ -203,8 +203,7 @@ function handshake()
   //create the url
   var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
   //find out in which subfolder we are
-  var resource = exports.baseURL + "socket.io";
-  
+  var resource =  exports.baseURL.substring(1)  + "socket.io";
   //connect
   socket = pad.socket = io.connect(url, {
     resource: resource,
