@@ -1546,7 +1546,7 @@ input[type=checkbox] {
       box-sizing: border-box;
       width: 100%;
     }
-    #settingsmenu,
+    #settings,
     #importexport,
     #embed {
       left: 0;
