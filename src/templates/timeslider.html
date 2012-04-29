@@ -134,7 +134,12 @@
   var clientVars = {};
   
   (function () {
-    var baseURL = '../../';
+    
+    var pathComponents = location.pathname.split('/');
+    
+    // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
+    var baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/';
+    
     
     require.setRootURI(baseURL + "javascripts/src");
     require.setLibraryURI(baseURL + "javascripts/lib");

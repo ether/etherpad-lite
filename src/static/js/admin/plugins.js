@@ -1,5 +1,16 @@
 $(document).ready(function () {
-  var socket = io.connect().of("/pluginfw/installer");
+  
+  var socket,
+    loc = document.location,
+    port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port,
+    url = loc.protocol + "//" + loc.hostname + ":" + port + "/",
+    pathComponents = location.pathname.split('/'),
+    // Strip admin/plugins/
+    baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/',
+    resource = baseURL.substring(1) + "socket.io";
+
+  //connect
+  socket = io.connect(url, {resource : resource}).of("/pluginfw/installer");
 
   $('.search-results').data('query', {
     pattern: '',
