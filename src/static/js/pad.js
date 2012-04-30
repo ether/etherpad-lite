@@ -102,7 +102,6 @@ function getParams()
   var showLineNumbers = params["showLineNumbers"];
   var useMonospaceFont = params["useMonospaceFont"];
   var IsnoColors = params["noColors"];
-  var hideQRCode = params["hideQRCode"];
   var rtl = params["rtl"];
   var alwaysShowChat = params["alwaysShowChat"];
 
@@ -147,10 +146,6 @@ function getParams()
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
     settings.globalUserName = decodeURIComponent(userName);
-  }
-  if(hideQRCode)
-  {
-    $('#qrcode').hide();
   }
   if(rtl)
   {
@@ -1024,7 +1019,6 @@ var settings = {
 , noColors: false
 , useMonospaceFontGlobal: false
 , globalUserName: false
-, hideQRCode: false
 , rtlIsTrue: false
 };
 

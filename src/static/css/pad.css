@@ -1318,31 +1318,6 @@ ul#colorpickerswatches li:hover {
   line-height: 18px;
   position: fixed;
 }
-#qr_center {
-  margin: 10px 10px auto 0;
-  text-align: center;
-}
-#embedreadonlyqr {
-  -webkit-box-shadow: 0 0 10px #000;
-  -moz-box-shadow: 0 0 10px #000;
-  box-shadow: 0 0 10px #000;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  -webkit-transition: all .2s ease-in-out;
-  -moz-transition: all .2s ease-in-out;
-  -o-transition: all .2s ease-in-out;
-  -ms-transition: all .2s ease-in-out;
-  transition: all .2s ease-in-out;
-}
-#embedreadonlyqr:hover {
-  cursor: none;
-  -webkit-transform: scale(1.5);
-  -moz-transform: scale(1.5);
-  -o-transform: scale(1.5);
-  -ms-transform: scale(1.5);
-  transform: scale(1.5);
-}
 .rtl {
   direction: RTL
 }
@@ -1517,9 +1492,6 @@ input[type=checkbox] {
     }
     #usericonback {
       margin-top: 4px
-    }
-    #qrcode {
-      display: none
     }
     .toolbar ul.menu_right li:not(:last-child) {
       display: block
