@@ -119,7 +119,7 @@ var padeditbar = (function()
         }
         else if (cmd == 'settings')
         {
-              self.toogleDropDown("settingsmenu");
+              self.toogleDropDown("settings");
         }
         else if (cmd == 'embed')
         {
@@ -177,12 +177,11 @@ var padeditbar = (function()
     },
     toogleDropDown: function(moduleName)
     {
-      var modules = ["settingsmenu", "importexport", "embed", "users"];
+      var modules = ["settings", "importexport", "embed", "users"];
       
-      //hide all modules
+      // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
-        $("#editbar ul#menu_right > li").removeClass("selected");
         for(var i=0;i<modules.length;i++)
         {
           //skip the userlist
@@ -193,29 +192,27 @@ var padeditbar = (function()
         
           if(module.css('display') != "none")
           {
+            $("#" + modules[i] + "link").removeClass("selected");
             module.slideUp("fast");
           }
         }
       }
       else 
       {
-        var nth_child = indexOf(modules, moduleName) + 1;
-      	if (nth_child > 0 && nth_child <= (modules.length-1)) {
-          $("#editbar ul#menu_right li:not(:nth-child(" + nth_child + "))").removeClass("selected");
-          $("#editbar ul#menu_right li:nth-child(" + nth_child + ")").toggleClass("selected");
-      	}
-      	if(modules[modules.length-1] === moduleName) $("#editbar ul#menu_right li").removeClass("selected");
-        //hide all modules that are not selected and show the selected one
+        // hide all modules that are not selected and remove highlighting
+        // respectively add highlighting to the corresponding button
         for(var i=0;i<modules.length;i++)
         {
           var module = $("#" + modules[i]);
         
           if(module.css('display') != "none")
           {
+            $("#" + modules[i] + "link").removeClass("selected");
             module.slideUp("fast");
           }
           else if(modules[i]==moduleName)
           {
+            $("#" + modules[i] + "link").addClass("selected");
             module.slideDown("fast");
           }
         }

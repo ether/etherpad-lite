@@ -167,7 +167,13 @@ require.setGlobalKeyPath("require");\n\
       buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
       buffer.push(KERNEL_BOOT);
       buffer.push('<\/script>');
-    }
+    } else {
+      file = KERNEL_SOURCE;
+      buffer.push('<script type="application/javascript" src="' + KERNEL_SOURCE + '"><\/script>');
+      buffer.push('<script type="text/javascript">');
+      buffer.push(KERNEL_BOOT);
+      buffer.push('<\/script>');
+    } 
   }
   function pushScriptsTo(buffer) {
     /* Folling is for packaging regular expression. */

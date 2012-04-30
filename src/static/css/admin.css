@@ -1,6 +1,5 @@
 body {
   margin: 0;
-  height: 100%;
   color: #333;
   font: 14px helvetica, sans-serif;
   background: #ddd;
@@ -42,33 +41,32 @@ form {
   width: 300px;
   margin: 0 auto;
 }
-button, input {
+input {
   font-weight: bold;
   font-size: 15px;
 }
 input[type="button"] {
-  height: 30px;
+  padding: 4px 6px;
   margin: 0;
-  display: block;
 }
-input[value="Uninstall"], input[value="Install"] {
+input[type="button"].do-install, input[type="button"].do-uninstall {
   float: right;
   width: 100px;
+}
+input[type="button"]#do-search {
+  display: block;
 }
 input[type="text"] {
   border-radius: 3px;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;   
+  -moz-box-sizing: border-box;
   padding: 10px;
   *padding: 0; /* IE7 hack */
   width: 100%;
   outline: none;
   border: 1px solid #ddd;
-  margin: 0 0 5px 1px;
+  margin: 0 0 5px 0;
   max-width: 500px;
-}
-button{
-  display:block;
 }
 table {
   border: 1px solid #ddd;
@@ -95,13 +93,13 @@ td, th {
   height: 500px;
   margin-left: -350px;
   margin-top: -250px;
-  border: 3px solid #999999;
-  background: #eeeeee;
+  border: 3px solid #999;
+  background: #eee;
 }
 .dialog .title {
   margin: 0;
   padding: 2px;
-  border-bottom: 3px solid #999999;
+  border-bottom: 3px solid #999;
   font-size: 24px;
   line-height: 24px;
   height: 24px;
@@ -109,10 +107,11 @@ td, th {
 }
 .dialog .title .close {
   float: right;
+  padding: 1px 10px;
 }
 .dialog .history {
-  background: #222222;
-  color: #eeeeee;
+  background: #222;
+  color: #eee;
   position: absolute;
   top: 41px;
   bottom: 10px;
