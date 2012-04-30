@@ -11,10 +11,10 @@ if(process.argv.length != 3)
 var padId = process.argv[2];
 
 //initalize the database
-var log4js = require("log4js");
+var log4js = require("../src/node_modules/log4js");
 log4js.setGlobalLogLevel("INFO");
-var async = require("async");
-var db = require('../node/db/DB');
+var async = require("../src/node_modules/async");
+var db = require('../src/node/db/DB');
 
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager;
@@ -28,7 +28,7 @@ async.series([
   //get the pad 
   function (callback)
   {
-    padManager = require('../node/db/PadManager');
+    padManager = require('../src/node/db/PadManager');
     
     padManager.doesPadExists(padId, function(err, exists)
     {
