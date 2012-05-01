@@ -237,14 +237,12 @@ var padeditbar = (function()
         var readonlyLink = basePath + "/ro/" + clientVars.readOnlyId;
         $('#embedinput').val("<iframe name='embed_readonly' src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(readonlyLink);
-        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=|0&chl=" + readonlyLink);
       }
       else
       {
         var padurl = window.location.href.split("?")[0];
         $('#embedinput').val("<iframe name='embed_readwrite' src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(padurl);
-        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=|0&chl=" + padurl);
       }
     }
   };
