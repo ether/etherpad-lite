@@ -18,6 +18,7 @@
 
         <!-- head and body had been removed intentionally -->
 
+        <% e.begin_block("body"); %>
         <div id="editbar" class="toolbar">
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
@@ -116,6 +117,7 @@
         <div id="settings" class="popup">
             <h1>Pad settings</h1>
             <div class="column">
+                <% e.begin_block("mySettings"); %>
                 <h2>My view</h2>
                 <p>
                     <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
@@ -136,16 +138,20 @@
                         <option value="monospace">Monospaced</option>
                     </select>
                 </p>
+                <% e.end_block(); %>
             </div>
             <div class="column">
+                <% e.begin_block("globalSettings"); %>
                 <h2>Global view</h2>
                 <p>Currently nothing.</p>
                 <p class="note">These options affect everyone viewing this pad.</p>
+                <% e.end_block(); %>
             </div>
         </div>
 
         <div id="importexport" class="popup">
             <div class="column">
+                <% e.begin_block("importColumn"); %>
                 <h2>Import from text file, HTML, PDF, Word, ODT or RTF</h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
                     <div class="importformdiv" id="importformfilediv">
@@ -163,9 +169,11 @@
                         </span>
                     </div>
                 </form>
+                <% e.end_block(); %>
             </div>
             <div class="column">
                 <h2>Export current pad as</h2>
+                <% e.begin_block("exportColumn"); %>
                 <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
                 <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
                 <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
@@ -173,10 +181,12 @@
                 <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
                 <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
                 <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
+                <% e.end_block(); %>
             </div>
         </div>
 
         <div id="embed" class="popup">
+            <% e.begin_block("embedPopup"); %>
             <div id="embedreadonly" class="right">
                 <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();">
                 <label for="readonlyinput">Read only</label>
@@ -191,6 +201,7 @@
                 <h2>Embed URL</h2>
                 <input id="embedinput" type="text" value="">
             </div>
+            <% e.end_block(); %>
         </div>
 
         <div id="chatthrob"></div>
@@ -264,6 +275,7 @@
             </div>
             <% e.end_block(); %>
         </div>
+        <% e.end_block(); %>
 
         <% e.begin_block("scripts"); %>
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
