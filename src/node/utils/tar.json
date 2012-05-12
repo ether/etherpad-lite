@@ -59,6 +59,8 @@
   , "jquery.js"
   , "rjquery.js"
   , "underscore.js"
+  , "$underscore.js"
+  , "$underscore/underscore.js"
   , "security.js"
   , "$security.js"
   , "json2.js"

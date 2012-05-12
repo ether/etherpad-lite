@@ -38,6 +38,7 @@ var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 var LIBRARY_WHITELIST = [
       'security'
+    , 'underscore'
     ];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
