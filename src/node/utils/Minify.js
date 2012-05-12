@@ -51,6 +51,10 @@ for (var key in tar) {
       tar[key].map(prefixLocalLibraryPath).map(function (p) {
         return p.replace(/\.js$/, '');
       })
+    ).concat(
+      tar[key].map(prefixLocalLibraryPath).map(function (p) {
+        return p.replace(/\.js$/, '') + '/index.js';
+      })
     );
 }
 
