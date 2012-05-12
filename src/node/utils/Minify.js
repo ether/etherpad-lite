@@ -285,8 +285,10 @@ function statFile(filename, callback) {
         } else {
           callback(error);
         }
-      } else {
+      } else if (stats.isFile()) {
         callback(null, stats.mtime.getTime(), true);
+      } else {
+        callback(null, stats.mtime.getTime(), false);
       }
     });
   }
