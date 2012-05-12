@@ -36,7 +36,9 @@ var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 
-var LIBRARY_WHITELIST = [];
+var LIBRARY_WHITELIST = [
+      'security'
+    ];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';

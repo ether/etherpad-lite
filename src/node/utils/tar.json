@@ -60,6 +60,7 @@
   , "rjquery.js"
   , "underscore.js"
   , "security.js"
+  , "$security.js"
   , "json2.js"
   , "pluginfw/plugins.js"
   , "pluginfw/hooks.js"
