@@ -42,7 +42,11 @@ var LIBRARY_WHITELIST = [];
 var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
 exports.tar = {};
 function prefixLocalLibraryPath(path) {
-  return LIBRARY_PREFIX + '/' + path;
+  if (path.charAt(0) == '$') {
+    return path.slice(1);
+  } else {
+    return LIBRARY_PREFIX + '/' + path;
+  }
 }
 
 for (var key in tar) {
