@@ -41,11 +41,15 @@ var LIBRARY_WHITELIST = [];
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
 exports.tar = {};
+function prefixLocalLibraryPath(path) {
+  return LIBRARY_PREFIX + '/' + path;
+}
+
 for (var key in tar) {
-  exports.tar[LIBRARY_PREFIX + '/' + key] =
-    tar[key].map(function (p) {return LIBRARY_PREFIX + '/' + p}).concat(
-      tar[key].map(function (p) {
-        return LIBRARY_PREFIX + '/' + p.replace(/\.js$/, '')
+  exports.tar[prefixLocalLibraryPath(key)] =
+    tar[key].map(prefixLocalLibraryPath).concat(
+      tar[key].map(prefixLocalLibraryPath).map(function (p) {
+        return p.replace(/\.js$/, '');
       })
     );
 }
