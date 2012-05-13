@@ -20,15 +20,12 @@
  * limitations under the License.
  */
 
-function makeCSSManager(emptyStylesheetTitle, top)
+function makeCSSManager(emptyStylesheetTitle)
 {
 
-  function getSheetByTitle(title, top)
+  function getSheetByTitle(title)
   {
-    if(top)
-      var allSheets = window.parent.parent.document.styleSheets;
-    else 
-      var allSheets = document.styleSheets;
+    var allSheets = document.styleSheets;
     
     for (var i = 0; i < allSheets.length; i++)
     {
@@ -40,21 +37,8 @@ function makeCSSManager(emptyStylesheetTitle, top)
     }
     return null;
   }
-
-/*function getSheetTagByTitle(title) {
-    var allStyleTags = document.getElementsByTagName("style");
-    for(var i=0;i<allStyleTags.length;i++) {
-      var t = allStyleTags[i];
-      if (t.title == title) {
-	return t;
-      }
-    }
-    return null;
-  }*/
-
-  var browserSheet = getSheetByTitle(emptyStylesheetTitle, top);
-  //var browserTag = getSheetTagByTitle(emptyStylesheetTitle);
-
+  
+  var browserSheet = getSheetByTitle(emptyStylesheetTitle);
 
   function browserRules()
   {

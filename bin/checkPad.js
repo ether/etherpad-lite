@@ -4,7 +4,7 @@
 
 if(process.argv.length != 3)
 {
-  console.error("Use: node checkPad.js $PADID");
+  console.error("Use: node bin/checkPad.js $PADID");
   process.exit(1);
 }
 //get the padID

@@ -883,15 +883,6 @@ down on the page in IE.  Strange but it works! */
   line-height: 18px;
   padding: 2px;
 }
-#sharebox-send {
-  float: right;
-  background-repeat: no-repeat;
-  background-image: url(static/img/sharebox4.gif);
-  display: block;
-  width: 87px;
-  height: 22px;
-  background-position: -383px -289px;
-}
 #viewbarcontents {
   display: none
 }
@@ -903,9 +894,7 @@ down on the page in IE.  Strange but it works! */
   line-height: 20px;
   width: auto;
 }
-#viewzoommenu {
-  width: 65px
-}
+
 #bottomarea {
   height: 28px;
   overflow: hidden;
@@ -949,17 +938,7 @@ down on the page in IE.  Strange but it works! */
 .sidebarchecked {
   background-position: -1px -67px
 }
-#feedbackbutton {
-  display: block;
-  position: absolute;
-  width: 68px;
-  height: 0;
-  padding-top: 17px;
-  overflow: hidden;
-  background: url(static/img/bottomareagfx.gif);
-  top: 5px;
-  right: 220px;
-}
+
 #modaloverlay {
   z-index: 500;
   display: none;

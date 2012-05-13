@@ -245,14 +245,6 @@ require.setGlobalKeyPath("require");\n\
         iframeHTML: iframeHTML
       });
 
-      // For compatability's sake transform in and out.
-      for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
-        iframeHTML[i] = JSON.stringify(iframeHTML[i]);
-      }
-      for (var i = 0, ii = iframeHTML.length; i < ii; i++) {
-        iframeHTML[i] = JSON.parse(iframeHTML[i]);
-      }
-
       // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
       // and compressed, putting the compressed code from the named file directly into the
       // source here.

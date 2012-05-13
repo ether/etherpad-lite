@@ -24,7 +24,6 @@
 // assigns to the global `$` and augments it with plugins.
 require('./jquery');
 JSON = require('./json2');
-require('./undo-xpopup');
 
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;

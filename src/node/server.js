@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server. 
  * Static file Requests are answered directly from this module, Socket.IO messages are passed 
@@ -65,9 +66,9 @@ async.waterfall([
   plugins.update,
 
   function (callback) {
-    console.log("Installed plugins: " + plugins.formatPlugins());
-    console.log("Installed parts:\n" + plugins.formatParts());
-    console.log("Installed hooks:\n" + plugins.formatHooks());
+    console.info("Installed plugins: " + plugins.formatPlugins());
+    console.debug("Installed parts:\n" + plugins.formatParts());
+    console.debug("Installed hooks:\n" + plugins.formatHooks());
     callback();
   },
 
@@ -88,12 +89,12 @@ async.waterfall([
     
     //let the server listen
     app.listen(settings.port, settings.ip);
-    console.log("Server is listening at " + settings.ip + ":" + settings.port);
+    console.log("You can access your Etherpad-Lite instance at http://" + settings.ip + ":" + settings.port + "/");
     if(!_.isEmpty(settings.users)){
-      console.log("Plugin admin page listening at " + settings.ip + ":" + settings.port + "/admin/plugins");
+      console.log("The plugin admin page is at http://" + settings.ip + ":" + settings.port + "/admin/plugins");
     }
     else{
-      console.log("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
+      console.warn("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
     }
     callback(null);  
   }
