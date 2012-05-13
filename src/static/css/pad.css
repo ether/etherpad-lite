@@ -1420,11 +1420,8 @@ input[type=checkbox] {
     }
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) { 
-    .toolbar ul li.separator {
-      padding: 3px;
-    }
-    .toolbar ul li {
-      padding: 4px 3px
+    .toolbar ul li a {
+      padding: 4px 5px;
     }
     #users {
       right: 0;
@@ -1455,15 +1452,6 @@ input[type=checkbox] {
       bottom: 0;
       border-top: 1px solid #ccc;
     }
-    .toolbar ul.menu_right li:last-child {
-      height: 24px;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      margin-top: 0;
-      border: 0;
-      float: right;
-    }
     #chaticon {
       bottom: 3px;
       right: 55px;
@@ -1485,19 +1473,27 @@ input[type=checkbox] {
       border-top-right-radius: 0;
       border-right: none;
     }
-    .toolbar ul li a span {
-      top: -3px
-    }
     #usericonback {
       margin-top: 4px
     }
-    .toolbar ul.menu_right li:not(:last-child) {
-      display: block
+    .toolbar ul.menu_right > li:last-child {
+      float: right;
+    }
+    .toolbar ul.menu_right > li:not(:last-child) a {
+      display: block;
     }
     .toolbar ul.menu_right > li {
-      background: none;
+      padding: 0;
+    }
+    .toolbar ul.menu_right > li a {
+      height: 24px;
+      line-height: 24px;
+      -webkit-border-radius: 0;
+      -moz-border-radius: 0;
+      border-radius: 0;
       border: none;
-      margin-top: 4px;
+      background: none;
+      margin: 0;
       padding: 4px 8px;
     }
     .selected {
