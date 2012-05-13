@@ -1,6 +1,5 @@
 body {
   margin: 0;
-  height: 100%;
   color: #333;
   font: 14px helvetica, sans-serif;
   background: #ddd;
@@ -26,7 +25,7 @@ h1 {
 h2 {
   font-size: 24px;
 }
-.seperator {
+.separator {
   margin: 10px 0;
   height: 1px;
   background: #aaa;

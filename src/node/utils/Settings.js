@@ -44,7 +44,7 @@ exports.dbType = "dirty";
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-exports.dbSettings = { "filename" : path.join(exports.root, "var/dirty.db") };
+exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
 /**
  * The default Text of a new pad
  */
@@ -106,9 +106,15 @@ if (settingsFilename.charAt(0) != '/') {
     settingsFilename = path.normalize(path.join(root, settingsFilename));
 }
 
-//read the settings sync
-var settingsStr = fs.readFileSync(settingsFilename).toString();
-
+var settingsStr
+try{
+  //read the settings sync
+  settingsStr = fs.readFileSync(settingsFilename).toString();
+} catch(e){
+  console.warn('No settings file found. Using defaults.');
+  settingsStr = '{}';
+}
+  
 //remove all comments
 settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
 
@@ -145,4 +151,8 @@ for(var i in settings)
     console.warn("Unkown Setting: '" + i + "'");
     console.warn("This setting doesn't exist or it was removed");
   }
+}
+
+if(exports.dbType === "dirty"){
+  console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
 }
