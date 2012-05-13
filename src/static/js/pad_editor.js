@@ -58,7 +58,6 @@ var padeditor = (function()
       self.setViewOptions(initialViewOptions);
 
       // view bar
-      self.initViewZoom();
       $("#viewbarcontents").show();
     },
     initViewOptions: function()
@@ -105,36 +104,6 @@ var padeditor = (function()
       v = getOption('useMonospaceFont', false);
       self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
       $("#viewfontmenu").val(v ? "monospace" : "normal");
-    },
-    initViewZoom: function()
-    {
-      var viewZoom = Number(padcookie.getPref('viewZoom'));
-      if ((!viewZoom) || isNaN(viewZoom))
-      {
-        viewZoom = 100;
-      }
-      self.setViewZoom(viewZoom);
-      $("#viewzoommenu").change(function(evt)
-      {
-        // strip initial 'z' from val
-        self.setViewZoom(Number($("#viewzoommenu").val().substring(1)));
-      });
-    },
-    setViewZoom: function(percent)
-    {
-      if (!(percent >= 50 && percent <= 1000))
-      {
-        // percent is out of sane range or NaN (which fails comparisons)
-        return;
-      }
-
-      self.viewZoom = percent;
-      $("#viewzoommenu").val('z' + percent);
-
-      var baseSize = 13;
-      self.ace.setProperty('textsize', Math.round(baseSize * self.viewZoom / 100));
-
-      padcookie.setPref('viewZoom', percent);
     },
     dispose: function()
     {
