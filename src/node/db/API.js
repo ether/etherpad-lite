@@ -431,7 +431,7 @@ exports.setPassword = function(padID, password, callback)
     if(ERR(err, callback)) return;
     
     //set the password
-    pad.setPassword(password);
+    pad.setPassword(password == "" ? null : password);
     
     callback();
   });
