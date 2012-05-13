@@ -166,12 +166,10 @@ function Ace2Inner(){
   }
 
   var dynamicCSS = null;
-  var dynamicCSSTop = null;
 
   function initDynamicCSS()
   {
     dynamicCSS = makeCSSManager("dynamicsyntax");
-    dynamicCSSTop = makeCSSManager("dynamicsyntax", true);
   }
 
   var changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
@@ -214,7 +212,6 @@ function Ace2Inner(){
       if (dynamicCSS)
       {
         dynamicCSS.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
-        dynamicCSSTop.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
       }
     }
     else
@@ -232,23 +229,18 @@ function Ace2Inner(){
           
           var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author)));
-          var authorStyleTop = dynamicCSSTop.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author)));
           var anchorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author))+' > a')
           
           // author color
           authorStyle.backgroundColor = bgcolor;
-          authorStyleTop.backgroundColor = bgcolor;
           
           // text contrast
           if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
           {
             authorStyle.color = '#ffffff';
-            authorStyleTop.color = '#ffffff';
           }else{
             authorStyle.color = null;
-            authorStyleTop.color = null;
           }
           
           // anchor text contrast
@@ -3747,24 +3739,6 @@ function Ace2Inner(){
     selection.focusAtStart = !! rep.selFocusAtStart;
 
     setSelection(selection);
-  }
-
-  function getRepHTML()
-  {
-    return _.map(rep.lines.slice(), function(entry)
-    {
-      var text = entry.text;
-      var content;
-      if (text.length === 0)
-      {
-        content = '<span style="color: #aaa">--</span>';
-      }
-      else
-      {
-        content = htmlPrettyEscape(text);
-      }
-      return '<div><code>' + content + '</div></code>';
-    }).join('');
   }
 
   function nodeMaxIndex(nd)
