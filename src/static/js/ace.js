@@ -185,14 +185,10 @@ require.setGlobalKeyPath("require");\n\
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
       buffer.push(Ace2Editor.EMBEDED[ACE_COMMON]);
-      buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
       buffer.push('<\/script>');
     } else {
       buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
       buffer.push('<script type="application/javascript" src="' + ACE_COMMON + '"><\/script>');
-      buffer.push('<script type="text/javascript">');
-      buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
-      buffer.push('<\/script>');
     }
   }
   function pushStyleTagsFor(buffer, files) {
@@ -264,8 +260,9 @@ require.setGlobalKeyPath("require");\n\
       pushStyleTagsFor(iframeHTML, includedCSS);
 
       var includedJS = [];
-      var $$INCLUDE_JS = function(filename) {includedJS.push(filename)};
       pushRequireScriptTo(iframeHTML);
+      pushScriptsTo(iframeHTML);
+
       // Inject my plugins into my child.
       iframeHTML.push('\
 <script type="text/javascript">\
@@ -280,7 +277,10 @@ require.setGlobalKeyPath("require");\n\
   });\
 </script>\
 ');
-      pushScriptsTo(iframeHTML);
+
+      iframeHTML.push('<script type="text/javascript">');
+      iframeHTML.push('require("ep_etherpad-lite/static/js/ace2_inner");');
+      iframeHTML.push('<\/script>');
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
       iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
