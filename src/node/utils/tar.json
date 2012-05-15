@@ -1,12 +1,7 @@
 {
   "pad.js": [
-    "jquery.js"
-  , "underscore.js"
-  , "security.js"
-  , "pad.js"
-  , "ace2_common.js"
+    "pad.js"
   , "pad_utils.js"
-  , "json2.js"
   , "pad_cookie.js"
   , "pad_editor.js"
   , "pad_editbar.js"
@@ -23,13 +18,9 @@
   , "farbtastic.js"
   ]
 , "timeslider.js": [
-    "jquery.js"
-  , "underscore.js"
-  , "security.js"
-  , "json2.js"
+    "timeslider.js"
   , "colorutils.js"
   , "draggable.js"
-  , "ace2_common.js"
   , "pad_utils.js"
   , "pad_cookie.js"
   , "pad_editor.js"
@@ -46,12 +37,10 @@
   , "broadcast.js"
   , "broadcast_slider.js"
   , "broadcast_revisions.js"
-  , "timeslider.js"
   ]
 , "ace2_inner.js": [
-    "ace2_common.js"
+    "ace2_inner.js"
   , "underscore.js"
-  , "rjquery.js"
   , "AttributePool.js"
   , "Changeset.js"
   , "ChangesetUtils.js"
@@ -66,6 +55,13 @@
   , "linestylefilter.js"
   , "domline.js"
   , "AttributeManager.js"
-  , "ace2_inner.js"
+  ]
+, "ace2_common.js": [
+    "ace2_common.js"
+  , "jquery.js"
+  , "rjquery.js"
+  , "underscore.js"
+  , "security.js"
+  , "json2.js"
   ]
 }
