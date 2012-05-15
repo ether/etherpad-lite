@@ -63,5 +63,9 @@
   , "underscore.js"
   , "security.js"
   , "json2.js"
+  , "pluginfw/plugins.js"
+  , "pluginfw/hooks.js"
+  , "pluginfw/async.js"
+  , "pluginfw/parent_require.js"
   ]
 }
