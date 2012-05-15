@@ -185,7 +185,6 @@ require.setGlobalKeyPath("require");\n\
       buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
       buffer.push('<\/script>');
     } else {
-      file = ACE_SOURCE;
       buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
       buffer.push('<script type="text/javascript">');
       buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
