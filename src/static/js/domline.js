@@ -52,49 +52,51 @@ domline.addToLineClass = function(lineClass, cls)
   return lineClass;
 }
 
-// if "document" is falsy we don't create a DOM node, just
-// an object with innerHTML and className
-domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
-{
-  var result = {
-    node: null,
-    appendSpan: noop,
-    prepareForAdd: noop,
-    notifyAdded: noop,
-    clearSpans: noop,
-    finishUpdate: noop,
-    lineMarker: 0
-  };
+function DOMLine(nonEmpty, doesWrap, browser, document) {
+  this.node = null;
+  this.lineMarker = 0;
+  this.nonEmpty = nonEmpty;
+  this.doesWrap = doesWrap;
+  this.browser = browser;
+  this.document = document;
 
-  var browser = (optBrowser || {});
-  var document = optDocument;
-
+  // if "document" is falsy we don't create a DOM node, just
+  // an object with innerHTML and className
   if (document)
   {
-    result.node = document.createElement("div");
+    this.node = document.createElement("div");
   }
   else
   {
-    result.node = {
+    this.node = {
       innerHTML: '',
       className: ''
     };
   }
 
-  var html = [];
-  var preHtml = '', 
-  postHtml = '';
-  var curHTML = null;
+  this.html = [];
+  this.preHtml = '';
+  this.postHtml = '';
+  this.curHTML = null;
 
-  function processSpaces(s)
+  this.perTextNodeProcess = (doesWrap ? _.identity : this.processSpaces);
+  this.perHtmlLineProcess = (doesWrap ? this.processSpaces : _.identity);
+  this.lineClass = 'ace-line';
+
+  // Apparently overridden at the instance level sometimes...
+  this.notifyAdded = function () {this._notifyAdded()};
+  this.finishUpdate = function () {this._finishUpdate()};
+}
+
+DOMLine.prototype = {};
+(function () {
+  this.processSpaces = function(s)
   {
-    return domline.processSpaces(s, doesWrap);
+    return domline.processSpaces(s, this.doesWrap);
   }
+  this._notifyAdded = function () {};
 
-  var perTextNodeProcess = (doesWrap ? _.identity : processSpaces);
-  var perHtmlLineProcess = (doesWrap ? processSpaces : _.identity);
-  var lineClass = 'ace-line';
-  result.appendSpan = function(txt, cls)
+  this.appendSpan = function(txt, cls)
   {
     var processedMarker = false;
     // Handle lineAttributeMarker, if present
@@ -110,13 +112,13 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         {
           if(listType.indexOf("number") < 0)
           {
-            preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ul>';
+            this.preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            this.postHtml = '</li></ul>';
           }
           else
           {
-            preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ol>';
+            this.preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            this.postHtml = '</li></ol>';
           }
         } 
         processedMarker = true;
@@ -127,13 +129,13 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         cls: cls
       }), function(modifier)
       {
-        preHtml += modifier.preHtml;
-        postHtml += modifier.postHtml;
+        this.preHtml += modifier.preHtml;
+        this.postHtml += modifier.postHtml;
         processedMarker |= modifier.processedMarker;
       });
       
       if( processedMarker ){
-        result.lineMarker += txt.length;
+        this.lineMarker += txt.length;
         return; // don't append any text
       } 
 
@@ -174,7 +176,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
 
     if ((!txt) && cls)
     {
-      lineClass = domline.addToLineClass(lineClass, cls);
+      this.lineClass = domline.addToLineClass(this.lineClass, cls);
     }
     else if (txt)
     {
@@ -194,54 +196,62 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         simpleTags.reverse();
         extraCloseTags = '</' + simpleTags.join('></') + '>' + extraCloseTags;
       }
-      html.push('<span class="', Security.escapeHTMLAttribute(cls || ''), '">', extraOpenTags, perTextNodeProcess(Security.escapeHTML(txt)), extraCloseTags, '</span>');
+      this.html.push('<span class="', Security.escapeHTMLAttribute(cls || ''), '">', extraOpenTags, this.perTextNodeProcess(Security.escapeHTML(txt)), extraCloseTags, '</span>');
     }
   };
-  result.clearSpans = function()
+  this.clearSpans = function()
   {
-    html = [];
-    lineClass = ''; // non-null to cause update
-    result.lineMarker = 0;
+    this.html = [];
+    this.lineClass = ''; // non-null to cause update
+    this.lineMarker = 0;
   };
 
-  function writeHTML()
+  this._writeHTML = function ()
   {
-    var newHTML = perHtmlLineProcess(html.join(''));
+    var newHTML = this.perHtmlLineProcess(this.html.join(''));
     if (!newHTML)
     {
-      if ((!document) || (!optBrowser))
+      if ((!this.document) || (!this.browser))
       {
         newHTML += '&nbsp;';
       }
-      else if (!browser.msie)
+      else if (!(this.browser || {}).msie)
       {
         newHTML += '<br/>';
       }
     }
-    if (nonEmpty)
+    if (this.nonEmpty)
     {
-      newHTML = (preHtml || '') + newHTML + (postHtml || '');
+      newHTML = (this.preHtml || '') + newHTML + (this.postHtml || '');
     }
-    html = preHtml = postHtml = ''; // free memory
-    if (newHTML !== curHTML)
+    this.html = this.preHtml = this.postHtml = ''; // free memory
+    if (newHTML !== this.curHTML)
     {
-      curHTML = newHTML;
-      result.node.innerHTML = curHTML;
+      this.curHTML = newHTML;
+      this.node.innerHTML = this.curHTML;
     }
-    if (lineClass !== null) result.node.className = lineClass;
+    if (this.lineClass !== null) this.node.className = this.lineClass;
 	
-	hooks.callAll("acePostWriteDomLineHTML", {
-        node: result.node
-	});
+	  hooks.callAll("acePostWriteDomLineHTML", {
+        node: this.node
+	  });
   }
-  result.prepareForAdd = writeHTML;
-  result.finishUpdate = writeHTML;
-  result.getInnerHTML = function()
+  this.prepareForAdd = function () {
+    return this._writeHTML();
+  };
+  this._finishUpdate = function () {
+    return this._writeHTML();
+  };
+  this.getInnerHTML = function()
   {
-    return curHTML || '';
+    return this.curHTML || '';
   };
 
-  return result;
+}).call(DOMLine.prototype);
+
+domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
+{
+  return new DOMLine(nonEmpty, doesWrap, optBrowser, optDocument);
 };
 
 domline.processSpaces = function(s, doesWrap)
