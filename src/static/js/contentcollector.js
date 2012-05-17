@@ -30,6 +30,41 @@ var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
 
+var DOMInterface = {
+  isNodeText: function(n)
+  {
+    return (n.nodeType == 3);
+  },
+  nodeTagName: function(n)
+  {
+    return n.tagName;
+  },
+  nodeValue: function(n)
+  {
+    return n.nodeValue;
+  },
+  nodeNumChildren: function(n)
+  {
+    return n.childNodes.length;
+  },
+  nodeChild: function(n, i)
+  {
+    return n.childNodes.item(i);
+  },
+  nodeProp: function(n, p)
+  {
+    return n[p];
+  },
+  nodeAttr: function(n, a)
+  {
+    return n.getAttribute(a);
+  },
+  optNodeInnerHTML: function(n)
+  {
+    return n.innerHTML;
+  }
+};
+
 function sanitizeUnicode(s)
 {
   return UNorm.nfc(s).replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
@@ -39,40 +74,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 {
   browser = browser || {};
 
-  var dom = domInterface || {
-    isNodeText: function(n)
-    {
-      return (n.nodeType == 3);
-    },
-    nodeTagName: function(n)
-    {
-      return n.tagName;
-    },
-    nodeValue: function(n)
-    {
-      return n.nodeValue;
-    },
-    nodeNumChildren: function(n)
-    {
-      return n.childNodes.length;
-    },
-    nodeChild: function(n, i)
-    {
-      return n.childNodes.item(i);
-    },
-    nodeProp: function(n, p)
-    {
-      return n[p];
-    },
-    nodeAttr: function(n, a)
-    {
-      return n.getAttribute(a);
-    },
-    optNodeInnerHTML: function(n)
-    {
-      return n.innerHTML;
-    }
-  };
+  var dom = domInterface || DOMInterface;
 
   var _blockElems = {
     "div": 1,
@@ -703,5 +705,6 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   return cc;
 }
 
+exports.DOMInterface = DOMInterface;
 exports.sanitizeUnicode = sanitizeUnicode;
 exports.makeContentCollector = makeContentCollector;
