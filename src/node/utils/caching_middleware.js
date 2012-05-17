@@ -73,6 +73,9 @@ CachingMiddleware.prototype = new function () {
       var _headers = {};
       old_res.setHeader = res.setHeader;
       res.setHeader = function (key, value) {
+        // Don't set cookies, see issue #707
+        if (key.toLowerCase() === 'set-cookie') return;
+
         _headers[key.toLowerCase()] = value;
         old_res.setHeader.call(res, key, value);
       };
