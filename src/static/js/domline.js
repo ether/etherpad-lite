@@ -249,9 +249,71 @@ DOMLine.prototype = {};
 
 }).call(DOMLine.prototype);
 
-domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
+function SpecialIEDOMLine(nonEmpty, doesWrap, browser, document) {
+  this.node = null;
+  this.lineMarker = 0;
+  this.node = document.createElement("div")
+
+  this.lineClass = 'ace-line';
+
+  // Apparently overridden at the instance level sometimes...
+  this.notifyAdded = function () {this._notifyAdded()};
+  this.finishUpdate = function () {this._finishUpdate()};;
+}
+SpecialIEDOMLine.prototype = {};
+(function () {
+  this._notifyAdded = function () {
+    // magic -- settng an empty div's innerHTML to the empty string
+    // keeps it from collapsing.  Apparently innerHTML must be set *after*
+    // adding the node to the DOM.
+    // Such a div is what IE 6 creates naturally when you make a blank line
+    // in a document of divs.  However, when copy-and-pasted the div will
+    // contain a space, so we note its emptiness with a property.
+    this.node.innerHTML = " "; // Frist we set a value that isnt blank
+    // a primitive-valued property survives copy-and-paste
+    Ace2Common.setAssoc(lineElem, "shouldBeEmpty", true);
+    // an object property doesn't
+    Ace2Common.setAssoc(lineElem, "unpasted", {});
+    this.node.innerHTML = ""; // Then we make it blank..  New line and no space = Awesome :)
+  }
+
+  this.appendSpan = function (txt, cls) {
+    if ((!txt) && cls) {
+      // gain a whole-line style (currently to show insertion point in CSS)
+      this.lineClass = domline.addToLineClass(lineClass, cls);
+    }
+    // otherwise, ignore appendSpan, this is an empty line
+  }
+
+  this.clearSpans = function () {
+    this.lineClass = ''; // non-null to cause update
+  }
+
+  this._writeClass = function () {
+    if (this.lineClass !== null) {
+      this.node.className = this.lineClass;
+    }
+  }
+
+  this.prepareForAdd = function () {
+    return this._writeClass;
+  }
+  this._finishUpdate = function () {
+    return this._writeClass;
+  }
+  this.getInnerHTML = function () {
+    return "";
+  }
+}).call(SpecialIEDOMLine.prototype);
+
+function createDomLine(nonEmpty, doesWrap, browser, document)
 {
-  return new DOMLine(nonEmpty, doesWrap, optBrowser, optDocument);
+  if (browser.msie && (!nonEmpty)) {
+    // TODO: Why is this necessary?
+    return new SpecialIEDOMLine(nonEmpty, doesWrap, browser, document);
+  } else {
+    return new DOMLine(nonEmpty, doesWrap, browser, document);
+  }
 };
 
 domline.processSpaces = function(s, doesWrap)
