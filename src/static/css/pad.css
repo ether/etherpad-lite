@@ -19,6 +19,9 @@ textarea {
 iframe {
   position: absolute
 }
+.readonly .acl-write {
+  display: none;
+}
 #users {
   position: absolute;
   z-index: 500;

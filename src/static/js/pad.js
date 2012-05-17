@@ -325,6 +325,8 @@ function handshake()
       pad._afterHandshake();
       initalized = true;
 
+      $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
+
       padeditor.ace.callWithAce(function (ace) {
         ace.ace_setEditable(!clientVars.readonly);
       });
