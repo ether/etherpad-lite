@@ -64,34 +64,17 @@ a img {
   height: 32px;
 }
 .toolbar ul li {
-  background: #fff;
-  background: -webkit-linear-gradient(#fff, #f0f0f0);
-  background: -moz-linear-gradient(#fff, #f0f0f0);
-  background: -o-linear-gradient(#fff, #f0f0f0);
-  background: -ms-linear-gradient(#fff, #f0f0f0);
-  background: linear-gradient(#fff, #f0f0f0);
-  border: 1px solid #ccc;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  cursor: pointer;
   float: left;
-  height: 18px;
   margin-left: 2px;
-  overflow: hidden;
-  padding: 4px 5px;
-  width: 18px;
 }
-.toolbar ul li a {
+.toolbar ul li a:hover {
   text-decoration: none;
-  color: #ccc;
-  position: absolute;
 }
 .toolbar ul li a span {
   position: relative;
   top: -2px;
 }
-.toolbar ul li:hover {
+.toolbar ul li a:hover {
   background: #fff;
   background: -webkit-linear-gradient(#f4f4f4, #e4e4e4);
   background: -moz-linear-gradient(#f4f4f4, #e4e4e4);
@@ -99,7 +82,7 @@ a img {
   background: -ms-linear-gradient(#f4f4f4, #e4e4e4);
   background: linear-gradient(#f4f4f4, #e4e4e4);
 }
-.toolbar ul li:active {
+.toolbar ul li a:active {
   background: #eee;
   background: -webkit-linear-gradient(#ddd, #fff);
   background: -moz-linear-gradient(#ddd, #fff);
@@ -115,12 +98,30 @@ a img {
   background: inherit;
   visibility: hidden;
   width: 0px;
+  padding: 5px;
 }
 .toolbar ul li a {
-  display: block
+  background: #fff;
+  background: -webkit-linear-gradient(#fff, #f0f0f0);
+  background: -moz-linear-gradient(#fff, #f0f0f0);
+  background: -o-linear-gradient(#fff, #f0f0f0);
+  background: -ms-linear-gradient(#fff, #f0f0f0);
+  background: linear-gradient(#fff, #f0f0f0);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #ccc;
+  cursor: pointer;
+  display: inline-block;
+  min-height: 18px;
+  overflow: hidden;
+  padding: 4px 5px;
+  text-align: center;
+  text-decoration: none;
+  min-width: 18px;
 }
-.toolbar ul li a img {
-  padding: 1px
+.toolbar ul li a .buttonicon {
+  position: relative;
+  top: 1px;
 }
 .toolbar ul {
   float: left
@@ -428,6 +429,7 @@ a#hidetopmsg {
   top: 0;
   width: 56px;
   z-index: 10;
+  display: inline-block;
 }
 .toolbarsavetable {
   position: absolute;
@@ -1214,8 +1216,8 @@ ul#colorpickerswatches li:hover {
   height: 16px;
   background-image: url('../../static/img/etherpad_lite_icons.png');
   background-repeat: no-repeat;
-  margin-left: 1px;
-  margin-top: 1px;
+  display: inline-block;
+  vertical-align: middle;
 }
 .buttonicon-bold {
   background-position: 0px -116px
@@ -1264,19 +1266,12 @@ ul#colorpickerswatches li:hover {
 }
 .buttonicon-chat {
   background-position: 0px -102px;
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0 !important;
 }
 .buttonicon-showusers {
   background-position: 0px -183px;
-  display: inline-block;
 }
 .buttonicon-savedRevision {
   background-position: 0px -493px
-}
-#usericon {
-  width: 33px !important
 }
 #focusprotector {
   z-index: 100;
@@ -1293,9 +1288,6 @@ ul#colorpickerswatches li:hover {
 }
 #online_count {
   color: #888;
-  font-size: 11px;
-  line-height: 18px;
-  position: fixed;
 }
 .rtl {
   direction: RTL
@@ -1399,13 +1391,16 @@ input[type=checkbox] {
     }
 }
 @media screen and (max-width: 600px) { 
-    .toolbar ul li {
+    .toolbar ul li.separator {
+      padding: 1px;
+    }
+    .toolbar ul li a {
       padding: 4px 1px
     }
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) { 
-    .toolbar ul li {
-      padding: 4px 3px
+    .toolbar ul li a {
+      padding: 4px 5px;
     }
     #users {
       right: 0;
@@ -1436,15 +1431,6 @@ input[type=checkbox] {
       bottom: 0;
       border-top: 1px solid #ccc;
     }
-    .toolbar ul.menu_right li:last-child {
-      height: 24px;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      margin-top: 0;
-      border: 0;
-      float: right;
-    }
     #chaticon {
       bottom: 3px;
       right: 55px;
@@ -1466,19 +1452,27 @@ input[type=checkbox] {
       border-top-right-radius: 0;
       border-right: none;
     }
-    .toolbar ul li a span {
-      top: -3px
-    }
     #usericonback {
       margin-top: 4px
     }
-    .toolbar ul.menu_right li:not(:last-child) {
-      display: block
+    .toolbar ul.menu_right > li:last-child {
+      float: right;
+    }
+    .toolbar ul.menu_right > li:not(:last-child) a {
+      display: block;
     }
     .toolbar ul.menu_right > li {
-      background: none;
+      padding: 0;
+    }
+    .toolbar ul.menu_right > li a {
+      height: 24px;
+      line-height: 24px;
+      -webkit-border-radius: 0;
+      -moz-border-radius: 0;
+      border-radius: 0;
       border: none;
-      margin-top: 4px;
+      background: none;
+      margin: 0;
       padding: 4px 8px;
     }
     .selected {
