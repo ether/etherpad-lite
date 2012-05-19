@@ -217,7 +217,6 @@ var padimpexp = (function()
       // build the export links
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
       $("#exportplaina").attr("href", pad_root_path + "/export/txt");
-      $("#exportwordlea").attr("href", pad_root_path + "/export/wordle");
       $("#exportdokuwikia").attr("href", pad_root_path + "/export/dokuwiki");
       
       //hide stuff thats not avaible if abiword is disabled
@@ -280,17 +279,6 @@ var padimpexp = (function()
       $("#impexp-disabled-clickcatcher").hide();
       $("#import").css('opacity', 1);
       $("#impexp-export").css('opacity', 1);
-    },
-    export2Wordle: function()
-    {
-      var padUrl = $('#exportwordlea').attr('href').replace(/\/wordle$/, '/txt')
-      
-      $.get(padUrl, function(data) 
-      {
-        $('.result').html(data);
-        $('#text').html(data);
-        $('#wordlepost').submit();
-      });
     }
   };
   return self;
