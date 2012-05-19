@@ -178,18 +178,17 @@ require.setGlobalKeyPath("require");\n\
   function pushScriptsTo(buffer) {
     /* Folling is for packaging regular expression. */
     /* $$INCLUDE_JS("../javascripts/src/ace2_inner.js?callback=require.define"); */
+    /* $$INCLUDE_JS("../javascripts/src/ace2_common.js?callback=require.define"); */
     var ACE_SOURCE = '../javascripts/src/ace2_inner.js?callback=require.define';
+    var ACE_COMMON = '../javascripts/src/ace2_common.js?callback=require.define';
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[ACE_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
-      buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
+      buffer.push(Ace2Editor.EMBEDED[ACE_COMMON]);
       buffer.push('<\/script>');
     } else {
-      file = ACE_SOURCE;
       buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
-      buffer.push('<script type="text/javascript">');
-      buffer.push('require("ep_etherpad-lite/static/js/ace2_inner");');
-      buffer.push('<\/script>');
+      buffer.push('<script type="application/javascript" src="' + ACE_COMMON + '"><\/script>');
     }
   }
   function pushStyleTagsFor(buffer, files) {
@@ -261,8 +260,9 @@ require.setGlobalKeyPath("require");\n\
       pushStyleTagsFor(iframeHTML, includedCSS);
 
       var includedJS = [];
-      var $$INCLUDE_JS = function(filename) {includedJS.push(filename)};
       pushRequireScriptTo(iframeHTML);
+      pushScriptsTo(iframeHTML);
+
       // Inject my plugins into my child.
       iframeHTML.push('\
 <script type="text/javascript">\
@@ -277,7 +277,10 @@ require.setGlobalKeyPath("require");\n\
   });\
 </script>\
 ');
-      pushScriptsTo(iframeHTML);
+
+      iframeHTML.push('<script type="text/javascript">');
+      iframeHTML.push('require("ep_etherpad-lite/static/js/ace2_inner");');
+      iframeHTML.push('<\/script>');
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
       iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');

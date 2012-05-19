@@ -22,65 +22,99 @@
         <div id="editbar" class="toolbar">
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
-                <li id="bold" onClick="window.pad&amp;&amp;pad.editbarClick('bold');return false">
-                    <a class="buttonicon buttonicon-bold" title="Bold (ctrl-B)"></a>
+                <li id="bold" data-key="bold">
+                    <a title="Bold (ctrl-B)">
+                      <span class="buttonicon buttonicon-bold"></span>
+                    </a>
                 </li>
-                <li id="italic" onClick="window.pad&amp;&amp;pad.editbarClick('italic'); return false;">
-                    <a class="buttonicon buttonicon-italic" title="Italics (ctrl-I)"></a>
+                <li id="italic" data-key="italic">
+                    <a title="Italics (ctrl-I)">
+                      <span class="buttonicon buttonicon-italic"></span>
+                    </a>
                 </li>
-                <li id="underline" onClick="window.pad&amp;&amp;pad.editbarClick('underline');return false;" >
-                    <a class="buttonicon buttonicon-underline" title="Underline (ctrl-U)"></a>
+                <li id="underline" data-key="underline">
+                    <a title="Underline (ctrl-U)">
+                      <span class="buttonicon buttonicon-underline"></span>
+                    </a>
                 </li>
-                <li id="strikethrough" onClick="window.pad&amp;&amp;pad.editbarClick('strikethrough');return false;">
-                    <a class="buttonicon buttonicon-strikethrough" title="Strikethrough"></a>
-                </li>
-                <li class="separator"></li>
-                <li id="oderedlist" onClick="window.pad&amp;&amp;pad.editbarClick('insertorderedlist');return false;">
-                    <a class="buttonicon buttonicon-insertorderedlist" title="Toggle Ordered List"></a>
-                </li>
-                <li id="unoderedlist" onClick="window.pad&amp;&amp;pad.editbarClick('insertunorderedlist');return false;">
-                    <a class="buttonicon buttonicon-insertunorderedlist" title="Toggle Bullet List"></a>
-                </li>
-                <li id="indent" onClick="window.pad&amp;&amp;pad.editbarClick('indent');return false;">
-                    <a class="buttonicon buttonicon-indent" title="Indent"></a>
-                </li>
-                <li id="outdent" onClick="window.pad&amp;&amp;pad.editbarClick('outdent');return false;">
-                    <a class="buttonicon buttonicon-outdent" title="Unindent"></a>
+                <li id="strikethrough" data-key="strikethrough">
+                    <a title="Strikethrough">
+                      <span class="buttonicon buttonicon-strikethrough"></span>
+                    </a>
                 </li>
                 <li class="separator"></li>
-                <li id="undo" onClick="window.pad&amp;&amp;pad.editbarClick('undo');return false;">
-                    <a class="buttonicon buttonicon-undo" title="Undo (ctrl-Z)"></a>
+                <li id="oderedlist" data-key="insertorderedlist">
+                    <a title="Toggle Ordered List">
+                      <span class="buttonicon buttonicon-insertorderedlist"></span>
+                    </a>
                 </li>
-                <li id="redo" onClick="window.pad&amp;&amp;pad.editbarClick('redo');return false;">
-                    <a class="buttonicon buttonicon-redo" title="Redo (ctrl-Y)"></a>
+                <li id="unoderedlist" data-key="insertunorderedlist">
+                    <a title="Toggle Bullet List">
+                      <span class="buttonicon buttonicon-insertunorderedlist"></span>
+                    </a>
+                </li>
+                <li id="indent" data-key="indent">
+                    <a title="Indent">
+                      <span class="buttonicon buttonicon-indent"></span>
+                    </a>
+                </li>
+                <li id="outdent" data-key="outdent">
+                    <a title="Unindent">
+                      <span class="buttonicon buttonicon-outdent"></span>
+                    </a>
                 </li>
                 <li class="separator"></li>
-                <li id="clearAuthorship" onClick="window.pad&amp;&amp;pad.editbarClick('clearauthorship');return false;">
-                    <a class="buttonicon buttonicon-clearauthorship" title="Clear Authorship Colors"></a>
+                <li id="undo" data-key="undo">
+                    <a title="Undo (ctrl-Z)">
+                      <span class="buttonicon buttonicon-undo"></span>
+                    </a>
+                </li>
+                <li id="redo" data-key="redo">
+                    <a title="Redo (ctrl-Y)">
+                      <span class="buttonicon buttonicon-redo"></span>
+                    </a>
+                </li>
+                <li class="separator"></li>
+                <li id="clearAuthorship" data-key="clearauthorship">
+                    <a title="Clear Authorship Colors">
+                      <span class="buttonicon buttonicon-clearauthorship"></span>
+                    </a>
                 </li>
                 <% e.end_block(); %>
             </ul>
             <ul class="menu_right">
                 <% e.begin_block("editbarMenuRight"); %>
-                <li id="settingslink" onClick="window.pad&amp;&amp;pad.editbarClick('settings');return false;">
-                    <a class="buttonicon buttonicon-settings" title="Settings of this pad"></a>
+                <li data-key="settings">
+                    <a id="settingslink" title="Settings of this pad">
+                        <span class="buttonicon buttonicon-settings"></span>
+                    </a>
                 </li>
-                <li id="importexportlink" onClick="window.pad&amp;&amp;pad.editbarClick('import_export');return false;">
-                    <a class="buttonicon buttonicon-import_export" title="Import/Export from/to different document formats"></a>
+                <li data-key="import_export">
+                    <a id="importexportlink" title="Import/Export from/to different document formats">
+                        <span class="buttonicon buttonicon-import_export"></span>
+                    </a>
                 </li>
-                <li id="embedlink" onClick="window.pad&amp;&amp;pad.editbarClick('embed');return false;">
-                    <a class="buttonicon buttonicon-embed" title="Share and Embed this pad"></a>
+                <li data-key="embed">
+                    <a id="embedlink" title="Share and Embed this pad">
+                        <span class="buttonicon buttonicon-embed"></span>
+                    </a>
                 </li>
-                <li id="revisionlink" onClick="window.pad&amp;&amp;pad.editbarClick('savedRevision');return false;">
-                    <a class="buttonicon buttonicon-savedRevision" title="Mark this revision as a saved revision"></a>
+                <li data-key="savedRevision">
+                    <a id="revisionlink" title="Mark this revision as a saved revision">
+                        <span class="buttonicon buttonicon-savedRevision"></span>
+                    </a>
                 </li>
                 <li class="separator"></li>
-                <li id="timesliderlink" onClick="document.location = document.location.pathname+ '/timeslider'">
-                    <a class="buttonicon buttonicon-history" title="Show the history of this pad"></a>
+                <li onClick="document.location = document.location.pathname+ '/timeslider'">
+                    <a id="timesliderlink" title="Show the history of this pad">
+                        <span class="buttonicon buttonicon-history"></span>
+                    </a>
                 </li>
-                <li id="usericon" onClick="window.pad&amp;&amp;pad.editbarClick('showusers');return false;" title="Show connected users">
-                <span class="buttonicon buttonicon-showusers" id="usericonback"></span>
-                <span id="online_count">1</span>
+                <li id="usericon" data-key="showusers">
+                    <a title="Show connected users">
+                        <span class="buttonicon buttonicon-showusers" id="usericonback"></span>
+                        <span id="online_count">1</span>
+                    </a>
                 </li>
                 <% e.end_block(); %>
             </ul>
@@ -283,7 +317,11 @@
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
         <script type="text/javascript">
-            document.domain = document.domain;
+            if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
+            {
+              document.domain = document.domain; // for comet
+            }
+
             var clientVars = {};
             (function () {
               
