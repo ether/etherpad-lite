@@ -216,24 +216,6 @@ a img {
   padding-left: 10px;
   padding-top: 10px;
 }
-/*
-#mycolorpicker ul li
- {
-  
-float:  left;
-  
-}
-
-#mycolorpicker .picked  {
-   border:  1px solid #000 !important;
-   }
-
-
-#mycolorpicker .picked .pickerswatch  {
-   border:  1px solid #fff;
-   }
-
- */
 #mycolorpickersave {
   left: 10px;
   font-weight: bold;
@@ -915,7 +897,7 @@ input[type=checkbox] {
 }
 @media screen and (max-width: 600px) { 
     .toolbar ul li.separator {
-      padding: 1px;
+      display: none;
     }
     .toolbar ul li a {
       padding: 4px 1px
@@ -954,27 +936,6 @@ input[type=checkbox] {
       bottom: 0;
       border-top: 1px solid #ccc;
     }
-    #chaticon {
-      bottom: 3px;
-      right: 55px;
-      border-right: none;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background: #f7f7f7;
-      background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
-      background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-      background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-      background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-      background: linear-gradient(#f7f7f7, #f1f1f1 80%);
-      border: 0;
-    }
-    #chatbox {
-      bottom: 32px;
-      right: 0;
-      border-top-right-radius: 0;
-      border-right: none;
-    }
     #usericonback {
       margin-top: 4px
     }
@@ -1001,7 +962,7 @@ input[type=checkbox] {
     .selected {
       background: none !important
     }
-    #timesliderlink {
+    #chaticon, #timesliderlink {
       display: none !important
     }
     .popup {
