@@ -169,232 +169,6 @@ a img {
   bottom: 0px;
   width: 100%;
 }
-.maximized #padpage {
-  left: 8px;
-  right: 8px;
-  width: auto;
-  margin-left: 0;
-}
-body.fullwidth #padpage {
-  width: auto;
-  margin-left: 6px;
-  margin-right: 6px;
-}
-body.squish1width #padpage {
-  width: 800px
-}
-body.squish2width #padpage {
-  width: 700px
-}
-a#backtoprosite,
-#accountnav {
-  display: block;
-  position: absolute;
-  height: 15px;
-  line-height: 15px;
-  width: auto;
-  top: 5px;
-  font-size: 1.2em;
-  display: none;
-}
-a#backtoprosite,
-#accountnav a {
-  color: #cde7ff;
-  text-decoration: underline;
-}
-a#backtoprosite {
-  padding-left: 20px;
-  left: 6px;
-  background: url(static/img/protop.gif) no-repeat -5px -6px;
-}
-#accountnav {
-  right: 30px;
-  color: #fff;
-}
-#specialkeyarea {
-  top: 5px;
-  left: 250px;
-  color: yellow;
-  font-weight: bold;
-  font-size: 1.5em;
-  position: absolute;
-}
-#alertbar {
-  margin-top: 6px;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-  opacity: 0;
-  display: none;
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 53;
-}
-#servermsg {
-  position: relative;
-  zoom: 1;
-  border: 1px solid #992;
-  background: #ffc;
-  padding: 0.8em;
-  font-size: 1.2em;
-}
-#servermsg h3 {
-  font-weight: bold;
-  margin-right: 10px;
-  margin-bottom: 1em;
-  float: left;
-  width: auto;
-}
-#servermsg #servermsgdate {
-  font-style: italic;
-  font-weight: normal;
-  color: #666;
-}
-a#hidetopmsg {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-}
-#shuttingdown {
-  position: relative;
-  zoom: 1;
-  border: 1px solid #992;
-  background: #ffc;
-  padding: 0.6em;
-  font-size: 1.2em;
-  margin-top: 6px;
-}
-#docbar {
-  margin-top: 6px;
-  height: 25px;
-  position: relative;
-  zoom: 1;
-  background: #fbfbfb url(static/img/padtopback2.gif) repeat-x 0 -31px;
-}
-.docbarbutton {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 4px;
-  padding-right: 4px;
-  border-left: 1px solid #CCC;
-  white-space: nowrap;
-}
-.docbarbutton img {
-  border: 0px;
-  width: 13px;
-  margin-right: 2px;
-  vertical-align: middle;
-  margin-top: 3px;
-  margin-bottom: 2px;
-}
-.menu,
-.menu ul {
-  font-size: 10pt;
-  list-style-type: none;
-}
-.menu ul {
-  padding-left: 20px
-}
-.menu a {
-  font-size: 10px;
-  line-height: 18px;
-  text-decoration: none;
-  color: #444;
-  font-weight: bold;
-}
-.docbarbutton.highlight {
-  background-color: #fef2bd;
-  border: 1px solid #CCC;
-  border-right: 0px;
-}
-#docbarleft {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  overflow: hidden;
-  background: url(static/img/padtop5.gif) no-repeat left -31px;
-  width: 7px;
-}
-#docbarpadtitle {
-  position: absolute;
-  height: auto;
-  left: 9px;
-  width: 280px;
-  font-size: 1.6em;
-  color: #444;
-  font-weight: normal;
-  line-height: 22px;
-  margin-left: 2px;
-  height: 22px;
-  top: 2px;
-  overflow: hidden; /*not supported in FF*/
-  -o-text-overflow: ellipsis;
-  -ms-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.docbar-public #docbarpadtitle {
-  padding-left: 22px;
-  background: url(static/img/public.gif) no-repeat left center;
-}
-#docbarrenamelink {
-  position: absolute;
-  top: 6px;
-  font-size: 1.1em;
-  display: none;
-}
-#docbarrenamelink a {
-  color: #999
-}
-#docbarrenamelink a:hover {
-  color: #48d
-}
-#padtitlebuttons {
-  position: absolute;
-  width: 74px;
-  zoom: 1;
-  height: 17px;
-  top: 4px;
-  left: 170px;
-  display: none;
-  background: url(static/img/ok_or_cancel.gif) 0px 0px;
-}
-#padtitlesave {
-  position: absolute;
-  display: block;
-  height: 0;
-  padding-top: 17px;
-  overflow: hidden;
-  width: 23px;
-  left: 0;
-  top: 0;
-}
-#padtitlecancel {
-  position: absolute;
-  display: block;
-  height: 0;
-  padding-top: 17px;
-  overflow: hidden;
-  width: 35px;
-  right: 0;
-  top: 0;
-}
-#padtitleedit {
-  position: absolute;
-  top: 2px;
-  left: 5px;
-  height: 15px;
-  padding: 2px;
-  font-size: 1.4em;
-  background: white;
-  border-left: 1px solid #c3c3c3;
-  border-top: 1px solid #c3c3c3;
-  border-right: 1px solid #e6e6e6;
-  border-bottom: 1px solid #e6e6e6;
-  width: 150px;
-  display: none;
-}
 #padmain {
   margin-top: 0px;
   position: absolute;
@@ -411,35 +185,6 @@ a#hidetopmsg {
   right: 0px;
   top: 0;
   zoom: 1;
-}
-.hidesidebar #padeditor {
-  right: 0
-}
-#vdraggie {
-  /*  background: url(static/img/vdraggie.gif) no-repeat top center;;*/
-  width: 16px;
-  height: 16px;
-  background-image: url('../../static/img/etherpad_lite_icons.png');
-  background-repeat: no-repeat;
-  background-position: 0px -300px;
-  cursor: W-resize;
-  bottom: 0;
-  position: absolute;
-  right: 268px;
-  top: 0;
-  width: 56px;
-  z-index: 10;
-  display: inline-block;
-}
-.toolbarsavetable {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  height: 24px;
-}
-.toolbarsavetable td,
-.toolbartable td {
-  white-space: nowrap
 }
 #myswatchbox {
   position: absolute;
@@ -471,24 +216,6 @@ a#hidetopmsg {
   padding-left: 10px;
   padding-top: 10px;
 }
-/*
-#mycolorpicker ul li
- {
-  
-float:  left;
-  
-}
-
-#mycolorpicker .picked  {
-   border:  1px solid #000 !important;
-   }
-
-
-#mycolorpicker .picked .pickerswatch  {
-   border:  1px solid #fff;
-   }
-
- */
 #mycolorpickersave {
   left: 10px;
   font-weight: bold;
@@ -751,73 +478,6 @@ table#otheruserstable {
   font-size: 12pt;
   padding: 5px;
 }
-/* We give docbar a higher z-index than its descendant impexp-wrapper in
-order to allow the Import/Export panel to be on top of stuff lower
-down on the page in IE.  Strange but it works! */
-#docbar {
-  z-index: 52
-}
-#impexp-wrapper {
-  width: 650px;
-  right: 10px;
-}
-#impexp-panel {
-  height: 160px
-}
-.docbarimpexp-closing #impexp-wrapper {
-  z-index: 50
-}
-#savedrevs-wrapper {
-  width: 100%;
-  left: 0;
-}
-#savedrevs-panel {
-  height: 79px
-}
-.docbarsavedrevs-closing #savedrevs-wrapper {
-  z-index: 50
-}
-#savedrevs-wrapper .dbpanel-rightedge {
-  background-position: 0 -10px
-}
-#options-wrapper {
-  width: 340px;
-  right: 200px;
-}
-#options-panel {
-  height: 114px
-}
-.docbaroptions-closing #options-wrapper {
-  z-index: 50
-}
-#security-wrapper {
-  width: 320px;
-  right: 300px;
-}
-#security-panel {
-  height: 130px
-}
-.docbarsecurity-closing #security-wrapper {
-  z-index: 50
-}
-#revision-notifier {
-  position: absolute;
-  right: 8px;
-  top: 25px;
-  width: auto;
-  height: auto;
-  font-size: 1.2em;
-  background: #ffc;
-  border: 1px solid #aaa;
-  color: #444;
-  padding: 3px 5px;
-  display: none;
-  z-index: 55;
-}
-#revision-notifier .label {
-  color: #777;
-  font-weight: bold;
-}
 #mainmodals {
   z-index: 600; /* higher than the modals themselves: */
 }
@@ -828,17 +488,6 @@ down on the page in IE.  Strange but it works! */
 }
 #mainmodals .editempty {
   color: #aaa
-}
-.expand-collapse {
-  height: 22px;
-  background-image: url(static/img/sharedistri.gif);
-  background-repeat: no-repeat;
-  background-position: 0 3px;
-  padding-left: 17px;
-  text-decoration: none;
-}
-.expand-collapse.expanded {
-  background-position: 0 -31px
 }
 .modaldialog {
   position: absolute;
@@ -877,69 +526,6 @@ down on the page in IE.  Strange but it works! */
   vertical-align: top;
   text-align: left;
 }
-.sharebox-url {
-  width: 440px;
-  height: 18px;
-  text-align: left;
-  font-size: 1.3em;
-  line-height: 18px;
-  padding: 2px;
-}
-#viewbarcontents {
-  display: none
-}
-#viewzoomtitle {
-  position: absolute;
-  left: 10px;
-  top: 4px;
-  height: 20px;
-  line-height: 20px;
-  width: auto;
-}
-
-#bottomarea {
-  height: 28px;
-  overflow: hidden;
-  position: absolute;
-  height: 28px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  font-size: 1.2em;
-  color: #444;
-}
-#widthprefcheck {
-  position: absolute;
-  background-image: url(static/img/layoutbuttons.gif);
-  background-repeat: no-repeat;
-  cursor: pointer;
-  width: 86px;
-  height: 20px;
-  top: 4px;
-  right: 2px;
-}
-.widthprefunchecked {
-  background-position: -1px -1px
-}
-.widthprefchecked {
-  background-position: -1px -23px
-}
-#sidebarcheck {
-  position: absolute;
-  background-image: url(static/img/layoutbuttons.gif);
-  background-repeat: no-repeat;
-  cursor: pointer;
-  width: 86px;
-  height: 20px;
-  top: 4px;
-  right: 90px;
-}
-.sidebarunchecked {
-  background-position: -1px -45px
-}
-.sidebarchecked {
-  background-position: -1px -67px
-}
 
 #modaloverlay {
   z-index: 500;
@@ -959,67 +545,7 @@ down on the page in IE.  Strange but it works! */
   background-image: none;
   background-repeat: no-repeat; /* scale the image */
 }
-a#topbarmaximize {
-  float: right;
-  width: 16px;
-  height: 16px;
-  margin-right: -143px;
-  margin-top: 4px;
-  background: url(static/img/maximize_normal.png);
-}
-.maximized a#topbarmaximize {
-  background: url(static/img/maximize_maximized.png)
-}
-.toolbarinner h1 {
-  line-height: 29px;
-  font-size: 16px;
-  padding-left: 6pt;
-  margin-top: 0;
-  white-space: nowrap;
-}
-.toolbarinner h1 a {
-  font-size: 12px
-}
-.bigbutton {
-  display: block;
-  background-color: #a3bde0;
-  color: #555555;
-  border-style: solid;
-  border-width: 2px;
-  border-left-color: #d6e2f1;
-  border-right-color: #86aee1;
-  border-top-color: #d6e2f1;
-  border-bottom-color: #86aee1;
-  margin: 10pt;
-  text-align: center;
-  text-decoration: none;
-  padding: 50pt;
-  font-size: 20pt;
-  -webkit-border-radius: 3pt;
-  -moz-border-radius: 3pt;
-  border-radius: 3pt;
-}
-.modaldialog .bigbutton {
-  padding-left: 0;
-  padding-right: 0;
-  width: 100%;
-}
-ul#colorpickerswatches {
-  padding-left: 3px;
-  padding-top: 5px;
-}
-ul#colorpickerswatches li {
-  border: 1px solid #ccc;
-  width: 14px;
-  height: 14px;
-  overflow: hidden;
-  margin: 3px 6px;
-  padding: 0px;
-}
-ul#colorpickerswatches li:hover {
-  border: 1px solid #000;
-  cursor: pointer;
-}
+
 #chatbox {
   position: absolute;
   bottom: 0px;
@@ -1133,24 +659,6 @@ ul#colorpickerswatches li:hover {
   background-image: url("../../static/img/etherpad_lite_icons.png");
   color: #fff;
   text-decoration: none;
-}
-#importexportline {
-  border-left: 1px solid #fff;
-  height: 190px;
-  position: absolute;
-  width: 0px;
-  left: 260px;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-  filter: alpha(opacity=80);
-  opacity: .8;
-}
-.impexpbutton {
-  background-image: -webkit-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
-  background-image: -moz-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
-  background-image: -o-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
-  background-image: -ms-linear-gradient(center top , #EEEEEE, white 20%, white 20%);
-  background-image: linear-gradient(center top , #EEEEEE, white 20%, white 20%);
-  padding: 3px;
 }
 #exporthtml {
   background-position: 0px -299px
@@ -1389,7 +897,7 @@ input[type=checkbox] {
 }
 @media screen and (max-width: 600px) { 
     .toolbar ul li.separator {
-      padding: 1px;
+      display: none;
     }
     .toolbar ul li a {
       padding: 4px 1px
@@ -1428,27 +936,6 @@ input[type=checkbox] {
       bottom: 0;
       border-top: 1px solid #ccc;
     }
-    #chaticon {
-      bottom: 3px;
-      right: 55px;
-      border-right: none;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background: #f7f7f7;
-      background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
-      background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-      background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-      background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-      background: linear-gradient(#f7f7f7, #f1f1f1 80%);
-      border: 0;
-    }
-    #chatbox {
-      bottom: 32px;
-      right: 0;
-      border-top-right-radius: 0;
-      border-right: none;
-    }
     #usericonback {
       margin-top: 4px
     }
@@ -1475,7 +962,7 @@ input[type=checkbox] {
     .selected {
       background: none !important
     }
-    #timesliderlink {
+    #chaticon, #timesliderlink {
       display: none !important
     }
     .popup {
