@@ -148,6 +148,14 @@ a img {
   background: -ms-linear-gradient(#EEE, #F0F0F0) !important;
   background: linear-gradient(#EEE, #F0F0F0) !important;
 }
+.toolbar ul li select {
+  padding: 4px;
+  line-height: 22px; /* fix for safari (win/mac) */
+  height: 28px; /* fix for chrome (mac) */
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  outline: none;
+}
 #users {
   display: none
 }
