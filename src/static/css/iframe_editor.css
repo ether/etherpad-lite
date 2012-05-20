@@ -5,6 +5,13 @@
 html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
 span { cursor: auto; }
 
+::selection {
+  background: #acf;
+}
+::-moz-selection {
+  background: #acf;
+}
+
 a { cursor: pointer !important; }
 
 ul, ol, li {
