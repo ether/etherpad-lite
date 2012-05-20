@@ -893,7 +893,8 @@ input[type=checkbox] {
 }
 #settings,
 #importexport,
-#embed {
+#embed,
+#users {
   position: absolute;
   top: 36px;
   right: 20px;
