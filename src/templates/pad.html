@@ -114,7 +114,7 @@
                 </li>
                 <li id="usericon" data-key="showusers">
                     <a title="Show connected users">
-                        <span class="buttonicon buttonicon-showusers" id="usericonback"></span>
+                        <span class="buttonicon buttonicon-showusers"></span>
                         <span id="online_count">1</span>
                     </a>
                 </li>
@@ -179,16 +179,15 @@
             <div class="column">
                 <% e.begin_block("globalSettings"); %>
                 <h2>Global view</h2>
-                <p>Currently nothing.</p>
-                <p class="note">These options affect everyone viewing this pad.</p>
                 <% e.end_block(); %>
             </div>
         </div>
 
         <div id="importexport" class="popup">
+            <h1>Import/Export</h1>
             <div class="column">
                 <% e.begin_block("importColumn"); %>
-                <h2>Import from text file, HTML, PDF, Word, ODT or RTF</h2><br>
+                <h2>Upload any text file or document</h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
                     <div class="importformdiv" id="importformfilediv">
                         <input type="file" name="file" size="15" id="importfileinput">

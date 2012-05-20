@@ -20,18 +20,17 @@ iframe {
   position: absolute
 }
 #users {
-  position: absolute;
-  z-index: 500;
-  background-color: #000;
-  background-color: rgba(0,0,0,0.7);
+  background: #f7f7f7;
+  background: -webkit-linear-gradient( #F7F7F7,#EEE);
+  background: -moz-linear-gradient( #F7F7F7,#EEE);
+  background: -ms-linear-gradient( #F7F7F7,#EEE);
+  background: -o-linear-gradient( #F7F7F7,#EEE);
+  background: linear-gradient( #F7F7F7,#EEE);
   width: 160px;
-  right: 20px;
-  top: 40px;
   color: #fff;
   padding: 5px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
+  border-radius: 0 0 6px 6px;
+  border: 1px solid #ccc;
 }
 #otherusers {
   max-height: 400px;
@@ -156,8 +155,14 @@ a img {
   border: 1px solid #ccc;
   outline: none;
 }
-#users {
-  display: none
+#usericon a {
+  min-width: 30px;
+}
+#usericon a #online_count {
+  color: #777;
+  font-size: 10px;
+  position: relative;
+  top: 2px;
 }
 #editorcontainer {
   position: absolute;
@@ -236,10 +241,10 @@ a img {
   top: 0px;
   z-index: 101;
   display: none;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  background: rgba(0, 0, 0, 0.7);
+  border-radius: 0 0 6px 6px;
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  border-top: 0;
   padding-left: 10px;
   padding-top: 10px;
 }
@@ -333,6 +338,10 @@ a img {
 #myusernameform .editempty {
   color: #333
 }
+#myswatchbox, #myusernameedit, #otheruserstable .swatch {
+  border: 1px solid #ccc !important;
+  color: #333;
+}
 table#otheruserstable {
   display: none
 }
@@ -349,7 +358,7 @@ table#otheruserstable {
   height: 26px;
   vertical-align: middle;
   padding: 0 2px;
-  color: #fff;
+  color: #333;
 }
 #otheruserstable .swatch {
   border: 1px solid #000;
@@ -646,8 +655,8 @@ table#otheruserstable {
   text-decoration: none
 }
 #chatcounter {
-  color: #555;
-  font-size: 9px;
+  color: #777;
+  font-size: 10px;
   vertical-align: middle;
 }
 #titlebar {
@@ -680,11 +689,11 @@ table#otheruserstable {
   margin-top: 2px;
 }
 .exporttype {
-  margin-top: 2px;
+  margin-top: 4px;
   background-repeat: no-repeat;
   padding-left: 25px;
   background-image: url("../../static/img/etherpad_lite_icons.png");
-  color: #fff;
+  color: #333;
   text-decoration: none;
 }
 #exporthtml {
@@ -837,22 +846,19 @@ input[type=checkbox] {
 .popup {
   font-size: 14px;
   width: 450px;
-  z-index: 500;
   padding: 10px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  background: #222;
-  background: rgba(0,0,0,.7);
-  background: -webkit-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
-  background: -moz-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
-  background: -o-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
-  background: -ms-linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
-  background: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.7) 35px, rgba(0,0,0,.6));
+  border-radius: 0 0 6px 6px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  background: -webkit-linear-gradient(#F7F7F7, #EEE);
+  background: -moz-linear-gradient(#F7F7F7, #EEE);
+  background: -ms-linear-gradient(#F7F7F7, #EEE);
+  background: -o-linear-gradient(#F7F7F7, #EEE);
+  background: linear-gradient(#F7F7F7, #EEE);
   -webkit-box-shadow: 0 0 8px #888;
   -moz-box-shadow: 0 0 8px #888;
-  box-shadow: 0 0 8px #888;
-  color: #fff;
+  box-shadow: 0 2px 4px #ddd;
+  color: #222;
 }
 .popup input[type=text] {
   width: 100%;
@@ -864,13 +870,18 @@ input[type=checkbox] {
   display: block;
   margin-top: 10px;
 }
+.popup input[type=text], #users input[type=text] {
+  outline: none;
+}
 .popup a {
   text-decoration: none
 }
 .popup h1 {
+  color: #555;
   font-size: 18px
 }
 .popup h2 {
+  color: #777;
   font-size: 15px
 }
 .popup p {
@@ -884,14 +895,10 @@ input[type=checkbox] {
 #importexport,
 #embed {
   position: absolute;
-  top: 55px;
+  top: 36px;
   right: 20px;
   display: none;
-}
-.note {
-  color: #ddd;
-  font-size: 11px;
-  font-weight: bold;
+  z-index: 500;
 }
 .stickyChat {
   background-color: #f1f1f1 !important;
@@ -922,20 +929,14 @@ input[type=checkbox] {
       padding: 4px 1px
     }
 }
-@media only screen and (min-device-width: 320px) and (max-device-width: 720px) { 
-    .toolbar ul li a {
-      padding: 4px 5px;
-    }
+@media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
     #users {
-      right: 0;
       top: 36px;
-      bottom: 33px;
-      -webkit-border-radius: none;
-      -moz-border-radius: none;
+      bottom: 40px;
       border-radius: none;
     }
     #mycolorpicker {
-      left: -72px;
+      left: -73px;
       /* #mycolorpicker: width -#users: width */;
     }
     #editorcontainer {
@@ -955,28 +956,15 @@ input[type=checkbox] {
       bottom: 0;
       border-top: 1px solid #ccc;
     }
-    #usericonback {
-      margin-top: 4px
-    }
     .toolbar ul.menu_right > li:last-child {
       float: right;
     }
-    .toolbar ul.menu_right > li:not(:last-child) a {
-      display: block;
-    }
-    .toolbar ul.menu_right > li {
-      padding: 0;
-    }
     .toolbar ul.menu_right > li a {
-      height: 24px;
-      line-height: 24px;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
       border-radius: 0;
       border: none;
       background: none;
       margin: 0;
-      padding: 4px 8px;
+      padding: 8px;
     }
     .toolbar ul li a.selected {
       background: none !important
@@ -1004,8 +992,5 @@ input[type=checkbox] {
     }
     .toolbar ul li .separator {
       display: none
-    }
-    #online_count {
-      line-height: 24px
     }
 }
