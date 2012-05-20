@@ -10,6 +10,8 @@
         <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 
+        <link rel="shortcut icon" href="../favicon.ico">
+
         <% e.begin_block("styles"); %>
         <link href="../static/css/pad.css" rel="stylesheet">
         <link href="../static/custom/pad.css" rel="stylesheet">
@@ -23,54 +25,54 @@
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
                 <li id="bold" data-key="bold">
-                    <a title="Bold (ctrl-B)">
+                    <a class="grouped-left" title="Bold (ctrl-B)">
                       <span class="buttonicon buttonicon-bold"></span>
                     </a>
                 </li>
                 <li id="italic" data-key="italic">
-                    <a title="Italics (ctrl-I)">
+                    <a class="grouped-middle" title="Italics (ctrl-I)">
                       <span class="buttonicon buttonicon-italic"></span>
                     </a>
                 </li>
                 <li id="underline" data-key="underline">
-                    <a title="Underline (ctrl-U)">
+                    <a class="grouped-middle" title="Underline (ctrl-U)">
                       <span class="buttonicon buttonicon-underline"></span>
                     </a>
                 </li>
                 <li id="strikethrough" data-key="strikethrough">
-                    <a title="Strikethrough">
+                    <a class="grouped-right" title="Strikethrough">
                       <span class="buttonicon buttonicon-strikethrough"></span>
                     </a>
                 </li>
                 <li class="separator"></li>
                 <li id="oderedlist" data-key="insertorderedlist">
-                    <a title="Toggle Ordered List">
+                    <a class="grouped-left" title="Toggle Ordered List">
                       <span class="buttonicon buttonicon-insertorderedlist"></span>
                     </a>
                 </li>
                 <li id="unoderedlist" data-key="insertunorderedlist">
-                    <a title="Toggle Bullet List">
+                    <a class="grouped-middle" title="Toggle Bullet List">
                       <span class="buttonicon buttonicon-insertunorderedlist"></span>
                     </a>
                 </li>
                 <li id="indent" data-key="indent">
-                    <a title="Indent">
+                    <a class="grouped-middle" title="Indent">
                       <span class="buttonicon buttonicon-indent"></span>
                     </a>
                 </li>
                 <li id="outdent" data-key="outdent">
-                    <a title="Unindent">
+                    <a class="grouped-right" title="Unindent">
                       <span class="buttonicon buttonicon-outdent"></span>
                     </a>
                 </li>
                 <li class="separator"></li>
                 <li id="undo" data-key="undo">
-                    <a title="Undo (ctrl-Z)">
+                    <a class="grouped-left" title="Undo (ctrl-Z)">
                       <span class="buttonicon buttonicon-undo"></span>
                     </a>
                 </li>
                 <li id="redo" data-key="redo">
-                    <a title="Redo (ctrl-Y)">
+                    <a class="grouped-right" title="Redo (ctrl-Y)">
                       <span class="buttonicon buttonicon-redo"></span>
                     </a>
                 </li>
@@ -85,22 +87,22 @@
             <ul class="menu_right">
                 <% e.begin_block("editbarMenuRight"); %>
                 <li data-key="settings">
-                    <a id="settingslink" title="Settings of this pad">
+                    <a class="grouped-left" id="settingslink" title="Settings of this pad">
                         <span class="buttonicon buttonicon-settings"></span>
                     </a>
                 </li>
                 <li data-key="import_export">
-                    <a id="importexportlink" title="Import/Export from/to different document formats">
+                    <a class="grouped-middle" id="importexportlink" title="Import/Export from/to different document formats">
                         <span class="buttonicon buttonicon-import_export"></span>
                     </a>
                 </li>
                 <li data-key="embed">
-                    <a id="embedlink" title="Share and Embed this pad">
+                    <a class="grouped-middle" id="embedlink" title="Share and Embed this pad">
                         <span class="buttonicon buttonicon-embed"></span>
                     </a>
                 </li>
                 <li data-key="savedRevision">
-                    <a id="revisionlink" title="Mark this revision as a saved revision">
+                    <a class="grouped-right" id="revisionlink" title="Mark this revision as a saved revision">
                         <span class="buttonicon buttonicon-savedRevision"></span>
                     </a>
                 </li>
@@ -112,7 +114,7 @@
                 </li>
                 <li id="usericon" data-key="showusers">
                     <a title="Show connected users">
-                        <span class="buttonicon buttonicon-showusers" id="usericonback"></span>
+                        <span class="buttonicon buttonicon-showusers"></span>
                         <span id="online_count">1</span>
                     </a>
                 </li>
@@ -177,16 +179,15 @@
             <div class="column">
                 <% e.begin_block("globalSettings"); %>
                 <h2>Global view</h2>
-                <p>Currently nothing.</p>
-                <p class="note">These options affect everyone viewing this pad.</p>
                 <% e.end_block(); %>
             </div>
         </div>
 
         <div id="importexport" class="popup">
+            <h1>Import/Export</h1>
             <div class="column">
                 <% e.begin_block("importColumn"); %>
-                <h2>Import from text file, HTML, PDF, Word, ODT or RTF</h2><br>
+                <h2>Upload any text file or document</h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
                     <div class="importformdiv" id="importformfilediv">
                         <input type="file" name="file" size="15" id="importfileinput">
