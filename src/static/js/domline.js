@@ -76,8 +76,6 @@ function DOMLine(nonEmpty, doesWrap, browser, document) {
   this.postHtml = '';
   this.curHTML = null;
 
-  this.perTextNodeProcess = (doesWrap ? _.identity : this.processSpaces);
-  this.perHtmlLineProcess = (doesWrap ? this.processSpaces : _.identity);
   this.lineClass = 'ace-line';
 
   // Apparently overridden at the instance level sometimes...
@@ -87,6 +85,23 @@ function DOMLine(nonEmpty, doesWrap, browser, document) {
 
 DOMLine.prototype = {};
 (function () {
+
+  this.perTextNodeProcess = function (s) {
+    if (this.doesWrap) {
+      return _.identity(s);
+    } else {
+      return this.processSpaces(s);
+    }
+  }
+
+  this.perHtmlLineProcess = function (s) {
+    if (this.doesWrap) {
+      return this.processSpaces(s);
+    } else {
+      return _.identity(s);
+    }
+  }
+
   this.processSpaces = function(s)
   {
     return processSpaces(s, this.doesWrap);
