@@ -196,6 +196,6 @@ exports.doImport = function(req, res, padId)
     ERR(err);
   
     //close the connection
-    res.send("<script> if ( (!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf(\"1.8.\") == 0)) ){document.domain = document.domain;}var impexp = window.top.require('/pad_impexp').padimpexp.handleFrameCall('" + status + "');</script>", 200);
+    res.send("<script type='text/javascript' src='/static/js/jquery.js'></script><script> if ( (!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf(\"1.8.\") == 0)) ){document.domain = document.domain;}var impexp = window.top.require('/pad_impexp').padimpexp.handleFrameCall('" + status + "');</script>", 200);
   });
 }
