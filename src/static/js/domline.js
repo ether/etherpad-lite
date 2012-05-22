@@ -33,10 +33,7 @@ var lineAttributeMarker = require('./linestylefilter').lineAttributeMarker;
 var Ace2Common = require('./ace2_common');
 var noop = Ace2Common.noop;
 
-
-var domline = {};
-
-domline.addToLineClass = function(lineClass, cls)
+function addToLineClass(lineClass, cls)
 {
   // an "empty span" at any point can be used to add classes to
   // the line, using line:className.  otherwise, we ignore
@@ -92,7 +89,7 @@ DOMLine.prototype = {};
 (function () {
   this.processSpaces = function(s)
   {
-    return domline.processSpaces(s, this.doesWrap);
+    return processSpaces(s, this.doesWrap);
   }
   this._notifyAdded = function () {};
 
@@ -125,7 +122,7 @@ DOMLine.prototype = {};
       }
       
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
-        domline: domline,
+        domline: exports,
         cls: cls
       }), function(modifier)
       {
@@ -165,7 +162,7 @@ DOMLine.prototype = {};
     var extraCloseTags = "";
 
     _.map(hooks.callAll("aceCreateDomLine", {
-      domline: domline,
+      domline: exports,
       cls: cls
     }), function(modifier)
     {
@@ -176,7 +173,7 @@ DOMLine.prototype = {};
 
     if ((!txt) && cls)
     {
-      this.lineClass = domline.addToLineClass(this.lineClass, cls);
+      this.lineClass = addToLineClass(this.lineClass, cls);
     }
     else if (txt)
     {
@@ -280,7 +277,7 @@ SpecialIEDOMLine.prototype = {};
   this.appendSpan = function (txt, cls) {
     if ((!txt) && cls) {
       // gain a whole-line style (currently to show insertion point in CSS)
-      this.lineClass = domline.addToLineClass(lineClass, cls);
+      this.lineClass = addToLineClass(lineClass, cls);
     }
     // otherwise, ignore appendSpan, this is an empty line
   }
@@ -316,7 +313,7 @@ function createDomLine(nonEmpty, doesWrap, browser, document)
   }
 };
 
-domline.processSpaces = function(s, doesWrap)
+function processSpaces(s, doesWrap)
 {
   if (s.indexOf("<") < 0 && !doesWrap)
   {
@@ -378,4 +375,8 @@ domline.processSpaces = function(s, doesWrap)
   return parts.join('');
 };
 
-exports.domline = domline;
+exports.addToLineClass = addToLineClass;
+exports.createDomLine = createDomLine;
+exports.processSpaces = processSpaces;
+
+exports.domline = exports; // For compatibility
