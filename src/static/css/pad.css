@@ -154,6 +154,7 @@ a img {
 }
 #usericon a {
   min-width: 30px;
+  text-align: left;
 }
 #usericon a #online_count {
   color: #777;
@@ -901,7 +902,7 @@ input[type=checkbox] {
 .stickyChat {
   background-color: #f1f1f1 !important;
   right: 0px !important;
-  top: 36px;
+  top: 37px;
   -webkit-border-radius: 0px !important;
   -moz-border-radius: 0px !important;
   border-radius: 0px !important;
