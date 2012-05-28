@@ -266,7 +266,7 @@ require.setGlobalKeyPath("require");\n\
       // Inject my plugins into my child.
       iframeHTML.push('\
 <script type="text/javascript">\
-  parent_req = require("./pluginfw/parent_require.js");\
+  parent_req = require("ep_etherpad-lite/static/js/pluginfw/parent_require");\
   parent_req.getRequirementFromParent(require, "ep_etherpad-lite/static/js/pluginfw/hooks");\
   parent_req.getRequirementFromParent(require, "ep_etherpad-lite/static/js/pluginfw/plugins");\
   parent_req.getRequirementFromParent(require, "./pluginfw/hooks");\
