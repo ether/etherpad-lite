@@ -177,10 +177,10 @@ require.setGlobalKeyPath("require");\n\
   }
   function pushScriptsTo(buffer) {
     /* Folling is for packaging regular expression. */
-    /* $$INCLUDE_JS("../javascripts/src/ace2_inner.js?callback=require.define"); */
-    /* $$INCLUDE_JS("../javascripts/src/ace2_common.js?callback=require.define"); */
-    var ACE_SOURCE = '../javascripts/src/ace2_inner.js?callback=require.define';
-    var ACE_COMMON = '../javascripts/src/ace2_common.js?callback=require.define';
+    /* $$INCLUDE_JS("../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define"); */
+    /* $$INCLUDE_JS("../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"); */
+    var ACE_SOURCE = '../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define';
+    var ACE_COMMON = '../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define';
     if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[ACE_SOURCE]) {
       buffer.push('<script type="text/javascript">');
       buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
