@@ -500,30 +500,34 @@ var padutils = {
   }
 };
 
-var globalExceptionHandler = undefined;
-function setupGlobalExceptionHandler() {
-  if (!globalExceptionHandler) {
-    globalExceptionHandler = function test (msg, url, linenumber)
-    {
-      var errorId = randomString(20);
-      if ($("#editorloadingbox").attr("display") != "none"){
-        //show javascript errors to the user
-        $("#editorloadingbox").css("padding", "10px");
-        $("#editorloadingbox").css("padding-top", "45px");
-        $("#editorloadingbox").html("<div style='text-align:left;color:red;font-size:16px;'><b>An error occured</b><br>The error was reported with the following id: '" + errorId + "'<br><br><span style='color:black;font-weight:bold;font-size:16px'>Please send this error message to us: </span><div style='color:black;font-size:14px'>'"
-          + "ErrorId: " + errorId + "<br>UserAgent: " + navigator.userAgent + "<br>" + msg + " in " + url + " at line " + linenumber + "'</div></div>");
-      }
+function globalExceptionHandler(msg, url, linenumber) {
+  var errorId = randomString(20);
+  if ($("#editorloadingbox").attr("display") != "none"){
+    //show javascript errors to the user
+    $("#editorloadingbox").css("padding", "10px");
+    $("#editorloadingbox").css("padding-top", "45px");
+    $("#editorloadingbox").html("<div style='text-align:left;color:red;font-size:16px;'><b>An error occured</b><br>The error was reported with the following id: '" + errorId + "'<br><br><span style='color:black;font-weight:bold;font-size:16px'>Please send this error message to us: </span><div style='color:black;font-size:14px'>'"
+      + "ErrorId: " + errorId + "<br>UserAgent: " + navigator.userAgent + "<br>" + msg + " in " + url + " at line " + linenumber + "'</div></div>");
+  }
 
-      //send javascript errors to the server
-      var errObj = {errorInfo: JSON.stringify({errorId: errorId, msg: msg, url: url, linenumber: linenumber, userAgent: navigator.userAgent})};
-      var loc = document.location;
-      var url = loc.protocol + "//" + loc.hostname + ":" + loc.port + "/" + loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "jserror";
- 
-      $.post(url, errObj);
- 
-      return false;
-    };
+  //send javascript errors to the server
+  var errObj = {errorInfo: JSON.stringify({errorId: errorId, msg: msg, url: url, linenumber: linenumber, userAgent: navigator.userAgent})};
+  var loc = document.location;
+  var url = loc.protocol + "//" + loc.hostname + ":" + loc.port + "/" + loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "jserror";
+
+  $.post(url, errObj);
+
+  return false;
+}
+
+var globalExceptionHandlerSetup = false;
+function setupGlobalExceptionHandler() {
+  if (!globalExceptionHandlerSetup) {
+    globalExceptionHandlerSetup = true;
     window.onerror = globalExceptionHandler;
+  } else {
+    // no-op
+    // TODO: Throw an exception here.
   }
 }
 
