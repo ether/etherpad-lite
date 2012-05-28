@@ -19,19 +19,18 @@
  * @params reqModuleName Module name e.g. (ep_etherpad-lite/static/js/plugins)
  */
 exports.getRequirementFromParent = function(requireDefObj, reqModuleName) {
-    requireDefObj.define(reqModuleName, function(require, exports, module) {
-	var t = parent;
-	var max = 0;  // make sure I don't go up more than 10 times
-	while (typeof(t) != "undefined") {
-	    max++;
-	    if (max==10)
-		break;
-	    if (typeof(t.require) != "undefined") {
-		module.exports = t.require(reqModuleName);
-		return;
-	    }
-	    t = t.parent;
-	}
-    }); 
-
+  requireDefObj.define(reqModuleName, function(require, exports, module) {
+    var t = parent;
+    var max = 0;  // make sure I don't go up more than 10 times
+    while (typeof(t) != "undefined") {
+      max++;
+      if (max==10)
+        break;
+      if (typeof(t.require) != "undefined") {
+        module.exports = t.require(reqModuleName);
+        return;
+      }
+      t = t.parent;
+    }
+  });
 }
