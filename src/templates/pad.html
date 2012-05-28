@@ -318,11 +318,6 @@
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
         <script type="text/javascript">
-            if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
-            {
-              document.domain = document.domain; // for comet
-            }
-
             var clientVars = {};
             (function () {
               
@@ -335,6 +330,10 @@
               require.setRootURI(baseURL + "javascripts/src");
               require.setLibraryURI(baseURL + "javascripts/lib");
               require.setGlobalKeyPath("require");
+
+              if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+                document.domain = document.domain; // for comet
+              }
 
               var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
               plugins.baseURL = baseURL;
