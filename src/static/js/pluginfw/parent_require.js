@@ -19,6 +19,9 @@
  * @params reqModuleName Module name e.g. (ep_etherpad-lite/static/js/plugins)
  */
 exports.getRequirementFromParent = function(requireDefObj, reqModuleName) {
+  // Force the 'undefinition' of the modules (if they already have been loaded).
+  delete (requireDefObj._definitions)[reqModuleName];
+  delete (requireDefObj._modules)[reqModuleName];
   requireDefObj.define(reqModuleName, function(require, exports, module) {
     var t = parent;
     var max = 0;  // make sure I don't go up more than 10 times
