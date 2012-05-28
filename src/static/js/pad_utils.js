@@ -506,8 +506,9 @@ function globalExceptionHandler(msg, url, linenumber) {
     //show javascript errors to the user
     $("#editorloadingbox").css("padding", "10px");
     $("#editorloadingbox").css("padding-top", "45px");
-    $("#editorloadingbox").html("<div style='text-align:left;color:red;font-size:16px;'><b>An error occured</b><br>The error was reported with the following id: '" + errorId + "'<br><br><span style='color:black;font-weight:bold;font-size:16px'>Please send this error message to us: </span><div style='color:black;font-size:14px'>'"
-      + "ErrorId: " + errorId + "<br>UserAgent: " + navigator.userAgent + "<br>" + msg + " in " + url + " at line " + linenumber + "'</div></div>");
+    // TODO: Use Mustache
+    $("#editorloadingbox").html("<div style='text-align:left;color:red;font-size:16px;'><b>An error occured</b><br>The error was reported with the following id: '" + Security.escapeHTML(errorId) + "'<br><br><span style='color:black;font-weight:bold;font-size:16px'>Please send this error message to us: </span><div style='color:black;font-size:14px'>'"
+      + "ErrorId: " + Security.escapeHTML(errorId) + "<br>UserAgent: " + Security.escapeHTML(navigator.userAgent) + "<br>" + Security.escapeHTML(msg) + " in " + Security.escapeHTML(url) + " at line " + Security.escapeHTML(linenumber) + "'</div></div>");
   }
 
   //send javascript errors to the server
