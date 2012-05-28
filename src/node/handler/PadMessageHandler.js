@@ -177,31 +177,25 @@ exports.handleMessage = function(client, message)
   {
     handleClientReady(client, message);
   }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "USER_CHANGES")
-  {
-    handleUserChanges(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "USERINFO_UPDATE")
-  {
-    handleUserInfoUpdate(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "CHAT_MESSAGE")
-  {
-    handleChatMessage(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "SAVE_REVISION")
-  {
-    handleSaveRevisionMessage(client, message);
-  }
-  else if(message.type == "COLLABROOM" && 
-          message.data.type == "CLIENT_MESSAGE" &&
-          message.data.payload.type == "suggestUserName")
-  {
-    handleSuggestUserName(client, message);
+  else if(message.type == "COLLABROOM" && typeof message.data == 'object'){
+    if (message.data.type == "USER_CHANGES")
+    {
+      handleUserChanges(client, message);
+    }
+    else if (message.data.type == "USERINFO_UPDATE")
+    {
+      handleUserInfoUpdate(client, message);
+    }
+    else if(message.data.type == "CHAT_MESSAGE")
+    {
+      handleChatMessage(client, message);
+    }
+    else if(message.data.type == "CLIENT_MESSAGE" &&
+            typeof message.data.payload == 'object' &&
+            message.data.payload.type == "suggestUserName")
+    {
+      handleSuggestUserName(client, message);
+    }
   }
   //if the message type is unknown, throw an exception
   else
