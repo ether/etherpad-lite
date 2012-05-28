@@ -238,7 +238,6 @@ require.setGlobalKeyPath("require");\n\
 
       iframeHTML.push(doctype);
       iframeHTML.push("<html><head>");
-      iframeHTML.push('<script type="text/javascript" src="../static/js/jquery.js"></script>');
 
       hooks.callAll("aceInitInnerdocbodyHead", {
         iframeHTML: iframeHTML
@@ -279,6 +278,7 @@ require.setGlobalKeyPath("require");\n\
 ');
 
       iframeHTML.push('<script type="text/javascript">');
+      iframeHTML.push('$ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK');
       iframeHTML.push('require("ep_etherpad-lite/static/js/ace2_inner");');
       iframeHTML.push('<\/script>');
 
