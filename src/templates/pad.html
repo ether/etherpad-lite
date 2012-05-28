@@ -313,15 +313,14 @@
 
         <% e.begin_block("scripts"); %>
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
-        <script type="text/javascript" src="../static/js/jquery.js"></script>
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
-        <script type="text/javascript">
-            if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
-            {
-              document.domain = document.domain; // for comet
-            }
 
+        <!-- Include base packages manually (this help with debugging) -->
+        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
+        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
+
+        <!-- Bootstrap page -->
+        <script type="text/javascript">
             var clientVars = {};
             (function () {
               
@@ -334,6 +333,12 @@
               require.setRootURI(baseURL + "javascripts/src");
               require.setLibraryURI(baseURL + "javascripts/lib");
               require.setGlobalKeyPath("require");
+
+              $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
+
+              if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+                document.domain = document.domain; // for comet
+              }
 
               var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
               plugins.baseURL = baseURL;
