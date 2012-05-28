@@ -40,11 +40,9 @@
   ]
 , "ace2_inner.js": [
     "ace2_inner.js"
-  , "underscore.js"
   , "AttributePool.js"
   , "Changeset.js"
   , "ChangesetUtils.js"
-  , "security.js"
   , "skiplist.js"
   , "virtual_lines.js"
   , "cssmanager.js"
