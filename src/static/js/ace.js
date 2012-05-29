@@ -268,12 +268,6 @@ require.setGlobalKeyPath("require");\n\
   parent_req = require("ep_etherpad-lite/static/js/pluginfw/parent_require");\
   parent_req.getRequirementFromParent(require, "ep_etherpad-lite/static/js/pluginfw/hooks");\
   parent_req.getRequirementFromParent(require, "ep_etherpad-lite/static/js/pluginfw/plugins");\
-  parent_req.getRequirementFromParent(require, "./pluginfw/hooks");\
-  parent_req.getRequirementFromParent(require, "./pluginfw/plugins");\
-  require.define("/plugins", null);\n\
-  require.define("/plugins.js", function (require, exports, module) {\
-    module.exports = require("ep_etherpad-lite/static/js/plugins");\
-  });\
 </script>\
 ');
 
