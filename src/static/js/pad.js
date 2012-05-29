@@ -30,7 +30,6 @@ require('./jquery');
 require('./farbtastic');
 require('./excanvas');
 JSON = require('./json2');
-require('./undo-xpopup');
 
 var chat = require('./chat').chat;
 var getCollabClient = require('./collab_client').getCollabClient;
@@ -102,7 +101,6 @@ function getParams()
   var showLineNumbers = params["showLineNumbers"];
   var useMonospaceFont = params["useMonospaceFont"];
   var IsnoColors = params["noColors"];
-  var hideQRCode = params["hideQRCode"];
   var rtl = params["rtl"];
   var alwaysShowChat = params["alwaysShowChat"];
 
@@ -147,10 +145,6 @@ function getParams()
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
     settings.globalUserName = decodeURIComponent(userName);
-  }
-  if(hideQRCode)
-  {
-    $('#qrcode').hide();
   }
   if(rtl)
   {
@@ -203,8 +197,7 @@ function handshake()
   //create the url
   var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
   //find out in which subfolder we are
-  var resource = exports.baseURL + "socket.io";
-  
+  var resource =  exports.baseURL.substring(1)  + "socket.io";
   //connect
   socket = pad.socket = io.connect(url, {
     resource: resource,
@@ -697,13 +690,6 @@ var pad = {
       paduserlist.removeGuestPrompt(msg.guestId);
     }
   },
-  editbarClick: function(cmd)
-  {
-    if (padeditbar)
-    {
-      padeditbar.toolbarClick(cmd);
-    }
-  },
   dmesg: function(m)
   {
     if (pad.getIsDebugEnabled())
@@ -1033,7 +1019,6 @@ var settings = {
 , noColors: false
 , useMonospaceFontGlobal: false
 , globalUserName: false
-, hideQRCode: false
 , rtlIsTrue: false
 };
 

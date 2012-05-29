@@ -97,8 +97,15 @@ var padeditbar = (function()
   var self = {
     init: function()
     {
+      var self = this;
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
+      $("#editbar [data-key]").each(function (i, e) {
+        $(e).click(function (event) {
+          self.toolbarClick($(e).attr('data-key'));
+          event.preventDefault();
+        });
+      });
     },
     isEnabled: function()
     {
@@ -119,7 +126,7 @@ var padeditbar = (function()
         }
         else if (cmd == 'settings')
         {
-              self.toogleDropDown("settingsmenu");
+              self.toogleDropDown("settings");
         }
         else if (cmd == 'embed')
         {
@@ -177,12 +184,11 @@ var padeditbar = (function()
     },
     toogleDropDown: function(moduleName)
     {
-      var modules = ["settingsmenu", "importexport", "embed", "users"];
+      var modules = ["settings", "importexport", "embed", "users"];
       
-      //hide all modules
+      // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
-        $(".toolbar ul.menu_right li").removeClass("selected");
         for(var i=0;i<modules.length;i++)
         {
           //skip the userlist
@@ -193,29 +199,27 @@ var padeditbar = (function()
         
           if(module.css('display') != "none")
           {
+            $("#" + modules[i] + "link").removeClass("selected");
             module.slideUp("fast");
           }
         }
       }
       else 
       {
-        var nth_child = indexOf(modules, moduleName) + 1;
-        if (nth_child > 0 && nth_child <= (modules.length-1)) {
-          $(".toolbar ul.menu_right li:not(:nth-child(" + nth_child + "))").removeClass("selected");
-          $(".toolbar ul.menu_right li:nth-child(" + nth_child + ")").toggleClass("selected");
-        }
-        if(modules[modules.length-1] === moduleName) $(".toolbar ul.menu_right li").removeClass("selected");
-        //hide all modules that are not selected and show the selected one
+        // hide all modules that are not selected and remove highlighting
+        // respectively add highlighting to the corresponding button
         for(var i=0;i<modules.length;i++)
         {
           var module = $("#" + modules[i]);
         
           if(module.css('display') != "none")
           {
+            $("#" + modules[i] + "link").removeClass("selected");
             module.slideUp("fast");
           }
           else if(modules[i]==moduleName)
           {
+            $("#" + modules[i] + "link").addClass("selected");
             module.slideDown("fast");
           }
         }
@@ -240,14 +244,12 @@ var padeditbar = (function()
         var readonlyLink = basePath + "/p/" + clientVars.readOnlyId;
         $('#embedinput').val("<iframe name='embed_readonly' src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(readonlyLink);
-        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=|0&chl=" + readonlyLink);
       }
       else
       {
         var padurl = window.location.href.split("?")[0];
         $('#embedinput').val("<iframe name='embed_readwrite' src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
         $('#linkinput').val(padurl);
-        $('#embedreadonlyqr').attr("src","https://chart.googleapis.com/chart?chs=200x200&cht=qr&chld=|0&chl=" + padurl);
       }
     }
   };

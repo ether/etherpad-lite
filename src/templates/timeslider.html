@@ -5,6 +5,8 @@
   <meta name="robots" content="noindex, nofollow">
 
   <title>Etherpad Lite Timeslider</title>
+
+  <link rel="shortcut icon" href="../../favicon.ico">
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <link rel="stylesheet" href="../../static/custom/timeslider.css">
@@ -13,35 +15,6 @@
 
 <body id="padbody" class="timeslider limwidth">
   <div id="padpage">
-    <div id="padtop">
-      <div id="alertbar">
-        <div id="servermsg">
-          <h3>Server Notice<span id="servermsgdate"><!-- --></span>:</h3><a id=
-          "hidetopmsg" href="javascript:%20void%20pad.hideServerMessage()" name=
-          "hidetopmsg">hide</a>
-          <p id="servermsgtext"><!-- --></p>
-        </div>
-      </div>
-
-      <div id="navigation"></div>
-      
-      <div id="docbar" class="menu docbar">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" id="docbartable"
-        class="docbartable">
-          <tr>
-            <td><img src="../../static/img/roundcorner_left.gif" /></td>
-
-            <td id="docbarpadtitle" class="docbarpadtitle" title=
-            "Public Pad: Public Pad"><span>Public Pad</span></td>
-
-            <td width="100%">&nbsp;</td>
-
-            <td><img src="../../static/img/roundcorner_right.gif" /></td>
-          </tr>
-        </table>
-      </div><!-- /docbar -->
-    </div>
-    
     <div id="timeslider-top">
       <div id="timeslider-wrapper">
         <div id="timeslider" unselectable="on" style="display: none">
@@ -157,29 +130,39 @@
   <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
   <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
   <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
-  <a id="exportwordlea" target="_blank" onClick="padimpexp.export2Wordle();return false;" class="exportlink"><div class="exporttype" id="exportwordle">Wordle</div></a>
-  <form id="wordlepost" name="wall" action="http://wordle.net/advanced" method="POST" style="margin-left:0px;"> 
-    <div id="hidetext" style=""><textarea id="text" name="text" id="text" style="display:none;">Coming soon!</textarea></div> 
-  </form> 
 </div>
 </div>
 
 <script type="text/javascript" src="../../static/js/require-kernel.js"></script>
-<script type="text/javascript" src="../../static/js/jquery.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+<!-- Include base packages manually (this help with debugging) -->
 <script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
+<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
+
 <script type="text/javascript" src="../../static/custom/timeslider.js"></script>
 
+<!-- Bootstrap -->
 <script type="text/javascript" >
-  document.domain = document.domain;
   var clientVars = {};
   
   (function () {
-    var baseURL = '../../';
+    
+    var pathComponents = location.pathname.split('/');
+    
+    // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
+    var baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/';
+    
     
     require.setRootURI(baseURL + "javascripts/src");
     require.setLibraryURI(baseURL + "javascripts/lib");
     require.setGlobalKeyPath("require");
+
+    $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
+
+    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+      document.domain = document.domain; // for comet
+    }
 
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
     plugins.baseURL = baseURL;

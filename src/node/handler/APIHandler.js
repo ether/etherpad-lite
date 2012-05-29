@@ -29,12 +29,12 @@ var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var apikey = null;
 try
 {
-  apikey = fs.readFileSync("../APIKEY.txt","utf8");
+  apikey = fs.readFileSync("./APIKEY.txt","utf8");
 }
 catch(e) 
 {
   apikey = randomString(32);
-  fs.writeFileSync("../APIKEY.txt",apikey,"utf8");
+  fs.writeFileSync("./APIKEY.txt",apikey,"utf8");
 }
 
 //a list of all functions

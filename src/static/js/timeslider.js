@@ -24,7 +24,6 @@
 // assigns to the global `$` and augments it with plugins.
 require('./jquery');
 JSON = require('./json2');
-require('./undo-xpopup');
 
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
@@ -60,7 +59,7 @@ function init() {
     //create the url
     var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
     //find out in which subfolder we are
-    var resource = exports.baseURL + 'socket.io';
+    var resource = exports.baseURL.substring(1) + 'socket.io';
     
     //build up the socket io connection
     socket = io.connect(url, {resource: resource});
