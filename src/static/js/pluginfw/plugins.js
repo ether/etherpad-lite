@@ -53,7 +53,7 @@ exports.formatHooks = function (hook_set_name) {
   return "<dl>" + res.join("\n") + "</dl>";
 };
 
-exports.loadFn = function (path, hookName) {
+function loadFn(path, hookName) {
   var functionName
     , parts = path.split(":");
   
@@ -95,7 +95,7 @@ exports.extractHooks = function (parts, hook_set_name) {
       }
 
       try {
-        var hook_fn = exports.loadFn(hook_fn_name, hook_name);
+        var hook_fn = loadFn(hook_fn_name, hook_name);
         if (!hook_fn) {
           throw "Not a function";
         }
@@ -161,12 +161,12 @@ exports.update = function (cb) {
     async.forEach(
       Object.keys(packages),
       function (plugin_name, cb) {
-        exports.loadPlugin(packages, plugin_name, plugins, parts, cb);
+        loadPlugin(packages, plugin_name, plugins, parts, cb);
       },
       function (err) {
         if (err) cb(err);
         exports.plugins = plugins;
-        exports.parts = exports.sortParts(parts);
+        exports.parts = sortParts(parts);
         exports.hooks = exports.extractHooks(exports.parts, "hooks");
         exports.loaded = true;
         exports.callInit(cb);
@@ -202,7 +202,10 @@ exports.getPackages = function (cb) {
   });
 };
 
-exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
+}
+
+
+function loadPlugin(packages, plugin_name, plugins, parts, cb) {
   var plugin_path = path.resolve(packages[plugin_name].path, "ep.json");
   fs.readFile(
     plugin_path,
@@ -226,9 +229,9 @@ exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
       cb();
     }
   );
-};
+}
 
-exports.partsToParentChildList = function (parts) {
+function partsToParentChildList(parts) {
   var res = [];
   _.chain(parts).keys().forEach(function (name) {
     _.each(parts[name].post || [], function (child_name)  {
@@ -242,18 +245,15 @@ exports.partsToParentChildList = function (parts) {
     }
   });
   return res;
-};
-
+}
 
 // Used only in Node, so no need for _
-exports.sortParts = function(parts) {
+function sortParts(parts) {
   return tsort(
-    exports.partsToParentChildList(parts)
+    partsToParentChildList(parts)
   ).filter(
     function (name) { return parts[name] !== undefined; }
   ).map(
     function (name) { return parts[name]; }
   );
-};
-
 }
