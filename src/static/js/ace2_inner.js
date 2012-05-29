@@ -23,7 +23,7 @@ var editor, _, $, jQuery, plugins, Ace2Common;
 
 Ace2Common = require('./ace2_common');
 
-plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
 $ = jQuery = require('./rjquery').$;
 _ = require("./underscore");
 
