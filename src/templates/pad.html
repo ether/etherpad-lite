@@ -374,6 +374,8 @@
 
               plugins.baseURL = baseURL;
               plugins.update(function () {
+                hooks.plugins = plugins;
+
                 // Call documentReady hook
                 $(function() {
                   hooks.aCallAll('documentReady');
