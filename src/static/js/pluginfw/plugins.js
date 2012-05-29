@@ -165,10 +165,10 @@ exports.update = function (cb) {
       },
       function (err) {
         if (err) cb(err);
-	exports.plugins = plugins;
+        exports.plugins = plugins;
         exports.parts = exports.sortParts(parts);
-          exports.hooks = exports.extractHooks(exports.parts, "hooks");
-	exports.loaded = true;
+        exports.hooks = exports.extractHooks(exports.parts, "hooks");
+        exports.loaded = true;
         exports.callInit(cb);
       }
     );
@@ -200,9 +200,9 @@ exports.getPackages = function (cb) {
     flatten(tmp);
     cb(null, packages);
   });
-  };
+};
 
-  exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
+exports.loadPlugin = function (packages, plugin_name, plugins, parts, cb) {
   var plugin_path = path.resolve(packages[plugin_name].path, "ep.json");
   fs.readFile(
     plugin_path,
@@ -226,7 +226,7 @@ exports.getPackages = function (cb) {
       cb();
     }
   );
-  };
+};
 
 exports.partsToParentChildList = function (parts) {
   var res = [];
