@@ -58,6 +58,8 @@
     "ace2_common.js"
   , "jquery.js"
   , "rjquery.js"
+  , "$async.js"
+  , "$async/lib/async.js"
   , "underscore.js"
   , "$underscore.js"
   , "$underscore/underscore.js"
@@ -66,7 +68,6 @@
   , "json2.js"
   , "pluginfw/plugins.js"
   , "pluginfw/hooks.js"
-  , "pluginfw/async.js"
   , "pluginfw/parent_require.js"
   ]
 }
