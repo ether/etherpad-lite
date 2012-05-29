@@ -76,7 +76,7 @@ function loadFn(path, hookName) {
   return fn;
 };
 
-exports.extractHooks = function (parts, hook_set_name) {
+function extractHooks(parts, hook_set_name, normalizer) {
   var hooks = {};
   _.each(parts,function (part) {
     _.chain(part[hook_set_name] || {})
@@ -90,8 +90,8 @@ exports.extractHooks = function (parts, hook_set_name) {
        * require("pluginname/whatever") if the plugin is installed as
        * a dependency of another plugin! Bah, pesky little details of
        * npm... */
-      if (!exports.isClient) {
-        hook_fn_name = path.normalize(path.join(path.dirname(exports.plugins[part.plugin].package.path), hook_fn_name));
+      if (normalizer) {
+        hook_fn_name = normalizer(part, hook_fn_name);
       }
 
       try {
@@ -121,7 +121,7 @@ if (exports.isClient) {
     jQuery.getJSON(exports.baseURL + 'pluginfw/plugin-definitions.json', function(data) {
       exports.plugins = data.plugins;
       exports.parts = data.parts;
-      exports.hooks = exports.extractHooks(exports.parts, "client_hooks");
+      exports.hooks = extractHooks(exports.parts, "client_hooks");
       exports.loaded = true;
       callback();
      }).error(function(xhr, s, err){
@@ -153,6 +153,10 @@ exports.callInit = function (cb) {
   );
 }
 
+exports.pathNormalization = function (part, hook_fn_name) {
+  return path.normalize(path.join(path.dirname(exports.plugins[part.plugin].package.path), hook_fn_name));
+}
+
 exports.update = function (cb) {
   exports.getPackages(function (er, packages) {
     var parts = [];
@@ -167,7 +171,7 @@ exports.update = function (cb) {
         if (err) cb(err);
         exports.plugins = plugins;
         exports.parts = sortParts(parts);
-        exports.hooks = exports.extractHooks(exports.parts, "hooks");
+        exports.hooks = exports.extractHooks(exports.parts, "hooks", exports.pathNormalization);
         exports.loaded = true;
         exports.callInit(cb);
       }
