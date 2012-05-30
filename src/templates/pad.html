@@ -25,40 +25,62 @@
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
                 <li class="acl-write" id="bold" data-key="bold">
-                    <a class="buttonicon buttonicon-bold" title="Bold (ctrl-B)"></a>
+                    <a class="grouped-left" title="Bold (ctrl-B)">
+                      <span class="buttonicon buttonicon-bold"></span>
+                    </a>
                 </li>
                 <li class="acl-write" id="italic" data-key="italic">
-                    <a class="buttonicon buttonicon-italic" title="Italics (ctrl-I)"></a>
+                    <a class="grouped-middle" title="Italics (ctrl-I)">
+                      <span class="buttonicon buttonicon-italic"></span>
+                    </a>
                 </li>
                 <li class="acl-write" id="underline" data-key="underline">
-                    <a class="buttonicon buttonicon-underline" title="Underline (ctrl-U)"></a>
+                    <a class="grouped-middle" title="Underline (ctrl-U)">
+                      <span class="buttonicon buttonicon-underline"></span>
+                    </a>
                 </li>
                 <li class="acl-write" id="strikethrough" data-key="strikethrough">
-                    <a class="buttonicon buttonicon-strikethrough" title="Strikethrough"></a>
+                    <a class="grouped-right" title="Strikethrough">
+                      <span class="buttonicon buttonicon-strikethrough"></span>
+                    </a>
                 </li>
-                <li class="separator acl-write"></li>
+                <li class="acl-write separator"></li>
                 <li class="acl-write" id="oderedlist" data-key="insertorderedlist">
-                    <a class="buttonicon buttonicon-insertorderedlist" title="Toggle Ordered List"></a>
+                    <a class="grouped-left" title="Toggle Ordered List">
+                      <span class="buttonicon buttonicon-insertorderedlist"></span>
+                    </a>
                 </li>
                 <li class="acl-write" id="unoderedlist" data-key="insertunorderedlist">
-                    <a class="buttonicon buttonicon-insertunorderedlist" title="Toggle Bullet List"></a>
+                    <a class="grouped-middle" title="Toggle Bullet List">
+                      <span class="buttonicon buttonicon-insertunorderedlist"></span>
+                    </a>
                 </li>
                 <li class="acl-write" id="indent" data-key="indent">
-                    <a class="buttonicon buttonicon-indent" title="Indent"></a>
+                    <a class="grouped-middle" title="Indent">
+                      <span class="buttonicon buttonicon-indent"></span>
+                    </a>
                 </li>
                 <li class="acl-write" id="outdent" data-key="outdent">
-                    <a class="buttonicon buttonicon-outdent" title="Unindent"></a>
+                    <a class="grouped-right" title="Unindent">
+                      <span class="buttonicon buttonicon-outdent"></span>
+                    </a>
                 </li>
-                <li class="separator acl-write"></li>
+                <li class="acl-write separator"></li>
                 <li class="acl-write" id="undo" data-key="undo">
-                    <a class="buttonicon buttonicon-undo" title="Undo (ctrl-Z)"></a>
+                    <a class="grouped-left" title="Undo (ctrl-Z)">
+                      <span class="buttonicon buttonicon-undo"></span>
+                    </a>
                 </li>
                 <li class="acl-write" id="redo" data-key="redo">
-                    <a class="buttonicon buttonicon-redo" title="Redo (ctrl-Y)"></a>
+                    <a class="grouped-right" title="Redo (ctrl-Y)">
+                      <span class="buttonicon buttonicon-redo"></span>
+                    </a>
                 </li>
-                <li class="separator acl-write"></li>
+                <li class="acl-write separator"></li>
                 <li class="acl-write" id="clearAuthorship" data-key="clearauthorship">
-                    <a class="buttonicon buttonicon-clearauthorship" title="Clear Authorship Colors"></a>
+                    <a title="Clear Authorship Colors">
+                      <span class="buttonicon buttonicon-clearauthorship"></span>
+                    </a>
                 </li>
                 <% e.end_block(); %>
             </ul>
@@ -69,19 +91,20 @@
                         <span class="buttonicon buttonicon-settings"></span>
                     </a>
                 </li>
+                <li class="acl-write" data-key="savedRevision">
+                    <a class="grouped-right" id="revisionlink" title="Mark this revision as a saved revision">
+                        <span class="buttonicon buttonicon-savedRevision"></span>
+                    </a>
+                </li>
+                <li class="acl-write separator"></li>
                 <li data-key="import_export">
-                    <a class="grouped-middle" id="importexportlink" title="Import/Export from/to different document formats">
+                    <a class="grouped-left" id="importexportlink" title="Import/Export from/to different document formats">
                         <span class="buttonicon buttonicon-import_export"></span>
                     </a>
                 </li>
                 <li data-key="embed">
-                    <a class="grouped-middle" id="embedlink" title="Share and Embed this pad">
-                        <span class="buttonicon buttonicon-embed"></span>
-                    </a>
-                </li>
-                <li class="acl-write" data-key="savedRevision">
-                    <a class="grouped-right" id="revisionlink" title="Mark this revision as a saved revision">
-                        <span class="buttonicon buttonicon-savedRevision"></span>
+                    <a class="grouped-right" id="embedlink" title="Share and Embed this pad">
+                        <span class="grouped-right buttonicon buttonicon-embed"></span>
                     </a>
                 </li>
                 <li class="separator"></li>
