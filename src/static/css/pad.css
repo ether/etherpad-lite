@@ -19,6 +19,9 @@ textarea {
 iframe {
   position: absolute
 }
+.readonly .acl-write {
+  display: none;
+}
 #users {
   background: #f7f7f7;
   background: -webkit-linear-gradient( #F7F7F7,#EEE);
@@ -991,5 +994,8 @@ input[type=checkbox] {
     }
     .toolbar ul li .separator {
       display: none
+    }
+    #online_count {
+      line-height: 24px
     }
 }
