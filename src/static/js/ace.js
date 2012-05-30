@@ -239,10 +239,6 @@ require.setGlobalKeyPath("require");\n\
       iframeHTML.push(doctype);
       iframeHTML.push("<html><head>");
 
-      hooks.callAll("aceInitInnerdocbodyHead", {
-        iframeHTML: iframeHTML
-      });
-
       // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
       // and compressed, putting the compressed code from the named file directly into the
       // source here.
@@ -277,6 +273,11 @@ require.setGlobalKeyPath("require");\n\
       iframeHTML.push('<\/script>');
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
+
+      hooks.callAll("aceInitInnerdocbodyHead", {
+        iframeHTML: iframeHTML
+      });
+
       iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
       // Expose myself to global for my child frame.
