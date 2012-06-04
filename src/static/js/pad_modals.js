@@ -67,7 +67,7 @@ var padmodals = (function()
       {
         $("#modaloverlay").hide();
       });
-    },
+    }
   };
   return self;
 }());

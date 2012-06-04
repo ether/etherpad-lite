@@ -1,2 +1,1 @@
-cd node
-..\bin\node server.js
+bin\node.exe node_modules\ep_etherpad-lite\node\server.js
