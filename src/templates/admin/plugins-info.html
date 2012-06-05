@@ -1,0 +1,30 @@
+<%
+  var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
+%>
+
+<html>
+  <head>
+    <title>Plugin information</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" href="../../static/css/admin.css">
+  </head>
+  <body>
+    <div id="wrapper">
+      <h1>Etherpad Lite</h1>
+      <div class="separator"></div>
+
+      <h2>Installed plugins</h2>
+      <pre><%= plugins.formatPlugins() %></pre>
+
+      <h2>Installed parts</h2>
+      <pre><%= plugins.formatParts() %></pre>
+
+      <h2>Installed hooks</h2>
+      <h3>Server side hooks</h3>
+      <div><%= plugins.formatHooks() %></div>
+
+      <h3>Client side hooks</h3>
+      <div><%= plugins.formatHooks("client_hooks") %></div>
+    </div>
+  </body>
+</html>
