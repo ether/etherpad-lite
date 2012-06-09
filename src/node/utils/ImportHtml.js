@@ -50,9 +50,7 @@ function setPadHTML(pad, html, callback)
   }
 
   // Get the new plain text and its attributes
-  var newText = map(result.lines, function (e) {
-    return e + '\n';
-  }).join('');
+  var newText = result.lines.join('\n');
   apiLogger.debug('newText:');
   apiLogger.debug(newText);
   var newAttribs = result.lineAttribs.join('|1+1') + '|1+1';
