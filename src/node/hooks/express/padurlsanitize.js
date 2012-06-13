@@ -1,4 +1,5 @@
 var padManager = require('../../db/PadManager');
+var url = require('url');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   //redirects browser to the pad's sanitized url if needed. otherwise, renders the html
@@ -14,9 +15,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 	//the pad id was sanitized, so we redirect to the sanitized version
 	if(sanitizedPadId != padId)
 	{
-	  var real_path = req.path.replace(/^\/p\/[^\/]+/, '/p/' + sanitizedPadId);
-	  res.header('Location', real_path);
-	  res.send('You should be redirected to <a href="' + real_path + '">' + real_path + '</a>', 302);
+          var real_url = req.url.replace(/^\/p\/[^\/]+/, '/p/' + sanitizedPadId);
+          var query = url.parse(req.url).query;
+          if ( query ) real_url += '?' + query;
+	  res.header('Location', real_url);
+	  res.send('You should be redirected to <a href="' + real_url + '">' + real_url + '</a>', 302);
 	}
 	//the pad id was fine, so just render it
 	else
