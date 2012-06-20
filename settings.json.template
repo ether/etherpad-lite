@@ -8,8 +8,8 @@
   "ip": "0.0.0.0",
   "port" : 9001,
   
-  //The Type of the database. You can choose between dirty, sqlite and mysql
-  //You should use mysql or sqlite for anything else than testing or development
+  //The Type of the database. You can choose between dirty, sqlite, posgres and mysql
+  //You should use mysql, postgres or sqlite for anything else than testing or development
   "dbType" : "dirty",
   //the database specific settings
   "dbSettings" : {
