@@ -1,0 +1,10 @@
+{
+  "author": "cohitre <smiles@cohitre.com> (http://cohitre.com)",
+  "name": "ep_formatting",
+  "description": "Show basic formatting options in the etherpad-lite toolbar.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pita/etherpad-lite"
+  }
+}

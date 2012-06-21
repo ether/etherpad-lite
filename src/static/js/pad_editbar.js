@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -116,8 +116,25 @@ var padeditbar = (function()
     {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
     },
+    hasToolbarCommand: function (commandName) {
+      return this.toolbarCommands && this.toolbarCommands[commandName] !== undefined;
+    },
+    registerToolbarCommand: function (commandName, method) {
+      this.toolbarCommands = this.toolbarCommands || {};
+      this.toolbarCommands[commandName] = method;
+      return this;
+    },
+    executeToolbarCommand: function (commandName) {
+      var args = Array.prototype.slice.call(arguments, 1);
+
+      if (this.hasToolbarCommand(commandName)) {
+        this.toolbarCommands[commandName].apply(this, args);
+      }
+
+      return this;
+    },
     toolbarClick: function(cmd)
-    {  
+    {
       if (self.isEnabled())
       {
         if(cmd == "showusers")
@@ -136,48 +153,14 @@ var padeditbar = (function()
         }
         else if (cmd == 'import_export')
         {
-	      self.toogleDropDown("importexport");
+          self.toogleDropDown("importexport");
         }
         else if (cmd == 'savedRevision')
         {
           padsavedrevs.saveNow();
         }
-        else
-        {
-          padeditor.ace.callWithAce(function(ace)
-          {
-            if (cmd == 'bold' || cmd == 'italic' || cmd == 'underline' || cmd == 'strikethrough') ace.ace_toggleAttributeOnSelection(cmd);
-            else if (cmd == 'undo' || cmd == 'redo') ace.ace_doUndoRedo(cmd);
-            else if (cmd == 'insertunorderedlist') ace.ace_doInsertUnorderedList();
-            else if (cmd == 'insertorderedlist') ace.ace_doInsertOrderedList();
-            else if (cmd == 'indent')
-            {
-              if (!ace.ace_doIndentOutdent(false))
-              {
-                ace.ace_doInsertUnorderedList();
-              }
-            }
-            else if (cmd == 'outdent')
-            {
-              ace.ace_doIndentOutdent(true);
-            }
-            else if (cmd == 'clearauthorship')
-            {
-              if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret())
-              {
-                if (window.confirm("Clear authorship colors on entire document?"))
-                {
-                  ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
-                    ['author', '']
-                  ]);
-                }
-              }
-              else
-              {
-                ace.ace_setAttributeOnSelection('author', '');
-              }
-            }
-          }, cmd, true);
+        else if (self.hasToolbarCommand(cmd)) {
+          self.executeToolbarCommand(cmd);
         }
       }
       if(padeditor.ace) padeditor.ace.focus();
@@ -185,7 +168,7 @@ var padeditbar = (function()
     toogleDropDown: function(moduleName)
     {
       var modules = ["settings", "importexport", "embed", "users"];
-      
+
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
@@ -194,9 +177,9 @@ var padeditbar = (function()
           //skip the userlist
           if(modules[i] == "users")
             continue;
-          
+
           var module = $("#" + modules[i]);
-        
+
           if(module.css('display') != "none")
           {
             $("#" + modules[i] + "link").removeClass("selected");
@@ -204,14 +187,14 @@ var padeditbar = (function()
           }
         }
       }
-      else 
+      else
       {
         // hide all modules that are not selected and remove highlighting
         // respectively add highlighting to the corresponding button
         for(var i=0;i<modules.length;i++)
         {
           var module = $("#" + modules[i]);
-        
+
           if(module.css('display') != "none")
           {
             $("#" + modules[i] + "link").removeClass("selected");
