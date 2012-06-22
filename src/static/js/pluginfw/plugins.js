@@ -41,14 +41,16 @@ exports.formatParts = function () {
   return _.map(exports.parts, function (part) { return part.full_name; }).join("\n");
 };
 
-exports.formatHooks = function () {
+exports.formatHooks = function (hook_set_name) {
   var res = [];
-  _.chain(exports.hooks).keys().forEach(function (hook_name) {
-    _.forEach(exports.hooks[hook_name], function (hook) {
-      res.push(hook.hook_name + ": " + hook.hook_fn_name + " from " + hook.part.full_name);
+  var hooks = exports.extractHooks(exports.parts, hook_set_name || "hooks");
+
+  _.chain(hooks).keys().forEach(function (hook_name) {
+    _.forEach(hooks[hook_name], function (hook) {
+      res.push("<dt>" + hook.hook_name + "</dt><dd>" + hook.hook_fn_name + " from " + hook.part.full_name + "</dd>");
     });
   });
-  return res.join("\n");
+  return "<dl>" + res.join("\n") + "</dl>";
 };
 
 exports.loadFn = function (path, hookName) {
@@ -62,7 +64,7 @@ exports.loadFn = function (path, hookName) {
   return fn;
 };
 
-exports.extractHooks = function (parts, hook_set_name, plugins) {
+exports.extractHooks = function (parts, hook_set_name) {
   var hooks = {};
   _.each(parts,function (part) {
     _.chain(part[hook_set_name] || {})
