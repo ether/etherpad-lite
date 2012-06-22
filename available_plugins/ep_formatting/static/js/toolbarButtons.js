@@ -1,7 +1,6 @@
-var _ = require('ep_etherpad-lite/static/js/underscore')
+var _ = require('ep_etherpad-lite/static/js/underscore')._
   , padeditor = require('ep_etherpad-lite/static/js/pad_editor').padeditor
-  , padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar
-  , simpleCommands = ["bold", "italic", "underline", "strikethrough"];
+  , padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
 
 function  registerCallWithAceCommand(commandName, callback) {
   padeditbar.registerToolbarCommand(commandName, function () {
@@ -10,13 +9,16 @@ function  registerCallWithAceCommand(commandName, callback) {
 }
 
 exports.postAceInit = function () {
+  var simpleCommands = ["bold", "italic", "underline", "strikethrough"]
+    , undoRedoCommands = ["undo", "redo"];
+
   _.each(simpleCommands, function (commandName) {
     registerCallWithAceCommand(commandName, function (ace) {
       ace.ace_toggleAttributeOnSelection(commandName)
     });
   });
 
-  _.each(["undo", "redo"], function (commandName) {
+  _.each(undoRedoCommands, function (commandName) {
     registerCallWithAceCommand(commandName, function (ace) {
       ace.ace_doUndoRedo(commandName);
     });
