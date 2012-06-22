@@ -102,7 +102,7 @@ exports.aCallAll = function (hook_name, args, cb) {
 
 exports.callFirst = function (hook_name, args) {
   if (!args) args = {};
-  if (plugins.hooks[hook_name][0] === undefined) return [];
+  if (plugins.hooks[hook_name] === undefined) return [];
   return exports.syncMapFirst(plugins.hooks[hook_name], function (hook) {
     return hookCallWrapper(hook, hook_name, args);
   });

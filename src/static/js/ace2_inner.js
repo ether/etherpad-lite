@@ -341,6 +341,11 @@ function Ace2Inner(){
     return rep;
   };
 
+  editorInfo.ace_getAuthor = function()
+  {
+    return thisAuthor;
+  }
+
   var currentCallStack = null;
 
   function inCallStack(type, action)
@@ -439,6 +444,14 @@ function Ace2Inner(){
     try
     {
       result = action();
+
+      hooks.callAll('aceEditEvent', {
+        callstack: currentCallStack,
+        editorInfo: editorInfo,
+        rep: rep,
+        documentAttributeManager: documentAttributeManager
+      });
+
       //console.log("Just did action for: "+type);
       cleanExit = true;
     }
@@ -522,6 +535,7 @@ function Ace2Inner(){
   {
     return rep.lines.atOffset(charOffset).key;
   }
+    
   
   function dispose()
   {
