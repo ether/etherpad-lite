@@ -24,60 +24,60 @@
         <div id="editbar" class="toolbar">
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
-                <li id="bold" data-key="bold">
+                <li class="acl-write" id="bold" data-key="bold">
                     <a class="grouped-left" title="Bold (ctrl-B)">
                       <span class="buttonicon buttonicon-bold"></span>
                     </a>
                 </li>
-                <li id="italic" data-key="italic">
+                <li class="acl-write" id="italic" data-key="italic">
                     <a class="grouped-middle" title="Italics (ctrl-I)">
                       <span class="buttonicon buttonicon-italic"></span>
                     </a>
                 </li>
-                <li id="underline" data-key="underline">
+                <li class="acl-write" id="underline" data-key="underline">
                     <a class="grouped-middle" title="Underline (ctrl-U)">
                       <span class="buttonicon buttonicon-underline"></span>
                     </a>
                 </li>
-                <li id="strikethrough" data-key="strikethrough">
+                <li class="acl-write" id="strikethrough" data-key="strikethrough">
                     <a class="grouped-right" title="Strikethrough">
                       <span class="buttonicon buttonicon-strikethrough"></span>
                     </a>
                 </li>
-                <li class="separator"></li>
-                <li id="oderedlist" data-key="insertorderedlist">
+                <li class="acl-write separator"></li>
+                <li class="acl-write" id="oderedlist" data-key="insertorderedlist">
                     <a class="grouped-left" title="Toggle Ordered List">
                       <span class="buttonicon buttonicon-insertorderedlist"></span>
                     </a>
                 </li>
-                <li id="unoderedlist" data-key="insertunorderedlist">
+                <li class="acl-write" id="unoderedlist" data-key="insertunorderedlist">
                     <a class="grouped-middle" title="Toggle Bullet List">
                       <span class="buttonicon buttonicon-insertunorderedlist"></span>
                     </a>
                 </li>
-                <li id="indent" data-key="indent">
+                <li class="acl-write" id="indent" data-key="indent">
                     <a class="grouped-middle" title="Indent">
                       <span class="buttonicon buttonicon-indent"></span>
                     </a>
                 </li>
-                <li id="outdent" data-key="outdent">
+                <li class="acl-write" id="outdent" data-key="outdent">
                     <a class="grouped-right" title="Unindent">
                       <span class="buttonicon buttonicon-outdent"></span>
                     </a>
                 </li>
-                <li class="separator"></li>
-                <li id="undo" data-key="undo">
+                <li class="acl-write separator"></li>
+                <li class="acl-write" id="undo" data-key="undo">
                     <a class="grouped-left" title="Undo (ctrl-Z)">
                       <span class="buttonicon buttonicon-undo"></span>
                     </a>
                 </li>
-                <li id="redo" data-key="redo">
+                <li class="acl-write" id="redo" data-key="redo">
                     <a class="grouped-right" title="Redo (ctrl-Y)">
                       <span class="buttonicon buttonicon-redo"></span>
                     </a>
                 </li>
-                <li class="separator"></li>
-                <li id="clearAuthorship" data-key="clearauthorship">
+                <li class="acl-write separator"></li>
+                <li class="acl-write" id="clearAuthorship" data-key="clearauthorship">
                     <a title="Clear Authorship Colors">
                       <span class="buttonicon buttonicon-clearauthorship"></span>
                     </a>
@@ -86,24 +86,25 @@
             </ul>
             <ul class="menu_right">
                 <% e.begin_block("editbarMenuRight"); %>
-                <li data-key="settings">
+                <li class="acl-write" data-key="settings">
                     <a class="grouped-left" id="settingslink" title="Settings of this pad">
                         <span class="buttonicon buttonicon-settings"></span>
                     </a>
                 </li>
+                <li class="acl-write" data-key="savedRevision">
+                    <a class="grouped-right" id="revisionlink" title="Mark this revision as a saved revision">
+                        <span class="buttonicon buttonicon-savedRevision"></span>
+                    </a>
+                </li>
+                <li class="acl-write separator"></li>
                 <li data-key="import_export">
-                    <a class="grouped-middle" id="importexportlink" title="Import/Export from/to different document formats">
+                    <a class="grouped-left" id="importexportlink" title="Import/Export from/to different document formats">
                         <span class="buttonicon buttonicon-import_export"></span>
                     </a>
                 </li>
                 <li data-key="embed">
-                    <a class="grouped-middle" id="embedlink" title="Share and Embed this pad">
-                        <span class="buttonicon buttonicon-embed"></span>
-                    </a>
-                </li>
-                <li data-key="savedRevision">
-                    <a class="grouped-right" id="revisionlink" title="Mark this revision as a saved revision">
-                        <span class="buttonicon buttonicon-savedRevision"></span>
+                    <a class="grouped-right" id="embedlink" title="Share and Embed this pad">
+                        <span class="grouped-right buttonicon buttonicon-embed"></span>
                     </a>
                 </li>
                 <li class="separator"></li>
@@ -185,7 +186,7 @@
 
         <div id="importexport" class="popup">
             <h1>Import/Export</h1>
-            <div class="column">
+            <div class="column acl-write">
                 <% e.begin_block("importColumn"); %>
                 <h2>Upload any text file or document</h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
@@ -221,7 +222,7 @@
 
         <div id="embed" class="popup">
             <% e.begin_block("embedPopup"); %>
-            <div id="embedreadonly" class="right">
+            <div id="embedreadonly" class="right acl-write">
                 <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();">
                 <label for="readonlyinput">Read only</label>
             </div>

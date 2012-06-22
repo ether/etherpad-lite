@@ -16,6 +16,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       "ep_etherpad-lite/templates/admin/plugins.html",
       render_args), {});
   });
+  args.app.get('/admin/plugins/info', function(req, res) {
+    res.send(eejs.require(
+      "ep_etherpad-lite/templates/admin/plugins-info.html",
+        {}), {});
+  });
 }
 
 exports.socketio = function (hook_name, args, cb) {
