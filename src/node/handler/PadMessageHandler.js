@@ -33,6 +33,7 @@ var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins.js");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var _ = require('underscore');
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
 /**
  * A associative array that saves which sessions belong to a pad
@@ -158,6 +159,11 @@ exports.handleDisconnect = function(client)
  */
 exports.handleMessage = function(client, message)
 { 
+  _.map(hooks.callAll( "handleMessage", { client: client, message: message }), function ( newmessage ) {
+    if ( newmessage || newmessage === null ) {
+      message = newmessage;
+    }
+  });
   if(message == null)
   {
     messageLogger.warn("Message is null!");
