@@ -231,6 +231,8 @@ exports.handleMessage = function(client, message)
       },
       finalHandler
     ]);
+  } else {
+    finalHandler();
   }
 }
 
