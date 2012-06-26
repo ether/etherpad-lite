@@ -174,31 +174,63 @@ exports.handleMessage = function(client, message)
     messageLogger.warn("Message has no type attribute!");
     return;
   }
-  
-  //Check what type of message we get and delegate to the other methodes
-  if(message.type == "CLIENT_READY") {
-    handleClientReady(client, message);
-  } else if(message.type == "CHANGESET_REQ") {
-    handleChangesetRequest(client, message);
-  } else if(message.type == "COLLABROOM") {
-    if (sessioninfos[client.id].readonly) {
-      messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
-    } else if (message.data.type == "USER_CHANGES") {
-      handleUserChanges(client, message);
-    } else if (message.data.type == "USERINFO_UPDATE") {
-      handleUserInfoUpdate(client, message);
-    } else if (message.data.type == "CHAT_MESSAGE") {
-      handleChatMessage(client, message);
-    } else if (message.data.type == "SAVE_REVISION") {
-      handleSaveRevisionMessage(client, message);
-    } else if (message.data.type == "CLIENT_MESSAGE" &&
-               message.data.payload.type == "suggestUserName") {
-      handleSuggestUserName(client, message);
+
+  var finalHandler = function () {
+    //Check what type of message we get and delegate to the other methodes
+    if(message.type == "CLIENT_READY") {
+      handleClientReady(client, message);
+    } else if(message.type == "CHANGESET_REQ") {
+      handleChangesetRequest(client, message);
+    } else if(message.type == "COLLABROOM") {
+      if (sessioninfos[client.id].readonly) {
+        messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
+      } else if (message.data.type == "USER_CHANGES") {
+        handleUserChanges(client, message);
+      } else if (message.data.type == "USERINFO_UPDATE") {
+        handleUserInfoUpdate(client, message);
+      } else if (message.data.type == "CHAT_MESSAGE") {
+        handleChatMessage(client, message);
+      } else if (message.data.type == "SAVE_REVISION") {
+        handleSaveRevisionMessage(client, message);
+      } else if (message.data.type == "CLIENT_MESSAGE" &&
+                 message.data.payload.type == "suggestUserName") {
+        handleSuggestUserName(client, message);
+      } else {
+        messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
+      }
     } else {
-      messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
+      messageLogger.warn("Dropped message, unknown Message Type " + message.type);
     }
-  } else {
-    messageLogger.warn("Dropped message, unknown Message Type " + message.type);
+  };
+
+  if (message && message.padId) {
+    async.series([
+      //check permissions
+      function(callback)
+      {
+        // Note: message.sessionID is an entirely different kind of
+        // session from the sessions we use here! Beware! FIXME: Call
+        // our "sessions" "connections".
+        // FIXME: Use a hook instead
+        // FIXME: Allow to override readwrite access with readonly
+        securityManager.checkAccess(message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+        {
+          if(ERR(err, callback)) return;
+
+          //access was granted
+          if(statusObject.accessStatus == "grant")
+          {
+            callback();
+          }
+          //no access, send the client a message that tell him why
+          else
+          {
+            client.json.send({accessStatus: statusObject.accessStatus})
+          }
+        });
+      },
+      finalHandler
+    ]);
   }
 }
 
