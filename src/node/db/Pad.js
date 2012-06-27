@@ -84,7 +84,7 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
   this.saveToDatabase();
   
   // set the author to pad
-  if(author != '')
+  if(author)
     authorManager.addPad(author, this.id);
 };
 
