@@ -82,6 +82,10 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
 
   db.set("pad:"+this.id+":revs:"+newRev, newRevData);             
   this.saveToDatabase();
+  
+  // set the author to pad
+  if(author != '')
+    authorManager.addPad(author, this.id);
 };
 
 //save all attributes to the database
@@ -435,6 +439,18 @@ Pad.prototype.remove = function remove(callback) {
           {
             db.remove("pad:"+padID+":revs:"+i);
           }
+
+          callback();
+        },
+        //remove pad from all authors who contributed
+        function(callback)
+        {
+          var authorIDs = _this.getAllAuthors();
+
+          authorIDs.forEach(function (authorID)
+          {
+        	authorManager.removePad(authorID, padID);
+          });
 
           callback();
         }
