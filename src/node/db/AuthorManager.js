@@ -165,7 +165,6 @@ exports.setAuthorColorId = function (author, colorId, callback)
 /**
  * Returns the name of the author
  * @param {String} author The id of the author
- * @param {String} name The name of the author
  * @param {Function} callback callback(err, name)
  */
 exports.getAuthorName = function (author, callback)
@@ -176,6 +175,7 @@ exports.getAuthorName = function (author, callback)
 /**
  * Sets the name of the author
  * @param {String} author The id of the author
+ * @param {String} name The name of the author
  * @param {Function} callback (optional)
  */
 exports.setAuthorName = function (author, name, callback)
@@ -186,7 +186,6 @@ exports.setAuthorName = function (author, name, callback)
 /**
  * Returns an array of all pads this author contributed to
  * @param {String} author The id of the author
- * @param {String} name The name of the author
  * @param {Function} callback (optional)
  */
 exports.listPadsOfAuthor = function (authorID, callback)
@@ -225,7 +224,6 @@ exports.listPadsOfAuthor = function (authorID, callback)
  * Adds a new pad to the list of contributions
  * @param {String} author The id of the author
  * @param {String} padID The id of the pad the author contributes to
- * @param {Function} callback (optional)
  */
 exports.addPad = function (authorID, padID)
 {
@@ -238,11 +236,11 @@ exports.addPad = function (authorID, padID)
     //the entry doesn't exist so far, let's create it
     if(author.padIDs == null)
     {
-      author.padIDs = {padIDs : {}};
+      author.padIDs = {};
     }
       
     //add the entry for this pad
-    author.padIDs[padID] = 1;
+    author.padIDs[padID] = 1;// anything, because value is not used
       
     //save the new element back
     db.set("globalAuthor:" + authorID, author);
@@ -253,7 +251,6 @@ exports.addPad = function (authorID, padID)
  * Removes a pad from the list of contributions
  * @param {String} author The id of the author
  * @param {String} padID The id of the pad the author contributes to
- * @param {Function} callback (optional)
  */
 exports.removePad = function (authorID, padID)
 {
