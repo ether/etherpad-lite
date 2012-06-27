@@ -283,6 +283,24 @@ exports.getRevisionsCount = function(padID, callback)
 }
 
 /**
+getLastEdited(padID) returns the timestamp of the last revision of the pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {lastEdited: 1340815946602}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getLastEdited = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    callback(null, {lastEdited: pad.getLastEdited()});
+  });
+}
+
+/**
 createPad(padName [, text]) creates a new pad in this group 
 
 Example returns:

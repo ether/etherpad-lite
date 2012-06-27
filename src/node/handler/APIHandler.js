@@ -57,6 +57,7 @@ var functions = {
   "getHTML"                   : ["padID", "rev"],
   "setHTML"                   : ["padID", "html"],
   "getRevisionsCount"         : ["padID"], 
+  "getLastEdited"             : ["padID"],
   "deletePad"                 : ["padID"], 
   "getReadOnlyID"             : ["padID"],
   "setPublicStatus"           : ["padID", "publicStatus"], 

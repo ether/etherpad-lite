@@ -80,7 +80,7 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
     newRevData.meta.atext = this.atext;
   }
 
-  db.set("pad:"+this.id+":revs:"+newRev, newRevData);             
+  db.set("pad:"+this.id+":revs:"+newRev, newRevData);
   this.saveToDatabase();
 };
 
@@ -100,6 +100,12 @@ Pad.prototype.saveToDatabase = function saveToDatabase(){
   }
   
   db.set("pad:"+this.id, dbObject);
+}
+
+// get time of last edit (changeset application)
+Pad.prototype.getLastEdit = function getLastEdit(callback){
+  var revNum = this.getHeadRevisionNumber();
+  db.getSub("pad:"+this.id+":revs:"+revNum, ["meta", "timestamp"], callback);
 }
 
 Pad.prototype.getRevisionChangeset = function getRevisionChangeset(revNum, callback) {
