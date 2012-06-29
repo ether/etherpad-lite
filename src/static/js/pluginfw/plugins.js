@@ -57,8 +57,8 @@ exports.loadFn = function (path, hookName) {
   var functionName
     , parts = path.split(":");
   
-  // on windows
-  if(process.platform == 'win32') {
+  // on windows: C:\foo\bar:xyz
+  if(parts[0].length == 1) {
     if(parts.length == 3)
       functionName = parts.pop();
     path = parts.join(":");
