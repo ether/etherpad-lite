@@ -1348,3 +1348,14 @@ function composePadChangesets(padId, startNum, endNum, callback)
     callback(null, changeset);
   });
 }
+
+/**
+ * Get the number of users in a pad
+ */
+exports.padUsersCount = function (padID, callback) {
+  if (!pad2sessions[padID] || typeof pad2sessions[padID] != typeof []) {
+    callback(null, {padUsersCount: 0});
+  } else {
+    callback(null, {padUsersCount: pad2sessions[padID].length});
+  }
+}
