@@ -23,7 +23,7 @@ var util = require('util');
 var settings = require('./Settings');
 
 var CACHE_DIR = path.normalize(path.join(settings.root, 'var/'));
-CACHE_DIR = path.existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
+CACHE_DIR = fs.existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 var responseCache = {};
 
