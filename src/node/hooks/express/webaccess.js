@@ -88,6 +88,8 @@ exports.basicAuth = function (req, res, next) {
   });
 }
 
+var secret = null;
+
 exports.expressConfigure = function (hook_name, args, cb) {
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
@@ -100,10 +102,15 @@ exports.expressConfigure = function (hook_name, args, cb) {
    * name) to a javascript identifier compatible string. Makes code
    * handling it cleaner :) */
 
-  args.app.sessionStore = new express.session.MemoryStore();
+  if (!exports.sessionStore) {
+    exports.sessionStore = new express.session.MemoryStore();
+    secret = randomString(32);
+  }
+
+  args.app.sessionStore = exports.sessionStore;
   args.app.use(express.session({store: args.app.sessionStore,
                                 key: 'express_sid',
-                                secret: apikey = randomString(32)}));
+                                secret: secret}));
 
   args.app.use(exports.basicAuth);
 }
