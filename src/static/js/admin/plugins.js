@@ -126,6 +126,7 @@ $(document).ready(function () {
   socket.on('installed-results', function (data) {
     $("#installed-plugins *").remove();
     for (plugin_name in data.results) {
+      if (plugin_name == "ep_etherpad-lite") continue; // Hack...
       var plugin = data.results[plugin_name];
       var row = $("#installed-plugin-template").clone();
 
