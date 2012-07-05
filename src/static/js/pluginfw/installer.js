@@ -3,7 +3,7 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm");
 var registry = require("npm/lib/utils/npm-registry-client/index.js");
 
-var withNpm = function (npmfn, cb) {
+var withNpm = function (npmfn, final, cb) {
   npm.load({}, function (er) {
     if (er) return cb({progress:1, error:er});
     npm.on("log", function (message) {
@@ -15,6 +15,7 @@ var withNpm = function (npmfn, cb) {
       data.progress = 1;
       data.message = "Done.";
       cb(data);
+      final();
     });
   });
 }
@@ -36,6 +37,9 @@ exports.uninstall = function(plugin_name, cb) {
         });
       });
     },
+    function () {
+      hooks.aCallAll("restartServer", {}, function () {});                
+    },
     cb
   );
 };
@@ -50,6 +54,9 @@ exports.install = function(plugin_name, cb) {
           plugins.update(cb);
         });
       });
+    },
+    function () {
+      hooks.aCallAll("restartServer", {}, function () {});                
     },
     cb
   );
@@ -93,6 +100,7 @@ exports.search = function(query, cache, cb) {
         }
       );
     },
+    function () { },
     cb
   );
 };

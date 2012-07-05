@@ -40,13 +40,14 @@ catch(e)
 //a list of all functions
 var functions = {
   "createGroup"               : [],
-  "createGroupIfNotExistsFor"  : ["groupMapper"], 
+  "createGroupIfNotExistsFor" : ["groupMapper"], 
   "deleteGroup"               : ["groupID"], 
   "listPads"                  : ["groupID"], 
   "createPad"                 : ["padID", "text"], 
   "createGroupPad"            : ["groupID", "padName", "text"],
   "createAuthor"              : ["name"], 
   "createAuthorIfNotExistsFor": ["authorMapper" , "name"], 
+  "listPadsOfAuthor"          : ["authorID"], 
   "createSession"             : ["groupID", "authorID", "validUntil"], 
   "deleteSession"             : ["sessionID"], 
   "getSessionInfo"            : ["sessionID"], 
@@ -57,12 +58,15 @@ var functions = {
   "getHTML"                   : ["padID", "rev"],
   "setHTML"                   : ["padID", "html"],
   "getRevisionsCount"         : ["padID"], 
+  "getLastEdited"             : ["padID"],
   "deletePad"                 : ["padID"], 
   "getReadOnlyID"             : ["padID"],
   "setPublicStatus"           : ["padID", "publicStatus"], 
   "getPublicStatus"           : ["padID"], 
   "setPassword"               : ["padID", "password"], 
-  "isPasswordProtected"       : ["padID"]
+  "isPasswordProtected"       : ["padID"], 
+  "listAuthorsOfPad"          : ["padID"],
+  "padUsersCount"             : ["padID"]
 };
 
 /**

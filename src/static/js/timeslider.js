@@ -70,6 +70,11 @@ function init() {
       sendSocketMsg("CLIENT_READY", {});
     });
 
+    socket.on('disconnect', function()
+    {
+      BroadcastSlider.showReconnectUI();
+    });
+
     //route the incoming messages
     socket.on('message', function(message)
     {
@@ -79,13 +84,11 @@ function init() {
       {
         handleClientVars(message);
       }
-      else if(message.type == "CHANGESET_REQ")
-      {
-        changesetLoader.handleSocketResponse(message);
-      }
       else if(message.accessStatus)
       {
         $("body").html("<h2>You have no permission to access this pad</h2>")
+      } else {
+        changesetLoader.handleMessageFromServer(message);
       }
     });
 
@@ -97,6 +100,12 @@ function init() {
     } else {
       $("#returnbutton").attr("href", document.location.href.substring(0,document.location.href.lastIndexOf("/")));
     }
+
+    $('button#forcereconnect').click(function()
+    {
+      window.location.reload();
+    });
+
   });
 }
 
@@ -106,7 +115,7 @@ function sendSocketMsg(type, data)
   var sessionID = readCookie("sessionID");
   var password = readCookie("password");
 
-  var msg = { "component" : "timeslider",
+  var msg = { "component" : "pad", // FIXME: Remove this stupidity!
               "type": type,
               "data": data,
               "padId": padId,
