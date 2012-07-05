@@ -372,7 +372,17 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     _reachBlockPoint(node, 0, state);
     if (dom.isNodeText(node))
     {
-      var txt = dom.nodeValue(node);
+       var tname = dom.nodeAttr(node.parentNode,"name");
+       hooks.callAll('collectContentTblTd', {
+            cc: this,
+            state: state,
+            tname: tname,
+            node:node,
+            text:dom.nodeValue(node),
+	    styl: null,
+            cls: null
+          });	
+      var txt = this.text||dom.nodeValue(node);
       var rest = '';
       var x = 0; // offset into original text
       if (txt.length == 0)
