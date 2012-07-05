@@ -200,6 +200,10 @@ function Ace2Inner(){
 
   var authorInfos = {}; // presence of key determines if author is present in doc
 
+  function getAuthorInfos(){
+	return authorInfos;
+  };
+ editorInfo.ace_getAuthorInfos= getAuthorInfos;
   function setAuthorInfo(author, info)
   {
     if ((typeof author) != "string")
@@ -884,7 +888,12 @@ function Ace2Inner(){
   editorInfo.ace_setEditable = setEditable;
   editorInfo.ace_execCommand = execCommand;
   editorInfo.ace_replaceRange = replaceRange;
-
+  editorInfo.ace_performDocumentReplaceRange = performDocumentReplaceRange;
+  editorInfo.ace_performDocumentReplaceCharRange = performDocumentReplaceCharRange;
+  editorInfo.ace_renumberList = renumberList;
+  editorInfo.ace_doReturnKey = doReturnKey;
+  editorInfo.ace_isBlockElement = isBlockElement;
+  editorInfo.ace_getLineListType = getLineListType;  
   editorInfo.ace_callWithAce = function(fn, callStack, normalize)
   {
     var wrapper = function()
@@ -1683,16 +1692,34 @@ function Ace2Inner(){
     p.mark("findsel");
     // if the nodes that define the selection weren't encountered during
     // content collection, figure out where those nodes are now.
-    if (selection && !selStart)
+	if (selection && !selStart)
     {
       //if (domChanges) dmesg("selection not collected");
-      selStart = getLineAndCharForPoint(selection.startPoint);
+       editorInfo.lineAndChar = null;
+       hooks.callAll('aceLineAndCharForPoint', {
+		callstack: currentCallStack,
+		editorInfo: editorInfo,
+		rep: rep,
+		root:root,
+		point:selection.startPoint,
+		documentAttributeManager: documentAttributeManager
+      });
+      selStart = editorInfo.lineAndChar || getLineAndCharForPoint(selection.startPoint);
     }
     if (selection && !selEnd)
     {
-      selEnd = getLineAndCharForPoint(selection.endPoint);
+	 editorInfo.lineAndChar = null;
+	 hooks.callAll('aceLineAndCharForPoint', {
+			callstack: currentCallStack,
+			editorInfo: editorInfo,
+			rep: rep,
+			root:root,
+			point:selection.endPoint,
+			documentAttributeManager: documentAttributeManager
+	      });
+      	selEnd = editorInfo.lineAndChar || getLineAndCharForPoint(selection.endPoint);
     }
-
+	
     // selection from content collection can, in various ways, extend past final
     // BR in firefox DOM, so cap the line
     var numLines = rep.lines.length();
@@ -1845,16 +1872,18 @@ function Ace2Inner(){
   {
     return rep.selStart[0];
   }
+  editorInfo.ace_caretLine = caretLine;
 
   function caretColumn()
   {
     return rep.selStart[1];
   }
-
+  editorInfo.ace_caretColumn = caretColumn;
   function caretDocChar()
   {
     return rep.lines.offsetOfIndex(caretLine()) + caretColumn();
   }
+  editorInfo.ace_caretDocChar = caretDocChar;
 
   function handleReturnIndentation()
   {
@@ -3447,7 +3476,7 @@ function Ace2Inner(){
   {
     return !!REGEX_WORDCHAR.exec(c);
   }
-
+  editorInfo.ace_isWordChar = isWordChar;
   function isSpaceChar(c)
   {
     return !!REGEX_SPACE.exec(c);
@@ -3548,7 +3577,17 @@ function Ace2Inner(){
 
       if (!stopped)
       {
-        if (isTypeForSpecialKey && keyCode == 8)
+	    editorInfo.specialHandled = null;
+	    hooks.callAll('aceKeyEvent', {
+			callstack: currentCallStack,
+			editorInfo: editorInfo,
+			rep: rep,
+			specialHandled:specialHandled,
+			documentAttributeManager: documentAttributeManager,
+			evt:evt
+	      });
+		specialHandled = editorInfo.specialHandled||specialHandled;
+        if ((!specialHandled) &&isTypeForSpecialKey && keyCode == 8)
         {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
           // or else deleting a blank line can take two delete presses.
