@@ -1062,18 +1062,29 @@ function handleChangesetRequest(client, message)
   var granularity = message.data.granularity;
   var start = message.data.start;
   var end = start + (100 * granularity);
-  var padId = message.padId;
-  
-  //build the requested rough changesets and send them back
-  getChangesetInfo(padId, start, end, granularity, function(err, changesetInfo)
-  {
-    ERR(err);
-    
-    var data = changesetInfo;
-    data.requestID = message.data.requestID;
-    
-    client.json.send({type: "CHANGESET_REQ", data: data});
-  });
+  var padIds;
+
+  async.series([
+    function (callback) {
+      readOnlyManager.getIds(message.padId, function(err, value) {
+        if(ERR(err, callback)) return;
+        padIds = value;
+        callback();
+      });
+    },
+    function (callback) {
+      //build the requested rough changesets and send them back
+      getChangesetInfo(padIds.padId, start, end, granularity, function(err, changesetInfo)
+      {
+        ERR(err);
+
+        var data = changesetInfo;
+        data.requestID = message.data.requestID;
+
+        client.json.send({type: "CHANGESET_REQ", data: data});
+      });
+    }
+  ]);
 }
 
 
@@ -1297,7 +1308,7 @@ function composePadChangesets(padId, startNum, endNum, callback)
     function(callback)
     {
       padManager.getPad(padId, function(err, _pad)
-      {        
+      {
         if(ERR(err, callback)) return;
         pad = _pad;
         callback();
