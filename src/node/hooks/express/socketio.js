@@ -5,7 +5,6 @@ var socketIORouter = require("../../handler/SocketIORouter");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
-var timesliderMessageHandler = require("../../handler/TimesliderMessageHandler");
 
 var connect = require('connect');
  
@@ -59,7 +58,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //Initalize the Socket.IO Router
   socketIORouter.setSocketIO(io);
   socketIORouter.addComponent("pad", padMessageHandler);
-  socketIORouter.addComponent("timeslider", timesliderMessageHandler);
 
   hooks.callAll("socketio", {"app": args.app, "io": io});
 }

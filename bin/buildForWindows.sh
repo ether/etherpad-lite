@@ -41,7 +41,7 @@ echo "do a normal unix install first..."
 bin/installDeps.sh || exit 1
 
 echo "copy the windows settings template..."
-cp settings.json.template_windows settings.json
+cp settings.json.template settings.json
 
 echo "resolve symbolic links..."
 cp -rL node_modules node_modules_resolved
