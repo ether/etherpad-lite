@@ -114,9 +114,13 @@ var chat = (function()
       {
         var count = Number($("#chatcounter").text());
         count++;
+        
+        // is the users focus already in the chatbox?
+        var alreadyFocused = $("#chatinput").is(":focus");
+        
         $("#chatcounter").text(count);
         // chat throb stuff -- Just make it throw for twice as long
-        if(wasMentioned)
+        if(wasMentioned && !alreadyFocused)
         { // If the user was mentioned show for twice as long and flash the browser window
           if (chatMentions == 0){
             title = document.title;
@@ -130,7 +134,11 @@ var chat = (function()
           $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(2000).hide(400);
         }
       }
-      
+       // Clear the chat mentions when the user clicks on the chat input box
+      $('#chatinput').click(function(){
+        chatMentions = 0;
+        document.title = title;
+      });
       self.scrollDown();
 
     },
