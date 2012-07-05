@@ -450,7 +450,19 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
       if (tname == "br")
       {
-        cc.startNewLine(state);
+        this.breakLine = true;
+	var tvalue = dom.nodeAttr(node, 'value');
+	hooks.callAll('collectContentBreak', {
+            cc: this,
+            state: state,
+            tname: tname,
+	    tvalue:tvalue,
+            styl: null,
+            cls: null
+          });
+	 if(this.breakLine){
+		cc.startNewLine(state);
+	}
       }
       else if (tname == "script" || tname == "style")
       {
