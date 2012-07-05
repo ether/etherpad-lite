@@ -37,7 +37,7 @@ fi
 NODE_VERSION=$(node --version)
 node_v_minor=$(echo $NODE_VERSION | cut -d "." -f 1-2)
 if [ ! node_v_minor = "v0.8" ] || [ ! node_v_minor = "v0.6"]; then
-  echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.8.x" >&2
+  echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.6.x or v0.8.x" >&2
   exit 1 
 fi
 
