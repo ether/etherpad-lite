@@ -298,7 +298,10 @@ exports.getLastEdited = function(padID, callback)
   getPadSafe(padID, true, function(err, pad)
   {
     if(ERR(err, callback)) return;
-    callback(null, {lastEdited: pad.getLastEdited()});
+    pad.getLastEdit(function(err, value) {
+      if(ERR(err, callback)) return;
+      callback(null, {lastEdited: value});
+    });
   });
 }
 
