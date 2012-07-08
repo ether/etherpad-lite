@@ -3,6 +3,7 @@ var express = require('express');
 var settings = require('../utils/Settings');
 var fs = require('fs');
 var path = require('path');
+var npm = require("npm/lib/npm.js");
 var  _ = require("underscore");
 
 var server;
