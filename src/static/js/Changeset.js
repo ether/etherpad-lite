@@ -27,8 +27,6 @@
 
 var AttributePool = require("./AttributePool");
 
-var _opt = null;
-
 /**
  * ==================== General Util Functions =======================
  */
@@ -127,22 +125,13 @@ exports.opIterator = function (opsStr, optStartIndex) {
   function nextRegexMatch() {
     prevIndex = curIndex;
     var result;
-    if (_opt) {
-      result = _opt.nextOpInString(opsStr, curIndex);
-      if (result) {
-        if (result.opcode() == '?') {
-          exports.error("Hit error opcode in op stream");
-        }
-        curIndex = result.lastIndex();
-      }
-    } else {
-      regex.lastIndex = curIndex;
-      result = regex.exec(opsStr);
-      curIndex = regex.lastIndex;
-      if (result[0] == '?') {
-        exports.error("Hit error opcode in op stream");
-      }
+    regex.lastIndex = curIndex;
+    result = regex.exec(opsStr);
+    curIndex = regex.lastIndex;
+    if (result[0] == '?') {
+      exports.error("Hit error opcode in op stream");
     }
+  
     return result;
   }
   var regexResult = nextRegexMatch();
@@ -150,13 +139,7 @@ exports.opIterator = function (opsStr, optStartIndex) {
 
   function next(optObj) {
     var op = (optObj || obj);
-    if (_opt && regexResult) {
-      op.attribs = regexResult.attribs();
-      op.lines = regexResult.lines();
-      op.chars = regexResult.chars();
-      op.opcode = regexResult.opcode();
-      regexResult = nextRegexMatch();
-    } else if ((!_opt) && regexResult[0]) {
+    if (regexResult[0]) {
       op.attribs = regexResult[1];
       op.lines = exports.parseNum(regexResult[2] || 0);
       op.opcode = regexResult[3];
@@ -169,7 +152,7 @@ exports.opIterator = function (opsStr, optStartIndex) {
   }
 
   function hasNext() {
-    return !!(_opt ? regexResult : regexResult[0]);
+    return !!(regexResult[0]);
   }
 
   function lastIndex() {
@@ -414,159 +397,109 @@ exports.smartOpAssembler = function () {
   };
 };
 
-if (_opt) {
-  exports.mergingOpAssembler = function () {
-    var assem = _opt.mergingOpAssembler();
 
-    function append(op) {
-      assem.append(op.opcode, op.chars, op.lines, op.attribs);
-    }
+exports.mergingOpAssembler = function () {
+  // This assembler can be used in production; it efficiently
+  // merges consecutive operations that are mergeable, ignores
+  // no-ops, and drops final pure "keeps".  It does not re-order
+  // operations.
+  var assem = exports.opAssembler();
+  var bufOp = exports.newOp();
 
-    function toString() {
-      return assem.toString();
-    }
+  // If we get, for example, insertions [xxx\n,yyy], those don't merge,
+  // but if we get [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n].
+  // This variable stores the length of yyy and any other newline-less
+  // ops immediately after it.
+  var bufOpAdditionalCharsAfterNewline = 0;
 
-    function clear() {
-      assem.clear();
-    }
-
-    function endDocument() {
-      assem.endDocument();
-    }
-
-    return {
-      append: append,
-      toString: toString,
-      clear: clear,
-      endDocument: endDocument
-    };
-  };
-} else {
-  exports.mergingOpAssembler = function () {
-    // This assembler can be used in production; it efficiently
-    // merges consecutive operations that are mergeable, ignores
-    // no-ops, and drops final pure "keeps".  It does not re-order
-    // operations.
-    var assem = exports.opAssembler();
-    var bufOp = exports.newOp();
-
-    // If we get, for example, insertions [xxx\n,yyy], those don't merge,
-    // but if we get [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n].
-    // This variable stores the length of yyy and any other newline-less
-    // ops immediately after it.
-    var bufOpAdditionalCharsAfterNewline = 0;
-
-    function flush(isEndDocument) {
-      if (bufOp.opcode) {
-        if (isEndDocument && bufOp.opcode == '=' && !bufOp.attribs) {
-          // final merged keep, leave it implicit
-        } else {
+  function flush(isEndDocument) {
+    if (bufOp.opcode) {
+      if (isEndDocument && bufOp.opcode == '=' && !bufOp.attribs) {
+        // final merged keep, leave it implicit
+      } else {
+        assem.append(bufOp);
+        if (bufOpAdditionalCharsAfterNewline) {
+          bufOp.chars = bufOpAdditionalCharsAfterNewline;
+          bufOp.lines = 0;
           assem.append(bufOp);
-          if (bufOpAdditionalCharsAfterNewline) {
-            bufOp.chars = bufOpAdditionalCharsAfterNewline;
-            bufOp.lines = 0;
-            assem.append(bufOp);
-            bufOpAdditionalCharsAfterNewline = 0;
-          }
+          bufOpAdditionalCharsAfterNewline = 0;
         }
-        bufOp.opcode = '';
       }
+      bufOp.opcode = '';
     }
+  }
 
-    function append(op) {
-      if (op.chars > 0) {
-        if (bufOp.opcode == op.opcode && bufOp.attribs == op.attribs) {
-          if (op.lines > 0) {
-            // bufOp and additional chars are all mergeable into a multi-line op
-            bufOp.chars += bufOpAdditionalCharsAfterNewline + op.chars;
-            bufOp.lines += op.lines;
-            bufOpAdditionalCharsAfterNewline = 0;
-          } else if (bufOp.lines == 0) {
-            // both bufOp and op are in-line
-            bufOp.chars += op.chars;
-          } else {
-            // append in-line text to multi-line bufOp
-            bufOpAdditionalCharsAfterNewline += op.chars;
-          }
+  function append(op) {
+    if (op.chars > 0) {
+      if (bufOp.opcode == op.opcode && bufOp.attribs == op.attribs) {
+        if (op.lines > 0) {
+          // bufOp and additional chars are all mergeable into a multi-line op
+          bufOp.chars += bufOpAdditionalCharsAfterNewline + op.chars;
+          bufOp.lines += op.lines;
+          bufOpAdditionalCharsAfterNewline = 0;
+        } else if (bufOp.lines == 0) {
+          // both bufOp and op are in-line
+          bufOp.chars += op.chars;
         } else {
-          flush();
-          exports.copyOp(op, bufOp);
+          // append in-line text to multi-line bufOp
+          bufOpAdditionalCharsAfterNewline += op.chars;
         }
+      } else {
+        flush();
+        exports.copyOp(op, bufOp);
       }
     }
+  }
 
-    function endDocument() {
-      flush(true);
-    }
+  function endDocument() {
+    flush(true);
+  }
 
-    function toString() {
-      flush();
-      return assem.toString();
-    }
+  function toString() {
+    flush();
+    return assem.toString();
+  }
 
-    function clear() {
-      assem.clear();
-      exports.clearOp(bufOp);
-    }
-    return {
-      append: append,
-      toString: toString,
-      clear: clear,
-      endDocument: endDocument
-    };
+  function clear() {
+    assem.clear();
+    exports.clearOp(bufOp);
+  }
+  return {
+    append: append,
+    toString: toString,
+    clear: clear,
+    endDocument: endDocument
   };
-}
+};
 
-if (_opt) {
-  exports.opAssembler = function () {
-    var assem = _opt.opAssembler();
-    // this function allows op to be mutated later (doesn't keep a ref)
 
-    function append(op) {
-      assem.append(op.opcode, op.chars, op.lines, op.attribs);
+
+exports.opAssembler = function () {
+  var pieces = [];
+  // this function allows op to be mutated later (doesn't keep a ref)
+
+  function append(op) {
+    pieces.push(op.attribs);
+    if (op.lines) {
+      pieces.push('|', exports.numToString(op.lines));
     }
+    pieces.push(op.opcode);
+    pieces.push(exports.numToString(op.chars));
+  }
 
-    function toString() {
-      return assem.toString();
-    }
+  function toString() {
+    return pieces.join('');
+  }
 
-    function clear() {
-      assem.clear();
-    }
-    return {
-      append: append,
-      toString: toString,
-      clear: clear
-    };
+  function clear() {
+    pieces.length = 0;
+  }
+  return {
+    append: append,
+    toString: toString,
+    clear: clear
   };
-} else {
-  exports.opAssembler = function () {
-    var pieces = [];
-    // this function allows op to be mutated later (doesn't keep a ref)
-
-    function append(op) {
-      pieces.push(op.attribs);
-      if (op.lines) {
-        pieces.push('|', exports.numToString(op.lines));
-      }
-      pieces.push(op.opcode);
-      pieces.push(exports.numToString(op.chars));
-    }
-
-    function toString() {
-      return pieces.join('');
-    }
-
-    function clear() {
-      pieces.length = 0;
-    }
-    return {
-      append: append,
-      toString: toString,
-      clear: clear
-    };
-  };
-}
+};
 
 /**
  * A custom made String Iterator
