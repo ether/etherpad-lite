@@ -123,8 +123,8 @@ try
 }
 catch(e)
 {
-  console.error("There is a syntax error in your settings.ym file");
-  console.error(e.message);
+  console.error("There is a syntax error in your settings.yml file");
+  console.error(e.toString());
   process.exit(1);
 }
 
