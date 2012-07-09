@@ -31,8 +31,4 @@ echo Clearing cache.
 del /S var\minified*
 
 echo _
-echo Setting up settings.json...
-IF NOT EXIST settings.json copy settings.json.template settings.json
-
-echo _
 echo Installed Etherpad-lite!

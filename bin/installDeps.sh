@@ -41,20 +41,6 @@ if [ ! $NODE_V_MINOR = "v0.8" ] && [ ! $NODE_V_MINOR = "v0.6" ]; then
   exit 1 
 fi
 
-#Get the name of the settings file
-settings="settings.json"
-a='';
-for arg in $*; do
-  if [ "$a" = "--settings" ] || [ "$a" = "-s" ]; then settings=$arg; fi
-  a=$arg
-done
-
-#Does a $settings exist? if no copy the template
-if [ ! -f $settings ]; then
-  echo "Copy the settings template to $settings..."
-  cp -v settings.json.template $settings || exit 1
-fi
-
 echo "Ensure that all dependencies are up to date..."
 (
   mkdir -p node_modules
