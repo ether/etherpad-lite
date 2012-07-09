@@ -26,10 +26,10 @@ dbSettings :
 
 #the default text of a pad
 defaultPadText : |
-	Welcome to Etherpad Lite!
-	This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!
-	
-	Etherpad Lite on Github: http://j.mp/ep-lite
+  Welcome to Etherpad Lite! 
+  This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!
+  
+  Etherpad Lite on Github: http://j.mp/ep-lite
 
 # Users must have a session to access pads. This effectively allows only group pads to be accessed. 
 requireSession : false
