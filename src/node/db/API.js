@@ -154,6 +154,13 @@ Example returns:
 */
 exports.setText = function(padID, text, callback)
 {    
+  //text is required
+  if(typeof text != "string")
+  {
+    callback(new customError("text is no string","apierror"));
+    return;
+  }
+
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
