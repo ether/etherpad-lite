@@ -111,7 +111,8 @@ try{
   //read the settings sync
   settingsStr = fs.readFileSync(settingsFilename);
 } catch(e){
-  console.warn('No settings file found. Using defaults.');
+  console.error('No settings file found.');
+  process.exit(1);
 }
 
 // try to parse the settings
@@ -121,8 +122,8 @@ try {
     settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
   }
 }catch(e){
-  console.warn('There was an error processing your settings.json file. Using defaults.');
-  console.warn(e.message);
+  console.error('There was an error processing your settings.json file: '+e.message);
+  process.exit(1);
 }
 
 //loop trough the settings
@@ -142,8 +143,7 @@ for(var i in settings)
   //this setting is unkown, output a warning and throw it away
   else
   {
-    console.warn("Unkown Setting: '" + i + "'");
-    console.warn("This setting doesn't exist or it was removed");
+    console.warn("Unkown Setting: '" + i + "'. This setting doesn't exist or it was removed");
   }
 }
 
