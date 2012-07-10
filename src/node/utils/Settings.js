@@ -143,7 +143,7 @@ for(var i in settings)
   //this setting is unkown, output a warning and throw it away
   else
   {
-    console.warn("Unkown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+    console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
   }
 }
 
