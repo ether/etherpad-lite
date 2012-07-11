@@ -109,7 +109,7 @@ settingsFilename = path.resolve(path.join(root, settingsFilename));
 var settingsStr;
 try{
   //read the settings sync
-  settingsStr = fs.readFileSync(settingsFilename);
+  settingsStr = fs.readFileSync(settingsFilename).toString();
 } catch(e){
   console.error('No settings file found.');
   process.exit(1);
