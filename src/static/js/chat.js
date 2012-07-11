@@ -62,8 +62,11 @@ var chat = (function()
     },
     scrollDown: function()
     {
-      if($('#chatbox').css("display") != "none")
-        $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
+      if($('#options-scrollchat').is(':checked')){
+        if($('#chatbox').css("display") != "none"){
+          $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
+        }
+      }
     }, 
     send: function()
     {
