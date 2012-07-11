@@ -111,8 +111,7 @@ try{
   //read the settings sync
   settingsStr = fs.readFileSync(settingsFilename).toString();
 } catch(e){
-  console.error('No settings file found.');
-  process.exit(1);
+  console.warn('No settings file found. Continuing using defaults!');
 }
 
 // try to parse the settings
