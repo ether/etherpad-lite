@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+var fs = require('fs'),
+  jsparser = require('uglify-js').parser;
+
+
+if(process.argv.length != 3){
+  console.error('Usage: ' + process.argv[1] + ' [filename]');
+  process.exit(1);
+}
+var settingsStr = fs.readFileSync(process.argv[2]).toString();
+
+var token = {};
+var t = jsparser.tokenizer(settingsStr);
+
+
+indent = -1
+
+var ymlStr = '';
+
+var valueIsNext = false;
+
+function escapeString(s){
+  if(s.indexOf('\n') != -1 || s.indexOf(':') != -1 || s.indexOf('\'') != -1 ){
+    return JSON.stringify(s);
+  }
+  return s;
+}
+
+function indentation(i){
+  s = ''
+  while (i-- > 0) s += '  '
+  return s; 
+}
+
+
+while((token = t()).type !== 'eof'){
+  var type = token.type,
+    value = token.value,
+    comments = token.comments_before.map(function(c){return c.value.split('\n') })
+  if(type == 'punc' && value == '{') { indent++; ymlStr += "\n"; valueIsNext = false};
+  if(type == 'punc' && value == '}') indent--;
+  if(type == 'punc' && value == ':')  {ymlStr += ' : '; valueIsNext = true };
+  if(type == 'punc' && value == ',')  {ymlStr += '\n'; valueIsNext = false };
+  
+  if(type == 'string' || type == 'name' || type == 'num'){
+    if(!valueIsNext){
+      if(comments.length > 0){
+        
+        ymlStr += indentation(indent) + "\n" +
+          comments.map(function(s){return "\n" + indentation(indent) + '#' + s.join("\n" + indentation(indent) + '#')}).join('\n') +'\n';
+      }
+      ymlStr += indentation(indent);
+    }
+    ymlStr += (type == 'string') ? escapeString(value) : value;
+  }
+}
+
+console.log(ymlStr);

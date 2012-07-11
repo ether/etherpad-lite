@@ -29,7 +29,7 @@ var arg, prevArg;
 for ( var i = 0; i < argv.length; i++ ) {
   arg = argv[i];
 
-  // Override location of settings.json file
+  // Override location of settings.yml file
   if ( prevArg == '--settings' || prevArg == '-s' ) {
     exports.argv.settings = arg;
   }

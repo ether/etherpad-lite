@@ -36,7 +36,7 @@ exports.createServer = function () {
     console.log("The plugin admin page is at http://" + settings.ip + ":" + settings.port + "/admin/plugins");
   }
   else{
-    console.warn("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
+    console.warn("Admin username and password not set in settings.yml.  To access admin please uncomment and edit 'users' in settings.yml");
   }
 
 }

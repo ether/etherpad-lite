@@ -1,5 +1,5 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides 
+ * The Settings Modul reads the settings out of settings.yml and provides 
  * this information to the other modules
  */
 
@@ -24,6 +24,7 @@ var os = require("os");
 var path = require('path');
 var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
+var yaml = require('js-yaml');
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -101,7 +102,7 @@ exports.abiwordAvailable = function()
 }
 
 // Discover where the settings file lives
-var settingsFilename = argv.settings || "settings.json";
+var settingsFilename = argv.settings || "settings.yml";
 if (settingsFilename.charAt(0) != '/') {
     settingsFilename = path.normalize(path.join(root, settingsFilename));
 }
@@ -111,23 +112,19 @@ try{
   //read the settings sync
   settingsStr = fs.readFileSync(settingsFilename).toString();
 } catch(e){
-  console.warn('No settings file found. Using defaults.');
-  settingsStr = '{}';
+  console.error('No settings file found. If you were using a settings.json file, cosider converting it using \'./bin/settings2yml settings.json > settings.yml\'');
+  process.exit(1);
 }
   
-//remove all comments
-settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
-
-//try to parse the settings
 var settings;
 try
 {
-  settings = JSON.parse(settingsStr);
+  settings = yaml.load(settingsStr);
 }
 catch(e)
 {
-  console.error("There is a syntax error in your settings.json file");
-  console.error(e.message);
+  console.error("There is a syntax error in your settings.yml file");
+  console.error(e.toString());
   process.exit(1);
 }
 
