@@ -63,7 +63,7 @@ var chat = (function()
     scrollDown: function()
     {
       if($('#chatbox').css("display") != "none"){
-        if(!self.lastMessage || self.lastMessage.position().top < $('#chattext').height()) {
+        if(!self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < $('#chattext').height()) {
           $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
           self.lastMessage = $('#chattext > p').eq(-1);
         }
