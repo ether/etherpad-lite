@@ -21,6 +21,7 @@
  */
  
 var padutils = require('./pad_utils').padutils;
+var padeditbar = require('./pad_editbar').padeditbar;
 
 var padmodals = (function()
 {
@@ -30,16 +31,15 @@ var padmodals = (function()
     {
       pad = _pad;
     },
-    showModal: function(modalId, duration)
+    showModal: function(messageId)
     {
-      $(".modaldialog").hide();
-      $(modalId).show().css(
-      {
-        'opacity': 0
-      }).animate(
-      {
-        'opacity': 1
-      }, duration);
+      $("#connectivity .visible").removeClass('visible');
+      $("#connectivity ."+messageId).addClass('visible');
+      padeditbar.toogleDropDown("none", function() {
+        padeditbar.toogleDropDown("connectivity");
+      });
+    },
+    showOverlay: function(duration) {
       $("#modaloverlay").show().css(
       {
         'opacity': 0
@@ -48,18 +48,7 @@ var padmodals = (function()
         'opacity': 1
       }, duration);
     },
-    hideModal: function(duration)
-    {
-      padutils.cancelActions('hide-feedbackbox');
-      padutils.cancelActions('hide-sharebox');
-      $("#sharebox-response").hide();
-      $(".modaldialog").animate(
-      {
-        'opacity': 0
-      }, duration, function()
-      {
-        $("#modaloverlay").hide();
-      });
+    hideOverlay: function(duration) {
       $("#modaloverlay").animate(
       {
         'opacity': 0
