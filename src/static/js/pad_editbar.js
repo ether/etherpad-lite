@@ -122,25 +122,25 @@ var padeditbar = (function()
       {
         if(cmd == "showusers")
         {
-          self.toogleDropDown("users");
+          self.toggleDropDown("users");
         }
         else if (cmd == 'settings')
         {
-              self.toogleDropDown("settings");
+              self.toggleDropDown("settings");
         }
         else if (cmd == 'connectivity')
         {
-              self.toogleDropDown("connectivity");
+              self.toggleDropDown("connectivity");
         }
         else if (cmd == 'embed')
         {
           self.setEmbedLinks();
           $('#linkinput').focus().select();
-          self.toogleDropDown("embed");
+          self.toggleDropDown("embed");
         }
         else if (cmd == 'import_export')
         {
-	      self.toogleDropDown("importexport");
+	      self.toggleDropDown("importexport");
         }
         else if (cmd == 'savedRevision')
         {
@@ -186,7 +186,7 @@ var padeditbar = (function()
       }
       if(padeditor.ace) padeditor.ace.focus();
     },
-    toogleDropDown: function(moduleName, cb)
+    toggleDropDown: function(moduleName, cb)
     {
       var modules = ["settings", "connectivity", "importexport", "embed", "users"];
       

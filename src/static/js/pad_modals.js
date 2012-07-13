@@ -35,8 +35,8 @@ var padmodals = (function()
     {
       $("#connectivity .visible").removeClass('visible');
       $("#connectivity ."+messageId).addClass('visible');
-      padeditbar.toogleDropDown("none", function() {
-        padeditbar.toogleDropDown("connectivity");
+      padeditbar.toggleDropDown("none", function() {
+        padeditbar.toggleDropDown("connectivity");
       });
     },
     showOverlay: function(duration) {
