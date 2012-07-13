@@ -209,7 +209,7 @@ var padeditbar = (function()
             returned = true;
           }
         }
-        if(!returned) return cb();
+        if(!returned && cb) return cb();
       }
       else 
       {
