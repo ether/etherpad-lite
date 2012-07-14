@@ -89,9 +89,9 @@
             </ul>
             <ul class="menu_right">
                 <% e.begin_block("editbarMenuRight"); %>
-                <li class="acl-write" data-key="savedRevision">
-                    <a class="grouped-left" id="revisionlink" title="Mark this revision as a saved revision">
-                        <span class="buttonicon buttonicon-savedRevision"></span>
+                <li data-key="import_export">
+                    <a class="grouped-left" id="importexportlink" title="Import/Export from/to different document formats">
+                        <span class="buttonicon buttonicon-import_export"></span>
                     </a>
                 </li>
                 <li onClick="document.location = document.location.pathname+ '/timeslider'">
@@ -99,9 +99,9 @@
                         <span class="buttonicon buttonicon-history"></span>
                     </a>
                 </li>
-                <li data-key="import_export">
-                    <a class="grouped-right" id="importexportlink" title="Import/Export from/to different document formats">
-                        <span class="buttonicon buttonicon-import_export"></span>
+                <li class="acl-write" data-key="savedRevision">
+                    <a class="grouped-right" id="revisionlink" title="Mark this revision as a saved revision">
+                        <span class="buttonicon buttonicon-savedRevision"></span>
                     </a>
                 </li>
                 <li class="acl-write separator"></li>
