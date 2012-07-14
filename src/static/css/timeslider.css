@@ -150,6 +150,13 @@
   margin-top: 0;
   padding-right: 6px;
 }
+#settings,
+#importexport,
+#embed,
+#connectivity,
+#users {
+    top: 62px;
+}
 #importexport .popup {
   width: 185px
 }
