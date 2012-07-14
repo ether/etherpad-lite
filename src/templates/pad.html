@@ -22,6 +22,9 @@
 
         <% e.begin_block("body"); %>
         <div id="editbar" class="toolbar">
+            <div id="overlay">
+                <div id="overlay-inner"></div>
+            </div>
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
                 <li class="acl-write" id="bold" data-key="bold">
@@ -312,10 +315,6 @@
         </div>
 
         <div id="focusprotector">&nbsp;</div>
-
-        <div id="modaloverlay">
-            <div id="modaloverlay-inner"></div>
-        </div>
 
         <% e.end_block(); %>
 

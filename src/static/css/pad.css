@@ -402,6 +402,7 @@ table#otheruserstable {
   font-style: italic;
 }
 
+#connectivitylink,
 #connectivity {
   z-index: 600 !important;
 }
@@ -420,17 +421,17 @@ table#otheruserstable {
   padding: 5px;
 }
 
-#modaloverlay {
+.toolbar #overlay {
   z-index: 500;
   display: none;
   background-repeat: repeat-both;
   width: 100%;
   position: absolute;
-  height: 100%;
+  height: inherit;
   left: 0;
   top: 0;
 }
-* html #modaloverlay {
+* html #overlay {
   /* for IE 6+ */
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   filter: alpha(opacity=100);

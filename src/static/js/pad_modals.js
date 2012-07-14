@@ -40,7 +40,7 @@ var padmodals = (function()
       });
     },
     showOverlay: function(duration) {
-      $("#modaloverlay").show().css(
+      $("#overlay").show().css(
       {
         'opacity': 0
       }).animate(
@@ -49,7 +49,7 @@ var padmodals = (function()
       }, duration);
     },
     hideOverlay: function(duration) {
-      $("#modaloverlay").animate(
+      $("#overlay").animate(
       {
         'opacity': 0
       }, duration, function()
