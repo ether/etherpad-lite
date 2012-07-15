@@ -252,12 +252,12 @@ function getDokuWikiFromAtext(pad, atext)
 
     if (line.listLevel && lineContent)
     {
-	  if (line.listTypeName == "number")
-		{
-          pieces.push(new Array(line.listLevel + 1).join('  ') + ' - ');
-	    } else {
-          pieces.push(new Array(line.listLevel + 1).join('  ') + '* ');
-		}
+      if (line.listTypeName == "number")
+      {
+        pieces.push(new Array(line.listLevel + 1).join('  ') + ' - ');
+      } else {
+        pieces.push(new Array(line.listLevel + 1).join('  ') + '* ');
+      }
     }
     pieces.push(lineContent);
   }
