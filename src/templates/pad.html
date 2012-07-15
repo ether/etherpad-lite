@@ -224,40 +224,44 @@
                   <h2>Connected.</h2>
                 </div>
                 <div class="reconnecting">
-                  <h2>Reestablishing connection...</h2>
+                  <h1>Reestablishing connection...</h1>
                   <p><img alt="" border="0" src="/static/img/connectingbar.gif" /></p>
                 </div>
                 <div class="userdup">
-                  <h2>Opened in another window.</h2>
-                  <p><b>You seem to have opened this pad in another browser window.</b> If you'd like to use this window instead, you can reconnect.</p>
+                  <h1>Opened in another window.</h1>
+                  <h2>You seem to have opened this pad in another browser window.</h2>
+                  <p>If you'd like to use this window instead, you can reconnect.</p>
                   <button id="forcereconnect">Reconnect Now</button>
                 </div>
                 <div class="unauth">
-                  <h2>No Authorization.</h2>
+                  <h1>No Authorization.</h1>
                   <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
                   <button id="forcereconnect">Reconnect Now</button>
                 </div>
                 <div class="looping">
-                  <h2>Disconnected.</h2>
-                  <p><b>We're having trouble talking to the EtherPad lite synchronization server.</b> You may be connecting through an incompatible firewall or proxy server.</p>
+                  <h1>Disconnected.</h1>
+                  <h2>We're having trouble talking to the EtherPad lite synchronization server.</h2>
+                  <p>You may be connecting through an incompatible firewall or proxy server.</p>
                 </div>
                 <div class="initsocketfail">
-                  <h2>Disconnected.</h2>
-                  <p><b>We were unable to connect to the EtherPad lite synchronization server.</b> This may be due to an incompatibility with your web browser or internet connection.</p>
+                  <h1>Disconnected.</h1>
+                  <h2>We were unable to connect to the EtherPad lite synchronization server.</h2>
+                  <p>This may be due to an incompatibility with your web browser or internet connection.</p>
                 </div>
                 <div class="slowcommit">
-                  <h2>Disconnected.</h2>
-                  <p><b>Server not responding.</b> This may be due to network connectivity issues or high load on the server.</p>
+                  <h1>Disconnected.</h1>
+                  <h2>Server not responding.</h2>
+                  <p>This may be due to network connectivity issues or high load on the server.</p>
                   <button id="forcereconnect">Reconnect Now</button>
                 </div>
                 <div class="deleted">
-                  <h2>Disconnected.</h2>
+                  <h1>Disconnected.</h1>
                   <p>This pad was deleted.</p>
                 </div>
                 <div class="disconnected">
-                  <h2>Disconnected.</h2>
-                  <p><b>Lost connection with the EtherPad lite synchronization server.</b> This may be due to a loss of network connectivity.</p>
-                  <p>If this continues to happen, please let us know</p>
+                  <h1>Disconnected.</h1>
+                  <h2>Lost connection with the EtherPad lite synchronization server.</h2>
+                  <p>This may be due to a loss of network connectivity. If this continues to happen, please let us know</p>
                   <button id="forcereconnect">Reconnect Now</button>
                 </div>
                 <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">

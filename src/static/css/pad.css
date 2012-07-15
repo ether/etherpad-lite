@@ -730,6 +730,10 @@ input[type=checkbox] {
 .popup input[type=text], #users input[type=text] {
   outline: none;
 }
+.popup button {
+  padding: 5px;
+  font-size: 14px;
+}
 .popup a {
   text-decoration: none
 }
