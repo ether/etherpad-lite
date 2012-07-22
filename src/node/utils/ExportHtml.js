@@ -469,6 +469,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
     var head = 
       (noDocType ? '' : '<!doctype html>\n') + 
       '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+	'<title>' + Security.escapeHTML(padId) + '</title>\n' +
         '<meta charset="utf-8">\n' + 
         '<style> * { font-family: arial, sans-serif;\n' + 
           'font-size: 13px;\n' + 
