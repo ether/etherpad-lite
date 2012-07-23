@@ -321,7 +321,6 @@
                (Gets overridden by padutils.setupGlobalExceptionHandler)
             */
             window.onerror = function(msg, url, line) {
-              console.log('error', arguments);
               var box   = document.getElementById('editorloadingbox');
               box.innerHTML = '<p><b>An error occured while loading the pad</b></p>'
                             + '<p><b>'+msg+'</b> '
