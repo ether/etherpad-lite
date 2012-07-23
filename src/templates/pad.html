@@ -316,6 +316,19 @@
         <% e.end_block(); %>
 
         <% e.begin_block("scripts"); %>
+        <script type="text/javascript">
+            /* Display errors on page load to the user 
+               (Gets overridden by padutils.setupGlobalExceptionHandler)
+            */
+            window.onerror = function(msg, url, line) {
+              console.log('error', arguments);
+              var box   = document.getElementById('editorloadingbox');
+              box.innerHTML = '<p><b>An error occured while loading the pad</b></p>'
+                            + '<p><b>'+msg+'</b> '
+                            + '<small>in '+ url +' (line '+ line +')</small></p>'
+            };
+        </script>
+
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 
