@@ -21,6 +21,7 @@
  */
 
 var padutils = require('./pad_utils').padutils;
+var hooks = require('./pluginfw/hooks');
 
 var myUserInfo = {};
 
@@ -528,6 +529,10 @@ var paduserlist = (function()
         // not sure how this would happen
         return;
       }
+
+      hooks.callAll('userJoinOrUpdate', {
+        userInfo: info
+      });
 
       var userData = {};
       userData.color = typeof info.colorId == "number" ? clientVars.colorPalette[info.colorId] : info.colorId;

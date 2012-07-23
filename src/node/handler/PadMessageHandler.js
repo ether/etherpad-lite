@@ -159,11 +159,7 @@ exports.handleDisconnect = function(client)
  */
 exports.handleMessage = function(client, message)
 { 
-  _.map(hooks.callAll( "handleMessage", { client: client, message: message }), function ( newmessage ) {
-    if ( newmessage || newmessage === null ) {
-      message = newmessage;
-    }
-  });
+
   if(message == null)
   {
     messageLogger.warn("Message is null!");
@@ -173,6 +169,23 @@ exports.handleMessage = function(client, message)
   {
     messageLogger.warn("Message has no type attribute!");
     return;
+  }
+
+  var handleMessageHook = function(callback){
+    var dropMessage = false;
+    
+    // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
+    // handleMessage will be called, even if the client is not authorized
+    hooks.aCallAll("handleMessage", { client: client, message: message }, function ( messages ) {
+      _.each(messages, function(newMessage){
+        if ( newmessage === null ) {
+          dropMessage = true;
+        }
+      });
+      
+      // If no plugins explicitly told us to drop the message, its ok to proceed
+      if(!dropMessage){ callback() };
+    });
   }
 
   var finalHandler = function () {
@@ -203,11 +216,18 @@ exports.handleMessage = function(client, message)
     }
   };
 
-  if (message && message.padId) {
+  if (message) {
     async.series([
+      handleMessageHook,
       //check permissions
       function(callback)
       {
+        
+        if(!message.padId){
+          // If the message has a padId we assume the client is already known to the server and needs no re-authorization
+          callback();
+          return;
+        }
         // Note: message.sessionID is an entirely different kind of
         // session from the sessions we use here! Beware! FIXME: Call
         // our "sessions" "connections".
@@ -231,8 +251,6 @@ exports.handleMessage = function(client, message)
       },
       finalHandler
     ]);
-  } else {
-    finalHandler();
   }
 }
 
