@@ -25,6 +25,8 @@ var path = require('path');
 var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
 var vm = require('vm');
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -149,3 +151,9 @@ for(var i in settings)
 if(exports.dbType === "dirty"){
   console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
 }
+
+// Call loadSettings hook with an immutable settings object
+plugins.ensure(function() {
+	var immutableSettings = Object.freeze(Object.create(exports));
+	hooks.aCallAll("loadSettings", { settings: immutableSettings });
+});
