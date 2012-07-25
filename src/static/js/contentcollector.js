@@ -258,7 +258,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     {
       state.listNesting--;
     }
-    if(oldListType) state.lineAttributes['list'] = oldListType;
+    if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
+    else { delete state.lineAttributes['list']; }
     _recalcAttribString(state);
   }
 
