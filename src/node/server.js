@@ -46,6 +46,10 @@ async.waterfall([
     console.info("Installed plugins: " + plugins.formatPlugins());
     console.debug("Installed parts:\n" + plugins.formatParts());
     console.debug("Installed hooks:\n" + plugins.formatHooks());
+
+    // Call loadSettings hook
+    hooks.aCallAll("loadSettings", { settings: settings });
+
     callback();
   },
 
