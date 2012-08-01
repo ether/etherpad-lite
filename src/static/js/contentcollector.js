@@ -310,7 +310,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       ['insertorder', 'first']
     ].concat(
       _.map(state.lineAttributes,function(value,key){
-        console.log([key, value])
+        if (window.console) console.log([key, value])
         return [key, value];
       })
     );
