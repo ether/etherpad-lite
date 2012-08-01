@@ -50,7 +50,7 @@ mv node_modules_resolved node_modules
 
 echo "download windows node..."
 cd bin
-wget "http://nodejs.org/dist/v$NODE_VERSION/node.exe" -O node.exe
+wget "http://nodejs.org/dist/v$NODE_VERSION/node.exe" -O ../node.exe
 
 echo "create the zip..."
 cd /tmp
