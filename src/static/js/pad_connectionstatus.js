@@ -21,6 +21,7 @@
  */
 
 var padmodals = require('./pad_modals').padmodals;
+var padeditbar = require('./pad_editbar').padeditbar;
 
 var padconnectionstatus = (function()
 {
@@ -42,15 +43,18 @@ var padconnectionstatus = (function()
       status = {
         what: 'connected'
       };
-      padmodals.hideModal(500);
+      
+      padmodals.showModal('connected');
+      padmodals.hideOverlay(500);
     },
     reconnecting: function()
     {
       status = {
         what: 'reconnecting'
       };
-      $("#connectionbox").get(0).className = 'modaldialog cboxreconnecting';
-      padmodals.showModal("#connectionbox", 500);
+      
+      padmodals.showModal('reconnecting');
+      padmodals.showOverlay(500);
     },
     disconnected: function(msg)
     {
@@ -61,20 +65,15 @@ var padconnectionstatus = (function()
         what: 'disconnected',
         why: msg
       };
+      
       var k = String(msg).toLowerCase(); // known reason why
       if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth'))
       {
-        k = 'unknown';
+        k = 'disconnected';
       }
       
-      var cls = 'modaldialog cboxdisconnected cboxdisconnected_' + k;
-      $("#connectionbox").get(0).className = cls;
-      padmodals.showModal("#connectionbox", 500);
-
-      $('button#forcereconnect').click(function()
-      {
-        window.location.reload();
-      });
+      padmodals.showModal(k);
+      padmodals.showOverlay(500);
     },
     isFullyConnected: function()
     {
