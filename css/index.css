@@ -6,10 +6,11 @@ body {
 h1,h2,h3,h4,h5,h6 {
   font-family: Helvetica,Arial,sans-serif;
   font-weight: normal;
-  padding: 20px 0;
+  padding: 10px 0;
 }
 
 h1 {
+  margin-top: 40px;
   font-size: 0.9cm;
 }
 h2 {
@@ -38,18 +39,10 @@ h6 {
 
 /* scroll points */
 
-a.anchor {
+a.scroll-point {
   display: block;
-  border-bottom: 1px solid #ccc;
-  padding-top: 45px;
-  margin-bottom: 45px;
-}
-a.anchor:first-of-type {
-  padding-top: 0;
-  border-bottom: none;
-  
   position: relative;
-  top: -45px;
+  top: -90px;
 }
 
 /* header */
@@ -206,7 +199,7 @@ ul.links li a:focus {
 /* footer */
 
 div#footer {
-  height: 50px;
-  padding-top: 20px;
+  padding-bottom: 40px;
+  padding-top: 60px;
   text-align: center;
 }
