@@ -1,0 +1,212 @@
+
+body {
+  font-family: Helvetica,Arial,sans-serif; /* Calibri,FreeSans,Tahoma, */
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: Helvetica,Arial,sans-serif;
+  font-weight: normal;
+  padding: 20px 0;
+}
+
+h1 {
+  font-size: 0.9cm;
+}
+h2 {
+  font-size: 0.75cm;
+}
+h3 {
+  font-size: 0.7cm;
+}
+h4 {
+  font-size: 0.65cm;
+}
+h5 {
+  font-size: 0.6cm;
+}
+h6 {
+  font-size: 0.5cm;
+}
+
+/* middling everything */
+
+.wrap {
+  width: 1008px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* scroll points */
+
+a.anchor {
+  display: block;
+  border-bottom: 1px solid #ccc;
+  padding-top: 45px;
+  margin-bottom: 45px;
+}
+a.anchor:first-of-type {
+  padding-top: 0;
+  border-bottom: none;
+  
+  position: relative;
+  top: -45px;
+}
+
+/* header */
+
+div#header {
+  background: none repeat scroll 0 0 #333;
+  border-bottom: 3px solid #aaa;
+  left: 0;
+  margin-bottom: 10px;
+  position: fixed;
+  right: 0;
+  z-index: 10;
+}
+div#header a.logo {
+  background: url("../img/brand.png") no-repeat scroll 0 0 transparent;
+  display: block;
+  float: left;
+  height: 50px;
+  margin: 10px 0;
+  width: 140px;
+}
+div#header div#nav {
+  float: right;
+  padding: 16px 0;
+}
+div#header div#nav li {
+  display: inline-block;
+  margin: 0 8px;
+}
+div#header div#nav li a,
+div#header div#nav li a:active {
+  -moz-transition: all 0.25s linear 0s;
+  color: #fff;
+  font-size: 0.6cm;
+  line-height: 55px;
+  padding: 16px;
+  text-decoration: none;
+}
+
+div#header div#nav li a:hover,
+div#header div#nav li a:focus {
+  color: #5a5;
+}
+
+div#header + * {
+  padding-top: 120px !important;
+}
+
+
+/* download button */
+
+div#downloadbutton {
+  float: left;
+  width: 7cm;
+  padding: 8px 25px;
+  margin: 15px;
+  -moz-transition: all 0.25s linear 0s;
+  background-color: #272;
+  color: #fff;
+  font-size: 12px;
+}
+div.showcase div#downloadbutton { float: right; }
+div#downloadbutton a,
+div#downloadbutton a:active {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.8cm;
+}
+div#downloadbutton:hover,
+div#downloadbutton:focus {
+  background-color: #050;
+}
+div#downloadbutton a i.icon-download-alt{
+  float:right;
+}
+
+
+/* content */
+
+div.content {
+  overflow: auto;
+  
+  background: none repeat scroll 0 0 #fff;
+  font-size: 0.475cm;
+  line-height: 1.5;
+}
+
+div.content p {
+  margin-bottom: 15px;
+}
+
+div.content a,
+div.content a:active {
+  color: #272;
+  -moz-transition: all 0.25s linear 0s;
+}
+
+div.content a:focus,
+div.content a:hover {
+  color: #050;
+}
+
+
+/* show case */
+
+div.showcase {
+  background: url('../img/linen.jpg');
+}
+
+div.showcase h1 {
+  display: inline;
+  line-height: 1.5;
+  padding: 1px;
+  font-size: 1cm;
+  background: #fff;
+  color: #000;
+}
+
+
+/* links */
+
+ul.links li {
+  display: block;
+  margin: 8px 0;
+  width: 12cm;
+  height: 1cm;
+}
+
+ul.links li a [class^="icon-"] {
+  display: block;
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  
+  color: #fff;
+  background-color: #5a5;
+  padding: 5px;
+}
+ul.links li a,
+ul.links li a:active {
+  display: block;
+  position: relative;
+  padding: 5px;
+  -moz-transition: all 0.25s linear 0s;
+  background-color: #fff;
+  color: #000;
+  text-decoration: none;
+}
+ul.links li a:hover,
+ul.links li a:focus {
+  color: #fff;
+  background-color: #5a5;
+}
+
+/* footer */
+
+div#footer {
+  height: 50px;
+  padding-top: 20px;
+  text-align: center;
+}

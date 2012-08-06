@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Etherpad lite</title>
+<!--
+
+Thanks to Apache CouchDB team for the inspiration.
+
+    http://couchdb.apache.org
+
+Thanks to Patrick Hoesly for his original artwork:
+
+    http://www.flickr.com/photos/zooboing/4715048673/
+
+This fabulous linen texture was integrated into the site design.
+
+Thanks to Dave Gandy for his work on Font Awesome
+
+    http://fortawesome.github.com/Font-Awesome
+
+This iconic web font was used extensively around the site.
+-->
+<link type="text/css" rel="stylesheet" href="css/reset.css" />
+<link type="text/css" rel="stylesheet" href="css/font-awesome.css" />
+<link type="text/css" rel="stylesheet" href="css/index.css" />
+</head>
+<body>
+  <div id="header">
+    <div class="wrap">
+      <a href="#" class="logo"></a>
+      <div id="nav">
+        <ul>
+          <li><a href="#about">about</a></li>
+          <li><a href="#download">download</a></li>
+          <li><a href="#docs">docs</a></li>
+          <li><a href="#contribute">contribute</a></li>
+          <li><a href="#links">links</a></li>
+       </ul>
+      </div>
+    </div>
+  </div>
+  <div class="content showcase">
+    <div class="wrap">
+      <div style="margin: 0 15px 10px 0; float:left;">
+        <iframe width="420" height="235" src="https://www.youtube-nocookie.com/embed/X_SO7K6ef6g?rel=0" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <h1><strong>Etherpad</strong> is an <strong>Open Source</strong> online editor providing collaborative editing in really <strong>real-time</strong> powered by <strong>Node.js</strong></h1>
+      <div id="downloadbutton"><a href="#download"><i class="icon-download-alt"></i>DOWNLOAD</a><br/><span>Version 1.1</span></div>
+    </div>
+  </div>
+  
+  <a class="anchor wrap" name="about"></a>
+  <div class="content wrap">
+    <h1><i class="icon-info-sign"></i> Collaborating in really real-time</h1>
+    <p>Etherpad lite allows you to edit documents colaboratively in real-time, much like a live multi-player online editor. Additionally, Etherpad lite provides access to all data through a well-documented HTTP API and supports import/export to many major data exchange formats. The built-in plugin system makes extending the core functionality almost a breeze.</p>
+
+    <h2>History</h2>
+    <p>Etherpad lite was spawned from the hell fire of Etherpad. Etherpad Lite is based entirely on node.js, while reusing the well-tested easysync library. This makes it much more lightweight and more stable than the original Etherpad.</p>
+    <p>Our hope is that this will encourage more users to use and install a realtime collaborative editor. A smaller, manageable and well-documented code base makes it easier for developers to understand and improve the code and contribute towards the project.</p>
+  </div>
+  
+  <a class="anchor wrap" name="download"></a>
+  <div class="content wrap">
+    <h1><i class="icon-download-alt"></i> Download</h1>
+    <div id="downloadbutton"><a href="http://github.com/Pita/etherpad-lite/zipball/master"><i class="icon-download-alt"></i>Source</a><br/><span>Version 1.1</span></div>
+    <div id="downloadbutton"><a href="https://github.com/downloads/Pita/etherpad-lite/etherpad-lite-win.zip"><i class="icon-download-alt"></i>Windows</a><br/><span>Version 1.1</span></div>
+  </div>
+  
+  <a class="anchor wrap" name="docs"></a>
+  <div class="content wrap">
+    <h1><i class="icon-align-left"></i> Docs</h1>
+    <p><a href="https://github.com/Pita/etherpad-lite/wiki">The wiki</a> provides useful tuorials and How-to's to get you started with Etherpad lite.</p>
+    <p>A more thorough reference can be found in the <a href="#">official documentation</a>.</p>
+  </div>
+  
+  <a class="anchor wrap" name="contribute"></a>
+  <div class="content wrap">
+    <h1><i class="icon-wrench"></i> Contribute</h1>
+    <p>Etherpad is an open source project. And that means, that everything, from this website to the core of the application itself, has been contributed by passionate, helpful individuals (such as yourself) who liked what they saw and wanted to make something better of it. So if <em>you</em> like what you see, and want to make something better of it, <em>we’d</em> like to see your contributions. It doesn’t matter how familiar you are with real-time applications, or whether you know how to program in JavaScript. There are plenty of ways to be helpful! Just ask!</p>
+    <p>The main development happens on <a href="https://github.com/Pita/etherpad-lite">Github</a>. To contribute, <a href="http://help.github.com/fork-a-repo/">fork</a> the <a href="https://github.com/Pita/etherpad-lite">main repo</a>, branch off a <a href="https://www.google.com/search?q=git+feature+branches">feature branch</a> from <code>develop</code>, make your changes and <a href="http://git-scm.com/docs/git-commit">commit</a> them, <a href="http://git-scm.com/docs/git-push">push</a> to your fork and submit a <a href="http://help.github.com/send-pull-requests/">pull request</a> for <code>Pita/develop</code>.</p>
+    <p>Once in a while we merge <code>develop</code> into <code>master</code>, which results in a new release. This means you will always find the latest stable version in the <code>master</code> branch.</p>
+    <p>One of the first things you should do is actually use Etherpad lite, and get to know it, read about it, evangelise it, and engage with the wider community. You can learn, how to write a plugin and implement some cool stuff.</p>
+    <p></p>
+  </div>
+  
+  <a class="anchor wrap" name="links"></a>
+  <div class="content wrap">
+    <h1><i class="icon-external-link"></i> Links</h1>
+  </div>
+  <div class="content showcase">
+    <ul class="links wrap">
+      <li><a href="https://github.com/Pita/etherpad-lite">GitHub repository<i class="icon-chevron-right"></i></a></li>
+      <li><a href="https://github.com/Pita/etherpad-lite/issues">Issue tracker<i class="icon-chevron-right"></i></a></li>
+      <li><a href="https://github.com/Pita/etherpad-lite/wiki">Wiki<i class="icon-chevron-right"></i></a></li>
+      <li><a href="#">Documentation<i class="icon-chevron-right"></i></a></li>
+    </ul>
+  </div>
+  
+  <div id="footer" class="wrap">
+    <p>Copyright © 2012 The Etherpad Foundation | Design by Marcel Klehr</p>
+  </div>
+</body>
+</html>
