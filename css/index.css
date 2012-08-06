@@ -1,3 +1,10 @@
+/* font awesome */
+
+.icon-info-sign:before {
+  vertical-align: middle;
+}
+
+/**/
 
 body {
   font-family: Helvetica,Arial,sans-serif; /* Calibri,FreeSans,Tahoma, */
