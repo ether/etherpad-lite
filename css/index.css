@@ -6,7 +6,7 @@ body {
 h1,h2,h3,h4,h5,h6 {
   font-family: Helvetica,Arial,sans-serif;
   font-weight: normal;
-  padding: 10px 0;
+  padding: 20px 0;
 }
 
 h1 {
@@ -26,7 +26,7 @@ h5 {
   font-size: 0.6cm;
 }
 h6 {
-  font-size: 0.5cm;
+  font-size: 0.55cm;
 }
 
 /* middling everything */
@@ -98,13 +98,13 @@ div#downloadbutton {
   float: left;
   width: 7cm;
   padding: 8px 25px;
-  margin: 15px;
+  margin: 0 15px 0 0;
   -moz-transition: all 0.25s linear 0s;
   background-color: #272;
   color: #fff;
   font-size: 12px;
 }
-div.showcase div#downloadbutton { float: right; }
+div.showcase div#downloadbutton { float: right; margin: 15px;}
 div#downloadbutton a,
 div#downloadbutton a:active {
   color: #fff;
@@ -126,8 +126,8 @@ div.content {
   overflow: auto;
   
   background: none repeat scroll 0 0 #fff;
-  font-size: 0.475cm;
-  line-height: 1.5;
+  font-size: 0.5cm;
+  line-height: 1.75;
 }
 
 div.content p {
@@ -150,6 +150,7 @@ div.content a:hover {
 
 div.showcase {
   background: url('../img/linen.jpg');
+  padding: 30px 0;
 }
 
 div.showcase h1 {
