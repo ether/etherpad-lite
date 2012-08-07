@@ -39,7 +39,7 @@ h6 {
 /* middling everything */
 
 .wrap {
-  width: 1008px;
+  width: 25.5cm;
   margin: 0 auto;
   position: relative;
 }
@@ -77,11 +77,10 @@ div#header div#nav {
 }
 div#header div#nav li {
   display: inline-block;
-  margin: 0 8px;
 }
 div#header div#nav li a,
 div#header div#nav li a:active {
-  -moz-transition: all 0.25s linear 0s;
+  -moz-transition: color 0.25s linear 0s;
   color: #fff;
   font-size: 0.6cm;
   line-height: 55px;
@@ -106,7 +105,7 @@ div#downloadbutton {
   width: 7cm;
   padding: 8px 25px;
   margin: 0 15px 0 0;
-  -moz-transition: all 0.25s linear 0s;
+  -moz-transition: background-color 0.25s linear 0s;
   background-color: #272;
   color: #fff;
   font-size: 12px;
@@ -169,6 +168,13 @@ div.showcase h1 {
   color: #000;
 }
 
+div.showcase .feature  {
+  float:left;
+  margin: 0 15px 10px 0;
+  width: 420px;
+  height: 235px;
+}
+
 
 /* links */
 
@@ -211,3 +217,111 @@ div#footer {
   padding-top: 60px;
   text-align: center;
 }
+
+/*
+-------------------------
+*/
+
+@media screen and (min-width: 35cm) {
+  .wrap {
+    width: 35cm;
+  }
+  
+  div#header div#nav li a,
+  div#header div#nav li a:active {
+    font-size: 0.6cm;
+  }
+  
+  div.showcase .feature  {
+    width: 600px;
+    height: 350px;
+  }
+}
+
+@media screen and (max-width: 26cm) {
+  .wrap {
+    width: 18cm;
+  }
+  
+  div#header div#nav li a,
+  div#header div#nav li a:active {
+    font-size: 0.5cm;
+    padding: 16px;
+  }
+  
+  div.showcase .feature  {
+    width: 310px;
+    height: 215px;
+  }
+}
+
+@media screen and (max-width: 18.5cm) {
+  .wrap {
+    width: 15cm;
+  }
+  
+  div#header div#nav li a,
+  div#header div#nav li a:active {
+    font-size: 0.45cm;
+    padding: 10px;
+  }
+  
+  div.showcase h1 {
+    font-size: 0.7cm;
+  }
+  
+  div.showcase .feature  {
+    width: 300px;
+    height: 200px;
+  }
+  
+  div#downloadbutton a,
+  div#downloadbutton a:active {
+    font-size: 0.6cm;
+  }
+  div#downloadbutton {
+    width: 6.5cm;
+    margin-bottom: 10px;
+  }
+}
+
+@media screen and (max-width: 15.5cm) {
+  .wrap {
+    width: 8cm;
+  }
+  
+  div#header {
+    height: 195px;
+  }
+  
+  a.scroll-point {
+    top: -180px;
+  }
+  
+  div#header + * {
+  padding-top: 210px !important;
+}
+  
+  div#header div#nav{
+    padding-top: 0;
+  }
+  
+  div#header div#nav li a,
+  div#header div#nav li a:active {
+    font-size: 0.45cm;
+    padding: 10px;
+  }
+  
+  div.showcase div#downloadbutton {
+    float: left;
+    margin-left: 0;
+  }
+  div#downloadbutton {
+    width: 6.5cm;
+  }
+  
+  ul.links li {
+    width: 8cm;
+  }
+}
+
