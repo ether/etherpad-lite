@@ -104,12 +104,13 @@ div#downloadbutton {
   position: relative;
   width: 8cm;
   padding: 0.7cm 20px 10px;
-  margin: 0 15px 0 0;
+  margin: 0 15px 10px 0;
   
   -moz-transition: background-color 0.25s linear 0s;
   background-color: #272;
   color: #fff;
   font-size: 0.35cm;
+  box-shadow: 3px 3px 3px #555555;
 }
 div.showcase div#downloadbutton { float: right; margin: 15px;}
 div#downloadbutton a,
@@ -257,10 +258,6 @@ div#footer {
   div.showcase .feature  {
     width: 8.2cm;
     height: 5.7cm;
-  }
-  
-  div#downloadbutton {
-    margin-bottom: 10px;
   }
 }
 
