@@ -1,12 +1,12 @@
+## Server-side hooks
+These hooks are called on server-side.
+
 All hooks registered to these events are called with two arguments:
 
 1. name - the name of the hook being called
 2. context - an object with some relevant information about the context of the call
 
-# Server-side hooks
-These hooks are called on server-side.
-
-## pluginUninstall
+### pluginUninstall
 Called from: src/static/js/pluginfw/installer.js
 
 Things in context:
@@ -15,7 +15,7 @@ Things in context:
 
 If this hook returns an error, the callback to the uninstall function gets an error as well. This mostly seems useful for handling additional features added in based on the installation of other plugins, which is pretty cool!
 
-## pluginInstall
+### pluginInstall
 Called from: src/static/js/pluginfw/installer.js
 
 Things in context:
@@ -24,14 +24,14 @@ Things in context:
 
 If this hook returns an error, the callback to the install function gets an error, too. This seems useful for adding in features when a particular plugin is installed.
 
-## init_`<plugin name>`
+### init_`<plugin name>`
 Called from: src/static/js/pluginfw/plugins.js
 
 Things in context: None
 
 This function is called after a specific plugin is initialized. This would probably be more useful than the previous two functions if you only wanted to add in features to one specific plugin.
 
-## expressConfigure
+### expressConfigure
 Called from: src/node/server.js
 
 Things in context:
@@ -40,7 +40,7 @@ Things in context:
 
 This is a helpful hook for changing the behavior and configuration of the application. It's called right after the application gets configured.
 
-## expressCreateServer
+### expressCreateServer
 Called from: src/node/server.js
 
 Things in context:
@@ -49,7 +49,7 @@ Things in context:
 
 This hook gets called after the application object has been created, but before it starts listening. This is similar to the expressConfigure hook, but it's not guaranteed that the application object will have all relevant configuration variables.
 
-## eejsBlock_`<name>`
+### eejsBlock_`<name>`
 Called from: src/node/eejs/index.js
 
 Things in context:
@@ -60,7 +60,7 @@ This hook gets called upon the rendering of an ejs template block. For any speci
 
 Have a look at `src/templates/pad.html` and `src/templates/timeslider.html` to see which blocks are available.
 
-## socketio
+### socketio
 Called from: src/node/hooks/express/socketio.js
 
 Things in context:
@@ -70,7 +70,7 @@ Things in context:
 
 I have no idea what this is useful for, someone else will have to add this description.
 
-## authorize
+### authorize
 Called from: src/node/hooks/express/webaccess.js
 
 Things in context:
@@ -82,7 +82,7 @@ Things in context:
 
 This is useful for modifying the way authentication is done, especially for specific paths.
 
-## authenticate
+### authenticate
 Called from: src/node/hooks/express/webaccess.js
 
 Things in context:
@@ -95,7 +95,7 @@ Things in context:
 
 This is useful for modifying the way authentication is done.
 
-## authFailure
+### authFailure
 Called from: src/node/hooks/express/webaccess.js
 
 Things in context:
@@ -106,7 +106,7 @@ Things in context:
 
 This is useful for modifying the way authentication is done.
 
-## handleMessage
+### handleMessage
 Called from: src/node/handler/PadMessageHandler.js
 
 Things in context:
