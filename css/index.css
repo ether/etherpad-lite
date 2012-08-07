@@ -13,11 +13,11 @@ body {
 h1,h2,h3,h4,h5,h6 {
   font-family: Helvetica,Arial,sans-serif;
   font-weight: normal;
-  padding: 20px 0;
+  padding: 0.5cm 0;
 }
 
 h1 {
-  margin-top: 40px;
+  margin-top: 1cm;
   font-size: 0.9cm;
 }
 h2 {
@@ -49,7 +49,7 @@ h6 {
 a.scroll-point {
   display: block;
   position: relative;
-  top: -90px;
+  top: -2.3cm;
 }
 
 /* header */
@@ -58,7 +58,7 @@ div#header {
   background: none repeat scroll 0 0 #333;
   border-bottom: 3px solid #aaa;
   left: 0;
-  margin-bottom: 10px;
+  height: 2.3cm;
   position: fixed;
   right: 0;
   z-index: 10;
@@ -67,9 +67,8 @@ div#header a.logo {
   background: url("../img/brand.png") no-repeat scroll 0 0 transparent;
   display: block;
   float: left;
-  height: 50px;
+  width: 140px; height: 50px;
   margin: 10px 0;
-  width: 140px;
 }
 div#header div#nav {
   float: right;
@@ -94,7 +93,7 @@ div#header div#nav li a:focus {
 }
 
 div#header + * {
-  padding-top: 120px !important;
+  padding-top: 3cm !important;
 }
 
 
@@ -108,7 +107,7 @@ div#downloadbutton {
   -moz-transition: background-color 0.25s linear 0s;
   background-color: #272;
   color: #fff;
-  font-size: 12px;
+  font-size: 0.35cm;
 }
 div.showcase div#downloadbutton { float: right; margin: 15px;}
 div#downloadbutton a,
@@ -122,7 +121,7 @@ div#downloadbutton:focus {
   background-color: #050;
 }
 div#downloadbutton a i.icon-download-alt{
-  float:right;
+  float: right;
 }
 
 
@@ -137,7 +136,7 @@ div.content {
 }
 
 div.content p {
-  margin-bottom: 15px;
+  margin-bottom: 0.4cm;
 }
 
 div.content a,
@@ -156,23 +155,23 @@ div.content a:hover {
 
 div.showcase {
   background: url('../img/linen.jpg');
-  padding: 30px 0;
+  padding: 0.4cm 0;
 }
 
 div.showcase h1 {
   display: inline;
   line-height: 1.5;
-  padding: 1px;
+  padding: 2px;
   font-size: 1cm;
   background: #fff;
   color: #000;
 }
 
 div.showcase .feature  {
-  float:left;
+  float: left;
   margin: 0 15px 10px 0;
-  width: 420px;
-  height: 235px;
+  width: 11cm;
+  height: 6.5cm;
 }
 
 
@@ -232,9 +231,9 @@ div#footer {
     font-size: 0.6cm;
   }
   
-  div.showcase .feature  {
-    width: 600px;
-    height: 350px;
+  div.showcase iframe.feature  {
+    width: 13cm;
+    height: 8cm;
   }
 }
 
@@ -250,8 +249,8 @@ div#footer {
   }
   
   div.showcase .feature  {
-    width: 310px;
-    height: 215px;
+    width: 8.2cm;
+    height: 5.7cm;
   }
 }
 
@@ -271,8 +270,8 @@ div#footer {
   }
   
   div.showcase .feature  {
-    width: 300px;
-    height: 200px;
+    width: 8cm;
+    height: 5.5cm;
   }
   
   div#downloadbutton a,
@@ -291,15 +290,15 @@ div#footer {
   }
   
   div#header {
-    height: 195px;
+    height: 5.15cm;
   }
   
   a.scroll-point {
-    top: -180px;
+    top: -5cm;
   }
   
   div#header + * {
-  padding-top: 210px !important;
+  padding-top: 5.5cm !important;
 }
   
   div#header div#nav{
