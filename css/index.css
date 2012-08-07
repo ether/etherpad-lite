@@ -101,9 +101,11 @@ div#header + * {
 
 div#downloadbutton {
   float: left;
-  width: 7cm;
-  padding: 8px 25px;
+  position: relative;
+  width: 8cm;
+  padding: 0.7cm 20px 10px;
   margin: 0 15px 0 0;
+  
   -moz-transition: background-color 0.25s linear 0s;
   background-color: #272;
   color: #fff;
@@ -115,6 +117,10 @@ div#downloadbutton a:active {
   color: #fff;
   text-decoration: none;
   font-size: 0.8cm;
+  
+  padding: 3px 20px 0;
+  position: absolute;
+  top:0; bottom:0; right:0; left:0;
 }
 div#downloadbutton:hover,
 div#downloadbutton:focus {
@@ -252,6 +258,10 @@ div#footer {
     width: 8.2cm;
     height: 5.7cm;
   }
+  
+  div#downloadbutton {
+    margin-bottom: 10px;
+  }
 }
 
 @media screen and (max-width: 18.5cm) {
@@ -280,7 +290,6 @@ div#footer {
   }
   div#downloadbutton {
     width: 6.5cm;
-    margin-bottom: 10px;
   }
 }
 
