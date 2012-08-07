@@ -252,7 +252,7 @@ div#footer {
   div#header div#nav li a,
   div#header div#nav li a:active {
     font-size: 0.5cm;
-    padding: 16px;
+    padding: 16px 10px;
   }
   
   div.showcase .feature  {
@@ -269,7 +269,7 @@ div#footer {
   div#header div#nav li a,
   div#header div#nav li a:active {
     font-size: 0.45cm;
-    padding: 10px;
+    padding: 16px 5px;
   }
   
   div.showcase h1 {
