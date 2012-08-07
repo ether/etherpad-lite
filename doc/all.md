@@ -1,3 +1,3 @@
-@include documentation.md
-@include api/api.md
-@include database.md
+@include documentation
+@include api/api
+@include database
