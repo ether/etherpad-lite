@@ -48,7 +48,8 @@ There are 3 types of operators: `+`,`-` and `=`. These operators describe differ
 ```
 
 ### APool
-<pre>
+
+```
 > var AttributePoolFactory = require("./utils/AttributePoolFactory");
 > var apool = AttributePoolFactory.createAttributePool();
 > console.log(apool)
@@ -62,9 +63,11 @@ There are 3 types of operators: `+`,`-` and `=`. These operators describe differ
   eachAttrib: [Function],
   toJsonable: [Function],
   fromJsonable: [Function] }
-</pre>
+```
+
 This creates an empty apool. A apool saves which attributes were used during the history of a pad. There is one apool for each pad. It only saves the attributes that were really used, it doesn't save unused attributes. Lets fill this apool with some values
-<pre>
+
+```
 > apool.fromJsonable({"numToAttrib":{"0":["author","a.kVnWeomPADAT2pn9"],"1":["bold","true"],"2":["italic","true"]},"nextNum":3});
 > console.log(apool)
 { numToAttrib: 
@@ -83,23 +86,29 @@ This creates an empty apool. A apool saves which attributes were used during the
   eachAttrib: [Function],
   toJsonable: [Function],
   fromJsonable: [Function] }
-</pre>
+```
+
 We used the fromJsonable function to fill the empty apool with values. the fromJsonable and toJsonable functions are used to serialize and deserialize an apool. You can see that it stores the relation between numbers and attributes. So for example the attribute 1 is the attribute bold and vise versa. A attribute is always a key value pair. For stuff like bold and italic its just  'italic':'true'. For authors its author:$AUTHORID. So a character can be bold and italic. But it can't belong to multiple authors
-<pre>
+
+```
 > apool.getAttrib(1)
 [ 'bold', 'true' ]
-</pre>
+```
+
 Simple example of how to get the key value pair for the attribute 1
 
 ### AText
-<pre>
+
+```
 > var atext = {"text":"bold text\nitalic text\nnormal text\n\n","attribs":"*0*1+9*0|1+1*0*1*2+b|1+1*0+b|2+2"};
 > console.log(atext)
 { text: 'bold text\nitalic text\nnormal text\n\n',
   attribs: '*0*1+9*0|1+1*0*1*2+b|1+1*0+b|2+2' }
-</pre>
+```
+
 This is an atext. An atext has two parts: text and attribs. The text is just the text of the pad as a string. We will look closer at the attribs at the next steps
-<pre>
+
+```
 > var opiterator = Changeset.opIterator(atext.attribs)
 > console.log(opiterator)
 { next: [Function: next],
@@ -135,7 +144,8 @@ This is an atext. An atext has two parts: text and attribs. The text is just the
   chars: 2,
   lines: 2,
   attribs: '' }
-</pre>
+```
+
 The attribs are again a bunch of operators like .ops in the changeset was. But these operators are only + operators. They describe which part of the text has which attributes
 
 For more information see /doc/easysync/easysync-notes.txt in the source.
