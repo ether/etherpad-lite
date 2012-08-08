@@ -237,3 +237,7 @@ Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security
 * **getLastEdited(padID)** returns the timestamp of the last revision of the pad <br><br>*Example returns:*
   * `{code: 0, message:"ok", data: {lastEdited: 1340815946602}}`
   * `{code: 1, message:"padID does not exist", data: null}`
+  
+* **sendClientsMessage(padID, msg)** sends a custom message of type `msg` to the pad <br><br>*Example returns:*
+  * `{code: 0, message:"ok", data: {}}`
+  * `{code: 1, message:"padID does not exist", data: null}`
