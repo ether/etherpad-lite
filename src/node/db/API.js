@@ -512,6 +512,39 @@ exports.listAuthorsOfPad = function(padID, callback)
   });
 }
 
+/**
+sendClientsMessage(padID, msg) sends a message to all clients connected to the
+pad, possibly for the purpose of signalling a plugin.
+
+Note, this will only accept strings from the HTTP API, so sending bogus changes
+or chat messages will probably not be possible.
+
+The resulting message will be structured like so:
+
+{
+  type: 'COLLABROOM',
+  data: {
+    type: <msg>,
+    time: <time the message was sent>
+  }
+}
+
+Example returns:
+
+{code: 0, message:"ok"}
+{code: 1, message:"padID does not exist"}
+*/
+
+exports.sendClientsMessage = function (padID, msg, callback) {
+  getPadSafe(padID, true, function (err, pad) {
+    if (ERR(err, callback)) {
+      return;
+    } else {
+      padMessageHandler.handleCustomMessage(padID, msg, callback);
+    }
+  } );
+}
+
 
 /******************************/
 /** INTERNAL HELPER FUNCTIONS */
