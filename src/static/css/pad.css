@@ -401,180 +401,36 @@ table#otheruserstable {
   color: #888;
   font-style: italic;
 }
-.modaldialog.cboxreconnecting .modaldialog-inner,
-.modaldialog.cboxconnecting .modaldialog-inner {
-  background: url(../../static/img/connectingbar.gif) no-repeat center 60px;
-  height: 100px;
+
+#connectivity {
+  z-index: 600 !important;
 }
-.modaldialog.cboxreconnecting,
-.modaldialog.cboxconnecting,
-.modaldialog.cboxdisconnected {
-  background: #8FCDE0
-}
-.cboxdisconnected #connectionboxinner div {
-  display: none
-}
-.cboxdisconnected_userdup #connectionboxinner #disconnected_userdup {
-  display: block
-}
-.cboxdisconnected_deleted #connectionboxinner #disconnected_deleted {
-  display: block
-}
-.cboxdisconnected_initsocketfail #connectionboxinner #disconnected_initsocketfail {
-  display: block
-}
-.cboxdisconnected_looping #connectionboxinner #disconnected_looping {
-  display: block
-}
-.cboxdisconnected_slowcommit #connectionboxinner #disconnected_slowcommit {
-  display: block
-}
-.cboxdisconnected_unauth #connectionboxinner #disconnected_unauth {
-  display: block
-}
-.cboxdisconnected_unknown #connectionboxinner #disconnected_unknown {
-  display: block
-}
-.cboxdisconnected_initsocketfail #connectionboxinner #reconnect_advise,
-.cboxdisconnected_looping #connectionboxinner #reconnect_advise,
-.cboxdisconnected_slowcommit #connectionboxinner #reconnect_advise,
-.cboxdisconnected_unknown #connectionboxinner #reconnect_advise {
-  display: block
-}
-.cboxdisconnected div#reconnect_form {
-  display: block
-}
-.cboxdisconnected .disconnected h2 {
-  display: none
-}
-.cboxdisconnected .disconnected .h2_disconnect {
-  display: block
-}
-.cboxdisconnected_userdup .disconnected h2.h2_disconnect {
-  display: none
-}
-.cboxdisconnected_userdup .disconnected h2.h2_userdup {
-  display: block
-}
-.cboxdisconnected_unauth .disconnected h2.h2_disconnect {
-  display: none
-}
-.cboxdisconnected_unauth .disconnected h2.h2_unauth {
-  display: block
-}
-#connectionstatus {
-  position: absolute;
-  width: 37px;
-  height: 41px;
-  overflow: hidden;
-  right: 0;
-  z-index: 11;
-}
-#connectionboxinner .connecting {
-  margin-top: 20px;
-  font-size: 2.0em;
-  color: #555;
-  text-align: center;
+
+#connectivity * {
   display: none;
 }
-.cboxconnecting #connectionboxinner .connecting {
-  display: block
+
+#connectivity .visible,
+#connectivity .visible * {
+  display: block;
 }
-#connectionboxinner .disconnected h2 {
-  font-size: 1.8em;
-  color: #333;
-  text-align: left;
-  margin-top: 10px;
-  margin-left: 10px;
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-#connectionboxinner .disconnected p {
-  margin: 10px 10px;
-  font-size: 1.2em;
-  line-height: 1.1;
-  color: #333;
-}
-#connectionboxinner .disconnected {
-  display: none
-}
-.cboxdisconnected #connectionboxinner .disconnected {
-  display: block
-}
-#connectionboxinner .reconnecting {
-  margin-top: 20px;
-  font-size: 1.6em;
-  color: #555;
-  text-align: center;
-  display: none;
-}
-.cboxreconnecting #connectionboxinner .reconnecting {
-  display: block
-}
+
 #reconnect_form button {
   font-size: 12pt;
   padding: 5px;
 }
-#mainmodals {
-  z-index: 600; /* higher than the modals themselves: */
-}
-.modalfield {
-  font-size: 1.2em;
-  padding: 1px;
-  border: 1px solid #bbb;
-}
-#mainmodals .editempty {
-  color: #aaa
-}
-.modaldialog {
-  position: absolute;
-  top: 100px;
-  left: 50%;
-  margin-left: -243px;
-  width: 485px;
-  display: none;
-  z-index: 501;
-  zoom: 1;
-  overflow: hidden;
-  background: white;
-  border: 1px solid #999;
-}
-.modaldialog .modaldialog-inner {
-  padding: 10pt
-}
-.modaldialog .modaldialog-hide {
-  float: right;
-  background-repeat: no-repeat;
-  background-image: url(static/img/sharebox4.gif);
-  display: block;
-  width: 22px;
-  height: 22px;
-  background-position: -454px -6px;
-  margin-right: -5px;
-  margin-top: -5px;
-}
-.modaldialog label,
-.modaldialog h1 {
-  color: #222222;
-  font-size: 125%;
-  font-weight: bold;
-}
-.modaldialog th {
-  vertical-align: top;
-  text-align: left;
-}
 
-#modaloverlay {
+.toolbar #overlay {
   z-index: 500;
   display: none;
   background-repeat: repeat-both;
   width: 100%;
   position: absolute;
-  height: 100%;
+  height: inherit;
   left: 0;
   top: 0;
 }
-* html #modaloverlay {
+* html #overlay {
   /* for IE 6+ */
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   filter: alpha(opacity=100);
@@ -874,6 +730,10 @@ input[type=checkbox] {
 .popup input[type=text], #users input[type=text] {
   outline: none;
 }
+.popup button {
+  padding: 5px;
+  font-size: 14px;
+}
 .popup a {
   text-decoration: none
 }
@@ -895,6 +755,7 @@ input[type=checkbox] {
 #settings,
 #importexport,
 #embed,
+#connectivity,
 #users {
   position: absolute;
   top: 36px;
@@ -913,15 +774,6 @@ input[type=checkbox] {
   border: none !important;
   border-left: 1px solid #ccc !important;
   width: 185px !important;
-}
-@media screen and (max-width: 960px) { 
-    .modaldialog {
-      position: relative;
-      margin: 0 auto;
-      width: 80%;
-      top: 40px;
-      left: 0;
-    }
 }
 @media screen and (max-width: 600px) { 
     .toolbar ul li.separator {
@@ -986,6 +838,7 @@ input[type=checkbox] {
     }
     #settings,
     #importexport,
+    #connectivity,
     #embed {
       left: 0;
       top: 0;

@@ -3237,7 +3237,7 @@ function Ace2Inner(){
     }
     //hide the dropdownso
     if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/Pita/etherpad-lite/issues/327
-      window.parent.parent.padeditbar.toogleDropDown("none");
+      window.parent.parent.padeditbar.toggleDropDown("none");
     }
   }
 

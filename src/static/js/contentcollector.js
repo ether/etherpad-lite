@@ -258,7 +258,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     {
       state.listNesting--;
     }
-    if(oldListType) state.lineAttributes['list'] = oldListType;
+    if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
+    else { delete state.lineAttributes['list']; }
     _recalcAttribString(state);
   }
 
@@ -309,7 +310,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       ['insertorder', 'first']
     ].concat(
       _.map(state.lineAttributes,function(value,key){
-        console.log([key, value])
+        if (window.console) console.log([key, value])
         return [key, value];
       })
     );
