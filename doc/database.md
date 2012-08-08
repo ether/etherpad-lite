@@ -1,5 +1,7 @@
 # Database structure
 
+## Keys and their values
+
 ### pad:$PADID
 Saves all informations about pads
 
