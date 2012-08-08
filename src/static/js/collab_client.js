@@ -21,6 +21,7 @@
  */
 
 var chat = require('./chat').chat;
+var hooks = require('./pluginfw/hooks');
 
 // Dependency fill on init. This exists for `pad.socket` only.
 // TODO: bind directly to the socket.
@@ -337,6 +338,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       callbacks.onServerMessage(msg.payload);
     }
+    hooks.callAll('handleClientMessage_' + msg.type, {payload: msg.payload});
   }
 
   function updateUserInfo(userInfo)
