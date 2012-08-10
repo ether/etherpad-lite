@@ -162,7 +162,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
         if(ERR(err, callback)) return;
         
         //the entry doesn't exist so far, let's create it
-        if(author2sessions == null)
+        if(author2sessions == null || author2sessions.sessionIDs == null)
         {
           author2sessions = {sessionIDs : {}};
         }
