@@ -92,6 +92,7 @@ div#header div#nav li a:focus {
   color: #5a5;
 }
 
+/* push anything right after the header */
 div#header + * {
   padding-top: 3cm !important;
 }
@@ -228,7 +229,7 @@ div#footer {
 -------------------------
 */
 
-@media screen and (min-width: 35cm) {
+@media screen and (min-width: 36cm) { /* padding => 0.5cm; */
   .wrap {
     width: 35cm;
   }
@@ -244,7 +245,7 @@ div#footer {
   }
 }
 
-@media screen and (max-width: 26cm) {
+@media screen and (max-width: 27cm) {/* padding => 0.5cm; */
   .wrap {
     width: 18cm;
   }
@@ -261,7 +262,7 @@ div#footer {
   }
 }
 
-@media screen and (max-width: 18.5cm) {
+@media screen and (max-width: 19.5cm) {/* padding => 0.5cm; */
   .wrap {
     width: 15cm;
   }
@@ -290,7 +291,7 @@ div#footer {
   }
 }
 
-@media screen and (max-width: 15.5cm) {
+@media screen and (max-width: 16.5cm) {/* padding => 0.5cm; */
   .wrap {
     width: 8cm;
   }
