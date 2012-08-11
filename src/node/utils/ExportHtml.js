@@ -403,19 +403,20 @@ function getHTMLFromAtext(pad, atext)
         lists.length--;
       }   
       var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
-        {
-	 line: line,
-	 apool: apool,
-	 attribLine: attribLines[i],
-	 text: textLines[i]
-        }, " ", " ", "");
-	if (lineContentFromHook)
-	{
-	 pieces.push(lineContentFromHook, '');
-	} else 
-	{
-	 pieces.push(lineContent, '<br>');
-	}		  
+      {
+        line: line,
+        apool: apool,
+        attribLine: attribLines[i],
+        text: textLines[i]
+      }, " ", " ", "");
+	  if (lineContentFromHook)
+	  {
+	    pieces.push(lineContentFromHook, '');
+	  } 
+	  else 
+	 {
+	   pieces.push(lineContent, '<br>');
+	 }		  
     }
   }
   
