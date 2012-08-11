@@ -402,20 +402,20 @@ function getHTMLFromAtext(pad, atext)
         }
         lists.length--;
       }   
-      var newLineContent = hooks.callAllStr("getLineHTMLForExport", 
-      {
-		line: line,
-		apool: apool,
-		attribLine: attribLines[i],
-		text: textLines[i]
-	  }, " ", " ", "");
-	  if (newLineContent)
-	  {
-		pieces.push(newLineContent, '');
-	  } else 
-	  {
-		pieces.push(lineContent, '<br>');
-	  }		  
+      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
+        {
+	 line: line,
+	 apool: apool,
+	 attribLine: attribLines[i],
+	 text: textLines[i]
+        }, " ", " ", "");
+	if (lineContentFromHook)
+	{
+	 pieces.push(lineContentFromHook, '');
+	} else 
+	{
+	 pieces.push(lineContent, '<br>');
+	}		  
     }
   }
   
