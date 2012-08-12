@@ -159,3 +159,14 @@ Things in context:
 5. cls - the HTML class string of the node
 
 This hook is called after the content of a node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad. See, for example, the heading1 plugin for etherpad original.
+
+### handleClientMessage_`name`
+Called from: `src/static/js/collab_client.js`
+
+Things in context:
+
+1. payload - the data that got sent with the message (use it for custom message content)
+
+This hook gets called every time the client receives a message of type `name`. This can most notably be used with the new HTTP API call, "sendClientsMessage", which sends a custom message type to all clients connected to a pad. You can also use this to handle existing types.
+
+`collab_client.js` has a pretty extensive list of message types, if you want to take a look.
