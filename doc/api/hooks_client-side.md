@@ -6,6 +6,15 @@ All hooks registered to these events are called with two arguments:
 1. name - the name of the hook being called
 2. context - an object with some relevant information about the context of the call
 
+### documentReady
+Called from: src/templates/pad.html
+
+Things in context:
+
+nothing
+
+This hook proxies the functionality of jQuery's `$(document).ready` event.
+
 ### aceDomLineProcessLineAttributes
 Called from: src/static/js/domline.js
 
