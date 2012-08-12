@@ -273,6 +273,28 @@ function handleSaveRevisionMessage(client, message){
 }
 
 /**
+ * Handles a custom message (sent via HTTP API request)
+ *
+ * @param padID {Pad} the pad to which we're sending this message
+ * @param msg {String} the message we're sending
+ */
+exports.handleCustomMessage = function (padID, msg, cb) {
+  var time = new Date().getTime();
+  var msg = {
+    type: 'COLLABROOM',
+    data: {
+      type: msg,
+      time: time
+    }
+  };
+  for (var i in pad2sessions[padID]) {
+    socketio.sockets.sockets[pad2sessions[padID][i]].json.send(msg);
+  }
+
+  cb(null, {});
+}
+
+/**
  * Handles a Chat Message
  * @param client the client that send this message
  * @param message the message from the client
