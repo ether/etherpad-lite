@@ -353,8 +353,15 @@
               }
 
               var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+              var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+
               plugins.baseURL = baseURL;
               plugins.update(function () {
+                // Call documentReady hook
+                $(function() {
+                  hooks.aCallAll('documentReady');
+                });
+
                 var pad = require('ep_etherpad-lite/static/js/pad');
                 pad.baseURL = baseURL;
                 pad.init();
