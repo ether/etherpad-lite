@@ -25,13 +25,14 @@
 
 var _MAX_LIST_LEVEL = 8;
 
+var UNorm = require('./unorm');
 var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
 
 function sanitizeUnicode(s)
 {
-  return s.replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
+  return UNorm.nfc(s).replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
 }
 
 function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
