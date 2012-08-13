@@ -54,10 +54,22 @@ exports.formatHooks = function (hook_set_name) {
 };
 
 exports.loadFn = function (path, hookName) {
-  var x = path.split(":");
-  var fn = require(x[0]);
-  var functionName = x[1] ? x[1] : hookName;  
+  var functionName
+    , parts = path.split(":");
   
+  // on windows: C:\foo\bar:xyz
+  if(parts[0].length == 1) {
+    if(parts.length == 3)
+      functionName = parts.pop();
+    path = parts.join(":");
+  }else{
+    path = parts[0];
+    functionName = parts[1];
+  }
+  
+  var fn = require(path);
+  functionName = functionName ? functionName : hookName;  
+
   _.each(functionName.split("."), function (name) {
     fn = fn[name];
   });

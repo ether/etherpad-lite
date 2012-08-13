@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>API Test and Examples Page</title>
-  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery.js"></script>
   <style type="text/css">
     body {
       font-size:9pt;
@@ -64,24 +64,25 @@
 
         callFunction(name, results_node, params);
       });
-
+      
+      var template = $('#template')
       $('.define').each(function() {
         var functionName = parseName($(this).text());
         var parameters = parseParameters($(this).text());
 
-        var $template = $('#template').clone();
+        var testGroup = template.clone();
 
-        $template.find('h2').text(functionName + "()");
+        testGroup.find('h2').text(functionName + "()");
 
-        var $table = $template.find('table');
+        var table = testGroup.find('table');
 
         $(parameters).each(function(index, el) {
-          $table.prepend('<tr><td>' + el + ':</td>' +
+          table.prepend('<tr><td>' + el + ':</td>' +
                           '<td style="width:200px"><input type="text" size="10" name="' + el + '" /></td></tr>');
         });
 
-        $template.css({display: "block"});
-        $template.appendTo('body');
+        testGroup.css({display: "block"});
+        testGroup.appendTo('body');
       });
     });
 
@@ -113,13 +114,12 @@
       $('#result').text('Calling ' + memberName + "()...");
       
       params["apikey"]=$("#apikey").val();
-      
       $.ajax({
         type: "GET",
         url: "/api/1/" + memberName,
         data: params,
-        success: function(json) {
-          results_node.text(json);
+        success: function(json,status,xhr) {
+          results_node.text(xhr.responseText);
         },
         error: function(jqXHR, textStatus, errorThrown) {
           results_node.html("textStatus: " + textStatus + "<br />errorThrown: " + errorThrown);
@@ -137,7 +137,8 @@
         <td class="buttonBox" colspan="2" style="text-align:right;"><input type="button" value="Run" /></td>
       </tr>
     </table>
-    <div class="results"/>
+    <div class="results"></div>
+    
   </div>
   <div class="define">createGroup()</div>
   <div class="define">deleteGroup(groupID)</div>
@@ -155,6 +156,7 @@
   <div class="define">getText(padID,rev)</div>
   <div class="define">setText(padID,text)</div>
   <div class="define">getRevisionsCount(padID)</div>
+  <div class="define">getLastEdited(padID)</div>
   <div class="define">deletePad(padID)</div>
   <div class="define">getReadOnlyID(padID)</div>
   <div class="define">setPublicStatus(padID,publicStatus)</div>

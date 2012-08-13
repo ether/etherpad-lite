@@ -47,6 +47,8 @@ exports.createGroupPad = groupManager.createGroupPad;
 
 exports.createAuthor = authorManager.createAuthor;
 exports.createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
+exports.listPadsOfAuthor = authorManager.listPadsOfAuthor;
+exports.padUsersCount = padMessageHandler.padUsersCount;
 
 /**********************/
 /**SESSION FUNCTIONS***/
@@ -152,6 +154,13 @@ Example returns:
 */
 exports.setText = function(padID, text, callback)
 {    
+  //text is required
+  if(typeof text != "string")
+  {
+    callback(new customError("text is no string","apierror"));
+    return;
+  }
+
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
@@ -279,6 +288,27 @@ exports.getRevisionsCount = function(padID, callback)
     if(ERR(err, callback)) return;
     
     callback(null, {revisions: pad.getHeadRevisionNumber()});
+  });
+}
+
+/**
+getLastEdited(padID) returns the timestamp of the last revision of the pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {lastEdited: 1340815946602}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getLastEdited = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    pad.getLastEdit(function(err, value) {
+      if(ERR(err, callback)) return;
+      callback(null, {lastEdited: value});
+    });
   });
 }
 
@@ -462,6 +492,59 @@ exports.isPasswordProtected = function(padID, callback)
     callback(null, {isPasswordProtected: pad.isPasswordProtected()});
   });
 }
+
+/**
+listAuthorsOfPad(padID) returns an array of authors who contributed to this pad 
+
+Example returns:
+
+{code: 0, message:"ok", data: {authorIDs : ["a.s8oes9dhwrvt0zif", "a.akf8finncvomlqva"]}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.listAuthorsOfPad = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    callback(null, {authorIDs: pad.getAllAuthors()});
+  });
+}
+
+/**
+sendClientsMessage(padID, msg) sends a message to all clients connected to the
+pad, possibly for the purpose of signalling a plugin.
+
+Note, this will only accept strings from the HTTP API, so sending bogus changes
+or chat messages will probably not be possible.
+
+The resulting message will be structured like so:
+
+{
+  type: 'COLLABROOM',
+  data: {
+    type: <msg>,
+    time: <time the message was sent>
+  }
+}
+
+Example returns:
+
+{code: 0, message:"ok"}
+{code: 1, message:"padID does not exist"}
+*/
+
+exports.sendClientsMessage = function (padID, msg, callback) {
+  getPadSafe(padID, true, function (err, pad) {
+    if (ERR(err, callback)) {
+      return;
+    } else {
+      padMessageHandler.handleCustomMessage(padID, msg, callback);
+    }
+  } );
+}
+
 
 /******************************/
 /** INTERNAL HELPER FUNCTIONS */

@@ -1,5 +1,9 @@
 {
   "parts": [
+    { "name": "express", "hooks": {
+      "createServer": "ep_etherpad-lite/node/hooks/express:createServer",
+      "restartServer": "ep_etherpad-lite/node/hooks/express:restartServer"
+      } },
     { "name": "static", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static:expressCreateServer" } },
     { "name": "specialpages", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/specialpages:expressCreateServer" } },
     { "name": "padurlsanitize", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padurlsanitize:expressCreateServer" } },

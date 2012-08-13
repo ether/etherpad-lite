@@ -139,17 +139,21 @@ var padeditbar = (function()
       {
         if(cmd == "showusers")
         {
-          self.toogleDropDown("users");
+          self.toggleDropDown("users");
         }
         else if (cmd == 'settings')
         {
-              self.toogleDropDown("settings");
+              self.toggleDropDown("settings");
+        }
+        else if (cmd == 'connectivity')
+        {
+              self.toggleDropDown("connectivity");
         }
         else if (cmd == 'embed')
         {
           self.setEmbedLinks();
           $('#linkinput').focus().select();
-          self.toogleDropDown("embed");
+          self.toggleDropDown("embed");
         }
         else if (cmd == 'import_export')
         {
@@ -165,13 +169,13 @@ var padeditbar = (function()
       }
       if(padeditor.ace) padeditor.ace.focus();
     },
-    toogleDropDown: function(moduleName)
+    toggleDropDown: function(moduleName, cb)
     {
-      var modules = ["settings", "importexport", "embed", "users"];
-
+      var modules = ["settings", "connectivity", "importexport", "embed", "users"];
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
+        var returned = false
         for(var i=0;i<modules.length;i++)
         {
           //skip the userlist
@@ -183,9 +187,11 @@ var padeditbar = (function()
           if(module.css('display') != "none")
           {
             $("#" + modules[i] + "link").removeClass("selected");
-            module.slideUp("fast");
+            module.slideUp("fast", cb);
+            returned = true;
           }
         }
+        if(!returned && cb) return cb();
       }
       else
       {
@@ -203,7 +209,7 @@ var padeditbar = (function()
           else if(modules[i]==moduleName)
           {
             $("#" + modules[i] + "link").addClass("selected");
-            module.slideDown("fast");
+            module.slideDown("fast", cb);
           }
         }
       }

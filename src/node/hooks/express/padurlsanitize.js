@@ -15,7 +15,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 	//the pad id was sanitized, so we redirect to the sanitized version
 	if(sanitizedPadId != padId)
 	{
-          var real_url = req.url.replace(/^\/p\/[^\/]+/, '/p/' + sanitizedPadId);
+          var real_url = sanitizedPadId;
           var query = url.parse(req.url).query;
           if ( query ) real_url += '?' + query;
 	  res.header('Location', real_url);

@@ -790,8 +790,6 @@ var pad = {
       }, 1000);
     }
 
-    padsavedrevs.handleIsFullyConnected(isConnected);
-
     // pad.determineSidebarVisibility(isConnected && !isInitialConnect);
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();

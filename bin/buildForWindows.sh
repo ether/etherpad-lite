@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NODE_VERSION="0.6.5"
+NODE_VERSION="0.8.4"
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
@@ -41,7 +41,7 @@ echo "do a normal unix install first..."
 bin/installDeps.sh || exit 1
 
 echo "copy the windows settings template..."
-cp settings.json.template_windows settings.json
+cp settings.json.template settings.json
 
 echo "resolve symbolic links..."
 cp -rL node_modules node_modules_resolved
@@ -50,7 +50,7 @@ mv node_modules_resolved node_modules
 
 echo "download windows node..."
 cd bin
-wget "http://nodejs.org/dist/v$NODE_VERSION/node.exe" -O node.exe
+wget "http://nodejs.org/dist/v$NODE_VERSION/node.exe" -O ../node.exe
 
 echo "create the zip..."
 cd /tmp

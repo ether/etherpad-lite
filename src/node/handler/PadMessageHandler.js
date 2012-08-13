@@ -33,6 +33,7 @@ var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins.js");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var _ = require('underscore');
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
 /**
  * A associative array that saves which sessions belong to a pad
@@ -158,6 +159,7 @@ exports.handleDisconnect = function(client)
  */
 exports.handleMessage = function(client, message)
 { 
+
   if(message == null)
   {
     messageLogger.warn("Message is null!");
@@ -168,31 +170,87 @@ exports.handleMessage = function(client, message)
     messageLogger.warn("Message has no type attribute!");
     return;
   }
-  
-  //Check what type of message we get and delegate to the other methodes
-  if(message.type == "CLIENT_READY") {
-    handleClientReady(client, message);
-  } else if(message.type == "CHANGESET_REQ") {
-    handleChangesetRequest(client, message);
-  } else if(message.type == "COLLABROOM") {
-    if (sessioninfos[client.id].readonly) {
-      messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
-    } else if (message.data.type == "USER_CHANGES") {
-      handleUserChanges(client, message);
-    } else if (message.data.type == "USERINFO_UPDATE") {
-      handleUserInfoUpdate(client, message);
-    } else if (message.data.type == "CHAT_MESSAGE") {
-      handleChatMessage(client, message);
-    } else if (message.data.type == "SAVE_REVISION") {
-      handleSaveRevisionMessage(client, message);
-    } else if (message.data.type == "CLIENT_MESSAGE" &&
-               message.data.payload.type == "suggestUserName") {
-      handleSuggestUserName(client, message);
+
+  var handleMessageHook = function(callback){
+    var dropMessage = false;
+    
+    // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
+    // handleMessage will be called, even if the client is not authorized
+    hooks.aCallAll("handleMessage", { client: client, message: message }, function ( messages ) {
+      _.each(messages, function(newMessage){
+        if ( newmessage === null ) {
+          dropMessage = true;
+        }
+      });
+      
+      // If no plugins explicitly told us to drop the message, its ok to proceed
+      if(!dropMessage){ callback() };
+    });
+  }
+
+  var finalHandler = function () {
+    //Check what type of message we get and delegate to the other methodes
+    if(message.type == "CLIENT_READY") {
+      handleClientReady(client, message);
+    } else if(message.type == "CHANGESET_REQ") {
+      handleChangesetRequest(client, message);
+    } else if(message.type == "COLLABROOM") {
+      if (sessioninfos[client.id].readonly) {
+        messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
+      } else if (message.data.type == "USER_CHANGES") {
+        handleUserChanges(client, message);
+      } else if (message.data.type == "USERINFO_UPDATE") {
+        handleUserInfoUpdate(client, message);
+      } else if (message.data.type == "CHAT_MESSAGE") {
+        handleChatMessage(client, message);
+      } else if (message.data.type == "SAVE_REVISION") {
+        handleSaveRevisionMessage(client, message);
+      } else if (message.data.type == "CLIENT_MESSAGE" &&
+                 message.data.payload.type == "suggestUserName") {
+        handleSuggestUserName(client, message);
+      } else {
+        messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
+      }
     } else {
-      messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
+      messageLogger.warn("Dropped message, unknown Message Type " + message.type);
     }
-  } else {
-    messageLogger.warn("Dropped message, unknown Message Type " + message.type);
+  };
+
+  if (message) {
+    async.series([
+      handleMessageHook,
+      //check permissions
+      function(callback)
+      {
+        
+        if(!message.padId){
+          // If the message has a padId we assume the client is already known to the server and needs no re-authorization
+          callback();
+          return;
+        }
+        // Note: message.sessionID is an entirely different kind of
+        // session from the sessions we use here! Beware! FIXME: Call
+        // our "sessions" "connections".
+        // FIXME: Use a hook instead
+        // FIXME: Allow to override readwrite access with readonly
+        securityManager.checkAccess(message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+        {
+          if(ERR(err, callback)) return;
+
+          //access was granted
+          if(statusObject.accessStatus == "grant")
+          {
+            callback();
+          }
+          //no access, send the client a message that tell him why
+          else
+          {
+            client.json.send({accessStatus: statusObject.accessStatus})
+          }
+        });
+      },
+      finalHandler
+    ]);
   }
 }
 
@@ -212,6 +270,28 @@ function handleSaveRevisionMessage(client, message){
     
     pad.addSavedRevision(pad.head, userId);
   });
+}
+
+/**
+ * Handles a custom message (sent via HTTP API request)
+ *
+ * @param padID {Pad} the pad to which we're sending this message
+ * @param msg {String} the message we're sending
+ */
+exports.handleCustomMessage = function (padID, msg, cb) {
+  var time = new Date().getTime();
+  var msg = {
+    type: 'COLLABROOM',
+    data: {
+      type: msg,
+      time: time
+    }
+  };
+  for (var i in pad2sessions[padID]) {
+    socketio.sockets.sockets[pad2sessions[padID][i]].json.send(msg);
+  }
+
+  cb(null, {});
 }
 
 /**
@@ -1022,18 +1102,29 @@ function handleChangesetRequest(client, message)
   var granularity = message.data.granularity;
   var start = message.data.start;
   var end = start + (100 * granularity);
-  var padId = message.padId;
-  
-  //build the requested rough changesets and send them back
-  getChangesetInfo(padId, start, end, granularity, function(err, changesetInfo)
-  {
-    ERR(err);
-    
-    var data = changesetInfo;
-    data.requestID = message.data.requestID;
-    
-    client.json.send({type: "CHANGESET_REQ", data: data});
-  });
+  var padIds;
+
+  async.series([
+    function (callback) {
+      readOnlyManager.getIds(message.padId, function(err, value) {
+        if(ERR(err, callback)) return;
+        padIds = value;
+        callback();
+      });
+    },
+    function (callback) {
+      //build the requested rough changesets and send them back
+      getChangesetInfo(padIds.padId, start, end, granularity, function(err, changesetInfo)
+      {
+        ERR(err);
+
+        var data = changesetInfo;
+        data.requestID = message.data.requestID;
+
+        client.json.send({type: "CHANGESET_REQ", data: data});
+      });
+    }
+  ]);
 }
 
 
@@ -1257,7 +1348,7 @@ function composePadChangesets(padId, startNum, endNum, callback)
     function(callback)
     {
       padManager.getPad(padId, function(err, _pad)
-      {        
+      {
         if(ERR(err, callback)) return;
         pad = _pad;
         callback();
@@ -1307,4 +1398,15 @@ function composePadChangesets(padId, startNum, endNum, callback)
     if(ERR(err, callback)) return;
     callback(null, changeset);
   });
+}
+
+/**
+ * Get the number of users in a pad
+ */
+exports.padUsersCount = function (padID, callback) {
+  if (!pad2sessions[padID] || typeof pad2sessions[padID] != typeof []) {
+    callback(null, {padUsersCount: 0});
+  } else {
+    callback(null, {padUsersCount: pad2sessions[padID].length});
+  }
 }
