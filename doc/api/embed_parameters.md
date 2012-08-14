@@ -1,4 +1,4 @@
-## Embed parameters
+# Embed parameters
 You can easily embed your etherpad-lite into any webpage by using iframes. You can configure the embedded pad using embed paramters.
 
 Example:
@@ -9,39 +9,39 @@ Cut and paste the following code into any webpage to embed a pad. The parameters
 <iframe src='http://pad.test.de/p/PAD_NAME?showChat=false&showLineNumbers=false' width=600 height=400></iframe>
 ```
 
-### showLineNumbers
+## showLineNumbers
  * Boolean
 
 Default: true
 
-### showControls
+## showControls
  * Boolean
 
 Default: true
 
-### showChat
+## showChat
  * Boolean
 
 Default: true
 
-### useMonospaceFont
+## useMonospaceFont
  * Boolean
 
 Default: false
 
-### userName
+## userName
  * String
 
 Default: "unnamed"
 
 Example: `userName=Etherpad%20User`
 
-### noColors
+## noColors
  * Boolean
 
 Default: false
 
-### alwaysShowChat
+## alwaysShowChat
  * Boolean
 
 Default: false

@@ -1,4 +1,4 @@
-## Client-side hooks
+# Client-side hooks
 Most of these hooks are called during or in order to set up the formatting process.
 
 All hooks registered to these events are called with two arguments:
@@ -6,7 +6,7 @@ All hooks registered to these events are called with two arguments:
 1. name - the name of the hook being called
 2. context - an object with some relevant information about the context of the call
 
-### documentReady
+## documentReady
 Called from: src/templates/pad.html
 
 Things in context:
@@ -15,7 +15,7 @@ nothing
 
 This hook proxies the functionality of jQuery's `$(document).ready` event.
 
-### aceDomLineProcessLineAttributes
+## aceDomLineProcessLineAttributes
 Called from: src/static/js/domline.js
 
 Things in context:
@@ -31,7 +31,7 @@ The return value of this hook should have the following structure:
 
 The preHtml and postHtml values will be added to the HTML display of the element, and if processedMarker is true, the engine won't try to process it any more.
 
-### aceCreateDomLine
+## aceCreateDomLine
 Called from: src/static/js/domline.js
 
 Things in context:
@@ -47,7 +47,7 @@ The return value of this hook should have the following structure:
 
 extraOpenTags and extraCloseTags will be added before and after the element in question, and cls will be the new class of the element going forward.
 
-### acePostWriteDomLineHTML
+## acePostWriteDomLineHTML
 Called from: src/static/js/domline.js
 
 Things in context:
@@ -56,7 +56,7 @@ Things in context:
 
 This hook is for right after a node has been fully formatted and written to the page.
 
-### aceAttribsToClasses
+## aceAttribsToClasses
 Called from: src/static/js/linestylefilter.js
 
 Things in context:
@@ -69,7 +69,7 @@ This hook is called during the attribute processing procedure, and should be use
 
 The return value for this function should be a list of classes, which will then be parsed into a valid class string.
 
-### aceGetFilterStack
+## aceGetFilterStack
 Called from: src/static/js/linestylefilter.js
 
 Things in context:
@@ -79,14 +79,14 @@ Things in context:
 
 This hook is called to apply custom regular expression filters to a set of styles. The one example available is the ep_linkify plugin, which adds internal links. They use it to find the telltale `[[ ]]` syntax that signifies internal links, and finding that syntax, they add in the internalHref attribute to be later used by the aceCreateDomLine hook (documented above).
 
-### aceEditorCSS
+## aceEditorCSS
 Called from: src/static/js/ace.js
 
 Things in context: None
 
 This hook is provided to allow custom CSS files to be loaded. The return value should be an array of paths relative to the plugins directory.
 
-### aceInitInnerdocbodyHead
+## aceInitInnerdocbodyHead
 Called from: src/static/js/ace.js
 
 Things in context:
@@ -95,7 +95,7 @@ Things in context:
 
 This hook is called during the creation of the editor HTML. The array should have lines of HTML added to it, giving the plugin author a chance to add in meta, script, link, and other tags that go into the `<head>` element of the editor HTML document.
 
-### aceEditEvent
+## aceEditEvent
 Called from: src/static/js/ace2_inner.js
 
 Things in context:
@@ -107,14 +107,14 @@ Things in context:
 
 This hook is made available to edit the edit events that might occur when changes are made. Currently you can change the editor information, some of the meanings of the edit, and so on. You can also make internal changes (internal to your plugin) that use the information provided by the edit event.
 
-### aceRegisterBlockElements
+## aceRegisterBlockElements
 Called from: src/static/js/ace2_inner.js
 
 Things in context: None
 
 The return value of this hook will add elements into the "lineMarkerAttribute" category, making the aceDomLineProcessLineAttributes hook (documented below) call for those elements.
 
-### aceInitialized
+## aceInitialized
 Called from: src/static/js/ace2_inner.js
 
 Things in context:
@@ -125,7 +125,7 @@ Things in context:
 
 This hook is for inserting further information into the ace engine, for later use in formatting hooks.
 
-### postAceInit
+## postAceInit
 Called from: src/static/js/pad.js
 
 Things in context:
@@ -134,7 +134,7 @@ Things in context:
 
 There doesn't appear to be any example available of this particular hook being used, but it gets fired after the editor is all set up.
 
-### userJoinOrUpdate
+## userJoinOrUpdate
 Called from: src/static/js/pad_userlist.js
 
 Things in context:
@@ -143,7 +143,7 @@ Things in context:
 
 This hook is called on the client side whenever a user joins or changes. This can be used to create notifications or an alternate user list.
 
-### collectContentPre
+## collectContentPre
 Called from: src/static/js/contentcollector.js
 
 Things in context:
@@ -156,7 +156,7 @@ Things in context:
 
 This hook is called before the content of a node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad. See, for example, the heading1 plugin for etherpad original.
 
-### collectContentPost
+## collectContentPost
 Called from: src/static/js/contentcollector.js
 
 Things in context:
@@ -169,7 +169,7 @@ Things in context:
 
 This hook is called after the content of a node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad. See, for example, the heading1 plugin for etherpad original.
 
-### handleClientMessage_`name`
+## handleClientMessage_`name`
 Called from: `src/static/js/collab_client.js`
 
 Things in context:
