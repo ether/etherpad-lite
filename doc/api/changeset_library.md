@@ -1,4 +1,4 @@
-## Changeset Library
+# Changeset Library
 
 ```
 "Z:z>1|2=m=b*0|1+1$\n"
@@ -8,7 +8,7 @@ This is a Changeset. Its just a string and its very difficult to read in this fo
 
 A changeset describes the diff between two revisions of the document. The Browser sends changesets to the server and the server sends them to the clients to update them. This Changesets gets also saved into the history of a pad. Which allows us to go back to every revision from the past.
 
-### Changeset.unpack(changeset)
+## Changeset.unpack(changeset)
 
  * `changeset` {String}
 
@@ -23,7 +23,7 @@ This functions returns an object representaion of the changeset, similar to this
  * `ops` {String} the actual changes, introduced by this changeset.
  * `charBank` {String} All characters that are added by this changeset.
 
-### Changeset.opIterator(ops)
+## Changeset.opIterator(ops)
 
  * `ops` {String} The operators, returned by `Changeset.unpack()`
 
@@ -31,7 +31,7 @@ Returns an operator iterator. This iterator allows us to iterate over all operat
 
 You can iterate with an opIterator using its `next()` and `hasNext()` methods. Next returns the `next()` operator object and `hasNext()` indicates, whether there are any operators left.
 
-### The Operator object
+## The Operator object
 There are 3 types of operators: `+`,`-` and `=`. These operators describe different changes to the document, beginning with the first character of the document. A `=` operator doesn't change the text, but it may add or remove text attributes. A `-` operator removes text. And a `+` Operator adds text and optionally adds some attributes to it.
 
  * `opcode` {String} the operator type
@@ -39,7 +39,7 @@ There are 3 types of operators: `+`,`-` and `=`. These operators describe differ
  * `lines` {Number} the number of lines changed by this operator.
  * `attribs` {attribs} attributes set on this text.
 
-#### Example
+### Example
 ```
 { opcode: '+',
   chars: 1,
@@ -47,7 +47,7 @@ There are 3 types of operators: `+`,`-` and `=`. These operators describe differ
   attribs: '*0' }
 ```
 
-### APool
+## APool
 
 ```
 > var AttributePoolFactory = require("./utils/AttributePoolFactory");
@@ -97,7 +97,7 @@ We used the fromJsonable function to fill the empty apool with values. the fromJ
 
 Simple example of how to get the key value pair for the attribute 1
 
-### AText
+## AText
 
 ```
 > var atext = {"text":"bold text\nitalic text\nnormal text\n\n","attribs":"*0*1+9*0|1+1*0*1*2+b|1+1*0+b|2+2"};
