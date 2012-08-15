@@ -48,6 +48,7 @@
   , "cssmanager.js"
   , "colorutils.js"
   , "undomodule.js"
+  , "$unorm.js"
   , "contentcollector.js"
   , "changesettracker.js"
   , "linestylefilter.js"

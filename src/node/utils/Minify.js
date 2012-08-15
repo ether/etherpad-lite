@@ -40,6 +40,7 @@ var LIBRARY_WHITELIST = [
       'async'
     , 'security'
     , 'underscore'
+    , 'unorm'
     ];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
