@@ -1410,3 +1410,26 @@ exports.padUsersCount = function (padID, callback) {
     callback(null, {padUsersCount: pad2sessions[padID].length});
   }
 }
+
+/**
+ * Get the list of users in a pad
+ */
+exports.padUsers = function (padID, callback) {
+  if (!pad2sessions[padID] || typeof pad2sessions[padID] != typeof []) {
+    callback(null, {padUsers: []});
+  } else {
+    var authors = [];
+    for ( var ix in sessioninfos ) {
+      if ( sessioninfos[ix].padId !== padID ) {
+        continue;
+      }
+      var aid = sessioninfos[ix].author;
+      authorManager.getAuthor( aid, function ( err, author ) {
+        authors.push( author );
+        if ( authors.length === pad2sessions[padID].length ) {
+          callback(null, {padUsers: authors});
+        }
+      } );
+    }
+  }
+}

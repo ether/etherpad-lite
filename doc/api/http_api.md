@@ -206,6 +206,10 @@ Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security
 * **padUsersCount(padID)** returns the number of user that are currently editing this pad <br><br>*Example returns:*
   * `{code: 0, message:"ok", data: {padUsersCount: 5}}`
 
+* **padUsers(padID)** returns the list of users that are currently editing this pad <br><br>*Example returns:*
+  * `{code: 0, message:"ok", data: {padUsers: [{colorId:"#c1a9d9","name":"username1","timestamp":1345228793126},{"colorId":"#d9a9cd","name":"Hmmm","timestamp":1345228796042}]}}`
+  * `{code: 0, message:"ok", data: {padUsers: []}}`
+
 * **deletePad(padID)** deletes a pad <br><br>*Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
