@@ -48,6 +48,7 @@ exports.createGroupPad = groupManager.createGroupPad;
 exports.createAuthor = authorManager.createAuthor;
 exports.createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
 exports.listPadsOfAuthor = authorManager.listPadsOfAuthor;
+exports.padUsers = padMessageHandler.padUsers;
 exports.padUsersCount = padMessageHandler.padUsersCount;
 
 /**********************/

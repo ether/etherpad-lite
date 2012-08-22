@@ -67,6 +67,7 @@ var functions = {
   "isPasswordProtected"       : ["padID"], 
   "listAuthorsOfPad"          : ["padID"],
   "padUsersCount"             : ["padID"],
+  "padUsers"                  : ["padID"],
   "sendClientsMessage"        : ["padID", "msg"]
 };
 
