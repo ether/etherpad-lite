@@ -3514,6 +3514,9 @@ function Ace2Inner(){
     var keyCode = evt.keyCode;
     var which = evt.which;
 
+    // prevent ESC key
+    if (keyCode == 27) return;
+
     //dmesg("keyevent type: "+type+", which: "+which);
     // Don't take action based on modifier keys going up and down.
     // Modifier keys do not generate "keypress" events.
