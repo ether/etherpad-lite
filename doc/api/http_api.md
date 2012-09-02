@@ -151,7 +151,7 @@ Theses authors are bind to the attributes the users choose (color and name).
 -> can't be deleted cause this would involve scanning all the pads where this author was
 
 ### Session
-Sessions can be created between a group and an author. This allows an author to access more than one group. The sessionID will be set as a cookie to the client and is valid until a certain date. Only users with a valid session for this group, can access group pads. You can create a session after you authenticated the user at your web application, to give them access to the pads. You should save the sessionID of this session and delete it after the user logged out
+Sessions can be created between a group and an author. This allows an author to access more than one group. The sessionID will be set as a cookie to the client and is valid until a certain date. The session cookie can also contain multiple comma-seperated sessionIDs, allowing a user to edit pads in different groups at the same time. Only users with a valid session for this group, can access group pads. You can create a session after you authenticated the user at your web application, to give them access to the pads. You should save the sessionID of this session and delete it after the user logged out.
 
 * **createSession(groupID, authorID, validUntil)** creates a new session. validUntil is an unix timestamp in seconds <br><br>*Example returns:*
   * `{code: 0, message:"ok", data: {sessionID: "s.s8oes9dhwrvt0zif"}}`
