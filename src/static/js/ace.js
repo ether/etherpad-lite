@@ -168,11 +168,9 @@ require.setGlobalKeyPath("require");\n\
       buffer.push(KERNEL_BOOT);
       buffer.push('<\/script>');
     } else {
-      file = KERNEL_SOURCE;
-      buffer.push('<script type="application/javascript" src="' + KERNEL_SOURCE + '"><\/script>');
-      buffer.push('<script type="text/javascript">');
-      buffer.push(KERNEL_BOOT);
-      buffer.push('<\/script>');
+      // Remotely src'd script tag will not work in IE; it must be embedded, so
+      // throw an error if it is not.
+      throw new Error("Require script could not be embedded.");
     } 
   }
   function pushScriptsTo(buffer) {
