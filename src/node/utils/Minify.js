@@ -239,10 +239,11 @@ function getAceFile(callback) {
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
-      request(resourceURI, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
+      requestURI(resourceURI, 'GET', {}, function (status, headers, body) {
+        var error = !(status == 200 || status == 404);
+        if (!error) {
           data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-              + JSON.stringify(body || '') + ';\n';
+              +  JSON.stringify(status == 200 ? body || '' : null) + ';\n';
         } else {
           // Silence?
         }
