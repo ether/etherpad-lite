@@ -62,9 +62,9 @@ Here is the **[FAQ](https://github.com/Pita/etherpad-lite/wiki/FAQ)**
   </li><br>
   <li>Install node.js 
     <ol type="a">
-      <li>Download the latest <b>0.6.x</b> node.js release from <a href="http://nodejs.org/#download">http://nodejs.org/#download</a></li>
-      <li>Extract it with <code>tar xf node-v0.6*</code></li>
-      <li>Move into the node folder <code>cd node-v0.6*</code> and build node with <code>./configure && make && make install</code></li>
+      <li>Download the latest node.js release (both 0.6 and 0.8 are supported, recommended is stable 0.8.8) from <a href="http://nodejs.org/download">http://nodejs.org</a></li>
+      <li>Extract it with <code>tar xf node-v0.8.8</code></li>
+      <li>Move into the node folder <code>cd node-v0.8.8</code> and build node with <code>./configure && make && make install</code></li>
     </ol>
   </li>
 </ol>
@@ -85,7 +85,8 @@ If you have multiple settings files, you may pass one to `bin/run.sh` using the 
 
 You should use a dedicated database such as "mysql" if you are planning on using etherpad-lite in a production environment, the "dirty" database driver is only for testing and/or development purposes.
 
-You can update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies
+You can update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies. You probably need to do a `npm cache clean jshint` before, in case that throws an error message. 
+
 
 Look at this wiki pages: 
 
