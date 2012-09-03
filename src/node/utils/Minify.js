@@ -51,7 +51,7 @@ for (var key in tar) {
  * @param req the Express request
  * @param res the Express response
  */
-exports.minify = function(req, res, next)
+function minify(req, res, next)
 {
   var filename = req.params['filename'];
 
@@ -319,3 +319,5 @@ function compressCSS(values)
   var complete = values.join("\n");
   return cleanCSS.process(complete);
 }
+
+exports.minify = minify;
