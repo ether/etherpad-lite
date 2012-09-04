@@ -142,6 +142,25 @@ exports.getAuthor = function (author, callback)
 }
 
 /**
+ * Returns the Author Name of the author
+  * @param {String} author The id of the author
+  * @param {Function} callback callback(err, name)
+  */
+
+exports.getAuthorName = function (authorID, callback)
+{
+  db.getSub("globalAuthor:" + author, ["name"], callback);
+  console.log(authorID);
+  db.getSub("globalAuthor:" + authorID, ["name"], function(err, authorName){
+    if(ERR(err, callback)) return;
+    console.log(authorName);
+    callback(null, {authorName: authorName});
+  });
+}
+
+
+
+/**
  * Returns the color Id of the author
  * @param {String} author The id of the author
  * @param {Function} callback callback(err, colorId)
