@@ -136,7 +136,7 @@ Pads can belong to a group. The padID of grouppads is starting with a groupID li
   * `{code: 1, message:"groupID does not exist", data: null}`
 
 ### Author
-Theses authors are bind to the attributes the users choose (color and name). 
+These authors are bound to the attributes the users choose (color and name). 
 
 * **createAuthor([name])** creates a new author <br><br>*Example returns:*
   * `{code: 0, message:"ok", data: {authorID: "a.s8oes9dhwrvt0zif"}}`
@@ -147,6 +147,9 @@ Theses authors are bind to the attributes the users choose (color and name).
 * **listPadsOfAuthor(authorID)** returns an array of all pads this author contributed to<br><br>*Example returns:*
   * `{code: 0, message:"ok", data: {padIDs: ["g.s8oes9dhwrvt0zif$test", "g.s8oejklhwrvt0zif$foo"]}}`
   * `{code: 1, message:"authorID does not exist", data: null}`
+
+* **getAuthorName(authorID)** Returns the Author Name of the author <br><br>*Example returns:*
+  * `{code: 0, message:"ok", data: {authorName: "John McLear"}}`
 
 -> can't be deleted cause this would involve scanning all the pads where this author was
 
