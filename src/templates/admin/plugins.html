@@ -1,0 +1,90 @@
+<html>
+  <head>
+    <title>Plugin manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" href="../static/css/admin.css">
+    <script src="../static/js/jquery.js"></script>
+    <script src="../socket.io/socket.io.js"></script>
+    <script src="../static/js/admin/plugins.js"></script>
+  </head>
+  <body>
+    <div id="wrapper">
+
+      <% if (errors.length) { %>
+        <div class="errors">
+          <% errors.forEach(function (item) { %>
+            <div class="error"><%= item.toString() %></div>
+          <% }) %>
+        </div>
+      <% } %>
+
+
+      <h1>Etherpad Lite</h1>
+
+      <a href="plugins/info">Technical information on installed plugins</a>
+
+      <div class="separator"></div>
+      <h2>Installed plugins</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody class="template">
+          <tr id="installed-plugin-template">
+            <td class="name"></td>
+            <td class="description"></td>
+            <td class="actions">
+              <input type="button" value="Uninstall" class="do-uninstall">
+            </td>
+          </tr>
+        </tbody>
+        <tbody id="installed-plugins">
+        </tbody>
+      </table>
+
+      <div class="paged listing search-results">
+        <div class="separator"></div>
+        <h2>Search for plugins to install</h2>
+        <form>
+          <input type="text" name="search" placeholder="Search term" id="search-query">
+          <input type="button" value="Search" id="do-search">
+        </form>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody class="template">
+            <tr>
+              <td class="name"></td>
+              <td class="description"></td>
+              <td class="actions">
+                <input type="button" value="Install" class="do-install">
+             </td>
+            </tr>
+          </tbody>
+          <tbody class="results">
+          </tbody>
+        </table>
+        <input type="button" value="<<" class="do-prev-page">
+        <span class="offset"></span>..<span class="limit"></span> of <span class="total"></span>.
+        <input type="button" value=">>" class="do-next-page">
+      </div>
+
+      <div id="progress" class="dialog">
+        <h1 class="title">
+          Please wait: <span class="message"></span>
+        <input type="button" class="close" value="Close">
+        </h1>
+        <div class="history"></div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,395 @@
+<%
+  var settings = require("ep_etherpad-lite/node/utils/Settings");
+%>
+<!doctype html>
+<html>
+
+        <title>Etherpad Lite</title>
+
+        <meta charset="utf-8">
+        <meta name="robots" content="noindex, nofollow">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+        <link rel="shortcut icon" href="../favicon.ico">
+
+        <% e.begin_block("styles"); %>
+        <link href="../static/css/pad.css" rel="stylesheet">
+        <link href="../static/custom/pad.css" rel="stylesheet">
+        <style title="dynamicsyntax"></style>
+        <% e.end_block(); %>
+
+        <!-- head and body had been removed intentionally -->
+
+        <% e.begin_block("body"); %>
+        <div id="editbar" class="toolbar">
+            <div id="overlay">
+                <div id="overlay-inner"></div>
+            </div>
+            <ul class="menu_left">
+                <% e.begin_block("editbarMenuLeft"); %>
+                <li class="acl-write" id="bold" data-key="bold">
+                    <a class="grouped-left" title="Bold (ctrl-B)">
+                      <span class="buttonicon buttonicon-bold"></span>
+                    </a>
+                </li>
+                <li class="acl-write" id="italic" data-key="italic">
+                    <a class="grouped-middle" title="Italics (ctrl-I)">
+                      <span class="buttonicon buttonicon-italic"></span>
+                    </a>
+                </li>
+                <li class="acl-write" id="underline" data-key="underline">
+                    <a class="grouped-middle" title="Underline (ctrl-U)">
+                      <span class="buttonicon buttonicon-underline"></span>
+                    </a>
+                </li>
+                <li class="acl-write" id="strikethrough" data-key="strikethrough">
+                    <a class="grouped-right" title="Strikethrough">
+                      <span class="buttonicon buttonicon-strikethrough"></span>
+                    </a>
+                </li>
+                <li class="acl-write separator"></li>
+                <li class="acl-write" id="oderedlist" data-key="insertorderedlist">
+                    <a class="grouped-left" title="Toggle Ordered List">
+                      <span class="buttonicon buttonicon-insertorderedlist"></span>
+                    </a>
+                </li>
+                <li class="acl-write" id="unoderedlist" data-key="insertunorderedlist">
+                    <a class="grouped-middle" title="Toggle Bullet List">
+                      <span class="buttonicon buttonicon-insertunorderedlist"></span>
+                    </a>
+                </li>
+                <li class="acl-write" id="indent" data-key="indent">
+                    <a class="grouped-middle" title="Indent">
+                      <span class="buttonicon buttonicon-indent"></span>
+                    </a>
+                </li>
+                <li class="acl-write" id="outdent" data-key="outdent">
+                    <a class="grouped-right" title="Unindent">
+                      <span class="buttonicon buttonicon-outdent"></span>
+                    </a>
+                </li>
+                <li class="acl-write separator"></li>
+                <li class="acl-write" id="undo" data-key="undo">
+                    <a class="grouped-left" title="Undo (ctrl-Z)">
+                      <span class="buttonicon buttonicon-undo"></span>
+                    </a>
+                </li>
+                <li class="acl-write" id="redo" data-key="redo">
+                    <a class="grouped-right" title="Redo (ctrl-Y)">
+                      <span class="buttonicon buttonicon-redo"></span>
+                    </a>
+                </li>
+                <li class="acl-write separator"></li>
+                <li class="acl-write" id="clearAuthorship" data-key="clearauthorship">
+                    <a title="Clear Authorship Colors">
+                      <span class="buttonicon buttonicon-clearauthorship"></span>
+                    </a>
+                </li>
+                <% e.end_block(); %>
+            </ul>
+            <ul class="menu_right">
+                <% e.begin_block("editbarMenuRight"); %>
+                <li data-key="import_export">
+                    <a class="grouped-left" id="importexportlink" title="Import/Export from/to different document formats">
+                        <span class="buttonicon buttonicon-import_export"></span>
+                    </a>
+                </li>
+                <li onClick="document.location = document.location.pathname+ '/timeslider'">
+                    <a id="timesliderlink" class="grouped-middle" title="Show the history of this pad">
+                        <span class="buttonicon buttonicon-history"></span>
+                    </a>
+                </li>
+                <li class="acl-write" data-key="savedRevision">
+                    <a class="grouped-right" id="revisionlink" title="Mark this revision as a saved revision">
+                        <span class="buttonicon buttonicon-savedRevision"></span>
+                    </a>
+                </li>
+                <li class="acl-write separator"></li>
+                <li class="acl-write" data-key="settings">
+                    <a class="grouped-left" id="settingslink" title="Settings of this pad">
+                        <span class="buttonicon buttonicon-settings"></span>
+                    </a>
+                </li>
+                <li data-key="embed">
+                    <a class="grouped-right" id="embedlink" title="Share and Embed this pad">
+                        <span class="grouped-right buttonicon buttonicon-embed"></span>
+                    </a>
+                </li>
+                <li class="separator"></li>
+                <li id="usericon" data-key="showusers">
+                    <a title="Show connected users">
+                        <span class="buttonicon buttonicon-showusers"></span>
+                        <span id="online_count">1</span>
+                    </a>
+                </li>
+                <% e.end_block(); %>
+            </ul>
+        </div>
+
+        <div id="users">
+            <div id="connectionstatus"></div>
+            <div id="myuser">
+                <div id="mycolorpicker">
+                    <div id="colorpicker"></div>
+                    <button id="mycolorpickersave">Save</button>
+                    <button id="mycolorpickercancel">Cancel</button>
+                    <span id="mycolorpickerpreview" class="myswatchboxhoverable"></span>
+                </div>
+                <div id="myswatchbox"><div id="myswatch"></div></div>
+                <div id="myusernameform"><input type="text" id="myusernameedit" disabled="disabled"></div>
+                <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled"></div>
+            </div>
+            <div id="otherusers">
+                <div id="guestprompts"></div>
+                <table id="otheruserstable" cellspacing="0" cellpadding="0" border="0">
+                    <tr><td></td></tr>
+                </table>
+                <div id="nootherusers"></div>
+            </div>
+            <div id="userlistbuttonarea"></div>
+        </div>
+
+        <div id="editorcontainerbox">
+            <div id="editorcontainer"></div>
+            <div id="editorloadingbox">
+              <p>Loading...</p>
+              <noscript><strong>Sorry, you have to enable Javascript in order to use this.</strong></noscript>
+            </div>
+        </div>
+
+        <div id="settings" class="popup">
+            <h1>Pad settings</h1>
+            <div class="column">
+                <% e.begin_block("mySettings"); %>
+                <h2>My view</h2>
+                <p>
+                    <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
+                    <label for="options-stickychat">Chat always on screen</label>
+                </p>
+                <p>
+                    <input type="checkbox" id="options-colorscheck">
+                    <label for="options-colorscheck">Authorship colors</label>
+                </p>
+                <p>
+                    <input type="checkbox" id="options-linenoscheck" checked>
+                    <label for="options-linenoscheck">Line numbers</label>
+                </p>
+                <p>
+                    Font type:
+                    <select id="viewfontmenu">
+                        <option value="normal">Normal</option>
+                        <option value="monospace">Monospaced</option>
+                    </select>
+                </p>
+                <% e.end_block(); %>
+            </div>
+            <div class="column">
+                <% e.begin_block("globalSettings"); %>
+                <h2>Global view</h2>
+                <% e.end_block(); %>
+            </div>
+        </div>
+
+        <div id="importexport" class="popup">
+            <h1>Import/Export</h1>
+            <div class="column acl-write">
+                <% e.begin_block("importColumn"); %>
+                <h2>Upload any text file or document</h2><br>
+                <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
+                    <div class="importformdiv" id="importformfilediv">
+                        <input type="file" name="file" size="15" id="importfileinput">
+                        <div class="importmessage" id="importmessagefail"></div>
+                    </div>
+                    <div id="import"></div>
+                    <div class="importmessage" id="importmessagesuccess">Successful!</div>
+                    <div class="importformdiv" id="importformsubmitdiv">
+                        <input type="hidden" name="padId" value="blpmaXT35R">
+                        <span class="nowrap">
+                            <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput">
+                            <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top">
+                            <img alt="" id="importarrow" src="../static/img/leftarrow.png" align="top">
+                        </span>
+                    </div>
+                </form>
+                <% e.end_block(); %>
+            </div>
+            <div class="column">
+                <h2>Export current pad as</h2>
+                <% e.begin_block("exportColumn"); %>
+                <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
+                <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
+                <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
+                <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
+                <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
+                <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
+                <% e.end_block(); %>
+            </div>
+        </div>
+        
+        <div id="connectivity" class="popup">
+            <% e.begin_block("modals"); %>
+                <div class="connected visible">
+                  <h2>Connected.</h2>
+                </div>
+                <div class="reconnecting">
+                  <h1>Reestablishing connection...</h1>
+                  <p><img alt="" border="0" src="/static/img/connectingbar.gif" /></p>
+                </div>
+                <div class="userdup">
+                  <h1>Opened in another window.</h1>
+                  <h2>You seem to have opened this pad in another browser window.</h2>
+                  <p>If you'd like to use this window instead, you can reconnect.</p>
+                  <button id="forcereconnect">Reconnect Now</button>
+                </div>
+                <div class="unauth">
+                  <h1>No Authorization.</h1>
+                  <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
+                  <button id="forcereconnect">Reconnect Now</button>
+                </div>
+                <div class="looping">
+                  <h1>Disconnected.</h1>
+                  <h2>We're having trouble talking to the EtherPad lite synchronization server.</h2>
+                  <p>You may be connecting through an incompatible firewall or proxy server.</p>
+                </div>
+                <div class="initsocketfail">
+                  <h1>Disconnected.</h1>
+                  <h2>We were unable to connect to the EtherPad lite synchronization server.</h2>
+                  <p>This may be due to an incompatibility with your web browser or internet connection.</p>
+                </div>
+                <div class="slowcommit">
+                  <h1>Disconnected.</h1>
+                  <h2>Server not responding.</h2>
+                  <p>This may be due to network connectivity issues or high load on the server.</p>
+                  <button id="forcereconnect">Reconnect Now</button>
+                </div>
+                <div class="deleted">
+                  <h1>Disconnected.</h1>
+                  <p>This pad was deleted.</p>
+                </div>
+                <div class="disconnected">
+                  <h1>Disconnected.</h1>
+                  <h2>Lost connection with the EtherPad lite synchronization server.</h2>
+                  <p>This may be due to a loss of network connectivity. If this continues to happen, please let us know</p>
+                  <button id="forcereconnect">Reconnect Now</button>
+                </div>
+                <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
+                    <input type="hidden" class="padId" name="padId">
+                    <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
+                    <input type="hidden" class="missedChanges" name="missedChanges">
+                </form>
+            <% e.end_block(); %>
+        </div>
+
+        <div id="embed" class="popup">
+            <% e.begin_block("embedPopup"); %>
+            <div id="embedreadonly" class="right acl-write">
+                <input type="checkbox" id="readonlyinput" onClick="padeditbar.setEmbedLinks();">
+                <label for="readonlyinput">Read only</label>
+            </div>
+            <h1>Share this pad</h1>
+            <div id="linkcode">
+                <h2>Link</h2>
+                <input id="linkinput" type="text" value="">
+            </div>
+            <br>
+            <div id="embedcode">
+                <h2>Embed URL</h2>
+                <input id="embedinput" type="text" value="">
+            </div>
+            <% e.end_block(); %>
+        </div>
+
+        <div id="chatthrob"></div>
+
+        <div id="chaticon" title="Open the chat for this pad" onclick="chat.show();return false;">
+            <span id="chatlabel">Chat</span>
+            <span class="buttonicon buttonicon-chat"></span>
+            <span id="chatcounter">0</span>
+        </div>
+
+        <div id="chatbox">
+            <div id="titlebar"><span id ="titlelabel">Chat</span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
+            <div id="chattext" class="authorColors"></div>
+            <div id="chatinputbox">
+                <form>
+                    <input id="chatinput" type="text" maxlength="140">
+                </form>
+            </div>
+        </div>
+
+        <div id="focusprotector">&nbsp;</div>
+
+        <% e.end_block(); %>
+
+        <% e.begin_block("scripts"); %>
+        <script type="text/javascript">
+            /* Display errors on page load to the user 
+               (Gets overridden by padutils.setupGlobalExceptionHandler)
+            */
+            (function() {
+              var originalHandler = window.onerror;
+              window.onerror = function(msg, url, line) {
+                var box   = document.getElementById('editorloadingbox');
+                box.innerHTML = '<p><b>An error occured while loading the pad</b></p>'
+                              + '<p><b>'+msg+'</b> '
+                              + '<small>in '+ url +' (line '+ line +')</small></p>';
+                // call original error handler
+                if(typeof(originalHandler) == 'function') originalHandler.call(null, arguments);
+              };
+            })();
+        </script>
+
+        <script type="text/javascript" src="../static/js/require-kernel.js"></script>
+        <script type="text/javascript" src="../socket.io/socket.io.js"></script>
+
+        <!-- Include base packages manually (this help with debugging) -->
+        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
+        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
+
+        <script type="text/javascript" src="../static/custom/pad.js"></script>
+
+        <!-- Bootstrap page -->
+        <script type="text/javascript">
+            var clientVars = {};
+            (function () {
+              
+              
+              var pathComponents = location.pathname.split('/');
+              
+              // Strip 'p' and the padname from the pathname and set as baseURL
+              var baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/';
+                            
+              require.setRootURI(baseURL + "javascripts/src");
+              require.setLibraryURI(baseURL + "javascripts/lib");
+              require.setGlobalKeyPath("require");
+
+              $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
+
+              if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+                document.domain = document.domain; // for comet
+              }
+
+              var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+              var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+
+              plugins.baseURL = baseURL;
+              plugins.update(function () {
+                // Call documentReady hook
+                $(function() {
+                  hooks.aCallAll('documentReady');
+                });
+
+                var pad = require('ep_etherpad-lite/static/js/pad');
+                pad.baseURL = baseURL;
+                pad.init();
+              });
+
+              /* TODO: These globals shouldn't exist. */
+              pad = require('ep_etherpad-lite/static/js/pad').pad;
+              chat = require('ep_etherpad-lite/static/js/chat').chat;
+              padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+              padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+            }());
+        </script>
+        <% e.end_block(); %>
+</html>

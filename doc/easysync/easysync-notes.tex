@@ -1,0 +1,200 @@
+\documentclass[12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[USenglish]{babel} 
+
+
+\begin{document}
+
+\title{Easysync Protocol}
+\author{AppJet, Inc., with modifications by the Etherpad Foundation}
+\date{\today}
+
+\maketitle
+
+\section{Attributes}
+
+An ``attribute'' is a (key,value) pair such as
+\verb|(author,abc123)| or \verb|(bold,true)|.
+Sometimes an attribute is treated as an instruction to add
+that attribute, in which case an empty value means to
+remove it.  So \verb|(bold,)| removes the ``bold''
+attribute.  Attributes are interned and given numeric IDs,
+so the number ``\verb|6|'' could represent
+``\verb|(bold,true)|'', for example.  This mapping is
+stored in an attribute pool which may be shared by
+multiple changesets.
+
+Entries in the pool must be unique, so that attributes can
+be compared by their IDs.  Attribute names cannot contain
+commas.
+
+A changeset looks something like the following:
+
+\begin{verbatim}
+Z:5g>1|5=2p=v*4*5+1$x
+\end{verbatim}
+
+With the corresponding pool containing these entries (among others):
+
+\begin{itemize}
+\item[] \verb|4| $\rightarrow$ \verb|(author,1059348573)|
+\item[] \verb|5| $\rightarrow$ \verb|(bold,true)|
+\end{itemize}
+
+This changeset, together with the attribute pool,
+represents inserting a bold letter ``x'' into the middle
+of a line.
+
+The string consists of:
+
+\begin{itemize}
+\item a letter \verb|Z| (the ``magic character'' and
+  format version identifier)
+\item a series punctuation marks (operation codes or
+  ``opcodes'' for short), together with alphanumerics
+  (numeric values in base 36).
+\item a dollar sign (\verb|$|)
+\item a string of characters used for insertion operations
+  (the ``char bank'')
+\end{itemize}
+
+In the example above, if we separate out the operations
+and convert the numbers to base 10, then we get:
+\begin{verbatim}
+Z :196 >1 |5=97 =31 *4 *5 +1 $x
+\end{verbatim}
+Here are descriptions of the operations, where capital
+letters are variables:
+
+\begin{description}
+\item{{\bf :N}} \quad \\ 
+Source text has length $N$ (must be first op)
+\item{{\bf >N}} \quad \\
+Final text is $N$ (positive) characters longer than source
+text (must be second op)
+\item{{\bf <N }} \quad \\
+Final text is $N$ (positive) characters shorter than
+source text (must be second op)
+\item{{\bf >0 }} \quad \\
+Final text is same length as source text
+\item{{\bf +N }} \quad \\
+Insert $N$ characters from the bank, none of them newlines
+\item{{\bf -N}} \quad \\
+Skip over (delete) $N$ characters from the source text,
+none of them newlines
+\item{{\bf =N}} \quad \\
+Keep $N$ characters from the source text, none of them newlines
+\item{{\bf |L+N}} \quad \\
+Insert $N$ characters from the source text, containing $L$
+newlines.  The last character inserted MUST be a newline,
+but not the (new) document's final newline.
+\item{{\bf |L-N}}  \quad \\
+Delete $N$ characters from the source text, containing $L$
+newlines. The last character inserted MUST be a newline,
+but not the (old) document's final newline.
+\item{{\bf |L=N}}  \quad \\
+Keep $N$ characters from the source text, containing L
+newlines.  The last character kept MUST be a newline, and
+the final newline of the document is allowed.
+\item{{\bf *I}} \quad \\
+Apply attribute $I$ from the pool to the following
+\verb|+|, \verb|=|, \verb_|+_, or \verb_|=_ command. In
+other words, any number of \verb|*| ops can come before a
+\verb_+_, \verb_=_, or \verb_|_ but not between a \verb_|_
+and the corresponding \verb_+_ or \verb_=_. If \verb_+_,
+text is inserted having this attribute.  If \verb_=_, text
+is kept but with the attribute applied as an attribute
+addition or removal. Consecutive attributes must be sorted
+lexically by (key,value) with key and value taken as
+strings.  It's illegal to have duplicate keys for
+(key,value) pairs that apply to the same text.  It's
+illegal to have an empty value for a key in the case of an
+insertion (\verb_+_), the pair should just be omitted.
+\end{description}
+
+Characters from the source text that aren't accounted for
+are assumed to be kept with the same attributes.
+
+\paragraph{Additional Constraints}
+
+\begin{itemize}
+\item Consecutive \verb_+_, \verb_-_, and \verb_=_ ops of
+  the same type that could be combined are not allowed.
+  Whether combination is possible depends on the
+  attributes of the ops and whether each is multiline or
+ not.  For example, two multiline deletions can never be
+ consecutive, nor can any insertion come after a
+ non-multiline insertion with the same attributes.
+\item ``No-op'' ops are not allowed, such as deleting 0
+  characters.  However, attribute applications that don't
+  have any effect are allowed.
+\item Characters at the end of the source text cannot be
+  explicitly kept with no changes; if the change doesn't
+  affect the last $N$ characters, those ``keep'' ops must
+  be left off.
+\item In any consecutive sequence of insertions (\verb_+_)
+  and deletions (\verb_-_) with no keeps (\verb_=_), the
+  deletions must come before the insertions.
+\item The document text before and after will always end
+  with a newline.  This policy avoids a lot of
+  special-casing of the end of the document.  If a final
+  newline is always added when importing text and removed
+  when exporting text, then the changeset representation
+  can be used to process text files that may or may not
+  have a final newline.
+\end{itemize}
+
+\paragraph{Attribution string}
+
+An \emph{attribution string} is a series of inserts with
+no deletions or keeps.  For example, ``\verb_*3+8|1+5_''
+describes the attributes of a string of length 13, where
+the first 8 chars have attribute 3 and the next 5 chars
+have no attributes, with the last of these 5 chars being a
+newline.  Constraints apply similar to those affecting
+changesets, but the restriction about the final newline of
+the new document being added doesn't apply.
+
+Attributes in an attribution string cannot be empty, like
+``\verb|(bold,)|'', they should instead be absent.
+
+
+\section{Further Considerations}
+
+\begin{itemize}
+\item composing changesets/attributions with different
+  pools.
+\item generalizing ``applyToAttribution'' to make
+  ``mutateAttributionLines'' and ``compose''
+\end{itemize}
+
+\section{Using Unicode?}
+
+\begin{itemize}
+\item no unicode (for efficient escaping, sightliness)
+\item efficient operations for ACE and collab (attributed text, etc.)
+\item good for time-slider
+\item good for API
+\item line-ending aware
+X more coherent (deleting or styling text merging with insertion)
+\item server-side syntax highlighting?
+\item unify author map with attribute pool
+\item unify attributed text with changeset rep
+\item not: reversible
+\item force final newline of document to be preserved
+\end{itemize}
+
+\paragraph{Unicode bad!}
+
+\begin{itemize}
+\item ugly (hard to read)
+\item more complex to parse
+\item harder to store and transmit correctly
+\item doesn't save all that much space anyway
+\item blows up in size when string-escaped
+\item embarrassing for API
+\end{itemize}
+
+
+\end{document}
