@@ -376,18 +376,18 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     {
       var txt = dom.nodeValue(node);
       var tname = dom.nodeAttr(node.parentNode,"name");
-       /* 
-       * Called from: src/static/js/contentcollector.js
-       *
-       * Context - 
-       * cc - the contentcollector object
-       * state - the current state of the change being made
-       * tname - the tag name of this node currently being processed
-       * text  - the text for that line 
-       * This hook allows you to validate/manipulate the text before it sent to the server side.
-       * The return value should the validate/manipulated text.
-       * 
-       */
+      /* 
+      * Called from: src/static/js/contentcollector.js
+      *
+      * Context - 
+      * cc - the contentcollector object
+      * state - the current state of the change being made
+      * tname - the tag name of this node currently being processed
+      * text  - the text for that line 
+      * This hook allows you to validate/manipulate the text before it sent to the server side.
+      * The return value should be the validated/manipulated text.
+      * 
+      */
       var txtFromHook = hooks.callAll('collectContentLineText', {
         cc: this,
         state: state,
@@ -472,7 +472,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
        * state - the current state of the change being made
        * tname - the tag name of this node currently being processed
        * 
-       * This hook is provided to allow Whether the br tag should induce a new magic domline or not.
+       * This hook is provided to allow whether the br tag should induce a new magic domline or not.
        * The return value should be either true(break the line) or false.
        * 
        */

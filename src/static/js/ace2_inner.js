@@ -200,6 +200,11 @@ function Ace2Inner(){
 
   var authorInfos = {}; // presence of key determines if author is present in doc
 
+  function getAuthorInfos(){
+    return authorInfos;
+  };
+  editorInfo.ace_getAuthorInfos= getAuthorInfos;
+
   function setAuthorInfo(author, info)
   {
     if ((typeof author) != "string")
@@ -884,7 +889,14 @@ function Ace2Inner(){
   editorInfo.ace_setEditable = setEditable;
   editorInfo.ace_execCommand = execCommand;
   editorInfo.ace_replaceRange = replaceRange;
-
+  editorInfo.ace_getAuthorInfos= getAuthorInfos;
+  editorInfo.ace_performDocumentReplaceRange = performDocumentReplaceRange;
+  editorInfo.ace_performDocumentReplaceCharRange = performDocumentReplaceCharRange;
+  editorInfo.ace_renumberList = renumberList;
+  editorInfo.ace_doReturnKey = doReturnKey;
+  editorInfo.ace_isBlockElement = isBlockElement;
+  editorInfo.ace_getLineListType = getLineListType;
+  
   editorInfo.ace_callWithAce = function(fn, callStack, normalize)
   {
     var wrapper = function()
@@ -1686,11 +1698,55 @@ function Ace2Inner(){
     if (selection && !selStart)
     {
       //if (domChanges) dmesg("selection not collected");
-      selStart = getLineAndCharForPoint(selection.startPoint);
+      /* 
+       * Called from: src/static/js/ace2_inner.js
+       *
+       * Context - 
+       * callstack - a bunch of information about the current action
+       * editorInfo - information about the user who is making the change
+       * rep - information about where the change is being made
+       * root - the span element of the current line
+       * point - the starting element where the cursor currently resides
+       * documentAttributeManager - information about attributes in the document 
+       * This hook is provided to allow a plugin to turn DOM node selection into [line,char] selection.
+       * The return value should be an array of [line,char]
+       * 
+       */
+      var selStartFromHook = hooks.callAll('aceStartLineAndCharForPoint', {
+        callstack: currentCallStack,
+        editorInfo: editorInfo,
+        rep: rep,
+        root:root,
+        point:selection.startPoint,
+        documentAttributeManager: documentAttributeManager
+      });
+      selStart = selStartFromHook || getLineAndCharForPoint(selection.startPoint);
     }
     if (selection && !selEnd)
     {
-      selEnd = getLineAndCharForPoint(selection.endPoint);
+      /* 
+       * Called from: src/static/js/ace2_inner.js
+       *
+       * Context - 
+       * callstack - a bunch of information about the current action
+       * editorInfo - information about the user who is making the change
+       * rep - information about where the change is being made
+       * root - the span element of the current line
+       * point - the ending element where the cursor currently resides
+       * documentAttributeManager - information about attributes in the document 
+       * This hook is provided to allow a plugin to turn DOM node selection into [line,char] selection.
+       * The return value should be an array of [line,char]
+       * 
+       */		
+      var selEndFromHook = hooks.callAll('aceEndLineAndCharForPoint', {
+        callstack: currentCallStack,
+        editorInfo: editorInfo,
+        rep: rep,
+        root:root,
+        point:selection.endPoint,
+        documentAttributeManager: documentAttributeManager
+      });
+      selEnd = selEndFromHook || getLineAndCharForPoint(selection.endPoint);		      
     }
 
     // selection from content collection can, in various ways, extend past final
@@ -1845,17 +1901,20 @@ function Ace2Inner(){
   {
     return rep.selStart[0];
   }
-
+  editorInfo.ace_caretLine = caretLine;
+  
   function caretColumn()
   {
     return rep.selStart[1];
   }
-
+  editorInfo.ace_caretColumn = caretColumn;
+  
   function caretDocChar()
   {
     return rep.lines.offsetOfIndex(caretLine()) + caretColumn();
   }
-
+  editorInfo.ace_caretDocChar = caretDocChar;
+  
   function handleReturnIndentation()
   {
     // on return, indent to level of previous line
@@ -3447,7 +3506,8 @@ function Ace2Inner(){
   {
     return !!REGEX_WORDCHAR.exec(c);
   }
-
+  editorInfo.ace_isWordChar = isWordChar;
+  
   function isSpaceChar(c)
   {
     return !!REGEX_SPACE.exec(c);
@@ -3555,7 +3615,30 @@ function Ace2Inner(){
 
       if (!stopped)
       {
-        if (isTypeForSpecialKey && keyCode == 8)
+       /* 
+        * Called from: src/static/js/ace2_inner.js
+        *
+        * Context - 
+        * callstack - a bunch of information about the current action
+        * editorInfo - information about the user who is making the change
+        * rep - information about where the change is being made
+        * documentAttributeManager - information about attributes in the document 
+        * evt - the fired event
+        * 
+        * This hook is provided to allow a plugin to handle key events.
+        * The return value should true if you have handled the event.
+        * 
+        */		  
+        editorInfo.specialHandled = null;
+        specialHandled = hooks.callAll('aceKeyEvent', {
+          callstack: currentCallStack,
+          editorInfo: editorInfo,
+          rep: rep,
+          documentAttributeManager: documentAttributeManager,
+          evt:evt
+        });
+
+        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)
         {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
           // or else deleting a blank line can take two delete presses.
