@@ -144,6 +144,7 @@ function minify(req, res, next)
     if (plugin) {
       var pluginPath = plugin.package.realPath;
       filename = path.relative(ROOT_DIR, pluginPath + '/static/' + resourcePath);
+      filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
     }
   }
 
