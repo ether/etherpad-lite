@@ -39,6 +39,7 @@ var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 var LIBRARY_WHITELIST = [
       'async'
     , 'security'
+    , 'tinycon'
     , 'underscore'
     , 'unorm'
     ];
