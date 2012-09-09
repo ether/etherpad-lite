@@ -182,7 +182,7 @@ require.setGlobalKeyPath("require");\n\
       buffer.push('<style type="text/css">');
       for (var i = 0, ii = embededFiles.length; i < ii; i++) {
         var file = embededFiles[i];
-        buffer.push(Ace2Editor.EMBEDED[file].replace(/<\//g, '<\\/'));
+        buffer.push((Ace2Editor.EMBEDED[file] || '').replace(/<\//g, '<\\/'));
       }
       buffer.push('<\/style>');
     }
