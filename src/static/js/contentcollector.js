@@ -25,13 +25,14 @@
 
 var _MAX_LIST_LEVEL = 8;
 
+var UNorm = require('./unorm');
 var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
 
 function sanitizeUnicode(s)
 {
-  return s.replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
+  return UNorm.nfc(s).replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
 }
 
 function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
@@ -258,7 +259,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     {
       state.listNesting--;
     }
-    if(oldListType) state.lineAttributes['list'] = oldListType;
+    if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
+    else { delete state.lineAttributes['list']; }
     _recalcAttribString(state);
   }
 
@@ -309,7 +311,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       ['insertorder', 'first']
     ].concat(
       _.map(state.lineAttributes,function(value,key){
-        console.log([key, value])
+        if (window.console) console.log([key, value])
         return [key, value];
       })
     );

@@ -3237,7 +3237,7 @@ function Ace2Inner(){
     }
     //hide the dropdownso
     if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/Pita/etherpad-lite/issues/327
-      window.parent.parent.padeditbar.toogleDropDown("none");
+      window.parent.parent.padeditbar.toggleDropDown("none");
     }
   }
 
@@ -3513,6 +3513,13 @@ function Ace2Inner(){
     var charCode = evt.charCode;
     var keyCode = evt.keyCode;
     var which = evt.which;
+
+    // prevent ESC key
+    if (keyCode == 27)
+    {
+      evt.preventDefault();
+      return;
+    }
 
     //dmesg("keyevent type: "+type+", which: "+which);
     // Don't take action based on modifier keys going up and down.
