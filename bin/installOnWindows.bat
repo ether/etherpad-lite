@@ -36,4 +36,4 @@ IF NOT EXIST settings.json (
 )
 
 echo _
-echo Installed Etherpad-lite!
+echo Installed Etherpad-lite!  To run Etherpad type start.bat
