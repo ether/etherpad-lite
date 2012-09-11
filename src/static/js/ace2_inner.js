@@ -1698,20 +1698,6 @@ function Ace2Inner(){
     if (selection && !selStart)
     {
       //if (domChanges) dmesg("selection not collected");
-      /* 
-       * Called from: src/static/js/ace2_inner.js
-       *
-       * Context - 
-       * callstack - a bunch of information about the current action
-       * editorInfo - information about the user who is making the change
-       * rep - information about where the change is being made
-       * root - the span element of the current line
-       * point - the starting element where the cursor currently resides
-       * documentAttributeManager - information about attributes in the document 
-       * This hook is provided to allow a plugin to turn DOM node selection into [line,char] selection.
-       * The return value should be an array of [line,char]
-       * 
-       */
       var selStartFromHook = hooks.callAll('aceStartLineAndCharForPoint', {
         callstack: currentCallStack,
         editorInfo: editorInfo,
@@ -1724,20 +1710,6 @@ function Ace2Inner(){
     }
     if (selection && !selEnd)
     {
-      /* 
-       * Called from: src/static/js/ace2_inner.js
-       *
-       * Context - 
-       * callstack - a bunch of information about the current action
-       * editorInfo - information about the user who is making the change
-       * rep - information about where the change is being made
-       * root - the span element of the current line
-       * point - the ending element where the cursor currently resides
-       * documentAttributeManager - information about attributes in the document 
-       * This hook is provided to allow a plugin to turn DOM node selection into [line,char] selection.
-       * The return value should be an array of [line,char]
-       * 
-       */		
       var selEndFromHook = hooks.callAll('aceEndLineAndCharForPoint', {
         callstack: currentCallStack,
         editorInfo: editorInfo,
@@ -3615,20 +3587,6 @@ function Ace2Inner(){
 
       if (!stopped)
       {
-       /* 
-        * Called from: src/static/js/ace2_inner.js
-        *
-        * Context - 
-        * callstack - a bunch of information about the current action
-        * editorInfo - information about the user who is making the change
-        * rep - information about where the change is being made
-        * documentAttributeManager - information about attributes in the document 
-        * evt - the fired event
-        * 
-        * This hook is provided to allow a plugin to handle key events.
-        * The return value should true if you have handled the event.
-        * 
-        */       
         var specialHandledInHook = hooks.callAll('aceKeyEvent', {
           callstack: currentCallStack,
           editorInfo: editorInfo,
@@ -3636,7 +3594,7 @@ function Ace2Inner(){
           documentAttributeManager: documentAttributeManager,
           evt:evt
         });
-		specialHandled = (specialHandledInHook&&specialHandledInHook.length>0)?specialHandledInHook[0]:specialHandled;
+        specialHandled = (specialHandledInHook&&specialHandledInHook.length>0)?specialHandledInHook[0]:specialHandled;
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)
         {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
