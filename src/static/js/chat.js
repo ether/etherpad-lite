@@ -23,7 +23,7 @@
 var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
 
-require('./tinycon');
+var Tinycon = require('tinycon/tinycon');
 
 var chat = (function()
 {

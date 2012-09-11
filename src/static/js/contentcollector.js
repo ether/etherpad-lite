@@ -25,7 +25,7 @@
 
 var _MAX_LIST_LEVEL = 8;
 
-var UNorm = require('./unorm');
+var UNorm = require('unorm');
 var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
