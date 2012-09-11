@@ -11,6 +11,7 @@
     { "name": "webaccess", "hooks": { "expressConfigure": "ep_etherpad-lite/node/hooks/express/webaccess:expressConfigure" } },
     { "name": "apicalls", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/apicalls:expressCreateServer" } },
     { "name": "importexport", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/importexport:expressCreateServer" } },
+    { "name": "preview", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/preview:expressCreateServer" } },
     { "name": "errorhandling", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/errorhandling:expressCreateServer" } },
     { "name": "socketio", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/socketio:expressCreateServer" } },
     { "name": "adminplugins", "hooks": {

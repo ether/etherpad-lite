@@ -98,6 +98,11 @@ var padeditbar = (function()
     init: function()
     {
       var self = this;
+      //get /p/padname
+      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname)
+      //get http://example.com/p/padname
+      var pad_root_url = document.location.href.replace(document.location.pathname, pad_root_path)
+
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
       $("#editbar [data-key]").each(function (i, e) {
@@ -106,6 +111,7 @@ var padeditbar = (function()
           event.preventDefault();
         });
       });
+      $("#previewhtmllink").attr("href", pad_root_url + "/preview/html");
     },
     isEnabled: function()
     {
