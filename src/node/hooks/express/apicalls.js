@@ -7,7 +7,7 @@ var apiHandler = require('../../handler/APIHandler');
 var apiCaller = function(req, res, fields) {
   res.header("Content-Type", "application/json; charset=utf-8");
 
-  apiLogger.info("REQUEST, " + req.params.func + ", " + JSON.stringify(fields));
+  apiLogger.info("REQUEST, v"+ req.params.version + ":" + req.params.func + ", " + JSON.stringify(fields));
 
   //wrap the send function so we can log the response
   //note: res._send seems to be already in use, so better use a "unique" name
@@ -24,19 +24,19 @@ var apiCaller = function(req, res, fields) {
   }
 
   //call the api handler
-  apiHandler.handle(req.params.func, fields, req, res);
+  apiHandler.handle(req.params.version, req.params.func, fields, req, res);
 }
 
 exports.apiCaller = apiCaller;
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   //This is a api GET call, collect all post informations and pass it to the apiHandler
-  args.app.get('/api/1/:func', function (req, res) {
+  args.app.get('/api/:version/:func', function (req, res) {
     apiCaller(req, res, req.query)
   });
 
   //This is a api POST call, collect all post informations and pass it to the apiHandler
-  args.app.post('/api/1/:func', function(req, res) {
+  args.app.post('/api/:version/:func', function(req, res) {
     new formidable.IncomingForm().parse(req, function (err, fields, files) {
       apiCaller(req, res, fields)
     });
