@@ -388,6 +388,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       * The return value should be the validated/manipulated text.
       * 
       */
+      //top.console.log(' nodevalue ',txt);
       var txtFromHook = hooks.callAll('collectContentLineText', {
         cc: this,
         state: state,
@@ -397,7 +398,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         styl: null,
         cls: null
       });  
-      var txt = txtFromHook||txt;
+      var txt = (typeof(txtFromHook)=='object'&&txtFromHook.length==0)?dom.nodeValue(node):txtFromHook[0];
+
       var rest = '';
       var x = 0; // offset into original text
       if (txt.length == 0)
@@ -409,7 +411,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         if (endPoint && node == endPoint.node)
         {
           selEnd = _pointHere(0, state);
-        }
+			}
       }
       while (txt.length > 0)
       {
@@ -476,8 +478,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
        * The return value should be either true(break the line) or false.
        * 
        */
-      {
-        cc.startNewLine(state);
+      {        
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
         var induceLineBreak = hooks.callAll('collectContentLineBreak', {
@@ -487,8 +488,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           tvalue:tvalue,
           styl: null,
           cls: null
-        });
-        if(induceLineBreak){
+        });       
+        var startNewLine= (typeof(induceLineBreak)=='object'&&induceLineBreak.length==0)?true:induceLineBreak[0];
+        if(startNewLine){
           cc.startNewLine(state);
         }		  
       }

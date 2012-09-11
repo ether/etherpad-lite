@@ -1719,8 +1719,8 @@ function Ace2Inner(){
         root:root,
         point:selection.startPoint,
         documentAttributeManager: documentAttributeManager
-      });
-      selStart = selStartFromHook || getLineAndCharForPoint(selection.startPoint);
+      });	
+      selStart = (selStartFromHook==null||selStartFromHook.length==0)?getLineAndCharForPoint(selection.startPoint):selStartFromHook;
     }
     if (selection && !selEnd)
     {
@@ -1746,7 +1746,7 @@ function Ace2Inner(){
         point:selection.endPoint,
         documentAttributeManager: documentAttributeManager
       });
-      selEnd = selEndFromHook || getLineAndCharForPoint(selection.endPoint);		      
+      selEnd = (selEndFromHook==null||selEndFromHook.length==0)?getLineAndCharForPoint(selection.endPoint):selEndFromHook;		                      
     }
 
     // selection from content collection can, in various ways, extend past final
@@ -3628,16 +3628,15 @@ function Ace2Inner(){
         * This hook is provided to allow a plugin to handle key events.
         * The return value should true if you have handled the event.
         * 
-        */		  
-        editorInfo.specialHandled = null;
-        specialHandled = hooks.callAll('aceKeyEvent', {
+        */       
+        var specialHandledInHook = hooks.callAll('aceKeyEvent', {
           callstack: currentCallStack,
           editorInfo: editorInfo,
           rep: rep,
           documentAttributeManager: documentAttributeManager,
           evt:evt
         });
-
+		specialHandled = (specialHandledInHook&&specialHandledInHook.length>0)?specialHandledInHook[0]:specialHandled;
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)
         {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
