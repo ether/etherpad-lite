@@ -117,6 +117,11 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
         //get information about all sessions contained in this cookie
         function(callback)
         {
+          if (!sessionCookie) {
+            callback();
+            return;
+          }
+          
           var sessionIDs = sessionCookie.split(',');
           async.foreach(sessionIDs, function(sessionID) {
             sessionManager.getSessionInfo(sessionID, function(err, sessionInfo) {
