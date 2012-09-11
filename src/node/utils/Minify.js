@@ -35,14 +35,35 @@ var ROOT_DIR = path.normalize(__dirname + "/../../static/");
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
+
+var LIBRARY_WHITELIST = [
+      'async'
+    , 'security'
+    , 'tinycon'
+    , 'underscore'
+    , 'unorm'
+    ];
+
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
 exports.tar = {};
+function prefixLocalLibraryPath(path) {
+  if (path.charAt(0) == '$') {
+    return path.slice(1);
+  } else {
+    return LIBRARY_PREFIX + '/' + path;
+  }
+}
+
 for (var key in tar) {
-  exports.tar[LIBRARY_PREFIX + '/' + key] =
-    tar[key].map(function (p) {return LIBRARY_PREFIX + '/' + p}).concat(
-      tar[key].map(function (p) {
-        return LIBRARY_PREFIX + '/' + p.replace(/\.js$/, '')
+  exports.tar[prefixLocalLibraryPath(key)] =
+    tar[key].map(prefixLocalLibraryPath).concat(
+      tar[key].map(prefixLocalLibraryPath).map(function (p) {
+        return p.replace(/\.js$/, '');
+      })
+    ).concat(
+      tar[key].map(prefixLocalLibraryPath).map(function (p) {
+        return p.replace(/\.js$/, '') + '/index.js';
       })
     );
 }
@@ -131,20 +152,26 @@ function minify(req, res, next)
     return; 
   }
 
-  /* Handle static files for plugins:
+  /* Handle static files for plugins/libraries:
      paths like "plugins/ep_myplugin/static/js/test.js"
      are rewritten into ROOT_PATH_OF_MYPLUGIN/static/js/test.js,
      commonly ETHERPAD_ROOT/node_modules/ep_myplugin/static/js/test.js
   */
-  var match = filename.match(/^plugins\/([^\/]+)\/static\/(.*)/);
+  var match = filename.match(/^plugins\/([^\/]+)(\/(?:(static\/.*)|.*))?$/);
   if (match) {
-    var pluginName = match[1];
-    var resourcePath = match[2];
-    var plugin = plugins.plugins[pluginName];
-    if (plugin) {
+    var library = match[1];
+    var libraryPath = match[2] || '';
+
+    if (plugins.plugins[library] && match[3]) {
+      var plugin = plugins.plugins[library];
       var pluginPath = plugin.package.realPath;
-      filename = path.relative(ROOT_DIR, pluginPath + '/static/' + resourcePath);
+      filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
       filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
+    } else if (LIBRARY_WHITELIST.indexOf(library) != -1) {
+      // Go straight into node_modules
+      // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
+      // would end up resolving to logically distinct resources.
+      filename = '../node_modules/' + library + libraryPath;
     }
   }
 
@@ -285,8 +312,10 @@ function statFile(filename, callback) {
         } else {
           callback(error);
         }
-      } else {
+      } else if (stats.isFile()) {
         callback(null, stats.mtime.getTime(), true);
+      } else {
+        callback(null, stats.mtime.getTime(), false);
       }
     });
   }

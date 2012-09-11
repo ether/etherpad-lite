@@ -1,14 +1,6 @@
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-var _;
-
-/* FIXME: Ugly hack, in the future, use same code for server & client */
-if (plugins.isClient) {
-  var async = require("ep_etherpad-lite/static/js/pluginfw/async");  
-  var _ = require("ep_etherpad-lite/static/js/underscore");
-} else {
-  var async = require("async");
-  var _ = require("underscore");
-}
+var plugins = require("./plugins");
+var async = require("async");
+var _ = require("underscore");
 
 exports.bubbleExceptions = true
 
