@@ -815,6 +815,9 @@ table#otheruserstable {
 .buttonicon-savedRevision {
   background-position: 0px -493px
 }
+.buttonicon-preview {
+  background-image: url('../../static/img/preview.png');
+}
 #focusprotector {
   z-index: 100;
   position: absolute;
