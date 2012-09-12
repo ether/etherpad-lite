@@ -71,6 +71,5 @@
   , "pluginfw/client_plugins.js"
   , "pluginfw/shared.js"
   , "pluginfw/hooks.js"
-  , "pluginfw/parent_require.js"
   ]
 }
