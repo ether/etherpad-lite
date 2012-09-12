@@ -1,11 +1,6 @@
 # Server-side hooks
 These hooks are called on server-side.
 
-All hooks registered to these events are called with two arguments:
-
-1. name - the name of the hook being called
-2. context - an object with some relevant information about the context of the call
-
 ## loadSettings
 Called from: src/node/server.js
 
