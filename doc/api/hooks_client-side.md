@@ -1,11 +1,6 @@
 # Client-side hooks
 Most of these hooks are called during or in order to set up the formatting process.
 
-All hooks registered to these events are called with two arguments:
-
-1. name - the name of the hook being called
-2. context - an object with some relevant information about the context of the call
-
 ## documentReady
 Called from: src/templates/pad.html
 
