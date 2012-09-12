@@ -34,3 +34,37 @@ exports.update = function (cb) {
      callback();
    });
 };
+
+function adoptPlugins(plugins) {
+  var keys = [
+      'loaded', 'plugins', 'parts', 'hooks', 'baseURL', 'ensure', 'update'];
+
+  for (var i = 0, ii = keys.length; i < ii; i++) {
+    var key = keys[i];
+    exports[key] = plugins[key];
+  }
+}
+
+function adoptPluginsFromAncestorsOf(frame) {
+  // Bind plugins with parent;
+  var parentRequire = null;
+  try {
+    while (frame = frame.parent) {
+      if (typeof (frame.require) !== "undefined") {
+        parentRequire = frame.require;
+        break;
+      }
+    }
+  } catch (error) {
+    // Silence (this can only be a XDomain issue).
+  }
+  if (parentRequire) {
+    var ancestorPlugins = parentRequire("ep_etherpad-lite/static/js/pluginfw/client_plugins");
+    exports.adoptPlugins(ancestorPlugins);
+  } else {
+    throw new Error("Parent plugins could not be found.")
+  }
+}
+
+exports.adoptPlugins = adoptPlugins;
+exports.adoptPluginsFromAncestorsOf = adoptPluginsFromAncestorsOf;
