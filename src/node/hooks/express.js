@@ -42,12 +42,13 @@ exports.createServer = function () {
 }
 
 exports.restartServer = function () {
+
   if (server) {
     console.log("Restarting express server");
     server.close();
   }
 
-  server = express.createServer();
+  server = express(); // New syntax for express v3
 
   server.use(function (req, res, next) {
     res.header("Server", serverName);
