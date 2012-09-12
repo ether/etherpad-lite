@@ -284,8 +284,14 @@ function getAceFile(callback) {
 }
 
 // Check for the existance of the file and get the last modification date.
-function statFile(filename, callback) {
-  if (filename == 'js/ace.js') {
+function statFile(filename, callback, dirStatLimit) {
+  if (typeof dirStatLimit === 'undefined') {
+    dirStatLimit = 3;
+  }
+
+  if (dirStatLimit < 1 || filename == '' || filename == '/') {
+    callback(null, null, false);
+  } else if (filename == 'js/ace.js') {
     // Sometimes static assets are inlined into this file, so we have to stat
     // everything.
     lastModifiedDateOfEverything(function (error, date) {
@@ -298,17 +304,9 @@ function statFile(filename, callback) {
       if (error) {
         if (error.code == "ENOENT") {
           // Stat the directory instead.
-          fs.stat(path.dirname(ROOT_DIR + filename), function (error, stats) {
-            if (error) {
-              if (error.code == "ENOENT") {
-                callback(null, null, false);
-              } else {
-                callback(error);
-              }
-            } else {
-              callback(null, stats.mtime.getTime(), false);
-            }
-          });
+          statFile(path.dirname(filename), function (error, date, exists) {
+            callback(error, date, false);
+          }, dirStatLimit-1);
         } else {
           callback(error);
         }
