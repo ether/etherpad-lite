@@ -246,7 +246,11 @@ hooks.plugins = plugins;\n\
 plugins.adoptPluginsFromAncestorsOf(window);\n\
 \n\
 $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
-require("ep_etherpad-lite/static/js/ace2_inner");\n\
+var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
+\n\
+plugins.ensure(function () {\n\
+  Ace2Inner.init();\n\
+});\n\
 '));
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
