@@ -29,6 +29,7 @@ var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm/lib/npm.js");
 
+hooks.plugins = plugins;
 
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);

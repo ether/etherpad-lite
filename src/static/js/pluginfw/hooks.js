@@ -1,4 +1,3 @@
-var plugins = require("./plugins");
 var async = require("async");
 var _ = require("underscore");
 
@@ -71,8 +70,8 @@ exports.flatten = function (lst) {
 
 exports.callAll = function (hook_name, args) {
   if (!args) args = {};
-  if (plugins.hooks[hook_name] === undefined) return [];
-  return _.flatten(_.map(plugins.hooks[hook_name], function (hook) {
+  if (exports.plugins.hooks[hook_name] === undefined) return [];
+  return _.flatten(_.map(exports.plugins.hooks[hook_name], function (hook) {
     return hookCallWrapper(hook, hook_name, args);
   }), true);
 }
@@ -80,9 +79,9 @@ exports.callAll = function (hook_name, args) {
 exports.aCallAll = function (hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
-  if (plugins.hooks[hook_name] === undefined) return cb(null, []);
+  if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
   async.map(
-    plugins.hooks[hook_name],
+    exports.plugins.hooks[hook_name],
     function (hook, cb) {
       hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
@@ -94,8 +93,8 @@ exports.aCallAll = function (hook_name, args, cb) {
 
 exports.callFirst = function (hook_name, args) {
   if (!args) args = {};
-  if (plugins.hooks[hook_name] === undefined) return [];
-  return exports.syncMapFirst(plugins.hooks[hook_name], function (hook) {
+  if (exports.plugins.hooks[hook_name] === undefined) return [];
+  return exports.syncMapFirst(exports.plugins.hooks[hook_name], function (hook) {
     return hookCallWrapper(hook, hook_name, args);
   });
 }
@@ -103,9 +102,9 @@ exports.callFirst = function (hook_name, args) {
 exports.aCallFirst = function (hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
-  if (plugins.hooks[hook_name] === undefined) return cb(null, []);
+  if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
   exports.mapFirst(
-    plugins.hooks[hook_name],
+    exports.plugins.hooks[hook_name],
     function (hook, cb) {
       hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
