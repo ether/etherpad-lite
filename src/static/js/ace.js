@@ -24,6 +24,8 @@
 // requires: plugins
 // requires: undefined
 
+var KERNEL_SOURCE = '../static/js/require-kernel.js';
+
 Ace2Editor.registry = {
   nextId: 1
 };
@@ -155,24 +157,6 @@ function Ace2Editor()
 
     return {embeded: embededFiles, remote: remoteFiles};
   }
-  function pushRequireScriptTo(buffer) {
-    var KERNEL_SOURCE = '../static/js/require-kernel.js';
-    var KERNEL_BOOT = '\
-require.setRootURI("../javascripts/src");\n\
-require.setLibraryURI("../javascripts/lib");\n\
-require.setGlobalKeyPath("require");\n\
-';
-    if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
-      buffer.push('<script type="text/javascript">');
-      buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
-      buffer.push(KERNEL_BOOT);
-      buffer.push('<\/script>');
-    } else {
-      // Remotely src'd script tag will not work in IE; it must be embedded, so
-      // throw an error if it is not.
-      throw new Error("Require script could not be embedded.");
-    } 
-  }
   function pushStyleTagsFor(buffer, files) {
     var sorted = sortFilesByEmbeded(files);
     var embededFiles = sorted.embeded;
@@ -236,22 +220,28 @@ require.setGlobalKeyPath("require");\n\
       
       pushStyleTagsFor(iframeHTML, includedCSS);
 
-      var includedJS = [];
-      pushRequireScriptTo(iframeHTML);
+      if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
+        // Remotely src'd script tag will not work in IE; it must be embedded, so
+        // throw an error if it is not.
+        throw new Error("Require kernel could not be found.");
+      }
 
-      // Inject my plugins into my child.
       iframeHTML.push('\
 <script type="text/javascript">\n\
+' + Ace2Editor.EMBEDED[KERNEL_SOURCE] + '\n\
+  require.setRootURI("../javascripts/src");\n\
+  require.setLibraryURI("../javascripts/lib");\n\
+  require.setGlobalKeyPath("require");\n\
+\n\
   var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
   var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
   hooks.plugins = plugins;\n\
   plugins.adoptPluginsFromAncestorsOf(window);\n\
-</script>\
+\n\
+  $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
+  require("ep_etherpad-lite/static/js/ace2_inner");\n\
+</script>\n\
 ');
-
-      iframeHTML.push('<script type="text/javascript">');
-      iframeHTML.push('$ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK');
-      iframeHTML.push('require("ep_etherpad-lite/static/js/ace2_inner");');
       iframeHTML.push('<\/script>');
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
