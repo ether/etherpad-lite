@@ -16,9 +16,6 @@ exports.gracefulShutdown = function(err) {
 
   console.log("graceful shutdown...");
 
-  //stop the http server
-  exports.app.close();
-
   //do the db shutdown
   db.db.doShutdown(function() {
     console.log("db sucessfully closed.");
@@ -35,11 +32,33 @@ exports.gracefulShutdown = function(err) {
 exports.expressCreateServer = function (hook_name, args, cb) {
   exports.app = args.app;
 
+
+
+/*
+  Below breaks Express 3, commented out to allow express 3o to run.  For mroe details see:
+  https://github.com/visionmedia/express/wiki/Migrating-from-2.x-to-3.x
+/*
+/* 
   args.app.error(function(err, req, res, next){
     res.send(500);
     console.error(err.stack ? err.stack : err.toString());
     exports.gracefulShutdown();
   });
+*/
+
+  
+
+//  args.app.on('close', function(){
+//    console.log("Exited in a sloppy fashion");
+//  })
+
+  args.app.use(function(err, req, res, next){
+    // if an error occurs Connect will pass it down
+    // through these "error-handling" middleware
+    // allowing you to respond however you like
+    res.send(500, { error: 'Sorry something bad happened!' });
+  })
+
 
   //connect graceful shutdown with sigint and uncaughtexception
   if(os.type().indexOf("Windows") == -1) {

@@ -17,7 +17,7 @@
                       "socket.io"           : "0.9.x",
                       "ueberDB"             : "0.1.7",
                       "async"               : "0.1.x",
-                      "express"             : "2.5.x",
+                      "express"             : "3.x",
                       "connect"             : "1.x",
                       "clean-css"           : "0.3.2",
                       "uglify-js"           : "1.2.5",
