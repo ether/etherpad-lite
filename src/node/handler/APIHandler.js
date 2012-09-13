@@ -68,7 +68,9 @@ var version =
   , "isPasswordProtected"       : ["padID"]
   , "listAuthorsOfPad"          : ["padID"]
   , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
+  }
+, "1.1":
+  { "getAuthorName"             : ["authorID"]
   , "padUsers"                  : ["padID"]
   , "sendClientsMessage"        : ["padID", "msg"]
   }
