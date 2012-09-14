@@ -62,6 +62,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   var caughtErrorCatchers = [];
   var caughtErrorTimes = [];
   var debugMessages = [];
+  var msgQueue = [];
 
   tellAceAboutHistoricalAuthors(serverVars.historicalAuthorData);
   tellAceActiveAuthorInfo(initialUserInfo);
@@ -110,6 +111,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   function handleUserChanges()
   {
+    if (window.parent.parent.inInternationalComposition) return;
     if ((!getSocket()) || channelState == "CONNECTING")
     {
       if (channelState == "CONNECTING" && (((+new Date()) - initialStartConnectTime) > 20000))
@@ -128,12 +130,12 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
     if (state != "IDLE")
     {
-      if (state == "COMMITTING" && (t - lastCommitTime) > 20000)
+      if (state == "COMMITTING" && msgQueue.length == 0 && (t - lastCommitTime) > 20000)
       {
         // a commit is taking too long
         setChannelState("DISCONNECTED", "slowcommit");
       }
-      else if (state == "COMMITTING" && (t - lastCommitTime) > 5000)
+      else if (state == "COMMITTING" && msgQueue.length == 0 && (t - lastCommitTime) > 5000)
       {
         callbacks.onConnectionTrouble("SLOW");
       }
@@ -150,6 +152,36 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), earliestCommit - t);
       return;
+    }
+
+    // apply msgQueue changeset.
+    if (msgQueue.length != 0) {
+      while (msg = msgQueue.shift()) {
+        var newRev = msg.newRev;
+        rev=newRev;
+        if (msg.type == "ACCEPT_COMMIT")
+        {
+          editor.applyPreparedChangesetToBase();
+          setStateIdle();
+          callCatchingErrors("onInternalAction", function()
+          {
+            callbacks.onInternalAction("commitAcceptedByServer");
+          });
+          callCatchingErrors("onConnectionTrouble", function()
+          {
+            callbacks.onConnectionTrouble("OK");
+          });
+          handleUserChanges();
+        }
+        else if (msg.type == "NEW_CHANGES")
+        {
+          var changeset = msg.changeset;
+          var author = (msg.author || '');
+          var apool = msg.apool;
+
+          editor.applyChangesToBase(changeset, author, apool);
+        }
+      }
     }
 
     var sentMessage = false;
@@ -254,6 +286,22 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       var changeset = msg.changeset;
       var author = (msg.author || '');
       var apool = msg.apool;
+
+      // When inInternationalComposition, msg pushed msgQueue.
+      if (msgQueue.length > 0 || window.parent.parent.inInternationalComposition) {
+        if (msgQueue.length > 0) oldRev = msgQueue[msgQueue.length - 1].newRev;
+        else oldRev = rev;
+
+        if (newRev != (oldRev + 1))
+        {
+          dmesg("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
+          setChannelState("DISCONNECTED", "badmessage_newchanges");
+          return;
+        }
+        msgQueue.push(msg);
+        return;
+      }
+
       if (newRev != (rev + 1))
       {
         dmesg("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
@@ -266,6 +314,18 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     else if (msg.type == "ACCEPT_COMMIT")
     {
       var newRev = msg.newRev;
+      if (msgQueue.length > 0)
+      {
+        if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
+        {
+          dmesg("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+          setChannelState("DISCONNECTED", "badmessage_acceptcommit");
+          return;
+        }
+        msgQueue.push(msg);
+        return;
+      }
+
       if (newRev != (rev + 1))
       {
         dmesg("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
