@@ -1161,7 +1161,7 @@ function Ace2Inner(){
     //if (! top.BEFORE) top.BEFORE = [];
     //top.BEFORE.push(magicdom.root.dom.innerHTML);
     //if (! isEditable) return; // and don't reschedule
-    if (inInternationalComposition)
+    if (window.parent.parent.inInternationalComposition)
     {
       // don't do idle input incorporation during international input composition
       idleWorkTimer.atLeast(500);
@@ -1486,7 +1486,6 @@ function Ace2Inner(){
 
     if (currentCallStack.domClean) return false;
 
-    inInternationalComposition = false; // if we need the document normalized, so be it
     currentCallStack.isUserChange = true;
 
     isTimeUp = (isTimeUp ||
@@ -3690,7 +3689,7 @@ function Ace2Inner(){
         thisKeyDoesntTriggerNormalize = true;
       }
 
-      if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!inInternationalComposition))
+      if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!window.parent.parent.inInternationalComposition))
       {
         if (type != "keyup" || !incorpIfQuick())
         {
@@ -4550,19 +4549,9 @@ function Ace2Inner(){
     }
   }
 
-  var inInternationalComposition = false;
-
   function handleCompositionEvent(evt)
   {
-    // international input events, fired in FF3, at least;  allow e.g. Japanese input
-    if (evt.type == "compositionstart")
-    {
-      inInternationalComposition = true;
-    }
-    else if (evt.type == "compositionend")
-    {
-      inInternationalComposition = false;
-    }
+      window.parent.parent.handleCompositionEvent(evt);
   }
 
   function bindTheEventHandlers()
@@ -4577,7 +4566,8 @@ function Ace2Inner(){
       $(document).on("click", handleIEOuterClick);
     }
     if (browser.msie) $(root).on("paste", handleIEPaste);
-    if ((!browser.msie) && document.documentElement)
+    // CompositionEvent is not implemented below IE version 8
+    if ( !(browser.msie && browser.version < 9) && document.documentElement)
     {
       $(document.documentElement).on("compositionstart", handleCompositionEvent);
       $(document.documentElement).on("compositionend", handleCompositionEvent);
