@@ -114,6 +114,7 @@ function getParams()
   var showControls = params["showControls"];
   var showChat = params["showChat"];
   var userName = params["userName"];
+  var userColor = params["userColor"];
   var showLineNumbers = params["showLineNumbers"];
   var useMonospaceFont = params["useMonospaceFont"];
   var IsnoColors = params["noColors"];
@@ -161,6 +162,11 @@ function getParams()
   {
     // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
     settings.globalUserName = decodeURIComponent(userName);
+  }
+  if(userColor)
+    // If the userColor is set as a parameter, set a global value to use once we have initiated hte pad.
+  {
+    settings.globalUserColor = decodeURIComponent(userColor);
   }
   if(rtl)
   {
@@ -362,6 +368,24 @@ function handshake()
         pad.notifyChangeName(settings.globalUserName); // Notifies the server
         pad.myUserInfo.name = settings.globalUserName;
         $('#myusernameedit').attr({"value":settings.globalUserName}); // Updates the current users UI
+      }
+      if (settings.globalUserColor !== false)
+      {
+        // First, check the color to ensure it's a valid css color value.
+        var check = $("<span/>").css("background-color", "white");
+        $("body").append(check);
+        var white = check.css("background-color");
+        check.css("background-color", settings.globalUserColor);
+        // Ensure that setting the element changed the color.
+        if (check.css("background-color") === white) {
+          settings.globalUserColor = "#ff0000";
+        }
+        check.remove();
+
+        // Add a 'globalUserColor' property to myUserInfo, so collabClient knows we have a query parameter.
+        pad.myUserInfo.globalUserColor = settings.globalUserColor;
+        pad.notifyChangeColor(settings.globalUserColor); // Updates pad.myUserInfo.colorId
+        paduserlist.setMyUserInfo(pad.myUserInfo);
       }
     }
     //This handles every Message after the clientVars
@@ -1025,6 +1049,7 @@ var settings = {
 , noColors: false
 , useMonospaceFontGlobal: false
 , globalUserName: false
+, globalUserColor: false
 , rtlIsTrue: false
 };
 
