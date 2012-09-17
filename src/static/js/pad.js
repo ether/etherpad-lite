@@ -164,7 +164,7 @@ function getParams()
     settings.globalUserName = decodeURIComponent(userName);
   }
   if(userColor)
-    // If the userColor is set as a parameter, set a global value to use once we have initiated hte pad.
+    // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
   {
     settings.globalUserColor = decodeURIComponent(userColor);
   }
@@ -372,12 +372,12 @@ function handshake()
       if (settings.globalUserColor !== false)
       {
         // First, check the color to ensure it's a valid css color value.
-        var check = $("<span/>").css("background-color", "white");
+        var check = $("<span/>").css("background-color", "transparent");
         $("body").append(check);
-        var white = check.css("background-color");
+        var transparent = check.css("background-color");
         check.css("background-color", settings.globalUserColor);
         // Ensure that setting the element changed the color.
-        if (check.css("background-color") === white) {
+        if (check.css("background-color") === transparent) {
           settings.globalUserColor = "#ff0000";
         }
         check.remove();
