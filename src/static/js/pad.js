@@ -43,6 +43,7 @@ var padmodals = require('./pad_modals').padmodals;
 var padsavedrevs = require('./pad_savedrevs');
 var paduserlist = require('./pad_userlist').paduserlist;
 var padutils = require('./pad_utils').padutils;
+var colorutils = require('./colorutils').colorutils;
 
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
@@ -369,18 +370,8 @@ function handshake()
         pad.myUserInfo.name = settings.globalUserName;
         $('#myusernameedit').attr({"value":settings.globalUserName}); // Updates the current users UI
       }
-      if (settings.globalUserColor !== false)
+      if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor))
       {
-        // First, check the color to ensure it's a valid css color value.
-        var check = $("<span/>").css("background-color", "transparent");
-        $("body").append(check);
-        var transparent = check.css("background-color");
-        check.css("background-color", settings.globalUserColor);
-        // Ensure that setting the element changed the color.
-        if (check.css("background-color") === transparent) {
-          settings.globalUserColor = "#ff0000";
-        }
-        check.remove();
 
         // Add a 'globalUserColor' property to myUserInfo, so collabClient knows we have a query parameter.
         pad.myUserInfo.globalUserColor = settings.globalUserColor;
