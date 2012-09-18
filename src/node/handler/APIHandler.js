@@ -101,6 +101,7 @@ var version =
   , "getAuthorName"             : ["authorID"]
   , "padUsers"                  : ["padID"]
   , "sendClientsMessage"        : ["padID", "msg"]
+  , "listAllGroups"             : []
   }
 };
 
