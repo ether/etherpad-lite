@@ -123,29 +123,28 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
           }
           
           var sessionIDs = sessionCookie.split(',');
-          if (sessionIDs){
-            async.forEach(sessionIDs, function(sessionID, cb){
-              sessionManager.getSessionInfo(sessionID, function(err, sessionInfo) {
-                //skip session if it doesn't exist
-                if(err && err.message == "sessionID does not exist") return;
+          async.forEach(sessionIDs, function(sessionID, callback) {
+            sessionManager.getSessionInfo(sessionID, function(err, sessionInfo) {
+              //skip session if it doesn't exist
+              if(err && err.message == "sessionID does not exist") return;
               
-                if(ERR(err, callback)) return;
+              if(ERR(err, callback)) return;
               
-                var now = Math.floor(new Date().getTime()/1000);
+              var now = Math.floor(new Date().getTime()/1000);
               
-                //is it for this group?
-                if(sessionInfo.groupID != groupID) return;
+              //is it for this group?
+              if(sessionInfo.groupID != groupID) return;
               
-                //is validUntil still ok?
-                if(sessionInfo.validUntil <= now) return;
+              //is validUntil still ok?
+              if(sessionInfo.validUntil <= now) return;
               
-                // There is a valid session
-                validSession = true;
-                sessionAuthor = sessionInfo.authorID;
-                cb(); // finish the current value and go to next
-              });
-            }, callback)
-          }
+              // There is a valid session
+              validSession = true;
+              sessionAuthor = sessionInfo.authorID;
+              
+              callback();
+            });
+          }, callback);
         },
         //get author for token
         function(callback)
