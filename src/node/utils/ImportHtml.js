@@ -16,6 +16,7 @@
 
 var jsdom = require('jsdom-nocontextifiy').jsdom;
 var log4js = require('log4js');
+log4js.configure('etherpad_logging.json');
 
 
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");

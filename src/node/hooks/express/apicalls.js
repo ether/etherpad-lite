@@ -1,4 +1,5 @@
 var log4js = require('log4js');
+log4js.configure('etherpad_logging.json');
 var apiLogger = log4js.getLogger("API");
 var formidable = require('formidable');
 var apiHandler = require('../../handler/APIHandler');

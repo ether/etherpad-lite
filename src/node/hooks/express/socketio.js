@@ -1,4 +1,5 @@
 var log4js = require('log4js');
+log4js.configure('etherpad_logging.json');
 var socketio = require('socket.io');
 var settings = require('../../utils/Settings');
 var socketIORouter = require("../../handler/SocketIORouter");

@@ -1,5 +1,6 @@
 var express = require('express');
 var log4js = require('log4js');
+log4js.configure('etherpad_logging.json');
 var httpLogger = log4js.getLogger("http");
 var settings = require('../../utils/Settings');
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;

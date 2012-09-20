@@ -22,6 +22,7 @@
  */
 
 var log4js = require('log4js');
+log4js.configure('etherpad_logging.json');
 var settings = require('./utils/Settings');
 var db = require('./db/DB');
 var async = require('async');
