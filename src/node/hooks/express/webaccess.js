@@ -95,6 +95,7 @@ exports.expressConfigure = function (hook_name, args, cb) {
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
   if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
     args.app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+  
   args.app.use(express.cookieParser());
 
   /* Do not let express create the session, so that we can retain a
