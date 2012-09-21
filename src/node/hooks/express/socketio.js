@@ -10,7 +10,7 @@ var connect = require('connect');
  
 exports.expressCreateServer = function (hook_name, args, cb) {
   //init socket.io and redirect all requests to the MessageHandler
-  var io = socketio.listen(args.app);
+  var io = socketio.listen(args.server);
 
   /* Require an express session cookie to be present, and load the
    * session. See http://www.danielbaulig.de/socket-ioexpress for more
@@ -62,5 +62,5 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   socketIORouter.setSocketIO(io);
   socketIORouter.addComponent("pad", padMessageHandler);
 
-  hooks.callAll("socketio", {"app": args.app, "io": io});
+  hooks.callAll("socketio", {"app": args.app, "io": io, "server": args.server});
 }
