@@ -88,7 +88,7 @@ exports.basicAuth = function (req, res, next) {
   });
 }
 
-var secret = null;
+exports.secret = null;
 
 exports.expressConfigure = function (hook_name, args, cb) {
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
@@ -103,10 +103,10 @@ exports.expressConfigure = function (hook_name, args, cb) {
 
   if (!exports.sessionStore) {
     exports.sessionStore = new express.session.MemoryStore();
-    secret = randomString(32);
+    exports.secret = randomString(32);
   }
   
-  args.app.use(express.cookieParser(secret));
+  args.app.use(express.cookieParser(exports.secret));
 
   args.app.sessionStore = exports.sessionStore;
   args.app.use(express.session({store: args.app.sessionStore,

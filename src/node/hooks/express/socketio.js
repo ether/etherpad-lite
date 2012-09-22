@@ -3,6 +3,7 @@ var socketio = require('socket.io');
 var settings = require('../../utils/Settings');
 var socketIORouter = require("../../handler/SocketIORouter");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
+var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
 
@@ -17,12 +18,21 @@ exports.expressCreateServer = function (hook_name, args, cb) {
    * info */
   io.set('authorization', function (data, accept) {
     if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
-    data.cookie = connect.utils.parseCookie(data.headers.cookie);
-    data.sessionID = data.cookie.express_sid;
-    args.app.sessionStore.get(data.sessionID, function (err, session) {
-      if (err || !session) return accept('Bad session / session has expired', false);
-      data.session = new connect.middleware.session.Session(data, session);
-      accept(null, true);
+
+    // Use connect's cookie parser, because it knows how to parse signed cookies
+    connect.cookieParser(webaccess.secret)(data, {}, function(err){
+      if(err) {
+        console.error(err);
+        accept("Couldn't parse request cookies. ", false);
+        return;
+      }
+
+      data.sessionID = data.signedCookies.express_sid;
+      args.app.sessionStore.get(data.sessionID, function (err, session) {
+        if (err || !session) return accept('Bad session / session has expired', false);
+        data.session = new connect.middleware.session.Session(data, session);
+        accept(null, true);
+      });
     });
   });
 
