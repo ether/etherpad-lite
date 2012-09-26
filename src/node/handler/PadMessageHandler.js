@@ -526,7 +526,11 @@ function handleUserChanges(client, message)
             if(ERR(err, callback)) return;
             
             changeset = Changeset.follow(c, changeset, false, apool);
-            callback(null);
+            if ((r - baseRev) % 200 == 0) { // don't let the stack get too deep
+              async.nextTick(callback);
+            } else {
+              callback(null);
+            }
           });
         },
         //use the callback of the series function
