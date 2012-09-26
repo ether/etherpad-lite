@@ -465,6 +465,7 @@ function handleUserChanges(client, message)
   var baseRev = message.data.baseRev;
   var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
   var changeset = message.data.changeset;
+  var thisAuthor = sessioninfos[client.id].author;
       
   var r, apool, pad;
     
@@ -544,8 +545,6 @@ function handleUserChanges(client, message)
         callback();
         return;
       }
-        
-      var thisAuthor = sessioninfos[client.id].author;
         
       pad.appendRevision(changeset, thisAuthor);
         
