@@ -465,7 +465,9 @@ function handleUserChanges(client, message)
   var baseRev = message.data.baseRev;
   var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
   var changeset = message.data.changeset;
-  var thisAuthor = sessioninfos[client.id].author;
+  // The client might disconnect between our callbacks. We should still
+  // finish processing the changeset, so keep a reference to the session.
+  var thisSession = sessioninfos[client.id];
       
   var r, apool, pad;
     
@@ -473,7 +475,7 @@ function handleUserChanges(client, message)
     //get the pad
     function(callback)
     {
-      padManager.getPad(sessioninfos[client.id].padId, function(err, value)
+      padManager.getPad(thisSession.padId, function(err, value)
       {
         if(ERR(err, callback)) return;
         pad = value;
@@ -550,7 +552,7 @@ function handleUserChanges(client, message)
         return;
       }
         
-      pad.appendRevision(changeset, thisAuthor);
+      pad.appendRevision(changeset, thisSession.author);
         
       var correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
       if (correctionChangeset) {
