@@ -436,15 +436,22 @@ function handleUserInfoUpdate(client, message)
 }
 
 /**
- * Handles a USERINFO_UPDATE, that means that a user have changed his color or name. Anyway, we get both informations
- * This Method is nearly 90% copied out of the Etherpad Source Code. So I can't tell you what happens here exactly
- * Look at https://github.com/ether/pad/blob/master/etherpad/src/etherpad/collab/collab_server.js in the function applyUserChanges()
+ * Handles a USER_CHANGES message, where the client submits its local
+ * edits as a changeset.
+ *
+ * This handler's job is to update the incoming changeset so that it applies
+ * to the latest revision, then add it to the pad, broadcast the changes
+ * to all other clients, and send a confirmation to the submitting client.
+ *
+ * This function is based on a similar one in the original Etherpad.
+ *   See https://github.com/ether/pad/blob/master/etherpad/src/etherpad/collab/collab_server.js in the function applyUserChanges()
+ *
  * @param client the client that send this message
  * @param message the message from the client
  */
 function handleUserChanges(client, message)
 {
-  //check if all ok
+  // Make sure all required fields are present
   if(message.data.baseRev == null)
   {
     messageLogger.warn("Dropped message, USER_CHANGES Message has no baseRev!");
@@ -487,22 +494,23 @@ function handleUserChanges(client, message)
     {
       //ex. _checkChangesetAndPool
   
-      //Copied from Etherpad, don't know what it does exactly
       try
       {
-        //this looks like a changeset check, it throws errors sometimes
+        // Verify that the changeset has valid syntax and is in canonical form
         Changeset.checkRep(changeset);
-      
+
+        // Verify that the attribute indexes used in the changeset are all
+        // defined in the accompanying attribute pool.
         Changeset.eachAttribNumber(changeset, function(n) {
           if (! wireApool.getAttrib(n)) {
             throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
           }
         });
       }
-      //there is an error in this changeset, so just refuse it
       catch(e)
       {
-        console.warn("Can't apply USER_CHANGES "+changeset+", cause it faild checkRep");
+        // There is an error in this changeset, so just refuse it
+        console.warn("Can't apply USER_CHANGES "+changeset+", because it failed checkRep");
         client.json.send({disconnect:"badChangeset"});
         return;
       }
@@ -515,7 +523,10 @@ function handleUserChanges(client, message)
       //ex. applyUserChanges
       apool = pad.pool;
       r = baseRev;
-        
+
+      // The client's changeset might not be based on the latest revision,
+      // since other clients are sending changes at the same time.
+      // Update the changeset so that it can be applied to the latest revision.
       //https://github.com/caolan/async#whilst
       async.whilst(
         function() { return r < pad.getHeadRevisionNumber(); },
@@ -526,8 +537,13 @@ function handleUserChanges(client, message)
           pad.getRevisionChangeset(r, function(err, c)
           {
             if(ERR(err, callback)) return;
-            
+
+            // At this point, both "c" (from the pad) and "changeset" (from the
+            // client) are relative to revision r - 1. The follow function
+            // rebases "changeset" so that it is relative to revision r
+            // and can be applied after "c".
             changeset = Changeset.follow(c, changeset, false, apool);
+
             if ((r - baseRev) % 200 == 0) { // don't let the stack get too deep
               async.nextTick(callback);
             } else {
@@ -558,7 +574,8 @@ function handleUserChanges(client, message)
       if (correctionChangeset) {
         pad.appendRevision(correctionChangeset);
       }
-        
+
+      // Make sure the pad always ends with an empty line.
       if (pad.text().lastIndexOf("\n\n") != pad.text().length-2) {
         var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1, 0, "\n");
         pad.appendRevision(nlChangeset);
