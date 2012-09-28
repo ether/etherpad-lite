@@ -882,6 +882,13 @@ function handleClientReady(client, message)
     },
     function(callback)
     {
+      //Check that the client is still here. It might have disconnected between callbacks.
+      if(sessioninfos[client.id] === undefined)
+      {
+        callback();
+        return;
+      }
+
       //Check if this author is already on the pad, if yes, kick the other sessions!
       if(pad2sessions[padIds.padId])
       {
@@ -896,10 +903,9 @@ function handleClientReady(client, message)
       }
       
       //Save in sessioninfos that this session belonges to this pad
-      var sessionId=String(client.id);
-      sessioninfos[sessionId].padId = padIds.padId;
-      sessioninfos[sessionId].readOnlyPadId = padIds.readOnlyPadId;
-      sessioninfos[sessionId].readonly = padIds.readonly;
+      sessioninfos[client.id].padId = padIds.padId;
+      sessioninfos[client.id].readOnlyPadId = padIds.readOnlyPadId;
+      sessioninfos[client.id].readonly = padIds.readonly;
       
       //check if there is already a pad2sessions entry, if not, create one
       if(!pad2sessions[padIds.padId])
@@ -908,7 +914,7 @@ function handleClientReady(client, message)
       }
       
       //Saves in pad2sessions that this session belongs to this pad
-      pad2sessions[padIds.padId].push(sessionId);
+      pad2sessions[padIds.padId].push(client.id);
       
       //prepare all values for the wire
       var atext = Changeset.cloneAText(pad.atext);
@@ -973,26 +979,22 @@ function handleClientReady(client, message)
         clientVars.userName = authorName;
       }
       
-      if(sessioninfos[client.id] !== undefined)
+      //If this is a reconnect, we don't have to send the client the ClientVars again
+      if(message.reconnect == true)
       {
-        //This is a reconnect, so we don't have to send the client the ClientVars again
-        if(message.reconnect == true)
-        {
-          //Save the revision in sessioninfos, we take the revision from the info the client send to us
-          sessioninfos[client.id].rev = message.client_rev;
-        }
-        //This is a normal first connect
-        else
-        {
-          //Send the clientVars to the Client
-          client.json.send({type: "CLIENT_VARS", data: clientVars});
-          //Save the revision in sessioninfos
-          sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
-        }
-        
-        //Save the revision and the author id in sessioninfos
-        sessioninfos[client.id].author = author;
+        //Save the revision in sessioninfos, we take the revision from the info the client send to us
+        sessioninfos[client.id].rev = message.client_rev;
       }
+      //This is a normal first connect
+      else
+      {
+        //Send the clientVars to the Client
+        client.json.send({type: "CLIENT_VARS", data: clientVars});
+        //Save the current revision in sessioninfos, should be the same as in clientVars
+        sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+      }
+        
+      sessioninfos[client.id].author = author;
       
       //prepare the notification for the other users on the pad, that this user joined
       var messageToTheOtherUsers = {
