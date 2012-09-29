@@ -50,6 +50,22 @@ var randomString = require('./pad_utils').randomString;
 
 var hooks = require('./pluginfw/hooks');
 
+window.inInternationalComposition = false;
+var inInternationalComposition = window.inInternationalComposition;
+
+window.handleCompositionEvent =  function handleCompositionEvent(evt)
+  {
+    // international input events, fired in FF3, at least;  allow e.g. Japanese input
+    if (evt.type == "compositionstart")
+    {
+      this.inInternationalComposition = true;
+    }
+    else if (evt.type == "compositionend")
+    {
+      this.inInternationalComposition = false;
+    }
+  }
+
 function createCookie(name, value, days, path)
 {
   if (days)
@@ -781,8 +797,6 @@ var pad = {
         }
       }, 1000);
     }
-
-    padsavedrevs.handleIsFullyConnected(isConnected);
 
     // pad.determineSidebarVisibility(isConnected && !isInitialConnect);
     pad.determineChatVisibility(isConnected && !isInitialConnect);

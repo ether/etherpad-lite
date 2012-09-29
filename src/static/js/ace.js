@@ -168,28 +168,10 @@ require.setGlobalKeyPath("require");\n\
       buffer.push(KERNEL_BOOT);
       buffer.push('<\/script>');
     } else {
-      file = KERNEL_SOURCE;
-      buffer.push('<script type="application/javascript" src="' + KERNEL_SOURCE + '"><\/script>');
-      buffer.push('<script type="text/javascript">');
-      buffer.push(KERNEL_BOOT);
-      buffer.push('<\/script>');
+      // Remotely src'd script tag will not work in IE; it must be embedded, so
+      // throw an error if it is not.
+      throw new Error("Require script could not be embedded.");
     } 
-  }
-  function pushScriptsTo(buffer) {
-    /* Folling is for packaging regular expression. */
-    /* $$INCLUDE_JS("../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define"); */
-    /* $$INCLUDE_JS("../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"); */
-    var ACE_SOURCE = '../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define';
-    var ACE_COMMON = '../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define';
-    if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[ACE_SOURCE]) {
-      buffer.push('<script type="text/javascript">');
-      buffer.push(Ace2Editor.EMBEDED[ACE_SOURCE]);
-      buffer.push(Ace2Editor.EMBEDED[ACE_COMMON]);
-      buffer.push('<\/script>');
-    } else {
-      buffer.push('<script type="application/javascript" src="' + ACE_SOURCE + '"><\/script>');
-      buffer.push('<script type="application/javascript" src="' + ACE_COMMON + '"><\/script>');
-    }
   }
   function pushStyleTagsFor(buffer, files) {
     var sorted = sortFilesByEmbeded(files);
@@ -200,7 +182,7 @@ require.setGlobalKeyPath("require");\n\
       buffer.push('<style type="text/css">');
       for (var i = 0, ii = embededFiles.length; i < ii; i++) {
         var file = embededFiles[i];
-        buffer.push(Ace2Editor.EMBEDED[file].replace(/<\//g, '<\\/'));
+        buffer.push((Ace2Editor.EMBEDED[file] || '').replace(/<\//g, '<\\/'));
       }
       buffer.push('<\/style>');
     }
@@ -256,14 +238,14 @@ require.setGlobalKeyPath("require");\n\
 
       var includedJS = [];
       pushRequireScriptTo(iframeHTML);
-      pushScriptsTo(iframeHTML);
 
       // Inject my plugins into my child.
       iframeHTML.push('\
-<script type="text/javascript">\
-  parent_req = require("ep_etherpad-lite/static/js/pluginfw/parent_require");\
-  parent_req.getRequirementFromParent(require, "ep_etherpad-lite/static/js/pluginfw/hooks");\
-  parent_req.getRequirementFromParent(require, "ep_etherpad-lite/static/js/pluginfw/plugins");\
+<script type="text/javascript">\n\
+  var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
+  var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
+  hooks.plugins = plugins;\n\
+  plugins.adoptPluginsFromAncestorsOf(window);\n\
 </script>\
 ');
 

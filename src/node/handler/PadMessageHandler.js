@@ -159,11 +159,7 @@ exports.handleDisconnect = function(client)
  */
 exports.handleMessage = function(client, message)
 { 
-  _.map(hooks.callAll( "handleMessage", { client: client, message: message }), function ( newmessage ) {
-    if ( newmessage || newmessage === null ) {
-      message = newmessage;
-    }
-  });
+
   if(message == null)
   {
     messageLogger.warn("Message is null!");
@@ -173,6 +169,23 @@ exports.handleMessage = function(client, message)
   {
     messageLogger.warn("Message has no type attribute!");
     return;
+  }
+
+  var handleMessageHook = function(callback){
+    var dropMessage = false;
+    
+    // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
+    // handleMessage will be called, even if the client is not authorized
+    hooks.aCallAll("handleMessage", { client: client, message: message }, function ( messages ) {
+      _.each(messages, function(newMessage){
+        if ( newmessage === null ) {
+          dropMessage = true;
+        }
+      });
+      
+      // If no plugins explicitly told us to drop the message, its ok to proceed
+      if(!dropMessage){ callback() };
+    });
   }
 
   var finalHandler = function () {
@@ -203,11 +216,18 @@ exports.handleMessage = function(client, message)
     }
   };
 
-  if (message && message.padId) {
+  if (message) {
     async.series([
+      handleMessageHook,
       //check permissions
       function(callback)
       {
+        
+        if(!message.padId){
+          // If the message has a padId we assume the client is already known to the server and needs no re-authorization
+          callback();
+          return;
+        }
         // Note: message.sessionID is an entirely different kind of
         // session from the sessions we use here! Beware! FIXME: Call
         // our "sessions" "connections".
@@ -231,8 +251,6 @@ exports.handleMessage = function(client, message)
       },
       finalHandler
     ]);
-  } else {
-    finalHandler();
   }
 }
 
@@ -252,6 +270,28 @@ function handleSaveRevisionMessage(client, message){
     
     pad.addSavedRevision(pad.head, userId);
   });
+}
+
+/**
+ * Handles a custom message (sent via HTTP API request)
+ *
+ * @param padID {Pad} the pad to which we're sending this message
+ * @param msg {String} the message we're sending
+ */
+exports.handleCustomMessage = function (padID, msg, cb) {
+  var time = new Date().getTime();
+  var msg = {
+    type: 'COLLABROOM',
+    data: {
+      type: msg,
+      time: time
+    }
+  };
+  for (var i in pad2sessions[padID]) {
+    socketio.sockets.sockets[pad2sessions[padID][i]].json.send(msg);
+  }
+
+  cb(null, {});
 }
 
 /**
@@ -425,6 +465,9 @@ function handleUserChanges(client, message)
   var baseRev = message.data.baseRev;
   var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
   var changeset = message.data.changeset;
+  // The client might disconnect between our callbacks. We should still
+  // finish processing the changeset, so keep a reference to the session.
+  var thisSession = sessioninfos[client.id];
       
   var r, apool, pad;
     
@@ -432,7 +475,7 @@ function handleUserChanges(client, message)
     //get the pad
     function(callback)
     {
-      padManager.getPad(sessioninfos[client.id].padId, function(err, value)
+      padManager.getPad(thisSession.padId, function(err, value)
       {
         if(ERR(err, callback)) return;
         pad = value;
@@ -485,7 +528,11 @@ function handleUserChanges(client, message)
             if(ERR(err, callback)) return;
             
             changeset = Changeset.follow(c, changeset, false, apool);
-            callback(null);
+            if ((r - baseRev) % 200 == 0) { // don't let the stack get too deep
+              async.nextTick(callback);
+            } else {
+              callback(null);
+            }
           });
         },
         //use the callback of the series function
@@ -505,9 +552,7 @@ function handleUserChanges(client, message)
         return;
       }
         
-      var thisAuthor = sessioninfos[client.id].author;
-        
-      pad.appendRevision(changeset, thisAuthor);
+      pad.appendRevision(changeset, thisSession.author);
         
       var correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
       if (correctionChangeset) {
@@ -1368,5 +1413,28 @@ exports.padUsersCount = function (padID, callback) {
     callback(null, {padUsersCount: 0});
   } else {
     callback(null, {padUsersCount: pad2sessions[padID].length});
+  }
+}
+
+/**
+ * Get the list of users in a pad
+ */
+exports.padUsers = function (padID, callback) {
+  if (!pad2sessions[padID] || typeof pad2sessions[padID] != typeof []) {
+    callback(null, {padUsers: []});
+  } else {
+    var authors = [];
+    for ( var ix in sessioninfos ) {
+      if ( sessioninfos[ix].padId !== padID ) {
+        continue;
+      }
+      var aid = sessioninfos[ix].author;
+      authorManager.getAuthor( aid, function ( err, author ) {
+        authors.push( author );
+        if ( authors.length === pad2sessions[padID].length ) {
+          callback(null, {padUsers: authors});
+        }
+      } );
+    }
   }
 }

@@ -146,9 +146,16 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
 
     return function(txt, cls)
     {
+	
+      var disableAuthColorForThisLine = hooks.callAll("disableAuthorColorsForThisLine", {
+        linestylefilter: linestylefilter,
+        text: txt,
+        "class": cls
+      }, " ", " ", "");   
+      var disableAuthors = (disableAuthColorForThisLine==null||disableAuthColorForThisLine.length==0)?false:disableAuthColorForThisLine[0];
       while (txt.length > 0)
       {
-        if (leftInAuthor <= 0)
+        if (leftInAuthor <= 0 || disableAuthors)
         {
           // prevent infinite loop if something funny's going on
           return nextAfterAuthorColors(txt, cls);

@@ -29,6 +29,7 @@ var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm/lib/npm.js");
 
+hooks.plugins = plugins;
 
 //set loglevel
 log4js.setGlobalLogLevel(settings.loglevel);
@@ -46,6 +47,10 @@ async.waterfall([
     console.info("Installed plugins: " + plugins.formatPlugins());
     console.debug("Installed parts:\n" + plugins.formatParts());
     console.debug("Installed hooks:\n" + plugins.formatHooks());
+
+    // Call loadSettings hook
+    hooks.aCallAll("loadSettings", { settings: settings });
+
     callback();
   },
 
