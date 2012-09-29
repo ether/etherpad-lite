@@ -82,6 +82,11 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
+/*
+* log4js appender configuration
+*/
+exports.logconfig = { appenders: [{ type: "console" }]};
+
 /* This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
  * either authorization by a module, or a user with is_admin set */

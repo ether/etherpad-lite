@@ -21,9 +21,12 @@
 
 var ERR = require("async-stacktrace");
 var log4js = require('log4js');
-log4js.configure('etherpad_logging.json');
+var settings = require('../../utils/Settings');
 var messageLogger = log4js.getLogger("message");
 var securityManager = require("../db/SecurityManager");
+
+//Configure the logging appenders
+log4js.configure(settings.logconfig);
 
 /**
  * Saves all components
