@@ -135,6 +135,10 @@ Pads can belong to a group. The padID of grouppads is starting with a groupID li
   * `{code: 1, message:"pad does already exist", data: null}`
   * `{code: 1, message:"groupID does not exist", data: null}`
 
+* **listAllGroups()** lists all existing groups<br><br>*Example returns:*
+  * `{code: 0, message:"ok", data: {groupIDs: ["g.mKjkmnAbSMtCt8eL", "g.3ADWx6sbGuAiUmCy"]}}`
+  * `{code: 0, message:"ok", data: {groupIDs: []}}`
+
 ### Author
 These authors are bound to the attributes the users choose (color and name). 
 
