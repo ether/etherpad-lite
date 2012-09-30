@@ -174,3 +174,71 @@ Things in context:
 This hook gets called every time the client receives a message of type `name`. This can most notably be used with the new HTTP API call, "sendClientsMessage", which sends a custom message type to all clients connected to a pad. You can also use this to handle existing types.
 
 `collab_client.js` has a pretty extensive list of message types, if you want to take a look.
+
+##aceStartLineAndCharForPoint-aceEndLineAndCharForPoint 
+Called from: src/static/js/ace2_inner.js
+
+Things in context:
+
+1. callstack - a bunch of information about the current action
+2. editorInfo - information about the user who is making the change
+3. rep - information about where the change is being made
+4. root - the span element of the current line
+5. point - the starting/ending element where the cursor highlights
+6. documentAttributeManager - information about attributes in the document
+
+This hook is provided to allow a plugin to turn DOM node selection into [line,char] selection.
+The return value should be an array of [line,char]
+
+##aceKeyEvent 
+Called from: src/static/js/ace2_inner.js
+
+Things in context:
+
+1. callstack - a bunch of information about the current action
+2. editorInfo - information about the user who is making the change
+3. rep - information about where the change is being made
+4. documentAttributeManager - information about attributes in the document
+5. evt - the fired event
+
+This hook is provided to allow a plugin to handle key events.
+The return value should be true if you have handled the event.
+
+##collectContentLineText 
+Called from: src/static/js/contentcollector.js
+
+Things in context:
+
+1. cc - the contentcollector object
+2. state - the current state of the change being made
+3. tname - the tag name of this node currently being processed
+4. text - the text for that line
+
+This hook allows you to validate/manipulate the text before it's sent to the server side.
+The return value should be the validated/manipulated text.
+
+##collectContentLineBreak 
+Called from: src/static/js/contentcollector.js
+
+Things in context:
+
+1. cc - the contentcollector object
+2. state - the current state of the change being made
+3. tname - the tag name of this node currently being processed
+
+This hook is provided to allow whether the br tag should induce a new magic domline or not.
+The return value should be either true(break the line) or false.
+
+##disableAuthorColorsForThisLine 
+Called from: src/static/js/linestylefilter.js
+
+Things in context:
+
+1. linestylefilter - the JavaScript object that's currently processing the ace attributes
+2. text - the line text
+3. class - line class
+
+This hook is provided to allow whether a given line should be deliniated with multiple authors.
+Multiple authors in one line cause the creation of magic span lines. This might not be suit you and
+now you can disable it and handle your own deliniation.
+The return value should be either true(disable ) or false.
