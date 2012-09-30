@@ -16,7 +16,10 @@
 
 var jsdom = require('jsdom-nocontextifiy').jsdom;
 var log4js = require('log4js');
+var settings = require('../../utils/Settings');
 
+//Configure the logging appenders
+log4js.configure(settings.logconfig);
 
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");

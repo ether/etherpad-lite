@@ -35,6 +35,9 @@ var messageLogger = log4js.getLogger("message");
 var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
+//Configure the logging appenders
+log4js.configure(settings.logconfig);
+
 /**
  * A associative array that saves which sessions belong to a pad
  */

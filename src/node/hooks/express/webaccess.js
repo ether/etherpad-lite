@@ -5,6 +5,8 @@ var settings = require('../../utils/Settings');
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
+//Configure the logging appenders
+log4js.configure(settings.logconfig);
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {

@@ -1,7 +1,11 @@
 var log4js = require('log4js');
+var settings = require('../../utils/Settings');
 var apiLogger = log4js.getLogger("API");
 var formidable = require('formidable');
 var apiHandler = require('../../handler/APIHandler');
+
+//Configure the logging appenders
+log4js.configure(settings.logconfig);
 
 //This is for making an api call, collecting all post information and passing it to the apiHandler
 var apiCaller = function(req, res, fields) {

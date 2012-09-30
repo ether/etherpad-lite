@@ -1,8 +1,12 @@
 var log4js = require('log4js');
 var socketio = require('socket.io');
-var settings = require('../../utils/Settings');
+var settings = require('../../utils/Settings.js');
 var socketIORouter = require("../../handler/SocketIORouter");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
+console.dir("adgadgqadgaegaega");
+
+//Configure the logging appenders
+log4js.configure(settings.logconfig);
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
 

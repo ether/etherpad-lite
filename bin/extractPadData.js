@@ -12,6 +12,7 @@ var padId = process.argv[2];
 
 //initalize the database
 var log4js = require("log4js");
+log4js.configure('etherpad_logging.json');
 log4js.setGlobalLogLevel("INFO");
 var async = require("async");
 var db = require('../node/db/DB');
