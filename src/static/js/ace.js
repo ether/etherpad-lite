@@ -24,12 +24,22 @@
 // requires: plugins
 // requires: undefined
 
+var KERNEL_SOURCE = '../static/js/require-kernel.js';
+
 Ace2Editor.registry = {
   nextId: 1
 };
 
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
+
+function scriptTag(source) {
+  return (
+    '<script type="text/javascript">\n'
+    + source.replace(/<\//g, '<\\/') +
+    '</script>'
+  )
+}
 
 function Ace2Editor()
 {
@@ -155,24 +165,6 @@ function Ace2Editor()
 
     return {embeded: embededFiles, remote: remoteFiles};
   }
-  function pushRequireScriptTo(buffer) {
-    var KERNEL_SOURCE = '../static/js/require-kernel.js';
-    var KERNEL_BOOT = '\
-require.setRootURI("../javascripts/src");\n\
-require.setLibraryURI("../javascripts/lib");\n\
-require.setGlobalKeyPath("require");\n\
-';
-    if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
-      buffer.push('<script type="text/javascript">');
-      buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
-      buffer.push(KERNEL_BOOT);
-      buffer.push('<\/script>');
-    } else {
-      // Remotely src'd script tag will not work in IE; it must be embedded, so
-      // throw an error if it is not.
-      throw new Error("Require script could not be embedded.");
-    } 
-  }
   function pushStyleTagsFor(buffer, files) {
     var sorted = sortFilesByEmbeded(files);
     var embededFiles = sorted.embeded;
@@ -236,23 +228,30 @@ require.setGlobalKeyPath("require");\n\
       
       pushStyleTagsFor(iframeHTML, includedCSS);
 
-      var includedJS = [];
-      pushRequireScriptTo(iframeHTML);
+      if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
+        // Remotely src'd script tag will not work in IE; it must be embedded, so
+        // throw an error if it is not.
+        throw new Error("Require kernel could not be found.");
+      }
 
-      // Inject my plugins into my child.
-      iframeHTML.push('\
-<script type="text/javascript">\n\
-  var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
-  var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
-  hooks.plugins = plugins;\n\
-  plugins.adoptPluginsFromAncestorsOf(window);\n\
-</script>\
-');
-
-      iframeHTML.push('<script type="text/javascript">');
-      iframeHTML.push('$ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK');
-      iframeHTML.push('require("ep_etherpad-lite/static/js/ace2_inner");');
-      iframeHTML.push('<\/script>');
+      iframeHTML.push(scriptTag(
+Ace2Editor.EMBEDED[KERNEL_SOURCE] + '\n\
+require.setRootURI("../javascripts/src");\n\
+require.setLibraryURI("../javascripts/lib");\n\
+require.setGlobalKeyPath("require");\n\
+\n\
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
+hooks.plugins = plugins;\n\
+plugins.adoptPluginsFromAncestorsOf(window);\n\
+\n\
+$ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
+var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
+\n\
+plugins.ensure(function () {\n\
+  Ace2Inner.init();\n\
+});\n\
+'));
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
 
@@ -266,8 +265,32 @@ require.setGlobalKeyPath("require");\n\
       var thisFunctionsName = "ChildAccessibleAce2Editor";
       (function () {return this}())[thisFunctionsName] = Ace2Editor;
 
-      var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); iframe.name = "ace_inner";' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
-      'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');doc.write(text); doc.close(); ' + '}, 0); }';
+      var outerScript = '\
+editorId = ' + JSON.stringify(info.id) + ';\n\
+editorInfo = parent[' + JSON.stringify(thisFunctionsName) + '].registry[editorId];\n\
+window.onload = function () {\n\
+  window.onload = null;\n\
+  setTimeout(function () {\n\
+    var iframe = document.createElement("IFRAME");\n\
+    iframe.name = "ace_inner";\n\
+    iframe.scrolling = "no";\n\
+    var outerdocbody = document.getElementById("outerdocbody");\n\
+    iframe.frameBorder = 0;\n\
+    iframe.allowTransparency = true; // for IE\n\
+    outerdocbody.insertBefore(iframe, outerdocbody.firstChild);\n\
+    iframe.ace_outerWin = window;\n\
+    readyFunc = function () {\n\
+      editorInfo.onEditorReady();\n\
+      readyFunc = null;\n\
+      editorInfo = null;\n\
+    };\n\
+    var doc = iframe.contentWindow.document;\n\
+    doc.open();\n\
+    var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');\n\
+    doc.write(text);\n\
+    doc.close();\n\
+  }, 0);\n\
+}';
 
       var outerHTML = [doctype, '<html><head>']
 
@@ -285,7 +308,7 @@ require.setGlobalKeyPath("require");\n\
 
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
-      outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript.replace(/<\//g, '<\\/'), '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>');
+      outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/>', scriptTag(outerScript), '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>');
 
       var outerFrame = document.createElement("IFRAME");
       outerFrame.name = "ace_outer";
