@@ -47,7 +47,7 @@ Returns the `rep` object.
 ## editorInfo.ace_performDocumentApplyAttributesToRange()
 
 ## editorInfo.ace_getAuthorInfos()
-Returns an info object about the author. Object key = author_id and info includes athour's bg color value.
+Returns an info object about the author. Object key = author_id and info includes author's bg color value.
 Use to define your own authorship.
 ## editorInfo.ace_performDocumentReplaceRange(start, end, newText)
 This function replaces a range (from [x1,y1] to [x2,y2]) with `newText`.
