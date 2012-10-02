@@ -67,12 +67,16 @@ Have a look at `src/templates/pad.html` and `src/templates/timeslider.html` to s
 ## padCreated
 Called from: src/node/db/Pad.js
 
+Things in context:
+
 1. pad - the pad instance
 
 This hook gets called when a new pad was created.
 
 ## padLoaded
 Called from: src/node/db/Pad.js
+
+Things in context:
 
 1. pad - the pad instance
 
@@ -81,12 +85,16 @@ This hook gets called when an pad was loaded.
 ## padUpdated
 Called from: src/node/db/Pad.js
 
+Things in context:
+
 1. pad - the pad instance
 
 This hook gets called when an existing pad was updated.
 
 ## padRemoved
 Called from: src/node/db/Pad.js
+
+Things in context:
 
 1. pad - the pad instance
 
