@@ -417,22 +417,34 @@ function handleUserInfoUpdate(client, message)
   authorManager.setAuthorName(author, message.data.userInfo.name);
   
   var padId = sessioninfos[client.id].padId;
+
+  var infoMsg = {
+    type: "COLLABROOM",
+    data: {
+      // The Client doesn't know about USERINFO_UPDATE, use USER_NEWINFO
+      type: "USER_NEWINFO",
+      userInfo: {
+        userId: author,
+        name: message.data.userInfo.name,
+        colorId: message.data.userInfo.colorId,
+        userAgent: "Anonymous",
+        ip: "127.0.0.1",
+      }
+    }
+  };
   
   //set a null name, when there is no name set. cause the client wants it null
-  if(message.data.userInfo.name == null)
+  if(infoMsg.data.userInfo.name == null)
   {
-    message.data.userInfo.name = null;
+    infoMsg.data.userInfo.name = null;
   }
-  
-  //The Client don't know about a USERINFO_UPDATE, it can handle only new user_newinfo, so change the message type
-  message.data.type = "USER_NEWINFO";
   
   //Send the other clients on the pad the update message
   for(var i in pad2sessions[padId])
   {
     if(pad2sessions[padId][i] != client.id)
     {
-      socketio.sockets.sockets[pad2sessions[padId][i]].json.send(message);
+      socketio.sockets.sockets[pad2sessions[padId][i]].json.send(infoMsg);
     }
   }
 }
