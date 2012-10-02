@@ -96,7 +96,7 @@ Called from: src/node/db/Pad.js
 
 Things in context:
 
-1. pad - the pad instance
+1. pad id
 
 This hook gets called when an existing pad was removed/deleted.
 
