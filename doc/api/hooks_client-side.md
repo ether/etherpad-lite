@@ -239,6 +239,6 @@ Things in context:
 3. class - line class
 
 This hook is provided to allow whether a given line should be deliniated with multiple authors.
-Multiple authors in one line cause the creation of magic span lines. This might not be suit you and
+Multiple authors in one line cause the creation of magic span lines. This might not suit you and
 now you can disable it and handle your own deliniation.
-The return value should be either true(disable ) or false.
+The return value should be either true(disable) or false.
