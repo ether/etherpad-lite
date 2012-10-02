@@ -64,6 +64,34 @@ This hook gets called upon the rendering of an ejs template block. For any speci
 
 Have a look at `src/templates/pad.html` and `src/templates/timeslider.html` to see which blocks are available.
 
+## padCreated
+Called from: src/node/db/Pad.js
+
+1. pad - the pad instance
+
+This hook gets called when a new pad was created.
+
+## padLoaded
+Called from: src/node/db/Pad.js
+
+1. pad - the pad instance
+
+This hook gets called when an pad was loaded.
+
+## padUpdated
+Called from: src/node/db/Pad.js
+
+1. pad - the pad instance
+
+This hook gets called when an existing pad was updated.
+
+## padRemoved
+Called from: src/node/db/Pad.js
+
+1. pad - the pad instance
+
+This hook gets called when an existing pad was removed/deleted.
+
 ## socketio
 Called from: src/node/hooks/express/socketio.js
 
