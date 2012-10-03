@@ -475,7 +475,7 @@ Pad.prototype.remove = function remove(callback) {
     {
       db.remove("pad:"+padID);
       padManager.unloadPad(padID);
-      hooks.callAll("padRemove", {'pad_id':padID});
+      hooks.callAll("padRemove", {'padID':padID});
       callback();
     }
   ], function(err)
