@@ -89,9 +89,9 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
     authorManager.addPad(author, this.id);
     
   if (this.head == 0) {
-    hooks.callAll("padCreated", this);
+    hooks.callAll("padCreate", {'pad':this});
   } else {
-    hooks.callAll("padUpdated", this);
+    hooks.callAll("padUpdate", {'pad':this});
   }    
 };
 
@@ -375,7 +375,7 @@ Pad.prototype.init = function init(text, callback) {
       _this.appendRevision(firstChangeset, '');
     }
 
-    hooks.callAll("padLoaded", _this);
+    hooks.callAll("padLoad", {'pad':_this});
     callback(null);
   });
 };
@@ -475,7 +475,7 @@ Pad.prototype.remove = function remove(callback) {
     {
       db.remove("pad:"+padID);
       padManager.unloadPad(padID);
-      hooks.callAll("padRemoved", padID );
+      hooks.callAll("padRemove", {'pad_id':padID});
       callback();
     }
   ], function(err)
