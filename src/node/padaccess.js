@@ -15,7 +15,7 @@ module.exports = function (req, res, callback) {
       callback();
     //no access
     } else {
-      res.send("403 - Can't touch this", 403);
+      res.send(403, "403 - Can't touch this");
     }
   });
 }
