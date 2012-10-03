@@ -249,13 +249,13 @@ var padeditbar = (function()
       {
         var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
         var readonlyLink = basePath + "/p/" + clientVars.readOnlyId;
-        $('#embedinput').val("<iframe name='embed_readonly' src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
+        $('#embedinput').val("<iframe name='embed_readonly' src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400></iframe>");
         $('#linkinput').val(readonlyLink);
       }
       else
       {
         var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val("<iframe name='embed_readwrite' src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400>");
+        $('#embedinput').val("<iframe name='embed_readwrite' src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400></iframe>");
         $('#linkinput').val(padurl);
       }
     }
