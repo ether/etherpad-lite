@@ -1,7 +1,11 @@
-(function(){
-	//allow iframe access
-	document.domain = document.domain;
+$(function(){
+  //allow cross iframe access
+  document.domain = document.domain;
 
-  //start test framework
-  mocha.run();
-})()
+  //initalize the test helper
+  testHelper.init();
+
+  //configure and start the test framework
+  mocha.ignoreLeaks();
+	mocha.run();
+});

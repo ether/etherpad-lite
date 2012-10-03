@@ -4856,8 +4856,8 @@ process.on = function(e, fn){
     var options = mocha.options;
     mocha.globals('location');
 
-    var query = Mocha.utils.parseQuery(window.location.search || '');
-    if (query.grep) mocha.grep(query.grep);
+    //var query = Mocha.utils.parseQuery(window.location.search || '');
+    //if (query.grep) mocha.grep(query.grep);
 
     return Mocha.prototype.run.call(mocha, function(){
       Mocha.utils.highlightTags('code');

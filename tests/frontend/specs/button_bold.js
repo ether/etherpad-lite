@@ -5,14 +5,14 @@ describe("bold button", function(){
   });
 
   it("makes text bold", function() {
-  	//get the inner iframe
+    //get the inner iframe
     var $inner = testHelper.$getPadInner();
     
     //get the first text element out of the inner iframe
     var firstTextElement = $inner.find("div").first();
     
     //select this text element
-    testHelper.selectText(firstTextElement[0]);
+    testHelper.selectText(firstTextElement[0], $inner);
 
     //get the bold button and click it
     var $boldButton = testHelper.$getPadChrome().find(".buttonicon-bold");
