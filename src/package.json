@@ -10,7 +10,7 @@
                         "name": "Robin Buse" }
                      ],
   "dependencies"   : {
-                      "yajsml"              : "1.1.4",
+                      "yajsml"              : "1.1.5",
                       "request"             : "2.9.100",
                       "require-kernel"      : "1.0.5",
                       "resolve"             : "0.2.x",
@@ -42,5 +42,5 @@
   "engines"        : { "node" : ">=0.6.0",
                        "npm"  : ">=1.0"
                      }, 
-  "version"        : "1.0.0"
+  "version"        : "1.1.2"
 }

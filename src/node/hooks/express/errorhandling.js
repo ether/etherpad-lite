@@ -39,10 +39,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     // allowing you to respond however you like
     res.send(500, { error: 'Sorry, something bad happened!' });
     console.error(err.stack? err.stack : err.toString());
-    exports.gracefulShutdown();
-    next();
   })
-
 
   //connect graceful shutdown with sigint and uncaughtexception
   if(os.type().indexOf("Windows") == -1) {

@@ -123,7 +123,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
           }
           
           var sessionIDs = sessionCookie.split(',');
-          async.foreach(sessionIDs, function(sessionID) {
+          async.forEach(sessionIDs, function(sessionID, callback) {
             sessionManager.getSessionInfo(sessionID, function(err, sessionInfo) {
               //skip session if it doesn't exist
               if(err && err.message == "sessionID does not exist") return;
@@ -141,8 +141,10 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               // There is a valid session
               validSession = true;
               sessionAuthor = sessionInfo.authorID;
+              
+              callback();
             });
-          }, callback)
+          }, callback);
         },
         //get author for token
         function(callback)

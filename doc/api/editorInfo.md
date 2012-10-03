@@ -45,3 +45,26 @@ Returns the `rep` object.
 ## editorInfo.ace_doInsertUnorderedList(?)
 ## editorInfo.ace_doInsertOrderedList(?)
 ## editorInfo.ace_performDocumentApplyAttributesToRange()
+
+## editorInfo.ace_getAuthorInfos()
+Returns an info object about the author. Object key = author_id and info includes author's bg color value.
+Use to define your own authorship.
+## editorInfo.ace_performDocumentReplaceRange(start, end, newText)
+This function replaces a range (from [x1,y1] to [x2,y2]) with `newText`.
+## editorInfo.ace_performDocumentReplaceCharRange(startChar, endChar, newText)
+This function replaces a range (from y1 to y2) with `newText`.
+## editorInfo.ace_renumberList(lineNum)
+If you delete a line, calling this method will fix the line numbering.
+## editorInfo.ace_doReturnKey()
+Forces a return key at the current carret position.
+## editorInfo.ace_isBlockElement(element)
+Returns true if your passed elment is registered as a block element
+## editorInfo.ace_getLineListType(lineNum)
+Returns the line's html list type.
+## editorInfo.ace_caretLine()
+Returns X position of the caret.
+## editorInfo.ace_caretColumn()
+Returns Y position of the caret.
+## editorInfo.ace_caretDocChar()
+Returns the Y offset starting from [x=0,y=0]
+## editorInfo.ace_isWordChar(?)

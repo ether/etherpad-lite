@@ -15,7 +15,7 @@ $(document).ready(function () {
   $('.search-results').data('query', {
     pattern: '',
     offset: 0,
-    limit: 4,
+    limit: 12,
   });
 
   var doUpdate = false;

@@ -1,11 +1,6 @@
 # Server-side hooks
 These hooks are called on server-side.
 
-All hooks registered to these events are called with two arguments:
-
-1. name - the name of the hook being called
-2. context - an object with some relevant information about the context of the call
-
 ## loadSettings
 Called from: src/node/server.js
 
@@ -143,3 +138,16 @@ function handleMessage ( hook, context, callback ) {
   }
 };
 ```
+
+
+## getLineHTMLForExport
+Called from: src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. apool - pool object
+2. attribLine - line attributes
+3. text - line text
+
+This hook will allow a plug-in developer to re-write each line when exporting to HTML.
+
