@@ -12,14 +12,10 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       errors: [],
     };
 
-    res.send(eejs.require(
-      "ep_etherpad-lite/templates/admin/plugins.html",
-      render_args), {});
+    res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins.html", render_args) );
   });
   args.app.get('/admin/plugins/info', function(req, res) {
-    res.send(eejs.require(
-      "ep_etherpad-lite/templates/admin/plugins-info.html",
-        {}), {});
+    res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html", {}) );
   });
 }
 
