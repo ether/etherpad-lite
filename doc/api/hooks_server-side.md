@@ -64,7 +64,7 @@ This hook gets called upon the rendering of an ejs template block. For any speci
 
 Have a look at `src/templates/pad.html` and `src/templates/timeslider.html` to see which blocks are available.
 
-## padCreated
+## padCreate
 Called from: src/node/db/Pad.js
 
 Things in context:
@@ -73,16 +73,16 @@ Things in context:
 
 This hook gets called when a new pad was created.
 
-## padLoaded
+## padLoad
 Called from: src/node/db/Pad.js
 
 Things in context:
 
 1. pad - the pad instance
 
-This hook gets called when an pad was loaded.
+This hook gets called when an pad was loaded. If a new pad was created and loaded this event will be emitted too.
 
-## padUpdated
+## padUpdate
 Called from: src/node/db/Pad.js
 
 Things in context:
@@ -91,7 +91,7 @@ Things in context:
 
 This hook gets called when an existing pad was updated.
 
-## padRemoved
+## padRemove
 Called from: src/node/db/Pad.js
 
 Things in context:
