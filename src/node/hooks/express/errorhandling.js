@@ -38,7 +38,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.error(function(err, req, res, next){
     res.send(500);
     console.error(err.stack ? err.stack : err.toString());
-    exports.gracefulShutdown();
   });
 
   //connect graceful shutdown with sigint and uncaughtexception
