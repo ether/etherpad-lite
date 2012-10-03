@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var editor, _, $, jQuery, plugins, Ace2Common;
+var _, $, jQuery, plugins, Ace2Common;
 
 Ace2Common = require('./ace2_common');
 
@@ -5430,62 +5430,64 @@ function Ace2Inner(){
     return documentAttributeManager.setAttributesOnRange.apply(documentAttributeManager, arguments);
   };
 
-  $(document).ready(function(){
-    doc = document; // defined as a var in scope outside
-    inCallStack("setup", function()
-    {
-      var body = doc.getElementById("innerdocbody");
-      root = body; // defined as a var in scope outside
-      if (browser.mozilla) $(root).addClass("mozilla");
-      if (browser.safari) $(root).addClass("safari");
-      if (browser.msie) $(root).addClass("msie");
-      if (browser.msie)
+  this.init = function () {
+    $(document).ready(function(){
+      doc = document; // defined as a var in scope outside
+      inCallStack("setup", function()
       {
-        // cache CSS background images
-        try
+        var body = doc.getElementById("innerdocbody");
+        root = body; // defined as a var in scope outside
+        if (browser.mozilla) $(root).addClass("mozilla");
+        if (browser.safari) $(root).addClass("safari");
+        if (browser.msie) $(root).addClass("msie");
+        if (browser.msie)
         {
-          doc.execCommand("BackgroundImageCache", false, true);
+          // cache CSS background images
+          try
+          {
+            doc.execCommand("BackgroundImageCache", false, true);
+          }
+          catch (e)
+          { /* throws an error in some IE 6 but not others! */
+          }
         }
-        catch (e)
-        { /* throws an error in some IE 6 but not others! */
-        }
-      }
-      setClassPresence(root, "authorColors", true);
-      setClassPresence(root, "doesWrap", doesWrap);
+        setClassPresence(root, "authorColors", true);
+        setClassPresence(root, "doesWrap", doesWrap);
 
-      initDynamicCSS();
+        initDynamicCSS();
 
-      enforceEditability();
+        enforceEditability();
 
-      // set up dom and rep
-      while (root.firstChild) root.removeChild(root.firstChild);
-      var oneEntry = createDomLineEntry("");
-      doRepLineSplice(0, rep.lines.length(), [oneEntry]);
-      insertDomLines(null, [oneEntry.domInfo], null);
-      rep.alines = Changeset.splitAttributionLines(
-      Changeset.makeAttribution("\n"), "\n");
+        // set up dom and rep
+        while (root.firstChild) root.removeChild(root.firstChild);
+        var oneEntry = createDomLineEntry("");
+        doRepLineSplice(0, rep.lines.length(), [oneEntry]);
+        insertDomLines(null, [oneEntry.domInfo], null);
+        rep.alines = Changeset.splitAttributionLines(
+        Changeset.makeAttribution("\n"), "\n");
 
-      bindTheEventHandlers();
+        bindTheEventHandlers();
 
-    });
+      });
     
-    hooks.callAll('aceInitialized', {
-      editorInfo: editorInfo,
-      rep: rep,
-      documentAttributeManager: documentAttributeManager
-    });
+      hooks.callAll('aceInitialized', {
+        editorInfo: editorInfo,
+        rep: rep,
+        documentAttributeManager: documentAttributeManager
+      });
     
-    scheduler.setTimeout(function()
-    {
-      parent.readyFunc(); // defined in code that sets up the inner iframe
-    }, 0);
+      scheduler.setTimeout(function()
+      {
+        parent.readyFunc(); // defined in code that sets up the inner iframe
+      }, 0);
 
-    isSetUp = true;
-  });
+      isSetUp = true;
+    });
+  }
 
 }
 
-// Ensure that plugins are loaded before initializing the editor
-plugins.ensure(function () {
-  var editor = new Ace2Inner();
-});
+exports.init = function () {
+  var editor = new Ace2Inner()
+  editor.init();
+};
