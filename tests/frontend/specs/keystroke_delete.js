@@ -12,11 +12,11 @@ describe("delete keystroke", function(){
     var firstTextElement = $inner.find("div").first();
     
     // get the original length of this element
-    var elementLength = firstTextElement.html().length;
+    var elementLength = firstTextElement.text().length;
 
     // get the original string value minus the last char
     var originalTextValue = firstTextElement.text();
-    originalTextValue = originalTextValue.substring(0, originalTextValue.length -1);
+    originalTextValueMinusFirstChar = originalTextValue.substring(1, originalTextValue.length );
 
     // simulate key presses to delete content
     firstTextElement.sendkeys('{leftarrow}'); // simulate a keypress of the left arrow key
@@ -26,13 +26,13 @@ describe("delete keystroke", function(){
     var newFirstTextElement = $inner.find("div").first();
     
     // get the new length of this element
-    var newElementLength = newFirstTextElement.html().length;
+    var newElementLength = newFirstTextElement.text().length;
 
     //expect it to be one char less in length
     expect(newElementLength).to.be((elementLength-1));
 
     //make sure the text has changed correctly
-    expect(newFirstTextElement.text()).to.eql(originalTextValue);
+    expect(newFirstTextElement.text()).to.eql(originalTextValueMinusFirstChar);
 
   });
 });
