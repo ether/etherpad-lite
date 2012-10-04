@@ -49,7 +49,8 @@ Called from: src/node/server.js
 
 Things in context:
 
-1. app - the main application object (helpful for adding new paths and such)
+1. app - the main express application object (helpful for adding new paths and such)
+2. server - the http server object
 
 This hook gets called after the application object has been created, but before it starts listening. This is similar to the expressConfigure hook, but it's not guaranteed that the application object will have all relevant configuration variables.
 
@@ -71,6 +72,7 @@ Things in context:
 
 1. app - the application object
 2. io - the socketio object
+3. server - the http server object
 
 I have no idea what this is useful for, someone else will have to add this description.
 
@@ -136,3 +138,16 @@ function handleMessage ( hook, context, callback ) {
   }
 };
 ```
+
+
+## getLineHTMLForExport
+Called from: src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. apool - pool object
+2. attribLine - line attributes
+3. text - line text
+
+This hook will allow a plug-in developer to re-write each line when exporting to HTML.
+
