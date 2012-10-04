@@ -103,35 +103,36 @@ describe("indentation button", function(){
     firstTextElement.sendkeys('line 2'); // simulate writing the second line
 
     //get the second text element out of the inner iframe
-    var secondTextElement = $inner.find("div").first().children(":nth-child(0)"); // I need help wth this!
-    console.log(secondTextElement); // not working
+    setTimeout(function(){ // THIS IS REALLY BAD
+      var secondTextElement = $('iframe').contents().find('iframe').contents().find('iframe').contents().find('body > div').get(1); // THIS IS UGLY
 
-    // is there a list-indent class element now?
-    var firstChild = secondTextElement.children(":first");
-    var isUL = firstChild.is('ul');
+      // is there a list-indent class element now?
+      var firstChild = secondTextElement.children(":first");
+      var isUL = firstChild.is('ul');
 
-    //expect it to be the beginning of a list
-    expect(isUL).to.be(true);
+      //expect it to be the beginning of a list
+      expect(isUL).to.be(true);
 
-    var secondChild = secondChild.children(":first");
-    var isLI = secondChild.is('li');
-    //expect it to be part of a list
-    expect(isLI).to.be(true);
+      var secondChild = secondChild.children(":first");
+      var isLI = secondChild.is('li');
+      //expect it to be part of a list
+      expect(isLI).to.be(true);
 
-    //get the first text element out of the inner iframe
-    var thirdTextElement = $inner.find("div").first(); // I also need help with this..
+      //get the first text element out of the inner iframe
+      var thirdTextElement = $('iframe').contents().find('iframe').contents().find('iframe').contents().find('body > div').get(2); // THIS IS UGLY TOO
 
-    // is there a list-indent class element now?
-    var firstChild = thirdTextElement.children(":first");
-    var isUL = firstChild.is('ul');
+      // is there a list-indent class element now?
+      var firstChild = thirdTextElement.children(":first");
+      var isUL = firstChild.is('ul');
 
-    //expect it to be the beginning of a list
-    expect(isUL).to.be(true);
+      //expect it to be the beginning of a list
+      expect(isUL).to.be(true);
 
-    var secondChild = firstChild.children(":first");
-    var isLI = secondChild.is('li');
-    //expect it to be part of a list
-    expect(isLI).to.be(true);
+      var secondChild = firstChild.children(":first");
+      var isLI = secondChild.is('li');
 
+      //expect it to be part of a list
+      expect(isLI).to.be(true);
+    },1000);
   });
 });
