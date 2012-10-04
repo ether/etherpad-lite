@@ -24,7 +24,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-(function(){
+(function($){
 
 bililiteRange = function(el, debug){
 	var ret;
@@ -44,6 +44,8 @@ bililiteRange = function(el, debug){
 		ret = new NothingRange();
 	}
 	ret._el = el;
+	ret._doc = el.ownerDocument;
+	ret._win = 'defaultView' in ret._doc ? ret._doc.defaultView : ret._doc.parentWindow;
 	ret._textProp = textProp(el);
 	ret._bounds = [0, ret.length()];
 	return ret;
@@ -122,7 +124,7 @@ IERange.prototype._nativeRange = function (bounds){
 		// IE 8 is very inconsistent; textareas have createTextRange but it doesn't work
 		rng = this._el.createTextRange();
 	}else{
-		rng = document.body.createTextRange ();
+		rng = this._doc.body.createTextRange ();
 		rng.moveToElementText(this._el);
 	}
 	if (bounds){
@@ -144,8 +146,8 @@ IERange.prototype._nativeSelection = function (){
 	// returns [start, end] for the selection constrained to be in element
 	var rng = this._nativeRange(); // range of the element to constrain to
 	var len = this.length();
-	if (document.selection.type != 'Text') return [len, len]; // append to the end
-	var sel = document.selection.createRange();
+	if (this._doc.selection.type != 'Text') return [len, len]; // append to the end
+	var sel = this._doc.selection.createRange();
 	try{
 		return [
 			iestart(sel, rng),
@@ -213,7 +215,7 @@ InputRange.prototype._nativeEOL = function(){
 function W3CRange(){}
 W3CRange.prototype = new Range();
 W3CRange.prototype._nativeRange = function (bounds){
-	var rng = document.createRange();
+	var rng = this._doc.createRange();
 	rng.selectNodeContents(this._el);
 	if (bounds){
 		w3cmoveBoundary (rng, bounds[0], true, this._el);
@@ -223,14 +225,14 @@ W3CRange.prototype._nativeRange = function (bounds){
 	return rng;					
 };
 W3CRange.prototype._nativeSelect = function (rng){
-	window.getSelection().removeAllRanges();
-	window.getSelection().addRange (rng);
+	this._win.getSelection().removeAllRanges();
+	this._win.getSelection().addRange (rng);
 };
 W3CRange.prototype._nativeSelection = function (){
 		// returns [start, end] for the selection constrained to be in element
 		var rng = this._nativeRange(); // range of the element to constrain to
-		if (window.getSelection().rangeCount == 0) return [this.length(), this.length()]; // append to the end
-		var sel = window.getSelection().getRangeAt(0);
+		if (this._win.getSelection().rangeCount == 0) return [this.length(), this.length()]; // append to the end
+		var sel = this._win.getSelection().getRangeAt(0);
 		return [
 			w3cstart(sel, rng),
 			w3cend (sel, rng)
@@ -241,16 +243,16 @@ W3CRange.prototype._nativeGetText = function (rng){
 };
 W3CRange.prototype._nativeSetText = function (text, rng){
 	rng.deleteContents();
-	rng.insertNode (document.createTextNode(text));
+	rng.insertNode (this._doc.createTextNode(text));
 	this._el.normalize(); // merge the text with the surrounding text
 };
 W3CRange.prototype._nativeEOL = function(){
 	var rng = this._nativeRange(this.bounds());
 	rng.deleteContents();
-	var br = document.createElement('br');
+	var br = this._doc.createElement('br');
 	br.setAttribute ('_moz_dirty', ''); // for Firefox
 	rng.insertNode (br);
-	rng.insertNode (document.createTextNode('\n'));
+	rng.insertNode (this._doc.createTextNode('\n'));
 	rng.collapse (false);
 };
 // W3C internals
@@ -344,7 +346,7 @@ NothingRange.prototype._nativeEOL = function(){
 	this.text('\n');
 };
 
-})();
+})(jQuery);
 
 // insert characters in a textarea or text input field
 // special characters are enclosed in {}; use {{} for the { character itself
