@@ -14,16 +14,19 @@ describe("urls become clickable", function(){
     // simulate key presses to delete content
     firstTextElement.sendkeys('{selectall}'); // select all
     firstTextElement.sendkeys('{del}'); // clear the first line
-    firstTextElement.sendkeys('http://etherpad.org'); // add a url to the pad
+    firstTextElement.sendkeys('http://etherpad.org'); // insert a URL
+	
+//    setTimeout(function(){
+      //ace creates a new dom element when you press a keystroke, so just get the first text element again
+      var newFirstTextElement = $inner.find("div").first();
+      var locatedHref = newFirstTextElement.find("a").contents().text();
+      var isURL = locatedHref.indexOf("http://etherpad.org") != -1; // if we found a URL and it is for etherpad.org
 
-    //ace creates a new dom element when you press a keystroke, so just get the first text element again
-    var newFirstTextElement = $inner.find("div").first();
-
-    // is there a url class now?
-    var isURL = newFirstTextElement.find("href").length === 1;
+      console.log(isURL);
 
     //expect it to be bold
     expect(isURL).to.be(true);
+//    }, 1000);
 
   });
 });
