@@ -9,10 +9,9 @@ body {
 }
 
 #iframe-container {
-  width: 600px;
+  width: 50%;
   height: 100%;
-  position: absolute;
-  left: 400px;
+  float:right;
 }
 
 #iframe-container iframe {
@@ -23,10 +22,11 @@ body {
 #mocha {
   font: 20px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
   border-right: 2px solid #999;
-  width: 400px;
+  width: 50%;
   height: 100%;
   position: absolute;
   overflow: auto;
+  float:left;
 }
 
 #mocha #report {
