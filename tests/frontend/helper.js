@@ -98,7 +98,11 @@ var helper = {};
     }}
 
     var intervalCheck = setInterval(function(){
-      var passed = conditionFunc();
+      var passed = false;
+
+      try {
+        passed = conditionFunc();
+      } catch(e){}
 
       if(passed){
         clearInterval(intervalCheck);
