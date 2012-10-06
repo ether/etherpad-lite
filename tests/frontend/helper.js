@@ -1,13 +1,13 @@
-var testHelper = {};
+var helper = {};
 
 (function(){
-  var $iframeContainer, $iframe;
+  var $iframeContainer, $iframe, $padChrome, $padOuter, $padInner;
 
-  testHelper.init = function(){
+  helper.init = function(){
     $iframeContainer = $("#iframe-container");
   }
 
-  testHelper.randomString = function randomString(len)
+  helper.randomString = function randomString(len)
   {
     var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     var randomstring = '';
@@ -19,81 +19,121 @@ var testHelper = {};
     return randomstring;
   }
 
-  testHelper.newPad = function(cb){
-    var padName = "FRONTEND_TEST_" + testHelper.randomString(20);
+  var getFrameJQuery = function($, selector, callback){
+    //find the iframe and get its window and document
+    var $iframe = $(selector);
+    var $content = $iframe.contents();
+    var win = $iframe[0].contentWindow;
+    var doc = win.document;
+
+    //inject jquery if not already existing
+    if(win.$ === undefined){
+      helper.injectJS(doc, "/static/js/jquery.js");
+    }
+
+    helper.waitFor(function(){
+      return win.$ 
+    }).then(function(){
+      if(!(win.$ && win.$.fn && win.$.fn.sendkeys)){
+        helper.injectJS(doc, "/tests/frontend/sendkeys.js");
+      }
+
+      helper.waitFor(function(){
+        return (win.$ && win.$.fn && win.$.fn.sendkeys);
+      }).then(function(){
+        win.$.window = win;
+        win.$.document = doc;
+
+        callback(win.$);
+      });
+    });
+  }
+
+  helper.newPad = function(cb){
+    var padName = "FRONTEND_TEST_" + helper.randomString(20);
     $iframe = $("<iframe src='/p/" + padName + "'></iframe>");
 
     $iframeContainer.empty().append($iframe);
 
     var checkInterval;
     $iframe.load(function(){
-      checkInterval = setInterval(function(){
-        var loaded = false;
+      helper.waitFor(function(){
+        return !$iframe.contents().find("#editorloadingbox").is(":visible");
+      }).then(function(){
+        //INCEPTION!!!
+        getFrameJQuery($, '#iframe-container iframe', function(_$padChrome){
+          $padChrome = _$padChrome;
 
-        try {
-          //check if loading div is hidden
-          loaded = !testHelper.$getPadChrome().find("#editorloadingbox").is(":visible");
-        } catch(e){}
+          getFrameJQuery($padChrome, 'iframe.[name="ace_outer"]', function(_$padOuter){
+            $padOuter = _$padOuter;
 
-        if(loaded){
-          clearTimeout(timeout);
-          clearInterval(checkInterval);
+            getFrameJQuery($padOuter, 'iframe.[name="ace_inner"]', function(_$padInner){
+              $padInner = _$padInner;
 
-          cb(null, {name: padName});
-        }
-      }, 100);
+              cb();
+            });
+          });
+        })
+      });
     });
-
-    var timeout = setTimeout(function(){
-      if(checkInterval) clearInterval(checkInterval);
-      cb(new Error("Pad didn't load in 10 seconds"));
-    }, 10000);
 
     return padName;
   }
 
-  testHelper.$getPadChrome = function(){
-    var win = $iframe[0].contentWindow;
-    var $content = $iframe.contents();
-    $content.window = win;
-
-    return $content;
+  //helper to inject javascript
+  helper.injectJS = function(doc, url){
+    var script = doc.createElement( 'script' );
+    script.type = 'text/javascript';
+    script.src = url;
+    doc.body.appendChild(script);
   }
 
-  testHelper.$getPadOuter = function(){
-    var $iframe = testHelper.$getPadChrome().find('iframe.[name="ace_outer"]');
-    var win = $iframe[0].contentWindow;
-    var $content = $iframe.contents();
-    $content.window = win;
+  helper.waitFor = function(conditionFunc, _timeoutTime, _intervalTime){
+    var timeoutTime = _timeoutTime || 1000;
+    var intervalTime = _intervalTime || 10;
+    
+    var callback = function(){}
+    var returnObj = { then: function(_callback){ 
+      callback = _callback;
+    }}
 
-    return $content;
+    var intervalCheck = setInterval(function(){
+      var passed = conditionFunc();
+
+      if(passed){
+        clearInterval(intervalCheck);
+        clearTimeout(timeout);
+
+        callback(passed);
+      }
+    }, intervalTime);
+
+    var timeout = setTimeout(function(){
+      clearInterval(intervalCheck);
+      throw Error("wait for condition never became true");
+    }, timeoutTime);
+
+    return returnObj;
   }
 
-  testHelper.$getPadInner = function(){
-    var $iframe = testHelper.$getPadOuter().find('iframe.[name="ace_inner"]');
-    var win = $iframe[0].contentWindow;
-    var $content = $iframe.contents();
-    $content.window = win;
-
-    return $content;
-  }
-
-  // copied from http://stackoverflow.com/questions/985272/jquery-selecting-text-in-an-element-akin-to-highlighting-with-your-mouse
-  // selects the whole dom element you give it
-  testHelper.selectText = function(element, $iframe){
-    var doc = $iframe[0], win = $iframe.window, range, selection;
-
-    if (doc.body.createTextRange) { //ms
-        range = doc.body.createTextRange();
-        range.moveToElementText(element);
-        range.select();
-    } else if (win.getSelection) { //all others
-        selection = win.getSelection();        
-        range = doc.createRange();
-        range.selectNodeContents(element);
-        selection.removeAllRanges();
-        selection.addRange(range);
+  helper.log = function(){
+    if(console && console.log){
+      console.log.apply(console, arguments);
     }
   }
+
+  helper.jQueryOf = function(name){
+    switch(name){
+      case "chrome":
+        return $padChrome;
+        break;
+      case "outer":
+        return $padOuter;
+        break;
+      case "inner":
+        return $padInner;
+        break;
+    }
+  } 
 })()
 
