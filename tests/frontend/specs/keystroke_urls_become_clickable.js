@@ -1,10 +1,10 @@
-describe("urls become clickable", function(){
+describe("urls", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
   });
 
-  it("adds a url and makes sure it's clickable", function(done) {
+  it("when you enter an url, it becomes clickable", function(done) {
     var inner$ = helper.jQueryOf("inner"); 
     var chrome$ = helper.jQueryOf("chrome"); 
     
