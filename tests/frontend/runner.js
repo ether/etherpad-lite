@@ -1,12 +1,14 @@
 $(function(){
   //allow cross iframe access
-  document.domain = document.domain;
+  if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+    document.domain = document.domain; // for comet
+  }
 
   //initalize the test helper
-  helper.init();
-
-  //configure and start the test framework
-  mocha.timeout(5000);
-  mocha.ignoreLeaks();
-	mocha.run();
+  helper.init(function(){
+	  //configure and start the test framework
+	  //mocha.suite.timeout(5000);
+	  mocha.ignoreLeaks();
+		mocha.run();
+  });
 });

@@ -1,10 +1,20 @@
 var helper = {};
 
 (function(){
-  var $iframeContainer, $iframe, $padChrome, $padOuter, $padInner;
+  var $iframeContainer, $iframe, jsLibraries = {};
 
-  helper.init = function(){
+  helper.init = function(cb){
     $iframeContainer = $("#iframe-container");
+
+    $.get('/static/js/jquery.js').done(function(code){ 
+      jsLibraries["jquery"] = code;
+
+      $.get('/tests/frontend/sendkeys.js').done(function(code){ 
+        jsLibraries["sendkeys"] = code;
+
+        cb();
+      });
+    });
   }
 
   helper.randomString = function randomString(len)
@@ -19,125 +29,106 @@ var helper = {};
     return randomstring;
   }
 
-  var getFrameJQuery = function($, selector, callback){
-    //find the iframe and get its window and document
-    var $iframe = $(selector);
-    var $content = $iframe.contents();
+  var getFrameJQuery = function($iframe){
+    /*
+      I tried over 9000 ways to inject javascript into iframes. 
+      This is the only way I found that worked in IE 7+8+9, FF and Chrome
+    */
+
     var win = $iframe[0].contentWindow;
     var doc = win.document;
 
-    //inject jquery if not already existing
-    if(win.$ === undefined){
-      helper.injectJS(doc, "/static/js/jquery.js");
-    }
+    //IE 8+9 Hack to make eval appear
+    //http://stackoverflow.com/questions/2720444/why-does-this-window-object-not-have-the-eval-function
+    win.execScript && win.execScript("null");
 
-    helper.waitFor(function(){
-      return win.$ 
-    }).then(function(){
-      if(!(win.$ && win.$.fn && win.$.fn.sendkeys)){
-        helper.injectJS(doc, "/tests/frontend/sendkeys.js");
-      }
+    win.eval(jsLibraries["jquery"]);
+    win.eval(jsLibraries["sendkeys"]);
+    
+    win.$.window = win;
+    win.$.document = doc;
 
-      helper.waitFor(function(){
-        return (win.$ && win.$.fn && win.$.fn.sendkeys);
-      }).then(function(){
-        win.$.window = win;
-        win.$.document = doc;
-
-        callback(win.$);
-      });
-    });
+    return win.$;
   }
 
   helper.newPad = function(cb){
     var padName = "FRONTEND_TEST_" + helper.randomString(20);
     $iframe = $("<iframe src='/p/" + padName + "'></iframe>");
+    
+    //clean up inner iframe references
+    helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
 
-    $iframeContainer.empty().append($iframe);
-
-    var checkInterval;
-    $iframe.load(function(){
-      helper.waitFor(function(){
-        return !$iframe.contents().find("#editorloadingbox").is(":visible");
-      }).then(function(){
-        //INCEPTION!!!
-        getFrameJQuery($, '#iframe-container iframe', function(_$padChrome){
-          $padChrome = _$padChrome;
-
-          getFrameJQuery($padChrome, 'iframe.[name="ace_outer"]', function(_$padOuter){
-            $padOuter = _$padOuter;
-
-            getFrameJQuery($padOuter, 'iframe.[name="ace_inner"]', function(_$padInner){
-              $padInner = _$padInner;
-
-              cb();
-            });
-          });
-        })
+    //clean up iframes properly to prevent IE from memoryleaking
+    $iframeContainer.find("iframe").purgeFrame().done(function(){
+      $iframeContainer.append($iframe);
+      $iframe.one('load', function(){  
+        helper.waitFor(function(){
+          return !$iframe.contents().find("#editorloadingbox").is(":visible");
+        }, 4000).done(function(){
+          helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
+          helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe.[name="ace_outer"]'));
+          helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe.[name="ace_inner"]'));
+          
+          cb();
+        }).fail(function(){
+          throw new Error("Pad never loaded");
+        });
       });
-    });
+    }); 
 
     return padName;
-  }
-
-  //helper to inject javascript
-  helper.injectJS = function(doc, url){
-    var script = doc.createElement( 'script' );
-    script.type = 'text/javascript';
-    script.src = url;
-    doc.body.appendChild(script);
   }
 
   helper.waitFor = function(conditionFunc, _timeoutTime, _intervalTime){
     var timeoutTime = _timeoutTime || 1000;
     var intervalTime = _intervalTime || 10;
+
+    var deferred = $.Deferred();
     
-    var callback = function(){}
-    var returnObj = { then: function(_callback){ 
-      callback = _callback;
-    }}
+    var _fail = deferred.fail;
+    var listenForFail = false;
+    deferred.fail = function(){
+      listenForFail = true;
+      _fail.apply(this, arguments);
+    }
 
     var intervalCheck = setInterval(function(){
       var passed = false;
 
-      try {
-        passed = conditionFunc();
-      } catch(e){}
+      passed = conditionFunc();
 
       if(passed){
         clearInterval(intervalCheck);
         clearTimeout(timeout);
 
-        callback(passed);
+        deferred.resolve();
       }
     }, intervalTime);
 
     var timeout = setTimeout(function(){
       clearInterval(intervalCheck);
-      throw Error("wait for condition never became true");
+      var error = new Error("wait for condition never became true " + conditionFunc.toString());
+      deferred.reject(error);
+
+      if(!listenForFail){
+        throw error;
+      }
     }, timeoutTime);
 
-    return returnObj;
+    return deferred;
   }
 
-  helper.log = function(){
-    if(console && console.log){
-      console.log.apply(console, arguments);
-    }
-  }
+  /* Ensure console.log doesn't blow up in IE, ugly but ok for a test framework imho*/
+  window.console = window.console || {};
+  window.console.log = window.console.log || function(){}
 
-  helper.jQueryOf = function(name){
-    switch(name){
-      case "chrome":
-        return $padChrome;
-        break;
-      case "outer":
-        return $padOuter;
-        break;
-      case "inner":
-        return $padInner;
-        break;
+  //force usage of callbacks in it
+  var _it = it;
+  it = function(name, func){
+    if(func && func.length !== 1){
+      throw new Error("Please use always a callback with it() - " + func.toString());
     }
-  } 
+
+    _it.apply(null, arguments);
+  }
 })()
-

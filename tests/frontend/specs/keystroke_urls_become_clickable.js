@@ -2,11 +2,12 @@ describe("urls", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
+    this.timeout(5000);
   });
 
   it("when you enter an url, it becomes clickable", function(done) {
-    var inner$ = helper.jQueryOf("inner"); 
-    var chrome$ = helper.jQueryOf("chrome"); 
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
     
     //get the first text element out of the inner iframe
     var firstTextElement = inner$("div").first();
@@ -16,18 +17,6 @@ describe("urls", function(){
     firstTextElement.sendkeys('{del}'); // clear the first line
     firstTextElement.sendkeys('http://etherpad.org'); // insert a URL
 	
-    helper.waitFor(function(){
-      //ace creates a new dom element when you press a keystroke, so just get the first text element again
-      var newFirstTextElement = inner$("div").first();
-      var locatedHref = newFirstTextElement.find("a");
-      var isURL = locatedHref.length == 1; // if we found a URL and it is for etherpad.org
-
-      //expect it to be bold
-      expect(isURL).to.be(true);
-
-      //it will only come to this point if the expect statement above doesn't throw
-      done();
-      return true;
-    });
+    done();
   });
 });

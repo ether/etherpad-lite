@@ -2,11 +2,12 @@ describe("italic button", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
+    this.timeout(5000);
   });
 
-  it("makes text italic", function() {
-    var inner$ = helper.jQueryOf("inner"); 
-    var chrome$ = helper.jQueryOf("chrome"); 
+  it("makes text italic", function(done) {
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
 
     //get the first text element out of the inner iframe
     var $firstTextElement = inner$("div").first();
@@ -29,5 +30,7 @@ describe("italic button", function(){
 
     //make sure the text hasn't changed
     expect($newFirstTextElement.text()).to.eql($firstTextElement.text());
+
+    done();
   });
 });

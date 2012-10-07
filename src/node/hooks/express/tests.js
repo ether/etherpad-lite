@@ -6,6 +6,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     if (subPath == ""){
       subPath = "index.html"
     }
+    subPath = subPath.split("?")[0];
 
     var filePath = path.normalize(__dirname + "/../../../../tests/frontend/")
     filePath += subPath.replace("..", "");

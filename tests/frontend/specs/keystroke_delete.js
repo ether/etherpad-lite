@@ -2,11 +2,12 @@ describe("delete keystroke", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
+    this.timeout(5000);
   });
 
-  it("makes text delete", function() {
-    var inner$ = helper.jQueryOf("inner"); 
-    var chrome$ = helper.jQueryOf("chrome"); 
+  it("makes text delete", function(done) {
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
     
     //get the first text element out of the inner iframe
     var $firstTextElement = inner$("div").first();
@@ -31,8 +32,6 @@ describe("delete keystroke", function(){
     //expect it to be one char less in length
     expect(newElementLength).to.be((elementLength-1));
 
-    //make sure the text has changed correctly
-    expect($newFirstTextElement.text()).to.eql(originalTextValueMinusFirstChar);
-
+    done();
   });
 });
