@@ -358,6 +358,14 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       var userInfo = msg.userInfo;
       var id = userInfo.userId;
+
+      // Avoid a race condition when setting colors.  If our color was set by a
+      // query param, ignore our own "new user" message's color value.
+      if (id === initialUserInfo.userId && initialUserInfo.globalUserColor)
+      {
+        msg.userInfo.colorId = initialUserInfo.globalUserColor;
+      }
+
       
       if (userSet[id])
       {
