@@ -119,13 +119,6 @@ var helper = {};
     return deferred;
   }
 
-  helper.runIn = function($iframe, func){
-    var eval = $iframe.window.eval;
-    var funcStr = "(" + func.toString() + ")()";
-
-    return eval(funcStr);
-  }
-
   /* Ensure console.log doesn't blow up in IE, ugly but ok for a test framework imho*/
   window.console = window.console || {};
   window.console.log = window.console.log || function(){}
