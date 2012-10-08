@@ -7,7 +7,8 @@ var helper = {};
     $iframeContainer = $("#iframe-container");
 
     $.get('/static/js/jquery.js').done(function(code){ 
-      jsLibraries["jquery"] = code;
+      // make sure we don't override existing jquery
+      jsLibraries["jquery"] = "if(typeof $ === 'undefined') {\n" + code + "\n}";
 
       $.get('/tests/frontend/sendkeys.js').done(function(code){ 
         jsLibraries["sendkeys"] = code;
