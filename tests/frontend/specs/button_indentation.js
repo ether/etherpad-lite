@@ -1,8 +1,49 @@
 describe("indentation button", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
-    testHelper.newPad(cb);
+    helper.newPad(cb);
+    this.timeout(5000);
   });
+
+  it("indent text", function(done){
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$;
+
+    var $indentButton = chrome$(".buttonicon-indent");
+    $indentButton.click();
+
+    helper.waitFor(function(){
+      return inner$("div").first().find("ul li").length === 1;
+    }).done(done);
+  });
+
+  it("keeps the indent on enter for the new line", function(done){
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$;
+
+    var $indentButton = chrome$(".buttonicon-indent");
+    $indentButton.click();
+
+    //type a bit, make a line break and type again
+    var $firstTextElement = inner$("div span").first();
+    $firstTextElement.sendkeys('line 1'); 
+    $firstTextElement.sendkeys('{enter}');    
+    $firstTextElement.sendkeys('line 2'); 
+    $firstTextElement.sendkeys('{enter}');
+
+    helper.waitFor(function(){
+      return inner$("div span").first().text().indexOf("line 2") === -1;
+    }).done(function(){
+      var $newSecondLine = inner$("div").first().next();
+      var hasULElement = $newSecondLine.find("ul li").length === 1;
+
+      expect(hasULElement).to.be(true);
+      expect($newSecondLine.text()).to.be("line 2");
+      done();
+    });
+  });
+
+  /*
 
   it("makes text indented and outdented", function() {
 
@@ -94,7 +135,7 @@ describe("indentation button", function(){
     /* this test creates the below content, both should have double indentation
 		line1
 		line2
-    */
+    
 
     firstTextElement.sendkeys('{rightarrow}'); // simulate a keypress of enter
     firstTextElement.sendkeys('{enter}'); // simulate a keypress of enter
@@ -134,5 +175,5 @@ describe("indentation button", function(){
       //expect it to be part of a list
       expect(isLI).to.be(true);
     },1000);
-  });
+  });*/
 });
