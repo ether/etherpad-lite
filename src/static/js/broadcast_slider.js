@@ -155,9 +155,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
     function showReconnectUI()
     {
-      var cls = 'modaldialog cboxdisconnected cboxdisconnected_unknown';
-      $("#connectionbox").get(0).className = cls;
-      padmodals.showModal("#connectionbox", 500);
+      padmodals.showModal("disconnected");
     }
 
     var fixPadHeight = _.throttle(function(){

@@ -36,15 +36,15 @@ var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
  * @param password the password the user has given to access this pad, can be null 
  * @param callback will be called with (err, {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx})
  */ 
-exports.checkAccess = function (padID, sessionID, token, password, callback)
+exports.checkAccess = function (padID, sessionCookie, token, password, callback)
 { 
   var statusObject;
 
   // a valid session is required (api-only mode)
   if(settings.requireSession)
   {
-    // no sessionID, access is denied
-    if(!sessionID)
+    // without sessionCookie, access is denied
+    if(!sessionCookie)
     {
       callback(null, {accessStatus: "deny"});
       return;
@@ -114,32 +114,37 @@ exports.checkAccess = function (padID, sessionID, token, password, callback)
             callback();
           });
         },
-        //get informations about this session
+        //get information about all sessions contained in this cookie
         function(callback)
         {
-          sessionManager.getSessionInfo(sessionID, function(err, sessionInfo)
-          {
-            //skip session validation if the session doesn't exists
-            if(err && err.message == "sessionID does not exist")
-            {
-              callback();
-              return;
-            }
-            
-            if(ERR(err, callback)) return;
-            
-            var now = Math.floor(new Date().getTime()/1000);
-            
-            //is it for this group? and is validUntil still ok? --> validSession
-            if(sessionInfo.groupID == groupID && sessionInfo.validUntil > now)
-            {
-              validSession = true;
-            }
-            
-            sessionAuthor = sessionInfo.authorID;
-            
+          if (!sessionCookie) {
             callback();
-          });
+            return;
+          }
+          
+          var sessionIDs = sessionCookie.split(',');
+          async.forEach(sessionIDs, function(sessionID, callback) {
+            sessionManager.getSessionInfo(sessionID, function(err, sessionInfo) {
+              //skip session if it doesn't exist
+              if(err && err.message == "sessionID does not exist") return;
+              
+              if(ERR(err, callback)) return;
+              
+              var now = Math.floor(new Date().getTime()/1000);
+              
+              //is it for this group?
+              if(sessionInfo.groupID != groupID) return;
+              
+              //is validUntil still ok?
+              if(sessionInfo.validUntil <= now) return;
+              
+              // There is a valid session
+              validSession = true;
+              sessionAuthor = sessionInfo.authorID;
+              
+              callback();
+            });
+          }, callback);
         },
         //get author for token
         function(callback)

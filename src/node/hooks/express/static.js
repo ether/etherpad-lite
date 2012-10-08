@@ -9,6 +9,7 @@ var ERR = require("async-stacktrace");
 var _ = require("underscore");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
+
   // Cache both minified and static.
   var assetCache = new CachingMiddleware;
   args.app.all('/(javascripts|static)/*', assetCache.handle);
@@ -24,6 +25,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   , rootURI: 'http://localhost:' + settings.port + '/static/js/'
   , libraryPath: 'javascripts/lib/'
   , libraryURI: 'http://localhost:' + settings.port + '/static/plugins/'
+  , requestURIs: minify.requestURIs // Loop-back is causing problems, this is a workaround.
   });
 
   var StaticAssociator = Yajsml.associators.StaticAssociator;

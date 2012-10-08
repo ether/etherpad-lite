@@ -21,17 +21,22 @@
  * limitations under the License.
  */
 
+// set up logger
 var log4js = require('log4js');
+log4js.replaceConsole();
+
 var settings = require('./utils/Settings');
+
+//set loglevel
+log4js.setGlobalLogLevel(settings.loglevel);
+
 var db = require('./db/DB');
 var async = require('async');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm/lib/npm.js");
 
-
-//set loglevel
-log4js.setGlobalLogLevel(settings.loglevel);
+hooks.plugins = plugins;
 
 async.waterfall([
   //initalize the database
@@ -46,6 +51,10 @@ async.waterfall([
     console.info("Installed plugins: " + plugins.formatPlugins());
     console.debug("Installed parts:\n" + plugins.formatParts());
     console.debug("Installed hooks:\n" + plugins.formatHooks());
+
+    // Call loadSettings hook
+    hooks.aCallAll("loadSettings", { settings: settings });
+
     callback();
   },
 
