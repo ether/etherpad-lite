@@ -16,7 +16,9 @@ describe("urls", function(){
     firstTextElement.sendkeys('{selectall}'); // select all
     firstTextElement.sendkeys('{del}'); // clear the first line
     firstTextElement.sendkeys('http://etherpad.org'); // insert a URL
-	
-    done();
+	  
+    helper.waitFor(function(){
+      return inner$("div").first().find("a").length === 1;
+    }, 2000).done(done);
   });
 });
