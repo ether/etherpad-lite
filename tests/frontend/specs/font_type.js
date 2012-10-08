@@ -1,45 +1,30 @@
 describe("font select", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
-    testHelper.newPad(cb);
+    helper.newPad(cb);
     this.timeout(5000);
   });
 
-  it("makes text monospace", function() {
-    //get the inner iframe
-    var $inner = testHelper.$getPadInner();
+  it("makes text monospace", function(done) {
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
 
-    //open pad settings
-    var $settingsButton = testHelper.$getPadChrome().find(".buttonicon-settings");
+    //click on the settings button to make settings visible
+    var $settingsButton = chrome$(".buttonicon-settings");
     $settingsButton.click();
 
-    //get the font selector and click it
-    var $viewfontmenu = testHelper.$getPadChrome().find("#viewfontmenu"); 
-    $viewfontmenu.click();
+    //get the font menu and monospace option
+    var $viewfontmenu = chrome$("#viewfontmenu");
+    var $monospaceoption = $viewfontmenu.find("[value=monospace]");
 
-    //get the monospace option and click it
-    var $monospaceoption = testHelper.$getPadChrome().find("[value=monospace]");
+    //select monospace and fire change event
     $monospaceoption.attr('selected','selected');
+    $viewfontmenu.change();
 
-    /*
+    //check if font changed to monospace
+    var fontFamily = inner$("body").css("font-family").toLowerCase();
+    expect(fontFamily).to.be("monospace");
 
-    //get the font selector and click it
-    var $viewfontmenu = testHelper.$getPadChrome().find("#viewfontmenu"); 
-    $viewfontmenu.click(); // this doesnt work but I left it in for posterity.
-    $($viewfontmenu).attr('size',2); // this hack is required to make it visible ;\
-
-    //get the monospace option and click it
-    var $monospaceoption = testHelper.$getPadChrome().find("[value=monospace]");
-    $monospaceoption.attr('selected','selected'); // despite this being selected the event doesnt fire
-    $monospaceoption.click(); // this doesnt work but it should.
-
-    */
-
-    // get the attributes of the body of the editor iframe
-    var bodyAttr = $inner.find("body");
-    var cssText = bodyAttr[0].style.cssText;
-
-    //make sure the text hasn't changed
-    expect(cssText).to.eql("font-family: monospace;");
+    done();
   });
 });
