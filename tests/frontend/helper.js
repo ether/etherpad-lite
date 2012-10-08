@@ -118,6 +118,13 @@ var helper = {};
     return deferred;
   }
 
+  helper.runIn = function($iframe, func){
+    var eval = $iframe.window.eval;
+    var funcStr = "(" + func.toString() + ")()";
+
+    return eval(funcStr);
+  }
+
   /* Ensure console.log doesn't blow up in IE, ugly but ok for a test framework imho*/
   window.console = window.console || {};
   window.console.log = window.console.log || function(){}
@@ -126,9 +133,11 @@ var helper = {};
   var _it = it;
   it = function(name, func){
     if(func && func.length !== 1){
-      throw new Error("Please use always a callback with it() - " + func.toString());
+      func = function(){
+        throw new Error("Please use always a callback with it() - " + func.toString());
+      }
     }
 
-    _it.apply(null, arguments);
+    _it(name, func);
   }
 })()

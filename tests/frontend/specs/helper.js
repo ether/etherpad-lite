@@ -1,7 +1,32 @@
 describe("the test helper", function(){
+  describe("the runIn method", function(){
+    it("runs the function in the correct iframe", function(done){
+      this.timeout(5000);
+
+      helper.newPad(function(){
+        var chromeLength = helper.runIn(helper.padChrome$, function(){
+          return $("#editbar").length;
+        });
+
+        var outerLength = helper.runIn(helper.padOuter$, function(){
+          return $("#outerdocbody").length;
+        });
+
+        var innerLength = helper.runIn(helper.padInner$, function(){
+          return $("#innerdocbody").length;
+        });
+
+        expect(chromeLength).to.be(1);
+        expect(outerLength).to.be(1);
+        expect(innerLength).to.be(1);
+        done();
+      });
+    });
+  }); 
+ 
   describe("the newPad method", function(){
     xit("doesn't leak memory if you creates iframes over and over again", function(done){
-      this.timeout(200000);
+      this.timeout(100000);
 
       var times = 10;
 
