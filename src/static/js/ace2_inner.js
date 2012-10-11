@@ -1173,7 +1173,7 @@ function Ace2Inner(){
     //if (! top.BEFORE) top.BEFORE = [];
     //top.BEFORE.push(magicdom.root.dom.innerHTML);
     //if (! isEditable) return; // and don't reschedule
-    if (window.parent.parent.inInternationalComposition)
+    if (inInternationalComposition)
     {
       // don't do idle input incorporation during international input composition
       idleWorkTimer.atLeast(500);
@@ -3729,7 +3729,7 @@ function Ace2Inner(){
         thisKeyDoesntTriggerNormalize = true;
       }
 
-      if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!window.parent.parent.inInternationalComposition))
+      if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!inInternationalComposition))
       {
         if (type != "keyup" || !incorpIfQuick())
         {
@@ -4589,9 +4589,24 @@ function Ace2Inner(){
     }
   }
 
+
+  var inInternationalComposition = false;
   function handleCompositionEvent(evt)
   {
-      window.parent.parent.handleCompositionEvent(evt);
+    // international input events, fired in FF3, at least;  allow e.g. Japanese input
+    if (evt.type == "compositionstart")
+    {
+      inInternationalComposition = true;
+    }
+    else if (evt.type == "compositionend")
+    {
+      inInternationalComposition = false;
+    }
+  }
+
+  editorInfo.ace_getInInternationalComposition = function ()
+  {
+    return inInternationalComposition;
   }
 
   function bindTheEventHandlers()
