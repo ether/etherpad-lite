@@ -16,7 +16,7 @@
                       "resolve"             : "0.2.x",
                       "socket.io"           : "0.9.x",
                       "ueberDB"             : "0.1.7",
-                      "async"               : "0.1.x",
+                      "async"               : "0.1.22",
                       "express"             : "2.5.x",
                       "connect"             : "1.x",
                       "clean-css"           : "0.3.2",
