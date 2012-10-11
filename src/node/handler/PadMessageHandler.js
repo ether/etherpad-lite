@@ -178,7 +178,7 @@ exports.handleMessage = function(client, message)
     // handleMessage will be called, even if the client is not authorized
     hooks.aCallAll("handleMessage", { client: client, message: message }, function ( messages ) {
       _.each(messages, function(newMessage){
-        if ( newMessage === null ) {
+        if ( newmessage === null ) {
           dropMessage = true;
         }
       });
