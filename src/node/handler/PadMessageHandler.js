@@ -176,7 +176,9 @@ exports.handleMessage = function(client, message)
     
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
     // handleMessage will be called, even if the client is not authorized
-    hooks.aCallAll("handleMessage", { client: client, message: message }, function ( messages ) {
+    hooks.aCallAll("handleMessage", { client: client, message: message }, function ( err, messages ) {
+      if(ERR(err, callback)) return;
+      
       _.each(messages, function(newMessage){
         if ( newMessage === null ) {
           dropMessage = true;
