@@ -111,7 +111,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   function handleUserChanges()
   {
-    if (window.parent.parent.inInternationalComposition) return;
+    if (editor.getInInternationalComposition()) return;
     if ((!getSocket()) || channelState == "CONNECTING")
     {
       if (channelState == "CONNECTING" && (((+new Date()) - initialStartConnectTime) > 20000))
@@ -288,7 +288,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       var apool = msg.apool;
 
       // When inInternationalComposition, msg pushed msgQueue.
-      if (msgQueue.length > 0 || window.parent.parent.inInternationalComposition) {
+      if (msgQueue.length > 0 || editor.getInInternationalComposition()) {
         if (msgQueue.length > 0) oldRev = msgQueue[msgQueue.length - 1].newRev;
         else oldRev = rev;
 
