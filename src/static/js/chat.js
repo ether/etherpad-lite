@@ -23,11 +23,12 @@
 var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
 
+var Tinycon = require('tinycon/tinycon');
+
 var chat = (function()
 {
   var isStuck = false;
   var chatMentions = 0;
-  var title = document.title;
   var self = {
     show: function () 
     {      
@@ -35,7 +36,7 @@ var chat = (function()
       $("#chatbox").show();
       self.scrollDown();
       chatMentions = 0;
-      document.title = title;
+      Tinycon.setBubble(0);
     },
     stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
@@ -62,8 +63,12 @@ var chat = (function()
     },
     scrollDown: function()
     {
-      if($('#chatbox').css("display") != "none")
-        $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
+      if($('#chatbox').css("display") != "none"){
+        if(!self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < $('#chattext').height()) {
+          $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
+          self.lastMessage = $('#chattext > p').eq(-1);
+        }
+      }
     }, 
     send: function()
     {
@@ -122,12 +127,9 @@ var chat = (function()
         // chat throb stuff -- Just make it throw for twice as long
         if(wasMentioned && !alreadyFocused)
         { // If the user was mentioned show for twice as long and flash the browser window
-          if (chatMentions == 0){
-            title = document.title;
-          }
           $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(4000).hide(400);
           chatMentions++;
-          document.title = "("+chatMentions+") " + title;
+          Tinycon.setBubble(chatMentions);
         }
         else
         {
@@ -137,7 +139,7 @@ var chat = (function()
        // Clear the chat mentions when the user clicks on the chat input box
       $('#chatinput').click(function(){
         chatMentions = 0;
-        document.title = title;
+        Tinycon.setBubble(0);
       });
       self.scrollDown();
 

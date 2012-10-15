@@ -26,6 +26,24 @@ var db = require("./DB").db;
 var async = require("async");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
+
+exports.listAllGroups = function(callback) {
+  db.get("groups", function (err, groups) {
+    if(ERR(err, callback)) return;
+    
+    // there are no groups
+    if(groups == null) {
+      callback(null, {groupIDs: []});
+      return;
+    }
+    
+    var groupIDs = [];
+    for ( var groupID in groups ) {
+      groupIDs.push(groupID);
+    }
+    callback(null, {groupIDs: groupIDs});
+  });
+}
  
 exports.deleteGroup = function(groupID, callback)
 {
@@ -105,6 +123,39 @@ exports.deleteGroup = function(groupID, callback)
       db.remove("group2sessions:" + groupID);
       db.remove("group:" + groupID);
       callback();
+    },
+    //unlist the group
+    function(callback)
+    {
+      exports.listAllGroups(function(err, groups) {
+        if(ERR(err, callback)) return;
+        groups = groups? groups.groupIDs : [];
+
+        // it's not listed
+        if(groups.indexOf(groupID) == -1) {
+          callback();
+          return;
+        }
+
+        groups.splice(groups.indexOf(groupID), 1);
+        
+        // store empty groupe list
+        if(groups.length == 0) {
+          db.set("groups", {});
+          callback();
+          return;
+        }
+
+        // regenerate group list
+        var newGroups = {};
+        async.forEach(groups, function(group, cb) {
+          newGroups[group] = 1;
+          cb();
+        },function() {
+          db.set("groups", newGroups);
+          callback();
+        });
+      });
     }
   ], function(err)
   {
@@ -130,7 +181,24 @@ exports.createGroup = function(callback)
   
   //create the group
   db.set("group:" + groupID, {pads: {}});
-  callback(null, {groupID: groupID});
+  
+  //list the group
+  exports.listAllGroups(function(err, groups) {
+    if(ERR(err, callback)) return;
+    groups = groups? groups.groupIDs : [];
+    
+    groups.push(groupID);
+    
+    // regenerate group list
+    var newGroups = {};
+    async.forEach(groups, function(group, cb) {
+      newGroups[group] = 1;
+      cb();
+    },function() {
+      db.set("groups", newGroups);
+      callback(null, {groupID: groupID});
+    });
+  });
 }
 
 exports.createGroupIfNotExistsFor = function(groupMapper, callback)

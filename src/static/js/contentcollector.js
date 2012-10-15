@@ -25,13 +25,14 @@
 
 var _MAX_LIST_LEVEL = 8;
 
+var UNorm = require('unorm');
 var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
 
 function sanitizeUnicode(s)
 {
-  return s.replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
+  return UNorm.nfc(s).replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
 }
 
 function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
@@ -258,7 +259,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     {
       state.listNesting--;
     }
-    if(oldListType) state.lineAttributes['list'] = oldListType;
+    if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
+    else { delete state.lineAttributes['list']; }
     _recalcAttribString(state);
   }
 
@@ -309,7 +311,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       ['insertorder', 'first']
     ].concat(
       _.map(state.lineAttributes,function(value,key){
-        console.log([key, value])
+        if (window.console) console.log([key, value])
         return [key, value];
       })
     );
@@ -373,6 +375,19 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     if (dom.isNodeText(node))
     {
       var txt = dom.nodeValue(node);
+      var tname = dom.nodeAttr(node.parentNode,"name");
+
+      var txtFromHook = hooks.callAll('collectContentLineText', {
+        cc: this,
+        state: state,
+        tname: tname,
+        node:node,
+        text:txt,
+        styl: null,
+        cls: null
+      });  
+      var txt = (typeof(txtFromHook)=='object'&&txtFromHook.length==0)?dom.nodeValue(node):txtFromHook[0];
+
       var rest = '';
       var x = 0; // offset into original text
       if (txt.length == 0)
@@ -384,7 +399,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         if (endPoint && node == endPoint.node)
         {
           selEnd = _pointHere(0, state);
-        }
+			}
       }
       while (txt.length > 0)
       {
@@ -439,8 +454,21 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
       if (tname == "br")
-      {
-        cc.startNewLine(state);
+      {        
+        this.breakLine = true;
+        var tvalue = dom.nodeAttr(node, 'value');
+        var induceLineBreak = hooks.callAll('collectContentLineBreak', {
+          cc: this,
+          state: state,
+          tname: tname,
+          tvalue:tvalue,
+          styl: null,
+          cls: null
+        });       
+        var startNewLine= (typeof(induceLineBreak)=='object'&&induceLineBreak.length==0)?true:induceLineBreak[0];
+        if(startNewLine){
+          cc.startNewLine(state);
+        }		  
       }
       else if (tname == "script" || tname == "style")
       {

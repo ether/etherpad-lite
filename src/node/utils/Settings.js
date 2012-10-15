@@ -24,6 +24,7 @@ var os = require("os");
 var path = require('path');
 var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
+var vm = require('vm');
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -45,6 +46,7 @@ exports.dbType = "dirty";
  * This setting is passed with dbType to ueberDB to set up the database
  */
 exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
+
 /**
  * The default Text of a new pad
  */
@@ -102,32 +104,24 @@ exports.abiwordAvailable = function()
 
 // Discover where the settings file lives
 var settingsFilename = argv.settings || "settings.json";
-if (settingsFilename.charAt(0) != '/') {
-    settingsFilename = path.normalize(path.join(root, settingsFilename));
-}
+settingsFilename = path.resolve(path.join(root, settingsFilename));
 
-var settingsStr
+var settingsStr;
 try{
   //read the settings sync
   settingsStr = fs.readFileSync(settingsFilename).toString();
 } catch(e){
-  console.warn('No settings file found. Using defaults.');
-  settingsStr = '{}';
+  console.warn('No settings file found. Continuing using defaults!');
 }
-  
-//remove all comments
-settingsStr = settingsStr.replace(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/gm,"").replace(/#.*/g,"").replace(/\/\/.*/g,"");
 
-//try to parse the settings
+// try to parse the settings
 var settings;
-try
-{
-  settings = JSON.parse(settingsStr);
-}
-catch(e)
-{
-  console.error("There is a syntax error in your settings.json file");
-  console.error(e.message);
+try {
+  if(settingsStr) {
+    settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
+  }
+}catch(e){
+  console.error('There was an error processing your settings.json file: '+e.message);
   process.exit(1);
 }
 
@@ -148,8 +142,7 @@ for(var i in settings)
   //this setting is unkown, output a warning and throw it away
   else
   {
-    console.warn("Unkown Setting: '" + i + "'");
-    console.warn("This setting doesn't exist or it was removed");
+    console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
   }
 }
 

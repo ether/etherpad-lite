@@ -57,6 +57,12 @@
             <div class="stepper" id="rightstep"></div>
           </div>
         </div>
+        
+        <div id="overlay">
+          <div id="overlay-inner">
+            <!-- -->
+          </div>
+        </div>
       </div>
 
       <div class="timeslider-bar">
@@ -94,54 +100,59 @@
     </div><!-- /padmain -->
   </div><!-- /padpage -->
 
-  <div id="modaloverlay">
-    <div id="modaloverlay-inner">
-      <!-- -->
+<div id="connectivity" class="popup">
+  <% e.begin_block("modals"); %>
+    <div class="connected visible">
+      <h2>Connected.</h2>
     </div>
-  </div>
-
-  <div id="mainmodals">
-      <% e.begin_block("modals"); %>
-          <div id="connectionbox" class="modaldialog">
-              <div id="connectionboxinner" class="modaldialog-inner">
-                  <div class="connecting">Connecting...</div>
-                  <div class="reconnecting">Reestablishing connection...</div>
-                  <div class="disconnected">
-                      <h2 class="h2_disconnect">Disconnected.</h2>
-                      <h2 class="h2_userdup">Opened in another window.</h2>
-                      <h2 class="h2_unauth">No Authorization.</h2>
-                      <div id="disconnected_looping">
-                          <p><b>We're having trouble talking to the EtherPad lite synchronization server.</b> You may be connecting through an incompatible firewall or proxy server.</p>
-                      </div>
-                      <div id="disconnected_initsocketfail">
-                          <p><b>We were unable to connect to the EtherPad lite synchronization server.</b> This may be due to an incompatibility with your web browser or internet connection.</p>
-                      </div>
-                      <div id="disconnected_userdup">
-                          <p><b>You seem to have opened this pad in another browser window.</b> If you'd like to use this window instead, you can reconnect.</p>
-                      </div>
-                      <div id="disconnected_unknown">
-                          <p><b>Lost connection with the EtherPad lite synchronization server.</b> This may be due to a loss of network connectivity.</p>
-                      </div>
-                      <div id="disconnected_slowcommit">
-                          <p><b>Server not responding.</b> This may be due to network connectivity issues or high load on the server.</p>
-                      </div>
-                      <div id="disconnected_unauth">
-                          <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
-                      </div>
-                      <div id="disconnected_deleted">
-                          <p>This pad was deleted.</p>
-                      </div>
-                      <div id="reconnect_advise">
-                          <p>If this continues to happen, please let us know</p>
-                      </div>
-                      <div id="reconnect_form">
-                          <button id="forcereconnect">Reconnect Now</button>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      <% e.end_block(); %>
-  </div>
+    <div class="reconnecting">
+      <h1>Reestablishing connection...</h1>
+      <p><img alt="" border="0" src="/static/img/connectingbar.gif" /></p>
+    </div>
+    <div class="userdup">
+      <h1>Opened in another window.</h1>
+      <h2>You seem to have opened this pad in another browser window.</h2>
+      <p>If you'd like to use this window instead, you can reconnect.</p>
+      <button id="forcereconnect">Reconnect Now</button>
+    </div>
+    <div class="unauth">
+      <h1>No Authorization.</h1>
+      <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
+      <button id="forcereconnect">Reconnect Now</button>
+    </div>
+    <div class="looping">
+      <h1>Disconnected.</h1>
+      <h2>We're having trouble talking to the EtherPad lite synchronization server.</h2>
+      <p>You may be connecting through an incompatible firewall or proxy server.</p>
+    </div>
+    <div class="initsocketfail">
+      <h1>Disconnected.</h1>
+      <h2>We were unable to connect to the EtherPad lite synchronization server.</h2>
+      <p>This may be due to an incompatibility with your web browser or internet connection.</p>
+    </div>
+    <div class="slowcommit">
+      <h1>Disconnected.</h1>
+      <h2>Server not responding.</h2>
+      <p>This may be due to network connectivity issues or high load on the server.</p>
+      <button id="forcereconnect">Reconnect Now</button>
+    </div>
+    <div class="deleted">
+      <h1>Disconnected.</h1>
+      <p>This pad was deleted.</p>
+    </div>
+    <div class="disconnected">
+      <h1>Disconnected.</h1>
+      <h2>Lost connection with the EtherPad lite synchronization server.</h2>
+      <p>This may be due to a loss of network connectivity. If this continues to happen, please let us know</p>
+      <button id="forcereconnect">Reconnect Now</button>
+    </div>
+    <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
+        <input type="hidden" class="padId" name="padId">
+        <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
+        <input type="hidden" class="missedChanges" name="missedChanges">
+    </form>
+  <% e.end_block(); %>
+</div>
 
 <!-- export code -->
 <div id="importexport">
@@ -188,10 +199,13 @@
       document.domain = document.domain; // for comet
     }
 
-    var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+    var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
     plugins.baseURL = baseURL;
     
     plugins.update(function () {
+      var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+      hooks.plugins = plugins;
+
       var timeslider = require('ep_etherpad-lite/static/js/timeslider')
       timeslider.baseURL = baseURL;
       timeslider.init();

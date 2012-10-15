@@ -20,7 +20,7 @@ var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
 var Security = require('ep_etherpad-lite/static/js/security');
-
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 function getPadPlainText(pad, revNum)
 {
   var atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext());
@@ -401,8 +401,22 @@ function getHTMLFromAtext(pad, atext)
           pieces.push('</li></ul>');
         }
         lists.length--;
-      }      
-      pieces.push(lineContent, '<br>');
+      }   
+      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
+      {
+        line: line,
+        apool: apool,
+        attribLine: attribLines[i],
+        text: textLines[i]
+      }, " ", " ", "");
+	  if (lineContentFromHook)
+	  {
+	    pieces.push(lineContentFromHook, '');
+	  } 
+	  else 
+	 {
+	   pieces.push(lineContent, '<br>');
+	 }		  
     }
   }
   
@@ -469,6 +483,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
     var head = 
       (noDocType ? '' : '<!doctype html>\n') + 
       '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+	'<title>' + Security.escapeHTML(padId) + '</title>\n' +
         '<meta charset="utf-8">\n' + 
         '<style> * { font-family: arial, sans-serif;\n' + 
           'font-size: 13px;\n' + 

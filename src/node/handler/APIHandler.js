@@ -38,35 +38,71 @@ catch(e)
 }
 
 //a list of all functions
-var functions = {
-  "createGroup"               : [],
-  "createGroupIfNotExistsFor" : ["groupMapper"], 
-  "deleteGroup"               : ["groupID"], 
-  "listPads"                  : ["groupID"], 
-  "createPad"                 : ["padID", "text"], 
-  "createGroupPad"            : ["groupID", "padName", "text"],
-  "createAuthor"              : ["name"], 
-  "createAuthorIfNotExistsFor": ["authorMapper" , "name"], 
-  "listPadsOfAuthor"          : ["authorID"], 
-  "createSession"             : ["groupID", "authorID", "validUntil"], 
-  "deleteSession"             : ["sessionID"], 
-  "getSessionInfo"            : ["sessionID"], 
-  "listSessionsOfGroup"       : ["groupID"], 
-  "listSessionsOfAuthor"      : ["authorID"], 
-  "getText"                   : ["padID", "rev"],
-  "setText"                   : ["padID", "text"],
-  "getHTML"                   : ["padID", "rev"],
-  "setHTML"                   : ["padID", "html"],
-  "getRevisionsCount"         : ["padID"], 
-  "getLastEdited"             : ["padID"],
-  "deletePad"                 : ["padID"], 
-  "getReadOnlyID"             : ["padID"],
-  "setPublicStatus"           : ["padID", "publicStatus"], 
-  "getPublicStatus"           : ["padID"], 
-  "setPassword"               : ["padID", "password"], 
-  "isPasswordProtected"       : ["padID"], 
-  "listAuthorsOfPad"          : ["padID"],
-  "padUsersCount"             : ["padID"]
+var version =
+{ "1":
+  { "createGroup"               : []
+  , "createGroupIfNotExistsFor" : ["groupMapper"]
+  , "deleteGroup"               : ["groupID"]
+  , "listPads"                  : ["groupID"]
+  , "createPad"                 : ["padID", "text"]
+  , "createGroupPad"            : ["groupID", "padName", "text"]
+  , "createAuthor"              : ["name"]
+  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
+  , "listPadsOfAuthor"          : ["authorID"]
+  , "createSession"             : ["groupID", "authorID", "validUntil"]
+  , "deleteSession"             : ["sessionID"]
+  , "getSessionInfo"            : ["sessionID"]
+  , "listSessionsOfGroup"       : ["groupID"]
+  , "listSessionsOfAuthor"      : ["authorID"]
+  , "getText"                   : ["padID", "rev"]
+  , "setText"                   : ["padID", "text"]
+  , "getHTML"                   : ["padID", "rev"]
+  , "setHTML"                   : ["padID", "html"]
+  , "getRevisionsCount"         : ["padID"]
+  , "getLastEdited"             : ["padID"]
+  , "deletePad"                 : ["padID"]
+  , "getReadOnlyID"             : ["padID"]
+  , "setPublicStatus"           : ["padID", "publicStatus"]
+  , "getPublicStatus"           : ["padID"]
+  , "setPassword"               : ["padID", "password"]
+  , "isPasswordProtected"       : ["padID"]
+  , "listAuthorsOfPad"          : ["padID"]
+  , "padUsersCount"             : ["padID"]
+  }
+, "1.1":
+  { "createGroup"               : []
+  , "createGroupIfNotExistsFor" : ["groupMapper"]
+  , "deleteGroup"               : ["groupID"]
+  , "listPads"                  : ["groupID"]
+  , "createPad"                 : ["padID", "text"]
+  , "createGroupPad"            : ["groupID", "padName", "text"]
+  , "createAuthor"              : ["name"]
+  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
+  , "listPadsOfAuthor"          : ["authorID"]
+  , "createSession"             : ["groupID", "authorID", "validUntil"]
+  , "deleteSession"             : ["sessionID"]
+  , "getSessionInfo"            : ["sessionID"]
+  , "listSessionsOfGroup"       : ["groupID"]
+  , "listSessionsOfAuthor"      : ["authorID"]
+  , "getText"                   : ["padID", "rev"]
+  , "setText"                   : ["padID", "text"]
+  , "getHTML"                   : ["padID", "rev"]
+  , "setHTML"                   : ["padID", "html"]
+  , "getRevisionsCount"         : ["padID"]
+  , "getLastEdited"             : ["padID"]
+  , "deletePad"                 : ["padID"]
+  , "getReadOnlyID"             : ["padID"]
+  , "setPublicStatus"           : ["padID", "publicStatus"]
+  , "getPublicStatus"           : ["padID"]
+  , "setPassword"               : ["padID", "password"]
+  , "isPasswordProtected"       : ["padID"]
+  , "listAuthorsOfPad"          : ["padID"]
+  , "padUsersCount"             : ["padID"]
+  , "getAuthorName"             : ["authorID"]
+  , "padUsers"                  : ["padID"]
+  , "sendClientsMessage"        : ["padID", "msg"]
+  , "listAllGroups"             : []
+  }
 };
 
 /**
@@ -76,18 +112,30 @@ var functions = {
  * @req express request object
  * @res express response object
  */
-exports.handle = function(functionName, fields, req, res)
+exports.handle = function(apiVersion, functionName, fields, req, res)
 {
-  //check the api key!
-  if(fields["apikey"] != apikey.trim())
+  //check if this is a valid apiversion
+  var isKnownApiVersion = false;
+  for(var knownApiVersion in version)
   {
-    res.send({code: 4, message: "no or wrong API Key", data: null});
+    if(knownApiVersion == apiVersion)
+    {
+      isKnownApiVersion = true;
+      break;
+    }
+  }
+  
+  //say goodbye if this is an unkown API version
+  if(!isKnownApiVersion)
+  {
+    res.statusCode = 404;
+    res.send({code: 3, message: "no such api version", data: null});
     return;
   }
   
   //check if this is a valid function name
   var isKnownFunctionname = false;
-  for(var knownFunctionname in functions)
+  for(var knownFunctionname in version[apiVersion])
   {
     if(knownFunctionname == functionName)
     {
@@ -102,6 +150,13 @@ exports.handle = function(functionName, fields, req, res)
     res.send({code: 3, message: "no such function", data: null});
     return;
   }
+  
+  //check the api key!
+  if(fields["apikey"] != apikey.trim())
+  {
+    res.send({code: 4, message: "no or wrong API Key", data: null});
+    return;
+  }
 
   //sanitize any pad id's before continuing
   if(fields["padID"])
@@ -109,7 +164,7 @@ exports.handle = function(functionName, fields, req, res)
     padManager.sanitizePadId(fields["padID"], function(padId)
     {
       fields["padID"] = padId;
-      callAPI(functionName, fields, req, res);
+      callAPI(apiVersion, functionName, fields, req, res);
     });
   }
   else if(fields["padName"])
@@ -117,23 +172,23 @@ exports.handle = function(functionName, fields, req, res)
     padManager.sanitizePadId(fields["padName"], function(padId)
     {
       fields["padName"] = padId;
-      callAPI(functionName, fields, req, res);
+      callAPI(apiVersion, functionName, fields, req, res);
     });
   }
   else
   {
-    callAPI(functionName, fields, req, res);
+    callAPI(apiVersion, functionName, fields, req, res);
   }
 }
 
 //calls the api function
-function callAPI(functionName, fields, req, res)
+function callAPI(apiVersion, functionName, fields, req, res)
 {
   //put the function parameters in an array
   var functionParams = [];
-  for(var i=0;i<functions[functionName].length;i++)
+  for(var i=0;i<version[apiVersion][functionName].length;i++)
   {
-    functionParams.push(fields[functions[functionName][i]]);
+    functionParams.push(fields[ version[apiVersion][functionName][i] ]);
   }
   
   //add a callback function to handle the response
