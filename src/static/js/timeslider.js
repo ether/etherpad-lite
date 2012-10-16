@@ -144,13 +144,12 @@ function handleClientVars(message)
   require('./pad_impexp').padimpexp.init();
 
   //change export urls when the slider moves
-  var export_rev_regex = /(\/\d+)?\/export/
   BroadcastSlider.onSlider(function(revno)
   {
     // export_links is a jQuery Array, so .each is allowed.
     export_links.each(function()
     {
-      this.setAttribute('href', this.href.replace(export_rev_regex, '/' + revno + '/export'));
+      this.setAttribute('href', this.href.replace( /\/[A-Za-z0-9_]+\/(\d+\/)?export/ , '/' + padId + '/' + revno + '/export'));
     });
   });
 
