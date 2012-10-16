@@ -292,13 +292,13 @@ function handshake()
       {
         $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
+                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button><script>$('#passwordinput').focus();</script>");
       }
       else if(obj.accessStatus == "wrongPassword")
       {
         $("#editorloadingbox").html("<b>You're password was wrong</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
+                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button><script>$('#passwordinput').focus();</script>");
       }
     }
     
