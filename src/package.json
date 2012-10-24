@@ -15,7 +15,7 @@
                       "require-kernel"      : "1.0.5",
                       "resolve"             : "0.2.x",
                       "socket.io"           : "0.9.x",
-                      "ueberDB"             : "0.1.7",
+                      "ueberDB"             : "0.1.8",
                       "async"               : "0.1.22",
                       "express"             : "3.x",
                       "connect"             : "2.4.x",
@@ -42,5 +42,5 @@
   "engines"        : { "node" : ">=0.6.0",
                        "npm"  : ">=1.0"
                      }, 
-  "version"        : "1.1.2"
+  "version"        : "1.1.4"
 }
