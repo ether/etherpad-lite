@@ -8,7 +8,7 @@
                       { "name": "John McLear" }, 
                       { "name": "Hans Pinckaers" },
                       { "name": "Robin Buse" },
-                      { "name": "Marcel Klehr" },
+                      { "name": "Marcel Klehr" }
                      ],
   "dependencies"   : {
                       "yajsml"              : "1.1.6",
