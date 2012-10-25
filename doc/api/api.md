@@ -5,3 +5,4 @@
 @include hooks_server-side
 @include editorInfo
 @include changeset_library
+@include pluginfw
