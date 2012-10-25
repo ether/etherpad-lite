@@ -1,0 +1,13 @@
+{
+  "parts": [
+    {
+      "name": "basic-formatting",
+      "client_hooks": {
+        "postAceInit": "ep_formatting/static/js/toolbarButtons:postAceInit"
+      },
+      "hooks": {
+        "eejsBlock_editbarMenuLeft": "ep_formatting/plugin:eejsBlock_editbarMenuLeft"
+      }
+    }
+  ]
+}

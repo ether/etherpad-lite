@@ -1,0 +1,11 @@
+<%
+  var groupClass = ""
+  if (groupPosition !== undefined) {
+    groupClass = "grouped-" + groupPosition;
+  }
+%>
+<li class="acl-write" id="<%= button.id %>" data-key="<%= button.key %>">
+    <a class="<%= groupClass %>" title="<%= button.title %>">
+      <span class="buttonicon <%= button.cssClass %>"></span>
+    </a>
+</li>
