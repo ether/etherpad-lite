@@ -52,13 +52,9 @@ body {
   font-weight: 200;
 }
 
-/*#mocha h1 a {
-  text-decoration: none;
-  color: inherit;
-}*/
-
-#mocha h1 a:hover {
-  text-decoration: underline;
+#mocha h1 a:visited
+{ 
+  color: #00E;
 }
 
 #mocha .suite .suite h1 {
