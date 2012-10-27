@@ -1,6 +1,15 @@
 var path = require("path");
+var fs = require("fs");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
+  args.app.get('/tests/frontend/specs_list.js', function(req, res){
+    fs.readdir('tests/frontend/specs', function(err, files){
+      if(err){ return res.send(500); }
+
+      res.send("var specs_list = " + JSON.stringify(files.sort()) + ";\n"); 
+    });
+  });
+
   args.app.get('/tests/frontend/*', function (req, res) {
     var subPath = req.url.substr("/tests/frontend".length);
     if (subPath == ""){
@@ -16,5 +25,5 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   args.app.get('/tests/frontend', function (req, res) {
     res.redirect('/tests/frontend/');
-  });
+  }); 
 }

@@ -4,6 +4,13 @@ $(function(){
     document.domain = document.domain; // for comet
   }
 
+  var specs = specs_list.slice();
+
+  var $body = $('body')
+  $.each(specs, function(i, spec){
+    $body.append('<script src="specs/' + spec + '"></script>')
+  });
+
   //initalize the test helper
   helper.init(function(){
 	  //configure and start the test framework
