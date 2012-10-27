@@ -52,10 +52,10 @@ body {
   font-weight: 200;
 }
 
-#mocha h1 a {
+/*#mocha h1 a {
   text-decoration: none;
   color: inherit;
-}
+}*/
 
 #mocha h1 a:hover {
   text-decoration: underline;
