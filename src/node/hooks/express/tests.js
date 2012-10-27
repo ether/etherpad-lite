@@ -10,8 +10,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  args.app.get('/tests/frontend/*', function (req, res) {
-    var subPath = req.url.substr("/tests/frontend".length);
+  var url2FilePath = function(url){
+    var subPath = url.substr("/tests/frontend".length);
     if (subPath == ""){
       subPath = "index.html"
     }
@@ -19,7 +19,24 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     var filePath = path.normalize(__dirname + "/../../../../tests/frontend/")
     filePath += subPath.replace("..", "");
+    return filePath;
+  }
 
+  args.app.get('/tests/frontend/specs/*', function (req, res) {
+    var specFilePath = url2FilePath(req.url);
+    var specFileName = path.basename(specFilePath);
+
+    fs.readFile(specFilePath, function(err, content){
+      if(err){ return res.send(500); }
+   
+      content = "describe(" + JSON.stringify(specFileName) + ", function(){   " + content + "   });";
+
+      res.send(content);
+    }); 
+  });
+
+  args.app.get('/tests/frontend/*', function (req, res) {
+    var filePath = url2FilePath(req.url);
     res.sendfile(filePath);
   });
 
