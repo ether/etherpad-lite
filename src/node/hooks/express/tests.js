@@ -13,4 +13,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     res.sendfile(filePath);
   });
+
+  args.app.get('/tests/frontend', function (req, res) {
+    res.redirect('/tests/frontend/');
+  });
 }
