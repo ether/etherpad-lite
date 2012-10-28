@@ -18,8 +18,14 @@ describe("change username value", function(){
 
     $usernameInput.sendkeys('{selectall}');
     $usernameInput.sendkeys('{del}');
+    $usernameInput.sendkeys('Hairy Robot');
+    $usernameInput.sendkeys('{enter}');
+
+    $usernameInput.sendkeys('{selectall}');
+    $usernameInput.sendkeys('{del}');
     $usernameInput.sendkeys('John McLear');
     $usernameInput.sendkeys('{enter}');
+
 
     var correctUsernameValue = $usernameInput.val() === "John McLear";
 
@@ -42,8 +48,16 @@ describe("change username value", function(){
       var $firstChatMessage = chrome$("#chattext").children("p");
       var containsJohnMcLear = $firstChatMessage.text().indexOf("John McLear") !== -1; // does the string contain Jo$
       expect(containsJohnMcLear).to.be(true); // expect the first chat message to contain JohnMcLear
-    }); 
 
+      beforeEach(function(cb){ // create another pad..  
+       helper.newPad(cb);
+       this.timeout(5000);
+      });
+      var rememberedName = $usernameInput.val() === "John McLear";
+      var rememberedWrongName = $usernameInput.val() === "Hairy Robot";
+      expect(rememberedName).to.be(true); // expect it to remember the name of the user
+      expect(rememberedWrongName).to.be(false); // expect it to forget any old names..
+    }); 
     done();
   });
 });
