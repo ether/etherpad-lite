@@ -1,4 +1,8 @@
 $(function(){
+  /*
+    This reporter wraps the original html reporter plus reports plain text into a hidden div. 
+    This allows the webdriver client to pick up the test results
+  */
   var WebdriverAndHtmlReporter = function(html_reporter){
     return function(runner){
       //initalize the html reporter first
