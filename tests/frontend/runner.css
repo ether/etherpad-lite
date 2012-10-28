@@ -8,6 +8,10 @@ body {
   height: 100%;
 }
 
+#console {
+  display: none;
+}
+
 #iframe-container {
   width: 50%;
   height: 100%;
