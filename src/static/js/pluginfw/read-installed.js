@@ -94,8 +94,21 @@ var npm = require("npm/lib/npm.js")
   , path = require("path")
   , asyncMap = require("slide").asyncMap
   , semver = require("semver")
-  , readJson = require("npm/lib/utils/read-json.js")
-  , log = require("npm/lib/utils/log.js")
+  , log = require("log4js").getLogger('pluginfw')
+
+function readJson(file, callback) {
+  fs.readFile(file, function(er, buf) {
+    if(er) {
+      callback(er);
+      return;
+    }
+    try {
+      callback( null, JSON.parse(buf.toString()) )
+    } catch(er) {
+      callback(er)
+    }
+  })
+}
 
 module.exports = readInstalled
 
@@ -274,7 +287,7 @@ function findUnmet (obj) {
       }
 
     })
-  log.verbose([obj._id], "returning")
+  log.debug([obj._id], "returning")
   return obj
 }
 
