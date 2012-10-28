@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - "0.8"
+install:
+  - bin/installDeps.sh
+notifications:
+  email:
+    - petermartischka@googlemail.com
