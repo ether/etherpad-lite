@@ -16,13 +16,24 @@ describe("chat always ons creen select", function(){
     //get the chat selector
     var $stickychatCheckbox = chrome$("#options-stickychat");
 
-    //select monospace and fire change event
+    //select chat always on screen and fire change event
     $stickychatCheckbox.attr('selected','selected');
     $stickychatCheckbox.change();
+    $stickychatCheckbox.click();
 
     //check if chat changed to get the stickychat Class
-    var hasStickyChatClass = chrome$(".chatbox").hasClass("stickychat");
+    var $chatbox = chrome$("#chatbox");
+    var hasStickyChatClass = $chatbox.hasClass("stickyChat");
     expect(hasStickyChatClass).to.be(true);
+
+    //select chat always on screen and fire change event
+    $stickychatCheckbox.attr('selected','selected');
+    $stickychatCheckbox.change();
+    $stickychatCheckbox.click();
+
+    //check if chat changed to remove the stickychat Class
+    var hasStickyChatClass = $chatbox.hasClass("stickyChat");
+    expect(hasStickyChatClass).to.be(false);
 
     done();
   });
