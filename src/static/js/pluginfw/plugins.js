@@ -1,7 +1,5 @@
 var npm = require("npm/lib/npm.js");
 var readInstalled = require("./read-installed.js");
-var relativize = require("npm/lib/utils/relativize.js");
-var readJson = require("npm/lib/utils/read-json.js");
 var path = require("path");
 var async = require("async");
 var fs = require("fs");
