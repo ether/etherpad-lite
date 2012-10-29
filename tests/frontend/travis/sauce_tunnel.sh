@@ -1,6 +1,6 @@
 #!/bin/bash
 #download and unzip the sauce connector
-echo "hello world"
+echo "hello world" 
 #curl http://saucelabs.com/downloads/Sauce-Connect-latest.zip > /tmp/sauce.zip
 #unzip /tmp/sauce.zip -d /tmp
 
