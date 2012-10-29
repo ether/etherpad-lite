@@ -85,10 +85,12 @@ var padeditor = (function()
         if (value == "false") return false;
         return defaultValue;
       }
-
       self.ace.setProperty("rtlIsTrue", settings.rtlIsTrue);
 
       var v;
+
+      v = getOption('rtlIsTrue', false);
+      self.ace.setProperty("rtlIsTrue", v);
 
       v = getOption('showLineNumbers', true);
       self.ace.setProperty("showslinenumbers", v);
