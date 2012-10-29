@@ -1,7 +1,7 @@
 var helper = {};
 
 (function(){
-  var $iframeContainer, $iframe, jsLibraries = {};
+  var $iframeContainer, $iframe, jsLibraries = {};  
 
   helper.init = function(cb){
     $iframeContainer = $("#iframe-container");
