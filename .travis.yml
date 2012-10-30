@@ -7,8 +7,8 @@ before_script:
   - "tests/frontend/travis/sauce_tunnel.sh"
 env:
   global:
-    - secure: zGX8AFKQnuh6WWLJw58WnRZiVQ4dIbN0gIQ0NpJIKmzQw2yQ+rqQEo2UoT5p\n+SSX/DJnU0yZzZ2RkiN8sabyY3e3Y2JhjO5GUTdoUxxB7ffCDLM4W1T8ckyl\nmSUW/ajrxMbGxruYbKQfepCRK6w4OoUsROYI0MpeoDo8ngxmcFw="
-    - SAUCE_USER: pita
+    - secure: "oKA4KbSvyxMOFCiOa3hWswnaIrCmX60MfhBhD8xu8sodOqbdK5RUrxDJew9p\n1nNSewxoVmKhX0G5GxIABfGtdU1nrEzCEoejTDJIFmzEbcLcHpcyarouWLSY\nOpn11FKS1rnb69aflHM7K8l4dhrCkA2i0Dwwl8LN3HayGzDV2Rg="
+    - SAUCE_USER=pita
 jdk:
   - oraclejdk6
 notifications:
