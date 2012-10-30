@@ -62,7 +62,7 @@ Portal submits content into new blog post
 
 ### Request Format
 
-The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION/$FUNCTIONNAME. Parameters are transmitted via HTTP GET. $APIVERSION is 1
+The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION/$FUNCTIONNAME. Parameters are transmitted via HTTP GET. $APIVERSION depends on the endpoints you want to use. The latest version is `1.1`
 
 ### Response Format
 Responses are valid JSON in the following format:
