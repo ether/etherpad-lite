@@ -158,6 +158,7 @@ function handleClientVars(message)
   {
     fireWhenAllScriptsAreLoaded[i]();
   }
+  $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
 }
 
 exports.baseURL = '';
