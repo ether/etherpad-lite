@@ -1,3 +1,11 @@
+# v1.1.5
+* Many bugfixes including some stability and security issues
+* Support for PageView as a plugin
+* Upgrade to Express V3
+* Better support for smaller screen sizes
+* Various dependency updates
+* Improved Docs
+
 # v1.1
 * Introduced Plugin framework
 * Many bugfixes
