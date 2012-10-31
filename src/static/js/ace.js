@@ -122,6 +122,11 @@ function Ace2Editor()
     return info.ace_getDebugProperty(prop);
   };
 
+  editor.getInInternationalComposition = function()
+  {
+    return info.ace_getInInternationalComposition();
+  };
+
   // prepareUserChangeset:
   // Returns null if no new changes or ACE not ready.  Otherwise, bundles up all user changes
   // to the latest base text into a Changeset, which is returned (as a string if encodeAsString).

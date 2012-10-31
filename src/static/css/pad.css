@@ -783,6 +783,23 @@ input[type=checkbox] {
       padding: 4px 1px
     }
 }
+@media screen and (max-width: 400px){
+  #editorcontainer { 
+    top: 68px;
+  }
+  #editbar { 
+    height: 62px;
+  }
+  .toolbar ul.menu_right { 
+    float: left;
+    margin-top:2px;
+  }
+  .popup {
+    width:100%;
+    max-width:300px;
+    top: 72px !important;
+  }
+}
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
     #users {
       top: 36px;

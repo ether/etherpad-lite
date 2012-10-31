@@ -1,4 +1,5 @@
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
+var http = require('http');
 var express = require('express');
 var settings = require('../utils/Settings');
 var fs = require('fs');
@@ -42,22 +43,24 @@ exports.createServer = function () {
 }
 
 exports.restartServer = function () {
+
   if (server) {
     console.log("Restarting express server");
     server.close();
   }
 
-  server = express.createServer();
+  var app = express(); // New syntax for express v3
+  server = http.createServer(app);
 
-  server.use(function (req, res, next) {
+  app.use(function (req, res, next) {
     res.header("Server", serverName);
     next();
   });
 
-  server.configure(function() {
-    hooks.callAll("expressConfigure", {"app": server});
+  app.configure(function() {
+    hooks.callAll("expressConfigure", {"app": app});
   });
-  hooks.callAll("expressCreateServer", {"app": server});
+  hooks.callAll("expressCreateServer", {"app": app, "server": server});
 
   server.listen(settings.port, settings.ip);
 }
