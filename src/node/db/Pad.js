@@ -16,6 +16,7 @@ var padMessageHandler = require("../handler/PadMessageHandler");
 var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
 var randomString = require("../utils/randomstring");
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 //serialization/deserialization attributes
 var attributeBlackList = ["id"];
@@ -86,6 +87,12 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
   // set the author to pad
   if(author)
     authorManager.addPad(author, this.id);
+    
+  if (this.head == 0) {
+    hooks.callAll("padCreate", {'pad':this});
+  } else {
+    hooks.callAll("padUpdate", {'pad':this});
+  }    
 };
 
 //save all attributes to the database
@@ -368,6 +375,7 @@ Pad.prototype.init = function init(text, callback) {
       _this.appendRevision(firstChangeset, '');
     }
 
+    hooks.callAll("padLoad", {'pad':_this});
     callback(null);
   });
 };
@@ -467,6 +475,7 @@ Pad.prototype.remove = function remove(callback) {
     {
       db.remove("pad:"+padID);
       padManager.unloadPad(padID);
+      hooks.callAll("padRemove", {'padID':padID});
       callback();
     }
   ], function(err)

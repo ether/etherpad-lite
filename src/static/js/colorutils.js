@@ -24,6 +24,13 @@
 
 var colorutils = {};
 
+// Check that a given value is a css hex color value, e.g.
+// "#ffffff" or "#fff"
+colorutils.isCssHex = function(cssColor)
+{
+  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(cssColor);
+}
+
 // "#ffffff" or "#fff" or "ffffff" or "fff" to [1.0, 1.0, 1.0]
 colorutils.css2triple = function(cssColor)
 {
