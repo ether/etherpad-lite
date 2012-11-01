@@ -4,11 +4,15 @@
 cd `dirname $0`
 
 #start etherpad lite
-../../../bin/run.sh &
+../../../bin/run.sh > /dev/null &
 sleep 10
 
 #start remote runner
 node remote_runner.js
+exit_code=$?
 
 kill $!
 kill $(cat /tmp/sauce.pid)
+sleep 30
+
+exit $exit_code

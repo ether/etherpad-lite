@@ -1,10 +1,3 @@
-/*
-  connect to sauce labs
-  run 2 tests in parrallel
-    - check in 5s interval for status
-    - print out result when finished
-  - exit with 0 when everything has passed, else with 1
-*/
 var srcFolder = "../../../src/node_modules/";
 var log4js = require(srcFolder + "log4js");
 var wd = require(srcFolder + "wd");
@@ -27,10 +20,34 @@ var enviroment = {
 }
 
 browserChain.init(enviroment).get("http://localhost:9001/tests/frontend/", function(){
-	setTimeout(function(){
+  var stopSauce = function(success){
+    getStatusInterval && clearInterval(getStatusInterval);
+    clearTimeout(timeout);
+
     browserChain.quit();
     setTimeout(function(){
-      process.exit(0);
+      process.exit(success ? 0 : 1);
     }, 1000);
-	}, 60000);
+  }
+
+  var timeout = setTimeout(function(){
+    stopSauce(false);
+  }, 60000 * 10);
+
+  var knownConsoleText = "";
+  var getStatusInterval = setInterval(function(){
+    browserChain.eval("$('#console').text()", function(err, consoleText){
+      if(!consoleText || err){
+        return;
+      }
+      var newText = consoleText.substr(knownConsoleText.length);
+      newText.length > 0 && console.log(newText.replace(/\n$/, ""));
+      knownConsoleText = consoleText;
+
+      if(knownConsoleText.indexOf("FINISHED") > 0){
+        var success = knownConsoleText.indexOf("FAILED") === -1;
+        stopSauce(success);
+      }
+    });
+  }, 5000);
 });
