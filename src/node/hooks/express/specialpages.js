@@ -12,8 +12,16 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve robots.txt
   args.app.get('/robots.txt', function(req, res)
   {
-    var filePath = path.normalize(__dirname + "/../../../static/robots.txt");
-    res.sendfile(filePath);
+    var filePath = path.normalize(__dirname + "/../../../static/custom/robots.txt");
+    res.sendfile(filePath, function(err)
+    {
+      //there is no custom favicon, send the default robots.txt which dissallows all
+      if(err)
+      {
+        filePath = path.normalize(__dirname + "/../../../static/robots.txt");
+        res.sendfile(filePath);
+      }
+    });
   });
 
   //serve favicon.ico
