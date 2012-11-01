@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "0.8"
 install:
-  - "bin/installDeps.sh > /dev/null"
+  - "bin/installDeps.sh"
 before_script: 
   - "tests/frontend/travis/sauce_tunnel.sh"
 script:
