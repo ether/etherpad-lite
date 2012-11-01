@@ -14,6 +14,3 @@ while [ ! -e "/tmp/tunnel" ]
   do
   sleep 1 
 done
-
-echo "READY!!!!"
-kill $!
