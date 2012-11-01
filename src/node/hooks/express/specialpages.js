@@ -34,13 +34,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve pad.html under /p
   args.app.get('/p/:pad', function(req, res, next)
   {    
-    res.send(eejs.require("ep_etherpad-lite/templates/pad.html"));
+    res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {req: req}));
   });
 
   //serve timeslider.html under /p/$padname/timeslider
   args.app.get('/p/:pad/timeslider', function(req, res, next)
   {
-    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html"));
+    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {req: req}));
   });
 
 }
