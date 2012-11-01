@@ -2,7 +2,7 @@ describe("send chat message", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
-    this.timeout(5000);
+    this.timeout(60000);
   });
 
   it("opens chat, sends a message and makes sure it exists on the page", function(done) {

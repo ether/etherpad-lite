@@ -2,7 +2,7 @@ describe("enter keystroke", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
-    this.timeout(5000);
+    this.timeout(60000);
   });
 
   it("creates a enw line & puts cursor onto a new line", function(done) {

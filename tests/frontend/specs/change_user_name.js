@@ -2,7 +2,7 @@ describe("change username value", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
-    this.timeout(5000);
+    this.timeout(60000);
   });
 
   it("Changing username from one value to another sticks", function(done) {
@@ -60,7 +60,7 @@ describe("change username value", function(){
   it("make sure the username has stuck when we create a new pad", function(done){
     beforeEach(function(cb){ // create another pad..  
       helper.newPad(cb);
-      this.timeout(5000);
+      this.timeout(60000);
     });
 
     var inner$ = helper.padInner$;

@@ -1,7 +1,7 @@
 describe("timeslider button takes you to the timeslider of a pad", function(){
   beforeEach(function(cb){
     helper.newPad(cb); // creates a new pad
-    this.timeout(5000);
+    this.timeout(60000);
   });
 
   it("timeslider contained in URL", function(done){

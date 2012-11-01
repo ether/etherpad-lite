@@ -2,7 +2,7 @@ describe("assign ordered list", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
-    this.timeout(5000);
+    this.timeout(60000);
   });
 
   it("insert ordered list text", function(done){

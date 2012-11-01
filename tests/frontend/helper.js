@@ -65,7 +65,7 @@ var helper = {};
       $iframe.one('load', function(){  
         helper.waitFor(function(){
           return !$iframe.contents().find("#editorloadingbox").is(":visible");
-        }, 4000).done(function(){
+        }, 50000).done(function(){
           helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
           helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe.[name="ace_outer"]'));
           helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe.[name="ace_inner"]'));
