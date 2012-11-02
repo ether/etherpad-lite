@@ -1,6 +1,7 @@
 var path = require('path');
 var eejs = require('ep_etherpad-lite/node/eejs');
 var installer = require('ep_etherpad-lite/static/js/pluginfw/installer');
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var fs = require('fs');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
@@ -41,20 +42,11 @@ exports.socketio = function (hook_name, args, cb) {
       });
     });
 
-/*
-    socket.on("install", function (plugin_name) {
-      socket.emit("progress", {progress:0, message:'Downloading and installing ' + plugin_name + "..."});
-      installer.install(plugin_name, function (progress) {
-        socket.emit("progress", progress);
-      });
+    socket.on("restartServer", function () {
+      console.log("Admin request to restart server through a socket on /admin/settings");
+      hooks.aCallAll("restartServer", {}, function () {});
+
     });
 
-    socket.on("uninstall", function (plugin_name) {
-      socket.emit("progress", {progress:0, message:'Uninstalling ' + plugin_name + "..."});
-      installer.uninstall(plugin_name, function (progress) {
-        socket.emit("progress", progress);
-      });
-    });
-*/
   });
 }

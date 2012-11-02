@@ -38,7 +38,7 @@ $(document).ready(function () {
 
   /* Tell Etherpad Server to restart */
   $('#restartEtherpad').on('click', function(){
-    socket.emit("restartEtherpad");
+    socket.emit("restartServer");
   });
 
   socket.on('saveprogress', function(progress){
