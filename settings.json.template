@@ -4,6 +4,9 @@
   Please edit settings.json, not settings.json.template
 */
 {
+  // Name your instance!
+  "title": "Etherpad Lite",
+  
   //Ip and port which etherpad should bind at
   "ip": "0.0.0.0",
   "port" : 9001,
