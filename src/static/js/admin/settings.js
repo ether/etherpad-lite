@@ -123,44 +123,52 @@ $(document).ready(function () {
   });
 */
 
-  socket.on('settings', function (data) {
-    $('.settings').append(data.results);
-    $('.settings').sloppyForm(); // Turn JSON into Form
+  socket.on('settings', function (settings) {
 
-/*    $("#installed-plugins *").remove();
-    for (plugin_name in data.results) {
-      if (plugin_name == "ep_etherpad-lite") continue; // Hack...
-      var plugin = data.results[plugin_name];
-      var row = $("#installed-plugin-template").clone();
+    /* Check to make sure the JSON is clean before proceeding */
 
-      for (attr in plugin.package) {
-        row.find("." + attr).html(plugin.package[attr]);
-      }
-      $("#installed-plugins").append(row);
+    if(isJSONClean(settings.results))
+    {
+      $('.settings').append(settings.results);
     }
-    updateHandlers();
-*/
+    else{
+      alert("YOUR JSON IS BAD AND YOU SHOULD FEEL BAD")
+    }    
+
+    $('#saveSettings').on('click', function(){
+      var editedSettings = $('.settings').val();
+      if(isJSONClean(editedSettings)){
+        // JSON is clean so emit it to the server
+      }else{
+        alert("YOUR JSON IS BAD AND YOU SHOULD FEEL BAD")
+      }
+    });
+
+    $('#restartEtherpad').on('click', function(){
+
+    });
+
+    
   });
 
   socket.emit("load");
   search();
 });
 
-
-/* A jQuery plugin to turn JSON strings into forms */
-(function($){
-  $.fn.sloppyForm = function() {  
-    return this.each(function() {  
-      // Firstly get a clean object with comments stripped out
-      var settings = ($.parseJSON(JSON.minify($(this).text())));
- 
-      // For each create form bla bla
-
-    });  
- };  
-})(jQuery);
-
-
+function isJSONClean(data){
+  var cleanSettings = JSON.minify(data);
+  try{
+    var response = jQuery.parseJSON(cleanSettings);
+  }
+  catch(e){
+    return false; // the JSON failed to be parsed
+  }
+  if(typeof response !== 'object'){
+    return false;
+  }else{
+    return true;
+  }
+}
 
 
 /* Strip crap out of JSON */
@@ -174,18 +182,18 @@ $(document).ready(function () {
 	if (typeof global.JSON == "undefined" || !global.JSON) {
 		global.JSON = {};
 	}
-	
+
 	global.JSON.minify = function(json) {
-		
+
 		var tokenizer = /"|(\/\*)|(\*\/)|(\/\/)|\n|\r/g,
 			in_string = false,
 			in_multiline_comment = false,
 			in_singleline_comment = false,
 			tmp, tmp2, new_str = [], ns = 0, from = 0, lc, rc
 		;
-		
+
 		tokenizer.lastIndex = 0;
-		
+
 		while (tmp = tokenizer.exec(json)) {
 			lc = RegExp.leftContext;
 			rc = RegExp.rightContext;
@@ -197,7 +205,7 @@ $(document).ready(function () {
 				new_str[ns++] = tmp2;
 			}
 			from = tokenizer.lastIndex;
-			
+
 			if (tmp[0] == "\"" && !in_multiline_comment && !in_singleline_comment) {
 				tmp2 = lc.match(/(\\)*$/);
 				if (!in_string || !tmp2 || (tmp2[0].length % 2) == 0) {	// start of string with ", or unescaped " character found to end string

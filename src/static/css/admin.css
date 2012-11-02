@@ -120,10 +120,9 @@ td, th {
   padding: 2px;
   overflow: auto;
 }
-.settings pre{
-  white-space: pre-wrap;      
-  white-space: -moz-pre-wrap; 
-  white-space: -pre-wrap;    
-  white-space: -o-pre-wrap; 
-  word-wrap: break-word;      
+.settings {
+  margin-top:10px;
+  width:100%;  
+  min-height:600px;
 }
+
