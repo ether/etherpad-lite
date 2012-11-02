@@ -41,7 +41,14 @@ $(document).ready(function () {
     socket.emit("restartEtherpad");
   });
 
+  socket.on('saveprogress', function(progress){
+    $('#response').show();
+    $('#response').text(progress);
+    $('#response').fadeOut('slow');
+  });
+
   socket.emit("load"); // Load the JSON from the server
+
 });
 
 
