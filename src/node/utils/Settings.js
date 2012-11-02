@@ -30,6 +30,11 @@ var vm = require('vm');
 exports.root = path.normalize(path.join(npm.dir, ".."));
 
 /**
+ * The app title, visible e.g. in the browser window
+ */
+exports.title = "Etherpad Lite";
+
+/**
  * The IP ep-lite should listen to
  */
 exports.ip = "0.0.0.0";
