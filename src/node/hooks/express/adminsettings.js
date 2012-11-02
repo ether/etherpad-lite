@@ -23,7 +23,6 @@ exports.socketio = function (hook_name, args, cb) {
     if (!socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
 
     socket.on("load", function (query) {
-//      socket.emit("installed-results", {results: plugins.plugins});
       fs.readFile('settings.json', 'utf8', function (err,data) {
         if (err) {
           return console.log(err);
@@ -35,16 +34,14 @@ exports.socketio = function (hook_name, args, cb) {
       });
     });
 
-/*
-    socket.on("search", function (query) {
-      socket.emit("progress", {progress:0, message:'Fetching results...'});
-        installer.search(query, true, function (progress) {
-        if (progress.results)
-          socket.emit("search-result", progress);
-        socket.emit("progress", progress);
+    socket.on("saveSettings", function (settings) {
+      fs.writeFile('settings.json', settings, function (err) {
+        if (err) throw err;
+        socket.emit("saveprogress", "saved");
       });
     });
 
+/*
     socket.on("install", function (plugin_name) {
       socket.emit("progress", {progress:0, message:'Downloading and installing ' + plugin_name + "..."});
       installer.install(plugin_name, function (progress) {
