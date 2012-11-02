@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title>Settings manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" href="../static/css/admin.css">
+    <script src="../static/js/jquery.js"></script>
+    <script src="../socket.io/socket.io.js"></script>
+    <script src="../static/js/admin/settings.js"></script>
+  </head>
+  <body>
+    <div id="wrapper">
+
+      <% if (errors.length) { %>
+        <div class="errors">
+          <% errors.forEach(function (item) { %>
+            <div class="error"><%= item.toString() %></div>
+          <% }) %>
+        </div>
+      <% } %>
+
+
+      <h1>Etherpad Lite Settings</h1>
+      <div class="settings"></div>
+    </div>
+  </body>
+</html>
