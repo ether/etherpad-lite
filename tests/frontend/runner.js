@@ -75,9 +75,9 @@ $(function(){
         //indent all lines with the given amount of space
         var newText = _(text.split("\n")).map(function(line){
           return space + line;
-        }).join("\n");
+        }).join("\\n");
 
-        $console.text(oldText + newText + "\n");
+        $console.text(oldText + newText + "\\n");
       }
 
       runner.on('suite', function(suite){
