@@ -60,8 +60,8 @@ describe("the test helper", function(){
         checks++;
         return false;	
       }, 2000, 100).fail(function(){
-        expect(checks).to.be.greaterThan(18);
-        expect(checks).to.be.lessThan(22);
+        expect(checks).to.be.greaterThan(10);
+        expect(checks).to.be.lessThan(30);
         done();
       });
   	});
