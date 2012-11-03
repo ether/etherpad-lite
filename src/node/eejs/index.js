@@ -30,6 +30,7 @@ exports.info = {
   block_stack: [],
   blocks: {},
   file_stack: [],
+  args: []
 };
 
 exports._init = function (b, recursive) {
@@ -81,7 +82,8 @@ exports.end_define_block = function () {
 
 exports.end_block = function () {
   var name = exports.info.block_stack[exports.info.block_stack.length-1];
-  var args = {content: exports.end_define_block()};
+  var renderContext = exports.info.args[exports.info.args.length-1];
+  var args = {content: exports.end_define_block(), renderContext: renderContext};
   hooks.callAll("eejsBlock_" + name, args);
   exports.info.buf.push(args.content);
 }
@@ -118,10 +120,13 @@ exports.require = function (name, args, mod) {
   args.e = exports;
   args.require = require;
   var template = '<% e._init(buf); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
-
+  
+  exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath, inherit: []});
+
   var res = ejs.render(template, args);
   exports.info.file_stack.pop();
+  exports.info.args.pop();
 
   return res;
 }

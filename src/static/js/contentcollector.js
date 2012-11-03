@@ -516,7 +516,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             var type;
             var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);
-            type = rr && rr[1] || "bullet" + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
+            type = rr && rr[1] || (tname == "ul" ? "bullet" : "number") + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
           else if ((tname == "div" || tname == "p") && cls && cls.match(/(?:^| )ace-line\b/))

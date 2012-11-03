@@ -62,7 +62,7 @@ Portal submits content into new blog post
 
 ### Request Format
 
-The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION/$FUNCTIONNAME. Parameters are transmitted via HTTP GET. $APIVERSION is 1
+The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION/$FUNCTIONNAME. Parameters are transmitted via HTTP GET. $APIVERSION depends on the endpoints you want to use. The latest version is `1.1`
 
 ### Response Format
 Responses are valid JSON in the following format:
@@ -116,43 +116,93 @@ Example usage: http://api.jquery.com/jQuery.getJSON/
 ### Groups
 Pads can belong to a group. The padID of grouppads is starting with a groupID like g.asdfasdfasdfasdf$test
 
-* **createGroup()** creates a new group <br><br>*Example returns:*
+#### createGroup()
+ * API >= 1
+ 
+creates a new group
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {groupID: g.s8oes9dhwrvt0zif}}`
 
-* **createGroupIfNotExistsFor(groupMapper)** this functions helps you to map your application group ids to etherpad lite group ids <br><br>*Example returns:*
+#### createGroupIfNotExistsFor(groupMapper)
+ * API >= 1
+
+this functions helps you to map your application group ids to etherpad lite group ids 
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {groupID: g.s8oes9dhwrvt0zif}}`
 
-* **deleteGroup(groupID)** deletes a group <br><br>*Example returns:*
+#### deleteGroup(groupID)
+ * API >= 1
+
+deletes a group
+
+*Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"groupID does not exist", data: null}`
 
-* **listPads(groupID)** returns all pads of this group<br><br>*Example returns:*
+#### listPads(groupID)
+ * API >= 1
+
+returns all pads of this group
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {padIDs : ["g.s8oes9dhwrvt0zif$test", "g.s8oes9dhwrvt0zif$test2"]}`
   * `{code: 1, message:"groupID does not exist", data: null}`
 
-* **createGroupPad(groupID, padName [, text])** creates a new pad in this group <br><br>*Example returns:*
+#### createGroupPad(groupID, padName [, text])
+ * API >= 1
+
+creates a new pad in this group
+
+*Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"pad does already exist", data: null}`
   * `{code: 1, message:"groupID does not exist", data: null}`
 
-* **listAllGroups()** lists all existing groups<br><br>*Example returns:*
+#### listAllGroups()
+ * API >= 1
+
+lists all existing groups
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {groupIDs: ["g.mKjkmnAbSMtCt8eL", "g.3ADWx6sbGuAiUmCy"]}}`
   * `{code: 0, message:"ok", data: {groupIDs: []}}`
 
 ### Author
 These authors are bound to the attributes the users choose (color and name). 
 
-* **createAuthor([name])** creates a new author <br><br>*Example returns:*
+#### createAuthor([name])
+ * API >= 1
+
+creates a new author
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {authorID: "a.s8oes9dhwrvt0zif"}}`
 
-* **createAuthorIfNotExistsFor(authorMapper [, name])** this functions helps you to map your application author ids to etherpad lite author ids <br><br>*Example returns:*
+#### createAuthorIfNotExistsFor(authorMapper [, name])
+ * API >= 1
+
+this functions helps you to map your application author ids to etherpad lite author ids 
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {authorID: "a.s8oes9dhwrvt0zif"}}`
 
-* **listPadsOfAuthor(authorID)** returns an array of all pads this author contributed to<br><br>*Example returns:*
+#### listPadsOfAuthor(authorID)
+ * API >= 1
+
+returns an array of all pads this author contributed to
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {padIDs: ["g.s8oes9dhwrvt0zif$test", "g.s8oejklhwrvt0zif$foo"]}}`
   * `{code: 1, message:"authorID does not exist", data: null}`
 
-* **getAuthorName(authorID)** Returns the Author Name of the author <br><br>*Example returns:*
+#### getAuthorName(authorID)
+ * API >= 1.1
+
+Returns the Author Name of the author
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {authorName: "John McLear"}}`
 
 -> can't be deleted cause this would involve scanning all the pads where this author was
@@ -160,25 +210,50 @@ These authors are bound to the attributes the users choose (color and name).
 ### Session
 Sessions can be created between a group and an author. This allows an author to access more than one group. The sessionID will be set as a cookie to the client and is valid until a certain date. The session cookie can also contain multiple comma-seperated sessionIDs, allowing a user to edit pads in different groups at the same time. Only users with a valid session for this group, can access group pads. You can create a session after you authenticated the user at your web application, to give them access to the pads. You should save the sessionID of this session and delete it after the user logged out.
 
-* **createSession(groupID, authorID, validUntil)** creates a new session. validUntil is an unix timestamp in seconds <br><br>*Example returns:*
+#### createSession(groupID, authorID, validUntil)
+ * API >= 1
+
+creates a new session. validUntil is an unix timestamp in seconds
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {sessionID: "s.s8oes9dhwrvt0zif"}}`
   * `{code: 1, message:"groupID doesn't exist", data: null}`
   * `{code: 1, message:"authorID doesn't exist", data: null}`
   * `{code: 1, message:"validUntil is in the past", data: null}`
 
-* **deleteSession(sessionID)** deletes a session <br><br>*Example returns:*
+#### deleteSession(sessionID)
+ * API >= 1
+
+deletes a session
+
+*Example returns:*
   * `{code: 1, message:"ok", data: null}`
   * `{code: 1, message:"sessionID does not exist", data: null}`
 
-* **getSessionInfo(sessionID)** returns informations about a session <br><br>*Example returns:*
+#### getSessionInfo(sessionID)
+ * API >= 1
+
+returns informations about a session
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {authorID: "a.s8oes9dhwrvt0zif", groupID: g.s8oes9dhwrvt0zif, validUntil: 1312201246}}`
   * `{code: 1, message:"sessionID does not exist", data: null}`
 
-* **listSessionsOfGroup(groupID)** returns all sessions of a group <br><br>*Example returns:*
+#### listSessionsOfGroup(groupID)
+ * API >= 1
+
+returns all sessions of a group
+
+*Example returns:*
   * `{"code":0,"message":"ok","data":{"s.oxf2ras6lvhv2132":{"groupID":"g.s8oes9dhwrvt0zif","authorID":"a.akf8finncvomlqva","validUntil":2312905480}}}`
   * `{code: 1, message:"groupID does not exist", data: null}`
 
-* **listSessionsOfAuthor(authorID)** returns all sessions of an author <br><br>*Example returns:*
+#### listSessionsOfAuthor(authorID)
+ * API >= 1
+
+returns all sessions of an author
+
+*Example returns:*
   * `{"code":0,"message":"ok","data":{"s.oxf2ras6lvhv2132":{"groupID":"g.s8oes9dhwrvt0zif","authorID":"a.akf8finncvomlqva","validUntil":2312905480}}}`
   * `{code: 1, message:"authorID does not exist", data: null}`
 
@@ -186,69 +261,149 @@ Sessions can be created between a group and an author. This allows an author to 
 
 Pad content can be updated and retrieved through the API
 
-* **getText(padID, [rev])** returns the text of a pad <br><br>*Example returns:*
+#### getText(padID, [rev])
+ * API >= 1
+
+returns the text of a pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {text:"Welcome Text"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **setText(padID, text)** sets the text of a pad <br><br>*Example returns:*
+#### setText(padID, text)
+ * API >= 1
+
+sets the text of a pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
   * `{code: 1, message:"text too long", data: null}`
 
-* **getHTML(padID, [rev])** returns the text of a pad formatted as HTML<br><br>*Example returns:*
+#### getHTML(padID, [rev])
+ * API >= 1
+
+returns the text of a pad formatted as HTML
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {html:"Welcome Text<br>More Text"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
 ### Pad
 Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security manager controls access of them and its forbidden for normal pads to include a $ in the name. 
 
-* **createPad(padID [, text])** creates a new (non-group) pad.  Note that if you need to create a group Pad, you should call **createGroupPad**.<br><br>*Example returns:*
+#### createPad(padID [, text])
+ * API >= 1
+
+creates a new (non-group) pad.  Note that if you need to create a group Pad, you should call **createGroupPad**.
+
+*Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"pad does already exist", data: null}`
 
-* **getRevisionsCount(padID)** returns the number of revisions of this pad <br><br>*Example returns:*
+#### getRevisionsCount(padID)
+ * API >= 1
+
+returns the number of revisions of this pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {revisions: 56}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **padUsersCount(padID)** returns the number of user that are currently editing this pad <br><br>*Example returns:*
+#### padUsersCount(padID)
+ * API >= 1
+
+returns the number of user that are currently editing this pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {padUsersCount: 5}}`
 
-* **padUsers(padID)** returns the list of users that are currently editing this pad <br><br>*Example returns:*
+#### padUsers(padID)
+ * API >= 1.1
+
+returns the list of users that are currently editing this pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {padUsers: [{colorId:"#c1a9d9","name":"username1","timestamp":1345228793126},{"colorId":"#d9a9cd","name":"Hmmm","timestamp":1345228796042}]}}`
   * `{code: 0, message:"ok", data: {padUsers: []}}`
 
-* **deletePad(padID)** deletes a pad <br><br>*Example returns:*
+#### deletePad(padID)
+ * API >= 1
+
+deletes a pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **getReadOnlyID(padID)** returns the read only link of a pad <br><br>*Example returns:*
+#### getReadOnlyID(padID)
+ * API >= 1
+
+returns the read only link of a pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {readOnlyID: "r.s8oes9dhwrvt0zif"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **setPublicStatus(padID, publicStatus)** sets a boolean for the public status of a pad <br><br>*Example returns:*
+#### setPublicStatus(padID, publicStatus)
+ * API >= 1
+
+sets a boolean for the public status of a pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **getPublicStatus(padID)** return true of false <br><br>*Example returns:*
+#### getPublicStatus(padID)
+ * API >= 1
+
+return true of false
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {publicStatus: true}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **setPassword(padID, password)** returns ok or a error message <br><br>*Example returns:*
+#### setPassword(padID, password)
+ * API >= 1
+
+returns ok or a error message
+
+*Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **isPasswordProtected(padID)** returns true or false <br><br>*Example returns:*
+#### isPasswordProtected(padID)
+ * API >= 1
+
+returns true or false
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {passwordProtection: true}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **listAuthorsOfPad(padID)** returns an array of authors who contributed to this pad <br><br>*Example returns:*
+#### listAuthorsOfPad(padID)
+ * API >= 1
+
+returns an array of authors who contributed to this pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {authorIDs : ["a.s8oes9dhwrvt0zif", "a.akf8finncvomlqva"]}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-* **getLastEdited(padID)** returns the timestamp of the last revision of the pad <br><br>*Example returns:*
+#### getLastEdited(padID)
+ * API >= 1
+
+returns the timestamp of the last revision of the pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {lastEdited: 1340815946602}}`
   * `{code: 1, message:"padID does not exist", data: null}`
   
-* **sendClientsMessage(padID, msg)** sends a custom message of type `msg` to the pad <br><br>*Example returns:*
+#### sendClientsMessage(padID, msg)
+ * API >= 1.1
+
+sends a custom message of type `msg` to the pad
+
+*Example returns:*
   * `{code: 0, message:"ok", data: {}}`
   * `{code: 1, message:"padID does not exist", data: null}`

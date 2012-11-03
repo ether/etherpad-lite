@@ -36,6 +36,13 @@ Default: "unnamed"
 
 Example: `userName=Etherpad%20User`
 
+## userColor
+ * String (css hex color value)
+
+Default: randomly chosen by pad server
+
+Example: `userColor=%23ff9900`
+
 ## noColors
  * Boolean
 
