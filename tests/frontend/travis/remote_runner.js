@@ -18,10 +18,11 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings.name = name;
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
-  var url = "https://saucelabs.com/jobs/" + browser.sessionID;
-  console.log("Remote sauce test '" + name + "' started! " + url);
 
   browserChain.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
+    var url = "https://saucelabs.com/jobs/" + browser.sessionID;
+    console.log("Remote sauce test '" + name + "' started! " + url);
+
     //tear down the test excecution
     var stopSauce = function(success){
       getStatusInterval && clearInterval(getStatusInterval);
