@@ -62,7 +62,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       });
     }, 5000);
   });
-}, 2); //run 2 tests in parrallel
+}, 5); //run 2 tests in parrallel
 
 // Firefox 
 sauceTestWorker.push({
