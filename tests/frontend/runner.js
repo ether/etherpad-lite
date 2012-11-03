@@ -141,10 +141,6 @@ $(function(){
           append("FINISHED -", stats.passes, "tests passed,", stats.failures, "tests failed, duration: " + minutes + ":" + seconds);
         }
       });
-
-      $(window).on('error', function(e){
-        append("[red]Uncaught Javascript Error:[clear]", stringifyException(e));
-      })
     }
   }
 
