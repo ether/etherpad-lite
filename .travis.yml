@@ -4,6 +4,7 @@ node_js:
   - "0.6"
 install:
   - "bin/installDeps.sh"
+  - "export GIT_HASH=$(cat .git/HEAD | head -c 7)"
 before_script: 
   - "tests/frontend/travis/sauce_tunnel.sh"
 script:
