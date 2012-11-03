@@ -16,6 +16,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   var browserChain = browser.chain();
   var name = process.env.GIT_HASH + " - " + testSettings.browserName + " " + testSettings.version + ", " + testSettings.platform;
   testSettings.name = name;
+  testSettings["public"] = true;
+  testSettings["build"] = process.env.GIT_HASH;
   console.log("Remote sauce test '" + name + "' started!");
 
   browserChain.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
