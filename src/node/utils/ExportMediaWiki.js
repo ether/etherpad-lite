@@ -210,7 +210,7 @@ function getMediaWikiFromAtext(pad, atext)
         }
         var s = taker.take(chars);
 
-        assem.append(_escapeMediaWiki(s));
+        assem.append(s);
       } // end iteration over spans in line
       for (var i = propVals.length - 1; i >= 0; i--)
       {
@@ -317,12 +317,6 @@ exports.getPadMediaWikiDocument = function (padId, revNum, callback)
 
     getPadMediaWiki(pad, revNum, callback);
   });
-}
-
-function _escapeMediaWiki(s)
-{
-  s = s.replace(/(\/\/|\*\*|__)/g, '%%$1%%');
-  return s;
 }
 
 // copied from ACE
