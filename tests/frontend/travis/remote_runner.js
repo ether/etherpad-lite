@@ -78,27 +78,6 @@ sauceTestWorker.push({
   , 'version'        : ''
 });
 
-// Opera
-sauceTestWorker.push({
-    'platform'       : 'Windows 2008'
-  , 'browserName'    : 'opera'
-  , 'version'        : ''
-});
-
-//Safari
-sauceTestWorker.push({
-    'platform'       : 'Mac 10.6'
-  , 'browserName'    : 'safari'
-  , 'version'        : ''
-});
-
-// IE 7
-sauceTestWorker.push({
-    'platform'       : 'Windows 2003'
-  , 'browserName'    : 'iexplore'
-  , 'version'        : '7'
-});
-
 // IE 8
 sauceTestWorker.push({
     'platform'       : 'Windows 2003'
