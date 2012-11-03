@@ -65,7 +65,7 @@ $(function(){
             err += "\n(" + test.err.sourceURL + ":" + test.err.line + ")";
           }
 
-          append("->","[red]","FAILED :", test.title, err, "[clear]");
+          append("->","[red]FAILED[clear] :", test.title, err);
         }
       });
 
