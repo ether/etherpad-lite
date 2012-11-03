@@ -1,10 +1,63 @@
 $(function(){
+  function Base(runner) {
+    var self = this
+      , stats = this.stats = { suites: 0, tests: 0, passes: 0, pending: 0, failures: 0 }
+      , failures = this.failures = [];
+
+    if (!runner) return;
+    this.runner = runner;
+
+    runner.on('start', function(){
+      stats.start = new Date;
+    });
+
+    runner.on('suite', function(suite){
+      stats.suites = stats.suites || 0;
+      suite.root || stats.suites++;
+    });
+
+    runner.on('test end', function(test){
+      stats.tests = stats.tests || 0;
+      stats.tests++;
+    });
+
+    runner.on('pass', function(test){
+      stats.passes = stats.passes || 0;
+
+      var medium = test.slow() / 2;
+      test.speed = test.duration > test.slow()
+        ? 'slow'
+        : test.duration > medium
+          ? 'medium'
+          : 'fast';
+
+      stats.passes++;
+    });
+
+    runner.on('fail', function(test, err){
+      stats.failures = stats.failures || 0;
+      stats.failures++;
+      test.err = err;
+      failures.push(test);
+    });
+
+    runner.on('end', function(){
+      stats.end = new Date;
+      stats.duration = new Date - stats.start;
+    });
+
+    runner.on('pending', function(){
+      stats.pending++;
+    });
+  }
+
   /*
     This reporter wraps the original html reporter plus reports plain text into a hidden div. 
     This allows the webdriver client to pick up the test results
   */
   var WebdriverAndHtmlReporter = function(html_reporter){
     return function(runner){
+      Base.call(this, runner);
       //initalize the html reporter first
       html_reporter(runner);
 
@@ -43,35 +96,49 @@ $(function(){
         }
       });
 
+      var stringifyException = function(exception){
+        var err = exception.stack || exception.toString();
+
+        // FF / Opera do not add the message
+        if (!~err.indexOf(exception.message)) {
+          err = exception.message + '\n' + err;
+        }
+
+        // <=IE7 stringifies to [Object Error]. Since it can be overloaded, we
+        // check for the result of the stringifying.
+        if ('[object Error]' == err) err = exception.message;
+
+        // Safari doesn't give you a stack. Let's at least provide a source line.
+        if (!exception.stack && exception.sourceURL && exception.line !== undefined) {
+          err += "\n(" + exception.sourceURL + ":" + exception.line + ")";
+        }
+
+        return err;
+      }
+
       runner.on('test end', function(test){
         if ('passed' == test.state) {
           append("->","[green]PASSED[clear] :", test.title);
         } else if (test.pending) {
           append("->","[yellow]PENDING[clear]:", test.title);
         } else {
-          var err = test.err.stack || test.err.toString();
-
-          // FF / Opera do not add the message
-          if (!~err.indexOf(test.err.message)) {
-            err = test.err.message + '\n' + err;
-          }
-
-          // <=IE7 stringifies to [Object Error]. Since it can be overloaded, we
-          // check for the result of the stringifying.
-          if ('[object Error]' == err) err = test.err.message;
-
-          // Safari doesn't give you a stack. Let's at least provide a source line.
-          if (!test.err.stack && test.err.sourceURL && test.err.line !== undefined) {
-            err += "\n(" + test.err.sourceURL + ":" + test.err.line + ")";
-          }
-
-          append("->","[red]FAILED[clear] :", test.title, err);
+          append("->","[red]FAILED[clear] :", test.title, stringifyException(test.err));
         }
       });
 
+      var total = runner.total;
       runner.on('end', function(){
-        append("FINISHED");
+        if(stats.tests >= total){
+          var minutes = Math.floor(stats.duration / 1000 / 60);
+          var seconds = Math.round((stats.duration / 1000) % 60);
+
+          append("FINISHED -", stats.passes, "Tests passed,", stats.failures, "Tests failed, Duration: " + minutes + ":" + seconds);
+        }
       });
+
+      $(window).on('error', function(e){
+        append("[red]Uncaught Javascript Error:[clear]", stringifyException(e));
+      })
     }
   }
 
