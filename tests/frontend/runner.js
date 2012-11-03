@@ -132,7 +132,7 @@ $(function(){
           var minutes = Math.floor(stats.duration / 1000 / 60);
           var seconds = Math.round((stats.duration / 1000) % 60);
 
-          append("FINISHED -", stats.passes, "Tests passed,", stats.failures, "Tests failed, Duration: " + minutes + ":" + seconds);
+          append("FINISHED -", stats.passes, "tests passed,", stats.failures, "tests failed, duration: " + minutes + ":" + seconds);
         }
       });
 
