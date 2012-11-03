@@ -52,7 +52,24 @@ var helper = {};
     return win.$;
   }
 
-  helper.newPad = function(cb){
+  helper.clearCookies = function(){
+    window.document.cookie = "";
+  }
+
+  helper.newPad = function(){
+    //build opts object
+    var opts = {clearCookies: true}
+    if(typeof arguments[0] === 'function'){
+      opts.cb = arguments[0]
+    } else {
+      opts = _.defaults(arguments[0], opts);
+    }
+
+    //clear cookies
+    if(opts.clearCookies){
+      helper.clearCookies();
+    }
+
     var padName = "FRONTEND_TEST_" + helper.randomString(20);
     $iframe = $("<iframe src='/p/" + padName + "'></iframe>");
     
@@ -69,8 +86,13 @@ var helper = {};
           helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
           helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe.[name="ace_outer"]'));
           helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe.[name="ace_inner"]'));
+
+          //disable all animations, this makes tests faster and easier
+          helper.padChrome$.fx.off = true;
+          helper.padOuter$.fx.off = true;
+          helper.padInner$.fx.off = true;
           
-          cb();
+          opts.cb();
         }).fail(function(){
           throw new Error("Pad never loaded");
         });
