@@ -116,6 +116,7 @@ $(function(){
         return err;
       }
 
+      var killTimeout;
       runner.on('test end', function(test){
         if ('passed' == test.state) {
           append("->","[green]PASSED[clear] :", test.title);
@@ -124,6 +125,11 @@ $(function(){
         } else {
           append("->","[red]FAILED[clear] :", test.title, stringifyException(test.err));
         }
+
+        if(killTimeout) clearTimeout(killTimeout);
+        killTimeout = setTimeout(function(){
+          append("FINISHED - [red]no test started since 3 minutes, tests stopped[clear]");
+        }, 60000 * 3);
       });
 
       var total = runner.total;
