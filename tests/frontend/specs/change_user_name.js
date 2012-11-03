@@ -5,7 +5,40 @@ describe("change username value", function(){
     this.timeout(60000);
   });
 
-  it("Changing username from one value to another sticks", function(done) {
+  it("Remembers the user name after a refresh", function(done) {
+    this.timeout(60000);
+    var chrome$ = helper.padChrome$;
+
+    //click on the settings button to make settings visible
+    var $userButton = chrome$(".buttonicon-showusers");
+    $userButton.click();
+    
+    var $usernameInput = chrome$("#myusernameedit");
+    $usernameInput.click();
+
+    $usernameInput.val('John McLear');
+    $usernameInput.blur();
+
+    setTimeout(function(){ //give it a second to save the username on the server side
+      helper.newPad({ // get a new pad, but don't clear the cookies
+        clearCookies: false
+        , cb: function(){
+          var chrome$ = helper.padChrome$;
+
+          //click on the settings button to make settings visible
+          var $userButton = chrome$(".buttonicon-showusers");
+          $userButton.click();
+
+          var $usernameInput = chrome$("#myusernameedit");
+          expect($usernameInput.val()).to.be('John McLear')
+          done();
+        }
+      });
+    }, 0);
+  });
+
+
+  it("Own user name is shown when you enter a chat", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
@@ -16,28 +49,8 @@ describe("change username value", function(){
     var $usernameInput = chrome$("#myusernameedit");
     $usernameInput.click();
 
-    $usernameInput.sendkeys('{selectall}');
-    $usernameInput.sendkeys('{del}');
-    $usernameInput.sendkeys('Hairy Robot');
-    $usernameInput.sendkeys('{enter}');
-
-    $usernameInput.sendkeys('{selectall}');
-    $usernameInput.sendkeys('{del}');
-    $usernameInput.sendkeys('John McLear');
-    $usernameInput.sendkeys('{enter}');
-
-
-    var correctUsernameValue = $usernameInput.val() === "John McLear";
-
-    //check if the username has been changed to John McLear
-    expect(correctUsernameValue).to.be(true);
-    done();
-  });
-
-
-  it("changing username is to the value we expect", function(done) {
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+    $usernameInput.val('John McLear');
+    $usernameInput.blur();
 
     //click on the chat button to make chat visible
     var $chatButton = chrome$("#chaticon");
@@ -56,16 +69,4 @@ describe("change username value", function(){
       done();
     });
   });
-
-  it("make sure the username has stuck when we create a new pad", function(done){
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
-    var $usernameInput = chrome$("#myusernameedit");
-
-    var rememberedName = $usernameInput.val() === "John McLear";
-    var rememberedWrongName = $usernameInput.val() === "Hairy Robot";
-    expect(rememberedName).to.be(true); // expect it to remember the name of the user
-    expect(rememberedWrongName).to.be(false); // expect it to forget any old names..
-    done();
-  }); 
 });
