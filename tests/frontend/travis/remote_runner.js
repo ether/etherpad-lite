@@ -18,7 +18,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings.name = name;
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
-  console.log("Remote sauce test '" + name + "' started!");
+  var url = "https://saucelabs.com/jobs/" + browser.sessionID;
+  console.log("Remote sauce test '" + name + "' started! " + url);
 
   browserChain.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
     //tear down the test excecution
@@ -39,7 +40,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       }).join("\n");
       
       console.log(testResult);
-      console.log("Remote sauce test '" + name + "' finished!");
+      console.log("Remote sauce test '" + name + "' finished! " + url);
 
       callback();
     }
