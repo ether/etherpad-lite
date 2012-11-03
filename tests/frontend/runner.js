@@ -72,8 +72,18 @@ $(function(){
           space+=" ";
         }
 
+        var splitedText = "";
+        _(text.split("\n")).each(function(line){
+          while(line.length > 0){
+            var split = line.substr(0,100);
+            line = line.substr(100);
+            if(splitedText.length > 0) splitedText+="\n";
+            splitedText += split;
+          }
+        });
+
         //indent all lines with the given amount of space
-        var newText = _(text.split("\n")).map(function(line){
+        var newText = _(splitedText.split("\n")).map(function(line){
           return space + line;
         }).join("\\n");
 
