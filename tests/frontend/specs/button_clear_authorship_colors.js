@@ -27,12 +27,8 @@ describe("clear authorship colors button", function(){
     $firstTextElement.sendkeys(sentText);
 
     helper.waitFor(function(){
-      return inner$("div").first().text() === sentText + originalText; // wait until we have the full value available
+      return inner$("div span").first().attr("class").indexOf("author") !== -1; // wait until we have the full value available
     }).done(function(){
-      // does the first divs span include an author class?
-      var hasAuthorClass = inner$("div span").first().attr("class").indexOf("author") !== -1;
-      expect(hasAuthorClass).to.be(true);
-
       //get the clear authorship colors button and click it
       var $clearauthorshipcolorsButton = chrome$(".buttonicon-clearauthorship");
       $clearauthorshipcolorsButton.click();
