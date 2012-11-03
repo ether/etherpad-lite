@@ -58,11 +58,6 @@ describe("change username value", function(){
   });
 
   it("make sure the username has stuck when we create a new pad", function(done){
-    beforeEach(function(cb){ // create another pad..  
-      helper.newPad(cb);
-      this.timeout(60000);
-    });
-
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
     var $usernameInput = chrome$("#myusernameedit");
