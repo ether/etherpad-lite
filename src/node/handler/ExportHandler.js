@@ -21,6 +21,7 @@
 var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
 var exportdokuwiki = require("../utils/ExportDokuWiki");
+var exportmediawiki = require("../utils/ExportMediaWiki");
 var padManager = require("../db/PadManager");
 var async = require("async");
 var fs = require("fs");
@@ -77,6 +78,26 @@ exports.doExport = function(req, res, padId, type)
         exportdokuwiki.getPadDokuWikiDocument(padId, req.params.rev, function(err, dokuwiki)
         {
           res.send(dokuwiki);
+          callback("stop");
+        });
+      },
+    ], function(err)
+    {
+      if(err && err != "stop") throw err;
+    });
+  }
+  else if(type == 'mediawiki')
+  {
+    var randNum;
+    var srcFile, destFile;
+
+    async.series([
+      //render the mediawiki document
+      function(callback)
+      {
+        exportmediawiki.getPadMediaWikiDocument(padId, req.params.rev, function(err, mediawiki)
+        {
+          res.send(mediawiki);
           callback("stop");
         });
       },

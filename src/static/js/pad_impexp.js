@@ -218,6 +218,7 @@ var padimpexp = (function()
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
       $("#exportplaina").attr("href", pad_root_path + "/export/txt");
       $("#exportdokuwikia").attr("href", pad_root_path + "/export/dokuwiki");
+      $("#exportmediawikia").attr("href", pad_root_path + "/export/mediawiki");
       
       //hide stuff thats not avaible if abiword is disabled
       if(clientVars.abiwordAvailable == "no")
