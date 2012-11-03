@@ -33,7 +33,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
                        .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
       testResult = testResult.split("\n").map(function(line){
-        var newLine = "[" + testSettings.browserName + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] ";
+        return "[" + testSettings.browserName + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
       }).join("\n");
       
       console.log(testResult);
