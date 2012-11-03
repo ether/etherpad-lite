@@ -45,9 +45,9 @@ $(function(){
 
       runner.on('test end', function(test){
         if ('passed' == test.state) {
-          append("->","PASSED :", test.title);
+          append("->","[green]PASSED[clear] :", test.title);
         } else if (test.pending) {
-          append("->","PENDING:", test.title);
+          append("->","[yellow]PENDING[clear]:", test.title);
         } else {
           var err = test.err.stack || test.err.toString();
 
@@ -65,7 +65,7 @@ $(function(){
             err += "\n(" + test.err.sourceURL + ":" + test.err.line + ")";
           }
 
-          append("->","FAILED :", test.title, err);
+          append("->","[red]","FAILED :", test.title, err, "[clear]");
         }
       });
 

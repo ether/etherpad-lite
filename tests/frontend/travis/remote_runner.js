@@ -41,7 +41,12 @@ browserChain.init(enviroment).get("http://localhost:9001/tests/frontend/", funct
         return;
       }
       var newText = consoleText.substr(knownConsoleText.length);
-      newText.length > 0 && console.log(newText.replace(/\n$/, ""));
+      newText = newText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
+                .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
+
+      if(newText.length > 0){
+        console.log(newText.replace(/\n$/, ""))
+      }
       knownConsoleText = consoleText;
 
       if(knownConsoleText.indexOf("FINISHED") > 0){
