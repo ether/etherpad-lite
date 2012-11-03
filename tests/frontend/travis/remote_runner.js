@@ -34,7 +34,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
                        .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
       testResult = testResult.split("\n").map(function(line){
         var newLine = "[" + testSettings.browserName + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] ";
-      }.join("\n"));
+      }).join("\n"));
       
       console.log(testResult);
       console.log("Remote sauce test '" + name + "' finished!");
