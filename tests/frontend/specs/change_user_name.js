@@ -53,8 +53,8 @@ describe("change username value", function(){
       var $firstChatMessage = chrome$("#chattext").children("p");
       var containsJohnMcLear = $firstChatMessage.text().indexOf("John McLear") !== -1; // does the string contain John McLear
       expect(containsJohnMcLear).to.be(true); // expect the first chat message to contain JohnMcLear
+      done();
     });
-    done();
   });
 
   it("make sure the username has stuck when we create a new pad", function(done){
