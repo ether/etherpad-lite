@@ -24,7 +24,19 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  //serve favicon.ico from all path levels
+  //serve pad.html under /p
+  args.app.get('/p/:pad', function(req, res, next)
+  {    
+    res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {req: req}));
+  });
+
+  //serve timeslider.html under /p/$padname/timeslider
+  args.app.get('/p/:pad/timeslider', function(req, res, next)
+  {
+    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {req: req}));
+  });
+
+  //serve favicon.ico from all path levels except as a pad name
   args.app.get( /\/favicon.ico$/, function(req, res)
   {
     var filePath = path.normalize(__dirname + "/../../../static/custom/favicon.ico");
@@ -39,16 +51,5 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  //serve pad.html under /p
-  args.app.get('/p/:pad', function(req, res, next)
-  {    
-    res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {req: req}));
-  });
-
-  //serve timeslider.html under /p/$padname/timeslider
-  args.app.get('/p/:pad/timeslider', function(req, res, next)
-  {
-    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {req: req}));
-  });
 
 }
