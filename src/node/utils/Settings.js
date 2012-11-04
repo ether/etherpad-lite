@@ -35,6 +35,11 @@ exports.root = path.normalize(path.join(npm.dir, ".."));
 exports.title = "Etherpad Lite";
 
 /**
+ * The app favicon fully specified url, visible e.g. in the browser window
+ */
+exports.favicon = "favicon.ico";
+
+/**
  * The IP ep-lite should listen to
  */
 exports.ip = "0.0.0.0";

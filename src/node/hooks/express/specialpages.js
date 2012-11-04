@@ -24,8 +24,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  //serve favicon.ico
-  args.app.get('/favicon.ico', function(req, res)
+  //serve favicon.ico from all path levels
+  args.app.get( /\/favicon.ico$/, function(req, res)
   {
     var filePath = path.normalize(__dirname + "/../../../static/custom/favicon.ico");
     res.sendfile(filePath, function(err)
