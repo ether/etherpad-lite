@@ -140,7 +140,8 @@ for(var i in settings)
   }
 
   //we know this setting, so we overwrite it
-  if(exports[i] !== undefined)
+  //or it's a settings hash, specific to a plugin
+  if(exports[i] !== undefined || i.indexOf('ep_')==0)
   {
     exports[i] = settings[i];
   }
