@@ -1,9 +1,0 @@
-{
-  "name": "ep_fintest",
-  "description": "A test plugin",
-  "version": "0.0.1",
-  "author": "RedHog (Egil Moeller) <egil.moller@freecode.no>",
-  "contributors": [],
-  "dependencies": {},
-  "engines": { "node": ">= 0.4.1 < 0.7.0" }
-}
