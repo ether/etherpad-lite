@@ -18,6 +18,7 @@ $(document).ready(function () {
     {
       $('.settings').append(settings.results);
       $('.settings').focus();
+      $('.settings').autosize();  
     }
     else{
       alert("YOUR JSON IS BAD AND YOU SHOULD FEEL BAD");
@@ -66,3 +67,4 @@ function isJSONClean(data){
     return true;
   }
 }
+
