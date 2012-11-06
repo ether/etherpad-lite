@@ -1,4 +1,3 @@
-
 /* These CSS rules are included in both the outer and inner ACE iframe.
    Also see inner.css, included only in the inner one.
 */
@@ -39,7 +38,7 @@ ul.list-bullet6 { list-style-type: square; }
 ul.list-bullet7 { list-style-type: disc; }
 ul.list-bullet8 { list-style-type: circle; }
 
-ol.list-number1 { margin-left: 1.5em; }
+ol.list-number1 { margin-left: 1.9em; }
 ol.list-number2 { margin-left: 3em; }
 ol.list-number3 { margin-left: 4.5em; }
 ol.list-number4 { margin-left: 6em; }
