@@ -1,10 +1,10 @@
 # Making collaborative editing the standard on the web
 
 # About
-Etherpad lite is a really-real time collaborative editor spawned from the Hell fire of Etherpad. 
-We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad Lite 
-is based on node.js ergo is much lighter and more stable than the original Etherpad. Our hope 
-is that this will encourage more users to use and install a realtime collaborative editor. A smaller, manageable and well 
+Etherpad lite is a really-real time collaborative editor spawned from the Hell fire of Etherpad.
+We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad Lite
+is based on node.js ergo is much lighter and more stable than the original Etherpad. Our hope
+is that this will encourage more users to use and install a realtime collaborative editor. A smaller, manageable and well
 documented codebase makes it easier for developers to improve the code and contribute towards the project.
 
 **Etherpad vs Etherpad lite**
@@ -24,10 +24,10 @@ documented codebase makes it easier for developers to improve the code and contr
   <tr>
     <td align="right">RAM Usage immediately after start</td><td>257 MB (grows to ~1GB)</td><td>16 MB (grows to ~30MB)</td>
   </tr>
-</table> 
+</table>
 
 
-Etherpad Lite is designed to be easily embeddable and provides a [HTTP API](https://github.com/Pita/etherpad-lite/wiki/HTTP-API) 
+Etherpad Lite is designed to be easily embeddable and provides a [HTTP API](https://github.com/Pita/etherpad-lite/wiki/HTTP-API)
 that allows your web application to manage pads, users and groups. It is recommended to use the client implementations available for this API, listed on [this wiki page](https://github.com/Pita/etherpad-lite/wiki/HTTP-API-client-libraries).
 There is also a [jQuery plugin](https://github.com/johnyma22/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website
 
@@ -62,8 +62,8 @@ Update to the latest version with `git pull origin`, then run `bin\installOnWind
 [Next steps](#next-steps).
 
 ## Linux
-You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
-*For Debian/Ubuntu*: `apt-get install gzip git-core curl python libssl-dev pkg-config build-essential`  
+You'll need gzip, git, curl, libssl develop libraries, python and gcc.
+*For Debian/Ubuntu*: `apt-get install gzip git-core curl python libssl-dev pkg-config build-essential`
 *For Fedora/CentOS*: `yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"`
 
 Additionally, you'll need [node.js](http://nodejs.org).
@@ -73,7 +73,7 @@ Additionally, you'll need [node.js](http://nodejs.org).
 1. Move to a folder where you want to install Etherpad Lite. Clone the git repository `git clone git://github.com/Pita/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code `cd etherpad-lite`
 
-Now, run `bin\run.sh` and open <http://127.0.0.1:9001> in your browser. 
+Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
 
 Update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies.
 
