@@ -4,7 +4,7 @@ Please talk to people on the mailing list before you change this page
 
 Mailing list: https://groups.google.com/forum/?fromgroups#!forum/etherpad-lite-dev
 
-IRC channels: [#etherpad](irc://freenode/#etherpad) ([webchat](webchat.freenode.net?channels=etherpad)), [#etherpad-lite-dev](irc://freenode/#etherpad-lite-dev) ([webchat](webchat.freenode.net?channels=etherpad-lite-dev))
+IRC channels: [#etherpad](irc://freenode/#etherpad) ([webchat](http://webchat.freenode.net?channels=etherpad)), [#etherpad-lite-dev](irc://freenode/#etherpad-lite-dev) ([webchat](http://webchat.freenode.net?channels=etherpad-lite-dev))
 
 **Our goal is to iterate in small steps. Release often, release early. Evolution instead of a revolution**
 
