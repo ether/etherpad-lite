@@ -8,6 +8,14 @@ if [ -d "../bin" ]; then
   cd "../"
 fi
 
+#Is ggrep installed on SunOS (Solaris)
+if [ $(uname) = "SunOS" ]; then
+  hash ggrep > /dev/null 2>&1 || { 
+    echo "Please install ggrep" >&2
+    exit 1 
+  }
+fi
+
 #Is wget installed?
 hash curl > /dev/null 2>&1 || { 
   echo "Please install curl" >&2
@@ -52,7 +60,7 @@ done
 #Does a $settings exist? if no copy the template
 if [ ! -f $settings ]; then
   echo "Copy the settings template to $settings..."
-  cp -v settings.json.template $settings || exit 1
+  cp settings.json.template $settings || exit 1
 fi
 
 echo "Ensure that all dependencies are up to date..."
@@ -71,8 +79,12 @@ echo "Ensure jQuery is downloaded and up to date..."
 DOWNLOAD_JQUERY="true"
 NEEDED_VERSION="1.7.1"
 if [ -f "src/static/js/jquery.js" ]; then
-  VERSION=$(cat src/static/js/jquery.js | head -n 3 | grep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?");
-  
+  if [ $(uname) = "SunOS"]; then
+    VERSION=$(cat src/static/js/jquery.js | head -n 3 | ggrep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?");
+  else
+    VERSION=$(cat src/static/js/jquery.js | head -n 3 | grep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?");
+  fi
+
   if [ ${VERSION#v} = $NEEDED_VERSION ]; then
     DOWNLOAD_JQUERY="false"
   fi
@@ -91,11 +103,11 @@ echo "ensure custom css/js files are created..."
 for f in "index" "pad" "timeslider"
 do
   if [ ! -f "src/static/custom/$f.js" ]; then
-    cp -v "src/static/custom/js.template" "src/static/custom/$f.js" || exit 1
+    cp "src/static/custom/js.template" "src/static/custom/$f.js" || exit 1
   fi
   
   if [ ! -f "src/static/custom/$f.css" ]; then
-    cp -v "src/static/custom/css.template" "src/static/custom/$f.css" || exit 1
+    cp "src/static/custom/css.template" "src/static/custom/$f.css" || exit 1
   fi
 done
 
