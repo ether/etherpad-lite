@@ -8,10 +8,10 @@ if [ -d "../bin" ]; then
   cd "../"
 fi
 
-#Is ggrep installed on SunOS (Solaris)
+#Is gnu-grep (ggrep) installed on SunOS (Solaris)
 if [ $(uname) = "SunOS" ]; then
   hash ggrep > /dev/null 2>&1 || { 
-    echo "Please install ggrep" >&2
+    echo "Please install ggrep (pkg install gnu-grep)" >&2
     exit 1 
   }
 fi
