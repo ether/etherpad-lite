@@ -1,5 +1,6 @@
 var path = require('path');
 var eejs = require('ep_etherpad-lite/node/eejs');
+var settings = require('ep_etherpad-lite/node/utils/Settings');
 var installer = require('ep_etherpad-lite/static/js/pluginfw/installer');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var fs = require('fs');
@@ -44,6 +45,7 @@ exports.socketio = function (hook_name, args, cb) {
 
     socket.on("restartServer", function () {
       console.log("Admin request to restart server through a socket on /admin/settings");
+      settings.reloadSettings();
       hooks.aCallAll("restartServer", {}, function () {});
 
     });
