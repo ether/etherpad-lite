@@ -83,33 +83,33 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
 
   db.set("pad:"+this.id+":revs:"+newRev, newRevData);
   this.saveToDatabase();
-  
+
   // set the author to pad
   if(author)
     authorManager.addPad(author, this.id);
-    
+
   if (this.head == 0) {
     hooks.callAll("padCreate", {'pad':this});
   } else {
     hooks.callAll("padUpdate", {'pad':this});
-  }    
+  }
 };
 
 //save all attributes to the database
 Pad.prototype.saveToDatabase = function saveToDatabase(){
   var dbObject = {};
-  
+
   for(var attr in this){
     if(typeof this[attr] === "function") continue;
     if(attributeBlackList.indexOf(attr) !== -1) continue;
-    
+
     dbObject[attr] = this[attr];
-    
+
     if(jsonableList.indexOf(attr) !== -1){
       dbObject[attr] = dbObject[attr].toJsonable();
     }
   }
-  
+
   db.set("pad:"+this.id, dbObject);
 }
 
@@ -510,7 +510,7 @@ Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, la
       return;
     }
   }
-  
+
   //build the saved revision object
   var savedRevision = {};
   savedRevision.revNum = revNum;
@@ -518,7 +518,7 @@ Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, la
   savedRevision.label = label || "Revision " + revNum;
   savedRevision.timestamp = new Date().getTime();
   savedRevision.id = randomString(10);
-  
+
   //save this new saved revision
   this.savedRevisions.push(savedRevision);
   this.saveToDatabase();

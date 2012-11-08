@@ -43,7 +43,7 @@ exports.uninstall = function(plugin_name, cb) {
       });
     },
     function () {
-      hooks.aCallAll("restartServer", {}, function () {});                
+      hooks.aCallAll("restartServer", {}, function () {});
     },
     cb
   );
@@ -61,7 +61,7 @@ exports.install = function(plugin_name, cb) {
       });
     },
     function () {
-      hooks.aCallAll("restartServer", {}, function () {});                
+      hooks.aCallAll("restartServer", {}, function () {});
     },
     cb
   );

@@ -44,7 +44,7 @@
     .test_group table {
       width: 100%;
     }
-    
+
     #apikeyDIV {
       width: 100%
     }
@@ -64,7 +64,7 @@
 
         callFunction(name, results_node, params);
       });
-      
+
       var template = $('#template')
       $('.define').each(function() {
         var functionName = parseName($(this).text());
@@ -95,7 +95,7 @@
     {
       // parse out the parameters by looking for parens
       var parens = str.substring(str.indexOf("("));
-    
+
       // return empty array if there are no paremeters
       if(parens.length < 3)
       {
@@ -109,10 +109,10 @@
       return parens.split(',');
     }
 
-    function callFunction(memberName, results_node, params) 
+    function callFunction(memberName, results_node, params)
     {
       $('#result').text('Calling ' + memberName + "()...");
-      
+
       params["apikey"]=$("#apikey").val();
       $.ajax({
         type: "GET",
@@ -138,7 +138,7 @@
       </tr>
     </table>
     <div class="results"></div>
-    
+
   </div>
   <div class="define">createGroup()</div>
   <div class="define">deleteGroup(groupID)</div>

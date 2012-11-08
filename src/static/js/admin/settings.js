@@ -18,11 +18,11 @@ $(document).ready(function () {
     {
       $('.settings').append(settings.results);
       $('.settings').focus();
-      $('.settings').autosize();  
+      $('.settings').autosize();
     }
     else{
       alert("YOUR JSON IS BAD AND YOU SHOULD FEEL BAD");
-    }    
+    }
   });
 
   /* When the admin clicks save Settings check the JSON then send the JSON back to the server */

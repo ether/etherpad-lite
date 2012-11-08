@@ -33,15 +33,15 @@ if(settings.abiword != null)
 
 var tempDirectory = "/tmp";
 
-//tempDirectory changes if the operating system is windows 
+//tempDirectory changes if the operating system is windows
 if(os.type().indexOf("Windows") > -1)
 {
   tempDirectory = process.env.TEMP;
 }
-  
+
 /**
  * do a requested export
- */ 
+ */
 exports.doExport = function(req, res, padId, type)
 {
   //tell the browser that this is a downloadable file
@@ -100,7 +100,7 @@ exports.doExport = function(req, res, padId, type)
           if(ERR(err, callback)) return;
           html = _html;
           callback();
-        });   
+        });
       },
       //decide what to do with the html export
       function(callback)
@@ -109,13 +109,13 @@ exports.doExport = function(req, res, padId, type)
         if(type == "html")
         {
           res.send(html);
-          callback("stop");  
+          callback("stop");
         }
         else //write the html export to a file
         {
           randNum = Math.floor(Math.random()*0xFFFFFFFF);
           srcFile = tempDirectory + "/eplite_export_" + randNum + ".html";
-          fs.writeFile(srcFile, html, callback); 
+          fs.writeFile(srcFile, html, callback);
         }
       },
       //send the convert job to abiword
@@ -123,7 +123,7 @@ exports.doExport = function(req, res, padId, type)
       {
         //ensure html can be collected by the garbage collector
         html = null;
-      
+
         destFile = tempDirectory + "/eplite_export_" + randNum + "." + type;
         abiword.convertFile(srcFile, destFile, type, callback);
       },
@@ -145,7 +145,7 @@ exports.doExport = function(req, res, padId, type)
             //100ms delay to accomidate for slow windows fs
             if(os.type().indexOf("Windows") > -1)
             {
-              setTimeout(function() 
+              setTimeout(function()
               {
                 fs.unlink(destFile, callback);
               }, 100);

@@ -26,7 +26,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   //serve pad.html under /p
   args.app.get('/p/:pad', function(req, res, next)
-  {    
+  {
     res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {req: req}));
   });
 

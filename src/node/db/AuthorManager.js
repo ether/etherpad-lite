@@ -38,9 +38,9 @@ exports.doesAuthorExists = function (authorID, callback)
 }
 
 /**
- * Returns the AuthorID for a token. 
- * @param {String} token The token 
- * @param {Function} callback callback (err, author) 
+ * Returns the AuthorID for a token.
+ * @param {String} token The token
+ * @param {Function} callback callback (err, author)
  */
 exports.getAuthor4Token = function (token, callback)
 {
@@ -53,21 +53,21 @@ exports.getAuthor4Token = function (token, callback)
 }
 
 /**
- * Returns the AuthorID for a mapper. 
+ * Returns the AuthorID for a mapper.
  * @param {String} token The mapper
  * @param {String} name The name of the author (optional)
- * @param {Function} callback callback (err, author) 
+ * @param {Function} callback callback (err, author)
  */
 exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
 {
   mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
   {
     if(ERR(err, callback)) return;
-    
+
     //set the name of this author
     if(name)
       exports.setAuthorName(author.authorID, name);
-      
+
     //return the authorID
     callback(null, author);
   });
@@ -76,27 +76,27 @@ exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
 /**
  * Returns the AuthorID for a mapper. We can map using a mapperkey,
  * so far this is token2author and mapper2author
- * @param {String} mapperkey The database key name for this mapper 
+ * @param {String} mapperkey The database key name for this mapper
  * @param {String} mapper The mapper
- * @param {Function} callback callback (err, author) 
+ * @param {Function} callback callback (err, author)
  */
 function mapAuthorWithDBKey (mapperkey, mapper, callback)
-{  
+{
   //try to map to an author
   db.get(mapperkey + ":" + mapper, function (err, author)
   {
     if(ERR(err, callback)) return;
-  
+
     //there is no author with this mapper, so create one
     if(author == null)
     {
       exports.createAuthor(null, function(err, author)
       {
         if(ERR(err, callback)) return;
-        
+
         //create the token2author relation
         db.set(mapperkey + ":" + mapper, author.authorID);
-        
+
         //return the author
         callback(null, author);
       });
@@ -106,7 +106,7 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
     {
       //update the timestamp of this author
       db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
-      
+
       //return the author
       callback(null, {authorID: author});
     }
@@ -114,20 +114,20 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
 }
 
 /**
- * Internal function that creates the database entry for an author 
- * @param {String} name The name of the author 
+ * Internal function that creates the database entry for an author
+ * @param {String} name The name of the author
  */
 exports.createAuthor = function(name, callback)
 {
   //create the new author name
   var author = "a." + randomString(16);
-        
+
   //create the globalAuthors db entry
   var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
-        
+
   //set the global author db entry
   db.set("globalAuthor:" + author, authorObj);
-  
+
   callback(null, {authorID: author});
 }
 
@@ -208,7 +208,7 @@ exports.listPadsOfAuthor = function (authorID, callback)
     }
     //everything is fine, return the pad IDs
     else
-    {     
+    {
       var pads = [];
       if(author.padIDs != null)
       {
@@ -234,16 +234,16 @@ exports.addPad = function (authorID, padID)
   {
     if(ERR(err)) return;
     if(author == null) return;
-    
+
     //the entry doesn't exist so far, let's create it
     if(author.padIDs == null)
     {
       author.padIDs = {};
     }
-      
+
     //add the entry for this pad
     author.padIDs[padID] = 1;// anything, because value is not used
-      
+
     //save the new element back
     db.set("globalAuthor:" + authorID, author);
   });
@@ -260,11 +260,11 @@ exports.removePad = function (authorID, padID)
   {
     if(ERR(err)) return;
     if(author == null) return;
-    
+
     if(author.padIDs != null)
     {
       //remove pad from author
-      delete author.padIDs[padID];   
+      delete author.padIDs[padID];
       db.set("globalAuthor:" + authorID, author);
     }
   });

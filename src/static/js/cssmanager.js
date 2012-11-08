@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -26,7 +26,7 @@ function makeCSSManager(emptyStylesheetTitle)
   function getSheetByTitle(title)
   {
     var allSheets = document.styleSheets;
-    
+
     for (var i = 0; i < allSheets.length; i++)
     {
       var s = allSheets[i];
@@ -37,7 +37,7 @@ function makeCSSManager(emptyStylesheetTitle)
     }
     return null;
   }
-  
+
   var browserSheet = getSheetByTitle(emptyStylesheetTitle);
 
   function browserRules()

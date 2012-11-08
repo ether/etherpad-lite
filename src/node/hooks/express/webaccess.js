@@ -75,7 +75,7 @@ exports.basicAuth = function (req, res, next) {
      Note that the process could stop already in step 3 with a redirect to login page.
 
   */
- 
+
   authorize(function (ok) {
     if (ok) return next();
     authenticate(function (ok) {
@@ -105,7 +105,7 @@ exports.expressConfigure = function (hook_name, args, cb) {
     exports.sessionStore = new express.session.MemoryStore();
     exports.secret = randomString(32);
   }
-  
+
   args.app.use(express.cookieParser(exports.secret));
 
   args.app.sessionStore = exports.sessionStore;

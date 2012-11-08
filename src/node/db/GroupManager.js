@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
@@ -30,13 +30,13 @@ var sessionManager = require("./SessionManager");
 exports.listAllGroups = function(callback) {
   db.get("groups", function (err, groups) {
     if(ERR(err, callback)) return;
-    
+
     // there are no groups
     if(groups == null) {
       callback(null, {groupIDs: []});
       return;
     }
-    
+
     var groupIDs = [];
     for ( var groupID in groups ) {
       groupIDs.push(groupID);
@@ -44,20 +44,20 @@ exports.listAllGroups = function(callback) {
     callback(null, {groupIDs: groupIDs});
   });
 }
- 
+
 exports.deleteGroup = function(groupID, callback)
 {
   var group;
 
   async.series([
-    //ensure group exists 
+    //ensure group exists
     function (callback)
     {
       //try to get the group entry
       db.get("group:" + groupID, function (err, _group)
       {
         if(ERR(err, callback)) return;
-        
+
         //group does not exist
         if(_group == null)
         {
@@ -80,14 +80,14 @@ exports.deleteGroup = function(groupID, callback)
       {
         padIDs.push(i);
       }
-      
-      //loop trough all pads and delete them 
+
+      //loop trough all pads and delete them
       async.forEach(padIDs, function(padID, callback)
       {
         padManager.getPad(padID, function(err, pad)
         {
           if(ERR(err, callback)) return;
-          
+
           pad.remove(callback);
         });
       }, callback);
@@ -99,18 +99,18 @@ exports.deleteGroup = function(groupID, callback)
       db.get("group2sessions:" + groupID, function (err, group2sessions)
       {
         if(ERR(err, callback)) return;
-        
+
         //skip if there is no group2sessions entry
         if(group2sessions == null) {callback(); return}
-        
+
         //collect all sessions in an array, that allows us to use async.forEach
         var sessions = [];
         for(var i in group2sessions.sessionsIDs)
         {
           sessions.push(i);
         }
-        
-        //loop trough all sessions and delete them 
+
+        //loop trough all sessions and delete them
         async.forEach(sessions, function(session, callback)
         {
           sessionManager.deleteSession(session, callback);
@@ -138,7 +138,7 @@ exports.deleteGroup = function(groupID, callback)
         }
 
         groups.splice(groups.indexOf(groupID), 1);
-        
+
         // store empty groupe list
         if(groups.length == 0) {
           db.set("groups", {});
@@ -163,7 +163,7 @@ exports.deleteGroup = function(groupID, callback)
     callback();
   });
 }
- 
+
 exports.doesGroupExist = function(groupID, callback)
 {
   //try to get the group entry
@@ -178,17 +178,17 @@ exports.createGroup = function(callback)
 {
   //search for non existing groupID
   var groupID = "g." + randomString(16);
-  
+
   //create the group
   db.set("group:" + groupID, {pads: {}});
-  
+
   //list the group
   exports.listAllGroups(function(err, groups) {
     if(ERR(err, callback)) return;
     groups = groups? groups.groupIDs : [];
-    
+
     groups.push(groupID);
-    
+
     // regenerate group list
     var newGroups = {};
     async.forEach(groups, function(group, cb) {
@@ -209,22 +209,22 @@ exports.createGroupIfNotExistsFor = function(groupMapper, callback)
     callback(new customError("groupMapper is no string","apierror"));
     return;
   }
-  
+
   //try to get a group for this mapper
   db.get("mapper2group:"+groupMapper, function(err, groupID)
   {
      if(ERR(err, callback)) return;
-     
+
      //there is no group for this mapper, let's create a group
      if(groupID == null)
      {
        exports.createGroup(function(err, responseObj)
        {
          if(ERR(err, callback)) return;
-         
+
          //create the mapper entry for this group
          db.set("mapper2group:"+groupMapper, responseObj.groupID);
-         
+
          callback(null, responseObj);
        });
      }
@@ -243,13 +243,13 @@ exports.createGroupPad = function(groupID, padName, text, callback)
   var padID = groupID + "$" + padName;
 
   async.series([
-    //ensure group exists 
+    //ensure group exists
     function (callback)
     {
       exports.doesGroupExist(groupID, function(err, exists)
       {
         if(ERR(err, callback)) return;
-        
+
         //group does not exist
         if(exists == false)
         {
@@ -268,7 +268,7 @@ exports.createGroupPad = function(groupID, padName, text, callback)
       padManager.doesPadExists(padID, function(err, exists)
       {
         if(ERR(err, callback)) return;
-        
+
         //pad exists already
         if(exists == true)
         {
@@ -308,7 +308,7 @@ exports.listPads = function(groupID, callback)
   exports.doesGroupExist(groupID, function(err, exists)
   {
     if(ERR(err, callback)) return;
-    
+
     //group does not exist
     if(exists == false)
     {

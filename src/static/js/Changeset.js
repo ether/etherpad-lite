@@ -42,7 +42,7 @@ exports.error = function error(msg) {
 };
 
 /**
- * This method is user for assertions with Messages 
+ * This method is user for assertions with Messages
  * if assert fails, the error function called.
  * @param b {boolean} assertion condition
  * @param msgParts {string} error to be passed if it fails
@@ -76,7 +76,7 @@ exports.numToString = function (num) {
  * Converts stuff before $ to base 10
  * @obsolete not really used anywhere??
  * @param cs {string} the string
- * @return integer 
+ * @return integer
  */
 exports.toBaseTen = function (cs) {
   var dollarIndex = cs.indexOf('$');
@@ -93,10 +93,10 @@ exports.toBaseTen = function (cs) {
  */
 
 /**
- * returns the required length of the text before changeset 
+ * returns the required length of the text before changeset
  * can be applied
  * @param cs {string} String representation of the Changeset
- */ 
+ */
 exports.oldLen = function (cs) {
   return exports.unpack(cs).oldLen;
 };
@@ -104,16 +104,16 @@ exports.oldLen = function (cs) {
 /**
  * returns the length of the text after changeset is applied
  * @param cs {string} String representation of the Changeset
- */ 
+ */
 exports.newLen = function (cs) {
   return exports.unpack(cs).newLen;
 };
 
 /**
  * this function creates an iterator which decodes string changeset operations
- * @param opsStr {string} String encoding of the change operations to be performed 
- * @param optStartIndex {int} from where in the string should the iterator start 
- * @return {Op} type object iterator 
+ * @param opsStr {string} String encoding of the change operations to be performed
+ * @param optStartIndex {int} from where in the string should the iterator start
+ * @return {Op} type object iterator
  */
 exports.opIterator = function (opsStr, optStartIndex) {
   //print(opsStr);
@@ -131,7 +131,7 @@ exports.opIterator = function (opsStr, optStartIndex) {
     if (result[0] == '?') {
       exports.error("Hit error opcode in op stream");
     }
-  
+
     return result;
   }
   var regexResult = nextRegexMatch();
@@ -504,7 +504,7 @@ exports.opAssembler = function () {
 /**
  * A custom made String Iterator
  * @param str {string} String to be iterated over
- */ 
+ */
 exports.stringIterator = function (str) {
   var curIndex = 0;
 
@@ -542,7 +542,7 @@ exports.stringIterator = function (str) {
 };
 
 /**
- * A custom made StringBuffer 
+ * A custom made StringBuffer
  */
 exports.stringAssembler = function () {
   var pieces = [];
@@ -820,12 +820,12 @@ exports.textLinesMutator = function (lines) {
 };
 
 /**
- * Function allowing iterating over two Op strings. 
+ * Function allowing iterating over two Op strings.
  * @params in1 {string} first Op string
  * @params idx1 {int} integer where 1st iterator should start
  * @params in2 {string} second Op string
  * @params idx2 {int} integer where 2nd iterator should start
- * @params func {function} which decides how 1st or 2nd iterator 
+ * @params func {function} which decides how 1st or 2nd iterator
  *         advances. When opX.opcode = 0, iterator X advances to
  *         next element
  *         func has signature f(op1, op2, opOut)
@@ -882,7 +882,7 @@ exports.unpack = function (cs) {
 };
 
 /**
- * Packs Changeset object into a string 
+ * Packs Changeset object into a string
  * @params oldLen {int} Old length of the Changeset
  * @params newLen {int] New length of the Changeset
  * @params opsStr {string} String encoding of the changes to be made
@@ -958,8 +958,8 @@ exports.mutateTextLines = function (cs, lines) {
  * Composes two attribute strings (see below) into one.
  * @param att1 {string} first attribute string
  * @param att2 {string} second attribue string
- * @param resultIsMutaton {boolean} 
- * @param pool {AttribPool} attribute pool 
+ * @param resultIsMutaton {boolean}
+ * @param pool {AttribPool} attribute pool
  */
 exports.composeAttributes = function (att1, att2, resultIsMutation, pool) {
   // att1 and att2 are strings like "*3*f*1c", asMutation is a boolean.
@@ -1019,8 +1019,8 @@ exports.composeAttributes = function (att1, att2, resultIsMutation, pool) {
 };
 
 /**
- * Function used as parameter for applyZip to apply a Changeset to an 
- * attribute 
+ * Function used as parameter for applyZip to apply a Changeset to an
+ * attribute
  */
 exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
   // attOp is the op from the sequence that is being operated on, either an
@@ -1337,7 +1337,7 @@ exports.compose = function (cs1, cs2, pool) {
  * returns a function that tests if a string of attributes
  * (e.g. *3*4) contains a given attribute key,value that
  * is already present in the pool.
- * @param attribPair array [key,value] of the attribute 
+ * @param attribPair array [key,value] of the attribute
  * @param pool {AttribPool} Attribute pool
  */
 exports.attributeTester = function (attribPair, pool) {
@@ -1369,9 +1369,9 @@ exports.identity = function (N) {
 
 
 /**
- * creates a Changeset which works on oldFullText and removes text 
- * from spliceStart to spliceStart+numRemoved and inserts newText 
- * instead. Also gives possibility to add attributes optNewTextAPairs 
+ * creates a Changeset which works on oldFullText and removes text
+ * from spliceStart to spliceStart+numRemoved and inserts newText
+ * instead. Also gives possibility to add attributes optNewTextAPairs
  * for the new text.
  * @param oldFullText {string} old text
  * @param spliecStart {int} where splicing starts
@@ -1407,7 +1407,7 @@ exports.makeSplice = function (oldFullText, spliceStart, numRemoved, newText, op
  * @param cs Changeset
  */
 exports.toSplices = function (cs) {
-  // 
+  //
   var unpacked = exports.unpack(cs);
   var splices = [];
 
@@ -1438,7 +1438,7 @@ exports.toSplices = function (cs) {
 };
 
 /**
- * 
+ *
  */
 exports.characterRangeFollow = function (cs, startChar, endChar, insertionsAfter) {
   var newStartChar = startChar;
@@ -1524,7 +1524,7 @@ exports.makeAttribution = function (text) {
  * and runs function func on them
  * @param cs {Changeset} changeset
  * @param func {function} function to be called
- */ 
+ */
 exports.eachAttribNumber = function (cs, func) {
   var dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
@@ -1543,16 +1543,16 @@ exports.eachAttribNumber = function (cs, func) {
  * callable on a exports, attribution string, or attribs property of an op,
  * though it may easily create adjacent ops that can be merged.
  * @param cs {Changeset} changeset to be filtered
- * @param filter {function} fnc which returns true if an 
+ * @param filter {function} fnc which returns true if an
  *        attribute X (int) should be kept in the Changeset
- */ 
+ */
 exports.filterAttribNumbers = function (cs, filter) {
   return exports.mapAttribNumbers(cs, filter);
 };
 
 /**
- * does exactly the same as exports.filterAttribNumbers 
- */ 
+ * does exactly the same as exports.filterAttribNumbers
+ */
 exports.mapAttribNumbers = function (cs, func) {
   var dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
@@ -1577,7 +1577,7 @@ exports.mapAttribNumbers = function (cs, func) {
 /**
  * Create a Changeset going from Identity to a certain state
  * @params text {string} text of the final change
- * @attribs attribs {string} optional, operations which insert 
+ * @attribs attribs {string} optional, operations which insert
  *    the text and also puts the right attributes
  */
 exports.makeAText = function (text, attribs) {
@@ -1588,9 +1588,9 @@ exports.makeAText = function (text, attribs) {
 };
 
 /**
- * Apply a Changeset to a AText 
+ * Apply a Changeset to a AText
  * @param cs {Changeset} Changeset to be applied
- * @param atext {AText} 
+ * @param atext {AText}
  * @param pool {AttribPool} Attribute Pool to add to
  */
 exports.applyToAText = function (cs, atext, pool) {
@@ -1602,7 +1602,7 @@ exports.applyToAText = function (cs, atext, pool) {
 
 /**
  * Clones a AText structure
- * @param atext {AText} 
+ * @param atext {AText}
  */
 exports.cloneAText = function (atext) {
   return {
@@ -1613,7 +1613,7 @@ exports.cloneAText = function (atext) {
 
 /**
  * Copies a AText structure from atext1 to atext2
- * @param atext {AText} 
+ * @param atext {AText}
  */
 exports.copyAText = function (atext1, atext2) {
   atext2.text = atext1.text;
@@ -1622,7 +1622,7 @@ exports.copyAText = function (atext1, atext2) {
 
 /**
  * Append the set of operations from atext to an assembler
- * @param atext {AText} 
+ * @param atext {AText}
  * @param assem Assembler like smartOpAssembler
  */
 exports.appendATextToAssembler = function (atext, assem) {
@@ -1660,7 +1660,7 @@ exports.appendATextToAssembler = function (atext, assem) {
 
 /**
  * Creates a clone of a Changeset and it's APool
- * @param cs {Changeset} 
+ * @param cs {Changeset}
  * @param pool {AtributePool}
  */
 exports.prepareForWire = function (cs, pool) {
@@ -1681,8 +1681,8 @@ exports.isIdentity = function (cs) {
 };
 
 /**
- * returns all the values of attributes with a certain key 
- * in an Op attribs string 
+ * returns all the values of attributes with a certain key
+ * in an Op attribs string
  * @param attribs {string} Attribute string of a Op
  * @param key {string} string to be seached for
  * @param pool {AttribPool} attribute pool
@@ -1692,8 +1692,8 @@ exports.opAttributeValue = function (op, key, pool) {
 };
 
 /**
- * returns all the values of attributes with a certain key 
- * in an attribs string 
+ * returns all the values of attributes with a certain key
+ * in an attribs string
  * @param attribs {string} Attribute string
  * @param key {string} string to be seached for
  * @param pool {AttribPool} attribute pool
@@ -1711,7 +1711,7 @@ exports.attribsAttributeValue = function (attribs, key, pool) {
 };
 
 /**
- * Creates a Changeset builder for a string with initial 
+ * Creates a Changeset builder for a string with initial
  * length oldLen. Allows to add/remove parts of it
  * @param oldLen {int} Old length
  */

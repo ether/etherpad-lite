@@ -105,11 +105,11 @@ exports.getPackages = function (cb) {
           delete packages[name].dependencies;
           delete packages[name].parent;
         }
-      
+
         if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
       });
     }
-  
+
     var tmp = {};
     tmp[data.name] = data;
     flatten(tmp);

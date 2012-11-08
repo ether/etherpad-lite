@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -71,7 +71,7 @@ var padimpexp = (function()
     $('#importmessagefail').fadeOut("fast");
     var ret = window.confirm("Importing a file will overwrite the current text of the pad." + " Are you sure you want to proceed?");
     if (ret)
-    {        
+    {
       hidePanelCall = paddocbar.hideLaterIfNoOtherInteraction();
       currentImportTimer = window.setTimeout(function()
       {
@@ -128,13 +128,13 @@ var padimpexp = (function()
   function importErrorMessage(status)
   {
     var msg="";
-  
+
     if(status === "convertFailed"){
       msg = "We were not able to import this file. Please use a different document format or copy paste manually";
     } else if(status === "uploadFailed"){
       msg = "The upload failed, please try again";
     }
-  
+
     function showError(fade)
     {
       $('#importmessagefail').html('<strong style="color: red">Import failed:</strong> ' + (msg || 'Please copy paste'))[(fade ? "fadeIn" : "show")]();
@@ -218,7 +218,7 @@ var padimpexp = (function()
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
       $("#exportplaina").attr("href", pad_root_path + "/export/txt");
       $("#exportdokuwikia").attr("href", pad_root_path + "/export/dokuwiki");
-      
+
       //hide stuff thats not avaible if abiword is disabled
       if(clientVars.abiwordAvailable == "no")
       {
@@ -231,24 +231,24 @@ var padimpexp = (function()
       else if(clientVars.abiwordAvailable == "withoutPDF")
       {
         $("#exportpdfa").remove();
-        
+
         $("#exportworda").attr("href", pad_root_path + "/export/doc");
         $("#exportopena").attr("href", pad_root_path + "/export/odt");
-        
+
         $("#importexport").css({"height":"142px"});
         $("#importexportline").css({"height":"142px"});
-        
-        $("#importform").attr('action', pad_root_url + "/import"); 
+
+        $("#importform").attr('action', pad_root_url + "/import");
       }
       else
       {
         $("#exportworda").attr("href", pad_root_path + "/export/doc");
         $("#exportpdfa").attr("href", pad_root_path + "/export/pdf");
         $("#exportopena").attr("href", pad_root_path + "/export/odt");
-        
-        $("#importform").attr('action', pad_root_path + "/import"); 
+
+        $("#importform").attr('action', pad_root_path + "/import");
       }
-    
+
       $("#impexp-close").click(function()
       {
         paddocbar.setShownPanel(null);
@@ -265,7 +265,7 @@ var padimpexp = (function()
       {
         importFailed(status);
       }
-      
+
       importDone();
     },
     disable: function()

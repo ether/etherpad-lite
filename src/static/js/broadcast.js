@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -274,12 +274,12 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     padContents.currentTime += timeDelta;
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
-    
+
     var authors = _.map(padContents.getActiveAuthors(), function(name)
     {
       return authorData[name];
     });
-    
+
     BroadcastSlider.setAuthors(authors);
   }
 
@@ -292,9 +292,9 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         str = '0' + str;
         return str;
         }
-        
-        
-        
+
+
+
     var date = new Date(padContents.currentTime);
     var dateFormat = function()
       {
@@ -306,18 +306,18 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         var seconds = zpad(date.getSeconds(), 2);
         return ([month, '/', day, '/', year, ' ', hours, ':', minutes, ':', seconds].join(""));
         }
-        
-        
-        
-        
-        
+
+
+
+
+
     $('#timer').html(dateFormat());
 
     var revisionDate = ["Saved", ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"][date.getMonth()], date.getDate() + ",", date.getFullYear()].join(" ")
     $('#revision_date').html(revisionDate)
 
   }
-  
+
   updateTimer();
 
   function goToRevision(newRevision)
@@ -380,7 +380,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
       changesetLoader.queueUp(start, 1, update);
     }
-    
+
     var authors = _.map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
     });
@@ -549,7 +549,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       goToRevision.apply(goToRevision, arguments);
     }
   }
-      
+
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
   var dynamicCSS = makeCSSManager('dynamicsyntax');

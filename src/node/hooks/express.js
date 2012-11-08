@@ -22,7 +22,7 @@ exports.createServer = function () {
     version = version.substring(0, 7);
     console.log("Your Etherpad Lite git version is " + version);
   }
-  catch(e) 
+  catch(e)
   {
     console.warn("Can't get git version for server header\n" + e.message)
   }

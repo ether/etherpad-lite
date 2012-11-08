@@ -1,7 +1,7 @@
 /**
- * This Module manages all /minified/* requests. It controls the 
- * minification && compression of Javascript and CSS. 
- */ 
+ * This Module manages all /minified/* requests. It controls the
+ * minification && compression of Javascript and CSS.
+ */
 
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
@@ -149,7 +149,7 @@ function minify(req, res, next)
   } else {
     res.writeHead(404, {});
     res.end();
-    return; 
+    return;
   }
 
   /* Handle static files for plugins/libraries:

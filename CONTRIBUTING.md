@@ -13,7 +13,7 @@ IRC channels: [#etherpad](irc://freenode/#etherpad) ([webchat](http://webchat.fr
 * easy to use for people
 * using less resources on server side
 * easy to embed for admins
-* also runable as etherpad lite only 
+* also runable as etherpad lite only
 * keep it maintainable, we don't wanna end ob as the monster Etherpad was
 * extensible, as much functionality should be extendable with plugins so changes don't have to be done in core
 

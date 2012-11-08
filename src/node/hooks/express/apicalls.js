@@ -44,7 +44,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   //The Etherpad client side sends information about how a disconnect happen
   args.app.post('/ep/pad/connection-diagnostic-info', function(req, res) {
-    new formidable.IncomingForm().parse(req, function(err, fields, files) { 
+    new formidable.IncomingForm().parse(req, function(err, fields, files) {
       console.log("DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
       res.end("OK");
     });
@@ -52,7 +52,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   //The Etherpad client side sends information about client side javscript errors
   args.app.post('/jserror', function(req, res) {
-    new formidable.IncomingForm().parse(req, function(err, fields, files) { 
+    new formidable.IncomingForm().parse(req, function(err, fields, files) {
       console.error("CLIENT SIDE JAVASCRIPT ERROR: " + fields.errorInfo);
       res.end("OK");
     });

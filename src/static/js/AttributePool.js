@@ -91,6 +91,6 @@ AttributePool.prototype.fromJsonable = function (obj) {
   }
   return this;
 };
-  
+
 
 module.exports = AttributePool;

@@ -1,5 +1,5 @@
 /**
- * The DB Module provides a database initalized with the settings 
+ * The DB Module provides a database initalized with the settings
  * provided by the settings module
  */
 
@@ -33,14 +33,14 @@ exports.db = null;
 
 /**
  * Initalizes the database with the settings provided by the settings module
- * @param {Function} callback 
+ * @param {Function} callback
  */
 exports.init = function(callback)
 {
   //initalize the database async
   db.init(function(err)
   {
-    //there was an error while initializing the database, output it and stop 
+    //there was an error while initializing the database, output it and stop
     if(err)
     {
       console.error("ERROR: Problem while initalizing the database");
@@ -50,7 +50,7 @@ exports.init = function(callback)
     //everything ok
     else
     {
-      exports.db = db;  
+      exports.db = db;
       callback(null);
     }
   });

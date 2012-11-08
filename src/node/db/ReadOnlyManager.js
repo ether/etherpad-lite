@@ -29,9 +29,9 @@ var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
  * @param {String} padId the id of the pad
  */
 exports.getReadOnlyId = function (padId, callback)
-{  
+{
   var readOnlyId;
-  
+
   async.waterfall([
     //check if there is a pad2readonly entry
     function(callback)
@@ -44,7 +44,7 @@ exports.getReadOnlyId = function (padId, callback)
       if(dbReadOnlyId == null)
       {
         readOnlyId = "r." + randomString(16);
-        
+
         db.set("pad2readonly:" + padId, readOnlyId);
         db.set("readonly2pad:" + readOnlyId, padId);
       }
@@ -53,7 +53,7 @@ exports.getReadOnlyId = function (padId, callback)
       {
         readOnlyId = dbReadOnlyId;
       }
-      
+
       callback();
     }
   ], function(err)

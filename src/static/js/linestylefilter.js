@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -74,10 +74,10 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
     {
       var classes = '';
       var isLineAttribMarker = false;
-      
+
       Changeset.eachAttribNumber(attribs, function(n)
       {
-        var key = apool.getAttribKey(n);  
+        var key = apool.getAttribKey(n);
         if (key)
         {
           var value = apool.getAttribValue(n);
@@ -109,11 +109,11 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
                 key: key,
                 value: value
               }, " ", " ", "");
-            }            
+            }
           }
         }
       });
-      
+
       if(isLineAttribMarker) classes += ' ' + lineAttributeMarker;
       return classes.substring(1);
     }
@@ -146,12 +146,12 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
 
     return function(txt, cls)
     {
-	
+
       var disableAuthColorForThisLine = hooks.callAll("disableAuthorColorsForThisLine", {
         linestylefilter: linestylefilter,
         text: txt,
         "class": cls
-      }, " ", " ", "");   
+      }, " ", " ", "");
       var disableAuthors = (disableAuthColorForThisLine==null||disableAuthColorForThisLine.length==0)?false:disableAuthColorForThisLine[0];
       while (txt.length > 0)
       {

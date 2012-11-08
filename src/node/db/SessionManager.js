@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
@@ -26,7 +26,7 @@ var db = require("./DB").db;
 var async = require("async");
 var groupMangager = require("./GroupManager");
 var authorMangager = require("./AuthorManager");
- 
+
 exports.doesSessionExist = function(sessionID, callback)
 {
   //check if the database entry of this session exists
@@ -36,7 +36,7 @@ exports.doesSessionExist = function(sessionID, callback)
     callback(null, session != null);
   });
 }
- 
+
 /**
  * Creates a new session between an author and a group
  */
@@ -51,7 +51,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
       groupMangager.doesGroupExist(groupID, function(err, exists)
       {
         if(ERR(err, callback)) return;
-        
+
         //group does not exist
         if(exists == false)
         {
@@ -70,7 +70,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
       authorMangager.doesAuthorExists(authorID, function(err, exists)
       {
         if(ERR(err, callback)) return;
-        
+
         //author does not exist
         if(exists == false)
         {
@@ -100,34 +100,34 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
           return;
         }
       }
-      
+
       //ensure this is not a negativ number
       if(validUntil < 0)
       {
         callback(new customError("validUntil is a negativ number","apierror"));
         return;
       }
-      
+
       //ensure this is not a float value
       if(!is_int(validUntil))
       {
         callback(new customError("validUntil is a float value","apierror"));
         return;
       }
-    
+
       //check if validUntil is in the future
       if(Math.floor(new Date().getTime()/1000) > validUntil)
       {
         callback(new customError("validUntil is in the past","apierror"));
         return;
       }
-      
+
       //generate sessionID
       sessionID = "s." + randomString(16);
-      
+
       //set the session into the database
       db.set("session:" + sessionID, {"groupID": groupID, "authorID": authorID, "validUntil": validUntil});
-      
+
       callback();
     },
     //set the group2sessions entry
@@ -137,19 +137,19 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
       db.get("group2sessions:" + groupID, function(err, group2sessions)
       {
         if(ERR(err, callback)) return;
-        
+
         //the entry doesn't exist so far, let's create it
         if(group2sessions == null || group2sessions.sessionIDs == null)
         {
           group2sessions = {sessionIDs : {}};
         }
-        
+
         //add the entry for this session
         group2sessions.sessionIDs[sessionID] = 1;
-        
+
         //save the new element back
         db.set("group2sessions:" + groupID, group2sessions);
-        
+
         callback();
       });
     },
@@ -160,26 +160,26 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
       db.get("author2sessions:" + authorID, function(err, author2sessions)
       {
         if(ERR(err, callback)) return;
-        
+
         //the entry doesn't exist so far, let's create it
         if(author2sessions == null || author2sessions.sessionIDs == null)
         {
           author2sessions = {sessionIDs : {}};
         }
-        
+
         //add the entry for this session
         author2sessions.sessionIDs[sessionID] = 1;
-        
+
         //save the new element back
         db.set("author2sessions:" + authorID, author2sessions);
-        
+
         callback();
       });
     }
   ], function(err)
   {
     if(ERR(err, callback)) return;
-    
+
     //return error and sessionID
     callback(null, {sessionID: sessionID});
   })
@@ -191,7 +191,7 @@ exports.getSessionInfo = function(sessionID, callback)
   db.get("session:" + sessionID, function (err, session)
   {
     if(ERR(err, callback)) return;
-    
+
     //session does not exists
     if(session == null)
     {
@@ -220,7 +220,7 @@ exports.deleteSession = function(sessionID, callback)
       db.get("session:" + sessionID, function (err, session)
       {
         if(ERR(err, callback)) return;
-        
+
         //session does not exists
         if(session == null)
         {
@@ -231,7 +231,7 @@ exports.deleteSession = function(sessionID, callback)
         {
           authorID = session.authorID;
           groupID = session.groupID;
-          
+
           callback();
         }
       });
@@ -261,15 +261,15 @@ exports.deleteSession = function(sessionID, callback)
     {
       //remove the session
       db.remove("session:" + sessionID);
-      
+
       //remove session from group2sessions
       delete group2sessions.sessionIDs[sessionID];
       db.set("group2sessions:" + groupID, group2sessions);
-      
+
       //remove session from author2sessions
       delete author2sessions.sessionIDs[sessionID];
       db.set("author2sessions:" + authorID, author2sessions);
-      
+
       callback();
     }
   ], function(err)
@@ -284,7 +284,7 @@ exports.listSessionsOfGroup = function(groupID, callback)
   groupMangager.doesGroupExist(groupID, function(err, exists)
   {
     if(ERR(err, callback)) return;
-    
+
     //group does not exist
     if(exists == false)
     {
@@ -299,11 +299,11 @@ exports.listSessionsOfGroup = function(groupID, callback)
 }
 
 exports.listSessionsOfAuthor = function(authorID, callback)
-{  
+{
   authorMangager.doesAuthorExists(authorID, function(err, exists)
   {
     if(ERR(err, callback)) return;
-    
+
     //group does not exist
     if(exists == false)
     {
@@ -334,14 +334,14 @@ function listSessionsWithDBKey (dbkey, callback)
       });
     },
     function(callback)
-    {           
+    {
       //collect all sessionIDs in an arrary
       var sessionIDs = [];
       for (var i in sessions)
       {
         sessionIDs.push(i);
       }
-      
+
       //foreach trough the sessions and get the sessioninfos
       async.forEach(sessionIDs, function(sessionID, callback)
       {
@@ -362,6 +362,6 @@ function listSessionsWithDBKey (dbkey, callback)
 
 //checks if a number is an int
 function is_int(value)
-{ 
+{
   return (parseFloat(value) == parseInt(value)) && !isNaN(value)
 }

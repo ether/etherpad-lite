@@ -43,9 +43,9 @@ Information about an author
 * **colorID** - the colorID of this author as shown in the pad
 
 ### mapper2group:$MAPPER
-Maps an external application identifier to an internal group 
+Maps an external application identifier to an internal group
 ### mapper2author:$MAPPER
-Maps an external application identifier to an internal author 
+Maps an external application identifier to an internal author
 ### group:$GROUPID
 a group of pads
 
