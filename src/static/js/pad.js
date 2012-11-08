@@ -64,7 +64,13 @@ function createCookie(name, value, days, path)
   if(!path)
     path = "/";
   
-  document.cookie = name + "=" + value + expires + "; path=" + path;
+  //Check if the browser is IE and if so make sure the full path is set in the cookie
+  if(navigator.appName=='Microsoft Internet Explorer'){
+    document.cookie = name + "=" + value + expires + "; path="+document.location;
+  }
+  else{
+    document.cookie = name + "=" + value + expires + "; path=" + path;
+  }
 }
 
 function readCookie(name)
