@@ -31,7 +31,7 @@ try
 {
   apikey = fs.readFileSync("./APIKEY.txt","utf8");
 }
-catch(e) 
+catch(e)
 {
   apikey = randomString(32);
   fs.writeFileSync("./APIKEY.txt",apikey,"utf8");
@@ -124,7 +124,7 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
       break;
     }
   }
-  
+
   //say goodbye if this is an unkown API version
   if(!isKnownApiVersion)
   {
@@ -132,7 +132,7 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
     res.send({code: 3, message: "no such api version", data: null});
     return;
   }
-  
+
   //check if this is a valid function name
   var isKnownFunctionname = false;
   for(var knownFunctionname in version[apiVersion])
@@ -143,14 +143,14 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
       break;
     }
   }
-  
+
   //say goodbye if this is a unkown function
   if(!isKnownFunctionname)
   {
     res.send({code: 3, message: "no such function", data: null});
     return;
   }
-  
+
   //check the api key!
   if(fields["apikey"] != apikey.trim())
   {
@@ -190,16 +190,16 @@ function callAPI(apiVersion, functionName, fields, req, res)
   {
     functionParams.push(fields[ version[apiVersion][functionName][i] ]);
   }
-  
+
   //add a callback function to handle the response
   functionParams.push(function(err, data)
-  {  
+  {
     // no error happend, everything is fine
     if(err == null)
     {
       if(!data)
         data = null;
-    
+
       res.send({code: 0, message: "ok", data: data});
     }
     // parameters were wrong and the api stopped execution, pass the error
@@ -214,7 +214,7 @@ function callAPI(apiVersion, functionName, fields, req, res)
       ERR(err);
     }
   });
-  
+
   //call the api function
   api[functionName](functionParams[0],functionParams[1],functionParams[2],functionParams[3],functionParams[4]);
 }

@@ -8,7 +8,7 @@ var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
 var padMessageHandler = require("../../handler/PadMessageHandler");
 
 var connect = require('connect');
- 
+
 exports.expressCreateServer = function (hook_name, args, cb) {
   //init socket.io and redirect all requests to the MessageHandler
   var io = socketio.listen(args.server);
@@ -36,7 +36,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  // the following has been successfully tested with the following browsers 
+  // the following has been successfully tested with the following browsers
   // works also behind reverse proxy
   // Firefox 14.0.1
   // IE8 with Native XMLHTTP support
@@ -49,7 +49,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     debug: function (str)
     {
       socketIOLogger.debug.apply(socketIOLogger, arguments);
-    }, 
+    },
     info: function (str)
     {
       socketIOLogger.info.apply(socketIOLogger, arguments);

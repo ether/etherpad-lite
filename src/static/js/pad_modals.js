@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 var padutils = require('./pad_utils').padutils;
 var padeditbar = require('./pad_editbar').padeditbar;
 

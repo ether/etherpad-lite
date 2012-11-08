@@ -775,7 +775,7 @@ input[type=checkbox] {
   border-left: 1px solid #ccc !important;
   width: 185px !important;
 }
-@media screen and (max-width: 600px) { 
+@media screen and (max-width: 600px) {
     .toolbar ul li.separator {
       display: none;
     }
@@ -784,13 +784,13 @@ input[type=checkbox] {
     }
 }
 @media screen and (max-width: 400px){
-  #editorcontainer { 
+  #editorcontainer {
     top: 68px;
   }
-  #editbar { 
+  #editbar {
     height: 62px;
   }
-  .toolbar ul.menu_right { 
+  .toolbar ul.menu_right {
     float: left;
     margin-top:2px;
   }

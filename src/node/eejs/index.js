@@ -120,7 +120,7 @@ exports.require = function (name, args, mod) {
   args.e = exports;
   args.require = require;
   var template = '<% e._init(buf); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
-  
+
   exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath, inherit: []});
 

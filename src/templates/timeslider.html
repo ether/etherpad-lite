@@ -57,7 +57,7 @@
             <div class="stepper" id="rightstep"></div>
           </div>
         </div>
-        
+
         <div id="overlay">
           <div id="overlay-inner">
             <!-- -->
@@ -180,15 +180,15 @@
 <!-- Bootstrap -->
 <script type="text/javascript" >
   var clientVars = {};
-  
+
   (function () {
-    
+
     var pathComponents = location.pathname.split('/');
-    
+
     // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
     var baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/';
-    
-    
+
+
     require.setRootURI(baseURL + "javascripts/src");
     require.setLibraryURI(baseURL + "javascripts/lib");
     require.setGlobalKeyPath("require");
@@ -201,7 +201,7 @@
 
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
     plugins.baseURL = baseURL;
-    
+
     plugins.update(function () {
       var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
       hooks.plugins = plugins;

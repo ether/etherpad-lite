@@ -16,7 +16,7 @@ log4js.setGlobalLogLevel("INFO");
 var async = require("async");
 var db = require('../node/db/DB');
 var dirty = require("dirty")(padId + ".db");
-var padManager; 
+var padManager;
 var pad;
 var neededDBValues = ["pad:"+padId];
 
@@ -26,12 +26,12 @@ async.series([
   {
     db.init(callback);
   },
-  //get the pad 
+  //get the pad
   function (callback)
   {
     padManager = require('../node/db/PadManager');
-    
-    padManager.getPad(padId, function(err, _pad)  
+
+    padManager.getPad(padId, function(err, _pad)
     {
       pad = _pad;
       callback(err);
@@ -45,21 +45,21 @@ async.series([
     {
       neededDBValues.push("globalAuthor:" + authors[i]);
     }
-    
+
     //add all revisions
     var revHead = pad.head;
     for(var i=0;i<=revHead;i++)
     {
       neededDBValues.push("pad:"+padId+":revs:" + i);
     }
-    
+
     //get all chat values
     var chatHead = pad.chatHead;
     for(var i=0;i<=chatHead;i++)
     {
       neededDBValues.push("pad:"+padId+":chat:" + i);
     }
-    
+
     //get and set all values
     async.forEach(neededDBValues, function(dbkey, callback)
     {
@@ -67,7 +67,7 @@ async.series([
       {
         if(err) { callback(err); return}
         dbvalue=JSON.parse(dbvalue);
-        
+
         dirty.set(dbkey, dbvalue, callback);
       });
     }, callback);
@@ -75,8 +75,8 @@ async.series([
 ], function (err)
 {
   if(err) throw err;
-  else 
-  { 
+  else
+  {
     console.log("finished");
     process.exit();
   }

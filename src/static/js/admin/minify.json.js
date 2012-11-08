@@ -7,18 +7,18 @@
 	if (typeof global.JSON == "undefined" || !global.JSON) {
 		global.JSON = {};
 	}
-	
+
 	global.JSON.minify = function(json) {
-		
+
 		var tokenizer = /"|(\/\*)|(\*\/)|(\/\/)|\n|\r/g,
 			in_string = false,
 			in_multiline_comment = false,
 			in_singleline_comment = false,
 			tmp, tmp2, new_str = [], ns = 0, from = 0, lc, rc
 		;
-		
+
 		tokenizer.lastIndex = 0;
-		
+
 		while (tmp = tokenizer.exec(json)) {
 			lc = RegExp.leftContext;
 			rc = RegExp.rightContext;
@@ -30,7 +30,7 @@
 				new_str[ns++] = tmp2;
 			}
 			from = tokenizer.lastIndex;
-			
+
 			if (tmp[0] == "\"" && !in_multiline_comment && !in_singleline_comment) {
 				tmp2 = lc.match(/(\\)*$/);
 				if (!in_string || !tmp2 || (tmp2[0].length % 2) == 0) {	// start of string with ", or unescaped " character found to end string

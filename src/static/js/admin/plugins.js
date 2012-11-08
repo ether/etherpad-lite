@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  
+
   var socket,
     loc = document.location,
     port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port,
@@ -81,7 +81,7 @@ $(document).ready(function () {
       message = "<span class='status'>" + data.message.toString() + "</span>";
     }
     if (data.error) {
-      message = "<span class='error'>" + data.error.toString() + "<span>";            
+      message = "<span class='error'>" + data.error.toString() + "<span>";
     }
     $("#progress.dialog .message").html(message);
     $("#progress.dialog .history").append("<div>" + message + "</div>");

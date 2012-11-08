@@ -41,9 +41,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     var clientParts = _(plugins.parts)
       .filter(function(part){ return _(part).has('client_hooks') });
-      
+
     var clientPlugins = {};
-    
+
     _(clientParts).chain()
       .map(function(part){ return part.plugin })
       .uniq()
@@ -51,7 +51,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         clientPlugins[name] = _(plugins.plugins[name]).clone();
         delete clientPlugins[name]['package'];
       });
-      
+
     res.header("Content-Type","application/json; charset=utf-8");
     res.write(JSON.stringify({"plugins": clientPlugins, "parts": clientParts}));
     res.end();

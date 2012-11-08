@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -241,14 +241,14 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     {
       state.listNesting = (state.listNesting || 0) + 1;
     }
-    
+
     if(listType === 'none' || !listType ){
-      delete state.lineAttributes['list']; 
+      delete state.lineAttributes['list'];
     }
     else{
       state.lineAttributes['list'] = listType;
     }
-    
+
     _recalcAttribString(state);
     return oldListType;
   }
@@ -315,7 +315,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         return [key, value];
       })
     );
-    
+
     lines.appendText('*', Changeset.makeAttribsString('+', attributes , apool));
   }
   cc.startNewLine = function(state)
@@ -385,7 +385,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         text:txt,
         styl: null,
         cls: null
-      });  
+      });
       var txt = (typeof(txtFromHook)=='object'&&txtFromHook.length==0)?dom.nodeValue(node):txtFromHook[0];
 
       var rest = '';
@@ -454,7 +454,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
       if (tname == "br")
-      {        
+      {
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
         var induceLineBreak = hooks.callAll('collectContentLineBreak', {
@@ -464,11 +464,11 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           tvalue:tvalue,
           styl: null,
           cls: null
-        });       
+        });
         var startNewLine= (typeof(induceLineBreak)=='object'&&induceLineBreak.length==0)?true:induceLineBreak[0];
         if(startNewLine){
           cc.startNewLine(state);
-        }		  
+        }
       }
       else if (tname == "script" || tname == "style")
       {

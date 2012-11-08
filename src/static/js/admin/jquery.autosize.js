@@ -121,7 +121,7 @@
 								options.callback.call(ta);
 							}
 						}
-						
+
 						// This small timeout gives IE a chance to draw it's scrollbar
 						// before adjust can be run again (prevents an infinite loop).
 						setTimeout(function () {

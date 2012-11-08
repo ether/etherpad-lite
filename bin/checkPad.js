@@ -25,11 +25,11 @@ async.series([
   {
     db.init(callback);
   },
-  //get the pad 
+  //get the pad
   function (callback)
   {
     padManager = require('../src/node/db/PadManager');
-    
+
     padManager.doesPadExists(padId, function(err, exists)
     {
       if(!exists)
@@ -37,8 +37,8 @@ async.series([
         console.error("Pad does not exist");
         process.exit(1);
       }
-      
-      padManager.getPad(padId, function(err, _pad)  
+
+      padManager.getPad(padId, function(err, _pad)
       {
         pad = _pad;
         callback(err);
@@ -46,7 +46,7 @@ async.series([
     });
   },
   function (callback)
-  {    
+  {
     //create an array with key kevisions
     //key revisions always save the full pad atext
     var head = pad.getHeadRevisionNumber();
@@ -55,7 +55,7 @@ async.series([
     {
       keyRevisions.push(i);
     }
-    
+
     //run trough all key revisions
     async.forEachSeries(keyRevisions, function(keyRev, callback)
     {
@@ -65,10 +65,10 @@ async.series([
       {
         revisionsNeeded.push(i);
       }
-      
+
       //this array will hold all revision changesets
       var revisions = [];
-      
+
       //run trough all needed revisions and get them from the database
       async.forEach(revisionsNeeded, function(revNum, callback)
       {
@@ -84,14 +84,14 @@ async.series([
           callback(err);
           return;
         }
-        
+
         //check if the pad has a pool
         if(pad.pool === undefined )
         {
           console.error("Attribute pool is missing");
           process.exit(1);
         }
-        
+
         //check if there is a atext in the keyRevisions
         if(revisions[keyRev] === undefined || revisions[keyRev].meta === undefined || revisions[keyRev].meta.atext === undefined)
         {
@@ -99,10 +99,10 @@ async.series([
           callback();
           return;
         }
-        
+
         var apool = pad.pool;
         var atext = revisions[keyRev].meta.atext;
-        
+
         for(var i=keyRev+1;i<=keyRev+100 && i<=head; i++)
         {
           try
@@ -118,7 +118,7 @@ async.series([
             return;
           }
         }
-        
+
         callback();
       });
     }, callback);
@@ -126,8 +126,8 @@ async.series([
 ], function (err)
 {
   if(err) throw err;
-  else 
-  { 
+  else
+  {
     console.log("finished");
     process.exit(0);
   }

@@ -70,11 +70,11 @@ This creates an empty apool. A apool saves which attributes were used during the
 ```
 > apool.fromJsonable({"numToAttrib":{"0":["author","a.kVnWeomPADAT2pn9"],"1":["bold","true"],"2":["italic","true"]},"nextNum":3});
 > console.log(apool)
-{ numToAttrib: 
+{ numToAttrib:
    { '0': [ 'author', 'a.kVnWeomPADAT2pn9' ],
      '1': [ 'bold', 'true' ],
      '2': [ 'italic', 'true' ] },
-  attribToNum: 
+  attribToNum:
    { 'author,a.kVnWeomPADAT2pn9': 0,
      'bold,true': 1,
      'italic,true': 2 },

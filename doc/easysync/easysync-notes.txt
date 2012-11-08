@@ -72,7 +72,7 @@ Here are descriptions of the operations, where capital letters are variables:
 "-N" : Skip over (delete) N characters from the source text, none of them newlines
 "=N" : Keep N characters from the source text, none of them newlines
 "|L+N" : Insert N characters from the source text, containing L newlines.  The last
-         character inserted MUST be a newline, but not the (new) document's final newline.  
+         character inserted MUST be a newline, but not the (new) document's final newline.
 "|L-N" : Delete N characters from the source text, containing L newlines. The last
          character inserted MUST be a newline, but not the (old) document's final newline.
 "|L=N" : Keep N characters from the source text, containing L newlines.  The last character

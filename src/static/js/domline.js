@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -82,7 +82,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   }
 
   var html = [];
-  var preHtml = '', 
+  var preHtml = '',
   postHtml = '';
   var curHTML = null;
 
@@ -118,10 +118,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
             preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
             postHtml = '</li></ol>';
           }
-        } 
+        }
         processedMarker = true;
       }
-      
+
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
         domline: domline,
         cls: cls
@@ -131,11 +131,11 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         postHtml += modifier.postHtml;
         processedMarker |= modifier.processedMarker;
       });
-      
+
       if( processedMarker ){
         result.lineMarker += txt.length;
         return; // don't append any text
-      } 
+      }
 
 
     }
@@ -229,7 +229,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       result.node.innerHTML = curHTML;
     }
     if (lineClass !== null) result.node.className = lineClass;
-	
+
 	hooks.callAll("acePostWriteDomLineHTML", {
         node: result.node
 	});

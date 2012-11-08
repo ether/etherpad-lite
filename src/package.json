@@ -5,7 +5,7 @@
   "keywords"       : ["etherpad", "realtime", "collaborative", "editor"],
   "author"         : "Peter 'Pita' Martischka <petermartischka@googlemail.com> - Primary Technology Ltd",
   "contributors"   : [
-                      { "name": "John McLear" }, 
+                      { "name": "John McLear" },
                       { "name": "Hans Pinckaers" },
                       { "name": "Robin Buse" },
                       { "name": "Marcel Klehr" }
@@ -43,6 +43,6 @@
                      },
   "engines"        : { "node" : ">=0.6.0",
                        "npm"  : ">=1.0"
-                     }, 
+                     },
   "version"        : "1.1.4"
 }

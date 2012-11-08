@@ -31,7 +31,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     //if abiword is disabled, skip handling this request
     if(settings.abiword == null) {
       next();
-      return; 
+      return;
     }
 
     hasPadAccess(req, res, function() {

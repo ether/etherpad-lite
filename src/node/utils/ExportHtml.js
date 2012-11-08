@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -142,7 +142,7 @@ function getHTMLFromAtext(pad, atext)
       assem.append(tags[i]);
       assem.append('>');
     }
-    
+
     function orderdCloseTags(tags2close)
     {
       for(var i=0;i<openTags.length;i++)
@@ -246,9 +246,9 @@ function getHTMLFromAtext(pad, atext)
               tags2close.push(i);
             }
           }
-          
+
           orderdCloseTags(tags2close);
-          
+
           for (var i = 0; i < propVals.length; i++)
           {
             if (propVals[i] === ENTER || propVals[i] === STAY)
@@ -264,16 +264,16 @@ function getHTMLFromAtext(pad, atext)
         {
           chars--; // exclude newline at end of line, if present
         }
-        
+
         var s = taker.take(chars);
-        
-        //removes the characters with the code 12. Don't know where they come 
+
+        //removes the characters with the code 12. Don't know where they come
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
-        
+
         assem.append(_encodeWhitespace(Security.escapeHTML(s)));
       } // end iteration over spans in line
-      
+
       var tags2close = [];
       for (var i = propVals.length - 1; i >= 0; i--)
       {
@@ -283,7 +283,7 @@ function getHTMLFromAtext(pad, atext)
           propVals[i] = false;
         }
       }
-      
+
       orderdCloseTags(tags2close);
     } // end processNextChars
     if (urls)
@@ -317,7 +317,7 @@ function getHTMLFromAtext(pad, atext)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
-            
+
     if (line.listLevel)//If we are inside a list
     {
       // do list stuff
@@ -401,8 +401,8 @@ function getHTMLFromAtext(pad, atext)
           pieces.push('</li></ul>');
         }
         lists.length--;
-      }   
-      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
+      }
+      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport",
       {
         line: line,
         apool: apool,
@@ -412,14 +412,14 @@ function getHTMLFromAtext(pad, atext)
 	  if (lineContentFromHook)
 	  {
 	    pieces.push(lineContentFromHook, '');
-	  } 
-	  else 
+	  }
+	  else
 	 {
 	   pieces.push(lineContent, '<br>');
-	 }		  
+	 }
     }
   }
-  
+
   for (var k = lists.length - 1; k >= 0; k--)
   {
     if(lists[k][1] == "number")
@@ -480,14 +480,14 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
   {
     if(ERR(err, callback)) return;
 
-    var head = 
-      (noDocType ? '' : '<!doctype html>\n') + 
-      '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+    var head =
+      (noDocType ? '' : '<!doctype html>\n') +
+      '<html lang="en">\n' + (noDocType ? '' : '<head>\n' +
 	'<title>' + Security.escapeHTML(padId) + '</title>\n' +
-        '<meta charset="utf-8">\n' + 
-        '<style> * { font-family: arial, sans-serif;\n' + 
-          'font-size: 13px;\n' + 
-          'line-height: 17px; }' + 
+        '<meta charset="utf-8">\n' +
+        '<style> * { font-family: arial, sans-serif;\n' +
+          'font-size: 13px;\n' +
+          'line-height: 17px; }' +
           'ul.indent { list-style-type: none; }' +
           'ol { list-style-type: decimal; }' +
           'ol ol { list-style-type: lower-latin; }' +
@@ -497,7 +497,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
           'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
           'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
           'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
-          '</style>\n' + '</head>\n') + 
+          '</style>\n' + '</head>\n') +
       '<body>';
 
     var foot = '</body>\n</html>\n';

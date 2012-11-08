@@ -1,6 +1,6 @@
 /**
- * The MessageHandler handles all Messages that comes from Socket.IO and controls the sessions 
- */ 
+ * The MessageHandler handles all Messages that comes from Socket.IO and controls the sessions
+ */
 
 /*
  * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
@@ -71,7 +71,7 @@ exports.setSocketIO = function(socket_io)
  * @param client the new client
  */
 exports.handleConnect = function(client)
-{  
+{
   //Initalize sessioninfos for this new session
   sessioninfos[client.id]={};
 }
@@ -98,20 +98,20 @@ exports.kickSessionsFromPad = function(padID)
  * @param client the client that leaves
  */
 exports.handleDisconnect = function(client)
-{  
+{
   //save the padname of this session
   var sessionPad=sessioninfos[client.id].padId;
-  
+
   //if this connection was already etablished with a handshake, send a disconnect message to the others
   if(sessioninfos[client.id] && sessioninfos[client.id].author)
   {
     var author = sessioninfos[client.id].author;
-  
+
     //get the author color out of the db
     authorManager.getAuthorColorId(author, function(err, color)
     {
       ERR(err);
-      
+
       //prepare the notification for the other users on the pad, that this user left
       var messageToTheOtherUsers = {
         "type": "COLLABROOM",
@@ -125,7 +125,7 @@ exports.handleDisconnect = function(client)
           }
         }
       };
-      
+
       //Go trough all user that are still on the pad, and send them the USER_LEAVE message
       for(i in pad2sessions[sessionPad])
       {
@@ -133,23 +133,23 @@ exports.handleDisconnect = function(client)
         if(socket !== undefined){
           socket.json.send(messageToTheOtherUsers);
         }
-        
+
       }
-    }); 
+    });
   }
-  
+
   //Go trough all sessions of this pad, search and destroy the entry of this client
   for(i in pad2sessions[sessionPad])
   {
     if(pad2sessions[sessionPad][i] == client.id)
     {
-      pad2sessions[sessionPad].splice(i, 1); 
+      pad2sessions[sessionPad].splice(i, 1);
       break;
     }
   }
-  
+
   //Delete the sessioninfos entrys of this session
-  delete sessioninfos[client.id]; 
+  delete sessioninfos[client.id];
 }
 
 /**
@@ -158,7 +158,7 @@ exports.handleDisconnect = function(client)
  * @param message the message from the client
  */
 exports.handleMessage = function(client, message)
-{ 
+{
 
   if(message == null)
   {
@@ -173,18 +173,18 @@ exports.handleMessage = function(client, message)
 
   var handleMessageHook = function(callback){
     var dropMessage = false;
-    
-    // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
+
+    // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages
     // handleMessage will be called, even if the client is not authorized
     hooks.aCallAll("handleMessage", { client: client, message: message }, function ( err, messages ) {
       if(ERR(err, callback)) return;
-      
+
       _.each(messages, function(newMessage){
         if ( newMessage === null ) {
           dropMessage = true;
         }
       });
-      
+
       // If no plugins explicitly told us to drop the message, its ok to proceed
       if(!dropMessage){ callback() };
     });
@@ -224,7 +224,7 @@ exports.handleMessage = function(client, message)
       //check permissions
       function(callback)
       {
-        
+
         if(!message.padId){
           // If the message has a padId we assume the client is already known to the server and needs no re-authorization
           callback();
@@ -265,11 +265,11 @@ exports.handleMessage = function(client, message)
 function handleSaveRevisionMessage(client, message){
   var padId = sessioninfos[client.id].padId;
   var userId = sessioninfos[client.id].author;
-  
+
   padManager.getPad(padId, function(err, pad)
   {
     if(ERR(err)) return;
-    
+
     pad.addSavedRevision(pad.head, userId);
   });
 }
@@ -307,10 +307,10 @@ function handleChatMessage(client, message)
   var userId = sessioninfos[client.id].author;
   var text = message.data.text;
   var padId = sessioninfos[client.id].padId;
-  
+
   var pad;
   var userName;
-  
+
   async.series([
     //get the pad
     function(callback)
@@ -336,7 +336,7 @@ function handleChatMessage(client, message)
     {
       //save the chat message
       pad.appendChatMessage(text, userId, time);
-      
+
       var msg = {
         type: "COLLABROOM",
         data: {
@@ -347,13 +347,13 @@ function handleChatMessage(client, message)
                 text: text
               }
       };
-      
+
       //broadcast the chat message to everyone on the pad
       for(var i in pad2sessions[padId])
       {
         socketio.sockets.sockets[pad2sessions[padId][i]].json.send(msg);
       }
-      
+
       callback();
     }
   ], function(err)
@@ -381,9 +381,9 @@ function handleSuggestUserName(client, message)
     messageLogger.warn("Dropped message, suggestUserName Message has no unnamedId!");
     return;
   }
-  
+
   var padId = sessioninfos[client.id].padId;
-  
+
   //search the author and send him this message
   for(var i in pad2sessions[padId])
   {
@@ -408,14 +408,14 @@ function handleUserInfoUpdate(client, message)
     messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no colorId!");
     return;
   }
-  
+
   //Find out the author name of this session
   var author = sessioninfos[client.id].author;
-  
+
   //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
-  
+
   var padId = sessioninfos[client.id].padId;
 
   var infoMsg = {
@@ -432,13 +432,13 @@ function handleUserInfoUpdate(client, message)
       }
     }
   };
-  
+
   //set a null name, when there is no name set. cause the client wants it null
   if(infoMsg.data.userInfo.name == null)
   {
     infoMsg.data.userInfo.name = null;
   }
-  
+
   //Send the other clients on the pad the update message
   for(var i in pad2sessions[padId])
   {
@@ -481,7 +481,7 @@ function handleUserChanges(client, message)
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
     return;
   }
- 
+
   //get all Vars we need
   var baseRev = message.data.baseRev;
   var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
@@ -489,9 +489,9 @@ function handleUserChanges(client, message)
   // The client might disconnect between our callbacks. We should still
   // finish processing the changeset, so keep a reference to the session.
   var thisSession = sessioninfos[client.id];
-      
+
   var r, apool, pad;
-    
+
   async.series([
     //get the pad
     function(callback)
@@ -507,7 +507,7 @@ function handleUserChanges(client, message)
     function(callback)
     {
       //ex. _checkChangesetAndPool
-  
+
       try
       {
         // Verify that the changeset has valid syntax and is in canonical form
@@ -528,12 +528,12 @@ function handleUserChanges(client, message)
         client.json.send({disconnect:"badChangeset"});
         return;
       }
-        
+
       //ex. adoptChangesetAttribs
-        
+
       //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
       changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
-        
+
       //ex. applyUserChanges
       apool = pad.pool;
       r = baseRev;
@@ -547,7 +547,7 @@ function handleUserChanges(client, message)
         function(callback)
         {
           r++;
-            
+
           pad.getRevisionChangeset(r, function(err, c)
           {
             if(ERR(err, callback)) return;
@@ -573,17 +573,17 @@ function handleUserChanges(client, message)
     function (callback)
     {
       var prevText = pad.text();
-      
-      if (Changeset.oldLen(changeset) != prevText.length) 
+
+      if (Changeset.oldLen(changeset) != prevText.length)
       {
         console.warn("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
         client.json.send({disconnect:"badChangeset"});
         callback();
         return;
       }
-        
+
       pad.appendRevision(changeset, thisSession.author);
-        
+
       var correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
       if (correctionChangeset) {
         pad.appendRevision(correctionChangeset);
@@ -594,7 +594,7 @@ function handleUserChanges(client, message)
         var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1, 0, "\n");
         pad.appendRevision(nlChangeset);
       }
-        
+
       exports.updatePadClients(pad, callback);
     }
   ], function(err)
@@ -604,14 +604,14 @@ function handleUserChanges(client, message)
 }
 
 exports.updatePadClients = function(pad, callback)
-{       
+{
   //skip this step if noone is on this pad
   if(!pad2sessions[pad.id])
   {
     callback();
     return;
   }
-  
+
   //go trough all sessions on this pad
   async.forEach(pad2sessions[pad.id], function(session, callback)
   {
@@ -621,10 +621,10 @@ exports.updatePadClients = function(pad, callback)
     async.whilst(
       function (){ return sessioninfos[session].rev < pad.getHeadRevisionNumber()},
       function(callback)
-      {      
+      {
         var author, revChangeset, currentTime;
         var r = sessioninfos[session].rev + 1;
-      
+
         async.parallel([
           function (callback)
           {
@@ -677,8 +677,8 @@ exports.updatePadClients = function(pad, callback)
                                    author: author,
                                    currentTime: currentTime,
                                    timeDelta: currentTime - sessioninfos[session].time
-                                  }};        
-                         
+                                  }};
+
             socketio.sockets.sockets[session].json.send(wireMsg);
           }
 
@@ -687,13 +687,13 @@ exports.updatePadClients = function(pad, callback)
              sessioninfos[session].time = currentTime;
              sessioninfos[session].rev = r;
            }
-          
+
           callback(null);
         });
       },
       callback
     );
-  },callback);  
+  },callback);
 }
 
 /**
@@ -709,11 +709,11 @@ function _correctMarkersInPad(atext, apool) {
   var offset = 0;
   while (iter.hasNext()) {
     var op = iter.next();
-    
+
     var hasMarker = _.find(AttributeManager.lineAttributes, function(attribute){
       return Changeset.opAttributeValue(op, attribute, apool);
     }) !== undefined;
-    
+
     if (hasMarker) {
       for(var i=0;i<op.chars;i++) {
         if (offset > 0 && text.charAt(offset-1) != '\n') {
@@ -743,7 +743,7 @@ function _correctMarkersInPad(atext, apool) {
 }
 
 /**
- * Handles a CLIENT_READY. A CLIENT_READY is the first message from the client to the server. The Client sends his token 
+ * Handles a CLIENT_READY. A CLIENT_READY is the first message from the client to the server. The Client sends his token
  * and the pad it wants to enter. The Server answers with the inital values (clientVars) of the pad
  * @param client the client that send this message
  * @param message the message from the client
@@ -802,7 +802,7 @@ function handleClientReady(client, message)
       securityManager.checkAccess (padIds.padId, message.sessionID, message.token, message.password, function(err, statusObject)
       {
         if(ERR(err, callback)) return;
-        
+
         //access was granted
         if(statusObject.accessStatus == "grant")
         {
@@ -815,7 +815,7 @@ function handleClientReady(client, message)
           client.json.send({accessStatus: statusObject.accessStatus})
         }
       });
-    }, 
+    },
     //get all authordata of this new user
     function(callback)
     {
@@ -855,7 +855,7 @@ function handleClientReady(client, message)
     function(callback)
     {
       var authors = pad.getAllAuthors();
-      
+
       async.parallel([
         //get timestamp of latest revission needed for timeslider
         function(callback)
@@ -892,7 +892,7 @@ function handleClientReady(client, message)
           });
         }
       ], callback);
-      
+
     },
     function(callback)
     {
@@ -915,27 +915,27 @@ function handleClientReady(client, message)
           }
         }
       }
-      
+
       //Save in sessioninfos that this session belonges to this pad
       sessioninfos[client.id].padId = padIds.padId;
       sessioninfos[client.id].readOnlyPadId = padIds.readOnlyPadId;
       sessioninfos[client.id].readonly = padIds.readonly;
-      
+
       //check if there is already a pad2sessions entry, if not, create one
       if(!pad2sessions[padIds.padId])
       {
         pad2sessions[padIds.padId] = [];
       }
-      
+
       //Saves in pad2sessions that this session belongs to this pad
       pad2sessions[padIds.padId].push(client.id);
-      
+
       //prepare all values for the wire
       var atext = Changeset.cloneAText(pad.atext);
       var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
       var apool = attribsForWire.pool.toJsonable();
       atext.attribs = attribsForWire.translated;
-      
+
       // Warning: never ever send padIds.padId to the client. If the
       // client is read only you would open a security hole 1 swedish
       // mile wide...
@@ -978,7 +978,7 @@ function handleClientReady(client, message)
             "fullWidth": false,
             "hideSidebar": false
         },
-        "abiwordAvailable": settings.abiwordAvailable(), 
+        "abiwordAvailable": settings.abiwordAvailable(),
         "plugins": {
 	  "plugins": plugins.plugins,
 	  "parts": plugins.parts,
@@ -992,7 +992,7 @@ function handleClientReady(client, message)
       {
         clientVars.userName = authorName;
       }
-      
+
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
       {
@@ -1007,9 +1007,9 @@ function handleClientReady(client, message)
         //Save the current revision in sessioninfos, should be the same as in clientVars
         sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
       }
-        
+
       sessioninfos[client.id].author = author;
-      
+
       //prepare the notification for the other users on the pad, that this user joined
       var messageToTheOtherUsers = {
         "type": "COLLABROOM",
@@ -1023,19 +1023,19 @@ function handleClientReady(client, message)
           }
         }
       };
-      
+
       //Add the authorname of this new User, if avaiable
       if(authorName != null)
       {
         messageToTheOtherUsers.data.userInfo.name = authorName;
       }
-      
+
       //Run trough all sessions of this pad
       async.forEach(pad2sessions[padIds.padId], function(sessionID, callback)
       {
         var author, socket, sessionAuthorName, sessionAuthorColorId;
-        
-        //Since sessioninfos might change while being enumerated, check if the 
+
+        //Since sessioninfos might change while being enumerated, check if the
         //sessionID is still assigned to a valid session
         if(sessioninfos[sessionID] !== undefined &&
           socketio.sockets.sockets[sessionID] !== undefined){
@@ -1070,7 +1070,7 @@ function handleClientReady(client, message)
                 })
               }
             ],callback);
-          }, 
+          },
           function (callback)
           {
             //Jump over, if this session is the connection session
@@ -1078,7 +1078,7 @@ function handleClientReady(client, message)
             {
               //Send this Session the Notification about the new user
               socket.json.send(messageToTheOtherUsers);
-            
+
               //Send the new User a Notification about this other user
               var messageToNotifyTheClientAboutTheOthers = {
                 "type": "COLLABROOM",
@@ -1096,7 +1096,7 @@ function handleClientReady(client, message)
               client.json.send(messageToNotifyTheClientAboutTheOthers);
             }
           }
-        ], callback);        
+        ], callback);
       }, callback);
     }
   ],function(err)
@@ -1106,7 +1106,7 @@ function handleClientReady(client, message)
 }
 
 /**
- * Handles a request for a rough changeset, the timeslider client needs it 
+ * Handles a request for a rough changeset, the timeslider client needs it
  */
 function handleChangesetRequest(client, message)
 {
@@ -1136,7 +1136,7 @@ function handleChangesetRequest(client, message)
     messageLogger.warn("Dropped message, changeset request has no requestID!");
     return;
   }
-  
+
   var granularity = message.data.granularity;
   var start = message.data.start;
   var end = start + (100 * granularity);
@@ -1180,47 +1180,47 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
   var composedChangesets = {};
   var revisionDate = [];
   var lines;
-  
+
   async.series([
     //get the pad from the database
     function(callback)
     {
       padManager.getPad(padId, function(err, _pad)
-      {        
+      {
         if(ERR(err, callback)) return;
         pad = _pad;
         callback();
       });
     },
     function(callback)
-    {      
+    {
       //calculate the last full endnum
       var lastRev = pad.getHeadRevisionNumber();
       if (endNum > lastRev+1) {
         endNum = lastRev+1;
       }
       endNum = Math.floor(endNum / granularity)*granularity;
-      
+
       var compositesChangesetNeeded = [];
       var revTimesNeeded = [];
-      
+
       //figure out which composite Changeset and revTimes we need, to load them in bulk
       var compositeStart = startNum;
-      while (compositeStart < endNum) 
+      while (compositeStart < endNum)
       {
         var compositeEnd = compositeStart + granularity;
-        
+
         //add the composite Changeset we needed
         compositesChangesetNeeded.push({start: compositeStart, end: compositeEnd});
-        
+
         //add the t1 time we need
         revTimesNeeded.push(compositeStart == 0 ? 0 : compositeStart - 1);
         //add the t2 time we need
         revTimesNeeded.push(compositeEnd - 1);
-        
+
         compositeStart += granularity;
       }
-      
+
       //get all needed db values parallel
       async.parallel([
         function(callback)
@@ -1257,58 +1257,58 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
             if(ERR(err, callback)) return;
             lines = _lines;
             callback();
-          }); 
+          });
         }
       ], callback);
     },
     //doesn't know what happens here excatly :/
     function(callback)
-    {    
+    {
       var compositeStart = startNum;
-      
-      while (compositeStart < endNum) 
+
+      while (compositeStart < endNum)
       {
-        if (compositeStart + granularity > endNum) 
+        if (compositeStart + granularity > endNum)
         {
           break;
         }
-        
+
         var compositeEnd = compositeStart + granularity;
-      
+
         var forwards = composedChangesets[compositeStart + "/" + compositeEnd];
         var backwards = Changeset.inverse(forwards, lines.textlines, lines.alines, pad.apool());
-        
+
         Changeset.mutateAttributionLines(forwards, lines.alines, pad.apool());
         Changeset.mutateTextLines(forwards, lines.textlines);
-      
+
         var forwards2 = Changeset.moveOpsToNewPool(forwards, pad.apool(), apool);
         var backwards2 = Changeset.moveOpsToNewPool(backwards, pad.apool(), apool);
-        
+
         var t1, t2;
-        if (compositeStart == 0) 
+        if (compositeStart == 0)
         {
           t1 = revisionDate[0];
         }
-        else 
+        else
         {
           t1 = revisionDate[compositeStart - 1];
         }
-        
+
         t2 = revisionDate[compositeEnd - 1];
-        
+
         timeDeltas.push(t2 - t1);
         forwardsChangesets.push(forwards2);
         backwardsChangesets.push(backwards2);
-        
+
         compositeStart += granularity;
       }
-      
+
       callback();
     }
   ], function(err)
   {
     if(ERR(err, callback)) return;
-    
+
     callback(null, {forwardsChangesets: forwardsChangesets,
                     backwardsChangesets: backwardsChangesets,
                     apool: apool.toJsonable(),
@@ -1323,7 +1323,7 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
  * Tries to rebuild the getPadLines function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L263
  */
-function getPadLines(padId, revNum, callback) 
+function getPadLines(padId, revNum, callback)
 {
   var atext;
   var result = {};
@@ -1334,7 +1334,7 @@ function getPadLines(padId, revNum, callback)
     function(callback)
     {
       padManager.getPad(padId, function(err, _pad)
-      {        
+      {
         if(ERR(err, callback)) return;
         pad = _pad;
         callback();
@@ -1396,14 +1396,14 @@ function composePadChangesets(padId, startNum, endNum, callback)
     function(callback)
     {
       var changesetsNeeded=[];
-      
-      //create a array for all changesets, we will 
+
+      //create a array for all changesets, we will
       //replace the values with the changeset later
       for(var r=startNum;r<endNum;r++)
       {
         changesetsNeeded.push(r);
       }
-      
+
       //get all changesets
       async.forEach(changesetsNeeded, function(revNum,callback)
       {
@@ -1420,13 +1420,13 @@ function composePadChangesets(padId, startNum, endNum, callback)
     {
       changeset = changesets[startNum];
       var pool = pad.apool();
-      
+
       for(var r=startNum+1;r<endNum;r++)
       {
         var cs = changesets[r];
         changeset = Changeset.compose(changeset, cs, pool);
       }
-      
+
       callback(null);
     }
   ],

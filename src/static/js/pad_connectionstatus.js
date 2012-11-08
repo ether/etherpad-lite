@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -43,7 +43,7 @@ var padconnectionstatus = (function()
       status = {
         what: 'connected'
       };
-      
+
       padmodals.showModal('connected');
       padmodals.hideOverlay(500);
     },
@@ -52,7 +52,7 @@ var padconnectionstatus = (function()
       status = {
         what: 'reconnecting'
       };
-      
+
       padmodals.showModal('reconnecting');
       padmodals.showOverlay(500);
     },
@@ -60,18 +60,18 @@ var padconnectionstatus = (function()
     {
       if(status.what == "disconnected")
         return;
-      
+
       status = {
         what: 'disconnected',
         why: msg
       };
-      
+
       var k = String(msg).toLowerCase(); // known reason why
       if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth'))
       {
         k = 'disconnected';
       }
-      
+
       padmodals.showModal(k);
       padmodals.showOverlay(500);
     },

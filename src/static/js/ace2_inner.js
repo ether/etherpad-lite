@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -36,10 +36,10 @@ var isNodeText = Ace2Common.isNodeText,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
   var hooks = require('./pluginfw/hooks');
-  
+
 
 function Ace2Inner(){
-  
+
   var makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   var colorutils = require('./colorutils').colorutils;
   var makeContentCollector = require('./contentcollector').makeContentCollector;
@@ -53,9 +53,9 @@ function Ace2Inner(){
   var undoModule = require('./undomodule').undoModule;
   var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
   var AttributeManager = require('./AttributeManager');
-  
+
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
-  // changed to false 
+  // changed to false
   var isSetUp = false;
 
   var THE_TAB = '    '; //4
@@ -83,9 +83,9 @@ function Ace2Inner(){
   initLineNumbers();
 
   var outsideKeyDown = noop;
-  
+
   var outsideKeyPress = function(){return true;};
-  
+
   var outsideNotifyDirty = noop;
 
   // selFocusAtStart -- determines whether the selection extends "backwards", so that the focus
@@ -101,7 +101,7 @@ function Ace2Inner(){
     alines: [],
     apool: new AttribPool()
   };
-  
+
   // lines, alltext, alines, and DOM are set up in setup()
   if (undoModule.enabled)
   {
@@ -113,7 +113,7 @@ function Ace2Inner(){
   var doesWrap = true;
   var hasLineNumbers = true;
   var isStyled = true;
-  
+
   // space around the innermost iframe element
   var iframePadLeft = MIN_LINEDIV_WIDTH + LINE_NUMBER_PADDING_RIGHT + EDIT_BODY_PADDING_LEFT;
   var iframePadTop = EDIT_BODY_PADDING_TOP;
@@ -122,7 +122,7 @@ function Ace2Inner(){
 
   var console = (DEBUG && window.console);
   var documentAttributeManager;
-  
+
   if (!window.console)
   {
     var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
@@ -158,7 +158,7 @@ function Ace2Inner(){
 
   var textFace = 'monospace';
   var textSize = 12;
-  
+
 
   function textLineHeight()
   {
@@ -231,15 +231,15 @@ function Ace2Inner(){
           {
             bgcolor = fadeColor(bgcolor, info.fade);
           }
-          
+
           var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author)));
           var anchorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author))+' > a')
-          
+
           // author color
           authorStyle.backgroundColor = bgcolor;
-          
+
           // text contrast
           if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
           {
@@ -247,7 +247,7 @@ function Ace2Inner(){
           }else{
             authorStyle.color = null;
           }
-          
+
           // anchor text contrast
           if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.55)
           {
@@ -540,8 +540,8 @@ function Ace2Inner(){
   {
     return rep.lines.atOffset(charOffset).key;
   }
-    
-  
+
+
   function dispose()
   {
     disposed = true;
@@ -896,14 +896,14 @@ function Ace2Inner(){
   editorInfo.ace_doReturnKey = doReturnKey;
   editorInfo.ace_isBlockElement = isBlockElement;
   editorInfo.ace_getLineListType = getLineListType;
-  
+
   editorInfo.ace_callWithAce = function(fn, callStack, normalize)
   {
     var wrapper = function()
     {
       return fn(editorInfo);
     };
-    
+
     if (normalize !== undefined)
     {
       var wrapper1 = wrapper;
@@ -929,14 +929,14 @@ function Ace2Inner(){
   // @param value the value to set to
   editorInfo.ace_setProperty = function(key, value)
   {
-    
-    // Convinience function returning a setter for a class on an element    
+
+    // Convinience function returning a setter for a class on an element
     var setClassPresenceNamed = function(element, cls){
       return function(value){
          setClassPresence(element, cls, !! value)
       }
     };
-    
+
     // These properties are exposed
     var setters = {
       wraps: setWraps,
@@ -951,7 +951,7 @@ function Ace2Inner(){
       },
       grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
       dmesg: function(){ dmesg = window.dmesg = value; },
-      userauthor: function(value){ 
+      userauthor: function(value){
         thisAuthor = String(value);
         documentAttributeManager.author = thisAuthor;
       },
@@ -960,10 +960,10 @@ function Ace2Inner(){
       textsize: setTextSize,
       rtlistrue: setClassPresenceNamed(root, "rtl")
     };
-    
+
     var setter = setters[key.toLowerCase()];
-    
-    // check if setter is present 
+
+    // check if setter is present
     if(setter !== undefined){
       setter(value)
     }
@@ -1067,7 +1067,7 @@ function Ace2Inner(){
           return false;
         }
       };
-        
+
     isTimeUp.elapsed = function()
     {
       return now() - startTime;
@@ -1448,7 +1448,7 @@ function Ace2Inner(){
     var p = PROFILER("getSelection", false);
     var selection = getSelection();
     p.end();
-    
+
     function topLevel(n)
     {
       if ((!n) || n == root) return null;
@@ -1458,7 +1458,7 @@ function Ace2Inner(){
       }
       return n;
     }
-    
+
     if (selection)
     {
       var node1 = topLevel(selection.startPoint.node);
@@ -1704,7 +1704,7 @@ function Ace2Inner(){
         root:root,
         point:selection.startPoint,
         documentAttributeManager: documentAttributeManager
-      });	
+      });
       selStart = (selStartFromHook==null||selStartFromHook.length==0)?getLineAndCharForPoint(selection.startPoint):selStartFromHook;
     }
     if (selection && !selEnd)
@@ -1717,7 +1717,7 @@ function Ace2Inner(){
         point:selection.endPoint,
         documentAttributeManager: documentAttributeManager
       });
-      selEnd = (selEndFromHook==null||selEndFromHook.length==0)?getLineAndCharForPoint(selection.endPoint):selEndFromHook;		                      
+      selEnd = (selEndFromHook==null||selEndFromHook.length==0)?getLineAndCharForPoint(selection.endPoint):selEndFromHook;
     }
 
     // selection from content collection can, in various ways, extend past final
@@ -1738,7 +1738,7 @@ function Ace2Inner(){
     // update rep if we have a new selection
     // NOTE: IE loses the selection when you click stuff in e.g. the
     // editbar, so removing the selection when it's lost is not a good
-    // idea. 
+    // idea.
     if (selection) repSelectionChange(selStart, selEnd, selection && selection.focusAtStart);
     // update browser selection
     p.mark("browsel");
@@ -1873,19 +1873,19 @@ function Ace2Inner(){
     return rep.selStart[0];
   }
   editorInfo.ace_caretLine = caretLine;
-  
+
   function caretColumn()
   {
     return rep.selStart[1];
   }
   editorInfo.ace_caretColumn = caretColumn;
-  
+
   function caretDocChar()
   {
     return rep.lines.offsetOfIndex(caretLine()) + caretColumn();
   }
   editorInfo.ace_caretDocChar = caretDocChar;
-  
+
   function handleReturnIndentation()
   {
     // on return, indent to level of previous line
@@ -2314,8 +2314,8 @@ function Ace2Inner(){
     documentAttributeManager.setAttributesOnRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
   }
   editorInfo.ace_performDocumentApplyAttributesToCharRange = performDocumentApplyAttributesToCharRange;
-  
-  
+
+
   function setAttributeOnSelection(attributeName, attributeValue)
   {
     if (!(rep.selStart && rep.selEnd)) return;
@@ -2879,7 +2879,7 @@ function Ace2Inner(){
       {
         if (lineClass !== null) lineElem.className = lineClass;
       };
-      
+
       result.prepareForAdd = writeClass;
       result.finishUpdate = writeClass;
       result.getInnerHTML = function()
@@ -3241,7 +3241,7 @@ function Ace2Inner(){
     {
       return (n.tagName || '').toLowerCase() == "a" && n.href;
     }
-    
+
     // only want to catch left-click
     if ((!evt.ctrlKey) && (evt.button != 2) && (evt.button != 3))
     {
@@ -3277,7 +3277,7 @@ function Ace2Inner(){
     {
       return;
     }
-    
+
     var lineNum = rep.selStart[0];
     var listType = getLineListType(lineNum);
 
@@ -3287,7 +3287,7 @@ function Ace2Inner(){
       listType = /([a-z]+)([12345678])/.exec(listType);
       var type  = listType[1];
       var level = Number(listType[2]);
-      
+
       //detect empty list item; exclude indentation
       if(text === '*' && type !== "indent")
       {
@@ -3401,9 +3401,9 @@ function Ace2Inner(){
             var thisLineListType = getLineListType(theLine);
             var prevLineEntry = (theLine > 0 && rep.lines.atIndex(theLine - 1));
             var prevLineBlank = (prevLineEntry && prevLineEntry.text.length == prevLineEntry.lineMarker);
-            
+
             var thisLineHasMarker = documentAttributeManager.lineHasMarker(theLine);
-            
+
             if (thisLineListType)
             {
               // this line is a list
@@ -3478,7 +3478,7 @@ function Ace2Inner(){
     return !!REGEX_WORDCHAR.exec(c);
   }
   editorInfo.ace_isWordChar = isWordChar;
-  
+
   function isSpaceChar(c)
   {
     return !!REGEX_SPACE.exec(c);
@@ -4011,7 +4011,7 @@ function Ace2Inner(){
           maxIndex: tn.nodeValue.length
         };
       };
-      
+
       var selection = {};
       if (origSelectionRange.compareEndPoints("StartToEnd", origSelectionRange) === 0)
       {
@@ -4875,9 +4875,9 @@ function Ace2Inner(){
       }
     }
   }
-  
+
   var listAttributeName = 'list';
-  
+
   function getLineListType(lineNum)
   {
     return documentAttributeManager.getAttributeOnLine(lineNum, listAttributeName)
@@ -4890,7 +4890,7 @@ function Ace2Inner(){
     }else{
       documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType);
     }
-    
+
     //if the list has been removed, it is necessary to renumber
     //starting from the *next* line because the list may have been
     //separated. If it returns null, it means that the list was not cut, try
@@ -4900,7 +4900,7 @@ function Ace2Inner(){
       renumberList(lineNum);
     }
   }
-  
+
   function renumberList(lineNum){
     //1-check we are in a list
     var type = getLineListType(lineNum);
@@ -4913,7 +4913,7 @@ function Ace2Inner(){
     {
       return null;
     }
-    
+
     //2-find the first line of the list
     while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
     {
@@ -4922,7 +4922,7 @@ function Ace2Inner(){
         break;
       lineNum--;
     }
-    
+
     //3-renumber every list item of the same level from the beginning, level 1
     //IMPORTANT: never skip a level because there imbrication may be arbitrary
     var builder = Changeset.builder(rep.lines.totalWidth());
@@ -4949,7 +4949,7 @@ function Ace2Inner(){
           ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
             ['start', position]
           ], rep.apool);
-          
+
           position++;
           line++;
         }
@@ -4964,19 +4964,19 @@ function Ace2Inner(){
       }
       return line;
     }
-    
+
     applyNumberList(lineNum, 1);
     var cs = builder.toString();
     if (!Changeset.isIdentity(cs))
     {
       performDocumentApplyChangeset(cs);
     }
-    
+
     //4-apply the modifications
-    
-    
+
+
   }
-  
+
 
   function doInsertList(type)
   {
@@ -5014,12 +5014,12 @@ function Ace2Inner(){
       var t = getLineListType(n);
       mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
-    
+
     _.each(mods, function(mod){
       setLineListType(mod[0], mod[1]);
     });
   }
-  
+
   function doInsertUnorderedList(){
     doInsertList('bullet');
   }
@@ -5353,7 +5353,7 @@ function Ace2Inner(){
       }
     };
   })());
-  
+
   var lineNumbersShown;
   var sideDivInner;
 
@@ -5369,11 +5369,11 @@ function Ace2Inner(){
     var newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
     //update height of all current line numbers
-  
+
     var a = sideDivInner.firstChild;
     var b = doc.body.firstChild;
     var n = 0;
-    
+
     if (currentCallStack && currentCallStack.domClean)
     {
 
@@ -5403,8 +5403,8 @@ function Ace2Inner(){
         b = b.nextSibling;
         n++;
       }
-    }	
-	
+    }
+
     if (newNumLines != lineNumbersShown)
     {
       var container = sideDivInner;
@@ -5414,21 +5414,21 @@ function Ace2Inner(){
       {
         lineNumbersShown++;
         var n = lineNumbersShown;
-        var div = odoc.createElement("DIV");	
+        var div = odoc.createElement("DIV");
         //calculate height for new line number
         var h = (b.clientHeight || b.offsetHeight);
-        
+
         if (b.nextSibling)
           h = b.nextSibling.offsetTop - b.offsetTop;
-        
+
         if(h) // apply style to div
           div.style.height = h +"px";
-			
+
         div.appendChild(odoc.createTextNode(String(n)));
         fragment.appendChild(div);
         b = b.nextSibling;
       }
-      
+
       container.appendChild(fragment);
       while (lineNumbersShown > newNumLines)
       {
@@ -5437,8 +5437,8 @@ function Ace2Inner(){
       }
     }
   }
-  
-  
+
+
   // Init documentAttributeManager
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
   editorInfo.ace_performDocumentApplyAttributesToRange = function () {
@@ -5484,13 +5484,13 @@ function Ace2Inner(){
         bindTheEventHandlers();
 
       });
-    
+
       hooks.callAll('aceInitialized', {
         editorInfo: editorInfo,
         rep: rep,
         documentAttributeManager: documentAttributeManager
       });
-    
+
       scheduler.setTimeout(function()
       {
         parent.readyFunc(); // defined in code that sets up the inner iframe

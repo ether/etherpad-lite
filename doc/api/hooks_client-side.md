@@ -175,7 +175,7 @@ This hook gets called every time the client receives a message of type `name`. T
 
 `collab_client.js` has a pretty extensive list of message types, if you want to take a look.
 
-##aceStartLineAndCharForPoint-aceEndLineAndCharForPoint 
+##aceStartLineAndCharForPoint-aceEndLineAndCharForPoint
 Called from: src/static/js/ace2_inner.js
 
 Things in context:
@@ -190,7 +190,7 @@ Things in context:
 This hook is provided to allow a plugin to turn DOM node selection into [line,char] selection.
 The return value should be an array of [line,char]
 
-##aceKeyEvent 
+##aceKeyEvent
 Called from: src/static/js/ace2_inner.js
 
 Things in context:
@@ -204,7 +204,7 @@ Things in context:
 This hook is provided to allow a plugin to handle key events.
 The return value should be true if you have handled the event.
 
-##collectContentLineText 
+##collectContentLineText
 Called from: src/static/js/contentcollector.js
 
 Things in context:
@@ -217,7 +217,7 @@ Things in context:
 This hook allows you to validate/manipulate the text before it's sent to the server side.
 The return value should be the validated/manipulated text.
 
-##collectContentLineBreak 
+##collectContentLineBreak
 Called from: src/static/js/contentcollector.js
 
 Things in context:
@@ -229,7 +229,7 @@ Things in context:
 This hook is provided to allow whether the br tag should induce a new magic domline or not.
 The return value should be either true(break the line) or false.
 
-##disableAuthorColorsForThisLine 
+##disableAuthorColorsForThisLine
 Called from: src/static/js/linestylefilter.js
 
 Things in context:

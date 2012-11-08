@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -366,7 +366,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         msg.userInfo.colorId = initialUserInfo.globalUserColor;
       }
 
-      
+
       if (userSet[id])
       {
         userSet[id] = userInfo;
@@ -433,7 +433,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       colorId = clientVars.colorPalette[colorId];
     }
-    
+
     var cssColor = colorId;
     if (inactive)
     {

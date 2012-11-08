@@ -11,26 +11,26 @@ if [ -d "../bin" ]; then
 fi
 
 #Is wget installed?
-hash wget > /dev/null 2>&1 || { 
+hash wget > /dev/null 2>&1 || {
   echo "Please install wget" >&2
-  exit 1 
+  exit 1
 }
 
 #Is zip installed?
-hash zip > /dev/null 2>&1 || { 
+hash zip > /dev/null 2>&1 || {
   echo "Please install zip" >&2
-  exit 1 
+  exit 1
 }
 
 #Is zip installed?
-hash unzip > /dev/null 2>&1 || { 
+hash unzip > /dev/null 2>&1 || {
   echo "Please install unzip" >&2
-  exit 1 
+  exit 1
 }
 
 START_FOLDER=$(pwd);
 
-echo "create a clean environment in /tmp/etherpad-lite-win..." 
+echo "create a clean environment in /tmp/etherpad-lite-win..."
 rm -rf /tmp/etherpad-lite-win
 cp -ar . /tmp/etherpad-lite-win
 cd /tmp/etherpad-lite-win

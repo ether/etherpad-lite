@@ -1,4 +1,4 @@
-\documentclass{article} 
+\documentclass{article}
 \usepackage{hyperref}
 
 \begin{document}
@@ -258,7 +258,7 @@ in Section \ref{follows}.
 \paragraph{Proof that $\mathbf{AXY=V \Rightarrow A'X'Y'=VD}$.}
 Substituting $A'X'Y'=(AB)(f(B,X))(f(f(X,B),Y))$, we
 recall that merges are commutative.  So for any two
-changesets $P$ and $Q$, 
+changesets $P$ and $Q$,
 $$m(P,Q)=m(Q,P)=Qf(Q,P)=Pf(P,Q)$$
 
 Applying this to the relation above, we see
@@ -267,7 +267,7 @@ A'X'Y'&=& AB f(B,X) f(f(X,B),Y) \\
       &=&AX f(X,B) f(f(X,B),Y) \\
       &=&A X Y f(Y, f(X,B)) \\
       &=&A X Y D \\
-      &=&V D 
+      &=&V D
 \end{eqnarray*}
 As claimed.
 
@@ -348,7 +348,7 @@ the client's changeset $C$, it does five things:
   server's most recent revision number, which we call
   $r_H$ ($H$ for HEAD).  $C'$ can be computed using
   follows (Section \ref{follows}).  Remember that the server has a series of
-  changesets, 
+  changesets,
 $$S_0\rightarrow S_1\rightarrow \ldots S_{r_c}\rightarrow S_{r_c+1} \rightarrow \ldots \rightarrow S_{r_H} $$
 $C$ is relative to $S_{r_c}$, but we need to compute $C'$ relative to $S_{r_H}$.
 We can compute a new $C$ relative to $S_{r_c+1}$ by computing $f(S_{r_c+1},C)$.  Similarly we can repeat for
