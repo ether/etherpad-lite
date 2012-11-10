@@ -31,7 +31,8 @@
 
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-
+        <script type="text/javascript" src="static/js/l10n.js"></script>
+        <link rel="resource" type="application/l10n" href="locale.ini" />
         <link rel="shortcut icon" href="<%=settings.favicon%>">
 
         <style>
@@ -148,8 +149,8 @@
 
         <div id="wrapper">
             <div id="inner">
-                <div id="button" onclick="go2Random()" class="translate">New Pad</div>
-                <div id="label" class="translate">or create/open a Pad with the name</div> 
+                <div id="button" onclick="go2Random()" data-l10n-id="index.newPad">New Pad</div>
+                <div id="label" data-l10n-id="index.createOpenPad">or create/open a Pad with the name</div> 
                 <form action="#" onsubmit="go2Name();return false;"> 
                     <input type="text" id="padname" autofocus x-webkit-speech> 
                     <button type="submit">OK</button>
