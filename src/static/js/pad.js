@@ -447,6 +447,7 @@ var pad = {
   {
     pad.collabClient.sendClientMessage(msg);
   },
+  createCookie: createCookie,
 
   init: function()
   {

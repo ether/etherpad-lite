@@ -1,5 +1,6 @@
 <%
-  var settings = require("ep_etherpad-lite/node/utils/Settings");
+  var settings = require("ep_etherpad-lite/node/utils/Settings")
+    , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
 %>
 <!doctype html>
 <html>
@@ -205,6 +206,15 @@
                     <select id="viewfontmenu">
                         <option value="normal" data-l10n-id="pad.settings.fontType.normal">Normal</option>
                         <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced">Monospaced</option>
+                    </select>
+                </p>
+                <p data-l10n-id="pad.settings.language">
+                    Language:
+                    <select id="languagemenu">
+                        <option value="en">English</option>
+                        <% for (lang in langs) { %>
+                        <option value="<%=lang%>"><%=langs[lang]%></option>
+                        <% } %>
                     </select>
                 </p>
                 <% e.end_block(); %>
