@@ -30,8 +30,8 @@ bililiteRange = function(el, debug){
 	var ret;
 	if (debug){
 		ret = new NothingRange(); // Easier to force it to use the no-selection type than to try to find an old browser
-	}else if (document.selection){
-		// Internet Explorer
+	}else if (document.selection && !document.addEventListener){
+		// Internet Explorer 8 and lower
 		ret = new IERange();
 	}else if (window.getSelection && el.setSelectionRange){
 		// Standards. Element is an input or textarea 
