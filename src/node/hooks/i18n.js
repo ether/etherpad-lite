@@ -2,12 +2,12 @@ var Globalize = require('globalize')
   , fs = require('fs')
   , path = require('path')
 
-exports.availableLangs = {}
+exports.availableLangs = {en: 'English'}
 fs.readdir(__dirname+"/../../locales", function(er, files) {
   files.forEach(function(locale) {
     locale = locale.split('.')[0]
     if(locale.toLowerCase() == 'en') return;
-    
+
     require('globalize/lib/cultures/globalize.culture.'+locale+'.js')
     var culture = Globalize.cultures[locale];
     exports.availableLangs[culture.name] = culture.nativeName;
