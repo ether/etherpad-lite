@@ -146,7 +146,7 @@ IERange.prototype._nativeSelection = function (){
 	// returns [start, end] for the selection constrained to be in element
 	var rng = this._nativeRange(); // range of the element to constrain to
 	var len = this.length();
-	if (this._doc.selection.type != 'Text') return [len, len]; // append to the end
+	if (this._doc.selection.type != 'Text') return [0,0]; // append to the end
 	var sel = this._doc.selection.createRange();
 	try{
 		return [
