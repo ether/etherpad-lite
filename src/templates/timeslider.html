@@ -31,6 +31,8 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
   <link rel="shortcut icon" href="<%=settings.favicon%>">
+  <script type="text/javascript" src="../../static/js/l10n.js"></script>
+  <link rel="resource" type="application/l10n" href="../../locale.ini" />
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <link rel="stylesheet" href="../../static/custom/timeslider.css">
@@ -74,7 +76,7 @@
                 </a>
               </li>
             </ul>
-            <a id="returnbutton">Return to pad</a>
+            <a id="returnbutton" data-l10n-id="timeslider.toolbar.returnbutton"></a>
           </div>
 
           <div>
@@ -82,9 +84,9 @@
                 <span id="revision_label"></span>
                 <span id="revision_date"></span>
               </h1>
-              <p>Authors:
-              <span id="authorsList">
-                <span>No Authors</span>
+              <p data-l10n-id="timeslider.toolbar.authors">
+                <span id="authorsList">
+                <span data-l10n-id="timeslider.toolbar.authorsList"></span>
               </span> </p>
           </div>
       </div>
@@ -101,57 +103,57 @@
   </div><!-- /padpage -->
 
 <div id="connectivity" class="popup">
-  <% e.begin_block("modals"); %>
+<% e.begin_block("modals"); %>
     <div class="connected visible">
-      <h2>Connected.</h2>
+      <h2 data-l10n-id="pad.modals.connected"></h2>
     </div>
     <div class="reconnecting">
-      <h1>Reestablishing connection...</h1>
+      <h1 data-l10n-id="pad.modals.reconnecting"></h1>
       <p><img alt="" border="0" src="../../static/img/connectingbar.gif" /></p>
     </div>
     <div class="userdup">
-      <h1>Opened in another window.</h1>
-      <h2>You seem to have opened this pad in another browser window.</h2>
-      <p>If you'd like to use this window instead, you can reconnect.</p>
-      <button id="forcereconnect">Reconnect Now</button>
+      <h1 data-l10n-id="pad.modals.uderdup"></h1>
+      <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
+      <p data-l10n-id="pad.modals.connected.advice"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <div class="unauth">
-      <h1>No Authorization.</h1>
-      <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
-      <button id="forcereconnect">Reconnect Now</button>
+      <h1 data-l10n-id="pad.modals.unauth"></h1>
+      <p data-l10n-id="pad.modals.unauth.explanation"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <div class="looping">
-      <h1>Disconnected.</h1>
-      <h2>We're having trouble talking to the EtherPad lite synchronization server.</h2>
-      <p>You may be connecting through an incompatible firewall or proxy server.</p>
+      <h1 data-l10n-id="pad.modals.looping"></h1>
+      <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
+      <p data-l10n-id="pad.modals.looping.cause"></p>
     </div>
     <div class="initsocketfail">
-      <h1>Disconnected.</h1>
-      <h2>We were unable to connect to the EtherPad lite synchronization server.</h2>
-      <p>This may be due to an incompatibility with your web browser or internet connection.</p>
+      <h1 data-l10n-id="pad.modals.initsocketfail"></h1>
+      <h2 data-l10n-id="pad.modals.initsocketfail.explanation"></h2>
+      <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
     </div>
     <div class="slowcommit">
-      <h1>Disconnected.</h1>
-      <h2>Server not responding.</h2>
-      <p>This may be due to network connectivity issues or high load on the server.</p>
-      <button id="forcereconnect">Reconnect Now</button>
+      <h1 data-l10n-id="pad.modals.slowcommit"></h1>
+      <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
+      <p data-l10n-id="pad.modals.slowcommit.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <div class="deleted">
-      <h1>Disconnected.</h1>
-      <p>This pad was deleted.</p>
+      <h1 data-l10n-id="pad.modals.deleted"></h1>
+      <p data-l10n-id="pad.modals.deleted.explanation"></p>
     </div>
     <div class="disconnected">
-      <h1>Disconnected.</h1>
-      <h2>Lost connection with the EtherPad lite synchronization server.</h2>
-      <p>This may be due to a loss of network connectivity. If this continues to happen, please let us know</p>
-      <button id="forcereconnect">Reconnect Now</button>
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
+      <p data-l10n-id="pad.modals.disconnected.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
         <input type="hidden" class="padId" name="padId">
         <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
         <input type="hidden" class="missedChanges" name="missedChanges">
     </form>
-  <% e.end_block(); %>
+<% e.end_block(); %>
 </div>
 
 <!-- export code -->
