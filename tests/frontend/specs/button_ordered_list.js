@@ -17,7 +17,7 @@ describe("assign ordered list", function(){
     }).done(done);
   });
 
-  it("keeps the numbered list on enter for the new line - EMULATES PASTING INTO A PAD", function(done){
+  xit("issue #1125 keeps the numbered list on enter for the new line - EMULATES PASTING INTO A PAD", function(done){
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$;
 
