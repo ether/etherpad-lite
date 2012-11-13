@@ -150,7 +150,7 @@ var chat = (function()
       $("#chatinput").keypress(function(evt)
       {
         //if the user typed enter, fire the send
-        if(evt.which == 13)
+        if(evt.which == 13 || evt.which == 10)
         {
           evt.preventDefault();
           self.send();

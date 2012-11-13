@@ -14,6 +14,7 @@
     { "name": "importexport", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/importexport:expressCreateServer" } },
     { "name": "errorhandling", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/errorhandling:expressCreateServer" } },
     { "name": "socketio", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/socketio:expressCreateServer" } },
+    { "name": "tests", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/tests:expressCreateServer" } },
     { "name": "admin", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/admin:expressCreateServer" } },
     { "name": "adminplugins", "hooks": {
       "expressCreateServer": "ep_etherpad-lite/node/hooks/express/adminplugins:expressCreateServer",
