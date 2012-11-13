@@ -389,6 +389,10 @@ function handshake()
   });
   // Bind the colorpicker
   var fb = $('#colorpicker').farbtastic({ callback: '#mycolorpickerpreview', width: 220});
+  // Bind the read only button  
+  $('#readonlyinput').on('click',function(){
+    padeditbar.setEmbedLinks();
+  });
 }
 
 var pad = {

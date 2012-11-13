@@ -69,7 +69,7 @@ echo "Ensure that all dependencies are up to date..."
   cd node_modules
   [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
   cd ep_etherpad-lite
-  npm install
+  npm install -s
 ) || { 
   rm -rf node_modules
   exit 1 
