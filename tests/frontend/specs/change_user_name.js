@@ -34,7 +34,7 @@ describe("change username value", function(){
           done();
         }
       });
-    }, 0);
+    }, 1000);
   });
 
 
