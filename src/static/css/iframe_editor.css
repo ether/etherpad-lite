@@ -126,7 +126,7 @@ body.doesWrap {
 .sidedivdelayed { /* class set after sizes are set */
   background-color: #eee;
   color: #888 !important;
-  border-right: 1px solid #999;
+  border-right: 1px solid #ccc;
 }
 .sidedivhidden {
   display: none;
