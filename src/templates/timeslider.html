@@ -3,7 +3,7 @@
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
 %>
 <!doctype html>
-<html lang="en">
+<html>
 <title data-l10n-id="timeslider.pageTitle" data-l10n-args='{ "appTitle": "<%=settings.title%>" }'><%=settings.title%> Timeslider</title>
 <script>
   /*
@@ -169,6 +169,15 @@
 </div>
 </div>
 
+<script type="text/javascript">
+    (function() {
+      // Set language for l10n
+      var language = document.cookie.match(/language=(\w{2})/);
+      if(language) document.documentElement.lang = language[1];
+    })();
+</script>
+
+<script type="text/javascript" src="../../static/js/l10n.js"></script>
 <script type="text/javascript" src="../../static/js/require-kernel.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
@@ -183,10 +192,6 @@
   var clientVars = {};
   
   (function () {
-    // Set language for l10n
-    var language = document.cookie.match(/language=(\w{2})/);
-    document.documentElement.lang = language? language[1] : 'en';
-    
     var pathComponents = location.pathname.split('/');
     
     // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
