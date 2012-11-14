@@ -111,6 +111,7 @@ function getParams()
   var IsnoColors = params["noColors"];
   var rtl = params["rtl"];
   var alwaysShowChat = params["alwaysShowChat"];
+  var lang = params["lang"];
 
   if(IsnoColors)
   {
@@ -171,6 +172,13 @@ function getParams()
     if(alwaysShowChat == "true")
     {
       chat.stickToScreen();
+    }
+  }
+  if(lang)
+  {
+    if(lang !== "")
+    {
+      document.webL10n.setLanguage(lang);
     }
   }
 }
@@ -451,6 +459,7 @@ var pad = {
   {
     pad.collabClient.sendClientMessage(msg);
   },
+  createCookie: createCookie,
 
   init: function()
   {
