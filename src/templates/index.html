@@ -32,7 +32,7 @@
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
         <script type="text/javascript" src="static/js/l10n.js"></script>
-        <link rel="resource" type="application/l10n" href="locale.ini" />
+        <link rel="resource" type="application/l10n" href="locales.ini" />
         <link rel="shortcut icon" href="<%=settings.favicon%>">
 
         <style>
@@ -184,6 +184,12 @@
                 }
                 return randomstring;
             }
+            
+            (function(document) {
+              // Set language for l10n
+              var language = document.cookie.match(/language=(\w{2})/);
+              document.documentElement.lang = language? language[1] : 'en';
+            })(document)
             
             // start the custom js
             if (typeof customStart == "function") customStart();
