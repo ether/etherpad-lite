@@ -27,8 +27,8 @@ documented codebase makes it easier for developers to improve the code and contr
 </table> 
 
 
-Etherpad Lite is designed to be easily embeddable and provides a [HTTP API](https://github.com/Pita/etherpad-lite/wiki/HTTP-API) 
-that allows your web application to manage pads, users and groups. It is recommended to use the client implementations available for this API, listed on [this wiki page](https://github.com/Pita/etherpad-lite/wiki/HTTP-API-client-libraries).
+Etherpad Lite is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API) 
+that allows your web application to manage pads, users and groups. It is recommended to use the client implementations available for this API, listed on [this wiki page](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries).
 There is also a [jQuery plugin](https://github.com/johnyma22/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website
 
 **Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live**
