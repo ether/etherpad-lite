@@ -1,4 +1,4 @@
-# v.1.2
+# v1.2
  * Internationalization / Language / Translation support (i18n) with support for German/French
  * A frontend/client side testing framework and backend build tests
  * Customizable robots.txt
