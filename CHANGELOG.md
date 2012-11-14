@@ -1,3 +1,16 @@
+# v1.2
+ * Internationalization / Language / Translation support (i18n) with support for German/French
+ * A frontend/client side testing framework and backend build tests
+ * Customizable robots.txt
+ * Customizable app title (finally you can name your epl instance!)
+ * eejs render arguments are now passed on to eejs hooks through the newly introduced `renderContext` argument.
+ * Plugin-specific settings in settings.json (finally allowing for things like a google analytics plugin)
+ * Serve admin dashboard at /admin (still very limited, though)
+ * Modify your settings.json through the newly created UI at /admin/settings
+ * Fix: Import <ol>'s  as <ol>'s and not as <ul>'s!
+ * Added solaris compatibility (bin/installDeps.sh was broken on solaris)
+ * Fix a bug with IE9 and Password Protected Pads using HTTPS
+
 # v1.1.5
  * We updated to express v3 (please [make sure](https://github.com/visionmedia/express/wiki/Migrating-from-2.x-to-3.x) your plugin works under express v3)
  * `userColor` URL parameter which sets the initial author color
