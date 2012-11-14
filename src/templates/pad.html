@@ -201,22 +201,34 @@
                     <input type="checkbox" id="options-linenoscheck" checked>
                     <label for="options-linenoscheck" data-l10n-id="pad.settings.linenocheck"></label>
                 </p>
-                <p data-l10n-id="pad.settings.fontType">
-                    Font type:
-                    <select id="viewfontmenu">
-                        <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
-                        <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
-                    </select>
-                </p>
-                <p data-l10n-id="pad.settings.language">
-                    Language:
-                    <select id="languagemenu">
-                        <% for (lang in langs) { %>
-                        <option value="<%=lang%>"><%=langs[lang]%></option>
-                        <% } %>
-                    </select>
-                </p>
                 <% e.end_block(); %>
+                <table>
+                    <% e.begin_block("mySettings.dropdowns"); %>
+                    <tr>
+                        <td>
+                            <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
+                        </td>
+                        <td>
+                            <select id="viewfontmenu">
+                                <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
+                                <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="languagemenu" data-l10n-id="pad.settings.language">Language:</label>
+                        </td>
+                        <td>
+                            <select id="languagemenu">
+                                <% for (lang in langs) { %>
+                                <option value="<%=lang%>"><%=langs[lang]%></option>
+                                <% } %>
+                            </select>
+                        </td>
+                    </tr>
+                    <% e.end_block(); %>
+                </table>
             </div>
             <div class="column">
                 <% e.begin_block("globalSettings"); %>

@@ -748,6 +748,15 @@ input[type=checkbox] {
 .popup p {
   margin: 5px 0
 }
+.popup select {
+  background: #fff;
+  padding: 2px;
+  height: 24px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  outline: none;
+  min-width: 105px;
+}
 .column {
   float: left;
   width: 50%;
