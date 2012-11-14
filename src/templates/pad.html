@@ -33,7 +33,6 @@
         <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 
-        <script type="text/javascript" src="../static/js/l10n.js"></script>
         <link rel="resource" type="application/l10n" href="../locales.ini" />
 
 
@@ -370,10 +369,9 @@
 
         <% e.begin_block("scripts"); %>
         <script type="text/javascript">
-            /* Display errors on page load to the user 
-               (Gets overridden by padutils.setupGlobalExceptionHandler)
-            */
             (function() {
+              // Display errors on page load to the user 
+              // (Gets overridden by padutils.setupGlobalExceptionHandler)
               var originalHandler = window.onerror;
               window.onerror = function(msg, url, line) {
                 var box   = document.getElementById('editorloadingbox');
@@ -383,9 +381,14 @@
                 // call original error handler
                 if(typeof(originalHandler) == 'function') originalHandler.call(null, arguments);
               };
+              
+              // Set language for l10n
+              var language = document.cookie.match(/language=(\w{2})/);
+              if(language) document.documentElement.lang = language[1];
             })();
         </script>
-
+        
+        <script type="text/javascript" src="../static/js/l10n.js"></script>
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 
@@ -399,10 +402,6 @@
         <script type="text/javascript">
             var clientVars = {};
             (function () {
-              // Set language for l10n
-              var language = document.cookie.match(/language=(\w{2})/);
-              document.documentElement.lang = language? language[1] : 'en';
-              
               var pathComponents = location.pathname.split('/');
               
               // Strip 'p' and the padname from the pathname and set as baseURL
