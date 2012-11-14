@@ -1,5 +1,6 @@
 <%
-  var settings = require("ep_etherpad-lite/node/utils/Settings");
+  var settings = require("ep_etherpad-lite/node/utils/Settings")
+    , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
 %>
 <!doctype html>
 <html lang="en">
@@ -71,7 +72,7 @@
           <div class="editbarright toolbar" id="editbar">
             <ul>
               <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
-                <a id="exportlink" title="Export to different document formats">
+                <a id="exportlink" data-l10n-id="pad.toolbar.import_export">
                   <div class="buttonicon buttonicon-import_export"></div>
                 </a>
               </li>
