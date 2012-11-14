@@ -5,6 +5,7 @@
       "restartServer": "ep_etherpad-lite/node/hooks/express:restartServer"
       } },
     { "name": "static", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static:expressCreateServer" } },
+    { "name": "i18n", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/i18n:expressCreateServer" } },
     { "name": "specialpages", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/specialpages:expressCreateServer" } },
     { "name": "padurlsanitize", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padurlsanitize:expressCreateServer" } },
     { "name": "padreadonly", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padreadonly:expressCreateServer" } },

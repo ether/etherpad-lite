@@ -1,5 +1,6 @@
 @include documentation
-@include cusotm_static
+@include localization
+@include custom_static
 @include api/api
 @include plugins
 @include database

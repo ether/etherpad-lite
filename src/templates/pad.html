@@ -1,5 +1,6 @@
 <%
-  var settings = require("ep_etherpad-lite/node/utils/Settings");
+  var settings = require("ep_etherpad-lite/node/utils/Settings")
+    , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
 %>
 <!doctype html>
 <html>
@@ -32,6 +33,10 @@
         <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 
+        <script type="text/javascript" src="../static/js/l10n.js"></script>
+        <link rel="resource" type="application/l10n" href="../locales.ini" />
+
+
         <link rel="shortcut icon" href="<%=settings.favicon%>">
 
         <% e.begin_block("styles"); %>
@@ -50,60 +55,60 @@
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
                 <li class="acl-write" id="bold" data-key="bold">
-                    <a class="grouped-left" title="Bold (ctrl-B)">
+                    <a class="grouped-left" data-l10n-id="pad.toolbar.bold">
                       <span class="buttonicon buttonicon-bold"></span>
                     </a>
                 </li>
                 <li class="acl-write" id="italic" data-key="italic">
-                    <a class="grouped-middle" title="Italics (ctrl-I)">
+                    <a class="grouped-middle" data-l10n-id="pad.toolbar.italic">
                       <span class="buttonicon buttonicon-italic"></span>
                     </a>
                 </li>
                 <li class="acl-write" id="underline" data-key="underline">
-                    <a class="grouped-middle" title="Underline (ctrl-U)">
+                    <a class="grouped-middle" data-l10n-id="pad.toolbar.underline">
                       <span class="buttonicon buttonicon-underline"></span>
                     </a>
                 </li>
                 <li class="acl-write" id="strikethrough" data-key="strikethrough">
-                    <a class="grouped-right" title="Strikethrough">
+                    <a class="grouped-right" data-l10n-id="pad.toolbar.strikethrough">
                       <span class="buttonicon buttonicon-strikethrough"></span>
                     </a>
                 </li>
                 <li class="acl-write separator"></li>
                 <li class="acl-write" id="oderedlist" data-key="insertorderedlist">
-                    <a class="grouped-left" title="Toggle Ordered List">
+                    <a class="grouped-left" data-l10n-id="pad.toolbar.ol">
                       <span class="buttonicon buttonicon-insertorderedlist"></span>
                     </a>
                 </li>
                 <li class="acl-write" id="unoderedlist" data-key="insertunorderedlist">
-                    <a class="grouped-middle" title="Toggle Bullet List">
+                    <a class="grouped-middle" data-l10n-id="pad.toolbar.ul">
                       <span class="buttonicon buttonicon-insertunorderedlist"></span>
                     </a>
                 </li>
                 <li class="acl-write" id="indent" data-key="indent">
-                    <a class="grouped-middle" title="Indent">
+                    <a class="grouped-middle" data-l10n-id="pad.toolbar.indent">
                       <span class="buttonicon buttonicon-indent"></span>
                     </a>
                 </li>
                 <li class="acl-write" id="outdent" data-key="outdent">
-                    <a class="grouped-right" title="Unindent">
+                    <a class="grouped-right" data-l10n-id="pad.toolbar.unindent">
                       <span class="buttonicon buttonicon-outdent"></span>
                     </a>
                 </li>
                 <li class="acl-write separator"></li>
                 <li class="acl-write" id="undo" data-key="undo">
-                    <a class="grouped-left" title="Undo (ctrl-Z)">
+                    <a class="grouped-left" data-l10n-id="pad.toolbar.undo">
                       <span class="buttonicon buttonicon-undo"></span>
                     </a>
                 </li>
                 <li class="acl-write" id="redo" data-key="redo">
-                    <a class="grouped-right" title="Redo (ctrl-Y)">
+                    <a class="grouped-right" data-l10n-id="pad.toolbar.redo">
                       <span class="buttonicon buttonicon-redo"></span>
                     </a>
                 </li>
                 <li class="acl-write separator"></li>
                 <li class="acl-write" id="clearAuthorship" data-key="clearauthorship">
-                    <a title="Clear Authorship Colors">
+                    <a data-l10n-id="pad.toolbar.clearAuthorship">
                       <span class="buttonicon buttonicon-clearauthorship"></span>
                     </a>
                 </li>
@@ -112,34 +117,34 @@
             <ul class="menu_right">
                 <% e.begin_block("editbarMenuRight"); %>
                 <li data-key="import_export">
-                    <a class="grouped-left" id="importexportlink" title="Import/Export from/to different document formats">
+                    <a class="grouped-left" id="importexportlink" data-l10n-id="pad.toolbar.import_export">
                         <span class="buttonicon buttonicon-import_export"></span>
                     </a>
                 </li>
                 <li onClick="document.location = document.location.pathname+ '/timeslider'">
-                    <a id="timesliderlink" class="grouped-middle" title="Show the history of this pad">
+                    <a id="timesliderlink" class="grouped-middle" data-l10n-id="pad.toolbar.timeslider">
                         <span class="buttonicon buttonicon-history"></span>
                     </a>
                 </li>
                 <li class="acl-write" data-key="savedRevision">
-                    <a class="grouped-right" id="revisionlink" title="Mark this revision as a saved revision">
+                    <a class="grouped-right" id="revisionlink" data-l10n-id="pad.toolbar.savedRevision">
                         <span class="buttonicon buttonicon-savedRevision"></span>
                     </a>
                 </li>
                 <li class="acl-write separator"></li>
                 <li class="acl-write" data-key="settings">
-                    <a class="grouped-left" id="settingslink" title="Settings of this pad">
+                    <a class="grouped-left" id="settingslink" data-l10n-id="pad.toolbar.settings">
                         <span class="buttonicon buttonicon-settings"></span>
                     </a>
                 </li>
                 <li data-key="embed">
-                    <a class="grouped-right" id="embedlink" title="Share and Embed this pad">
+                    <a class="grouped-right" id="embedlink" data-l10n-id="pad.toolbar.embed">
                         <span class="grouped-right buttonicon buttonicon-embed"></span>
                     </a>
                 </li>
                 <li class="separator"></li>
                 <li id="usericon" data-key="showusers">
-                    <a title="Show connected users">
+                    <a data-l10n-id="pad.toolbar.showusers">
                         <span class="buttonicon buttonicon-showusers"></span>
                         <span id="online_count">1</span>
                     </a>
@@ -153,8 +158,8 @@
             <div id="myuser">
                 <div id="mycolorpicker">
                     <div id="colorpicker"></div>
-                    <button id="mycolorpickersave">Save</button>
-                    <button id="mycolorpickercancel">Cancel</button>
+                    <button id="mycolorpickersave" data-l10n-id="pad.colorpicker.save"></button>
+                    <button id="mycolorpickercancel" data-l10n-id="pad.colorpicker.cancel"></button>
                     <span id="mycolorpickerpreview" class="myswatchboxhoverable"></span>
                 </div>
                 <div id="myswatchbox"><div id="myswatch"></div></div>
@@ -174,56 +179,76 @@
         <div id="editorcontainerbox">
             <div id="editorcontainer"></div>
             <div id="editorloadingbox">
-              <p>Loading...</p>
+              <p data-l10n-id="pad.loading">Loading...</p>
               <noscript><strong>Sorry, you have to enable Javascript in order to use this.</strong></noscript>
             </div>
         </div>
 
         <div id="settings" class="popup">
-            <h1>Pad settings</h1>
+            <h1 data-l10n-id="pad.settings.padSettings"></h1>
             <div class="column">
                 <% e.begin_block("mySettings"); %>
-                <h2>My view</h2>
+                <h2 data-l10n-id="pad.settings.myView"></h2>
                 <p>
                     <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
-                    <label for="options-stickychat">Chat always on screen</label>
+                    <label for="options-stickychat" data-l10n-id="pad.settings.stickychat"></label>
                 </p>
                 <p>
                     <input type="checkbox" id="options-colorscheck">
-                    <label for="options-colorscheck">Authorship colors</label>
+                    <label for="options-colorscheck" data-l10n-id="pad.settings.colorcheck"></label>
                 </p>
                 <p>
                     <input type="checkbox" id="options-linenoscheck" checked>
-                    <label for="options-linenoscheck">Line numbers</label>
-                </p>
-                <p>
-                    Font type:
-                    <select id="viewfontmenu">
-                        <option value="normal">Normal</option>
-                        <option value="monospace">Monospaced</option>
-                    </select>
+                    <label for="options-linenoscheck" data-l10n-id="pad.settings.linenocheck"></label>
                 </p>
                 <% e.end_block(); %>
+                <table>
+                    <% e.begin_block("mySettings.dropdowns"); %>
+                    <tr>
+                        <td>
+                            <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
+                        </td>
+                        <td>
+                            <select id="viewfontmenu">
+                                <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
+                                <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="languagemenu" data-l10n-id="pad.settings.language">Language:</label>
+                        </td>
+                        <td>
+                            <select id="languagemenu">
+                                <% for (lang in langs) { %>
+                                <option value="<%=lang%>"><%=langs[lang]%></option>
+                                <% } %>
+                            </select>
+                        </td>
+                    </tr>
+                    <% e.end_block(); %>
+                </table>
             </div>
             <div class="column">
                 <% e.begin_block("globalSettings"); %>
-                <h2>Global view</h2>
+                <h2 data-l10n-id="pad.settings.globalView"></h2>
                 <% e.end_block(); %>
             </div>
         </div>
 
         <div id="importexport" class="popup">
-            <h1>Import/Export</h1>
+            <h1 data-l10n-id="pad.importExport.import_export"></h1>
             <div class="column acl-write">
                 <% e.begin_block("importColumn"); %>
-                <h2>Upload any text file or document</h2><br>
+                <h2 data-l10n-id="pad.importExport.import"></h2><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
                     <div class="importformdiv" id="importformfilediv">
                         <input type="file" name="file" size="15" id="importfileinput">
                         <div class="importmessage" id="importmessagefail"></div>
                     </div>
                     <div id="import"></div>
-                    <div class="importmessage" id="importmessagesuccess">Successful!</div>
+                    <div class="importmessage" id="importmessagesuccess" data-l10n-id="pad.importExport.successful"></div>
                     <div class="importformdiv" id="importformsubmitdiv">
                         <input type="hidden" name="padId" value="blpmaXT35R">
                         <span class="nowrap">
@@ -236,14 +261,14 @@
                 <% e.end_block(); %>
             </div>
             <div class="column">
-                <h2>Export current pad as</h2>
+                <h2 data-l10n-id="pad.importExport.export"></h2>
                 <% e.begin_block("exportColumn"); %>
-                <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
-                <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
-                <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
-                <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
-                <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
-                <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
+                <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
+                <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain" data-l10n-id="pad.importExport.exportplain"></div></a>
+                <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>
+                <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></div></a>
+                <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen" data-l10n-id="pad.importExport.exportopen"></div></a>
+                <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki" data-l10n-id="pad.importExport.exportdokuwiki"></div></a>
                 <% e.end_block(); %>
             </div>
         </div>
@@ -251,48 +276,48 @@
         <div id="connectivity" class="popup">
             <% e.begin_block("modals"); %>
                 <div class="connected visible">
-                  <h2>Connected.</h2>
+                  <h2 data-l10n-id="pad.modals.connected"></h2>
                 </div>
                 <div class="reconnecting">
-                  <h1>Reestablishing connection...</h1>
+                  <h1 data-l10n-id="pad.modals.reconnecting"></h1>
                   <p><img alt="" border="0" src="../static/img/connectingbar.gif" /></p>
                 </div>
                 <div class="userdup">
-                  <h1>Opened in another window.</h1>
-                  <h2>You seem to have opened this pad in another browser window.</h2>
-                  <p>If you'd like to use this window instead, you can reconnect.</p>
-                  <button id="forcereconnect">Reconnect Now</button>
+                  <h1 data-l10n-id="pad.modals.uderdup"></h1>
+                  <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
+                  <p data-l10n-id="pad.modals.connected.advice"></p>
+                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <div class="unauth">
-                  <h1>No Authorization.</h1>
-                  <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
-                  <button id="forcereconnect">Reconnect Now</button>
+                  <h1 data-l10n-id="pad.modals.unauth"></h1>
+                  <p data-l10n-id="pad.modals.unauth.explanation"></p>
+                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <div class="looping">
-                  <h1>Disconnected.</h1>
-                  <h2>We're having trouble talking to the EtherPad lite synchronization server.</h2>
-                  <p>You may be connecting through an incompatible firewall or proxy server.</p>
+                  <h1 data-l10n-id="pad.modals.looping"></h1>
+                  <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
+                  <p data-l10n-id="pad.modals.looping.cause"></p>
                 </div>
                 <div class="initsocketfail">
-                  <h1>Disconnected.</h1>
-                  <h2>We were unable to connect to the EtherPad lite synchronization server.</h2>
-                  <p>This may be due to an incompatibility with your web browser or internet connection.</p>
+                  <h1 data-l10n-id="pad.modals.initsocketfail"></h1>
+                  <h2 data-l10n-id="pad.modals.initsocketfail.explanation"></h2>
+                  <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
                 </div>
                 <div class="slowcommit">
-                  <h1>Disconnected.</h1>
-                  <h2>Server not responding.</h2>
-                  <p>This may be due to network connectivity issues or high load on the server.</p>
-                  <button id="forcereconnect">Reconnect Now</button>
+                  <h1 data-l10n-id="pad.modals.slowcommit"></h1>
+                  <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
+                  <p data-l10n-id="pad.modals.slowcommit.cause"></p>
+                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <div class="deleted">
-                  <h1>Disconnected.</h1>
-                  <p>This pad was deleted.</p>
+                  <h1 data-l10n-id="pad.modals.deleted"></h1>
+                  <p data-l10n-id="pad.modals.deleted.explanation"></p>
                 </div>
                 <div class="disconnected">
-                  <h1>Disconnected.</h1>
-                  <h2>Lost connection with the EtherPad lite synchronization server.</h2>
-                  <p>This may be due to a loss of network connectivity. If this continues to happen, please let us know</p>
-                  <button id="forcereconnect">Reconnect Now</button>
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
+                  <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
+                  <p data-l10n-id="pad.modals.disconnected.cause"></p>
+                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
                     <input type="hidden" class="padId" name="padId">
@@ -306,16 +331,16 @@
             <% e.begin_block("embedPopup"); %>
             <div id="embedreadonly" class="right acl-write">
                 <input type="checkbox" id="readonlyinput">
-                <label for="readonlyinput">Read only</label>
+                <label for="readonlyinput" data-l10n-id="pad.share.readonly"></label>
             </div>
-            <h1>Share this pad</h1>
+            <h1 data-l10n-id="pad.share"></h1>
             <div id="linkcode">
-                <h2>Link</h2>
+                <h2 data-l10n-id="pad.share.link"></h2>
                 <input id="linkinput" type="text" value="">
             </div>
             <br>
             <div id="embedcode">
-                <h2>Embed URL</h2>
+                <h2 data-l10n-id="pad.share.emebdcode"></h2>
                 <input id="embedinput" type="text" value="">
             </div>
             <% e.end_block(); %>
@@ -323,14 +348,14 @@
 
         <div id="chatthrob"></div>
 
-        <div id="chaticon" title="Open the chat for this pad" onclick="chat.show();return false;">
-            <span id="chatlabel">Chat</span>
+        <div id="chaticon" data-l10n-id="pad.chat" onclick="chat.show();return false;">
+            <span id="chatlabel" data-l10n-id="pad.chat"></span>
             <span class="buttonicon buttonicon-chat"></span>
             <span id="chatcounter">0</span>
         </div>
 
         <div id="chatbox">
-            <div id="titlebar"><span id ="titlelabel">Chat</span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
+            <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
             <div id="chattext" class="authorColors"></div>
             <div id="chatinputbox">
                 <form>
@@ -374,7 +399,9 @@
         <script type="text/javascript">
             var clientVars = {};
             (function () {
-              
+              // Set language for l10n
+              var language = document.cookie.match(/language=(\w{2})/);
+              document.documentElement.lang = language? language[1] : 'en';
               
               var pathComponents = location.pathname.split('/');
               
