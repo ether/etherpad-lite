@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Making collaborative editing the standard on the web
 
 # About
@@ -124,3 +125,9 @@ Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and mak
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
+=======
+We moved!
+=============
+
+You can now find Etherpad Lite under [github.com/ether/etherpad-lite](https://github.com/ether/etherpad-lite)
+>>>>>>> a5c4fb154f7414cd5dca9e50c3f2ad00e42672f5
