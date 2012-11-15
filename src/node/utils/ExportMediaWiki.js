@@ -255,9 +255,9 @@ function getMediaWikiFromAtext(pad, atext)
     {
       if (line.listTypeName == "number")
       {
-        pieces.push('# ');
+        pieces.push(new Array(line.listLevel + 1).join('') + '# ');
       } else {
-        pieces.push('* ');
+        pieces.push(new Array(line.listLevel + 1).join('') + '* ');
       }
     }
     pieces.push(lineContent);
