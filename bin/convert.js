@@ -1,9 +1,9 @@
 
 var startTime = new Date().getTime();
 var fs = require("fs");
-var ueberDB = require("ueberDB");
-var mysql = require("mysql");
-var async = require("async");
+var ueberDB = require("../src/node_modules/ueberDB");
+var mysql = require("../src/node_modules/ueberDB/node_modules/mysql");
+var async = require("../src/node_modules/async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");

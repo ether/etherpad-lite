@@ -49,7 +49,8 @@ Called from: src/node/server.js
 
 Things in context:
 
-1. app - the main application object (helpful for adding new paths and such)
+1. app - the main express application object (helpful for adding new paths and such)
+2. server - the http server object
 
 This hook gets called after the application object has been created, but before it starts listening. This is similar to the expressConfigure hook, but it's not guaranteed that the application object will have all relevant configuration variables.
 
@@ -64,6 +65,42 @@ This hook gets called upon the rendering of an ejs template block. For any speci
 
 Have a look at `src/templates/pad.html` and `src/templates/timeslider.html` to see which blocks are available.
 
+## padCreate
+Called from: src/node/db/Pad.js
+
+Things in context:
+
+1. pad - the pad instance
+
+This hook gets called when a new pad was created.
+
+## padLoad
+Called from: src/node/db/Pad.js
+
+Things in context:
+
+1. pad - the pad instance
+
+This hook gets called when an pad was loaded. If a new pad was created and loaded this event will be emitted too.
+
+## padUpdate
+Called from: src/node/db/Pad.js
+
+Things in context:
+
+1. pad - the pad instance
+
+This hook gets called when an existing pad was updated.
+
+## padRemove
+Called from: src/node/db/Pad.js
+
+Things in context:
+
+1. padID
+
+This hook gets called when an existing pad was removed/deleted.
+
 ## socketio
 Called from: src/node/hooks/express/socketio.js
 
@@ -71,6 +108,7 @@ Things in context:
 
 1. app - the application object
 2. io - the socketio object
+3. server - the http server object
 
 I have no idea what this is useful for, someone else will have to add this description.
 
