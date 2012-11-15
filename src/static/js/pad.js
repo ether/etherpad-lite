@@ -64,7 +64,13 @@ function createCookie(name, value, days, path)
   if(!path)
     path = "/";
   
-  document.cookie = name + "=" + value + expires + "; path=" + path;
+  //Check if the browser is IE and if so make sure the full path is set in the cookie
+  if(navigator.appName=='Microsoft Internet Explorer'){
+    document.cookie = name + "=" + value + expires + "; path="+document.location;
+  }
+  else{
+    document.cookie = name + "=" + value + expires + "; path=" + path;
+  }
 }
 
 function readCookie(name)
@@ -105,6 +111,7 @@ function getParams()
   var IsnoColors = params["noColors"];
   var rtl = params["rtl"];
   var alwaysShowChat = params["alwaysShowChat"];
+  var lang = params["lang"];
 
   if(IsnoColors)
   {
@@ -165,6 +172,13 @@ function getParams()
     if(alwaysShowChat == "true")
     {
       chat.stickToScreen();
+    }
+  }
+  if(lang)
+  {
+    if(lang !== "")
+    {
+      document.webL10n.setLanguage(lang);
     }
   }
 }
@@ -383,6 +397,10 @@ function handshake()
   });
   // Bind the colorpicker
   var fb = $('#colorpicker').farbtastic({ callback: '#mycolorpickerpreview', width: 220});
+  // Bind the read only button  
+  $('#readonlyinput').on('click',function(){
+    padeditbar.setEmbedLinks();
+  });
 }
 
 var pad = {
@@ -441,6 +459,7 @@ var pad = {
   {
     pad.collabClient.sendClientMessage(msg);
   },
+  createCookie: createCookie,
 
   init: function()
   {

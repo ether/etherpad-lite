@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <title>Settings manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" href="../static/css/admin.css">
+    <script src="../static/js/jquery.js"></script>
+    <script src="../socket.io/socket.io.js"></script>
+    <script src="../static/js/admin/minify.json.js"></script>
+    <script src="../static/js/admin/settings.js"></script>
+    <script src="../static/js/admin/jquery.autosize.js"></script>
+
+  </head>
+  <body>
+    <div id="wrapper">
+
+      <% if (errors.length) { %>
+        <div class="errors">
+          <% errors.forEach(function (item) { %>
+            <div class="error"><%= item.toString() %></div>
+          <% }) %>
+        </div>
+      <% } %>
+
+
+      <h1>Etherpad Lite Settings</h1>
+      <a href='https://github.com/Pita/etherpad-lite/wiki/Example-Production-Settings.JSON'>Example production settings template</a>
+      <a href='https://github.com/Pita/etherpad-lite/wiki/Example-Development-Settings.JSON'>Example development settings template</a>
+      <textarea class="settings"></textarea>
+      <input type="button" class="settingsButton" id="saveSettings" value="Save Settings">
+      <input type="button" class="settingsButton" id="restartEtherpad" value="Restart Etherpad">
+      <div id="response"></div>
+    </div>
+  </body>
+</html>

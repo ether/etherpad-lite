@@ -75,6 +75,11 @@ var padeditor = (function()
       {
         pad.changeViewOption('useMonospaceFont', $("#viewfontmenu").val() == 'monospace');
       });
+      $("#languagemenu").val(document.webL10n.getLanguage());
+      $("#languagemenu").change(function() {
+        pad.createCookie("language",$("#languagemenu").val(),null,'/');
+        document.webL10n.setLanguage($("#languagemenu").val());
+      });
     },
     setViewOptions: function(newOptions)
     {

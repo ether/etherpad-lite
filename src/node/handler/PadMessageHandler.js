@@ -619,7 +619,7 @@ exports.updatePadClients = function(pad, callback)
     //https://github.com/caolan/async#whilst
     //send them all new changesets
     async.whilst(
-      function (){ return sessioninfos[session].rev < pad.getHeadRevisionNumber()},
+      function (){ return sessioninfos[session] && sessioninfos[session].rev < pad.getHeadRevisionNumber()},
       function(callback)
       {      
         var author, revChangeset, currentTime;
