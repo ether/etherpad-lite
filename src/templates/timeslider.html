@@ -1,12 +1,39 @@
+<%
+  var settings = require("ep_etherpad-lite/node/utils/Settings")
+    , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
+%>
 <!doctype html>
-<html lang="en">
+<html>
+<title data-l10n-id="timeslider.pageTitle" data-l10n-args='{ "appTitle": "<%=settings.title%>" }'><%=settings.title%> Timeslider</title>
+<script>
+  /*
+  |@licstart  The following is the entire license notice for the
+  JavaScript code in this page.|
+
+  Copyright 2011 Peter Martischka, Primary Technology.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  |@licend  The above is the entire license notice
+  for the JavaScript code in this page.|
+  */
+</script>
 <head>
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
-
-  <title>Etherpad Lite Timeslider</title>
-
-  <link rel="shortcut icon" href="../../favicon.ico">
+  <link rel="shortcut icon" href="<%=settings.favicon%>">
+  <script type="text/javascript" src="../../static/js/l10n.js"></script>
+  <link rel="resource" type="application/l10n" href="../../locales.ini" />
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <link rel="stylesheet" href="../../static/custom/timeslider.css">
@@ -45,12 +72,12 @@
           <div class="editbarright toolbar" id="editbar">
             <ul>
               <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
-                <a id="exportlink" title="Export to different document formats">
+                <a id="exportlink" data-l10n-id="pad.importExport.export">
                   <div class="buttonicon buttonicon-import_export"></div>
                 </a>
               </li>
             </ul>
-            <a id="returnbutton">Return to pad</a>
+            <a id="returnbutton" data-l10n-id="timeslider.toolbar.returnbutton"></a>
           </div>
 
           <div>
@@ -58,9 +85,8 @@
                 <span id="revision_label"></span>
                 <span id="revision_date"></span>
               </h1>
-              <p>Authors:
-              <span id="authorsList">
-                <span>No Authors</span>
+              <p data-l10n-id="timeslider.toolbar.authors">
+                <span id="authorsList" data-l10n-id="timeslider.toolbar.authorsList"></span>
               </span> </p>
           </div>
       </div>
@@ -77,74 +103,82 @@
   </div><!-- /padpage -->
 
 <div id="connectivity" class="popup">
-  <% e.begin_block("modals"); %>
+<% e.begin_block("modals"); %>
     <div class="connected visible">
-      <h2>Connected.</h2>
+      <h2 data-l10n-id="pad.modals.connected"></h2>
     </div>
     <div class="reconnecting">
-      <h1>Reestablishing connection...</h1>
-      <p><img alt="" border="0" src="/static/img/connectingbar.gif" /></p>
+      <h1 data-l10n-id="pad.modals.reconnecting"></h1>
+      <p><img alt="" border="0" src="../../static/img/connectingbar.gif" /></p>
     </div>
     <div class="userdup">
-      <h1>Opened in another window.</h1>
-      <h2>You seem to have opened this pad in another browser window.</h2>
-      <p>If you'd like to use this window instead, you can reconnect.</p>
-      <button id="forcereconnect">Reconnect Now</button>
+      <h1 data-l10n-id="pad.modals.uderdup"></h1>
+      <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
+      <p data-l10n-id="pad.modals.connected.advice"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <div class="unauth">
-      <h1>No Authorization.</h1>
-      <p>Your browser's credentials or permissions have changed while viewing this pad. Try reconnecting.</p>
-      <button id="forcereconnect">Reconnect Now</button>
+      <h1 data-l10n-id="pad.modals.unauth"></h1>
+      <p data-l10n-id="pad.modals.unauth.explanation"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <div class="looping">
-      <h1>Disconnected.</h1>
-      <h2>We're having trouble talking to the EtherPad lite synchronization server.</h2>
-      <p>You may be connecting through an incompatible firewall or proxy server.</p>
+      <h1 data-l10n-id="pad.modals.looping"></h1>
+      <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
+      <p data-l10n-id="pad.modals.looping.cause"></p>
     </div>
     <div class="initsocketfail">
-      <h1>Disconnected.</h1>
-      <h2>We were unable to connect to the EtherPad lite synchronization server.</h2>
-      <p>This may be due to an incompatibility with your web browser or internet connection.</p>
+      <h1 data-l10n-id="pad.modals.initsocketfail"></h1>
+      <h2 data-l10n-id="pad.modals.initsocketfail.explanation"></h2>
+      <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
     </div>
     <div class="slowcommit">
-      <h1>Disconnected.</h1>
-      <h2>Server not responding.</h2>
-      <p>This may be due to network connectivity issues or high load on the server.</p>
-      <button id="forcereconnect">Reconnect Now</button>
+      <h1 data-l10n-id="pad.modals.slowcommit"></h1>
+      <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
+      <p data-l10n-id="pad.modals.slowcommit.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <div class="deleted">
-      <h1>Disconnected.</h1>
-      <p>This pad was deleted.</p>
+      <h1 data-l10n-id="pad.modals.deleted"></h1>
+      <p data-l10n-id="pad.modals.deleted.explanation"></p>
     </div>
     <div class="disconnected">
-      <h1>Disconnected.</h1>
-      <h2>Lost connection with the EtherPad lite synchronization server.</h2>
-      <p>This may be due to a loss of network connectivity. If this continues to happen, please let us know</p>
-      <button id="forcereconnect">Reconnect Now</button>
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
+      <p data-l10n-id="pad.modals.disconnected.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
         <input type="hidden" class="padId" name="padId">
         <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
         <input type="hidden" class="missedChanges" name="missedChanges">
     </form>
-  <% e.end_block(); %>
+<% e.end_block(); %>
 </div>
 
 <!-- export code -->
 <div id="importexport">
 
-<div id="export" class="popup">
-  Export current version as:
-  <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml">HTML</div></a>
-  <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain">Plain text</div></a>
-  <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword">Microsoft Word</div></a>
-  <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf">PDF</div></a>
-  <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen">OpenDocument</div></a>
-  <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki">DokuWiki text</div></a>
-  <a id="exportmediawikia" target="_blank" class="exportlink"><div class="exporttype" id="exportmediawiki">MediaWiki text</div></a>
+<div id="export" class="popup" data-l10n-id="timeslider.exportCurrent">
+  <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
+  <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain" data-l10n-id="pad.importExport.exportplain"></div></a>
+  <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>
+  <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></div></a>
+  <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen" data-l10n-id="pad.importExport.exportopen"></div></a>
+  <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki" data-l10n-id="pad.importExport.exportdokuwiki"></div></a>
+  <a id="exportmediawikia" target="_blank" class="exportlink"><div class="exporttype" id="exportmediawiki" data-l10n-id="pad.importExport.exportmediawiki"></div></a>
 </div>
 </div>
 
+<script type="text/javascript">
+    (function() {
+      // Set language for l10n
+      var language = document.cookie.match(/language=(\w{2})/);
+      if(language) document.documentElement.lang = language[1];
+    })();
+</script>
+
+<script type="text/javascript" src="../../static/js/l10n.js"></script>
 <script type="text/javascript" src="../../static/js/require-kernel.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
@@ -159,7 +193,6 @@
   var clientVars = {};
   
   (function () {
-    
     var pathComponents = location.pathname.split('/');
     
     // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
