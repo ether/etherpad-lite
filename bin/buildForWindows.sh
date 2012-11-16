@@ -57,7 +57,7 @@ rm -rf .git/objects
 
 echo "create the zip..."
 cd /tmp
-zip -9 -r etherpad-lite-win.zip etherpad-lite-win
+zip -9 -r etherpad-lite-win.zip etherpad-lite-win -x "src/node_modules/jsdom-nocontextifiy/test/*"
 mv etherpad-lite-win.zip $START_FOLDER
 
 echo "clean up..."
