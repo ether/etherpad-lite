@@ -65,6 +65,6 @@ zip -9 -r etherpad-lite-win.zip etherpad-lite-win
 mv etherpad-lite-win.zip $START_FOLDER
 
 echo "clean up..."
-# rm -rf /tmp/etherpad-lite-win
+rm -rf /tmp/etherpad-lite-win
 
 echo "Finished. You can find the zip in the Etherpad Lite root folder, it's called etherpad-lite-win.zip"
