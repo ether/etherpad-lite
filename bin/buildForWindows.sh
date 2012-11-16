@@ -55,12 +55,16 @@ wget "http://nodejs.org/dist/v$NODE_VERSION/node.exe" -O ../node.exe
 echo "remove git history to reduce folder size"
 rm -rf .git/objects
 
+echo "remove windows jsdom-nocontextify/test folder"
+rm -rf /tmp/etherpad-lite-win/node_modules/ep_etherpad-lite/node_modules/jsdom-nocontextifiy/test/
+rm -rf /tmp/etherpad-lite-win/src/node_modules/jsdom-nocontextifiy/test/
+
 echo "create the zip..."
 cd /tmp
-zip -9 -r etherpad-lite-win.zip etherpad-lite-win -x "src/node_modules/jsdom-nocontextifiy/test/*"
+zip -9 -r etherpad-lite-win.zip etherpad-lite-win
 mv etherpad-lite-win.zip $START_FOLDER
 
 echo "clean up..."
-rm -rf /tmp/etherpad-lite-win
+# rm -rf /tmp/etherpad-lite-win
 
 echo "Finished. You can find the zip in the Etherpad Lite root folder, it's called etherpad-lite-win.zip"
