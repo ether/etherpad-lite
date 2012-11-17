@@ -21,13 +21,7 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
 
-    helper.waitFor(function(){
-
-      var $boldButton = chrome$(".buttonicon-bold").parent();
-      //get the title of the bold button
-      var boldButtonTitle = $boldButton[0]["title"];
-      return boldButtonTitle !== undefined;
-    }).done(function(){
+    setTimeout(function(){
 
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
@@ -39,7 +33,7 @@ describe("Language select and change", function(){
       expect(boldButtonTitle).to.be("Fett (Strg-B)");
       done();
 
-    });
+    }, 1000);
   });
 
   it("makes text English", function(done) {
@@ -58,13 +52,7 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
 
-    helper.waitFor(function(){
-
-      var $boldButton = chrome$(".buttonicon-bold").parent();
-      //get the title of the bold button
-      var boldButtonTitle = $boldButton[0]["title"];
-      return boldButtonTitle !== undefined;
-    }).done(function(){
+    setTimeout(function(){
 
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
@@ -76,7 +64,7 @@ describe("Language select and change", function(){
       expect(boldButtonTitle).to.be("Bold (Ctrl-B)");
       done();
 
-    });
+    }, 1000);
   });
 
 });
