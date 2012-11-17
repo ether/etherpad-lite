@@ -5,7 +5,9 @@ var Globalize = require('globalize')
 
 var localesPath = __dirname+"/../../locales";
 
-var localeIndex = '[*]\r\n@import url(locales/en.ini)\r\n';
+// Serve English strings directly with /locales.ini
+var localeIndex = fs.readFileSync(localesPath+'/en.ini')+'\r\n';
+
 exports.availableLangs = {en: 'English'};
 
 fs.readdir(localesPath, function(er, files) {
