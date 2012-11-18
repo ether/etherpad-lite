@@ -188,9 +188,9 @@ body {
 }
 
 #stats {
-  position: absolute;
+  position: fixed;
   top: 15px;
-  right: 10px;
+  right: 52%;
   font-size: 12px;
   margin: 0;
   color: #888;
