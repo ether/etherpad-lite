@@ -10,7 +10,7 @@ script:
   - "tests/frontend/travis/runner.sh"
 env:
   global:
-    - secure: "Y5c+H5P3b/W48UClURXAuAvQ4jcR/P5QF6hpwBQcFiLbWX6WPIZnxoxNkane\nyUYlytjcOxI/sqTP2liW0NX+7Q+RLAKmsyBXT8CLi4Rz/mpOjmJvMTnll8qe\nCYmO1eK4C/r9p7PW3cq97vFKnZykEX75ELdtaAFOsBaFiQLRRPs="
+    - secure: "OxZ2s724S96xu02746LUN+4lBckAe1BOICJjfA4jnFPNpiNU6XoMH52f+LgG\nZzAwu6xMTv+NsaLGp6Avm3cx4GZ+jIiHe4NB9XOgYPa0r0TBIi3ueWYPDyVv\nCniS/4qX68DoFNV4lh7zMBXn0IIPxT4Wppm3desBpjWDP/SdoRs="
     - SAUCE_USER=pita
 jdk:
   - oraclejdk6
