@@ -21,14 +21,13 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
 
-    helper.waitFor(function(){
+    var localizedEventFired = false;
+    $(chrome$.window).bind('localized', function() {
+      localizedEventFired = true;
+    })
 
-      var $boldButton = chrome$(".buttonicon-bold").parent();
-      //get the title of the bold button
-      var boldButtonTitle = $boldButton[0]["title"];
-      return boldButtonTitle !== undefined;
-    }).done(function(){
-
+    helper.waitFor(function() { return localizedEventFired;})
+    .done(function(){
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
 
@@ -38,7 +37,6 @@ describe("Language select and change", function(){
       //check if the language is now german
       expect(boldButtonTitle).to.be("Fett (Strg-B)");
       done();
-
     });
   });
 
@@ -58,13 +56,13 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
 
-    helper.waitFor(function(){
+    var localizedEventFired = false;
+    $(chrome$.window).bind('localized', function() {
+      localizedEventFired = true;
+    })
 
-      var $boldButton = chrome$(".buttonicon-bold").parent();
-      //get the title of the bold button
-      var boldButtonTitle = $boldButton[0]["title"];
-      return boldButtonTitle !== undefined;
-    }).done(function(){
+    helper.waitFor(function() { return localizedEventFired;})
+    .done(function(){
 
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
