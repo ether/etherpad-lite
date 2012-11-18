@@ -21,8 +21,13 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
 
-    setTimeout(function(){
+    var localizedEventFired = false;
+    $(chrome$.window).bind('localized', function() {
+      localizedEventFired = true;
+    })
 
+    helper.waitFor(function() { return localizedEventFired;})
+    .done(function(){
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
 
@@ -32,8 +37,7 @@ describe("Language select and change", function(){
       //check if the language is now german
       expect(boldButtonTitle).to.be("Fett (Strg-B)");
       done();
-
-    }, 1000);
+    });
   });
 
   it("makes text English", function(done) {
@@ -52,7 +56,13 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
 
-    setTimeout(function(){
+    var localizedEventFired = false;
+    $(chrome$.window).bind('localized', function() {
+      localizedEventFired = true;
+    })
+
+    helper.waitFor(function() { return localizedEventFired;})
+    .done(function(){
 
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
@@ -64,7 +74,7 @@ describe("Language select and change", function(){
       expect(boldButtonTitle).to.be("Bold (Ctrl-B)");
       done();
 
-    }, 1000);
+    });
   });
 
 });
