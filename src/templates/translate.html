@@ -1,0 +1,299 @@
+<%
+  var i18n = require("ep_etherpad-lite/node/hooks/i18n");
+%>
+<!doctype html>
+<html>
+  <head>
+    <title>Translator Assistant</title>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" href="../static/css/admin.css">
+    <link rel="resource" type="application/l10n" href="../locales.ini" />
+    <script src="../static/js/jquery.js"></script>
+    <script src="../socket.io/socket.io.js"></script>
+    <script type="text/javascript"> 
+      (function(document) {
+        // Set language for l10n
+        var language = document.cookie.match(/language=(\w{2})/);
+        if(language) document.documentElement.lang = language[1];
+      })(document)
+    </script>
+    <script type="text/javascript" src="../static/js/l10n.js" async></script>
+
+	<style>
+	select {
+		width: 30%;
+		height: 30px;
+	}
+	#translation {
+		width: 100%;
+		height: 400px;
+		overflow: auto;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		font-size: 1.1em;
+	}
+	#translation.loading {
+		color: #99c;
+		font-size: 3em;
+		/*padding-top: 150px;*/
+		text-align: center;
+	}
+	#translation.error {
+		color: #c00;
+		font-size: 3em;
+		/*padding-top: 150px;*/
+		text-align: center;
+	}
+	</style>
+
+  </head>
+  <body>
+    <div id="wrapper">
+
+      <h1 data-l10n-id="translate.assistant">Translator Assistant</h1>
+
+		<label for="idiom-from" data-l10n-id="translate.from">Translate from:</label>
+		<select id="idiom-from">
+			<option value="" selected="selected" data-l10n-id="translate.choose">Choose...</option>
+			<% for (var lang_code in i18n.availableLangs) { %>
+			<option value="<%= lang_code %>"><%= "["+lang_code+"] "+i18n.availableLangs[lang_code] %></option>
+			<% } %>
+		</select>
+
+		<label for="idiom-to" data-l10n-id="translate.to">to:</label>
+		<select id="idiom-to">
+			<option value="" selected="selected" data-l10n-id="translate.choose">Choose...</option>
+			<option value='aa'>[aa] Afaraf</option>
+			<option value='ab'>[ab] Аҧсуа Бызшәа, Аҧсшәа</option>
+			<option value='ae'>[ae] Avesta</option>
+			<option value='af'>[af] Afrikaans</option>
+			<option value='ak'>[ak] Akan</option>
+			<option value='am'>[am] አማርኛ</option>
+			<option value='an'>[an] Aragonés</option>
+			<option value='ar'>[ar] العربية</option>
+			<option value='as'>[as] অসমীয়া</option>
+			<option value='av'>[av] Авар МацӀ, МагӀарул МацӀ</option>
+			<option value='ay'>[ay] Aymar Aru</option>
+			<option value='az'>[az] Azərbaycan Dili</option>
+			<option value='ba'>[ba] Башҡорт Теле</option>
+			<option value='be'>[be] Беларуская Мова</option>
+			<option value='bg'>[bg] Български Език</option>
+			<option value='bh'>[bh] भोजपुरी</option>
+			<option value='bi'>[bi] Bislama</option>
+			<option value='bm'>[bm] Bamanankan</option>
+			<option value='bn'>[bn] বাংলা</option>
+			<option value='bo'>[bo] Tibetan</option>
+			<option value='br'>[br] Brezhoneg</option>
+			<option value='bs'>[bs] Bosanski Jezik</option>
+			<option value='ca'>[ca] Català, Valencià</option>
+			<option value='ce'>[ce] Нохчийн Мотт</option>
+			<option value='ch'>[ch] Chamoru</option>
+			<option value='co'>[co] Corsu, Lingua Corsa</option>
+			<option value='cr'>[cr] ᓀᐦᐃᔭᐍᐏᐣ</option>
+			<option value='cs'>[cs] Čeština, Český Jazyk</option>
+			<option value='cu'>[cu] Ѩзыкъ Словѣньскъ</option>
+			<option value='cv'>[cv] Чӑваш Чӗлхи</option>
+			<option value='cy'>[cy] Cymraeg</option>
+			<option value='da'>[da] Dansk</option>
+			<option value='de'>[de] Deutsch</option>
+			<option value='dv'>[dv] ދިވެހި</option>
+			<option value='dz'>[dz] Dzongkha</option>
+			<option value='ee'>[ee] Eʋegbe</option>
+			<option value='el'>[el] Ελληνικά</option>
+			<option value='en'>[en] English</option>
+			<option value='eo'>[eo] Esperanto</option>
+			<option value='es'>[es] Español, Castellano</option>
+			<option value='et'>[et] Eesti, Eesti Keel</option>
+			<option value='eu'>[eu] Euskara, Euskera</option>
+			<option value='fa'>[fa] فارسی</option>
+			<option value='ff'>[ff] Fulfulde, Pulaar, Pular</option>
+			<option value='fi'>[fi] Suomi, Suomen Kieli</option>
+			<option value='fj'>[fj] Vosa Vakaviti</option>
+			<option value='fo'>[fo] Føroyskt</option>
+			<option value='fr'>[fr] Français, Langue Française</option>
+			<option value='fy'>[fy] Frysk</option>
+			<option value='ga'>[ga] Gaeilge</option>
+			<option value='gd'>[gd] Gàidhlig</option>
+			<option value='gl'>[gl] Galego</option>
+			<option value='gn'>[gn] Avañe'Ẽ</option>
+			<option value='gu'>[gu] ગુજરાતી</option>
+			<option value='gv'>[gv] Gaelg, Gailck</option>
+			<option value='ha'>[ha] Hausa, هَوُسَ</option>
+			<option value='he'>[he] עברית</option>
+			<option value='hi'>[hi] हिन्दी, हिंदी</option>
+			<option value='ho'>[ho] Hiri Motu</option>
+			<option value='hr'>[hr] Hrvatski Jezik</option>
+			<option value='ht'>[ht] Kreyòl Ayisyen</option>
+			<option value='hu'>[hu] Magyar</option>
+			<option value='hy'>[hy] Հայերեն</option>
+			<option value='hz'>[hz] Otjiherero</option>
+			<option value='ia'>[ia] Interlingua</option>
+			<option value='id'>[id] Bahasa Indonesia</option>
+			<option value='ie'>[ie] Interlingue After Wwii</option>
+			<option value='ig'>[ig] Asụsụ Igbo</option>
+			<option value='ii'>[ii] Nuosuhxop</option>
+			<option value='ik'>[ik] Iñupiaq, Iñupiatun</option>
+			<option value='io'>[io] Ido</option>
+			<option value='is'>[is] Íslenska</option>
+			<option value='it'>[it] Italiano</option>
+			<option value='iu'>[iu] ᐃᓄᒃᑎᑐᑦ</option>
+			<option value='ja'>[ja] 日本語 (にほんご)</option>
+			<option value='jv'>[jv] Basa Jawa</option>
+			<option value='ka'>[ka] ქართული</option>
+			<option value='kg'>[kg] Kikongo</option>
+			<option value='ki'>[ki] Gĩkũyũ</option>
+			<option value='kj'>[kj] Kuanyama</option>
+			<option value='kk'>[kk] Қазақ Тілі</option>
+			<option value='kl'>[kl] Kalaallisut, Kalaallit Oqaasii</option>
+			<option value='km'>[km] ខ្មែរ, ខេមរភាសា, ភាសាខ្មែរ</option>
+			<option value='kn'>[kn] ಕನ್ನಡ</option>
+			<option value='ko'>[ko] 한국어 (韓國語), 조선어 (朝鮮語)</option>
+			<option value='kr'>[kr] Kanuri</option>
+			<option value='ks'>[ks] कश्मीरी, كشميري‎</option>
+			<option value='ku'>[ku] Kurdî, كوردی‎</option>
+			<option value='kv'>[kv] Коми Кыв</option>
+			<option value='kw'>[kw] Kernewek</option>
+			<option value='ky'>[ky] Кыргызча, Кыргыз Тили</option>
+			<option value='la'>[la] Latine, Lingua Latina</option>
+			<option value='lb'>[lb] Lëtzebuergesch</option>
+			<option value='lg'>[lg] Luganda</option>
+			<option value='li'>[li] Limburgs</option>
+			<option value='ln'>[ln] Lingála</option>
+			<option value='lo'>[lo] ພາສາລາວ</option>
+			<option value='lt'>[lt] Lietuvių Kalba</option>
+			<option value='lu'>[lu] Tshiluba</option>
+			<option value='lv'>[lv] Latviešu Valoda</option>
+			<option value='mg'>[mg] Fiteny Malagasy</option>
+			<option value='mh'>[mh] Kajin M̧Ajeļ</option>
+			<option value='mi'>[mi] Te Reo Māori</option>
+			<option value='mk'>[mk] Македонски Јазик</option>
+			<option value='ml'>[ml] മലയാളം</option>
+			<option value='mn'>[mn] Монгол</option>
+			<option value='mr'>[mr] मराठी</option>
+			<option value='ms'>[ms] Bahasa Melayu, بهاس ملايو‎</option>
+			<option value='mt'>[mt] Malti</option>
+			<option value='my'>[my] Burmese</option>
+			<option value='na'>[na] Ekakairũ Naoero</option>
+			<option value='nb'>[nb] Norsk Bokmål</option>
+			<option value='nd'>[nd] Isindebele</option>
+			<option value='ne'>[ne] नेपाली</option>
+			<option value='ng'>[ng] Owambo</option>
+			<option value='nl'>[nl] Nederlands, Vlaams</option>
+			<option value='nn'>[nn] Norsk Nynorsk</option>
+			<option value='no'>[no] Norsk</option>
+			<option value='nr'>[nr] Isindebele</option>
+			<option value='nv'>[nv] Diné Bizaad, Dinékʼehǰí</option>
+			<option value='ny'>[ny] Chicheŵa, Chinyanja</option>
+			<option value='oc'>[oc] Occitan, Lenga D'Òc</option>
+			<option value='oj'>[oj] ᐊᓂᔑᓈᐯᒧᐎᓐ</option>
+			<option value='om'>[om] Afaan Oromoo</option>
+			<option value='or'>[or] ଓଡ଼ିଆ</option>
+			<option value='os'>[os] Ирон Æвзаг</option>
+			<option value='pa'>[pa] ਪੰਜਾਬੀ, پنجابی‎</option>
+			<option value='pi'>[pi] पाऴि</option>
+			<option value='pl'>[pl] Język Polski, Polszczyzna</option>
+			<option value='ps'>[ps] پښتو</option>
+			<option value='pt'>[pt] Português</option>
+			<option value='qu'>[qu] Runa Simi, Kichwa</option>
+			<option value='rm'>[rm] Rumantsch Grischun</option>
+			<option value='rn'>[rn] Ikirundi</option>
+			<option value='ro'>[ro] Limba Română</option>
+			<option value='ru'>[ru] Русский Язык</option>
+			<option value='rw'>[rw] Ikinyarwanda</option>
+			<option value='sa'>[sa] संस्कृतम्</option>
+			<option value='sc'>[sc] Sardu</option>
+			<option value='sd'>[sd] सिन्धी, سنڌي، سندھی‎</option>
+			<option value='se'>[se] Davvisámegiella</option>
+			<option value='sg'>[sg] Yângâ Tî Sängö</option>
+			<option value='si'>[si] සිංහල</option>
+			<option value='sk'>[sk] Slovenčina, Slovenský Jazyk</option>
+			<option value='sl'>[sl] Slovenski Jezik, Slovenščina</option>
+			<option value='sm'>[sm] Gagana Fa'A Samoa</option>
+			<option value='sn'>[sn] Chishona</option>
+			<option value='so'>[so] Soomaaliga, Af Soomaali</option>
+			<option value='sq'>[sq] Gjuha Shqipe</option>
+			<option value='sr'>[sr] Српски Језик</option>
+			<option value='ss'>[ss] Siswati</option>
+			<option value='st'>[st] Sesotho</option>
+			<option value='su'>[su] Basa Sunda</option>
+			<option value='sv'>[sv] Svenska</option>
+			<option value='sw'>[sw] Kiswahili</option>
+			<option value='ta'>[ta] தமிழ்</option>
+			<option value='te'>[te] తెలుగు</option>
+			<option value='tg'>[tg] Тоҷикӣ, Toğikī, تاجیکی‎</option>
+			<option value='th'>[th] ไทย</option>
+			<option value='ti'>[ti] ትግርኛ</option>
+			<option value='tk'>[tk] Türkmen, Түркмен</option>
+			<option value='tl'>[tl] Wikang Tagalog</option>
+			<option value='tn'>[tn] Setswana</option>
+			<option value='to'>[to] Faka Tonga</option>
+			<option value='tr'>[tr] Türkçe</option>
+			<option value='ts'>[ts] Xitsonga</option>
+			<option value='tt'>[tt] Татар Теле, Tatar Tele</option>
+			<option value='tw'>[tw] Twi</option>
+			<option value='ty'>[ty] Reo Tahiti</option>
+			<option value='ug'>[ug] Uyƣurqə, ئۇيغۇرچە‎</option>
+			<option value='uk'>[uk] Українська Мова</option>
+			<option value='ur'>[ur] اردو</option>
+			<option value='uz'>[uz] O'Zbek, Ўзбек, أۇزبېك‎</option>
+			<option value='ve'>[ve] Tshivenḓa</option>
+			<option value='vi'>[vi] Tiếng Việt</option>
+			<option value='vo'>[vo] Volapük</option>
+			<option value='wa'>[wa] Walon</option>
+			<option value='wo'>[wo] Wollof</option>
+			<option value='xh'>[xh] Isixhosa</option>
+			<option value='yi'>[yi] ייִדיש</option>
+			<option value='yo'>[yo] Yorùbá</option>
+			<option value='za'>[za] Saɯ Cueŋƅ, Saw Cuengh</option>
+			<option value='zh'>[zh] 中文 (Zhōngwén), 汉语, 漢語</option>
+			<option value='zu'>[zu] Isizulu</option>
+		</select>
+      
+      <textarea id="translation"></textarea>
+
+      <input type="button" class="settingsButton" id="sendTranslation" value="Send" disabled="disabled" data-l10n-id="translate.send">
+      <label for="sendTranslation"><span data-l10n-id="translate.to">to</span> <a href="mailto:translators-etherpad-lite@googlegroups.com">translators-etherpad-lite@googlegroups.com</a></label>
+      <div id="response"></div>
+    </div>
+
+<script type="text/javascript">
+$(function() {
+	var base_url = ""+document.location.toString();
+	if (base_url[base_url.length - 1] != '/') base_url+='/'; 
+
+	$('#idiom-from').val('');
+	$('#idiom-to').val('').hide();
+
+	$('#idiom-from').change(function(e) {
+		var idiom_from = $('#idiom-from').val();
+		$('#translation').addClass('loading').text('\nLoading...');
+		$.ajax({	
+			url: base_url+idiom_from,
+			error: function(err) {
+				$('#translation').removeClass('loading').addClass('error').text("\nERROR: "+err.status);
+			},
+			success: function(data) {
+				$('#translation').removeClass('loading').removeClass('error').text(data);
+				$('#idiom-to').fadeIn();
+			}
+		});
+	});
+
+	$('#idiom-to').change(function(e) {
+		$('#sendTranslation').attr('disabled',false);
+		var traduccion = $('#translation').text().split('\n');
+		traduccion[0]='['+$('#idiom-to').val()+']';
+		$('#translation').text(traduccion.join('\n'));
+	});
+
+	$('#sendTranslation').click(function(e) {
+		window.location.href = "mailto:"+encodeURIComponent("translators-etherpad-lite@googlegroups.com")
+	  	+ "?subject="+encodeURIComponent("traslated to ["+$('#idioma').val()+"]")
+		+ "&body="+encodeURIComponent($("#translation").val());
+	});
+});
+</script>
+
+  </body>
+</html>
