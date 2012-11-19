@@ -13,7 +13,7 @@ cmd /C node -e %check_version% || exit /B 1
 
 echo _
 echo Installing etherpad-lite and dependencies...
-cmd /C npm install src/ || exit /B 1
+cmd /C npm install src/ --loglevel warn || exit /B 1
 
 echo _
 echo Copying custom templates...
