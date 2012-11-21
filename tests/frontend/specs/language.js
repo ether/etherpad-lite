@@ -21,12 +21,8 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
 
-    var localizedEventFired = false;
-    $(chrome$.window).bind('localized', function() {
-      localizedEventFired = true;
-    })
-
-    helper.waitFor(function() { return localizedEventFired;})
+    var current = $language.val();
+    helper.waitFor(function() { return $language.val() != current})  // GOT IT?
     .done(function(){
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
@@ -56,12 +52,8 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
 
-    var localizedEventFired = false;
-    $(chrome$.window).bind('localized', function() {
-      localizedEventFired = true;
-    })
-
-    helper.waitFor(function() { return localizedEventFired;})
+    var current = $language.val();
+    helper.waitFor(function() { return $language.val() != current})
     .done(function(){
 
       //get the value of the bold button
@@ -78,4 +70,3 @@ describe("Language select and change", function(){
   });
 
 });
-
