@@ -58,6 +58,13 @@ $(function(){
   var WebdriverAndHtmlReporter = function(html_reporter){
     return function(runner){
       Base.call(this, runner);
+
+      // Scroll down test display after each test
+      mocha = $('#mocha')[0];
+      runner.on('test', function(){
+        mocha.scrollTop = mocha.scrollHeight;
+      });
+
       //initalize the html reporter first
       html_reporter(runner);
 
