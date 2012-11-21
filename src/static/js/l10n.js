@@ -131,7 +131,7 @@ document.webL10n = (function(window, document, undefined) {
 
       // token expressions
       var reBlank = /^\s*|\s*$/;
-      var reComment = /^\s*#|^\s*$/;
+      var reComment = /^\s*;|^\s*$/;// Use ; for comments!
       var reSection = /^\s*\[(.*)\]\s*$/;
       var reImport = /^\s*@import\s+url\((.*)\)\s*$/i;
       var reSplit = /^([^=\s]*)\s*=\s*(.+)$/; // TODO: escape EOLs with '\'
