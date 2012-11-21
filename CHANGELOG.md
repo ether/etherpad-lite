@@ -1,3 +1,10 @@
+# 1.2.1
+ * Allow ! in urls inside the editor (Not Pad urls)
+ * Allow comments in language files
+ * More languages (Finish, Spanish, Hindi, Dutch) Thanks to TranslateWiki.net team.
+ * Bugfix for IE7/8 issue with a JS error #1186
+ * Bugfix windows package extraction issue and make the .zip file smaller
+
 # v1.2
  * Internationalization / Language / Translation support (i18n) with support for German/French
  * A frontend/client side testing framework and backend build tests
