@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+  - "0.8"
+install:
+  - "bin/installDeps.sh"
+  - "export GIT_HASH=$(cat .git/HEAD | head -c 7)"
+before_script: 
+  - "tests/frontend/travis/sauce_tunnel.sh"
+script:
+  - "tests/frontend/travis/runner.sh"
+env:
+  global:
+    - secure: "OxZ2s724S96xu02746LUN+4lBckAe1BOICJjfA4jnFPNpiNU6XoMH52f+LgG\nZzAwu6xMTv+NsaLGp6Avm3cx4GZ+jIiHe4NB9XOgYPa0r0TBIi3ueWYPDyVv\nCniS/4qX68DoFNV4lh7zMBXn0IIPxT4Wppm3desBpjWDP/SdoRs="
+    - SAUCE_USER=pita
+jdk:
+  - oraclejdk6
+notifications:
+  email:
+    - petermartischka@googlemail.com
+  irc:
+    channels:
+      - "irc.freenode.org#etherpad-lite-dev"

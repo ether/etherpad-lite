@@ -1,5 +1,5 @@
 # Developer Guidelines
-(Please talk to people on the mailing list before you change this page, see our section on [how to get in touch](https://github.com/Pita/etherpad-lite#get-in-touch))
+(Please talk to people on the mailing list before you change this page, see our section on [how to get in touch](https://github.com/ether/etherpad-lite#get-in-touch))
 
 **Our goal is to iterate in small steps. Release often, release early. Evolution instead of a revolution**
 

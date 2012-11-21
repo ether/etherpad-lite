@@ -52,3 +52,11 @@ Default: false
  * Boolean
 
 Default: false
+
+## lang
+ * String
+
+Default: en
+
+Example: `lang=ar` (translates the interface into Arabic)
+
