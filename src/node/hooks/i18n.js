@@ -1,12 +1,15 @@
-var Globalize = require('globalize')
+var languages = require('languages')
   , fs = require('fs')
   , path = require('path')
   , express = require('express')
 
 var localesPath = __dirname+"/../../locales";
 
-var localeIndex = '[*]\r\n@import url(locales/en.ini)\r\n';
-exports.availableLangs = {en: 'English'};
+// Serve English strings directly with /locales.ini
+var localeIndex = fs.readFileSync(localesPath+'/en.ini')+'\r\n';
+
+// add language base 'en' to availableLangs
+exports.availableLangs = {en: languages.getLanguageInfo('en')}
 
 fs.readdir(localesPath, function(er, files) {
   files.forEach(function(locale) {
@@ -16,9 +19,8 @@ fs.readdir(localesPath, function(er, files) {
     // build locale index
     localeIndex += '['+locale+']\r\n@import url(locales/'+locale+'.ini)\r\n'
     
-    require('globalize/lib/cultures/globalize.culture.'+locale+'.js')
-    var culture = Globalize.cultures[locale];
-    exports.availableLangs[culture.name] = culture.nativeName;
+    // add info language {name, nativeName, direction} to availableLangs
+    exports.availableLangs[locale]=languages.getLanguageInfo(locale);
   })
 })
 

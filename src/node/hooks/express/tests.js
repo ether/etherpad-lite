@@ -1,5 +1,6 @@
-var path = require("path");
-var fs = require("fs");
+var path = require("path")
+  , npm = require("npm")
+  , fs = require("fs");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/tests/frontend/specs_list.js', function(req, res){
@@ -17,7 +18,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     }
     subPath = subPath.split("?")[0];
 
-    var filePath = path.normalize(__dirname + "/../../../../tests/frontend/")
+    var filePath = path.normalize(npm.root + "/../tests/frontend/")
     filePath += subPath.replace("..", "");
     return filePath;
   }

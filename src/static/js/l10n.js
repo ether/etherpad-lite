@@ -131,7 +131,7 @@ document.webL10n = (function(window, document, undefined) {
 
       // token expressions
       var reBlank = /^\s*|\s*$/;
-      var reComment = /^\s*#|^\s*$/;
+      var reComment = /^\s*;|^\s*$/;// Use ; for comments!
       var reSection = /^\s*\[(.*)\]\s*$/;
       var reImport = /^\s*@import\s+url\((.*)\)\s*$/i;
       var reSplit = /^([^=\s]*)\s*=\s*(.+)$/; // TODO: escape EOLs with '\'
@@ -902,7 +902,7 @@ document.webL10n = (function(window, document, undefined) {
   // browser-specific startup
   if (document.addEventListener) { // modern browsers and IE9+
     document.addEventListener('DOMContentLoaded', function() {
-      var lang = document.documentElement.lang || navigator.language;
+      var lang = document.documentElement.lang || navigator.language || navigator.userLanguage || 'en';
       loadLocale(lang, translateFragment);
     }, false);
   } else if (window.attachEvent) { // IE8 and before (= oldIE)
@@ -977,7 +977,7 @@ document.webL10n = (function(window, document, undefined) {
     // startup for IE<9
     window.attachEvent('onload', function() {
       gTextProp = document.body.textContent ? 'textContent' : 'innerText';
-      var lang = document.documentElement.lang || window.navigator.userLanguage;
+      var lang = document.documentElement.lang || navigator.language || navigator.userLanguage || 'en';
       loadLocale(lang, translateFragment);
     });
   }
