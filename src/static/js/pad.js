@@ -310,7 +310,7 @@ function handshake()
       }
       else if(obj.accessStatus == "wrongPassword")
       {
-        $("#editorloadingbox").html("<b>You're password was wrong</b><br>" +
+        $("#editorloadingbox").html("<b>Your password was wrong</b><br>" +
                                     "<input id='passwordinput' type='password' name='password'>"+
                                     "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
       }
