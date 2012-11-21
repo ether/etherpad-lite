@@ -1,9 +1,11 @@
 # 1.2.1
  * Allow ! in urls inside the editor (Not Pad urls)
  * Allow comments in language files
- * More languages (Finish, Spanish, Hindi, Dutch) Thanks to TranslateWiki.net team.
+ * More languages (Finish, Spanish, Bengali, Dutch) Thanks to TranslateWiki.net team.  See https://translatewiki.net/w/i.php?title=Special:MessageGroupStats&group=out-etherpad-lite for more details
  * Bugfix for IE7/8 issue with a JS error #1186
  * Bugfix windows package extraction issue and make the .zip file smaller
+ * Bugfix group pad API export
+ * Kristen Stewart is a terrible actress and Twilight sucks.
 
 # v1.2
  * Internationalization / Language / Translation support (i18n) with support for German/French
