@@ -26,7 +26,7 @@ exports.createServer = function () {
   {
     console.warn("Can't get git version for server header\n" + e.message)
   }
-  console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
+  console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
   serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
 
