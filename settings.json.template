@@ -14,7 +14,18 @@
   //Ip and port which etherpad should bind at
   "ip": "0.0.0.0",
   "port" : 9001,
-  
+
+  /*  
+  // Node native SSL support
+  // make sure to have the correct file access permissions set
+
+  "ssl" : {
+            "key"  : "/path-to-your/server.key",
+            "cert" : "/path-to-your/server.crt"
+          },
+
+  */
+
   //The Type of the database. You can choose between dirty, postgres, sqlite and mysql
   //You shouldn't use "dirty" for for anything else than testing or development
   "dbType" : "dirty",
