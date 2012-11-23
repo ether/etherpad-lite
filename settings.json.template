@@ -23,8 +23,8 @@
   // so that the Etherpad server can access them
 
   "ssl" : {
-            "key"  : "/path-to-your/server.key",
-            "cert" : "/path-to-your/server.crt"
+            "key"  : "/path-to-your/epl-server.key",
+            "cert" : "/path-to-your/epl-server.crt"
           },
 
   */
