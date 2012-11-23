@@ -11,13 +11,16 @@
   // alternatively, set up a fully specified Url to your own favicon
   "favicon": "favicon.ico",
   
-  //Ip and port which etherpad should bind at
+  //IP and port which etherpad should bind at
   "ip": "0.0.0.0",
   "port" : 9001,
 
   /*  
   // Node native SSL support
-  // make sure to have the correct file access permissions set
+  // this is disabled by default
+  //
+  // make sure to have the minimum and correct file access permissions set
+  // so that the Etherpad server can access them
 
   "ssl" : {
             "key"  : "/path-to-your/server.key",
