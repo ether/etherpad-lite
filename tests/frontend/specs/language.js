@@ -1,36 +1,42 @@
+function deletecookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
 describe("Language select and change", function(){
+  // Destroy language cookies
+  deletecookie("language", null);
+
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
     this.timeout(60000);
   });
+ 
+  // Destroy language cookies
 
   it("makes text german", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
-
+ 
     //click on the settings button to make settings visible
     var $settingsButton = chrome$(".buttonicon-settings");
     $settingsButton.click();
-
+ 
     //click the language button
     var $language = chrome$("#languagemenu");
     var $languageoption = $language.find("[value=de]");
-
+ 
     //select german
     $languageoption.attr('selected','selected');
     $language.change();
-
-    var localizedEventFired = false;
-    $(chrome$.window).bind('localized', function() {
-      localizedEventFired = true;
-    })
-
-    helper.waitFor(function() { return localizedEventFired;})
+ 
+    helper.waitFor(function() { 
+      return chrome$(".buttonicon-bold").parent()[0]["title"] = "Fett (Strg-B)";
+     })
     .done(function(){
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
-
+ 
       //get the title of the bold button
       var boldButtonTitle = $boldButton[0]["title"];
 
@@ -39,43 +45,40 @@ describe("Language select and change", function(){
       done();
     });
   });
-
+ 
   it("makes text English", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
-
+ 
     //click on the settings button to make settings visible
     var $settingsButton = chrome$(".buttonicon-settings");
     $settingsButton.click();
-
+ 
     //click the language button
     var $language = chrome$("#languagemenu");
     var $languageoption = $language.find("[value=en]");
-
+ 
     //select german
     $languageoption.attr('selected','selected');
     $language.change();
+ 
+    //get the value of the bold button
+    var $boldButton = chrome$(".buttonicon-bold").parent();
 
-    var localizedEventFired = false;
-    $(chrome$.window).bind('localized', function() {
-      localizedEventFired = true;
-    })
-
-    helper.waitFor(function() { return localizedEventFired;})
+    helper.waitFor(function() { return $boldButton[0]["title"] != "Fett (Strg-B)";})
     .done(function(){
-
+ 
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
-
+ 
       //get the title of the bold button
       var boldButtonTitle = $boldButton[0]["title"];
-
+ 
       //check if the language is now English
       expect(boldButtonTitle).to.be("Bold (Ctrl-B)");
       done();
-
+ 
     });
   });
-
+ 
 });
-

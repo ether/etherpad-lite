@@ -1,7 +1,7 @@
 {
   "name"           : "ep_etherpad-lite",
   "description"    : "A Etherpad based on node.js",
-  "homepage"       : "https://github.com/Pita/etherpad-lite",
+  "homepage"       : "https://github.com/ether/etherpad-lite",
   "keywords"       : ["etherpad", "realtime", "collaborative", "editor"],
   "author"         : "Peter 'Pita' Martischka <petermartischka@googlemail.com> - Primary Technology Ltd",
   "contributors"   : [
@@ -46,5 +46,5 @@
   "engines"        : { "node" : ">=0.6.0",
                        "npm"  : ">=1.0"
                      }, 
-  "version"        : "1.2.0"
+  "version"        : "1.2.1"
 }
