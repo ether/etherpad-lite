@@ -23,6 +23,7 @@ var ERR = require("async-stacktrace")
   , padMessageHandler = require("./PadMessageHandler")
   , async = require("async")
   , fs = require("fs")
+  , path = require("path")
   , settings = require('../utils/Settings')
   , formidable = require('formidable')
   , os = require("os")
@@ -42,7 +43,7 @@ exports.doImport = function(req, res, padId)
   //set html in the pad
   
   var srcFile, destFile
-    , pad;
+    , pad
     , text;
   
   async.series([
@@ -69,16 +70,9 @@ exports.doImport = function(req, res, padId)
     //ensure this is a file ending we know, else we change the file ending to .txt
     //this allows us to accept source code files like .c or .java
     function(callback) {
-      var fileEnding = (srcFile.split(".")[1] || "").toLowerCase();
-      var knownFileEndings = ["txt", "doc", "docx", "pdf", "odt", "html", "htm"];
-      
-      //find out if this is a known file ending
-      var fileEndingKnown = false;
-      for(var i in knownFileEndings) {
-        if(fileEnding == knownFileEndings[i]){
-          fileEndingKnown = true;
-        }
-      }
+      var fileEnding = path.extname(srcFile).toLowerCase()
+        , knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm"]
+        , fileEndingKnown = (knownFileEndings.indexOf(fileEnding) > -1);
       
       //if the file ending is known, continue as normal
       if(fileEndingKnown) {
@@ -87,25 +81,31 @@ exports.doImport = function(req, res, padId)
       //we need to rename this file with a .txt ending
       else {
         var oldSrcFile = srcFile;
-        srcFile = srcFile.split(".")[0] + ".txt";
+        srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
         
         fs.rename(oldSrcFile, srcFile, callback);
       }
     },
     
-    //convert file to text
+    //convert file to html
     function(callback) {
       var randNum = Math.floor(Math.random()*0xFFFFFFFF);
-		destFile = os.tmpDir() + "/eplite_import_" + randNum + ".htm";
-      abiword.convertFile(srcFile, destFile, "htm", function(err) {
-        //catch convert errors
-        if(err) {
-          console.warn("Converting Error:", err);
-          return callback("convertFailed");
-        } else {
-          callback();
-        }
-      });
+      destFile = path.join(os.tmpDir(), "eplite_import_" + randNum + ".htm");
+
+      if (abiword) {
+        abiword.convertFile(srcFile, destFile, "htm", function(err) {
+          //catch convert errors
+          if(err) {
+            console.warn("Converting Error:", err);
+            return callback("convertFailed");
+          } else {
+            callback();
+          }
+        });
+      } else {
+        // if no abiword only rename
+        fs.rename(srcFile, destFile, callback);
+      }
     },
     
     //get the pad object
@@ -125,28 +125,35 @@ exports.doImport = function(req, res, padId)
         
         //node on windows has a delay on releasing of the file lock.  
         //We add a 100ms delay to work around this
-	      if(os.type().indexOf("Windows") > -1){
-          setTimeout(function(){callback();}, 100);
-	      } else {
-	        callback();
-	      }
+        if(os.type().indexOf("Windows") > -1){
+           setTimeout(function() {callback();}, 100);
+        } else {
+          callback();
+        }
       });
     },
     
     //change text of the pad and broadcast the changeset
     function(callback) {
-		importHtml.setPadHTML(pad, text);
+      var fileEnding = path.extname(srcFile).toLowerCase();
+      if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
+        importHtml.setPadHTML(pad, text);
+      } else {
+        pad.setText(text);
+      }
       padMessageHandler.updatePadClients(pad, callback);
     },
     
     //clean up temporary files
     function(callback) {
+      //for node < 0.7 compatible
+      var fileExists = fs.exists || path.exists;
       async.parallel([
         function(callback){
-          fs.unlink(srcFile, callback);
+          fileExists (srcFile, function(exist) { (exist)? fs.unlink(srcFile, callback): callback(); });
         },
         function(callback){
-          fs.unlink(destFile, callback);
+          fileExists (destFile, function(exist) { (exist)? fs.unlink(destFile, callback): callback(); });
         }
       ], callback);
     }
@@ -164,7 +171,6 @@ exports.doImport = function(req, res, padId)
     ERR(err);
   
     //close the connection
-
     res.send("<script type='text/javascript' src='/static/js/jquery.js'></script><script> if ( (!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf(\"1.8.\") == 0)) ){document.domain = document.domain;}var impexp = window.top.require('/pad_impexp').padimpexp.handleFrameCall('" + status + "');</script>", 200);
   });
 }
