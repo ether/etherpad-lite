@@ -15,12 +15,15 @@ body {
 #iframe-container {
   width: 50%;
   height: 100%;
-  float:right;
 }
 
 #iframe-container iframe {
-  width: 100%;
   height: 100%;
+  position:absolute;
+  min-width:500px;
+  max-width:800px;
+  left:50%;
+  width:100%;
 }
 
 #mocha {
