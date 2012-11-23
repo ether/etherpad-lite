@@ -27,17 +27,22 @@ var settings = require('../utils/Settings');
 var formidable = require('formidable');
 var os = require("os");
 
+// TESTING importing in HTML
+var importHtml = require("../utils/ImportHtml");
+
 //load abiword only if its enabled
 if(settings.abiword != null)
   var abiword = require("../utils/Abiword");
 
-var tempDirectory = "/tmp/";
+//Patched in formidable since v1.0.4:
+// The dafault temp directory is well detected in order to OS 
+//var tempDirectory = "/tmp/";
 
 //tempDirectory changes if the operating system is windows
-if(os.type().indexOf("Windows") > -1)
+/*if(os.type().indexOf("Windows") > -1)
 {
   tempDirectory = process.env.TEMP;
-}
+}*/
   
 /**
  * do a requested import
@@ -58,7 +63,7 @@ exports.doImport = function(req, res, padId)
     {
       var form = new formidable.IncomingForm();
       form.keepExtensions = true;
-      form.uploadDir = tempDirectory;
+      //form.uploadDir = tempDirectory;
       
       form.parse(req, function(err, fields, files) 
       { 
@@ -105,6 +110,7 @@ exports.doImport = function(req, res, padId)
       {
         var oldSrcFile = srcFile;
         srcFile = srcFile.split(".")[0] + ".txt";
+        //srcFile = srcFile.split(".")[0] + ".htm";
         
         fs.rename(oldSrcFile, srcFile, callback);
       }
@@ -114,8 +120,11 @@ exports.doImport = function(req, res, padId)
     function(callback)
     {
       var randNum = Math.floor(Math.random()*0xFFFFFFFF);
-      destFile = tempDirectory + "eplite_import_" + randNum + ".txt";
-      abiword.convertFile(srcFile, destFile, "txt", function(err){
+      //destFile = tempDirectory + "eplite_import_" + randNum + ".txt";
+      //destFile = tempDirectory + "eplite_import_" + randNum + ".htm";
+		destFile = os.tmpDir() + "/eplite_import_" + randNum + ".htm";
+      //abiword.convertFile(srcFile, destFile, "txt", function(err){
+      abiword.convertFile(srcFile, destFile, "htm", function(err){
         //catch convert errors
         if(err){
           console.warn("Converting Error:", err);
@@ -164,7 +173,9 @@ exports.doImport = function(req, res, padId)
     //change text of the pad and broadcast the changeset
     function(callback)
     {
-      pad.setText(text);
+      //pad.setText(text);
+		//prueba
+		importHtml.setPadHTML(pad, text);
       padMessageHandler.updatePadClients(pad, callback);
     },
     
@@ -196,6 +207,7 @@ exports.doImport = function(req, res, padId)
     ERR(err);
   
     //close the connection
+
     res.send("<script type='text/javascript' src='/static/js/jquery.js'></script><script> if ( (!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf(\"1.8.\") == 0)) ){document.domain = document.domain;}var impexp = window.top.require('/pad_impexp').padimpexp.handleFrameCall('" + status + "');</script>", 200);
   });
 }
