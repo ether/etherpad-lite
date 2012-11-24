@@ -14,7 +14,7 @@
       <div class="separator"></div>
 
       <h2>Installed plugins</h2>
-      <pre><%= plugins.formatPlugins() %></pre>
+      <pre><%- plugins.formatPlugins().replace(", ","\n") %></pre>
 
       <h2>Installed parts</h2>
       <pre><%= plugins.formatParts() %></pre>
