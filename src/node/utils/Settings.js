@@ -48,6 +48,13 @@ exports.ip = "0.0.0.0";
  * The Port ep-lite should listen to
  */
 exports.port = process.env.PORT || 9001;
+
+/**
+ * The SSL signed server key and the Certificate Authority's own certificate
+ * default case: ep-lite does *not* use SSL. A signed server key is not required in this case.
+ */
+exports.ssl = false;
+
 /*
  * The Type of the database
  */
