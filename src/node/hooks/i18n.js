@@ -1,4 +1,4 @@
-var languages = require('languages')
+var languages = require('languages4translatewiki')
   , fs = require('fs')
   , path = require('path')
   , express = require('express')
@@ -9,7 +9,7 @@ var localesPath = __dirname+"/../../locales";
 var localeIndex = fs.readFileSync(localesPath+'/en.ini')+'\r\n';
 
 // add language base 'en' to availableLangs
-exports.availableLangs = {en: languages.getLanguageInfo('en')}
+exports.availableLangs = {en: {name:'English',nativeName:'English',direction:'ltr'}};
 
 fs.readdir(localesPath, function(er, files) {
   files.forEach(function(locale) {
