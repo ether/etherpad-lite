@@ -190,6 +190,19 @@ a img {
   height: 30px;
   z-index: 100;
 }
+
+#editorloadingbox passForm{
+  padding:10px;
+}
+
+#editorloadingbox input{
+  padding:10px;
+}
+
+#editorloadingbox button{
+  padding:10px;
+}
+
 #editorcontainerbox {
   position: absolute;
   bottom: 0;
