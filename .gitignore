@@ -12,3 +12,5 @@ src/static/js/jquery.js
 npm-debug.log
 *.DS_Store
 .ep_initialized
+*.crt
+*.key

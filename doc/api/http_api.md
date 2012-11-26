@@ -9,7 +9,7 @@ The API gives another web application control of the pads. The basic functions a
 
 The API is designed in a way, so you can reuse your existing user system with their permissions, and map it to etherpad lite. Means: Your web application still has to do authentication, but you can tell etherpad lite via the api, which visitors should get which permissions. This allows etherpad lite to fit into any web application and extend it with real-time functionality. You can embed the pads via an iframe into your website.
 
-Take a look at [HTTP API client libraries](https://github.com/Pita/etherpad-lite/wiki/HTTP-API-client-libraries) to see if a library in your favorite language.
+Take a look at [HTTP API client libraries](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) to see if a library in your favorite language.
 
 ## Examples
 

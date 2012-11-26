@@ -305,14 +305,22 @@ function handshake()
       else if(obj.accessStatus == "needPassword")
       {
         $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
-                                    "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
+                                    "<form class='passForm'><input id='passwordinput' type='password' name='password'>"+
+                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword();") + "\">ok</button></div>");
+        $("#passwordinput").focus();
+        $(".passForm").submit(function(){
+          $('.passForm button').click();
+        });
       }
       else if(obj.accessStatus == "wrongPassword")
       {
-        $("#editorloadingbox").html("<b>You're password was wrong</b><br>" +
-                                    "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
+        $("#editorloadingbox").html("<b>Your password was wrong</b><br>" +
+                                    "<form class='passForm'><input id='passwordinput' type='password' name='password'>"+
+                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword();") + "\">ok</button></div>");
+        $("#passwordinput").focus();
+        $(".passForm").submit(function(){
+          $('.passForm button').click();
+        });
       }
     }
     
