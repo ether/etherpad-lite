@@ -304,7 +304,14 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         var hours = zpad(date.getHours(), 2);
         var minutes = zpad(date.getMinutes(), 2);
         var seconds = zpad(date.getSeconds(), 2);
-        return ([month, '/', day, '/', year, ' ', hours, ':', minutes, ':', seconds].join(""));
+        return (document.webL10n.get("timeslider.dateformat", {
+          "day": day,
+          "month": month,
+          "year": year,
+          "hours": hours,
+          "minutes": minutes, 
+          "seconds": seconds
+        }));
         }
         
         
@@ -313,7 +320,24 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         
     $('#timer').html(dateFormat());
 
-    var revisionDate = ["Saved", ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"][date.getMonth()], date.getDate() + ",", date.getFullYear()].join(" ")
+    var revisionDate = document.webL10n.get("timeslider.saved", {
+      "day": date.getDate(),
+      "month": [
+                document.webL10n.get("timeslider.month.january"),
+                document.webL10n.get("timeslider.month.february"),
+                document.webL10n.get("timeslider.month.march"),
+                document.webL10n.get("timeslider.month.april"),
+                document.webL10n.get("timeslider.month.may"),
+                document.webL10n.get("timeslider.month.june"),
+                document.webL10n.get("timeslider.month.july"),
+                document.webL10n.get("timeslider.month.august"),
+                document.webL10n.get("timeslider.month.september"),
+                document.webL10n.get("timeslider.month.october"),
+                document.webL10n.get("timeslider.month.november"),
+                document.webL10n.get("timeslider.month.december")
+               ][date.getMonth()],
+      "year": date.getFullYear()
+    });
     $('#revision_date').html(revisionDate)
 
   }
