@@ -1,5 +1,4 @@
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-var http = require('http');
 var express = require('express');
 var settings = require('../utils/Settings');
 var fs = require('fs');
@@ -50,7 +49,28 @@ exports.restartServer = function () {
   }
 
   var app = express(); // New syntax for express v3
-  server = http.createServer(app);
+
+  if (settings.ssl) {
+
+    console.log( "SSL -- enabled");
+    console.log( "SSL -- server key file: " + settings.ssl.key );
+    console.log( "SSL -- Certificate Authority's certificate file: " + settings.ssl.cert );
+    
+    options = {
+      key: fs.readFileSync( settings.ssl.key ),
+      cert: fs.readFileSync( settings.ssl.cert )
+    };
+    
+    var https = require('https');
+    server = https.createServer(options, app);
+
+  } else {
+
+    console.log( "SSL -- not enabled!" );
+
+    var http = require('http');
+    server = http.createServer(app);
+  }
 
   app.use(function (req, res, next) {
     res.header("Server", serverName);
