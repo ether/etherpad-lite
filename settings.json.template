@@ -11,10 +11,24 @@
   // alternatively, set up a fully specified Url to your own favicon
   "favicon": "favicon.ico",
   
-  //Ip and port which etherpad should bind at
+  //IP and port which etherpad should bind at
   "ip": "0.0.0.0",
   "port" : 9001,
-  
+
+  /*  
+  // Node native SSL support
+  // this is disabled by default
+  //
+  // make sure to have the minimum and correct file access permissions set
+  // so that the Etherpad server can access them
+
+  "ssl" : {
+            "key"  : "/path-to-your/epl-server.key",
+            "cert" : "/path-to-your/epl-server.crt"
+          },
+
+  */
+
   //The Type of the database. You can choose between dirty, postgres, sqlite and mysql
   //You shouldn't use "dirty" for for anything else than testing or development
   "dbType" : "dirty",
