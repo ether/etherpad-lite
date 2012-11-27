@@ -191,7 +191,7 @@ a img {
   z-index: 100;
 }
 
-#editorloadingbox passForm{
+#editorloadingbox .passForm{
   padding:10px;
 }
 
