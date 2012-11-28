@@ -3537,7 +3537,7 @@ function Ace2Inner(){
     var keyCode = evt.keyCode;
     var which = evt.which;
 
-    // prevent ESC key and Control S
+    // prevent ESC key
     if (keyCode == 27)
     {
       evt.preventDefault();
