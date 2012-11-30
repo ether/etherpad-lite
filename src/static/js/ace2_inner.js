@@ -3561,8 +3561,7 @@ function Ace2Inner(){
 
     inCallStackIfNecessary("handleKeyEvent", function()
     {
-
-      if (type == "keypress" || (isTypeForSpecialKey && keyCode == 13 || keyCode == 83 /*return*/ ))
+      if (type == "keypress" || (isTypeForSpecialKey && keyCode == 13 /*return*/ ))
       {
         // in IE, special keys don't send keypress, the keydown does the action
         if (!outsideKeyPress(evt))
