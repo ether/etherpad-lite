@@ -333,14 +333,6 @@ function Ace2Inner(){
     return colorutils.triple2css(color);
   }
 
-  function doAlert(str)
-  {
-    scheduler.setTimeout(function()
-    {
-      alert(str);
-    }, 0);
-  }
-
   editorInfo.ace_getRep = function()
   {
     return rep;
@@ -1624,7 +1616,7 @@ function Ace2Inner(){
 
         if (linesWrapped > 0)
         {
-          doAlert("Editor warning: " + linesWrapped + " long line" + (linesWrapped == 1 ? " was" : "s were") + " hard-wrapped into " + ccData.numLinesAfter + " lines.");
+          // console.log("Editor warning: " + linesWrapped + " long line" + (linesWrapped == 1 ? " was" : "s were") + " hard-wrapped into " + ccData.numLinesAfter + " lines.");
         }
 
         if (ss[0] >= 0) selStart = [ss[0] + a + netNumLinesChangeSoFar, ss[1]];
@@ -3569,7 +3561,6 @@ function Ace2Inner(){
 
     inCallStackIfNecessary("handleKeyEvent", function()
     {
-
       if (type == "keypress" || (isTypeForSpecialKey && keyCode == 13 /*return*/ ))
       {
         // in IE, special keys don't send keypress, the keydown does the action
@@ -3583,7 +3574,6 @@ function Ace2Inner(){
       {
         outsideKeyDown(evt);
       }
-
       if (!stopped)
       {
         var specialHandledInHook = hooks.callAll('aceKeyEvent', {
@@ -3620,6 +3610,12 @@ function Ace2Inner(){
           {
             outerWin.scrollBy(-100, 0);
           }, 0);
+          specialHandled = true;
+        }
+        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 83)
+        {
+          evt.preventDefault();
+          parent.parent.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
           specialHandled = true;
         }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 9 && !(evt.metaKey || evt.ctrlKey))
