@@ -38,8 +38,6 @@ exports.title = "Etherpad Lite";
  * The app favicon fully specified url, visible e.g. in the browser window
  */
 exports.favicon = "favicon.ico";
-exports.faviconPad = "../" + exports.favicon;
-exports.faviconTimeslider = "../../" + exports.favicon;
 
 /**
  * The IP ep-lite should listen to
@@ -169,6 +167,19 @@ exports.reloadSettings = function reloadSettings() {
     }
   }
 
+  var favicon = exports.favicon;
+  if (favicon.match(/^https?:\/\//i))
+  {
+    settings.faviconPad = favicon;
+    settings.faviconTimeslider = favicon;
+  }else 
+  {
+    settings.faviconPad = "../" + favicon;
+    settings.faviconTimeslider = "../../" + favicon;
+  }
+  exports.faviconPad = settings.faviconPad;
+  exports.faviconTimeslider = settings.faviconTimeslider;
+  
   if(exports.dbType === "dirty"){
     console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
   }
