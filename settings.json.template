@@ -30,7 +30,6 @@
   */
 
   // restricts socket.io transport methods
-
   "socketTransportProtocols" : ['xhr-polling', 'jsonp-polling', 'htmlfile'],
   
   //The Type of the database. You can choose between dirty, postgres, sqlite and mysql
