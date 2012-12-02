@@ -22,6 +22,7 @@ iframe {
 .readonly .acl-write {
   display: none;
 }
+
 #users {
   background: #f7f7f7;
   background: -webkit-linear-gradient( #F7F7F7,#EEE);
@@ -890,4 +891,16 @@ input[type=checkbox] {
     #online_count {
       line-height: 24px
     }
+}
+
+#passwordRequired{
+  display:none;
+}
+
+#permissionDenied{
+  display:none;
+}
+
+#wrongPassword{
+  display:none;
 }

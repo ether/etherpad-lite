@@ -298,30 +298,39 @@ function handshake()
     //the access was not granted, give the user a message
     if(!receivedClientVars && obj.accessStatus)
     {
+      $('.passForm').submit(function(){
+        // THIS BIT DOESNT WORK
+        alert("I AM BROKEN");
+        padutils.escapeHtml('require('+JSON.stringify(module.id)).savePassword();
+      });
+
       if(obj.accessStatus == "deny")
       {
-        $("#editorloadingbox").html("<b>You do not have permission to access this pad</b>");
+        $('#loading').hide();
+        $("#permissionDenied").show());
       }
       else if(obj.accessStatus == "needPassword")
       {
-        $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
+/*        $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
                                     "<form class='passForm'><input id='passwordinput' type='password' name='password'>"+
                                     "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword();") + "\">ok</button></div>");
         $("#passwordinput").focus();
         $(".passForm").submit(function(){
           $('.passForm button').click();
         });
+*/
+        $('#loading').hide();
+        $('#passwordRequired').show();
+        $("#passwordinput").focus();
       }
       else if(obj.accessStatus == "wrongPassword")
       {
-        $("#editorloadingbox").html("<b>Your password was wrong</b><br>" +
-                                    "<form class='passForm'><input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword();") + "\">ok</button></div>");
+        $('#loading').hide();
+        $('#wrongPassword').show();
         $("#passwordinput").focus();
-        $(".passForm").submit(function(){
-          $('.passForm button').click();
-        });
+
       }
+
     }
     
     //if we haven't recieved the clientVars yet, then this message should it be
