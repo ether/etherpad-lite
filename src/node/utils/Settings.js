@@ -177,6 +177,7 @@ exports.reloadSettings = function reloadSettings() {
   if(exports.dbType === "dirty"){
     console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
   }
+  console.debug("socket.io uses "+exports.socketTransportProtocols);
 }
 
 // initially load settings
