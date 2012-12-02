@@ -36,10 +36,10 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  // there shouldn#t be a browser that isn't compatible to all 
+  // there shouldn't be a browser that isn't compatible to all 
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  io.set('transports', ['xhr-polling', 'jsonp-polling', 'htmlfile']);
+  io.set('transports', settings.socketTransportProtocols );
 
   var socketIOLogger = log4js.getLogger("socket.io");
   io.set('logger', {
