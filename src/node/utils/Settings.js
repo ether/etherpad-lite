@@ -58,10 +58,7 @@ exports.port = process.env.PORT || 9001;
 exports.ssl = false;
 
 /**
- * restricts socket.io transport methods to JSONP-POLLING only
- * which is needed for IE8 browsers with deactivated native XMLHTTP support
- * see issue https://github.com/ether/etherpad-lite/pull/958
- * and https://github.com/ether/etherpad-lite/issues/245#issuecomment-4013455
+ * socket.io transport methods
  **/
 exports.socketTransportProtocols = ['xhr-polling', 'jsonp-polling', 'htmlfile'];
 
