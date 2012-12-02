@@ -331,12 +331,12 @@ exports.createPad = function(padID, text, callback)
     callback(new customError("createPad can't create group pads","apierror"));
     return;
   }
-  
+  padID = padID.replace(/[^a-z0-9_\-]/gi, '_'); 
   //create pad
   getPadSafe(padID, false, text, function(err)
   {
     if(ERR(err, callback)) return;
-    callback();
+    callback(null, {padID: padID});
   });
 }
 
