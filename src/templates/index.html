@@ -171,7 +171,7 @@
             function go2Name() 
             {
               
-                var padname = document.getElementById("padname").value.replace(/[^a-z0-9_\-]/gi, '_');
+                var padname = document.getElementById("padname").value.replace(/[;\/\?:@&=\+\$,{}\\\^\[\]\`\|]/gi, '_');
                 padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name");
             }
  
