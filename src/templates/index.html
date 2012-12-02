@@ -42,7 +42,7 @@
               if(language) document.documentElement.lang = language[1];
             })(document)
         </script>
-        <script type="text/javascript" src="static/js/l10n.js" async></script>
+        <script type="text/javascript" src="static/js/l10n.js"></script>
 
         <style>
             html, body {
@@ -158,8 +158,8 @@
 
         <div id="wrapper">
             <div id="inner">
-                <div id="button" onclick="go2Random()" data-l10n-id="index.newPad"><div id="content-btn" data-possible="New Pad,নতুন প্যাড,Neues Pad,Nuevo Pad,Uusi muistio,Nouveau Pad,Nieuw pad"></div></div>
-                <div id="label" data-l10n-id="index.createOpenPad"><div id="newwithname" data-possible="or create/open a Pad with the name:,অথবা নাম লিখে প্যাড খুলুন/তৈরী করুন:,Pad mit folgendem Namen öffnen,o puedes crear/abrir un Pad con el nombre:,tai avaa muistio nimellä:,ou créer/ouvrir un Pad intitulé,Maak of open pad met de naam:"></div></div> 
+                <div id="button" onclick="go2Random()" data-l10n-id="index.newPad"></div>
+                <div id="label" data-l10n-id="index.createOpenPad"></div> 
                 <form action="#" onsubmit="go2Name();return false;"> 
                     <input type="text" id="padname" autofocus x-webkit-speech> 
                     <button type="submit">OK</button>
@@ -196,30 +196,5 @@
             
             // start the custom js
             if (typeof customStart == "function") customStart();
-
-            var type = $("#content-btn").attr("data-possible").split(",");
-            var type2 = $("#newwithname").attr("data-possible").split(",");
-            var go = 1;
-            var go2 = 1;
-            $("#content-btn").text(type[0]).fadeIn(300).delay(800).fadeOut(300).queue(namer);
-            $("#newwithname").text(type2[0]).fadeIn(300).delay(800).fadeOut(300).queue(namer2);
-            function namer(){
-              $(this).text(type[go]).fadeIn(300).delay(800).fadeOut(300).queue(namer);
-              if(go < type.length - 1){
-                go++;
-              }else{
-                go = 0;
-              }
-                $(this).dequeue();
-            }  
-            function namer2(){
-              $(this).text(type2[go2]).fadeIn(300).delay(800).fadeOut(300).queue(namer2);
-              if(go2 < type2.length - 1){
-                go2++;
-              }else{
-                go2 = 0;
-              }
-                $(this).dequeue();
-            }  
         </script>
 </html>
