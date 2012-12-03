@@ -28,12 +28,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   //handle import requests
   args.app.post('/p/:pad/import', function(req, res, next) {
-    //if abiword is disabled, skip handling this request
-    if(settings.abiword == null) {
-      next();
-      return; 
-    }
-
     hasPadAccess(req, res, function() {
       importHandler.doImport(req, res, req.params.pad);
     });

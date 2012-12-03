@@ -585,15 +585,20 @@ table#otheruserstable {
 #exportdokuwiki {
   background-position: 0px -459px
 }
-#importstatusball {
-  display: none
+
+/* hidden element */
+#importstatusball,
+#importarrow,
+#importmessagesuccess,
+#importmessageabiword {
+  display: none;
 }
-#importarrow {
-  display: none
+
+#importmessageabiword {
+  color: #900;
+  font-size: small;
 }
-#importmessagesuccess {
-  display: none
-}
+
 #importsubmitinput {
   height: 25px;
   width: 85px;
