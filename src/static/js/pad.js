@@ -299,9 +299,7 @@ function handshake()
     if(!receivedClientVars && obj.accessStatus)
     {
       $('.passForm').submit(function(){
-        // THIS BIT DOESNT WORK
-        alert("I AM BROKEN");
-        padutils.escapeHtml('require('+JSON.stringify(module.id)).savePassword();
+        require(module.id).savePassword();
       });
 
       if(obj.accessStatus == "deny")
@@ -311,14 +309,6 @@ function handshake()
       }
       else if(obj.accessStatus == "needPassword")
       {
-/*        $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
-                                    "<form class='passForm'><input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword();") + "\">ok</button></div>");
-        $("#passwordinput").focus();
-        $(".passForm").submit(function(){
-          $('.passForm button').click();
-        });
-*/
         $('#loading').hide();
         $('#passwordRequired').show();
         $("#passwordinput").focus();
