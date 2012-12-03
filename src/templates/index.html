@@ -41,7 +41,7 @@
               if(language) document.documentElement.lang = language[1];
             })(document)
         </script>
-        <script type="text/javascript" src="static/js/l10n.js" async></script>
+        <script type="text/javascript" src="static/js/l10n.js"></script>
 
         <style>
             html, body {
@@ -168,11 +168,11 @@
 
         <script src="static/custom/index.js"></script>
         <script> 
-      
             function go2Name() 
             {
-                var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
+              
+                var padname = document.getElementById("padname").value.replace(/[;\/\?:@&=\+\$,{}\\\^\[\]\`\|%<>\*#]/gi, '_');
+                padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name");
             }
  
             function go2Random() 

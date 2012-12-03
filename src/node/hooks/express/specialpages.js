@@ -27,7 +27,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve pad.html under /p
   args.app.get('/p/:pad', function(req, res, next)
   {    
-    res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {req: req}));
+    /*if(!!(req.params.pad.match(/[;\/\?:@&=\+\$,{}\\\^\[\]\`\|%<>\*#]/gi))){
+      res.send(404, "Such a padname is forbidden");
+    }else{*/
+      res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {req: req}));
+    //}
   });
 
   //serve timeslider.html under /p/$padname/timeslider
@@ -35,7 +39,16 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   {
     res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {req: req}));
   });
-
+  args.app.get('/p/:pad/*', function(req, res, next)
+  {
+    if(req.url.split("/")[3] == "timeslider"){
+      //Just a safeguard, sometimes these URLs get messed up and should be
+      //actually rerouted to the timeslider instead of an error page.
+      res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {req: req}));
+    }else{
+      res.send(404, "Such a padname is forbidden");
+    }
+  });
   //serve favicon.ico from all path levels except as a pad name
   args.app.get( /\/favicon.ico$/, function(req, res)
   {
