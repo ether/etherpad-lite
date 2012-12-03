@@ -202,6 +202,7 @@ function savePassword()
   createCookie("password",$("#passwordinput").val(),null,document.location.pathname);
   //reload
   document.location=document.location;
+  return false;
 }
 
 function handshake()
