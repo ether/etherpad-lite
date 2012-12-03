@@ -298,7 +298,7 @@ function handshake()
     //the access was not granted, give the user a message
     if(!receivedClientVars && obj.accessStatus)
     {
-      $('.passForm').submit(pad.savePassword);
+      $('.passForm').submit(require(module.id).savePassword);
 
       if(obj.accessStatus == "deny")
       {
