@@ -315,6 +315,7 @@ function handshake()
       {
         $('#loading').hide();
         $('#wrongPassword').show();
+        $('#passwordRequired').show();
         $("#passwordinput").focus();
       }
     }
