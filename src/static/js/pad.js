@@ -51,18 +51,20 @@ var randomString = require('./pad_utils').randomString;
 
 var hooks = require('./pluginfw/hooks');
 
-function createCookie(name, value, days, path)
-{
+function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
   if (days)
   {
     var date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
     var expires = "; expires=" + date.toGMTString();
   }
-  else var expires = "";
+  else{
+    var expires = "";
+  }
   
-  if(!path)
+  if(!path){ // If the path isn't set then just whack the cookie on the root path
     path = "/";
+  }
   
   //Check if the browser is IE and if so make sure the full path is set in the cookie
   if(navigator.appName=='Microsoft Internet Explorer'){

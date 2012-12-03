@@ -39,26 +39,24 @@ function randomString(len)
   return randomstring;
 }
 
-function createCookie(name, value, days, path)
-{
+function createCookie(name, value, days, path){ /* Used by IE */
   if (days)
   {
     var date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
     var expires = "; expires=" + date.toGMTString();
   }
-  else var expires = "";
+  else{
+    var expires = "";
+  }
 
-  if(!path)
+  if(!path){ // IF the Path of the cookie isn't set then just create it on root
     path = "/";
-
-  // This fixes an issue with IE not wanting to store cookies for Auth #1234.  It's a temp fix because 
-  // Really we should be storing the cookie on teh document.location path and not modifying the fsking URL to contain a password!
-  // document.cookie = name + "=" + value + expires + "; path=" + "/";
+  }
 
   //Check if the browser is IE and if so make sure the full path is set in the cookie
   if(navigator.appName=='Microsoft Internet Explorer'){
-    document.cookie = name + "=" + value + expires + "; path="+document.location;
+    document.cookie = name + "=" + value + expires + "; path=/"; /* Note this bodge fix for IE is temporary until auth is rewritten */
   }
   else{
     document.cookie = name + "=" + value + expires + "; path=" + path;
