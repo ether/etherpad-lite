@@ -1,6 +1,8 @@
 # Developer Guidelines
 (Please talk to people on the mailing list before you change this page, see our section on [how to get in touch](https://github.com/ether/etherpad-lite#get-in-touch))
 
+## Important note for pull requests
+Pull requests should issued against the develop branch.  We never pull directly into master.
 **Our goal is to iterate in small steps. Release often, release early. Evolution instead of a revolution**
 
 ## General goals of Etherpad Lite
