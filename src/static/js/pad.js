@@ -298,14 +298,12 @@ function handshake()
     //the access was not granted, give the user a message
     if(!receivedClientVars && obj.accessStatus)
     {
-      $('.passForm').submit(function(){
-        require(module.id).savePassword();
-      });
+      $('.passForm').submit(pad.savePassword);
 
       if(obj.accessStatus == "deny")
       {
         $('#loading').hide();
-        $("#permissionDenied").show());
+        $("#permissionDenied").show();
       }
       else if(obj.accessStatus == "needPassword")
       {
@@ -318,9 +316,7 @@ function handshake()
         $('#loading').hide();
         $('#wrongPassword').show();
         $("#passwordinput").focus();
-
       }
-
     }
     
     //if we haven't recieved the clientVars yet, then this message should it be
