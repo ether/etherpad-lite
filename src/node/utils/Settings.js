@@ -38,6 +38,8 @@ exports.title = "Etherpad Lite";
  * The app favicon fully specified url, visible e.g. in the browser window
  */
 exports.favicon = "favicon.ico";
+exports.faviconPad = "../" + exports.favicon;
+exports.faviconTimeslider = "../../" + exports.favicon;
 
 /**
  * The IP ep-lite should listen to

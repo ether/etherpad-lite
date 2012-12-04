@@ -32,7 +32,7 @@
         <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-        <link rel="shortcut icon" href="<%=settings.favicon%>">
+        <link rel="shortcut icon" href="<%=settings.faviconPad%>">
 
         <link rel="resource" type="application/l10n" href="../locales.ini" />
         <script type="text/javascript">
@@ -184,7 +184,19 @@
         <div id="editorcontainerbox">
             <div id="editorcontainer"></div>
             <div id="editorloadingbox">
-              <p data-l10n-id="pad.loading">Loading...</p>
+              <div id="passwordRequired">
+                <p data-l10n-id="pad.passwordRequired">You need a password to access this pad</p>
+                <form class='passForm' method='POST'>
+                  <input id='passwordinput' type='password' name='password'><input type='submit' value='Submit'>
+                </form>
+              </div>
+              <div id="permissionDenied">
+                <p data-l10n-id="pad.permissionDenied">You do not have permission to access this pad</p>
+              </div>
+              <div id="wrongPassword">
+                <p data-l10n-id="pad.wrongPassword">Your password was wrong</p>
+              </div>
+              <p data-l10n-id="pad.loading" id="loading">Loading...</p>
               <noscript><strong>Sorry, you have to enable Javascript in order to use this.</strong></noscript>
             </div>
         </div>
@@ -246,7 +258,8 @@
             <h1 data-l10n-id="pad.importExport.import_export"></h1>
             <div class="column acl-write">
                 <% e.begin_block("importColumn"); %>
-                <h2 data-l10n-id="pad.importExport.import"></h2><br>
+                <h2 data-l10n-id="pad.importExport.import"></h2>
+                <div class="importmessage" id="importmessageabiword" data-l10n-id="pad.importExport.abiword"></div><br>
                 <form id="importform" method="post" action="" target="importiframe" enctype="multipart/form-data">
                     <div class="importformdiv" id="importformfilediv">
                         <input type="file" name="file" size="15" id="importfileinput">

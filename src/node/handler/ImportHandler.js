@@ -4,6 +4,7 @@
 
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
+ * 2012 Iván Eixarch
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +19,20 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
-var padManager = require("../db/PadManager");
-var padMessageHandler = require("./PadMessageHandler");
-var async = require("async");
-var fs = require("fs");
-var settings = require('../utils/Settings');
-var formidable = require('formidable');
-var os = require("os");
+var ERR = require("async-stacktrace")
+  , padManager = require("../db/PadManager")
+  , padMessageHandler = require("./PadMessageHandler")
+  , async = require("async")
+  , fs = require("fs")
+  , path = require("path")
+  , settings = require('../utils/Settings')
+  , formidable = require('formidable')
+  , os = require("os")
+  , importHtml = require("../utils/ImportHtml");
 
 //load abiword only if its enabled
 if(settings.abiword != null)
   var abiword = require("../utils/Abiword");
-
-var tempDirectory = "/tmp/";
-
-//tempDirectory changes if the operating system is windows
-if(os.type().indexOf("Windows") > -1)
-{
-  tempDirectory = process.env.TEMP;
-}
   
 /**
  * do a requested import
@@ -45,32 +40,27 @@ if(os.type().indexOf("Windows") > -1)
 exports.doImport = function(req, res, padId)
 {
   //pipe to a file
-  //convert file to text via abiword
-  //set text in the pad
+  //convert file to html via abiword
+  //set html in the pad
   
-  var srcFile, destFile;
-  var pad;
-  var text;
+  var srcFile, destFile
+    , pad
+    , text;
   
   async.series([
     //save the uploaded file to /tmp
-    function(callback)
-    {
+    function(callback) {
       var form = new formidable.IncomingForm();
       form.keepExtensions = true;
-      form.uploadDir = tempDirectory;
       
-      form.parse(req, function(err, fields, files) 
-      { 
+      form.parse(req, function(err, fields, files) { 
         //the upload failed, stop at this point
-        if(err || files.file === undefined)
-        {
+        if(err || files.file === undefined) {
           console.warn("Uploading Error: " + err.stack);
           callback("uploadFailed");
         }
         //everything ok, continue
-        else 
-        {
+        else {
           //save the path of the uploaded file
           srcFile = files.file.path;
           callback();
@@ -80,57 +70,48 @@ exports.doImport = function(req, res, padId)
     
     //ensure this is a file ending we know, else we change the file ending to .txt
     //this allows us to accept source code files like .c or .java
-    function(callback)
-    {
-      var fileEnding = (srcFile.split(".")[1] || "").toLowerCase();
-      var knownFileEndings = ["txt", "doc", "docx", "pdf", "odt", "html", "htm"];
-      
-      //find out if this is a known file ending
-      var fileEndingKnown = false;
-      for(var i in knownFileEndings)
-      {
-        if(fileEnding == knownFileEndings[i])
-        {
-          fileEndingKnown = true;
-        }
-      }
+    function(callback) {
+      var fileEnding = path.extname(srcFile).toLowerCase()
+        , knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm"]
+        , fileEndingKnown = (knownFileEndings.indexOf(fileEnding) > -1);
       
       //if the file ending is known, continue as normal
-      if(fileEndingKnown)
-      {
+      if(fileEndingKnown) {
         callback();
       }
       //we need to rename this file with a .txt ending
-      else
-      {
+      else {
         var oldSrcFile = srcFile;
-        srcFile = srcFile.split(".")[0] + ".txt";
+        srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
         
         fs.rename(oldSrcFile, srcFile, callback);
       }
     },
     
-    //convert file to text
-    function(callback)
-    {
+    //convert file to html
+    function(callback) {
       var randNum = Math.floor(Math.random()*0xFFFFFFFF);
-      destFile = tempDirectory + "eplite_import_" + randNum + ".txt";
-      abiword.convertFile(srcFile, destFile, "txt", function(err){
-        //catch convert errors
-        if(err){
-          console.warn("Converting Error:", err);
-          return callback("convertFailed");
-        } else {
-          callback();
-        }
-      });
+      destFile = path.join(os.tmpDir(), "eplite_import_" + randNum + ".htm");
+
+      if (abiword) {
+        abiword.convertFile(srcFile, destFile, "htm", function(err) {
+          //catch convert errors
+          if(err) {
+            console.warn("Converting Error:", err);
+            return callback("convertFailed");
+          } else {
+            callback();
+          }
+        });
+      } else {
+        // if no abiword only rename
+        fs.rename(srcFile, destFile, callback);
+      }
     },
     
     //get the pad object
-    function(callback)
-    {
-      padManager.getPad(padId, function(err, _pad)
-      {
+    function(callback) {
+      padManager.getPad(padId, function(err, _pad){
         if(ERR(err, callback)) return;
         pad = _pad;
         callback();
@@ -138,52 +119,47 @@ exports.doImport = function(req, res, padId)
     },
     
     //read the text
-    function(callback)
-    {
-      fs.readFile(destFile, "utf8", function(err, _text)
-      {
+    function(callback) {
+      fs.readFile(destFile, "utf8", function(err, _text){
         if(ERR(err, callback)) return;
         text = _text;
         
         //node on windows has a delay on releasing of the file lock.  
         //We add a 100ms delay to work around this
-	      if(os.type().indexOf("Windows") > -1)
-	      {
-          setTimeout(function()
-          {
-            callback();
-          }, 100);
-	      }
-	      else
-	      {
-	        callback();
-	      }
+        if(os.type().indexOf("Windows") > -1){
+           setTimeout(function() {callback();}, 100);
+        } else {
+          callback();
+        }
       });
     },
     
     //change text of the pad and broadcast the changeset
-    function(callback)
-    {
-      pad.setText(text);
+    function(callback) {
+      var fileEnding = path.extname(srcFile).toLowerCase();
+      if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
+        importHtml.setPadHTML(pad, text);
+      } else {
+        pad.setText(text);
+      }
       padMessageHandler.updatePadClients(pad, callback);
     },
     
     //clean up temporary files
-    function(callback)
-    {
+    function(callback) {
+      //for node < 0.7 compatible
+      var fileExists = fs.exists || path.exists;
       async.parallel([
-        function(callback)
-        {
-          fs.unlink(srcFile, callback);
+        function(callback){
+          fileExists (srcFile, function(exist) { (exist)? fs.unlink(srcFile, callback): callback(); });
         },
-        function(callback)
-        {
-          fs.unlink(destFile, callback);
+        function(callback){
+          fileExists (destFile, function(exist) { (exist)? fs.unlink(destFile, callback): callback(); });
         }
       ], callback);
     }
-  ], function(err)
-  {
+  ], function(err) {
+
     var status = "ok";
     
     //check for known errors and replace the status

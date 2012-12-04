@@ -22,6 +22,7 @@ iframe {
 .readonly .acl-write {
   display: none;
 }
+
 #users {
   background: #f7f7f7;
   background: -webkit-linear-gradient( #F7F7F7,#EEE);
@@ -190,6 +191,19 @@ a img {
   height: 30px;
   z-index: 100;
 }
+
+#editorloadingbox .passForm{
+  padding:10px;
+}
+
+#editorloadingbox input{
+  padding:10px;
+}
+
+#editorloadingbox button{
+  padding:10px;
+}
+
 #editorcontainerbox {
   position: absolute;
   bottom: 0;
@@ -571,15 +585,20 @@ table#otheruserstable {
 #exportdokuwiki {
   background-position: 0px -459px
 }
-#importstatusball {
-  display: none
+
+/* hidden element */
+#importstatusball,
+#importarrow,
+#importmessagesuccess,
+#importmessageabiword {
+  display: none;
 }
-#importarrow {
-  display: none
+
+#importmessageabiword {
+  color: #900;
+  font-size: small;
 }
-#importmessagesuccess {
-  display: none
-}
+
 #importsubmitinput {
   height: 25px;
   width: 85px;
@@ -877,4 +896,16 @@ input[type=checkbox] {
     #online_count {
       line-height: 24px
     }
+}
+
+#passwordRequired{
+  display:none;
+}
+
+#permissionDenied{
+  display:none;
+}
+
+#wrongPassword{
+  display:none;
 }

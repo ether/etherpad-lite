@@ -218,6 +218,9 @@ var padimpexp = (function()
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
       $("#exportplaina").attr("href", pad_root_path + "/export/txt");
       $("#exportdokuwikia").attr("href", pad_root_path + "/export/dokuwiki");
+
+      // activate action to import in the form
+      $("#importform").attr('action', pad_root_url + "/import");
       
       //hide stuff thats not avaible if abiword is disabled
       if(clientVars.abiwordAvailable == "no")
@@ -225,8 +228,8 @@ var padimpexp = (function()
         $("#exportworda").remove();
         $("#exportpdfa").remove();
         $("#exportopena").remove();
-        $(".importformdiv").remove();
-        $("#import").html("Import is not available.  To enable import please install abiword");
+
+        $("#importmessageabiword").show();
       }
       else if(clientVars.abiwordAvailable == "withoutPDF")
       {
@@ -237,16 +240,12 @@ var padimpexp = (function()
         
         $("#importexport").css({"height":"142px"});
         $("#importexportline").css({"height":"142px"});
-        
-        $("#importform").attr('action', pad_root_url + "/import"); 
       }
       else
       {
         $("#exportworda").attr("href", pad_root_path + "/export/doc");
         $("#exportpdfa").attr("href", pad_root_path + "/export/pdf");
         $("#exportopena").attr("href", pad_root_path + "/export/odt");
-        
-        $("#importform").attr('action', pad_root_path + "/import"); 
       }
     
       $("#impexp-close").click(function()
