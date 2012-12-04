@@ -8,7 +8,7 @@ var localesPath = __dirname+"/../../locales";
 // Serve English strings directly with /locales.ini
 var localeIndex = fs.readFileSync(localesPath+'/en.ini')+'\r\n';
 
-exports.availableLangs = {'en': {'nativeName': 'English'}};
+exports.availableLangs = {'en': {'nativeName': 'English', 'direction': 'ltr'}};
 
 fs.readdir(localesPath, function(er, files) {
   files.forEach(function(locale) {
