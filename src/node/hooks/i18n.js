@@ -13,6 +13,7 @@ exports.availableLangs = {en: languages.getLanguageInfo('en')}
 
 fs.readdir(localesPath, function(er, files) {
   files.forEach(function(locale) {
+    if(!foo.match(/\.ini$/)) return; // irrelevant
     locale = locale.split('.')[0]
     if(locale.toLowerCase() == 'en') return;
 
