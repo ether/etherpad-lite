@@ -113,10 +113,14 @@ $(document).ready(function () {
     for (plugin_name in data.results) {
       var plugin = data.results[plugin_name];
       var row = widget.find(".template tr").clone();
+      var version = '0.0.0';
+      for (version in data.results[plugin_name].versions) break;
 
       for (attr in plugin) {
         row.find("." + attr).html(plugin[attr]);
       }
+      row.find(".version").html(version);
+      
       widget.find(".results").append(row);
     }
 
