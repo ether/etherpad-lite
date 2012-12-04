@@ -1,4 +1,4 @@
-var http = require ('http')
+var languages = require('languages4translatewiki')
   , fs = require('fs')
   , path = require('path')
   , express = require('express')
@@ -10,37 +10,20 @@ var localeIndex = fs.readFileSync(localesPath+'/en.ini')+'\r\n';
 
 exports.availableLangs = {'en': {'nativeName': 'English'}};
 
-// build availableLangs with translatewiki web API
-var request = http.request ('http://translatewiki.net/w/api.php?action=query&meta=siteinfo&siprop=languages&format=json',
-  function (res) {
-    var twLangs = '';
-    res.setEncoding ('utf8');
-    res.on ('data', function (chunk) { twLangs += chunk; });
-    res.on ('end', function () {
-      // twLangs = [{code: 'en', '*': 'English'}...] 
-      twLangs = JSON.parse(twLangs)['query']['languages'];
+fs.readdir(localesPath, function(er, files) {
+  files.forEach(function(locale) {
+    var ext = path.extname(locale);
+    locale = path.basename(locale, ext).toLowerCase();
+    if(locale == 'en' || ext != '.ini') return;
 
-      fs.readdir(localesPath, function(er, files) {
-        files.forEach(function(locale) {
-          locale = locale.split('.')[0];
-          if(locale.toLowerCase() == 'en') return;
-
-          // build locale index
-          localeIndex += '['+locale+']\r\n@import url(locales/'+locale+'.ini)\r\n';
+    // build locale index
+    localeIndex += '['+locale+']\r\n@import url(locales/'+locale+'.ini)\r\n'
     
-          for (var l = 0; l < twLangs.length; l++) {
-            var code = twLangs[l]['code'];
-            if (locale == code) {
-              var nativeName = twLangs[l]['*'];
-              exports.availableLangs[code] = {'nativeName': nativeName};
-            }
-          }
-        });
-      });
-    });
-  }).on ('error', function(e) {
-    console.error('While query translatewiki API: '+e.message);
-  }).end();
+    // add info language {nativeName, direction} to availableLangs
+    exports.availableLangs[locale]=languages.getLanguageInfo(locale);
+  })
+})
+
 
 exports.expressCreateServer = function(n, args) {
 
