@@ -114,6 +114,7 @@ $(document).ready(function () {
       var plugin = data.results[plugin_name];
       var row = widget.find(".template tr").clone();
       var version = '0.0.0';
+      // hack to access "versions" property of the npm package object
       for (version in data.results[plugin_name].versions) break;
 
       for (attr in plugin) {
