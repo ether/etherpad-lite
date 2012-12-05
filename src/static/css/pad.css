@@ -774,7 +774,7 @@ input[type=checkbox] {
   border-radius: 3px;
   border: 1px solid #ccc;
   outline: none;
-  min-width: 105px;
+  width: 120px;
 }
 .column {
   float: left;
