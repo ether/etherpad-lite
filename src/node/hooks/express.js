@@ -66,8 +66,6 @@ exports.restartServer = function () {
 
   } else {
 
-    console.log( "SSL -- not enabled!" );
-
     var http = require('http');
     server = http.createServer(app);
   }

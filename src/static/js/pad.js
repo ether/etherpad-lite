@@ -51,18 +51,20 @@ var randomString = require('./pad_utils').randomString;
 
 var hooks = require('./pluginfw/hooks');
 
-function createCookie(name, value, days, path)
-{
+function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
   if (days)
   {
     var date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
     var expires = "; expires=" + date.toGMTString();
   }
-  else var expires = "";
+  else{
+    var expires = "";
+  }
   
-  if(!path)
+  if(!path){ // If the path isn't set then just whack the cookie on the root path
     path = "/";
+  }
   
   //Check if the browser is IE and if so make sure the full path is set in the cookie
   if(navigator.appName=='Microsoft Internet Explorer'){
@@ -202,6 +204,7 @@ function savePassword()
   createCookie("password",$("#passwordinput").val(),null,document.location.pathname);
   //reload
   document.location=document.location;
+  return false;
 }
 
 function handshake()
@@ -298,21 +301,25 @@ function handshake()
     //the access was not granted, give the user a message
     if(!receivedClientVars && obj.accessStatus)
     {
+      $('.passForm').submit(require(module.id).savePassword);
+
       if(obj.accessStatus == "deny")
       {
-        $("#editorloadingbox").html("<b>You do not have permission to access this pad</b>");
+        $('#loading').hide();
+        $("#permissionDenied").show();
       }
       else if(obj.accessStatus == "needPassword")
       {
-        $("#editorloadingbox").html("<b>You need a password to access this pad</b><br>" +
-                                    "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
+        $('#loading').hide();
+        $('#passwordRequired').show();
+        $("#passwordinput").focus();
       }
       else if(obj.accessStatus == "wrongPassword")
       {
-        $("#editorloadingbox").html("<b>Your password was wrong</b><br>" +
-                                    "<input id='passwordinput' type='password' name='password'>"+
-                                    "<button type='button' onclick=\"" + padutils.escapeHtml('require('+JSON.stringify(module.id)+").savePassword()") + "\">ok</button>");
+        $('#loading').hide();
+        $('#wrongPassword').show();
+        $('#passwordRequired').show();
+        $("#passwordinput").focus();
       }
     }
     
