@@ -68,6 +68,7 @@ var version =
   , "isPasswordProtected"       : ["padID"]
   , "listAuthorsOfPad"          : ["padID"]
   , "padUsersCount"             : ["padID"]
+  , "checkToken"                : []
   }
 , "1.1":
   { "createGroup"               : []
@@ -102,6 +103,7 @@ var version =
   , "padUsers"                  : ["padID"]
   , "sendClientsMessage"        : ["padID", "msg"]
   , "listAllGroups"             : []
+  , "checkToken"                : []
   }
 };
 
