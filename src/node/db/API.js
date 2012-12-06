@@ -548,6 +548,18 @@ exports.sendClientsMessage = function (padID, msg, callback) {
   } );
 }
 
+/**
+checkToken() returns ok when api token is valid
+
+Example returns:
+
+{code: 0, message:"ok"}
+*/
+exports.checkToken = function(padID, callback)
+{
+  callback()
+}
+
 
 /******************************/
 /** INTERNAL HELPER FUNCTIONS */
