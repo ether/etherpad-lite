@@ -555,9 +555,9 @@ Example returns:
 
 {code: 0, message:"ok"}
 */
-exports.checkToken = function(padID, callback)
+exports.checkToken = function(callback)
 {
-  callback()
+  callback();
 }
 
 
