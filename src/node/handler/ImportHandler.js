@@ -33,6 +33,9 @@ var ERR = require("async-stacktrace")
 //load abiword only if its enabled
 if(settings.abiword != null)
   var abiword = require("../utils/Abiword");
+
+//for node 0.6 compatibily, os.tmpDir() only works from 0.8
+var tmpDirectory = process.env.TEMP || process.env.TMPDIR || process.env.TMP || '/tmp';
   
 /**
  * do a requested import
@@ -52,6 +55,7 @@ exports.doImport = function(req, res, padId)
     function(callback) {
       var form = new formidable.IncomingForm();
       form.keepExtensions = true;
+      form.uploadDir = tmpDirectory;
       
       form.parse(req, function(err, fields, files) { 
         //the upload failed, stop at this point
@@ -91,7 +95,7 @@ exports.doImport = function(req, res, padId)
     //convert file to html
     function(callback) {
       var randNum = Math.floor(Math.random()*0xFFFFFFFF);
-      destFile = path.join(os.tmpDir(), "eplite_import_" + randNum + ".htm");
+      destFile = path.join(tmpDirectory, "eplite_import_" + randNum + ".htm");
 
       if (abiword) {
         abiword.convertFile(srcFile, destFile, "htm", function(err) {
