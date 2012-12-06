@@ -133,10 +133,16 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               var now = Math.floor(new Date().getTime()/1000);
               
               //is it for this group?
-              if(sessionInfo.groupID != groupID) return;
+              if(sessionInfo.groupID != groupID) {
+            	  callback();
+            	  return;
+              }
               
               //is validUntil still ok?
-              if(sessionInfo.validUntil <= now) return;
+              if(sessionInfo.validUntil <= now){
+            	  callback();
+            	  return;
+              }
               
               // There is a valid session
               validSession = true;
