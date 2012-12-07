@@ -11,39 +11,50 @@ describe("timeslider", function(){
     
     // make some changes to produce 100 revisions
     var timePerRev = 900
-      , revs = 150;
+      , revs = 100;
     this.timeout(revs*timePerRev+10000);
     for(var i=0; i < revs; i++) {
       setTimeout(function() {
-        // type 'a' in the first text element
+        // enter 'a' in the first text element
         inner$("div").first().sendkeys('a');
       }, timePerRev*i);
     }
     
     setTimeout(function() {
+      // go to timeslider
       $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider');
       
-      var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
-      
-      var $sliderHandle = timeslider$('#timeslider-slider ui-slider-handle');
-  /*
-      //get the strikethrough button and click it
-      var $strikethroughButton = chrome$(".buttonicon-strikethrough");
-      $strikethroughButton.click();
-      
-      //ace creates a new dom element when you press a button, so just get the first text element again
-      var $newFirstTextElement = inner$("div").first();
-      
-      // is there a <i> element now?
-      var isstrikethrough = $newFirstTextElement.find("s").length === 1;
+      setTimeout(function() {
+        var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+        var $sliderBar = timeslider$('#ui-slider-bar');
+        
+        var latestContents = timeslider$('#padcontent').text();
 
-      //expect it to be strikethrough
-      expect(isstrikethrough).to.be(true);
+        // Click somewhere on the timeslider
+        var e = new jQuery.Event('mousedown');
+        e.clientX = e.pageX = 150;
+        e.clientY = e.pageY = 45;
+        $sliderBar.trigger(e);
+        
+        e = new jQuery.Event('mousedown');
+        e.clientX = e.pageX = 150;
+        e.clientY = e.pageY = 40;
+        $sliderBar.trigger(e);
+        
+        e = new jQuery.Event('mousedown');
+        e.clientX = e.pageX = 150;
+        e.clientY = e.pageY = 50;
+        $sliderBar.trigger(e);
+        
+        $sliderBar.trigger('mouseup')
 
-      //make sure the text hasn't changed
-      expect($newFirstTextElement.text()).to.eql($firstTextElement.text());
-  */
-      done();
+        setTimeout(function() {
+          //make sure the text has changed
+          expect( timeslider$('#padcontent').text() ).not.to.eql( latestContents );
+          done();
+        }, 1000);
+        
+      }, 6000);
     }, revs*timePerRev);
   });
 });
