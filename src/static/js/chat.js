@@ -109,7 +109,7 @@ var chat = (function()
       }
       /* End of new action */
 
-      var authorName = msg.userName == null ? "unnamed" : padutils.escapeHtml(msg.userName); 
+      var authorName = msg.userName == null ? _('pad_userlist.unnamed') : padutils.escapeHtml(msg.userName); 
       
       var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
       $("#chattext").append(html);

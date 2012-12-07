@@ -69,7 +69,7 @@ var padimpexp = (function()
   function fileInputSubmit()
   {
     $('#importmessagefail').fadeOut("fast");
-    var ret = window.confirm("Importing a file will overwrite the current text of the pad." + " Are you sure you want to proceed?");
+    var ret = window.confirm(_("pad_impexp.confirmimport"));
     if (ret)
     {        
       hidePanelCall = paddocbar.hideLaterIfNoOtherInteraction();
@@ -85,7 +85,7 @@ var padimpexp = (function()
       $('#importsubmitinput').attr(
       {
         disabled: true
-      }).val("Importing...");
+      }).val(_("pad_impexp.importing"));
       window.setTimeout(function()
       {
         $('#importfileinput').attr(
@@ -106,7 +106,7 @@ var padimpexp = (function()
 
   function importDone()
   {
-    $('#importsubmitinput').removeAttr('disabled').val("Import Now");
+    $('#importsubmitinput').removeAttr('disabled').val(_("pad_impexp.importbutton"));
     window.setTimeout(function()
     {
       $('#importfileinput').removeAttr('disabled');
@@ -130,14 +130,14 @@ var padimpexp = (function()
     var msg="";
   
     if(status === "convertFailed"){
-      msg = "We were not able to import this file. Please use a different document format or copy paste manually";
+      msg = _("pad_impexp.convertFailed");
     } else if(status === "uploadFailed"){
-      msg = "The upload failed, please try again";
+      msg = _("pad_impexp.uploadFailed");
     }
   
     function showError(fade)
     {
-      $('#importmessagefail').html('<strong style="color: red">Import failed:</strong> ' + (msg || 'Please copy paste'))[(fade ? "fadeIn" : "show")]();
+      $('#importmessagefail').html('<strong style="color: red">'+_('pad_impexp.importfailed')+':</strong> ' + (msg || _('pad_impexp.copypaste','')))[(fade ? "fadeIn" : "show")]();
     }
 
     if ($('#importexport .importmessage').is(':visible'))
@@ -198,7 +198,7 @@ var padimpexp = (function()
     {
       type = "this file";
     }
-    alert("Exporting as " + type + " format is disabled. Please contact your" + " system administrator for details.");
+    alert(_("pad_impexp.exportdisabled", {type:type}));
     return false;
   }
 
@@ -213,6 +213,9 @@ var padimpexp = (function()
       var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname)
       //get http://example.com/p/padname
       var pad_root_url = document.location.href.replace(document.location.pathname, pad_root_path)
+
+      //i10l buttom import
+      $('#importsubmitinput').val(_("pad_impexp.importbutton"));
 
       // build the export links
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
