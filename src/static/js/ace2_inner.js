@@ -166,10 +166,12 @@ function Ace2Inner(){
   }
 
   var dynamicCSS = null;
+  var parentDynamicCSS = null;
 
   function initDynamicCSS()
   {
     dynamicCSS = makeCSSManager("dynamicsyntax");
+    parentDynamicCSS = makeCSSManager("dynamicsyntax", true);
   }
 
   var changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
@@ -217,6 +219,7 @@ function Ace2Inner(){
       if (dynamicCSS)
       {
         dynamicCSS.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
+        parentDynamicCSS.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
       }
     }
     else
@@ -234,18 +237,23 @@ function Ace2Inner(){
           
           var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author)));
+          var parentAuthorStyle = parentDynamicCSS.selectorStyle(getAuthorColorClassSelector(
+          getAuthorClassName(author)));
           var anchorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author))+' > a')
           
           // author color
           authorStyle.backgroundColor = bgcolor;
+          parentAuthorStyle.backgroundColor = bgcolor;
           
           // text contrast
           if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
           {
             authorStyle.color = '#ffffff';
+            parentAuthorStyle.color = '#ffffff';
           }else{
             authorStyle.color = null;
+            parentAuthorStyle.color = null;
           }
           
           // anchor text contrast
