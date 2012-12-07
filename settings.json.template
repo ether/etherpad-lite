@@ -68,7 +68,7 @@
   "maxAge" : 21600, // 60 * 60 * 6 = 6 hours
   
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
-     Abiword is needed to enable the import/export of pads*/  
+     Abiword is needed to advanced import/export features of pads*/  
   "abiword" : null,
  
   /* This setting is used if you require authentication of all users.
