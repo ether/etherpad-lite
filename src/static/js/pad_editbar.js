@@ -169,7 +169,7 @@ var padeditbar = (function()
             {
               if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret())
               {
-                if (window.confirm(_("pad_editbar.clearcolors")))
+                if (window.confirm(_("pad.editbar.clearcolors")))
                 {
                   ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
                     ['author', '']
