@@ -19,6 +19,7 @@ var parseIni = function (input) {
   var result = {},
   lines = input.split('\n');
   _.each (lines, function(line) {
+    line = line.trim();
     if ((line.length > 0) && (line[0] != ';') && (line[0] != '[')) { 
       line = line.split('=', 2);
       if (line.length == 2) result[line[0].trim()]=line[1].trim();
