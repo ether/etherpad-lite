@@ -57,6 +57,11 @@ exports.port = process.env.PORT || 9001;
  */
 exports.ssl = false;
 
+/**
+ * socket.io transport methods
+ **/
+exports.socketTransportProtocols = ['xhr-polling', 'jsonp-polling', 'htmlfile'];
+
 /*
  * The Type of the database
  */

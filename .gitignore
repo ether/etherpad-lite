@@ -1,5 +1,6 @@
 node_modules
 settings.json
+!settings.json.template
 APIKEY.txt
 bin/abiword.exe
 bin/node.exe
