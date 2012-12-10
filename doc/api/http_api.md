@@ -407,3 +407,12 @@ sends a custom message of type `msg` to the pad
 *Example returns:*
   * `{code: 0, message:"ok", data: {}}`
   * `{code: 1, message:"padID does not exist", data: null}`
+
+#### checkToken()
+ * API >= 1
+
+returns ok when api token is valid
+
+*Example returns:*
+  * `{"code":0,"message":"ok","data":null}`
+  * `{"code":4,"message":"no or wrong API Key","data":null}`
