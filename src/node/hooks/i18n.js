@@ -127,11 +127,12 @@ var generateLocaleIndex = function () {
  * PUBLIC
  */
 
-var localeIndex = generateLocaleIndex();
-
-exports.availableLangs = getAvailableLangs();
-
 exports.expressCreateServer = function(n, args) {
+
+  //regenerate locales when server restart
+  locales = {};
+  var localeIndex = generateLocaleIndex();
+  exports.availableLangs = getAvailableLangs();
 
   args.app.get ('/locales/:locale', function(req, res) {
     //works with /locale/en and /locale/en.ini requests
