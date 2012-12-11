@@ -11,7 +11,6 @@ pad.modals.uderdup = Ouvrir dans une nouvelle fenêtre.
 pad.toolbar.unindent.title = Désindenter
 pad.toolbar.undo.title = Annuler (Ctrl-Z)
 timeslider.pageTitle = {{appTitle}} Curseur temporel
-
 ```
 
 There must be only one translation per line. Each translation consists of a key (the id of the string that is to be translated), an equal sign and the translated string. Anything after the equa sign will be used as the translated string (you may put some spaces after `=` for better readability, though). Terms in curly braces must not be touched but left as they are, since they represent a dynamically changing part of the string like a variable. Imagine a message welcoming a user: `Welcome, {{userName}}!` would be translated as `Ahoy, {{userName}}!` in pirate.
