@@ -126,16 +126,26 @@ var generateLocaleIndex = function () {
   return result;
 }
 
+var generateLocaleIndexJSON = function () {
+  if (_.isEmpty(locales)) getAllLocales();
+  var result = locales;
+  //result += locales['en']+"\n";
+  _.each(_.keys(locales), function(langcode) {
+    if (langcode != 'en') result[langcode]='/locales/'+langcode+'.json';
+  });
+  return JSON.stringify(result);
+}
+
 var root = path.resolve(__dirname+"/../locales");
 
 getAllLocales();
 
 _.each(locales, function(translation, langcode) {
   console.log('escribiendo '+langcode);
-  translation = JSON.stringify(translation);
+  translation = '{"'+langcode+'":'+JSON.stringify(translation)+'}';
   fs.writeFileSync(root+"/"+langcode+".json", translation, 'utf8');  
 });
 
-console.log('escribiendo locales.json');
-fs.writeFileSync(root+"/locales.json", JSON.stringify(locales), 'utf8'); 
+console.log('escribiendo localeIndex.json');
+fs.writeFileSync(root+"/localesIndex.json", generateLocaleIndexJSON(), 'utf8'); 
 
