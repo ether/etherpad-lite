@@ -32,16 +32,11 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
   <link rel="shortcut icon" href="<%=settings.faviconTimeslider%>">
-  <link rel="resource" type="application/l10n" href="../../locales.ini" />
-  
-  <script type="text/javascript">
-    (function() {
-      // Set language for l10n
-      var language = document.cookie.match(/language=(\w{2})/);
-      if(language) document.documentElement.lang = language[1];
-    })();
-  </script>
+
+  <link rel="localizations" type="application/l10n+json" href="../../locales.ini" />
+  <script type="text/javascript" src="../../static/js/html10n.js"></script>
   <script type="text/javascript" src="../../static/js/l10n.js"></script>
+
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <link rel="stylesheet" href="../../static/custom/timeslider.css">
