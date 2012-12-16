@@ -804,6 +804,14 @@ window.html10n = (function(window, document, undefined) {
       cb(null, build)
     })
   }
+  
+  /**
+   * Returns the language that was last applied to the translations hash
+   * thus overriding most of the formerly applied langs
+   */
+  html10n.getLanguage = function() {
+    this.language
+  }
 
   /**
    * Index all <link>s
