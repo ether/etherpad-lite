@@ -597,12 +597,14 @@ window.html10n = (function(window, document, undefined) {
    * @param langs An array of lang codes defining fallbacks
    */
   html10n.localize = function(langs) {
+    var that = this
     // if only one string => create an array
     if ('string' == typeof langs) langs = [langs]
     
     this.build(langs, function(er, translations) {
       html10n.translations = translations
       html10n.translateElement(translations)
+      that.trigger('localized')
     })
   }
 
@@ -780,7 +782,8 @@ window.html10n = (function(window, document, undefined) {
    * @param langs Array - a list of langs sorted by priority (default langs should go last)
    */
   html10n.build = function(langs, cb) {
-    var build = {}
+    var that = this
+      , build = {}
 
     asyncForEach(langs, function (lang, i, next) {
       html10n.loader.load(lang, next)
@@ -790,12 +793,24 @@ window.html10n = (function(window, document, undefined) {
       for (var i=0, n=langs.length; i < n; i++) {
         // apply all strings of the current lang in the list
         // to our build object
-        for (var string in this.loader.langs[lang]) {
+        for (var string in this.loader.langs[i]) {
           build[string] = this.loader.langs[lang][string]
         }
+        
+        // the last applied lang will be exposed as the
+        // lang the page was translated to
+        that.language = langs[i]
       }
       cb(null, build)
     })
+  }
+  
+  /**
+   * Returns the language that was last applied to the translations hash
+   * thus overriding most of the formerly applied langs
+   */
+  html10n.getLanguage = function() {
+    this.language
   }
 
   /**
