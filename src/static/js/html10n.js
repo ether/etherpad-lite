@@ -54,9 +54,9 @@ window.html10n = (function(window, document, undefined) {
    */
   MicroEvent.mixin	= function(destObject){
     var props	= ['bind', 'unbind', 'trigger'];
-    if(!destObject.prototype) destObject.prototype = {};
+    if(!destObject) return;
     for(var i = 0; i < props.length; i ++){
-      destObject.prototype[props[i]] = MicroEvent.prototype[props[i]];
+      destObject[props[i]] = MicroEvent.prototype[props[i]];
     }
   }
   
@@ -148,8 +148,8 @@ window.html10n = (function(window, document, undefined) {
   /**
    * The html10n object
    */
-  var html10n =
-  { language: null
+  var html10n = 
+  { language : null
   }
   MicroEvent.mixin(html10n)
   
@@ -819,6 +819,7 @@ window.html10n = (function(window, document, undefined) {
   html10n.index = function () {
     // Find all <link>s
     var links = document.getElementsByTagName('link')
+       , resources = []
     for (var i=0, n=links.length; i < n; i++) {
       if (links[i].type != 'application/l10n+json')
         continue;
@@ -829,12 +830,17 @@ window.html10n = (function(window, document, undefined) {
   }
   
   if (document.addEventListener) // modern browsers and IE9+
-   document.addEventListener('DOMContentLoaded', html10n.index, false)
+   document.addEventListener('DOMContentLoaded', function() {
+     html10n.index()
+   }, false)
   else if (window.attachEvent)
-    document.attachEvent('onload', html10n.index, false)
+    document.attachEvent('onload', function() {
+     html10n.index()
+   }, false)
 
   // gettext-like shortcut
   if (window._ === undefined)
     var _ = html10n.get;
 
+  return html10n
 })(window, document)
