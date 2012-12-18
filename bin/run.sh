@@ -8,6 +8,8 @@ if [ -d "../bin" ]; then
   cd "../"
 fi
 
+. bin/functions.sh
+
 #Stop the script if its started as root
 if [ "$(id -u)" -eq 0 ]; then
    echo "You shouldn't start Etherpad-Lite as root!"
@@ -25,4 +27,4 @@ bin/installDeps.sh $* || exit 1
 
 #Move to the node folder and start
 echo "start..."
-node node_modules/ep_etherpad-lite/node/server.js $*
+$NODEJS node_modules/ep_etherpad-lite/node/server.js $*
