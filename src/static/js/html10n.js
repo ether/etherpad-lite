@@ -92,8 +92,7 @@ window.html10n = (function(window, document, undefined) {
     var that = this
     
     if (this.cache[href]) {
-      this.parse(this.cache[href])
-      cb()
+      this.parse(lang, this.cache[href], cb)
       return;
     }
     
@@ -123,6 +122,7 @@ window.html10n = (function(window, document, undefined) {
       return
     }
     
+    if (!data[lang]) lang = lang.substr(0,2)
     if (!data[lang]) {
       cb(new Error('Couldn\'t find translations for '+lang))
       return
