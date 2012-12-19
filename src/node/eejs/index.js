@@ -28,10 +28,17 @@ var resolve = require("resolve");
 exports.info = {
   buf_stack: [],
   block_stack: [],
-  blocks: {},
   file_stack: [],
   args: []
 };
+
+function getCurrentFile() {
+  return exports.info.file_stack[exports.info.file_stack.length-1];
+}
+
+function createBlockId(name) {
+  return getCurrentFile().path + '|' + name;
+}
 
 exports._init = function (b, recursive) {
   exports.info.buf_stack.push(exports.info.buf);
@@ -39,7 +46,7 @@ exports._init = function (b, recursive) {
 }
 
 exports._exit = function (b, recursive) {
-  exports.info.file_stack[exports.info.file_stack.length-1].inherit.forEach(function (item) {
+  getCurrentFile().inherit.forEach(function (item) {
     exports._require(item.name, item.args);
   });
   exports.info.buf = exports.info.buf_stack.pop();
@@ -59,29 +66,17 @@ exports.end_capture = function () {
 }
 
 exports.begin_define_block = function (name) {
-  if (typeof exports.info.blocks[name] == "undefined")
-    exports.info.blocks[name] = {};
   exports.info.block_stack.push(name);
   exports.begin_capture();
 }
 
-exports.super = function () {
-  exports.info.buf.push('<!eejs!super!>');
-}
-
 exports.end_define_block = function () {
   content = exports.end_capture();
-  var name = exports.info.block_stack.pop();
-  if (typeof exports.info.blocks[name].content == "undefined")
-    exports.info.blocks[name].content = content;
-  else if (typeof exports.info.blocks[name].content.indexOf('<!eejs!super!>'))
-    exports.info.blocks[name].content = exports.info.blocks[name].content.replace('<!eejs!super!>', content);
-
-  return exports.info.blocks[name].content;
+  return content;
 }
 
 exports.end_block = function () {
-  var name = exports.info.block_stack[exports.info.block_stack.length-1];
+  var name = exports.info.block_stack.pop();
   var renderContext = exports.info.args[exports.info.args.length-1];
   var args = {content: exports.end_define_block(), renderContext: renderContext};
   hooks.callAll("eejsBlock_" + name, args);
@@ -91,7 +86,7 @@ exports.end_block = function () {
 exports.begin_block = exports.begin_define_block;
 
 exports.inherit = function (name, args) {
-    exports.info.file_stack[exports.info.file_stack.length-1].inherit.push({name:name, args:args});
+    getCurrentFile().inherit.push({name:name, args:args});
 }
 
 exports.require = function (name, args, mod) {
@@ -101,7 +96,7 @@ exports.require = function (name, args, mod) {
   var paths = [];
 
   if (exports.info.file_stack.length) {
-    basedir = path.dirname(exports.info.file_stack[exports.info.file_stack.length-1].path);
+    basedir = path.dirname(getCurrentFile().path);
   }
   if (mod) {
     basedir = path.dirname(mod.filename);

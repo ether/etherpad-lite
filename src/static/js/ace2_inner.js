@@ -166,10 +166,12 @@ function Ace2Inner(){
   }
 
   var dynamicCSS = null;
+  var parentDynamicCSS = null;
 
   function initDynamicCSS()
   {
     dynamicCSS = makeCSSManager("dynamicsyntax");
+    parentDynamicCSS = makeCSSManager("dynamicsyntax", true);
   }
 
   var changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
@@ -217,6 +219,7 @@ function Ace2Inner(){
       if (dynamicCSS)
       {
         dynamicCSS.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
+        parentDynamicCSS.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
       }
     }
     else
@@ -234,18 +237,23 @@ function Ace2Inner(){
           
           var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author)));
+          var parentAuthorStyle = parentDynamicCSS.selectorStyle(getAuthorColorClassSelector(
+          getAuthorClassName(author)));
           var anchorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author))+' > a')
           
           // author color
           authorStyle.backgroundColor = bgcolor;
+          parentAuthorStyle.backgroundColor = bgcolor;
           
           // text contrast
           if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
           {
             authorStyle.color = '#ffffff';
+            parentAuthorStyle.color = '#ffffff';
           }else{
             authorStyle.color = null;
+            parentAuthorStyle.color = null;
           }
           
           // anchor text contrast
@@ -331,14 +339,6 @@ function Ace2Inner(){
     var color = colorutils.css2triple(colorCSS);
     color = colorutils.blend(color, [1, 1, 1], fadeFrac);
     return colorutils.triple2css(color);
-  }
-
-  function doAlert(str)
-  {
-    scheduler.setTimeout(function()
-    {
-      alert(str);
-    }, 0);
   }
 
   editorInfo.ace_getRep = function()
@@ -1624,7 +1624,7 @@ function Ace2Inner(){
 
         if (linesWrapped > 0)
         {
-          doAlert("Editor warning: " + linesWrapped + " long line" + (linesWrapped == 1 ? " was" : "s were") + " hard-wrapped into " + ccData.numLinesAfter + " lines.");
+          // console.log("Editor warning: " + linesWrapped + " long line" + (linesWrapped == 1 ? " was" : "s were") + " hard-wrapped into " + ccData.numLinesAfter + " lines.");
         }
 
         if (ss[0] >= 0) selStart = [ss[0] + a + netNumLinesChangeSoFar, ss[1]];
@@ -3266,7 +3266,7 @@ function Ace2Inner(){
       }
     }
     //hide the dropdownso
-    if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/Pita/etherpad-lite/issues/327
+    if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/ether/etherpad-lite/issues/327
       window.parent.parent.padeditbar.toggleDropDown("none");
     }
   }
@@ -3569,7 +3569,6 @@ function Ace2Inner(){
 
     inCallStackIfNecessary("handleKeyEvent", function()
     {
-
       if (type == "keypress" || (isTypeForSpecialKey && keyCode == 13 /*return*/ ))
       {
         // in IE, special keys don't send keypress, the keydown does the action
@@ -3583,7 +3582,6 @@ function Ace2Inner(){
       {
         outsideKeyDown(evt);
       }
-
       if (!stopped)
       {
         var specialHandledInHook = hooks.callAll('aceKeyEvent', {
@@ -3620,6 +3618,12 @@ function Ace2Inner(){
           {
             outerWin.scrollBy(-100, 0);
           }, 0);
+          specialHandled = true;
+        }
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey)) /* Do a saved revision on ctrl S */
+        {
+          evt.preventDefault();
+          parent.parent.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
           specialHandled = true;
         }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 9 && !(evt.metaKey || evt.ctrlKey))

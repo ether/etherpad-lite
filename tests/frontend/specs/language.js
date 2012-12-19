@@ -1,10 +1,19 @@
+function deletecookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
 describe("Language select and change", function(){
+  // Destroy language cookies
+  deletecookie("language", null);
+
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
     this.timeout(60000);
   });
  
+  // Destroy language cookies
+
   it("makes text german", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
@@ -21,14 +30,16 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
  
-    helper.waitFor(function() { return $language.val() == "de"})
+    helper.waitFor(function() { 
+      return chrome$(".buttonicon-bold").parent()[0]["title"] = "Fett (Strg-B)";
+     })
     .done(function(){
       //get the value of the bold button
       var $boldButton = chrome$(".buttonicon-bold").parent();
  
       //get the title of the bold button
       var boldButtonTitle = $boldButton[0]["title"];
- 
+
       //check if the language is now german
       expect(boldButtonTitle).to.be("Fett (Strg-B)");
       done();
@@ -51,7 +62,10 @@ describe("Language select and change", function(){
     $languageoption.attr('selected','selected');
     $language.change();
  
-    helper.waitFor(function() { return $language.val() == "en";})
+    //get the value of the bold button
+    var $boldButton = chrome$(".buttonicon-bold").parent();
+
+    helper.waitFor(function() { return $boldButton[0]["title"] != "Fett (Strg-B)";})
     .done(function(){
  
       //get the value of the bold button

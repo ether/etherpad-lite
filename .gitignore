@@ -1,5 +1,6 @@
 node_modules
 settings.json
+!settings.json.template
 APIKEY.txt
 bin/abiword.exe
 bin/node.exe
@@ -12,3 +13,5 @@ src/static/js/jquery.js
 npm-debug.log
 *.DS_Store
 .ep_initialized
+*.crt
+*.key
