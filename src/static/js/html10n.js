@@ -92,7 +92,7 @@ window.html10n = (function(window, document, undefined) {
     var that = this
     
     if (this.cache[href]) {
-      this.parse(lang, this.cache[href], cb)
+      this.parse(lang, href, this.cache[href], cb)
       return;
     }
     
@@ -107,7 +107,7 @@ window.html10n = (function(window, document, undefined) {
           var data = JSON.parse(xhr.responseText)
           that.cache[href] = data
           // Pass on the contents for parsing
-          that.parse(lang, data, cb)
+          that.parse(lang, href, data, cb)
         } else {
           cb(new Error('Failed to load '+href))
         }
@@ -116,7 +116,7 @@ window.html10n = (function(window, document, undefined) {
     xhr.send(null);
   }
   
-  Loader.prototype.parse = function(lang, data, cb) {
+  Loader.prototype.parse = function(lang, currHref, data, cb) {
     if ('object' != typeof data) {
       cb(new Error('A file couldn\'t be parsed as json.'))
       return
@@ -130,15 +130,24 @@ window.html10n = (function(window, document, undefined) {
     
     if ('string' == typeof data[lang]) {
       // Import rule
-      this.fetch(data[lang], lang, cb)
+
+      // absolute path
+      var importUrl = data[lang]
+
+      // relative path
+      if(data[lang].indexOf("http") != 0 && data[lang].indexOf("/") != 0) {  
+        importUrl = currHref+"/../"+data[lang]
+      }
+
+      this.fetch(importUrl, lang, cb)
       return
     }
-    
+
     if ('object' != typeof data[lang]) {
       cb(new Error('Translations should be specified as JSON objects!'))
       return
     }
-    
+
     this.langs[lang] = data[lang]
     // TODO: Also store accompanying langs
     cb()
