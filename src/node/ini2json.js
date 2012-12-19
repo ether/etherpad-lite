@@ -24,8 +24,14 @@ var parseIni = function (input) {
   _.each (lines, function(line) {
     line = line.trim();
     if ((line.length > 0) && (line[0] != ';') && (line[0] != '[')) {
-      line = line.split('=', 2);
-      if (line.length == 2) result[line[0].trim()]=line[1].trim();
+      var equalpos = line.indexOf('=');
+      if (equalpos > -1) {
+        var key = line.substring(0,equalpos).trim()
+          , value = line.substring(equalpos+1).trim();
+        result[key]=value;
+      }
+      //line = line.split('=', 2);
+      //if (line.length == 2) result[line[0].trim()]=line[1].trim();
     }	
   });
   return result;
@@ -126,6 +132,7 @@ var generateLocaleIndex = function () {
   return result;
 }
 
+/* in i18n
 var generateLocaleIndexJSON = function () {
   if (_.isEmpty(locales)) getAllLocales();
   var result = locales;
@@ -135,6 +142,7 @@ var generateLocaleIndexJSON = function () {
   });
   return JSON.stringify(result);
 }
+*/
 
 var root = path.resolve(__dirname+"/../locales");
 
@@ -146,6 +154,10 @@ _.each(locales, function(translation, langcode) {
   fs.writeFileSync(root+"/"+langcode+".json", translation, 'utf8');  
 });
 
-console.log('escribiendo localeIndex.json');
-fs.writeFileSync(root+"/localesIndex.json", generateLocaleIndexJSON(), 'utf8'); 
+//console.log('escribiendo localeIndex.json');
+//fs.writeFileSync(root+"/localesIndex.json", generateLocaleIndexJSON(), 'utf8'); 
+
+//test new parseIni
+//var root = path.resolve(__dirname+"/../locales/es.ini");
+//console.log(parseIni(fs.readFileSync(root,'utf8')));
 
