@@ -2,7 +2,9 @@ var languages = require('languages4translatewiki')
   , fs = require('fs')
   , path = require('path')
   , express = require('express')
-  , _ = require('underscore');
+  , _ = require('underscore')
+  , npm = require('npm')
+;
 
 /*
 * PRIVATE
@@ -53,11 +55,10 @@ var getAllLocalesPaths = function () {
   }
 
   //add core supported languages first
-  var root = path.resolve(__dirname+"/../../locales");
-  exploreDir (root, extractLangs);
-  //add plugins languages (if any)
-  root = path.resolve(__dirname+"/../../../node_modules");
-  exploreDir (root, extractLangs);
+  exploreDir (npm.root+"/ep_etherpad-lite/locales", extractLangs);
+  
+  //add plugins languages (if any) -- bad practice
+  exploreDir (npm.root, extractLangs);
 
   return result;
 }
