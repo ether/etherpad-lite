@@ -4,90 +4,70 @@ var languages = require('languages4translatewiki')
   , express = require('express')
   , _ = require('underscore')
   , npm = require('npm')
+  , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
 ;
 
-/*
-* PRIVATE
-*/
-
-// locales will store all locales ini files merged (core+plugins) in RAM
-var locales = {};
-
-//explore recursive subdirectories from root and execute callback
-//don't explore symbolic links
-var exploreDir = function (root, callback) {
-  var stat = fs.lstatSync(root);
-  if (stat.isDirectory() && !stat.isSymbolicLink()) {
-    var names = fs.readdirSync(root),
-    subdirs = [],
-    files = [];
-    names.forEach (function(file) {
-      file = path.resolve(root,file);
-      stat = fs.lstatSync(file);
-      if (stat.isDirectory() && !stat.isSymbolicLink()) {
-        subdirs.push(file);
-      } else {
-        files.push(file);
-      }
-    });
-    callback(root, subdirs, files);
-    subdirs.forEach(function (d) {
-      exploreDir(d, callback);
-    });
-  }
-};
 
 // return all files languages absolute path group by langcode
 // {es: [pathcore, pathplugin1...], en:...}
-var getAllLocalesPaths = function () {
-  var result = {};
+function getAllLocales() {
+  var locales2paths = {};
 
-  //extract only files paths with name is a supported language code and have json extension
-  var extractLangs = function (root, subdirs, files) {
-    _.each(files, function(file) {
-      var ext = path.extname(file),
-      locale = path.basename(file, ext).toLowerCase();
+  // Puts the paths of all locale files contained in a given directory
+  // into `results` (files from various dirs are grouped by lang code)
+  // (only json files with valid language code as name)
+  function extractLangs(dir) {
+    var stat = fs.lstatSync(dir);
+    if (!stat.isDirectory() || stat.isSymbolicLink()) return;
+
+    fs.readdirSync(dir).forEach(function(file) {
+      file = path.resolve(dir, file);
+      stat = fs.lstatSync(file);
+      if (stat.isDirectory() || stat.isSymbolicLink()) return;
+
+      var ext = path.extname(file)
+      , locale = path.basename(file, ext).toLowerCase();
+
       if ((ext == '.json') && languages.isValid(locale)) {
-        if (!(_.has(result, locale))) result[locale] = [];
-        result[locale].push(file);
+        if(!locales2paths[locale]) locales2paths[locale] = [];
+        locales2paths[locale].push(file);
       }
     });
   }
 
   //add core supported languages first
-  exploreDir (npm.root+"/ep_etherpad-lite/locales", extractLangs);
+  extractLangs(npm.root+"/ep_etherpad-lite/locales");
   
-  //add plugins languages (if any) -- bad practice
-  exploreDir (npm.root, extractLangs);
+  //add plugins languages (if any)
+  for(var pluginName in plugins) extractLangs(path.join(npm.root, pluginName, 'locales'));
 
-  return result;
-}
+  // Build a locale index (merge all locale data)
+  var locales = {}
+  _.each (locales2paths, function(files, langcode) {
+    locales[langcode]={};
 
-//save in locales all json files merged by language code
-var getAllLocales = function () {
-  _.each (getAllLocalesPaths(), function(files, langcode) {
-    locales[langcode]={}
-    _.each (files, function(file) {
-      _.extend(locales[langcode], JSON.parse(fs.readFileSync(file,'utf8'))[langcode]);
+    files.forEach(function(file) {
+     var fileContents = JSON.parse(fs.readFileSync(file,'utf8'));
+      _.extend(locales[langcode], fileContents[langcode]);
     });
   });
+
+  return locales;
 }
 
-//return all languages availables with nativeName and direction
-//{es: {nativeName: "español", direction: "ltr"},...}
-var getAvailableLangs = function () {
+// returns a hash of all available languages availables with nativeName and direction
+// e.g. { es: {nativeName: "español", direction: "ltr"}, ... }
+function getAvailableLangs(locales) {
   var result = {};
-  if (_.isEmpty(locales)) getAllLocales();
   _.each(_.keys(locales), function(langcode) {
-    result[langcode]=languages.getLanguageInfo(langcode);
+    result[langcode] = languages.getLanguageInfo(langcode);
   });
   return result;
 }
 
-//return locale index that will be served in /locales.json
-var generateLocaleIndex = function () {
-  if (_.isEmpty(locales)) getAllLocales();
-  var result = _.clone(locales);
+// returns locale index that will be served in /locales.json
+var generateLocaleIndex = function (locales) {
+  var result = _.clone(locales) // keep English strings
   _.each(_.keys(locales), function(langcode) {
     if (langcode != 'en') result[langcode]='locales/'+langcode+'.json';
   });
@@ -95,23 +75,19 @@ var generateLocaleIndex = function () {
 }
 
 
-/*
-* PUBLIC
-*/
-
 exports.expressCreateServer = function(n, args) {
 
-  //regenerate locales when server restart
-  locales = {};
-  var localeIndex = generateLocaleIndex();
-  exports.availableLangs = getAvailableLangs();
+  //regenerate locales on server restart
+  var locales = getAllLocales();
+  var localeIndex = generateLocaleIndex(locales);
+  exports.availableLangs = getAvailableLangs(locales);
 
   args.app.get ('/locales/:locale', function(req, res) {
     //works with /locale/en and /locale/en.json requests
     var locale = req.params.locale.split('.')[0];
     if (exports.availableLangs.hasOwnProperty(locale)) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-     res.send('{"'+locale+'":'+JSON.stringify(locales[locale])+'}');
+      res.send('{"'+locale+'":'+JSON.stringify(locales[locale])+'}');
     } else {
       res.send(404, 'Language not available');
     }
