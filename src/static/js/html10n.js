@@ -662,6 +662,7 @@ window.html10n = (function(window, document, undefined) {
   
   html10n.get = function(id, args) {
     var translations = html10n.translations
+    if(!translations) return consoleWarn('No translations available (yet)')
     if(!translations[id]) return consoleWarn('Could not find string '+id)
     
     // apply args
@@ -804,7 +805,8 @@ window.html10n = (function(window, document, undefined) {
       // loop through priority array...
       for (var i=0, n=langs.length; i < n; i++) {
         lang = langs[i]
-        if(!lang) continue;
+        
+        if(!lang || !(lang in that.loader.langs)) continue;
         
         // ... and apply all strings of the current lang in the list
         // to our build object
@@ -814,7 +816,7 @@ window.html10n = (function(window, document, undefined) {
         
         // the last applied lang will be exposed as the
         // lang the page was translated to
-        that.language = langs[lang]
+        that.language = lang
       }
       cb(null, build)
     })
@@ -825,7 +827,7 @@ window.html10n = (function(window, document, undefined) {
    * thus overriding most of the formerly applied langs
    */
   html10n.getLanguage = function() {
-    this.language
+    return this.language;
   }
 
   /**
