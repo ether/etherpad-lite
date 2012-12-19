@@ -110,16 +110,15 @@ exports.expressCreateServer = function(n, args) {
     //works with /locale/en and /locale/en.json requests
     var locale = req.params.locale.split('.')[0];
     if (exports.availableLangs.hasOwnProperty(locale)) {
-      // Don't include utf8 encoding (see https://forum.jquery.com/topic/the-problem-with-ie8-and-encoding-error-c00ce56e)
-      res.setHeader('Content-Type', 'application/json');
-      res.send('{"'+locale+'":'+JSON.stringify(locales[locale])+'}');
+      res.setHeader('Content-Type', 'application/json; charset=utf8');
+     res.send('{"'+locale+'":'+JSON.stringify(locales[locale])+'}');
     } else {
       res.send(404, 'Language not available');
     }
   })
   
   args.app.get('/locales.json', function(req, res) {
-    res.setHeader('Content-Type', 'application/json');// don't send encoding (see above)
+    res.setHeader('Content-Type', 'application/json; charset=utf8');
     res.send(localeIndex);
   })
   
