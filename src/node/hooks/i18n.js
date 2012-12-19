@@ -17,6 +17,7 @@ function getAllLocales() {
   // into `results` (files from various dirs are grouped by lang code)
   // (only json files with valid language code as name)
   function extractLangs(dir) {
+    if(!fs.existsSync(dir)) return;
     var stat = fs.lstatSync(dir);
     if (!stat.isDirectory() || stat.isSymbolicLink()) return;
 
