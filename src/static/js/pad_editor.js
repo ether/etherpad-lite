@@ -78,7 +78,7 @@ var padeditor = (function()
       $("#languagemenu").val(window.html10n.getLanguage());
       $("#languagemenu").change(function() {
         pad.createCookie("language",$("#languagemenu").val(),null,'/');
-        document.webL10n.localize([$("#languagemenu").val(), 'en']);
+        window.html10n.localize([$("#languagemenu").val(), 'en']);
       });
     },
     setViewOptions: function(newOptions)
