@@ -89,7 +89,7 @@ var generateLocaleIndex = function () {
   if (_.isEmpty(locales)) getAllLocales();
   var result = _.clone(locales);
   _.each(_.keys(locales), function(langcode) {
-    if (langcode != 'en') result[langcode]='/locales/'+langcode+'.json';
+    if (langcode != 'en') result[langcode]='locales/'+langcode+'.json';
   });
   return JSON.stringify(result);
 }
