@@ -122,7 +122,7 @@ window.html10n = (function(window, document, undefined) {
       return
     }
     
-    if (!data[lang]) lang = lang.substr(0,2)
+    if (!data[lang]) lang = lang.substr(0, lang.indexOf('-') == -1? lang.length : lang.indexOf('-'))
     if (!data[lang]) {
       cb(new Error('Couldn\'t find translations for '+lang))
       return
