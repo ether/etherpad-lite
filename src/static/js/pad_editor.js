@@ -79,6 +79,7 @@ var padeditor = (function()
       html10n.bind('localized', function() {
         $("#languagemenu").val(html10n.getLanguage());
       })
+      $("#languagemenu").val(html10n.getLanguage());
       $("#languagemenu").change(function() {
         pad.createCookie("language",$("#languagemenu").val(),null,'/');
         window.html10n.localize([$("#languagemenu").val(), 'en']);
