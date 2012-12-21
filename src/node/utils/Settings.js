@@ -131,12 +131,15 @@ exports.abiwordAvailable = function()
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
-  settingsFilename = path.resolve(path.join(root, settingsFilename));
 
   var settingsStr;
   try{
     //read the settings sync
-    settingsStr = fs.readFileSync(settingsFilename).toString();
+    if (settingsFilename == '-') {
+      settingsStr = fs.readFileSync('/dev/stdin').toString();
+    } else {
+      settingsStr = fs.readFileSync(path.resolve(path.join(root, settingsFilename))).toString();
+    }
   } catch(e){
     console.warn('No settings file found. Continuing using defaults!');
   }
