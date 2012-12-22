@@ -8,6 +8,8 @@ if [ -d "../bin" ]; then
   cd "../"
 fi
 
+. bin/functions.sh
+
 #Is gnu-grep (ggrep) installed on SunOS (Solaris)
 if [ $(uname) = "SunOS" ]; then
   hash ggrep > /dev/null 2>&1 || { 
@@ -23,7 +25,7 @@ hash curl > /dev/null 2>&1 || {
 }
 
 #Is node installed?
-hash node > /dev/null 2>&1 || { 
+hash $NODEJS > /dev/null 2>&1 || {
   echo "Please install node.js ( http://nodejs.org )" >&2
   exit 1 
 }
@@ -42,7 +44,7 @@ if [ ! $(echo $NPM_VERSION | cut -d "." -f 1) = "1" ]; then
 fi
 
 #check node version
-NODE_VERSION=$(node --version)
+NODE_VERSION=$($NODEJS --version)
 NODE_V_MINOR=$(echo $NODE_VERSION | cut -d "." -f 1-2)
 if [ ! $NODE_V_MINOR = "v0.8" ] && [ ! $NODE_V_MINOR = "v0.6" ]; then
   echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.6.x or v0.8.x" >&2
