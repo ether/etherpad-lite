@@ -295,10 +295,10 @@ Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security
 #### createPad(padID [, text])
  * API >= 1
 
-creates a new (non-group) pad.  Note that if you need to create a group Pad, you should call **createGroupPad**.
+creates a new (non-group) pad.  Note that if you need to create a group Pad, you should call **createGroupPad**. Returns the actual PadID that was recorded (Checked against a regex so that nothing breaks when accessed.)
 
 *Example returns:*
-  * `{code: 0, message:"ok", data: null}`
+  * `{code: 0, message:"ok", data: {"padID":"asdf_as_d"}}`
   * `{code: 1, message:"pad does already exist", data: null}`
 
 #### getRevisionsCount(padID)
