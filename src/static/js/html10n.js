@@ -163,6 +163,8 @@ window.html10n = (function(window, document, undefined) {
   MicroEvent.mixin(html10n)
   
   html10n.macros = {}
+
+  html10n.rtl = ["ar","dv","fa","ha","he","ks","ku","ps","ur","yi"]
   
   /**
    * Get rules for plural forms (shared with JetPack), see:
@@ -829,6 +831,14 @@ window.html10n = (function(window, document, undefined) {
    */
   html10n.getLanguage = function() {
     return this.language;
+  }
+
+  /**
+   * Returns the direction of the language returned be html10n#getLanguage
+   */
+  html10n.getDirection = function() {
+    var langCode = this.language.indexOf('-') == -1? this.language : this.language.substr(0, this.language.indexOf('-'))
+    return html10n.rtl.indexOf(langCode) == -1? 'ltr' : 'rtl'
   }
 
   /**
