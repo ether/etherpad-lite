@@ -735,7 +735,8 @@ window.html10n = (function(window, document, undefined) {
     // get id
     str.id = node.getAttribute('data-l10n-id')
     if (!str.id) return
-    if(!translations[str.id]) return
+
+    if(!translations[str.id]) return consoleWarn('Couldn\'t find translation key '+str.id)
 
     // get args
     if(window.JSON) {
@@ -750,6 +751,7 @@ window.html10n = (function(window, document, undefined) {
     
     str.str = html10n.get(str.id, str.args)
     
+    // get attribute name to apply str to
     var prop
       , index = str.id.lastIndexOf('.')
       , attrList = // allowed attributes
@@ -758,7 +760,6 @@ window.html10n = (function(window, document, undefined) {
        , "alt": 1
        , "textContent": 1
        }
-    // get attribute name to apply str to
     if (index > 0 && str.id.substr(index + 1) in attrList) { // an attribute has been specified
       prop = str.id.substr(index + 1)
     } else { // no attribute: assuming text content by default
@@ -766,7 +767,7 @@ window.html10n = (function(window, document, undefined) {
     }
 
     // Apply translation
-    if (node.children.length === 0) {
+    if (node.children.length === 0 || prop != 'textContent') {
       node[prop] = str.str
     } else {
       var children = node.childNodes,
