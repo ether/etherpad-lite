@@ -31,7 +31,7 @@ describe("Language select and change", function(){
     $language.change();
  
     helper.waitFor(function() { 
-      return chrome$(".buttonicon-bold").parent()[0]["title"] = "Fett (Strg-B)";
+      return chrome$(".buttonicon-bold").parent()[0]["title"] == "Fett (Strg-B)";
      })
     .done(function(){
       //get the value of the bold button
@@ -78,6 +78,32 @@ describe("Language select and change", function(){
       expect(boldButtonTitle).to.be("Bold (Ctrl-B)");
       done();
  
+    });
+  });
+  
+  it("changes direction when picking an rtl lang", function(done) {
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+ 
+    //click on the settings button to make settings visible
+    var $settingsButton = chrome$(".buttonicon-settings");
+    $settingsButton.click();
+ 
+    //click the language button
+    var $language = chrome$("#languagemenu");
+    var $languageoption = $language.find("[value=ar]");
+ 
+    //select arabic
+    $languageoption.attr('selected','selected');
+    $language.change();
+ 
+    helper.waitFor(function() { 
+      return chrome$("html")[0]["dir"] != 'ltr';
+     })
+    .done(function(){
+      // check if the document's direction was changed
+      expect(chrome$("html")[0]["dir"]).to.be("rtl");
+      done();
     });
   });
  
