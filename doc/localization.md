@@ -19,14 +19,12 @@ Translations will be send back to us regularly and will eventually appear in the
 `/src/locales` contains files for all supported languages which contain the translated strings. Translation files are simple `*.json` files and look like this:
 
 ```json
-{ "fr":
 { "pad.modals.connected": "Connecté."
 , "pad.modals.uderdup": "Ouvrir dans une nouvelle fenêtre."
 , "pad.toolbar.unindent.title": "Désindenter"
 , "pad.toolbar.undo.title": "Annuler (Ctrl-Z)"
 , "timeslider.pageTitle": "{{appTitle}} Curseur temporel"
 , ...
-}
 }
 ```
 
@@ -71,17 +69,13 @@ alert(window._('pad.chat'));
 
 *ep_your-plugin/locales/en.json*
 ```
-{ "en":
 { "ep_your-plugin.h1": "Heading 1"
-}
 }
 ```
 
 *ep_your-plugin/locales/es.json*
 ```
-{ "es":
 { "ep_your-plugin.h1": "Título 1"
-}
 }
 ```
 
@@ -94,9 +88,7 @@ For example, if you want to replace `Chat` with `Notes`, simply add...
 
 *ep_your-plugin/locales/en.json*
 ```
-{ "en":
 { "ep_your-plugin.h1": "Heading 1"
 , "pad.chat": "Notes"
-}
 }
 ```

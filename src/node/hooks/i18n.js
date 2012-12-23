@@ -8,13 +8,13 @@ var languages = require('languages4translatewiki')
 ;
 
 
-// return all files languages absolute path group by langcode
-// {es: [pathcore, pathplugin1...], en:...}
+// returns all existing messages merged together and grouped by langcode
+// {es: {"foo": "string"}, en:...}
 function getAllLocales() {
   var locales2paths = {};
 
   // Puts the paths of all locale files contained in a given directory
-  // into `results` (files from various dirs are grouped by lang code)
+  // into `locales2paths` (files from various dirs are grouped by lang code)
   // (only json files with valid language code as name)
   function extractLangs(dir) {
     if(!fs.existsSync(dir)) return;
@@ -49,7 +49,7 @@ function getAllLocales() {
 
     files.forEach(function(file) {
      var fileContents = JSON.parse(fs.readFileSync(file,'utf8'));
-      _.extend(locales[langcode], fileContents[langcode]);
+      _.extend(locales[langcode], fileContents);
     });
   });
 
