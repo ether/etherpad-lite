@@ -1,6 +1,6 @@
-NODEJS_BINARIES_CANDIDATES="node nodejs"
+NODEJS_BINARIES_CANDIDATES="node"
 
-NODEJS=node
+NODEJS=nodejs
 
 for candidate in $NODEJS_BINARIES_CANDIDATES; do
   if hash $candidate > /dev/null 2>&1; then
