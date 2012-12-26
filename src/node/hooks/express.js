@@ -27,7 +27,7 @@ exports.createServer = function () {
   }
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
-  serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
+  serverName = "Etherpad-Lite " + version + " (http://etherpad.org)";
 
   exports.restartServer();
 
