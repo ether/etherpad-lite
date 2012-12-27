@@ -75,10 +75,14 @@ var padeditor = (function()
       {
         pad.changeViewOption('useMonospaceFont', $("#viewfontmenu").val() == 'monospace');
       });
-      $("#languagemenu").val(document.webL10n.getLanguage());
+      
+      html10n.bind('localized', function() {
+        $("#languagemenu").val(html10n.getLanguage());
+      })
+      $("#languagemenu").val(html10n.getLanguage());
       $("#languagemenu").change(function() {
         pad.createCookie("language",$("#languagemenu").val(),null,'/');
-        document.webL10n.setLanguage($("#languagemenu").val());
+        window.html10n.localize([$("#languagemenu").val(), 'en']);
       });
     },
     setViewOptions: function(newOptions)

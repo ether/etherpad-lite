@@ -112,7 +112,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       {
         $(this).attr('href', $(this).attr('thref').replace("%revision%", newpos));
       });
-      $("#revision_label").html(document.webL10n.get("timeslider.version", { "version": newpos}));
+      $("#revision_label").html(html10n.get("timeslider.version", { "version": newpos}));
 
       if (newpos == 0)
       {
@@ -215,7 +215,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       }
       if (authors.length == 0)
       {
-        authorsList.append(document.webL10n.get("timeslider.toolbar.authorsList"));
+        authorsList.append(html10n.get("timeslider.toolbar.authorsList"));
       }
       
       fixPadHeight();
@@ -346,7 +346,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           var newloc = self.currentLoc + (evt2.clientX - self.startLoc);
           if (newloc < 0) newloc = 0;
           if (newloc > ($("#ui-slider-bar").width() - 2)) newloc = ($("#ui-slider-bar").width() - 2);
-          $("#revision_label").html(document.webL10n.get("timeslider.version", { "version": Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))}));
+          $("#revision_label").html(html10n.get("timeslider.version", { "version": Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))}));
           $(self).css('left', newloc);
           if (getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))) _callSliderCallbacks(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
         });
