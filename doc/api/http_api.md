@@ -60,9 +60,12 @@ Portal submits content into new blog post
 
 ## Usage
 
+### API version
+The latest version is `1.2`
+
 ### Request Format
 
-The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION/$FUNCTIONNAME. Parameters are transmitted via HTTP GET. $APIVERSION depends on the endpoints you want to use. The latest version is `1.1`
+The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION/$FUNCTIONNAME. Parameters are transmitted via HTTP GET. $APIVERSION depends on the endpoints you want to use.
 
 ### Response Format
 Responses are valid JSON in the following format:
@@ -409,7 +412,7 @@ sends a custom message of type `msg` to the pad
   * `{code: 1, message:"padID does not exist", data: null}`
 
 #### checkToken()
- * API >= 1
+ * API >= 1.2
 
 returns ok when api token is valid
 

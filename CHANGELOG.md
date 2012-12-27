@@ -1,3 +1,22 @@
+# 1.2.2
+ * More translations and better language support.  See https://translatewiki.net/wiki/Translating:Etherpad_lite for more details
+ * Add a checkToken Method to the API
+ * Bugfix for Internal Caching issue that was causing some 404s on images.
+ * Bugfix for IE Import
+ * Bugfix for Node 0.6 compatibility
+ * Bugfix for multiple cookie support
+ * Bugfix for API when requireAuth is enabled.
+ * Plugin page now shows plugin version #
+ * Show color of Author in Chat messages
+ * Allow plugin search by description
+ * Allow for different socket IO transports
+ * Allow for custom favicon path
+ * Control S now does Create new Revision functionality
+ * Focus on password when required
+ * Frontend Timeslider test
+ * Allow for basic HTML etc. import without abiword
+ * Native HTTPS support
+
 # 1.2.1
  * Allow ! in urls inside the editor (Not Pad urls)
  * Allow comments in language files
