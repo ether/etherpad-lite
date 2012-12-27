@@ -180,7 +180,7 @@ function getParams()
   {
     if(lang !== "")
     {
-      document.webL10n.setLanguage(lang);
+      window.html10n.localize([lang, 'en']);
     }
   }
 }
