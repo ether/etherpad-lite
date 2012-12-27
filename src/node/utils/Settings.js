@@ -38,6 +38,8 @@ exports.title = "Etherpad Lite";
  * The app favicon fully specified url, visible e.g. in the browser window
  */
 exports.favicon = "favicon.ico";
+exports.faviconPad = "../" + exports.favicon;
+exports.faviconTimeslider = "../../" + exports.favicon;
 
 /**
  * The IP ep-lite should listen to
@@ -48,6 +50,18 @@ exports.ip = "0.0.0.0";
  * The Port ep-lite should listen to
  */
 exports.port = process.env.PORT || 9001;
+
+/**
+ * The SSL signed server key and the Certificate Authority's own certificate
+ * default case: ep-lite does *not* use SSL. A signed server key is not required in this case.
+ */
+exports.ssl = false;
+
+/**
+ * socket.io transport methods
+ **/
+exports.socketTransportProtocols = ['xhr-polling', 'jsonp-polling', 'htmlfile'];
+
 /*
  * The Type of the database
  */

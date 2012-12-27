@@ -25,7 +25,7 @@ var async = require("async");
 var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
-var settings = require("../utils/Settings")
+var settings = require("../utils/Settings");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 
 /**
@@ -83,7 +83,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
           // grant access, with author of token
           callback(null, statusObject);
         }
-      })
+      });
       
       //don't continue
       return;
@@ -133,10 +133,16 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               var now = Math.floor(new Date().getTime()/1000);
               
               //is it for this group?
-              if(sessionInfo.groupID != groupID) return;
+              if(sessionInfo.groupID != groupID) {
+            	  callback();
+            	  return;
+              }
               
               //is validUntil still ok?
-              if(sessionInfo.validUntil <= now) return;
+              if(sessionInfo.validUntil <= now){
+            	  callback();
+            	  return;
+              }
               
               // There is a valid session
               validSession = true;
@@ -282,4 +288,4 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
     if(ERR(err, callback)) return;
     callback(null, statusObject);
   });
-}
+};

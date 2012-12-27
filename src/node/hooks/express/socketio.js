@@ -36,13 +36,10 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  // the following has been successfully tested with the following browsers 
-  // works also behind reverse proxy
-  // Firefox 14.0.1
-  // IE8 with Native XMLHTTP support
-  // IE8 without Native XMLHTTP support
-  // Chrome 21.0.1180.79
-  io.set('transports', ['jsonp-polling']);
+  // there shouldn't be a browser that isn't compatible to all 
+  // transports in this list at once
+  // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
+  io.set('transports', settings.socketTransportProtocols );
 
   var socketIOLogger = log4js.getLogger("socket.io");
   io.set('logger', {

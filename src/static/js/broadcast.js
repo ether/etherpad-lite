@@ -304,7 +304,14 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         var hours = zpad(date.getHours(), 2);
         var minutes = zpad(date.getMinutes(), 2);
         var seconds = zpad(date.getSeconds(), 2);
-        return ([month, '/', day, '/', year, ' ', hours, ':', minutes, ':', seconds].join(""));
+        return (html10n.get("timeslider.dateformat", {
+          "day": day,
+          "month": month,
+          "year": year,
+          "hours": hours,
+          "minutes": minutes, 
+          "seconds": seconds
+        }));
         }
         
         
@@ -313,7 +320,24 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         
     $('#timer').html(dateFormat());
 
-    var revisionDate = ["Saved", ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"][date.getMonth()], date.getDate() + ",", date.getFullYear()].join(" ")
+    var revisionDate = html10n.get("timeslider.saved", {
+      "day": date.getDate(),
+      "month": [
+                html10n.get("timeslider.month.january"),
+                html10n.get("timeslider.month.february"),
+                html10n.get("timeslider.month.march"),
+                html10n.get("timeslider.month.april"),
+                html10n.get("timeslider.month.may"),
+                html10n.get("timeslider.month.june"),
+                html10n.get("timeslider.month.july"),
+                html10n.get("timeslider.month.august"),
+                html10n.get("timeslider.month.september"),
+                html10n.get("timeslider.month.october"),
+                html10n.get("timeslider.month.november"),
+                html10n.get("timeslider.month.december")
+               ][date.getMonth()],
+      "year": date.getFullYear()
+    });
     $('#revision_date').html(revisionDate)
 
   }

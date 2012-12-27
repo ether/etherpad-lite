@@ -1,5 +1,4 @@
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-var http = require('http');
 var express = require('express');
 var settings = require('../utils/Settings');
 var fs = require('fs');
@@ -26,9 +25,9 @@ exports.createServer = function () {
   {
     console.warn("Can't get git version for server header\n" + e.message)
   }
-  console.log("Report bugs at https://github.com/Pita/etherpad-lite/issues")
+  console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
-  serverName = "Etherpad-Lite " + version + " (http://j.mp/ep-lite)";
+  serverName = "Etherpad-Lite " + version + " (http://etherpad.org)";
 
   exports.restartServer();
 
@@ -50,7 +49,26 @@ exports.restartServer = function () {
   }
 
   var app = express(); // New syntax for express v3
-  server = http.createServer(app);
+
+  if (settings.ssl) {
+
+    console.log( "SSL -- enabled");
+    console.log( "SSL -- server key file: " + settings.ssl.key );
+    console.log( "SSL -- Certificate Authority's certificate file: " + settings.ssl.cert );
+    
+    options = {
+      key: fs.readFileSync( settings.ssl.key ),
+      cert: fs.readFileSync( settings.ssl.cert )
+    };
+    
+    var https = require('https');
+    server = https.createServer(options, app);
+
+  } else {
+
+    var http = require('http');
+    server = http.createServer(app);
+  }
 
   app.use(function (req, res, next) {
     res.header("Server", serverName);

@@ -18,7 +18,7 @@ var pad;
 
 exports.saveNow = function(){
   pad.collabClient.sendMessage({"type": "SAVE_REVISION"});
-  alert("This revision is now marked as a saved revision");
+  alert(_("pad.savedrevs.marked"));
 }
 
 exports.init = function(_pad){
