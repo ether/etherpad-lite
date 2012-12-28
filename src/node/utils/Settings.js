@@ -129,56 +129,74 @@ exports.abiwordAvailable = function()
 
 
 exports.reloadSettings = function reloadSettings() {
+
+  var loadSettings = function(settingsStr) {
+    // try to parse the settings
+    var settings;
+    try {
+      if(settingsStr) {
+        settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
+      }
+    }catch(e){
+      console.error('There was an error processing your settings.json file: '+e.message);
+      process.exit(1);
+    }
+
+    //loop trough the settings
+    for(var i in settings)
+    {
+      //test if the setting start with a low character
+      if(i.charAt(0).search("[a-z]") !== 0)
+      {
+        console.warn("Settings should start with a low character: '" + i + "'");
+      }
+
+      //we know this setting, so we overwrite it
+      //or it's a settings hash, specific to a plugin
+      if(exports[i] !== undefined || i.indexOf('ep_')==0)
+      {
+        exports[i] = settings[i];
+      }
+      //this setting is unkown, output a warning and throw it away
+      else
+      {
+        console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+      }
+    }
+
+    if(exports.dbType === "dirty"){
+      console.warn("DirtyDB is used. This is fine for testing but not recommended for production.");
+    }
+    
+  };
+  
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
 
   var settingsStr;
   try{
     //read the settings sync
+    var stream;
+
     if (settingsFilename == '-') {
-      settingsStr = fs.readFileSync('/dev/stdin').toString();
-    } else {
-      settingsStr = fs.readFileSync(path.resolve(path.join(root, settingsFilename))).toString();
+      stream = process.stdin;
+    } else {        
+      var fullFilename = path.resolve(path.join(root, settingsFilename));
+      stream = fs.ReadStream(fullFilename);
     }
+    var str = "";
+    
+    process.stdin.resume();
+    process.stdin.on('data', function (chunk) {
+      str += chunk;
+    });
+    
+    process.stdin.on('end', function (chunk) {
+      loadSettings(str);
+    });      
   } catch(e){
+    console.warn(e);
     console.warn('No settings file found. Continuing using defaults!');
-  }
-
-  // try to parse the settings
-  var settings;
-  try {
-    if(settingsStr) {
-      settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
-    }
-  }catch(e){
-    console.error('There was an error processing your settings.json file: '+e.message);
-    process.exit(1);
-  }
-
-  //loop trough the settings
-  for(var i in settings)
-  {
-    //test if the setting start with a low character
-    if(i.charAt(0).search("[a-z]") !== 0)
-    {
-      console.warn("Settings should start with a low character: '" + i + "'");
-    }
-
-    //we know this setting, so we overwrite it
-    //or it's a settings hash, specific to a plugin
-    if(exports[i] !== undefined || i.indexOf('ep_')==0)
-    {
-      exports[i] = settings[i];
-    }
-    //this setting is unkown, output a warning and throw it away
-    else
-    {
-      console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
-    }
-  }
-
-  if(exports.dbType === "dirty"){
-    console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
   }
 }
 
