@@ -21,8 +21,29 @@
  * IN THE SOFTWARE.
  */
 window.html10n = (function(window, document, undefined) {
-  var consoleLog = console? console.log : function() {}
-    , consoleWarn = console? console.warn : function() {}
+  var console = window.console
+  function interceptConsole(method){
+      var original = console[method]
+
+      if (!console) return function() {}
+
+      // do sneaky stuff
+      if (original.bind){
+        // Do this for normal browsers
+        return original.bind(console)
+      }else{
+        return function() {
+          // Do this for IE
+          var message = Array.prototype.slice.apply(arguments).join(' ')
+          original(message)
+        }
+      }
+  }
+  var consoleLog = interceptConsole('log')
+    , consoleWarn = interceptConsole('warn')
+    , consoleError = interceptConsole('warn')
+
+
     
   /**
    * MicroEvent - to make any js object an event emitter (server or browser)
