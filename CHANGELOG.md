@@ -1,3 +1,7 @@
+# 1.2.3
+ * Fix #1307: Chrome needs console.log to be called on console obj
+ * Fix #1309: We had broken support for node v0.6 in the last release
+
 # 1.2.2
  * More translations and better language support.  See https://translatewiki.net/wiki/Translating:Etherpad_lite for more details
  * Add a checkToken Method to the API
