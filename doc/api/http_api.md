@@ -164,7 +164,7 @@ creates a new pad in this group
   * `{code: 1, message:"groupID does not exist", data: null}`
 
 #### listAllGroups()
- * API >= 1
+ * API >= 1.1
 
 lists all existing groups
 
