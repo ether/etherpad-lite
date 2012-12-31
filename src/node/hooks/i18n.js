@@ -5,6 +5,8 @@ var languages = require('languages4translatewiki')
   , _ = require('underscore')
   , npm = require('npm')
   , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
+  , semver = require('semver')
+  , existsSync = semver.gt(process.version, '>=', '0.7.0') ? fs.existsSync : path.existsSync
 ;
 
 
@@ -17,7 +19,7 @@ function getAllLocales() {
   // into `locales2paths` (files from various dirs are grouped by lang code)
   // (only json files with valid language code as name)
   function extractLangs(dir) {
-    if(!fs.existsSync(dir)) return;
+    if(!existsSync(dir)) return;
     var stat = fs.lstatSync(dir);
     if (!stat.isDirectory() || stat.isSymbolicLink()) return;
 
