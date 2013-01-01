@@ -73,6 +73,7 @@ Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the la
 
 1. Move to a folder where you want to install Etherpad Lite. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code `cd etherpad-lite`
+3. Set ownership to your etherpad-lite user `chown -R etherpad-lite .`
 
 Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser. 
 
