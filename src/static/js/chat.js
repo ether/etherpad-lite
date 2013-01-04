@@ -97,7 +97,7 @@ var chat = (function()
       if(day.length == 1)
         day = "0" + day ;
       var timeStr = hours + ":" + minutes;
-      var dateStr = month + "/" + day + "/" + year;
+      var dateStr = html10n.get('timeslider.dateonlyformat', {month: month, day: day, year: year});
         
       //create the authorclass
       var authorClass = "author-" + msg.userId.replace(/[^a-y0-9]/g, function(c)
