@@ -86,6 +86,7 @@
 	"timeslider.version": "\u0412\u0435\u0440\u0441\u0456\u044f {{version}}",
 	"timeslider.saved": "\u0417\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u043e {{month}} {{day}}, {{year}}",
 	"timeslider.dateformat": "{{month}}\/{{day}}\/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "{{month}}\/{{day}}\/{{year}}",
 	"timeslider.month.january": "\u0421\u0456\u0447\u0435\u043d\u044c",
 	"timeslider.month.february": "\u041b\u044e\u0442\u0438\u0439",
 	"timeslider.month.march": "\u0411\u0435\u0440\u0435\u0437\u0435\u043d\u044c",

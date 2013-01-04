@@ -87,6 +87,7 @@
 	"timeslider.version": "\ubc84\uc804 {{version}}",
 	"timeslider.saved": "{{year}}\ub144 {{month}} {{day}}\uc77c\uc5d0 \uc800\uc7a5\ud568",
 	"timeslider.dateformat": "{{year}}\ub144\/{{month}}\/{{day}}\uc77c {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "{{year}}\ub144\/{{month}}\/{{day}}\uc77c",
 	"timeslider.month.january": "1\uc6d4",
 	"timeslider.month.february": "2\uc6d4",
 	"timeslider.month.march": "3\uc6d4",

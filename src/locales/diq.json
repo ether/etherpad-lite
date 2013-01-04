@@ -60,6 +60,7 @@
 	"timeslider.version": "Versiyon\u00ea {{version}}",
 	"timeslider.saved": "{{day}} {{month}}, {{year}} de biyo qeyd",
 	"timeslider.dateformat": "{{month}}\/{{day}}\/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "{{month}}\/{{day}}\/{{year}}",
 	"timeslider.month.january": "\u00c7ele",
 	"timeslider.month.february": "\u015e\u0131bate",
 	"timeslider.month.march": "Adar",

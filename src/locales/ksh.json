@@ -80,6 +80,7 @@
 	"timeslider.version": "V\u00e4sjon {{version}}",
 	"timeslider.saved": "Fa\u00dfjehallde aam {{day}}. {{month}} {{year}}",
 	"timeslider.dateformat": "amm {{day}}. {{month}} {{year}} \u00f6m {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "amm {{day}}. {{month}} {{year}}",
 	"timeslider.month.january": "Jannewaa",
 	"timeslider.month.february": "F\u00e4\u00e4browaa",
 	"timeslider.month.march": "M\u00e4\u00e4z",

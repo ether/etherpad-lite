@@ -87,6 +87,7 @@
 	"timeslider.version": "Versi\u00f3n {{version}}",
 	"timeslider.saved": "Gardado o {{day}} de {{month}} de {{year}}",
 	"timeslider.dateformat": "{{day}}\/{{month}}\/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "{{day}}\/{{month}}\/{{year}}",
 	"timeslider.month.january": "xaneiro",
 	"timeslider.month.february": "febreiro",
 	"timeslider.month.march": "marzo",
