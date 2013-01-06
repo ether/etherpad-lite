@@ -25,6 +25,8 @@ var padcookie = require('./pad_cookie').padcookie;
 
 var Tinycon = require('tinycon/tinycon');
 
+var lastDateStr = null;
+
 var chat = (function()
 {
   var isStuck = false;
@@ -120,8 +122,13 @@ var chat = (function()
 
       var authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName); 
       
-      var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "' title='" + dateStr + "'>" + timeStr + "</span> " + text + "</p>";
+      var html = "";
+      if(lastDateStr != null && lastDateStr != dateStr)
+        html = "<p class='chatDaySeperator'>" + dateStr + "</p>";
+      html += "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "' title='" + dateStr + "'>" + timeStr + "</span> " + text + "</p>";
       $("#chattext").append(html);
+      
+      lastDateStr = dateStr;
       
       //should we increment the counter??
       if(increment)
