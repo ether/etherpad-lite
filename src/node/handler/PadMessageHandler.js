@@ -782,15 +782,15 @@ function handleClientReady(client, message)
   var padIds;
 
   async.series([
-    // Get ro/rw id:s
-    function (callback) {
+    //Get ro/rw id:s
+    function (callback)
+    {
       readOnlyManager.getIds(message.padId, function(err, value) {
         if(ERR(err, callback)) return;
         padIds = value;
         callback();
       });
     },
-
     //check permissions
     function(callback)
     {
@@ -816,7 +816,7 @@ function handleClientReady(client, message)
         }
       });
     }, 
-    //get all authordata of this new user
+    //get all authordata of this new user, and load the pad-object from the database
     function(callback)
     {
       async.parallel([
@@ -840,6 +840,7 @@ function handleClientReady(client, message)
             callback();
           });
         },
+        //get pad
         function(callback)
         {
           padManager.getPad(padIds.padId, function(err, value)
@@ -851,7 +852,7 @@ function handleClientReady(client, message)
         }
       ], callback);
     },
-    //these db requests all need the pad object
+    //these db requests all need the pad object (timestamp of latest revission, author data, chat messages)
     function(callback)
     {
       var authors = pad.getAllAuthors();
@@ -894,6 +895,7 @@ function handleClientReady(client, message)
       ], callback);
       
     },
+    //glue the clientVars together, send them and tell the other clients that a new one is there
     function(callback)
     {
       //Check that the client is still here. It might have disconnected between callbacks.
@@ -980,11 +982,10 @@ function handleClientReady(client, message)
         },
         "abiwordAvailable": settings.abiwordAvailable(), 
         "plugins": {
-	  "plugins": plugins.plugins,
-	  "parts": plugins.parts,
-	},
-          "initialChangesets": [] // FIXME: REMOVE THIS SHIT
-
+          "plugins": plugins.plugins,
+          "parts": plugins.parts,
+        },
+        "initialChangesets": [] // FIXME: REMOVE THIS SHIT
       }
 
       //Add a username to the clientVars if one avaiable
