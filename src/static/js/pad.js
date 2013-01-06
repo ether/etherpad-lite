@@ -555,6 +555,11 @@ var pad = {
     pad.collabClient.setOnChannelStateChange(pad.handleChannelStateChange);
     pad.collabClient.setOnInternalAction(pad.handleCollabAction);
 
+    // load initial chat-messages
+    var chatHead = clientVars.chatHead;
+    var start = Math.max(chatHead - 100, 0);
+    pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": chatHead});
+
     function postAceInit()
     {
       padeditbar.init();

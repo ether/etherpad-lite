@@ -400,7 +400,19 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
     else if (msg.type == "CHAT_MESSAGE")
     {
-      chat.addMessage(msg, true);
+      chat.addMessage(msg, true, false);
+    }
+    else if (msg.type == "CHAT_MESSAGES")
+    {
+      for(var i = msg.messages.length - 1; i >= 0; i--)
+      {
+        chat.addMessage(msg.messages[i], true, true);
+      }
+      if(!chat.gotInitalMessages)
+      {
+        chat.scrollDown();
+	    chat.gotInitalMessages = true;
+      }
     }
     else if (msg.type == "SERVER_MESSAGE")
     {

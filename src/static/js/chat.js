@@ -28,6 +28,7 @@ var Tinycon = require('tinycon/tinycon');
 var chat = (function()
 {
   var isStuck = false;
+  var gotInitialMessages = false;
   var chatMentions = 0;
   var self = {
     show: function () 
@@ -76,7 +77,7 @@ var chat = (function()
       this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
-    addMessage: function(msg, increment)
+    addMessage: function(msg, increment, isHistoryAdd)
     {    
       //correct the time
       msg.time += this._pad.clientTimeOffset;
@@ -112,7 +113,10 @@ var chat = (function()
       var authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName); 
       
       var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
-      $("#chattext").append(html);
+      if(isHistoryAdd)
+        $("#chattext").prepend(html);
+      else
+        $("#chattext").append(html);
       
       //should we increment the counter??
       if(increment)
@@ -125,7 +129,7 @@ var chat = (function()
         
         $("#chatcounter").text(count);
         // chat throb stuff -- Just make it throw for twice as long
-        if(wasMentioned && !alreadyFocused)
+        if(wasMentioned && !alreadyFocused && !isHistoryAdd)
         { // If the user was mentioned show for twice as long and flash the browser window
           $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(4000).hide(400);
           chatMentions++;
@@ -141,8 +145,8 @@ var chat = (function()
         chatMentions = 0;
         Tinycon.setBubble(0);
       });
-      self.scrollDown();
-
+      if(!isHistoryAdd)
+        self.scrollDown();
     },
     init: function(pad)
     {
@@ -157,12 +161,9 @@ var chat = (function()
         }
       });
       
-      var that = this;
-      $.each(clientVars.chatHistory, function(i, o){
-        that.addMessage(o, false);
-      })
-
-      $("#chatcounter").text(clientVars.chatHistory.length);
+	  // initial messages are loaded in pad.js' _afterHandshake
+	  
+	  $("#chatcounter").text(0);
     }
   }
 
