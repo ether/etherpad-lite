@@ -22,7 +22,15 @@ async.series([
   // load npm
   function(callback) {
     npm.load({}, function(er) {
-      callback(er)
+      if(er)
+      {
+        console.error("Could not load NPM: " + er)
+        process.exit(1);
+      }
+      else
+      {
+        callback();
+      }
     })
   },
   // load modules
