@@ -167,9 +167,9 @@ var chat = (function()
 	  $("#chatcounter").text(0);
 	  $("#chatloadmessages").click(function()
 	  {
-        var start = Math.max(self.historyPointer - 100, 0);
-		var end = self.historyPointer;
-		
+        var start = Math.max(self.historyPointer - 20, 0);
+        var end = self.historyPointer;
+
         if(start == end) // nothing to load
           return;
         if(start == 0) // reached the top
