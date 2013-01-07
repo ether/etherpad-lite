@@ -115,7 +115,7 @@ var chat = (function()
       
       var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
       if(isHistoryAdd)
-        $(html).insertAfter('#chatloadmessages');
+        $(html).insertAfter('#chatloadmessagesbutton');
       else
         $("#chattext").append(html);
       
@@ -165,15 +165,16 @@ var chat = (function()
 	  // initial messages are loaded in pad.js' _afterHandshake
 	  
 	  $("#chatcounter").text(0);
-	  $("#chatloadmessages").click(function()
+	  $("#chatloadmessagesbutton").click(function()
 	  {
         var start = Math.max(self.historyPointer - 20, 0);
         var end = self.historyPointer;
 
         if(start == end) // nothing to load
           return;
-        if(start == 0) // reached the top
-          $("#chatloadmessages").css("display", "none");
+
+        $("#chatloadmessagesbutton").css("display", "none");
+        $("#chatloadmessagesball").css("display", "block");
 
         pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": end});
         self.historyPointer = start;

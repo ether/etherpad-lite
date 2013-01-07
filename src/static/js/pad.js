@@ -564,7 +564,7 @@ var pad = {
     }
     else // there are no messages
     {
-      $("#chatloadmessages").css("display", "none");
+      $("#chatloadmessagesbutton").css("display", "none");
     }
 
     function postAceInit()

@@ -488,10 +488,21 @@ table#otheruserstable {
   -ms-overflow-x: hidden;
   overflow-x: hidden;
 }
-#chatloadmessages
+.chatloadmessages
 {
-  color: blue;
-  text-decoration: underline;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+#chatloadmessagesbutton
+{
+  line-height: 1.8em;
+}
+#chatloadmessagesball
+{
+  display: none;
 }
 #chatinputbox {
   padding: 3px 2px;

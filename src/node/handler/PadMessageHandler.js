@@ -365,7 +365,7 @@ function handleChatMessage(client, message)
 }
 
 /**
- * Handles the clients requets for more chat-messages
+ * Handles the clients request for more chat-messages
  * @param client the client that send this message
  * @param message the message from the client
  */
