@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": {
-			"1": "WTM",
-			"2": "Woytecr"
+			"0": "Rezonansowy",
+			"2": "WTM",
+			"3": "Woytecr"
 		}
 	},
 	"index.newPad": "Nowy Dokument",
@@ -54,6 +55,7 @@
 	"pad.modals.connected": "Po\u0142\u0105czony.",
 	"pad.modals.reconnecting": "Ponowne \u0142\u0105czenie z dokumentem...",
 	"pad.modals.forcereconnect": "Wymu\u015b ponowne po\u0142\u0105czenie",
+	"pad.modals.userdup": "Otwarty w innym oknie",
 	"pad.modals.userdup.explanation": "Ten dokument prawdopodobnie zosta\u0142 otwarty w wi\u0119cej ni\u017c jednym oknie przegl\u0105darki.",
 	"pad.modals.userdup.advice": "Po\u0142\u0105cz ponownie przy u\u017cyciu tego okna.",
 	"pad.modals.unauth": "Brak autoryzacji",
@@ -82,6 +84,7 @@
 	"timeslider.toolbar.returnbutton": "Powr\u00f3\u0107 do dokumentu",
 	"timeslider.toolbar.authors": "Autorzy:",
 	"timeslider.toolbar.authorsList": "Brak autor\u00f3w",
+	"timeslider.toolbar.exportlink.title": "Eksportuj",
 	"timeslider.exportCurrent": "Eksportuj bie\u017c\u0105c\u0105 wersj\u0119 jako:",
 	"timeslider.version": "Wersja {{version}}",
 	"timeslider.saved": "Zapisano {{day}} {{month}} {{year}}",
