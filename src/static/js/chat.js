@@ -29,6 +29,7 @@ var chat = (function()
 {
   var isStuck = false;
   var gotInitialMessages = false;
+  var historyPointer = 0;
   var chatMentions = 0;
   var self = {
     show: function () 
@@ -114,7 +115,7 @@ var chat = (function()
       
       var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
       if(isHistoryAdd)
-        $("#chattext").prepend(html);
+        $(html).insertAfter('#chatloadmessages');
       else
         $("#chattext").append(html);
       
@@ -164,6 +165,19 @@ var chat = (function()
 	  // initial messages are loaded in pad.js' _afterHandshake
 	  
 	  $("#chatcounter").text(0);
+	  $("#chatloadmessages").click(function()
+	  {
+        var start = Math.max(self.historyPointer - 100, 0);
+		var end = self.historyPointer;
+		
+        if(start == end) // nothing to load
+          return;
+        if(start == 0) // reached the top
+          $("#chatloadmessages").css("display", "none");
+
+        pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": end});
+        self.historyPointer = start;
+	  });
     }
   }
 

@@ -556,9 +556,16 @@ var pad = {
     pad.collabClient.setOnInternalAction(pad.handleCollabAction);
 
     // load initial chat-messages
-    var chatHead = clientVars.chatHead;
-    var start = Math.max(chatHead - 100, 0);
-    pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": chatHead});
+    if(clientVars.chatHead != -1)
+    {
+      var chatHead = clientVars.chatHead;
+      var start = Math.max(chatHead - 100, 0);
+      pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": chatHead});
+    }
+    else // there are no messages
+    {
+      $("#chatloadmessages").css("display", "none");
+    }
 
     function postAceInit()
     {

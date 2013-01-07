@@ -488,6 +488,11 @@ table#otheruserstable {
   -ms-overflow-x: hidden;
   overflow-x: hidden;
 }
+#chatloadmessages
+{
+  color: blue;
+  text-decoration: underline;
+}
 #chatinputbox {
   padding: 3px 2px;
   position: absolute;

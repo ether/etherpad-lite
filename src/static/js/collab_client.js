@@ -411,7 +411,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       if(!chat.gotInitalMessages)
       {
         chat.scrollDown();
-	    chat.gotInitalMessages = true;
+        chat.gotInitalMessages = true;
+        chat.historyPointer = clientVars.chatHead - msg.messages.length;
+        if(chat.historyPointer == -1) // there are less than 100 messages
+          $("#chatloadmessages").css("display", "none");
       }
     }
     else if (msg.type == "SERVER_MESSAGE")
