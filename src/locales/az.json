@@ -78,7 +78,7 @@
 	"timeslider.version": "Versiya {{versiya}}",
 	"timeslider.saved": "Saxlan\u0131ld\u0131 {{ay}} {{g\u00fcn}}, {{il}}",
 	"timeslider.dateformat": "{{ay}}\/{{g\u00fcn}}\/{{il}} {{saat}}:{{d\u0259qiq\u0259}}:{{saniy\u0259}}",
-	"timeslider.dateonlyformat": "{{ay}}\/{{g\u00fcn}}\/{{il}}",
+	"timeslider.dateonlyformat": "{{day}} {{month}}, {{year}}",
 	"timeslider.month.january": "Yanvar",
 	"timeslider.month.february": "Fevral",
 	"timeslider.month.march": "Mart",
