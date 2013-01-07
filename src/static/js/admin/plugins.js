@@ -31,7 +31,7 @@ $(document).ready(function () {
 
     $("form").submit(function(){
       var query = $('.search-results').data('query');
-      query.pattern = $("#search-query")[0].value;
+      query.pattern = $("#search-query").val();
       query.offset = 0;
       search();
       return false;
@@ -39,7 +39,7 @@ $(document).ready(function () {
 
     $("#do-search").unbind('click').click(function () {
       var query = $('.search-results').data('query');
-      query.pattern = $("#search-query")[0].value;
+      query.pattern = $("#search-query").val();
       query.offset = 0;
       search();
     });
