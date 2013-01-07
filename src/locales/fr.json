@@ -95,7 +95,7 @@
 	"timeslider.exportCurrent": "Exporter la version actuelle en\u00a0:",
 	"timeslider.version": "Version {{version}}",
 	"timeslider.saved": "Enregistr\u00e9 le {{day}} {{month}} {{year}}",
-	"timeslider.dateformat": "{{j}}\/{{mois}}\/{{ann\u00e9e}} {{h}}:{{minutes}}:{{secondes}}",
+	"timeslider.dateformat": "{{day}} {{month}} {{year}} {{hours}}:{{minutes}}:{{secondes}}",
 	"timeslider.month.january": "Janvier",
 	"timeslider.month.february": "F\u00e9vrier",
 	"timeslider.month.march": "Mars",

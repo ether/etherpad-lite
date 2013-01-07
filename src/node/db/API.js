@@ -549,7 +549,7 @@ exports.sendClientsMessage = function (padID, msg, callback) {
 }
 
 /**
-checkToken() returns ok when api token is valid
+checkToken() returns ok when the current api token is valid
 
 Example returns:
 

@@ -414,7 +414,7 @@ sends a custom message of type `msg` to the pad
 #### checkToken()
  * API >= 1.2
 
-returns ok when api token is valid
+returns ok when the current api token is valid
 
 *Example returns:*
   * `{"code":0,"message":"ok","data":null}`
