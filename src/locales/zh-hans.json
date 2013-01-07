@@ -1,4 +1,11 @@
 {
+	"@metadata": {
+		"authors": [
+			"Dimension",
+			"Hydra",
+			"\u71c3\u7389"
+		]
+	},
 	"index.newPad": "\u65b0\u8bb0\u4e8b\u672c",
 	"pad.toolbar.bold.title": "\u7c97\u4f53\uff08Ctrl-B\uff09",
 	"pad.toolbar.italic.title": "\u659c\u4f53 (Ctrl-I)",
@@ -73,12 +80,5 @@
 	"pad.impexp.importbutton": "\u73b0\u5728\u5bfc\u5165",
 	"pad.impexp.importing": "\u6b63\u5728\u5bfc\u5165...",
 	"pad.impexp.uploadFailed": "\u4e0a\u8f7d\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5",
-	"pad.impexp.importfailed": "\u5bfc\u5165\u5931\u8d25",
-	"@metadata": {
-		"authors": [
-			"Dimension",
-			"Hydra",
-			"\u71c3\u7389"
-		]
-	}
+	"pad.impexp.importfailed": "\u5bfc\u5165\u5931\u8d25"
 }

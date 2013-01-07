@@ -1,10 +1,11 @@
 {
 	"@metadata": {
-		"authors": [
-			"Beta16",
-			"Gianfranco",
-			"Muxator"
-		]
+		"authors": {
+			"0": "Beta16",
+			"1": "Gianfranco",
+			"2": "Muxator",
+			"4": "Vituzzu"
+		}
 	},
 	"index.newPad": "Nuovo Pad",
 	"index.createOpenPad": "o creare o aprire un Pad con il nome:",
@@ -55,6 +56,7 @@
 	"pad.modals.connected": "Connesso.",
 	"pad.modals.reconnecting": "Riconnessione al pad in corso...",
 	"pad.modals.forcereconnect": "Forza la riconnessione",
+	"pad.modals.userdup": "Aperto in un'altra finestra",
 	"pad.modals.userdup.explanation": "Questo Pad sembra essere aperto in pi\u00f9 di una finestra del browser su questo computer.",
 	"pad.modals.userdup.advice": "Riconnettiti per utilizzare invece questa finestra.",
 	"pad.modals.unauth": "Non autorizzato",
@@ -83,6 +85,7 @@
 	"timeslider.toolbar.returnbutton": "Ritorna al Pad",
 	"timeslider.toolbar.authors": "Autori:",
 	"timeslider.toolbar.authorsList": "Nessun autore",
+	"timeslider.toolbar.exportlink.title": "esporta",
 	"timeslider.exportCurrent": "Esporta la versione corrente come:",
 	"timeslider.version": "Versione {{version}}",
 	"timeslider.saved": "Salvato {{day}} {{month}} {{year}}",
