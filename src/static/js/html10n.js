@@ -23,9 +23,9 @@
 window.html10n = (function(window, document, undefined) {
   var console = window.console
   function interceptConsole(method){
-      var original = console[method]
-
       if (!console) return function() {}
+
+      var original = console[method]
 
       // do sneaky stuff
       if (original.bind){
