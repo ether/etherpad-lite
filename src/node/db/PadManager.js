@@ -210,6 +210,9 @@ exports.isValidPadId = function(padId)
   return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
 }
 
+/**
+ * Removes the pad from database and unloads it.
+ */
 exports.removePad = function(padId){
   db.remove("pad:"+padId);
   exports.unloadPad(padId);
