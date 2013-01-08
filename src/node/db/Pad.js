@@ -473,8 +473,7 @@ Pad.prototype.remove = function remove(callback) {
     //delete the pad entry and delete pad from padManager
     function(callback)
     {
-      db.remove("pad:"+padID);
-      padManager.unloadPad(padID);
+      padManager.removePad(padID);
       hooks.callAll("padRemove", {'padID':padID});
       callback();
     }

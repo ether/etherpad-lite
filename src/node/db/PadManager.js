@@ -34,9 +34,51 @@ var db = require("./DB").db;
  */
 var globalPads = {
     get: function (name) { return this[':'+name]; },
-    set: function (name, value) { this[':'+name] = value; },
+    set: function (name, value) 
+    {
+      this[':'+name] = value;
+      padList.addPad(name);
+    },
     remove: function (name) { delete this[':'+name]; }
 };
+
+var padList = {
+  list: [],
+  init: function()
+  {
+    db.get("pads", function(err, dbData)
+    {
+      if(ERR(err)) return;
+      if(dbData != null){
+        dbData.forEach(function(val){
+          padList.addPad(val,false);
+        });
+      }
+    });
+    return this;
+  },
+  getPads: function(){
+    return this.list;
+  },
+  addPad: function(name,immediateSave)
+  {
+    if(this.list.indexOf(name) == -1){
+      this.list.push(name);
+      if(immediateSave == undefined || immediateSave == true){
+        db.set("pads", this.list);
+      }
+    }
+  },
+  removePad: function(name)
+  {
+    var index=this.list.indexOf(name);
+    if(index>-1){
+      this.list.splice(index,1);
+      db.set("pads", this.list);
+    }
+  }
+};
+padList.init();
 
 /**
  * An array of padId transformations. These represent changes in pad name policy over
@@ -109,6 +151,11 @@ exports.getPad = function(id, text, callback)
   }
 }
 
+exports.getPads = function(callback)
+{
+  callback(null,padList.getPads());
+}
+
 //checks if a pad exists
 exports.doesPadExists = function(padId, callback)
 {
@@ -161,6 +208,12 @@ exports.sanitizePadId = function(padId, callback) {
 exports.isValidPadId = function(padId)
 {
   return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
+}
+
+exports.removePad = function(padId){
+  db.remove("pad:"+padId);
+  exports.unloadPad(padId);
+  padList.removePad(padId);
 }
 
 //removes a pad from the array
