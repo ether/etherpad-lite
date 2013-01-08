@@ -78,6 +78,7 @@ var padList = {
     }
   }
 };
+//initialises the allknowing data structure
 padList.init();
 
 /**
