@@ -46,12 +46,12 @@ var padList = {
   list: [],
   init: function()
   {
-    db.get("pads", function(err, dbData)
+    db.findKeys("pad:*", "*:*:*", function(err, dbData)
     {
       if(ERR(err)) return;
       if(dbData != null){
         dbData.forEach(function(val){
-          padList.addPad(val,false);
+          padList.addPad(val.replace(/pad:/,""),false);
         });
       }
     });
@@ -60,13 +60,10 @@ var padList = {
   getPads: function(){
     return this.list;
   },
-  addPad: function(name,immediateSave)
+  addPad: function(name)
   {
     if(this.list.indexOf(name) == -1){
       this.list.push(name);
-      if(immediateSave == undefined || immediateSave == true){
-        db.set("pads", this.list);
-      }
     }
   },
   removePad: function(name)
@@ -74,7 +71,6 @@ var padList = {
     var index=this.list.indexOf(name);
     if(index>-1){
       this.list.splice(index,1);
-      db.set("pads", this.list);
     }
   }
 };
