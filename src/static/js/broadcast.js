@@ -244,14 +244,14 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     if (broadcasting) applyChangeset(changesetForward, revision + 1, false, timeDelta);
   }
 
-/*
+   /*
    At this point, we must be certain that the changeset really does map from
    the current revision to the specified revision.  Any mistakes here will
    cause the whole slider to get out of sync.
    */
 
   function applyChangeset(changeset, revision, preventSliderMovement, timeDelta)
-  {
+  { 
     // disable the next 'gotorevision' call handled by a timeslider update
     if (!preventSliderMovement)
     {
@@ -271,7 +271,8 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     Changeset.mutateTextLines(changeset, padContents);
     padContents.currentRevision = revision;
-    padContents.currentTime += timeDelta;
+    padContents.currentTime += timeDelta * 1000;
+
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
     
@@ -292,8 +293,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         str = '0' + str;
         return str;
         }
-        
-        
         
     var date = new Date(padContents.currentTime);
     var dateFormat = function()
@@ -319,7 +318,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         
         
     $('#timer').html(dateFormat());
-
     var revisionDate = html10n.get("timeslider.saved", {
       "day": date.getDate(),
       "month": [
