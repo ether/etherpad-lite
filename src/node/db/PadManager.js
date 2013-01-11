@@ -44,6 +44,7 @@ var globalPads = {
 
 var padList = {
   list: [],
+  sorted : false,
   init: function()
   {
     db.findKeys("pad:*", "*:*:*", function(err, dbData)
@@ -57,13 +58,21 @@ var padList = {
     });
     return this;
   },
+  /**
+   * Returns all pads in alphabetical order as array.
+   */
   getPads: function(){
+    if(!this.sorted){
+      this.list=this.list.sort();
+      this.sorted=true;
+    }
     return this.list;
   },
   addPad: function(name)
   {
     if(this.list.indexOf(name) == -1){
       this.list.push(name);
+      this.sorted=false;
     }
   },
   removePad: function(name)
@@ -71,6 +80,7 @@ var padList = {
     var index=this.list.indexOf(name);
     if(index>-1){
       this.list.splice(index,1);
+      this.sorted=false;
     }
   }
 };
