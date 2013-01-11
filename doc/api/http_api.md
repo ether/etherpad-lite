@@ -419,3 +419,13 @@ returns ok when api token is valid
 *Example returns:*
   * `{"code":0,"message":"ok","data":null}`
   * `{"code":4,"message":"no or wrong API Key","data":null}`
+
+### Pads
+
+#### listAllPads()
+ * API >= 1.2.1
+ 
+lists all pads on this epl instance
+
+*Example returns:*
+ * `{code: 0, message:"ok", data: ["testPad", "thePadsOfTheOthers"]}`
