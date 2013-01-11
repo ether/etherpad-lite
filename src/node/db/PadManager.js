@@ -150,7 +150,11 @@ exports.getPad = function(id, text, callback)
 
 exports.getPads = function(callback)
 {
-  callback(null,padList.getPads());
+  if(callback != null){
+    callback(null,padList.getPads());
+  }else{
+    return padList.getPads();
+  }
 }
 
 //checks if a pad exists
