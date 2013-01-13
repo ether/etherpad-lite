@@ -96,7 +96,6 @@
 	"timeslider.version": "Version {{version}}",
 	"timeslider.saved": "Enregistr\u00e9 le {{day}} {{month}} {{year}}",
 	"timeslider.dateformat": "{{j}}\/{{mois}}\/{{ann\u00e9e}} {{h}}:{{minutes}}:{{secondes}}",
-	"timeslider.dateonlyformat": "{{day}} {{month}} {{year}}",
 	"timeslider.month.january": "Janvier",
 	"timeslider.month.february": "F\u00e9vrier",
 	"timeslider.month.march": "Mars",
