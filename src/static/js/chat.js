@@ -28,6 +28,8 @@ var Tinycon = require('tinycon/tinycon');
 var chat = (function()
 {
   var isStuck = false;
+  var gotInitialMessages = false;
+  var historyPointer = 0;
   var chatMentions = 0;
   var self = {
     show: function () 
@@ -76,7 +78,7 @@ var chat = (function()
       this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
-    addMessage: function(msg, increment)
+    addMessage: function(msg, increment, isHistoryAdd)
     {    
       //correct the time
       msg.time += this._pad.clientTimeOffset;
@@ -112,7 +114,10 @@ var chat = (function()
       var authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName); 
       
       var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
-      $("#chattext").append(html);
+      if(isHistoryAdd)
+        $(html).insertAfter('#chatloadmessagesbutton');
+      else
+        $("#chattext").append(html);
       
       //should we increment the counter??
       if(increment)
@@ -125,7 +130,7 @@ var chat = (function()
         
         $("#chatcounter").text(count);
         // chat throb stuff -- Just make it throw for twice as long
-        if(wasMentioned && !alreadyFocused)
+        if(wasMentioned && !alreadyFocused && !isHistoryAdd)
         { // If the user was mentioned show for twice as long and flash the browser window
           $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(4000).hide(400);
           chatMentions++;
@@ -141,8 +146,8 @@ var chat = (function()
         chatMentions = 0;
         Tinycon.setBubble(0);
       });
-      self.scrollDown();
-
+      if(!isHistoryAdd)
+        self.scrollDown();
     },
     init: function(pad)
     {
@@ -157,12 +162,23 @@ var chat = (function()
         }
       });
       
-      var that = this;
-      $.each(clientVars.chatHistory, function(i, o){
-        that.addMessage(o, false);
-      })
+	  // initial messages are loaded in pad.js' _afterHandshake
+	  
+	  $("#chatcounter").text(0);
+	  $("#chatloadmessagesbutton").click(function()
+	  {
+        var start = Math.max(self.historyPointer - 20, 0);
+        var end = self.historyPointer;
 
-      $("#chatcounter").text(clientVars.chatHistory.length);
+        if(start == end) // nothing to load
+          return;
+
+        $("#chatloadmessagesbutton").css("display", "none");
+        $("#chatloadmessagesball").css("display", "block");
+
+        pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": end});
+        self.historyPointer = start;
+	  });
     }
   }
 

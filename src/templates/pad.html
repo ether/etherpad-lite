@@ -368,7 +368,10 @@
 
         <div id="chatbox">
             <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
-            <div id="chattext" class="authorColors"></div>
+            <div id="chattext" class="authorColors">
+                <img alt="loading.." id="chatloadmessagesball" class="chatloadmessages" src="../static/img/loading.gif" align="top">
+                <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>
+            </div>
             <div id="chatinputbox">
                 <form>
                     <input id="chatinput" type="text" maxlength="999">
