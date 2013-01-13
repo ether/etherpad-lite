@@ -1,9 +1,9 @@
 describe("chat-load-messages", function(){
-  it("create pad", function(done) {
+  it("creates a pad", function(done) {
     helper.newPad(done);
   });
 
-  it("add a lot of messages", function(done) {
+  it("adds a lot of messages", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     var chatButton = chrome$("#chaticon");
@@ -21,26 +21,29 @@ describe("chat-load-messages", function(){
       chatInput.sendkeys('msg' + num);
       chatInput.sendkeys('{enter}');
     }
-    setTimeout(function() {
-      expect(chatText.children("p").length).to.be(messages);
+    helper.waitFor(function(){
+      return chatText.children("p").length == messages;
+    }).done(function(){
       $('#iframe-container iframe')[0].contentWindow.location.reload();
       done();
-     }, 500);
+     });
   });
   
-  it("check initial message count", function(done) {
-    setTimeout(function() {
-      var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
-      var chatButton = chrome$("#chaticon");
-      chatButton.click();
-      var chatText = chrome$("#chattext");
-      
-      expect(chatText.children("p").length).to.be(101);
-      done();
-    }, 500);
+  it("checks initial message count", function(done) {
+    helper.waitFor(function(){
+	  // wait for the frame to load
+	  var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
+	  if(!chrome$) // page not fully loaded
+	    return false;
+	
+	  var chatButton = chrome$("#chaticon");
+	  chatButton.click();
+	  var chatText = chrome$("#chattext");
+      return chatText.children("p").length == 101;
+    }).done(done);
   });
   
-  it("load more messages", function(done) {
+  it("loads more messages", function(done) {
     var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
     var chatButton = chrome$("#chaticon");
     chatButton.click();
@@ -48,13 +51,12 @@ describe("chat-load-messages", function(){
     var loadMsgBtn = chrome$("#chatloadmessagesbutton");
       
     loadMsgBtn.click();
-    setTimeout(function() {
-      expect(chatText.children("p").length).to.be(122);
-      done();
-    }, 500);
+    helper.waitFor(function(){
+      return chatText.children("p").length == 122;
+    }).done(done);
   });
   
-  it("btn vanishes", function(done) {
+  it("checks for button vanishing", function(done) {
     var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
     var chatButton = chrome$("#chaticon");
     chatButton.click();
@@ -62,9 +64,8 @@ describe("chat-load-messages", function(){
     var loadMsgBtn = chrome$("#chatloadmessagesbutton");
 
     loadMsgBtn.click();
-    setTimeout(function() {
-      expect(loadMsgBtn.css('display')).to.be('none');
-      done();
-    }, 200);
+    helper.waitFor(function(){
+      return loadMsgBtn.css('display') == 'none';
+    }).done(done);
   });
 });
