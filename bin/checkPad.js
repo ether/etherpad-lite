@@ -11,8 +11,7 @@ if(process.argv.length != 3)
 var padId = process.argv[2];
 
 //initalize the database
-var log4js = require("../src/node_modules/log4js");
-log4js.setGlobalLogLevel("INFO");
+var settings = require("../src/node/utils/Settings");
 var async = require("../src/node_modules/async");
 var db = require('../src/node/db/DB');
 
