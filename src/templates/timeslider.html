@@ -32,11 +32,12 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
   <link rel="shortcut icon" href="<%=settings.faviconTimeslider%>">
-
+  <% e.begin_block("timesliderStyles"); %>
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <link rel="stylesheet" href="../../static/custom/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
+  <% e.end_block(); %>
 
   <link rel="localizations" type="application/l10n+json" href="../../locales.json" />
   <script type="text/javascript" src="../../static/js/html10n.js"></script>
@@ -74,6 +75,7 @@
 
       <div class="timeslider-bar">
           <div class="editbarright toolbar" id="editbar">
+            <% e.begin_block("timesliderEditbarRight"); %>
             <ul>
               <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
                 <a id="exportlink" data-l10n-id="timeslider.toolbar.exportlink.title">
@@ -82,6 +84,7 @@
               </li>
             </ul>
             <a id="returnbutton" data-l10n-id="timeslider.toolbar.returnbutton"></a>
+          <% e.end_block(); %>
           </div>
 
           <div>
@@ -222,7 +225,7 @@
     });
   })();
 </script>
-</body>
 <% e.end_block(); %>
+</body>
 </html>
 
