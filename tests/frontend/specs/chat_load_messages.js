@@ -23,27 +23,34 @@ describe("chat-load-messages", function(){
     }
     helper.waitFor(function(){
       return chatText.children("p").length == messages;
-    }).done(function(){
+    }).always(function(){
+      expect(chatText.children("p").length).to.be(messages);
       $('#iframe-container iframe')[0].contentWindow.location.reload();
       done();
      });
   });
   
   it("checks initial message count", function(done) {
+    var chatText;
+    var expectedCount = 101;
     helper.waitFor(function(){
-	  // wait for the frame to load
-	  var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
-	  if(!chrome$) // page not fully loaded
-	    return false;
-	
-	  var chatButton = chrome$("#chaticon");
-	  chatButton.click();
-	  var chatText = chrome$("#chattext");
-      return chatText.children("p").length == 101;
-    }).done(done);
+      // wait for the frame to load
+      var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
+      if(!chrome$) // page not fully loaded
+        return false;
+    
+      var chatButton = chrome$("#chaticon");
+      chatButton.click();
+      chatText = chrome$("#chattext");
+      return chatText.children("p").length == expectedCount;
+    }).always(function(){
+      expect(chatText.children("p").length).to.be(expectedCount);
+      done();
+    });
   });
   
   it("loads more messages", function(done) {
+    var expectedCount = 122;
     var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
     var chatButton = chrome$("#chaticon");
     chatButton.click();
@@ -52,11 +59,15 @@ describe("chat-load-messages", function(){
       
     loadMsgBtn.click();
     helper.waitFor(function(){
-      return chatText.children("p").length == 122;
-    }).done(done);
+      return chatText.children("p").length == expectedCount;
+    }).always(function(){
+      expect(chatText.children("p").length).to.be(expectedCount);
+      done();
+    });
   });
   
   it("checks for button vanishing", function(done) {
+    var expectedDisplay = 'none';
     var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
     var chatButton = chrome$("#chaticon");
     chatButton.click();
@@ -65,7 +76,10 @@ describe("chat-load-messages", function(){
 
     loadMsgBtn.click();
     helper.waitFor(function(){
-      return loadMsgBtn.css('display') == 'none';
-    }).done(done);
+      return loadMsgBtn.css('display') == expectedDisplay;
+    }).always(function(){
+      expect(loadMsgBtn.css('display')).to.be(expectedDisplay);
+      done();
+    });
   });
 });
