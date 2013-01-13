@@ -25,6 +25,7 @@ var path = require('path');
 var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
 var vm = require('vm');
+var log4js = require("log4js");
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -106,6 +107,11 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
+/*
+* log4js appender configuration
+*/
+exports.logconfig = { appenders: [{ type: "console" }]};
+
 /* This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
  * either authorization by a module, or a user with is_admin set */
@@ -173,6 +179,10 @@ exports.reloadSettings = function reloadSettings() {
       console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
     }
   }
+  
+  log4js.configure(exports.logconfig);//Configure the logging appenders
+  log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
+  log4js.replaceConsole();
 
   if(exports.dbType === "dirty"){
     console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
