@@ -81,6 +81,7 @@
 	"pad.share.emebdcode": "In Webseite einbetten",
 	"pad.chat": "Chat",
 	"pad.chat.title": "Den Chat dieses Pads \u00f6ffnen",
+	"pad.chat.loadmessages": "Weitere Nachrichten laden",
 	"timeslider.pageTitle": "{{appTitle}} Pad-Versionsgeschichte",
 	"timeslider.toolbar.returnbutton": "Zur\u00fcck zum Pad",
 	"timeslider.toolbar.authors": "Autoren:",

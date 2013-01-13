@@ -205,6 +205,8 @@ exports.handleMessage = function(client, message)
         handleUserInfoUpdate(client, message);
       } else if (message.data.type == "CHAT_MESSAGE") {
         handleChatMessage(client, message);
+      } else if (message.data.type == "GET_CHAT_MESSAGES") {
+        handleGetChatMessages(client, message);
       } else if (message.data.type == "SAVE_REVISION") {
         handleSaveRevisionMessage(client, message);
       } else if (message.data.type == "CLIENT_MESSAGE" &&
@@ -362,6 +364,74 @@ function handleChatMessage(client, message)
   });
 }
 
+/**
+ * Handles the clients request for more chat-messages
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
+function handleGetChatMessages(client, message)
+{
+  if(message.data.start == null)
+  {
+    messageLogger.warn("Dropped message, GetChatMessages Message has no start!");
+    return;
+  }
+  if(message.data.end == null)
+  {
+    messageLogger.warn("Dropped message, GetChatMessages Message has no start!");
+    return;
+  }
+  
+  var start = message.data.start;
+  var end = message.data.end;
+  var count = start - count;
+  
+  if(count < 0 && count > 100)
+  {
+    messageLogger.warn("Dropped message, GetChatMessages Message, client requested invalid amout of messages!");
+    return;
+  }
+  
+  var padId = sessioninfos[client.id].padId;
+  var pad;
+  
+  async.series([
+    //get the pad
+    function(callback)
+    {
+      padManager.getPad(padId, function(err, _pad)
+      {
+        if(ERR(err, callback)) return;
+        pad = _pad;
+        callback();
+      });
+    },
+    function(callback)
+    {
+      pad.getChatMessages(start, end, function(err, chatMessages)
+      {
+        if(ERR(err, callback)) return;
+		
+	    var infoMsg = {
+	      type: "COLLABROOM",
+	      data: {
+	        type: "CHAT_MESSAGES",
+	        messages: chatMessages
+	      }
+	    };
+		
+		// send the messages back to the client
+        for(var i in pad2sessions[padId])
+        {
+          if(pad2sessions[padId][i] == client.id)
+          {
+            socketio.sockets.sockets[pad2sessions[padId][i]].json.send(infoMsg);
+			break;
+          }
+        }
+      });
+    }]);
+}
 
 /**
  * Handles a handleSuggestUserName, that means a user have suggest a userName for a other user
@@ -778,19 +848,18 @@ function handleClientReady(client, message)
   var pad;
   var historicalAuthorData = {};
   var currentTime;
-  var chatMessages;
   var padIds;
 
   async.series([
-    // Get ro/rw id:s
-    function (callback) {
+    //Get ro/rw id:s
+    function (callback)
+    {
       readOnlyManager.getIds(message.padId, function(err, value) {
         if(ERR(err, callback)) return;
         padIds = value;
         callback();
       });
     },
-
     //check permissions
     function(callback)
     {
@@ -816,7 +885,7 @@ function handleClientReady(client, message)
         }
       });
     }, 
-    //get all authordata of this new user
+    //get all authordata of this new user, and load the pad-object from the database
     function(callback)
     {
       async.parallel([
@@ -840,6 +909,7 @@ function handleClientReady(client, message)
             callback();
           });
         },
+        //get pad
         function(callback)
         {
           padManager.getPad(padIds.padId, function(err, value)
@@ -851,7 +921,7 @@ function handleClientReady(client, message)
         }
       ], callback);
     },
-    //these db requests all need the pad object
+    //these db requests all need the pad object (timestamp of latest revission, author data)
     function(callback)
     {
       var authors = pad.getAllAuthors();
@@ -880,20 +950,11 @@ function handleClientReady(client, message)
               callback();
             });
           }, callback);
-        },
-        //get the latest chat messages
-        function(callback)
-        {
-          pad.getLastChatMessages(100, function(err, _chatMessages)
-          {
-            if(ERR(err, callback)) return;
-            chatMessages = _chatMessages;
-            callback();
-          });
         }
       ], callback);
       
     },
+    //glue the clientVars together, send them and tell the other clients that a new one is there
     function(callback)
     {
       //Check that the client is still here. It might have disconnected between callbacks.
@@ -966,7 +1027,9 @@ function handleClientReady(client, message)
         "padId": message.padId,
         "initialTitle": "Pad: " + message.padId,
         "opts": {},
-        "chatHistory": chatMessages,
+        // tell the client the number of the latest chat-message, which will be 
+        // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
+        "chatHead": pad.chatHead,
         "numConnectedUsers": pad2sessions[padIds.padId].length,
         "isProPad": false,
         "readOnlyId": padIds.readOnlyPadId,
@@ -980,11 +1043,10 @@ function handleClientReady(client, message)
         },
         "abiwordAvailable": settings.abiwordAvailable(), 
         "plugins": {
-	  "plugins": plugins.plugins,
-	  "parts": plugins.parts,
-	},
-          "initialChangesets": [] // FIXME: REMOVE THIS SHIT
-
+          "plugins": plugins.plugins,
+          "parts": plugins.parts,
+        },
+        "initialChangesets": [] // FIXME: REMOVE THIS SHIT
       }
 
       //Add a username to the clientVars if one avaiable
