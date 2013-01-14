@@ -175,6 +175,27 @@ function handleMessage ( hook, context, callback ) {
 };
 ```
 
+## clientVars
+Called from: src/node/handler/PadMessageHandler.js
+
+Things in context:
+
+1. clientVars - the basic `clientVars` built by the core
+2. pad - the pad this session is about
+
+This hook will be called once a client connects and the `clientVars` are being sent. Plugins can use this hook to give the client a initial configuriation, like the tracking-id of an external analytics-tool that is used on the client-side. You can also overwrite values from the original `clientVars`.
+
+Example:
+
+```
+exports.clientVars = function(hook, context, callback)
+{
+  // tell the client which year we are in
+  return callback({ "currentYear": new Date().getFullYear() });
+};
+```
+
+This can be accessed on the client-side using `clientVars.currentYear`.
 
 ## getLineHTMLForExport
 Called from: src/node/utils/ExportHtml.js
