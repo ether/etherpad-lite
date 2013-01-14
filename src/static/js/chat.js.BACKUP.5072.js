@@ -124,19 +124,14 @@ var chat = (function()
 
       var authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName); 
       
-<<<<<<< HEAD
       var html = "";
       if(lastDateStr != null && lastDateStr != dateStr)
         html = "<p class='chatDaySeperator'>" + dateStr + "</p>";
       html += "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "' title='" + dateStr + "'>" + timeStr + "</span> " + text + "</p>";
-      $("#chattext").append(html);
-=======
-      var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
       if(isHistoryAdd)
         $(html).insertAfter('#chatloadmessagesbutton');
       else
         $("#chattext").append(html);
->>>>>>> 025c92f3464516f63c942b0dcc9fe4a8dda8e414
       
       lastDateStr = dateStr;
       

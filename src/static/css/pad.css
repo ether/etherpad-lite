@@ -575,6 +575,14 @@ table#otheruserstable {
   margin-right: 3px;
   margin-top: 2px;
 }
+.chatDaySeperator
+{
+  text-align:center;
+  border-bottom: 1px solid #aaa;
+  line-height:0.85em;
+  margin:3px 0 5px;
+  color:#888;
+}
 .exporttype {
   margin-top: 4px;
   background-repeat: no-repeat;

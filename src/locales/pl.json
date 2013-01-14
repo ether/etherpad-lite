@@ -89,6 +89,7 @@
 	"timeslider.version": "Wersja {{version}}",
 	"timeslider.saved": "Zapisano {{day}} {{month}} {{year}}",
 	"timeslider.dateformat": "{{year}}-{{month}}-{{day}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "{{year}}-{{month}}-{{day}}",
 	"timeslider.month.january": "Stycze\u0144",
 	"timeslider.month.february": "Luty",
 	"timeslider.month.march": "Marzec",

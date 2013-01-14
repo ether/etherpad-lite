@@ -30,8 +30,6 @@ var lastDateStr = null;
 var chat = (function()
 {
   var isStuck = false;
-  var gotInitialMessages = false;
-  var historyPointer = 0;
   var chatMentions = 0;
   var self = {
     show: function () 
@@ -80,7 +78,7 @@ var chat = (function()
       this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
-    addMessage: function(msg, increment, isHistoryAdd)
+    addMessage: function(msg, increment)
     {    
       //correct the time
       msg.time += this._pad.clientTimeOffset;
@@ -124,19 +122,11 @@ var chat = (function()
 
       var authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName); 
       
-<<<<<<< HEAD
       var html = "";
       if(lastDateStr != null && lastDateStr != dateStr)
         html = "<p class='chatDaySeperator'>" + dateStr + "</p>";
       html += "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "' title='" + dateStr + "'>" + timeStr + "</span> " + text + "</p>";
       $("#chattext").append(html);
-=======
-      var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
-      if(isHistoryAdd)
-        $(html).insertAfter('#chatloadmessagesbutton');
-      else
-        $("#chattext").append(html);
->>>>>>> 025c92f3464516f63c942b0dcc9fe4a8dda8e414
       
       lastDateStr = dateStr;
       
@@ -151,7 +141,7 @@ var chat = (function()
         
         $("#chatcounter").text(count);
         // chat throb stuff -- Just make it throw for twice as long
-        if(wasMentioned && !alreadyFocused && !isHistoryAdd)
+        if(wasMentioned && !alreadyFocused)
         { // If the user was mentioned show for twice as long and flash the browser window
           $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(4000).hide(400);
           chatMentions++;
@@ -167,8 +157,8 @@ var chat = (function()
         chatMentions = 0;
         Tinycon.setBubble(0);
       });
-      if(!isHistoryAdd)
-        self.scrollDown();
+      self.scrollDown();
+
     },
     init: function(pad)
     {
@@ -183,23 +173,12 @@ var chat = (function()
         }
       });
       
-	  // initial messages are loaded in pad.js' _afterHandshake
-	  
-	  $("#chatcounter").text(0);
-	  $("#chatloadmessagesbutton").click(function()
-	  {
-        var start = Math.max(self.historyPointer - 20, 0);
-        var end = self.historyPointer;
+      var that = this;
+      $.each(clientVars.chatHistory, function(i, o){
+        that.addMessage(o, false);
+      })
 
-        if(start == end) // nothing to load
-          return;
-
-        $("#chatloadmessagesbutton").css("display", "none");
-        $("#chatloadmessagesball").css("display", "block");
-
-        pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": end});
-        self.historyPointer = start;
-	  });
+      $("#chatcounter").text(clientVars.chatHistory.length);
     }
   }
 

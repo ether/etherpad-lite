@@ -43,6 +43,7 @@
 	"timeslider.version": "Weergawe {{version}}",
 	"timeslider.saved": "Gestoor op {{day}} {{month}} {{year}}",
 	"timeslider.dateformat": "{{year}}-{{month}}-{{day}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "{{year}}-{{month}}-{{day}}",
 	"timeslider.month.january": "Januarie",
 	"timeslider.month.february": "Februarie",
 	"timeslider.month.march": "Maart",

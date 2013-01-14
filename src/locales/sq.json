@@ -85,6 +85,7 @@
 	"timeslider.version": "Versioni {{version}}",
 	"timeslider.saved": "Ruajtur m\u00eb {{month}} {{day}}, {{year}}",
 	"timeslider.dateformat": "{{month}}\/{{day}}\/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "{{month}}\/{{day}}\/{{year}}",
 	"timeslider.month.january": "Janar",
 	"timeslider.month.february": "Shkurt",
 	"timeslider.month.march": "Mars",

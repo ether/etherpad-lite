@@ -25,8 +25,6 @@ var padcookie = require('./pad_cookie').padcookie;
 
 var Tinycon = require('tinycon/tinycon');
 
-var lastDateStr = null;
-
 var chat = (function()
 {
   var isStuck = false;
@@ -86,22 +84,13 @@ var chat = (function()
       msg.time += this._pad.clientTimeOffset;
       
       //create the time string
-      var msgDate = new Date(msg.time);
-      var minutes = "" + msgDate.getMinutes();
-      var hours = "" + msgDate.getHours();
-      var month = "" + (msgDate.getMonth() + 1);
-      var day = "" + msgDate.getDate();
-      var year = "" + (msgDate.getYear() + 1900);
+      var minutes = "" + new Date(msg.time).getMinutes();
+      var hours = "" + new Date(msg.time).getHours();
       if(minutes.length == 1)
         minutes = "0" + minutes ;
       if(hours.length == 1)
         hours = "0" + hours ;
-      if(month.length == 1)
-        month = "0" + month ;
-      if(day.length == 1)
-        day = "0" + day ;
       var timeStr = hours + ":" + minutes;
-      var dateStr = html10n.get('timeslider.dateonlyformat', {month: month, day: day, year: year});
         
       //create the authorclass
       var authorClass = "author-" + msg.userId.replace(/[^a-y0-9]/g, function(c)
@@ -124,21 +113,11 @@ var chat = (function()
 
       var authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName); 
       
-<<<<<<< HEAD
-      var html = "";
-      if(lastDateStr != null && lastDateStr != dateStr)
-        html = "<p class='chatDaySeperator'>" + dateStr + "</p>";
-      html += "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "' title='" + dateStr + "'>" + timeStr + "</span> " + text + "</p>";
-      $("#chattext").append(html);
-=======
       var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
       if(isHistoryAdd)
         $(html).insertAfter('#chatloadmessagesbutton');
       else
         $("#chattext").append(html);
->>>>>>> 025c92f3464516f63c942b0dcc9fe4a8dda8e414
-      
-      lastDateStr = dateStr;
       
       //should we increment the counter??
       if(increment)

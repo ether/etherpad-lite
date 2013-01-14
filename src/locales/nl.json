@@ -87,6 +87,7 @@
 	"timeslider.version": "Versie {{version}}",
 	"timeslider.saved": "Opgeslagen op {{day}} {{month}} {{year}}",
 	"timeslider.dateformat": "{{year}}-{{month}}-{{day}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateonlyformat": "{{year}}-{{month}}-{{day}}",
 	"timeslider.month.january": "januari",
 	"timeslider.month.february": "februari",
 	"timeslider.month.march": "maart",
