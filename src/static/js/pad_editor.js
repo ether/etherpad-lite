@@ -113,7 +113,9 @@ var padeditor = (function()
         self.ace.setProperty("showsauthorcolors", !settings.noColors);
 
       v = getOption('useMonospaceFont', false);
-      self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
+      // use Ayuthaya font on MacOS Family, Consolas on Windows Family and Monospace on Linux Family
+      // for better readability of font
+      self.ace.setProperty("textface", (v ? "Ayuthaya, Consolas, monospace" : "Arial, sans-serif"));
       $("#viewfontmenu").val(v ? "monospace" : "normal");
     },
     dispose: function()
