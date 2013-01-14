@@ -34,9 +34,58 @@ var db = require("./DB").db;
  */
 var globalPads = {
     get: function (name) { return this[':'+name]; },
-    set: function (name, value) { this[':'+name] = value; },
+    set: function (name, value) 
+    {
+      this[':'+name] = value;
+      padList.addPad(name);
+    },
     remove: function (name) { delete this[':'+name]; }
 };
+
+var padList = {
+  list: [],
+  sorted : false,
+  init: function()
+  {
+    db.findKeys("pad:*", "*:*:*", function(err, dbData)
+    {
+      if(ERR(err)) return;
+      if(dbData != null){
+        dbData.forEach(function(val){
+          padList.addPad(val.replace(/pad:/,""),false);
+        });
+      }
+    });
+    return this;
+  },
+  /**
+   * Returns all pads in alphabetical order as array.
+   */
+  getPads: function(){
+    if(!this.sorted){
+      this.list=this.list.sort();
+      this.sorted=true;
+    }
+    return this.list;
+  },
+  addPad: function(name)
+  {
+    if(this.list.indexOf(name) == -1){
+      this.list.push(name);
+      this.sorted=false;
+    }
+  },
+  removePad: function(name)
+  {
+    var index=this.list.indexOf(name);
+    if(index>-1){
+      this.list.splice(index,1);
+      this.sorted=false;
+    }
+  }
+};
+//initialises the allknowing data structure
+padList.init();
 
 /**
  * An array of padId transformations. These represent changes in pad name policy over
@@ -109,6 +158,15 @@ exports.getPad = function(id, text, callback)
   }
 }
 
+exports.getPads = function(callback)
+{
+  if(callback != null){
+    callback(null,padList.getPads());
+  }else{
+    return padList.getPads();
+  }
+}
+
 //checks if a pad exists
 exports.doesPadExists = function(padId, callback)
 {
@@ -161,6 +219,15 @@ exports.sanitizePadId = function(padId, callback) {
 exports.isValidPadId = function(padId)
 {
   return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
+}
+
+/**
+ * Removes the pad from database and unloads it.
+ */
+exports.removePad = function(padId){
+  db.remove("pad:"+padId);
+  exports.unloadPad(padId);
+  padList.removePad(padId);
 }
 
 //removes a pad from the array
