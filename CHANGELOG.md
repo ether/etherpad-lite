@@ -1,3 +1,11 @@
+# 1.2.4
+ * Fix IE console issue created in 1.2.3
+ * Allow CI Tests to pass by ignoring timeslider test
+ * Fix broken placeholders in locales
+ * Fix extractPadData script
+ * Fix documentation for checkToken
+ * Fix hitting enter on form in admin/plugins
+
 # 1.2.3
  * Fix #1307: Chrome needs console.log to be called on console obj
  * Fix #1309: We had broken support for node v0.6 in the last release

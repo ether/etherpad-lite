@@ -281,27 +281,7 @@ Pad.prototype.getChatMessage = function getChatMessage(entryNum, callback) {
   });
 };
 
-Pad.prototype.getLastChatMessages = function getLastChatMessages(count, callback) {
-  //return an empty array if there are no chat messages
-  if(this.chatHead == -1)
-  {
-    callback(null, []);
-    return;
-  }
-
-  var _this = this;
-
-  //works only if we decrement the amount, for some reason
-  count--;
-
-  //set the startpoint
-  var start = this.chatHead-count;
-  if(start < 0)
-    start = 0;
-
-  //set the endpoint
-  var end = this.chatHead;
-
+Pad.prototype.getChatMessages = function getChatMessages(start, end, callback) {
   //collect the numbers of chat entries and in which order we need them
   var neededEntries = [];
   var order = 0;
@@ -310,7 +290,9 @@ Pad.prototype.getLastChatMessages = function getLastChatMessages(count, callback
     neededEntries.push({entryNum:i, order: order});
     order++;
   }
-
+  
+  var _this = this;
+  
   //get all entries out of the database
   var entries = [];
   async.forEach(neededEntries, function(entryObject, callback)
@@ -473,8 +455,7 @@ Pad.prototype.remove = function remove(callback) {
     //delete the pad entry and delete pad from padManager
     function(callback)
     {
-      db.remove("pad:"+padID);
-      padManager.unloadPad(padID);
+      padManager.removePad(padID);
       hooks.callAll("padRemove", {'padID':padID});
       callback();
     }

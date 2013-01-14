@@ -92,5 +92,14 @@
 	"timeslider.month.september": "S\u00e4pt\u00e4mber",
 	"timeslider.month.october": "Oktoober",
 	"timeslider.month.november": "Nov\u00e4mber",
-	"timeslider.month.december": "Dez\u00e4mber"
+	"timeslider.month.december": "Dez\u00e4mber",
+	"pad.userlist.entername": "Jif Dinge Naame en",
+	"pad.userlist.unnamed": "naamelo\u00df\u00df",
+	"pad.userlist.guest": "Ja\u00df\u00df",
+	"pad.userlist.deny": "Aflehne",
+	"pad.impexp.importing": "Ben aam Empotteere&nbsp;&hellip;",
+	"pad.impexp.uploadFailed": "Et Huhlaade es don\u00e4vve jejange, bes esu jood un probeer et norr_ens",
+	"pad.impexp.importfailed": "Et Empoteere es don\u00e4vve jejange",
+	"pad.impexp.copypaste": "Bes esu jood un donn et koppeere un enf\u00f6\u00f6je",
+	"pad.impexp.exportdisabled": "Et \u00c4xpotteere em {{type}}-Formmaat es affjeschalldt. De Verwallder vun heh d\u00e4 Sigge k\u00fcnne doh velleisch wiggerh\u00e4llefe."
 }

@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"AZISS",
 			"Khan27"
 		]
 	},
@@ -36,6 +37,7 @@
 	"pad.settings.linenocheck": "S\u0259tir n\u00f6mr\u0259l\u0259ri",
 	"pad.settings.fontType": "\u015eriftin tipi:",
 	"pad.settings.fontType.normal": "Normal",
+	"pad.settings.fontType.monospaced": "Monobo\u015fluq",
 	"pad.settings.globalView": "\u00dcmumi g\u00f6r\u00fcn\u00fc\u015f",
 	"pad.settings.language": "Dil:",
 	"pad.importExport.import_export": "\u0130dxal\/\u0130xrac",
@@ -51,9 +53,12 @@
 	"pad.modals.connected": "Ba\u011fland\u0131.",
 	"pad.modals.reconnecting": "Sizin pad yenid\u0259n qo\u015fulur..",
 	"pad.modals.forcereconnect": "M\u0259cbur t\u0259krar\u0259n ba\u011flan",
+	"pad.modals.userdup": "Ba\u015fqa p\u0259nc\u0259r\u0259d\u0259 art\u0131q a\u00e7\u0131qd\u0131r",
 	"pad.modals.userdup.advice": "Bu p\u0259nc\u0259r\u0259d\u0259n istifad\u0259yl\u0259 yenid\u0259n qo\u015fulun.",
 	"pad.modals.unauth": "\u0130caz\u0259li deyil",
+	"pad.modals.unauth.explanation": "Bu s\u0259hif\u0259y\u0259 baxd\u0131\u011f\u0131n\u0131z vaxt sizin icaz\u0259niz  d\u0259yi\u015filib. B\u0259rpa etm\u0259k \u00fc\u015f\u00fcn yenid\u0259n c\u0259hd edin.",
 	"pad.modals.looping": "\u018flaq\u0259 k\u0259sildi.",
+	"pad.modals.looping.explanation": "Sinxronla\u015fd\u0131rma serveri il\u0259 kommunikasiya x\u0259tas\u0131 var.",
 	"pad.modals.initsocketfail": "Server \u0259l\u00e7atmazd\u0131r.",
 	"pad.modals.initsocketfail.explanation": "Sinxronla\u015fd\u0131rma serverin\u0259 qo\u015fulma m\u00fcmk\u00fcns\u00fczd\u00fcr.",
 	"pad.modals.slowcommit": "\u018flaq\u0259 k\u0259sildi.",
@@ -74,10 +79,11 @@
 	"timeslider.toolbar.returnbutton": "Pad-a qay\u0131t",
 	"timeslider.toolbar.authors": "M\u00fc\u0259llifl\u0259r:",
 	"timeslider.toolbar.authorsList": "M\u00fc\u0259llif yoxdur",
+	"timeslider.toolbar.exportlink.title": "\u0130xrac",
 	"timeslider.exportCurrent": "Cari versiyan\u0131 ixrac etm\u0259k kimi:",
-	"timeslider.version": "Versiya {{versiya}}",
-	"timeslider.saved": "Saxlan\u0131ld\u0131 {{ay}} {{g\u00fcn}}, {{il}}",
-	"timeslider.dateformat": "{{ay}}\/{{g\u00fcn}}\/{{il}} {{saat}}:{{d\u0259qiq\u0259}}:{{saniy\u0259}}",
+	"timeslider.version": "Versiya {{version}}",
+	"timeslider.saved": "Saxlan\u0131ld\u0131 {{day}} {{month}}, {{year}}",
+	"timeslider.dateformat": "{{day}} {{month}}, {{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Yanvar",
 	"timeslider.month.february": "Fevral",
 	"timeslider.month.march": "Mart",

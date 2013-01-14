@@ -10,17 +10,33 @@ if(process.argv.length != 3)
 //get the padID
 var padId = process.argv[2];
 
-//initalize the database
-var log4js = require("log4js");
-log4js.setGlobalLogLevel("INFO");
-var async = require("async");
-var db = require('../node/db/DB');
-var dirty = require("dirty")(padId + ".db");
-var padManager; 
-var pad;
+var db, dirty, padManager, pad, settings;
 var neededDBValues = ["pad:"+padId];
 
+var npm = require("../src/node_modules/npm");
+var async = require("../src/node_modules/async");
+
 async.series([
+  // load npm
+  function(callback) {
+    npm.load({}, function(er) {
+      if(er)
+      {
+        console.error("Could not load NPM: " + er)
+        process.exit(1);
+      }
+      else
+      {
+        callback();
+      }
+    })
+  },
+  // load modules
+  function(callback) {
+    settings = require('../src/node/utils/Settings');
+    db = require('../src/node/db/DB');
+    dirty = require("../src/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
+  },
   //intallize the database
   function (callback)
   {

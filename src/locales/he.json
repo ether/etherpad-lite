@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"Ofrahod"
 		]
 	},
 	"index.newPad": "\u05e4\u05e0\u05e7\u05e1 \u05d7\u05d3\u05e9",
@@ -80,6 +81,7 @@
 	"timeslider.toolbar.returnbutton": "\u05d7\u05d6\u05e8\u05d4 \u05d0\u05dc \u05d4\u05e4\u05e0\u05e7\u05e1",
 	"timeslider.toolbar.authors": "\u05db\u05d5\u05ea\u05d1\u05d9\u05dd:",
 	"timeslider.toolbar.authorsList": "\u05d0\u05d9\u05df \u05db\u05d5\u05ea\u05d1\u05d9\u05dd",
+	"timeslider.toolbar.exportlink.title": "\u05d9\u05e6\u05d5\u05d0",
 	"timeslider.exportCurrent": "\u05d9\u05d9\u05e6\u05d5\u05d0 \u05d4\u05db\u05e8\u05e1\u05d4 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9\u05ea \u05d1\u05ea\u05d5\u05e8:",
 	"timeslider.version": "\u05d2\u05e8\u05e1\u05d4 {{version}}",
 	"timeslider.saved": "\u05e0\u05e9\u05de\u05e8\u05d4 \u05d1\u05be{{day}} \u05d1{{month}} {{year}}",
@@ -96,5 +98,10 @@
 	"timeslider.month.september": "\u05e1\u05e4\u05d8\u05de\u05d1\u05e8",
 	"timeslider.month.october": "\u05d0\u05d5\u05e7\u05d8\u05d5\u05d1\u05e8",
 	"timeslider.month.november": "\u05e0\u05d5\u05d1\u05de\u05d1\u05e8",
-	"timeslider.month.december": "\u05d3\u05e6\u05de\u05d1\u05e8"
+	"timeslider.month.december": "\u05d3\u05e6\u05de\u05d1\u05e8",
+	"pad.savedrevs.marked": "\u05d2\u05e8\u05e1\u05d4 \u05d6\u05d5 \u05de\u05e1\u05d5\u05de\u05e0\u05ea \u05db\u05d2\u05e8\u05e1\u05d4 \u05e9\u05de\u05d5\u05e8\u05d4",
+	"pad.userlist.unnamed": "\u05dc\u05dc\u05d0 \u05e9\u05dd",
+	"pad.userlist.guest": "\u05d0\u05d5\u05e8\u05d7",
+	"pad.impexp.importbutton": "\u05dc\u05d9\u05d9\u05d1\u05d0 \u05db\u05e2\u05ea",
+	"pad.impexp.confirmimport": "\u05d9\u05d1\u05d5\u05d0 \u05e9\u05dc \u05e7\u05d5\u05d1\u05e5 \u05d9\u05d1\u05d8\u05dc \u05d0\u05ea \u05d4\u05d8\u05e7\u05e1\u05d8 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9 \u05d1\u05e4\u05e0\u05e7\u05e1. \u05d4\u05d0\u05dd \u05d0\u05ea\u05dd \u05d1\u05d8\u05d5\u05d7\u05d9\u05dd \u05e9\u05d1\u05e8\u05e6\u05d5\u05e0\u05db\u05dd \u05dc\u05d4\u05de\u05e9\u05d9\u05da?"
 }

@@ -1,11 +1,12 @@
 {
 	"@metadata": {
-		"authors": [
-			"Artnay",
-			"Jl",
-			"Nedergard",
-			"Nike"
-		]
+		"authors": {
+			"0": "Artnay",
+			"1": "Jl",
+			"2": "Nedergard",
+			"3": "Nike",
+			"5": "VezonThunder"
+		}
 	},
 	"index.newPad": "Uusi muistio",
 	"index.createOpenPad": "tai luo tai avaa muistio nimell\u00e4:",
@@ -56,6 +57,7 @@
 	"pad.modals.connected": "Yhdistetty.",
 	"pad.modals.reconnecting": "Muodostetaan yhteytt\u00e4 muistioon uudelleen...",
 	"pad.modals.forcereconnect": "Pakota yhdist\u00e4m\u00e4\u00e4n uudelleen",
+	"pad.modals.userdup": "Avattu toisessa ikkunassa",
 	"pad.modals.userdup.explanation": "T\u00e4m\u00e4 muistio vaikuttaa olevan avoinna useammassa eri selainikkunassa t\u00e4ll\u00e4 koneella.",
 	"pad.modals.userdup.advice": "Yhdist\u00e4 uudelleen, jos haluat k\u00e4ytt\u00e4\u00e4 t\u00e4t\u00e4 ikkunaa.",
 	"pad.modals.unauth": "Oikeudet eiv\u00e4t riit\u00e4",
@@ -84,6 +86,7 @@
 	"timeslider.toolbar.returnbutton": "Palaa muistioon",
 	"timeslider.toolbar.authors": "Tekij\u00e4t:",
 	"timeslider.toolbar.authorsList": "Ei tekij\u00f6it\u00e4",
+	"timeslider.toolbar.exportlink.title": "Vie",
 	"timeslider.exportCurrent": "Vie nykyinen versio muodossa:",
 	"timeslider.version": "Versio {{version}}",
 	"timeslider.saved": "Tallennettu {{day}}. {{month}}ta {{year}}",
