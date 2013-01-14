@@ -36,4 +36,32 @@ describe("send chat message", function(){
     });
 
   });
+
+  it("checks for the date-hover on chat-messages", function(done) {
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
+    var chatValue = "JohnMcLear";
+
+    //click on the chat button to make chat visible
+    var $chatButton = chrome$("#chaticon");
+    $chatButton.click();
+    var $chatInput = chrome$("#chatinput");
+    $chatInput.sendkeys('JohnMcLear'); // simulate a keypress of typing JohnMcLear
+    $chatInput.sendkeys('{enter}'); // simulate a keypress of enter actually does evt.which = 10 not 13
+
+    //check if chat shows up
+    helper.waitFor(function(){
+      return chrome$("#chattext").children("p").length !== 0; // wait until the chat message shows up
+    }).done(function(){
+      var $firstChatMessage = chrome$("#chattext").children("p");
+      
+      var time = $firstChatMessage.children(".time");
+      var dateValue = time.attr('title');
+      // can't test any further because the date is i18nzed..
+      expect(dateValue).not.to.be(undefined);
+      expect(dateValue).not.to.be('');
+      done();
+    });
+
+  });
 });
