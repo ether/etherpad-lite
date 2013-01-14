@@ -73,6 +73,8 @@ var chat = (function()
     send: function()
     {
       var text = $("#chatinput").val();
+      if(text.trim().length == 0)
+        return;
       this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
