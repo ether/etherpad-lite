@@ -1063,10 +1063,22 @@ function handleClientReady(client, message)
           clientVars.userName = authorName;
         }
         
-        //Send the clientVars to the Client
-        client.json.send({type: "CLIENT_VARS", data: clientVars});
-        //Save the current revision in sessioninfos, should be the same as in clientVars
-        sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+        //call the clientVars-hook so plugins can modify them before they get sent to the client
+        hooks.aCallAll("clientVars", { clientVars: clientVars, pad: pad }, function ( err, messages ) {
+          if(ERR(err, callback)) return;
+          
+          _.each(messages, function(newVars) {
+            //combine our old object with the new attributes from the hook
+            for(var attr in newVars) {
+              clientVars[attr] = newVars[attr];
+            }
+          });
+        
+          //Send the clientVars to the Client
+          client.json.send({type: "CLIENT_VARS", data: clientVars});
+          //Save the current revision in sessioninfos, should be the same as in clientVars
+          sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+        });
       }
         
       sessioninfos[client.id].author = author;
