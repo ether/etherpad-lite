@@ -10,15 +10,25 @@ if(process.argv.length != 3)
 //get the padID
 var padId = process.argv[2];
 
-//initalize the database
-var settings = require("../src/node/utils/Settings");
+//initalize the variables
+var db, settings, padManager;
+var npm = require("../src/node_modules/npm");
 var async = require("../src/node_modules/async");
-var db = require('../src/node/db/DB');
 
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var padManager;
 
 async.series([
+  //load npm
+  function(callback) {
+    npm.load({}, function(er) {
+      callback(er);
+    })
+  },
+  //load modules
+  function(callback) {
+    settings = require('../src/node/utils/Settings');
+    db = require('../src/node/db/DB');
+  },
   //intallize the database
   function (callback)
   {
