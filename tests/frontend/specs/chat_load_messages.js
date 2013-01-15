@@ -14,7 +14,7 @@ describe("chat-load-messages", function(){
     var chatInput = chrome$("#chatinput");
     var chatText = chrome$("#chattext");
     
-    this.timeout(10000);
+    this.timeout(60000);
     
     var messages = 140;
     for(var i=1; i <= messages; i++) {
@@ -28,7 +28,7 @@ describe("chat-load-messages", function(){
     }
     helper.waitFor(function(){
       return chatText.children("p").length == messages;
-    }).always(function(){
+    }, 60000).always(function(){
       expect(chatText.children("p").length).to.be(messages);
       helper.newPad(done, padName);
      });
@@ -73,12 +73,15 @@ describe("chat-load-messages", function(){
     chatButton.click();
     var chatText = chrome$("#chattext");
     var loadMsgBtn = chrome$("#chatloadmessagesbutton");
+    var loadMsgBall = chrome$("#chatloadmessagesball");
 
     loadMsgBtn.click();
     helper.waitFor(function(){
-      return loadMsgBtn.css('display') == expectedDisplay;
+      return loadMsgBtn.css('display')  == expectedDisplay &&
+             loadMsgBall.css('display') == expectedDisplay;
     }).always(function(){
       expect(loadMsgBtn.css('display')).to.be(expectedDisplay);
+      expect(loadMsgBall.css('display')).to.be(expectedDisplay);
       done();
     });
   });
