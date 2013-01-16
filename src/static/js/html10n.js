@@ -883,7 +883,7 @@ window.html10n = (function(window, document, undefined) {
      html10n.index()
    }, false)
   else if (window.attachEvent)
-    document.attachEvent('onload', function() {
+    window.attachEvent('onload', function() {
      html10n.index()
    }, false)
 
