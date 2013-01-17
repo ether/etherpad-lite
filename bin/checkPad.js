@@ -28,10 +28,8 @@ async.series([
   function(callback) {
     settings = require('../src/node/utils/Settings');
     db = require('../src/node/db/DB');
-  },
-  //intallize the database
-  function (callback)
-  {
+
+    //intallize the database
     db.init(callback);
   },
   //get the pad 
