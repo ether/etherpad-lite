@@ -25,7 +25,6 @@ var log4js = require('log4js')
   , async = require('async')
   ;
 
-// set up logger
 log4js.replaceConsole();
 
 var settings
@@ -50,8 +49,6 @@ async.waterfall([
     hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
     hooks.plugins = plugins;
 
-    //set loglevel
-    log4js.setGlobalLogLevel(settings.loglevel);
     callback();
   },
   
