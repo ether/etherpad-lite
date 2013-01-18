@@ -1,3 +1,14 @@
+# 1.2.5
+ * Create timeslider EEJS blocks for plugins
+ * Allow for "more messages" to be loaded in chat
+ * Introduce better logging
+ * API endpoint for "listAllPads"
+ * Fix: Stop highlight of timeslider when dragging mouse
+ * Fix: Time Delta on Timeslider make date update properly
+ * Fix: Prevent empty chat messages from being sent
+ * Fix: checkPad script
+ * Fix: IE onLoad listener for i18n
+
 # 1.2.4
  * Fix IE console issue created in 1.2.3
  * Allow CI Tests to pass by ignoring timeslider test
