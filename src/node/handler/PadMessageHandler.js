@@ -205,6 +205,8 @@ exports.handleMessage = function(client, message)
         handleUserInfoUpdate(client, message);
       } else if (message.data.type == "CHAT_MESSAGE") {
         handleChatMessage(client, message);
+      } else if (message.data.type == "GET_CHAT_MESSAGES") {
+        handleGetChatMessages(client, message);
       } else if (message.data.type == "SAVE_REVISION") {
         handleSaveRevisionMessage(client, message);
       } else if (message.data.type == "CLIENT_MESSAGE" &&
@@ -362,6 +364,74 @@ function handleChatMessage(client, message)
   });
 }
 
+/**
+ * Handles the clients request for more chat-messages
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
+function handleGetChatMessages(client, message)
+{
+  if(message.data.start == null)
+  {
+    messageLogger.warn("Dropped message, GetChatMessages Message has no start!");
+    return;
+  }
+  if(message.data.end == null)
+  {
+    messageLogger.warn("Dropped message, GetChatMessages Message has no start!");
+    return;
+  }
+  
+  var start = message.data.start;
+  var end = message.data.end;
+  var count = start - count;
+  
+  if(count < 0 && count > 100)
+  {
+    messageLogger.warn("Dropped message, GetChatMessages Message, client requested invalid amout of messages!");
+    return;
+  }
+  
+  var padId = sessioninfos[client.id].padId;
+  var pad;
+  
+  async.series([
+    //get the pad
+    function(callback)
+    {
+      padManager.getPad(padId, function(err, _pad)
+      {
+        if(ERR(err, callback)) return;
+        pad = _pad;
+        callback();
+      });
+    },
+    function(callback)
+    {
+      pad.getChatMessages(start, end, function(err, chatMessages)
+      {
+        if(ERR(err, callback)) return;
+		
+	    var infoMsg = {
+	      type: "COLLABROOM",
+	      data: {
+	        type: "CHAT_MESSAGES",
+	        messages: chatMessages
+	      }
+	    };
+		
+		// send the messages back to the client
+        for(var i in pad2sessions[padId])
+        {
+          if(pad2sessions[padId][i] == client.id)
+          {
+            socketio.sockets.sockets[pad2sessions[padId][i]].json.send(infoMsg);
+			break;
+          }
+        }
+      });
+    }]);
+}
 
 /**
  * Handles a handleSuggestUserName, that means a user have suggest a userName for a other user
@@ -778,19 +848,18 @@ function handleClientReady(client, message)
   var pad;
   var historicalAuthorData = {};
   var currentTime;
-  var chatMessages;
   var padIds;
 
   async.series([
-    // Get ro/rw id:s
-    function (callback) {
+    //Get ro/rw id:s
+    function (callback)
+    {
       readOnlyManager.getIds(message.padId, function(err, value) {
         if(ERR(err, callback)) return;
         padIds = value;
         callback();
       });
     },
-
     //check permissions
     function(callback)
     {
@@ -816,7 +885,7 @@ function handleClientReady(client, message)
         }
       });
     }, 
-    //get all authordata of this new user
+    //get all authordata of this new user, and load the pad-object from the database
     function(callback)
     {
       async.parallel([
@@ -840,6 +909,7 @@ function handleClientReady(client, message)
             callback();
           });
         },
+        //get pad
         function(callback)
         {
           padManager.getPad(padIds.padId, function(err, value)
@@ -851,7 +921,7 @@ function handleClientReady(client, message)
         }
       ], callback);
     },
-    //these db requests all need the pad object
+    //these db requests all need the pad object (timestamp of latest revission, author data)
     function(callback)
     {
       var authors = pad.getAllAuthors();
@@ -880,20 +950,11 @@ function handleClientReady(client, message)
               callback();
             });
           }, callback);
-        },
-        //get the latest chat messages
-        function(callback)
-        {
-          pad.getLastChatMessages(100, function(err, _chatMessages)
-          {
-            if(ERR(err, callback)) return;
-            chatMessages = _chatMessages;
-            callback();
-          });
         }
       ], callback);
       
     },
+    //glue the clientVars together, send them and tell the other clients that a new one is there
     function(callback)
     {
       //Check that the client is still here. It might have disconnected between callbacks.
@@ -929,70 +990,7 @@ function handleClientReady(client, message)
       
       //Saves in pad2sessions that this session belongs to this pad
       pad2sessions[padIds.padId].push(client.id);
-      
-      //prepare all values for the wire
-      var atext = Changeset.cloneAText(pad.atext);
-      var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
-      var apool = attribsForWire.pool.toJsonable();
-      atext.attribs = attribsForWire.translated;
-      
-      // Warning: never ever send padIds.padId to the client. If the
-      // client is read only you would open a security hole 1 swedish
-      // mile wide...
-      var clientVars = {
-        "accountPrivs": {
-            "maxRevisions": 100
-        },
-        "initialRevisionList": [],
-        "initialOptions": {
-            "guestPolicy": "deny"
-        },
-        "savedRevisions": pad.getSavedRevisions(),
-        "collab_client_vars": {
-            "initialAttributedText": atext,
-            "clientIp": "127.0.0.1",
-            //"clientAgent": "Anonymous Agent",
-            "padId": message.padId,
-            "historicalAuthorData": historicalAuthorData,
-            "apool": apool,
-            "rev": pad.getHeadRevisionNumber(),
-            "globalPadId": message.padId,
-            "time": currentTime,
-        },
-        "colorPalette": ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ff8f8f", "#ffe38f", "#c7ff8f", "#8fffab", "#8fffff", "#8fabff", "#c78fff", "#ff8fe3", "#d97979", "#d9c179", "#a9d979", "#79d991", "#79d9d9", "#7991d9", "#a979d9", "#d979c1", "#d9a9a9", "#d9cda9", "#c1d9a9", "#a9d9b5", "#a9d9d9", "#a9b5d9", "#c1a9d9", "#d9a9cd", "#4c9c82", "#12d1ad", "#2d8e80", "#7485c3", "#a091c7", "#3185ab", "#6818b4", "#e6e76d", "#a42c64", "#f386e5", "#4ecc0c", "#c0c236", "#693224", "#b5de6a", "#9b88fd", "#358f9b", "#496d2f", "#e267fe", "#d23056", "#1a1a64", "#5aa335", "#d722bb", "#86dc6c", "#b5a714", "#955b6a", "#9f2985", "#4b81c8", "#3d6a5b", "#434e16", "#d16084", "#af6a0e", "#8c8bd8"],
-        "clientIp": "127.0.0.1",
-        "userIsGuest": true,
-        "userColor": authorColorId,
-        "padId": message.padId,
-        "initialTitle": "Pad: " + message.padId,
-        "opts": {},
-        "chatHistory": chatMessages,
-        "numConnectedUsers": pad2sessions[padIds.padId].length,
-        "isProPad": false,
-        "readOnlyId": padIds.readOnlyPadId,
-        "readonly": padIds.readonly,
-        "serverTimestamp": new Date().getTime(),
-        "globalPadId": message.padId,
-        "userId": author,
-        "cookiePrefsToSet": {
-            "fullWidth": false,
-            "hideSidebar": false
-        },
-        "abiwordAvailable": settings.abiwordAvailable(), 
-        "plugins": {
-	  "plugins": plugins.plugins,
-	  "parts": plugins.parts,
-	},
-          "initialChangesets": [] // FIXME: REMOVE THIS SHIT
-
-      }
-
-      //Add a username to the clientVars if one avaiable
-      if(authorName != null)
-      {
-        clientVars.userName = authorName;
-      }
-      
+            
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
       {
@@ -1002,10 +1000,85 @@ function handleClientReady(client, message)
       //This is a normal first connect
       else
       {
-        //Send the clientVars to the Client
-        client.json.send({type: "CLIENT_VARS", data: clientVars});
-        //Save the current revision in sessioninfos, should be the same as in clientVars
-        sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+        //prepare all values for the wire
+        var atext = Changeset.cloneAText(pad.atext);
+        var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
+        var apool = attribsForWire.pool.toJsonable();
+        atext.attribs = attribsForWire.translated;
+        
+        // Warning: never ever send padIds.padId to the client. If the
+        // client is read only you would open a security hole 1 swedish
+        // mile wide...
+        var clientVars = {
+          "accountPrivs": {
+              "maxRevisions": 100
+          },
+          "initialRevisionList": [],
+          "initialOptions": {
+              "guestPolicy": "deny"
+          },
+          "savedRevisions": pad.getSavedRevisions(),
+          "collab_client_vars": {
+              "initialAttributedText": atext,
+              "clientIp": "127.0.0.1",
+              "padId": message.padId,
+              "historicalAuthorData": historicalAuthorData,
+              "apool": apool,
+              "rev": pad.getHeadRevisionNumber(),
+              "globalPadId": message.padId,
+              "time": currentTime,
+          },
+          "colorPalette": ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ff8f8f", "#ffe38f", "#c7ff8f", "#8fffab", "#8fffff", "#8fabff", "#c78fff", "#ff8fe3", "#d97979", "#d9c179", "#a9d979", "#79d991", "#79d9d9", "#7991d9", "#a979d9", "#d979c1", "#d9a9a9", "#d9cda9", "#c1d9a9", "#a9d9b5", "#a9d9d9", "#a9b5d9", "#c1a9d9", "#d9a9cd", "#4c9c82", "#12d1ad", "#2d8e80", "#7485c3", "#a091c7", "#3185ab", "#6818b4", "#e6e76d", "#a42c64", "#f386e5", "#4ecc0c", "#c0c236", "#693224", "#b5de6a", "#9b88fd", "#358f9b", "#496d2f", "#e267fe", "#d23056", "#1a1a64", "#5aa335", "#d722bb", "#86dc6c", "#b5a714", "#955b6a", "#9f2985", "#4b81c8", "#3d6a5b", "#434e16", "#d16084", "#af6a0e", "#8c8bd8"],
+          "clientIp": "127.0.0.1",
+          "userIsGuest": true,
+          "userColor": authorColorId,
+          "padId": message.padId,
+          "initialTitle": "Pad: " + message.padId,
+          "opts": {},
+          // tell the client the number of the latest chat-message, which will be 
+          // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
+          "chatHead": pad.chatHead,
+          "numConnectedUsers": pad2sessions[padIds.padId].length,
+          "isProPad": false,
+          "readOnlyId": padIds.readOnlyPadId,
+          "readonly": padIds.readonly,
+          "serverTimestamp": new Date().getTime(),
+          "globalPadId": message.padId,
+          "userId": author,
+          "cookiePrefsToSet": {
+              "fullWidth": false,
+              "hideSidebar": false
+          },
+          "abiwordAvailable": settings.abiwordAvailable(), 
+          "plugins": {
+            "plugins": plugins.plugins,
+            "parts": plugins.parts,
+          },
+          "initialChangesets": [] // FIXME: REMOVE THIS SHIT
+        }
+
+        //Add a username to the clientVars if one avaiable
+        if(authorName != null)
+        {
+          clientVars.userName = authorName;
+        }
+        
+        //call the clientVars-hook so plugins can modify them before they get sent to the client
+        hooks.aCallAll("clientVars", { clientVars: clientVars, pad: pad }, function ( err, messages ) {
+          if(ERR(err, callback)) return;
+          
+          _.each(messages, function(newVars) {
+            //combine our old object with the new attributes from the hook
+            for(var attr in newVars) {
+              clientVars[attr] = newVars[attr];
+            }
+          });
+        
+          //Send the clientVars to the Client
+          client.json.send({type: "CLIENT_VARS", data: clientVars});
+          //Save the current revision in sessioninfos, should be the same as in clientVars
+          sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+        });
       }
         
       sessioninfos[client.id].author = author;
