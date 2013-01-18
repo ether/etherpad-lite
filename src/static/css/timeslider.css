@@ -32,6 +32,12 @@
   background-image: url(../../static/img/timeslider_background.png);
   height: 63px;
   margin: 0 9px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 #timeslider #timeslider-slider {
   height: 61px;
@@ -139,6 +145,14 @@
 }
 #padmain {
   top: 0px !important
+}
+#editbar{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 #editbarright {
   float: right

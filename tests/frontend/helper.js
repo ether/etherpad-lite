@@ -56,13 +56,13 @@ var helper = {};
     window.document.cookie = "";
   }
 
-  helper.newPad = function(){
+  helper.newPad = function(cb, padName){
     //build opts object
     var opts = {clearCookies: true}
-    if(typeof arguments[0] === 'function'){
-      opts.cb = arguments[0]
+    if(typeof cb === 'function'){
+      opts.cb = cb
     } else {
-      opts = _.defaults(arguments[0], opts);
+      opts = _.defaults(cb, opts);
     }
 
     //clear cookies
@@ -70,7 +70,8 @@ var helper = {};
       helper.clearCookies();
     }
 
-    var padName = "FRONTEND_TEST_" + helper.randomString(20);
+    if(!padName)
+      padName = "FRONTEND_TEST_" + helper.randomString(20);
     $iframe = $("<iframe src='/p/" + padName + "'></iframe>");
     
     //clean up inner iframe references

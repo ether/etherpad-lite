@@ -115,9 +115,9 @@ Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and mak
 
 # Modules created for this project
 
-* [ueberDB](https://github.com/ether/ueberDB) "transforms every database into a object key value store" - manages all database access
-* [channels](https://github.com/ether/channels) "Event channels in node.js" - ensures that ueberDB operations are atomic and in series for each key
-* [async-stacktrace](https://github.com/ether/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
+* [ueberDB](https://github.com/Pita/ueberDB) "transforms every database into a object key value store" - manages all database access
+* [channels](https://github.com/Pita/channels) "Event channels in node.js" - ensures that ueberDB operations are atomic and in series for each key
+* [async-stacktrace](https://github.com/Pita/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
 
 # Donate!
 * [Flattr] (http://flattr.com/thing/71378/Etherpad-Foundation)

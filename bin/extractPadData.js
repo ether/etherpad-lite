@@ -10,13 +10,11 @@ if(process.argv.length != 3)
 //get the padID
 var padId = process.argv[2];
 
-var db, dirty, padManager, pad;
+var db, dirty, padManager, pad, settings;
 var neededDBValues = ["pad:"+padId];
 
 var npm = require("../src/node_modules/npm");
 var async = require("../src/node_modules/async");
-var log4js = require("../src/node_modules/log4js");
-log4js.setGlobalLogLevel("INFO");
 
 async.series([
   // load npm
@@ -35,6 +33,7 @@ async.series([
   },
   // load modules
   function(callback) {
+    settings = require('../src/node/utils/Settings');
     db = require('../src/node/db/DB');
     dirty = require("../src/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
   },

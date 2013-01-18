@@ -2,6 +2,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
 
   process.chdir(npm.root+'/..')
 
+  var settings = require("ep_etherpad-lite/node/utils/Settings");
   var dirty = require("ep_etherpad-lite/node_modules/ueberDB/node_modules/dirty")('var/dirty.db');
   var db = require("ep_etherpad-lite/node/db/DB");
 
