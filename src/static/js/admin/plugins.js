@@ -114,7 +114,11 @@ $(document).ready(function () {
     widget.data('total', data.total);
 
     widget.find('.offset').html(data.query.offset);
-    widget.find('.limit').html(data.query.offset + data.query.limit);
+    if (data.query.offset + data.query.limit > data.total){
+      widget.find('.limit').html(data.total);
+    }else{
+      widget.find('.limit').html(data.query.offset + data.query.limit);
+    }
     widget.find('.total').html(data.total);
 
     widget.find(".results *").remove();
