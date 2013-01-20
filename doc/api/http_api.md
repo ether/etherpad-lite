@@ -61,7 +61,7 @@ Portal submits content into new blog post
 ## Usage
 
 ### API version
-The latest version is `1.2`
+The latest version is `1.2.1`
 
 ### Request Format
 
