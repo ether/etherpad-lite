@@ -129,7 +129,7 @@ $(document).ready(function () {
           row.find("." + attr).html(plugin[attr]);
         }else{
           if(plugin['url']){
-            row.find(".name").html("<a href='"+plugin['url'] +"'>"+plugin[attr]+"</a>");
+            row.find(".name").html("<a target='_blank' href='"+plugin['url'] +"'>"+plugin[attr]+"</a>");
           }else{
             row.find(".name").html(plugin["name"]);
           }
