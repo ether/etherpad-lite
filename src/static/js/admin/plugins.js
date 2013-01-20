@@ -129,6 +129,7 @@ $(document).ready(function () {
           row.find("." + attr).html(plugin[attr]);
         }else{
           if(plugin['url']){
+            plugin['url'] = plugin['url'].replace("registry.","");
             row.find(".name").html("<a target='_blank' href='"+plugin['url'] +"'>"+plugin[attr]+"</a>");
           }else{
             row.find(".name").html(plugin["name"]);
