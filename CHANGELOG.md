@@ -1,3 +1,7 @@
+# 1.2.6
+ * Fix: Package file UeberDB reference
+ * New #users EEJS block for plugins
+
 # 1.2.5
  * Create timeslider EEJS blocks for plugins
  * Allow for "more messages" to be loaded in chat
