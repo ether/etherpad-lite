@@ -46,7 +46,7 @@ exports.createGroupPad = groupManager.createGroupPad;
 /**PADLIST FUNCTION****/
 /**********************/
 
-exports.listAllPads = padManager.getPads;
+exports.listAllPads = padManager.listAllPads;
 
 /**********************/
 /**AUTHOR FUNCTIONS****/
