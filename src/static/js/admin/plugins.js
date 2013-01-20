@@ -124,9 +124,16 @@ $(document).ready(function () {
       var version = '0.0.0';
       // hack to access "versions" property of the npm package object
       for (version in data.results[plugin_name].versions) break;
-
       for (attr in plugin) {
-        row.find("." + attr).html(plugin[attr]);
+        if(attr != "name"){ // Hack to rewrite URLS into name
+          row.find("." + attr).html(plugin[attr]);
+        }else{
+          if(plugin['url']){
+            row.find(".name").html("<a href='"+plugin['url'] +"'>"+plugin[attr]+"</a>");
+          }else{
+            row.find(".name").html(plugin["name"]);
+          }
+        }
       }
       row.find(".version").html(version);
       
