@@ -611,19 +611,16 @@ exports.createDiff = function(padID, startRev, endRev, callback){
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
-console.warn(padID);
     if(err){
       return callback(err);
     }
  
     try {
-console.warn(pad);
       var padDiff = new PadDiff(pad, startRev, endRev);
-console.warn("AFTER");
     } catch(e) {
+      // console.warn(e.stack);
       return callback({stop:e.message});
     }
-/* 
     var html, authors;
  
     async.series([
@@ -650,7 +647,6 @@ console.warn("AFTER");
     ], function(err){
       callback(err, {html: html, authors: authors})
     });
-  */
   });
 }
 
