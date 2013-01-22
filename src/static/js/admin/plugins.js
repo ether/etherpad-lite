@@ -47,13 +47,13 @@ $(document).ready(function () {
     $(".do-install").unbind('click').click(function (e) {
       var row = $(e.target).closest("tr");
       doUpdate = true;
-      socket.emit("install", row.find(".name").html());
+      socket.emit("install", row.find(".name").text());
     });
 
     $(".do-uninstall").unbind('click').click(function (e) {
       var row = $(e.target).closest("tr");
       doUpdate = true;
-      socket.emit("uninstall", row.find(".name").html());
+      socket.emit("uninstall", row.find(".name").text());
     });
 
     $(".do-prev-page").unbind('click').click(function (e) {
@@ -129,15 +129,10 @@ $(document).ready(function () {
       // hack to access "versions" property of the npm package object
       for (version in data.results[plugin_name].versions) break;
       for (attr in plugin) {
-        if(attr != "name"){ // Hack to rewrite URLS into name
-          row.find("." + attr).html(plugin[attr]);
+        if(attr == "name"){ // Hack to rewrite URLS into name
+          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin[attr]+"</a>");
         }else{
-          if(plugin['url']){
-            plugin['url'] = plugin['url'].replace("registry.","");
-            row.find(".name").html("<a target='_blank' href='"+plugin['url'] +"'>"+plugin[attr]+"</a>");
-          }else{
-            row.find(".name").html(plugin["name"]);
-          }
+          row.find("." + attr).html(plugin[attr]);
         }
       }
       row.find(".version").html(version);
