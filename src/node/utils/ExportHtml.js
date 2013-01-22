@@ -92,7 +92,7 @@ function getPadHTML(pad, revNum, callback)
 
 exports.getPadHTML = getPadHTML;
 
-function getHTMLFromAtext(pad, atext)
+exports.getHTMLFromAtext = function(pad, atext)
 {
   var apool = pad.apool();
   var textLines = atext.text.slice(0, -1).split('\n');

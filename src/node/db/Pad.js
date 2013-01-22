@@ -213,6 +213,47 @@ Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targe
   });
 };
 
+Pad.prototype.getRevision = function getRevisionChangeset(revNum, callback) {
+  db.get("pad:"+this.id+":revs:"+revNum, callback);
+};
+
+Pad.prototype.getAllAuthorColors = function getAllAuthorColors(callback){
+  var authors = this.getAllAuthors();
+  var returnTable = {};
+  var colorPalette = authorManager.getColorPalette();
+
+  async.forEach(authors, function(author, callback){
+    authorManager.getAuthorColorId(author, function(err, colorId){
+      if(err){
+        return callback(err);
+      }
+      returnTable[author]=colorPalette[colorId];
+
+      callback();
+    });
+  }, function(err){
+    callback(err, returnTable);
+  });
+};
+
+Pad.prototype.getValidRevisionRange = function getValidRevisionRange(startRev, endRev) {
+  startRev = parseInt(startRev, 10);
+  var head = this.getHeadRevisionNumber();
+  endRev = endRev ? parseInt(endRev, 10) : head;
+  if(isNaN(startRev) || startRev < 0 || startRev > head) {
+    startRev = null;
+  }
+  if(isNaN(endRev) || endRev < startRev) {
+    endRev = null;
+  } else if(endRev > head) {
+    endRev = head;
+  }
+  if(startRev !== null && endRev !== null) {
+    return { startRev: startRev , endRev: endRev }
+  }
+  return null;
+};
+
 Pad.prototype.getKeyRevisionNumber = function getKeyRevisionNumber(revNum) {
   return Math.floor(revNum / 100) * 100;
 };
