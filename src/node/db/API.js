@@ -30,6 +30,7 @@ var async = require("async");
 var exportHtml = require("../utils/ExportHtml");
 var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
+var padDiff = require("../utils/padDiff");
 
 /**********************/
 /**GROUP FUNCTIONS*****/

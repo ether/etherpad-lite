@@ -24,7 +24,6 @@ var fs = require("fs");
 var api = require("../db/API");
 var padManager = require("../db/PadManager");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
-var padDiff = require("../utils/padDiff");
 
 //ensure we have an apikey
 var apikey = null;
