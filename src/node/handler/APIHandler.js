@@ -24,6 +24,7 @@ var fs = require("fs");
 var api = require("../db/API");
 var padManager = require("../db/PadManager");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var padDiff = require("../utils/padDiff");
 
 //ensure we have an apikey
 var apikey = null;
@@ -144,6 +145,43 @@ var version =
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
   , "listAllPads"               : []
+  , "createPad"                 : ["padID", "text"]
+  , "createGroupPad"            : ["groupID", "padName", "text"]
+  , "createAuthor"              : ["name"]
+  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
+  , "listPadsOfAuthor"          : ["authorID"]
+  , "createSession"             : ["groupID", "authorID", "validUntil"]
+  , "deleteSession"             : ["sessionID"]
+  , "getSessionInfo"            : ["sessionID"]
+  , "listSessionsOfGroup"       : ["groupID"]
+  , "listSessionsOfAuthor"      : ["authorID"]
+  , "getText"                   : ["padID", "rev"]
+  , "setText"                   : ["padID", "text"]
+  , "getHTML"                   : ["padID", "rev"]
+  , "setHTML"                   : ["padID", "html"]
+  , "getRevisionsCount"         : ["padID"]
+  , "getLastEdited"             : ["padID"]
+  , "deletePad"                 : ["padID"]
+  , "getReadOnlyID"             : ["padID"]
+  , "setPublicStatus"           : ["padID", "publicStatus"]
+  , "getPublicStatus"           : ["padID"]
+  , "setPassword"               : ["padID", "password"]
+  , "isPasswordProtected"       : ["padID"]
+  , "listAuthorsOfPad"          : ["padID"]
+  , "padUsersCount"             : ["padID"]
+  , "getAuthorName"             : ["authorID"]
+  , "padUsers"                  : ["padID"]
+  , "sendClientsMessage"        : ["padID", "msg"]
+  , "listAllGroups"             : []
+  , "checkToken"                : []
+  }
+, "1.2.2":
+  { "createGroup"               : []
+  , "createGroupIfNotExistsFor" : ["groupMapper"]
+  , "deleteGroup"               : ["groupID"]
+  , "listPads"                  : ["groupID"]
+  , "listAllPads"               : []
+  , "createDiff"		: ["padID", "startRev", "endRev"]
   , "createPad"                 : ["padID", "text"]
   , "createGroupPad"            : ["groupID", "padName", "text"]
   , "createAuthor"              : ["name"]
