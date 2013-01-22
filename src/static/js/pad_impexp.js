@@ -212,10 +212,8 @@ var padimpexp = (function()
 
       //get /p/padname
       var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname);
-      //get http://example.com/p/padname
-      var pad_root_url = document.location.href.replace(document.location.pathname, pad_root_path);
-      //strip out params IE ?noColor=true
-      pad_root_url = pad_root_url.substring(0, pad_root_url.indexOf('?'));
+      //get http://example.com/p/padname without Params
+      var pad_root_url = document.location.protocol + '//' + document.location.host + document.location.pathname;
 
       //i10l buttom import
       $('#importsubmitinput').val(html10n.get("pad.impexp.importbutton"));
