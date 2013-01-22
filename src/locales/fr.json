@@ -87,6 +87,7 @@
 	"pad.share.emebdcode": "Lien \u00e0 int\u00e9grer",
 	"pad.chat": "Chat",
 	"pad.chat.title": "Ouvrir le chat associ\u00e9 \u00e0 ce pad.",
+	"pad.chat.loadmessages": "Charger davantage de messages",
 	"timeslider.pageTitle": "Historique dynamique de {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Retour \u00e0 ce Pad.",
 	"timeslider.toolbar.authors": "Auteurs :",

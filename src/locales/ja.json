@@ -78,6 +78,7 @@
 	"pad.share.emebdcode": "\u57cb\u3081\u8fbc\u307f\u7528 URL",
 	"pad.chat": "\u30c1\u30e3\u30c3\u30c8",
 	"pad.chat.title": "\u3053\u306e\u30d1\u30c3\u30c9\u306e\u30c1\u30e3\u30c3\u30c8\u3092\u958b\u304d\u307e\u3059\u3002",
+	"pad.chat.loadmessages": "\u305d\u306e\u4ed6\u306e\u30e1\u30c3\u30bb\u30fc\u30b8\u3092\u8aad\u307f\u8fbc\u3080",
 	"timeslider.pageTitle": "{{appTitle}} \u30bf\u30a4\u30e0\u30b9\u30e9\u30a4\u30c0\u30fc",
 	"timeslider.toolbar.returnbutton": "\u30d1\u30c3\u30c9\u306b\u623b\u308b",
 	"timeslider.toolbar.authors": "\u4f5c\u8005:",
