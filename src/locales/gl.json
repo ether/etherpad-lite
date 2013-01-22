@@ -78,6 +78,7 @@
 	"pad.share.emebdcode": "Incorporar o URL",
 	"pad.chat": "Chat",
 	"pad.chat.title": "Abrir o chat deste documento.",
+	"pad.chat.loadmessages": "Cargar m\u00e1is mensaxes",
 	"timeslider.pageTitle": "Li\u00f1a do tempo de {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Volver ao documento",
 	"timeslider.toolbar.authors": "Autores:",

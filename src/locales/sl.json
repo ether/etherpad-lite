@@ -1,4 +1,9 @@
 {
+	"@metadata": {
+		"authors": [
+			"Mateju"
+		]
+	},
 	"index.newPad": "Nov dokument",
 	"index.createOpenPad": "ali pa odpri dokument z imenom:",
 	"pad.toolbar.bold.title": "Krepko (Ctrl-B)",
@@ -108,10 +113,5 @@
 	"pad.impexp.uploadFailed": "Nalaganje je spodletelo, poskusite znova.",
 	"pad.impexp.importfailed": "Uvoz je spodletel.",
 	"pad.impexp.copypaste": "Vsebino kopirajte in prilepite.",
-	"pad.impexp.exportdisabled": "Izvoz v zapis {{type}} je onemogo\u010den. Za ve\u010d podrobnosti stopite v stik s skrbnikom.",
-	"@metadata": {
-		"authors": [
-			"Mateju"
-		]
-	}
+	"pad.impexp.exportdisabled": "Izvoz v zapis {{type}} je onemogo\u010den. Za ve\u010d podrobnosti stopite v stik s skrbnikom."
 }

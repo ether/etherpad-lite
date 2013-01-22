@@ -78,6 +78,7 @@
 	"pad.share.emebdcode": "URL insluiten",
 	"pad.chat": "Chatten",
 	"pad.chat.title": "Chat voor dit pad opnenen",
+	"pad.chat.loadmessages": "Meer berichten laden",
 	"timeslider.pageTitle": "Tijdlijn voor {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Terug naar pad",
 	"timeslider.toolbar.authors": "Auteurs:",

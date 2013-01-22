@@ -78,6 +78,7 @@
 	"pad.share.emebdcode": "B\u00e4dda in URL",
 	"pad.chat": "Chatt",
 	"pad.chat.title": "\u00d6ppna chatten f\u00f6r detta block.",
+	"pad.chat.loadmessages": "L\u00e4s in fler meddelanden",
 	"timeslider.pageTitle": "Tidsreglage f\u00f6r {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "\u00c5terv\u00e4nd till blocket",
 	"timeslider.toolbar.authors": "F\u00f6rfattare:",
