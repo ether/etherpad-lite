@@ -30,7 +30,7 @@ var async = require("async");
 var exportHtml = require("../utils/ExportHtml");
 var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
-var padDiff = require("../utils/padDiff");
+var PadDiff = require("../utils/padDiff");
 
 /**********************/
 /**GROUP FUNCTIONS*****/
@@ -611,16 +611,19 @@ exports.createDiff = function(padID, startRev, endRev, callback){
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
+console.warn(padID);
     if(err){
       return callback(err);
     }
  
     try {
+console.warn(pad);
       var padDiff = new PadDiff(pad, startRev, endRev);
+console.warn("AFTER");
     } catch(e) {
       return callback({stop:e.message});
     }
- 
+/* 
     var html, authors;
  
     async.series([
@@ -647,6 +650,7 @@ exports.createDiff = function(padID, startRev, endRev, callback){
     ], function(err){
       callback(err, {html: html, authors: authors})
     });
+  */
   });
 }
 

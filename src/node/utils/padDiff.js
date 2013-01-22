@@ -1,5 +1,6 @@
 exports.createDiff = function(padID, startRev, endRev, callback){
 console.warn("WTF");
+
   //check if rev is a number
   if(startRev !== undefined && typeof startRev != "number")
   {
