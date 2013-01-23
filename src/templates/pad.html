@@ -3,7 +3,10 @@
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
 %>
 <!doctype html>
+<% e.begin_block("htmlHead"); %>
 <html>
+<% e.end_block(); %>
+
         <title><%=settings.title%></title>
         <script>
           /*
