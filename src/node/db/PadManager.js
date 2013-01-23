@@ -236,3 +236,23 @@ exports.unloadPad = function(padId)
   if(globalPads.get(padId))
     globalPads.remove(padId);
 }
+
+//checks if a pad is a "team pad"
+exports.isTeamPad = function(padId)
+{
+  var isTeamPad = false;
+  db.get("pad:"+padId, function(err, value)
+  {
+    if(ERR(err)) return;
+
+    if(value != null && value.atext && value.teamStatus){
+      isTeamPad = true;
+    }
+    else
+    {
+      isTeamPad = false;
+    }
+  });
+
+  return isTeamPad;
+}

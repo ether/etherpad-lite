@@ -238,7 +238,14 @@ exports.handleMessage = function(client, message)
         // our "sessions" "connections".
         // FIXME: Use a hook instead
         // FIXME: Allow to override readwrite access with readonly
-        securityManager.checkAccess(message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+        // FIXME: always use httponly session cookies
+        var sessionID = null;
+        if (padManager.isTeamPad(message.padID)) {
+            sessionID = message.sessionid;
+        } else {
+            sessionID = client.handshake.sessionID;
+        }
+        securityManager.checkAccess(message.padId, sessionID, message.token, message.password, function(err, statusObject)
         {
           if(ERR(err, callback)) return;
 
@@ -874,7 +881,14 @@ function handleClientReady(client, message)
       // our "sessions" "connections".
       // FIXME: Use a hook instead
       // FIXME: Allow to override readwrite access with readonly
-      securityManager.checkAccess (padIds.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+      // FIXME: always use httponly session cookies
+      var sessionID = null;
+      if (padManager.isTeamPad(message.padID)) {
+          sessionID = message.sessionid;
+      } else {
+          sessionID = client.handshake.sessionID;
+      }
+      securityManager.checkAccess (padIds.padId, sessionID, message.token, message.password, function(err, statusObject)
       {
         if(ERR(err, callback)) return;
         

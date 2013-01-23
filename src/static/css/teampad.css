@@ -1,0 +1,86 @@
+body {
+  margin: 0;
+  color: #333;
+  font: 14px helvetica, sans-serif;
+  background: #ddd;
+  background: -webkit-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+  background: -moz-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+  background: -ms-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+  background: -o-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+  border-top: 8px solid rgba(51,51,51,.8);
+}
+#wrapper {
+  margin-top: 160px;
+  padding: 15px;
+  background: #fff;
+  opacity: .9;
+  box-shadow: 0px 1px 8px rgba(0,0,0,0.3);
+  max-width: 700px;
+  margin: auto;
+  border-radius: 0 0 7px 7px;
+}
+h1 {
+  font-size: 29px;
+}
+h2 {
+  font-size: 24px;
+}
+.separator {
+  margin: 10px 0;
+  height: 1px;
+  background: #aaa;
+  background: -webkit-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
+  background: -moz-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
+  background: -ms-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
+  background: -o-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
+}
+form {
+  margin-bottom: 0;
+}
+#inner {
+  width: 300px;
+  margin: 0 auto;
+}
+input {
+  font-weight: bold;
+  font-size: 15px;
+}
+input[type="button"] {
+  padding: 4px 6px;
+  margin: 0;
+}
+input[type="button"].do-install, input[type="button"].do-uninstall {
+  float: right;
+  width: 100px;
+}
+input[type="button"]#do-search {
+  display: block;
+}
+input[type="text"] {
+  border-radius: 3px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 10px;
+  *padding: 0; /* IE7 hack */
+  width: 100%;
+  outline: none;
+  border: 1px solid #ddd;
+  margin: 0 0 5px 0;
+  max-width: 500px;
+}
+table {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  border-spacing: 0;
+  width: 100%;
+  margin: 20px 0;
+}
+table thead tr {
+  background: #eee;
+}
+td, th {
+  padding: 5px;
+}
+.template {
+  display: none;
+}
