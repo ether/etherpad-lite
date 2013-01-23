@@ -53,7 +53,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   args.app.post('/teampad/createteam', function(req, res) {
-    var sessionID = req.cookies.express_sid,
+    var sessionID = req.signedCookies.express_sid,
         currentUser = null,
         signedIn = false,
         teamName = null,
@@ -91,7 +91,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   args.app.post('/teampad/createpad', function(req, res) {
-    var sessionID = req.cookies.express_sid;
+    var sessionID = req.signedCookies.express_sid;
 
     var teamName = null,
         padName = null,
@@ -134,7 +134,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   args.app.post('/teampad/addaccount', function(req, res) {
-    var sessionID = req.cookies.express_sid,
+    var sessionID = req.signedCookies.express_sid,
         currentUser = null,
         signedIn = false,
         teamName = null,
@@ -168,7 +168,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   args.app.get('/teampad', function(req, res) { 
-    var sessionID = req.cookies.express_sid;
+    var sessionID = req.signedCookies.express_sid;
     var currentUser = null;
     var signedIn = false;
 
@@ -206,7 +206,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   args.app.get('/teampad/:teamName', function(req, res) { 
-    var sessionID = req.cookies.express_sid;
+    var sessionID = req.signedCookies.express_sid;
     var currentUser = null;
     var signedIn = false;
 
@@ -253,7 +253,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // TODO implement, for now we are linking to normal pads via templates
   args.app.get('/teampad/:teamName/:padName', function(req, res) { 
-    var sessionID = req.cookies.express_sid;
+    var sessionID = req.signedCookies.express_sid;
     var currentUser = null;
     var signedIn = false;
 
