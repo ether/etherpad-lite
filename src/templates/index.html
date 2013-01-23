@@ -63,9 +63,24 @@
               background: -o-linear-gradient(#fff,#ccc);
               box-shadow: 0px 1px 8px rgba(0,0,0,0.3);
             }
-            #inner {
-              width: 300px;
-              margin: 0 auto;
+            #inner,
+            #footer {
+               margin:0 auto;
+               width: 300px;
+            }
+            #footer {
+               margin-top: 160px;
+               padding: 15px;
+               text-align: center;
+            }
+            #teampads {
+               color: inherit;
+               font-size: 24px;
+               text-decoration: none;
+               letter-spacing: -2px;
+            }
+            #teampads::after {
+                content: ' »';
             }
             #button {
               margin: 0 auto;
@@ -165,10 +180,8 @@
         <% e.end_block(); %>
         </div>
 
-        <div id="wrapper">
-            <div id="inner">
-                <a id="teampads" href="/teampad">Manage TeamPads</a>
-            </div>
+        <div id="footer">
+            <a id="teampads" href="/teampad">Manage TeamPads</a>
         </div>
 
         <script src="static/custom/index.js"></script>

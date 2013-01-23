@@ -37,9 +37,24 @@ h2 {
 form {
   margin-bottom: 0;
 }
-#inner {
-  width: 300px;
-  margin: 0 auto;
+#inner,
+#footer {
+   margin:0 auto;
+   width: 300px;
+}
+#footer {
+   margin-top: 160px;
+   padding: 15px;
+   text-align: center;
+}
+#teampads {
+   color: inherit;
+   font-size: 24px;
+   text-decoration: none;
+   letter-spacing: -2px;
+}
+#teampads::after {
+    content: ' »';
 }
 input {
   font-weight: bold;
