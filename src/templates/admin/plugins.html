@@ -18,12 +18,16 @@
         </div>
       <% } %>
 
-
        <div class="menu">
         <h1>Etherpad lite</h1> 
         <li><a href="plugins">Plugin manager</a> </li>
         <li><a href="settings">Settings</a> </li>
         <li><a href="plugins/info">Troubleshooting information</a> </li>
+        
+        <div id="progress">
+          <p><img src="../static/img/loading.gif" alt=""/>&nbsp;&nbsp;<span class="message"></span> <a class="showhistory" href="javascript:void(0)">(show&nbsp;progress)</a></p>
+          <div class="history"></div>
+        </div>
       </div>
 
       <div class="innerwrapper">
@@ -53,11 +57,12 @@
 
       <div class="paged listing search-results">
         <div class="separator"></div>
-        <h2>Search for plugins to install</h2>
+        
+        <h2>Available plugins</h2>
         <form>
-          <input type="text" name="search" placeholder="Search term" id="search-query">
-          <input type="button" value="Search" id="do-search">
+          <input type="text" name="search" placeholder="Search for plugins to install" id="search-query">
         </form>
+
         <table>
           <thead>
             <tr>
@@ -86,16 +91,7 @@
       </div>
       
       </div>
-
-      <div id="progress" class="dialog">
-        <h1 class="title">
-          Please wait: <span class="message"></span>
-        <input type="button" class="close" value="Close">
-        </h1>
-        <div class="history"></div>
-      </div>
     </div>
-    
     <div id="topborder"></div>
   </body>
 </html>
