@@ -68,10 +68,6 @@ $(document).ready(function () {
       }
       search();
     });
-    
-    $('#progress .showhistory').unbind('click').click(function() {
-        $("#progress .history").toggle()
-    });
   }
 
   updateHandlers();
@@ -79,25 +75,22 @@ $(document).ready(function () {
   socket.on('progress', function (data) {
     if (data.progress > 0 && $('#progress').data('progress') > data.progress) return;
 
-    $("#progress .history").hide();
     $("#progress").show();
 
     $('#progress').data('progress', data.progress);
 
     var message = "Unknown status";
     if (data.message) {
-      message = "<span class='status'>" + data.message.toString() + "</span>";
+      message = data.message.toString();
     }
     if (data.error) {
       data.progress = 1;
     }
     
     $("#progress .message").html(message);
-    $("#progress .history").append("<div>" + message + "</div>");
 
     if (data.progress >= 1) {
       $("#progress").hide();
-      $("#progress .history").html('');
       
       if (data.error) {
         alert('An error occurred: '+data.error+' -- the server log might know more...');
