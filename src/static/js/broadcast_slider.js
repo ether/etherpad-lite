@@ -361,7 +361,11 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           $(self).css('left', newloc);
           // if(getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width()-2)))
           setSliderPosition(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
-          self.currentLoc = parseInt($(self).css('left'));
+          if(parseInt($(self).css('left')) < 2){
+            $(self).css('left', '2px');
+          }else{
+            self.currentLoc = parseInt($(self).css('left'));
+          }
         });
       })
 
