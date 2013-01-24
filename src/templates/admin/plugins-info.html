@@ -10,21 +10,30 @@
   </head>
   <body>
     <div id="wrapper">
-      <h1>Etherpad Lite</h1>
-      <div class="separator"></div>
+      <div class="menu">
+        <h1>Etherpad lite</h1> 
+        <li><a href="../plugins">Plugin manager</a> </li>
+        <li><a href="../settings">Settings</a> </li>
+        <li><a href="../plugins/info">Troubleshooting information</a> </li>
+      </div>
 
-      <h2>Installed plugins</h2>
-      <pre><%- plugins.formatPlugins().replace(", ","\n") %></pre>
+      <div class="innerwrapper">
 
-      <h2>Installed parts</h2>
-      <pre><%= plugins.formatParts() %></pre>
+        <h2>Installed plugins</h2>
+        <pre><%- plugins.formatPlugins().replace(", ","\n") %></pre>
 
-      <h2>Installed hooks</h2>
-      <h3>Server side hooks</h3>
-      <div><%- plugins.formatHooks() %></div>
+        <h2>Installed parts</h2>
+        <pre><%= plugins.formatParts() %></pre>
 
-      <h3>Client side hooks</h3>
-      <div><%- plugins.formatHooks("client_hooks") %></div>
+        <h2>Installed hooks</h2>
+        <h3>Server side hooks</h3>
+        <div><%- plugins.formatHooks() %></div>
+
+        <h3>Client side hooks</h3>
+        <div><%- plugins.formatHooks("client_hooks") %></div>
+        
+      </div>
     </div>
+    <div id="topborder"></div>
   </body>
 </html>

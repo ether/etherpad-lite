@@ -19,11 +19,14 @@
       <% } %>
 
 
-      <h1>Etherpad Lite</h1>
+       <div class="menu">
+        <h1>Etherpad lite</h1> 
+        <li><a href="plugins">Plugin manager</a> </li>
+        <li><a href="settings">Settings</a> </li>
+        <li><a href="plugins/info">Troubleshooting information</a> </li>
+      </div>
 
-      <a href="plugins/info">Technical information on installed plugins</a>
-
-      <div class="separator"></div>
+      <div class="innerwrapper">
       <h2>Installed plugins</h2>
       <table>
         <thead>
@@ -81,6 +84,8 @@
         <span class="offset"></span>..<span class="limit"></span> of <span class="total"></span>.
         <input type="button" value=">>" class="do-next-page">
       </div>
+      
+      </div>
 
       <div id="progress" class="dialog">
         <h1 class="title">
@@ -90,5 +95,7 @@
         <div class="history"></div>
       </div>
     </div>
+    
+    <div id="topborder"></div>
   </body>
 </html>
