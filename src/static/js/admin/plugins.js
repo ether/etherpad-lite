@@ -47,13 +47,13 @@ $(document).ready(function () {
     $(".do-install").unbind('click').click(function (e) {
       var row = $(e.target).closest("tr");
       doUpdate = true;
-      socket.emit("install", row.find(".name").html());
+      socket.emit("install", row.find(".name").text());
     });
 
     $(".do-uninstall").unbind('click').click(function (e) {
       var row = $(e.target).closest("tr");
       doUpdate = true;
-      socket.emit("uninstall", row.find(".name").html());
+      socket.emit("uninstall", row.find(".name").text());
     });
 
     $(".do-prev-page").unbind('click').click(function (e) {
@@ -114,7 +114,11 @@ $(document).ready(function () {
     widget.data('total', data.total);
 
     widget.find('.offset').html(data.query.offset);
-    widget.find('.limit').html(data.query.offset + data.query.limit);
+    if (data.query.offset + data.query.limit > data.total){
+      widget.find('.limit').html(data.total);
+    }else{
+      widget.find('.limit').html(data.query.offset + data.query.limit);
+    }
     widget.find('.total').html(data.total);
 
     widget.find(".results *").remove();
@@ -124,9 +128,12 @@ $(document).ready(function () {
       var version = '0.0.0';
       // hack to access "versions" property of the npm package object
       for (version in data.results[plugin_name].versions) break;
-
       for (attr in plugin) {
-        row.find("." + attr).html(plugin[attr]);
+        if(attr == "name"){ // Hack to rewrite URLS into name
+          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin[attr]+"</a>");
+        }else{
+          row.find("." + attr).html(plugin[attr]);
+        }
       }
       row.find(".version").html(version);
       
@@ -144,7 +151,11 @@ $(document).ready(function () {
       var row = $("#installed-plugin-template").clone();
 
       for (attr in plugin.package) {
-        row.find("." + attr).html(plugin.package[attr]);
+        if(attr == "name"){ // Hack to rewrite URLS into name
+          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin.package['name']+"'>"+plugin.package[attr]+"</a>");
+        }else{
+          row.find("." + attr).html(plugin.package[attr]);
+        }
       }
       $("#installed-plugins").append(row);
     }

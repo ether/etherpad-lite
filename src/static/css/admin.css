@@ -128,3 +128,13 @@ td, th {
 #response{
   display:inline;
 }
+
+a:link, a:visited, a:hover, a:focus {
+  color: #333333;
+  text-decoration: none;
+  border-bottom: #333333 1px dotted;
+}
+
+a:focus, a:hover {
+  border-bottom: #333333 1px solid;
+}
