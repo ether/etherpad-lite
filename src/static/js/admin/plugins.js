@@ -151,7 +151,11 @@ $(document).ready(function () {
       var row = $("#installed-plugin-template").clone();
 
       for (attr in plugin.package) {
-        row.find("." + attr).html(plugin.package[attr]);
+        if(attr == "name"){ // Hack to rewrite URLS into name
+          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin.package['name']+"'>"+plugin.package[attr]+"</a>");
+        }else{
+          row.find("." + attr).html(plugin.package[attr]);
+        }
       }
       $("#installed-plugins").append(row);
     }
