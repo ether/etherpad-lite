@@ -150,6 +150,7 @@
         <link href="static/custom/index.css" rel="stylesheet"> 
 
         <div id="wrapper">
+        <% e.begin_block("indexWrapper"); %>
             <div id="inner">
                 <div id="button" onclick="go2Random()" data-l10n-id="index.newPad"></div>
                 <div id="label" data-l10n-id="index.createOpenPad"></div> 
@@ -158,6 +159,7 @@
                     <button type="submit">OK</button>
                 </form>
             </div>
+        <% e.end_block(); %>
         </div>
 
         <script src="static/custom/index.js"></script>
