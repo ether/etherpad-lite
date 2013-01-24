@@ -25,10 +25,6 @@ $(document).ready(function () {
   }
 
   function updateHandlers() {
-    $("#progress.dialog .close").unbind('click').click(function () {
-      $("#progress.dialog").hide();
-    });
-
     $("form").submit(function(){
       var query = $('.search-results').data('query');
       query.pattern = $("#search-query").val();
@@ -36,8 +32,8 @@ $(document).ready(function () {
       search();
       return false;
     });
-
-    $("#do-search").unbind('click').click(function () {
+    
+    $("#search-query").unbind('keyup').keyup(function () {
       var query = $('.search-results').data('query');
       query.pattern = $("#search-query").val();
       query.offset = 0;
@@ -72,37 +68,44 @@ $(document).ready(function () {
       }
       search();
     });
+    
+    $('#progress .showhistory').unbind('click').click(function() {
+        $("#progress .history").toggle()
+    });
   }
 
   updateHandlers();
 
   socket.on('progress', function (data) {
-    if (data.progress > 0 && $('#progress.dialog').data('progress') > data.progress) return;
+    if (data.progress > 0 && $('#progress').data('progress') > data.progress) return;
 
-    $("#progress.dialog .close").hide();
-    $("#progress.dialog").show();
+    $("#progress .history").hide();
+    $("#progress").show();
 
-    $('#progress.dialog').data('progress', data.progress);
+    $('#progress').data('progress', data.progress);
 
     var message = "Unknown status";
     if (data.message) {
       message = "<span class='status'>" + data.message.toString() + "</span>";
     }
     if (data.error) {
-      message = "<span class='error'>" + data.error.toString() + "<span>";            
+      data.progress = 1;
     }
-    $("#progress.dialog .message").html(message);
-    $("#progress.dialog .history").append("<div>" + message + "</div>");
+    
+    $("#progress .message").html(message);
+    $("#progress .history").append("<div>" + message + "</div>");
 
     if (data.progress >= 1) {
+      $("#progress").hide();
+      $("#progress .history").html('');
+      
       if (data.error) {
-        $("#progress.dialog .close").show();
-      } else {
+        alert('An error occurred: '+data.error+' -- the server log might know more...');
+      }else {
         if (doUpdate) {
           doUpdate = false;
           socket.emit("load");
         }
-        $("#progress.dialog").hide();
       }
     }
   });

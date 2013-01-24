@@ -86,9 +86,6 @@ input[type="button"].do-install, input[type="button"].do-uninstall {
   float: right;
   width: 100px;
 }
-input[type="button"]#do-search {
-  display: block;
-}
 input[type="text"] {
   border-radius: 3px;
   box-sizing: border-box;
@@ -117,41 +114,16 @@ td, th {
 .template {
   display: none;
 }
-.dialog {
-  display: none;
+#progress {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 700px;
-  height: 500px;
-  margin-left: -350px;
-  margin-top: -250px;
-  border: 3px solid #999;
-  background: #eee;
+  bottom: 50px;
 }
-.dialog .title {
-  margin: 0;
-  padding: 2px;
-  border-bottom: 3px solid #999;
-  font-size: 24px;
-  line-height: 24px;
-  height: 24px;
-  overflow: hidden;
-}
-.dialog .title .close {
+#progress .historylink {
   float: right;
-  padding: 1px 10px;
 }
-.dialog .history {
-  background: #222;
-  color: #eee;
-  position: absolute;
-  top: 41px;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
-  padding: 2px;
-  overflow: auto;
+#progress .history {
+  white-space: pre;
+  font-family: monospace;
 }
 .settings {
   margin-top:10px;
