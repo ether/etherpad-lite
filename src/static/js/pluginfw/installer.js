@@ -15,7 +15,10 @@ var withNpm = function (npmfn, final, cb) {
       cb({progress: 0.5, message:message.msg + ": " + message.pref});
     });
     npmfn(function (er, data) {
-      if (er) return cb({progress:1, error:er.code + ": " + er.path});
+      if (er) {
+        console.error(er);
+        return cb({progress:1, error: er.message});
+      }
       if (!data) data = {};
       data.progress = 1;
       data.message = "Done.";
