@@ -78,11 +78,12 @@ var padeditor = (function()
       
       html10n.bind('localized', function() {
         $("#languagemenu").val(html10n.getLanguage());
+        // translate the value of 'unnamed' and 'Enter your name' textboxes in the userlist
         $('input[data-l10n-id]').each(function(key, input)
           {
             input = $(input);
             if(input.hasClass("editempty"))
-              input.val(_(input.attr("data-l10n-id")));
+              input.val(html10n.get(input.attr("data-l10n-id")));
           });
       })
       $("#languagemenu").val(html10n.getLanguage());

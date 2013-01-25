@@ -95,6 +95,8 @@
   "timeslider.month.october": "October",
   "timeslider.month.november": "November",
   "timeslider.month.december": "December",
+  "timeslider.unnamedauthor": "{{num}} unnamed author",
+  "timeslider.unnamedauthors": "{{num}} unnamed authors",
   "pad.savedrevs.marked": "This revision is now marked as a saved revision",
   "pad.userlist.entername": "Enter your name",
   "pad.userlist.unnamed": "unnamed",
