@@ -7,17 +7,50 @@ body {
   background: -moz-radial-gradient(circle,#aaa,#eee 60%) center fixed;
   background: -ms-radial-gradient(circle,#aaa,#eee 60%) center fixed;
   background: -o-radial-gradient(circle,#aaa,#eee 60%) center fixed;
-  border-top: 8px solid rgba(51,51,51,.8);
 }
-#wrapper {
-  margin-top: 160px;
+
+#topborder {
+     border-top: 8px solid rgba(51, 51, 51, 0.8);
+     position: fixed;
+     top: 0px;
+     width: 100%;
+}
+
+div.menu {
+   background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.75);
+   box-shadow: 0px -4px 4px rgba(0, 0, 0, 0.3);
+   display: block;
+   float: left;
+   height: 100%;
+   padding: 15px;
+   position: fixed;
+   width: 220px;
+}
+
+div.menu li {
+  list-style: none;
+  margin-left: 3px;
+  line-height: 1.6
+}
+
+div.innerwrapper {
+  display: block;
+  float: right;
+  opacity: 0.9;
   padding: 15px;
-  background: #fff;
-  opacity: .9;
-  box-shadow: 0px 1px 8px rgba(0,0,0,0.3);
-  max-width: 700px;
-  margin: auto;
+  width: 860px;
   border-radius: 0 0 7px 7px;
+}
+
+#wrapper {
+  background: none repeat scroll 0px 0px #FFFFFF;
+  box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.3);
+  margin: auto;
+  max-width: 1150px;
+  min-height: 100%;
+  overflow: auto;
+  padding-left: 15px;
+  opacity: .9;
 }
 h1 {
   font-size: 29px;
@@ -53,9 +86,6 @@ input[type="button"].do-install, input[type="button"].do-uninstall {
   float: right;
   width: 100px;
 }
-input[type="button"]#do-search {
-  display: block;
-}
 input[type="text"] {
   border-radius: 3px;
   box-sizing: border-box;
@@ -84,41 +114,9 @@ td, th {
 .template {
   display: none;
 }
-.dialog {
-  display: none;
+#progress {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 700px;
-  height: 500px;
-  margin-left: -350px;
-  margin-top: -250px;
-  border: 3px solid #999;
-  background: #eee;
-}
-.dialog .title {
-  margin: 0;
-  padding: 2px;
-  border-bottom: 3px solid #999;
-  font-size: 24px;
-  line-height: 24px;
-  height: 24px;
-  overflow: hidden;
-}
-.dialog .title .close {
-  float: right;
-  padding: 1px 10px;
-}
-.dialog .history {
-  background: #222;
-  color: #eee;
-  position: absolute;
-  top: 41px;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
-  padding: 2px;
-  overflow: auto;
+  bottom: 50px;
 }
 .settings {
   margin-top:10px;
@@ -127,4 +125,14 @@ td, th {
 }
 #response{
   display:inline;
+}
+
+a:link, a:visited, a:hover, a:focus {
+  color: #333333;
+  text-decoration: none;
+  border-bottom: #333333 1px dotted;
+}
+
+a:focus, a:hover {
+  border-bottom: #333333 1px solid;
 }

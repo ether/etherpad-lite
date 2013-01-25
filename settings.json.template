@@ -101,5 +101,5 @@
   "loglevel": "INFO",
 
   // restrict socket.io transport methods
-  "socketTransportProtocols" : ['xhr-polling', 'jsonp-polling', 'htmlfile']
+  "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"]
 }

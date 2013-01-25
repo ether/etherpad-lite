@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Plugin manager</title>
+    <title>Plugin manager - Etherpad lite</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <link rel="stylesheet" href="../static/css/admin.css">
     <script src="../static/js/jquery.js"></script>
@@ -18,12 +18,16 @@
         </div>
       <% } %>
 
+       <div class="menu">
+        <h1>Etherpad lite</h1> 
+        <li><a href="plugins">Plugin manager</a> </li>
+        <li><a href="settings">Settings</a> </li>
+        <li><a href="plugins/info">Troubleshooting information</a> </li>
+        
+        <div id="progress"><img src="../static/img/loading.gif" alt=""/>&nbsp;&nbsp;<span class="message"></span></div>
+      </div>
 
-      <h1>Etherpad Lite</h1>
-
-      <a href="plugins/info">Technical information on installed plugins</a>
-
-      <div class="separator"></div>
+      <div class="innerwrapper">
       <h2>Installed plugins</h2>
       <table>
         <thead>
@@ -50,11 +54,12 @@
 
       <div class="paged listing search-results">
         <div class="separator"></div>
-        <h2>Search for plugins to install</h2>
+        
+        <h2>Available plugins</h2>
         <form>
-          <input type="text" name="search" placeholder="Search term" id="search-query">
-          <input type="button" value="Search" id="do-search">
+          <input type="text" name="search" placeholder="Search for plugins to install" id="search-query">
         </form>
+
         <table>
           <thead>
             <tr>
@@ -81,14 +86,9 @@
         <span class="offset"></span>..<span class="limit"></span> of <span class="total"></span>.
         <input type="button" value=">>" class="do-next-page">
       </div>
-
-      <div id="progress" class="dialog">
-        <h1 class="title">
-          Please wait: <span class="message"></span>
-        <input type="button" class="close" value="Close">
-        </h1>
-        <div class="history"></div>
+      
       </div>
     </div>
+    <div id="topborder"></div>
   </body>
 </html>
