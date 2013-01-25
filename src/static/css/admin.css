@@ -118,13 +118,6 @@ td, th {
   position: absolute;
   bottom: 50px;
 }
-#progress .historylink {
-  float: right;
-}
-#progress .history {
-  white-space: pre;
-  font-family: monospace;
-}
 .settings {
   margin-top:10px;
   width:100%;  
