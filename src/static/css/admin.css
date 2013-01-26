@@ -84,7 +84,7 @@ input[type="button"] {
   padding: 4px 6px;
   margin: 0;
 }
-input[type="button"].do-install, input[type="button"].do-uninstall {
+table input[type="button"] {
   float: right;
   width: 100px;
 }

@@ -2,6 +2,9 @@ var path = require('path');
 var eejs = require('ep_etherpad-lite/node/eejs');
 var installer = require('ep_etherpad-lite/static/js/pluginfw/installer');
 var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+var _ = require('underscore');
+var semver = require('semver');
+var async = require('async');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/admin/plugins', function(req, res) {
@@ -25,8 +28,26 @@ exports.socketio = function (hook_name, args, cb) {
     if (!socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
 
     socket.on("load", function (query) {
+      // send currently installed plugins
       socket.emit("installed-results", {results: plugins.plugins});
+      socket.emit("progress", {progress:1});
     });
+    
+    socket.on("checkUpdates", function() {
+      socket.emit("progress", {progress:0, message:'Checking for plugin updates...'});
+      // Check plugins for updates
+      installer.search({offset: 0, pattern: '', limit: 500}, /*useCache:*/true, function(data) { // hacky
+        if (!data.results) return;
+        var updatable = _(plugins.plugins).keys().filter(function(plugin) {
+          if(!data.results[plugin]) return false;
+          var latestVersion = data.results[plugin]['dist-tags'].latest
+          var currentVersion = plugins.plugins[plugin].package.version
+          return semver.gt(latestVersion, currentVersion)
+        });
+        socket.emit("updatable", {updatable: updatable});
+        socket.emit("progress", {progress:1});
+      });
+    })
 
     socket.on("search", function (query) {
       socket.emit("progress", {progress:0, message:'Fetching results...'});
