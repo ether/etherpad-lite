@@ -39,7 +39,7 @@ div.innerwrapper {
   opacity: 0.9;
   padding: 15px;
   max-width: 860px;
-  bordr-radius: 0 0 7px 7px;
+  border-radius: 0 0 7px 7px;
   margin-left:250px;
   min-width:400px;
 }
