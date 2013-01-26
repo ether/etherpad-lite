@@ -22,6 +22,7 @@ $(document).ready(function () {
 
   var search = function () {
     socket.emit("search", $('.search-results').data('query'));
+    tasks++;
   }
 
   function updateHandlers() {
@@ -40,16 +41,18 @@ $(document).ready(function () {
       search();
     });
 
-    $(".do-install").unbind('click').click(function (e) {
+    $(".do-install, .do-update").unbind('click').click(function (e) {
       var row = $(e.target).closest("tr");
       doUpdate = true;
       socket.emit("install", row.find(".name").text());
+      tasks++;
     });
 
     $(".do-uninstall").unbind('click').click(function (e) {
       var row = $(e.target).closest("tr");
       doUpdate = true;
       socket.emit("uninstall", row.find(".name").text());
+      tasks++;
     });
 
     $(".do-prev-page").unbind('click').click(function (e) {
@@ -72,11 +75,9 @@ $(document).ready(function () {
 
   updateHandlers();
 
+  var tasks = 0;
   socket.on('progress', function (data) {
-    if (data.progress > 0 && $('#progress').data('progress') > data.progress) return;
-
     $("#progress").show();
-
     $('#progress').data('progress', data.progress);
 
     var message = "Unknown status";
@@ -90,7 +91,12 @@ $(document).ready(function () {
     $("#progress .message").html(message);
 
     if (data.progress >= 1) {
-      $("#progress").hide();
+      tasks--;
+      if (tasks <= 0) {
+        // Hide the activity indicator once all tasks are done
+        $("#progress").hide();
+        tasks = 0;
+      }
       
       if (data.error) {
         alert('An error occurred: '+data.error+' -- the server log might know more...');
@@ -98,6 +104,7 @@ $(document).ready(function () {
         if (doUpdate) {
           doUpdate = false;
           socket.emit("load");
+          tasks++;
         }
       }
     }
@@ -121,9 +128,7 @@ $(document).ready(function () {
     for (plugin_name in data.results) {
       var plugin = data.results[plugin_name];
       var row = widget.find(".template tr").clone();
-      var version = '0.0.0';
-      // hack to access "versions" property of the npm package object
-      for (version in data.results[plugin_name].versions) break;
+      
       for (attr in plugin) {
         if(attr == "name"){ // Hack to rewrite URLS into name
           row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin[attr]+"</a>");
@@ -131,7 +136,7 @@ $(document).ready(function () {
           row.find("." + attr).html(plugin[attr]);
         }
       }
-      row.find(".version").html(version);
+      row.find(".version").html( data.results[plugin_name]['dist-tags'].latest );
       
       widget.find(".results").append(row);
     }
@@ -141,6 +146,7 @@ $(document).ready(function () {
 
   socket.on('installed-results', function (data) {
     $("#installed-plugins *").remove();
+
     for (plugin_name in data.results) {
       if (plugin_name == "ep_etherpad-lite") continue; // Hack...
       var plugin = data.results[plugin_name];
@@ -156,9 +162,26 @@ $(document).ready(function () {
       $("#installed-plugins").append(row);
     }
     updateHandlers();
+
+    socket.emit('checkUpdates');
+    tasks++;
   });
+  
+  socket.on('updatable', function(data) {
+    $('#installed-plugins>tr').each(function(i,tr) {
+      var pluginName = $(tr).find('.name').text()
+      
+      if (data.updatable.indexOf(pluginName) >= 0) {
+        var actions = $(tr).find('.actions')
+        actions.append('<input class="do-update" type="button" value="Update" />')
+        actions.css('width', 200)
+      }
+    })
+    updateHandlers();
+  })
 
   socket.emit("load");
+  tasks++;
+  
   search();
-
 });
