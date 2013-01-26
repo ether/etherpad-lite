@@ -118,7 +118,7 @@ var paduserlist = (function()
       }
       else
       {
-        nameHtml = '<input type="text" class="editempty newinput" value="'+_('pad.userlist.unnamed')+'" ' + (isNameEditable(data) ? '' : 'disabled="disabled" ') + '/>';
+        nameHtml = '<input data-l10n-id="pad.userlist.unnamed" type="text" class="editempty newinput" value="'+_('pad.userlist.unnamed')+'" ' + (isNameEditable(data) ? '' : 'disabled="disabled" ') + '/>';
       }
 
       return ['<td style="height:', height, 'px" class="usertdswatch"><div class="swatch" style="background:' + data.color + '">&nbsp;</div></td>', '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
@@ -710,8 +710,7 @@ var paduserlist = (function()
     {
       if (myUserInfo.name)
       {
-        $("#myusernameedit").removeClass("editempty").val(
-        myUserInfo.name);
+        $("#myusernameedit").removeClass("editempty").val(myUserInfo.name);
       }
       else
       {
