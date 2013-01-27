@@ -2182,3 +2182,121 @@ exports.followAttributes = function (att1, att2, pool) {
   }
   return buf.toString();
 };
+
+exports.composeWithDeletions = function (cs1, cs2, pool) {
+  var unpacked1 = exports.unpack(cs1);
+  var unpacked2 = exports.unpack(cs2);
+  var len1 = unpacked1.oldLen;
+  var len2 = unpacked1.newLen;
+  exports.assert(len2 == unpacked2.oldLen, "mismatched composition");
+  var len3 = unpacked2.newLen;
+  var bankIter1 = exports.stringIterator(unpacked1.charBank);
+  var bankIter2 = exports.stringIterator(unpacked2.charBank);
+  var bankAssem = exports.stringAssembler();
+
+  var newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, function (op1, op2, opOut) {
+    var op1code = op1.opcode;
+    var op2code = op2.opcode;
+    if (op1code == '+' && op2code == '-') {
+      bankIter1.skip(Math.min(op1.chars, op2.chars));
+    }
+    exports._slicerZipperFuncWithDeletions(op1, op2, opOut, pool);
+    if (opOut.opcode == '+') {
+      if (op2code == '+') {
+        bankAssem.append(bankIter2.take(opOut.chars));
+      } else {
+        bankAssem.append(bankIter1.take(opOut.chars));
+      }
+    }
+  });
+
+  return exports.pack(len1, len3, newOps, bankAssem.toString());
+};
+
+// This function is 95% like _slicerZipperFunc, we just changed two lines to ensure it merges the attribs of deletions properly. 
+// This is necassary for correct paddiff. But to ensure these changes doesn't affect anything else, we've created a seperate function only used for paddiffs
+exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
+  // attOp is the op from the sequence that is being operated on, either an
+  // attribution string or the earlier of two exportss being composed.
+  // pool can be null if definitely not needed.
+  //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
+  if (attOp.opcode == '-') {
+    exports.copyOp(attOp, opOut);
+    attOp.opcode = '';
+  } else if (!attOp.opcode) {
+    exports.copyOp(csOp, opOut);
+    csOp.opcode = '';
+  } else {
+    switch (csOp.opcode) {
+    case '-':
+      {
+        if (csOp.chars <= attOp.chars) {
+          // delete or delete part
+          if (attOp.opcode == '=') {
+            opOut.opcode = '-';
+            opOut.chars = csOp.chars;
+            opOut.lines = csOp.lines;
+            opOut.attribs = csOp.attribs; //changed by yammer
+          }
+          attOp.chars -= csOp.chars;
+          attOp.lines -= csOp.lines;
+          csOp.opcode = '';
+          if (!attOp.chars) {
+            attOp.opcode = '';
+          }
+        } else {
+          // delete and keep going
+          if (attOp.opcode == '=') {
+            opOut.opcode = '-';
+            opOut.chars = attOp.chars;
+            opOut.lines = attOp.lines;
+            opOut.attribs = csOp.attribs; //changed by yammer
+          }
+          csOp.chars -= attOp.chars;
+          csOp.lines -= attOp.lines;
+          attOp.opcode = '';
+        }
+        break;
+      }
+    case '+':
+      {
+        // insert
+        exports.copyOp(csOp, opOut);
+        csOp.opcode = '';
+        break;
+      }
+    case '=':
+      {
+        if (csOp.chars <= attOp.chars) {
+          // keep or keep part
+          opOut.opcode = attOp.opcode;
+          opOut.chars = csOp.chars;
+          opOut.lines = csOp.lines;
+          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+          csOp.opcode = '';
+          attOp.chars -= csOp.chars;
+          attOp.lines -= csOp.lines;
+          if (!attOp.chars) {
+            attOp.opcode = '';
+          }
+        } else {
+          // keep and keep going
+          opOut.opcode = attOp.opcode;
+          opOut.chars = attOp.chars;
+          opOut.lines = attOp.lines;
+          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+          attOp.opcode = '';
+          csOp.chars -= attOp.chars;
+          csOp.lines -= attOp.lines;
+        }
+        break;
+      }
+    case '':
+      {
+        exports.copyOp(attOp, opOut);
+        attOp.opcode = '';
+        break;
+      }
+    }
+  }
+};
