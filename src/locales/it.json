@@ -81,6 +81,7 @@
 	"pad.share.emebdcode": "Incorpora URL",
 	"pad.chat": "Chat",
 	"pad.chat.title": "Apri la chat per questo Pad.",
+	"pad.chat.loadmessages": "Carica altri messaggi",
 	"timeslider.pageTitle": "Cronologia {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Ritorna al Pad",
 	"timeslider.toolbar.authors": "Autori:",
