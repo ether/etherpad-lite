@@ -101,86 +101,39 @@ function randomString()
   return "t." + randomstring;
 }
 
+// This array represents all GET-parameters which can be used to change a setting.
+//   name:     the parameter-name, eg  `?noColors=true`  =>  `noColors`
+//   checkVal: the callback is only executed when
+//                * the parameter was supplied and matches checkVal
+//                * the parameter was supplied and checkVal is null
+//   callback: the function to call when all above succeeds, `val` is the value supplied by the user
+var paramSettings = [
+  { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
+  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').hide(); $('#editorcontainer').css({"top":"0px"}); } },
+  { name: "showChat",         checkVal: "false", callback: function(val) { $('#chaticon').hide(); } },
+  { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
+  { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
+  // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
+  { name: "userName",         checkVal: null,    callback: function(val) { settings.globalUserName = decodeURIComponent(val); } },
+  // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
+  { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); } },
+  { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
+  { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
+  { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); } }
+];
+
 function getParams()
 {
   var params = getUrlVars()
-  var showControls = params["showControls"];
-  var showChat = params["showChat"];
-  var userName = params["userName"];
-  var userColor = params["userColor"];
-  var showLineNumbers = params["showLineNumbers"];
-  var useMonospaceFont = params["useMonospaceFont"];
-  var IsnoColors = params["noColors"];
-  var rtl = params["rtl"];
-  var alwaysShowChat = params["alwaysShowChat"];
-  var lang = params["lang"];
-
-  if(IsnoColors)
+  
+  for(var i = 0; i < paramSettings.length; i++)
   {
-    if(IsnoColors == "true")
+    var setting = paramSettings[i];
+    var value = params[setting.name];
+    
+    if(value && (value == setting.checkVal || setting.checkVal == null))
     {
-      settings.noColors = true;
-      $('#clearAuthorship').hide();
-    }
-  }
-  if(showControls)
-  {
-    if(showControls == "false")
-    { 
-      $('#editbar').hide();
-      $('#editorcontainer').css({"top":"0px"});
-    }
-  }
-  if(showChat)
-  {
-    if(showChat == "false")
-    {
-      $('#chaticon').hide();
-    }
-  }
-  if(showLineNumbers)
-  {
-    if(showLineNumbers == "false")
-    {
-      settings.LineNumbersDisabled = true;
-    }
-  }
-  if(useMonospaceFont)
-  {
-    if(useMonospaceFont == "true")
-    {
-      settings.useMonospaceFontGlobal = true;
-    }
-  }
-  if(userName)
-  {
-    // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
-    settings.globalUserName = decodeURIComponent(userName);
-  }
-  if(userColor)
-    // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
-  {
-    settings.globalUserColor = decodeURIComponent(userColor);
-  }
-  if(rtl)
-  {
-    if(rtl == "true")
-    {
-      settings.rtlIsTrue = true
-    }
-  }
-  if(alwaysShowChat)
-  {
-    if(alwaysShowChat == "true")
-    {
-      chat.stickToScreen();
-    }
-  }
-  if(lang)
-  {
-    if(lang !== "")
-    {
-      window.html10n.localize([lang, 'en']);
+      setting.callback(value);
     }
   }
 }
