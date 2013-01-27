@@ -807,6 +807,10 @@ input[type=checkbox] {
   display: none;
   z-index: 500;
 }
+#globalViewWarning {
+  color: red;
+  font-size: 10px;
+}
 .stickyChat {
   background-color: #f1f1f1 !important;
   right: 0px !important;

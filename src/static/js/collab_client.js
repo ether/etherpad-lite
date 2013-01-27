@@ -424,6 +424,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       else // there are still more messages, re-show the load-button
         $("#chatloadmessagesbutton").css("display", "block");
     }
+    else if (msg.type == "GLOBAL_SETTING_CHANGED")
+    {
+      pad.changeViewOption(msg.setting, msg.value, true);
+    }
     else if (msg.type == "SERVER_MESSAGE")
     {
       callbacks.onServerMessage(msg.payload);
@@ -442,6 +446,14 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       type: "USERINFO_UPDATE",
       userInfo: userInfo
     });
+  }
+  
+  function changeGlobalSetting(setting, value)
+  {
+    sendMessage({ "type"    : "GLOBAL_SETTING_CHANGED",
+                  "setting" : setting,
+                  "value"   : value
+                });
   }
 
   function tellAceActiveAuthorInfo(userInfo)
@@ -675,7 +687,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     getMissedChanges: getMissedChanges,
     callWhenNotCommitting: callWhenNotCommitting,
     addHistoricalAuthors: tellAceAboutHistoricalAuthors,
-    setChannelState: setChannelState
+    setChannelState: setChannelState,
+    changeGlobalSetting: changeGlobalSetting
   };
 
   $(document).ready(setUpSocket);

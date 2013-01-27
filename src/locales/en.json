@@ -33,6 +33,7 @@
   "pad.settings.fontType.normal": "Normal",
   "pad.settings.fontType.monospaced": "Monospace",
   "pad.settings.globalView": "Global View",
+  "pad.settings.globalView.warning": "Warning: This will effect everyones view of this pad.",
   "pad.settings.language": "Language:",
   "pad.importExport.import_export": "Import/Export",
   "pad.importExport.import": "Upload any text file or document",

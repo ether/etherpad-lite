@@ -355,7 +355,7 @@ function handshake()
       // If the noColors value is set to true then we need to hide the background colors on the ace spans
       if (settings.noColors == true)
       {
-        pad.changeViewOption('noColors', true);
+        pad.changeViewOption('showAuthorColors', true);
       }
       
       if (settings.rtlIsTrue == true)
@@ -368,6 +368,29 @@ function handshake()
       {
         pad.changeViewOption('useMonospaceFont', true);
       }
+
+      // settings which are global for all users of this pad, these overwrite 
+      // all settings set in cookies or by the user. They will also get updated
+      // via a collabClient-message when they're changed later.
+      var viewSettings = clientVars.viewSettings;
+      
+      // check if they are set, if they are overwrite whatever is set by the user
+      if (typeof(viewSettings.showLineNumbers) != "undefined")
+      {
+        pad.changeViewOption('showLineNumbers', viewSettings.showLineNumbers, true);
+        $("#options-global-linenoscheck").prop('checked', viewSettings.showLineNumbers);
+      }
+      if (typeof(viewSettings.showAuthorColors) != "undefined")
+      {
+        pad.changeViewOption('showAuthorColors', viewSettings.showAuthorColors, true);
+        $("#options-global-colorscheck").prop('checked', viewSettings.showAuthorColors);
+      }
+      if (typeof(viewSettings.useMonospaceFont) != "undefined")
+      {
+        pad.changeViewOption('useMonospaceFont', viewSettings.useMonospaceFont, true);   
+        $("#global-viewfontmenu").val(viewSettings.useMonospaceFont ? "monospace" : "normal");
+      }
+
       // if the globalUserName value is set we need to tell the server and the client about the new authorname
       if (settings.globalUserName !== false)
       {
@@ -630,15 +653,15 @@ var pad = {
       changedBy: pad.myUserInfo.name || "unnamed"
     });
   },
-  changeViewOption: function(key, value)
+  changeViewOption: function(key, value, global)
   {
     var options = {
       view: {}
     };
     options.view[key] = value;
-    pad.handleOptionsChange(options);
+    pad.handleOptionsChange(options, global);
   },
-  handleOptionsChange: function(opts)
+  handleOptionsChange: function(opts, global)
   {
     // opts object is a full set of options or just
     // some options to change
@@ -652,7 +675,7 @@ var pad = {
       {
         pad.padOptions.view[k] = opts.view[k];
       }
-      padeditor.setViewOptions(pad.padOptions.view);
+      padeditor.setViewOptions(pad.padOptions.view, global);
     }
     if (opts.guestPolicy)
     {
