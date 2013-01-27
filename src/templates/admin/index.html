@@ -9,12 +9,13 @@
   <body>
     <div id="wrapper">
       <div class="menu">
-        <h1>Etherpad lite</h1> 
+        <h1>Etherpad lite</h1>
+        <% e.begin_block("adminMenu");  %>
         <li><a href="admin/plugins">Plugin manager</a> </li>
         <li><a href="admin/settings">Settings</a> </li>
         <li><a href="admin/plugins/info">Troubleshooting information</a> </li>
+        <% e.end_block(); %>
       </div>
-
     </div>
     <div id="topborder"></div>
   </body>

@@ -42,6 +42,7 @@ div.innerwrapper {
   border-radius: 0 0 7px 7px;
   margin-left:250px;
   min-width:400px;
+  width:100%;
 }
 
 #wrapper {
