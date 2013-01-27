@@ -14,7 +14,7 @@ out/doc/assets/%: doc/assets/%
 out/doc/%.html: doc/%.md
 	mkdir -p $(@D)
 	node tools/doc/generate.js --format=html --template=doc/template.html $< > $@
-	cat $@ | sed 's/__VERSION__/${VERSION}/' > $@
+	sed -i 's/__VERSION__/${VERSION}/' $@
 
 clean:
 	rm -rf out/
