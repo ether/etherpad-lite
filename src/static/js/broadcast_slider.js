@@ -193,7 +193,12 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       });
       if (numAnonymous > 0)
       {
-        var anonymousAuthorString = numAnonymous + " unnamed author" + (numAnonymous > 1 ? "s" : "")
+        var anonymousAuthorString;
+        if(numAnonymous == 1)
+          anonymousAuthorString = html10n.get("timeslider.unnamedauthor", { num: numAnonymous });
+        else
+          anonymousAuthorString = html10n.get("timeslider.unnamedauthors", { num: numAnonymous });
+        
         if (numNamed !== 0){
           authorsList.append(' + ' + anonymousAuthorString);
         } else {
@@ -361,7 +366,11 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           $(self).css('left', newloc);
           // if(getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width()-2)))
           setSliderPosition(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
-          self.currentLoc = parseInt($(self).css('left'));
+          if(parseInt($(self).css('left')) < 2){
+            $(self).css('left', '2px');
+          }else{
+            self.currentLoc = parseInt($(self).css('left'));
+          }
         });
       })
 

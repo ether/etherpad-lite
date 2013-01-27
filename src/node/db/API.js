@@ -278,6 +278,77 @@ exports.setHTML = function(padID, html, callback)
   });
 }
 
+/******************/
+/**CHAT FUNCTIONS */
+/******************/
+
+/**
+getChatHistory(padId, start, end), returns a part of or the whole chat-history of this pad
+
+Example returns:
+
+{"code":0,"message":"ok","data":{"messages":[{"text":"foo","userId":"a.foo","time":1359199533759,"userName":"test"},
+                                             {"text":"bar","userId":"a.foo","time":1359199534622,"userName":"test"}]}}
+
+{code: 1, message:"start is higher or equal to the current chatHead", data: null}
+
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getChatHistory = function(padID, start, end, callback)
+{
+  if(start && end)
+  {
+    if(start < 0)
+    {
+      callback(new customError("start is below zero","apierror"));
+      return;
+    }
+    if(end < 0)
+    {
+      callback(new customError("end is below zero","apierror"));
+      return;
+    }
+    if(start > end)
+    {
+      callback(new customError("start is higher than end","apierror"));
+      return;
+    }
+  }
+  
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    var chatHead = pad.chatHead;
+    
+    // fall back to getting the whole chat-history if a parameter is missing
+    if(!start || !end)
+    {
+	  start = 0;
+	  end = pad.chatHead - 1;
+    }
+    
+    if(start >= chatHead)
+    {
+      callback(new customError("start is higher or equal to the current chatHead","apierror"));
+      return;
+    }
+    if(end >= chatHead)
+    {
+      callback(new customError("end is higher or equal to the current chatHead","apierror"));
+      return;
+    }
+    
+    // the the whole message-log and return it to the client
+    pad.getChatMessages(start, end,
+      function(err, msgs)
+      {
+        if(ERR(err, callback)) return;
+        callback(null, {messages: msgs});
+      });
+  });
+}
+
 /*****************/
 /**PAD FUNCTIONS */
 /*****************/
@@ -568,6 +639,23 @@ exports.checkToken = function(callback)
   callback();
 }
 
+/**
+getChatHead(padID) returns the chatHead (last number of the last chat-message) of the pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {chatHead: 42}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getChatHead = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    callback(null, {chatHead: pad.chatHead});
+  });
+}
 
 /**
 createDiff(padID, startRev, endRev) returns an object of diffs from 2 points in a pad

@@ -174,13 +174,13 @@ var version =
   , "listAllGroups"             : []
   , "checkToken"                : []
   }
-, "1.2.2":
+, "1.2.7":
   { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
   , "listAllPads"               : []
-  , "createDiff"		            : ["padID", "startRev", "endRev"]
+  , "createDiff"	        : ["padID", "startRev", "endRev"]
   , "createPad"                 : ["padID", "text"]
   , "createGroupPad"            : ["groupID", "padName", "text"]
   , "createAuthor"              : ["name"]
@@ -210,6 +210,9 @@ var version =
   , "sendClientsMessage"        : ["padID", "msg"]
   , "listAllGroups"             : []
   , "checkToken"                : []
+  , "getChatHistory"            : ["padID"]
+  , "getChatHistory"            : ["padID", "start", "end"]
+  , "getChatHead"               : ["padID"]
   }
 };
 

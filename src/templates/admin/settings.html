@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Settings manager</title>
+    <title>Settings - Etherpad lite</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <link rel="stylesheet" href="../static/css/admin.css">
     <script src="../static/js/jquery.js"></script>
@@ -22,13 +22,23 @@
       <% } %>
 
 
-      <h1>Etherpad Lite Settings</h1>
-      <a href='https://github.com/ether/etherpad-lite/wiki/Example-Production-Settings.JSON'>Example production settings template</a>
-      <a href='https://github.com/ether/etherpad-lite/wiki/Example-Development-Settings.JSON'>Example development settings template</a>
-      <textarea class="settings"></textarea>
-      <input type="button" class="settingsButton" id="saveSettings" value="Save Settings">
-      <input type="button" class="settingsButton" id="restartEtherpad" value="Restart Etherpad">
-      <div id="response"></div>
+      <div class="menu">
+        <h1>Etherpad lite</h1> 
+        <li><a href="plugins">Plugin manager</a> </li>
+        <li><a href="settings">Settings</a> </li>
+        <li><a href="plugins/info">Troubleshooting information</a> </li>
+      </div>
+
+      <div class="innerwrapper">
+        <a href='https://github.com/ether/etherpad-lite/wiki/Example-Production-Settings.JSON'>Example production settings template</a>
+        <a href='https://github.com/ether/etherpad-lite/wiki/Example-Development-Settings.JSON'>Example development settings template</a>
+        <textarea class="settings"></textarea>
+        <input type="button" class="settingsButton" id="saveSettings" value="Save Settings">
+        <input type="button" class="settingsButton" id="restartEtherpad" value="Restart Etherpad">
+        <div id="response"></div>
+      </div>
     </div>
+    
+    <div id="topborder"></div>
   </body>
 </html>
