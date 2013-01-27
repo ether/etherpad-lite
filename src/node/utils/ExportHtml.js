@@ -1,12 +1,12 @@
 /**
  * Copyright 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS-IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -92,7 +92,7 @@ function getPadHTML(pad, revNum, callback)
 
 exports.getPadHTML = getPadHTML;
 
-exports.getHTMLFromAtext = function(pad, atext)
+exports.getHTMLFromAtext = function(pad, atext, authorColors)
 {
   var apool = pad.apool();
   var textLines = atext.text.slice(0, -1).split('\n');
@@ -101,6 +101,42 @@ exports.getHTMLFromAtext = function(pad, atext)
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
   var anumMap = {};
+  var css = "";
+
+  var stripDotFromAuthorID = function(id){
+    return id.replace(/\./g,'_');
+  };
+
+  if(authorColors){
+    css+="<style>\n";
+    
+    for (var a in apool.numToAttrib) {
+      var attr = apool.numToAttrib[a];
+      
+      //skip non author attributes
+      if(attr[0] === "author" && attr[1] !== ""){
+        //add to props array
+        var propName = "author" + stripDotFromAuthorID(attr[1]);
+        var newLength = props.push(propName);
+        anumMap[a] = newLength -1;
+        
+        css+="." + propName + " {background-color: " + authorColors[attr[1]]+ "}\n";
+      } else if(attr[0] === "removed") {
+        var propName = "removed";
+        
+        var newLength = props.push(propName);
+        anumMap[a] = newLength -1;
+        
+        css+=".removed {text-decoration: line-through; " + 
+             "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+ 
+             "filter: alpha(opacity=80); "+
+             "opacity: 0.8; "+
+             "}\n";
+      }
+    }
+    
+    css+="</style>";
+  }
 
   props.forEach(function (propName, i)
   {
@@ -125,22 +161,53 @@ exports.getHTMLFromAtext = function(pad, atext)
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
     var taker = Changeset.stringIterator(text);
     var assem = Changeset.stringAssembler();
-
     var openTags = [];
+
+    function getSpanClassFor(i){
+      //return if author colors are disabled
+      if (!authorColors) return false;
+      
+      var property = props[i];
+   
+      if(property.substr(0,6) === "author"){
+        return stripDotFromAuthorID(property);
+      }
+      
+      if(property === "removed"){
+        return "removed";
+      }
+      
+      return false;
+    }
+
     function emitOpenTag(i)
     {
       openTags.unshift(i);
-      assem.append('<');
-      assem.append(tags[i]);
-      assem.append('>');
+      var spanClass = getSpanClassFor(i);
+      
+      if(spanClass){
+        assem.append('<span class="');
+        assem.append(spanClass);
+        assem.append('">');
+      } else {
+        assem.append('<');
+        assem.append(tags[i]);
+        assem.append('>');
+      }
     }
 
     function emitCloseTag(i)
     {
       openTags.shift();
-      assem.append('</');
-      assem.append(tags[i]);
-      assem.append('>');
+      var spanClass = getSpanClassFor(i);
+      
+      if(spanClass){
+        assem.append('</span>');
+      } else {
+        assem.append('</');
+        assem.append(tags[i]);
+        assem.append('>');
+      }
     }
     
     function orderdCloseTags(tags2close)
@@ -303,7 +370,7 @@ exports.getHTMLFromAtext = function(pad, atext)
 
     return _processSpaces(assem.toString());
   } // end getLineHTML
-  var pieces = [];
+  var pieces = [css];
 
   // Need to deal with constraints imposed on HTML lists; can
   // only gain one level of nesting at once, can't change type

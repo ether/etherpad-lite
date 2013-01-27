@@ -618,7 +618,6 @@ exports.createDiff = function(padID, startRev, endRev, callback){
     try {
       var padDiff = new PadDiff(pad, startRev, endRev);
     } catch(e) {
-      // console.warn(e.stack);
       return callback({stop:e.message});
     }
     var html, authors;

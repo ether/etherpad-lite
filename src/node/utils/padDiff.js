@@ -244,17 +244,14 @@ PadDiff.prototype.getHtml = function(callback){
     },
     //get the authorColor table
     function(callback){
-      /* 
-        self._pad.getAllAuthorColors(function(err, _authorColors){ // TODO
+      self._pad.getAllAuthorColors(function(err, _authorColors){
         if(err){
           return callback(err);
         }
         
         authorColors = _authorColors;
+        callback();
       });
-      */
-      authorColors = {};
-      callback();
     },
     //convert the atext to html
     function(callback){
@@ -265,7 +262,7 @@ PadDiff.prototype.getHtml = function(callback){
   ], function(err){
     callback(err, html);
   });
-}
+};
  
 PadDiff.prototype.getAuthors = function(callback){
   var self = this;

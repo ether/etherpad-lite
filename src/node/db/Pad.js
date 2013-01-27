@@ -227,7 +227,8 @@ Pad.prototype.getAllAuthorColors = function getAllAuthorColors(callback){
       if(err){
         return callback(err);
       }
-      returnTable[author]=colorPalette[colorId];
+      //colorId might be a hex color or an number out of the palette
+      returnTable[author]=colorPalette[colorId] || colorId;
 
       callback();
     });
