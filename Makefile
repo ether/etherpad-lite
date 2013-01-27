@@ -15,10 +15,11 @@ out/doc/assets/%: doc/assets/%
 out/doc/%.html: doc/%.md
 	mkdir -p $(@D)
 	node tools/doc/generate.js --format=html --template=doc/template.html $< > $@
-	ifeq ($(UNAME),Darwin)
-		sed -i '' 's/__VERSION__/${VERSION}/' $@
-	else
-		sed -i 's/__VERSION__/${VERSION}/' $@
+ifeq ($(UNAME),Darwin)
+	sed -i '' 's/__VERSION__/${VERSION}/' $@
+else
+	sed -i 's/__VERSION__/${VERSION}/' $@
+endif
 
 clean:
 	rm -rf out/
