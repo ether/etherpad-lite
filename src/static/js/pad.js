@@ -374,21 +374,23 @@ function handshake()
       // via a collabClient-message when they're changed later.
       var viewSettings = clientVars.viewSettings;
       
+      // set the private options here if there is no global setting
+      $("#options-global-colorscheck").prop("checked", $("#options-colorscheck").prop("checked"));
+      $("#options-global-linenoscheck").prop("checked", $("#options-linenoscheck").prop("checked"));
+      $("#global-viewfontmenu").val($("#global-viewfontmenu").val());
+      
       // check if they are set, if they are overwrite whatever is set by the user
       if (typeof(viewSettings.showLineNumbers) != "undefined")
       {
         pad.changeViewOption('showLineNumbers', viewSettings.showLineNumbers, true);
-        $("#options-global-linenoscheck").prop('checked', viewSettings.showLineNumbers);
       }
       if (typeof(viewSettings.showAuthorColors) != "undefined")
       {
         pad.changeViewOption('showAuthorColors', viewSettings.showAuthorColors, true);
-        $("#options-global-colorscheck").prop('checked', viewSettings.showAuthorColors);
       }
       if (typeof(viewSettings.useMonospaceFont) != "undefined")
       {
-        pad.changeViewOption('useMonospaceFont', viewSettings.useMonospaceFont, true);   
-        $("#global-viewfontmenu").val(viewSettings.useMonospaceFont ? "monospace" : "normal");
+        pad.changeViewOption('useMonospaceFont', viewSettings.useMonospaceFont, true);
       }
 
       // if the globalUserName value is set we need to tell the server and the client about the new authorname

@@ -128,12 +128,16 @@ var padeditor = (function()
 
       v = getOption('showLineNumbers', true);
       self.ace.setProperty("showslinenumbers", v);
-      if(!global)
+      if(global)
+        padutils.setCheckbox($("#options-global-linenoscheck"), v);
+      else
         padutils.setCheckbox($("#options-linenoscheck"), v);
 
       v = getOption('showAuthorColors', true);
       self.ace.setProperty("showsauthorcolors", v);
-      if(!global)
+      if(global)
+        padutils.setCheckbox($("#options-global-colorscheck"), v);
+      else
         padutils.setCheckbox($("#options-colorscheck"), v);
       // Override from parameters if true
       if (settings.noColors !== false)
@@ -141,7 +145,9 @@ var padeditor = (function()
 
       v = getOption('useMonospaceFont', false);
       self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
-      if(!global)
+      if(global)
+        $("#global-viewfontmenu").val(v ? "monospace" : "normal");
+      else
         $("#viewfontmenu").val(v ? "monospace" : "normal");
     },
     dispose: function()
