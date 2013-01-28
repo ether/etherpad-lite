@@ -121,4 +121,31 @@ describe("timeslider", function(){
       });
     }, 2500);
   });
+  
+  it("checks the export url", function(done) {
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
+    this.timeout(11000);
+    inner$("div").first().sendkeys('a');
+    
+    setTimeout(function() {
+      // go to timeslider
+      $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
+      var timeslider$;
+      var exportLink;
+      
+      helper.waitFor(function(){
+        timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+        if(!timeslider$)
+          return false;
+        exportLink = timeslider$('#exportplaina').attr('href');
+        if(!exportLink)
+          return false;
+        return exportLink.substr(exportLink.length - 12) == "0/export/txt";
+      }, 6000).always(function(){
+        expect( exportLink.substr(exportLink.length - 12) ).to.eql( "0/export/txt" );
+        done();
+      });
+    }, 2500);
+  });
 });
