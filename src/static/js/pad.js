@@ -107,7 +107,7 @@ function randomString()
 //                * the parameter was supplied and matches checkVal
 //                * the parameter was supplied and checkVal is null
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
-var paramSettings = [
+var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
   { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').hide(); $('#editorcontainer').css({"top":"0px"}); } },
   { name: "showChat",         checkVal: "false", callback: function(val) { $('#chaticon').hide(); } },
@@ -126,9 +126,9 @@ function getParams()
 {
   var params = getUrlVars()
   
-  for(var i = 0; i < paramSettings.length; i++)
+  for(var i = 0; i < getParameters.length; i++)
   {
-    var setting = paramSettings[i];
+    var setting = getParameters[i];
     var value = params[setting.name];
     
     if(value && (value == setting.checkVal || setting.checkVal == null))
