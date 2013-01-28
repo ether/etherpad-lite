@@ -78,6 +78,7 @@
 	"pad.share.emebdcode": "Incorporar o URL",
 	"pad.chat": "Bate-papo",
 	"pad.chat.title": "Abrir o bate-papo desta nota.",
+	"pad.chat.loadmessages": "Carregar mais mensagens",
 	"timeslider.pageTitle": "Linha do tempo de {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Retornar para a nota",
 	"timeslider.toolbar.authors": "Autores:",

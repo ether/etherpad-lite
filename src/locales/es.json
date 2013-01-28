@@ -82,6 +82,7 @@
 	"pad.share.emebdcode": "Incrustar URL",
 	"pad.chat": "Chat",
 	"pad.chat.title": "Abrir el chat para este pad.",
+	"pad.chat.loadmessages": "Cargar m\u00e1s mensajes",
 	"timeslider.pageTitle": "{{appTitle}} L\u00ednea de tiempo",
 	"timeslider.toolbar.returnbutton": "Volver al pad",
 	"timeslider.toolbar.authors": "Autores:",

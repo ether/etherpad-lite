@@ -103,6 +103,8 @@
 	"timeslider.month.october": "Oktober",
 	"timeslider.month.november": "November",
 	"timeslider.month.december": "Dezember",
+	"timeslider.unnamedauthor": "{{num}} unbenannter Autor",
+	"timeslider.unnamedauthors": "{{num}} unbenannte Autoren",
 	"pad.savedrevs.marked": "Diese Version wurde jetzt als gespeicherte Version gekennzeichnet",
 	"pad.userlist.entername": "Geben Sie Ihren Namen ein",
 	"pad.userlist.unnamed": "unbenannt",

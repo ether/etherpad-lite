@@ -80,6 +80,7 @@
 	"pad.share.emebdcode": "Kod do umieszczenia",
 	"pad.chat": "Czat",
 	"pad.chat.title": "Otw\u00f3rz czat dla tego dokumentu.",
+	"pad.chat.loadmessages": "Za\u0142aduj wi\u0119cej wiadomo\u015bci",
 	"timeslider.pageTitle": "O\u015b czasu {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Powr\u00f3\u0107 do dokumentu",
 	"timeslider.toolbar.authors": "Autorzy:",
