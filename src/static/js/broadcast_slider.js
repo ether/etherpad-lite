@@ -106,6 +106,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     function setSliderPosition(newpos)
     {
       newpos = Number(newpos);
+      window.location.hash = "#" + newpos;
       if (newpos < 0 || newpos > sliderLength) return;
       $("#ui-slider-handle").css('left', newpos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
       $("a.tlink").map(function()
@@ -481,6 +482,18 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         }
         
         $("#timeslider").show();
+        
+        var startPos = clientVars.collab_client_vars.rev;
+        if(window.location.hash.length > 1)
+        {
+	      var hashRev = Number(window.location.hash.substr(1));
+	      if(!isNaN(hashRev))
+	      {
+	        // this is necessary because of the socket.io-event which loads the changesets 
+            setTimeout(function() { setSliderPosition(hashRev); }, 1);
+          }
+        }
+        
         setSliderLength(clientVars.collab_client_vars.rev);
         setSliderPosition(clientVars.collab_client_vars.rev);
         
