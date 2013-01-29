@@ -10,7 +10,6 @@
  */
 
 (function($){
- 	
 	/**
 	* Set it up as an object under the jQuery namespace
 	*/
