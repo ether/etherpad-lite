@@ -48,6 +48,7 @@ var colorutils = require('./colorutils').colorutils;
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
+var gritter = require('./gritter').gritter;
 
 var hooks = require('./pluginfw/hooks');
 
