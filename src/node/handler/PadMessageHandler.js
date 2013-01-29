@@ -1536,6 +1536,7 @@ exports.padUsers = function (padID, callback) {
       }
       var aid = sessioninfos[ix].author;
       authorManager.getAuthor( aid, function ( err, author ) {
+        author.id = aid;
         authors.push( author );
         if ( authors.length === pad2sessions[padID].length ) {
           callback(null, {padUsers: authors});
