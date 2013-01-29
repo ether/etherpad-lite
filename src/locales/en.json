@@ -35,6 +35,7 @@
   "pad.settings.globalView": "Global View",
   "pad.settings.globalView.warning": "Warning: This will affect everyone's view of this pad.",
   "pad.settings.language": "Language:",
+  "pad.settings.ignoreglobal": "Ignore global settings",
   "pad.importExport.import_export": "Import/Export",
   "pad.importExport.import": "Upload any text file or document",
   "pad.importExport.importSuccessful": "Successful!",

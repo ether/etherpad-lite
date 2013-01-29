@@ -86,6 +86,10 @@ var padeditor = (function()
       {
         pad.collabClient.changeGlobalSetting("showAuthorColors", $("#options-global-colorscheck").prop('checked'));
       });
+      padutils.bindCheckboxChange($("#options-ignore-global"), function()
+      {
+        pad.padOptions.ignoreGlobalSettings = $("#options-ignore-global").prop('checked');
+      });
       $("#global-viewfontmenu").change(function()
       {
         pad.collabClient.changeGlobalSetting("useMonospaceFont", $("#global-viewfontmenu").val() == 'monospace');

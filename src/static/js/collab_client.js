@@ -426,7 +426,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
     else if (msg.type == "GLOBAL_SETTING_CHANGED")
     {
-      pad.changeViewOption(msg.setting, msg.value, true);
+      if(!pad.padOptions.ignoreGlobalSettings)
+        pad.changeViewOption(msg.setting, msg.value, true);
     }
     else if (msg.type == "SERVER_MESSAGE")
     {
