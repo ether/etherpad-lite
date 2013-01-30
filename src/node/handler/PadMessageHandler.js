@@ -210,6 +210,7 @@ exports.handleMessage = function(client, message)
       } else if (message.data.type == "SAVE_REVISION") {
         handleSaveRevisionMessage(client, message);
       } else if (message.data.type == "CLIENT_MESSAGE" &&
+                 message.data.payload != null &&
                  message.data.payload.type == "suggestUserName") {
         handleSuggestUserName(client, message);
       } else {
@@ -473,6 +474,11 @@ function handleSuggestUserName(client, message)
 function handleUserInfoUpdate(client, message)
 {
   //check if all ok
+  if(message.data.userInfo == null)
+  {
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no userInfo!");
+    return;
+  }
   if(message.data.userInfo.colorId == null)
   {
     messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no colorId!");
