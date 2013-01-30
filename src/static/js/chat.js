@@ -118,7 +118,7 @@ var chat = (function()
         $("#chattext").append(html);
       
       //should we increment the counter??
-      if(increment)
+      if(increment && !isHistoryAdd)
       {
         var count = Number($("#chatcounter").text());
         count++;
