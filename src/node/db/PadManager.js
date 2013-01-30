@@ -157,12 +157,12 @@ exports.getPad = function(id, text, callback)
   }
 }
 
-exports.getPads = function(callback)
+exports.listAllPads = function(callback)
 {
   if(callback != null){
-    callback(null,padList.getPads());
+    callback(null,{padIDs: padList.getPads()});
   }else{
-    return padList.getPads();
+    return {padIDs: padList.getPads()};
   }
 }
 

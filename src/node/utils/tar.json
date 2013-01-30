@@ -14,6 +14,7 @@
   , "pad_savedrevs.js"
   , "pad_connectionstatus.js"
   , "chat.js"
+  , "gritter.js"
   , "$tinycon/tinycon.js"
   , "excanvas.js"
   , "farbtastic.js"

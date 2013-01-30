@@ -5,7 +5,8 @@
 			"1": "Jl",
 			"2": "Nedergard",
 			"3": "Nike",
-			"5": "VezonThunder"
+			"5": "Veikk0.ma",
+			"6": "VezonThunder"
 		}
 	},
 	"index.newPad": "Uusi muistio",
@@ -82,6 +83,7 @@
 	"pad.share.emebdcode": "Upotusosoite",
 	"pad.chat": "Keskustelu",
 	"pad.chat.title": "Avaa keskustelu nykyisest\u00e4 muistiosta.",
+	"pad.chat.loadmessages": "Lataa lis\u00e4\u00e4 viestej\u00e4",
 	"timeslider.pageTitle": "{{appTitle}} -aikajana",
 	"timeslider.toolbar.returnbutton": "Palaa muistioon",
 	"timeslider.toolbar.authors": "Tekij\u00e4t:",

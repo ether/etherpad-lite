@@ -107,6 +107,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     {
       newpos = Number(newpos);
       if (newpos < 0 || newpos > sliderLength) return;
+      window.location.hash = "#" + newpos;
       $("#ui-slider-handle").css('left', newpos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
       $("a.tlink").map(function()
       {
@@ -193,7 +194,12 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       });
       if (numAnonymous > 0)
       {
-        var anonymousAuthorString = numAnonymous + " unnamed author" + (numAnonymous > 1 ? "s" : "")
+        var anonymousAuthorString;
+        if(numAnonymous == 1)
+          anonymousAuthorString = html10n.get("timeslider.unnamedauthor", { num: numAnonymous });
+        else
+          anonymousAuthorString = html10n.get("timeslider.unnamedauthors", { num: numAnonymous });
+        
         if (numNamed !== 0){
           authorsList.append(' + ' + anonymousAuthorString);
         } else {
@@ -361,7 +367,11 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           $(self).css('left', newloc);
           // if(getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width()-2)))
           setSliderPosition(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
-          self.currentLoc = parseInt($(self).css('left'));
+          if(parseInt($(self).css('left')) < 2){
+            $(self).css('left', '2px');
+          }else{
+            self.currentLoc = parseInt($(self).css('left'));
+          }
         });
       })
 
@@ -472,6 +482,18 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         }
         
         $("#timeslider").show();
+        
+        var startPos = clientVars.collab_client_vars.rev;
+        if(window.location.hash.length > 1)
+        {
+	      var hashRev = Number(window.location.hash.substr(1));
+	      if(!isNaN(hashRev))
+	      {
+	        // this is necessary because of the socket.io-event which loads the changesets 
+            setTimeout(function() { setSliderPosition(hashRev); }, 1);
+          }
+        }
+        
         setSliderLength(clientVars.collab_client_vars.rev);
         setSliderPosition(clientVars.collab_client_vars.rev);
         

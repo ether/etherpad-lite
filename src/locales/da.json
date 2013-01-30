@@ -78,6 +78,7 @@
 	"pad.share.emebdcode": "Integrerings URL",
 	"pad.chat": "Chat",
 	"pad.chat.title": "\u00c5ben chat for denne pad.",
+	"pad.chat.loadmessages": "Indl\u00e6s flere meddelelser",
 	"timeslider.pageTitle": "{{appTitle}} Timeslider",
 	"timeslider.toolbar.returnbutton": "Tilbage til pad",
 	"timeslider.toolbar.authors": "Forfattere:",

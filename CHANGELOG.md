@@ -1,3 +1,38 @@
+# 1.2.7
+ * NEW: notifications are now modularized and can be stacked
+ * NEW: Visit a specific revision in the timeslider by suffixing #%revNumber% IE http://localhost/p/test/timeslider#12
+ * NEW: Link to plugin on Admin page allows admins to easily see plugin details in a new window by clicking on the plugin name
+ * NEW: Automatically see plugins that require update and be able to one click update
+ * NEW: API endpoints for Chat .. getChatHistory, getChatHead
+ * NEW: API endpoint to see a pad diff in HTML format from revision x to revision y .. createPadDiffHTML
+ * NEW: Real time plugin search & unified menu UI for admin pages
+ * Fix: MAJOR issue where server could be crashed by malformed client message
+ * Fix: AuthorID is now included in padUsers API response
+ * Fix: make docs
+ * Fix: Timeslider UI bug with slider not being in position
+ * Fix: IE8 language issue where it wouldn't load pads due to IE8 suckling on the bussum of hatrid
+ * Fix: Import timeout issue
+ * Fix: Import now works if Params are set in pad URL
+ * Fix: Convert script
+ * Other: Various new language strings and update/bugfixes of others
+ * Other: Clean up the getParams functionality
+ * Other: Various new EEJS blocks: index, timeslider, html etc.
+
+# 1.2.6
+ * Fix: Package file UeberDB reference
+ * New #users EEJS block for plugins
+
+# 1.2.5
+ * Create timeslider EEJS blocks for plugins
+ * Allow for "more messages" to be loaded in chat
+ * Introduce better logging
+ * API endpoint for "listAllPads"
+ * Fix: Stop highlight of timeslider when dragging mouse
+ * Fix: Time Delta on Timeslider make date update properly
+ * Fix: Prevent empty chat messages from being sent
+ * Fix: checkPad script
+ * Fix: IE onLoad listener for i18n
+
 # 1.2.4
  * Fix IE console issue created in 1.2.3
  * Allow CI Tests to pass by ignoring timeslider test

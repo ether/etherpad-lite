@@ -4,7 +4,8 @@
 			"0": "Armando-Martin",
 			"1": "Jacobo",
 			"2": "Joker",
-			"4": "Xuacu"
+			"4": "Vivaelcelta",
+			"5": "Xuacu"
 		}
 	},
 	"index.newPad": "Nuevo Pad",
@@ -56,6 +57,7 @@
 	"pad.modals.connected": "Conectado.",
 	"pad.modals.reconnecting": "Reconectando a tu pad..",
 	"pad.modals.forcereconnect": "Reconexi\u00f3n forzosa",
+	"pad.modals.userdup": "Abierto en otra ventana",
 	"pad.modals.userdup.explanation": "Este pad parece estar abierto en m\u00e1s de una ventana de tu navegador.",
 	"pad.modals.userdup.advice": "Reconectar para usar esta ventana.",
 	"pad.modals.unauth": "No autorizado.",
@@ -80,10 +82,12 @@
 	"pad.share.emebdcode": "Incrustar URL",
 	"pad.chat": "Chat",
 	"pad.chat.title": "Abrir el chat para este pad.",
+	"pad.chat.loadmessages": "Cargar m\u00e1s mensajes",
 	"timeslider.pageTitle": "{{appTitle}} L\u00ednea de tiempo",
 	"timeslider.toolbar.returnbutton": "Volver al pad",
 	"timeslider.toolbar.authors": "Autores:",
 	"timeslider.toolbar.authorsList": "Sin autores",
+	"timeslider.toolbar.exportlink.title": "Exportar",
 	"timeslider.exportCurrent": "Exportar la versi\u00f3n actual como:",
 	"timeslider.version": "Versi\u00f3n {{version}}",
 	"timeslider.saved": "Guardado el {{day}} de {{month}} de {{year}}",

@@ -78,6 +78,16 @@ var padeditor = (function()
       
       html10n.bind('localized', function() {
         $("#languagemenu").val(html10n.getLanguage());
+        // translate the value of 'unnamed' and 'Enter your name' textboxes in the userlist
+        // this does not interfere with html10n's normal value-setting because html10n just ingores <input>s
+        // also, a value which has been set by the user will be not overwritten since a user-edited <input>
+        // does *not* have the editempty-class
+        $('input[data-l10n-id]').each(function(key, input)
+          {
+            input = $(input);
+            if(input.hasClass("editempty"))
+              input.val(html10n.get(input.attr("data-l10n-id")));
+          });
       })
       $("#languagemenu").val(html10n.getLanguage());
       $("#languagemenu").change(function() {

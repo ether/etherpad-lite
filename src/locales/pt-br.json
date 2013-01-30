@@ -1,4 +1,9 @@
 {
+	"@metadata": {
+		"authors": [
+			"Tuliouel"
+		]
+	},
 	"index.newPad": "Nova Nota",
 	"index.createOpenPad": "ou criar-abrir uma Nota com o nome:",
 	"pad.toolbar.bold.title": "Negrito (Ctrl-B)",
@@ -73,6 +78,7 @@
 	"pad.share.emebdcode": "Incorporar o URL",
 	"pad.chat": "Bate-papo",
 	"pad.chat.title": "Abrir o bate-papo desta nota.",
+	"pad.chat.loadmessages": "Carregar mais mensagens",
 	"timeslider.pageTitle": "Linha do tempo de {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Retornar para a nota",
 	"timeslider.toolbar.authors": "Autores:",
@@ -108,10 +114,5 @@
 	"pad.impexp.uploadFailed": "O envio falhou. Tente outra vez",
 	"pad.impexp.importfailed": "A importa\u00e7\u00e3o falhou",
 	"pad.impexp.copypaste": "Copie e cole",
-	"pad.impexp.exportdisabled": "A exposta\u00e7\u00e3o em formato {{type}} est\u00e1 desativada. Comunique-se com o administrador do sistema para detalhes.",
-	"@metadata": {
-		"authors": [
-			"Tuliouel"
-		]
-	}
+	"pad.impexp.exportdisabled": "A exposta\u00e7\u00e3o em formato {{type}} est\u00e1 desativada. Comunique-se com o administrador do sistema para detalhes."
 }

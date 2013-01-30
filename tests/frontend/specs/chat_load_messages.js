@@ -1,6 +1,9 @@
 describe("chat-load-messages", function(){
+  var padName;
+ 
   it("creates a pad", function(done) {
-    helper.newPad(done);
+    padName = helper.newPad(done);
+    this.timeout(60000);
   });
 
   it("adds a lot of messages", function(done) {
@@ -10,6 +13,8 @@ describe("chat-load-messages", function(){
     chatButton.click();
     var chatInput = chrome$("#chatinput");
     var chatText = chrome$("#chattext");
+    
+    this.timeout(60000);
     
     var messages = 140;
     for(var i=1; i <= messages; i++) {
@@ -23,22 +28,17 @@ describe("chat-load-messages", function(){
     }
     helper.waitFor(function(){
       return chatText.children("p").length == messages;
-    }).always(function(){
+    }, 60000).always(function(){
       expect(chatText.children("p").length).to.be(messages);
-      $('#iframe-container iframe')[0].contentWindow.location.reload();
-      done();
+      helper.newPad(done, padName);
      });
   });
   
   it("checks initial message count", function(done) {
     var chatText;
     var expectedCount = 101;
+    var chrome$ = helper.padChrome$;
     helper.waitFor(function(){
-      // wait for the frame to load
-      var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
-      if(!chrome$) // page not fully loaded
-        return false;
-    
       var chatButton = chrome$("#chaticon");
       chatButton.click();
       chatText = chrome$("#chattext");
@@ -51,7 +51,7 @@ describe("chat-load-messages", function(){
   
   it("loads more messages", function(done) {
     var expectedCount = 122;
-    var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
+    var chrome$ = helper.padChrome$;
     var chatButton = chrome$("#chaticon");
     chatButton.click();
     var chatText = chrome$("#chattext");
@@ -68,17 +68,20 @@ describe("chat-load-messages", function(){
   
   it("checks for button vanishing", function(done) {
     var expectedDisplay = 'none';
-    var chrome$ = $('#iframe-container iframe')[0].contentWindow.$;
+    var chrome$ = helper.padChrome$;
     var chatButton = chrome$("#chaticon");
     chatButton.click();
     var chatText = chrome$("#chattext");
     var loadMsgBtn = chrome$("#chatloadmessagesbutton");
+    var loadMsgBall = chrome$("#chatloadmessagesball");
 
     loadMsgBtn.click();
     helper.waitFor(function(){
-      return loadMsgBtn.css('display') == expectedDisplay;
+      return loadMsgBtn.css('display')  == expectedDisplay &&
+             loadMsgBall.css('display') == expectedDisplay;
     }).always(function(){
       expect(loadMsgBtn.css('display')).to.be(expectedDisplay);
+      expect(loadMsgBall.css('display')).to.be(expectedDisplay);
       done();
     });
   });
