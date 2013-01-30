@@ -19,11 +19,14 @@
       <% } %>
 
        <div class="menu">
-        <h1>Etherpad lite</h1> 
-        <li><a href="plugins">Plugin manager</a> </li>
-        <li><a href="settings">Settings</a> </li>
-        <li><a href="plugins/info">Troubleshooting information</a> </li>
-        
+        <h1>Etherpad lite</h1>
+        <ul> 
+          <% e.begin_block("adminMenu"); %>
+          <li><a href="plugins">Plugin manager</a> </li>
+          <li><a href="settings">Settings</a> </li>
+          <li><a href="plugins/info">Troubleshooting information</a> </li>
+          <% e.end_block(); %>
+        </ul>
         <div id="progress"><img src="../static/img/loading.gif" alt=""/>&nbsp;&nbsp;<span class="message"></span></div>
       </div>
 
