@@ -473,6 +473,11 @@ function handleSuggestUserName(client, message)
 function handleUserInfoUpdate(client, message)
 {
   //check if all ok
+  if(message.data.userInfo == null)
+  {
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no userInfo!");
+    return;
+  }
   if(message.data.userInfo.colorId == null)
   {
     messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no colorId!");
