@@ -210,6 +210,7 @@ exports.handleMessage = function(client, message)
       } else if (message.data.type == "SAVE_REVISION") {
         handleSaveRevisionMessage(client, message);
       } else if (message.data.type == "CLIENT_MESSAGE" &&
+                 message.data.payload != null &&
                  message.data.payload.type == "suggestUserName") {
         handleSuggestUserName(client, message);
       } else {
