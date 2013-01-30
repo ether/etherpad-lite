@@ -180,6 +180,7 @@ var version =
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
   , "listAllPads"               : []
+  , "createDiffHTML"	        : ["padID", "startRev", "endRev"]
   , "createPad"                 : ["padID", "text"]
   , "createGroupPad"            : ["groupID", "padName", "text"]
   , "createAuthor"              : ["name"]

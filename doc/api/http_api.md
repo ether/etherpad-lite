@@ -355,7 +355,7 @@ returns the number of user that are currently editing this pad
 returns the list of users that are currently editing this pad
 
 *Example returns:*
-  * `{code: 0, message:"ok", data: {padUsers: [{colorId:"#c1a9d9","name":"username1","timestamp":1345228793126},{"colorId":"#d9a9cd","name":"Hmmm","timestamp":1345228796042}]}}`
+  * `{code: 0, message:"ok", data: {padUsers: [{colorId:"#c1a9d9","name":"username1","timestamp":1345228793126,"id":"a.n4gEeMLsvg12452n"},{"colorId":"#d9a9cd","name":"Hmmm","timestamp":1345228796042,"id":"a.n4gEeMLsvg12452n"}]}}`
   * `{code: 0, message:"ok", data: {padUsers: []}}`
 
 #### deletePad(padID)

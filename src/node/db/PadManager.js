@@ -56,7 +56,6 @@ var padList = {
         });
       }
     });
-    return this;
   },
   /**
    * Returns all pads in alphabetical order as array.

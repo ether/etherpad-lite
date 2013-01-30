@@ -210,6 +210,7 @@ exports.handleMessage = function(client, message)
       } else if (message.data.type == "SAVE_REVISION") {
         handleSaveRevisionMessage(client, message);
       } else if (message.data.type == "CLIENT_MESSAGE" &&
+                 message.data.payload != null &&
                  message.data.payload.type == "suggestUserName") {
         handleSuggestUserName(client, message);
       } else {
@@ -473,6 +474,11 @@ function handleSuggestUserName(client, message)
 function handleUserInfoUpdate(client, message)
 {
   //check if all ok
+  if(message.data.userInfo == null)
+  {
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no userInfo!");
+    return;
+  }
   if(message.data.userInfo.colorId == null)
   {
     messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no colorId!");
@@ -1028,7 +1034,7 @@ function handleClientReady(client, message)
               "globalPadId": message.padId,
               "time": currentTime,
           },
-          "colorPalette": ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ff8f8f", "#ffe38f", "#c7ff8f", "#8fffab", "#8fffff", "#8fabff", "#c78fff", "#ff8fe3", "#d97979", "#d9c179", "#a9d979", "#79d991", "#79d9d9", "#7991d9", "#a979d9", "#d979c1", "#d9a9a9", "#d9cda9", "#c1d9a9", "#a9d9b5", "#a9d9d9", "#a9b5d9", "#c1a9d9", "#d9a9cd", "#4c9c82", "#12d1ad", "#2d8e80", "#7485c3", "#a091c7", "#3185ab", "#6818b4", "#e6e76d", "#a42c64", "#f386e5", "#4ecc0c", "#c0c236", "#693224", "#b5de6a", "#9b88fd", "#358f9b", "#496d2f", "#e267fe", "#d23056", "#1a1a64", "#5aa335", "#d722bb", "#86dc6c", "#b5a714", "#955b6a", "#9f2985", "#4b81c8", "#3d6a5b", "#434e16", "#d16084", "#af6a0e", "#8c8bd8"],
+          "colorPalette": authorManager.getColorPalette(),
           "clientIp": "127.0.0.1",
           "userIsGuest": true,
           "userColor": authorColorId,
@@ -1536,6 +1542,7 @@ exports.padUsers = function (padID, callback) {
       }
       var aid = sessioninfos[ix].author;
       authorManager.getAuthor( aid, function ( err, author ) {
+        author.id = aid;
         authors.push( author );
         if ( authors.length === pad2sessions[padID].length ) {
           callback(null, {padUsers: authors});
