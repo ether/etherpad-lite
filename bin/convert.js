@@ -1,4 +1,3 @@
-
 var startTime = new Date().getTime();
 var fs = require("fs");
 var ueberDB = require("../src/node_modules/ueberDB");
@@ -403,7 +402,7 @@ function convertPad(padId, callback)
       }
       catch(e)
       {
-        console.error("Error while converting pad " + padId + ", pad skiped");
+        console.error("Error while converting pad " + padId + ", pad skipped");
         console.error(e.stack ? e.stack : JSON.stringify(e));
         callback();
         return;

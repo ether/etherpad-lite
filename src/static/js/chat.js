@@ -1,10 +1,4 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
- * This helps other people to understand this code better and helps them to improve it.
- * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
- */
-
-/**
  * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +16,6 @@
 
 var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
-
 var Tinycon = require('tinycon/tinycon');
 
 var chat = (function()
@@ -36,6 +29,7 @@ var chat = (function()
     {      
       $("#chaticon").hide();
       $("#chatbox").show();
+      $("#gritter-notice-wrapper").hide();
       self.scrollDown();
       chatMentions = 0;
       Tinycon.setBubble(0);
@@ -62,6 +56,8 @@ var chat = (function()
       $("#chatcounter").text("0");
       $("#chaticon").show();
       $("#chatbox").hide();
+      $.gritter.removeAll();
+      $("#gritter-notice-wrapper").show();
     },
     scrollDown: function()
     {
@@ -122,7 +118,7 @@ var chat = (function()
         $("#chattext").append(html);
       
       //should we increment the counter??
-      if(increment)
+      if(increment && !isHistoryAdd)
       {
         var count = Number($("#chatcounter").text());
         count++;
@@ -130,17 +126,44 @@ var chat = (function()
         // is the users focus already in the chatbox?
         var alreadyFocused = $("#chatinput").is(":focus");
         
+        // does the user already have the chatbox open?
+        var chatOpen = $("#chatbox").is(":visible");
+
         $("#chatcounter").text(count);
         // chat throb stuff -- Just make it throw for twice as long
-        if(wasMentioned && !alreadyFocused && !isHistoryAdd)
+        if(wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen)
         { // If the user was mentioned show for twice as long and flash the browser window
-          $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(4000).hide(400);
+          $.gritter.add({
+            // (string | mandatory) the heading of the notification
+            title: authorName,
+            // (string | mandatory) the text inside the notification
+            text: text,
+            // (bool | optional) if you want it to fade out on its own or just sit there
+            sticky: true,
+            // (int | optional) the time you want it to be alive for before fading out
+            time: '2000'
+          });
+
           chatMentions++;
           Tinycon.setBubble(chatMentions);
         }
         else
         {
-          $('#chatthrob').html("<b>"+authorName+"</b>" + ": " + text).show().delay(2000).hide(400);
+          if(!chatOpen){
+            $.gritter.add({
+              // (string | mandatory) the heading of the notification
+              title: authorName,
+              // (string | mandatory) the text inside the notification
+              text: text,
+
+              // (bool | optional) if you want it to fade out on its own or just sit there
+              sticky: false,
+              // (int | optional) the time you want it to be alive for before fading out
+              time: '4000'
+            });
+            Tinycon.setBubble(count);
+
+          }
         }
       }
        // Clear the chat mentions when the user clicks on the chat input box

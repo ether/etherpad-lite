@@ -1,4 +1,9 @@
 {
+	"@metadata": {
+		"authors": [
+			"Mateju"
+		]
+	},
 	"index.newPad": "Nov dokument",
 	"index.createOpenPad": "ali pa odpri dokument z imenom:",
 	"pad.toolbar.bold.title": "Krepko (Ctrl-B)",
@@ -73,6 +78,7 @@
 	"pad.share.emebdcode": "Vstavi naslov URL",
 	"pad.chat": "Klepet",
 	"pad.chat.title": "Odpri klepetalno okno dokumenta.",
+	"pad.chat.loadmessages": "Nalo\u017ei ve\u010d sporo\u010dil",
 	"timeslider.pageTitle": "Zgodovina dokumenta {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Vrni se na dokument",
 	"timeslider.toolbar.authors": "Autorji:",
@@ -108,10 +114,5 @@
 	"pad.impexp.uploadFailed": "Nalaganje je spodletelo, poskusite znova.",
 	"pad.impexp.importfailed": "Uvoz je spodletel.",
 	"pad.impexp.copypaste": "Vsebino kopirajte in prilepite.",
-	"pad.impexp.exportdisabled": "Izvoz v zapis {{type}} je onemogo\u010den. Za ve\u010d podrobnosti stopite v stik s skrbnikom.",
-	"@metadata": {
-		"authors": [
-			"Mateju"
-		]
-	}
+	"pad.impexp.exportdisabled": "Izvoz v zapis {{type}} je onemogo\u010den. Za ve\u010d podrobnosti stopite v stik s skrbnikom."
 }

@@ -292,6 +292,34 @@ returns the text of a pad formatted as HTML
   * `{code: 0, message:"ok", data: {html:"Welcome Text<br>More Text"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
+### Chat
+#### getChatHistory(padID, [start, end])
+ * API >= 1.2.7
+
+returns
+
+* a part of the chat history, when `start` and `end` are given
+* the whole chat histroy, when no extra parameters are given
+
+
+*Example returns:*
+
+* `{"code":0,"message":"ok","data":{"messages":[{"text":"foo","userId":"a.foo","time":1359199533759,"userName":"test"},{"text":"bar","userId":"a.foo","time":1359199534622,"userName":"test"}]}}`
+* `{code: 1, message:"start is higher or equal to the current chatHead", data: null}`
+* `{code: 1, message:"padID does not exist", data: null}`
+
+#### getChatHead(padID)
+ * API >= 1.2.7
+
+returns the chatHead (last number of the last chat-message) of the pad
+
+
+*Example returns:*
+
+* `{code: 0, message:"ok", data: {chatHead: 42}}`
+* `{code: 1, message:"padID does not exist", data: null}`
+
+
 ### Pad
 Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security manager controls access of them and its forbidden for normal pads to include a $ in the name. 
 
@@ -327,7 +355,7 @@ returns the number of user that are currently editing this pad
 returns the list of users that are currently editing this pad
 
 *Example returns:*
-  * `{code: 0, message:"ok", data: {padUsers: [{colorId:"#c1a9d9","name":"username1","timestamp":1345228793126},{"colorId":"#d9a9cd","name":"Hmmm","timestamp":1345228796042}]}}`
+  * `{code: 0, message:"ok", data: {padUsers: [{colorId:"#c1a9d9","name":"username1","timestamp":1345228793126,"id":"a.n4gEeMLsvg12452n"},{"colorId":"#d9a9cd","name":"Hmmm","timestamp":1345228796042,"id":"a.n4gEeMLsvg12452n"}]}}`
   * `{code: 0, message:"ok", data: {padUsers: []}}`
 
 #### deletePad(padID)

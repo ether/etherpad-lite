@@ -30,6 +30,7 @@ var async = require("async");
 var exportHtml = require("../utils/ExportHtml");
 var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
+var PadDiff = require("../utils/padDiff");
 
 /**********************/
 /**GROUP FUNCTIONS*****/
@@ -274,6 +275,77 @@ exports.setHTML = function(padID, html, callback)
     //update the clients on the pad
     padMessageHandler.updatePadClients(pad, callback);
 
+  });
+}
+
+/******************/
+/**CHAT FUNCTIONS */
+/******************/
+
+/**
+getChatHistory(padId, start, end), returns a part of or the whole chat-history of this pad
+
+Example returns:
+
+{"code":0,"message":"ok","data":{"messages":[{"text":"foo","userId":"a.foo","time":1359199533759,"userName":"test"},
+                                             {"text":"bar","userId":"a.foo","time":1359199534622,"userName":"test"}]}}
+
+{code: 1, message:"start is higher or equal to the current chatHead", data: null}
+
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getChatHistory = function(padID, start, end, callback)
+{
+  if(start && end)
+  {
+    if(start < 0)
+    {
+      callback(new customError("start is below zero","apierror"));
+      return;
+    }
+    if(end < 0)
+    {
+      callback(new customError("end is below zero","apierror"));
+      return;
+    }
+    if(start > end)
+    {
+      callback(new customError("start is higher than end","apierror"));
+      return;
+    }
+  }
+  
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    var chatHead = pad.chatHead;
+    
+    // fall back to getting the whole chat-history if a parameter is missing
+    if(!start || !end)
+    {
+	  start = 0;
+	  end = pad.chatHead - 1;
+    }
+    
+    if(start >= chatHead)
+    {
+      callback(new customError("start is higher or equal to the current chatHead","apierror"));
+      return;
+    }
+    if(end >= chatHead)
+    {
+      callback(new customError("end is higher or equal to the current chatHead","apierror"));
+      return;
+    }
+    
+    // the the whole message-log and return it to the client
+    pad.getChatMessages(start, end,
+      function(err, msgs)
+      {
+        if(ERR(err, callback)) return;
+        callback(null, {messages: msgs});
+      });
   });
 }
 
@@ -567,6 +639,103 @@ exports.checkToken = function(callback)
   callback();
 }
 
+/**
+getChatHead(padID) returns the chatHead (last number of the last chat-message) of the pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {chatHead: 42}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getChatHead = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    callback(null, {chatHead: pad.chatHead});
+  });
+}
+
+/**
+createDiffHTML(padID, startRev, endRev) returns an object of diffs from 2 points in a pad
+
+Example returns:
+
+{"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad Lite!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}
+{"code":4,"message":"no or wrong API Key","data":null}
+*/
+exports.createDiffHTML = function(padID, startRev, endRev, callback){
+  //check if rev is a number
+  if(startRev !== undefined && typeof startRev != "number")
+  {
+    //try to parse the number
+    if(!isNaN(parseInt(startRev)))
+    {
+      startRev = parseInt(startRev, 10);
+    }
+    else
+    {
+      callback({stop: "startRev is not a number"});
+      return;
+    }
+  }
+ 
+  //check if rev is a number
+  if(endRev !== undefined && typeof endRev != "number")
+  {
+    //try to parse the number
+    if(!isNaN(parseInt(endRev)))
+    {
+      endRev = parseInt(endRev, 10);
+    }
+    else
+    {
+      callback({stop: "endRev is not a number"});
+      return;
+    }
+  }
+ 
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(err){
+      return callback(err);
+    }
+ 
+    try {
+      var padDiff = new PadDiff(pad, startRev, endRev);
+    } catch(e) {
+      return callback({stop:e.message});
+    }
+    var html, authors;
+ 
+    async.series([
+      function(callback){
+        padDiff.getHtml(function(err, _html){
+          if(err){
+            return callback(err);
+          }
+ 
+          html = _html;
+          callback();
+        });
+      },
+      function(callback){
+        padDiff.getAuthors(function(err, _authors){
+          if(err){
+            return callback(err);
+          }
+ 
+          authors = _authors;
+          callback();
+        });
+      }
+    ], function(err){
+      callback(err, {html: html, authors: authors})
+    });
+  });
+}
 
 /******************************/
 /** INTERNAL HELPER FUNCTIONS */

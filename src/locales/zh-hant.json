@@ -78,6 +78,7 @@
 	"pad.share.emebdcode": "\u5d4c\u5165\u7db2\u5740",
 	"pad.chat": "\u804a\u5929",
 	"pad.chat.title": "\u6253\u958b\u6b64pad\u7684\u804a\u5929\u3002",
+	"pad.chat.loadmessages": "\u8f09\u5165\u66f4\u591a\u8a0a\u606f",
 	"timeslider.pageTitle": "{{appTitle}}\u6642\u9593\u8ef8",
 	"timeslider.toolbar.returnbutton": "\u8fd4\u56de\u5230pad",
 	"timeslider.toolbar.authors": "\u4f5c\u8005\uff1a",

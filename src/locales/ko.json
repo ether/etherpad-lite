@@ -78,6 +78,7 @@
 	"pad.share.emebdcode": "URL \ud3ec\ud568",
 	"pad.chat": "\ub300\ud654",
 	"pad.chat.title": "\uc774 \ud328\ub4dc\uc5d0 \ub300\ud654\ub97c \uc5fd\ub2c8\ub2e4.",
+	"pad.chat.loadmessages": "\ub354 \ub9ce\uc740 \uba54\uc2dc\uc9c0 \ubd88\ub7ec\uc624\uae30",
 	"timeslider.pageTitle": "{{appTitle}} \uc2dc\uac04\uc2ac\ub77c\uc774\ub354",
 	"timeslider.toolbar.returnbutton": "\ud328\ub4dc\ub85c \ub3cc\uc544\uac00\uae30",
 	"timeslider.toolbar.authors": "\uc800\uc790:",

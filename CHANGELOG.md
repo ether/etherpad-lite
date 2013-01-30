@@ -1,3 +1,20 @@
+# 1.2.7
+ * NEW: Visit a specific revision in the timeslider by suffixing #%revNumber% IE http://localhost/p/test/timeslider#12
+ * NEW: Link to plugin on Admin page allows admins to easily see plugin details in a new window by clicking on the plugin name
+ * NEW: Automatically see plugins that require update and be able to one click update
+ * NEW: API endpoints for Chat .. getChatHistory, getChatHead
+ * NEW: API endpoint to see a pad diff in HTML format from revision x to revision y .. createPadDiffHTML
+ * NEW: Real time plugin search & unified menu UI for admin pages
+ * Fix: make docs
+ * Fix: Timeslider UI bug with slider not being in position
+ * Fix: IE8 language issue where it wouldn't load pads due to IE8 suckling on the bussum of hatrid
+ * Fix: Import timeout issue
+ * Fix: Import now works if Params are set in pad URL
+ * Fix: Convert script
+ * Other: Various new language strings
+ * Other: Clean up the getParams functionality
+ * Other: Various new EEJS blocks: index, timeslider, html etc.
+
 # 1.2.6
  * Fix: Package file UeberDB reference
  * New #users EEJS block for plugins
