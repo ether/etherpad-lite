@@ -154,7 +154,12 @@ function Ace2Inner(){
   var dmesg = noop;
   window.dmesg = noop;
 
-  var scheduler = parent;
+  // Ugly hack for Firefox 18
+  // get the timeout and interval methods from the parent iframe
+  setTimeout = parent.setTimeout;
+  clearTimeout = parent.clearTimeout;
+  setInterval = parent.setInterval;
+  clearInterval = parent.clearInterval;
 
   var textFace = 'monospace';
   var textSize = 12;
@@ -174,7 +179,7 @@ function Ace2Inner(){
     parentDynamicCSS = makeCSSManager("dynamicsyntax", true);
   }
 
-  var changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
+  var changesetTracker = makeChangesetTracker(rep.apool, {
     withCallbacks: function(operationName, f)
     {
       inCallStackIfNecessary(operationName, function()
@@ -594,7 +599,7 @@ function Ace2Inner(){
     doesWrap = newVal;
     var dwClass = "doesWrap";
     setClassPresence(root, "doesWrap", doesWrap);
-    scheduler.setTimeout(function()
+    setTimeout(function()
     {
       inCallStackIfNecessary("setWraps", function()
       {
@@ -634,7 +639,7 @@ function Ace2Inner(){
     textFace = face;
     root.style.fontFamily = textFace;
     lineMetricsDiv.style.fontFamily = textFace;
-    scheduler.setTimeout(function()
+    setTimeout(function()
     {
       setUpTrackingCSS();
     }, 0);
@@ -647,7 +652,7 @@ function Ace2Inner(){
     root.style.lineHeight = textLineHeight() + "px";
     sideDiv.style.lineHeight = textLineHeight() + "px";
     lineMetricsDiv.style.fontSize = textSize + "px";
-    scheduler.setTimeout(function()
+    setTimeout(function()
     {
       setUpTrackingCSS();
     }, 0);
@@ -1085,7 +1090,7 @@ function Ace2Inner(){
     {
       if (scheduledTimeout)
       {
-        scheduler.clearTimeout(scheduledTimeout);
+        clearTimeout(scheduledTimeout);
         scheduledTimeout = null;
       }
     }
@@ -1096,7 +1101,7 @@ function Ace2Inner(){
       scheduledTime = time;
       var delay = time - now();
       if (delay < 0) delay = 0;
-      scheduledTimeout = scheduler.setTimeout(callback, delay);
+      scheduledTimeout = setTimeout(callback, delay);
     }
 
     function callback()
@@ -3613,7 +3618,7 @@ function Ace2Inner(){
           evt.preventDefault();
           doReturnKey();
           //scrollSelectionIntoView();
-          scheduler.setTimeout(function()
+          setTimeout(function()
           {
             outerWin.scrollBy(-100, 0);
           }, 0);
@@ -3688,6 +3693,42 @@ function Ace2Inner(){
           evt.preventDefault();
           doDeleteKey();
           specialHandled = true;
+        }
+        if((evt.which == 33 || evt.which == 34) && type == 'keydown'){
+          var oldVisibleLineRange = getVisibleLineRange();
+          var topOffset = rep.selStart[0] - oldVisibleLineRange[0];
+          if(topOffset < 0 ){
+            topOffset = 0;
+          }
+
+          var isPageDown = evt.which === 34;
+          var isPageUp = evt.which === 33;
+
+          setTimeout(function(){
+            var newVisibleLineRange = getVisibleLineRange();
+            var linesCount = rep.lines.length();
+
+            var newCaretRow = rep.selStart[0];
+            if(isPageUp){
+              newCaretRow = oldVisibleLineRange[0];
+            }
+
+            if(isPageDown){
+              newCaretRow = newVisibleLineRange[0] + topOffset;
+            }
+
+            //ensure min and max
+            if(newCaretRow < 0){
+              newCaretRow = 0;
+            }
+            if(newCaretRow >= linesCount){
+              newCaretRow = linesCount-1;
+            }
+
+            rep.selStart[0] = newCaretRow;
+            rep.selEnd[0] = newCaretRow;
+            updateBrowserSelectionFromRep();
+          }, 200);
         }
       }
 
@@ -4720,7 +4761,7 @@ function Ace2Inner(){
 
     });
 
-    scheduler.setTimeout(function()
+    setTimeout(function()
     {
       parent.readyFunc(); // defined in code that sets up the inner iframe
     }, 0);
@@ -5168,7 +5209,7 @@ function Ace2Inner(){
         documentAttributeManager: documentAttributeManager
       });
     
-      scheduler.setTimeout(function()
+      setTimeout(function()
       {
         parent.readyFunc(); // defined in code that sets up the inner iframe
       }, 0);
