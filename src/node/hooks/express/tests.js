@@ -10,7 +10,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         plugins.forEach(function(plugin){ // for each one
           if(fs.existsSync("node_modules/"+plugin+"/tests/frontend/specs")){ // If the folder exists
             fs.readdir("node_modules/"+plugin+"/tests/frontend/specs/", function(err, pluginFiles){
-              files.push(pluginFiles);
+              files.push("/static/plugins/"+plugin+"/tests/frontend/specs/"+pluginFiles);
             });
           }
         });
