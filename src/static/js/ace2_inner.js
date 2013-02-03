@@ -4119,6 +4119,11 @@ function Ace2Inner(){
         selection.startPoint = pointFromRangeBound(range.startContainer, range.startOffset);
         selection.endPoint = pointFromRangeBound(range.endContainer, range.endOffset);
         selection.focusAtStart = (((range.startContainer != range.endContainer) || (range.startOffset != range.endOffset)) && browserSelection.anchorNode && (browserSelection.anchorNode == range.endContainer) && (browserSelection.anchorOffset == range.endOffset));
+        
+        if(selection.startPoint.node.ownerDocument !== window.document){
+          return null;
+        }
+
         return selection;
       }
       else return null;
