@@ -8,9 +8,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
       fs.readdir('node_modules', function(err, plugins){ // installed plugins
         plugins.forEach(function(plugin){ // for each one
-          if(fs.existsSync("node_modules/"+plugin+"/tests/frontend/specs")){ // If the folder exists
-            fs.readdir("node_modules/"+plugin+"/tests/frontend/specs/", function(err, pluginFiles){
-              files.push("/static/plugins/"+plugin+"/tests/frontend/specs/"+pluginFiles);
+          if(fs.existsSync("node_modules/"+plugin+"/static/tests/frontend/specs")){ // If the folder exists
+            fs.readdir("node_modules/"+plugin+"/static/tests/frontend/specs/", function(err, pluginFiles){
+              files.push("/static/plugins/"+plugin+"/static/tests/frontend/specs/"+pluginFiles);
             });
           }
         });
