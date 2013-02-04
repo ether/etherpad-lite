@@ -80,5 +80,16 @@ exports.restartServer = function () {
   });
   hooks.callAll("expressCreateServer", {"app": app, "server": server});
 
+  //The 404 Route (ALWAYS Keep this as the last route)
+  app.get('*', function(req, res){
+    var rootPath = path.resolve(npm.dir, '..');
+    var customFile = rootPath + '/src/static/custom/404.html';
+    if(fs.existsSync(customFile)){ // if a custom 404 page exists..
+      res.sendfile(customFile);
+    } else {
+      res.send('Resource does not exist', 404);
+    }
+  });
+
   server.listen(settings.port, settings.ip);
 }
