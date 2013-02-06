@@ -179,7 +179,11 @@ $(function(){
   //inject spec scripts into the dom
   var $body = $('body');
   $.each(specs, function(i, spec){
-    $body.append('<script src="specs/' + spec + '"></script>')
+    if(spec[0] != "/"){ // if the spec isn't a plugin spec which means the spec file might be in a different subfolder
+      $body.append('<script src="specs/' + spec + '"></script>')
+    }else{
+      $body.append('<script src="' + spec + '"></script>')
+    }
   });
 
   //initalize the test helper
