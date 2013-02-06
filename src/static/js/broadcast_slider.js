@@ -108,11 +108,15 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       newpos = Number(newpos);
       if (newpos < 0 || newpos > sliderLength) return;
       window.location.hash = "#" + newpos;
+      if(!newpos){
+        newpos = 0; // stops it from displaying NaN if newpos isn't set
+      }
       $("#ui-slider-handle").css('left', newpos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
       $("a.tlink").map(function()
       {
         $(this).attr('href', $(this).attr('thref').replace("%revision%", newpos));
       });
+      console.log(newpos);
       $("#revision_label").html(html10n.get("timeslider.version", { "version": newpos}));
 
       if (newpos == 0)
