@@ -28,7 +28,7 @@ $ = jQuery = require('./rjquery').$;
 _ = require("./underscore");
 
 var isNodeText = Ace2Common.isNodeText,
-  browser = Ace2Common.browser,
+  browser = $.browser,
   getAssoc = Ace2Common.getAssoc,
   setAssoc = Ace2Common.setAssoc,
   isTextNode = Ace2Common.isTextNode,
@@ -154,7 +154,17 @@ function Ace2Inner(){
   var dmesg = noop;
   window.dmesg = noop;
 
-  var scheduler = parent;
+  // Ugly hack for Firefox 18
+  // get the timeout and interval methods from the parent iframe
+  // This hack breaks IE8
+  try{
+    setTimeout = parent.setTimeout;
+    clearTimeout = parent.clearTimeout;
+    setInterval = parent.setInterval;
+    clearInterval = parent.clearInterval;
+  }catch(err){
+    // IE8 can panic here.
+  }
 
   var textFace = 'monospace';
   var textSize = 12;
@@ -174,7 +184,7 @@ function Ace2Inner(){
     parentDynamicCSS = makeCSSManager("dynamicsyntax", true);
   }
 
-  var changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
+  var changesetTracker = makeChangesetTracker(rep.apool, {
     withCallbacks: function(operationName, f)
     {
       inCallStackIfNecessary(operationName, function()
@@ -594,7 +604,7 @@ function Ace2Inner(){
     doesWrap = newVal;
     var dwClass = "doesWrap";
     setClassPresence(root, "doesWrap", doesWrap);
-    scheduler.setTimeout(function()
+    setTimeout(function()
     {
       inCallStackIfNecessary("setWraps", function()
       {
@@ -634,7 +644,7 @@ function Ace2Inner(){
     textFace = face;
     root.style.fontFamily = textFace;
     lineMetricsDiv.style.fontFamily = textFace;
-    scheduler.setTimeout(function()
+    setTimeout(function()
     {
       setUpTrackingCSS();
     }, 0);
@@ -647,7 +657,7 @@ function Ace2Inner(){
     root.style.lineHeight = textLineHeight() + "px";
     sideDiv.style.lineHeight = textLineHeight() + "px";
     lineMetricsDiv.style.fontSize = textSize + "px";
-    scheduler.setTimeout(function()
+    setTimeout(function()
     {
       setUpTrackingCSS();
     }, 0);
@@ -1085,7 +1095,7 @@ function Ace2Inner(){
     {
       if (scheduledTimeout)
       {
-        scheduler.clearTimeout(scheduledTimeout);
+        clearTimeout(scheduledTimeout);
         scheduledTimeout = null;
       }
     }
@@ -1096,7 +1106,7 @@ function Ace2Inner(){
       scheduledTime = time;
       var delay = time - now();
       if (delay < 0) delay = 0;
-      scheduledTimeout = scheduler.setTimeout(callback, delay);
+      scheduledTimeout = setTimeout(callback, delay);
     }
 
     function callback()
@@ -2817,7 +2827,6 @@ function Ace2Inner(){
       rep.selStart = selectStart;
       rep.selEnd = selectEnd;
       rep.selFocusAtStart = newSelFocusAtStart;
-      if (mozillaFakeArrows) mozillaFakeArrows.notifySelectionChanged();
       currentCallStack.repChanged = true;
 
       return true;
@@ -3614,7 +3623,7 @@ function Ace2Inner(){
           evt.preventDefault();
           doReturnKey();
           //scrollSelectionIntoView();
-          scheduler.setTimeout(function()
+          setTimeout(function()
           {
             outerWin.scrollBy(-100, 0);
           }, 0);
@@ -3690,11 +3699,41 @@ function Ace2Inner(){
           doDeleteKey();
           specialHandled = true;
         }
+        if((evt.which == 33 || evt.which == 34) && type == 'keydown'){
+          var oldVisibleLineRange = getVisibleLineRange();
+          var topOffset = rep.selStart[0] - oldVisibleLineRange[0];
+          if(topOffset < 0 ){
+            topOffset = 0;
+          }
 
-        if (mozillaFakeArrows && mozillaFakeArrows.handleKeyEvent(evt))
-        {
-          evt.preventDefault();
-          specialHandled = true;
+          var isPageDown = evt.which === 34;
+          var isPageUp = evt.which === 33;
+
+          setTimeout(function(){
+            var newVisibleLineRange = getVisibleLineRange();
+            var linesCount = rep.lines.length();
+
+            var newCaretRow = rep.selStart[0];
+            if(isPageUp){
+              newCaretRow = oldVisibleLineRange[0];
+            }
+
+            if(isPageDown){
+              newCaretRow = newVisibleLineRange[0] + topOffset;
+            }
+
+            //ensure min and max
+            if(newCaretRow < 0){
+              newCaretRow = 0;
+            }
+            if(newCaretRow >= linesCount){
+              newCaretRow = linesCount-1;
+            }
+
+            rep.selStart[0] = newCaretRow;
+            rep.selEnd[0] = newCaretRow;
+            updateBrowserSelectionFromRep();
+          }, 200);
         }
       }
 
@@ -4119,6 +4158,11 @@ function Ace2Inner(){
         selection.startPoint = pointFromRangeBound(range.startContainer, range.startOffset);
         selection.endPoint = pointFromRangeBound(range.endContainer, range.endOffset);
         selection.focusAtStart = (((range.startContainer != range.endContainer) || (range.startOffset != range.endOffset)) && browserSelection.anchorNode && (browserSelection.anchorNode == range.endContainer) && (browserSelection.anchorOffset == range.endOffset));
+        
+        if(selection.startPoint.node.ownerDocument !== window.document){
+          return null;
+        }
+
         return selection;
       }
       else return null;
@@ -4722,7 +4766,7 @@ function Ace2Inner(){
 
     });
 
-    scheduler.setTimeout(function()
+    setTimeout(function()
     {
       parent.readyFunc(); // defined in code that sets up the inner iframe
     }, 0);
@@ -5032,331 +5076,6 @@ function Ace2Inner(){
   }
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
   editorInfo.ace_doInsertOrderedList = doInsertOrderedList;
-
-  var mozillaFakeArrows = (browser.mozilla && (function()
-  {
-    // In Firefox 2, arrow keys are unstable while DOM-manipulating
-    // operations are going on.  Specifically, if an operation
-    // (computation that ties up the event queue) is going on (in the
-    // call-stack of some event, like a timeout) that at some point
-    // mutates nodes involved in the selection, then the arrow
-    // keypress may (randomly) move the caret to the beginning or end
-    // of the document.  If the operation also mutates the selection
-    // range, the old selection or the new selection may be used, or
-    // neither.
-    // As long as the arrow is pressed during the busy operation, it
-    // doesn't seem to matter that the keydown and keypress events
-    // aren't generated until afterwards, or that the arrow movement
-    // can still be stopped (meaning it hasn't been performed yet);
-    // Firefox must be preserving some old information about the
-    // selection or the DOM from when the key was initially pressed.
-    // However, it also doesn't seem to matter when the key was
-    // actually pressed relative to the time of the mutation within
-    // the prolonged operation.  Also, even in very controlled tests
-    // (like a mutation followed by a long period of busyWaiting), the
-    // problem shows up often but not every time, with no discernable
-    // pattern.  Who knows, it could have something to do with the
-    // caret-blinking timer, or DOM changes not being applied
-    // immediately.
-    // This problem, mercifully, does not show up at all in IE or
-    // Safari.  My solution is to have my own, full-featured arrow-key
-    // implementation for Firefox.
-    // Note that the problem addressed here is potentially very subtle,
-    // especially if the operation is quick and is timed to usually happen
-    // when the user is idle.
-    // features:
-    // - 'up' and 'down' arrows preserve column when passing through shorter lines
-    // - shift-arrows extend the "focus" point, which may be start or end of range
-    // - the focus point is kept horizontally and vertically scrolled into view
-    // - arrows without shift cause caret to move to beginning or end of selection (left,right)
-    //   or move focus point up or down a line (up,down)
-    // - command-(left,right,up,down) on Mac acts like (line-start, line-end, doc-start, doc-end)
-    // - takes wrapping into account when doesWrap is true, i.e. up-arrow and down-arrow move
-    //   between the virtual lines within a wrapped line; this was difficult, and unfortunately
-    //   requires mutating the DOM to get the necessary information
-    var savedFocusColumn = 0; // a value of 0 has no effect
-    var updatingSelectionNow = false;
-
-    function getVirtualLineView(lineNum)
-    {
-      var lineNode = rep.lines.atIndex(lineNum).lineNode;
-      while (lineNode.firstChild && isBlockElement(lineNode.firstChild))
-      {
-        lineNode = lineNode.firstChild;
-      }
-      return makeVirtualLineView(lineNode);
-    }
-
-    function markerlessLineAndChar(line, chr)
-    {
-      return [line, chr - rep.lines.atIndex(line).lineMarker];
-    }
-
-    function markerfulLineAndChar(line, chr)
-    {
-      return [line, chr + rep.lines.atIndex(line).lineMarker];
-    }
-
-    return {
-      notifySelectionChanged: function()
-      {
-        if (!updatingSelectionNow)
-        {
-          savedFocusColumn = 0;
-        }
-      },
-      handleKeyEvent: function(evt)
-      {
-        // returns "true" if handled
-        if (evt.type != "keypress") return false;
-        var keyCode = evt.keyCode;
-        if (keyCode < 37 || keyCode > 40) return false;
-        incorporateUserChanges();
-
-        if (!(rep.selStart && rep.selEnd)) return true;
-
-        // {byWord,toEnd,normal}
-        var moveMode = (evt.altKey ? "byWord" : (evt.ctrlKey ? "byWord" : (evt.metaKey ? "toEnd" : "normal")));
-
-        var anchorCaret = markerlessLineAndChar(rep.selStart[0], rep.selStart[1]);
-        var focusCaret = markerlessLineAndChar(rep.selEnd[0], rep.selEnd[1]);
-        var wasCaret = isCaret();
-        if (rep.selFocusAtStart)
-        {
-          var tmp = anchorCaret;
-          anchorCaret = focusCaret;
-          focusCaret = tmp;
-        }
-        var K_UP = 38,
-            K_DOWN = 40,
-            K_LEFT = 37,
-            K_RIGHT = 39;
-        var dontMove = false;
-        if (wasCaret && !evt.shiftKey)
-        {
-          // collapse, will mutate both together
-          anchorCaret = focusCaret;
-        }
-        else if ((!wasCaret) && (!evt.shiftKey))
-        {
-          if (keyCode == K_LEFT)
-          {
-            // place caret at beginning
-            if (rep.selFocusAtStart) anchorCaret = focusCaret;
-            else focusCaret = anchorCaret;
-            if (moveMode == "normal") dontMove = true;
-          }
-          else if (keyCode == K_RIGHT)
-          {
-            // place caret at end
-            if (rep.selFocusAtStart) focusCaret = anchorCaret;
-            else anchorCaret = focusCaret;
-            if (moveMode == "normal") dontMove = true;
-          }
-          else
-          {
-            // collapse, will mutate both together
-            anchorCaret = focusCaret;
-          }
-        }
-        if (!dontMove)
-        {
-          function lineLength(i)
-          {
-            var entry = rep.lines.atIndex(i);
-            return entry.text.length - entry.lineMarker;
-          }
-
-          function lineText(i)
-          {
-            var entry = rep.lines.atIndex(i);
-            return entry.text.substring(entry.lineMarker);
-          }
-
-          if (keyCode == K_UP || keyCode == K_DOWN)
-          {
-            var up = (keyCode == K_UP);
-            var canChangeLines = ((up && focusCaret[0]) || ((!up) && focusCaret[0] < rep.lines.length() - 1));
-            var virtualLineView, virtualLineSpot, canChangeVirtualLines = false;
-            if (doesWrap)
-            {
-              virtualLineView = getVirtualLineView(focusCaret[0]);
-              virtualLineSpot = virtualLineView.getVLineAndOffsetForChar(focusCaret[1]);
-              canChangeVirtualLines = ((up && virtualLineSpot.vline > 0) || ((!up) && virtualLineSpot.vline < (
-              virtualLineView.getNumVirtualLines() - 1)));
-            }
-            var newColByVirtualLineChange;
-            if (moveMode == "toEnd")
-            {
-              if (up)
-              {
-                focusCaret[0] = 0;
-                focusCaret[1] = 0;
-              }
-              else
-              {
-                focusCaret[0] = rep.lines.length() - 1;
-                focusCaret[1] = lineLength(focusCaret[0]);
-              }
-            }
-            else if (moveMode == "byWord")
-            {
-              // move by "paragraph", a feature that Firefox lacks but IE and Safari both have
-              if (up)
-              {
-                if (focusCaret[1] === 0 && canChangeLines)
-                {
-                  focusCaret[0]--;
-                  focusCaret[1] = 0;
-                }
-                else focusCaret[1] = 0;
-              }
-              else
-              {
-                var lineLen = lineLength(focusCaret[0]);
-                if (browser.windows)
-                {
-                  if (canChangeLines)
-                  {
-                    focusCaret[0]++;
-                    focusCaret[1] = 0;
-                  }
-                  else
-                  {
-                    focusCaret[1] = lineLen;
-                  }
-                }
-                else
-                {
-                  if (focusCaret[1] == lineLen && canChangeLines)
-                  {
-                    focusCaret[0]++;
-                    focusCaret[1] = lineLength(focusCaret[0]);
-                  }
-                  else
-                  {
-                    focusCaret[1] = lineLen;
-                  }
-                }
-              }
-              savedFocusColumn = 0;
-            }
-            else if (canChangeVirtualLines)
-            {
-              var vline = virtualLineSpot.vline;
-              var offset = virtualLineSpot.offset;
-              if (up) vline--;
-              else vline++;
-              if (savedFocusColumn > offset) offset = savedFocusColumn;
-              else
-              {
-                savedFocusColumn = offset;
-              }
-              var newSpot = virtualLineView.getCharForVLineAndOffset(vline, offset);
-              focusCaret[1] = newSpot.lineChar;
-            }
-            else if (canChangeLines)
-            {
-              if (up) focusCaret[0]--;
-              else focusCaret[0]++;
-              var offset = focusCaret[1];
-              if (doesWrap)
-              {
-                offset = virtualLineSpot.offset;
-              }
-              if (savedFocusColumn > offset) offset = savedFocusColumn;
-              else
-              {
-                savedFocusColumn = offset;
-              }
-              if (doesWrap)
-              {
-                var newLineView = getVirtualLineView(focusCaret[0]);
-                var vline = (up ? newLineView.getNumVirtualLines() - 1 : 0);
-                var newSpot = newLineView.getCharForVLineAndOffset(vline, offset);
-                focusCaret[1] = newSpot.lineChar;
-              }
-              else
-              {
-                var lineLen = lineLength(focusCaret[0]);
-                if (offset > lineLen) offset = lineLen;
-                focusCaret[1] = offset;
-              }
-            }
-            else
-            {
-              if (up) focusCaret[1] = 0;
-              else focusCaret[1] = lineLength(focusCaret[0]);
-              savedFocusColumn = 0;
-            }
-          }
-          else if (keyCode == K_LEFT || keyCode == K_RIGHT)
-          {
-            var left = (keyCode == K_LEFT);
-            if (left)
-            {
-              if (moveMode == "toEnd") focusCaret[1] = 0;
-              else if (focusCaret[1] > 0)
-              {
-                if (moveMode == "byWord")
-                {
-                  focusCaret[1] = moveByWordInLine(lineText(focusCaret[0]), focusCaret[1], false);
-                }
-                else
-                {
-                  focusCaret[1]--;
-                }
-              }
-              else if (focusCaret[0] > 0)
-              {
-                focusCaret[0]--;
-                focusCaret[1] = lineLength(focusCaret[0]);
-                if (moveMode == "byWord")
-                {
-                  focusCaret[1] = moveByWordInLine(lineText(focusCaret[0]), focusCaret[1], false);
-                }
-              }
-            }
-            else
-            {
-              var lineLen = lineLength(focusCaret[0]);
-              if (moveMode == "toEnd") focusCaret[1] = lineLen;
-              else if (focusCaret[1] < lineLen)
-              {
-                if (moveMode == "byWord")
-                {
-                  focusCaret[1] = moveByWordInLine(lineText(focusCaret[0]), focusCaret[1], true);
-                }
-                else
-                {
-                  focusCaret[1]++;
-                }
-              }
-              else if (focusCaret[0] < rep.lines.length() - 1)
-              {
-                focusCaret[0]++;
-                focusCaret[1] = 0;
-                if (moveMode == "byWord")
-                {
-                  focusCaret[1] = moveByWordInLine(lineText(focusCaret[0]), focusCaret[1], true);
-                }
-              }
-            }
-            savedFocusColumn = 0;
-          }
-        }
-
-        var newSelFocusAtStart = ((focusCaret[0] < anchorCaret[0]) || (focusCaret[0] == anchorCaret[0] && focusCaret[1] < anchorCaret[1]));
-        var newSelStart = (newSelFocusAtStart ? focusCaret : anchorCaret);
-        var newSelEnd = (newSelFocusAtStart ? anchorCaret : focusCaret);
-        updatingSelectionNow = true;
-        performSelectionChange(markerfulLineAndChar(newSelStart[0], newSelStart[1]), markerfulLineAndChar(newSelEnd[0], newSelEnd[1]), newSelFocusAtStart);
-        updatingSelectionNow = false;
-        currentCallStack.userChangedSelection = true;
-        return true;
-      }
-    };
-  })());
   
   var lineNumbersShown;
   var sideDivInner;
@@ -5495,7 +5214,7 @@ function Ace2Inner(){
         documentAttributeManager: documentAttributeManager
       });
     
-      scheduler.setTimeout(function()
+      setTimeout(function()
       {
         parent.readyFunc(); // defined in code that sets up the inner iframe
       }, 0);
