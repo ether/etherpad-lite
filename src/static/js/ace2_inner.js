@@ -156,10 +156,13 @@ function Ace2Inner(){
 
   // Ugly hack for Firefox 18
   // get the timeout and interval methods from the parent iframe
-  setTimeout = parent.setTimeout;
-  clearTimeout = parent.clearTimeout;
-  setInterval = parent.setInterval;
-  clearInterval = parent.clearInterval;
+  var FIREFOX = /Firefox/i.test(navigator.userAgent);
+  if(FIREFOX){
+    setTimeout = parent.setTimeout;
+    clearTimeout = parent.clearTimeout;
+    setInterval = parent.setInterval;
+    clearInterval = parent.clearInterval;
+  }
 
   var textFace = 'monospace';
   var textSize = 12;
