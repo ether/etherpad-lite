@@ -156,12 +156,14 @@ function Ace2Inner(){
 
   // Ugly hack for Firefox 18
   // get the timeout and interval methods from the parent iframe
-  var FIREFOX = /Firefox/i.test(navigator.userAgent);
-  if(FIREFOX){
+  // This hack breaks IE8
+  try{
     setTimeout = parent.setTimeout;
     clearTimeout = parent.clearTimeout;
     setInterval = parent.setInterval;
     clearInterval = parent.clearInterval;
+  }catch(err){
+    // IE8 can panic here.
   }
 
   var textFace = 'monospace';
