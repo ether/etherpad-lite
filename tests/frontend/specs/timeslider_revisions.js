@@ -98,7 +98,6 @@ describe("timeslider", function(){
       }, 6000);
     }, revs*timePerRev);
   });
-
   // This test is bad because it expects char length to be static
   // A much better way would be get the charCount before sending new chars
   it("jumps to a revision given in the url", function(done) {
@@ -117,7 +116,9 @@ describe("timeslider", function(){
           timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
         }catch(e){
         }
-        return timeslider$('#padcontent').text().length == 230; 
+        if(timeslider$){
+          return timeslider$('#padcontent').text().length == 230;
+        }
       }, 6000).always(function(){
         expect( timeslider$('#padcontent').text().length ).to.eql( 230 );
         done();
