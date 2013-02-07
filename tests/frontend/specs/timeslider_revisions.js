@@ -98,32 +98,47 @@ describe("timeslider", function(){
       }, 6000);
     }, revs*timePerRev);
   });
-  // This test is bad because it expects char length to be static
-  // A much better way would be get the charCount before sending new chars
   it("jumps to a revision given in the url", function(done) {
     var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
-    this.timeout(15000);
-    inner$("div").first().sendkeys('a');
-    
-    setTimeout(function() {
-      // go to timeslider with a specific revision set
-      $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
-      var timeslider$;
+    var chrome$ = helper.padChrome$;
+    this.timeout(20000);
+
+    // wait for the text to be loaded
+    helper.waitFor(function(){
+      return inner$('body').text().length != 0;
+    }, 6000).always(function() {
+      var newLines = inner$('body div').length;
+      var oldLength = inner$('body').text().length + newLines / 2;
+      expect( oldLength ).to.not.eql( 0 );
+      inner$("div").first().sendkeys('a');
       
+      // wait for our additional revision to be added
       helper.waitFor(function(){
-        try{
-          timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
-        }catch(e){
-        }
-        if(timeslider$){
-          return timeslider$('#padcontent').text().length == 230;
-        }
-      }, 6000).always(function(){
-        expect( timeslider$('#padcontent').text().length ).to.eql( 230 );
-        done();
+        // newLines takes the new lines into account which are strippen when using
+        // inner$('body').text(), one <div> is used for one line in ACE.
+        var lenOkay = inner$('body').text().length + newLines / 2 != oldLength;
+        // this waits for the color to be added to our <span>, which means that the revision
+        // was accepted by the server.
+        var colorOkay = inner$('span').first().attr('class').indexOf("author-") == 0;
+        return lenOkay && colorOkay;
+      }, 6000).always(function() {
+        // go to timeslider with a specific revision set
+        $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
+        
+        // wait for the timeslider to be loaded
+        helper.waitFor(function(){
+          try {
+            timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+          } catch(e){}
+          if(timeslider$){
+            return timeslider$('#padcontent').text().length == oldLength;
+          }
+        }, 6000).always(function(){
+          expect( timeslider$('#padcontent').text().length ).to.eql( oldLength );
+          done();
+        });
       });
-    }, 2500);
+    });
   });
   it("checks the export url", function(done) {
     var inner$ = helper.padInner$; 
