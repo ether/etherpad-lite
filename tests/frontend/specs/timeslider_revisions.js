@@ -4,7 +4,6 @@ describe("timeslider", function(){
     helper.newPad(cb);
     this.timeout(6000);
   });
-
   xit("loads adds a hundred revisions", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
@@ -57,14 +56,13 @@ describe("timeslider", function(){
       }, 6000);
     }, revs*timePerRev);
   });
-  
   it("changes the url when clicking on the timeslider", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     
     // make some changes to produce 7 revisions
-    var timePerRev = 900
-      , revs = 7;
+    var timePerRev = 1000
+      , revs = 20;
     this.timeout(revs*timePerRev+10000);
     for(var i=0; i < revs; i++) {
       setTimeout(function() {
@@ -100,28 +98,32 @@ describe("timeslider", function(){
       }, 6000);
     }, revs*timePerRev);
   });
-  
+
+  // This test is bad because it expects char length to be static
+  // A much better way would be get the charCount before sending new chars
   it("jumps to a revision given in the url", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
-    this.timeout(11000);
+    this.timeout(15000);
     inner$("div").first().sendkeys('a');
     
     setTimeout(function() {
-      // go to timeslider
+      // go to timeslider with a specific revision set
       $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
       var timeslider$;
       
       helper.waitFor(function(){
-        timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
-        return timeslider$ && timeslider$('#padcontent').text().length == 230;
+        try{
+          timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+        }catch(e){
+        }
+        return timeslider$('#padcontent').text().length == 230; 
       }, 6000).always(function(){
         expect( timeslider$('#padcontent').text().length ).to.eql( 230 );
         done();
       });
     }, 2500);
   });
-  
   it("checks the export url", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
@@ -135,7 +137,9 @@ describe("timeslider", function(){
       var exportLink;
       
       helper.waitFor(function(){
-        timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+        try{
+          timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+        }catch(e){}
         if(!timeslider$)
           return false;
         exportLink = timeslider$('#exportplaina').attr('href');
