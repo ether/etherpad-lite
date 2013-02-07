@@ -390,10 +390,6 @@ var pad = {
   {
     return clientVars.clientIp;
   },
-  getIsProPad: function()
-  {
-    return clientVars.isProPad;
-  },
   getColorPalette: function()
   {
     return clientVars.colorPalette;
@@ -599,7 +595,7 @@ var pad = {
   },
   isPadPublic: function()
   {
-    return (!pad.getIsProPad()) || (pad.getPadOptions().guestPolicy == 'allow');
+    return pad.getPadOptions().guestPolicy == 'allow';
   },
   suggestUserName: function(userId, name)
   {

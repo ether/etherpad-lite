@@ -958,7 +958,6 @@ function handleClientReady(client, message)
           // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
           "chatHead": pad.chatHead,
           "numConnectedUsers": roomClients.length,
-          "isProPad": false,
           "readOnlyId": padIds.readOnlyPadId,
           "readonly": padIds.readonly,
           "serverTimestamp": new Date().getTime(),
