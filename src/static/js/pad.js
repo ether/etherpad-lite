@@ -501,7 +501,6 @@ var pad = {
     padeditor.init(postAceInit, pad.padOptions.view || {}, this);
 
     paduserlist.init(pad.myUserInfo, this);
-    //    padchat.init(clientVars.chatHistory, pad.myUserInfo);
     padconnectionstatus.init();
     padmodals.init(this);
 
@@ -540,7 +539,7 @@ var pad = {
         $('#options-stickychat').prop("checked", true); // set the checkbox to on
       }
       if(padcookie.getPref("showAuthorshipColors") == false){
-	pad.changeViewOption('showAuthorColors', false);
+        pad.changeViewOption('showAuthorColors', false);
       }
       hooks.aCallAll("postAceInit", {ace: padeditor.ace});
     }
@@ -553,13 +552,11 @@ var pad = {
   {
     pad.myUserInfo.name = newName;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
-    //padchat.handleUserJoinOrUpdate(pad.myUserInfo);
   },
   notifyChangeColor: function(newColorId)
   {
     pad.myUserInfo.colorId = newColorId;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
-    //padchat.handleUserJoinOrUpdate(pad.myUserInfo);
   },
   notifyChangeTitle: function(newTitle)
   {
@@ -643,17 +640,14 @@ var pad = {
   handleUserJoin: function(userInfo)
   {
     paduserlist.userJoinOrUpdate(userInfo);
-    //padchat.handleUserJoinOrUpdate(userInfo);
   },
   handleUserUpdate: function(userInfo)
   {
     paduserlist.userJoinOrUpdate(userInfo);
-    //padchat.handleUserJoinOrUpdate(userInfo);
   },
   handleUserLeave: function(userInfo)
   {
     paduserlist.userLeave(userInfo);
-    //padchat.handleUserLeave(userInfo);
   },
   handleClientMessage: function(msg)
   {
@@ -664,10 +658,6 @@ var pad = {
         pad.notifyChangeName(msg.newName);
         paduserlist.setMyUserInfo(pad.myUserInfo);
       }
-    }
-    else if (msg.type == 'chat')
-    {
-      //padchat.receiveChat(msg);
     }
     else if (msg.type == 'padtitle')
     {
