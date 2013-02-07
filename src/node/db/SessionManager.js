@@ -360,6 +360,66 @@ function listSessionsWithDBKey (dbkey, callback)
   });
 }
 
+/**
+ * Creates a new session based on an externally-verified account (e.g. persona)
+ */
+exports.createVerifiedSession = function(sessionID, account, validUntil, callback)
+{
+  async.series([
+
+    //check validUntil and create the session db entry
+    function(callback)
+    {
+      //check if rev is a number
+      if(typeof validUntil != "number")
+      {
+        //try to parse the number
+        if(!isNaN(parseInt(validUntil)))
+        {
+          validUntil = parseInt(validUntil);
+        }
+        else
+        {
+          callback(new customError("validUntil is not a number","apierror"));
+          return;
+        }
+      }
+      
+      //ensure this is not a negativ number
+      if(validUntil < 0)
+      {
+        callback(new customError("validUntil is a negativ number","apierror"));
+        return;
+      }
+      
+      //ensure this is not a float value
+      if(!is_int(validUntil))
+      {
+        callback(new customError("validUntil is a float value","apierror"));
+        return;
+      }
+    
+      //check if validUntil is in the future
+      if(Math.floor(new Date().getTime()/1000) > validUntil)
+      {
+        callback(new customError("validUntil is in the past","apierror"));
+        return;
+      }
+
+      //set the session into the database
+      db.set("session:" + sessionID, {"account": account, "validUntil": validUntil});
+      
+      callback();
+    }
+  ], function(err)
+  {
+    if(ERR(err, callback)) return;
+    
+    //return error and sessionID
+    callback(null, {sessionID: sessionID});
+  })
+}
+
 //checks if a number is an int
 function is_int(value)
 { 

@@ -45,7 +45,7 @@ exports.faviconTimeslider = "../../" + exports.favicon;
 /**
  * The IP ep-lite should listen to
  */
-exports.ip = "0.0.0.0";
+exports.ip = process.env.VCAP_APP_HOST || "0.0.0.0";
   
 /**
  * The Port ep-lite should listen to

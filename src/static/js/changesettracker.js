@@ -23,7 +23,7 @@
 var AttributePool = require('./AttributePool');
 var Changeset = require('./Changeset');
 
-function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
+function makeChangesetTracker(apool, aceCallbacksProvider)
 {
 
   // latest official text from server
@@ -51,7 +51,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
     // and if there isn't a timeout already scheduled.
     if (changeCallback && changeCallbackTimeout === null)
     {
-      changeCallbackTimeout = scheduler.setTimeout(function()
+      changeCallbackTimeout = setTimeout(function()
       {
         try
         {

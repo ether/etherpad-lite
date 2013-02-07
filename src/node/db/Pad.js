@@ -38,6 +38,7 @@ var Pad = function Pad(id) {
   this.head = -1;
   this.chatHead = -1;
   this.publicStatus = false;
+  this.teamStatus = false;
   this.passwordHash = null;
   this.id = id;
   this.savedRevisions = [];
@@ -549,6 +550,15 @@ Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, la
 
 Pad.prototype.getSavedRevisions = function getSavedRevisions() {
   return this.savedRevisions;
+};
+
+Pad.prototype.getTeamStatus = function getTeamStatus() {
+  return this.teamStatus;
+};
+
+Pad.prototype.setTeamStatus = function setTeamStatus(teamStatus) {
+  this.teamStatus = teamStatus;
+  this.saveToDatabase();
 };
 
 /* Crypto helper methods */

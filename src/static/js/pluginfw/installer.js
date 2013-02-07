@@ -94,11 +94,12 @@ exports.search = function(query, cache, cb) {
           if (er) return cb(er);
           var res = {};
           var i = 0;
+          var pattern = query.pattern.toLowerCase();
           for (key in data) { // for every plugin in the data from npm
             if (   key.indexOf(plugins.prefix) == 0
-                && key.indexOf(query.pattern) != -1
+                && key.indexOf(pattern) != -1
                 || key.indexOf(plugins.prefix) == 0
-                && data[key].description.indexOf(query.pattern) != -1
+                && data[key].description.indexOf(pattern) != -1
               ) { // If the name contains ep_ and the search string is in the name or description
               i++;
               if (i > query.offset

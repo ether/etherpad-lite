@@ -23,6 +23,9 @@
     { "name": "adminsettings", "hooks": {
       "expressCreateServer": "ep_etherpad-lite/node/hooks/express/adminsettings:expressCreateServer",
       "socketio": "ep_etherpad-lite/node/hooks/express/adminsettings:socketio" }
+    },
+    { "name": "teampad", "hooks": {
+      "expressCreateServer": "ep_etherpad-lite/node/hooks/express/teampad:expressCreateServer" }
     }
   ]
 }

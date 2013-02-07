@@ -30,8 +30,7 @@ var Security = require('./security');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
 var lineAttributeMarker = require('./linestylefilter').lineAttributeMarker;
-var Ace2Common = require('./ace2_common');
-var noop = Ace2Common.noop;
+var noop = function(){};
 
 
 var domline = {};

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= teamInfo.name %></title>
+    <link rel="stylesheet" href="../../static/css/teampad.css"> 
+  </head>
+  <div id="wrapper">
+    <h1>Etherpad Lite</h1>
+    <div class="separator"></div>
+    <h2>Pads belonging to this team:</h2>
+    <% if (teamInfo.pads.length == 0) { %>
+    None yet!
+    <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <td id="name">Pad name</td>
+          <td id="controls"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (var i=0; i < teamInfo.pads.length; i++) { %>
+        <tr>
+          <td>
+            <% var teamName = teamInfo.pads[i].split('+')[1]; %>
+            <a href="/p/<%= teamInfo.pads[i] %>"><%= teamName %></a>
+          </td>
+          <td></td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+    <% } %>
+    <form action="/teampad/createpad" method="post">
+      <h2>Create pad:</h2>
+      <input name="padname" placeholder="Pad name" type="text">
+      <input name="teamname" type="hidden" value="<%= teamInfo.name %>">
+      <input name="teamID" type="hidden" value="<%= teamInfo.teamID %>">
+      <input type="submit" value="Create">
+    </form>
+    <div class="separator"></div>
+    <h2>Authors belonging to this team:</h2>
+    <table>
+      <thead>
+        <tr>
+          <td id="name">Account name</td>
+          <td id="controls"></td>
+        </tr>
+      </thead>
+      <tbody>
+      <% for (var i=0; i < teamInfo.accounts.length; i++) { %>
+        <tr>
+          <td>
+            <%= teamInfo.accounts[i] %>
+          </td>
+          <td></td>
+        </tr>
+      <% } %>
+      </tbody>
+    </table>
+    <form action="/teampad/addaccount" method="post">
+      <h2>Add account to team:</h2>
+      <input name="accountname" placeholder="Account name" type="email">
+      <input name="teamname" type="hidden" value="<%= teamInfo.name %>">
+      <input name="teamID" type="hidden" value="<%= teamInfo.teamID %>">
+      <input type="submit" value="Add">
+    </form>
+  </div>
+</html>

@@ -23,6 +23,7 @@ var ERR = require("async-stacktrace");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var securityManager = require("../db/SecurityManager");
+var padManager = require("../db/PadManager");
 
 /**
  * Saves all components
@@ -108,7 +109,14 @@ exports.setSocketIO = function(_socket)
         //this message has everything to try an authorization
         if(message.padId !== undefined && message.sessionID !== undefined && message.token !== undefined && message.password !== undefined)
         {
-          securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+          // FIXME: always use httponly session cookies
+          var sessionID = null;
+          if (padManager.isTeamPad(message.padID)) {
+            sessionID = message.sessionid;
+          } else {
+            sessionID = client.handshake.sessionID;
+          }
+          securityManager.checkAccess (message.padId, sessionID, message.token, message.password, function(err, statusObject)
           {
             ERR(err);
             

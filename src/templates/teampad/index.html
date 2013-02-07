@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Teampad</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../static/css/teampad.css"> 
+  </head>
+
+  <div id="wrapper">
+    <h1>Etherpad Lite</h1>
+  <% if (signedIn) { %>
+    <div class="separator"></div>
+
+    <h2>Teams you are a member of</h2>
+    <% if (teamsInfo.length == 0) { %>
+    None yet!
+    <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <td id="name">Team name</td>
+          <td id="controls"></td>
+        </tr>
+      </thead>
+      <tbody>
+      <% for (var i=0; i < teamsInfo.length; i++) { %>
+        <tr>
+          <td>
+            <a href="/teampad/<%= teamsInfo[i].name %>"><%= teamsInfo[i].name %></a>
+          </td>
+          <td>
+            <% if (teamsInfo[i].admins.indexOf(currentUser) != undefined) { %>
+            [admin]
+            <% } %>
+          </td>
+        </tr>
+      <% } %>
+      </tbody>
+    </table>
+    <% } %>
+    <div class="separator"></div>
+    <form action="/teampad/createteam" method="post">
+      <h2>Create new team:<h2>
+      <input name="teamname" placeholder="Team name" type="text">
+      <input type="submit" name="create" value="Create">
+    </form>
+  
+    <% } else { %>
+  
+    <span>Sign in to create, manage and see your team pads &rarr;</span>
+  
+    <form action="/teampad/verify" method="post" style="display:none;">
+      <input type="text" name="assertion"/>
+    </form>
+  
+    <img src="https://browserid.org/i/sign_in_red.png" id="browserid"/>
+    <script src="https://login.persona.org/include.js" type="text/javascript"></script>
+    <script>
+      $('#browserid').click(function(){
+        navigator.id.getVerifiedEmail(function(assertion) {
+          if (assertion) {
+            $('input').val(assertion);
+            $('form').submit();
+          } else {
+            location.reload();
+          }
+        });
+      });
+    </script>
+    <% } %>
+  </div>
+</html>

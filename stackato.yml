@@ -1,0 +1,5 @@
+name: etherpad-lite
+instances: 1
+framework:
+  type: node
+mem: 128

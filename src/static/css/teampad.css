@@ -7,53 +7,17 @@ body {
   background: -moz-radial-gradient(circle,#aaa,#eee 60%) center fixed;
   background: -ms-radial-gradient(circle,#aaa,#eee 60%) center fixed;
   background: -o-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+  border-top: 8px solid rgba(51,51,51,.8);
 }
-
-#topborder {
-     border-top: 8px solid rgba(51, 51, 51, 0.8);
-     position: fixed;
-     top: 0px;
-     width: 100%;
-}
-
-div.menu {
-   background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.75);
-   box-shadow: 0px -4px 4px rgba(0, 0, 0, 0.3);
-   display: block;
-   float: left;
-   height: 100%;
-   padding: 15px;
-   position: fixed;
-   width: 220px;
-}
-
-div.menu li {
-  list-style: none;
-  margin-left: 3px;
-  line-height: 1.6
-}
-
-div.innerwrapper {
-  display: block;
-  float: right;
-  opacity: 0.9;
-  padding: 15px;
-  max-width: 860px;
-  border-radius: 0 0 7px 7px;
-  margin-left:250px;
-  min-width:400px;
-  width:100%;
-}
-
 #wrapper {
-  background: none repeat scroll 0px 0px #FFFFFF;
-  box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.3);
-  margin: auto;
-  max-width: 1150px;
-  min-height: 100%;
-  overflow: auto;
-  padding-left: 15px;
+  margin-top: 160px;
+  padding: 15px;
+  background: #fff;
   opacity: .9;
+  box-shadow: 0px 1px 8px rgba(0,0,0,0.3);
+  max-width: 700px;
+  margin: auto;
+  border-radius: 0 0 7px 7px;
 }
 h1 {
   font-size: 29px;
@@ -73,9 +37,24 @@ h2 {
 form {
   margin-bottom: 0;
 }
-#inner {
-  width: 300px;
-  margin: 0 auto;
+#inner,
+#footer {
+   margin:0 auto;
+   width: 300px;
+}
+#footer {
+   margin-top: 160px;
+   padding: 15px;
+   text-align: center;
+}
+#teampads {
+   color: inherit;
+   font-size: 24px;
+   text-decoration: none;
+   letter-spacing: -2px;
+}
+#teampads::after {
+    content: ' »';
 }
 input {
   font-weight: bold;
@@ -85,9 +64,12 @@ input[type="button"] {
   padding: 4px 6px;
   margin: 0;
 }
-table input[type="button"] {
+input[type="button"].do-install, input[type="button"].do-uninstall {
   float: right;
   width: 100px;
+}
+input[type="button"]#do-search {
+  display: block;
 }
 input[type="text"] {
   border-radius: 3px;
@@ -116,26 +98,4 @@ td, th {
 }
 .template {
   display: none;
-}
-#progress {
-  position: absolute;
-  bottom: 50px;
-}
-.settings {
-  margin-top:10px;
-  width:100%;  
-  min-height:600px;
-}
-#response{
-  display:inline;
-}
-
-a:link, a:visited, a:hover, a:focus {
-  color: #333333;
-  text-decoration: none;
-  border-bottom: #333333 1px dotted;
-}
-
-a:focus, a:hover {
-  border-bottom: #333333 1px solid;
 }

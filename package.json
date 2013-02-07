@@ -1,0 +1,8 @@
+{
+  "name": "etherpad-lite",
+  "version": "0.0.1",
+  "engines": {
+    "node" : ">=0.6.0",
+    "npm"  : ">=1.0"
+  }
+}

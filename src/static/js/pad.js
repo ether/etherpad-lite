@@ -275,6 +275,11 @@ function handshake()
         $('#passwordRequired').show();
         $("#passwordinput").focus();
       }
+      else if(obj.accessStatus == "denyTeamPad")
+      {
+        $("#editorloadingbox").html("<b>This is a Team pad</b><br>" +
+                                    "<a href='/teampad'>Manage teampads</a>");
+      }
     }
     
     //if we haven't recieved the clientVars yet, then this message should it be
