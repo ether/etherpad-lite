@@ -460,16 +460,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
       if (clientVars)
       {
-        if (clientVars.disableRightBar)
-        {
-          $("#rightbars").css('display', 'none');
-          $('#padmain').css('width', 'auto');
-          $("#padmain").css('width', '860px');
-          $("#revision").css('position', "absolute");
-          $("#revision").css('right', "20px");
-          $("#revision").css('top', "20px");
-        }
-        
         $("#timeslider").show();
         
         var startPos = clientVars.collab_client_vars.rev;

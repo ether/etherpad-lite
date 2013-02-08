@@ -462,10 +462,6 @@ var pad = {
     }
 
     // order of inits is important here:
-    padcookie.init(clientVars.cookiePrefsToSet, this);
-      
-    // $("#sidebarcheck").click(pad.togglewSidebar);
-
     pad.myUserInfo = {
       userId: clientVars.userId,
       name: clientVars.userName,
@@ -745,28 +741,10 @@ var pad = {
       }, 1000);
     }
 
-    // pad.determineSidebarVisibility(isConnected && !isInitialConnect);
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
 
   },
-/*  determineSidebarVisibility: function(asNowConnectedFeedback)
-  {
-    if (pad.isFullyConnected())
-    {
-      var setSidebarVisibility = padutils.getCancellableAction("set-sidebar-visibility", function()
-      {
-        // $("body").toggleClass('hidesidebar', !! padcookie.getPref('hideSidebar'));
-      });
-      window.setTimeout(setSidebarVisibility, asNowConnectedFeedback ? 3000 : 0);
-    }
-    else
-    {
-      padutils.cancelActions("set-sidebar-visibility");
-      $("body").removeClass('hidesidebar');
-    }
-  },
-*/
   determineChatVisibility: function(asNowConnectedFeedback){
     var chatVisCookie = padcookie.getPref('chatAlwaysVisible');
     if(chatVisCookie){ // if the cookie is set for chat always visible
@@ -828,15 +806,6 @@ var pad = {
     $('form#reconnectform input.missedChanges').val(JSON.stringify(pad.collabClient.getMissedChanges()));
     $('form#reconnectform').submit();
   },
-/*
-  toggleSidebar: function()
-  {
-    var newValue = !padcookie.getPref('hideSidebar');
-    padcookie.setPref('hideSidebar', newValue);
-    $("#sidebarcheck").toggleClass('sidebarchecked', !newValue).toggleClass('sidebarunchecked', !! newValue);
-    pad.determineSidebarVisibility();
-  },
-*/
   // this is called from code put into a frame from the server:
   handleImportExportFrameCall: function(callName, varargs)
   {

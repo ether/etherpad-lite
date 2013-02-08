@@ -963,9 +963,6 @@ function handleClientReady(client, message)
           "serverTimestamp": new Date().getTime(),
           "globalPadId": message.padId,
           "userId": author,
-          "cookiePrefsToSet": {
-              "hideSidebar": false
-          },
           "abiwordAvailable": settings.abiwordAvailable(), 
           "plugins": {
             "plugins": plugins.plugins,
