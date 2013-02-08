@@ -20,14 +20,11 @@
  * limitations under the License.
  */
 
-var paddocbar = require('./pad_docbar').paddocbar;
-
 var padimpexp = (function()
 {
 
   ///// import
   var currentImportTimer = null;
-  var hidePanelCall = null;
 
   function addImportFrames()
   {
@@ -72,7 +69,6 @@ var padimpexp = (function()
     var ret = window.confirm(html10n.get("pad.impexp.confirmimport"));
     if (ret)
     {        
-      hidePanelCall = paddocbar.hideLaterIfNoOtherInteraction();
       currentImportTimer = window.setTimeout(function()
       {
         if (!currentImportTimer)
@@ -255,11 +251,6 @@ var padimpexp = (function()
         $("#exportopena").attr("href", pad_root_path + "/export/odt");
       }
     
-      $("#impexp-close").click(function()
-      {
-        paddocbar.setShownPanel(null);
-      });
-
       addImportFrames();
       $("#importfileinput").change(fileInputUpdated);
       $('#importform').submit(fileInputSubmit);
