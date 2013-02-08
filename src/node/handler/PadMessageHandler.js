@@ -964,7 +964,6 @@ function handleClientReady(client, message)
           "globalPadId": message.padId,
           "userId": author,
           "cookiePrefsToSet": {
-              "fullWidth": false,
               "hideSidebar": false
           },
           "abiwordAvailable": settings.abiwordAvailable(), 

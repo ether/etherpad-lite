@@ -464,7 +464,6 @@ var pad = {
     // order of inits is important here:
     padcookie.init(clientVars.cookiePrefsToSet, this);
       
-    $("#widthprefcheck").click(pad.toggleWidthPref);
     // $("#sidebarcheck").click(pad.togglewSidebar);
 
     pad.myUserInfo = {
@@ -829,13 +828,6 @@ var pad = {
     $('form#reconnectform input.missedChanges').val(JSON.stringify(pad.collabClient.getMissedChanges()));
     $('form#reconnectform').submit();
   },
-  toggleWidthPref: function()
-  {
-    var newValue = !padcookie.getPref('fullWidth');
-    padcookie.setPref('fullWidth', newValue);
-    $("#widthprefcheck").toggleClass('widthprefchecked', !! newValue).toggleClass('widthprefunchecked', !newValue);
-    pad.handleWidthChange();
-  },
 /*
   toggleSidebar: function()
   {
@@ -845,21 +837,6 @@ var pad = {
     pad.determineSidebarVisibility();
   },
 */
-  handleWidthChange: function()
-  {
-    var isFullWidth = padcookie.getPref('fullWidth');
-    if (isFullWidth)
-    {
-      $("body").addClass('fullwidth').removeClass('limwidth').removeClass('squish1width').removeClass('squish2width');
-    }
-    else
-    {
-      $("body").addClass('limwidth').removeClass('fullwidth');
-
-      var pageWidth = $(window).width();
-      $("body").toggleClass('squish1width', (pageWidth < 912 && pageWidth > 812)).toggleClass('squish2width', (pageWidth <= 812));
-    }
-  },
   // this is called from code put into a frame from the server:
   handleImportExportFrameCall: function(callName, varargs)
   {
