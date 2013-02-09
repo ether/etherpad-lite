@@ -1,59 +1,59 @@
+html, body {
+  height: 100%;
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   color: #333;
   font: 14px helvetica, sans-serif;
-  background: #ddd;
-  background: -webkit-radial-gradient(circle,#aaa,#eee 60%) center fixed;
-  background: -moz-radial-gradient(circle,#aaa,#eee 60%) center fixed;
-  background: -ms-radial-gradient(circle,#aaa,#eee 60%) center fixed;
-  background: -o-radial-gradient(circle,#aaa,#eee 60%) center fixed;
+  background: #eee;
 }
 
 div.menu {
-   background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.75);
-   box-shadow: 0px -4px 4px rgba(0, 0, 0, 0.3);
-   display: block;
-   float: left;
-   height: 100%;
-   padding: 15px;
-   position: fixed;
-   width: 220px;
+  height: 100%;
+  padding: 15px;
+  width: 220px;
+  border-right: 1px solid #ccc;
+  position: fixed;
+}
+
+div.menu ul {
+  padding: 0;
 }
 
 div.menu li {
   list-style: none;
   margin-left: 3px;
-  line-height: 1.6
+  line-height: 3;
+  border-top: 1px solid #ccc;
+}
+
+div.menu li:last-child {
+  border-bottom: 1px solid #ccc;
 }
 
 div.innerwrapper {
-  display: block;
-  float: right;
-  opacity: 0.9;
   padding: 15px;
-  max-width: 860px;
-  border-radius: 0 0 7px 7px;
-  margin-left:250px;
-  min-width:400px;
-  width:100%;
+  padding-left: 265px;
 }
 
 #wrapper {
   background: none repeat scroll 0px 0px #FFFFFF;
-  box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
   margin: auto;
   max-width: 1150px;
   min-height: 100%;
-  overflow: auto;
-  padding-left: 15px;
-  opacity: .9;
 }
+
 h1 {
   font-size: 29px;
 }
+
 h2 {
   font-size: 24px;
 }
+
 .separator {
   margin: 10px 0;
   height: 1px;
@@ -63,37 +63,45 @@ h2 {
   background: -ms-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
   background: -o-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
 }
+
 form {
   margin-bottom: 0;
 }
+
 #inner {
   width: 300px;
   margin: 0 auto;
 }
+
 input {
   font-weight: bold;
   font-size: 15px;
 }
+
 input[type="button"] {
   padding: 4px 6px;
   margin: 0;
 }
+
 table input[type="button"] {
   float: right;
   width: 100px;
 }
+
 input[type="text"] {
   border-radius: 3px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   padding: 10px;
-  *padding: 0; /* IE7 hack */
+  *padding: 0;
+ /* IE7 hack */
   width: 100%;
   outline: none;
   border: 1px solid #ddd;
   margin: 0 0 5px 0;
   max-width: 500px;
 }
+
 table {
   border: 1px solid #ddd;
   border-radius: 3px;
@@ -101,34 +109,101 @@ table {
   width: 100%;
   margin: 20px 0;
 }
+
 table thead tr {
   background: #eee;
 }
+
 td, th {
   padding: 5px;
 }
+
 .template {
   display: none;
 }
+
 #progress {
   position: absolute;
   bottom: 50px;
 }
+
 .settings {
-  margin-top:10px;
-  width:100%;  
-  min-height:600px;
+  outline: none;
+  width: 100%;
+  min-height: 500px;
 }
-#response{
-  display:inline;
+
+#response {
+  display: inline;
 }
 
 a:link, a:visited, a:hover, a:focus {
   color: #333333;
   text-decoration: none;
-  border-bottom: #333333 1px dotted;
 }
 
 a:focus, a:hover {
   border-bottom: #333333 1px solid;
+}
+
+@media (max-width: 720px) {
+  div.innerwrapper {
+    padding: 0 15px 15px 15px;
+  }
+
+  div.menu {
+    padding: 1px 15px 0 15px;
+    position: static;
+    height: auto;
+    border-right: none;
+    width: auto;
+  }
+
+  table {
+    border: none;
+  }
+
+  table, thead, tbody, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    border-radius: 3px;
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
+    text-align: left;
+  }
+
+  td.name {
+    word-wrap: break-word;
+  }
+
+  td:before {
+    padding-right: 10px;
+    white-space: nowrap;
+    float: left;
+    margin-left: -100%;
+    font-weight: bold;
+    content: attr(data-label);
+  }
+
+  td:last-child {
+    border-bottom: none;
+  }
+
+  table input[type="button"] {
+    float: none;
+  }
 }
