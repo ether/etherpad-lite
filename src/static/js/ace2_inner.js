@@ -2839,69 +2839,7 @@ function Ace2Inner(){
 
   function doCreateDomLine(nonEmpty)
   {
-    if (browser.msie && (!nonEmpty))
-    {
-      var result = {
-        node: null,
-        appendSpan: noop,
-        prepareForAdd: noop,
-        notifyAdded: noop,
-        clearSpans: noop,
-        finishUpdate: noop,
-        lineMarker: 0
-      };
-
-      var lineElem = doc.createElement("div");
-      result.node = lineElem;
-
-      result.notifyAdded = function()
-      {
-        // magic -- settng an empty div's innerHTML to the empty string
-        // keeps it from collapsing.  Apparently innerHTML must be set *after*
-        // adding the node to the DOM.
-        // Such a div is what IE 6 creates naturally when you make a blank line
-        // in a document of divs.  However, when copy-and-pasted the div will
-        // contain a space, so we note its emptiness with a property.
-        lineElem.innerHTML = " "; // Frist we set a value that isnt blank
-        // a primitive-valued property survives copy-and-paste
-        setAssoc(lineElem, "shouldBeEmpty", true);
-        // an object property doesn't
-        setAssoc(lineElem, "unpasted", {});
-        lineElem.innerHTML = ""; // Then we make it blank..  New line and no space = Awesome :)
-      };
-      var lineClass = 'ace-line';
-      result.appendSpan = function(txt, cls)
-      {
-        if ((!txt) && cls)
-        {
-          // gain a whole-line style (currently to show insertion point in CSS)
-          lineClass = domline.addToLineClass(lineClass, cls);
-        }
-        // otherwise, ignore appendSpan, this is an empty line
-      };
-      result.clearSpans = function()
-      {
-        lineClass = ''; // non-null to cause update
-      };
-
-      var writeClass = function()
-      {
-        if (lineClass !== null) lineElem.className = lineClass;
-      };
-      
-      result.prepareForAdd = writeClass;
-      result.finishUpdate = writeClass;
-      result.getInnerHTML = function()
-      {
-        return "";
-      };
-
-      return result;
-    }
-    else
-    {
-      return domline.createDomLine(nonEmpty, doesWrap, browser, doc);
-    }
+    return domline.createDomLine(nonEmpty, doesWrap, browser, doc);
   }
 
   function textify(str)

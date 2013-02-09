@@ -32,10 +32,7 @@ var _ = require('./underscore');
 var lineAttributeMarker = require('./linestylefilter').lineAttributeMarker;
 var noop = function(){};
 
-
-var domline = {};
-
-domline.addToLineClass = function(lineClass, cls)
+function addToLineClass(lineClass, cls)
 {
   // an "empty span" at any point can be used to add classes to
   // the line, using line:className.  otherwise, we ignore
@@ -51,49 +48,66 @@ domline.addToLineClass = function(lineClass, cls)
   return lineClass;
 }
 
-// if "document" is falsy we don't create a DOM node, just
-// an object with innerHTML and className
-domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
-{
-  var result = {
-    node: null,
-    appendSpan: noop,
-    prepareForAdd: noop,
-    notifyAdded: noop,
-    clearSpans: noop,
-    finishUpdate: noop,
-    lineMarker: 0
-  };
+function DOMLine(nonEmpty, doesWrap, browser, document) {
+  this.node = null;
+  this.lineMarker = 0;
+  this.nonEmpty = nonEmpty;
+  this.doesWrap = doesWrap;
+  this.browser = browser;
+  this.document = document;
 
-  var browser = (optBrowser || {});
-  var document = optDocument;
-
+  // if "document" is falsy we don't create a DOM node, just
+  // an object with innerHTML and className
   if (document)
   {
-    result.node = document.createElement("div");
+    this.node = document.createElement("div");
   }
   else
   {
-    result.node = {
+    this.node = {
       innerHTML: '',
       className: ''
     };
   }
 
-  var html = [];
-  var preHtml = '', 
-  postHtml = '';
-  var curHTML = null;
+  this.html = [];
+  this.preHtml = '';
+  this.postHtml = '';
+  this.curHTML = null;
 
-  function processSpaces(s)
-  {
-    return domline.processSpaces(s, doesWrap);
+  this.lineClass = 'ace-line';
+
+  // Apparently overridden at the instance level sometimes...
+  this.notifyAdded = function () {this._notifyAdded()};
+  this.finishUpdate = function () {this._finishUpdate()};
+}
+
+DOMLine.prototype = {};
+(function () {
+
+  this.perTextNodeProcess = function (s) {
+    if (this.doesWrap) {
+      return _.identity(s);
+    } else {
+      return this.processSpaces(s);
+    }
   }
 
-  var perTextNodeProcess = (doesWrap ? _.identity : processSpaces);
-  var perHtmlLineProcess = (doesWrap ? processSpaces : _.identity);
-  var lineClass = 'ace-line';
-  result.appendSpan = function(txt, cls)
+  this.perHtmlLineProcess = function (s) {
+    if (this.doesWrap) {
+      return this.processSpaces(s);
+    } else {
+      return _.identity(s);
+    }
+  }
+
+  this.processSpaces = function(s)
+  {
+    return processSpaces(s, this.doesWrap);
+  }
+  this._notifyAdded = function () {};
+
+  this.appendSpan = function(txt, cls)
   {
     var processedMarker = false;
     // Handle lineAttributeMarker, if present
@@ -109,30 +123,30 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         {
           if(listType.indexOf("number") < 0)
           {
-            preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ul>';
+            this.preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            this.postHtml = '</li></ul>';
           }
           else
           {
-            preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ol>';
+            this.preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            this.postHtml = '</li></ol>';
           }
         } 
         processedMarker = true;
       }
       
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
-        domline: domline,
+        domline: exports,
         cls: cls
       }), function(modifier)
       {
-        preHtml += modifier.preHtml;
-        postHtml += modifier.postHtml;
+        this.preHtml += modifier.preHtml;
+        this.postHtml += modifier.postHtml;
         processedMarker |= modifier.processedMarker;
       });
       
       if( processedMarker ){
-        result.lineMarker += txt.length;
+        this.lineMarker += txt.length;
         return; // don't append any text
       } 
 
@@ -162,7 +176,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     var extraCloseTags = "";
 
     _.map(hooks.callAll("aceCreateDomLine", {
-      domline: domline,
+      domline: exports,
       cls: cls
     }), function(modifier)
     {
@@ -173,7 +187,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
 
     if ((!txt) && cls)
     {
-      lineClass = domline.addToLineClass(lineClass, cls);
+      this.lineClass = addToLineClass(this.lineClass, cls);
     }
     else if (txt)
     {
@@ -193,57 +207,127 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         simpleTags.reverse();
         extraCloseTags = '</' + simpleTags.join('></') + '>' + extraCloseTags;
       }
-      html.push('<span class="', Security.escapeHTMLAttribute(cls || ''), '">', extraOpenTags, perTextNodeProcess(Security.escapeHTML(txt)), extraCloseTags, '</span>');
+      this.html.push('<span class="', Security.escapeHTMLAttribute(cls || ''), '">', extraOpenTags, this.perTextNodeProcess(Security.escapeHTML(txt)), extraCloseTags, '</span>');
     }
   };
-  result.clearSpans = function()
+  this.clearSpans = function()
   {
-    html = [];
-    lineClass = ''; // non-null to cause update
-    result.lineMarker = 0;
+    this.html = [];
+    this.lineClass = ''; // non-null to cause update
+    this.lineMarker = 0;
   };
 
-  function writeHTML()
+  this._writeHTML = function ()
   {
-    var newHTML = perHtmlLineProcess(html.join(''));
+    var newHTML = this.perHtmlLineProcess(this.html.join(''));
     if (!newHTML)
     {
-      if ((!document) || (!optBrowser))
+      if ((!this.document) || (!this.browser))
       {
         newHTML += '&nbsp;';
       }
-      else if (!browser.msie)
+      else if (!(this.browser || {}).msie)
       {
         newHTML += '<br/>';
       }
     }
-    if (nonEmpty)
+    if (this.nonEmpty)
     {
-      newHTML = (preHtml || '') + newHTML + (postHtml || '');
+      newHTML = (this.preHtml || '') + newHTML + (this.postHtml || '');
     }
-    html = preHtml = postHtml = ''; // free memory
-    if (newHTML !== curHTML)
+    this.html = this.preHtml = this.postHtml = ''; // free memory
+    if (newHTML !== this.curHTML)
     {
-      curHTML = newHTML;
-      result.node.innerHTML = curHTML;
+      this.curHTML = newHTML;
+      this.node.innerHTML = this.curHTML;
     }
-    if (lineClass !== null) result.node.className = lineClass;
+    if (this.lineClass !== null) this.node.className = this.lineClass;
 	
-	hooks.callAll("acePostWriteDomLineHTML", {
-        node: result.node
-	});
+	  hooks.callAll("acePostWriteDomLineHTML", {
+        node: this.node
+	  });
   }
-  result.prepareForAdd = writeHTML;
-  result.finishUpdate = writeHTML;
-  result.getInnerHTML = function()
+  this.prepareForAdd = function () {
+    return this._writeHTML();
+  };
+  this._finishUpdate = function () {
+    return this._writeHTML();
+  };
+  this.getInnerHTML = function()
   {
-    return curHTML || '';
+    return this.curHTML || '';
   };
 
-  return result;
+}).call(DOMLine.prototype);
+
+function SpecialIEDOMLine(nonEmpty, doesWrap, browser, document) {
+  this.node = null;
+  this.lineMarker = 0;
+  this.node = document.createElement("div")
+
+  this.lineClass = 'ace-line';
+
+  // Apparently overridden at the instance level sometimes...
+  this.notifyAdded = function () {this._notifyAdded()};
+  this.finishUpdate = function () {this._finishUpdate()};;
+}
+SpecialIEDOMLine.prototype = {};
+(function () {
+  this._notifyAdded = function () {
+    // magic -- settng an empty div's innerHTML to the empty string
+    // keeps it from collapsing.  Apparently innerHTML must be set *after*
+    // adding the node to the DOM.
+    // Such a div is what IE 6 creates naturally when you make a blank line
+    // in a document of divs.  However, when copy-and-pasted the div will
+    // contain a space, so we note its emptiness with a property.
+    this.node.innerHTML = " "; // Frist we set a value that isnt blank
+    // a primitive-valued property survives copy-and-paste
+    Ace2Common.setAssoc(lineElem, "shouldBeEmpty", true);
+    // an object property doesn't
+    Ace2Common.setAssoc(lineElem, "unpasted", {});
+    this.node.innerHTML = ""; // Then we make it blank..  New line and no space = Awesome :)
+  }
+
+  this.appendSpan = function (txt, cls) {
+    if ((!txt) && cls) {
+      // gain a whole-line style (currently to show insertion point in CSS)
+      this.lineClass = addToLineClass(lineClass, cls);
+    }
+    // otherwise, ignore appendSpan, this is an empty line
+  }
+
+  this.clearSpans = function () {
+    this.lineClass = ''; // non-null to cause update
+  }
+
+  this._writeClass = function () {
+    if (this.lineClass !== null) {
+      this.node.className = this.lineClass;
+    }
+  }
+
+  this.prepareForAdd = function () {
+    return this._writeClass;
+  }
+  this._finishUpdate = function () {
+    return this._writeClass;
+  }
+  this.getInnerHTML = function () {
+    return "";
+  }
+}).call(SpecialIEDOMLine.prototype);
+
+function createDomLine(nonEmpty, doesWrap, browser, document)
+{
+  if (browser.msie && (!nonEmpty)) {
+    // TODO: Why is this necessary?
+    return new SpecialIEDOMLine(nonEmpty, doesWrap, browser, document);
+  } else {
+    return new DOMLine(nonEmpty, doesWrap, browser, document);
+  }
 };
 
-domline.processSpaces = function(s, doesWrap)
+function processSpaces(s, doesWrap)
 {
   if (s.indexOf("<") < 0 && !doesWrap)
   {
@@ -305,4 +389,8 @@ domline.processSpaces = function(s, doesWrap)
   return parts.join('');
 };
 
-exports.domline = domline;
+exports.addToLineClass = addToLineClass;
+exports.createDomLine = createDomLine;
+exports.processSpaces = processSpaces;
+
+exports.domline = exports; // For compatibility
