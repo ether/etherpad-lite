@@ -1,16 +1,16 @@
 # Making collaborative editing the standard on the web
 
 # About
-Etherpad lite is a really-real time collaborative editor spawned from the Hell fire of Etherpad. 
-We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad Lite 
+Etherpad is a really-real time collaborative editor spawned from the Hell fire of Etherpad. 
+We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad  
 is based on node.js ergo is much lighter and more stable than the original Etherpad. Our hope 
 is that this will encourage more users to use and install a realtime collaborative editor. A smaller, manageable and well 
 documented codebase makes it easier for developers to improve the code and contribute towards the project.
 
-**Etherpad vs Etherpad lite**
+**Etherpad(old version) vs Etherpad**
 <table>
   <tr>
-    <td>&nbsp;</td><td><b>Etherpad</b></td><td><b>Etherpad Lite</b></td>
+    <td>&nbsp;</td><td><b>Etherpad</b></td><td><b>Etherpad</b></td>
   </tr>
   <tr>
     <td align="right">Size of the folder (without git history)</td><td>30 MB</td><td>1.5 MB</td>
@@ -27,10 +27,10 @@ documented codebase makes it easier for developers to improve the code and contr
 </table> 
 
 
-Etherpad Lite is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API) 
-that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. There is also a [jQuery plugin](https://github.com/johnyma22/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
+Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API) 
+that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. There is also a [jQuery plugin](https://github.com/johnmclear/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 There's also a full-featured plugin framework, allowing you to easily add your own features.
-Finally, Etherpad Lite comes with translations into tons of different languages!
+Finally, Etherpad comes with translations into tons of different languages!
 
 **Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live**
 
@@ -71,7 +71,7 @@ Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the la
 
 **As any user (we recommend creating a separate user called etherpad-lite):**
 
-1. Move to a folder where you want to install Etherpad Lite. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
+1. Move to a folder where you want to install Etherpad. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code `cd etherpad-lite`
 
 Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser. 
@@ -83,7 +83,7 @@ You like it? [Next steps](#next-steps).
 # Next Steps
 
 ## Tweak the settings
-You can modify the settings in `settings.json`. (If you need to handle multiple settings files, you can pass the path to a settings file to `bin/run.sh` using the `-s|--settings` option. This allows you to run multiple Etherpad Lite instances from the same installation.)
+You can modify the settings in `settings.json`. (If you need to handle multiple settings files, you can pass the path to a settings file to `bin/run.sh` using the `-s|--settings` option. This allows you to run multiple Etherpad instances from the same installation.)
 
 You should use a dedicated database such as "mysql", if you are planning on using etherpad-lite in a production environment, since the "dirtyDB" database driver is only for testing and/or development purposes.
 
@@ -95,11 +95,11 @@ Documentation can be found in `docs/`.
 # Development
 
 ## Things you should know
-Read this [git guide](http://learn.github.com/p/intro.html) and watch this [video on getting started with Etherpad Lite Development](http://youtu.be/67-Q26YH97E).
+Read this [git guide](http://learn.github.com/p/intro.html) and watch this [video on getting started with Etherpad Development](http://youtu.be/67-Q26YH97E).
 
 If you're new to node.js, start with Ryan Dahl's [Introduction to Node.js](http://youtu.be/jo_B4LTHi3I).
 
-You can debug Etherpad lite using `bin/debugRun.sh`.
+You can debug Etherpad using `bin/debugRun.sh`.
 
 If you want to find out how Etherpad's `Easysync` works (the library that makes it really realtime), start with this [PDF](https://github.com/ether/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading).
 
