@@ -146,6 +146,11 @@ a:focus, a:hover {
   border-bottom: #333333 1px solid;
 }
 
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 @media (max-width: 720px) {
   div.innerwrapper {
     padding: 0 15px 15px 15px;
