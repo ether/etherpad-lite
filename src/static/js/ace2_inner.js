@@ -4665,7 +4665,10 @@ function Ace2Inner(){
   function bindTheEventHandlers()
   {
     $(document).on("keydown", handleKeyEvent);
-    $(document).on("keypress", handleKeyEvent);
+    // Hack for Opera to stop it firing twice on events
+    if (/Opera[\/\s](\d+\.\d+)/.test(!navigator.userAgent)){
+      $(document).on("keypress", handleKeyEvent);
+    }
     $(document).on("keyup", handleKeyEvent);
     $(document).on("click", handleClick);
     $(root).on("blur", handleBlur);
