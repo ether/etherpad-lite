@@ -112,8 +112,8 @@ Etherpad allows you to easily create front-end tests for plugins.
 
 1. Create a new folder
 ```
-%your_plugin%/static/tests/frontend
+%your_plugin%/static/tests/frontend/specs
 ```
-2. Put your spec file in here (Example spec files are visible in %etherpad_root_folder%/frontend/tests)
+2. Put your spec file in here (Example spec files are visible in %etherpad_root_folder%/frontend/tests/specs)
 
 3. Visit http://yourserver.com/frontend/tests your front-end tests will run.
