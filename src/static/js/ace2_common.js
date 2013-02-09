@@ -96,6 +96,7 @@ var noop = function(){};
 
 exports.isNodeText = isNodeText;
 exports.object = object;
+exports.browser = browser;
 exports.getAssoc = getAssoc;
 exports.setAssoc = setAssoc;
 exports.binarySearch = binarySearch;
