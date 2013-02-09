@@ -105,3 +105,15 @@ Your plugin must also contain a [package definition file](http://npmjs.org/doc/j
 
 ## Templates
 If your plugin adds or modifies the front end HTML (e.g. adding buttons or changing their functions), you should put the necessary HTML code for such operations in `templates/`, in files of type ".ejs", since Etherpad-Lite uses EJS for HTML templating. See the following link for more information about EJS: <https://github.com/visionmedia/ejs>.
+
+## Writing and running front-end tests for your plugin
+
+Etherpad allows you to easily create front-end tests for plugins.  
+
+1. Create a new folder
+```
+%your_plugin%/static/tests/frontend
+```
+2. Put your spec file in here (Example spec files are visible in %etherpad_root_folder%/frontend/tests)
+
+3. Visit http://yourserver.com/frontend/tests your front-end tests will run.
