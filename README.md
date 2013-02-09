@@ -1,31 +1,7 @@
 # Making collaborative editing the standard on the web
 
 # About
-Etherpad is a really-real time collaborative editor spawned from the Hell fire of Etherpad. 
-We're reusing the well tested Etherpad easysync library to make it really realtime. Etherpad  
-is based on node.js ergo is much lighter and more stable than the original Etherpad. Our hope 
-is that this will encourage more users to use and install a realtime collaborative editor. A smaller, manageable and well 
-documented codebase makes it easier for developers to improve the code and contribute towards the project.
-
-**Etherpad(old version) vs Etherpad**
-<table>
-  <tr>
-    <td>&nbsp;</td><td><b>Etherpad</b></td><td><b>Etherpad</b></td>
-  </tr>
-  <tr>
-    <td align="right">Size of the folder (without git history)</td><td>30 MB</td><td>1.5 MB</td>
-  </tr>
-  <tr>
-    <td align="right">Languages used server side</td><td>Javascript (Rhino), Java, Scala</td><td>Javascript (node.js)</td>
-  </tr>
-  <tr>
-    <td align="right">Lines of server side Javascript code</td><td>~101k</td><td>~9k</td>
-  </tr>
-  <tr>
-    <td align="right">RAM Usage immediately after start</td><td>257 MB (grows to ~1GB)</td><td>16 MB (grows to ~30MB)</td>
-  </tr>
-</table> 
-
+Etherpad is a really-real time web-based collaborative editor.
 
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API) 
 that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. There is also a [jQuery plugin](https://github.com/johnmclear/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
