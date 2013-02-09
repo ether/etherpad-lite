@@ -154,16 +154,21 @@ function Ace2Inner(){
   var dmesg = noop;
   window.dmesg = noop;
 
+
+  var scheduler = parent; // hack for opera required
+
   // Ugly hack for Firefox 18
   // get the timeout and interval methods from the parent iframe
-  // This hack breaks IE8
-  try{
-    setTimeout = parent.setTimeout;
-    clearTimeout = parent.clearTimeout;
-    setInterval = parent.setInterval;
-    clearInterval = parent.clearInterval;
-  }catch(err){
-    // IE8 can panic here.
+  // This hack breaks IE8 so be careful	
+  if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
+    try{
+      setTimeout = scheduler.setTimeout;
+      clearTimeout = scheduler.clearTimeout;
+      setInterval = scheduler.setInterval;
+      clearInterval = scheduler.clearInterval;
+    }catch(err){
+      // IE8 can panic here.
+    }
   }
 
   var textFace = 'monospace';
@@ -184,7 +189,7 @@ function Ace2Inner(){
     parentDynamicCSS = makeCSSManager("dynamicsyntax", true);
   }
 
-  var changesetTracker = makeChangesetTracker(rep.apool, {
+  var changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
     withCallbacks: function(operationName, f)
     {
       inCallStackIfNecessary(operationName, function()
@@ -604,7 +609,7 @@ function Ace2Inner(){
     doesWrap = newVal;
     var dwClass = "doesWrap";
     setClassPresence(root, "doesWrap", doesWrap);
-    setTimeout(function()
+    scheduler.setTimeout(function()
     {
       inCallStackIfNecessary("setWraps", function()
       {
@@ -644,7 +649,7 @@ function Ace2Inner(){
     textFace = face;
     root.style.fontFamily = textFace;
     lineMetricsDiv.style.fontFamily = textFace;
-    setTimeout(function()
+    scheduler.setTimeout(function()
     {
       setUpTrackingCSS();
     }, 0);
@@ -657,7 +662,7 @@ function Ace2Inner(){
     root.style.lineHeight = textLineHeight() + "px";
     sideDiv.style.lineHeight = textLineHeight() + "px";
     lineMetricsDiv.style.fontSize = textSize + "px";
-    setTimeout(function()
+    scheduler.setTimeout(function()
     {
       setUpTrackingCSS();
     }, 0);
@@ -1106,7 +1111,7 @@ function Ace2Inner(){
       scheduledTime = time;
       var delay = time - now();
       if (delay < 0) delay = 0;
-      scheduledTimeout = setTimeout(callback, delay);
+      scheduledTimeout = scheduler.setTimeout(callback, delay);
     }
 
     function callback()
@@ -3623,7 +3628,7 @@ function Ace2Inner(){
           evt.preventDefault();
           doReturnKey();
           //scrollSelectionIntoView();
-          setTimeout(function()
+          scheduler.setTimeout(function()
           {
             outerWin.scrollBy(-100, 0);
           }, 0);
@@ -3709,7 +3714,7 @@ function Ace2Inner(){
           var isPageDown = evt.which === 34;
           var isPageUp = evt.which === 33;
 
-          setTimeout(function(){
+          scheduler.setTimeout(function(){
             var newVisibleLineRange = getVisibleLineRange();
             var linesCount = rep.lines.length();
 
@@ -4766,7 +4771,7 @@ function Ace2Inner(){
 
     });
 
-    setTimeout(function()
+    scheduler.setTimeout(function()
     {
       parent.readyFunc(); // defined in code that sets up the inner iframe
     }, 0);
@@ -5214,7 +5219,7 @@ function Ace2Inner(){
         documentAttributeManager: documentAttributeManager
       });
     
-      setTimeout(function()
+      scheduler.setTimeout(function()
       {
         parent.readyFunc(); // defined in code that sets up the inner iframe
       }, 0);
