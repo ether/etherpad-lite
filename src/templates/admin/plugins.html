@@ -1,7 +1,8 @@
+<!doctype html> 
 <html>
   <head>
-    <title>Plugin manager - Etherpad lite</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>Plugin manager - Etherpad</title>
+    <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="../static/css/admin.css">
     <script src="../static/js/jquery.js"></script>
     <script src="../socket.io/socket.io.js"></script>
@@ -19,7 +20,7 @@
       <% } %>
 
        <div class="menu">
-        <h1>Etherpad lite</h1>
+        <h1>Etherpad</h1>
         <ul> 
           <% e.begin_block("adminMenu"); %>
           <li><a href="plugins">Plugin manager</a> </li>
@@ -27,7 +28,7 @@
           <li><a href="plugins/info">Troubleshooting information</a> </li>
           <% e.end_block(); %>
         </ul>
-        <div id="progress"><img src="../static/img/loading.gif" alt=""/>&nbsp;&nbsp;<span class="message"></span></div>
+        <div id="progress"><img src="../static/img/loading.gif">&nbsp;&nbsp;<span class="message"></span></div>
       </div>
 
       <div class="innerwrapper">
@@ -43,9 +44,9 @@
         </thead>
         <tbody class="template">
           <tr id="installed-plugin-template">
-            <td class="name"></td>
-            <td class="description"></td>
-              <td class="version"></td>
+            <td class="name" data-label="Name"></td>
+            <td class="description" data-label="Description"></td>
+            <td class="version" data-label="Version"></td>
             <td class="actions">
               <input type="button" value="Uninstall" class="do-uninstall">
             </td>
@@ -74,9 +75,9 @@
           </thead>
           <tbody class="template">
             <tr>
-              <td class="name"></td>
-              <td class="description"></td>
-              <td class="version"></td>
+              <td class="name" data-label="Name"></td>
+              <td class="description" data-label="Description"></td>
+              <td class="version" data-label="Version"></td>
               <td class="actions">
                 <input type="button" value="Install" class="do-install">
              </td>
@@ -92,6 +93,5 @@
       
       </div>
     </div>
-    <div id="topborder"></div>
   </body>
 </html>
