@@ -127,6 +127,10 @@ td, th {
   bottom: 50px;
 }
 
+#progress img {
+  vertical-align: top;
+}
+
 .settings {
   outline: none;
   width: 100%;
