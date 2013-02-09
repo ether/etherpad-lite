@@ -191,10 +191,12 @@ a:focus, a:hover {
   }
 
   td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    text-align: left;
     padding-right: 10px;
     white-space: nowrap;
-    float: left;
-    margin-left: -100%;
     font-weight: bold;
     content: attr(data-label);
   }
