@@ -23,7 +23,7 @@
 var AttributePool = require('./AttributePool');
 var Changeset = require('./Changeset');
 
-function makeChangesetTracker(apool, aceCallbacksProvider)
+function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 {
 
   // latest official text from server
