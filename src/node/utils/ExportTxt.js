@@ -236,6 +236,10 @@ function getTXTFromAtext(pad, atext, authorColors)
         //removes the characters with the code 12. Don't know where they come 
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
+
+        // remove * from s, it's just not needed on a blank line..  This stops
+        // plugins from being able to display * at the beginning of a line
+        s = s.replace("*", "");
         
         // assem.append(_encodeWhitespace(Security.escapeHTML(s)));
         assem.append(_encodeWhitespace(s));
