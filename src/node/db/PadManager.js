@@ -151,7 +151,6 @@ exports.getPad = function(id, text, callback)
     pad.init(text, function(err)
     {
       if(ERR(err, callback)) return;
-      console.warn(pad); 
       globalPads.set(id, pad);
       callback(null, pad);
     });
