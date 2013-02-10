@@ -39,8 +39,8 @@
   }
 
   //custom extensions, the original jquery didn't have these
-  browser.windows = /windows/.test(userAgent);
-  browser.mobile = /mobile/.test(userAgent) || /android/.test(userAgent);
+  browser.windows = /windows/i.test(userAgent);
+  browser.mobile = /mobile/i.test(userAgent) || /android/i.test(userAgent);
 
   if(typeof exports !== 'undefined'){
     exports.browser = browser;
