@@ -1,3 +1,20 @@
+# 1.2.8
+ * NEW: Use Socket IO for rooms (allows for pads to be load balanced with sticky rooms)
+ * NEW: Plugins can now provide their own frontend tests
+ * NEW: Improved server-side logging
+ * NEW: Admin dashboard mobile device support and new hooks for Admin dashboard
+ * Fix: Bugfix getChatHistory API method
+ * Fix: Make plugin search case insensitive
+ * Fix: Indentation and bullets on text export
+ * Fix: Resolve various warnings on dependencies during install
+ * Fix: Page up / Page down now works in all browsers
+ * Fix: Stop Opera browser inserting two new lines on enter keypress
+ * Fix: Stop timeslider from showing NaN on pads with only one revision
+ * Other: Allow timeslider tests to run and provide & fix various other frontend-tests
+ * Other: Update to latest jQuery
+ * Other: Change loading message asking user to please wait on first build
+ * Other: Allow etherpad to use global npm installation (Safe since node 6.3)
+
 # 1.2.7
  * NEW: notifications are now modularized and can be stacked
  * NEW: Visit a specific revision in the timeslider by suffixing #%revNumber% IE http://localhost/p/test/timeslider#12

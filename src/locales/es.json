@@ -4,8 +4,9 @@
 			"0": "Armando-Martin",
 			"1": "Jacobo",
 			"2": "Joker",
-			"4": "Vivaelcelta",
-			"5": "Xuacu"
+			"3": "Rubenwap",
+			"5": "Vivaelcelta",
+			"6": "Xuacu"
 		}
 	},
 	"index.newPad": "Nuevo Pad",
@@ -104,6 +105,8 @@
 	"timeslider.month.october": "Octubre",
 	"timeslider.month.november": "Noviembre",
 	"timeslider.month.december": "Diciembre",
+	"timeslider.unnamedauthor": "{{num}} autor desconocido",
+	"timeslider.unnamedauthors": "{{num}} autores desconocidos",
 	"pad.savedrevs.marked": "Revisi\u00f3n guardada",
 	"pad.userlist.entername": "Escribe tu nombre",
 	"pad.userlist.unnamed": "an\u00f3nimo",

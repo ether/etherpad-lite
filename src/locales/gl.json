@@ -100,6 +100,8 @@
 	"timeslider.month.october": "outubro",
 	"timeslider.month.november": "novembro",
 	"timeslider.month.december": "decembro",
+	"timeslider.unnamedauthor": "{{num}} autor an\u00f3nimo",
+	"timeslider.unnamedauthors": "{{num}} autores an\u00f3nimos",
 	"pad.savedrevs.marked": "Esta revisi\u00f3n est\u00e1 agora marcada como revisi\u00f3n gardada",
 	"pad.userlist.entername": "Insira o seu nome",
 	"pad.userlist.unnamed": "an\u00f3nimo",

@@ -85,8 +85,8 @@ var helper = {};
           return !$iframe.contents().find("#editorloadingbox").is(":visible");
         }, 50000).done(function(){
           helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
-          helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe.[name="ace_outer"]'));
-          helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe.[name="ace_inner"]'));
+          helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
+          helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
 
           //disable all animations, this makes tests faster and easier
           helper.padChrome$.fx.off = true;
