@@ -13,6 +13,7 @@
  * Other: Allow timeslider tests to run and provide & fix various other frontend-tests
  * Other: Update to latest jQuery
  * Other: Change loading message asking user to please wait on first build
+ * Other: Allow etherpad to use global npm installation (Safe since node 6.3)
 
 # 1.2.7
  * NEW: notifications are now modularized and can be stacked
