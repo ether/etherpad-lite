@@ -32,6 +32,7 @@ var securityManager = require("../db/SecurityManager");
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins.js");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
+var accessLogger = log4js.getLogger("access");
 var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
@@ -120,6 +121,10 @@ exports.handleDisconnect = function(client)
       client.broadcast.to(session.padId).json.send(messageToTheOtherUsers);
     }); 
   }
+  
+  client.get('remoteAddress', function(er, ip) {
+    accessLogger.info('[LEAVE] Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left pad "'+session.padId+'"')
+  })
   
   //Delete the sessioninfos entrys of this session
   delete sessioninfos[client.id]; 
@@ -910,6 +915,10 @@ function handleClientReady(client, message)
       sessioninfos[client.id].readOnlyPadId = padIds.readOnlyPadId;
       sessioninfos[client.id].readonly = padIds.readonly;
       
+      client.get('remoteAddress', function(er, ip) {
+        accessLogger.info('[ENTER] Client '+client.id+' with IP "'+ip+'" entered pad "'+padIds.padId+'"')
+      })
+
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
       {
