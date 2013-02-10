@@ -55,13 +55,14 @@ exports.setSocketIO = function(_socket)
   
   socket.sockets.on('connection', function(client)
   {
+    client.set('remoteAddress', client.handshake.address.address);
     var clientAuthorized = false;
     
     //wrap the original send function to log the messages
     client._send = client.send;
     client.send = function(message)
     {
-      messageLogger.info("to " + client.id + ": " + stringifyWithoutPassword(message));
+      messageLogger.debug("to " + client.id + ": " + stringifyWithoutPassword(message));
       client._send(message);
     }
   
@@ -79,7 +80,7 @@ exports.setSocketIO = function(_socket)
         //check if component is registered in the components array        
         if(components[message.component])
         {
-          messageLogger.info("from " + client.id + ": " + stringifyWithoutPassword(message));
+          messageLogger.debug("from " + client.id + ": " + stringifyWithoutPassword(message));
           components[message.component].handleMessage(client, message);
         }
       }
