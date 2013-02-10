@@ -40,10 +40,9 @@
                      },
   "bin":             { "etherpad-lite": "./node/server.js" },
   "devDependencies": {
-                      "jshint"  : "*",
-                      "wd"      : "0.0.26"
+                      "wd"      : "0.0.31"
                      },
-  "engines"        : { "node" : ">=0.6.0",
+  "engines"        : { "node" : ">=0.6.3",
                        "npm"  : ">=1.0"
                      }, 
   "version"        : "1.2.8"
