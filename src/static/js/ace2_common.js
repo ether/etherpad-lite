@@ -34,6 +34,18 @@ function object(o)
   return new f();
 }
 
+var userAgent = (((function () {return this;})().navigator || {}).userAgent || 'node-js').toLowerCase();
+
+var browser = {
+  version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+  safari: /webkit/.test(userAgent),
+  opera: /opera/.test(userAgent),
+  msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+  mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent),
+  windows: /windows/.test(userAgent),
+  mobile: /mobile/.test(userAgent) || /android/.test(userAgent)
+};
+
 function getAssoc(obj, name)
 {
   return obj["_magicdom_" + name];
@@ -84,6 +96,7 @@ var noop = function(){};
 
 exports.isNodeText = isNodeText;
 exports.object = object;
+exports.browser = browser;
 exports.getAssoc = getAssoc;
 exports.setAssoc = setAssoc;
 exports.binarySearch = binarySearch;
