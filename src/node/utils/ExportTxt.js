@@ -21,32 +21,12 @@ var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-function getPadPlainText(pad, revNum)
-{
-  var atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext());
-  var textLines = atext.text.slice(0, -1).split('\n');
-  var attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
-  var apool = pad.pool();
+var getPadPlainText = require('./ExportHtml').getPadPlainText;
+var _processSpaces = require('./ExportHtml')._processSpaces;
+var _analyzeLine = require('./ExportHtml')._analyzeLine;
+var _encodeWhitespace = require('./ExportHtml')._encodeWhitespace;
 
-  var pieces = [];
-  for (var i = 0; i < textLines.length; i++)
-  {
-    var line = _analyzeLine(textLines[i], attribLines[i], apool);
-    if (line.listLevel)
-    {
-      var numSpaces = line.listLevel * 2 - 1;
-      var bullet = '*';
-      pieces.push(new Array(numSpaces + 1).join(' '), bullet, ' ', line.text, '\n');
-    }
-    else
-    {
-      pieces.push(line.text, '\n');
-    }
-  }
-
-  return pieces.join('');
-}
-
+// This is slightly different than the HTML method as it passes the output to getTXTFromAText
 function getPadTXT(pad, revNum, callback)
 {
   var atext = pad.atext;
@@ -77,7 +57,7 @@ function getPadTXT(pad, revNum, callback)
 
   function (callback)
   {
-    html = getTXTFromAtext(pad, atext);
+    html = getTXTFromAtext(pad, atext); // only this line is different to the HTML function
     callback(null);
   }],
   // run final callback
@@ -91,8 +71,10 @@ function getPadTXT(pad, revNum, callback)
 }
 
 exports.getPadTXT = getPadTXT;
-exports.getTXTFromAtext = getTXTFromAtext;
 
+
+// This is different than the functionality provided in ExportHtml as it provides formatting
+// functionality that is designed specifically for TXT exports
 function getTXTFromAtext(pad, atext, authorColors)
 {
   var apool = pad.apool();
@@ -294,45 +276,7 @@ function getTXTFromAtext(pad, atext, authorColors)
 
   return pieces.join('');
 }
-
-function _analyzeLine(text, aline, apool)
-{
-  var line = {};
-
-  // identify list
-  var lineMarker = 0;
-  line.listLevel = 0;
-  if (aline)
-  {
-    var opIter = Changeset.opIterator(aline);
-    if (opIter.hasNext())
-    {
-      var listType = Changeset.opAttributeValue(opIter.next(), 'list', apool);
-      if (listType)
-      {
-        lineMarker = 1;
-        listType = /([a-z]+)([12345678])/.exec(listType);
-        if (listType)
-        {
-          line.listTypeName = listType[1];
-          line.listLevel = Number(listType[2]);
-        }
-      }
-    }
-  }
-  if (lineMarker)
-  {
-    line.text = text.substring(1);
-    line.aline = Changeset.subattribution(aline, 1);
-  }
-  else
-  {
-    line.text = text;
-    line.aline = aline;
-  }
-
-  return line;
-}
+exports.getTXTFromAtext = getTXTFromAtext;
 
 exports.getPadTXTDocument = function (padId, revNum, noDocType, callback)
 {
@@ -354,72 +298,3 @@ function _encodeWhitespace(s) {
     return "&#" +c.charCodeAt(0) + ";"
   });
 }
-
-// copied from ACE
-function _processSpaces(s)
-{
-  var doesWrap = true;
-  if (s.indexOf("<") < 0 && !doesWrap)
-  {
-    // short-cut
-    return s.replace(/ /g, '&nbsp;');
-  }
-  var parts = [];
-  s.replace(/<[^>]*>?| |[^ <]+/g, function (m)
-  {
-    parts.push(m);
-  });
-  if (doesWrap)
-  {
-    var endOfLine = true;
-    var beforeSpace = false;
-    // last space in a run is normal, others are nbsp,
-    // end of line is nbsp
-    for (var i = parts.length - 1; i >= 0; i--)
-    {
-      var p = parts[i];
-      if (p == " ")
-      {
-        if (endOfLine || beforeSpace) parts[i] = '&nbsp;';
-        endOfLine = false;
-        beforeSpace = true;
-      }
-      else if (p.charAt(0) != "<")
-      {
-        endOfLine = false;
-        beforeSpace = false;
-      }
-    }
-    // beginning of line is nbsp
-    for (var i = 0; i < parts.length; i++)
-    {
-      var p = parts[i];
-      if (p == " ")
-      {
-        parts[i] = '&nbsp;';
-        break;
-      }
-      else if (p.charAt(0) != "<")
-      {
-        break;
-      }
-    }
-  }
-  else
-  {
-    for (var i = 0; i < parts.length; i++)
-    {
-      var p = parts[i];
-      if (p == " ")
-      {
-        parts[i] = '&nbsp;';
-      }
-    }
-  }
-  return parts.join('');
-}
-
-
-// copied from ACE
-var _REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;
-var _REGEX_SPACE = /\s/;
