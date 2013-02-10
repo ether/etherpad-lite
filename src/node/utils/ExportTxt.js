@@ -261,7 +261,6 @@ function getTXTFromAtext(pad, atext, authorColors)
         var url = urlData[1];
         var urlLength = url.length;
         processNextChars(startIndex - idx);
-        console.warn(url);
         // assem.append('<a href="' + Security.escapeHTMLAttribute(url) + '">');
         assem.append(url);
         processNextChars(urlLength);
@@ -300,7 +299,6 @@ function getTXTFromAtext(pad, atext, authorColors)
       }
       pieces.push(lineContent, '\n');
     }else{
-      console.warn(line);
       pieces.push(lineContent, '\n');
     }
 
