@@ -157,20 +157,6 @@ function Ace2Inner(){
 
   var scheduler = parent; // hack for opera required
 
-  // Ugly hack for Firefox 18
-  // get the timeout and interval methods from the parent iframe
-  // This hack breaks IE8 so be careful	
-  if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
-    try{
-      setTimeout = scheduler.setTimeout;
-      clearTimeout = scheduler.clearTimeout;
-      setInterval = scheduler.setInterval;
-      clearInterval = scheduler.clearInterval;
-    }catch(err){
-      // IE8 can panic here.
-    }
-  }
-
   var textFace = 'monospace';
   var textSize = 12;
   
