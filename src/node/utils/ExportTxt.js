@@ -290,24 +290,6 @@ function getTXTFromAtext(pad, atext, authorColors)
     }else{
       pieces.push(lineContent, '\n');
     }
-
-    // I'm not too keen about using teh HTML export filters here, they could cause real pain in the future
-    // I'd suggest supporting getLineTXTForExport
-    var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
-    {
-      line: line,
-      apool: apool,
-      attribLine: attribLines[i],
-      text: textLines[i]
-    }, " ", " ", "");
-    if (lineContentFromHook)
-    {
-      pieces.push(lineContentFromHook, '');
-    } 
-    else 
-    {
-      // pieces.push(lineContent, '\n');
-    }
   }
 
   return pieces.join('');
