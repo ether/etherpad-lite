@@ -123,7 +123,7 @@ exports.handleDisconnect = function(client)
   }
   
   client.get('remoteAddress', function(er, ip) {
-    accessLogger.info('[LEAVE] Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left pad "'+session.padId+'"')
+    accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
   })
   
   //Delete the sessioninfos entrys of this session
@@ -916,7 +916,7 @@ function handleClientReady(client, message)
       sessioninfos[client.id].readonly = padIds.readonly;
       
       client.get('remoteAddress', function(er, ip) {
-        accessLogger.info('[ENTER] Client '+client.id+' with IP "'+ip+'" entered pad "'+padIds.padId+'"')
+        accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad')
       })
 
       //If this is a reconnect, we don't have to send the client the ClientVars again
