@@ -109,6 +109,8 @@
 	"timeslider.month.october": "Octobre",
 	"timeslider.month.november": "Novembre",
 	"timeslider.month.december": "D\u00e9cembre",
+	"timeslider.unnamedauthor": "{{num}} auteur anonyme",
+	"timeslider.unnamedauthors": "{{num}} auteurs anonymes",
 	"pad.savedrevs.marked": "Cette r\u00e9vision est maintenant marqu\u00e9e comme r\u00e9vision enregistr\u00e9e",
 	"pad.userlist.entername": "Entrez votre nom",
 	"pad.userlist.unnamed": "sans nom",
