@@ -2,43 +2,49 @@
   Copied from jQuery 1.8, the last jquery version with browser recognition support
 */
 
-// Use of jQuery.browser is frowned upon.
-// More details: http://api.jquery.com/jQuery.browser
-// jQuery.uaMatch maintained for back-compat
-var uaMatch = function( ua ) {
-    ua = ua.toLowerCase();
+(function(){
+  // Use of jQuery.browser is frowned upon.
+  // More details: http://api.jquery.com/jQuery.browser
+  // jQuery.uaMatch maintained for back-compat
+  var uaMatch = function( ua ) {
+      ua = ua.toLowerCase();
 
-    var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
-        /(webkit)[ \/]([\w.]+)/.exec( ua ) ||
-        /(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
-        /(msie) ([\w.]+)/.exec( ua ) ||
-        ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
-        [];
+      var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
+          /(webkit)[ \/]([\w.]+)/.exec( ua ) ||
+          /(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
+          /(msie) ([\w.]+)/.exec( ua ) ||
+          ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
+          [];
 
-    return {
-        browser: match[ 1 ] || "",
-        version: match[ 2 ] || "0"
-    };
-};
+      return {
+          browser: match[ 1 ] || "",
+          version: match[ 2 ] || "0"
+      };
+  };
 
-var userAgent = navigator.userAgent;
-var matched = uaMatch(userAgent);
-var browser = {};
+  var userAgent = navigator.userAgent;
+  var matched = uaMatch(userAgent);
+  var browser = {};
 
-if ( matched.browser ) {
-    browser[ matched.browser ] = true;
-    browser.version = matched.version;
-}
+  if ( matched.browser ) {
+      browser[ matched.browser ] = true;
+      browser.version = matched.version;
+  }
 
-// Chrome is Webkit, but Webkit is also Safari.
-if ( browser.chrome ) {
-    browser.webkit = true;
-} else if ( browser.webkit ) {
-    browser.safari = true;
-}
+  // Chrome is Webkit, but Webkit is also Safari.
+  if ( browser.chrome ) {
+      browser.webkit = true;
+  } else if ( browser.webkit ) {
+      browser.safari = true;
+  }
 
-//custom extensions, the original jquery didn't have these
-browser.windows = /windows/.test(userAgent);
-browser.mobile = /mobile/.test(userAgent) || /android/.test(userAgent);
+  //custom extensions, the original jquery didn't have these
+  browser.windows = /windows/.test(userAgent);
+  browser.mobile = /mobile/.test(userAgent) || /android/.test(userAgent);
 
-exports.browser = browser;
+  if(typeof exports !== 'undefined'){
+    exports.browser = browser;
+  } else{
+    $.browser = browser;
+  }
+})();
