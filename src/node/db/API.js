@@ -461,6 +461,24 @@ exports.getReadOnlyID = function(padID, callback)
 }
 
 /**
+getPadID(readonlyID) returns the normal link of a pad 
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getPadID = function(roID, callback)
+{
+  //get the PadId
+  readOnlyManager.getPadId(roID, function(err, PadId)
+  {
+    if(ERR(err, callback)) return;
+    callback(null, {PadID: PadId});
+  });
+}
+
+/**
 setPublicStatus(padID, publicStatus) sets a boolean for the public status of a pad 
 
 Example returns:
