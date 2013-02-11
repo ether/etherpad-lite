@@ -198,6 +198,7 @@ var version =
   , "getRevisionsCount"         : ["padID"]
   , "getLastEdited"             : ["padID"]
   , "deletePad"                 : ["padID"]
+  , "getPadID"                  : ["roID"]
   , "getReadOnlyID"             : ["padID"]
   , "setPublicStatus"           : ["padID", "publicStatus"]
   , "getPublicStatus"           : ["padID"]
