@@ -40,7 +40,8 @@ catch(e)
 //a list of all functions
 var version =
 { "1":
-  { "createGroup"               : []
+  { "getLatestApiVersion"       : []
+  , "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -70,7 +71,8 @@ var version =
   , "padUsersCount"             : ["padID"]
   }
 , "1.1":
-  { "createGroup"               : []
+  { "getLatestApiVersion"       : []
+  , "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -104,7 +106,8 @@ var version =
   , "listAllGroups"             : []
   }
 , "1.2":
-  { "createGroup"               : []
+  { "getLatestApiVersion"       : []
+  , "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -139,7 +142,8 @@ var version =
   , "checkToken"                : []
   }
 , "1.2.1":
-  { "createGroup"               : []
+  { "getLatestApiVersion"       : []
+  , "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -175,7 +179,8 @@ var version =
   , "checkToken"                : []
   }
 , "1.2.7":
-  { "createGroup"               : []
+  { "getLatestApiVersion"       : []
+  , "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -215,6 +220,13 @@ var version =
   , "getChatHead"               : ["padID"]
   }
 };
+
+// This sets the latest available API version
+var latestApiVersion = null;
+for(var knownApiVersion in version)
+{
+    latestApiVersion = knownApiVersion;
+}
 
 /**
  * Handles a HTTP API call
@@ -288,6 +300,11 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
   }
   else
   {
+    if(functionName == "getLatestApiVersion")
+    {
+      res.send({code: 0, message: "latest API version", data: latestApiVersion});
+      return;
+    } 
     callAPI(apiVersion, functionName, fields, req, res);
   }
 }
