@@ -915,8 +915,14 @@ function handleClientReady(client, message)
       sessioninfos[client.id].readOnlyPadId = padIds.readOnlyPadId;
       sessioninfos[client.id].readonly = padIds.readonly;
       
+      //Log creation/(re-)entering of a pad
       client.get('remoteAddress', function(er, ip) {
-        accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad')
+        if(pad.head > 0) {
+          accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad');
+        }
+        else if(pad.head == 0) {
+          accessLogger.info('[CREATE] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" created the pad');
+        }
       })
 
       //If this is a reconnect, we don't have to send the client the ClientVars again
