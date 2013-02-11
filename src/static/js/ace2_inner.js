@@ -1086,7 +1086,7 @@ function Ace2Inner(){
     {
       if (scheduledTimeout)
       {
-        clearTimeout(scheduledTimeout);
+        scheduler.clearTimeout(scheduledTimeout);
         scheduledTimeout = null;
       }
     }

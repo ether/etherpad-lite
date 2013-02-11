@@ -51,7 +51,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
     // and if there isn't a timeout already scheduled.
     if (changeCallback && changeCallbackTimeout === null)
     {
-      changeCallbackTimeout = setTimeout(function()
+      changeCallbackTimeout = scheduler.setTimeout(function()
       {
         try
         {
