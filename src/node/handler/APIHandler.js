@@ -216,7 +216,7 @@ var version =
   }
 };
 
-// sets the latest available API version here
+// set the latest available API version here
 exports.latestApiVersion = '1.2.7';
 
 /**
