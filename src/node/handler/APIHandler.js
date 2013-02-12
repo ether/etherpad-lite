@@ -216,6 +216,9 @@ var version =
   }
 };
 
+// set the latest available API version here
+exports.latestApiVersion = '1.2.7';
+
 /**
  * Handles a HTTP API call
  * @param functionName the name of the called function
@@ -288,6 +291,11 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
   }
   else
   {
+    if(functionName == "getLatestApiVersion")
+    {
+      res.send({code: 0, message: "latest API version", data: latestApiVersion});
+      return;
+    } 
     callAPI(apiVersion, functionName, fields, req, res);
   }
 }
