@@ -283,6 +283,16 @@ sets the text of a pad
   * `{code: 1, message:"padID does not exist", data: null}`
   * `{code: 1, message:"text too long", data: null}`
 
+#### setHTML(padID, html)
+ * API >= 1
+
+sets the text of a pad based on HTML, HTML must be well formed.  Malformed HTML will send a warning to the API log
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: null}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
+
 #### getHTML(padID, [rev])
  * API >= 1
 
