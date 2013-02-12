@@ -29,7 +29,6 @@ function setPadHTML(pad, html, callback)
   // by several orders of magnitude.
   pad.setText("");
   var padText = pad.text();
-
   // Parse the incoming HTML with jsdom
   var doc = jsdom(html.replace(/>\n+</g, '><'));
   apiLogger.debug('html:');
@@ -38,8 +37,15 @@ function setPadHTML(pad, html, callback)
   // Convert a dom tree into a list of lines and attribute liens
   // using the content collector object
   var cc = contentcollector.makeContentCollector(true, null, pad.pool);
-  cc.collectContent(doc.childNodes[0]);
+  try{ // we use a try here because if the HTML is bad it will blow up
+    cc.collectContent(doc.childNodes[0]);
+  }catch(e){
+    apiLogger.warn("HTML was not properly formed", e);
+    return; // We don't process the HTML because it was bad..
+  }
+
   var result = cc.finish();
+
   apiLogger.debug('Lines:');
   var i;
   for (i = 0; i < result.lines.length; i += 1)
