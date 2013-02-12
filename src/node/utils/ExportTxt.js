@@ -21,10 +21,10 @@ var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var getPadPlainText = require('./ExportHtml').getPadPlainText;
-var _processSpaces = require('./ExportHtml')._processSpaces;
-var _analyzeLine = require('./ExportHtml')._analyzeLine;
-var _encodeWhitespace = require('./ExportHtml')._encodeWhitespace;
+var getPadPlainText = require('./ExportHelper').getPadPlainText;
+var _processSpaces = require('./ExportHelper')._processSpaces;
+var _analyzeLine = require('./ExportHelper')._analyzeLine;
+var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
 function getPadTXT(pad, revNum, callback)
