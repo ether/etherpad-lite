@@ -40,8 +40,7 @@ catch(e)
 //a list of all functions
 var version =
 { "1":
-  { "getLatestApiVersion"       : []
-  , "createGroup"               : []
+  { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -71,8 +70,7 @@ var version =
   , "padUsersCount"             : ["padID"]
   }
 , "1.1":
-  { "getLatestApiVersion"       : []
-  , "createGroup"               : []
+  { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -106,8 +104,7 @@ var version =
   , "listAllGroups"             : []
   }
 , "1.2":
-  { "getLatestApiVersion"       : []
-  , "createGroup"               : []
+  { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -142,8 +139,7 @@ var version =
   , "checkToken"                : []
   }
 , "1.2.1":
-  { "getLatestApiVersion"       : []
-  , "createGroup"               : []
+  { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -179,8 +175,7 @@ var version =
   , "checkToken"                : []
   }
 , "1.2.7":
-  { "getLatestApiVersion"       : []
-  , "createGroup"               : []
+  { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
   , "listPads"                  : ["groupID"]
@@ -221,12 +216,8 @@ var version =
   }
 };
 
-// This sets the latest available API version
-var latestApiVersion = null;
-for(var knownApiVersion in version)
-{
-    latestApiVersion = knownApiVersion;
-}
+// sets the latest available API version here
+exports.latestApiVersion = '1.2.7';
 
 /**
  * Handles a HTTP API call
