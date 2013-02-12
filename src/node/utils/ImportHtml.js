@@ -25,10 +25,6 @@ function setPadHTML(pad, html, callback)
 {
   var apiLogger = log4js.getLogger("ImportHtml");
 
-  // Clean the pad. This makes the rest of the code easier
-  // by several orders of magnitude.
-  pad.setText("");
-  var padText = pad.text();
   // Parse the incoming HTML with jsdom
   var doc = jsdom(html.replace(/>\n+</g, '><'));
   apiLogger.debug('html:');
@@ -43,6 +39,8 @@ function setPadHTML(pad, html, callback)
     apiLogger.warn("HTML was not properly formed", e);
     return; // We don't process the HTML because it was bad..
   }
+
+  // console.warn("LUL WUT THE FUCK U DOIN HERE?");
 
   var result = cc.finish();
 
@@ -90,6 +88,7 @@ function setPadHTML(pad, html, callback)
   // the changeset is ready!
   var theChangeset = builder.toString();
   apiLogger.debug('The changeset: ' + theChangeset);
+  pad.setText("");
   pad.appendRevision(theChangeset);
 }
 

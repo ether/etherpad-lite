@@ -270,7 +270,7 @@ exports.setHTML = function(padID, html, callback)
     if(ERR(err, callback)) return;
 
     // add a new changeset with the new html to the pad
-    importHtml.setPadHTML(pad, cleanText(html));
+    importHtml.setPadHTML(pad, cleanText(html), callback);
 
     //update the clients on the pad
     padMessageHandler.updatePadClients(pad, callback);
