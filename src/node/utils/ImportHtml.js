@@ -40,8 +40,6 @@ function setPadHTML(pad, html, callback)
     return; // We don't process the HTML because it was bad..
   }
 
-  // console.warn("LUL WUT THE FUCK U DOIN HERE?");
-
   var result = cc.finish();
 
   apiLogger.debug('Lines:');
