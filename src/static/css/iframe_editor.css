@@ -178,5 +178,5 @@ p {
 #overlaysdiv { position: absolute; left: -1000px; top: -1000px; }
 
 .ace-line{
-  overflow:hidden;
+  overflow:hidden; /* Stops super long lines without being spaces such as aaaaaaaaaaaaaa*100 breaking the editor */
 }
