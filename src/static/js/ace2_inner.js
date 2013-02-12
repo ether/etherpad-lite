@@ -3561,6 +3561,11 @@ function Ace2Inner(){
     var isModKey = ((!charCode) && ((type == "keyup") || (type == "keydown")) && (keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 20 || keyCode == 224 || keyCode == 91));
     if (isModKey) return;
 
+    // If the key is a keypress and the browser is opera and the key is enter, do nothign at all as this fires twice.
+    if (keyCode == 13 && browser.opera && (type == "keypress")){
+      return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
+    }
+
     var specialHandled = false;
     var isTypeForSpecialKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
     var isTypeForCmdKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
@@ -4651,10 +4656,7 @@ function Ace2Inner(){
   function bindTheEventHandlers()
   {
     $(document).on("keydown", handleKeyEvent);
-    // Hack for Opera to stop it firing twice on events
-    if ($.browser.opera){
-      $(document).on("keypress", handleKeyEvent);
-    }
+    $(document).on("keypress", handleKeyEvent);
     $(document).on("keyup", handleKeyEvent);
     $(document).on("click", handleClick);
     $(root).on("blur", handleBlur);
