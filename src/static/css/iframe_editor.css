@@ -176,3 +176,7 @@ p {
 }
 
 #overlaysdiv { position: absolute; left: -1000px; top: -1000px; }
+
+.ace-line{
+  overflow:hidden;
+}
