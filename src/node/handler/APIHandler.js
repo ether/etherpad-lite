@@ -216,6 +216,9 @@ var version =
   }
 };
 
+// set the latest available API version here
+exports.latestApiVersion = '1.2.7';
+
 /**
  * Handles a HTTP API call
  * @param functionName the name of the called function
