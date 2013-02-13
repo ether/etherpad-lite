@@ -43,9 +43,8 @@ var padconnectionstatus = (function()
       status = {
         what: 'connected'
       };
-      
       padmodals.showModal('connected');
-      padmodals.hideOverlay(500);
+      padmodals.hideOverlay();
     },
     reconnecting: function()
     {
@@ -54,7 +53,7 @@ var padconnectionstatus = (function()
       };
       
       padmodals.showModal('reconnecting');
-      padmodals.showOverlay(500);
+      padmodals.showOverlay();
     },
     disconnected: function(msg)
     {
@@ -73,10 +72,11 @@ var padconnectionstatus = (function()
       }
       
       padmodals.showModal(k);
-      padmodals.showOverlay(500);
+      padmodals.showOverlay();
     },
     isFullyConnected: function()
     {
+      padmodals.hideOverlay();
       return status.what == 'connected';
     },
     getStatus: function()
