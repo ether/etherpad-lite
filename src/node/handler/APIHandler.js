@@ -219,6 +219,9 @@ var version =
 // set the latest available API version here
 exports.latestApiVersion = '1.2.7';
 
+// exports the versions so it can be used by the new Swagger endpoint
+exports.version = version;
+
 /**
  * Handles a HTTP API call
  * @param functionName the name of the called function
@@ -266,6 +269,8 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
   }
   
   //check the api key!
+  fields["apikey"] = fields["apikey"] || fields["api_key"];
+  
   if(fields["apikey"] != apikey.trim())
   {
     res.send({code: 4, message: "no or wrong API Key", data: null});
