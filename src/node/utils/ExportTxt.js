@@ -25,7 +25,6 @@ var ERR = require("async-stacktrace");
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var getPadPlainText = require('./ExportHelper').getPadPlainText;
-var _processSpaces = require('./ExportHelper')._processSpaces;
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
@@ -204,12 +203,12 @@ function getTXTFromAtext(pad, atext, authorColors)
           {
             if (propVals[i] === ENTER || propVals[i] === STAY)
             {
-              emitOpenTag(i);
               propVals[i] = true;
             }
           }
           // propVals is now all {true,false} again
         } // end if (propChanged)
+
         var chars = o.chars;
         if (o.lines)
         {
@@ -217,16 +216,15 @@ function getTXTFromAtext(pad, atext, authorColors)
         }
         
         var s = taker.take(chars);
-        
-        //removes the characters with the code 12. Don't know where they come 
-        //from but they break the abiword parser and are completly useless
-        s = s.replace(String.fromCharCode(12), "");
+
+        // removes the characters with the code 12. Don't know where they come 
+        // from but they break the abiword parser and are completly useless
+        // s = s.replace(String.fromCharCode(12), "");
 
         // remove * from s, it's just not needed on a blank line..  This stops
         // plugins from being able to display * at the beginning of a line
-        s = s.replace("*", "");
-        
-        // assem.append(_encodeWhitespace(Security.escapeHTML(s)));
+        // s = s.replace("*", ""); // Then remove it
+
         assem.append(_encodeWhitespace(s));
       } // end iteration over spans in line
       
@@ -242,8 +240,7 @@ function getTXTFromAtext(pad, atext, authorColors)
       
     } // end processNextChars
     processNextChars(text.length - idx);
-
-    return _processSpaces(assem.toString());
+    return(assem.toString());
   } // end getLineHTML
   var pieces = [css];
 

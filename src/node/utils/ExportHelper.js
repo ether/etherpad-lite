@@ -47,58 +47,6 @@ exports.getPadPlainText = function(pad, revNum){
   return pieces.join('');
 }
 
-// copied from ACE
-exports._processSpaces = function(s){
-  var doesWrap = true;
-  if (s.indexOf("<") < 0 && !doesWrap){
-    // short-cut
-    return s.replace(/ /g, '&nbsp;');
-  }
-  var parts = [];
-  s.replace(/<[^>]*>?| |[^ <]+/g, function (m){
-    parts.push(m);
-  });
-  if (doesWrap){
-    var endOfLine = true;
-    var beforeSpace = false;
-    // last space in a run is normal, others are nbsp,
-    // end of line is nbsp
-    for (var i = parts.length - 1; i >= 0; i--){
-      var p = parts[i];
-      if (p == " "){
-        if (endOfLine || beforeSpace) parts[i] = '&nbsp;';
-        endOfLine = false;
-        beforeSpace = true;
-      }
-      else if (p.charAt(0) != "<"){
-        endOfLine = false;
-        beforeSpace = false;
-      }
-    }
-    // beginning of line is nbsp
-    for (var i = 0; i < parts.length; i++){
-      var p = parts[i];
-      if (p == " "){
-        parts[i] = '&nbsp;';
-        break;
-      }
-      else if (p.charAt(0) != "<"){
-        break;
-      }
-    }
-  }
-  else
-  {
-    for (var i = 0; i < parts.length; i++){
-      var p = parts[i];
-      if (p == " "){
-        parts[i] = '&nbsp;';
-      }
-    }
-  }
-  return parts.join('');
-}
-
 
 exports._analyzeLine = function(text, aline, apool){
   var line = {};
