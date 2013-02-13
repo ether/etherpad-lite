@@ -1429,7 +1429,7 @@ function composePadChangesets(padId, startNum, endNum, callback)
  */
 exports.padUsersCount = function (padID, callback) {
   callback(null, {
-    padUsersCount: socketio.sockets.clients(padId).length
+    padUsersCount: socketio.sockets.clients(padID).length
   });
 }
 
