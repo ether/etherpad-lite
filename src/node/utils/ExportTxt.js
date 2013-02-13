@@ -26,6 +26,7 @@ var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var getPadPlainText = require('./ExportHelper').getPadPlainText;
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
+var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
 function getPadTXT(pad, revNum, callback)
@@ -111,6 +112,7 @@ function getTXTFromAtext(pad, atext, authorColors)
     var taker = Changeset.stringIterator(text);
     var assem = Changeset.stringAssembler();
     var openTags = [];
+
     var idx = 0;
 
     function processNextChars(numChars)
@@ -223,7 +225,7 @@ function getTXTFromAtext(pad, atext, authorColors)
         // plugins from being able to display * at the beginning of a line
         // s = s.replace("*", ""); // Then remove it
 
-        assem.append(s);
+        assem.append(_encodeWhitespace(s));
       } // end iteration over spans in line
       
       var tags2close = [];
@@ -290,3 +292,9 @@ exports.getPadTXTDocument = function (padId, revNum, noDocType, callback)
   });
 }
 
+function _encodeWhitespace(s) {
+  return s.replace(/[^\x21-\x7E\s\t\n\r]/g, function(c)
+  {
+    return "&#" +c.charCodeAt(0) + ";"
+  });
+}

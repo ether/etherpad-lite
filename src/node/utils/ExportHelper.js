@@ -80,4 +80,8 @@ exports._analyzeLine = function(text, aline, apool){
 }
 
 
-
+exports._encodeWhitespace = function(s){
+  return s.replace(/[^\x21-\x7E\s\t\n\r]/g, function(c){
+    return "&#" +c.charCodeAt(0) + ";"
+  });
+}

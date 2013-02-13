@@ -23,6 +23,7 @@ var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var getPadPlainText = require('./ExportHelper').getPadPlainText
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
+var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
 function getPadHTML(pad, revNum, callback)
 {
@@ -593,11 +594,5 @@ function _processSpaces(s){
     }
   }
   return parts.join('');
-}
-
-function _encodeWhitespace(s){
-  return s.replace(/[^\x21-\x7E\s\t\n\r]/g, function(c){
-    return "&#" +c.charCodeAt(0) + ";"
-  });
 }
 
