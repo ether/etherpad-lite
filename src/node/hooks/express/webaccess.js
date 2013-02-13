@@ -103,7 +103,7 @@ exports.expressConfigure = function (hook_name, args, cb) {
 
   if (!exports.sessionStore) {
     exports.sessionStore = new ueberStore();
-    exports.secret = randomString(32); // Isn't this being reset each time the server spawns?
+    exports.secret = settings.sessionKey; // Isn't this being reset each time the server spawns?
   }
 
   args.app.use(express.cookieParser(exports.secret));

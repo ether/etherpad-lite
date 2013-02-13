@@ -15,6 +15,10 @@
   "ip": "0.0.0.0",
   "port" : 9001,
 
+  // Session Key, used for reconnecting user sessions
+  // Set this to a secure string at least 10 characters long.  Do not share this value.
+  "sessionKey" : "",
+
   /*  
   // Node native SSL support
   // this is disabled by default
