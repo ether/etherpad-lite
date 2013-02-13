@@ -190,7 +190,7 @@ exports.reloadSettings = function reloadSettings() {
   log4js.replaceConsole();
 
   if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here
-    exports.sessionKey = "__bad__"+randomString(32);;
+    exports.sessionKey = randomString(32);
     console.warn("You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts");
   }
 
