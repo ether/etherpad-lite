@@ -3539,7 +3539,6 @@ function Ace2Inner(){
   {
     // if (DEBUG && window.DONT_INCORP) return;
     if (!isEditable) return;
-
     var type = evt.type;
     var charCode = evt.charCode;
     var keyCode = evt.keyCode;
@@ -3730,6 +3729,30 @@ function Ace2Inner(){
             rep.selEnd[0] = newCaretRow;
             updateBrowserSelectionFromRep();
           }, 200);
+        }
+
+        // Chrome sucks at moving the users UI to the right place when the user uses the arrow keys
+        // we catch these issues and fix it.
+        // You can replicate this bug by copy/pasting text into a pad and moving it about then using the
+        // arrow keys to navitgate
+        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && type == 'keydown' && $.browser.chrome){
+          /* Is it an event we care about? */
+          var isUpArrow = evt.which === 38;
+          var isLeftArrow = evt.which === 38;
+          var newVisibleLineRange = getVisibleLineRange(); // get the current visible range
+          top.console.log("IM NOT UPDATING!  I need a way to get the actual rep when a key is held down", rep.selStart[0]);
+          if(isUpArrow || isLeftArrow){ // was it an up arrow or left arrow?
+            var lineNum = rep.selStart[0]; // Get the current Line Number IE 84 
+            var caretIsVisible = (lineNum > newVisibleLineRange[0]); // Is the cursor in the visible Range IE ie 84 > 14?
+            if(!caretIsVisible){ // is the cursor no longer visible to the user?
+              // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
+              top.console.log("I need to scroll thw UI to here");
+              var lineHeight = textLineHeight(); // what Is the height of each line?
+              // Get the new Y by getting the line number and multiplying by the height of each line.
+              var newY = lineHeight * (lineNum -1); // -1 to go to the line above 
+              setScrollY(newY); // set the scroll height of the browser
+            }
+          }
         }
       }
 
