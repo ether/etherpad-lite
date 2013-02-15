@@ -142,11 +142,18 @@ var API = {
       "description": "returns all sessions of an author", 
       "response": {"sessions":{"type":"List", "items":{"type":"SessionInfo"}}}
     },
+    // We need an operation that return a UserInfo so it can be picked up by the codegen :(
     "getName" : {
       "func": "getAuthorName",
-      "description": "Returns the Author Name of the author", 
-      "response": {"authorName":{"type":"string"}}
-    },
+      "description": "Returns the Author Name of the author",
+      "responseProcessor": function(response) {
+        if (response.data) {
+          response["info"] = {"name": response.data.authorName};
+          delete response["data"];
+        }
+      },
+      "response": {"info":{"type":"UserInfo"}}
+    }
   },
   "session": {
     "create" : {
@@ -158,10 +165,18 @@ var API = {
       "func": "deleteSession",
       "description": "deletes a session"
     },
+    // We need an operation that returns a SessionInfo so it can be picked up by the codegen :(
     "info": {
       "func": "getSessionInfo", 
-      "description": "returns informations about a session", 
-      "response": {"authorID":{"type":"string"}, "groupID":{"type":"string"}, "validUntil":{"type":"long"}}
+      "description": "returns informations about a session",
+      "responseProcessor": function(response) {
+        // move this to info
+        if (response.data) {
+          response["info"] = response.data;
+          delete response["data"];
+        }
+      },
+      "response": {"info":{"type":"SessionInfo"}}
     },
   },
   "pad": {
@@ -181,12 +196,12 @@ var API = {
     },
     "getText" : {
       "func" : "getText",
-      "description": "returns the text of a pad"
+      "description": "returns the text of a pad",
+      "response": {"text":{"type":"string"}}
     },
     "setText" : {
       "func" : "setText",
-      "description": "sets the text of a pad", 
-      "response": {"groupID":{"type":"string"}}
+      "description": "sets the text of a pad"
     },
     "getHTML": {
       "func" : "getHTML",
@@ -223,7 +238,7 @@ var API = {
     "getPublicStatus": {
       "func": "getPublicStatus",
       "description": "return true of false", 
-      "response": {"publicStatus":{"type":"bool"}}
+      "response": {"publicStatus":{"type":"boolean"}}
     },
     "setPassword": {
       "func": "setPassword",
@@ -232,7 +247,7 @@ var API = {
     "isPasswordProtected": {
       "func": "isPasswordProtected", 
       "description": "returns true or false", 
-      "response": {"passwordProtection":{"type":"bool"}}
+      "response": {"passwordProtection":{"type":"boolean"}}
     },
     "authors": {
       "func": "listAuthorsOfPad", 
@@ -247,7 +262,7 @@ var API = {
     "users": {
       "func": "padUsers", 
       "description": "returns the list of users that are currently editing this pad", 
-      "response": {"padUsers":{"type":"Lists", "items":{"type": "UserInfo"}}}
+      "response": {"padUsers":{"type":"List", "items":{"type": "UserInfo"}}}
     },
     "sendClientsMessage": {
       "func": "sendClientsMessage", 
@@ -262,10 +277,18 @@ var API = {
       "description": "returns the chat history", 
       "response": {"messages":{"type":"List", "items": {"type" : "Message"}}}
     },
+    // We need an operation that returns a Message so it can be picked up by the codegen :(
     "getChatHead": {
       "func": "getChatHead", 
-      "description": "returns the chatHead (last number of the last chat-message) of the pad", 
-      "response": {"chatHead":{"type":"long"}}
+      "description": "returns the chatHead (chat-message) of the pad",
+      "responseProcessor": function(response) {
+        // move this to info
+        if (response.data) {
+          response["chatHead"] = {"time": response.data["chatHead"]};
+          delete response["data"];
+        }
+      },
+      "response": {"chatHead":{"type":"Message"}}
     }
   }
 };
@@ -277,11 +300,8 @@ function capitalise(string){
 for (var resource in API) {
   for (var func in API[resource]) {
     
-    // Add the response model
-    var responseModelId = capitalise(resource) + capitalise(func) + "Response";
-    
-    swaggerModels['models'][responseModelId] = {
-      "id": responseModelId,
+    // The base response model
+    var responseModel = {
       "properties": {
         "code":{
           "type":"int"
@@ -292,19 +312,24 @@ for (var resource in API) {
       }
     };
 
-    // This returns some data
-    if (API[resource][func]["response"]) {
-      // Add the data model
-      var dataModelId = capitalise(resource) + capitalise(func) + "Data";
-      swaggerModels['models'][dataModelId] = {
-        "id": dataModelId,
-        "properties": API[resource][func]["response"]
-      };
+    var responseModelId = "Response";
 
-      swaggerModels['models'][responseModelId]["properties"]["data"] = {
-        "type": dataModelId
-      };
+    // Add the data properties (if any) to the response
+    if (API[resource][func]["response"]) {
+      // This is a specific response so let's set a new id
+      responseModelId = capitalise(resource) + capitalise(func) + "Response";
+
+      for(var prop in API[resource][func]["response"]) {
+        var propType = API[resource][func]["response"][prop];
+        responseModel["properties"][prop] = propType;
+      }
     }
+
+    // Add the id
+    responseModel["id"] = responseModelId;
+
+    // Add this to the swagger models
+    swaggerModels['models'][responseModelId] = responseModel;
 
     // Store the response model id
     API[resource][func]["responseClass"] = responseModelId;
@@ -351,14 +376,26 @@ exports.expressCreateServer = function (hook_name, args, cb) {
             req.params.version = version;
             req.params.func = func; // call the api function
 
-            if (responseProcessor) {
-              //wrap the send function so we can process the response
-              res.__swagger_send = res.send;
-              res.send = function (response) {
+            //wrap the send function so we can process the response
+            res.__swagger_send = res.send;
+            res.send = function (response) {
+              // ugly but we need to get this as json
+              response = JSON.parse(response);
+              // process the response if needed
+              if (responseProcessor) {
                 response = responseProcessor(response);
-                res.__swagger_send(response);
               }
+              // Let's move everything out of "data"
+              if (response.data) {
+                for(var prop in response.data) {
+                  response[prop] = response.data[prop];
+                  delete response.data;
+                }
+              }
+              response = JSON.stringify(response);
+              res.__swagger_send(response);
             }
+
             apiCaller(req, res, req.query);
           };
         })(func["func"], func["responseProcessor"]) // must use a closure here
