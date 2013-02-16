@@ -21,8 +21,6 @@
 
 var ERR = require("async-stacktrace");
 var fs = require("fs");
-var semver = require("semver");
-var api = require("../db/API");
 var padManager = require("../db/PadManager");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 
@@ -327,24 +325,8 @@ function callAPI(apiVersion, functionName, fields, req, res)
     }
   });
   
-  var fn = api[functionName];
+  var api = require("../db/API")(apiVersion);
 
-  // If this is not a funcion it's a version=>function obj where version uses semver
-  if(typeof fn != "function") {
-    
-    // Get a proper version x.y.z
-    var v = apiVersion.split(".");
-    var apiVersion = [v[0]||'0', v[1]||'0', v[2]||'0'].join(".");
-
-    // lookup the first version that satisfies the required version
-    for(var fnVersion in fn) {
-      if (semver.satisfies(apiVersion, fnVersion)) {
-        fn = fn[fnVersion];
-        break;
-      }
-    }
-  }
-  
   //call the api function
-  fn(functionParams[0],functionParams[1],functionParams[2],functionParams[3],functionParams[4]);
+  api[functionName](functionParams[0],functionParams[1],functionParams[2],functionParams[3],functionParams[4]);
 }

@@ -19,6 +19,7 @@
  */
 
 var ERR = require("async-stacktrace");
+var semver = require("semver");
 var customError = require("../utils/customError");
 var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
@@ -32,43 +33,49 @@ var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
 
+var API = {};
+
+API["*"] = {};
+API[">=1.2.7"] = {};
+
+
 /**********************/
 /**GROUP FUNCTIONS*****/
 /**********************/
 
-exports.listAllGroups = groupManager.listAllGroups;
-exports.createGroup = groupManager.createGroup;
-exports.createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
-exports.deleteGroup = groupManager.deleteGroup;
-exports.listPads = groupManager.listPads;
-exports.createGroupPad = groupManager.createGroupPad;
+API["*"].listAllGroups = groupManager.listAllGroups;
+API["*"].createGroup = groupManager.createGroup;
+API["*"].createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
+API["*"].deleteGroup = groupManager.deleteGroup;
+API["*"].listPads = groupManager.listPads;
+API["*"].createGroupPad = groupManager.createGroupPad;
 
 /**********************/
 /**PADLIST FUNCTION****/
 /**********************/
 
-exports.listAllPads = padManager.listAllPads;
+API["*"].listAllPads = padManager.listAllPads;
 
 /**********************/
 /**AUTHOR FUNCTIONS****/
 /**********************/
 
-exports.createAuthor = authorManager.createAuthor;
-exports.createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
-exports.getAuthorName = authorManager.getAuthorName;
-exports.listPadsOfAuthor = authorManager.listPadsOfAuthor;
-exports.padUsers = padMessageHandler.padUsers;
-exports.padUsersCount = padMessageHandler.padUsersCount;
+API["*"].createAuthor = authorManager.createAuthor;
+API["*"].createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
+API["*"].getAuthorName = authorManager.getAuthorName;
+API["*"].listPadsOfAuthor = authorManager.listPadsOfAuthor;
+API["*"].padUsers = padMessageHandler.padUsers;
+API["*"].padUsersCount = padMessageHandler.padUsersCount;
 
 /**********************/
 /**SESSION FUNCTIONS***/
 /**********************/
 
-exports.createSession = sessionManager.createSession;
-exports.deleteSession = sessionManager.deleteSession;
-exports.getSessionInfo = sessionManager.getSessionInfo;
-exports.listSessionsOfGroup = sessionManager.listSessionsOfGroup;
-exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
+API["*"].createSession = sessionManager.createSession;
+API["*"].deleteSession = sessionManager.deleteSession;
+API["*"].getSessionInfo = sessionManager.getSessionInfo;
+API["*"].listSessionsOfGroup = sessionManager.listSessionsOfGroup;
+API["*"].listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 
 /************************/
 /**PAD CONTENT FUNCTIONS*/
@@ -82,7 +89,7 @@ Example returns:
 {code: 0, message:"ok", data: {text:"Welcome Text"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getText = function(padID, rev, callback)
+API["*"].getText = function(padID, rev, callback)
 {
   //check if rev is set
   if(typeof rev == "function")
@@ -162,7 +169,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
 {code: 1, message:"text too long", data: null}
 */
-exports.setText = function(padID, text, callback)
+API["*"].setText = function(padID, text, callback)
 {    
   //text is required
   if(typeof text != "string")
@@ -268,12 +275,12 @@ function getHTML(padID, rev, wrapBody, callback)
   });
 }
 
-exports.getHTML = {
-  "<1.2.7": function(padID, rev, callback){ return getHTML(padID, rev, false, callback); },
-  ">=1.2.7": function(padID, rev, callback){ return getHTML(padID, rev, true, callback); } // wrap the body
-};
+API["*"].getHTML = function(padID, rev, callback){ return getHTML(padID, rev, false, callback); };
 
-exports.setHTML = function(padID, html, callback)
+// this overrides the getHTML function for api version >= 1.2.7
+API[">=1.2.7"].getHTML = function(padID, rev, callback){ return getHTML(padID, rev, true, callback); };
+
+API["*"].setHTML = function(padID, html, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -305,7 +312,7 @@ Example returns:
 
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getChatHistory = function(padID, start, end, callback)
+API["*"].getChatHistory = function(padID, start, end, callback)
 {
   if(start && end)
   {
@@ -372,7 +379,7 @@ Example returns:
 {code: 0, message:"ok", data: {revisions: 56}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getRevisionsCount = function(padID, callback)
+API["*"].getRevisionsCount = function(padID, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -391,7 +398,7 @@ Example returns:
 {code: 0, message:"ok", data: {lastEdited: 1340815946602}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getLastEdited = function(padID, callback)
+API["*"].getLastEdited = function(padID, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -412,7 +419,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"pad does already exist", data: null}
 */
-exports.createPad = function(padID, text, callback)
+API["*"].createPad = function(padID, text, callback)
 {  
   //ensure there is no $ in the padID
   if(padID && padID.indexOf("$") != -1)
@@ -437,7 +444,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.deletePad = function(padID, callback)
+API["*"].deletePad = function(padID, callback)
 {
   getPadSafe(padID, true, function(err, pad)
   {
@@ -455,7 +462,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getReadOnlyID = function(padID, callback)
+API["*"].getReadOnlyID = function(padID, callback)
 {
   //we don't need the pad object, but this function does all the security stuff for us
   getPadSafe(padID, true, function(err)
@@ -479,7 +486,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.setPublicStatus = function(padID, publicStatus, callback)
+API["*"].setPublicStatus = function(padID, publicStatus, callback)
 {
   //ensure this is a group pad
   if(padID && padID.indexOf("$") == -1)
@@ -512,7 +519,7 @@ Example returns:
 {code: 0, message:"ok", data: {publicStatus: true}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getPublicStatus = function(padID, callback)
+API["*"].getPublicStatus = function(padID, callback)
 {
   //ensure this is a group pad
   if(padID && padID.indexOf("$") == -1)
@@ -538,7 +545,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.setPassword = function(padID, password, callback)
+API["*"].setPassword = function(padID, password, callback)
 {
   //ensure this is a group pad
   if(padID && padID.indexOf("$") == -1)
@@ -567,7 +574,7 @@ Example returns:
 {code: 0, message:"ok", data: {passwordProtection: true}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.isPasswordProtected = function(padID, callback)
+API["*"].isPasswordProtected = function(padID, callback)
 {
   //ensure this is a group pad
   if(padID && padID.indexOf("$") == -1)
@@ -593,7 +600,7 @@ Example returns:
 {code: 0, message:"ok", data: {authorIDs : ["a.s8oes9dhwrvt0zif", "a.akf8finncvomlqva"]}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.listAuthorsOfPad = function(padID, callback)
+API["*"].listAuthorsOfPad = function(padID, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -627,7 +634,7 @@ Example returns:
 {code: 1, message:"padID does not exist"}
 */
 
-exports.sendClientsMessage = function (padID, msg, callback) {
+API["*"].sendClientsMessage = function (padID, msg, callback) {
   getPadSafe(padID, true, function (err, pad) {
     if (ERR(err, callback)) {
       return;
@@ -645,7 +652,7 @@ Example returns:
 {"code":0,"message":"ok","data":null}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
-exports.checkToken = function(callback)
+API["*"].checkToken = function(callback)
 {
   callback();
 }
@@ -658,7 +665,7 @@ Example returns:
 {code: 0, message:"ok", data: {chatHead: 42}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getChatHead = function(padID, callback)
+API["*"].getChatHead = function(padID, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -676,7 +683,7 @@ Example returns:
 {"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad Lite!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
-exports.createDiffHTML = function(padID, startRev, endRev, callback){
+API["*"].createDiffHTML = function(padID, startRev, endRev, callback){
   //check if rev is a number
   if(startRev !== undefined && typeof startRev != "number")
   {
@@ -803,3 +810,33 @@ function getPadSafe(padID, shouldExist, text, callback)
     }
   });
 }
+
+// cache the API functions for each version
+var _CACHE = {};
+
+module.exports = function(apiVersion) {
+
+  // Get a proper version x.y.z
+  var v = apiVersion.split(".");
+  var apiVersion = [v[0]||'0', v[1]||'0', v[2]||'0'].join(".");
+
+  if (! _CACHE[apiVersion]) {
+
+    _CACHE[apiVersion] = {};
+
+    // got through each of the semver rules
+    for(var version in API) {
+
+      // if the rule satisfies the required version
+      if (semver.satisfies(apiVersion, version)) {
+        // Add these functions
+        for (var fn in API[version]) {
+          _CACHE[apiVersion][fn] = API[version][fn];
+        }
+      }
+    }
+
+  }
+  
+  return _CACHE[apiVersion];
+};
