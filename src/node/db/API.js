@@ -192,7 +192,7 @@ Example returns:
 {code: 0, message:"ok", data: {text:"Welcome <strong>Text</strong>"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getHTML = function(padID, rev, callback)
+function getHTML(padID, rev, wrapBody, callback)
 {
   if(typeof rev == "function")
   {
@@ -243,8 +243,10 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, rev, function(err, html)
       {
           if(ERR(err, callback)) return;
-          html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
-          html += "</body></html>";
+          if(wrapBody) {
+            html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
+            html += "</body></html>";
+          }
           data = {html: html};
           callback(null, data);
       });
@@ -255,14 +257,21 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, undefined, function (err, html)
       {
         if(ERR(err, callback)) return;
-        html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
-        html += "</body></html>";
+        if(wrapBody){
+          html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
+          html += "</body></html>";
+        }
         data = {html: html};
         callback(null, data);
       });
     }
   });
 }
+
+exports.getHTML = {
+  "<1.2.7": function(padID, rev, callback){ return getHTML(padID, rev, false, callback); },
+  ">=1.2.7": function(padID, rev, callback){ return getHTML(padID, rev, true, callback); } // wrap the body
+};
 
 exports.setHTML = function(padID, html, callback)
 {
