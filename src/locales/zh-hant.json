@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": {
-			"1": "Simon Shek"
+			"0": "Shirayuki",
+			"2": "Simon Shek"
 		}
 	},
 	"index.newPad": "\u65b0Pad",
@@ -86,8 +87,8 @@
 	"timeslider.toolbar.exportlink.title": "\u532f\u51fa",
 	"timeslider.exportCurrent": "\u532f\u51fa\u7576\u524d\u7248\u672c\u70ba\uff1a",
 	"timeslider.version": "\u7248\u672c{{version}}",
-	"timeslider.saved": "{{year}}{{month}}{{day}}\u4fdd\u5b58",
-	"timeslider.dateformat": "{{year}}{{month}}{{day}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.saved": "{{year}}\u5e74{{month}}{{day}}\u65e5\u4fdd\u5b58",
+	"timeslider.dateformat": "{{year}}\u5e74{{month}}\u6708{{day}}\u65e5 {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "1\u6708",
 	"timeslider.month.february": "2\u6708",
 	"timeslider.month.march": "3\u6708",
