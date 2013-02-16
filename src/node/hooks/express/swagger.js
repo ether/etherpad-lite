@@ -1,12 +1,8 @@
 var log4js = require('log4js');
 var express = require('express');
-var swagger = require("swagger-node-express");
 var apiHandler = require('../../handler/APIHandler');
 var apiCaller = require('./apicalls').apiCaller;
 var settings = require("../../utils/Settings");
-
-var versions = Object.keys(apiHandler.version)
-var version = versions[versions.length - 1];
 
 var swaggerModels = {
   'models': {
@@ -83,14 +79,14 @@ var API = {
 
   // Group
   "group": {
-    "create" : { 
+    "create" : {
       "func" : "createGroup",
-      "description": "creates a new group", 
+      "description": "creates a new group",
       "response": {"groupID":{"type":"string"}}
     },
     "createIfNotExistsFor" : {
       "func": "createGroupIfNotExistsFor",
-      "description": "this functions helps you to map your application group ids to etherpad lite group ids", 
+      "description": "this functions helps you to map your application group ids to etherpad lite group ids",
       "response": {"groupID":{"type":"string"}}
     },
     "delete" : {
@@ -98,23 +94,23 @@ var API = {
       "description": "deletes a group"
     },
     "listPads" : {
-      "func": "listPads", 
-      "description": "returns all pads of this group", 
+      "func": "listPads",
+      "description": "returns all pads of this group",
       "response": {"padIDs":{"type":"List", "items":{"type":"string"}}}
     },
     "createPad" : {
-      "func": "createGroupPad", 
+      "func": "createGroupPad",
       "description": "creates a new pad in this group"
     },
     "listSessions": {
       "func": "listSessionsOfGroup",
       "responseProcessor": sessionListResponseProcessor,
-      "description": "", 
+      "description": "",
       "response": {"sessions":{"type":"List", "items":{"type":"SessionInfo"}}}
     },
    "list": {
       "func": "listAllGroups",
-      "description": "", 
+      "description": "",
       "response": {"groupIDs":{"type":"List", "items":{"type":"string"}}}
     },
   },
@@ -122,24 +118,24 @@ var API = {
   // Author
   "author": {
     "create" : {
-      "func" : "createAuthor", 
-      "description": "creates a new author", 
+      "func" : "createAuthor",
+      "description": "creates a new author",
       "response": {"authorID":{"type":"string"}}
     },
     "createIfNotExistsFor": {
       "func": "createAuthorIfNotExistsFor",
-      "description": "this functions helps you to map your application author ids to etherpad lite author ids", 
+      "description": "this functions helps you to map your application author ids to etherpad lite author ids",
       "response": {"authorID":{"type":"string"}}
     },
     "listPads": {
       "func": "listPadsOfAuthor",
-      "description": "returns an array of all pads this author contributed to", 
+      "description": "returns an array of all pads this author contributed to",
       "response": {"padIDs":{"type":"List", "items":{"type":"string"}}}
     },
     "listSessions": {
       "func": "listSessionsOfAuthor",
       "responseProcessor": sessionListResponseProcessor,
-      "description": "returns all sessions of an author", 
+      "description": "returns all sessions of an author",
       "response": {"sessions":{"type":"List", "items":{"type":"SessionInfo"}}}
     },
     // We need an operation that return a UserInfo so it can be picked up by the codegen :(
@@ -158,7 +154,7 @@ var API = {
   "session": {
     "create" : {
       "func": "createSession",
-      "description": "creates a new session. validUntil is an unix timestamp in seconds", 
+      "description": "creates a new session. validUntil is an unix timestamp in seconds",
       "response": {"sessionID":{"type":"string"}}
     },
     "delete" : {
@@ -167,7 +163,7 @@ var API = {
     },
     // We need an operation that returns a SessionInfo so it can be picked up by the codegen :(
     "info": {
-      "func": "getSessionInfo", 
+      "func": "getSessionInfo",
       "description": "returns informations about a session",
       "responseProcessor": function(response) {
         // move this to info
@@ -177,22 +173,22 @@ var API = {
         }
       },
       "response": {"info":{"type":"SessionInfo"}}
-    },
+    }
   },
   "pad": {
-    "listAll" : { 
-      "func": "listAllPads", 
-      "description": "list all the pads", 
+    "listAll" : {
+      "func": "listAllPads",
+      "description": "list all the pads",
       "response": {"padIDs":{"type":"List", "items": {"type" : "string"}}}
     },
     "createDiffHTML" : {
-      "func" : "createDiffHTML", 
-      "description": "", 
+      "func" : "createDiffHTML",
+      "description": "",
       "response": {}
     },
-    "create" : { 
+    "create" : {
       "func" : "createPad",
-      "description": "creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad", 
+      "description": "creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad"
     },
     "getText" : {
       "func" : "getText",
@@ -205,7 +201,7 @@ var API = {
     },
     "getHTML": {
       "func" : "getHTML",
-      "description": "returns the text of a pad formatted as HTML", 
+      "description": "returns the text of a pad formatted as HTML",
       "response": {"html":{"type":"string"}}
     },
     "setHTML": {
@@ -214,12 +210,12 @@ var API = {
     },
     "getRevisionsCount": {
       "func" : "getRevisionsCount",
-      "description": "returns the number of revisions of this pad", 
+      "description": "returns the number of revisions of this pad",
       "response": {"revisions":{"type":"long"}}
     },
     "getLastEdited": {
       "func" : "getLastEdited",
-      "description": "returns the timestamp of the last revision of the pad", 
+      "description": "returns the timestamp of the last revision of the pad",
       "response": {"lastEdited":{"type":"long"}}
     },
     "delete": {
@@ -228,16 +224,16 @@ var API = {
     },
     "getReadOnlyID": {
       "func" : "getReadOnlyID",
-      "description": "returns the read only link of a pad", 
+      "description": "returns the read only link of a pad",
       "response": {"readOnlyID":{"type":"string"}}
     },
     "setPublicStatus": {
-      "func": "setPublicStatus", 
+      "func": "setPublicStatus",
       "description": "sets a boolean for the public status of a pad"
     },
     "getPublicStatus": {
       "func": "getPublicStatus",
-      "description": "return true of false", 
+      "description": "return true of false",
       "response": {"publicStatus":{"type":"boolean"}}
     },
     "setPassword": {
@@ -245,27 +241,27 @@ var API = {
       "description": "returns ok or a error message"
     },
     "isPasswordProtected": {
-      "func": "isPasswordProtected", 
-      "description": "returns true or false", 
+      "func": "isPasswordProtected",
+      "description": "returns true or false",
       "response": {"passwordProtection":{"type":"boolean"}}
     },
     "authors": {
-      "func": "listAuthorsOfPad", 
-      "description": "returns an array of authors who contributed to this pad", 
+      "func": "listAuthorsOfPad",
+      "description": "returns an array of authors who contributed to this pad",
       "response": {"authorIDs":{"type":"List", "items":{"type" : "string"}}}
     },
     "usersCount": {
-      "func": "padUsersCount", 
-      "description": "returns the number of user that are currently editing this pad", 
+      "func": "padUsersCount",
+      "description": "returns the number of user that are currently editing this pad",
       "response": {"padUsersCount":{"type": "long"}}
     },
     "users": {
-      "func": "padUsers", 
-      "description": "returns the list of users that are currently editing this pad", 
+      "func": "padUsers",
+      "description": "returns the list of users that are currently editing this pad",
       "response": {"padUsers":{"type":"List", "items":{"type": "UserInfo"}}}
     },
     "sendClientsMessage": {
-      "func": "sendClientsMessage", 
+      "func": "sendClientsMessage",
       "description": "sends a custom message of type msg to the pad"
     },
     "checkToken" : {
@@ -273,13 +269,13 @@ var API = {
       "description": "returns ok when the current api token is valid"
     },
     "getChatHistory": {
-      "func": "getChatHistory", 
-      "description": "returns the chat history", 
+      "func": "getChatHistory",
+      "description": "returns the chat history",
       "response": {"messages":{"type":"List", "items": {"type" : "Message"}}}
     },
     // We need an operation that returns a Message so it can be picked up by the codegen :(
     "getChatHead": {
-      "func": "getChatHead", 
+      "func": "getChatHead",
       "description": "returns the chatHead (chat-message) of the pad",
       "responseProcessor": function(response) {
         // move this to info
@@ -334,82 +330,102 @@ for (var resource in API) {
     // Store the response model id
     API[resource][func]["responseClass"] = responseModelId;
 
-    // get the api function
-    var apiFunc = apiHandler.version[version][API[resource][func]["func"]];
-
-    // Add the api function parameters
-    API[resource][func]["params"] = apiFunc.map( function(param) {
-      return swagger.queryParam(param, param, "string");
-    });
   }
+}
+
+function newSwagger() {
+  var swagger_module = require.resolve("swagger-node-express");
+  if (require.cache[swagger_module]) {
+    // delete the child modules from cache
+    require.cache[swagger_module].children.forEach(function(m)  {delete require.cache[m.id];});
+    // delete the module from cache
+    delete require.cache[swagger_module];
+  }
+  return require("swagger-node-express");
 }
 
 exports.expressCreateServer = function (hook_name, args, cb) {
 
-  // Let's put this under /rest for now
-  var subpath = express();
+  for (var version in apiHandler.version) {
+    
+    var swagger = newSwagger();
+    var basePath = "/rest/" + version;
 
-  args.app.use(express.bodyParser());
-  args.app.use("/rest", subpath);
+    // Let's put this under /rest for now
+    var subpath = express();
 
-  swagger.setAppHandler(subpath);
+    args.app.use(express.bodyParser());
+    args.app.use(basePath, subpath);
 
-  swagger.addModels(swaggerModels);
+    swagger.setAppHandler(subpath);
 
-  for (var resource in API) {
+    swagger.addModels(swaggerModels);
 
-    for (var funcName in API[resource]) {
-      var func = API[resource][funcName];
+    for (var resource in API) {
 
-      var swaggerFunc = {
-        'spec': {
-          "description" : func["description"],
-          "path" : "/" + resource + "/" + funcName,
-          "summary" : funcName,
-          "nickname" : funcName,
-          "method": "GET",
-          "params" : func["params"],
-          "responseClass" : func["responseClass"]
-        },
-        'action': (function(func, responseProcessor) { 
-          return function (req,res) {
-            req.params.version = version;
-            req.params.func = func; // call the api function
+      for (var funcName in API[resource]) {
+        var func = API[resource][funcName];
 
-            //wrap the send function so we can process the response
-            res.__swagger_send = res.send;
-            res.send = function (response) {
-              // ugly but we need to get this as json
-              response = JSON.parse(response);
-              // process the response if needed
-              if (responseProcessor) {
-                response = responseProcessor(response);
-              }
-              // Let's move everything out of "data"
-              if (response.data) {
-                for(var prop in response.data) {
-                  response[prop] = response.data[prop];
-                  delete response.data;
+        // get the api function
+        var apiFunc = apiHandler.version[version][func["func"]];
+
+        // Skip this one if it does not exist in the version
+        if(!apiFunc) {
+          continue;
+        }
+
+        var swaggerFunc = {
+          'spec': {
+            "description" : func["description"],
+            "path" : "/" + resource + "/" + funcName,
+            "summary" : funcName,
+            "nickname" : funcName,
+            "method": "GET",
+            "params" : apiFunc.map( function(param) {
+              return swagger.queryParam(param, param, "string");
+            }),
+            "responseClass" : func["responseClass"]
+          },
+          'action': (function(func, responseProcessor) {
+            return function (req,res) {
+              req.params.version = version;
+              req.params.func = func; // call the api function
+
+              //wrap the send function so we can process the response
+              res.__swagger_send = res.send;
+              res.send = function (response) {
+                // ugly but we need to get this as json
+                response = JSON.parse(response);
+                // process the response if needed
+                if (responseProcessor) {
+                  response = responseProcessor(response);
                 }
-              }
-              response = JSON.stringify(response);
-              res.__swagger_send(response);
-            }
+                // Let's move everything out of "data"
+                if (response.data) {
+                  for(var prop in response.data) {
+                    response[prop] = response.data[prop];
+                    delete response.data;
+                  }
+                }
+                response = JSON.stringify(response);
+                res.__swagger_send(response);
+              };
 
-            apiCaller(req, res, req.query);
-          };
-        })(func["func"], func["responseProcessor"]) // must use a closure here
-      };
+              apiCaller(req, res, req.query);
+            };
+          })(func["func"], func["responseProcessor"]) // must use a closure here
+        };
 
-      swagger.addGet(swaggerFunc);
+        swagger.addGet(swaggerFunc);
+      }
     }
+
+    swagger.setHeaders = function setHeaders(res) {
+      res.header('Access-Control-Allow-Origin', "*");
+    };
+
+    swagger.configureSwaggerPaths("", "/api" , "");
+    
+    swagger.configure("http://" + settings.ip + ":" + settings.port + basePath, version);
   }
-
-  swagger.setHeaders = function setHeaders(res) {
-    res.header('Access-Control-Allow-Origin', "*");
-  };
-
-  swagger.configureSwaggerPaths("", "/api" , "");
-  
-  swagger.configure("http://" + settings.ip + ":" + settings.port + "/rest", version);
-}
+};
