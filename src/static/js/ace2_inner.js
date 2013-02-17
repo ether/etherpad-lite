@@ -3731,29 +3731,27 @@ function Ace2Inner(){
           }, 200);
         }
 
-        // Chrome sucks at moving the users UI to the right place when the user uses the arrow keys
-        // we catch these issues and fix it.
-        // You can replicate this bug by copy/pasting text into a pad and moving it about then using the
-        // arrow keys to navitgate
-        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && type == 'keydown' && $.browser.chrome){
-          /* Is it an event we care about? */
-          var isUpArrow = evt.which === 38;
-          var isLeftArrow = evt.which === 38;
-          var newVisibleLineRange = getVisibleLineRange(); // get the current visible range
-          top.console.log("IM NOT UPDATING!  I need a way to get the actual rep when a key is held down", rep.selStart[0]);
-          if(isUpArrow || isLeftArrow){ // was it an up arrow or left arrow?
-            var lineNum = rep.selStart[0]; // Get the current Line Number IE 84 
-            var caretIsVisible = (lineNum > newVisibleLineRange[0]); // Is the cursor in the visible Range IE ie 84 > 14?
+       /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
+           We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
+           presses and holds the arrow key */
+        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && $.browser.chrome){
+          var newVisibleLineRange = getVisibleLineRange(); // get the current visible range -- This works great.
+          var lineHeight = textLineHeight(); // what Is the height of each line?
+          var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
+          var caretOffsetTop = myselection.focusNode.parentNode.offsetTop; // get the carets selection offset in px IE 214
+
+          if(caretOffsetTop){ // sometimes caretOffsetTop bugs out and returns 0, not sure why, possible Chrome bug?  Either way if it does we don't wanna mess with it
+            var lineNum = Math.round(caretOffsetTop / lineHeight) ; // Get the current Line Number IE 84
+            var caretIsVisible = (lineNum > newVisibleLineRange[0] && lineNum < newVisibleLineRange[1]); // Is the cursor in the visible Range IE ie 84 > 14 and 84 < 90?
             if(!caretIsVisible){ // is the cursor no longer visible to the user?
               // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
-              top.console.log("I need to scroll thw UI to here");
-              var lineHeight = textLineHeight(); // what Is the height of each line?
               // Get the new Y by getting the line number and multiplying by the height of each line.
-              var newY = lineHeight * (lineNum -1); // -1 to go to the line above 
+              var newY = lineHeight * (lineNum -1); // -1 to go to the line above
               setScrollY(newY); // set the scroll height of the browser
             }
           }
         }
+
       }
 
       if (type == "keydown")
