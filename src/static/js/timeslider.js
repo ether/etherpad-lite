@@ -30,7 +30,7 @@ var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 var _ = require('./underscore');
 
-var socket, token, padId, export_links;
+var token, padId, export_links;
 
 function init() {
   $(document).ready(function ()
@@ -63,7 +63,6 @@ function init() {
     
     //build up the socket io connection
     socket = io.connect(url, {resource: resource});
-    window.parent.socket = socket; // Expose the socket to it's parent HACK
 
     //send the ready message once we're connected
     socket.on('connect', function()
@@ -106,6 +105,8 @@ function init() {
     {
       window.location.reload();
     });
+
+    exports.socket = socket; // make the socket available
 
   });
 }

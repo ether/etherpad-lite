@@ -211,6 +211,8 @@
     }
 
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+    var socket = require('ep_etherpad-lite/static/js/timeslider').socket;
+
     plugins.baseURL = baseURL;
     
     plugins.update(function () {
