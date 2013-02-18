@@ -70,10 +70,12 @@ exports.flatten = function (lst) {
 
 exports.callAll = function (hook_name, args) {
   if (!args) args = {};
-  if (exports.plugins.hooks[hook_name] === undefined) return [];
-  return _.flatten(_.map(exports.plugins.hooks[hook_name], function (hook) {
-    return hookCallWrapper(hook, hook_name, args);
-  }), true);
+  if (exports.plugins){
+    if (exports.plugins.hooks[hook_name] === undefined) return [];
+    return _.flatten(_.map(exports.plugins.hooks[hook_name], function (hook) {
+      return hookCallWrapper(hook, hook_name, args);
+    }), true);
+  }
 }
 
 exports.aCallAll = function (hook_name, args, cb) {
