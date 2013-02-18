@@ -1897,7 +1897,7 @@ function Ace2Inner(){
       var prevLine = rep.lines.prev(thisLine);
       var prevLineText = prevLine.text;
       var theIndent = /^ *(?:)/.exec(prevLineText)[0];
-      if (/[\[\(\{]\s*$/.exec(prevLineText)) theIndent += THE_TAB;
+      if (/[\[\(\:\{]\s*$/.exec(prevLineText)) theIndent += THE_TAB;
       var cs = Changeset.builder(rep.lines.totalWidth()).keep(
       rep.lines.offsetOfIndex(lineNum), lineNum).insert(
       theIndent, [
