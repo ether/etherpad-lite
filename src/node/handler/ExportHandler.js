@@ -20,6 +20,7 @@
 
 var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
+var exporttxt = require("../utils/ExportTxt");
 var exportdokuwiki = require("../utils/ExportDokuWiki");
 var padManager = require("../db/PadManager");
 var async = require("async");
@@ -48,22 +49,75 @@ exports.doExport = function(req, res, padId, type)
   res.attachment(padId + "." + type);
 
   //if this is a plain text export, we can do this directly
+  // We have to over engineer this because tabs are stored as attributes and not plain text
+
   if(type == "txt")
   {
-    padManager.getPad(padId, function(err, pad)
-    {
-      ERR(err);
-      if(req.params.rev){
-        pad.getInternalRevisionAText(req.params.rev, function(junk, text)
-        {
-          res.send(text.text ? text.text : null);
-        });
-      }
-      else
+    var txt;
+    var randNum;
+    var srcFile, destFile;
+
+    async.series([
+      //render the txt document
+      function(callback)
       {
-        res.send(pad.text());
+        exporttxt.getPadTXTDocument(padId, req.params.rev, false, function(err, _txt)
+        {
+          if(ERR(err, callback)) return;
+          txt = _txt;
+          callback();
+        });
+      },
+      //decide what to do with the txt export
+      function(callback)
+      {
+        //if this is a txt export, we can send this from here directly
+        res.send(txt);
+        callback("stop");
+      },
+      //send the convert job to abiword
+      function(callback)
+      {
+        //ensure html can be collected by the garbage collector
+        txt = null;
+
+        destFile = tempDirectory + "/eplite_export_" + randNum + "." + type;
+        abiword.convertFile(srcFile, destFile, type, callback);
+      },
+      //send the file
+      function(callback)
+      {
+        res.sendfile(destFile, null, callback);
+      },
+      //clean up temporary files
+      function(callback)
+      {
+        async.parallel([
+          function(callback)
+          {
+            fs.unlink(srcFile, callback);
+          },
+          function(callback)
+          {
+            //100ms delay to accomidate for slow windows fs
+            if(os.type().indexOf("Windows") > -1)
+            {
+              setTimeout(function()
+              {
+                fs.unlink(destFile, callback);
+              }, 100);
+            }
+            else
+            {
+              fs.unlink(destFile, callback);
+            }
+          }
+        ], callback);
       }
-    });
+    ], function(err)
+    {
+      if(err && err != "stop") ERR(err);
+    })
   }
   else if(type == 'dokuwiki')
   {
