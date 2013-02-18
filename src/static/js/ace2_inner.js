@@ -3287,7 +3287,7 @@ function Ace2Inner(){
       listType = /([a-z]+)([12345678])/.exec(listType);
       var type  = listType[1];
       var level = Number(listType[2]);
-      
+
       //detect empty list item; exclude indentation
       if(text === '*' && type !== "indent")
       {
@@ -3317,8 +3317,10 @@ function Ace2Inner(){
 
   function doIndentOutdent(isOut)
   {
-    if (!(rep.selStart && rep.selEnd) ||
-        ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) &&  rep.selEnd[1] > 1))
+    if (!((rep.selStart && rep.selEnd) ||
+        ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) &&  rep.selEnd[1] > 1)) &&
+        (isOut != true)
+       )
     {
       return false;
     }
@@ -3326,7 +3328,6 @@ function Ace2Inner(){
     var firstLine, lastLine;
     firstLine = rep.selStart[0];
     lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
-
     var mods = [];
     for (var n = firstLine; n <= lastLine; n++)
     {
