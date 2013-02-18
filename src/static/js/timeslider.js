@@ -164,4 +164,3 @@ function handleClientVars(message)
 
 exports.baseURL = '';
 exports.init = init;
-exports.sendSocketMsg = sendSocketMsg;
