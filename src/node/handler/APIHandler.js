@@ -21,7 +21,6 @@
 
 var ERR = require("async-stacktrace");
 var fs = require("fs");
-var api = require("../db/API");
 var padManager = require("../db/PadManager");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 
@@ -326,6 +325,8 @@ function callAPI(apiVersion, functionName, fields, req, res)
     }
   });
   
+  var api = require("../db/API")(apiVersion);
+
   //call the api function
   api[functionName](functionParams[0],functionParams[1],functionParams[2],functionParams[3],functionParams[4]);
 }
