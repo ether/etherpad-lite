@@ -35,7 +35,7 @@ async.series([
   function(callback) {
     settings = require('../src/node/utils/Settings');
     db = require('../src/node/db/DB');
-    dirty = require("../src/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
+    dirty = require("../node_modules/ep_etherpad-lite/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
     callback();
   },
   //intallize the database
