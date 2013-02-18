@@ -63,6 +63,7 @@ function init() {
     
     //build up the socket io connection
     socket = io.connect(url, {resource: resource});
+    window.parent.socket = socket; // Expose the socket to it's parent HACK
 
     //send the ready message once we're connected
     socket.on('connect', function()
@@ -163,3 +164,4 @@ function handleClientVars(message)
 
 exports.baseURL = '';
 exports.init = init;
+exports.sendSocketMsg = sendSocketMsg;
