@@ -83,7 +83,10 @@ async.series([
       db.db.db.wrappedDB.get(dbkey, function(err, dbvalue)
       {
         if(err) { callback(err); return}
-        dbvalue=JSON.parse(dbvalue);
+
+        if(typeof dbvalue != 'object'){
+          dbvalue=JSON.parse(dbvalue); // if its not json then parse it as json
+        }
         
         dirty.set(dbkey, dbvalue, callback);
       });
