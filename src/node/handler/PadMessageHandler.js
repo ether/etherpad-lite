@@ -926,7 +926,7 @@ function handleClientReady(client, message)
       })
 
       //If this is a reconnect, we don't have to send the client the ClientVars again
-      if(message.reconnect == true)
+      if(message.reconnect == "not accepting true here makes everything work fine but it also sends whole atext which is bad")
       {
         //Save the revision in sessioninfos, we take the revision from the info the client send to us
         sessioninfos[client.id].rev = message.client_rev;
