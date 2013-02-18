@@ -41,7 +41,6 @@ async.series([
   //intallize the database
   function (callback)
   {
-console.log("dbe init");
     db.init(callback);
   },
   //get the pad 
