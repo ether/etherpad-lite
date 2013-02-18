@@ -33,49 +33,52 @@ var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
 
-var API = {};
-
-API["*"] = {};
-API[">=1.2.7"] = {};
+var API = {
+  ">=1": {},
+  ">=1.1": {},
+  ">=1.2": {},
+  ">=1.2.1": {},
+  ">=1.2.7": {}
+};
 
 
 /**********************/
 /**GROUP FUNCTIONS*****/
 /**********************/
 
-API["*"].listAllGroups = groupManager.listAllGroups;
-API["*"].createGroup = groupManager.createGroup;
-API["*"].createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
-API["*"].deleteGroup = groupManager.deleteGroup;
-API["*"].listPads = groupManager.listPads;
-API["*"].createGroupPad = groupManager.createGroupPad;
+API[">=1.1"].listAllGroups = groupManager.listAllGroups;
+API[">=1"].createGroup = groupManager.createGroup;
+API[">=1"].createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
+API[">=1"].deleteGroup = groupManager.deleteGroup;
+API[">=1"].listPads = groupManager.listPads;
+API[">=1"].createGroupPad = groupManager.createGroupPad;
 
 /**********************/
 /**PADLIST FUNCTION****/
 /**********************/
 
-API["*"].listAllPads = padManager.listAllPads;
+API[">=1.2.1"].listAllPads = padManager.listAllPads;
 
 /**********************/
 /**AUTHOR FUNCTIONS****/
 /**********************/
 
-API["*"].createAuthor = authorManager.createAuthor;
-API["*"].createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
-API["*"].getAuthorName = authorManager.getAuthorName;
-API["*"].listPadsOfAuthor = authorManager.listPadsOfAuthor;
-API["*"].padUsers = padMessageHandler.padUsers;
-API["*"].padUsersCount = padMessageHandler.padUsersCount;
+API[">=1"].createAuthor = authorManager.createAuthor;
+API[">=1"].createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
+API[">=1.1"].getAuthorName = authorManager.getAuthorName;
+API[">=1"].listPadsOfAuthor = authorManager.listPadsOfAuthor;
+API[">=1.1"].padUsers = padMessageHandler.padUsers;
+API[">=1"].padUsersCount = padMessageHandler.padUsersCount;
 
 /**********************/
 /**SESSION FUNCTIONS***/
 /**********************/
 
-API["*"].createSession = sessionManager.createSession;
-API["*"].deleteSession = sessionManager.deleteSession;
-API["*"].getSessionInfo = sessionManager.getSessionInfo;
-API["*"].listSessionsOfGroup = sessionManager.listSessionsOfGroup;
-API["*"].listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
+API[">=1"].createSession = sessionManager.createSession;
+API[">=1"].deleteSession = sessionManager.deleteSession;
+API[">=1"].getSessionInfo = sessionManager.getSessionInfo;
+API[">=1"].listSessionsOfGroup = sessionManager.listSessionsOfGroup;
+API[">=1"].listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 
 /************************/
 /**PAD CONTENT FUNCTIONS*/
@@ -89,7 +92,7 @@ Example returns:
 {code: 0, message:"ok", data: {text:"Welcome Text"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].getText = function(padID, rev, callback)
+API[">=1"].getText = function(padID, rev, callback)
 {
   //check if rev is set
   if(typeof rev == "function")
@@ -169,7 +172,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
 {code: 1, message:"text too long", data: null}
 */
-API["*"].setText = function(padID, text, callback)
+API[">=1"].setText = function(padID, text, callback)
 {    
   //text is required
   if(typeof text != "string")
@@ -275,12 +278,12 @@ function getHTML(padID, rev, wrapBody, callback)
   });
 }
 
-API["*"].getHTML = function(padID, rev, callback){ return getHTML(padID, rev, false, callback); };
+API[">=1"].getHTML = function(padID, rev, callback){ return getHTML(padID, rev, false, callback); };
 
 // this overrides the getHTML function for api version >= 1.2.7
 API[">=1.2.7"].getHTML = function(padID, rev, callback){ return getHTML(padID, rev, true, callback); };
 
-API["*"].setHTML = function(padID, html, callback)
+API[">=1"].setHTML = function(padID, html, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -312,7 +315,7 @@ Example returns:
 
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].getChatHistory = function(padID, start, end, callback)
+API[">=1.2.7"].getChatHistory = function(padID, start, end, callback)
 {
   if(start && end)
   {
@@ -379,7 +382,7 @@ Example returns:
 {code: 0, message:"ok", data: {revisions: 56}}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].getRevisionsCount = function(padID, callback)
+API[">=1"].getRevisionsCount = function(padID, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -398,7 +401,7 @@ Example returns:
 {code: 0, message:"ok", data: {lastEdited: 1340815946602}}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].getLastEdited = function(padID, callback)
+API[">=1"].getLastEdited = function(padID, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -419,7 +422,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"pad does already exist", data: null}
 */
-API["*"].createPad = function(padID, text, callback)
+API[">=1"].createPad = function(padID, text, callback)
 {  
   //ensure there is no $ in the padID
   if(padID && padID.indexOf("$") != -1)
@@ -444,7 +447,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].deletePad = function(padID, callback)
+API[">=1"].deletePad = function(padID, callback)
 {
   getPadSafe(padID, true, function(err, pad)
   {
@@ -462,7 +465,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].getReadOnlyID = function(padID, callback)
+API[">=1"].getReadOnlyID = function(padID, callback)
 {
   //we don't need the pad object, but this function does all the security stuff for us
   getPadSafe(padID, true, function(err)
@@ -486,7 +489,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].setPublicStatus = function(padID, publicStatus, callback)
+API[">=1"].setPublicStatus = function(padID, publicStatus, callback)
 {
   //ensure this is a group pad
   if(padID && padID.indexOf("$") == -1)
@@ -519,7 +522,7 @@ Example returns:
 {code: 0, message:"ok", data: {publicStatus: true}}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].getPublicStatus = function(padID, callback)
+API[">=1"].getPublicStatus = function(padID, callback)
 {
   //ensure this is a group pad
   if(padID && padID.indexOf("$") == -1)
@@ -545,7 +548,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].setPassword = function(padID, password, callback)
+API[">=1"].setPassword = function(padID, password, callback)
 {
   //ensure this is a group pad
   if(padID && padID.indexOf("$") == -1)
@@ -574,7 +577,7 @@ Example returns:
 {code: 0, message:"ok", data: {passwordProtection: true}}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].isPasswordProtected = function(padID, callback)
+API[">=1"].isPasswordProtected = function(padID, callback)
 {
   //ensure this is a group pad
   if(padID && padID.indexOf("$") == -1)
@@ -600,7 +603,7 @@ Example returns:
 {code: 0, message:"ok", data: {authorIDs : ["a.s8oes9dhwrvt0zif", "a.akf8finncvomlqva"]}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].listAuthorsOfPad = function(padID, callback)
+API[">=1"].listAuthorsOfPad = function(padID, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -634,7 +637,7 @@ Example returns:
 {code: 1, message:"padID does not exist"}
 */
 
-API["*"].sendClientsMessage = function (padID, msg, callback) {
+API[">=1.1"].sendClientsMessage = function (padID, msg, callback) {
   getPadSafe(padID, true, function (err, pad) {
     if (ERR(err, callback)) {
       return;
@@ -652,7 +655,7 @@ Example returns:
 {"code":0,"message":"ok","data":null}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
-API["*"].checkToken = function(callback)
+API[">=1.2"].checkToken = function(callback)
 {
   callback();
 }
@@ -665,7 +668,7 @@ Example returns:
 {code: 0, message:"ok", data: {chatHead: 42}}
 {code: 1, message:"padID does not exist", data: null}
 */
-API["*"].getChatHead = function(padID, callback)
+API[">=1.2.7"].getChatHead = function(padID, callback)
 {
   //get the pad
   getPadSafe(padID, true, function(err, pad)
@@ -683,7 +686,7 @@ Example returns:
 {"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad Lite!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
-API["*"].createDiffHTML = function(padID, startRev, endRev, callback){
+API[">=1.2.7"].createDiffHTML = function(padID, startRev, endRev, callback){
   //check if rev is a number
   if(startRev !== undefined && typeof startRev != "number")
   {
