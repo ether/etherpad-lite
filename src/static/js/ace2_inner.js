@@ -3746,7 +3746,11 @@ function Ace2Inner(){
             if(!caretIsVisible){ // is the cursor no longer visible to the user?
               // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
               // Get the new Y by getting the line number and multiplying by the height of each line.
-              var newY = lineHeight * (lineNum -1); // -1 to go to the line above
+              if(evt.which == 37 || evt.which == 38){ // If left or up
+                var newY = lineHeight * (lineNum -1); // -1 to go to the line above
+              }else if(evt.which == 39 || evt.which == 40){ // if down or right
+                var newY = caretOffsetTop + lineHeight; // the offset and one additional line
+              }
               setScrollY(newY); // set the scroll height of the browser
             }
           }
