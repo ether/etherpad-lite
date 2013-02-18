@@ -6,10 +6,12 @@
  * NEW: Get current API version from API
  * Fix: Text Export indentation now supports multiple indentations
  * Fix: Bugfix getChatHistory API method
+ * Fix: Stop Chrome losing caret after paste is texted
  * Fix: Make colons on end of line create 4 spaces on indent
  * Fix: Make indent when on middle of the line stop creating list
  * Fix: Stop long strings breaking the UX by moving focus away from beginning of line
  * Fix: padUsersCount no longer hangs server
+ * Fix: Issue with two part locale specs not working
  * Fix: Make plugin search case insensitive
  * Fix: Indentation and bullets on text export
  * Fix: Resolve various warnings on dependencies during install
