@@ -36,16 +36,18 @@ async.series([
     settings = require('../src/node/utils/Settings');
     db = require('../src/node/db/DB');
     dirty = require("../src/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
+    callback();
   },
   //intallize the database
   function (callback)
   {
+console.log("dbe init");
     db.init(callback);
   },
   //get the pad 
   function (callback)
   {
-    padManager = require('../node/db/PadManager');
+    padManager = require('../src/node/db/PadManager');
     
     padManager.getPad(padId, function(err, _pad)  
     {
