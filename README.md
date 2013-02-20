@@ -108,7 +108,7 @@ You know all this and just want to know how you can help?
 
 Look at the [TODO list](https://github.com/ether/etherpad-lite/wiki/TODO) and our [Issue tracker](https://github.com/ether/etherpad-lite/issues). (Please consider using [jshint](http://www.jshint.com/about/), if you plan to contribute code.)
 
-Also, and most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/wiki/Developer-Guidelines), really!
+Also, and most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md), really!
 
 # Get in touch
 Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and make some noise on our freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)!
