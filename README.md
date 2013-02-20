@@ -28,7 +28,7 @@ documented codebase makes it easier for developers to improve the code and contr
 
 
 Etherpad Lite is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API) 
-that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. There is also a [jQuery plugin](https://github.com/johnyma22/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
+that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. There is also a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 There's also a full-featured plugin framework, allowing you to easily add your own features.
 Finally, Etherpad Lite comes with translations into tons of different languages!
 
@@ -108,7 +108,7 @@ You know all this and just want to know how you can help?
 
 Look at the [TODO list](https://github.com/ether/etherpad-lite/wiki/TODO) and our [Issue tracker](https://github.com/ether/etherpad-lite/issues). (Please consider using [jshint](http://www.jshint.com/about/), if you plan to contribute code.)
 
-Also, and most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/wiki/Developer-Guidelines), really!
+Also, and most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md), really!
 
 # Get in touch
 Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and make some noise on our freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)!
@@ -122,6 +122,7 @@ Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and mak
 # Donate!
 * [Flattr] (http://flattr.com/thing/71378/Etherpad-Foundation)
 * Paypal - Press the donate button on [etherpad.org](http://etherpad.org)
+* [Bitcoin] (https://coinbase.com/checkouts/1e572bf8a82e4663499f7f1f66c2d15a)
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)

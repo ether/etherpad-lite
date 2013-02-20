@@ -1622,9 +1622,17 @@ function Ace2Inner(){
         lines = ccData.lines;
         var lineAttribs = ccData.lineAttribs;
         var linesWrapped = ccData.linesWrapped;
+        var scrollToTheLeftNeeded = false;
 
         if (linesWrapped > 0)
         {
+          if(!browser.ie){
+            // chrome decides in it's infinite wisdom that its okay to put the browsers visisble window in the middle of the span
+            // an outcome of this is that the first chars of the string are no longer visible to the user..  Yay chrome..
+            // Move the browsers visible area to the left hand side of the span
+            // Firefox isn't quite so bad, but it's still pretty quirky.
+            var scrollToTheLeftNeeded = true;
+          }
           // console.log("Editor warning: " + linesWrapped + " long line" + (linesWrapped == 1 ? " was" : "s were") + " hard-wrapped into " + ccData.numLinesAfter + " lines.");
         }
 
@@ -1691,6 +1699,10 @@ function Ace2Inner(){
       //dmesg(htmlPrettyEscape(htmlForRemovedChild(n)));
       //console.log("removed: "+id);
     });
+
+    if(scrollToTheLeftNeeded){ // needed to stop chrome from breaking the ui when long strings without spaces are pasted
+      $("#innerdocbody").scrollLeft(0);
+    }
 
     p.mark("findsel");
     // if the nodes that define the selection weren't encountered during
@@ -1897,7 +1909,7 @@ function Ace2Inner(){
       var prevLine = rep.lines.prev(thisLine);
       var prevLineText = prevLine.text;
       var theIndent = /^ *(?:)/.exec(prevLineText)[0];
-      if (/[\[\(\{]\s*$/.exec(prevLineText)) theIndent += THE_TAB;
+      if (/[\[\(\:\{]\s*$/.exec(prevLineText)) theIndent += THE_TAB;
       var cs = Changeset.builder(rep.lines.totalWidth()).keep(
       rep.lines.offsetOfIndex(lineNum), lineNum).insert(
       theIndent, [
@@ -3287,7 +3299,7 @@ function Ace2Inner(){
       listType = /([a-z]+)([12345678])/.exec(listType);
       var type  = listType[1];
       var level = Number(listType[2]);
-      
+
       //detect empty list item; exclude indentation
       if(text === '*' && type !== "indent")
       {
@@ -3317,8 +3329,10 @@ function Ace2Inner(){
 
   function doIndentOutdent(isOut)
   {
-    if (!(rep.selStart && rep.selEnd) ||
-        ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) &&  rep.selEnd[1] > 1))
+    if (!((rep.selStart && rep.selEnd) ||
+        ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) &&  rep.selEnd[1] > 1)) &&
+        (isOut != true)
+       )
     {
       return false;
     }
@@ -3326,7 +3340,6 @@ function Ace2Inner(){
     var firstLine, lastLine;
     firstLine = rep.selStart[0];
     lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
-
     var mods = [];
     for (var n = firstLine; n <= lastLine; n++)
     {
@@ -3731,10 +3744,11 @@ function Ace2Inner(){
           }, 200);
         }
 
-       /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
+        /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
            We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
            presses and holds the arrow key */
         if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && $.browser.chrome){
+
           var newVisibleLineRange = getVisibleLineRange(); // get the current visible range -- This works great.
           var lineHeight = textLineHeight(); // what Is the height of each line?
           var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
@@ -3744,6 +3758,7 @@ function Ace2Inner(){
             var lineNum = Math.round(caretOffsetTop / lineHeight) ; // Get the current Line Number IE 84
             newVisibleLineRange[1] = newVisibleLineRange[1]-1;
             var caretIsVisible = (lineNum > newVisibleLineRange[0] && lineNum < newVisibleLineRange[1]); // Is the cursor in the visible Range IE ie 84 > 14 and 84 < 90?
+
             if(!caretIsVisible){ // is the cursor no longer visible to the user?
               // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
               // Get the new Y by getting the line number and multiplying by the height of each line.
@@ -3754,7 +3769,9 @@ function Ace2Inner(){
               }
               setScrollY(newY); // set the scroll height of the browser
             }
+
           }
+
         }
 
       }
@@ -3862,7 +3879,6 @@ function Ace2Inner(){
     selection.endPoint = getPointForLineAndChar(se);
 
     selection.focusAtStart = !! rep.selFocusAtStart;
-
     setSelection(selection);
   }
 
