@@ -1035,7 +1035,7 @@ function handleClientReady(client, message)
       }
 
       // notify all existing users about new user
-      client.broadcast.to(padIds.padIds).json.send(messageToTheOtherUsers);
+      client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
       
       //Run trough all sessions of this pad
       async.forEach(socketio.sockets.clients(padIds.padId), function(roomClient, callback)
