@@ -3552,7 +3552,6 @@ function Ace2Inner(){
   {
     // if (DEBUG && window.DONT_INCORP) return;
     if (!isEditable) return;
-
     var type = evt.type;
     var charCode = evt.charCode;
     var keyCode = evt.keyCode;
@@ -3749,26 +3748,30 @@ function Ace2Inner(){
            We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
            presses and holds the arrow key */
         if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && $.browser.chrome){
-          var isLeftArrow = evt.which === 37;
-          var isUpArrow = evt.which === 38;
-          var isRightArrow = evt.which === 39;
-          var isDownArrow = evt.which === 40;
 
           var newVisibleLineRange = getVisibleLineRange(); // get the current visible range -- This works great.
           var lineHeight = textLineHeight(); // what Is the height of each line?
           var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
           var caretOffsetTop = myselection.focusNode.parentNode.offsetTop; // get the carets selection offset in px IE 214
 
-          if((isUpArrow || isLeftArrow || isRightArrow || isDownArrow) && caretOffsetTop){ // was it an up arrow or left arrow?
+          if(caretOffsetTop){ // sometimes caretOffsetTop bugs out and returns 0, not sure why, possible Chrome bug?  Either way if it does we don't wanna mess with it
             var lineNum = Math.round(caretOffsetTop / lineHeight) ; // Get the current Line Number IE 84
+            newVisibleLineRange[1] = newVisibleLineRange[1]-1;
             var caretIsVisible = (lineNum > newVisibleLineRange[0] && lineNum < newVisibleLineRange[1]); // Is the cursor in the visible Range IE ie 84 > 14 and 84 < 90?
+
             if(!caretIsVisible){ // is the cursor no longer visible to the user?
               // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
               // Get the new Y by getting the line number and multiplying by the height of each line.
-              var newY = lineHeight * (lineNum -1); // -1 to go to the line above
+              if(evt.which == 37 || evt.which == 38){ // If left or up
+                var newY = lineHeight * (lineNum -1); // -1 to go to the line above
+              }else if(evt.which == 39 || evt.which == 40){ // if down or right
+                var newY = getScrollY() + (lineHeight*3); // the offset and one additional line
+              }
               setScrollY(newY); // set the scroll height of the browser
             }
+
           }
+
         }
 
       }
