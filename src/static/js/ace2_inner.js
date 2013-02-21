@@ -185,7 +185,14 @@ function Ace2Inner(){
         {
           setDocumentAttributedText: function(atext)
           {
-            setDocAText(atext);
+            try{
+              setDocAText(atext);
+            }catch(err){
+              var err = {
+                errorInfo: "Text is broken so wont load on the client"
+              }
+              $.post('/jserror', err);
+            }
           },
           applyChangesetToDocument: function(changeset, preferInsertionAfterCaret)
           {
