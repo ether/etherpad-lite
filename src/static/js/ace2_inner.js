@@ -188,10 +188,13 @@ function Ace2Inner(){
             try{
               setDocAText(atext);
             }catch(err){
-              var err = {
-                errorInfo: "Text is broken so wont load on the client"
+              var padId = top.pad.getPadId();
+              var errMsg = "Pad data wont load for pad: " +padId;
+              top.console.error(errMsg);
+              var error = {
+                errorInfo: errMsg
               }
-              $.post('/jserror', err);
+              $.post('/jserror', error);
             }
           },
           applyChangesetToDocument: function(changeset, preferInsertionAfterCaret)
