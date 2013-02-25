@@ -108,8 +108,8 @@ function init() {
     });
 
     exports.socket = socket; // make the socket available
-    hooks.aCallAll("postTimesliderInit");
 
+    hooks.aCallAll("postTimesliderInit");
   });
 }
 
