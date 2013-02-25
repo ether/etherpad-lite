@@ -5,7 +5,7 @@ describe("font select", function(){
     this.timeout(60000);
   });
 
-  it("makes text monospace", function(done) {
+  it("makes text monospace locally", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
 
@@ -26,5 +26,30 @@ describe("font select", function(){
     expect(fontFamily).to.be("monospace");
 
     done();
+  });
+
+  it("makes text monospace globally", function(done) {
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
+
+    //click on the settings button to make settings visible
+    var $settingsButton = chrome$(".buttonicon-settings");
+    $settingsButton.click();
+
+    //get the font menu and monospace option
+    var $viewfontmenu = chrome$("#global-viewfontmenu");
+    var $monospaceoption = $viewfontmenu.find("[value=monospace]");
+
+    //select monospace and fire change event
+    $monospaceoption.attr('selected','selected');
+    $viewfontmenu.change();
+    
+    helper.waitFor(function(){
+      return inner$("body").css("font-family").toLowerCase() == "monospace";
+    }, 10000).always(function(){
+      var newValue = inner$("body").css("font-family").toLowerCase();
+      expect(newValue).to.be("monospace");
+      done();
+    });
   });
 });

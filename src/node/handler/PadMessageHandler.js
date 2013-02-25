@@ -187,6 +187,8 @@ exports.handleMessage = function(client, message)
         handleGetChatMessages(client, message);
       } else if (message.data.type == "SAVE_REVISION") {
         handleSaveRevisionMessage(client, message);
+      } else if (message.data.type == "GLOBAL_SETTING_CHANGED") {
+        handleGlobalSettingChangedMessage(client, message);
       } else if (message.data.type == "CLIENT_MESSAGE" &&
                  message.data.payload != null &&
                  message.data.payload.type == "suggestUserName") {
@@ -251,6 +253,55 @@ function handleSaveRevisionMessage(client, message){
     if(ERR(err)) return;
     
     pad.addSavedRevision(pad.head, userId);
+  });
+}
+
+/**
+ * Handles a global setting changed message
+ * @param client the client that send this message
+ * @param message the message from the client
+ */
+function handleGlobalSettingChangedMessage(client, message){
+  var padId = sessioninfos[client.id].padId;
+  var userId = sessioninfos[client.id].author;
+  
+  if(message.data.setting == null)
+  {
+    messageLogger.warn("Dropped message, GlobalSettingChanged Message has no setting!");
+    return;
+  }
+  if(message.data.value == null)
+  {
+    messageLogger.warn("Dropped message, GlobalSettingChanged Message has no value!");
+    return;
+  }
+  
+  var setting = message.data.setting;
+  var value = message.data.value;
+  
+  // check for illegal values
+  if(setting != "showLineNumbers" && setting != "showAuthorColors" && setting != "useMonospaceFont")
+  {
+    messageLogger.warn("Dropped message, GlobalSettingChanged Message has an invalid setting!");
+    return;
+  }
+  if(value != true && value != false)
+  {
+    messageLogger.warn("Dropped message, GlobalSettingChanged Message has an invalid value!");
+    return;
+  }
+ 
+  padManager.getPad(padId, function(err, pad)
+  {
+    if(ERR(err)) return;
+    
+    // save changed value to the db
+    pad.setViewSetting(setting, value);
+    
+    // tell the users that a setting has been changed
+    for (var i in pad2sessions[padId]) {
+      socketio.sockets.sockets[pad2sessions[padId][i]].json.send(message);
+    }
   });
 }
 
@@ -983,6 +1034,7 @@ function handleClientReady(client, message)
             "plugins": plugins.plugins,
             "parts": plugins.parts,
           },
+          "viewSettings": pad.getViewSettings(),
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
 

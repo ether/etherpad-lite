@@ -62,6 +62,7 @@ var padeditor = (function()
     },
     initViewOptions: function()
     {
+      // my view
       padutils.bindCheckboxChange($("#options-linenoscheck"), function()
       {
         pad.changeViewOption('showLineNumbers', padutils.getCheckbox($("#options-linenoscheck")));
@@ -74,6 +75,24 @@ var padeditor = (function()
       $("#viewfontmenu").change(function()
       {
         pad.changeViewOption('useMonospaceFont', $("#viewfontmenu").val() == 'monospace');
+      });
+      
+      // global view
+      padutils.bindCheckboxChange($("#options-global-linenoscheck"), function()
+      {
+        pad.collabClient.changeGlobalSetting("showLineNumbers", $("#options-global-linenoscheck").prop('checked'));
+      });
+      padutils.bindCheckboxChange($("#options-global-colorscheck"), function()
+      {
+        pad.collabClient.changeGlobalSetting("showAuthorColors", $("#options-global-colorscheck").prop('checked'));
+      });
+      padutils.bindCheckboxChange($("#options-ignore-global"), function()
+      {
+        pad.padOptions.ignoreGlobalSettings = $("#options-ignore-global").prop('checked');
+      });
+      $("#global-viewfontmenu").change(function()
+      {
+        pad.collabClient.changeGlobalSetting("useMonospaceFont", $("#global-viewfontmenu").val() == 'monospace');
       });
       
       html10n.bind('localized', function() {
@@ -95,7 +114,7 @@ var padeditor = (function()
         window.html10n.localize([$("#languagemenu").val(), 'en']);
       });
     },
-    setViewOptions: function(newOptions)
+    setViewOptions: function(newOptions, global)
     {
       function getOption(key, defaultValue)
       {
@@ -113,18 +132,27 @@ var padeditor = (function()
 
       v = getOption('showLineNumbers', true);
       self.ace.setProperty("showslinenumbers", v);
-      padutils.setCheckbox($("#options-linenoscheck"), v);
+      if(global)
+        padutils.setCheckbox($("#options-global-linenoscheck"), v);
+      else
+        padutils.setCheckbox($("#options-linenoscheck"), v);
 
       v = getOption('showAuthorColors', true);
       self.ace.setProperty("showsauthorcolors", v);
-      padutils.setCheckbox($("#options-colorscheck"), v);
+      if(global)
+        padutils.setCheckbox($("#options-global-colorscheck"), v);
+      else
+        padutils.setCheckbox($("#options-colorscheck"), v);
       // Override from parameters if true
       if (settings.noColors !== false)
         self.ace.setProperty("showsauthorcolors", !settings.noColors);
 
       v = getOption('useMonospaceFont', false);
       self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
-      $("#viewfontmenu").val(v ? "monospace" : "normal");
+      if(global)
+        $("#global-viewfontmenu").val(v ? "monospace" : "normal");
+      else
+        $("#viewfontmenu").val(v ? "monospace" : "normal");
     },
     dispose: function()
     {

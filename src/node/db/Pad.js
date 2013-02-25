@@ -39,6 +39,7 @@ var Pad = function Pad(id) {
   this.chatHead = -1;
   this.publicStatus = false;
   this.passwordHash = null;
+  this.viewSettings = {};
   this.id = id;
   this.savedRevisions = [];
 };
@@ -55,6 +56,14 @@ Pad.prototype.getHeadRevisionNumber = function getHeadRevisionNumber() {
 
 Pad.prototype.getPublicStatus = function getPublicStatus() {
   return this.publicStatus;
+};
+
+Pad.prototype.getViewSettings = function getViewSettings() {
+  return this.viewSettings;
+};
+
+Pad.prototype.getViewSetting = function getViewSettings(setting) {
+  return this.viewSettings[setting];
 };
 
 Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
@@ -510,6 +519,16 @@ Pad.prototype.remove = function remove(callback) {
     //set in db
 Pad.prototype.setPublicStatus = function setPublicStatus(publicStatus) {
   this.publicStatus = publicStatus;
+  this.saveToDatabase();
+};
+
+Pad.prototype.setViewSettings = function setPublicStatus(viewSettings) {
+  this.viewSettings = viewSettings;
+  this.saveToDatabase();
+};
+
+Pad.prototype.setViewSetting = function setPublicStatus(setting, value) {
+  this.viewSettings[setting] = value;
   this.saveToDatabase();
 };
 
