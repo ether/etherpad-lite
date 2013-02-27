@@ -4,7 +4,7 @@ var httpLogger = log4js.getLogger("http");
 var settings = require('../../utils/Settings');
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-
+var ueberStore = require('../../db/SessionStore');
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
@@ -102,15 +102,14 @@ exports.expressConfigure = function (hook_name, args, cb) {
    * handling it cleaner :) */
 
   if (!exports.sessionStore) {
-    exports.sessionStore = new express.session.MemoryStore();
-    exports.secret = randomString(32);
+    exports.sessionStore = new ueberStore();
+    exports.secret = settings.sessionKey; // Isn't this being reset each time the server spawns?
   }
-  
-  args.app.use(express.cookieParser(exports.secret));
 
+  args.app.use(express.cookieParser(exports.secret));
   args.app.sessionStore = exports.sessionStore;
-  args.app.use(express.session({store: args.app.sessionStore,
-                                key: 'express_sid' }));
+  args.app.use(express.session({secret: exports.secret, store: args.app.sessionStore, key: 'express_sid' }));
 
   args.app.use(exports.basicAuth);
 }
+

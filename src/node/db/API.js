@@ -253,9 +253,7 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, undefined, function (err, html)
       {
         if(ERR(err, callback)) return;
-        
         data = {html: html};
-          
         callback(null, data);
       });
     }
