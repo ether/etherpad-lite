@@ -586,7 +586,14 @@ function handleUserChanges(client, message)
             // client) are relative to revision r - 1. The follow function
             // rebases "changeset" so that it is relative to revision r
             // and can be applied after "c".
-            changeset = Changeset.follow(c, changeset, false, apool);
+            try
+            {
+              changeset = Changeset.follow(c, changeset, false, apool);
+            }catch(e){
+              console.warn("Can't apply USER_CHANGES "+changeset+", possibly because of mismatched follow error");
+              client.json.send({disconnect:"badChangeset"});
+              return;
+            }
 
             if ((r - baseRev) % 200 == 0) { // don't let the stack get too deep
               async.nextTick(callback);
