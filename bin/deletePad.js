@@ -50,6 +50,8 @@ async.series([
     padManager.removePad(padId, function(err){
       callback(err);
     }); 
+console.error("cool I got here");
+    callback();
   }
 ], function (err)
 {
