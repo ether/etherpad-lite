@@ -928,6 +928,8 @@ function handleClientReady(client, message)
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
       {
+        //Join the pad and start receiving updates
+        client.join(padIds.padId);
         //Save the revision in sessioninfos, we take the revision from the info the client send to us
         sessioninfos[client.id].rev = message.client_rev;
       }
