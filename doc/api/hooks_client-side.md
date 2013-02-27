@@ -129,6 +129,11 @@ Things in context:
 
 There doesn't appear to be any example available of this particular hook being used, but it gets fired after the editor is all set up.
 
+## postTimesliderInit
+Called from: src/static/js/timeslider.js
+
+There doesn't appear to be any example available of this particular hook being used, but it gets fired after the timeslider is all set up.
+
 ## userJoinOrUpdate
 Called from: src/static/js/pad_userlist.js
 
