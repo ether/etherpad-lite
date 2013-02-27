@@ -243,8 +243,6 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, rev, function(err, html)
       {
           if(ERR(err, callback)) return;
-          html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
-          html += "</body></html>";
           data = {html: html};
           callback(null, data);
       });
@@ -255,8 +253,6 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, undefined, function (err, html)
       {
         if(ERR(err, callback)) return;
-        html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
-        html += "</body></html>";
         data = {html: html};
         callback(null, data);
       });
