@@ -157,6 +157,7 @@ exports.reloadSettings = function reloadSettings() {
   try {
     if(settingsStr) {
       settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
+      settings = JSON.parse(JSON.stringify(settings)) // fix objects having constructors of other vm.context
     }
   }catch(e){
     console.error('There was an error processing your settings.json file: '+e.message);
