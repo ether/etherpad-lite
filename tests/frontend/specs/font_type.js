@@ -17,11 +17,9 @@ describe("font select", function(){
     var $viewfontmenu = chrome$("#viewfontmenu");
     var $monospaceoption = $viewfontmenu.find("[value=monospace]");
 
-console.log($monospaceoption);
-
     //select monospace and fire change event
     $monospaceoption.attr('selected','selected');
-    // $viewfontmenu.change();
+    $viewfontmenu.change();
 
     //check if font changed to monospace
     var fontFamily = inner$("body").css("font-family").toLowerCase();
