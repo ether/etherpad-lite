@@ -19,6 +19,7 @@ describe("font select", function(){
 
     //select monospace and fire change event
     $monospaceoption.attr('selected','selected');
+    $viewfontmenu.val("monospace");
     $viewfontmenu.change();
 
     //check if font changed to monospace
