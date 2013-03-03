@@ -95,7 +95,7 @@
   */
 
   // restrict socket.io transport methods
-  "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"]
+  "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
   
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO",
@@ -139,5 +139,5 @@
         }
         }
       }*/
-	] },
+	] }
 }
