@@ -294,8 +294,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
         if (newRev != (oldRev + 1))
         {
-          dmesg("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
-          setChannelState("DISCONNECTED", "badmessage_newchanges");
+          top.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
+          // setChannelState("DISCONNECTED", "badmessage_newchanges");
           return;
         }
         msgQueue.push(msg);
@@ -304,8 +304,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        dmesg("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
-        setChannelState("DISCONNECTED", "badmessage_newchanges");
+        top.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
+        // setChannelState("DISCONNECTED", "badmessage_newchanges");
         return;
       }
       rev = newRev;
@@ -318,8 +318,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       {
         if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
         {
-          dmesg("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
-          setChannelState("DISCONNECTED", "badmessage_acceptcommit");
+          top.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+          // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
         msgQueue.push(msg);
@@ -328,8 +328,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        dmesg("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
-        setChannelState("DISCONNECTED", "badmessage_acceptcommit");
+        top.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
+        // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
         return;
       }
       rev = newRev;
