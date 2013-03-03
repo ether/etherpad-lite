@@ -1,6 +1,22 @@
 <%
   var settings = require("ep_etherpad-lite/node/utils/Settings")
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
+    , toolbar = require("ep_etherpad-lite/node/utils/toolbar")
+    , leftToolbar
+    , rightToolbar;
+
+
+  if (settings.ep_toolbar && settings.ep_toolbar.left) {
+      leftToolbar = settings.ep_toolbar.left;
+  }
+  else {
+      leftToolbar = [
+          ["bold", "italic", "underline", "strikethrough"],
+          ["orderedlist", "unorderedlist", "indent", "outdent"],
+          ["undo", "redo"],
+          ["clearauthorship"]
+      ];
+  }
 %>
 <!doctype html>
 <% e.begin_block("htmlHead"); %>
@@ -54,66 +70,10 @@
             <div id="overlay">
                 <div id="overlay-inner"></div>
             </div>
+
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
-                <li class="acl-write" id="bold" data-key="bold">
-                    <a class="grouped-left" data-l10n-id="pad.toolbar.bold.title">
-                      <span class="buttonicon buttonicon-bold"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="italic" data-key="italic">
-                    <a class="grouped-middle" data-l10n-id="pad.toolbar.italic.title">
-                      <span class="buttonicon buttonicon-italic"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="underline" data-key="underline">
-                    <a class="grouped-middle" data-l10n-id="pad.toolbar.underline.title">
-                      <span class="buttonicon buttonicon-underline"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="strikethrough" data-key="strikethrough">
-                    <a class="grouped-right" data-l10n-id="pad.toolbar.strikethrough.title">
-                      <span class="buttonicon buttonicon-strikethrough"></span>
-                    </a>
-                </li>
-                <li class="acl-write separator"></li>
-                <li class="acl-write" id="oderedlist" data-key="insertorderedlist">
-                    <a class="grouped-left" data-l10n-id="pad.toolbar.ol.title">
-                      <span class="buttonicon buttonicon-insertorderedlist"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="unoderedlist" data-key="insertunorderedlist">
-                    <a class="grouped-middle" data-l10n-id="pad.toolbar.ul.title">
-                      <span class="buttonicon buttonicon-insertunorderedlist"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="indent" data-key="indent">
-                    <a class="grouped-middle" data-l10n-id="pad.toolbar.indent.title">
-                      <span class="buttonicon buttonicon-indent"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="outdent" data-key="outdent">
-                    <a class="grouped-right" data-l10n-id="pad.toolbar.unindent.title">
-                      <span class="buttonicon buttonicon-outdent"></span>
-                    </a>
-                </li>
-                <li class="acl-write separator"></li>
-                <li class="acl-write" id="undo" data-key="undo">
-                    <a class="grouped-left" data-l10n-id="pad.toolbar.undo.title">
-                      <span class="buttonicon buttonicon-undo"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="redo" data-key="redo">
-                    <a class="grouped-right" data-l10n-id="pad.toolbar.redo.title">
-                      <span class="buttonicon buttonicon-redo"></span>
-                    </a>
-                </li>
-                <li class="acl-write separator"></li>
-                <li class="acl-write" id="clearAuthorship" data-key="clearauthorship">
-                    <a data-l10n-id="pad.toolbar.clearAuthorship.title">
-                      <span class="buttonicon buttonicon-clearauthorship"></span>
-                    </a>
-                </li>
+                <%- toolbar.menu(leftToolbar) %>
                 <% e.end_block(); %>
             </ul>
             <ul class="menu_right">
@@ -289,7 +249,7 @@
                 <% e.end_block(); %>
             </div>
         </div>
-        
+
         <div id="connectivity" class="popup">
             <% e.begin_block("modals"); %>
                 <div class="connected visible">
@@ -391,7 +351,7 @@
         <% e.begin_block("scripts"); %>
         <script type="text/javascript">
             (function() {
-              // Display errors on page load to the user 
+              // Display errors on page load to the user
               // (Gets overridden by padutils.setupGlobalExceptionHandler)
               var originalHandler = window.onerror;
               window.onerror = function(msg, url, line) {
@@ -404,7 +364,7 @@
               };
             })();
         </script>
-        
+
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 
@@ -419,10 +379,10 @@
             var clientVars = {};
             (function () {
               var pathComponents = location.pathname.split('/');
-              
+
               // Strip 'p' and the padname from the pathname and set as baseURL
               var baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/';
-                            
+
               require.setRootURI(baseURL + "javascripts/src");
               require.setLibraryURI(baseURL + "javascripts/lib");
               require.setGlobalKeyPath("require");
