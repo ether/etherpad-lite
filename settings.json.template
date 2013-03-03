@@ -51,13 +51,6 @@
                   },
   */
   
-  //Logging configuration. See log4js documentation for further information
-  // https://github.com/nomiddlename/log4js-node
-  "logconfig" :
-	{ "appenders": [
-	    { "type": "console" }
-	] },
-  
   //the default text of a pad
   "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
   
@@ -101,9 +94,50 @@
   },
   */
 
-  /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
-  "loglevel": "INFO",
-
   // restrict socket.io transport methods
   "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"]
+  
+  /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
+  "loglevel": "INFO",
+  
+  //Logging configuration. See log4js documentation for further information
+  // https://github.com/nomiddlename/log4js-node
+  // You can add as many appenders as you want here:
+  "logconfig" :
+	{ "appenders": [
+	    { "type": "console" 
+	    //, "category": "access"// only logs pad access
+	    }
+    /*
+	  , { "type": "file"
+      , "filename": "your-log-file-here.log"
+      , "maxLogSize": 1024
+      , "backups": 3 // how many log files there're gonna be at max
+      //, "category": "test" // only log a specific category
+      }*/
+    /*
+	  , { "type": "logLevelFilter"
+	    , "level": "warn" // filters out all log messages that have a lower level than "error"
+	    , "appender":
+	      { /* Use whatever appender you want here */ }
+      }*/
+    /*
+	  , { "type": "logLevelFilter"
+	    , "level": "error" // filters out all log messages that have a lower level than "error"
+	    , "appender":
+	      { "type": "smtp"
+        , "subject": "An error occured in your EPL instance!"
+        , "recipients": "bar@blurdybloop.com, baz@blurdybloop.com"
+        , "sendInterval": 60*5 // in secs -- will buffer log messages; set to 0 to send a mail for every message
+        , "transport": "SMTP", "SMTP": { // see https://github.com/andris9/Nodemailer#possible-transport-methods
+            "host": "smtp.example.com", "port": 465,
+            "secureConnection": true,
+            "auth": {
+                "user": "foo@example.com",
+                "pass": "bar_foo"
+            }
+        }
+        }
+      }*/
+	] },
 }
