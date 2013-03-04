@@ -119,7 +119,7 @@
 	  , { "type": "logLevelFilter"
 	    , "level": "warn" // filters out all log messages that have a lower level than "error"
 	    , "appender":
-	      { /* Use whatever appender you want here */ }
+	      {  Use whatever appender you want here  }
       }*/
     /*
 	  , { "type": "logLevelFilter"
