@@ -1,3 +1,7 @@
+This is the new load testing file: https://bitbucket.org/rbraakman/etherpad-stresstest
+
+BELOW is the original load testing file.
+
 This load tester is extremely useful for testing how many dormant clients can connect to etherpad lite.  
 
 TODO:

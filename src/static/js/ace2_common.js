@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -33,19 +33,6 @@ function object(o)
   f.prototype = o;
   return new f();
 }
-var userAgent = (((function () {return this;})().navigator || {}).userAgent || 'node-js').toLowerCase();
-
-// Figure out what browser is being used (stolen from jquery 1.2.1)
-var browser = {
-  version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
-  safari: /webkit/.test(userAgent),
-  opera: /opera/.test(userAgent),
-  msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
-  mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent),
-  windows: /windows/.test(userAgent),
-  mobile: /mobile/.test(userAgent) || /android/.test(userAgent)
-};
-
 
 function getAssoc(obj, name)
 {
@@ -97,7 +84,6 @@ var noop = function(){};
 
 exports.isNodeText = isNodeText;
 exports.object = object;
-exports.browser = browser;
 exports.getAssoc = getAssoc;
 exports.setAssoc = setAssoc;
 exports.binarySearch = binarySearch;

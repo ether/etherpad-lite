@@ -4,8 +4,7 @@ describe("timeslider", function(){
     helper.newPad(cb);
     this.timeout(6000);
   });
-
-  xit("loads adds a hundred revisions", function(done) {
+  it("loads adds a hundred revisions", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     
@@ -57,14 +56,13 @@ describe("timeslider", function(){
       }, 6000);
     }, revs*timePerRev);
   });
-  
   it("changes the url when clicking on the timeslider", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     
     // make some changes to produce 7 revisions
-    var timePerRev = 900
-      , revs = 7;
+    var timePerRev = 1000
+      , revs = 20;
     this.timeout(revs*timePerRev+10000);
     for(var i=0; i < revs; i++) {
       setTimeout(function() {
@@ -100,28 +98,48 @@ describe("timeslider", function(){
       }, 6000);
     }, revs*timePerRev);
   });
-  
   it("jumps to a revision given in the url", function(done) {
     var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
-    this.timeout(11000);
-    inner$("div").first().sendkeys('a');
-    
-    setTimeout(function() {
-      // go to timeslider
-      $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
-      var timeslider$;
+    var chrome$ = helper.padChrome$;
+    this.timeout(20000);
+
+    // wait for the text to be loaded
+    helper.waitFor(function(){
+      return inner$('body').text().length != 0;
+    }, 6000).always(function() {
+      var newLines = inner$('body div').length;
+      var oldLength = inner$('body').text().length + newLines / 2;
+      expect( oldLength ).to.not.eql( 0 );
+      inner$("div").first().sendkeys('a');
       
+      // wait for our additional revision to be added
       helper.waitFor(function(){
-        timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
-        return timeslider$ && timeslider$('#padcontent').text().length == 230;
-      }, 6000).always(function(){
-        expect( timeslider$('#padcontent').text().length ).to.eql( 230 );
-        done();
+        // newLines takes the new lines into account which are strippen when using
+        // inner$('body').text(), one <div> is used for one line in ACE.
+        var lenOkay = inner$('body').text().length + newLines / 2 != oldLength;
+        // this waits for the color to be added to our <span>, which means that the revision
+        // was accepted by the server.
+        var colorOkay = inner$('span').first().attr('class').indexOf("author-") == 0;
+        return lenOkay && colorOkay;
+      }, 6000).always(function() {
+        // go to timeslider with a specific revision set
+        $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
+        
+        // wait for the timeslider to be loaded
+        helper.waitFor(function(){
+          try {
+            timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+          } catch(e){}
+          if(timeslider$){
+            return timeslider$('#padcontent').text().length == oldLength;
+          }
+        }, 6000).always(function(){
+          expect( timeslider$('#padcontent').text().length ).to.eql( oldLength );
+          done();
+        });
       });
-    }, 2500);
+    });
   });
-  
   it("checks the export url", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
@@ -135,7 +153,9 @@ describe("timeslider", function(){
       var exportLink;
       
       helper.waitFor(function(){
-        timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+        try{
+          timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+        }catch(e){}
         if(!timeslider$)
           return false;
         exportLink = timeslider$('#exportplaina').attr('href');

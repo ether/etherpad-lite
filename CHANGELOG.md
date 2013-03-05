@@ -1,3 +1,39 @@
+# 1.2.8
+ ! IMPORTANT: New setting.json value is required to automatically reconnect clients on disconnect
+ * NEW: Use Socket IO for rooms (allows for pads to be load balanced with sticky rooms)
+ * NEW: Plugins can now provide their own frontend tests
+ * NEW: Improved server-side logging
+ * NEW: Admin dashboard mobile device support and new hooks for Admin dashboard
+ * NEW: Get current API version from API
+ * NEW: CLI script to delete pads
+ * Fix: Automatic client reconnection on disonnect
+ * Fix: Text Export indentation now supports multiple indentations
+ * Fix: Bugfix getChatHistory API method
+ * Fix: Stop Chrome losing caret after paste is texted
+ * Fix: Make colons on end of line create 4 spaces on indent
+ * Fix: Stop the client disconnecting if a rev is in the wrong order
+ * Fix: Various server crash issues based on rev in wrong order
+ * Fix: Various tests
+ * Fix: Make indent when on middle of the line stop creating list
+ * Fix: Stop long strings breaking the UX by moving focus away from beginning of line
+ * Fix: Redis findKeys support
+ * Fix: padUsersCount no longer hangs server
+ * Fix: Issue with two part locale specs not working
+ * Fix: Make plugin search case insensitive
+ * Fix: Indentation and bullets on text export
+ * Fix: Resolve various warnings on dependencies during install
+ * Fix: Page up / Page down now works in all browsers
+ * Fix: Stop Opera browser inserting two new lines on enter keypress
+ * Fix: Stop timeslider from showing NaN on pads with only one revision
+ * Other: Allow timeslider tests to run and provide & fix various other frontend-tests
+ * Other: Begin dropping referene to Lite.  Etherpad Lite is now named "Etherpad"
+ * Other: Update to latest jQuery
+ * Other: Change loading message asking user to please wait on first build
+ * Other: Allow etherpad to use global npm installation (Safe since node 6.3)
+ * Other: Better documentation for log rotation and log message handling
+ 
+
+
 # 1.2.7
  * NEW: notifications are now modularized and can be stacked
  * NEW: Visit a specific revision in the timeslider by suffixing #%revNumber% IE http://localhost/p/test/timeslider#12

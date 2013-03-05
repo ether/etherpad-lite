@@ -16,7 +16,7 @@
                       "require-kernel"          : "1.0.5",
                       "resolve"                 : "0.2.x",
                       "socket.io"               : "0.9.x",
-                      "ueberDB"                 : "0.1.9",
+                      "ueberDB"                 : "0.1.94",
                       "async"                   : "0.1.x",
                       "express"                 : "3.x",
                       "connect"                 : "2.4.x",
@@ -40,11 +40,10 @@
                      },
   "bin":             { "etherpad-lite": "./node/server.js" },
   "devDependencies": {
-                      "jshint"  : "*",
-                      "wd"      : "0.0.26"
+                      "wd"      : "0.0.31"
                      },
-  "engines"        : { "node" : ">=0.6.0",
+  "engines"        : { "node" : ">=0.6.3",
                        "npm"  : ">=1.0"
                      }, 
-  "version"        : "1.2.7"
+  "version"        : "1.2.8"
 }

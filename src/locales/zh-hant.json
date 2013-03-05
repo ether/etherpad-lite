@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": {
-			"1": "Simon Shek"
+			"0": "Shirayuki",
+			"2": "Simon Shek"
 		}
 	},
 	"index.newPad": "\u65b0Pad",
@@ -19,7 +20,7 @@
 	"pad.toolbar.clearAuthorship.title": "\u6e05\u9664\u4f5c\u540d\u984f\u8272",
 	"pad.toolbar.import_export.title": "\u4ee5\u5176\u4ed6\u6a94\u6848\u683c\u5f0f\u5c0e\u5165\uff0f\u532f\u51fa",
 	"pad.toolbar.timeslider.title": "\u6642\u9593\u8ef8",
-	"pad.toolbar.savedRevision.title": "\u5df2\u5132\u5b58\u7684\u4fee\u8a02",
+	"pad.toolbar.savedRevision.title": "\u5132\u5b58\u4fee\u8a02",
 	"pad.toolbar.settings.title": "\u8a2d\u5b9a",
 	"pad.toolbar.embed.title": "\u5d4c\u5165\u6b64pad",
 	"pad.toolbar.showusers.title": "\u986f\u793a\u6b64pad\u7684\u7528\u6236",
@@ -86,8 +87,8 @@
 	"timeslider.toolbar.exportlink.title": "\u532f\u51fa",
 	"timeslider.exportCurrent": "\u532f\u51fa\u7576\u524d\u7248\u672c\u70ba\uff1a",
 	"timeslider.version": "\u7248\u672c{{version}}",
-	"timeslider.saved": "{{year}}{{month}}{{day}}\u4fdd\u5b58",
-	"timeslider.dateformat": "{{year}}{{month}}{{day}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.saved": "{{year}}\u5e74{{month}}{{day}}\u65e5\u4fdd\u5b58",
+	"timeslider.dateformat": "{{year}}\u5e74{{month}}\u6708{{day}}\u65e5 {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "1\u6708",
 	"timeslider.month.february": "2\u6708",
 	"timeslider.month.march": "3\u6708",
@@ -100,6 +101,8 @@
 	"timeslider.month.october": "10\u6708",
 	"timeslider.month.november": "11\u6708",
 	"timeslider.month.december": "12\u6708",
+	"timeslider.unnamedauthor": "{{num}} \u533f\u540d\u4f5c\u8005",
+	"timeslider.unnamedauthors": "{{num}} \u533f\u540d\u4f5c\u8005",
 	"pad.savedrevs.marked": "\u6b64\u4fee\u8a02\u5df2\u6a19\u8a18\u70ba\u5df2\u4fdd\u5b58\u3002",
 	"pad.userlist.entername": "\u8f38\u5165\u60a8\u7684\u59d3\u540d",
 	"pad.userlist.unnamed": "\u672a\u547d\u540d",

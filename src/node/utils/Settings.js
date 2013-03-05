@@ -26,6 +26,8 @@ var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
 var vm = require('vm');
 var log4js = require("log4js");
+var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -112,6 +114,11 @@ exports.loglevel = "INFO";
 */
 exports.logconfig = { appenders: [{ type: "console" }]};
 
+/*
+* Session Key, do not sure this.
+*/
+exports.sessionKey = false;
+
 /* This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
  * either authorization by a module, or a user with is_admin set */
@@ -132,8 +139,6 @@ exports.abiwordAvailable = function()
   }
 }
 
-
-
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
@@ -152,6 +157,7 @@ exports.reloadSettings = function reloadSettings() {
   try {
     if(settingsStr) {
       settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
+      settings = JSON.parse(JSON.stringify(settings)) // fix objects having constructors of other vm.context
     }
   }catch(e){
     console.error('There was an error processing your settings.json file: '+e.message);
@@ -183,6 +189,11 @@ exports.reloadSettings = function reloadSettings() {
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   log4js.replaceConsole();
+
+  if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here
+    exports.sessionKey = randomString(32);
+    console.warn("You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts");
+  }
 
   if(exports.dbType === "dirty"){
     console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")

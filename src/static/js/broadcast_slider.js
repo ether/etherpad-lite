@@ -107,12 +107,16 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     {
       newpos = Number(newpos);
       if (newpos < 0 || newpos > sliderLength) return;
+      if(!newpos){
+        newpos = 0; // stops it from displaying NaN if newpos isn't set
+      }
       window.location.hash = "#" + newpos;
       $("#ui-slider-handle").css('left', newpos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
       $("a.tlink").map(function()
       {
         $(this).attr('href', $(this).attr('thref').replace("%revision%", newpos));
       });
+
       $("#revision_label").html(html10n.get("timeslider.version", { "version": newpos}));
 
       if (newpos == 0)
@@ -456,31 +460,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
       if (clientVars)
       {
-        if (clientVars.fullWidth)
-        {
-          $("#padpage").css('width', '100%');
-          $("#revision").css('position', "absolute")
-          $("#revision").css('right', "20px")
-          $("#revision").css('top', "20px")
-          $("#padmain").css('left', '0px');
-          $("#padmain").css('right', '197px');
-          $("#padmain").css('width', 'auto');
-          $("#rightbars").css('right', '7px');
-          $("#rightbars").css('margin-right', '0px');
-          $("#timeslider").css('width', 'auto');
-        }
-
-        if (clientVars.disableRightBar)
-        {
-          $("#rightbars").css('display', 'none');
-          $('#padmain').css('width', 'auto');
-          if (clientVars.fullWidth) $("#padmain").css('right', '7px');
-          else $("#padmain").css('width', '860px');
-          $("#revision").css('position', "absolute");
-          $("#revision").css('right', "20px");
-          $("#revision").css('top', "20px");
-        }
-        
         $("#timeslider").show();
         
         var startPos = clientVars.collab_client_vars.rev;

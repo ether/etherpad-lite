@@ -100,6 +100,8 @@
 	"timeslider.month.october": "oktober",
 	"timeslider.month.november": "november",
 	"timeslider.month.december": "december",
+	"timeslider.unnamedauthor": "{{num}} namnl\u00f6s f\u00f6rfattare",
+	"timeslider.unnamedauthors": "{{num}} namnl\u00f6sa f\u00f6rfattare",
 	"pad.savedrevs.marked": "Denna revision \u00e4r nu markerad som en sparad revision",
 	"pad.userlist.entername": "Ange ditt namn",
 	"pad.userlist.unnamed": "namnl\u00f6s",

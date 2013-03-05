@@ -29,8 +29,9 @@ var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 var _ = require('./underscore');
+var hooks = require('./pluginfw/hooks');
 
-var socket, token, padId, export_links;
+var token, padId, export_links;
 
 function init() {
   $(document).ready(function ()
@@ -106,6 +107,9 @@ function init() {
       window.location.reload();
     });
 
+    exports.socket = socket; // make the socket available
+
+    hooks.aCallAll("postTimesliderInit");
   });
 }
 

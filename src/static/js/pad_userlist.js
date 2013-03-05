@@ -107,14 +107,9 @@ var paduserlist = (function()
     function getUserRowHtml(height, data)
     {
       var nameHtml;
-      var isGuest = (data.id.charAt(0) != 'p');
       if (data.name)
       {
         nameHtml = padutils.escapeHtml(data.name);
-        if (isGuest && pad.getIsProPad())
-        {
-          nameHtml += ' ('+_(pad.userlist.guest)+')';
-        }
       }
       else
       {

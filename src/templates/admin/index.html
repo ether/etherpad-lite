@@ -1,7 +1,8 @@
+<!doctype html> 
 <html>
   <head>
-    <title>Admin Dashboard - Etherpad lite</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>Admin Dashboard - Etherpad</title>
+    <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="../static/css/admin.css">
     <script src="../static/js/jquery.js"></script>
     <script src="../socket.io/socket.io.js"></script>
@@ -9,13 +10,15 @@
   <body>
     <div id="wrapper">
       <div class="menu">
-        <h1>Etherpad lite</h1> 
-        <li><a href="admin/plugins">Plugin manager</a> </li>
-        <li><a href="admin/settings">Settings</a> </li>
-        <li><a href="admin/plugins/info">Troubleshooting information</a> </li>
+        <h1>Etherpad</h1>
+        <ul>
+        <% e.begin_block("adminMenu");  %>
+          <li><a href="plugins">Plugin manager</a> </li>
+          <li><a href="settings">Settings</a> </li>
+          <li><a href="plugins/info">Troubleshooting information</a> </li>
+          <% e.end_block(); %>
+        </ul>
       </div>
-
     </div>
-    <div id="topborder"></div>
   </body>
 </html>

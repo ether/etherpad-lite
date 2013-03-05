@@ -56,10 +56,8 @@ describe("Language select and change", function(){
  
     //click the language button
     var $language = chrome$("#languagemenu");
-    var $languageoption = $language.find("[value=en]");
- 
-    //select german
-    $languageoption.attr('selected','selected');
+    //select english
+    $language.val("en");
     $language.change();
  
     //get the value of the bold button

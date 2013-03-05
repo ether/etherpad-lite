@@ -35,7 +35,6 @@ var chat = require('./chat').chat;
 var getCollabClient = require('./collab_client').getCollabClient;
 var padconnectionstatus = require('./pad_connectionstatus').padconnectionstatus;
 var padcookie = require('./pad_cookie').padcookie;
-var paddocbar = require('./pad_docbar').paddocbar;
 var padeditbar = require('./pad_editbar').padeditbar;
 var padeditor = require('./pad_editor').padeditor;
 var padimpexp = require('./pad_impexp').padimpexp;
@@ -391,10 +390,6 @@ var pad = {
   {
     return clientVars.clientIp;
   },
-  getIsProPad: function()
-  {
-    return clientVars.isProPad;
-  },
   getColorPalette: function()
   {
     return clientVars.colorPalette;
@@ -467,11 +462,6 @@ var pad = {
     }
 
     // order of inits is important here:
-    padcookie.init(clientVars.cookiePrefsToSet, this);
-      
-    $("#widthprefcheck").click(pad.toggleWidthPref);
-    // $("#sidebarcheck").click(pad.togglewSidebar);
-
     pad.myUserInfo = {
       userId: clientVars.userId,
       name: clientVars.userName,
@@ -488,20 +478,12 @@ var pad = {
         $("#specialkeyarea").html("mode: " + String(clientVars.specialKeyTranslation).toUpperCase());
       }
     }
-    paddocbar.init(
-    {
-      isTitleEditable: pad.getIsProPad(),
-      initialTitle: clientVars.initialTitle,
-      initialPassword: clientVars.initialPassword,
-      guestPolicy: pad.padOptions.guestPolicy
-    }, this);
     padimpexp.init(this);
     padsavedrevs.init(this);
 
     padeditor.init(postAceInit, pad.padOptions.view || {}, this);
 
     paduserlist.init(pad.myUserInfo, this);
-    //    padchat.init(clientVars.chatHistory, pad.myUserInfo);
     padconnectionstatus.init();
     padmodals.init(this);
 
@@ -540,7 +522,7 @@ var pad = {
         $('#options-stickychat').prop("checked", true); // set the checkbox to on
       }
       if(padcookie.getPref("showAuthorshipColors") == false){
-	pad.changeViewOption('showAuthorColors', false);
+        pad.changeViewOption('showAuthorColors', false);
       }
       hooks.aCallAll("postAceInit", {ace: padeditor.ace});
     }
@@ -553,31 +535,11 @@ var pad = {
   {
     pad.myUserInfo.name = newName;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
-    //padchat.handleUserJoinOrUpdate(pad.myUserInfo);
   },
   notifyChangeColor: function(newColorId)
   {
     pad.myUserInfo.colorId = newColorId;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
-    //padchat.handleUserJoinOrUpdate(pad.myUserInfo);
-  },
-  notifyChangeTitle: function(newTitle)
-  {
-    pad.collabClient.sendClientMessage(
-    {
-      type: 'padtitle',
-      title: newTitle,
-      changedBy: pad.myUserInfo.name || "unnamed"
-    });
-  },
-  notifyChangePassword: function(newPass)
-  {
-    pad.collabClient.sendClientMessage(
-    {
-      type: 'padpassword',
-      password: newPass,
-      changedBy: pad.myUserInfo.name || "unnamed"
-    });
   },
   changePadOption: function(key, value)
   {
@@ -619,7 +581,6 @@ var pad = {
     {
       // order important here
       pad.padOptions.guestPolicy = opts.guestPolicy;
-      paddocbar.setGuestPolicy(opts.guestPolicy);
     }
   },
   getPadOptions: function()
@@ -629,7 +590,7 @@ var pad = {
   },
   isPadPublic: function()
   {
-    return (!pad.getIsProPad()) || (pad.getPadOptions().guestPolicy == 'allow');
+    return pad.getPadOptions().guestPolicy == 'allow';
   },
   suggestUserName: function(userId, name)
   {
@@ -643,17 +604,14 @@ var pad = {
   handleUserJoin: function(userInfo)
   {
     paduserlist.userJoinOrUpdate(userInfo);
-    //padchat.handleUserJoinOrUpdate(userInfo);
   },
   handleUserUpdate: function(userInfo)
   {
     paduserlist.userJoinOrUpdate(userInfo);
-    //padchat.handleUserJoinOrUpdate(userInfo);
   },
   handleUserLeave: function(userInfo)
   {
     paduserlist.userLeave(userInfo);
-    //padchat.handleUserLeave(userInfo);
   },
   handleClientMessage: function(msg)
   {
@@ -664,18 +622,6 @@ var pad = {
         pad.notifyChangeName(msg.newName);
         paduserlist.setMyUserInfo(pad.myUserInfo);
       }
-    }
-    else if (msg.type == 'chat')
-    {
-      //padchat.receiveChat(msg);
-    }
-    else if (msg.type == 'padtitle')
-    {
-      paddocbar.changeTitle(msg.title);
-    }
-    else if (msg.type == 'padpassword')
-    {
-      paddocbar.changePassword(msg.password);
     }
     else if (msg.type == 'newRevisionList')
     {
@@ -769,7 +715,6 @@ var pad = {
       }
       padeditor.disable();
       padeditbar.disable();
-      paddocbar.disable();
       padimpexp.disable();
 
       padconnectionstatus.disconnected(message);
@@ -796,28 +741,10 @@ var pad = {
       }, 1000);
     }
 
-    // pad.determineSidebarVisibility(isConnected && !isInitialConnect);
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
 
   },
-/*  determineSidebarVisibility: function(asNowConnectedFeedback)
-  {
-    if (pad.isFullyConnected())
-    {
-      var setSidebarVisibility = padutils.getCancellableAction("set-sidebar-visibility", function()
-      {
-        // $("body").toggleClass('hidesidebar', !! padcookie.getPref('hideSidebar'));
-      });
-      window.setTimeout(setSidebarVisibility, asNowConnectedFeedback ? 3000 : 0);
-    }
-    else
-    {
-      padutils.cancelActions("set-sidebar-visibility");
-      $("body").removeClass('hidesidebar');
-    }
-  },
-*/
   determineChatVisibility: function(asNowConnectedFeedback){
     var chatVisCookie = padcookie.getPref('chatAlwaysVisible');
     if(chatVisCookie){ // if the cookie is set for chat always visible
@@ -878,37 +805,6 @@ var pad = {
     $('form#reconnectform input.diagnosticInfo').val(JSON.stringify(pad.diagnosticInfo));
     $('form#reconnectform input.missedChanges').val(JSON.stringify(pad.collabClient.getMissedChanges()));
     $('form#reconnectform').submit();
-  },
-  toggleWidthPref: function()
-  {
-    var newValue = !padcookie.getPref('fullWidth');
-    padcookie.setPref('fullWidth', newValue);
-    $("#widthprefcheck").toggleClass('widthprefchecked', !! newValue).toggleClass('widthprefunchecked', !newValue);
-    pad.handleWidthChange();
-  },
-/*
-  toggleSidebar: function()
-  {
-    var newValue = !padcookie.getPref('hideSidebar');
-    padcookie.setPref('hideSidebar', newValue);
-    $("#sidebarcheck").toggleClass('sidebarchecked', !newValue).toggleClass('sidebarunchecked', !! newValue);
-    pad.determineSidebarVisibility();
-  },
-*/
-  handleWidthChange: function()
-  {
-    var isFullWidth = padcookie.getPref('fullWidth');
-    if (isFullWidth)
-    {
-      $("body").addClass('fullwidth').removeClass('limwidth').removeClass('squish1width').removeClass('squish2width');
-    }
-    else
-    {
-      $("body").addClass('limwidth').removeClass('fullwidth');
-
-      var pageWidth = $(window).width();
-      $("body").toggleClass('squish1width', (pageWidth < 912 && pageWidth > 812)).toggleClass('squish2width', (pageWidth <= 812));
-    }
   },
   // this is called from code put into a frame from the server:
   handleImportExportFrameCall: function(callName, varargs)
