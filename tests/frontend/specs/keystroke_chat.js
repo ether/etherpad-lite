@@ -30,8 +30,9 @@ describe("send chat message", function(){
       var usernameValue = username.text();
       var time = $firstChatMessage.children(".time");
       var timeValue = time.text();
-      var expectedStringIncludingUserNameAndTime = usernameValue + timeValue + " " + "JohnMcLear";
-      expect(expectedStringIncludingUserNameAndTime).to.be($firstChatMessage.text());
+      var discoveredValue = $firstChatMessage.text();
+      var chatMsgExists = (discoveredValue.indexOf("JohnMcLear") !== -1);
+      expect(chatMsgExists).to.be(true);
       done();
     });
 
@@ -61,6 +62,7 @@ describe("send chat message", function(){
       expect(containsMessage).to.be(true);
       done();
     });
-
   });
+
 });
+
