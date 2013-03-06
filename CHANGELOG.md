@@ -1,3 +1,8 @@
+# 1.2.81
+ * Fix: CtrlZ-Y for Undo Redo
+ * Fix: RTL functionality on contents & fix RTL/LTR tests and RTL in Safari
+ * Fix: Various other tests fixed in Android
+
 # 1.2.8
  ! IMPORTANT: New setting.json value is required to automatically reconnect clients on disconnect
  * NEW: Use Socket IO for rooms (allows for pads to be load balanced with sticky rooms)
