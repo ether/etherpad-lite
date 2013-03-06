@@ -313,7 +313,7 @@ function handshake()
       
       if (settings.rtlIsTrue == true)
       {
-        pad.changeViewOption('rtl', true);
+        pad.changeViewOption('rtlIsTrue', true);
       }
 
       // If the Monospacefont value is set to true then change it to monospace.
