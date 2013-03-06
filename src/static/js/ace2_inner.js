@@ -963,6 +963,7 @@ function Ace2Inner(){
         setClassPresence(root, "rtl", value)
         setClassPresence(root, "ltr", !value)
         document.documentElement.dir = value? 'rtl' : 'ltr'
+        outerWin.document.documentElement.dir = value? 'rtl' : 'ltr'
       }
     };
     
