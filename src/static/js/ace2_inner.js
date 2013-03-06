@@ -959,7 +959,11 @@ function Ace2Inner(){
       styled: setStyled,
       textface: setTextFace,
       textsize: setTextSize,
-      rtlistrue: setClassPresenceNamed(root, "rtl")
+      rtlistrue: function(value) {
+        setClassPresence(root, "rtl", value)
+        setClassPresence(root, "ltr", !value)
+        document.documentElement.dir = value? 'rtl' : 'ltr'
+      }
     };
     
     var setter = setters[key.toLowerCase()];
