@@ -34,7 +34,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
         db.db.set(key, value, null);
         keyNo++;
         if (keyNo % 1000 == 0) {
-          process.stdout.write(" " + keyNo + "/" + count);
+          process.stdout.write(" " + keyNo + "/" + count + "\n");
         }
       }
     });
