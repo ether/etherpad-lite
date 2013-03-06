@@ -19,11 +19,12 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
     log("done");
 
     log("open output file...");
-    var file = fs.readFileSync(sqlFile, 'utf8');
+    var lines = fs.readFileSync(sqlFile, 'utf8').split("\n");;
 
+    var count = lines.length;
     var keyNo = 0;
 
-    file.split("\n").forEach(function(l) {
+    lines.forEach(function(l) {
       if (l.substr(0, 27) == "REPLACE INTO store VALUES (") {
         var pos = l.indexOf("', '");
         var key = l.substr(28, pos - 28);
@@ -31,8 +32,13 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
         value = value.substr(0, value.length - 3);
         db.db.set(key, value, null);
         keyNo++;
+        process.stdout.write(".");
+        if (keyNo % 100 == 0) {
+          console.log(" " + keyNo + "/" + count);
+        }
       }
     });
+    process.stdout.write("\n");
 
     db.db.doShutdown(function() {
       log("finished, imported " + keyNo + " keys.");
