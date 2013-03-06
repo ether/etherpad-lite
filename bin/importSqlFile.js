@@ -24,6 +24,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
     var count = lines.length;
     var keyNo = 0;
 
+    process.stdout.write("Start importing " + count + " keys...\n");
     lines.forEach(function(l) {
       if (l.substr(0, 27) == "REPLACE INTO store VALUES (") {
         var pos = l.indexOf("', '");
@@ -32,9 +33,8 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
         value = value.substr(0, value.length - 3);
         db.db.set(key, value, null);
         keyNo++;
-        process.stdout.write(".");
-        if (keyNo % 100 == 0) {
-          console.log(" " + keyNo + "/" + count);
+        if (keyNo % 1000 == 0) {
+          process.stdout.write(" " + keyNo + "/" + count);
         }
       }
     });
