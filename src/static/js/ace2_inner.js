@@ -959,7 +959,11 @@ function Ace2Inner(){
       styled: setStyled,
       textface: setTextFace,
       textsize: setTextSize,
-      rtlistrue: setClassPresenceNamed(root, "rtl")
+      rtlistrue: function(value) {
+        setClassPresence(root, "rtl", value)
+        setClassPresence(root, "ltr", !value)
+        document.documentElement.dir = value? 'rtl' : 'ltr'
+      }
     };
     
     var setter = setters[key.toLowerCase()];
@@ -3580,7 +3584,7 @@ function Ace2Inner(){
 
     var specialHandled = false;
     var isTypeForSpecialKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
-    var isTypeForCmdKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
+    var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
 
     var stopped = false;
 
