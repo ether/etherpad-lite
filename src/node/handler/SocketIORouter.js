@@ -92,10 +92,17 @@ exports.setSocketIO = function(_socket)
       
     client.on('message', function(message)
     {
+
       if(message.protocolVersion && message.protocolVersion != 2)
       {
         messageLogger.warn("Protocolversion header is not correct:" + stringifyWithoutPassword(message));
         return;
+      }
+
+      if (message.type == "candidate" || message.sdp){ // CRAZY SHIT DO NOT MERGE
+        console.warn((new Date()) + ' Received Message, broadcasting: ' + message);
+        client.broadcast.emit('message', message);
+        clientAuthorized = true; // This is bad and I feel bad, it's only temporary
       }
 
       //client is authorized, everything ok
@@ -119,6 +126,7 @@ exports.setSocketIO = function(_socket)
               clientAuthorized = true;
               handleMessage(message);
             }
+
             //no access, send the client a message that tell him why
             else
             {

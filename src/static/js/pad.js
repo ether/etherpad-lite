@@ -251,7 +251,8 @@ function handshake()
 
   socket.on('message', function(obj)
   {
-    //the access was not granted, give the user a message
+    // console.log("obj frmo server", obj);
+    // the access was not granted, give the user a message
     if(!receivedClientVars && obj.accessStatus)
     {
       $('.passForm').submit(require(module.id).savePassword);
