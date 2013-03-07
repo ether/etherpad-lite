@@ -1448,7 +1448,7 @@ exports.padUsersCount = function (padID, callback) {
 exports.padUsers = function (padID, callback) {
   var result = [];
 
-  async.forEach(socketio.sockets.clients(padId), function(roomClient, callback) {
+  async.forEach(socketio.sockets.clients(padID), function(roomClient, callback) {
     var s = sessioninfos[roomClient.id];
     if(s) {
       authorManager.getAuthor(s.author, function(err, author) {
