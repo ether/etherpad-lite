@@ -1,22 +1,7 @@
 <%
   var settings = require("ep_etherpad-lite/node/utils/Settings")
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
-    , toolbar = require("ep_etherpad-lite/node/utils/toolbar")
-    , leftToolbar
-    , rightToolbar;
-
-
-  if (settings.ep_toolbar && settings.ep_toolbar.left) {
-      leftToolbar = settings.ep_toolbar.left;
-  }
-  else {
-      leftToolbar = [
-          ["bold", "italic", "underline", "strikethrough"],
-          ["orderedlist", "unorderedlist", "indent", "outdent"],
-          ["undo", "redo"],
-          ["clearauthorship"]
-      ];
-  }
+    , toolbar = require("ep_etherpad-lite/node/utils/toolbar");
 %>
 <!doctype html>
 <% e.begin_block("htmlHead"); %>
@@ -73,44 +58,12 @@
 
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
-                <%- toolbar.menu(leftToolbar) %>
+                <%- toolbar.menu(settings.toolbar.left) %>
                 <% e.end_block(); %>
             </ul>
             <ul class="menu_right">
                 <% e.begin_block("editbarMenuRight"); %>
-                <li data-key="import_export">
-                    <a class="grouped-left" id="importexportlink" data-l10n-id="pad.toolbar.import_export.title">
-                        <span class="buttonicon buttonicon-import_export"></span>
-                    </a>
-                </li>
-                <li onClick="document.location = document.location.pathname+ '/timeslider'">
-                    <a id="timesliderlink" class="grouped-middle" data-l10n-id="pad.toolbar.timeslider.title">
-                        <span class="buttonicon buttonicon-history"></span>
-                    </a>
-                </li>
-                <li class="acl-write" data-key="savedRevision">
-                    <a class="grouped-right" id="revisionlink" data-l10n-id="pad.toolbar.savedRevision.title">
-                        <span class="buttonicon buttonicon-savedRevision"></span>
-                    </a>
-                </li>
-                <li class="acl-write separator"></li>
-                <li class="acl-write" data-key="settings">
-                    <a class="grouped-left" id="settingslink" data-l10n-id="pad.toolbar.settings.title">
-                        <span class="buttonicon buttonicon-settings"></span>
-                    </a>
-                </li>
-                <li data-key="embed">
-                    <a class="grouped-right" id="embedlink" data-l10n-id="pad.toolbar.embed.title">
-                        <span class="grouped-right buttonicon buttonicon-embed"></span>
-                    </a>
-                </li>
-                <li class="separator"></li>
-                <li id="usericon" data-key="showusers">
-                    <a data-l10n-id="pad.toolbar.showusers.title">
-                        <span class="buttonicon buttonicon-showusers"></span>
-                        <span id="online_count">1</span>
-                    </a>
-                </li>
+                <%- toolbar.menu(settings.toolbar.right) %>
                 <% e.end_block(); %>
             </ul>
         </div>

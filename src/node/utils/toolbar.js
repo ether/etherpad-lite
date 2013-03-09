@@ -3,24 +3,45 @@
  */
 
 var _ = require("underscore")
+  , tagAttributes
+  , tag
   , defaultButtons
   , Button
   , ButtonsGroup
   , Separator
-  , defaultButtonAttributes
-  , buttonTemplate;
-
-buttonTemplate = _.template(
-  '<li class="acl-write" id="<%= attributes.id %>" data-key="<%= attributes.key %>"><a class="<%= grouping %>" data-l10n-id="<%= attributes.localizationId %>"><span class="buttonicon <%= attributes.icon %>"></span></a></li>'
-);
+  , defaultButtonAttributes;
 
 defaultButtonAttributes = function (name, overrides) {
   return {
-    id: name,
     key: name,
     localizationId: "pad.toolbar." + name + ".title",
     icon: "buttonicon-" + name
   };
+};
+
+tag = function (name, attributes, contents) {
+  var aStr = tagAttributes(attributes);
+
+  if (contents) {
+    return '<' + name + aStr + '>' + contents + '</' + name + '>';
+  }
+  else {
+    return '<' + name + aStr + '/>';
+  }
+};
+
+tagAttributes = function (attributes) {
+  attributes = attributes || {};
+  attributes = _.reduce(attributes, function (o, val, name) {
+    if (!_.isUndefined(val)) {
+      o[name] = val;
+    }
+    return o;
+  }, {});
+
+  return " " + _.map(attributes, function (val, name) {
+    return "" + name + '="' + _.escape(val) + '"';
+  }, " ");
 };
 
 defaultButtons = {
@@ -30,14 +51,12 @@ defaultButtons = {
   strikethrough: defaultButtonAttributes("strikethrough"),
 
   orderedlist: {
-    id: "orderedlist",
     key: "insertorderedlist",
     localizationId: "pad.toolbar.ol.title",
     icon: "buttonicon-insertorderedlist"
   },
 
   unorderedlist: {
-    id: "unorderedlist",
     key: "insertunorderedlist",
     localizationId: "pad.toolbar.ul.title",
     icon: "buttonicon-insertunorderedlist"
@@ -45,7 +64,6 @@ defaultButtons = {
 
   indent: defaultButtonAttributes("indent"),
   outdent: {
-    id: "outdent",
     key: "outdent",
     localizationId: "pad.toolbar.unindent.title",
     icon: "buttonicon-outdent"
@@ -55,12 +73,27 @@ defaultButtons = {
   redo: defaultButtonAttributes("redo"),
 
   clearauthorship: {
-    id: "clearAuthorship",
     key: "clearauthorship",
     localizationId: "pad.toolbar.clearAuthorship.title",
     icon: "buttonicon-clearauthorship"
-  }
+  },
 
+  importexport: {
+    key: "import_export",
+    localizationId: "pad.toolbar.import_export.title",
+    icon: "buttonicon-import_export"
+  },
+
+  timeslider: {
+    onclick: "document.location = document.location.pathname + '/timeslider'",
+    localizationId: "pad.toolbar.timeslider.title",
+    icon: "buttonicon-history"
+  },
+
+  savedrevision: defaultButtonAttributes("savedRevision"),
+  settings: defaultButtonAttributes("settings"),
+  embed: defaultButtonAttributes("embed"),
+  showusers: defaultButtonAttributes("showusers")
 };
 
 ButtonsGroup = function () {
@@ -100,23 +133,39 @@ ButtonsGroup.prototype.render = function () {
 
 Button = function (attributes) {
   this.attributes = attributes;
+
+
 };
 
-Button.prototype.grouping = "";
-Button.prototype.render = function () {
-  return buttonTemplate(this);
-};
+_.extend(Button.prototype, {
+  grouping: "",
+
+  render: function () {
+    var liAttributes = {
+      "data-key": this.attributes.key,
+      "onclick": this.attributes.onclick
+    };
+    return tag("li", liAttributes,
+      tag("a", { "class": this.grouping, "data-l10n-id": this.attributes.localizationId },
+        tag("span", { "class": "buttonicon " + this.attributes.icon })
+      )
+    );
+  }
+});
 
 Separator = function () {};
 Separator.prototype.render = function () {
-  return '<li class="acl-write separator"></li>';
+  return tag("li", { "class": "separator"});
 };
 
 module.exports = {
+  separator: function () {
+    return (new Separator).render();
+  },
   menu: function (buttons) {
     var groups = _.map(buttons, function (group) {
       return ButtonsGroup.fromArray(group).render();
     });
-    return groups.join(new Separator().render());
+    return groups.join(this.separator());
   }
 };
