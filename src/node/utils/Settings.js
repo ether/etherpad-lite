@@ -1,5 +1,5 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides 
+ * The Settings Modul reads the settings out of settings.json and provides
  * this information to the other modules
  */
 
@@ -48,7 +48,7 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  * The IP ep-lite should listen to
  */
 exports.ip = "0.0.0.0";
-  
+
 /**
  * The Port ep-lite should listen to
  */
@@ -78,6 +78,23 @@ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
  * The default Text of a new pad
  */
 exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
+
+/**
+ * The toolbar buttons and order.
+ */
+exports.toolbar = {
+  left: [
+    ["bold", "italic", "underline", "strikethrough"],
+    ["orderedlist", "unorderedlist", "indent", "outdent"],
+    ["undo", "redo"],
+    ["clearauthorship"]
+  ],
+  right: [
+    ["importexport", "timeslider", "savedrevision"],
+    ["settings", "embed"],
+    ["showusers"]
+  ]
+}
 
 /**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
@@ -185,7 +202,7 @@ exports.reloadSettings = function reloadSettings() {
       console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
     }
   }
-  
+
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   log4js.replaceConsole();
