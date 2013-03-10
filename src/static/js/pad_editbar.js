@@ -24,15 +24,6 @@ var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
 var padsavedrevs = require('./pad_savedrevs');
 
-function indexOf(array, value) {
-  for (var i = 0, ii = array.length; i < ii; i++) {
-    if (array[i] == value) {
-      return i;
-    }
-  }
-  return -1;
-}
-
 var padeditbar = (function()
 {
 
@@ -95,8 +86,7 @@ var padeditbar = (function()
   }());
 
   var self = {
-    init: function()
-    {
+    init: function() {
       var self = this;
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
@@ -116,72 +106,30 @@ var padeditbar = (function()
     {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
     },
+    commands: {},
+    registerCommand: function (cmd, callback) {
+      this.commands[cmd] = callback;
+      return this;
+    },
+    registerDropdownCommand: function (cmd, dropdown) {
+      dropdown = dropdown || cmd;
+      this.registerCommand(cmd, function () {
+        self.toggleDropDown(dropdown);
+      });
+    },
+    registerAceCommand: function (cmd, callback) {
+      this.registerCommand(cmd, function (cmd, ace) {
+        ace.callWithAce(function (ace) {
+          callback(cmd, ace);
+        }, cmd, true);
+      });
+    },
     toolbarClick: function(cmd)
     {
       if (self.isEnabled())
       {
-        if(cmd == "showusers")
-        {
-          self.toggleDropDown("users");
-        }
-        else if (cmd == 'settings')
-        {
-              self.toggleDropDown("settings");
-        }
-        else if (cmd == 'connectivity')
-        {
-              self.toggleDropDown("connectivity");
-        }
-        else if (cmd == 'embed')
-        {
-          self.setEmbedLinks();
-          $('#linkinput').focus().select();
-          self.toggleDropDown("embed");
-        }
-        else if (cmd == 'import_export')
-        {
-	      self.toggleDropDown("importexport");
-        }
-        else if (cmd == 'savedRevision')
-        {
-          padsavedrevs.saveNow();
-        }
-        else
-        {
-          padeditor.ace.callWithAce(function(ace)
-          {
-            if (cmd == 'bold' || cmd == 'italic' || cmd == 'underline' || cmd == 'strikethrough') ace.ace_toggleAttributeOnSelection(cmd);
-            else if (cmd == 'undo' || cmd == 'redo') ace.ace_doUndoRedo(cmd);
-            else if (cmd == 'insertunorderedlist') ace.ace_doInsertUnorderedList();
-            else if (cmd == 'insertorderedlist') ace.ace_doInsertOrderedList();
-            else if (cmd == 'indent')
-            {
-              if (!ace.ace_doIndentOutdent(false))
-              {
-                ace.ace_doInsertUnorderedList();
-              }
-            }
-            else if (cmd == 'outdent')
-            {
-              ace.ace_doIndentOutdent(true);
-            }
-            else if (cmd == 'clearauthorship')
-            {
-              if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret())
-              {
-                if (window.confirm(html10n.get("pad.editbar.clearcolors")))
-                {
-                  ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
-                    ['author', '']
-                  ]);
-                }
-              }
-              else
-              {
-                ace.ace_setAttributeOnSelection('author', '');
-              }
-            }
-          }, cmd, true);
+        if (this.commands[cmd]) {
+          this.commands[cmd](cmd, padeditor.ace);
         }
       }
       if(padeditor.ace) padeditor.ace.focus();
@@ -260,6 +208,74 @@ var padeditbar = (function()
       }
     }
   };
+
+  self.registerDropdownCommand("showusers", "users");
+  self.registerDropdownCommand("settings");
+  self.registerDropdownCommand("connectivity");
+  self.registerDropdownCommand("import_export", "importexport");
+
+  self.registerCommand("embed", function () {
+    self.setEmbedLinks();
+    $('#linkinput').focus().select();
+    self.toggleDropDown("embed");
+  });
+
+  self.registerCommand("savedRevision", function () {
+    padsavedrevs.saveNow();
+  });
+
+  self.registerCommand("showTimeSlider", function () {
+    document.location = document.location + "/timeslider";
+  });
+
+  function aceAttributeCommand (cmd, ace) {
+    ace.ace_toggleAttributeOnSelection(cmd);
+  }
+
+  self.registerAceCommand("bold", aceAttributeCommand);
+  self.registerAceCommand("italic", aceAttributeCommand);
+  self.registerAceCommand("underline", aceAttributeCommand);
+  self.registerAceCommand("strikethrough", aceAttributeCommand);
+
+  self.registerAceCommand("undo", function (cmd, ace) {
+    ace.ace_doUndoRedo(cmd);
+  });
+
+  self.registerAceCommand("redo", function (cmd) {
+    ace.ace_doUndoRedo(cmd);
+  });
+
+  self.registerAceCommand("insertunorderedlist", function (cmd, ace) {
+    ace.ace_doInsertUnorderedList();
+  });
+
+  self.registerAceCommand("insertorderedlist", function (cmd, ace) {
+    ace.ace_doInsertOrderedList();
+  });
+
+  self.registerAceCommand("indent", function (cmd, ace) {
+    if (!ace.ace_doIndentOutdent(false)) {
+      ace.ace_doInsertUnorderedList();
+    }
+  });
+
+  self.registerAceCommand("outdent", function (cmd, ace) {
+    ace.ace_doIndentOutdent(true);
+  });
+
+  self.registerAceCommand("clearauthorship", function (cmd, ace) {
+    if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret()) {
+      if (window.confirm(html10n.get("pad.editbar.clearcolors"))) {
+        ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
+          ['author', '']
+        ]);
+      }
+    }
+    else {
+      ace.ace_setAttributeOnSelection('author', '');
+    }
+  });
+
   return self;
 }());
 

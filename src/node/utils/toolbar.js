@@ -22,17 +22,16 @@ defaultButtonAttributes = function (name, overrides) {
 tag = function (name, attributes, contents) {
   var aStr = tagAttributes(attributes);
 
-  if (contents) {
+  if (_.isString(contents) && contents.length > 0) {
     return '<' + name + aStr + '>' + contents + '</' + name + '>';
   }
   else {
-    return '<' + name + aStr + '/>';
+    return '<' + name + aStr + '></' + name + '>';
   }
 };
 
 tagAttributes = function (attributes) {
-  attributes = attributes || {};
-  attributes = _.reduce(attributes, function (o, val, name) {
+  attributes = _.reduce(attributes || {}, function (o, val, name) {
     if (!_.isUndefined(val)) {
       o[name] = val;
     }
@@ -41,7 +40,7 @@ tagAttributes = function (attributes) {
 
   return " " + _.map(attributes, function (val, name) {
     return "" + name + '="' + _.escape(val) + '"';
-  }, " ");
+  }).join(" ");
 };
 
 defaultButtons = {
@@ -85,7 +84,7 @@ defaultButtons = {
   },
 
   timeslider: {
-    onclick: "document.location = document.location.pathname + '/timeslider'",
+    key: "showTimeSlider",
     localizationId: "pad.toolbar.timeslider.title",
     icon: "buttonicon-history"
   },
@@ -101,10 +100,9 @@ ButtonsGroup = function () {
 };
 
 ButtonsGroup.fromArray = function (array) {
-  var btnGroup = new ButtonsGroup();
+  var btnGroup = new this;
   _.each(array, function (btnName) {
-    var b = new Button(defaultButtons[btnName]);
-    btnGroup.addButton(b);
+    btnGroup.addButton(Button.load(btnName));
   });
   return btnGroup;
 };
@@ -133,19 +131,24 @@ ButtonsGroup.prototype.render = function () {
 
 Button = function (attributes) {
   this.attributes = attributes;
+};
 
-
+Button.load = function (btnName) {
+  return new Button(defaultButtons[btnName]);
 };
 
 _.extend(Button.prototype, {
   grouping: "",
 
-  render: function () {
-    var liAttributes = {
+  li: function (attributes, contents) {
+    attributes = _.extend({
       "data-key": this.attributes.key,
-      "onclick": this.attributes.onclick
-    };
-    return tag("li", liAttributes,
+    }, attributes);
+    return tag("li", attributes, contents);
+  },
+
+  render: function () {
+    return this.li({},
       tag("a", { "class": this.grouping, "data-l10n-id": this.attributes.localizationId },
         tag("span", { "class": "buttonicon " + this.attributes.icon })
       )
@@ -153,14 +156,53 @@ _.extend(Button.prototype, {
   }
 });
 
+SelectButton = function (attributes) {
+  this.attributes = attributes;
+  this.options = [];
+};
+
+_.extend(SelectButton.prototype, Button.prototype, {
+  addOption: function (value, text, attributes) {
+    this.options.push({
+      value: value,
+      text: text,
+      attributes: attributes
+    });
+    return this;
+  },
+
+  select: function (attributes) {
+    var self = this
+      , options = [];
+
+    _.each(this.options, function (opt) {
+      var a = _.extend({
+        value: opt.value
+      }, opt.attributes);
+
+      options.push( tag("option", a, opt.text) );
+    });
+    return tag("select", attributes, options.join(""));
+  },
+  render: function () {
+    return this.li({ id: this.attributes.id },
+      this.select({ id: this.attributes.selectId })
+    );
+  }
+});
+
 Separator = function () {};
 Separator.prototype.render = function () {
-  return tag("li", { "class": "separator"});
+  return tag("li", { "class": "separator" });
 };
 
 module.exports = {
+  availableButtons: {},
   separator: function () {
     return (new Separator).render();
+  },
+  selectButton: function (attributes) {
+    return new SelectButton(attributes);
   },
   menu: function (buttons) {
     var groups = _.map(buttons, function (group) {
