@@ -255,6 +255,23 @@ function handleSaveRevisionMessage(client, message){
 }
 
 /**
+ * Handles a custom message, different to the function below as it handles objects not strings and you can direct the message to specific sessionID
+ *
+ * @param msg {Object} the message we're sending
+ * @param sessionID {string} the socketIO session to which we're sending this message
+ */
+exports.handleCustomObjectMessage = function (msg, sessionID, cb) {
+  if(sessionID){ // If a sessionID is targeted then send directly to this sessionID
+    io.sockets.socket(sessionID).emit(msg); // send a targeted message
+  }else{
+    socketio.sockets.in(msg.data.padId).json.send(msg); // broadcast to all clients on this pad
+  }
+
+  cb(null, {});
+}
+
+
+/**
  * Handles a custom message (sent via HTTP API request)
  *
  * @param padID {Pad} the pad to which we're sending this message
