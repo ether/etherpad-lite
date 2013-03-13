@@ -43,58 +43,6 @@ tagAttributes = function (attributes) {
   }).join(" ");
 };
 
-defaultButtons = {
-  bold: defaultButtonAttributes("bold"),
-  italic: defaultButtonAttributes("italic"),
-  underline: defaultButtonAttributes("underline"),
-  strikethrough: defaultButtonAttributes("strikethrough"),
-
-  orderedlist: {
-    key: "insertorderedlist",
-    localizationId: "pad.toolbar.ol.title",
-    icon: "buttonicon-insertorderedlist"
-  },
-
-  unorderedlist: {
-    key: "insertunorderedlist",
-    localizationId: "pad.toolbar.ul.title",
-    icon: "buttonicon-insertunorderedlist"
-  },
-
-  indent: defaultButtonAttributes("indent"),
-  outdent: {
-    key: "outdent",
-    localizationId: "pad.toolbar.unindent.title",
-    icon: "buttonicon-outdent"
-  },
-
-  undo: defaultButtonAttributes("undo"),
-  redo: defaultButtonAttributes("redo"),
-
-  clearauthorship: {
-    key: "clearauthorship",
-    localizationId: "pad.toolbar.clearAuthorship.title",
-    icon: "buttonicon-clearauthorship"
-  },
-
-  importexport: {
-    key: "import_export",
-    localizationId: "pad.toolbar.import_export.title",
-    icon: "buttonicon-import_export"
-  },
-
-  timeslider: {
-    key: "showTimeSlider",
-    localizationId: "pad.toolbar.timeslider.title",
-    icon: "buttonicon-history"
-  },
-
-  savedrevision: defaultButtonAttributes("savedRevision"),
-  settings: defaultButtonAttributes("settings"),
-  embed: defaultButtonAttributes("embed"),
-  showusers: defaultButtonAttributes("showusers")
-};
-
 ButtonsGroup = function () {
   this.buttons = [];
 };
@@ -134,7 +82,13 @@ Button = function (attributes) {
 };
 
 Button.load = function (btnName) {
-  return new Button(defaultButtons[btnName]);
+  var button = module.exports.availableButtons[btnName];
+  if (button.constructor === Button || button.constructor === SelectButton) {
+    return button;
+  }
+  else {
+    return new Button(button);
+  }
 };
 
 _.extend(Button.prototype, {
@@ -197,7 +151,65 @@ Separator.prototype.render = function () {
 };
 
 module.exports = {
-  availableButtons: {},
+  availableButtons: {
+    bold: defaultButtonAttributes("bold"),
+    italic: defaultButtonAttributes("italic"),
+    underline: defaultButtonAttributes("underline"),
+    strikethrough: defaultButtonAttributes("strikethrough"),
+
+    orderedlist: {
+      key: "insertorderedlist",
+      localizationId: "pad.toolbar.ol.title",
+      icon: "buttonicon-insertorderedlist"
+    },
+
+    unorderedlist: {
+      key: "insertunorderedlist",
+      localizationId: "pad.toolbar.ul.title",
+      icon: "buttonicon-insertunorderedlist"
+    },
+
+    indent: defaultButtonAttributes("indent"),
+    outdent: {
+      key: "outdent",
+      localizationId: "pad.toolbar.unindent.title",
+      icon: "buttonicon-outdent"
+    },
+
+    undo: defaultButtonAttributes("undo"),
+    redo: defaultButtonAttributes("redo"),
+
+    clearauthorship: {
+      key: "clearauthorship",
+      localizationId: "pad.toolbar.clearAuthorship.title",
+      icon: "buttonicon-clearauthorship"
+    },
+
+    importexport: {
+      key: "import_export",
+      localizationId: "pad.toolbar.import_export.title",
+      icon: "buttonicon-import_export"
+    },
+
+    timeslider: {
+      key: "showTimeSlider",
+      localizationId: "pad.toolbar.timeslider.title",
+      icon: "buttonicon-history"
+    },
+
+    savedrevision: defaultButtonAttributes("savedRevision"),
+    settings: defaultButtonAttributes("settings"),
+    embed: defaultButtonAttributes("embed"),
+    showusers: defaultButtonAttributes("showusers")
+  },
+
+  registerButton: function (buttonName, buttonInfo) {
+    this.availableButtons[buttonName] = buttonInfo;
+  },
+
+  button: function (attributes) {
+    return new Button(attributes);
+  },
   separator: function () {
     return (new Separator).render();
   },

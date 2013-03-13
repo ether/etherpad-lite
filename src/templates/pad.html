@@ -1,7 +1,12 @@
 <%
   var settings = require("ep_etherpad-lite/node/utils/Settings")
+    , hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks')
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
     , toolbar = require("ep_etherpad-lite/node/utils/toolbar");
+
+  hooks.callAll("padInitToolbar", {
+    toolbar: toolbar
+  });
 %>
 <!doctype html>
 <% e.begin_block("htmlHead"); %>
