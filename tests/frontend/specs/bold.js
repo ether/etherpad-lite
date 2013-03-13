@@ -46,7 +46,7 @@ describe("bold button", function(){
 
     var e = inner$.Event("keydown");
     e.ctrlKey = true; // Control key
-    e.which = 66; // z
+    e.which = 66; // b
     inner$("#innerdocbody").trigger(e);
 
     //ace creates a new dom element when you press a button, so just get the first text element again
@@ -63,7 +63,4 @@ describe("bold button", function(){
 
     done();
   });
-
-
-
 });
