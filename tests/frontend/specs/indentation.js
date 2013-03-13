@@ -5,7 +5,26 @@ describe("indentation button", function(){
     this.timeout(60000);
   });
 
-  it("indent text", function(done){
+ it("indent text with keypress", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //get the first text element out of the inner iframe
+    var $firstTextElement = inner$("div").first();
+
+    //select this text element
+    $firstTextElement.sendkeys('{selectall}');
+
+    var e = inner$.Event("keydown");
+    e.keyCode = 9; // tab :|
+    inner$("#innerdocbody").trigger(e);
+
+    helper.waitFor(function(){
+      return inner$("div").first().find("ul li").length === 1;
+    }).done(done);
+  });
+
+  it("indent text with button", function(done){
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$;
 
@@ -176,4 +195,5 @@ describe("indentation button", function(){
       expect(isLI).to.be(true);
     },1000);
   });*/
+
 });
