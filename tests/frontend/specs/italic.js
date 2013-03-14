@@ -44,7 +44,13 @@ describe("italic some text", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    var e = inner$.Event("keydown");
+    if(inner$.browser.mozilla){ // if it's a mozilla browser
+      var evtType = "keypress";
+    }else{
+      var evtType = "keydown";
+    }
+
+    var e = inner$.Event(evtType);
     e.ctrlKey = true; // Control key
     e.which = 105; // i
     inner$("#innerdocbody").trigger(e);
