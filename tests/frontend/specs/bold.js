@@ -44,7 +44,7 @@ describe("bold button", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    var e = inner$.Event("keydown");
+    var e = inner$.Event("keypress");
     e.ctrlKey = true; // Control key
     e.which = 66; // b
     inner$("#innerdocbody").trigger(e);

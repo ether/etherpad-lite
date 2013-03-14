@@ -15,7 +15,7 @@ describe("indentation button", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    var e = inner$.Event("keydown");
+    var e = inner$.Event("keypress");
     e.keyCode = 9; // tab :|
     inner$("#innerdocbody").trigger(e);
 
