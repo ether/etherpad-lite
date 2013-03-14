@@ -45,9 +45,9 @@ describe("undo button", function(){
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
     if(!inner$.browser.firefox){
-      var evtType = "keydown";
-    }else{
       var evtType = "keypress";
+    }else{
+      var evtType = "keydown";
     }
 
     var e = inner$.Event(evtType);

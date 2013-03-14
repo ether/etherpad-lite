@@ -44,10 +44,10 @@ describe("italic some text", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(!inner$.browser.firefox){
-      var evtType = "keydown";
-    }else{
+    if(inner$.browser.mozilla){ // if it's a mozilla browser
       var evtType = "keypress";
+    }else{
+      var evtType = "keydown";
     }
 
     var e = inner$.Event(evtType);
