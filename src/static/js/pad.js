@@ -655,8 +655,8 @@ var pad = {
       {
         alertBar.displayMessage(function(abar)
         {
-          abar.find("#servermsgdate").html(" (" + padutils.simpleDateTime(new Date) + ")");
-          abar.find("#servermsgtext").html(m.text);
+          abar.find("#servermsgdate").text(" (" + padutils.simpleDateTime(new Date) + ")");
+          abar.find("#servermsgtext").text(m.text);
         });
       }
       if (m.js)
