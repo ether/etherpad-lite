@@ -470,14 +470,6 @@ var pad = {
       userAgent: pad.getDisplayUserAgent()
     };
 
-    if (clientVars.specialKey)
-    {
-      pad.myUserInfo.specialKey = clientVars.specialKey;
-      if (clientVars.specialKeyTranslation)
-      {
-        $("#specialkeyarea").html("mode: " + String(clientVars.specialKeyTranslation).toUpperCase());
-      }
-    }
     padimpexp.init(this);
     padsavedrevs.init(this);
 
