@@ -13,7 +13,6 @@ describe("Language select and change", function(){
   });
  
   // Destroy language cookies
-
   it("makes text german", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
@@ -92,7 +91,7 @@ describe("Language select and change", function(){
     var $languageoption = $language.find("[value=ar]");
  
     //select arabic
-    $languageoption.attr('selected','selected');
+    // $languageoption.attr('selected','selected'); // Breaks the test..
     $language.val("ar");
     $languageoption.change();
 

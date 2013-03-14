@@ -119,9 +119,9 @@ var paduserlist = (function()
       return ['<td style="height:', height, 'px" class="usertdswatch"><div class="swatch" style="background:' + data.color + '">&nbsp;</div></td>', '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
     }
 
-    function getRowHtml(id, innerHtml)
+    function getRowHtml(id, innerHtml, authorId)
     {
-      return '<tr id="' + id + '">' + innerHtml + '</tr>';
+      return '<tr data-authorId="'+authorId+'" id="' + id + '">' + innerHtml + '</tr>';
     }
 
     function rowNode(row)
@@ -191,18 +191,20 @@ var paduserlist = (function()
         domId: domId,
         animationPower: animationPower
       };
+      var authorId = data.id;
+
       handleRowData(row);
       rowsPresent.splice(position, 0, row);
       var tr;
       if (animationPower == 0)
       {
-        tr = $(getRowHtml(domId, getUserRowHtml(getAnimationHeight(0), data)));
+        tr = $(getRowHtml(domId, getUserRowHtml(getAnimationHeight(0), data), authorId));
         row.animationStep = 0;
       }
       else
       {
         rowsFadingIn.push(row);
-        tr = $(getRowHtml(domId, getEmptyRowHtml(getAnimationHeight(ANIMATION_START))));
+        tr = $(getRowHtml(domId, getEmptyRowHtml(getAnimationHeight(ANIMATION_START)), authorId));
       }
       handleRowNode(tr, data);
       if (position == 0)

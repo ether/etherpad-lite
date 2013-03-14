@@ -567,11 +567,16 @@ function handleUserChanges(client, message)
             throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
           }
         });
+
+        // Validate all 'author' attribs to be the same value as the current user
+        wireApool.eachAttrib(function(type, value) {
+          if('author' == type && value != thisSession.author) throw "Trying to submit changes as another author"
+        })
       }
       catch(e)
       {
         // There is an error in this changeset, so just refuse it
-        console.warn("Can't apply USER_CHANGES "+changeset+", because it failed checkRep");
+        console.warn("Can't apply USER_CHANGES "+changeset+", because: "+e);
         client.json.send({disconnect:"badChangeset"});
         return;
       }
