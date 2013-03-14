@@ -27,7 +27,7 @@ exports.createServer = function () {
   }
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
-  serverName = "Etherpad-Lite " + version + " (http://etherpad.org)";
+  serverName = "Etherpad " + version + " (http://etherpad.org)";
 
   exports.restartServer();
 
@@ -71,6 +71,11 @@ exports.restartServer = function () {
   }
 
   app.use(function (req, res, next) {
+    res.header("X-Frame-Options", "deny");
+    if(settings.ssl){ // if we use SSL
+      res.header("X-Frame-Options", "max-age=31536000; includeSubDomains");
+    }
+
     res.header("Server", serverName);
     next();
   });
