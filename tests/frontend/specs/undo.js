@@ -44,10 +44,10 @@ describe("undo button", function(){
     var modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    if(!inner$.browser.chrome){        
-      var evtType = "keypress";
-    }else{
+    if(!inner$.browser.firefox){
       var evtType = "keydown";
+    }else{
+      var evtType = "keypress";
     }
 
     var e = inner$.Event(evtType);

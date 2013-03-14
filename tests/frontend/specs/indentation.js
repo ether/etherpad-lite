@@ -15,10 +15,10 @@ describe("indentation button", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(!inner$.browser.chrome){        
-      var evtType = "keypress";
-    }else{
+    if(!inner$.browser.firefox){
       var evtType = "keydown";
+    }else{
+      var evtType = "keypress";
     }
 
     var e = inner$.Event(evtType);
