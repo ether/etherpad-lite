@@ -58,7 +58,7 @@ describe("undo button then redo button", function(){
     e.which = 90; // z
     inner$("#innerdocbody").trigger(e);
 
-    var e = inner$.Event("keydown");
+    var e = inner$.Event(evtType);
     e.ctrlKey = true; // Control key
     e.which = 121; // y
     inner$("#innerdocbody").trigger(e);
