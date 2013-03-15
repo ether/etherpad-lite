@@ -550,11 +550,25 @@ function handleUserChanges(client, message)
             throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
           }
         });
+
+        // Validate all added 'author' attribs to be the same value as the current user
+        var iterator = Changeset.opIterator(Changeset.unpack(changeset).ops)
+          , op
+        while(iterator.hasNext()) {
+          op = iterator.next()
+          if(op.opcode != '+') continue;
+          op.attribs.split('*').forEach(function(attr) {
+            if(!attr) return
+            attr = wireApool.getAttrib(attr)
+            if(!attr) return
+            if('author' == attr[0] && attr[1] != thisSession.author) throw "Trying to submit changes as another author"
+          })
+        }
       }
       catch(e)
       {
         // There is an error in this changeset, so just refuse it
-        console.warn("Can't apply USER_CHANGES "+changeset+", because it failed checkRep");
+        console.warn("Can't apply USER_CHANGES "+changeset+", because: "+e);
         client.json.send({disconnect:"badChangeset"});
         return;
       }
@@ -1448,7 +1462,7 @@ exports.padUsersCount = function (padID, callback) {
 exports.padUsers = function (padID, callback) {
   var result = [];
 
-  async.forEach(socketio.sockets.clients(padId), function(roomClient, callback) {
+  async.forEach(socketio.sockets.clients(padID), function(roomClient, callback) {
     var s = sessioninfos[roomClient.id];
     if(s) {
       authorManager.getAuthor(s.author, function(err, author) {

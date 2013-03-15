@@ -5,7 +5,7 @@ describe("enter keystroke", function(){
     this.timeout(60000);
   });
 
-  it("creates a enw line & puts cursor onto a new line", function(done) {
+  it("creates a new line & puts cursor onto a new line", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     

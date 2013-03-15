@@ -3583,7 +3583,7 @@ function Ace2Inner(){
     }
 
     var specialHandled = false;
-    var isTypeForSpecialKey = ((browser.msie || browser.safari) ? (type == "keydown") : (type == "keypress"));
+    var isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
     var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
 
     var stopped = false;
@@ -5125,7 +5125,7 @@ function Ace2Inner(){
   function initLineNumbers()
   {
     lineNumbersShown = 1;
-    sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right">' + '<tr><td id="sidedivinner"><div>1</div></td></tr></table>';
+    sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner"><div>1</div></td></tr></table>';
     sideDivInner = outerWin.document.getElementById("sidedivinner");
   }
 
