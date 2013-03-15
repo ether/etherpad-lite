@@ -1,3 +1,15 @@
+# 1.2.9
+ * Fix: MAJOR Security issue, where a hacker could submit content as another user
+ * Fix: security issue due to unescaped user input
+ * Fix: Admin page at /admin redirects to /admin/ now to prevent breaking relative links
+ * Fix: indentation in chrome on linux
+ * Fix: PadUsers API endpoint
+ * NEW: A script to import data to all dbms
+ * NEW: Add authorId to chat and userlist as a data attribute
+ * NEW Refactor and fix our frontend tests
+ * NEW: Localisation updates
+ 
+
 # 1.2.81
  * Fix: CtrlZ-Y for Undo Redo
  * Fix: RTL functionality on contents & fix RTL/LTR tests and RTL in Safari
