@@ -76,7 +76,6 @@ var padconnectionstatus = (function()
     },
     isFullyConnected: function()
     {
-      padmodals.hideOverlay();
       return status.what == 'connected';
     },
     getStatus: function()
