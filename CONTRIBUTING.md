@@ -11,8 +11,8 @@ To make sure everybody is going in the same direction:
 * easy to install for admins and easy to use for people
 * easy to integrate into other apps, but also usable as standalone
 * using less resources on server side
-* extensible, as much functionality should be extendable with plugins so changes don't have to be done in core
-Also, keep it maintainable. We don't wanna end ob as the monster Etherpad was!
+* extensible, as much functionality should be extendable with plugins so changes don't have to be done in core.
+Also, keep it maintainable. We don't wanna end up as the monster Etherpad was!
 
 ## How to work with git?
 * Don't work in your master branch.
