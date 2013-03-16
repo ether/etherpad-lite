@@ -49,7 +49,7 @@ var padmodals = (function()
       }, duration);
     },
     hideOverlay: function(duration) {
-      $("#overlay").animate(
+      $("#overlay").hide().css(
       {
         'opacity': 0
       }, duration, function()
