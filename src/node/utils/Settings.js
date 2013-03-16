@@ -142,7 +142,7 @@ exports.abiwordAvailable = function()
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
-  settingsFilename = path.resolve(path.join(root, settingsFilename));
+  settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
 
   var settingsStr;
   try{
