@@ -614,7 +614,6 @@ var pad = {
   },
   handleClientMessage: function(msg)
   {
-    console.log("as");
     if (msg.type == 'suggestUserName')
     {
       if (msg.unnamedId == pad.myUserInfo.userId && msg.newName && !pad.myUserInfo.name)
