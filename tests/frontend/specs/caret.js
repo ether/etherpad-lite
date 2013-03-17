@@ -10,8 +10,14 @@ describe("As the caret is moved is the UI properly updated?", function(){
   * Page up (33) / down (34) with and without special keys
   */
 
+  /* Challenges
+  * How do we keep the authors focus on a line if the lines above the author are modified?  We should only redraw the user to a location if they are typing and make sure shift and arrow keys aren't redrawing the UI else highlight - copy/paste would get broken
+  * How the fsk do I get 
+  * 
+  */
+
   it("Creates N rows, changes height of rows, updates UI by caret key events", function(done) {
-    var inner$ = helper.padInner$; 
+    var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$; 
     var numberOfRows = 50;
     
@@ -29,6 +35,7 @@ describe("As the caret is moved is the UI properly updated?", function(){
         $(this).css("height", random+"px"); 
       });
 
+      console.log(caretPosition(inner$));
       var newDivHeight = inner$("div").first().css("height");
       var heightHasChanged = originalDivHeight != newDivHeight; // has the new div height changed from the original div height
       expect(heightHasChanged).to.be(true); // expect the first line to be blank
@@ -111,4 +118,13 @@ function isScrolledIntoView(elem, $){ // from http://stackoverflow.com/questions
     var elemTop = $(elem).offset().top;
     var elemBottom = elemTop + $(elem).height();
     return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+}
+
+function caretPosition($){
+  var doc = $.window.document;
+  var pos = doc.getSelection();
+  pos.y = pos.anchorNode.parentElement.offsetTop;
+  pos.x = pos.anchorNode.parentElement.offsetLeft;
+  console.log(pos);
+  return pos;
 }
