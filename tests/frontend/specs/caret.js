@@ -1,0 +1,114 @@
+describe("As the caret is moved is the UI properly updated?", function(){
+  //create a new pad before each test run
+  beforeEach(function(cb){
+    helper.newPad(cb);
+    this.timeout(60000);
+  });
+
+  /* Tests to do
+  * Keystroke up (38), down (40), left (37), right (39) with and without special keys IE control / shift
+  * Page up (33) / down (34) with and without special keys
+  */
+
+  it("Creates N rows, changes height of rows, updates UI by caret key events", function(done) {
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
+    var numberOfRows = 50;
+    
+    //ace creates a new dom element when you press a keystroke, so just get the first text element again
+    var $newFirstTextElement = inner$("div").first();
+    var originalDivHeight = inner$("div").first().css("height");
+
+    prepareDocument(numberOfRows, $newFirstTextElement); // N lines into the first div as a target
+
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      return inner$("div").first().text().length == 6;
+    }).done(function(){ // Once the DOM has registered the items
+      inner$("div").each(function(index){ // Randomize the item heights (replicates images / headings etc)
+        var random = Math.floor(Math.random() * (50)) + 20;
+        $(this).css("height", random+"px"); 
+      });
+
+      var newDivHeight = inner$("div").first().css("height");
+      var heightHasChanged = originalDivHeight != newDivHeight; // has the new div height changed from the original div height
+      expect(heightHasChanged).to.be(true); // expect the first line to be blank
+    });
+
+    // Is this Element now visible to the pad user?
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      return isScrolledIntoView(inner$("div:nth-child("+numberOfRows+")"), inner$); // Wait for the DOM to scroll into place
+    }).done(function(){ // Once the DOM has registered the items
+      inner$("div").each(function(index){ // Randomize the item heights (replicates images / headings etc)
+        var random = Math.floor(Math.random() * (80 - 20 + 1)) + 20;
+        $(this).css("height", random+"px");
+      });
+
+      var newDivHeight = inner$("div").first().css("height");
+      var heightHasChanged = originalDivHeight != newDivHeight; // has the new div height changed from the original div height
+      expect(heightHasChanged).to.be(true); // expect the first line to be blank
+    });
+
+    // Does scrolling back up the pad with the up arrow show the correct contents?
+    helper.waitFor(function(){ // Wait for the new position to be in place
+      return isScrolledIntoView(inner$("div:nth-child("+numberOfRows+")"), inner$); // Wait for the DOM to scroll into place
+    }).done(function(){ // Once the DOM has registered the items
+      var i = 0;
+      while(i < numberOfRows){ // press up arrow N times
+        keyEvent(inner$, 38, false, false);
+        i++;
+      }
+
+      helper.waitFor(function(){ // Wait for the new position to be in place
+        return isScrolledIntoView(inner$("div:nth-child(0)"), inner$); // Wait for the DOM to scroll into place
+      }).done(function(){ // Once we're at the top of the document
+        expect(true).to.be(true);
+        done();
+      });
+    });
+
+  });
+});
+
+function prepareDocument(n, target){ // generates a random document with random content on n lines
+  var i = 0;
+  while(i < n){ // for each line
+    target.sendkeys(makeStr()); // generate a random string and send that to the editor
+    target.sendkeys('{enter}'); // generator an enter keypress
+    i++; // rinse n times
+  }
+}
+
+function keyEvent(target, charCode, ctrl, shift){ // sends a charCode to the window
+  if(target.browser.mozilla){ // if it's a mozilla browser
+    var evtType = "keypress";
+  }else{
+    var evtType = "keydown";
+  }
+  var e = target.Event(evtType);
+  if(ctrl){
+    e.ctrlKey = true; // Control key
+  }
+  if(shift){
+    e.shiftKey = true; // Shift Key
+  }
+  e.which = charCode; 
+  target("#innerdocbody").trigger(e);
+}
+
+
+function makeStr(){ // from http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for( var i=0; i < 5; i++ )
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  return text;
+}
+
+function isScrolledIntoView(elem, $){ // from http://stackoverflow.com/questions/487073/check-if-element-is-visible-after-scrolling
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+    var elemTop = $(elem).offset().top;
+    var elemBottom = elemTop + $(elem).height();
+    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+}
