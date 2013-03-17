@@ -155,7 +155,6 @@ var chat = (function()
               title: authorName,
               // (string | mandatory) the text inside the notification
               text: text,
-
               // (bool | optional) if you want it to fade out on its own or just sit there
               sticky: false,
               // (int | optional) the time you want it to be alive for before fading out

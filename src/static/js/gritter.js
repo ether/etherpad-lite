@@ -21,8 +21,6 @@
 	$.gritter.options = {
 		position: '',
 		class_name: '', // could be set to 'gritter-light' to use white notifications
-		fade_in_speed: 'medium', // how fast notifications fade in
-		fade_out_speed: 1000, // how fast the notices fade out
 		time: 6000 // hang on the screen for...
 	}
 	
