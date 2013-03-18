@@ -63,9 +63,13 @@ Portal submits content into new blog post
 ### API version
 The latest version is `1.2.7`
 
-The current version can be queried via /api.
+The current version and a list of all available API versions can be obtained via 
 
-A list of all available API versions can be obtained via /API/versions.
+> `http://pad.domain/api`
+
+and
+
+> `http://pad.domain/api/versions`.
 
 ### Request Format
 
