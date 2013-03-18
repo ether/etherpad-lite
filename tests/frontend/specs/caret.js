@@ -1,7 +1,9 @@
 describe("As the caret is moved is the UI properly updated?", function(){
-  //create a new pad before each test run
-  beforeEach(function(cb){
-    helper.newPad(cb);
+  var padName;
+  var numberOfRows = 50;
+
+  it("creates a pad", function(done) {
+    padName = helper.newPad(done);
     this.timeout(60000);
   });
 
@@ -19,6 +21,87 @@ describe("As the caret is moved is the UI properly updated?", function(){
   * How can we simulate an edit event in the test framework?
   */
 
+  // THIS DOESNT WORK AS IT DOESNT MOVE THE CURSOR!
+  it("down arrow", function(done){
+    var inner$ = helper.padInner$;
+    keyEvent(inner$, 40, false, false); // arrow up
+    done();
+  });
+
+  it("Creates N lines", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+    var $newFirstTextElement = inner$("div").first();
+
+    prepareDocument(numberOfRows, $newFirstTextElement); // N lines into the first div as a target
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      return inner$("div").first().text().length == 6;
+    }).done(function(){ // Once the DOM has registered the items
+      done();
+    });
+  });
+
+  it("Moves caret up a line", function(done){
+    var inner$ = helper.padInner$;
+    var $newFirstTextElement = inner$("div").first();
+    var originalCaretPosition = caretPosition(inner$);
+    var originalPos = originalCaretPosition.y;
+    var newCaretPos;
+    keyEvent(inner$, 38, false, false); // arrow up
+
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      var newCaretPosition = caretPosition(inner$);
+      newCaretPos = newCaretPosition.y;
+      return (newCaretPos < originalPos);
+    }).done(function(){
+      expect(newCaretPos).to.be.lessThan(originalPos);
+      done();
+    });
+  });
+
+  it("Moves caret down a line", function(done){
+    var inner$ = helper.padInner$;
+    var $newFirstTextElement = inner$("div").first();
+    var originalCaretPosition = caretPosition(inner$);
+    var originalPos = originalCaretPosition.y;
+    var newCaretPos;
+    keyEvent(inner$, 40, false, false); // arrow down
+
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      var newCaretPosition = caretPosition(inner$);
+      newCaretPos = newCaretPosition.y;
+      return (newCaretPos > originalPos);
+    }).done(function(){
+      expect(newCaretPos).to.be.moreThan(originalPos);
+      done();
+    });
+  });
+
+  it("Moves caret to top of doc", function(done){
+    var inner$ = helper.padInner$;
+    var $newFirstTextElement = inner$("div").first();
+    var originalCaretPosition = caretPosition(inner$);
+    var originalPos = originalCaretPosition.y;
+    var newCaretPos;
+
+    var i = 0;
+    while(i < numberOfRows){ // press pageup key N times
+      keyEvent(inner$, 33, false, false);
+      i++;
+    }
+
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      var newCaretPosition = caretPosition(inner$);
+      newCaretPos = newCaretPosition.y;
+      return (newCaretPos < originalPos);
+    }).done(function(){
+      expect(newCaretPos).to.be.lessThan(originalPos);
+      done();
+    });
+  });
+
+
+/*
   it("Creates N rows, changes height of rows, updates UI by caret key events", function(done){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$; 
@@ -29,7 +112,6 @@ describe("As the caret is moved is the UI properly updated?", function(){
     var originalDivHeight = inner$("div").first().css("height");
     prepareDocument(numberOfRows, $newFirstTextElement); // N lines into the first div as a target
 
-    /*
     helper.waitFor(function(){ // Wait for the DOM to register the new items
       return inner$("div").first().text().length == 6;
     }).done(function(){ // Once the DOM has registered the items
@@ -43,9 +125,7 @@ describe("As the caret is moved is the UI properly updated?", function(){
       var heightHasChanged = originalDivHeight != newDivHeight; // has the new div height changed from the original div height
       expect(heightHasChanged).to.be(true); // expect the first line to be blank
     });
-    */
 
-    /*
     // Is this Element now visible to the pad user?
     helper.waitFor(function(){ // Wait for the DOM to register the new items
       return isScrolledIntoView(inner$("div:nth-child("+numberOfRows+")"), inner$); // Wait for the DOM to scroll into place
@@ -59,16 +139,12 @@ describe("As the caret is moved is the UI properly updated?", function(){
       var heightHasChanged = originalDivHeight != newDivHeight; // has the new div height changed from the original div height
       expect(heightHasChanged).to.be(true); // expect the first line to be blank
     });
-    */
-/*
     var i = 0;
     while(i < numberOfRows){ // press down arrow
 console.log("dwn");
       keyEvent(inner$, 40, false, false);
       i++;
     }
-*/
-/*
 
     // Does scrolling back up the pad with the up arrow show the correct contents?
     helper.waitFor(function(){ // Wait for the new position to be in place
@@ -99,7 +175,6 @@ console.log("dwn");
       });
    });
 
-*/
 
      var i = 0;
       while(i < numberOfRows){ // press down arrow
@@ -115,9 +190,8 @@ console.log("dwn");
       expect(true).to.be(true); 
       done();
     });
+*/
 
-
-  });
 });
 
 function prepareDocument(n, target){ // generates a random document with random content on n lines
