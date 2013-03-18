@@ -100,6 +100,85 @@ describe("As the caret is moved is the UI properly updated?", function(){
     });
   });
 
+  it("Moves caret right a position", function(done){
+    var inner$ = helper.padInner$;
+    var $newFirstTextElement = inner$("div").first();
+    var originalCaretPosition = caretPosition(inner$);
+    var originalPos = originalCaretPosition.x;
+    var newCaretPos;
+    keyEvent(inner$, 39, false, false); // arrow right
+
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      var newCaretPosition = caretPosition(inner$);
+      newCaretPos = newCaretPosition.x;
+      return (newCaretPos > originalPos);
+    }).done(function(){
+      expect(newCaretPos).to.be.moreThan(originalPos);
+      done();
+    });
+  });
+
+  it("Moves caret left a position", function(done){
+    var inner$ = helper.padInner$;
+    var $newFirstTextElement = inner$("div").first();
+    var originalCaretPosition = caretPosition(inner$);
+    var originalPos = originalCaretPosition.x;
+    var newCaretPos;
+    keyEvent(inner$, 33, false, false); // arrow left
+
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      var newCaretPosition = caretPosition(inner$);
+      newCaretPos = newCaretPosition.x;
+      return (newCaretPos < originalPos);
+    }).done(function(){
+      expect(newCaretPos).to.be.lessThan(originalPos);
+      done();
+    });
+  });
+
+  it("Moves caret to the next line using right arrow", function(done){
+    var inner$ = helper.padInner$;
+    var $newFirstTextElement = inner$("div").first();
+    var originalCaretPosition = caretPosition(inner$);
+    var originalPos = originalCaretPosition.y;
+    var newCaretPos;
+    keyEvent(inner$, 39, false, false); // arrow right
+    keyEvent(inner$, 39, false, false); // arrow right
+    keyEvent(inner$, 39, false, false); // arrow right
+    keyEvent(inner$, 39, false, false); // arrow right
+    keyEvent(inner$, 39, false, false); // arrow right
+    keyEvent(inner$, 39, false, false); // arrow right
+    keyEvent(inner$, 39, false, false); // arrow right
+
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      var newCaretPosition = caretPosition(inner$);
+      newCaretPos = newCaretPosition.y;
+      return (newCaretPos > originalPos);
+    }).done(function(){
+      expect(newCaretPos).to.be.moreThan(originalPos);
+      done();
+    });
+  });
+
+  it("Moves caret to the previous line using left arrow", function(done){
+    var inner$ = helper.padInner$;
+    var $newFirstTextElement = inner$("div").first();
+    var originalCaretPosition = caretPosition(inner$);
+    var originalPos = originalCaretPosition.y;
+    var newCaretPos;
+    keyEvent(inner$, 33, false, false); // arrow left
+
+    helper.waitFor(function(){ // Wait for the DOM to register the new items
+      var newCaretPosition = caretPosition(inner$);
+      newCaretPos = newCaretPosition.y;
+      return (newCaretPos < originalPos);
+    }).done(function(){
+      expect(newCaretPos).to.be.lessThan(originalPos);
+      done();
+    });
+  });
+
+
 
 /*
   it("Creates N rows, changes height of rows, updates UI by caret key events", function(done){
