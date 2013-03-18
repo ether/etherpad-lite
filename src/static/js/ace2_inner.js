@@ -3712,6 +3712,9 @@ function Ace2Inner(){
           specialHandled = true;
         }
         if((evt.which == 33 || evt.which == 34) && type == 'keydown'){
+
+          evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
+
           var oldVisibleLineRange = getVisibleLineRange();
           var topOffset = rep.selStart[0] - oldVisibleLineRange[0];
           if(topOffset < 0 ){
@@ -3726,22 +3729,13 @@ function Ace2Inner(){
             var linesCount = rep.lines.length(); // total count of lines in pad IE 10
             var numberOfLinesInViewport = newVisibleLineRange[1] - newVisibleLineRange[0]; // How many lines are in the viewport right now?
 
-            top.console.log(rep);
-            top.console.log("old vis", oldVisibleLineRange);
-
             if(isPageUp){
-              if(rep.selStart[0] == oldVisibleLineRange[0]+1 || rep.selStart[0] == oldVisibleLineRange[0] || rep.selStart[0] == oldVisibleLineRange[0] -1){ // if we're at the top of the document
-                rep.selEnd[0] = oldVisibleLineRange[0] - numberOfLinesInViewport;
-              }
-              else if(rep.selEnd[0] < (oldVisibleLineRange[0]+1)){ // If it's mostly near the bottom of a document
-                rep.selEnd[0] = oldVisibleLineRange[0]; // dont go further in the page up than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
-                rep.selStart[0] = oldVisibleLineRange[0]; // dont go further in the page up than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
-              }
+              rep.selEnd[0] = rep.selEnd[0] - numberOfLinesInViewport; // move to the bottom line +1 in the viewport (essentially skipping over a page)
+              rep.selStart[0] = rep.selStart[0] - numberOfLinesInViewport; // move to the bottom line +1 in the viewport (essentially skipping over a page)
             }
 
             if(isPageDown){ // if we hit page down
-              if(rep.selEnd[0] > oldVisibleLineRange[0]){
-                // top.console.log("new bottom", oldVisibleLineRange[1]);
+              if(rep.selEnd[0] >= oldVisibleLineRange[0]){ // If the new viewpoint position is actually further than where we are right now
                 rep.selStart[0] = oldVisibleLineRange[1] -1; // dont go further in the page down than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
                 rep.selEnd[0] = oldVisibleLineRange[1] -1; // dont go further in the page down than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
               }
@@ -3754,10 +3748,10 @@ function Ace2Inner(){
             if(rep.selEnd[0] >= linesCount){
               rep.selEnd[0] = linesCount-1;
             }
-top.console.log(rep)
             updateBrowserSelectionFromRep();
             var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop; // get the carets selection offset in px IE 214
+            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+            // top.console.log(caretOffsetTop);
             setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
 
           }, 200);
@@ -3792,6 +3786,7 @@ top.console.log(rep)
                 // Holding down arrow after a paste can lose the cursor -- This is the best fix I can find
                 if(rep.selStart[0] >= visibleLineRange[1] || rep.selStart[0] < visibleLineRange[0] ){ // if we're not at the bottom of the viewport
                   // top.console.log(viewport, lineHeight, myselection);
+                  // TODO: Make it so chrome doesnt need to redraw the page by only applying this technique if required
                   var newY = caretOffsetTop;
                 }else{ // we're at the bottom of the viewport so snap to a "new viewport"
                   // top.console.log(viewport, lineHeight, myselection);
