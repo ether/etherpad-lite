@@ -64,7 +64,8 @@ Portal submits content into new blog post
 The latest version is `1.2.7`
 
 The current version can be queried via /api.
-A list of all available API versions can be obtained via /API/versions
+
+A list of all available API versions can be obtained via /API/versions.
 
 ### Request Format
 
