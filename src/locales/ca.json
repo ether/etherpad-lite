@@ -28,6 +28,7 @@
 	"pad.settings.stickychat": "Xateja sempre a la pantalla",
 	"pad.settings.colorcheck": "Colors d'autoria",
 	"pad.settings.linenocheck": "N\u00fameros de l\u00ednia",
+	"pad.settings.rtlcheck": "Llegir el contingut de dreta a esquerra?",
 	"pad.settings.fontType": "Tipus de lletra:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.fontType.monospaced": "D'amplada fixa",
