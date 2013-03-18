@@ -3745,6 +3745,9 @@ function Ace2Inner(){
             if(rep.selEnd[0] < 0){
               rep.selEnd[0] = 0;
             }
+            if(rep.selStart[0] < 0){
+              rep.selStart[0] = 0;
+            }
             if(rep.selEnd[0] >= linesCount){
               rep.selEnd[0] = linesCount-1;
             }
