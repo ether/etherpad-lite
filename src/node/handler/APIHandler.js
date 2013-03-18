@@ -37,6 +37,14 @@ catch(e)
   fs.writeFileSync("./APIKEY.txt",apikey,"utf8");
 }
 
+//liitle helper for concatenating the following API versions
+function apiConcat(v1, v2) {
+ for (var key in v1) {
+  v2[key] = v1[key];
+ }
+ return v2;
+}
+
 //a list of all functions
 var API_V1 =
   { "createGroup"               : []
@@ -86,13 +94,6 @@ var API_V1_2_7 =
   , "getChatHistory"            : ["padID", "start", "end"]
   , "getChatHead"               : ["padID"] };
 
-function apiConcat(v1, v2) {
- for (var key in v1) {
-  v2[key] = v1[key];
- }
- return v2;
-}
-
 API_V1_1   =  apiConcat(API_V1,     API_V1_1)   ;
 API_V1_2   =  apiConcat(API_V1_1,   API_V1_2)   ;
 API_V1_2_1 =  apiConcat(API_V1_2,   API_V1_2_1) ;
@@ -106,6 +107,11 @@ var version = { "1"     : API_V1
 
 // set the latest available API version here
 exports.latestApiVersion = '1.2.7';
+
+//collect all available API versions and make it available for API endpoint
+versions = [];
+for (key in version) versions.push(key);
+exports.versions = versions;
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
