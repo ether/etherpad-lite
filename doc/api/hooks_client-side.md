@@ -143,6 +143,15 @@ Things in context:
 
 This hook is called on the client side whenever a user joins or changes. This can be used to create notifications or an alternate user list.
 
+## chatNewMessage
+Called from: src/static/js/chat.js
+
+Things in context:
+
+1. msg - The message object
+
+This hook is called on the client side whenever a user recieves a chat message from the server.  This can be used to create different notifications for chat messages.
+
 ## collectContentPre
 Called from: src/static/js/contentcollector.js
 
