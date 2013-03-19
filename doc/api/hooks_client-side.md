@@ -148,9 +148,14 @@ Called from: src/static/js/chat.js
 
 Things in context:
 
-1. msg - The message object
+1. authorName - The user that wrote this message
+2. author - The authorID of the user that wrote the message
+2. text - the message text
+3. sticky (boolean) - if you want the gritter notification bubble to fade out on its own or just sit there
+3. timestamp - the timestamp of the chat message
+4. timeStr - the timestamp as a formatted string
 
-This hook is called on the client side whenever a user recieves a chat message from the server.  This can be used to create different notifications for chat messages.
+This hook is called on the client side whenever a chat message is received from the server. It can be used to create different notifications for chat messages.
 
 ## collectContentPre
 Called from: src/static/js/contentcollector.js
