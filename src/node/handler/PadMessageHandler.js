@@ -192,7 +192,6 @@ exports.handleMessage = function(client, message)
         handleSuggestUserName(client, message);
       } else {
         messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
-console.warn(message);
       }
     } else {
       messageLogger.warn("Dropped message, unknown Message Type " + message.type);
