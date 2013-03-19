@@ -24,10 +24,14 @@ describe("As the caret is moved is the UI properly updated?", function(){
   // THIS DOESNT WORK AS IT DOESNT MOVE THE CURSOR!
   it("down arrow", function(done){
     var inner$ = helper.padInner$;
-    keyEvent(inner$, 40, false, false); // arrow up
+    var $newFirstTextElement = inner$("div").first();
+    $newFirstTextElement.focus();
+    keyEvent(inner$, 37, false, false); // arrow down
+    keyEvent(inner$, 37, false, false); // arrow down
+
     done();
   });
-
+/*
   it("Creates N lines", function(done){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
@@ -289,6 +293,7 @@ function keyEvent(target, charCode, ctrl, shift){ // sends a charCode to the win
     var evtType = "keydown";
   }
   var e = target.Event(evtType);
+  console.log(e);
   if(ctrl){
     e.ctrlKey = true; // Control key
   }
@@ -296,6 +301,7 @@ function keyEvent(target, charCode, ctrl, shift){ // sends a charCode to the win
     e.shiftKey = true; // Shift Key
   }
   e.which = charCode; 
+  e.keyCode = charCode;
   target("#innerdocbody").trigger(e);
 }
 
