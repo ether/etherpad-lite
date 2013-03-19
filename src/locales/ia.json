@@ -34,6 +34,7 @@
 	"pad.settings.stickychat": "Chat sempre visibile",
 	"pad.settings.colorcheck": "Colores de autor",
 	"pad.settings.linenocheck": "Numeros de linea",
+	"pad.settings.rtlcheck": "Leger le contento de dextra a sinistra?",
 	"pad.settings.fontType": "Typo de litteras:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.fontType.monospaced": "Monospatial",

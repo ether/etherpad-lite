@@ -47,12 +47,18 @@ describe("undo button then redo button", function(){
     var modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    var e = inner$.Event("keydown");
+    if(inner$.browser.mozilla){ // if it's a mozilla browser
+      var evtType = "keypress";
+    }else{
+      var evtType = "keydown";
+    }
+
+    var e = inner$.Event(evtType);
     e.ctrlKey = true; // Control key
     e.which = 90; // z
     inner$("#innerdocbody").trigger(e);
 
-    var e = inner$.Event("keydown");
+    var e = inner$.Event(evtType);
     e.ctrlKey = true; // Control key
     e.which = 121; // y
     inner$("#innerdocbody").trigger(e);

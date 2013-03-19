@@ -34,6 +34,7 @@
 	"pad.settings.stickychat": "Chat altijd zichtbaar",
 	"pad.settings.colorcheck": "Kleuren auteurs",
 	"pad.settings.linenocheck": "Regelnummers",
+	"pad.settings.rtlcheck": "Inhoud van rechts naar links lezen?",
 	"pad.settings.fontType": "Lettertype:",
 	"pad.settings.fontType.normal": "Normaal",
 	"pad.settings.fontType.monospaced": "Monospace",

@@ -569,10 +569,19 @@ function handleUserChanges(client, message)
           }
         });
 
-        // Validate all 'author' attribs to be the same value as the current user
-        wireApool.eachAttrib(function(type, value) {
-          if('author' == type && value != thisSession.author) throw "Trying to submit changes as another author"
-        })
+        // Validate all added 'author' attribs to be the same value as the current user
+        var iterator = Changeset.opIterator(Changeset.unpack(changeset).ops)
+          , op
+        while(iterator.hasNext()) {
+          op = iterator.next()
+          if(op.opcode != '+') continue;
+          op.attribs.split('*').forEach(function(attr) {
+            if(!attr) return
+            attr = wireApool.getAttrib(attr)
+            if(!attr) return
+            if('author' == attr[0] && attr[1] != thisSession.author) throw "Trying to submit changes as another author"
+          })
+        }
       }
       catch(e)
       {
