@@ -17,6 +17,7 @@
 var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
 var Tinycon = require('tinycon/tinycon');
+var hooks = require('./pluginfw/hooks');
 
 var chat = (function()
 {
@@ -162,7 +163,18 @@ var chat = (function()
               time: '4000'
             });
             Tinycon.setBubble(count);
-
+            var msg = {
+              "authorName" : authorName,
+              "text" : text,
+              "sticky" : false,
+              "time" : timeStr
+            };
+            hooks.aCallAll("chatNewMessage", {
+              "authorName" : authorName,
+              "text" : text,
+              "sticky" : false,
+              "time" : timeStr
+            });
           }
         }
       }
