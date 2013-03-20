@@ -40,22 +40,10 @@ var padmodals = (function()
       });
     },
     showOverlay: function(duration) {
-      $("#overlay").show().css(
-      {
-        'opacity': 0
-      }).animate(
-      {
-        'opacity': 1
-      }, duration);
+      $("#overlay").show();
     },
     hideOverlay: function(duration) {
-      $("#overlay").animate(
-      {
-        'opacity': 0
-      }, duration, function()
-      {
-        $("#modaloverlay").hide();
-      });
+      $("#overlay").hide();
     }
   };
   return self;

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Embed parameters - Etherpad Lite v1.2.81  Manual &amp; Documentation</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="apidoc" id="api-section-embed_parameters">
+  <header id="header">
+    <h1>Etherpad-Lite v1.2.81  Manual &amp; Documentation</h1>
+  </header>
+
+  <div id="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+<li><a href="#embed_parameters_embed_parameters">Embed parameters</a><ul>
+<li><a href="#embed_parameters_showlinenumbers">showLineNumbers</a></li>
+<li><a href="#embed_parameters_showcontrols">showControls</a></li>
+<li><a href="#embed_parameters_showchat">showChat</a></li>
+<li><a href="#embed_parameters_usemonospacefont">useMonospaceFont</a></li>
+<li><a href="#embed_parameters_username">userName</a></li>
+<li><a href="#embed_parameters_usercolor">userColor</a></li>
+<li><a href="#embed_parameters_nocolors">noColors</a></li>
+<li><a href="#embed_parameters_alwaysshowchat">alwaysShowChat</a></li>
+<li><a href="#embed_parameters_lang">lang</a></li>
+<li><a href="#embed_parameters_rtl">rtl</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+  <div id="apicontent">
+    <h1>Embed parameters<span><a class="mark" href="#embed_parameters_embed_parameters" id="embed_parameters_embed_parameters">#</a></span></h1>
+<p>You can easily embed your etherpad-lite into any webpage by using iframes. You can configure the embedded pad using embed paramters.
+
+</p>
+<p>Example:
+
+</p>
+<p>Cut and paste the following code into any webpage to embed a pad. The parameters below will hide the chat and the line numbers.
+
+</p>
+<pre><code>&lt;iframe src=&apos;http://pad.test.de/p/PAD_NAME?showChat=false&amp;showLineNumbers=false&apos; width=600 height=400&gt;&lt;/iframe&gt;</code></pre>
+<h2>showLineNumbers<span><a class="mark" href="#embed_parameters_showlinenumbers" id="embed_parameters_showlinenumbers">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: true
+
+</p>
+<h2>showControls<span><a class="mark" href="#embed_parameters_showcontrols" id="embed_parameters_showcontrols">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: true
+
+</p>
+<h2>showChat<span><a class="mark" href="#embed_parameters_showchat" id="embed_parameters_showchat">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: true
+
+</p>
+<h2>useMonospaceFont<span><a class="mark" href="#embed_parameters_usemonospacefont" id="embed_parameters_usemonospacefont">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: false
+
+</p>
+<h2>userName<span><a class="mark" href="#embed_parameters_username" id="embed_parameters_username">#</a></span></h2>
+<div class="signature"><ul>
+<li>String</li>
+</div></ul>
+<p>Default: &quot;unnamed&quot;
+
+</p>
+<p>Example: <code>userName=Etherpad%20User</code>
+
+</p>
+<h2>userColor<span><a class="mark" href="#embed_parameters_usercolor" id="embed_parameters_usercolor">#</a></span></h2>
+<div class="signature"><ul>
+<li>String (css hex color value)</li>
+</div></ul>
+<p>Default: randomly chosen by pad server
+
+</p>
+<p>Example: <code>userColor=%23ff9900</code>
+
+</p>
+<h2>noColors<span><a class="mark" href="#embed_parameters_nocolors" id="embed_parameters_nocolors">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: false
+
+</p>
+<h2>alwaysShowChat<span><a class="mark" href="#embed_parameters_alwaysshowchat" id="embed_parameters_alwaysshowchat">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: false
+
+</p>
+<h2>lang<span><a class="mark" href="#embed_parameters_lang" id="embed_parameters_lang">#</a></span></h2>
+<div class="signature"><ul>
+<li>String</li>
+</div></ul>
+<p>Default: en
+
+</p>
+<p>Example: <code>lang=ar</code> (translates the interface into Arabic)
+
+</p>
+<h2>rtl<span><a class="mark" href="#embed_parameters_rtl" id="embed_parameters_rtl">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: true
+Displays pad text from right to left.
+
+</p>
+
+  </div>
+
+</body>
+</html>
+

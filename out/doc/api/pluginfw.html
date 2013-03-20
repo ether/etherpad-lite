@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plugin Framework - Etherpad Lite v1.2.81  Manual &amp; Documentation</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="apidoc" id="api-section-pluginfw">
+  <header id="header">
+    <h1>Etherpad-Lite v1.2.81  Manual &amp; Documentation</h1>
+  </header>
+
+  <div id="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+<li><a href="#pluginfw_plugin_framework">Plugin Framework</a><ul>
+<li><a href="#pluginfw_plugins_update">plugins.update</a></li>
+<li><a href="#pluginfw_hooks_callall">hooks.callAll</a></li>
+<li><a href="#pluginfw_hooks_acallall">hooks.aCallAll</a></li>
+<li><a href="#pluginfw">...</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+  <div id="apicontent">
+    <h1>Plugin Framework<span><a class="mark" href="#pluginfw_plugin_framework" id="pluginfw_plugin_framework">#</a></span></h1>
+<p><code>require(&quot;ep_etherpad-lite/static/js/plugingfw/plugins&quot;)</code>
+
+</p>
+<h2>plugins.update<span><a class="mark" href="#pluginfw_plugins_update" id="pluginfw_plugins_update">#</a></span></h2>
+<p><code>require(&quot;ep_etherpad-lite/static/js/plugingfw/plugins&quot;).update()</code> will use npm to list all installed modules and read their ep.json files, registering the contained hooks.
+A hook registration is a pairs of a hook name and a function reference (filename for require() plus function name)
+
+</p>
+<h2>hooks.callAll<span><a class="mark" href="#pluginfw_hooks_callall" id="pluginfw_hooks_callall">#</a></span></h2>
+<p><code>require(&quot;ep_etherpad-lite/static/js/plugingfw/hooks&quot;).callAll(&quot;hook_name&quot;, {argname:value})</code> will call all hook functions registered for <code>hook_name</code> with <code>{argname:value}</code>.
+
+</p>
+<h2>hooks.aCallAll<span><a class="mark" href="#pluginfw_hooks_acallall" id="pluginfw_hooks_acallall">#</a></span></h2>
+<p>?
+
+</p>
+<h2>...<span><a class="mark" href="#pluginfw" id="pluginfw">#</a></span></h2>
+
+  </div>
+
+</body>
+</html>
+

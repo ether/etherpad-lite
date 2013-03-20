@@ -1,0 +1,2202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>About this Documentation - Etherpad Lite v1.2.81  Manual &amp; Documentation</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="apidoc" id="api-section-index">
+  <header id="header">
+    <h1>Etherpad-Lite v1.2.81  Manual &amp; Documentation</h1>
+  </header>
+
+  <div id="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+<li><a href="#index_about_this_documentation">About this Documentation</a></li>
+<li><a href="#index_localization">Localization</a><ul>
+<li><a href="#index_translating">Translating</a></li>
+<li><a href="#index_implementation">Implementation</a><ul>
+<li><a href="#index_server_side">Server-side</a></li>
+<li><a href="#index_client_side">Client-side</a></li>
+</ul>
+</li>
+<li><a href="#index_localizing_plugins">Localizing plugins</a><ul>
+<li><a href="#index_1_mark_the_strings_to_translate">1. Mark the strings to translate</a></li>
+<li><a href="#index_2_create_translate_files_in_the_locales_directory_of_your_plugin">2. Create translate files in the locales directory of your plugin</a></li>
+<li><a href="#index_overwrite_core_messages">Overwrite core messages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#index_custom_static_files">Custom static files</a></li>
+<li><a href="#index_embed_parameters">Embed parameters</a><ul>
+<li><a href="#index_showlinenumbers">showLineNumbers</a></li>
+<li><a href="#index_showcontrols">showControls</a></li>
+<li><a href="#index_showchat">showChat</a></li>
+<li><a href="#index_usemonospacefont">useMonospaceFont</a></li>
+<li><a href="#index_username">userName</a></li>
+<li><a href="#index_usercolor">userColor</a></li>
+<li><a href="#index_nocolors">noColors</a></li>
+<li><a href="#index_alwaysshowchat">alwaysShowChat</a></li>
+<li><a href="#index_lang">lang</a></li>
+<li><a href="#index_rtl">rtl</a></li>
+</ul>
+</li>
+<li><a href="#index_http_api">HTTP API</a><ul>
+<li><a href="#index_what_can_i_do_with_this_api">What can I do with this API?</a></li>
+<li><a href="#index_examples">Examples</a><ul>
+<li><a href="#index_example_1">Example 1</a></li>
+<li><a href="#index_example_2">Example 2</a></li>
+</ul>
+</li>
+<li><a href="#index_usage">Usage</a><ul>
+<li><a href="#index_api_version">API version</a></li>
+<li><a href="#index_request_format">Request Format</a></li>
+<li><a href="#index_response_format">Response Format</a></li>
+<li><a href="#index_overview">Overview</a></li>
+</ul>
+</li>
+<li><a href="#index_data_types">Data Types</a><ul>
+<li><a href="#index_authentication">Authentication</a></li>
+<li><a href="#index_node_interoperability">Node Interoperability</a></li>
+<li><a href="#index_jsonp">JSONP</a></li>
+</ul>
+</li>
+<li><a href="#index_api_methods">API Methods</a><ul>
+<li><a href="#index_groups">Groups</a><ul>
+<li><a href="#index_creategroup">createGroup()</a></li>
+<li><a href="#index_creategroupifnotexistsfor_groupmapper">createGroupIfNotExistsFor(groupMapper)</a></li>
+<li><a href="#index_deletegroup_groupid">deleteGroup(groupID)</a></li>
+<li><a href="#index_listpads_groupid">listPads(groupID)</a></li>
+<li><a href="#index_creategrouppad_groupid_padname_text">createGroupPad(groupID, padName [, text])</a></li>
+<li><a href="#index_listallgroups">listAllGroups()</a></li>
+</ul>
+</li>
+<li><a href="#index_author">Author</a><ul>
+<li><a href="#index_createauthor_name">createAuthor([name])</a></li>
+<li><a href="#index_createauthorifnotexistsfor_authormapper_name">createAuthorIfNotExistsFor(authorMapper [, name])</a></li>
+<li><a href="#index_listpadsofauthor_authorid">listPadsOfAuthor(authorID)</a></li>
+<li><a href="#index_getauthorname_authorid">getAuthorName(authorID)</a></li>
+</ul>
+</li>
+<li><a href="#index_session">Session</a><ul>
+<li><a href="#index_createsession_groupid_authorid_validuntil">createSession(groupID, authorID, validUntil)</a></li>
+<li><a href="#index_deletesession_sessionid">deleteSession(sessionID)</a></li>
+<li><a href="#index_getsessioninfo_sessionid">getSessionInfo(sessionID)</a></li>
+<li><a href="#index_listsessionsofgroup_groupid">listSessionsOfGroup(groupID)</a></li>
+<li><a href="#index_listsessionsofauthor_authorid">listSessionsOfAuthor(authorID)</a></li>
+</ul>
+</li>
+<li><a href="#index_pad_content">Pad Content</a><ul>
+<li><a href="#index_gettext_padid_rev">getText(padID, [rev])</a></li>
+<li><a href="#index_settext_padid_text">setText(padID, text)</a></li>
+<li><a href="#index_gethtml_padid_rev">getHTML(padID, [rev])</a></li>
+</ul>
+</li>
+<li><a href="#index_chat">Chat</a><ul>
+<li><a href="#index_getchathistory_padid_start_end">getChatHistory(padID, [start, end])</a></li>
+<li><a href="#index_getchathead_padid">getChatHead(padID)</a></li>
+</ul>
+</li>
+<li><a href="#index_pad">Pad</a><ul>
+<li><a href="#index_createpad_padid_text">createPad(padID [, text])</a></li>
+<li><a href="#index_getrevisionscount_padid">getRevisionsCount(padID)</a></li>
+<li><a href="#index_paduserscount_padid">padUsersCount(padID)</a></li>
+<li><a href="#index_padusers_padid">padUsers(padID)</a></li>
+<li><a href="#index_deletepad_padid">deletePad(padID)</a></li>
+<li><a href="#index_getreadonlyid_padid">getReadOnlyID(padID)</a></li>
+<li><a href="#index_setpublicstatus_padid_publicstatus">setPublicStatus(padID, publicStatus)</a></li>
+<li><a href="#index_getpublicstatus_padid">getPublicStatus(padID)</a></li>
+<li><a href="#index_setpassword_padid_password">setPassword(padID, password)</a></li>
+<li><a href="#index_ispasswordprotected_padid">isPasswordProtected(padID)</a></li>
+<li><a href="#index_listauthorsofpad_padid">listAuthorsOfPad(padID)</a></li>
+<li><a href="#index_getlastedited_padid">getLastEdited(padID)</a></li>
+<li><a href="#index_sendclientsmessage_padid_msg">sendClientsMessage(padID, msg)</a></li>
+<li><a href="#index_checktoken">checkToken()</a></li>
+</ul>
+</li>
+<li><a href="#index_pads">Pads</a><ul>
+<li><a href="#index_listallpads">listAllPads()</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#index_hooks">Hooks</a><ul>
+<li><a href="#index_return_values">Return values</a></li>
+</ul>
+</li>
+<li><a href="#index_client_side_hooks">Client-side hooks</a><ul>
+<li><a href="#index_documentready">documentReady</a></li>
+<li><a href="#index_acedomlineprocesslineattributes">aceDomLineProcessLineAttributes</a></li>
+<li><a href="#index_acecreatedomline">aceCreateDomLine</a></li>
+<li><a href="#index_acepostwritedomlinehtml">acePostWriteDomLineHTML</a></li>
+<li><a href="#index_aceattribstoclasses">aceAttribsToClasses</a></li>
+<li><a href="#index_acegetfilterstack">aceGetFilterStack</a></li>
+<li><a href="#index_aceeditorcss">aceEditorCSS</a></li>
+<li><a href="#index_aceinitinnerdocbodyhead">aceInitInnerdocbodyHead</a></li>
+<li><a href="#index_aceeditevent">aceEditEvent</a></li>
+<li><a href="#index_aceregisterblockelements">aceRegisterBlockElements</a></li>
+<li><a href="#index_aceinitialized">aceInitialized</a></li>
+<li><a href="#index_postaceinit">postAceInit</a></li>
+<li><a href="#index_posttimesliderinit">postTimesliderInit</a></li>
+<li><a href="#index_userjoinorupdate">userJoinOrUpdate</a></li>
+<li><a href="#index_collectcontentpre">collectContentPre</a></li>
+<li><a href="#index_collectcontentpost">collectContentPost</a></li>
+<li><a href="#index_handleclientmessage_name">handleClientMessage_<code>name</code></a></li>
+<li><a href="#index_acestartlineandcharforpoint_aceendlineandcharforpoint">aceStartLineAndCharForPoint-aceEndLineAndCharForPoint</a></li>
+<li><a href="#index_acekeyevent">aceKeyEvent</a></li>
+<li><a href="#index_collectcontentlinetext">collectContentLineText</a></li>
+<li><a href="#index_collectcontentlinebreak">collectContentLineBreak</a></li>
+<li><a href="#index_disableauthorcolorsforthisline">disableAuthorColorsForThisLine</a></li>
+</ul>
+</li>
+<li><a href="#index_server_side_hooks">Server-side hooks</a><ul>
+<li><a href="#index_loadsettings">loadSettings</a></li>
+<li><a href="#index_pluginuninstall">pluginUninstall</a></li>
+<li><a href="#index_plugininstall">pluginInstall</a></li>
+<li><a href="#index_init_plugin_name">init_<code>&lt;plugin name&gt;</code></a></li>
+<li><a href="#index_expressconfigure">expressConfigure</a></li>
+<li><a href="#index_expresscreateserver">expressCreateServer</a></li>
+<li><a href="#index_eejsblock_name">eejsBlock_<code>&lt;name&gt;</code></a></li>
+<li><a href="#index_padcreate">padCreate</a></li>
+<li><a href="#index_padload">padLoad</a></li>
+<li><a href="#index_padupdate">padUpdate</a></li>
+<li><a href="#index_padremove">padRemove</a></li>
+<li><a href="#index_socketio">socketio</a></li>
+<li><a href="#index_authorize">authorize</a></li>
+<li><a href="#index_authenticate">authenticate</a></li>
+<li><a href="#index_authfailure">authFailure</a></li>
+<li><a href="#index_handlemessage">handleMessage</a></li>
+<li><a href="#index_clientvars">clientVars</a></li>
+<li><a href="#index_getlinehtmlforexport">getLineHTMLForExport</a></li>
+</ul>
+</li>
+<li><a href="#index_editorinfo">editorInfo</a><ul>
+<li><a href="#index_editorinfo_ace_replacerange_start_end_text">editorInfo.ace_replaceRange(start, end, text)</a></li>
+<li><a href="#index_editorinfo_ace_getrep">editorInfo.ace_getRep()</a></li>
+<li><a href="#index_editorinfo_ace_getauthor">editorInfo.ace_getAuthor()</a></li>
+<li><a href="#index_editorinfo_ace_incallstack">editorInfo.ace_inCallStack()</a></li>
+<li><a href="#index_editorinfo_ace_incallstackifnecessary">editorInfo.ace_inCallStackIfNecessary(?)</a></li>
+<li><a href="#index_editorinfo_ace_focus">editorInfo.ace_focus(?)</a></li>
+<li><a href="#index_editorinfo_ace_importtext">editorInfo.ace_importText(?)</a></li>
+<li><a href="#index_editorinfo_ace_importatext">editorInfo.ace_importAText(?)</a></li>
+<li><a href="#index_editorinfo_ace_exporttext">editorInfo.ace_exportText(?)</a></li>
+<li><a href="#index_editorinfo_ace_editorchangedsize">editorInfo.ace_editorChangedSize(?)</a></li>
+<li><a href="#index_editorinfo_ace_setonkeypress">editorInfo.ace_setOnKeyPress(?)</a></li>
+<li><a href="#index_editorinfo_ace_setonkeydown">editorInfo.ace_setOnKeyDown(?)</a></li>
+<li><a href="#index_editorinfo_ace_setnotifydirty">editorInfo.ace_setNotifyDirty(?)</a></li>
+<li><a href="#index_editorinfo_ace_dispose">editorInfo.ace_dispose(?)</a></li>
+<li><a href="#index_editorinfo_ace_getformattedcode">editorInfo.ace_getFormattedCode(?)</a></li>
+<li><a href="#index_editorinfo_ace_seteditable_bool">editorInfo.ace_setEditable(bool)</a></li>
+<li><a href="#index_editorinfo_ace_execcommand">editorInfo.ace_execCommand(?)</a></li>
+<li><a href="#index_editorinfo_ace_callwithace_fn_callstack_normalize">editorInfo.ace_callWithAce(fn, callStack, normalize)</a></li>
+<li><a href="#index_editorinfo_ace_setproperty_key_value">editorInfo.ace_setProperty(key, value)</a></li>
+<li><a href="#index_editorinfo_ace_setbasetext_txt">editorInfo.ace_setBaseText(txt)</a></li>
+<li><a href="#index_editorinfo_ace_setbaseattributedtext_atxt_apooljsonobj">editorInfo.ace_setBaseAttributedText(atxt, apoolJsonObj)</a></li>
+<li><a href="#index_editorinfo_ace_applychangestobase_c_optauthor_apooljsonobj">editorInfo.ace_applyChangesToBase(c, optAuthor, apoolJsonObj)</a></li>
+<li><a href="#index_editorinfo_ace_prepareuserchangeset">editorInfo.ace_prepareUserChangeset()</a></li>
+<li><a href="#index_editorinfo_ace_applypreparedchangesettobase">editorInfo.ace_applyPreparedChangesetToBase()</a></li>
+<li><a href="#index_editorinfo_ace_setuserchangenotificationcallback_f">editorInfo.ace_setUserChangeNotificationCallback(f)</a></li>
+<li><a href="#index_editorinfo_ace_setauthorinfo_author_info">editorInfo.ace_setAuthorInfo(author, info)</a></li>
+<li><a href="#index_editorinfo_ace_setauthorselectionrange_author_start_end">editorInfo.ace_setAuthorSelectionRange(author, start, end)</a></li>
+<li><a href="#index_editorinfo_ace_getunhandlederrors">editorInfo.ace_getUnhandledErrors()</a></li>
+<li><a href="#index_editorinfo_ace_getdebugproperty_prop">editorInfo.ace_getDebugProperty(prop)</a></li>
+<li><a href="#index_editorinfo_ace_fastincorp">editorInfo.ace_fastIncorp(?)</a></li>
+<li><a href="#index_editorinfo_ace_iscaret">editorInfo.ace_isCaret(?)</a></li>
+<li><a href="#index_editorinfo_ace_getlineandcharforpoint">editorInfo.ace_getLineAndCharForPoint(?)</a></li>
+<li><a href="#index_editorinfo_ace_performdocumentapplyattributestocharrange">editorInfo.ace_performDocumentApplyAttributesToCharRange(?)</a></li>
+<li><a href="#index_editorinfo_ace_setattributeonselection">editorInfo.ace_setAttributeOnSelection(?)</a></li>
+<li><a href="#index_editorinfo_ace_toggleattributeonselection">editorInfo.ace_toggleAttributeOnSelection(?)</a></li>
+<li><a href="#index_editorinfo_ace_performselectionchange">editorInfo.ace_performSelectionChange(?)</a></li>
+<li><a href="#index_editorinfo_ace_doindentoutdent">editorInfo.ace_doIndentOutdent(?)</a></li>
+<li><a href="#index_editorinfo_ace_doundoredo">editorInfo.ace_doUndoRedo(?)</a></li>
+<li><a href="#index_editorinfo_ace_doinsertunorderedlist">editorInfo.ace_doInsertUnorderedList(?)</a></li>
+<li><a href="#index_editorinfo_ace_doinsertorderedlist">editorInfo.ace_doInsertOrderedList(?)</a></li>
+<li><a href="#index_editorinfo_ace_performdocumentapplyattributestorange">editorInfo.ace_performDocumentApplyAttributesToRange()</a></li>
+<li><a href="#index_editorinfo_ace_getauthorinfos">editorInfo.ace_getAuthorInfos()</a></li>
+<li><a href="#index_editorinfo_ace_performdocumentreplacerange_start_end_newtext">editorInfo.ace_performDocumentReplaceRange(start, end, newText)</a></li>
+<li><a href="#index_editorinfo_ace_performdocumentreplacecharrange_startchar_endchar_newtext">editorInfo.ace_performDocumentReplaceCharRange(startChar, endChar, newText)</a></li>
+<li><a href="#index_editorinfo_ace_renumberlist_linenum">editorInfo.ace_renumberList(lineNum)</a></li>
+<li><a href="#index_editorinfo_ace_doreturnkey">editorInfo.ace_doReturnKey()</a></li>
+<li><a href="#index_editorinfo_ace_isblockelement_element">editorInfo.ace_isBlockElement(element)</a></li>
+<li><a href="#index_editorinfo_ace_getlinelisttype_linenum">editorInfo.ace_getLineListType(lineNum)</a></li>
+<li><a href="#index_editorinfo_ace_caretline">editorInfo.ace_caretLine()</a></li>
+<li><a href="#index_editorinfo_ace_caretcolumn">editorInfo.ace_caretColumn()</a></li>
+<li><a href="#index_editorinfo_ace_caretdocchar">editorInfo.ace_caretDocChar()</a></li>
+<li><a href="#index_editorinfo_ace_iswordchar">editorInfo.ace_isWordChar(?)</a></li>
+</ul>
+</li>
+<li><a href="#index_changeset_library">Changeset Library</a><ul>
+<li><a href="#index_changeset_unpack_changeset">Changeset.unpack(changeset)</a></li>
+<li><a href="#index_changeset_opiterator_ops">Changeset.opIterator(ops)</a></li>
+<li><a href="#index_the_operator_object">The Operator object</a><ul>
+<li><a href="#index_example">Example</a></li>
+</ul>
+</li>
+<li><a href="#index_apool">APool</a></li>
+<li><a href="#index_atext">AText</a></li>
+</ul>
+</li>
+<li><a href="#index_plugin_framework">Plugin Framework</a><ul>
+<li><a href="#index_plugins_update">plugins.update</a></li>
+<li><a href="#index_hooks_callall">hooks.callAll</a></li>
+<li><a href="#index_hooks_acallall">hooks.aCallAll</a></li>
+<li><a href="#index">...</a></li>
+</ul>
+</li>
+<li><a href="#index_plugins">Plugins</a><ul>
+<li><a href="#index_folder_structure">Folder structure</a></li>
+<li><a href="#index_plugin_definition">Plugin definition</a><ul>
+<li><a href="#index_client_hooks_and_server_hooks">Client hooks and server hooks</a></li>
+<li><a href="#index_parts">Parts</a><ul>
+<li><a href="#index_pre_post">pre/post</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#index_package_definition">Package definition</a></li>
+<li><a href="#index_templates">Templates</a></li>
+<li><a href="#index_writing_and_running_front_end_tests_for_your_plugin">Writing and running front-end tests for your plugin</a></li>
+</ul>
+</li>
+<li><a href="#index_database_structure">Database structure</a><ul>
+<li><a href="#index_keys_and_their_values">Keys and their values</a><ul>
+<li><a href="#index_groups_1">groups</a></li>
+<li><a href="#index_pad_padid">pad:$PADID</a></li>
+<li><a href="#index_pad_padid_revs_revnum">pad:$PADID:revs:$REVNUM</a></li>
+<li><a href="#index_pad_padid_chat_chatnum">pad:$PADID:chat:$CHATNUM</a></li>
+<li><a href="#index_pad2readonly_padid">pad2readonly:$PADID</a></li>
+<li><a href="#index_readonly2pad_readonlyid">readonly2pad:$READONLYID</a></li>
+<li><a href="#index_token2author_tokenid">token2author:$TOKENID</a></li>
+<li><a href="#index_globalauthor_authorid">globalAuthor:$AUTHORID</a></li>
+<li><a href="#index_mapper2group_mapper">mapper2group:$MAPPER</a></li>
+<li><a href="#index_mapper2author_mapper">mapper2author:$MAPPER</a></li>
+<li><a href="#index_group_groupid">group:$GROUPID</a></li>
+<li><a href="#index_session_sessionid">session:$SESSIONID</a></li>
+<li><a href="#index_author2sessions_authorid">author2sessions:$AUTHORID</a></li>
+<li><a href="#index_group2sessions_groupid">group2sessions:$GROUPID</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+  <div id="apicontent">
+    <h1>About this Documentation<span><a class="mark" href="#index_about_this_documentation" id="index_about_this_documentation">#</a></span></h1>
+<!-- type=misc -->
+
+<p>The goal of this documentation is to comprehensively explain Etherpad-Lite,
+both from a reference as well as a conceptual point of view.
+
+</p>
+<p>Where appropriate, property types, method arguments, and the arguments
+provided to event handlers are detailed in a list underneath the topic
+heading.
+
+</p>
+<p>Every <code>.html</code> file is generated based on the corresponding
+<code>.markdown</code> file in the <code>doc/api/</code> folder in the source tree. The
+documentation is generated using the <code>tools/doc/generate.js</code> program.
+The HTML template is located at <code>doc/template.html</code>.
+</p>
+<h1>Localization<span><a class="mark" href="#index_localization" id="index_localization">#</a></span></h1>
+<p>Etherpad lite provides a  multi-language user interface, that&apos;s apart from your users&apos; content, so users from different countries can collaborate on a single document, while still having the user interface displayed in their mother tongue.
+
+
+</p>
+<h2>Translating<span><a class="mark" href="#index_translating" id="index_translating">#</a></span></h2>
+<p>We rely on <a href="http://translatewiki.net">http://translatewiki.net</a> to handle the translation process for us, so if you&apos;d like to help...
+
+</p>
+<ol>
+<li>sign up at <a href="http://translatewiki.net">http://translatewiki.net</a></li>
+<li>Visit our <a href="https://translatewiki.net/wiki/Translating:Etherpad_lite">TWN project page</a></li>
+<li>Click on <code>Translate Etherpad lite interface</code></li>
+<li>Choose a target language, you&apos;d like to translate our interface to, and hit <code>Fetch</code></li>
+<li>Start translating!</li>
+</ol>
+<p>Translations will be send back to us regularly and will eventually appear in the next release.
+
+</p>
+<h2>Implementation<span><a class="mark" href="#index_implementation" id="index_implementation">#</a></span></h2>
+<h3>Server-side<span><a class="mark" href="#index_server_side" id="index_server_side">#</a></span></h3>
+<p><code>/src/locales</code> contains files for all supported languages which contain the translated strings. Translation files are simple <code>*.json</code> files and look like this:
+
+</p>
+<pre><code class="json">{ &quot;pad.modals.connected&quot;: &quot;Connect�.&quot;
+, &quot;pad.modals.uderdup&quot;: &quot;Ouvrir dans une nouvelle fen�tre.&quot;
+, &quot;pad.toolbar.unindent.title&quot;: &quot;D�sindenter&quot;
+, &quot;pad.toolbar.undo.title&quot;: &quot;Annuler (Ctrl-Z)&quot;
+, &quot;timeslider.pageTitle&quot;: &quot;{{appTitle}} Curseur temporel&quot;
+, ...
+}</code></pre>
+<p>Each translation consists of a key (the id of the string that is to be translated) and the translated string. Terms in curly braces must not be touched but left as they are, since they represent a dynamically changing part of the string like a variable. Imagine a message welcoming a user: <code>Welcome, {{userName}}!</code> would be translated as <code>Ahoy, {{userName}}!</code> in pirate.
+
+</p>
+<h3>Client-side<span><a class="mark" href="#index_client_side" id="index_client_side">#</a></span></h3>
+<p>We use a <code>language</code> cookie to save your language settings if you change them. If you don&apos;t, we autodetect your locale using information from your browser. Now, that we know your preferred language this information is feeded into a very nice library called <a href="https://github.com/marcelklehr/html10n.js">html10n.js</a>, which loads the appropriate translations and applies them to our templates, providing translation params, pluralization, include rules and even a nice javascript API along the way.
+
+
+
+</p>
+<h2>Localizing plugins<span><a class="mark" href="#index_localizing_plugins" id="index_localizing_plugins">#</a></span></h2>
+<h3>1. Mark the strings to translate<span><a class="mark" href="#index_1_mark_the_strings_to_translate" id="index_1_mark_the_strings_to_translate">#</a></span></h3>
+<p>In the template files of your plugin, change all hardcoded messages/strings...
+
+</p>
+<p>from:
+</p>
+<pre><code class="html">&lt;option value=&quot;0&quot;&gt;Heading 1&lt;/option&gt;</code></pre>
+<p>to:
+</p>
+<pre><code class="html">&lt;option data-l10n-id=&quot;ep_heading.h1&quot; value=&quot;0&quot;&gt;&lt;/option&gt;</code></pre>
+<p>In the javascript files of your plugin, chaneg all hardcoded messages/strings...
+
+</p>
+<p>from:
+</p>
+<pre><code class="js">alert (&apos;Chat&apos;);</code></pre>
+<p>to:
+</p>
+<pre><code class="js">alert(window._(&apos;pad.chat&apos;));</code></pre>
+<h3>2. Create translate files in the locales directory of your plugin<span><a class="mark" href="#index_2_create_translate_files_in_the_locales_directory_of_your_plugin" id="index_2_create_translate_files_in_the_locales_directory_of_your_plugin">#</a></span></h3>
+<div class="signature"><ul>
+<li>The name of the file must be the language code of the language it contains translations for (see <a href="http://joker-x.github.com/languages4translatewiki/test/">supported lang codes</a>; e.g. en ? English, es ? Spanish...)</li>
+<li>The extension of the file must be <code>.json</code></li>
+<li>The default language is English, so your plugin should always provide <code>en.json</code></li>
+<li><p>In order to avoid naming conflicts, your message keys should start with the name of your plugin followed by a dot (see below)</p>
+</li>
+<li><p>ep_your-plugin/locales/en.json*</p>
+<pre><code>&lt;span class=&quot;type&quot;&gt; &quot;ep_your-plugin.h1&quot;: &quot;Heading 1&quot;
+&lt;/span&gt;</code></pre>
+</li>
+<li><p>ep_your-plugin/locales/es.json*</p>
+<pre><code>&lt;span class=&quot;type&quot;&gt; &quot;ep_your-plugin.h1&quot;: &quot;T�tulo 1&quot;
+&lt;/span&gt;</code></pre>
+</li>
+</div></ul>
+<p>Everytime the http server is started, it will auto-detect your messages and merge them automatically with the core messages.
+
+</p>
+<h3>Overwrite core messages<span><a class="mark" href="#index_overwrite_core_messages" id="index_overwrite_core_messages">#</a></span></h3>
+<p>You can overwrite Etherpad Lite&apos;s core messages in your plugin&apos;s locale files.
+For example, if you want to replace <code>Chat</code> with <code>Notes</code>, simply add...
+
+</p>
+<p><em>ep_your-plugin/locales/en.json</em>
+</p>
+<pre><code>{ &quot;ep_your-plugin.h1&quot;: &quot;Heading 1&quot;
+, &quot;pad.chat&quot;: &quot;Notes&quot;
+}</code></pre>
+<h1>Custom static files<span><a class="mark" href="#index_custom_static_files" id="index_custom_static_files">#</a></span></h1>
+<p>Etherpad Lite allows you to include your own static files in the browser, by modifying the files in <code>static/custom</code>.
+
+</p>
+<ul>
+<li><code>index.js</code> Javascript that&apos;ll be run in <code>/</code></li>
+<li><code>index.css</code> Stylesheet affecting <code>/</code></li>
+<li><code>pad.js</code> Javascript that&apos;ll be run in <code>/p/:padid</code></li>
+<li><code>pad.css</code> Stylesheet affecting <code>/p/:padid</code></li>
+<li><code>timeslider.js</code> Javascript that&apos;ll be run in <code>/p/:padid/timeslider</code></li>
+<li><code>timeslider.css</code> Stylesheet affecting <code>/p/:padid/timeslider</code></li>
+<li><code>favicon.ico</code> Overrides the default favicon.</li>
+<li><code>robots.txt</code> Overrides the default <code>robots.txt</code>.<h1>Embed parameters<span><a class="mark" href="#index_embed_parameters" id="index_embed_parameters">#</a></span></h1>
+You can easily embed your etherpad-lite into any webpage by using iframes. You can configure the embedded pad using embed paramters.</li>
+</ul>
+<p>Example:
+
+</p>
+<p>Cut and paste the following code into any webpage to embed a pad. The parameters below will hide the chat and the line numbers.
+
+</p>
+<pre><code>&lt;iframe src=&apos;http://pad.test.de/p/PAD_NAME?showChat=false&amp;showLineNumbers=false&apos; width=600 height=400&gt;&lt;/iframe&gt;</code></pre>
+<h2>showLineNumbers<span><a class="mark" href="#index_showlinenumbers" id="index_showlinenumbers">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: true
+
+</p>
+<h2>showControls<span><a class="mark" href="#index_showcontrols" id="index_showcontrols">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: true
+
+</p>
+<h2>showChat<span><a class="mark" href="#index_showchat" id="index_showchat">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: true
+
+</p>
+<h2>useMonospaceFont<span><a class="mark" href="#index_usemonospacefont" id="index_usemonospacefont">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: false
+
+</p>
+<h2>userName<span><a class="mark" href="#index_username" id="index_username">#</a></span></h2>
+<div class="signature"><ul>
+<li>String</li>
+</div></ul>
+<p>Default: &quot;unnamed&quot;
+
+</p>
+<p>Example: <code>userName=Etherpad%20User</code>
+
+</p>
+<h2>userColor<span><a class="mark" href="#index_usercolor" id="index_usercolor">#</a></span></h2>
+<div class="signature"><ul>
+<li>String (css hex color value)</li>
+</div></ul>
+<p>Default: randomly chosen by pad server
+
+</p>
+<p>Example: <code>userColor=%23ff9900</code>
+
+</p>
+<h2>noColors<span><a class="mark" href="#index_nocolors" id="index_nocolors">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: false
+
+</p>
+<h2>alwaysShowChat<span><a class="mark" href="#index_alwaysshowchat" id="index_alwaysshowchat">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: false
+
+</p>
+<h2>lang<span><a class="mark" href="#index_lang" id="index_lang">#</a></span></h2>
+<div class="signature"><ul>
+<li>String</li>
+</div></ul>
+<p>Default: en
+
+</p>
+<p>Example: <code>lang=ar</code> (translates the interface into Arabic)
+
+</p>
+<h2>rtl<span><a class="mark" href="#index_rtl" id="index_rtl">#</a></span></h2>
+<div class="signature"><ul>
+<li>Boolean</li>
+</div></ul>
+<p>Default: true
+Displays pad text from right to left.
+
+
+</p>
+<h1>HTTP API<span><a class="mark" href="#index_http_api" id="index_http_api">#</a></span></h1>
+<h2>What can I do with this API?<span><a class="mark" href="#index_what_can_i_do_with_this_api" id="index_what_can_i_do_with_this_api">#</a></span></h2>
+<p>The API gives another web application control of the pads. The basic functions are
+
+</p>
+<ul>
+<li>create/delete pads </li>
+<li>grant/forbid access to pads</li>
+<li>get/set pad content</li>
+</ul>
+<p>The API is designed in a way, so you can reuse your existing user system with their permissions, and map it to etherpad lite. Means: Your web application still has to do authentication, but you can tell etherpad lite via the api, which visitors should get which permissions. This allows etherpad lite to fit into any web application and extend it with real-time functionality. You can embed the pads via an iframe into your website.
+
+</p>
+<p>Take a look at <a href="https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries">HTTP API client libraries</a> to see if a library in your favorite language.
+
+</p>
+<h2>Examples<span><a class="mark" href="#index_examples" id="index_examples">#</a></span></h2>
+<h3>Example 1<span><a class="mark" href="#index_example_1" id="index_example_1">#</a></span></h3>
+<p>A portal (such as WordPress) wants to give a user access to a new pad. Let&apos;s assume the user have the internal id 7 and his name is michael. 
+
+</p>
+<p>Portal maps the internal userid to an etherpad author. 
+
+</p>
+<blockquote>
+<p>Request: <code>http://pad.domain/api/1/createAuthorIfNotExistsFor?apikey=secret&amp;name=Michael&amp;authorMapper=7</code>
+
+</p>
+<p>Response: <code>{code: 0, message:&quot;ok&quot;, data: {authorID: &quot;a.s8oes9dhwrvt0zif&quot;}}</code>
+
+</p>
+</blockquote>
+<p>Portal maps the internal userid to an etherpad group:
+
+</p>
+<blockquote>
+<p>Request: <code>http://pad.domain/api/1/createGroupIfNotExistsFor?apikey=secret&amp;groupMapper=7</code>
+
+</p>
+<p>Response: <code>{code: 0, message:&quot;ok&quot;, data: {groupID: &quot;g.s8oes9dhwrvt0zif&quot;}}</code>
+
+</p>
+</blockquote>
+<p>Portal creates a pad in the userGroup
+
+</p>
+<blockquote>
+<p>Request: <code>http://pad.domain/api/1/createGroupPad?apikey=secret&amp;groupID=g.s8oes9dhwrvt0zif&amp;padName=samplePad&amp;text=This is the first sentence in the pad</code>
+
+</p>
+<p>Response: <code>{code: 0, message:&quot;ok&quot;, data: null}</code>
+
+</p>
+</blockquote>
+<p>Portal starts the session for the user on the group:
+
+</p>
+<blockquote>
+<p>Request: <code>http://pad.domain/api/1/createSession?apikey=secret&amp;groupID=g.s8oes9dhwrvt0zif&amp;authorID=a.s8oes9dhwrvt0zif&amp;validUntil=1312201246</code>
+
+</p>
+<p>Response: <code>{&quot;data&quot;:{&quot;sessionID&quot;: &quot;s.s8oes9dhwrvt0zif&quot;}}</code>
+
+</p>
+</blockquote>
+<p>Portal places the cookie &quot;sessionID&quot; with the given value on the client and creates an iframe including the pad.
+
+</p>
+<h3>Example 2<span><a class="mark" href="#index_example_2" id="index_example_2">#</a></span></h3>
+<p>A portal (such as WordPress) wants to transform the contents of a pad that multiple admins edited into a blog post.
+
+</p>
+<p>Portal retrieves the contents of the pad for entry into the db as a blog post:
+
+</p>
+<blockquote>
+<p>Request: <code>http://pad.domain/api/1/getText?apikey=secret&amp;padID=g.s8oes9dhwrvt0zif$123</code>
+
+</p>
+<p>Response: <code>{code: 0, message:&quot;ok&quot;, data: {text:&quot;Welcome Text&quot;}}</code>
+
+</p>
+</blockquote>
+<p>Portal submits content into new blog post
+
+</p>
+<blockquote>
+<p>Portal.AddNewBlog(content)
+
+
+</p>
+</blockquote>
+<h2>Usage<span><a class="mark" href="#index_usage" id="index_usage">#</a></span></h2>
+<h3>API version<span><a class="mark" href="#index_api_version" id="index_api_version">#</a></span></h3>
+<p>The latest version is <code>1.2.7</code>
+
+</p>
+<p>The current version can be queried via /api.
+
+</p>
+<h3>Request Format<span><a class="mark" href="#index_request_format" id="index_request_format">#</a></span></h3>
+<p>The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION/$FUNCTIONNAME. Parameters are transmitted via HTTP GET. $APIVERSION depends on the endpoints you want to use.
+
+</p>
+<h3>Response Format<span><a class="mark" href="#index_response_format" id="index_response_format">#</a></span></h3>
+<p>Responses are valid JSON in the following format:
+
+</p>
+<pre><code class="js">{
+  &quot;code&quot;: number,
+  &quot;message&quot;: string,
+  &quot;data&quot;: obj
+}</code></pre>
+<ul>
+<li><strong>code</strong> a return code<ul>
+<li><strong>0</strong> everything ok</li>
+<li><strong>1</strong> wrong parameters</li>
+<li><strong>2</strong> internal error</li>
+<li><strong>3</strong> no such function</li>
+<li><strong>4</strong> no or wrong API Key</li>
+</ul>
+</li>
+<li><strong>message</strong> a status message. Its ok if everything is fine, else it contains an error message</li>
+<li><strong>data</strong> the payload</li>
+</ul>
+<h3>Overview<span><a class="mark" href="#index_overview" id="index_overview">#</a></span></h3>
+<p><img src="http://i.imgur.com/d0nWp.png" alt="API Overview">
+
+</p>
+<h2>Data Types<span><a class="mark" href="#index_data_types" id="index_data_types">#</a></span></h2>
+<div class="signature"><ul>
+<li><strong>groupID</strong>  a string, the unique id of a group. Format is g.16RANDOMCHARS, for example g.s8oes9dhwrvt0zif</li>
+<li><strong>sessionID</strong> a string, the unique id of a session. Format is s.16RANDOMCHARS, for example s.s8oes9dhwrvt0zif</li>
+<li><strong>authorID</strong> a string, the unique id of an author. Format is a.16RANDOMCHARS, for example a.s8oes9dhwrvt0zif</li>
+<li><strong>readOnlyID</strong> a string, the unique id of an readonly relation to a pad. Format is r.16RANDOMCHARS, for example r.s8oes9dhwrvt0zif</li>
+<li><strong>padID</strong> a string, format is GROUPID$PADNAME, for example the pad test of group g.s8oes9dhwrvt0zif has padID g.s8oes9dhwrvt0zif$test</li>
+</div></ul>
+<h3>Authentication<span><a class="mark" href="#index_authentication" id="index_authentication">#</a></span></h3>
+<p>Authentication works via a token that is sent with each request as a post parameter.  There is a single token per Etherpad-Lite deployment.  This token will be random string, generated by Etherpad-Lite at the first start. It will be saved in APIKEY.txt in the root folder of Etherpad Lite. Only Etherpad Lite and the requesting application knows this key. Token management will not be exposed through this API. 
+
+</p>
+<h3>Node Interoperability<span><a class="mark" href="#index_node_interoperability" id="index_node_interoperability">#</a></span></h3>
+<p>All functions will also be available through a node module accessable from other node.js applications.
+
+</p>
+<h3>JSONP<span><a class="mark" href="#index_jsonp" id="index_jsonp">#</a></span></h3>
+<p>The API provides <em>JSONP</em> support to allow requests from a server in a different domain.
+Simply add <code>&amp;jsonp=?</code> to the API call.
+
+</p>
+<p>Example usage: <a href="http://api.jquery.com/jQuery.getJSON/">http://api.jquery.com/jQuery.getJSON/</a>
+
+</p>
+<h2>API Methods<span><a class="mark" href="#index_api_methods" id="index_api_methods">#</a></span></h2>
+<h3>Groups<span><a class="mark" href="#index_groups" id="index_groups">#</a></span></h3>
+<p>Pads can belong to a group. The padID of grouppads is starting with a groupID like g.asdfasdfasdfasdf$test
+
+</p>
+<h4>createGroup()<span><a class="mark" href="#index_creategroup" id="index_creategroup">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>creates a new group
+
+</p>
+<p><em>Example returns:</em>
+  * <code>{code: 0, message:&quot;ok&quot;, data: {groupID: g.s8oes9dhwrvt0zif}}</code>
+
+</p>
+<h4>createGroupIfNotExistsFor(groupMapper)<span><a class="mark" href="#index_creategroupifnotexistsfor_groupmapper" id="index_creategroupifnotexistsfor_groupmapper">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>this functions helps you to map your application group ids to etherpad lite group ids 
+
+</p>
+<p><em>Example returns:</em>
+  * <code>{code: 0, message:&quot;ok&quot;, data: {groupID: g.s8oes9dhwrvt0zif}}</code>
+
+</p>
+<h4>deleteGroup(groupID)<span><a class="mark" href="#index_deletegroup_groupid" id="index_deletegroup_groupid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>deletes a group
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;groupID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>listPads(groupID)<span><a class="mark" href="#index_listpads_groupid" id="index_listpads_groupid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns all pads of this group
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {padIDs : [&quot;g.s8oes9dhwrvt0zif$test&quot;, &quot;g.s8oes9dhwrvt0zif$test2&quot;]}</code>
+  </em> <code>{code: 1, message:&quot;groupID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>createGroupPad(groupID, padName [, text])<span><a class="mark" href="#index_creategrouppad_groupid_padname_text" id="index_creategrouppad_groupid_padname_text">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>creates a new pad in this group
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;pad does already exist&quot;, data: null}</code>
+  * <code>{code: 1, message:&quot;groupID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>listAllGroups()<span><a class="mark" href="#index_listallgroups" id="index_listallgroups">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1.1</li>
+</div></ul>
+<p>lists all existing groups
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {groupIDs: [&quot;g.mKjkmnAbSMtCt8eL&quot;, &quot;g.3ADWx6sbGuAiUmCy&quot;]}}</code>
+  </em> <code>{code: 0, message:&quot;ok&quot;, data: {groupIDs: []}}</code>
+
+</p>
+<h3>Author<span><a class="mark" href="#index_author" id="index_author">#</a></span></h3>
+<p>These authors are bound to the attributes the users choose (color and name). 
+
+</p>
+<h4>createAuthor([name])<span><a class="mark" href="#index_createauthor_name" id="index_createauthor_name">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>creates a new author
+
+</p>
+<p><em>Example returns:</em>
+  * <code>{code: 0, message:&quot;ok&quot;, data: {authorID: &quot;a.s8oes9dhwrvt0zif&quot;}}</code>
+
+</p>
+<h4>createAuthorIfNotExistsFor(authorMapper [, name])<span><a class="mark" href="#index_createauthorifnotexistsfor_authormapper_name" id="index_createauthorifnotexistsfor_authormapper_name">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>this functions helps you to map your application author ids to etherpad lite author ids 
+
+</p>
+<p><em>Example returns:</em>
+  * <code>{code: 0, message:&quot;ok&quot;, data: {authorID: &quot;a.s8oes9dhwrvt0zif&quot;}}</code>
+
+</p>
+<h4>listPadsOfAuthor(authorID)<span><a class="mark" href="#index_listpadsofauthor_authorid" id="index_listpadsofauthor_authorid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns an array of all pads this author contributed to
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {padIDs: [&quot;g.s8oes9dhwrvt0zif$test&quot;, &quot;g.s8oejklhwrvt0zif$foo&quot;]}}</code>
+  </em> <code>{code: 1, message:&quot;authorID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>getAuthorName(authorID)<span><a class="mark" href="#index_getauthorname_authorid" id="index_getauthorname_authorid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1.1</li>
+</div></ul>
+<p>Returns the Author Name of the author
+
+</p>
+<p><em>Example returns:</em>
+  * <code>{code: 0, message:&quot;ok&quot;, data: {authorName: &quot;John McLear&quot;}}</code>
+
+</p>
+<p>-&gt; can&apos;t be deleted cause this would involve scanning all the pads where this author was
+
+</p>
+<h3>Session<span><a class="mark" href="#index_session" id="index_session">#</a></span></h3>
+<p>Sessions can be created between a group and an author. This allows an author to access more than one group. The sessionID will be set as a cookie to the client and is valid until a certain date. The session cookie can also contain multiple comma-seperated sessionIDs, allowing a user to edit pads in different groups at the same time. Only users with a valid session for this group, can access group pads. You can create a session after you authenticated the user at your web application, to give them access to the pads. You should save the sessionID of this session and delete it after the user logged out.
+
+</p>
+<h4>createSession(groupID, authorID, validUntil)<span><a class="mark" href="#index_createsession_groupid_authorid_validuntil" id="index_createsession_groupid_authorid_validuntil">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>creates a new session. validUntil is an unix timestamp in seconds
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {sessionID: &quot;s.s8oes9dhwrvt0zif&quot;}}</code>
+  </em> <code>{code: 1, message:&quot;groupID doesn&apos;t exist&quot;, data: null}</code>
+  <em> <code>{code: 1, message:&quot;authorID doesn&apos;t exist&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;validUntil is in the past&quot;, data: null}</code>
+
+</p>
+<h4>deleteSession(sessionID)<span><a class="mark" href="#index_deletesession_sessionid" id="index_deletesession_sessionid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>deletes a session
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 1, message:&quot;ok&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;sessionID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>getSessionInfo(sessionID)<span><a class="mark" href="#index_getsessioninfo_sessionid" id="index_getsessioninfo_sessionid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns informations about a session
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {authorID: &quot;a.s8oes9dhwrvt0zif&quot;, groupID: g.s8oes9dhwrvt0zif, validUntil: 1312201246}}</code>
+  </em> <code>{code: 1, message:&quot;sessionID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>listSessionsOfGroup(groupID)<span><a class="mark" href="#index_listsessionsofgroup_groupid" id="index_listsessionsofgroup_groupid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns all sessions of a group
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{&quot;code&quot;:0,&quot;message&quot;:&quot;ok&quot;,&quot;data&quot;:{&quot;s.oxf2ras6lvhv2132&quot;:{&quot;groupID&quot;:&quot;g.s8oes9dhwrvt0zif&quot;,&quot;authorID&quot;:&quot;a.akf8finncvomlqva&quot;,&quot;validUntil&quot;:2312905480}}}</code>
+  </em> <code>{code: 1, message:&quot;groupID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>listSessionsOfAuthor(authorID)<span><a class="mark" href="#index_listsessionsofauthor_authorid" id="index_listsessionsofauthor_authorid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns all sessions of an author
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{&quot;code&quot;:0,&quot;message&quot;:&quot;ok&quot;,&quot;data&quot;:{&quot;s.oxf2ras6lvhv2132&quot;:{&quot;groupID&quot;:&quot;g.s8oes9dhwrvt0zif&quot;,&quot;authorID&quot;:&quot;a.akf8finncvomlqva&quot;,&quot;validUntil&quot;:2312905480}}}</code>
+  </em> <code>{code: 1, message:&quot;authorID does not exist&quot;, data: null}</code>
+
+</p>
+<h3>Pad Content<span><a class="mark" href="#index_pad_content" id="index_pad_content">#</a></span></h3>
+<p>Pad content can be updated and retrieved through the API
+
+</p>
+<h4>getText(padID, [rev])<span><a class="mark" href="#index_gettext_padid_rev" id="index_gettext_padid_rev">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns the text of a pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {text:&quot;Welcome Text&quot;}}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>setText(padID, text)<span><a class="mark" href="#index_settext_padid_text" id="index_settext_padid_text">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>sets the text of a pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+  * <code>{code: 1, message:&quot;text too long&quot;, data: null}</code>
+
+</p>
+<h4>getHTML(padID, [rev])<span><a class="mark" href="#index_gethtml_padid_rev" id="index_gethtml_padid_rev">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns the text of a pad formatted as HTML
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {html:&quot;Welcome Text&lt;br&gt;More Text&quot;}}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h3>Chat<span><a class="mark" href="#index_chat" id="index_chat">#</a></span></h3>
+<h4>getChatHistory(padID, [start, end])<span><a class="mark" href="#index_getchathistory_padid_start_end" id="index_getchathistory_padid_start_end">#</a></span></h4>
+<ul>
+<li>API &gt;= 1.2.7</li>
+</ul>
+<p>returns
+
+</p>
+<ul>
+<li>a part of the chat history, when <code>start</code> and <code>end</code> are given</li>
+<li>the whole chat histroy, when no extra parameters are given</li>
+</ul>
+<p><em>Example returns:</em>
+
+</p>
+<ul>
+<li><code>{&quot;code&quot;:0,&quot;message&quot;:&quot;ok&quot;,&quot;data&quot;:{&quot;messages&quot;:[{&quot;text&quot;:&quot;foo&quot;,&quot;userId&quot;:&quot;a.foo&quot;,&quot;time&quot;:1359199533759,&quot;userName&quot;:&quot;test&quot;},{&quot;text&quot;:&quot;bar&quot;,&quot;userId&quot;:&quot;a.foo&quot;,&quot;time&quot;:1359199534622,&quot;userName&quot;:&quot;test&quot;}]}}</code></li>
+<li><code>{code: 1, message:&quot;start is higher or equal to the current chatHead&quot;, data: null}</code></li>
+<li><code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code></li>
+</ul>
+<h4>getChatHead(padID)<span><a class="mark" href="#index_getchathead_padid" id="index_getchathead_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1.2.7</li>
+</div></ul>
+<p>returns the chatHead (last number of the last chat-message) of the pad
+
+
+</p>
+<p><em>Example returns:</em>
+
+</p>
+<ul>
+<li><code>{code: 0, message:&quot;ok&quot;, data: {chatHead: 42}}</code></li>
+<li><code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code></li>
+</ul>
+<h3>Pad<span><a class="mark" href="#index_pad" id="index_pad">#</a></span></h3>
+<p>Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security manager controls access of them and its forbidden for normal pads to include a $ in the name. 
+
+</p>
+<h4>createPad(padID [, text])<span><a class="mark" href="#index_createpad_padid_text" id="index_createpad_padid_text">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>creates a new (non-group) pad.  Note that if you need to create a group Pad, you should call <strong>createGroupPad</strong>.
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;pad does already exist&quot;, data: null}</code>
+
+</p>
+<h4>getRevisionsCount(padID)<span><a class="mark" href="#index_getrevisionscount_padid" id="index_getrevisionscount_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns the number of revisions of this pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {revisions: 56}}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>padUsersCount(padID)<span><a class="mark" href="#index_paduserscount_padid" id="index_paduserscount_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns the number of user that are currently editing this pad
+
+</p>
+<p><em>Example returns:</em>
+  * <code>{code: 0, message:&quot;ok&quot;, data: {padUsersCount: 5}}</code>
+
+</p>
+<h4>padUsers(padID)<span><a class="mark" href="#index_padusers_padid" id="index_padusers_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1.1</li>
+</div></ul>
+<p>returns the list of users that are currently editing this pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {padUsers: [{colorId:&quot;#c1a9d9&quot;,&quot;name&quot;:&quot;username1&quot;,&quot;timestamp&quot;:1345228793126,&quot;id&quot;:&quot;a.n4gEeMLsvg12452n&quot;},{&quot;colorId&quot;:&quot;#d9a9cd&quot;,&quot;name&quot;:&quot;Hmmm&quot;,&quot;timestamp&quot;:1345228796042,&quot;id&quot;:&quot;a.n4gEeMLsvg12452n&quot;}]}}</code>
+  </em> <code>{code: 0, message:&quot;ok&quot;, data: {padUsers: []}}</code>
+
+</p>
+<h4>deletePad(padID)<span><a class="mark" href="#index_deletepad_padid" id="index_deletepad_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>deletes a pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>getReadOnlyID(padID)<span><a class="mark" href="#index_getreadonlyid_padid" id="index_getreadonlyid_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns the read only link of a pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {readOnlyID: &quot;r.s8oes9dhwrvt0zif&quot;}}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>setPublicStatus(padID, publicStatus)<span><a class="mark" href="#index_setpublicstatus_padid_publicstatus" id="index_setpublicstatus_padid_publicstatus">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>sets a boolean for the public status of a pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>getPublicStatus(padID)<span><a class="mark" href="#index_getpublicstatus_padid" id="index_getpublicstatus_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>return true of false
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {publicStatus: true}}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>setPassword(padID, password)<span><a class="mark" href="#index_setpassword_padid_password" id="index_setpassword_padid_password">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns ok or a error message
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: null}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>isPasswordProtected(padID)<span><a class="mark" href="#index_ispasswordprotected_padid" id="index_ispasswordprotected_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns true or false
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {passwordProtection: true}}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>listAuthorsOfPad(padID)<span><a class="mark" href="#index_listauthorsofpad_padid" id="index_listauthorsofpad_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns an array of authors who contributed to this pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {authorIDs : [&quot;a.s8oes9dhwrvt0zif&quot;, &quot;a.akf8finncvomlqva&quot;]}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>getLastEdited(padID)<span><a class="mark" href="#index_getlastedited_padid" id="index_getlastedited_padid">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1</li>
+</div></ul>
+<p>returns the timestamp of the last revision of the pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {lastEdited: 1340815946602}}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>sendClientsMessage(padID, msg)<span><a class="mark" href="#index_sendclientsmessage_padid_msg" id="index_sendclientsmessage_padid_msg">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1.1</li>
+</div></ul>
+<p>sends a custom message of type <code>msg</code> to the pad
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{code: 0, message:&quot;ok&quot;, data: {}}</code>
+  </em> <code>{code: 1, message:&quot;padID does not exist&quot;, data: null}</code>
+
+</p>
+<h4>checkToken()<span><a class="mark" href="#index_checktoken" id="index_checktoken">#</a></span></h4>
+<div class="signature"><ul>
+<li>API &gt;= 1.2</li>
+</div></ul>
+<p>returns ok when the current api token is valid
+
+</p>
+<p><em>Example returns:</em>
+  <em> <code>{&quot;code&quot;:0,&quot;message&quot;:&quot;ok&quot;,&quot;data&quot;:null}</code>
+  </em> <code>{&quot;code&quot;:4,&quot;message&quot;:&quot;no or wrong API Key&quot;,&quot;data&quot;:null}</code>
+
+</p>
+<h3>Pads<span><a class="mark" href="#index_pads" id="index_pads">#</a></span></h3>
+<h4>listAllPads()<span><a class="mark" href="#index_listallpads" id="index_listallpads">#</a></span></h4>
+<ul>
+<li>API &gt;= 1.2.1</li>
+</ul>
+<p>lists all pads on this epl instance
+
+</p>
+<p><em>Example returns:</em>
+ * <code>{code: 0, message:&quot;ok&quot;, data: [&quot;testPad&quot;, &quot;thePadsOfTheOthers&quot;]}</code>
+
+</p>
+<h1>Hooks<span><a class="mark" href="#index_hooks" id="index_hooks">#</a></span></h1>
+<p>All hooks are called with two arguments:
+
+</p>
+<ol>
+<li>name - the name of the hook being called</li>
+<li>context - an object with some relevant information about the context of the call</li>
+</ol>
+<h2>Return values<span><a class="mark" href="#index_return_values" id="index_return_values">#</a></span></h2>
+<p>A hook should always return a list or undefined. Returning undefined is equivalent to returning an empty list.
+All the returned lists are appended to each other, so if the return values where <code>[1, 2]</code>, <code>undefined</code>, <code>[3, 4,]</code>, <code>undefined</code> and <code>[5]</code>, the value returned by callHook would be <code>[1, 2, 3, 4, 5]</code>.
+
+</p>
+<p>This is, because it should never matter if you have one plugin or several plugins doing some work - a single plugin should be able to make callHook return the same value a set of plugins are able to return collectively. So, any plugin can return a list of values, of any length, not just one value.
+</p>
+<h1>Client-side hooks<span><a class="mark" href="#index_client_side_hooks" id="index_client_side_hooks">#</a></span></h1>
+<p>Most of these hooks are called during or in order to set up the formatting process.
+
+</p>
+<h2>documentReady<span><a class="mark" href="#index_documentready" id="index_documentready">#</a></span></h2>
+<p>Called from: src/templates/pad.html
+
+</p>
+<p>Things in context:
+
+</p>
+<p>nothing
+
+</p>
+<p>This hook proxies the functionality of jQuery&apos;s <code>$(document).ready</code> event.
+
+</p>
+<h2>aceDomLineProcessLineAttributes<span><a class="mark" href="#index_acedomlineprocesslineattributes" id="index_acedomlineprocesslineattributes">#</a></span></h2>
+<p>Called from: src/static/js/domline.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>domline - The current DOM line being processed</li>
+<li>cls - The class of the current block element (useful for styling)</li>
+</ol>
+<p>This hook is called for elements in the DOM that have the &quot;lineMarkerAttribute&quot; set. You can add elements into this category with the aceRegisterBlockElements hook above.
+
+</p>
+<p>The return value of this hook should have the following structure:
+
+</p>
+<p><code>{ preHtml: String, postHtml: String, processedMarker: Boolean }</code>
+
+</p>
+<p>The preHtml and postHtml values will be added to the HTML display of the element, and if processedMarker is true, the engine won&apos;t try to process it any more.
+
+</p>
+<h2>aceCreateDomLine<span><a class="mark" href="#index_acecreatedomline" id="index_acecreatedomline">#</a></span></h2>
+<p>Called from: src/static/js/domline.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>domline - the current DOM line being processed</li>
+<li>cls - The class of the current element (useful for styling)</li>
+</ol>
+<p>This hook is called for any line being processed by the formatting engine, unless the aceDomLineProcessLineAttributes hook from above returned true, in which case this hook is skipped.
+
+</p>
+<p>The return value of this hook should have the following structure:
+
+</p>
+<p><code>{ extraOpenTags: String, extraCloseTags: String, cls: String }</code>
+
+</p>
+<p>extraOpenTags and extraCloseTags will be added before and after the element in question, and cls will be the new class of the element going forward.
+
+</p>
+<h2>acePostWriteDomLineHTML<span><a class="mark" href="#index_acepostwritedomlinehtml" id="index_acepostwritedomlinehtml">#</a></span></h2>
+<p>Called from: src/static/js/domline.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>node - the DOM node that just got written to the page</li>
+</ol>
+<p>This hook is for right after a node has been fully formatted and written to the page.
+
+</p>
+<h2>aceAttribsToClasses<span><a class="mark" href="#index_aceattribstoclasses" id="index_aceattribstoclasses">#</a></span></h2>
+<p>Called from: src/static/js/linestylefilter.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>linestylefilter - the JavaScript object that&apos;s currently processing the ace attributes</li>
+<li>key - the current attribute being processed</li>
+<li>value - the value of the attribute being processed</li>
+</ol>
+<p>This hook is called during the attribute processing procedure, and should be used to translate key, value pairs into valid HTML classes that can be inserted into the DOM.
+
+</p>
+<p>The return value for this function should be a list of classes, which will then be parsed into a valid class string.
+
+</p>
+<h2>aceGetFilterStack<span><a class="mark" href="#index_acegetfilterstack" id="index_acegetfilterstack">#</a></span></h2>
+<p>Called from: src/static/js/linestylefilter.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>linestylefilter - the JavaScript object that&apos;s currently processing the ace attributes</li>
+<li>browser - an object indicating which browser is accessing the page</li>
+</ol>
+<p>This hook is called to apply custom regular expression filters to a set of styles. The one example available is the ep_linkify plugin, which adds internal links. They use it to find the telltale <code>[[ ]]</code> syntax that signifies internal links, and finding that syntax, they add in the internalHref attribute to be later used by the aceCreateDomLine hook (documented above).
+
+</p>
+<h2>aceEditorCSS<span><a class="mark" href="#index_aceeditorcss" id="index_aceeditorcss">#</a></span></h2>
+<p>Called from: src/static/js/ace.js
+
+</p>
+<p>Things in context: None
+
+</p>
+<p>This hook is provided to allow custom CSS files to be loaded. The return value should be an array of paths relative to the plugins directory.
+
+</p>
+<h2>aceInitInnerdocbodyHead<span><a class="mark" href="#index_aceinitinnerdocbodyhead" id="index_aceinitinnerdocbodyhead">#</a></span></h2>
+<p>Called from: src/static/js/ace.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>iframeHTML - the HTML of the editor iframe up to this point, in array format</li>
+</ol>
+<p>This hook is called during the creation of the editor HTML. The array should have lines of HTML added to it, giving the plugin author a chance to add in meta, script, link, and other tags that go into the <code>&lt;head&gt;</code> element of the editor HTML document.
+
+</p>
+<h2>aceEditEvent<span><a class="mark" href="#index_aceeditevent" id="index_aceeditevent">#</a></span></h2>
+<p>Called from: src/static/js/ace2_inner.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>callstack - a bunch of information about the current action</li>
+<li>editorInfo - information about the user who is making the change</li>
+<li>rep - information about where the change is being made</li>
+<li>documentAttributeManager - information about attributes in the document (this is a mystery to me)</li>
+</ol>
+<p>This hook is made available to edit the edit events that might occur when changes are made. Currently you can change the editor information, some of the meanings of the edit, and so on. You can also make internal changes (internal to your plugin) that use the information provided by the edit event.
+
+</p>
+<h2>aceRegisterBlockElements<span><a class="mark" href="#index_aceregisterblockelements" id="index_aceregisterblockelements">#</a></span></h2>
+<p>Called from: src/static/js/ace2_inner.js
+
+</p>
+<p>Things in context: None
+
+</p>
+<p>The return value of this hook will add elements into the &quot;lineMarkerAttribute&quot; category, making the aceDomLineProcessLineAttributes hook (documented below) call for those elements.
+
+</p>
+<h2>aceInitialized<span><a class="mark" href="#index_aceinitialized" id="index_aceinitialized">#</a></span></h2>
+<p>Called from: src/static/js/ace2_inner.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>editorInfo - information about the user who will be making changes through the interface, and a way to insert functions into the main ace object (see ep_headings)</li>
+<li>rep - information about where the user&apos;s cursor is</li>
+<li>documentAttributeManager - some kind of magic</li>
+</ol>
+<p>This hook is for inserting further information into the ace engine, for later use in formatting hooks.
+
+</p>
+<h2>postAceInit<span><a class="mark" href="#index_postaceinit" id="index_postaceinit">#</a></span></h2>
+<p>Called from: src/static/js/pad.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>ace - the ace object that is applied to this editor.</li>
+</ol>
+<p>There doesn&apos;t appear to be any example available of this particular hook being used, but it gets fired after the editor is all set up.
+
+</p>
+<h2>postTimesliderInit<span><a class="mark" href="#index_posttimesliderinit" id="index_posttimesliderinit">#</a></span></h2>
+<p>Called from: src/static/js/timeslider.js
+
+</p>
+<p>There doesn&apos;t appear to be any example available of this particular hook being used, but it gets fired after the timeslider is all set up.
+
+</p>
+<h2>userJoinOrUpdate<span><a class="mark" href="#index_userjoinorupdate" id="index_userjoinorupdate">#</a></span></h2>
+<p>Called from: src/static/js/pad_userlist.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>info - the user information</li>
+</ol>
+<p>This hook is called on the client side whenever a user joins or changes. This can be used to create notifications or an alternate user list.
+
+</p>
+<h2>collectContentPre<span><a class="mark" href="#index_collectcontentpre" id="index_collectcontentpre">#</a></span></h2>
+<p>Called from: src/static/js/contentcollector.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>cc - the contentcollector object</li>
+<li>state - the current state of the change being made</li>
+<li>tname - the tag name of this node currently being processed</li>
+<li>style - the style applied to the node (probably CSS)</li>
+<li>cls - the HTML class string of the node</li>
+</ol>
+<p>This hook is called before the content of a node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad. See, for example, the heading1 plugin for etherpad original.
+
+</p>
+<h2>collectContentPost<span><a class="mark" href="#index_collectcontentpost" id="index_collectcontentpost">#</a></span></h2>
+<p>Called from: src/static/js/contentcollector.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>cc - the contentcollector object</li>
+<li>state - the current state of the change being made</li>
+<li>tname - the tag name of this node currently being processed</li>
+<li>style - the style applied to the node (probably CSS)</li>
+<li>cls - the HTML class string of the node</li>
+</ol>
+<p>This hook is called after the content of a node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad. See, for example, the heading1 plugin for etherpad original.
+
+</p>
+<h2>handleClientMessage_<code>name</code><span><a class="mark" href="#index_handleclientmessage_name" id="index_handleclientmessage_name">#</a></span></h2>
+<p>Called from: <code>src/static/js/collab_client.js</code>
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>payload - the data that got sent with the message (use it for custom message content)</li>
+</ol>
+<p>This hook gets called every time the client receives a message of type <code>name</code>. This can most notably be used with the new HTTP API call, &quot;sendClientsMessage&quot;, which sends a custom message type to all clients connected to a pad. You can also use this to handle existing types.
+
+</p>
+<p><code>collab_client.js</code> has a pretty extensive list of message types, if you want to take a look.
+
+</p>
+<h2>aceStartLineAndCharForPoint-aceEndLineAndCharForPoint<span><a class="mark" href="#index_acestartlineandcharforpoint_aceendlineandcharforpoint" id="index_acestartlineandcharforpoint_aceendlineandcharforpoint">#</a></span></h2>
+<p>Called from: src/static/js/ace2_inner.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>callstack - a bunch of information about the current action</li>
+<li>editorInfo - information about the user who is making the change</li>
+<li>rep - information about where the change is being made</li>
+<li>root - the span element of the current line</li>
+<li>point - the starting/ending element where the cursor highlights</li>
+<li>documentAttributeManager - information about attributes in the document</li>
+</ol>
+<p>This hook is provided to allow a plugin to turn DOM node selection into [line,char] selection.
+The return value should be an array of [line,char]
+
+</p>
+<h2>aceKeyEvent<span><a class="mark" href="#index_acekeyevent" id="index_acekeyevent">#</a></span></h2>
+<p>Called from: src/static/js/ace2_inner.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>callstack - a bunch of information about the current action</li>
+<li>editorInfo - information about the user who is making the change</li>
+<li>rep - information about where the change is being made</li>
+<li>documentAttributeManager - information about attributes in the document</li>
+<li>evt - the fired event</li>
+</ol>
+<p>This hook is provided to allow a plugin to handle key events.
+The return value should be true if you have handled the event.
+
+</p>
+<h2>collectContentLineText<span><a class="mark" href="#index_collectcontentlinetext" id="index_collectcontentlinetext">#</a></span></h2>
+<p>Called from: src/static/js/contentcollector.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>cc - the contentcollector object</li>
+<li>state - the current state of the change being made</li>
+<li>tname - the tag name of this node currently being processed</li>
+<li>text - the text for that line</li>
+</ol>
+<p>This hook allows you to validate/manipulate the text before it&apos;s sent to the server side.
+The return value should be the validated/manipulated text.
+
+</p>
+<h2>collectContentLineBreak<span><a class="mark" href="#index_collectcontentlinebreak" id="index_collectcontentlinebreak">#</a></span></h2>
+<p>Called from: src/static/js/contentcollector.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>cc - the contentcollector object</li>
+<li>state - the current state of the change being made</li>
+<li>tname - the tag name of this node currently being processed</li>
+</ol>
+<p>This hook is provided to allow whether the br tag should induce a new magic domline or not.
+The return value should be either true(break the line) or false.
+
+</p>
+<h2>disableAuthorColorsForThisLine<span><a class="mark" href="#index_disableauthorcolorsforthisline" id="index_disableauthorcolorsforthisline">#</a></span></h2>
+<p>Called from: src/static/js/linestylefilter.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>linestylefilter - the JavaScript object that&apos;s currently processing the ace attributes</li>
+<li>text - the line text</li>
+<li>class - line class</li>
+</ol>
+<p>This hook is provided to allow whether a given line should be deliniated with multiple authors.
+Multiple authors in one line cause the creation of magic span lines. This might not suit you and
+now you can disable it and handle your own deliniation.
+The return value should be either true(disable) or false.
+
+</p>
+<h1>Server-side hooks<span><a class="mark" href="#index_server_side_hooks" id="index_server_side_hooks">#</a></span></h1>
+<p>These hooks are called on server-side.
+
+</p>
+<h2>loadSettings<span><a class="mark" href="#index_loadsettings" id="index_loadsettings">#</a></span></h2>
+<p>Called from: src/node/server.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>settings - the settings object</li>
+</ol>
+<p>Use this hook to receive the global settings in your plugin.
+
+</p>
+<h2>pluginUninstall<span><a class="mark" href="#index_pluginuninstall" id="index_pluginuninstall">#</a></span></h2>
+<p>Called from: src/static/js/pluginfw/installer.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>plugin_name - self-explanatory</li>
+</ol>
+<p>If this hook returns an error, the callback to the uninstall function gets an error as well. This mostly seems useful for handling additional features added in based on the installation of other plugins, which is pretty cool!
+
+</p>
+<h2>pluginInstall<span><a class="mark" href="#index_plugininstall" id="index_plugininstall">#</a></span></h2>
+<p>Called from: src/static/js/pluginfw/installer.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>plugin_name - self-explanatory</li>
+</ol>
+<p>If this hook returns an error, the callback to the install function gets an error, too. This seems useful for adding in features when a particular plugin is installed.
+
+</p>
+<h2>init_<code>&lt;plugin name&gt;</code><span><a class="mark" href="#index_init_plugin_name" id="index_init_plugin_name">#</a></span></h2>
+<p>Called from: src/static/js/pluginfw/plugins.js
+
+</p>
+<p>Things in context: None
+
+</p>
+<p>This function is called after a specific plugin is initialized. This would probably be more useful than the previous two functions if you only wanted to add in features to one specific plugin.
+
+</p>
+<h2>expressConfigure<span><a class="mark" href="#index_expressconfigure" id="index_expressconfigure">#</a></span></h2>
+<p>Called from: src/node/server.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>app - the main application object</li>
+</ol>
+<p>This is a helpful hook for changing the behavior and configuration of the application. It&apos;s called right after the application gets configured.
+
+</p>
+<h2>expressCreateServer<span><a class="mark" href="#index_expresscreateserver" id="index_expresscreateserver">#</a></span></h2>
+<p>Called from: src/node/server.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>app - the main express application object (helpful for adding new paths and such)</li>
+<li>server - the http server object</li>
+</ol>
+<p>This hook gets called after the application object has been created, but before it starts listening. This is similar to the expressConfigure hook, but it&apos;s not guaranteed that the application object will have all relevant configuration variables.
+
+</p>
+<h2>eejsBlock_<code>&lt;name&gt;</code><span><a class="mark" href="#index_eejsblock_name" id="index_eejsblock_name">#</a></span></h2>
+<p>Called from: src/node/eejs/index.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>content - the content of the block</li>
+</ol>
+<p>This hook gets called upon the rendering of an ejs template block. For any specific kind of block, you can change how that block gets rendered by modifying the content object passed in.
+
+</p>
+<p>Have a look at <code>src/templates/pad.html</code> and <code>src/templates/timeslider.html</code> to see which blocks are available.
+
+</p>
+<h2>padCreate<span><a class="mark" href="#index_padcreate" id="index_padcreate">#</a></span></h2>
+<p>Called from: src/node/db/Pad.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>pad - the pad instance</li>
+</ol>
+<p>This hook gets called when a new pad was created.
+
+</p>
+<h2>padLoad<span><a class="mark" href="#index_padload" id="index_padload">#</a></span></h2>
+<p>Called from: src/node/db/Pad.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>pad - the pad instance</li>
+</ol>
+<p>This hook gets called when an pad was loaded. If a new pad was created and loaded this event will be emitted too.
+
+</p>
+<h2>padUpdate<span><a class="mark" href="#index_padupdate" id="index_padupdate">#</a></span></h2>
+<p>Called from: src/node/db/Pad.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>pad - the pad instance</li>
+</ol>
+<p>This hook gets called when an existing pad was updated.
+
+</p>
+<h2>padRemove<span><a class="mark" href="#index_padremove" id="index_padremove">#</a></span></h2>
+<p>Called from: src/node/db/Pad.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>padID</li>
+</ol>
+<p>This hook gets called when an existing pad was removed/deleted.
+
+</p>
+<h2>socketio<span><a class="mark" href="#index_socketio" id="index_socketio">#</a></span></h2>
+<p>Called from: src/node/hooks/express/socketio.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>app - the application object</li>
+<li>io - the socketio object</li>
+<li>server - the http server object</li>
+</ol>
+<p>I have no idea what this is useful for, someone else will have to add this description.
+
+</p>
+<h2>authorize<span><a class="mark" href="#index_authorize" id="index_authorize">#</a></span></h2>
+<p>Called from: src/node/hooks/express/webaccess.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>req - the request object</li>
+<li>res - the response object</li>
+<li>next - ?</li>
+<li>resource - the path being accessed</li>
+</ol>
+<p>This is useful for modifying the way authentication is done, especially for specific paths.
+
+</p>
+<h2>authenticate<span><a class="mark" href="#index_authenticate" id="index_authenticate">#</a></span></h2>
+<p>Called from: src/node/hooks/express/webaccess.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>req - the request object</li>
+<li>res - the response object</li>
+<li>next - ?</li>
+<li>username - the username used (optional)</li>
+<li>password - the password used (optional)</li>
+</ol>
+<p>This is useful for modifying the way authentication is done.
+
+</p>
+<h2>authFailure<span><a class="mark" href="#index_authfailure" id="index_authfailure">#</a></span></h2>
+<p>Called from: src/node/hooks/express/webaccess.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>req - the request object</li>
+<li>res - the response object</li>
+<li>next - ?</li>
+</ol>
+<p>This is useful for modifying the way authentication is done.
+
+</p>
+<h2>handleMessage<span><a class="mark" href="#index_handlemessage" id="index_handlemessage">#</a></span></h2>
+<p>Called from: src/node/handler/PadMessageHandler.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>message - the message being handled</li>
+<li>client - the client object from socket.io</li>
+</ol>
+<p>This hook will be called once a message arrive. If a plugin calls <code>callback(null)</code> the message will be dropped. However it is not possible to modify the message.
+
+</p>
+<p>Plugins may also decide to implement custom behavior once a message arrives.
+
+</p>
+<p><strong>WARNING</strong>: handleMessage will be called, even if the client is not authorized to send this message. It&apos;s up to the plugin to check permissions.
+
+</p>
+<p>Example:
+
+</p>
+<pre><code>function handleMessage ( hook, context, callback ) {
+  if ( context.message.type == &apos;USERINFO_UPDATE&apos; ) {
+    // If the message type is USERINFO_UPDATE, drop the message
+    callback(null);
+  }else{
+    callback();
+  }
+};</code></pre>
+<h2>clientVars<span><a class="mark" href="#index_clientvars" id="index_clientvars">#</a></span></h2>
+<p>Called from: src/node/handler/PadMessageHandler.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>clientVars - the basic <code>clientVars</code> built by the core</li>
+<li>pad - the pad this session is about</li>
+</ol>
+<p>This hook will be called once a client connects and the <code>clientVars</code> are being sent. Plugins can use this hook to give the client a initial configuriation, like the tracking-id of an external analytics-tool that is used on the client-side. You can also overwrite values from the original <code>clientVars</code>.
+
+</p>
+<p>Example:
+
+</p>
+<pre><code>exports.clientVars = function(hook, context, callback)
+{
+  // tell the client which year we are in
+  return callback({ &quot;currentYear&quot;: new Date().getFullYear() });
+};</code></pre>
+<p>This can be accessed on the client-side using <code>clientVars.currentYear</code>.
+
+</p>
+<h2>getLineHTMLForExport<span><a class="mark" href="#index_getlinehtmlforexport" id="index_getlinehtmlforexport">#</a></span></h2>
+<p>Called from: src/node/utils/ExportHtml.js
+
+</p>
+<p>Things in context:
+
+</p>
+<ol>
+<li>apool - pool object</li>
+<li>attribLine - line attributes</li>
+<li>text - line text</li>
+</ol>
+<p>This hook will allow a plug-in developer to re-write each line when exporting to HTML.
+
+
+</p>
+<h1>editorInfo<span><a class="mark" href="#index_editorinfo" id="index_editorinfo">#</a></span></h1>
+<h2>editorInfo.ace_replaceRange(start, end, text)<span><a class="mark" href="#index_editorinfo_ace_replacerange_start_end_text" id="index_editorinfo_ace_replacerange_start_end_text">#</a></span></h2>
+<p>This function replaces a range (from <code>start</code> to <code>end</code>) with <code>text</code>.
+
+</p>
+<h2>editorInfo.ace_getRep()<span><a class="mark" href="#index_editorinfo_ace_getrep" id="index_editorinfo_ace_getrep">#</a></span></h2>
+<p>Returns the <code>rep</code> object.
+
+</p>
+<h2>editorInfo.ace_getAuthor()<span><a class="mark" href="#index_editorinfo_ace_getauthor" id="index_editorinfo_ace_getauthor">#</a></span></h2>
+<h2>editorInfo.ace_inCallStack()<span><a class="mark" href="#index_editorinfo_ace_incallstack" id="index_editorinfo_ace_incallstack">#</a></span></h2>
+<h2>editorInfo.ace_inCallStackIfNecessary(?)<span><a class="mark" href="#index_editorinfo_ace_incallstackifnecessary" id="index_editorinfo_ace_incallstackifnecessary">#</a></span></h2>
+<h2>editorInfo.ace_focus(?)<span><a class="mark" href="#index_editorinfo_ace_focus" id="index_editorinfo_ace_focus">#</a></span></h2>
+<h2>editorInfo.ace_importText(?)<span><a class="mark" href="#index_editorinfo_ace_importtext" id="index_editorinfo_ace_importtext">#</a></span></h2>
+<h2>editorInfo.ace_importAText(?)<span><a class="mark" href="#index_editorinfo_ace_importatext" id="index_editorinfo_ace_importatext">#</a></span></h2>
+<h2>editorInfo.ace_exportText(?)<span><a class="mark" href="#index_editorinfo_ace_exporttext" id="index_editorinfo_ace_exporttext">#</a></span></h2>
+<h2>editorInfo.ace_editorChangedSize(?)<span><a class="mark" href="#index_editorinfo_ace_editorchangedsize" id="index_editorinfo_ace_editorchangedsize">#</a></span></h2>
+<h2>editorInfo.ace_setOnKeyPress(?)<span><a class="mark" href="#index_editorinfo_ace_setonkeypress" id="index_editorinfo_ace_setonkeypress">#</a></span></h2>
+<h2>editorInfo.ace_setOnKeyDown(?)<span><a class="mark" href="#index_editorinfo_ace_setonkeydown" id="index_editorinfo_ace_setonkeydown">#</a></span></h2>
+<h2>editorInfo.ace_setNotifyDirty(?)<span><a class="mark" href="#index_editorinfo_ace_setnotifydirty" id="index_editorinfo_ace_setnotifydirty">#</a></span></h2>
+<h2>editorInfo.ace_dispose(?)<span><a class="mark" href="#index_editorinfo_ace_dispose" id="index_editorinfo_ace_dispose">#</a></span></h2>
+<h2>editorInfo.ace_getFormattedCode(?)<span><a class="mark" href="#index_editorinfo_ace_getformattedcode" id="index_editorinfo_ace_getformattedcode">#</a></span></h2>
+<h2>editorInfo.ace_setEditable(bool)<span><a class="mark" href="#index_editorinfo_ace_seteditable_bool" id="index_editorinfo_ace_seteditable_bool">#</a></span></h2>
+<h2>editorInfo.ace_execCommand(?)<span><a class="mark" href="#index_editorinfo_ace_execcommand" id="index_editorinfo_ace_execcommand">#</a></span></h2>
+<h2>editorInfo.ace_callWithAce(fn, callStack, normalize)<span><a class="mark" href="#index_editorinfo_ace_callwithace_fn_callstack_normalize" id="index_editorinfo_ace_callwithace_fn_callstack_normalize">#</a></span></h2>
+<h2>editorInfo.ace_setProperty(key, value)<span><a class="mark" href="#index_editorinfo_ace_setproperty_key_value" id="index_editorinfo_ace_setproperty_key_value">#</a></span></h2>
+<h2>editorInfo.ace_setBaseText(txt)<span><a class="mark" href="#index_editorinfo_ace_setbasetext_txt" id="index_editorinfo_ace_setbasetext_txt">#</a></span></h2>
+<h2>editorInfo.ace_setBaseAttributedText(atxt, apoolJsonObj)<span><a class="mark" href="#index_editorinfo_ace_setbaseattributedtext_atxt_apooljsonobj" id="index_editorinfo_ace_setbaseattributedtext_atxt_apooljsonobj">#</a></span></h2>
+<h2>editorInfo.ace_applyChangesToBase(c, optAuthor, apoolJsonObj)<span><a class="mark" href="#index_editorinfo_ace_applychangestobase_c_optauthor_apooljsonobj" id="index_editorinfo_ace_applychangestobase_c_optauthor_apooljsonobj">#</a></span></h2>
+<h2>editorInfo.ace_prepareUserChangeset()<span><a class="mark" href="#index_editorinfo_ace_prepareuserchangeset" id="index_editorinfo_ace_prepareuserchangeset">#</a></span></h2>
+<h2>editorInfo.ace_applyPreparedChangesetToBase()<span><a class="mark" href="#index_editorinfo_ace_applypreparedchangesettobase" id="index_editorinfo_ace_applypreparedchangesettobase">#</a></span></h2>
+<h2>editorInfo.ace_setUserChangeNotificationCallback(f)<span><a class="mark" href="#index_editorinfo_ace_setuserchangenotificationcallback_f" id="index_editorinfo_ace_setuserchangenotificationcallback_f">#</a></span></h2>
+<h2>editorInfo.ace_setAuthorInfo(author, info)<span><a class="mark" href="#index_editorinfo_ace_setauthorinfo_author_info" id="index_editorinfo_ace_setauthorinfo_author_info">#</a></span></h2>
+<h2>editorInfo.ace_setAuthorSelectionRange(author, start, end)<span><a class="mark" href="#index_editorinfo_ace_setauthorselectionrange_author_start_end" id="index_editorinfo_ace_setauthorselectionrange_author_start_end">#</a></span></h2>
+<h2>editorInfo.ace_getUnhandledErrors()<span><a class="mark" href="#index_editorinfo_ace_getunhandlederrors" id="index_editorinfo_ace_getunhandlederrors">#</a></span></h2>
+<h2>editorInfo.ace_getDebugProperty(prop)<span><a class="mark" href="#index_editorinfo_ace_getdebugproperty_prop" id="index_editorinfo_ace_getdebugproperty_prop">#</a></span></h2>
+<h2>editorInfo.ace_fastIncorp(?)<span><a class="mark" href="#index_editorinfo_ace_fastincorp" id="index_editorinfo_ace_fastincorp">#</a></span></h2>
+<h2>editorInfo.ace_isCaret(?)<span><a class="mark" href="#index_editorinfo_ace_iscaret" id="index_editorinfo_ace_iscaret">#</a></span></h2>
+<h2>editorInfo.ace_getLineAndCharForPoint(?)<span><a class="mark" href="#index_editorinfo_ace_getlineandcharforpoint" id="index_editorinfo_ace_getlineandcharforpoint">#</a></span></h2>
+<h2>editorInfo.ace_performDocumentApplyAttributesToCharRange(?)<span><a class="mark" href="#index_editorinfo_ace_performdocumentapplyattributestocharrange" id="index_editorinfo_ace_performdocumentapplyattributestocharrange">#</a></span></h2>
+<h2>editorInfo.ace_setAttributeOnSelection(?)<span><a class="mark" href="#index_editorinfo_ace_setattributeonselection" id="index_editorinfo_ace_setattributeonselection">#</a></span></h2>
+<h2>editorInfo.ace_toggleAttributeOnSelection(?)<span><a class="mark" href="#index_editorinfo_ace_toggleattributeonselection" id="index_editorinfo_ace_toggleattributeonselection">#</a></span></h2>
+<h2>editorInfo.ace_performSelectionChange(?)<span><a class="mark" href="#index_editorinfo_ace_performselectionchange" id="index_editorinfo_ace_performselectionchange">#</a></span></h2>
+<h2>editorInfo.ace_doIndentOutdent(?)<span><a class="mark" href="#index_editorinfo_ace_doindentoutdent" id="index_editorinfo_ace_doindentoutdent">#</a></span></h2>
+<h2>editorInfo.ace_doUndoRedo(?)<span><a class="mark" href="#index_editorinfo_ace_doundoredo" id="index_editorinfo_ace_doundoredo">#</a></span></h2>
+<h2>editorInfo.ace_doInsertUnorderedList(?)<span><a class="mark" href="#index_editorinfo_ace_doinsertunorderedlist" id="index_editorinfo_ace_doinsertunorderedlist">#</a></span></h2>
+<h2>editorInfo.ace_doInsertOrderedList(?)<span><a class="mark" href="#index_editorinfo_ace_doinsertorderedlist" id="index_editorinfo_ace_doinsertorderedlist">#</a></span></h2>
+<h2>editorInfo.ace_performDocumentApplyAttributesToRange()<span><a class="mark" href="#index_editorinfo_ace_performdocumentapplyattributestorange" id="index_editorinfo_ace_performdocumentapplyattributestorange">#</a></span></h2>
+<h2>editorInfo.ace_getAuthorInfos()<span><a class="mark" href="#index_editorinfo_ace_getauthorinfos" id="index_editorinfo_ace_getauthorinfos">#</a></span></h2>
+<p>Returns an info object about the author. Object key = author_id and info includes author&apos;s bg color value.
+Use to define your own authorship.
+</p>
+<h2>editorInfo.ace_performDocumentReplaceRange(start, end, newText)<span><a class="mark" href="#index_editorinfo_ace_performdocumentreplacerange_start_end_newtext" id="index_editorinfo_ace_performdocumentreplacerange_start_end_newtext">#</a></span></h2>
+<p>This function replaces a range (from [x1,y1] to [x2,y2]) with <code>newText</code>.
+</p>
+<h2>editorInfo.ace_performDocumentReplaceCharRange(startChar, endChar, newText)<span><a class="mark" href="#index_editorinfo_ace_performdocumentreplacecharrange_startchar_endchar_newtext" id="index_editorinfo_ace_performdocumentreplacecharrange_startchar_endchar_newtext">#</a></span></h2>
+<p>This function replaces a range (from y1 to y2) with <code>newText</code>.
+</p>
+<h2>editorInfo.ace_renumberList(lineNum)<span><a class="mark" href="#index_editorinfo_ace_renumberlist_linenum" id="index_editorinfo_ace_renumberlist_linenum">#</a></span></h2>
+<p>If you delete a line, calling this method will fix the line numbering.
+</p>
+<h2>editorInfo.ace_doReturnKey()<span><a class="mark" href="#index_editorinfo_ace_doreturnkey" id="index_editorinfo_ace_doreturnkey">#</a></span></h2>
+<p>Forces a return key at the current carret position.
+</p>
+<h2>editorInfo.ace_isBlockElement(element)<span><a class="mark" href="#index_editorinfo_ace_isblockelement_element" id="index_editorinfo_ace_isblockelement_element">#</a></span></h2>
+<p>Returns true if your passed elment is registered as a block element
+</p>
+<h2>editorInfo.ace_getLineListType(lineNum)<span><a class="mark" href="#index_editorinfo_ace_getlinelisttype_linenum" id="index_editorinfo_ace_getlinelisttype_linenum">#</a></span></h2>
+<p>Returns the line&apos;s html list type.
+</p>
+<h2>editorInfo.ace_caretLine()<span><a class="mark" href="#index_editorinfo_ace_caretline" id="index_editorinfo_ace_caretline">#</a></span></h2>
+<p>Returns X position of the caret.
+</p>
+<h2>editorInfo.ace_caretColumn()<span><a class="mark" href="#index_editorinfo_ace_caretcolumn" id="index_editorinfo_ace_caretcolumn">#</a></span></h2>
+<p>Returns Y position of the caret.
+</p>
+<h2>editorInfo.ace_caretDocChar()<span><a class="mark" href="#index_editorinfo_ace_caretdocchar" id="index_editorinfo_ace_caretdocchar">#</a></span></h2>
+<p>Returns the Y offset starting from [x=0,y=0]
+</p>
+<h2>editorInfo.ace_isWordChar(?)<span><a class="mark" href="#index_editorinfo_ace_iswordchar" id="index_editorinfo_ace_iswordchar">#</a></span></h2>
+<h1>Changeset Library<span><a class="mark" href="#index_changeset_library" id="index_changeset_library">#</a></span></h1>
+<pre><code>&quot;Z:z&gt;1|2=m=b*0|1+1$\n&quot;</code></pre>
+<p>This is a Changeset. Its just a string and its very difficult to read in this form. But the Changeset Library gives us some tools to read it.
+
+</p>
+<p>A changeset describes the diff between two revisions of the document. The Browser sends changesets to the server and the server sends them to the clients to update them. This Changesets gets also saved into the history of a pad. Which allows us to go back to every revision from the past.
+
+</p>
+<h2>Changeset.unpack(changeset)<span><a class="mark" href="#index_changeset_unpack_changeset" id="index_changeset_unpack_changeset">#</a></span></h2>
+<div class="signature"><ul>
+<li><code>changeset</code> <span class="type">String</span></li>
+</div></ul>
+<p>This functions returns an object representaion of the changeset, similar to this:
+
+</p>
+<pre><code>{ oldLen: 35, newLen: 36, ops: &apos;|2=m=b*0|1+1&apos;, charBank: &apos;\n&apos; }</code></pre>
+<ul>
+<li><code>oldLen</code> {Number} the original length of the document.</li>
+<li><code>newLen</code> {Number} the length of the document after the changeset is applied.</li>
+<li><code>ops</code> {String} the actual changes, introduced by this changeset.</li>
+<li><code>charBank</code> {String} All characters that are added by this changeset.</li>
+</ul>
+<h2>Changeset.opIterator(ops)<span><a class="mark" href="#index_changeset_opiterator_ops" id="index_changeset_opiterator_ops">#</a></span></h2>
+<div class="signature"><ul>
+<li><code>ops</code> <span class="type">String</span> The operators, returned by <code>Changeset.unpack()</code></li>
+</div></ul>
+<p>Returns an operator iterator. This iterator allows us to iterate over all operators that are in the changeset.
+
+</p>
+<p>You can iterate with an opIterator using its <code>next()</code> and <code>hasNext()</code> methods. Next returns the <code>next()</code> operator object and <code>hasNext()</code> indicates, whether there are any operators left.
+
+</p>
+<h2>The Operator object<span><a class="mark" href="#index_the_operator_object" id="index_the_operator_object">#</a></span></h2>
+<p>There are 3 types of operators: <code>+</code>,<code>-</code> and <code>=</code>. These operators describe different changes to the document, beginning with the first character of the document. A <code>=</code> operator doesn&apos;t change the text, but it may add or remove text attributes. A <code>-</code> operator removes text. And a <code>+</code> Operator adds text and optionally adds some attributes to it.
+
+</p>
+<ul>
+<li><code>opcode</code> {String} the operator type</li>
+<li><code>chars</code> {Number} the length of the text changed by this operator.</li>
+<li><code>lines</code> {Number} the number of lines changed by this operator.</li>
+<li><code>attribs</code> {attribs} attributes set on this text.</li>
+</ul>
+<h3>Example<span><a class="mark" href="#index_example" id="index_example">#</a></span></h3>
+<pre><code>{ opcode: &apos;+&apos;,
+  chars: 1,
+  lines: 1,
+  attribs: &apos;*0&apos; }</code></pre>
+<h2>APool<span><a class="mark" href="#index_apool" id="index_apool">#</a></span></h2>
+<pre><code>&gt; var AttributePoolFactory = require(&quot;./utils/AttributePoolFactory&quot;);
+&gt; var apool = AttributePoolFactory.createAttributePool();
+&gt; console.log(apool)
+{ numToAttrib: {},
+  attribToNum: {},
+  nextNum: 0,
+  putAttrib: [Function],
+  getAttrib: [Function],
+  getAttribKey: [Function],
+  getAttribValue: [Function],
+  eachAttrib: [Function],
+  toJsonable: [Function],
+  fromJsonable: [Function] }</code></pre>
+<p>This creates an empty apool. A apool saves which attributes were used during the history of a pad. There is one apool for each pad. It only saves the attributes that were really used, it doesn&apos;t save unused attributes. Lets fill this apool with some values
+
+</p>
+<pre><code>&gt; apool.fromJsonable({&quot;numToAttrib&quot;:{&quot;0&quot;:[&quot;author&quot;,&quot;a.kVnWeomPADAT2pn9&quot;],&quot;1&quot;:[&quot;bold&quot;,&quot;true&quot;],&quot;2&quot;:[&quot;italic&quot;,&quot;true&quot;]},&quot;nextNum&quot;:3});
+&gt; console.log(apool)
+{ numToAttrib: 
+   { &apos;0&apos;: [ &apos;author&apos;, &apos;a.kVnWeomPADAT2pn9&apos; ],
+     &apos;1&apos;: [ &apos;bold&apos;, &apos;true&apos; ],
+     &apos;2&apos;: [ &apos;italic&apos;, &apos;true&apos; ] },
+  attribToNum: 
+   { &apos;author,a.kVnWeomPADAT2pn9&apos;: 0,
+     &apos;bold,true&apos;: 1,
+     &apos;italic,true&apos;: 2 },
+  nextNum: 3,
+  putAttrib: [Function],
+  getAttrib: [Function],
+  getAttribKey: [Function],
+  getAttribValue: [Function],
+  eachAttrib: [Function],
+  toJsonable: [Function],
+  fromJsonable: [Function] }</code></pre>
+<p>We used the fromJsonable function to fill the empty apool with values. the fromJsonable and toJsonable functions are used to serialize and deserialize an apool. You can see that it stores the relation between numbers and attributes. So for example the attribute 1 is the attribute bold and vise versa. A attribute is always a key value pair. For stuff like bold and italic its just  &apos;italic&apos;:&apos;true&apos;. For authors its author:$AUTHORID. So a character can be bold and italic. But it can&apos;t belong to multiple authors
+
+</p>
+<pre><code>&gt; apool.getAttrib(1)
+[ &apos;bold&apos;, &apos;true&apos; ]</code></pre>
+<p>Simple example of how to get the key value pair for the attribute 1
+
+</p>
+<h2>AText<span><a class="mark" href="#index_atext" id="index_atext">#</a></span></h2>
+<pre><code>&gt; var atext = {&quot;text&quot;:&quot;bold text\nitalic text\nnormal text\n\n&quot;,&quot;attribs&quot;:&quot;*0*1+9*0|1+1*0*1*2+b|1+1*0+b|2+2&quot;};
+&gt; console.log(atext)
+{ text: &apos;bold text\nitalic text\nnormal text\n\n&apos;,
+  attribs: &apos;*0*1+9*0|1+1*0*1*2+b|1+1*0+b|2+2&apos; }</code></pre>
+<p>This is an atext. An atext has two parts: text and attribs. The text is just the text of the pad as a string. We will look closer at the attribs at the next steps
+
+</p>
+<pre><code>&gt; var opiterator = Changeset.opIterator(atext.attribs)
+&gt; console.log(opiterator)
+{ next: [Function: next],
+  hasNext: [Function: hasNext],
+  lastIndex: [Function: lastIndex] }
+&gt; opiterator.next()
+{ opcode: &apos;+&apos;,
+  chars: 9,
+  lines: 0,
+  attribs: &apos;*0*1&apos; }
+&gt; opiterator.next()
+{ opcode: &apos;+&apos;,
+  chars: 1,
+  lines: 1,
+  attribs: &apos;*0&apos; }
+&gt; opiterator.next()
+{ opcode: &apos;+&apos;,
+  chars: 11,
+  lines: 0,
+  attribs: &apos;*0*1*2&apos; }
+&gt; opiterator.next()
+{ opcode: &apos;+&apos;,
+  chars: 1,
+  lines: 1,
+  attribs: &apos;&apos; }
+&gt; opiterator.next()
+{ opcode: &apos;+&apos;,
+  chars: 11,
+  lines: 0,
+  attribs: &apos;*0&apos; }
+&gt; opiterator.next()
+{ opcode: &apos;+&apos;,
+  chars: 2,
+  lines: 2,
+  attribs: &apos;&apos; }</code></pre>
+<p>The attribs are again a bunch of operators like .ops in the changeset was. But these operators are only + operators. They describe which part of the text has which attributes
+
+</p>
+<p>For more information see /doc/easysync/easysync-notes.txt in the source.
+
+</p>
+<h1>Plugin Framework<span><a class="mark" href="#index_plugin_framework" id="index_plugin_framework">#</a></span></h1>
+<p><code>require(&quot;ep_etherpad-lite/static/js/plugingfw/plugins&quot;)</code>
+
+</p>
+<h2>plugins.update<span><a class="mark" href="#index_plugins_update" id="index_plugins_update">#</a></span></h2>
+<p><code>require(&quot;ep_etherpad-lite/static/js/plugingfw/plugins&quot;).update()</code> will use npm to list all installed modules and read their ep.json files, registering the contained hooks.
+A hook registration is a pairs of a hook name and a function reference (filename for require() plus function name)
+
+</p>
+<h2>hooks.callAll<span><a class="mark" href="#index_hooks_callall" id="index_hooks_callall">#</a></span></h2>
+<p><code>require(&quot;ep_etherpad-lite/static/js/plugingfw/hooks&quot;).callAll(&quot;hook_name&quot;, {argname:value})</code> will call all hook functions registered for <code>hook_name</code> with <code>{argname:value}</code>.
+
+</p>
+<h2>hooks.aCallAll<span><a class="mark" href="#index_hooks_acallall" id="index_hooks_acallall">#</a></span></h2>
+<p>?
+
+</p>
+<h2>...<span><a class="mark" href="#index" id="index">#</a></span></h2>
+<h1>Plugins<span><a class="mark" href="#index_plugins" id="index_plugins">#</a></span></h1>
+<p>Etherpad-Lite allows you to extend its functionality with plugins. A plugin registers hooks (functions) for certain events (thus certain features) in Etherpad-lite to execute its own functionality based on these events.
+
+</p>
+<p>Publicly available plugins can be found in the npm registry (see <a href="http://npmjs.org">http://npmjs.org</a>). Etherpad-lite&apos;s naming convention for plugins is to prefix your plugins with <code>ep_</code>. So, e.g. it&apos;s <code>ep_flubberworms</code>. Thus you can install plugins from npm, using <code>npm install ep_flubberworm</code> in etherpad-lite&apos;s root directory.
+
+</p>
+<p>You can also browse to <code>http://yourEtherpadInstan.ce/admin/plugins</code>, which will list all installed plugins  and those available on npm. It even provides functionality to search through all available plugins.
+
+</p>
+<h2>Folder structure<span><a class="mark" href="#index_folder_structure" id="index_folder_structure">#</a></span></h2>
+<p>A basic plugin usually has the following folder structure:
+</p>
+<pre><code>ep_&lt;plugin&gt;/
+ | static/
+ | templates/
+ | locales/
+ + ep.json
+ + package.json</code></pre>
+<p>If your plugin includes client-side hooks, put them in <code>static/js/</code>. If you&apos;re adding in CSS or image files, you should put those files in <code>static/css/ </code>and <code>static/image/</code>, respectively, and templates go into <code>templates/</code>. Translations go into <code>locales/</code>
+
+</p>
+<p>A Standard directory structure like this makes it easier to navigate through your code. That said, do note, that this is not actually <em>required</em> to make your plugin run. If you want to make use of our i18n system, you need to put your translations into <code>locales/</code>, though, in order to have them intergated. (See &quot;Localization&quot; for more info on how to localize your plugin)
+
+</p>
+<h2>Plugin definition<span><a class="mark" href="#index_plugin_definition" id="index_plugin_definition">#</a></span></h2>
+<p>Your plugin definition goes into <code>ep.json</code>. In this file you register your hooks, indicate the parts of your plugin and the order of execution. (A documentation of all available events to hook into can be found in chapter <a href="#all_hooks">hooks</a>.)
+
+</p>
+<p>A hook registration is a pairs of a hook name and a function reference (filename to require() + exported function name)
+
+</p>
+<pre><code class="json">{
+  &quot;parts&quot;: [
+    {
+      &quot;name&quot;: &quot;nameThisPartHoweverYouWant&quot;,
+      &quot;hooks&quot;: {
+        &quot;authenticate&quot; : &quot;ep_&lt;plugin&gt;/&lt;file&gt;:FUNCTIONNAME1&quot;,
+        &quot;expressCreateServer&quot;: &quot;ep_&lt;plugin&gt;/&lt;file&gt;:FUNCTIONNAME2&quot;
+      },
+      &quot;client_hooks&quot;: {
+        &quot;acePopulateDOMLine&quot;: &quot;ep_plugin/&lt;file&gt;:FUNCTIONNAME3&quot;
+      }
+    }
+  ]
+}</code></pre>
+<p>Etherpad-lite will expect the part of the hook definition before the colon to be a javascript file and will try to require it. The part after the colon is expected to be a valid function identifier of that module. So, you have to export your hooks, using <a href="http://nodejs.org/docs/latest/api/modules.html#modules_modules"><code>module.exports</code></a> and register it in <code>ep.json</code> as <code>ep_&lt;plugin&gt;/path/to/&lt;file&gt;:FUNCTIONNAME</code>.
+You can omit the <code>FUNCTIONNAME</code> part, if the exported function has got the same name as the hook. So <code>&quot;authorize&quot; : &quot;ep_flubberworm/foo&quot;</code> will call the function <code>exports.authorize</code> in <code>ep_flubberworm/foo.js</code>
+
+</p>
+<h3>Client hooks and server hooks<span><a class="mark" href="#index_client_hooks_and_server_hooks" id="index_client_hooks_and_server_hooks">#</a></span></h3>
+<p>There are server hooks, which will be executed on the server (e.g. <code>expressCreateServer</code>), and there are client hooks, which are executed on the client (e.g. <code>acePopulateDomLine</code>). Be sure to not make assumptions about the environment your code is running in, e.g. don&apos;t try to access <code>process</code>, if you know your code will be run on the client, and likewise, don&apos;t try to access <code>window</code> on the server...
+
+</p>
+<h3>Parts<span><a class="mark" href="#index_parts" id="index_parts">#</a></span></h3>
+<p>As your plugins become more and more complex, you will find yourself in the need to manage dependencies between plugins. E.g. you want the hooks of a certain plugin to be executed before (or after) yours. You can also manage these dependencies in your plugin definition file <code>ep.json</code>:
+
+</p>
+<pre><code class="javascript">{
+  &quot;parts&quot;: [
+    {
+      &quot;name&quot;: &quot;onepart&quot;,
+      &quot;pre&quot;: [],
+      &quot;post&quot;: [&quot;ep_onemoreplugin/partone&quot;]
+      &quot;hooks&quot;: {
+        &quot;storeBar&quot;: &quot;ep_monospace/plugin:storeBar&quot;,
+        &quot;getFoo&quot;: &quot;ep_monospace/plugin:getFoo&quot;,
+      }
+    },
+    {
+      &quot;name&quot;: &quot;otherpart&quot;,
+      &quot;pre&quot;: [&quot;ep_my_example/somepart&quot;, &quot;ep_otherplugin/main&quot;],
+      &quot;post&quot;: [],
+      &quot;hooks&quot;: {
+        &quot;someEvent&quot;: &quot;ep_my_example/otherpart:someEvent&quot;,
+        &quot;another&quot;: &quot;ep_my_example/otherpart:another&quot;
+      }
+    }
+  ]
+}</code></pre>
+<p>Usually a plugin will add only one functionality at a time, so it will probably only use one <code>part</code> definition to register its hooks. However, sometimes you have to put different (unrelated) functionalities into one plugin. For this you will want use parts, so other plugins can depend on them.
+
+</p>
+<h4>pre/post<span><a class="mark" href="#index_pre_post" id="index_pre_post">#</a></span></h4>
+<p>The <code>&quot;pre&quot;</code> and <code>&quot;post&quot;</code> definitions, affect the order in which parts of a plugin are executed. This ensures that plugins and their hooks are executed in the correct order.
+
+</p>
+<p><code>&quot;pre&quot;</code> lists parts that must be executed <em>before</em> the defining part. <code>&quot;post&quot;</code> lists parts that must be executed <em>after</em> the defining part.
+
+</p>
+<p>You can, on a basic level, think of this as double-ended dependency listing. If you have a dependency on another plugin, you can make sure it loads before yours by putting it in <code>&quot;pre&quot;</code>. If you are setting up things that might need to be used by a plugin later, you can ensure proper order by putting it in <code>&quot;post&quot;</code>.
+
+</p>
+<p>Note that it would be far more sane to use <code>&quot;pre&quot;</code> in almost any case, but if you want to change config variables for another plugin, or maybe modify its environment, <code>&quot;post&quot;</code> could definitely be useful.
+
+</p>
+<p>Also, note that dependencies should <em>also</em> be listed in your package.json, so they can be <code>npm install</code>&apos;d automagically when your plugin gets installed.
+
+</p>
+<h2>Package definition<span><a class="mark" href="#index_package_definition" id="index_package_definition">#</a></span></h2>
+<p>Your plugin must also contain a <a href="http://npmjs.org/doc/json.html">package definition file</a>, called package.json, in the project root - this file contains various metadata relevant to your plugin, such as the name and version number, author, project hompage, contributors, a short description, etc. If you publish your plugin on npm, these metadata are used for package search etc., but it&apos;s necessary for Etherpad-lite plugins, even if you don&apos;t publish your plugin.
+
+</p>
+<pre><code class="json">{
+  &quot;name&quot;: &quot;ep_PLUGINNAME&quot;,
+  &quot;version&quot;: &quot;0.0.1&quot;,
+  &quot;description&quot;: &quot;DESCRIPTION&quot;,
+  &quot;author&quot;: &quot;USERNAME (REAL NAME) &lt;MAIL@EXAMPLE.COM&gt;&quot;,
+  &quot;contributors&quot;: [],
+  &quot;dependencies&quot;: {&quot;MODULE&quot;: &quot;0.3.20&quot;},
+  &quot;engines&quot;: { &quot;node&quot;: &quot;&gt;= 0.6.0&quot;}
+}</code></pre>
+<h2>Templates<span><a class="mark" href="#index_templates" id="index_templates">#</a></span></h2>
+<p>If your plugin adds or modifies the front end HTML (e.g. adding buttons or changing their functions), you should put the necessary HTML code for such operations in <code>templates/</code>, in files of type &quot;.ejs&quot;, since Etherpad-Lite uses EJS for HTML templating. See the following link for more information about EJS: <a href="https://github.com/visionmedia/ejs">https://github.com/visionmedia/ejs</a>.
+
+</p>
+<h2>Writing and running front-end tests for your plugin<span><a class="mark" href="#index_writing_and_running_front_end_tests_for_your_plugin" id="index_writing_and_running_front_end_tests_for_your_plugin">#</a></span></h2>
+<p>Etherpad allows you to easily create front-end tests for plugins.  
+
+</p>
+<ol>
+<li>Create a new folder<pre><code>%your_plugin%/static/tests/frontend/specs</code></pre>
+</li>
+<li><p>Put your spec file in here (Example spec files are visible in %etherpad_root_folder%/frontend/tests/specs)</p>
+</li>
+<li><p>Visit <a href="http://yourserver.com/frontend/tests">http://yourserver.com/frontend/tests</a> your front-end tests will run.</p>
+</li>
+</ol>
+<h1>Database structure<span><a class="mark" href="#index_database_structure" id="index_database_structure">#</a></span></h1>
+<h2>Keys and their values<span><a class="mark" href="#index_keys_and_their_values" id="index_keys_and_their_values">#</a></span></h2>
+<h3>groups<span><a class="mark" href="#index_groups_1" id="index_groups_1">#</a></span></h3>
+<p>A list of all existing groups (a JSON object with groupIDs as keys and <code>1</code> as values).
+
+</p>
+<h3>pad:$PADID<span><a class="mark" href="#index_pad_padid" id="index_pad_padid">#</a></span></h3>
+<p>Saves all informations about pads
+
+</p>
+<ul>
+<li><strong>atext</strong> - the latest attributed text</li>
+<li><strong>pool</strong> - the attribute pool</li>
+<li><strong>head</strong> - the number of the latest revision</li>
+<li><strong>chatHead</strong> - the number of the latest chat entry</li>
+<li><strong>public</strong> - flag that disables security for this pad</li>
+<li><strong>passwordHash</strong> - string that contains a bcrypt hashed password for this pad</li>
+</ul>
+<h3>pad:$PADID:revs:$REVNUM<span><a class="mark" href="#index_pad_padid_revs_revnum" id="index_pad_padid_revs_revnum">#</a></span></h3>
+<p>Saves a revision $REVNUM of pad $PADID
+
+</p>
+<ul>
+<li><strong>meta</strong><ul>
+<li><strong>author</strong> - the autorID of this revision</li>
+<li><strong>timestamp</strong> - the timestamp of when this revision was created</li>
+</ul>
+</li>
+<li><strong>changeset</strong> - the changeset of this revision</li>
+</ul>
+<h3>pad:$PADID:chat:$CHATNUM<span><a class="mark" href="#index_pad_padid_chat_chatnum" id="index_pad_padid_chat_chatnum">#</a></span></h3>
+<p>Saves a chatentry with num $CHATNUM of pad $PADID
+
+</p>
+<ul>
+<li><strong>text</strong> - the text of this chat entry</li>
+<li><strong>userId</strong> - the autorID of this chat entry</li>
+<li><strong>time</strong> - the timestamp of this chat entry</li>
+</ul>
+<h3>pad2readonly:$PADID<span><a class="mark" href="#index_pad2readonly_padid" id="index_pad2readonly_padid">#</a></span></h3>
+<p>Translates a padID to a readonlyID
+</p>
+<h3>readonly2pad:$READONLYID<span><a class="mark" href="#index_readonly2pad_readonlyid" id="index_readonly2pad_readonlyid">#</a></span></h3>
+<p>Translates a readonlyID to a padID
+</p>
+<h3>token2author:$TOKENID<span><a class="mark" href="#index_token2author_tokenid" id="index_token2author_tokenid">#</a></span></h3>
+<p>Translates a token to an authorID
+</p>
+<h3>globalAuthor:$AUTHORID<span><a class="mark" href="#index_globalauthor_authorid" id="index_globalauthor_authorid">#</a></span></h3>
+<p>Information about an author
+
+</p>
+<ul>
+<li><strong>name</strong> - the name of this author as shown in the pad</li>
+<li><strong>colorID</strong> - the colorID of this author as shown in the pad</li>
+</ul>
+<h3>mapper2group:$MAPPER<span><a class="mark" href="#index_mapper2group_mapper" id="index_mapper2group_mapper">#</a></span></h3>
+<p>Maps an external application identifier to an internal group 
+</p>
+<h3>mapper2author:$MAPPER<span><a class="mark" href="#index_mapper2author_mapper" id="index_mapper2author_mapper">#</a></span></h3>
+<p>Maps an external application identifier to an internal author 
+</p>
+<h3>group:$GROUPID<span><a class="mark" href="#index_group_groupid" id="index_group_groupid">#</a></span></h3>
+<p>a group of pads
+
+</p>
+<ul>
+<li><strong>pads</strong> - object with pad names in it, values are 1<h3>session:$SESSIONID<span><a class="mark" href="#index_session_sessionid" id="index_session_sessionid">#</a></span></h3>
+a session between an author and a group</li>
+</ul>
+<ul>
+<li><strong>groupID</strong> - the groupID the session belongs too</li>
+<li><strong>authorID</strong> - the authorID the session belongs too</li>
+<li><strong>validUntil</strong> - the timestamp until this session is valid</li>
+</ul>
+<h3>author2sessions:$AUTHORID<span><a class="mark" href="#index_author2sessions_authorid" id="index_author2sessions_authorid">#</a></span></h3>
+<p>saves the sessions of an author
+
+</p>
+<ul>
+<li><strong>sessionsIDs</strong> - object with sessionIDs in it, values are 1</li>
+</ul>
+<h3>group2sessions:$GROUPID<span><a class="mark" href="#index_group2sessions_groupid" id="index_group2sessions_groupid">#</a></span></h3>
+<div class="signature"><ul>
+<li><strong>sessionsIDs</strong> - object with sessionIDs in it, values are 1</li>
+</div></ul>
+
+  </div>
+
+</body>
+</html>
+

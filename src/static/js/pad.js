@@ -469,14 +469,6 @@ var pad = {
       userAgent: pad.getDisplayUserAgent()
     };
 
-    if (clientVars.specialKey)
-    {
-      pad.myUserInfo.specialKey = clientVars.specialKey;
-      if (clientVars.specialKeyTranslation)
-      {
-        $("#specialkeyarea").html("mode: " + String(clientVars.specialKeyTranslation).toUpperCase());
-      }
-    }
     padimpexp.init(this);
     padsavedrevs.init(this);
 
@@ -662,8 +654,8 @@ var pad = {
       {
         alertBar.displayMessage(function(abar)
         {
-          abar.find("#servermsgdate").html(" (" + padutils.simpleDateTime(new Date) + ")");
-          abar.find("#servermsgtext").html(m.text);
+          abar.find("#servermsgdate").text(" (" + padutils.simpleDateTime(new Date) + ")");
+          abar.find("#servermsgtext").text(m.text);
         });
       }
       if (m.js)

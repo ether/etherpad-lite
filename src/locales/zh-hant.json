@@ -35,6 +35,7 @@
 	"pad.settings.stickychat": "\u6c38\u9060\u5728\u5c4f\u5e55\u4e0a\u986f\u793a\u804a\u5929",
 	"pad.settings.colorcheck": "\u4f5c\u8005\u984f\u8272",
 	"pad.settings.linenocheck": "\u884c\u865f",
+	"pad.settings.rtlcheck": "\u5f9e\u53f3\u81f3\u5de6\u8b80\u53d6\u5167\u5bb9\uff1f",
 	"pad.settings.fontType": "\u5b57\u9ad4\u985e\u578b\uff1a",
 	"pad.settings.fontType.normal": "\u6b63\u5e38",
 	"pad.settings.fontType.monospaced": "\u7b49\u5bec",
