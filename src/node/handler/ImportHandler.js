@@ -60,7 +60,7 @@ exports.doImport = function(req, res, padId)
       form.parse(req, function(err, fields, files) { 
         //the upload failed, stop at this point
         if(err || files.file === undefined) {
-          console.warn("Uploading Error: " + err.stack);
+          if(err) console.warn("Uploading Error: " + err.stack);
           callback("uploadFailed");
         }
         //everything ok, continue
