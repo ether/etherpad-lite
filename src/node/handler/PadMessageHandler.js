@@ -192,7 +192,6 @@ exports.handleMessage = function(client, message)
         handleSuggestUserName(client, message);
       } else {
         messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
-console.warn(message);
       }
     } else {
       messageLogger.warn("Dropped message, unknown Message Type " + message.type);
@@ -255,7 +254,8 @@ function handleSaveRevisionMessage(client, message){
 }
 
 /**
- * Handles a custom message, different to the function below as it handles objects not strings and you can direct the message to specific sessionID
+ * Handles a custom message, different to the function below as it handles objects not strings and you can 
+ * direct the message to specific sessionID
  *
  * @param msg {Object} the message we're sending
  * @param sessionID {string} the socketIO session to which we're sending this message
@@ -263,10 +263,7 @@ function handleSaveRevisionMessage(client, message){
 exports.handleCustomObjectMessage = function (msg, sessionID, cb) {
   if(msg.data.type === "CUSTOM"){
     if(sessionID){ // If a sessionID is targeted then send directly to this sessionID
-      console.warn("Sent msg", msg);
-      console.warn("to sessionID", sessionID);
-      // socketio.clients[sessionID].send(msg);
-      socketio.sockets.socket(sessionID).emit(msg); // send a targeted message
+      socketio.sockets.socket(sessionID).json.send(msg); // send a targeted message
     }else{
       socketio.sockets.in(msg.data.padId).json.send(msg); // broadcast to all clients on this pad
     }
