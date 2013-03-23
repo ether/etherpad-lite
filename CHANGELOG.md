@@ -3,6 +3,7 @@
  * NEW: Hook for Chat Messages Allows for Desktop Notification support
  * NEW: FreeBSD installation docs
  * Fix: Cookies inside of plugins
+ * Fix: Refactor Caret navigation with Arrow and Pageup/down keys stops cursor being lost
  * Fix: Long lines in Firefox now wrap properly
  * Fix: Log HTTP on DEBUG log level
  * Fix: Server wont crash on import fails on 0 file import.
