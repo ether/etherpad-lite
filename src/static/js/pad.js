@@ -441,6 +441,7 @@ var pad = {
   
     //initialize the chat
     chat.init(this);
+    padcookie.init(); // initialize the cookies
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
