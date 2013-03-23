@@ -35,6 +35,7 @@ var messageLogger = log4js.getLogger("message");
 var accessLogger = log4js.getLogger("access");
 var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
+var domain = require("domain");
 
 /**
  * A associative array that saves informations about a session
@@ -148,92 +149,100 @@ exports.handleMessage = function(client, message)
     messageLogger.warn("Message has no type attribute!");
     return;
   }
-
-  var handleMessageHook = function(callback){
-    var dropMessage = false;
-    
-    // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
-    // handleMessage will be called, even if the client is not authorized
-    hooks.aCallAll("handleMessage", { client: client, message: message }, function ( err, messages ) {
-      if(ERR(err, callback)) return;
+  
+  var msgDomain = domain.create()
+  msgDomain.on('error', function(er) {
+    messageLogger.warn('Error in message:')
+    messageLogger.warn(er.stack? er.stack : er)
+    msgDomain.dispose()
+  })
+  msgDomain.run(function() {
+    var handleMessageHook = function(callback){
+      var dropMessage = false;
       
-      _.each(messages, function(newMessage){
-        if ( newMessage === null ) {
-          dropMessage = true;
-        }
-      });
-      
-      // If no plugins explicitly told us to drop the message, its ok to proceed
-      if(!dropMessage){ callback() };
-    });
-  }
-
-  var finalHandler = function () {
-    //Check what type of message we get and delegate to the other methodes
-    if(message.type == "CLIENT_READY") {
-      handleClientReady(client, message);
-    } else if(message.type == "CHANGESET_REQ") {
-      handleChangesetRequest(client, message);
-    } else if(message.type == "COLLABROOM") {
-      if (sessioninfos[client.id].readonly) {
-        messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
-      } else if (message.data.type == "USER_CHANGES") {
-        handleUserChanges(client, message);
-      } else if (message.data.type == "USERINFO_UPDATE") {
-        handleUserInfoUpdate(client, message);
-      } else if (message.data.type == "CHAT_MESSAGE") {
-        handleChatMessage(client, message);
-      } else if (message.data.type == "GET_CHAT_MESSAGES") {
-        handleGetChatMessages(client, message);
-      } else if (message.data.type == "SAVE_REVISION") {
-        handleSaveRevisionMessage(client, message);
-      } else if (message.data.type == "CLIENT_MESSAGE" &&
-                 message.data.payload != null &&
-                 message.data.payload.type == "suggestUserName") {
-        handleSuggestUserName(client, message);
-      } else {
-        messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
-      }
-    } else {
-      messageLogger.warn("Dropped message, unknown Message Type " + message.type);
-    }
-  };
-
-  if (message) {
-    async.series([
-      handleMessageHook,
-      //check permissions
-      function(callback)
-      {
+      // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
+      // handleMessage will be called, even if the client is not authorized
+      hooks.aCallAll("handleMessage", { client: client, message: message }, function ( err, messages ) {
+        if(ERR(err, callback)) return;
         
-        // If the message has a padId we assume the client is already known to the server and needs no re-authorization
-        if(!message.padId)
-          return callback();
-
-        // Note: message.sessionID is an entirely different kind of
-        // session from the sessions we use here! Beware! FIXME: Call
-        // our "sessions" "connections".
-        // FIXME: Use a hook instead
-        // FIXME: Allow to override readwrite access with readonly
-        securityManager.checkAccess(message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
-        {
-          if(ERR(err, callback)) return;
-
-          //access was granted
-          if(statusObject.accessStatus == "grant")
-          {
-            callback();
-          }
-          //no access, send the client a message that tell him why
-          else
-          {
-            client.json.send({accessStatus: statusObject.accessStatus})
+        _.each(messages, function(newMessage){
+          if ( newMessage === null ) {
+            dropMessage = true;
           }
         });
-      },
-      finalHandler
-    ]);
-  }
+        
+        // If no plugins explicitly told us to drop the message, its ok to proceed
+        if(!dropMessage){ callback() };
+      });
+    }
+
+    var finalHandler = function () {
+      //Check what type of message we get and delegate to the other methodes
+      if(message.type == "CLIENT_READY") {
+        handleClientReady(client, message);
+      } else if(message.type == "CHANGESET_REQ") {
+        handleChangesetRequest(client, message);
+      } else if(message.type == "COLLABROOM") {
+        if (sessioninfos[client.id].readonly) {
+          messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
+        } else if (message.data.type == "USER_CHANGES") {
+          handleUserChanges(client, message);
+        } else if (message.data.type == "USERINFO_UPDATE") {
+          handleUserInfoUpdate(client, message);
+        } else if (message.data.type == "CHAT_MESSAGE") {
+          handleChatMessage(client, message);
+        } else if (message.data.type == "GET_CHAT_MESSAGES") {
+          handleGetChatMessages(client, message);
+        } else if (message.data.type == "SAVE_REVISION") {
+          handleSaveRevisionMessage(client, message);
+        } else if (message.data.type == "CLIENT_MESSAGE" &&
+                   message.data.payload != null &&
+                   message.data.payload.type == "suggestUserName") {
+          handleSuggestUserName(client, message);
+        } else {
+          messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
+        }
+      } else {
+        messageLogger.warn("Dropped message, unknown Message Type " + message.type);
+      }
+    };
+
+    if (message) {
+      async.series([
+        handleMessageHook,
+        //check permissions
+        function(callback)
+        {
+          
+          // If the message has a padId we assume the client is already known to the server and needs no re-authorization
+          if(!message.padId)
+            return callback();
+
+          // Note: message.sessionID is an entirely different kind of
+          // session from the sessions we use here! Beware! FIXME: Call
+          // our "sessions" "connections".
+          // FIXME: Use a hook instead
+          // FIXME: Allow to override readwrite access with readonly
+          securityManager.checkAccess(message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+          {
+            if(ERR(err, callback)) return;
+
+            //access was granted
+            if(statusObject.accessStatus == "grant")
+            {
+              callback();
+            }
+            //no access, send the client a message that tell him why
+            else
+            {
+              client.json.send({accessStatus: statusObject.accessStatus})
+            }
+          });
+        },
+        finalHandler
+      ]);
+    }
+  });
 }
 
 
