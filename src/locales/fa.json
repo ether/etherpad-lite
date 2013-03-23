@@ -3,7 +3,8 @@
 		"authors": {
 			"0": "BMRG14",
 			"1": "Dalba",
-			"3": "ZxxZxxZ"
+			"3": "ZxxZxxZ",
+			"4": "\u0627\u0644\u0646\u0627\u0632"
 		}
 	},
 	"index.newPad": "\u062f\u0641\u062a\u0631\u0686\u0647 \u06cc\u0627\u062f\u062f\u0627\u0634\u062a \u062a\u0627\u0632\u0647",
@@ -36,6 +37,7 @@
 	"pad.settings.stickychat": "\u06af\u0641\u062a\u06af\u0648 \u0647\u0645\u06cc\u0634\u0647 \u0631\u0648\u06cc \u0635\u0641\u062d\u0647 \u0646\u0645\u0627\u06cc\u0634 \u0628\u0627\u0634\u062f",
 	"pad.settings.colorcheck": "\u0631\u0646\u06af\u200c\u0647\u0627\u06cc \u0646\u0648\u06cc\u0633\u0646\u062f\u06af\u06cc",
 	"pad.settings.linenocheck": "\u0634\u0645\u0627\u0631\u0647\u200c\u06cc \u062e\u0637\u0648\u0637",
+	"pad.settings.rtlcheck": "\u062e\u0648\u0627\u0646\u062f\u0646 \u0645\u062d\u062a\u0648\u0627 \u0627\u0632 \u0631\u0627\u0633\u062a \u0628\u0647 \u0686\u067e\u061f",
 	"pad.settings.fontType": "\u0646\u0648\u0639 \u0642\u0644\u0645:",
 	"pad.settings.fontType.normal": "\u0633\u0627\u062f\u0647",
 	"pad.settings.fontType.monospaced": "Monospace",

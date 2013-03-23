@@ -1,4 +1,10 @@
 {
+	"@metadata": {
+		"authors": [
+			"Jim-by",
+			"Wizardist"
+		]
+	},
 	"index.newPad": "\u0421\u0442\u0432\u0430\u0440\u044b\u0446\u044c",
 	"index.createOpenPad": "\u0446\u0456 \u0442\u0432\u0430\u0440\u044b\u0446\u044c\/\u0430\u0434\u043a\u0440\u044b\u0446\u044c \u0434\u0430\u043a\u0443\u043c\u044d\u043d\u0442 \u0437 \u043d\u0430\u0437\u0432\u0430\u0439:",
 	"pad.toolbar.bold.title": "\u0422\u043e\u045e\u0441\u0442\u044b (Ctrl-B)",
@@ -51,11 +57,5 @@
 	"pad.share": "\u041f\u0430\u0434\u0437\u044f\u043b\u0456\u0446\u0446\u0430 \u0434\u0430\u043a\u0443\u043c\u044d\u043d\u0442\u0430\u043c",
 	"pad.share.readonly": "\u0422\u043e\u043b\u044c\u043a\u0456 \u0434\u043b\u044f \u0447\u044b\u0442\u0430\u043d\u044c\u043d\u044f",
 	"pad.share.link": "\u0421\u043f\u0430\u0441\u044b\u043b\u043a\u0430",
-	"pad.chat": "\u0427\u0430\u0442",
-	"@metadata": {
-		"authors": [
-			"Jim-by",
-			"Wizardist"
-		]
-	}
+	"pad.chat": "\u0427\u0430\u0442"
 }

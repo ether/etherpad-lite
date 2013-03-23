@@ -39,6 +39,7 @@
 	"pad.settings.stickychat": "Keskustelu aina n\u00e4kyviss\u00e4",
 	"pad.settings.colorcheck": "Kirjoittajav\u00e4rit",
 	"pad.settings.linenocheck": "Rivinumerot",
+	"pad.settings.rtlcheck": "Luetaanko sis\u00e4lt\u00f6 oikealta vasemmalle?",
 	"pad.settings.fontType": "Kirjasintyyppi:",
 	"pad.settings.fontType.normal": "normaali",
 	"pad.settings.fontType.monospaced": "tasalevyinen",
