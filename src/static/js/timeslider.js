@@ -87,14 +87,14 @@ function init() {
       }
       else if(message.accessStatus)
       {
-        $("body").html("<h2>You have no permission to access this pad</h2>")
+        $("body").html("<h2>You have no permission to access this pad</h2>");
       } else {
         changesetLoader.handleMessageFromServer(message);
       }
     });
 
     //get all the export links
-    export_links = $('#export > .exportlink')
+    export_links = $('#export > .exportlink');
 
     if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
       $("#returnbutton").attr("href", document.referrer);

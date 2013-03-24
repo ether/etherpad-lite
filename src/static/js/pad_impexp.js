@@ -215,7 +215,7 @@ var padimpexp = (function()
       $('#importsubmitinput').val(html10n.get("pad.impexp.importbutton"));
       html10n.bind('localized', function() {
         $('#importsubmitinput').val(html10n.get("pad.impexp.importbutton"));
-      })
+      });
 
       // build the export links
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");

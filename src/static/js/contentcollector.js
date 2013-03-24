@@ -211,11 +211,11 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   cc.incrementFlag = function(state, flagName)
   {
     state.flags[flagName] = (state.flags[flagName] || 0) + 1;
-  }
+  };
   cc.decrementFlag = function(state, flagName)
   {
     state.flags[flagName]--;
-  }
+  };
   cc.incrementAttrib = function(state, attribName)
   {
     if (!state.attribs[attribName])
@@ -227,12 +227,12 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       state.attribs[attribName]++;
     }
     _recalcAttribString(state);
-  }
+  };
   cc.decrementAttrib = function(state, attribName)
   {
     state.attribs[attribName]--;
     _recalcAttribString(state);
-  }
+  };
 
   function _enterList(state, listType)
   {
@@ -311,7 +311,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       ['insertorder', 'first']
     ].concat(
       _.map(state.lineAttributes,function(value,key){
-        if (typeof(window)!= 'undefined' && window.console) console.log([key, value])
+        if (typeof(window)!= 'undefined' && window.console) console.log([key, value]);
         return [key, value];
       })
     );
@@ -329,7 +329,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       }
     }
     lines.startNew();
-  }
+  };
   cc.notifySelection = function(sel)
   {
     if (sel)
@@ -724,7 +724,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       lines: lineStrings,
       lineAttribs: lineAttribs
     };
-  }
+  };
 
   return cc;
 }

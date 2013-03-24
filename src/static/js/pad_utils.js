@@ -30,7 +30,7 @@ function randomString(len)
 {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var randomstring = '';
-  len = len || 20
+  len = len || 20;
   for (var i = 0; i < len; i++)
   {
     var rnum = Math.floor(Math.random() * chars.length);

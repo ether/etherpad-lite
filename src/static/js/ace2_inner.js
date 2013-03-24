@@ -205,7 +205,7 @@ function Ace2Inner(){
 
   function getAuthorInfos(){
     return authorInfos;
-  };
+  }
   editorInfo.ace_getAuthorInfos= getAuthorInfos;
 
   function setAuthorInfo(author, info)
@@ -241,7 +241,7 @@ function Ace2Inner(){
           var parentAuthorStyle = parentDynamicCSS.selectorStyle(getAuthorColorClassSelector(
           getAuthorClassName(author)));
           var anchorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author))+' > a')
+          getAuthorClassName(author))+' > a');
           
           // author color
           authorStyle.backgroundColor = bgcolor;
@@ -350,7 +350,7 @@ function Ace2Inner(){
   editorInfo.ace_getAuthor = function()
   {
     return thisAuthor;
-  }
+  };
 
   var currentCallStack = null;
 
@@ -934,8 +934,8 @@ function Ace2Inner(){
     // Convinience function returning a setter for a class on an element    
     var setClassPresenceNamed = function(element, cls){
       return function(value){
-         setClassPresence(element, cls, !! value)
-      }
+         setClassPresence(element, cls, !! value);
+      };
     };
     
     // These properties are exposed
@@ -960,9 +960,9 @@ function Ace2Inner(){
       textface: setTextFace,
       textsize: setTextSize,
       rtlistrue: function(value) {
-        setClassPresence(root, "rtl", value)
-        setClassPresence(root, "ltr", !value)
-        document.documentElement.dir = value? 'rtl' : 'ltr'
+        setClassPresence(root, "rtl", value);
+        setClassPresence(root, "ltr", !value);
+        document.documentElement.dir = value? 'rtl' : 'ltr';
       }
     };
     
@@ -970,7 +970,7 @@ function Ace2Inner(){
     
     // check if setter is present 
     if(setter !== undefined){
-      setter(value)
+      setter(value);
     }
   };
 
@@ -4697,7 +4697,7 @@ function Ace2Inner(){
   editorInfo.ace_getInInternationalComposition = function ()
   {
     return inInternationalComposition;
-  }
+  };
 
   function bindTheEventHandlers()
   {
@@ -4970,7 +4970,7 @@ function Ace2Inner(){
   
   function getLineListType(lineNum)
   {
-    return documentAttributeManager.getAttributeOnLine(lineNum, listAttributeName)
+    return documentAttributeManager.getAttributeOnLine(lineNum, listAttributeName);
   }
 
   function setLineListType(lineNum, listType)
@@ -5263,11 +5263,11 @@ function Ace2Inner(){
 
       isSetUp = true;
     });
-  }
+  };
 
 }
 
 exports.init = function () {
-  var editor = new Ace2Inner()
+  var editor = new Ace2Inner();
   editor.init();
 };

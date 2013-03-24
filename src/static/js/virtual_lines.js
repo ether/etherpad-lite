@@ -186,7 +186,7 @@ function makeVirtualLineView(lineNode)
 
     var curNode = null;
     var curChar = 0;
-    var curCharWithinNode = 0
+    var curCharWithinNode = 0;
     var curTop;
     var curLeft;
     var approxLineHeight;
@@ -358,11 +358,11 @@ function makeVirtualLineView(lineNode)
     seeker.forwardByWhile = function(amount, optCondFunc, optCharLimit)
     {
       moveByWhile(false, amount, optCondFunc, optCharLimit);
-    }
+    };
     seeker.backwardByWhile = function(amount, optCondFunc, optCharLimit)
     {
       moveByWhile(true, amount, optCondFunc, optCharLimit);
-    }
+    };
     seeker.binarySearch = function(condFunc)
     {
       // returns index of boundary between false chars and true chars;
@@ -378,7 +378,7 @@ function makeVirtualLineView(lineNode)
       seeker.backwardByWhile(5, trueFunc);
       seeker.forwardByWhile(1, falseFunc);
       return seeker.getOffset() + (condFunc() ? 0 : 1);
-    }
+    };
 
     return seeker;
   }

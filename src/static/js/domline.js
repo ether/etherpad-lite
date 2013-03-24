@@ -49,7 +49,7 @@ domline.addToLineClass = function(lineClass, cls)
     }
   });
   return lineClass;
-}
+};
 
 // if "document" is falsy we don't create a DOM node, just
 // an object with innerHTML and className

@@ -94,7 +94,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       if (evt.which == 27)
       {
-        evt.preventDefault()
+        evt.preventDefault();
       }
     });
   }
@@ -547,7 +547,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       {
         action();
       }
-    }
+    };
   }
 
   function doDeferredActions(tag)

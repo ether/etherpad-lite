@@ -781,7 +781,7 @@ function showColorPicker()
 
     if (!colorPickerSetup)
     {
-      var colorsList = $("#colorpickerswatches")
+      var colorsList = $("#colorpickerswatches");
       for (var i = 0; i < palette.length; i++)
       {
 

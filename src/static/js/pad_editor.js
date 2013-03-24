@@ -78,12 +78,12 @@ var padeditor = (function()
       // Right to left
       padutils.bindCheckboxChange($("#options-rtlcheck"), function()
       {
-        pad.changeViewOption('rtlIsTrue', padutils.getCheckbox($("#options-rtlcheck")))
+        pad.changeViewOption('rtlIsTrue', padutils.getCheckbox($("#options-rtlcheck")));
       });
       html10n.bind('localized', function() {
         pad.changeViewOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
         padutils.setCheckbox($("#options-rtlcheck"), ('rtl' == html10n.getDirection()));
-      })
+      });
 
       // font face
       $("#viewfontmenu").change(function()
@@ -104,7 +104,7 @@ var padeditor = (function()
             if(input.hasClass("editempty"))
               input.val(html10n.get(input.attr("data-l10n-id")));
           });
-      })
+      });
       $("#languagemenu").val(html10n.getLanguage());
       $("#languagemenu").change(function() {
         pad.createCookie("language",$("#languagemenu").val(),null,'/');
