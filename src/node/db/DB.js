@@ -54,4 +54,4 @@ exports.init = function(callback)
       callback(null);
     }
   });
-}
+};

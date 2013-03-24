@@ -35,7 +35,7 @@ exports.doesSessionExist = function(sessionID, callback)
     if(ERR(err, callback)) return;
     callback(null, session != null);
   });
-}
+};
  
 /**
  * Creates a new session between an author and a group
@@ -182,8 +182,8 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
     
     //return error and sessionID
     callback(null, {sessionID: sessionID});
-  })
-}
+  });
+};
 
 exports.getSessionInfo = function(sessionID, callback)
 {
@@ -195,7 +195,7 @@ exports.getSessionInfo = function(sessionID, callback)
     //session does not exists
     if(session == null)
     {
-      callback(new customError("sessionID does not exist","apierror"))
+      callback(new customError("sessionID does not exist","apierror"));
     }
     //everything is fine, return the sessioninfos
     else
@@ -203,7 +203,7 @@ exports.getSessionInfo = function(sessionID, callback)
       callback(null, session);
     }
   });
-}
+};
 
 /**
  * Deletes a session
@@ -224,7 +224,7 @@ exports.deleteSession = function(sessionID, callback)
         //session does not exists
         if(session == null)
         {
-          callback(new customError("sessionID does not exist","apierror"))
+          callback(new customError("sessionID does not exist","apierror"));
         }
         //everything is fine, return the sessioninfos
         else
@@ -276,8 +276,8 @@ exports.deleteSession = function(sessionID, callback)
   {
     if(ERR(err, callback)) return;
     callback();
-  })
-}
+  });
+};
 
 exports.listSessionsOfGroup = function(groupID, callback)
 {
@@ -296,7 +296,7 @@ exports.listSessionsOfGroup = function(groupID, callback)
       listSessionsWithDBKey("group2sessions:" + groupID, callback);
     }
   });
-}
+};
 
 exports.listSessionsOfAuthor = function(authorID, callback)
 {  
@@ -315,7 +315,7 @@ exports.listSessionsOfAuthor = function(authorID, callback)
       listSessionsWithDBKey("author2sessions:" + authorID, callback);
     }
   });
-}
+};
 
 //this function is basicly the code listSessionsOfAuthor and listSessionsOfGroup has in common
 function listSessionsWithDBKey (dbkey, callback)
@@ -363,5 +363,5 @@ function listSessionsWithDBKey (dbkey, callback)
 //checks if a number is an int
 function is_int(value)
 { 
-  return (parseFloat(value) == parseInt(value)) && !isNaN(value)
+  return (parseFloat(value) == parseInt(value)) && !isNaN(value);
 }

@@ -143,7 +143,7 @@ exports.getText = function(padID, rev, callback)
         data = {text: atext.text};
         
         callback(null, data);
-      })
+      });
     }
     //the client wants the latest text, lets return it to him
     else
@@ -151,7 +151,7 @@ exports.getText = function(padID, rev, callback)
       callback(null, {"text": pad.text()});
     }
   });
-}
+};
 
 /**
 setText(padID, text) sets the text of a pad 
@@ -182,7 +182,7 @@ exports.setText = function(padID, text, callback)
     //update the clients on the pad
     padMessageHandler.updatePadClients(pad, callback);
   });
-}
+};
 
 /**
 getHTML(padID, [rev]) returns the html of a pad 
@@ -258,7 +258,7 @@ exports.getHTML = function(padID, rev, callback)
       });
     }
   });
-}
+};
 
 exports.setHTML = function(padID, html, callback)
 {
@@ -274,7 +274,7 @@ exports.setHTML = function(padID, html, callback)
     padMessageHandler.updatePadClients(pad, callback);
 
   });
-}
+};
 
 /******************/
 /**CHAT FUNCTIONS */
@@ -345,7 +345,7 @@ exports.getChatHistory = function(padID, start, end, callback)
         callback(null, {messages: msgs});
       });
   });
-}
+};
 
 /*****************/
 /**PAD FUNCTIONS */
@@ -368,7 +368,7 @@ exports.getRevisionsCount = function(padID, callback)
     
     callback(null, {revisions: pad.getHeadRevisionNumber()});
   });
-}
+};
 
 /**
 getLastEdited(padID) returns the timestamp of the last revision of the pad
@@ -389,7 +389,7 @@ exports.getLastEdited = function(padID, callback)
       callback(null, {lastEdited: value});
     });
   });
-}
+};
 
 /**
 createPad(padName [, text]) creates a new pad in this group 
@@ -414,7 +414,7 @@ exports.createPad = function(padID, text, callback)
     if(ERR(err, callback)) return;
     callback();
   });
-}
+};
 
 /**
 deletePad(padID) deletes a pad 
@@ -432,7 +432,7 @@ exports.deletePad = function(padID, callback)
     
     pad.remove(callback);
   });
-}
+};
 
 /**
 getReadOnlyLink(padID) returns the read only link of a pad 
@@ -456,7 +456,7 @@ exports.getReadOnlyID = function(padID, callback)
       callback(null, {readOnlyID: readOnlyId});
     });
   });
-}
+};
 
 /**
 setPublicStatus(padID, publicStatus) sets a boolean for the public status of a pad 
@@ -489,7 +489,7 @@ exports.setPublicStatus = function(padID, publicStatus, callback)
     
     callback();
   });
-}
+};
 
 /**
 getPublicStatus(padID) return true of false 
@@ -515,7 +515,7 @@ exports.getPublicStatus = function(padID, callback)
     
     callback(null, {publicStatus: pad.getPublicStatus()});
   });
-}
+};
 
 /**
 setPassword(padID, password) returns ok or a error message 
@@ -544,7 +544,7 @@ exports.setPassword = function(padID, password, callback)
     
     callback();
   });
-}
+};
 
 /**
 isPasswordProtected(padID) returns true or false 
@@ -570,7 +570,7 @@ exports.isPasswordProtected = function(padID, callback)
     
     callback(null, {isPasswordProtected: pad.isPasswordProtected()});
   });
-}
+};
 
 /**
 listAuthorsOfPad(padID) returns an array of authors who contributed to this pad 
@@ -589,7 +589,7 @@ exports.listAuthorsOfPad = function(padID, callback)
     
     callback(null, {authorIDs: pad.getAllAuthors()});
   });
-}
+};
 
 /**
 sendClientsMessage(padID, msg) sends a message to all clients connected to the
@@ -622,7 +622,7 @@ exports.sendClientsMessage = function (padID, msg, callback) {
       padMessageHandler.handleCustomMessage(padID, msg, callback);
     }
   } );
-}
+};
 
 /**
 checkToken() returns ok when the current api token is valid
@@ -635,7 +635,7 @@ Example returns:
 exports.checkToken = function(callback)
 {
   callback();
-}
+};
 
 /**
 getChatHead(padID) returns the chatHead (last number of the last chat-message) of the pad
@@ -653,7 +653,7 @@ exports.getChatHead = function(padID, callback)
     if(ERR(err, callback)) return;
     callback(null, {chatHead: pad.chatHead});
   });
-}
+};
 
 /**
 createDiffHTML(padID, startRev, endRev) returns an object of diffs from 2 points in a pad
@@ -730,10 +730,10 @@ exports.createDiffHTML = function(padID, startRev, endRev, callback){
         });
       }
     ], function(err){
-      callback(err, {html: html, authors: authors})
+      callback(err, {html: html, authors: authors});
     });
   });
-}
+};
 
 /******************************/
 /** INTERNAL HELPER FUNCTIONS */
@@ -742,7 +742,7 @@ exports.createDiffHTML = function(padID, startRev, endRev, callback){
 //checks if a number is an int
 function is_int(value)
 { 
-  return (parseFloat(value) == parseInt(value)) && !isNaN(value)
+  return (parseFloat(value) == parseInt(value)) && !isNaN(value);
 }
 
 //gets a pad safe
