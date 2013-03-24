@@ -60,7 +60,7 @@ var socketio;
 exports.setSocketIO = function(socket_io)
 {
   socketio=socket_io;
-}
+};
 
 /**
  * Handles the connection of a new user
@@ -70,7 +70,7 @@ exports.handleConnect = function(client)
 {  
   //Initalize sessioninfos for this new session
   sessioninfos[client.id]={};
-}
+};
 
 /**
  * Kicks all sessions from a pad
@@ -84,7 +84,7 @@ exports.kickSessionsFromPad = function(padID)
 
   //disconnect everyone from this pad
   socketio.sockets.in(padID).json.send({disconnect:"deleted"});
-}
+};
 
 /**
  * Handles the disconnection of a user
@@ -123,12 +123,12 @@ exports.handleDisconnect = function(client)
   }
   
   client.get('remoteAddress', function(er, ip) {
-    accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
+    accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad');
   })
   
   //Delete the sessioninfos entrys of this session
   delete sessioninfos[client.id]; 
-}
+};
 
 /**
  * Handles a message from a user
@@ -164,9 +164,9 @@ exports.handleMessage = function(client, message)
       });
       
       // If no plugins explicitly told us to drop the message, its ok to proceed
-      if(!dropMessage){ callback() };
+      if(!dropMessage){ callback(); }
     });
-  }
+  };
 
   var finalHandler = function () {
     //Check what type of message we get and delegate to the other methodes
@@ -227,14 +227,14 @@ exports.handleMessage = function(client, message)
           //no access, send the client a message that tell him why
           else
           {
-            client.json.send({accessStatus: statusObject.accessStatus})
+            client.json.send({accessStatus: statusObject.accessStatus});
           }
         });
       },
       finalHandler
     ]);
   }
-}
+};
 
 
 /**
@@ -272,7 +272,7 @@ exports.handleCustomMessage = function (padID, msg, cb) {
   socketio.sockets.in(padID).json.send(msg);
 
   cb(null, {});
-}
+};
 
 /**
  * Handles a Chat Message
@@ -553,16 +553,16 @@ function handleUserChanges(client, message)
 
         // Validate all added 'author' attribs to be the same value as the current user
         var iterator = Changeset.opIterator(Changeset.unpack(changeset).ops)
-          , op
+          , op;
         while(iterator.hasNext()) {
-          op = iterator.next()
+          op = iterator.next();
           if(op.opcode != '+') continue;
           op.attribs.split('*').forEach(function(attr) {
-            if(!attr) return
-            attr = wireApool.getAttrib(attr)
-            if(!attr) return
-            if('author' == attr[0] && attr[1] != thisSession.author) throw "Trying to submit changes as another author"
-          })
+            if(!attr) return;
+            attr = wireApool.getAttrib(attr);
+            if(!attr) return;
+            if('author' == attr[0] && attr[1] != thisSession.author) throw "Trying to submit changes as another author";
+          });
         }
       }
       catch(e)
@@ -677,7 +677,7 @@ exports.updatePadClients = function(pad, callback)
     //https://github.com/caolan/async#whilst
     //send them all new changesets
     async.whilst(
-      function (){ return sessioninfos[sid] && sessioninfos[sid].rev < pad.getHeadRevisionNumber()},
+      function (){ return sessioninfos[sid] && sessioninfos[sid].rev < pad.getHeadRevisionNumber();},
       function(callback)
       {      
         var r = sessioninfos[sid].rev + 1;
@@ -731,7 +731,7 @@ exports.updatePadClients = function(pad, callback)
       callback
     );
   },callback);  
-}
+};
 
 /**
  * Copied from the Etherpad Source Code. Don't know what this methode does excatly...
@@ -848,7 +848,7 @@ function handleClientReady(client, message)
         //no access, send the client a message that tell him why
         else
         {
-          client.json.send({accessStatus: statusObject.accessStatus})
+          client.json.send({accessStatus: statusObject.accessStatus});
         }
       });
     }, 
@@ -944,7 +944,7 @@ function handleClientReady(client, message)
         else if(pad.head == 0) {
           accessLogger.info('[CREATE] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" created the pad');
         }
-      })
+      });
 
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
@@ -1007,7 +1007,7 @@ function handleClientReady(client, message)
             "parts": plugins.parts,
           },
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
-        }
+        };
 
         //Add a username to the clientVars if one avaiable
         if(authorName != null)
@@ -1454,7 +1454,7 @@ exports.padUsersCount = function (padID, callback) {
   callback(null, {
     padUsersCount: socketio.sockets.clients(padID).length
   });
-}
+};
 
 /**
  * Get the list of users in a pad
@@ -1477,4 +1477,4 @@ exports.padUsers = function (padID, callback) {
 
     callback(null, {padUsers: result});
   });
-}
+};
