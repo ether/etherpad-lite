@@ -117,7 +117,7 @@ exports.doExport = function(req, res, padId, type)
     ], function(err)
     {
       if(err && err != "stop") ERR(err);
-    })
+    });
   }
   else if(type == 'dokuwiki')
   {
@@ -214,6 +214,6 @@ exports.doExport = function(req, res, padId, type)
     ], function(err)
     {
       if(err && err != "stop") ERR(err);
-    })
+    });
   }
 };

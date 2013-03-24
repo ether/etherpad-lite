@@ -43,7 +43,7 @@ exports.addComponent = function(moduleName, module)
   
   //give the module the socket
   module.setSocketIO(socket);
-}
+};
 
 /**
  * sets the socket.io and adds event functions for routing
@@ -64,7 +64,7 @@ exports.setSocketIO = function(_socket)
     {
       messageLogger.debug("to " + client.id + ": " + stringifyWithoutPassword(message));
       client._send(message);
-    }
+    };
   
     //tell all components about this connect
     for(var i in components)
@@ -144,7 +144,7 @@ exports.setSocketIO = function(_socket)
       }
     });
   });
-}
+};
 
 //returns a stringified representation of a message, removes the password
 //this ensures there are no passwords in the log
