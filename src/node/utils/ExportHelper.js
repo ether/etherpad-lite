@@ -45,7 +45,7 @@ exports.getPadPlainText = function(pad, revNum){
   }
 
   return pieces.join('');
-}
+};
 
 
 exports._analyzeLine = function(text, aline, apool){
@@ -77,11 +77,11 @@ exports._analyzeLine = function(text, aline, apool){
     line.aline = aline;
   }
   return line;
-}
+};
 
 
 exports._encodeWhitespace = function(s){
   return s.replace(/[^\x21-\x7E\s\t\n\r]/g, function(c){
-    return "&#" +c.charCodeAt(0) + ";"
+    return "&#" +c.charCodeAt(0) + ";";
   });
-}
+};
