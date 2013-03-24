@@ -18,4 +18,4 @@ module.exports = function (req, res, callback) {
       res.send(403, "403 - Can't touch this");
     }
   });
-}
+};

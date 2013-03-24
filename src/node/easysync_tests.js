@@ -27,11 +27,11 @@ var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 function random() {
   this.nextInt = function (maxValue) {
     return Math.floor(Math.random() * maxValue);
-  }
+  };
 
   this.nextDouble = function (maxValue) {
     return Math.random();
-  }
+  };
 }
 
 function runTests() {

@@ -37,8 +37,8 @@ async.waterfall([
   // load npm
   function(callback) {
     npm.load({}, function(er) {
-      callback(er)
-    })
+      callback(er);
+    });
   },
   
   // load everything
@@ -59,7 +59,7 @@ async.waterfall([
   },
 
   function(callback) {
-    plugins.update(callback)
+    plugins.update(callback);
   },
 
   function (callback) {
