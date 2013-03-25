@@ -12,165 +12,86 @@ $(document).ready(function () {
   //connect
   socket = io.connect(url, {resource : resource}).of("/pluginfw/installer");
 
-  $('.search-results').data('query', {
-    pattern: '',
-    offset: 0,
-    limit: 12,
-  });
-
-  var doUpdate = false;
-
-  var search = function () {
-    socket.emit("search", $('.search-results').data('query'));
-    tasks++;
+  function search(searchTerm) {
+    if(search.searchTerm != searchTerm) {
+      search.offset = 0
+      search.results = []
+      search.end = false
+    }
+    search.searchTerm = searchTerm;
+    socket.emit("search", {searchTerm: searchTerm, offset:search.offset, length: search.limit});
+    search.offset += search.limit;
   }
+  search.offset = 0
+  search.limit = 12
+  search.results = []
+  search.end = true// have we received all results already?
 
-  function updateHandlers() {
-    $("form").submit(function(){
-      var query = $('.search-results').data('query');
-      query.pattern = $("#search-query").val();
-      query.offset = 0;
-      search();
-      return false;
-    });
-    
-    $("#search-query").unbind('keyup').keyup(function () {
-      var query = $('.search-results').data('query');
-      query.pattern = $("#search-query").val();
-      query.offset = 0;
-      search();
-    });
-
-    $(".do-install, .do-update").unbind('click').click(function (e) {
-      var row = $(e.target).closest("tr");
-      doUpdate = true;
-      socket.emit("install", row.find(".name").text());
-      tasks++;
-    });
-
-    $(".do-uninstall").unbind('click').click(function (e) {
-      var row = $(e.target).closest("tr");
-      doUpdate = true;
-      socket.emit("uninstall", row.find(".name").text());
-      tasks++;
-    });
-
-    $(".do-prev-page").unbind('click').click(function (e) {
-      var query = $('.search-results').data('query');
-      query.offset -= query.limit;
-      if (query.offset < 0) {
-        query.offset = 0;
-      }
-      search();
-    });
-    $(".do-next-page").unbind('click').click(function (e) {
-      var query = $('.search-results').data('query');
-      var total = $('.search-results').data('total');
-      if (query.offset + query.limit < total) {
-        query.offset += query.limit;
-      }
-      search();
-    });
-  }
-
-  updateHandlers();
-
-  var tasks = 0;
-  socket.on('progress', function (data) {
-    $("#progress").show();
-    $('#progress').data('progress', data.progress);
-
-    var message = "Unknown status";
-    if (data.message) {
-      message = data.message.toString();
-    }
-    if (data.error) {
-      data.progress = 1;
-    }
-    
-    $("#progress .message").html(message);
-
-    if (data.progress >= 1) {
-      tasks--;
-      if (tasks <= 0) {
-        // Hide the activity indicator once all tasks are done
-        $("#progress").hide();
-        tasks = 0;
-      }
-      
-      if (data.error) {
-        alert('An error occurred: '+data.error+' -- the server log might know more...');
-      }else {
-        if (doUpdate) {
-          doUpdate = false;
-          socket.emit("load");
-          tasks++;
-        }
-      }
-    }
-  });
-
-  socket.on('search-result', function (data) {
-    var widget=$(".search-results");
-
-    widget.data('query', data.query);
-    widget.data('total', data.total);
-
-    widget.find('.offset').html(data.query.offset);
-    if (data.query.offset + data.query.limit > data.total){
-      widget.find('.limit').html(data.total);
-    }else{
-      widget.find('.limit').html(data.query.offset + data.query.limit);
-    }
-    widget.find('.total').html(data.total);
-
-    widget.find(".results *").remove();
-    for (plugin_name in data.results) {
-      var plugin = data.results[plugin_name];
-      var row = widget.find(".template tr").clone();
+  function displayPluginList(plugins, container, template) {
+    plugins.forEach(function(plugin) {
+      var row = template.clone();
       
       for (attr in plugin) {
         if(attr == "name"){ // Hack to rewrite URLS into name
-          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin[attr]+"</a>");
+          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin['name']+"</a>");
         }else{
           row.find("." + attr).html(plugin[attr]);
         }
       }
-      row.find(".version").html( data.results[plugin_name]['dist-tags'].latest );
+      row.find(".version").html( plugin.version );
       
-      widget.find(".results").append(row);
-    }
-
+      container.append(row);
+    })
     updateHandlers();
+  }
+
+  function updateHandlers() {
+    // Search
+    $("#search-query").unbind('keyup').keyup(function () {
+      search($("#search-query").val());
+    });
+
+    // update & install
+    $(".do-install, .do-update").unbind('click').click(function (e) {
+      var row = $(e.target).closest("tr");
+      socket.emit("install", row.find(".name").text());
+    });
+
+    // uninstall
+    $(".do-uninstall").unbind('click').click(function (e) {
+      var row = $(e.target).closest("tr");
+      socket.emit("uninstall", row.find(".name").text());
+    });
+
+    // Infinite scroll
+    $(window).unbind('scroll').scroll(function() {
+      if(search.end) return;// don't keep requesting if there are no more results
+      var top = $('.search-results .results > tr').last().offset().top
+      if($(window).scrollTop()+$(window).height() > top) search(search.searchTerm)
+    })
+  }
+
+  socket.on('results:search', function (data) {
+    console.log('got search results', data)
+    search.results = search.results.concat(data.results);
+    if(!data.results.length) search.end = true;
+    
+    var searchWidget = $(".search-results");
+    searchWidget.find(".results *").remove();
+    displayPluginList(search.results, searchWidget.find(".results"), searchWidget.find(".template tr"))
   });
 
-  socket.on('installed-results', function (data) {
+  socket.on('results:installed', function (data) {
     $("#installed-plugins *").remove();
-
-    for (plugin_name in data.results) {
-      if (plugin_name == "ep_etherpad-lite") continue; // Hack...
-      var plugin = data.results[plugin_name];
-      var row = $("#installed-plugin-template").clone();
-
-      for (attr in plugin.package) {
-        if(attr == "name"){ // Hack to rewrite URLS into name
-          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin.package['name']+"'>"+plugin.package[attr]+"</a>");
-        }else{
-          row.find("." + attr).html(plugin.package[attr]);
-        }
-      }
-      $("#installed-plugins").append(row);
-    }
-    updateHandlers();
+    displayPluginList(data.installed, $("#installed-plugins"), $("#installed-plugin-template"))
 
     setTimeout(function() {
       socket.emit('checkUpdates');
-      tasks++;
     }, 5000)
   });
   
-  socket.on('updatable', function(data) {
-    $('#installed-plugins>tr').each(function(i,tr) {
+  socket.on('results:updatable', function(data) {
+    $('#installed-plugins > tr').each(function(i, tr) {
       var pluginName = $(tr).find('.name').text()
       
       if (data.updatable.indexOf(pluginName) >= 0) {
@@ -182,8 +103,8 @@ $(document).ready(function () {
     updateHandlers();
   })
 
-  socket.emit("load");
-  tasks++;
-  
-  search();
+  // init
+  updateHandlers();
+  socket.emit("getInstalled");
+  search('');
 });
