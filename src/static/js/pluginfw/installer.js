@@ -2,9 +2,12 @@ var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm");
 
-var withNpm = function (npmfn, cb) {
+var npmIsLoaded = false;
+var withNpm = function (npmfn) {
+  if(npmIsLoaded) return npmfn();
   npm.load({}, function (er) {
     if (er) return cb(er);
+    npmIsLoaded = true;
     npm.on("log", function (message) {
       console.log('npm: ',message)
     });
