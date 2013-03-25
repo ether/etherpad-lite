@@ -36,7 +36,7 @@ exports.socketio = function (hook_name, args, cb) {
     socket.on("checkUpdates", function() {
       socket.emit("progress", {progress:0, message:'Checking for plugin updates...'});
       // Check plugins for updates
-      installer.search({offset: 0, pattern: '', limit: 500}, /*useCache:*/true, function(data) { // hacky
+      installer.search({offset: 0, pattern: '', limit: 500}, /*maxCacheAge:*/60*10, function(data) { // hacky
         if (!data.results) return;
         var updatable = _(plugins.plugins).keys().filter(function(plugin) {
           if(!data.results[plugin]) return false;
@@ -51,7 +51,7 @@ exports.socketio = function (hook_name, args, cb) {
 
     socket.on("search", function (query) {
       socket.emit("progress", {progress:0, message:'Fetching results...'});
-        installer.search(query, true, function (progress) {
+        installer.search(query, /*maxCacheAge:*/60*10, function (progress) {
         if (progress.results)
           socket.emit("search-result", progress);
         socket.emit("progress", progress);

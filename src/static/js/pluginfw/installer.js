@@ -71,12 +71,13 @@ exports.install = function(plugin_name, cb) {
 };
 
 exports.searchCache = null;
+var cacheTimestamp = 0;
 
-exports.search = function(query, cache, cb) {
+exports.search = function(query, maxCacheAge, cb) {
   withNpm(
     function (cb) {
       var getData = function (cb) {
-        if (cache && exports.searchCache) {
+        if (maxCacheAge && exports.searchCache && Math.round(+new Date/1000)-cacheTimestamp < maxCacheAge) {
           cb(null, exports.searchCache);
         } else {
           registry.get(
@@ -84,6 +85,7 @@ exports.search = function(query, cache, cb) {
             function (er, data) {
               if (er) return cb(er);
               exports.searchCache = data;
+              cacheTimestamp = Math.round(+new Date/1000)
               cb(er, data);
             }
           );

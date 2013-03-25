@@ -163,8 +163,10 @@ $(document).ready(function () {
     }
     updateHandlers();
 
-    socket.emit('checkUpdates');
-    tasks++;
+    setTimeout(function() {
+      socket.emit('checkUpdates');
+      tasks++;
+    }, 5000)
   });
   
   socket.on('updatable', function(data) {
