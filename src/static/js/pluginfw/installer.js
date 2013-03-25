@@ -1,120 +1,73 @@
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm");
-var RegClient = require("npm-registry-client")
 
-var registry = new RegClient(
-{ registry: "http://registry.npmjs.org"
-, cache: npm.cache }
-);
-
-var withNpm = function (npmfn, final, cb) {
+var withNpm = function (npmfn, cb) {
   npm.load({}, function (er) {
-    if (er) return cb({progress:1, error:er});
+    if (er) return cb(er);
     npm.on("log", function (message) {
-      cb({progress: 0.5, message:message.msg + ": " + message.pref});
+      console.log('npm: ',message)
     });
-    npmfn(function (er, data) {
-      if (er) {
-        console.error(er);
-        return cb({progress:1, error: er.message});
-      }
-      if (!data) data = {};
-      data.progress = 1;
-      data.message = "Done.";
-      cb(data);
-      final();
-    });
+    npmfn();
   });
 }
 
-// All these functions call their callback multiple times with
-// {progress:[0,1], message:STRING, error:object}. They will call it
-// with progress = 1 at least once, and at all times will either
-// message or error be present, not both. It can be called multiple
-// times for all values of propgress except for 1.
-
 exports.uninstall = function(plugin_name, cb) {
-  withNpm(
-    function (cb) {
-      npm.commands.uninstall([plugin_name], function (er) {
+  withNpm(function () {
+    npm.commands.uninstall([plugin_name], function (er) {
+      if (er) return cb && cb(er);
+      hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name}, function (er, data) {
         if (er) return cb(er);
-        hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name}, function (er, data) {
-          if (er) return cb(er);
-          plugins.update(cb);
-        });
+        plugins.update(cb);
+        cb && cb();
+        hooks.aCallAll("restartServer", {}, function () {});
       });
-    },
-    function () {
-      hooks.aCallAll("restartServer", {}, function () {});                
-    },
-    cb
-  );
+    });
+  });
 };
 
 exports.install = function(plugin_name, cb) {
-  withNpm(
-    function (cb) {
+  withNpm(function () {
       npm.commands.install([plugin_name], function (er) {
-        if (er) return cb(er);
+        if (er) return cb && cb(er);
         hooks.aCallAll("pluginInstall", {plugin_name: plugin_name}, function (er, data) {
           if (er) return cb(er);
           plugins.update(cb);
+          cb && cb();
+          hooks.aCallAll("restartServer", {}, function () {});
         });
       });
-    },
-    function () {
-      hooks.aCallAll("restartServer", {}, function () {});                
-    },
-    cb
-  );
+  });
 };
 
-exports.searchCache = null;
+exports.availablePlugins = null;
 var cacheTimestamp = 0;
 
-exports.search = function(query, maxCacheAge, cb) {
-  withNpm(
-    function (cb) {
-      var getData = function (cb) {
-        if (maxCacheAge && exports.searchCache && Math.round(+new Date/1000)-cacheTimestamp < maxCacheAge) {
-          cb(null, exports.searchCache);
-        } else {
-          registry.get(
-            "/-/all", 600, false, true,
-            function (er, data) {
-              if (er) return cb(er);
-              exports.searchCache = data;
-              cacheTimestamp = Math.round(+new Date/1000)
-              cb(er, data);
-            }
-          );
-        }
-      }
-      getData(
-        function (er, data) {
-          if (er) return cb(er);
-          var res = {};
-          var i = 0;
-          var pattern = query.pattern.toLowerCase();
-          for (key in data) { // for every plugin in the data from npm
-            if (   key.indexOf(plugins.prefix) == 0
-                && key.indexOf(pattern) != -1
-                || key.indexOf(plugins.prefix) == 0
-                && data[key].description.indexOf(pattern) != -1
-              ) { // If the name contains ep_ and the search string is in the name or description
-              i++;
-              if (i > query.offset
-                  && i <= query.offset + query.limit) {
-                res[key] = data[key];
-              }
-            }
-          }
-          cb(null, {results:res, query: query, total:i});
-        }
-      );
-    },
-    function () { },
-    cb
-  );
+exports.getAvailablePlugins = function(maxCacheAge, cb) {
+  withNpm(function () {
+    if(exports.availablePlugins && maxCacheAge && Math.round(+new Date/1000)-cacheTimestamp <= maxCacheAge) {
+      return cb && cb(null, exports.availablePlugins)
+    }
+    npm.commands.search(['ep_'], function(er, results) {
+      if(er) return cb && cb(er);
+      exports.availablePlugins = results;
+      cacheTimestamp = Math.round(+new Date/1000);
+      cb && cb(null, results)
+    })
+  });
+};
+
+
+exports.search = function(searchTerm, maxCacheAge, cb) {
+  exports.getAvailablePlugins(maxCacheAge, function(er, results) {
+    if(er) return cb && cb(er);
+    var res = {};
+    searchTerm = searchTerm.toLowerCase();
+    for (var pluginName in results) { // for every available plugin
+      if (pluginName.indexOf(plugins.prefix) != 0) continue; // TODO: Also search in keywords here!
+      if(pluginName.indexOf(searchTerm) < 0 && results[pluginName].description.indexOf(searchTerm) < 0) continue;
+      res[pluginName] = results[pluginName];
+    }
+    cb && cb(null, res)
+  })
 };
