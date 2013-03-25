@@ -27,7 +27,7 @@
                       "nodemailer"              : "0.3.x",
                       "jsdom-nocontextifiy"     : "0.2.10",
                       "async-stacktrace"        : "0.0.2",
-                      "npm"                     : "1.1.x",
+                      "npm"                     : "1.2.x",
                       "npm-registry-client"     : "0.2.10",
                       "ejs"                     : "0.6.1",
                       "graceful-fs"             : "1.1.5",
