@@ -127,6 +127,9 @@ $(document).ready(function () {
     sortPluginList(data.installed, 'name', /*ASC?*/true);
 
     $("#installed-plugins *").remove();
+    data.installed = data.installed.filter(function(plugin) {
+      return plugin.name != 'ep_etherpad-lite'
+    })
     displayPluginList(data.installed, $("#installed-plugins"), $("#installed-plugin-template"));
 
     setTimeout(function() {
