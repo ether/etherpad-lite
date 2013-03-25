@@ -12,20 +12,23 @@ $(document).ready(function () {
   //connect
   socket = io.connect(url, {resource : resource}).of("/pluginfw/installer");
 
-  function search(searchTerm) {
+  function search(searchTerm, limit) {
     if(search.searchTerm != searchTerm) {
       search.offset = 0
       search.results = []
       search.end = false
     }
+    limit = limit? limit : search.limit
     search.searchTerm = searchTerm;
-    socket.emit("search", {searchTerm: searchTerm, offset:search.offset, length: search.limit});
-    search.offset += search.limit;
+    socket.emit("search", {searchTerm: searchTerm, offset:search.offset, limit: limit, sortBy: search.sortBy, sortDir: search.sortDir});
+    search.offset += limit;
   }
-  search.offset = 0
-  search.limit = 12
-  search.results = []
-  search.end = true// have we received all results already?
+  search.offset = 0;
+  search.limit = 12;
+  search.results = [];
+  search.sortBy = 'name';
+  search.sortDir = /*DESC?*/true;
+  search.end = true;// have we received all results already?
 
   function displayPluginList(plugins, container, template) {
     plugins.forEach(function(plugin) {
@@ -43,6 +46,17 @@ $(document).ready(function () {
       container.append(row);
     })
     updateHandlers();
+  }
+  
+  function sortPluginList(plugins, property, /*ASC?*/dir) {
+    return plugins.sort(function(a, b) {
+      if (a[property] < b[property])
+         return dir? -1 : 1;
+      if (a[property] > b[property])
+         return dir? 1 : -1;
+      // a must be equal to b
+      return 0;
+    })
   }
 
   function updateHandlers() {
@@ -66,24 +80,54 @@ $(document).ready(function () {
     // Infinite scroll
     $(window).unbind('scroll').scroll(function() {
       if(search.end) return;// don't keep requesting if there are no more results
-      var top = $('.search-results .results > tr').last().offset().top
+      var top = $('.search-results .results > tr:last').offset().top
       if($(window).scrollTop()+$(window).height() > top) search(search.searchTerm)
+    })
+
+    // Sort
+    $('.sort.up').unbind('click').click(function() {
+      search.sortBy = $(this).text().toLowerCase();
+      search.sortDir = false;
+      search.offset = 0;
+      search.results = [];
+      search(search.searchTerm, search.results.length);
+    })
+    $('.sort.down, .sort.none').unbind('click').click(function() {
+      search.sortBy = $(this).text().toLowerCase();
+      search.sortDir = true;
+      search.offset = 0;
+      search.results = [];
+      search(search.searchTerm);
     })
   }
 
   socket.on('results:search', function (data) {
-    console.log('got search results', data)
-    search.results = search.results.concat(data.results);
     if(!data.results.length) search.end = true;
     
+    console.log('got search results', data)
+
+    // add to results
+    search.results = search.results.concat(data.results);
+
+    // Update sorting head
+    $('.sort')
+      .removeClass('up down')
+      .addClass('none');
+    $('.search-results thead th[data-label='+data.query.sortBy+']')
+      .removeClass('none')
+      .addClass(data.query.sortDir? 'up' : 'down');
+
+    // re-render search results
     var searchWidget = $(".search-results");
     searchWidget.find(".results *").remove();
     displayPluginList(search.results, searchWidget.find(".results"), searchWidget.find(".template tr"))
   });
 
   socket.on('results:installed', function (data) {
+    sortPluginList(data.installed, 'name', /*ASC?*/true);
+
     $("#installed-plugins *").remove();
-    displayPluginList(data.installed, $("#installed-plugins"), $("#installed-plugin-template"))
+    displayPluginList(data.installed, $("#installed-plugins"), $("#installed-plugin-template"));
 
     setTimeout(function() {
       socket.emit('checkUpdates');

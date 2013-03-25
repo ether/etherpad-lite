@@ -70,10 +70,11 @@ exports.socketio = function (hook_name, args, cb) {
           results = {}
         }
         var res = Object.keys(results)
-          .slice(query.offset, query.offset+query.length)
           .map(function(pluginName) {
             return results[pluginName]
           });
+        res = sortPluginList(res, query.sortBy, query.sortDir)
+          .slice(query.offset, query.offset+query.limit);
         socket.emit("results:search", {results: res, query: query});
       });
     });
@@ -90,4 +91,15 @@ exports.socketio = function (hook_name, args, cb) {
       });
     });
   });
+}
+
+function sortPluginList(plugins, property, /*ASC?*/dir) {
+  return plugins.sort(function(a, b) {
+    if (a[property] < b[property])
+       return dir? -1 : 1;
+    if (a[property] > b[property])
+       return dir? 1 : -1;
+    // a must be equal to b
+    return 0;
+  })
 }

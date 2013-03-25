@@ -102,6 +102,19 @@ input[type="text"] {
   max-width: 500px;
 }
 
+.sort {
+  cursor: pointer;
+}
+.sort:after {
+  content: '▲▼'
+}
+.sort.up:after {
+  content:'▲'
+}
+.sort.down:after {
+  content:'▼'
+}
+
 table {
   border: 1px solid #ddd;
   border-radius: 3px;
