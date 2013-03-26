@@ -78,6 +78,7 @@ ul.list-indent8 { list-style-type: none; }
 body {
   margin: 0;
   white-space: nowrap;
+  word-wrap: normal;
 }				 
 
 #outerdocbody {
@@ -93,6 +94,7 @@ body.grayedout { background-color: #eee !important }
 
 body.doesWrap {
   white-space: normal;
+  word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
 }
 
 #innerdocbody {

@@ -1,9 +1,10 @@
 {
 	"@metadata": {
-		"authors": [
-			"Christian List",
-			"Peter Alberti"
-		]
+		"authors": {
+			"0": "Christian List",
+			"1": "Peter Alberti",
+			"3": "Steenth"
+		}
 	},
 	"index.newPad": "Ny Pad",
 	"index.createOpenPad": "eller opret\/\u00e5bn en Pad med navnet:",
@@ -20,7 +21,7 @@
 	"pad.toolbar.clearAuthorship.title": "Fjern farver for forfatterskab",
 	"pad.toolbar.import_export.title": "Import\/eksport fra\/til forskellige filformater",
 	"pad.toolbar.timeslider.title": "Timeslider",
-	"pad.toolbar.savedRevision.title": "Gemte revisioner",
+	"pad.toolbar.savedRevision.title": "Gem Revision",
 	"pad.toolbar.settings.title": "Indstillinger",
 	"pad.toolbar.embed.title": "Integrer denne pad",
 	"pad.toolbar.showusers.title": "Vis brugere p\u00e5 denne pad",
@@ -35,6 +36,7 @@
 	"pad.settings.stickychat": "Chat altid p\u00e5 sk\u00e6rmen",
 	"pad.settings.colorcheck": "Forfatterskabsfarver",
 	"pad.settings.linenocheck": "Linjenumre",
+	"pad.settings.rtlcheck": "L\u00e6se indhold fra h\u00f8jre mod venstre?",
 	"pad.settings.fontType": "Skrifttype:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.fontType.monospaced": "Fastbredde",
