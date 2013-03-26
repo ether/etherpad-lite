@@ -72,6 +72,9 @@ exports.socketio = function (hook_name, args, cb) {
         var res = Object.keys(results)
           .map(function(pluginName) {
             return results[pluginName]
+          })
+          .filter(function(plugin) {
+            return !plugins.plugins[plugin.name]
           });
         res = sortPluginList(res, query.sortBy, query.sortDir)
           .slice(query.offset, query.offset+query.limit);

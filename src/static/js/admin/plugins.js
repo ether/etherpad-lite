@@ -80,16 +80,17 @@ $(document).ready(function () {
 
     // update & install
     $(".do-install, .do-update").unbind('click').click(function (e) {
-      var row = $(e.target).closest("tr")
-        , plugin = row.find(".name").text();
+      var $row = $(e.target).closest("tr")
+        , plugin = $row.find(".name").text();
       socket.emit("install", plugin);
       progress.show('Installing plugin '+plugin+'...')
     });
 
     // uninstall
     $(".do-uninstall").unbind('click').click(function (e) {
-      var row = $(e.target).closest("tr")
-        , plugin = row.find(".name").text();
+      var $row = $(e.target).closest("tr")
+        , plugin = $row.find(".name").text();
+      $row.remove()
       socket.emit("uninstall", plugin);
       progress.show('Uninstalling plugin '+plugin+'...')
     });
@@ -172,11 +173,21 @@ $(document).ready(function () {
   socket.on('finished:install', function(data) {
     if(data.error) alert('An error occured while installing the plugin. \n'+data.error)
     socket.emit("getInstalled");
+
+    // update search results
+    search.offset = 0;
+    search(search.searchTerm, search.results.length);
+    search.results = [];
   })
 
   socket.on('finished:uninstall', function(data) {
     if(data.error) alert('An error occured while uninstalling the plugin. \n'+data.error)
     socket.emit("getInstalled");
+    
+    // update search results
+    search.offset = 0;
+    search(search.searchTerm, search.results.length);
+    search.results = [];
   })
 
   // init
