@@ -87,6 +87,7 @@ $(document).ready(function () {
       $row.remove().appendTo('#installed-plugins')
       socket.emit("install", plugin);
       installed.progress.show(plugin, 'Installing')
+      $(".installed-results .nothing-installed").hide()
     });
 
     // uninstall
@@ -126,6 +127,8 @@ $(document).ready(function () {
 
   socket.on('results:search', function (data) {
     if(!data.results.length) search.end = true;
+    $(".search-results .nothing-found").hide()
+    $(".search-results .fetching").hide()
     
     console.log('got search results', data)
 
@@ -143,11 +146,18 @@ $(document).ready(function () {
     // re-render search results
     var searchWidget = $(".search-results");
     searchWidget.find(".results *").remove();
-    displayPluginList(search.results, searchWidget.find(".results"), searchWidget.find(".template tr"))
+    if(search.results.length > 0) {
+      displayPluginList(search.results, searchWidget.find(".results"), searchWidget.find(".template tr"))
+    }else {
+      $(".search-results .nothing-found").show()
+    }
     $('#search-progress').hide()
   });
 
   socket.on('results:installed', function (data) {
+    $(".installed-results .nothing-installed").hide()
+    $(".installed-results .fetching").hide()
+
     installed.list = data.installed
     sortPluginList(installed.list, 'name', /*ASC?*/true);
 
@@ -156,11 +166,16 @@ $(document).ready(function () {
       return plugin.name != 'ep_etherpad-lite'
     })
 
-    // remove all installed plugins (leave all plugins that are still being installed)
+    // remove all installed plugins (leave plugins that are still being installed)
     installed.list.forEach(function(plugin) {
       $('#installed-plugins .'+plugin.name).remove()
     })
-    displayPluginList(installed.list, $("#installed-plugins"), $("#installed-plugin-template"));
+
+    if(installed.list.length > 0) {
+      displayPluginList(installed.list, $("#installed-plugins"), $("#installed-plugin-template"));
+    }else {
+      $(".installed-results .nothing-installed").show()
+    }
   });
   
   socket.on('results:updatable', function(data) {

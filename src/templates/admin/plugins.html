@@ -32,7 +32,7 @@
 
       <div class="innerwrapper">
         <h2>Installed plugins</h2>
-        <table>
+        <table class="installed-results">
           <thead>
             <tr>
               <th>Name</th>
@@ -56,6 +56,12 @@
           </tbody>
           <tbody id="installed-plugins">
           </tbody>
+          <tbody>
+              <tr><td></td><td class="messages">
+                <p class="nothing-installed">You haven't installed any plugins yet.</p>
+                <p class="fetching">Fetching installed plugins...</p>
+              </td><td></td></tr>
+            </tbody>
         </table>
 
         <div class="paged listing search-results">
@@ -91,9 +97,11 @@
             <tbody class="results">
             </tbody>
             <tbody>
-              <tr><td>
-                <div id="search-progress" class="progress"><img src="../static/img/loading.gif"/></div>
-              </td></tr>
+              <tr><td></td><td class="messages">
+                <div class="search-progress" class="progress"><img src="../static/img/loading.gif"/></div>
+                <p class="nothing-found">No plugins found.</p>
+                <p class="fetching">Fetching catalogue...</p>
+              </td><td></td></tr>
             </tbody>
           </table>
         </div>

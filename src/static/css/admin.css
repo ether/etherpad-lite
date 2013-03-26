@@ -141,6 +141,15 @@ td, th {
   display: inline-block; /*make this fill the whole cell*/
 }
 
+.messages * {
+  text-align: center;
+  display: none;
+}
+
+.messages .fetching {
+  display: block;
+}
+
 .progress {
   position: absolute;
   top: 0; left: 0; bottom:0; right:0;
