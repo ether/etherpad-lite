@@ -75,6 +75,16 @@ $(document).ready(function () {
     })
   }
 
+  // Infinite scroll
+  $(window).scroll(checkInfiniteScroll)
+  function checkInfiniteScroll() {
+    if(search.end) return;// don't keep requesting if there are no more results
+    try{
+      var top = $('.search-results .results > tr:last').offset().top
+      if($(window).scrollTop()+$(window).height() > top) search(search.searchTerm)
+    }catch(e){}
+  }
+
   function updateHandlers() {
     // Search
     $("#search-query").unbind('keyup').keyup(function () {
@@ -101,13 +111,6 @@ $(document).ready(function () {
         return plugin.name != pluginName
       })
     });
-
-    // Infinite scroll
-    $(window).unbind('scroll').scroll(function() {
-      if(search.end) return;// don't keep requesting if there are no more results
-      var top = $('.search-results .results > tr:last').offset().top
-      if($(window).scrollTop()+$(window).height() > top) search(search.searchTerm)
-    })
 
     // Sort
     $('.sort.up').unbind('click').click(function() {
@@ -154,6 +157,7 @@ $(document).ready(function () {
       $(".search-results .nothing-found").show()
     }
     $('#search-progress').hide()
+    checkInfiniteScroll()
   });
 
   socket.on('results:installed', function (data) {
