@@ -559,6 +559,15 @@ table#otheruserstable {
   margin: 4px 0 0 4px;
   position: absolute;
 }
+#titlesticky{
+  font-size: 10px;
+  padding-top:2px;
+  float: right;
+  text-align: right;
+  text-decoration: none;
+  cursor: pointer;
+  color: #555;
+}
 #titlecross {
   font-size: 25px;
   float: right;
