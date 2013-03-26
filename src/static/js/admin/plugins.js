@@ -106,15 +106,15 @@ $(document).ready(function () {
       search.sortBy = $(this).text().toLowerCase();
       search.sortDir = false;
       search.offset = 0;
-      search.results = [];
       search(search.searchTerm, search.results.length);
+      search.results = [];
     })
     $('.sort.down, .sort.none').unbind('click').click(function() {
       search.sortBy = $(this).text().toLowerCase();
       search.sortDir = true;
       search.offset = 0;
+      search(search.searchTerm, search.results.length);
       search.results = [];
-      search(search.searchTerm);
     })
   }
 
