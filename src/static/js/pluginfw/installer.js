@@ -54,7 +54,7 @@ exports.getAvailablePlugins = function(maxCacheAge, cb) {
     if(exports.availablePlugins && maxCacheAge && Math.round(+new Date/1000)-cacheTimestamp <= maxCacheAge) {
       return cb && cb(null, exports.availablePlugins)
     }
-    npm.commands.search(['ep_'], function(er, results) {
+    npm.commands.search(['ep_'], /*silent?*/true, function(er, results) {
       if(er) return cb && cb(er);
       exports.availablePlugins = results;
       cacheTimestamp = Math.round(+new Date/1000);
