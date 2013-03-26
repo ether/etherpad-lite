@@ -51,13 +51,14 @@ $(document).ready(function () {
       
       for (attr in plugin) {
         if(attr == "name"){ // Hack to rewrite URLS into name
-          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin['name']+"</a>");
+          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin['name'].substr(3)+"</a>"); // remove 'ep_'
         }else{
           row.find("." + attr).html(plugin[attr]);
         }
       }
       row.find(".version").html( plugin.version );
       row.addClass(plugin.name)
+      row.data('plugin', plugin.name)
       container.append(row);
     })
     updateHandlers();
@@ -83,7 +84,7 @@ $(document).ready(function () {
     // update & install
     $(".do-install, .do-update").unbind('click').click(function (e) {
       var $row = $(e.target).closest("tr")
-        , plugin = $row.find(".name").text();
+        , plugin = $row.data('plugin');
       $row.remove().appendTo('#installed-plugins')
       socket.emit("install", plugin);
       installed.progress.show(plugin, 'Installing')
@@ -93,7 +94,7 @@ $(document).ready(function () {
     // uninstall
     $(".do-uninstall").unbind('click').click(function (e) {
       var $row = $(e.target).closest("tr")
-        , pluginName = $row.find(".name").text();
+        , pluginName = $row.data('plugin');
       socket.emit("uninstall", pluginName);
       installed.progress.show(pluginName, 'Uninstalling')
       installed.list = installed.list.filter(function(plugin) {

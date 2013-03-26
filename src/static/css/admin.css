@@ -155,7 +155,7 @@ td, th {
   top: 0; left: 0; bottom:0; right:0;
   padding: auto;
   
-  background: rgba(255,255,255,0.95);
+  background: rgb(255,255,255);
   display: none;
 }
 
@@ -187,7 +187,25 @@ a:link, a:visited, a:hover, a:focus {
 }
 
 a:focus, a:hover {
-  border-bottom: #333333 1px solid;
+  text-decoration: underline;
+}
+
+.installed-results a:link,
+.search-results a:link,
+.installed-results a:visited,
+.search-results a:visited,
+.installed-results a:hover,
+.search-results a:hover,
+.installed-results a:focus,
+.search-results a:focus  {
+  text-decoration: underline;
+}
+
+.installed-results a:focus,
+.search-results a:focus,
+.installed-results a:hover,
+.search-results a:hover {
+  text-decoration: none;
 }
 
 pre {
