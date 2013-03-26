@@ -81,13 +81,15 @@ exports.socketio = function (hook_name, args, cb) {
 
     socket.on("install", function (plugin_name) {
       installer.install(plugin_name, function (er) {
-        socket.emit("finished:install", {error: er});
+        if(er) console.warn(er)
+        socket.emit("finished:install", {error: er? er.message : null});
       });
     });
 
     socket.on("uninstall", function (plugin_name) {
       installer.uninstall(plugin_name, function (er) {
-        socket.emit("finished:uninstall", {error: er});
+        if(er) console.warn(er)
+        socket.emit("finished:uninstall", {error: er? er.message : null});
       });
     });
   });

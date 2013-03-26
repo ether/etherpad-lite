@@ -28,65 +28,70 @@
           <li><a href="plugins/info">Troubleshooting information</a> </li>
           <% e.end_block(); %>
         </ul>
-        <div id="progress"><img src="../static/img/loading.gif">&nbsp;&nbsp;<span class="message"></span></div>
       </div>
 
       <div class="innerwrapper">
-      <h2>Installed plugins</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Version</th>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody class="template">
-          <tr id="installed-plugin-template">
-            <td class="name" data-label="Name"></td>
-            <td class="description" data-label="Description"></td>
-            <td class="version" data-label="Version"></td>
-            <td class="actions">
-              <input type="button" value="Uninstall" class="do-uninstall">
-            </td>
-          </tr>
-        </tbody>
-        <tbody id="installed-plugins">
-        </tbody>
-      </table>
-
-      <div class="paged listing search-results">
-        <div class="separator"></div>
-        
-        <h2>Available plugins</h2>
-        <form>
-          <input type="text" name="search" placeholder="Search for plugins to install" id="search-query">
-        </form>
-
+        <h2>Installed plugins</h2>
         <table>
           <thead>
             <tr>
-              <th class="sort up"   data-label="name">Name</th>
-              <th class="sort none" data-label="description">Description</th>
-              <th class="sort none" data-label="Version">Version</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Version</th>
               <td></td>
             </tr>
           </thead>
           <tbody class="template">
-            <tr>
+            <tr id="installed-plugin-template">
               <td class="name" data-label="Name"></td>
               <td class="description" data-label="Description"></td>
               <td class="version" data-label="Version"></td>
               <td class="actions">
-                <input type="button" value="Install" class="do-install">
-             </td>
+                <input type="button" value="Uninstall" class="do-uninstall">
+              </td>
             </tr>
           </tbody>
-          <tbody class="results">
+          <tbody id="installed-plugins">
           </tbody>
         </table>
-      </div>
+
+        <div class="paged listing search-results">
+          <div class="separator"></div>
+          
+          <h2>Available plugins</h2>
+          <form>
+            <input type="text" name="search" placeholder="Search for plugins to install" id="search-query">
+          </form>
+
+          <table>
+            <thead>
+              <tr>
+                <th class="sort up"   data-label="name">Name</th>
+                <th class="sort none" data-label="description">Description</th>
+                <th class="sort none" data-label="Version">Version</th>
+                <td></td>
+              </tr>
+            </thead>
+            <tbody class="template">
+              <tr>
+                <td class="name" data-label="Name"></td>
+                <td class="description" data-label="Description"></td>
+                <td class="version" data-label="Version"></td>
+                <td class="actions">
+                  <input type="button" value="Install" class="do-install">
+               </td>
+              </tr>
+            </tbody>
+            <tbody class="results">
+            </tbody>
+            <tbody>
+              <tr><td>
+                <div id="search-progress" class="progress"><img src="../static/img/loading.gif"/></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="progress" class="progress"><p><img src="../static/img/loading.gif"/></p><p><span class="message"></span></p></div>
 
       </div>
     </div>

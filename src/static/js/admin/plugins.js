@@ -22,6 +22,7 @@ $(document).ready(function () {
     search.searchTerm = searchTerm;
     socket.emit("search", {searchTerm: searchTerm, offset:search.offset, limit: limit, sortBy: search.sortBy, sortDir: search.sortDir});
     search.offset += limit;
+    $('#search-progress').show()
   }
   search.offset = 0;
   search.limit = 12;
@@ -59,6 +60,18 @@ $(document).ready(function () {
     })
   }
 
+  var progress = {
+    show: function(msg) {
+      $('#progress').show()
+      $('#progress .message').text(msg)
+      $(window).scrollTop(0)
+    },
+    hide: function() {
+      $('#progress').hide()
+      $('#progress .message').text('')
+    }
+  }
+
   function updateHandlers() {
     // Search
     $("#search-query").unbind('keyup').keyup(function () {
@@ -67,14 +80,18 @@ $(document).ready(function () {
 
     // update & install
     $(".do-install, .do-update").unbind('click').click(function (e) {
-      var row = $(e.target).closest("tr");
-      socket.emit("install", row.find(".name").text());
+      var row = $(e.target).closest("tr")
+        , plugin = row.find(".name").text();
+      socket.emit("install", plugin);
+      progress.show('Installing plugin '+plugin+'...')
     });
 
     // uninstall
     $(".do-uninstall").unbind('click').click(function (e) {
-      var row = $(e.target).closest("tr");
-      socket.emit("uninstall", row.find(".name").text());
+      var row = $(e.target).closest("tr")
+        , plugin = row.find(".name").text();
+      socket.emit("uninstall", plugin);
+      progress.show('Uninstalling plugin '+plugin+'...')
     });
 
     // Infinite scroll
@@ -121,16 +138,18 @@ $(document).ready(function () {
     var searchWidget = $(".search-results");
     searchWidget.find(".results *").remove();
     displayPluginList(search.results, searchWidget.find(".results"), searchWidget.find(".template tr"))
+    $('#search-progress').hide()
   });
 
   socket.on('results:installed', function (data) {
     sortPluginList(data.installed, 'name', /*ASC?*/true);
 
-    $("#installed-plugins *").remove();
     data.installed = data.installed.filter(function(plugin) {
       return plugin.name != 'ep_etherpad-lite'
     })
+    $("#installed-plugins *").remove();
     displayPluginList(data.installed, $("#installed-plugins"), $("#installed-plugin-template"));
+    progress.hide()
 
     setTimeout(function() {
       socket.emit('checkUpdates');
@@ -148,6 +167,16 @@ $(document).ready(function () {
       }
     })
     updateHandlers();
+  })
+
+  socket.on('finished:install', function(data) {
+    if(data.error) alert('An error occured while installing the plugin. \n'+data.error)
+    socket.emit("getInstalled");
+  })
+
+  socket.on('finished:uninstall', function(data) {
+    if(data.error) alert('An error occured while uninstalling the plugin. \n'+data.error)
+    socket.emit("getInstalled");
   })
 
   // init
