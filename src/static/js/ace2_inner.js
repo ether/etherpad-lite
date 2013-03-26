@@ -1013,6 +1013,11 @@ function Ace2Inner(){
     return caughtErrors.slice();
   };
 
+  editorInfo.ace_getDocument = function()
+  {
+    return doc;
+  };
+
   editorInfo.ace_getDebugProperty = function(prop)
   {
     if (prop == "debugger")
