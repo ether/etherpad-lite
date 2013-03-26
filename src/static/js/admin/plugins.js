@@ -31,6 +31,20 @@ $(document).ready(function () {
   search.sortDir = /*DESC?*/true;
   search.end = true;// have we received all results already?
 
+  var installed = {
+    progress: {
+      show: function(plugin, msg) {
+        $('#installed-plugins .'+plugin+' .progress').show()
+        $('#installed-plugins .'+plugin+' .progress .message').text(msg)
+      },
+      hide: function(plugin) {
+        $('#installed-plugins .'+plugin+' .progress').hide()
+        $('#installed-plugins .'+plugin+' .progress .message').text('')
+      }
+    },
+    list: []
+  }
+
   function displayPluginList(plugins, container, template) {
     plugins.forEach(function(plugin) {
       var row = template.clone();
@@ -43,7 +57,7 @@ $(document).ready(function () {
         }
       }
       row.find(".version").html( plugin.version );
-      
+      row.addClass(plugin.name)
       container.append(row);
     })
     updateHandlers();
@@ -60,18 +74,6 @@ $(document).ready(function () {
     })
   }
 
-  var progress = {
-    show: function(msg) {
-      $('#progress').show()
-      $('#progress .message').text(msg)
-      $(window).scrollTop(0)
-    },
-    hide: function() {
-      $('#progress').hide()
-      $('#progress .message').text('')
-    }
-  }
-
   function updateHandlers() {
     // Search
     $("#search-query").unbind('keyup').keyup(function () {
@@ -82,17 +84,20 @@ $(document).ready(function () {
     $(".do-install, .do-update").unbind('click').click(function (e) {
       var $row = $(e.target).closest("tr")
         , plugin = $row.find(".name").text();
+      $row.remove().appendTo('#installed-plugins')
       socket.emit("install", plugin);
-      progress.show('Installing plugin '+plugin+'...')
+      installed.progress.show(plugin, 'Installing')
     });
 
     // uninstall
     $(".do-uninstall").unbind('click').click(function (e) {
       var $row = $(e.target).closest("tr")
-        , plugin = $row.find(".name").text();
-      $row.remove()
-      socket.emit("uninstall", plugin);
-      progress.show('Uninstalling plugin '+plugin+'...')
+        , pluginName = $row.find(".name").text();
+      socket.emit("uninstall", pluginName);
+      installed.progress.show(pluginName, 'Uninstalling')
+      installed.list = installed.list.filter(function(plugin) {
+        return plugin.name != pluginName
+      })
     });
 
     // Infinite scroll
@@ -143,18 +148,19 @@ $(document).ready(function () {
   });
 
   socket.on('results:installed', function (data) {
-    sortPluginList(data.installed, 'name', /*ASC?*/true);
+    installed.list = data.installed
+    sortPluginList(installed.list, 'name', /*ASC?*/true);
 
-    data.installed = data.installed.filter(function(plugin) {
+    // filter out epl
+    installed.list = installed.list.filter(function(plugin) {
       return plugin.name != 'ep_etherpad-lite'
     })
-    $("#installed-plugins *").remove();
-    displayPluginList(data.installed, $("#installed-plugins"), $("#installed-plugin-template"));
-    progress.hide()
 
-    setTimeout(function() {
-      socket.emit('checkUpdates');
-    }, 5000)
+    // remove all installed plugins (leave all plugins that are still being installed)
+    installed.list.forEach(function(plugin) {
+      $('#installed-plugins .'+plugin.name).remove()
+    })
+    displayPluginList(installed.list, $("#installed-plugins"), $("#installed-plugin-template"));
   });
   
   socket.on('results:updatable', function(data) {
@@ -171,7 +177,11 @@ $(document).ready(function () {
   })
 
   socket.on('finished:install', function(data) {
-    if(data.error) alert('An error occured while installing the plugin. \n'+data.error)
+    if(data.error) {
+      alert('An error occured while installing '+data.plugin+' \n'+data.error)
+      $('#installed-plugins .'+data.plugin).remove()
+    }
+
     socket.emit("getInstalled");
 
     // update search results
@@ -181,9 +191,13 @@ $(document).ready(function () {
   })
 
   socket.on('finished:uninstall', function(data) {
-    if(data.error) alert('An error occured while uninstalling the plugin. \n'+data.error)
-    socket.emit("getInstalled");
+    if(data.error) alert('An error occured while uninstalling the '+data.plugin+' \n'+data.error)
+
+    // remove plugin from installed list
+    $('#installed-plugins .'+data.plugin).remove()
     
+    socket.emit("getInstalled");
+
     // update search results
     search.offset = 0;
     search(search.searchTerm, search.results.length);
@@ -194,4 +208,9 @@ $(document).ready(function () {
   updateHandlers();
   socket.emit("getInstalled");
   search('');
+
+  // check for updates every 15mins
+  setInterval(function() {
+    socket.emit('checkUpdates');
+  }, 1000*60*15)
 });

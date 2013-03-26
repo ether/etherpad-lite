@@ -47,7 +47,10 @@
               <td class="description" data-label="Description"></td>
               <td class="version" data-label="Version"></td>
               <td class="actions">
-                <input type="button" value="Uninstall" class="do-uninstall">
+                <div>
+                  <input type="button" value="Uninstall" class="do-uninstall">
+                  <div class="progress"><p><img src="../static/img/loading.gif"/></p><p><span class="message"></span></p></div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -78,7 +81,10 @@
                 <td class="description" data-label="Description"></td>
                 <td class="version" data-label="Version"></td>
                 <td class="actions">
-                  <input type="button" value="Install" class="do-install">
+                  <div>
+                    <input type="button" value="Install" class="do-install">
+                    <div class="progress"><p><img src="../static/img/loading.gif"/></p><p><span class="message"></span></p></div>
+                  </div>
                </td>
               </tr>
             </tbody>
@@ -91,7 +97,6 @@
             </tbody>
           </table>
         </div>
-        <div id="progress" class="progress"><p><img src="../static/img/loading.gif"/></p><p><span class="message"></span></p></div>
 
       </div>
     </div>

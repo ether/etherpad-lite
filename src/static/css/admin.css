@@ -36,7 +36,6 @@ div.menu li:last-child {
 div.innerwrapper {
   padding: 15px;
   margin-left: 265px;
-  position:relative; /* Allows us to position the loading indicator relative to this div */
 }
 
 #wrapper {
@@ -137,23 +136,30 @@ td, th {
   display: none;
 }
 
+#installed-plugins td>div {
+  position: relative;/* Allows us to position the loading indicator relative to this row */
+  display: inline-block; /*make this fill the whole cell*/
+}
+
 .progress {
   position: absolute;
   top: 0; left: 0; bottom:0; right:0;
   padding: auto;
-  padding-top: 20%;
   
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.95);
   display: none;
-  /*border-radius: 7px;
-  border: 1px solid #ddd;*/
+}
+
+#search-progress.progress {
+  padding-top: 20%;
+  background: rgba(255,255,255,0.7);
 }
 
 .progress * {
   display: block;
   margin: 0 auto;
   text-align: center;
-  color: #999;
+  color: #666;
 }
 
 .settings {
