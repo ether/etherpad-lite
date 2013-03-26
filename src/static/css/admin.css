@@ -141,9 +141,9 @@ td, th {
   display: inline-block; /*make this fill the whole cell*/
 }
 
-.messages * {
-  text-align: center;
+.messages td>* {
   display: none;
+  text-align: center;
 }
 
 .messages .fetching {

@@ -30,17 +30,37 @@ $(document).ready(function () {
   search.sortBy = 'name';
   search.sortDir = /*DESC?*/true;
   search.end = true;// have we received all results already?
+  search.messages = {
+    show: function(msg) {
+      $('.search-results .messages').show()
+      $('.search-results .messages .'+msg+'').show()
+    },
+    hide: function(msg) {
+      $('.search-results .messages').hide()
+      $('.search-results .messages .'+msg+'').hide()
+    }
+  }
 
   var installed = {
     progress: {
       show: function(plugin, msg) {
-        $('#installed-plugins .'+plugin+' .progress').show()
-        $('#installed-plugins .'+plugin+' .progress .message').text(msg)
+        $('.installed-results .'+plugin+' .progress').show()
+        $('.installed-results .'+plugin+' .progress .message').text(msg)
         $(window).scrollTop(0)
       },
       hide: function(plugin) {
-        $('#installed-plugins .'+plugin+' .progress').hide()
-        $('#installed-plugins .'+plugin+' .progress .message').text('')
+        $('.installed-results .'+plugin+' .progress').hide()
+        $('.installed-results .'+plugin+' .progress .message').text('')
+      }
+    },
+    messages: {
+      show: function(msg) {
+        $('.installed-results .messages').show()
+        $('.installed-results .messages .'+msg+'').show()
+      },
+      hide: function(msg) {
+        $('.installed-results .messages').hide()
+        $('.installed-results .messages .'+msg+'').hide()
       }
     },
     list: []
@@ -99,7 +119,7 @@ $(document).ready(function () {
       $row.remove().appendTo('#installed-plugins')
       socket.emit("install", plugin);
       installed.progress.show(plugin, 'Installing')
-      $(".installed-results .nothing-installed").hide()
+      installed.messages.hide("nothing-installed")
     });
 
     // uninstall
@@ -132,8 +152,8 @@ $(document).ready(function () {
 
   socket.on('results:search', function (data) {
     if(!data.results.length) search.end = true;
-    $(".search-results .nothing-found").hide()
-    $(".search-results .fetching").hide()
+    search.messages.hide('nothing-found')
+    search.messages.hide('fetching')
     $("#search-query").removeAttr('disabled')
     
     console.log('got search results', data)
@@ -155,15 +175,15 @@ $(document).ready(function () {
     if(search.results.length > 0) {
       displayPluginList(search.results, searchWidget.find(".results"), searchWidget.find(".template tr"))
     }else {
-      $(".search-results .nothing-found").show()
+      search.messages.show('nothing-found')
     }
     $('#search-progress').hide()
     checkInfiniteScroll()
   });
 
   socket.on('results:installed', function (data) {
-    $(".installed-results .nothing-installed").hide()
-    $(".installed-results .fetching").hide()
+    installed.messages.hide("fetching")
+    installed.messages.hide("nothing-installed")
 
     installed.list = data.installed
     sortPluginList(installed.list, 'name', /*ASC?*/true);
@@ -181,7 +201,7 @@ $(document).ready(function () {
     if(installed.list.length > 0) {
       displayPluginList(installed.list, $("#installed-plugins"), $("#installed-plugin-template"));
     }else {
-      $(".installed-results .nothing-installed").show()
+      installed.messages.show("nothing-installed")
     }
   });
   
