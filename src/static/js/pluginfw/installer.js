@@ -6,7 +6,7 @@ var npmIsLoaded = false;
 var withNpm = function (npmfn) {
   if(npmIsLoaded) return npmfn();
   npm.load({}, function (er) {
-    if (er) return cb(er);
+    if (er) return npmfn(er);
     npmIsLoaded = true;
     npm.on("log", function (message) {
       console.log('npm: ',message)
@@ -16,7 +16,8 @@ var withNpm = function (npmfn) {
 }
 
 exports.uninstall = function(plugin_name, cb) {
-  withNpm(function () {
+  withNpm(function (er) {
+    if (er) return cb && cb(er);
     npm.commands.uninstall([plugin_name], function (er) {
       if (er) return cb && cb(er);
       hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name}, function (er, data) {
@@ -30,16 +31,17 @@ exports.uninstall = function(plugin_name, cb) {
 };
 
 exports.install = function(plugin_name, cb) {
-  withNpm(function () {
-      npm.commands.install([plugin_name], function (er) {
-        if (er) return cb && cb(er);
-        hooks.aCallAll("pluginInstall", {plugin_name: plugin_name}, function (er, data) {
-          if (er) return cb(er);
-          plugins.update(cb);
-          cb && cb();
-          hooks.aCallAll("restartServer", {}, function () {});
-        });
+  withNpm(function (er) {
+    if (er) return cb && cb(er);
+    npm.commands.install([plugin_name], function (er) {
+      if (er) return cb && cb(er);
+      hooks.aCallAll("pluginInstall", {plugin_name: plugin_name}, function (er, data) {
+        if (er) return cb(er);
+        plugins.update(cb);
+        cb && cb();
+        hooks.aCallAll("restartServer", {}, function () {});
       });
+    });
   });
 };
 
@@ -47,7 +49,8 @@ exports.availablePlugins = null;
 var cacheTimestamp = 0;
 
 exports.getAvailablePlugins = function(maxCacheAge, cb) {
-  withNpm(function () {
+  withNpm(function (er) {
+    if (er) return cb && cb(er);
     if(exports.availablePlugins && maxCacheAge && Math.round(+new Date/1000)-cacheTimestamp <= maxCacheAge) {
       return cb && cb(null, exports.availablePlugins)
     }
