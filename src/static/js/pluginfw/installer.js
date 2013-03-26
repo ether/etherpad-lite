@@ -23,7 +23,6 @@ exports.uninstall = function(plugin_name, cb) {
       hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name}, function (er, data) {
         if (er) return cb(er);
         plugins.update(cb);
-        cb && cb();
         hooks.aCallAll("restartServer", {}, function () {});
       });
     });
@@ -38,7 +37,6 @@ exports.install = function(plugin_name, cb) {
       hooks.aCallAll("pluginInstall", {plugin_name: plugin_name}, function (er, data) {
         if (er) return cb(er);
         plugins.update(cb);
-        cb && cb();
         hooks.aCallAll("restartServer", {}, function () {});
       });
     });
