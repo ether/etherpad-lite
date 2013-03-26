@@ -36,6 +36,7 @@ $(document).ready(function () {
       show: function(plugin, msg) {
         $('#installed-plugins .'+plugin+' .progress').show()
         $('#installed-plugins .'+plugin+' .progress .message').text(msg)
+        $(window).scrollTop(0)
       },
       hide: function(plugin) {
         $('#installed-plugins .'+plugin+' .progress').hide()
