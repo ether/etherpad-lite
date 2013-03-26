@@ -130,6 +130,7 @@ $(document).ready(function () {
     if(!data.results.length) search.end = true;
     $(".search-results .nothing-found").hide()
     $(".search-results .fetching").hide()
+    $("#search-query").removeAttr('disabled')
     
     console.log('got search results', data)
 

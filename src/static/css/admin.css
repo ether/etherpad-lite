@@ -43,7 +43,7 @@ div.innerwrapper {
   box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
   margin: auto;
   max-width: 1150px;
-  min-height: 100%;
+  min-height: 101%;/*always display a scrollbar*/
 }
 
 h1 {
