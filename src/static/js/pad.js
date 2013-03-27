@@ -117,14 +117,14 @@ var getParameters = [
   { name: "userName",         checkVal: null,    callback: function(val) { settings.globalUserName = decodeURIComponent(val); } },
   // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
   { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); } },
-  { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
+  { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true; } },
   { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
   { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); } }
 ];
 
 function getParams()
 {
-  var params = getUrlVars()
+  var params = getUrlVars();
   
   for(var i = 0; i < getParameters.length; i++)
   {
@@ -212,7 +212,7 @@ function handshake()
     }
     
     socket.json.send(msg);
-  };
+  }
 
   var disconnectTimeout;
 
@@ -293,7 +293,7 @@ function handshake()
       pad._afterHandshake();
       initalized = true;
 
-      $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
+      $("body").addClass(clientVars.readonly ? "readonly" : "readwrite");
 
       padeditor.ace.callWithAce(function (ace) {
         ace.ace_setEditable(!clientVars.readonly);

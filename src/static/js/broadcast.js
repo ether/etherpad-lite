@@ -273,7 +273,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     padContents.currentRevision = revision;
     padContents.currentTime += timeDelta * 1000;
 
-    debugLog('Time Delta: ', timeDelta)
+    debugLog('Time Delta: ', timeDelta);
     updateTimer();
     
     var authors = _.map(padContents.getActiveAuthors(), function(name)
@@ -292,7 +292,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         while (str.length < length)
         str = '0' + str;
         return str;
-        }
+        };
         
     var date = new Date(padContents.currentTime);
     var dateFormat = function()
@@ -311,12 +311,9 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
           "minutes": minutes, 
           "seconds": seconds
         }));
-        }
-        
-        
-        
-        
-        
+        };
+
+
     $('#timer').html(dateFormat());
     var revisionDate = html10n.get("timeslider.saved", {
       "day": date.getDate(),
@@ -336,7 +333,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
                ][date.getMonth()],
       "year": date.getFullYear()
     });
-    $('#revision_date').html(revisionDate)
+    $('#revision_date').html(revisionDate);
 
   }
   
@@ -570,7 +567,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     {
       goToRevision.apply(goToRevision, arguments);
     }
-  }
+  };
       
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
@@ -586,7 +583,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       if (bgcolor && dynamicCSS)
       {
         var selector = dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author));
-        selector.backgroundColor = bgcolor
+        selector.backgroundColor = bgcolor;
         selector.color = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5) ? '#ffffff' : '#000000'; //see ace2_inner.js for the other part
       }
       authorData[author] = data;

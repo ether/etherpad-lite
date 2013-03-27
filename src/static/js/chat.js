@@ -110,7 +110,7 @@ var chat = (function()
         "sticky" : false,
         "timestamp" : msg.time,
         "timeStr" : timeStr
-      }
+      };
 
       // is the users focus already in the chatbox?
       var alreadyFocused = $("#chatinput").is(":focus");
@@ -200,7 +200,7 @@ var chat = (function()
         self.historyPointer = start;
 	  });
     }
-  }
+  };
 
   return self;
 }());

@@ -46,7 +46,7 @@ function loadBroadcastRevisionsJS()
     {
       return (b.deltaRev - a.deltaRev)
     });
-  }
+  };
 
   revisionInfo = {};
   revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta)
@@ -55,7 +55,7 @@ function loadBroadcastRevisionsJS()
     var endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
     startRevision.addChangeset(toIndex, changeset, timeDelta);
     endRevision.addChangeset(fromIndex, backChangeset, -1 * timeDelta);
-  }
+  };
 
   revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
@@ -68,7 +68,7 @@ function loadBroadcastRevisionsJS()
     }
 
     return revisionInfo[index];
-  }
+  };
 
   // assuming that there is a path from fromIndex to toIndex, and that the links
   // are laid out in a skip-list format
@@ -80,7 +80,7 @@ function loadBroadcastRevisionsJS()
     var elem = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
     if (elem.changesets.length != 0 && fromIndex != toIndex)
     {
-      var reverse = !(fromIndex < toIndex)
+      var reverse = !(fromIndex < toIndex);
       while (((elem.rev < toIndex) && !reverse) || ((elem.rev > toIndex) && reverse))
       {
         var couldNotContinue = false;
@@ -122,7 +122,7 @@ function loadBroadcastRevisionsJS()
       'spans': spans,
       'times': times
     };
-  }
+  }:
 }
 
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;

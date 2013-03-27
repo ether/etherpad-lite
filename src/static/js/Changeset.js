@@ -284,7 +284,7 @@ exports.checkRep = function (cs) {
   exports.assert(normalized == cs, normalized, ' != ', cs);
 
   return cs;
-}
+};
 
 
 /**

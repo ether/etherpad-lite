@@ -29,7 +29,7 @@ var colorutils = {};
 colorutils.isCssHex = function(cssColor)
 {
   return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(cssColor);
-}
+};
 
 // "#ffffff" or "#fff" or "ffffff" or "fff" to [1.0, 1.0, 1.0]
 colorutils.css2triple = function(cssColor)
@@ -41,7 +41,7 @@ colorutils.css2triple = function(cssColor)
     return Number("0x" + hh) / 255;
   }
   return [hexToFloat(sixHex.substr(0, 2)), hexToFloat(sixHex.substr(2, 2)), hexToFloat(sixHex.substr(4, 2))];
-}
+};
 
 // "#ffffff" or "#fff" or "ffffff" or "fff" to "ffffff"
 colorutils.css2sixhex = function(cssColor)
@@ -55,7 +55,7 @@ colorutils.css2sixhex = function(cssColor)
     h = a + a + b + b + c + c;
   }
   return h;
-}
+};
 
 // [1.0, 1.0, 1.0] -> "#ffffff"
 colorutils.triple2css = function(triple)
@@ -66,8 +66,7 @@ colorutils.triple2css = function(triple)
     return ("0" + n2.toString(16)).slice(-2);
   }
   return "#" + floatToHex(triple[0]) + floatToHex(triple[1]) + floatToHex(triple[2]);
-}
-
+};
 
 colorutils.clamp = function(v, bot, top)
 {
@@ -101,18 +100,18 @@ colorutils.unscale = function(v, bot, top)
 colorutils.scaleColor = function(c, bot, top)
 {
   return [colorutils.scale(c[0], bot, top), colorutils.scale(c[1], bot, top), colorutils.scale(c[2], bot, top)];
-}
+};
 
 colorutils.unscaleColor = function(c, bot, top)
 {
   return [colorutils.unscale(c[0], bot, top), colorutils.unscale(c[1], bot, top), colorutils.unscale(c[2], bot, top)];
-}
+};
 
 colorutils.luminosity = function(c)
 {
   // rule of thumb for RGB brightness; 1.0 is white
   return c[0] * 0.30 + c[1] * 0.59 + c[2] * 0.11;
-}
+};
 
 colorutils.saturate = function(c)
 {
@@ -120,17 +119,17 @@ colorutils.saturate = function(c)
   var max = colorutils.colorMax(c);
   if (max - min <= 0) return [1.0, 1.0, 1.0];
   return colorutils.unscaleColor(c, min, max);
-}
+};
 
 colorutils.blend = function(c1, c2, t)
 {
   return [colorutils.scale(t, c1[0], c2[0]), colorutils.scale(t, c1[1], c2[1]), colorutils.scale(t, c1[2], c2[2])];
-}
+};
 
 colorutils.invert = function(c)
 {
   return [1 - c[0], 1 - c[1], 1- c[2]];
-}
+};
 
 colorutils.complementary = function(c)
 {
@@ -140,6 +139,6 @@ colorutils.complementary = function(c)
     (inv[1] >= c[1]) ? Math.min(inv[1] * 1.59, 1) : (c[1] * 0.59),
     (inv[2] >= c[2]) ? Math.min(inv[2] * 1.11, 1) : (c[2] * 0.11)
   ];
-}
+};
 
 exports.colorutils = colorutils;

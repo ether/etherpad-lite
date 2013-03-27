@@ -38,7 +38,7 @@ function scriptTag(source) {
     '<script type="text/javascript">\n'
     + source.replace(/<\//g, '<\\/') +
     '</script>'
-  )
+  );
 }
 
 function Ace2Editor()
@@ -63,7 +63,7 @@ function Ace2Editor()
       var action = function()
       {
         func.apply(that, args);
-      }
+      };
       if (optDoNow)
       {
         optDoNow.apply(that, args);
@@ -82,7 +82,7 @@ function Ace2Editor()
   function doActionsPendingInit()
   {
     _.each(actionsPendingInit, function(fn,i){
-      fn()
+      fn();
     });
     actionsPendingInit = [];
   }
@@ -223,12 +223,12 @@ function Ace2Editor()
       // source here.
       // these lines must conform to a specific format because they are passed by the build script:      
       var includedCSS = [];
-      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
+      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename);};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
       $$INCLUDE_CSS("../static/css/pad.css");
       $$INCLUDE_CSS("../static/custom/pad.css");
       
-      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path; });
       includedCSS = includedCSS.concat(additionalCSS);
       
       pushStyleTagsFor(iframeHTML, includedCSS);

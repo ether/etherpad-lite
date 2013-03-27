@@ -190,7 +190,7 @@ var padeditbar = (function()
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
-        var returned = false
+        var returned = false;
         for(var i=0;i<modules.length;i++)
         {
           //skip the userlist
