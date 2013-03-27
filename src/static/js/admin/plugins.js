@@ -72,7 +72,7 @@ $(document).ready(function () {
       
       for (attr in plugin) {
         if(attr == "name"){ // Hack to rewrite URLS into name
-          row.find(".name").html("<a target='_blank' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin['name'].substr(3)+"</a>"); // remove 'ep_'
+          row.find(".name").html("<a target='_blank' title='Plugin details' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin['name'].substr(3)+"</a>"); // remove 'ep_'
         }else{
           row.find("." + attr).html(plugin[attr]);
         }
