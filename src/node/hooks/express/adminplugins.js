@@ -35,9 +35,9 @@ exports.socketio = function (hook_name, args, cb) {
       socket.emit("results:installed", {installed: installed});
     });
     
-    socket.on("getUpdatable", function() {
+    socket.on("checkUpdates", function() {
       // Check plugins for updates
-      installer.getAvailable(/*maxCacheAge:*/60*10, function(er, results) {
+      installer.getAvailablePlugins(/*maxCacheAge:*/60*10, function(er, results) {
         if(er) {
           console.warn(er);
           socket.emit("results:updatable", {updatable: {}});

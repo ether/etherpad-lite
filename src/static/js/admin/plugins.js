@@ -46,7 +46,7 @@ $(document).ready(function () {
       show: function(plugin, msg) {
         $('.installed-results .'+plugin+' .progress').show()
         $('.installed-results .'+plugin+' .progress .message').text(msg)
-        $(window).scrollTop(0)
+        $(window).scrollTop($('.'+plugin).offset().top-100)
       },
       hide: function(plugin) {
         $('.installed-results .'+plugin+' .progress').hide()
@@ -116,9 +116,13 @@ $(document).ready(function () {
     $(".do-install, .do-update").unbind('click').click(function (e) {
       var $row = $(e.target).closest("tr")
         , plugin = $row.data('plugin');
-      $row.remove().appendTo('#installed-plugins')
+      if($(this).hasClass('do-install')) {
+        $row.remove().appendTo('#installed-plugins')
+        installed.progress.show(plugin, 'Installing')
+      }else{
+        installed.progress.show(plugin, 'Updating')
+      }
       socket.emit("install", plugin);
-      installed.progress.show(plugin, 'Installing')
       installed.messages.hide("nothing-installed")
     });
 
@@ -200,20 +204,17 @@ $(document).ready(function () {
 
     if(installed.list.length > 0) {
       displayPluginList(installed.list, $("#installed-plugins"), $("#installed-plugin-template"));
+      socket.emit('checkUpdates');
     }else {
       installed.messages.show("nothing-installed")
     }
   });
   
   socket.on('results:updatable', function(data) {
-    $('#installed-plugins > tr').each(function(i, tr) {
-      var pluginName = $(tr).find('.name').text()
-      
-      if (data.updatable.indexOf(pluginName) >= 0) {
-        var actions = $(tr).find('.actions')
-        actions.append('<input class="do-update" type="button" value="Update" />')
-        actions.css('width', 200)
-      }
+    data.updatable.forEach(function(pluginName) {
+      var $row = $('#installed-plugins > tr.'+pluginName)
+        , actions = $row.find('.actions')
+      actions.append('<input class="do-update" type="button" value="Update" />')
     })
     updateHandlers();
   })
@@ -251,8 +252,8 @@ $(document).ready(function () {
   socket.emit("getInstalled");
   search('');
 
-  // check for updates every 15mins
+  // check for updates every 5mins
   setInterval(function() {
     socket.emit('checkUpdates');
-  }, 1000*60*15)
+  }, 1000*60*5)
 });

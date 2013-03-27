@@ -139,6 +139,7 @@ td, th {
 #installed-plugins td>div {
   position: relative;/* Allows us to position the loading indicator relative to this row */
   display: inline-block; /*make this fill the whole cell*/
+  width:100%;
 }
 
 .messages td>* {
