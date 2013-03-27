@@ -43,19 +43,19 @@ function createBlockId(name) {
 exports._init = function (b, recursive) {
   exports.info.buf_stack.push(exports.info.buf);
   exports.info.buf = b;
-}
+};
 
 exports._exit = function (b, recursive) {
   getCurrentFile().inherit.forEach(function (item) {
     exports._require(item.name, item.args);
   });
   exports.info.buf = exports.info.buf_stack.pop();
-}
+};
 
 exports.begin_capture = function() {
   exports.info.buf_stack.push(exports.info.buf.concat());
   exports.info.buf.splice(0, exports.info.buf.length);
-}
+};
 
 exports.end_capture = function () {
   var res = exports.info.buf.join("");
@@ -63,17 +63,17 @@ exports.end_capture = function () {
     exports.info.buf,
     [0, exports.info.buf.length].concat(exports.info.buf_stack.pop()));
   return res;
-}
+};
 
 exports.begin_define_block = function (name) {
   exports.info.block_stack.push(name);
   exports.begin_capture();
-}
+};
 
 exports.end_define_block = function () {
   content = exports.end_capture();
   return content;
-}
+};
 
 exports.end_block = function () {
   var name = exports.info.block_stack.pop();
@@ -81,13 +81,13 @@ exports.end_block = function () {
   var args = {content: exports.end_define_block(), renderContext: renderContext};
   hooks.callAll("eejsBlock_" + name, args);
   exports.info.buf.push(args.content);
-}
+};
 
 exports.begin_block = exports.begin_define_block;
 
 exports.inherit = function (name, args) {
     getCurrentFile().inherit.push({name:name, args:args});
-}
+};
 
 exports.require = function (name, args, mod) {
   if (args == undefined) args = {};
@@ -110,7 +110,7 @@ exports.require = function (name, args, mod) {
       basedir : basedir,
       extensions : [ '.html', '.ejs' ],
     }
-  )
+  );
 
   args.e = exports;
   args.require = require;
@@ -124,8 +124,8 @@ exports.require = function (name, args, mod) {
   exports.info.args.pop();
 
   return res;
-}
+};
 
 exports._require = function (name, args) {
   exports.info.buf.push(exports.require(name, args));
-}
+};
