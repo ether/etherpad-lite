@@ -155,7 +155,7 @@ exports.getPad = function(id, text, callback)
       callback(null, pad);
     });
   }
-}
+};
 
 exports.listAllPads = function(callback)
 {
@@ -164,7 +164,7 @@ exports.listAllPads = function(callback)
   }else{
     return {padIDs: padList.getPads()};
   }
-}
+};
 
 //checks if a pad exists
 exports.doesPadExists = function(padId, callback)
@@ -180,7 +180,7 @@ exports.doesPadExists = function(padId, callback)
       callback(null, false); 
     }
   });
-}
+};
 
 //returns a sanitized padId, respecting legacy pad id formats
 exports.sanitizePadId = function(padId, callback) {
@@ -213,12 +213,12 @@ exports.sanitizePadId = function(padId, callback) {
       }
     });
   }
-}
+};
 
 exports.isValidPadId = function(padId)
 {
   return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
-}
+};
 
 /**
  * Removes the pad from database and unloads it.
@@ -227,11 +227,11 @@ exports.removePad = function(padId){
   db.remove("pad:"+padId);
   exports.unloadPad(padId);
   padList.removePad(padId);
-}
+};
 
 //removes a pad from the array
 exports.unloadPad = function(padId)
 {
   if(globalPads.get(padId))
     globalPads.remove(padId);
-}
+};

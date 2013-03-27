@@ -61,8 +61,8 @@ exports.getReadOnlyId = function (padId, callback)
     if(ERR(err, callback)) return;
     //return the results
     callback(null, readOnlyId);
-  })
-}
+  });
+};
 
 /**
  * returns a the padId for a read only id
@@ -71,7 +71,7 @@ exports.getReadOnlyId = function (padId, callback)
 exports.getPadId = function(readOnlyId, callback)
 {
   db.get("readonly2pad:" + readOnlyId, callback);
-}
+};
 
 /**
  * returns a the padId and readonlyPadId in an object for any id
@@ -86,7 +86,7 @@ exports.getIds = function(padIdOrReadonlyPadId, callback) {
         readonly: false
       });
     });
-  }
+  };
 
   if (padIdOrReadonlyPadId.indexOf("r.") != 0)
     return handleRealPadId();
@@ -101,4 +101,4 @@ exports.getIds = function(padIdOrReadonlyPadId, callback) {
       readonly: true
     });
   });
-}
+};

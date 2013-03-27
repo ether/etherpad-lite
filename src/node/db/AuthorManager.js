@@ -39,7 +39,7 @@ exports.doesAuthorExists = function (authorID, callback)
     if(ERR(err, callback)) return;
     callback(null, author != null);
   });
-}
+};
 
 /**
  * Returns the AuthorID for a token. 
@@ -54,7 +54,7 @@ exports.getAuthor4Token = function (token, callback)
     //return only the sub value authorID
     callback(null, author ? author.authorID : author);
   });
-}
+};
 
 /**
  * Returns the AuthorID for a mapper. 
@@ -75,7 +75,7 @@ exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
     //return the authorID
     callback(null, author);
   });
-}
+};
 
 /**
  * Returns the AuthorID for a mapper. We can map using a mapperkey,
@@ -133,7 +133,7 @@ exports.createAuthor = function(name, callback)
   db.set("globalAuthor:" + author, authorObj);
   
   callback(null, {authorID: author});
-}
+};
 
 /**
  * Returns the Author Obj of the author
@@ -143,7 +143,7 @@ exports.createAuthor = function(name, callback)
 exports.getAuthor = function (author, callback)
 {
   db.get("globalAuthor:" + author, callback);
-}
+};
 
 
 
@@ -155,7 +155,7 @@ exports.getAuthor = function (author, callback)
 exports.getAuthorColorId = function (author, callback)
 {
   db.getSub("globalAuthor:" + author, ["colorId"], callback);
-}
+};
 
 /**
  * Sets the color Id of the author
@@ -166,7 +166,7 @@ exports.getAuthorColorId = function (author, callback)
 exports.setAuthorColorId = function (author, colorId, callback)
 {
   db.setSub("globalAuthor:" + author, ["colorId"], colorId, callback);
-}
+};
 
 /**
  * Returns the name of the author
@@ -176,7 +176,7 @@ exports.setAuthorColorId = function (author, colorId, callback)
 exports.getAuthorName = function (author, callback)
 {
   db.getSub("globalAuthor:" + author, ["name"], callback);
-}
+};
 
 /**
  * Sets the name of the author
@@ -187,7 +187,7 @@ exports.getAuthorName = function (author, callback)
 exports.setAuthorName = function (author, name, callback)
 {
   db.setSub("globalAuthor:" + author, ["name"], name, callback);
-}
+};
 
 /**
  * Returns an array of all pads this author contributed to
@@ -208,7 +208,7 @@ exports.listPadsOfAuthor = function (authorID, callback)
     //author does not exists
     if(author == null)
     {
-      callback(new customError("authorID does not exist","apierror"))
+      callback(new customError("authorID does not exist","apierror"));
     }
     //everything is fine, return the pad IDs
     else
@@ -224,7 +224,7 @@ exports.listPadsOfAuthor = function (authorID, callback)
       callback(null, {padIDs: pads});
     }
   });
-}
+};
 
 /**
  * Adds a new pad to the list of contributions
@@ -251,7 +251,7 @@ exports.addPad = function (authorID, padID)
     //save the new element back
     db.set("globalAuthor:" + authorID, author);
   });
-}
+};
 
 /**
  * Removes a pad from the list of contributions
@@ -272,4 +272,4 @@ exports.removePad = function (authorID, padID)
       db.set("globalAuthor:" + authorID, author);
     }
   });
-}
+};

@@ -43,7 +43,7 @@ exports.listAllGroups = function(callback) {
     }
     callback(null, {groupIDs: groupIDs});
   });
-}
+};
  
 exports.deleteGroup = function(groupID, callback)
 {
@@ -101,7 +101,7 @@ exports.deleteGroup = function(groupID, callback)
         if(ERR(err, callback)) return;
         
         //skip if there is no group2sessions entry
-        if(group2sessions == null) {callback(); return}
+        if(group2sessions == null) {callback(); return;}
         
         //collect all sessions in an array, that allows us to use async.forEach
         var sessions = [];
@@ -162,7 +162,7 @@ exports.deleteGroup = function(groupID, callback)
     if(ERR(err, callback)) return;
     callback();
   });
-}
+};
  
 exports.doesGroupExist = function(groupID, callback)
 {
@@ -172,7 +172,7 @@ exports.doesGroupExist = function(groupID, callback)
     if(ERR(err, callback)) return;
     callback(null, group != null);
   });
-}
+};
 
 exports.createGroup = function(callback)
 {
@@ -199,7 +199,7 @@ exports.createGroup = function(callback)
       callback(null, {groupID: groupID});
     });
   });
-}
+};
 
 exports.createGroupIfNotExistsFor = function(groupMapper, callback)
 {
@@ -235,7 +235,7 @@ exports.createGroupIfNotExistsFor = function(groupMapper, callback)
        callback(null, {groupID: groupID});
      }
   });
-}
+};
 
 exports.createGroupPad = function(groupID, padName, text, callback)
 {
@@ -301,7 +301,7 @@ exports.createGroupPad = function(groupID, padName, text, callback)
     if(ERR(err, callback)) return;
     callback(null, {padID: padID});
   });
-}
+};
 
 exports.listPads = function(groupID, callback)
 {
@@ -328,4 +328,4 @@ exports.listPads = function(groupID, callback)
       });
     }
   });
-}
+};

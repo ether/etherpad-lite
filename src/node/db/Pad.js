@@ -111,13 +111,13 @@ Pad.prototype.saveToDatabase = function saveToDatabase(){
   }
   
   db.set("pad:"+this.id, dbObject);
-}
+};
 
 // get time of last edit (changeset application)
 Pad.prototype.getLastEdit = function getLastEdit(callback){
   var revNum = this.getHeadRevisionNumber();
   db.getSub("pad:"+this.id+":revs:"+revNum, ["meta", "timestamp"], callback);
-}
+};
 
 Pad.prototype.getRevisionChangeset = function getRevisionChangeset(revNum, callback) {
   db.getSub("pad:"+this.id+":revs:"+revNum, ["changeset"], callback);
@@ -250,7 +250,7 @@ Pad.prototype.getValidRevisionRange = function getValidRevisionRange(startRev, e
     endRev = head;
   }
   if(startRev !== null && endRev !== null) {
-    return { startRev: startRev , endRev: endRev }
+    return { startRev: startRev , endRev: endRev };
   }
   return null;
 };
