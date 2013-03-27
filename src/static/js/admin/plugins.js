@@ -46,7 +46,7 @@ $(document).ready(function () {
       show: function(plugin, msg) {
         $('.installed-results .'+plugin+' .progress').show()
         $('.installed-results .'+plugin+' .progress .message').text(msg)
-        $(window).scrollTop($('.'+plugin).offset().top-100)
+        if($(window).scrollTop() > $('.'+plugin).offset().top)$(window).scrollTop($('.'+plugin).offset().top-100)
       },
       hide: function(plugin) {
         $('.installed-results .'+plugin+' .progress').hide()
