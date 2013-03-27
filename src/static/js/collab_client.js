@@ -278,8 +278,9 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     if (!getSocket()) return;
     if (!evt.data) return;
     var wrapper = evt;
-    if (wrapper.type != "COLLABROOM") return;
+    if (wrapper.type != "COLLABROOM" && wrapper.type != "CUSTOM") return;
     var msg = wrapper.data;
+
     if (msg.type == "NEW_CHANGES")
     {
       var newRev = msg.newRev;
@@ -390,6 +391,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         callbacks.onUserLeave(userInfo);
       }
     }
+
     else if (msg.type == "DISCONNECT_REASON")
     {
       appLevelDisconnectReason = msg.reason;
