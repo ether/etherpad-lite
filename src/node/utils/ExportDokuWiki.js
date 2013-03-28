@@ -316,7 +316,7 @@ exports.getPadDokuWikiDocument = function (padId, revNum, callback)
 
     getPadDokuWiki(pad, revNum, callback);
   });
-}
+};
 
 function _escapeDokuWiki(s)
 {

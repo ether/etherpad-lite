@@ -289,5 +289,4 @@ exports.getPadTXTDocument = function (padId, revNum, noDocType, callback)
       callback(null, html);
     });
   });
-}
-
+};

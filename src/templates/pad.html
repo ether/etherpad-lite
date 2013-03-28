@@ -369,14 +369,17 @@
             <% e.end_block(); %>
         </div>
 
-        <div id="chaticon" onclick="chat.show();return false;">
+        <div id="chaticon" onclick="chat.show();return false;" data-l10n-id="pad.chat">
             <span id="chatlabel" data-l10n-id="pad.chat"></span>
             <span class="buttonicon buttonicon-chat"></span>
             <span id="chatcounter">0</span>
         </div>
 
         <div id="chatbox">
-            <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
+            <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span>
+              <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
+              <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
+            </div>
             <div id="chattext" class="authorColors">
                 <img alt="loading.." id="chatloadmessagesball" class="chatloadmessages" src="../static/img/loading.gif" align="top">
                 <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>

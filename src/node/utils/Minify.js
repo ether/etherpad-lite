@@ -125,11 +125,11 @@ function requestURIs(locations, method, headers, callback) {
   }
 
   function completed() {
-    var statuss = responses.map(function (x) {return x[0]});
-    var headerss = responses.map(function (x) {return x[1]});
-    var contentss = responses.map(function (x) {return x[2]});
+    var statuss = responses.map(function (x) {return x[0];});
+    var headerss = responses.map(function (x) {return x[1];});
+    var contentss = responses.map(function (x) {return x[2];});
     callback(statuss, headerss, contentss);
-  };
+  }
 }
 
 /**
@@ -263,7 +263,7 @@ function getAceFile(callback) {
       var filename = item.match(/"([^"]*)"/)[1];
       var request = require('request');
 
-      var baseURI = 'http://localhost:' + settings.port
+      var baseURI = 'http://localhost:' + settings.port;
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 

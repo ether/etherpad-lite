@@ -63,7 +63,7 @@ if(os.type().indexOf("Windows") > -1)
 
       callback();
     });
-  }
+  };
   
   exports.convertFile = function(srcFile, destFile, type, callback)
   {
@@ -121,7 +121,7 @@ else
         firstPrompt = false;
       }
     });
-  }
+  };
   spawnAbiword();
 
   doConvertTask = function(task, callback)
@@ -135,7 +135,7 @@ else
       console.log("queue continue");
       task.callback(err);
     };
-  }
+  };
   
   //Queue with the converts we have to do
   var queue = async.queue(doConvertTask, 1);
