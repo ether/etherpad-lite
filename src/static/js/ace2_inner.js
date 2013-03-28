@@ -3651,7 +3651,7 @@ function Ace2Inner(){
           evt.preventDefault();
           var originalBackground = parent.parent.$('#revisionlink').css("background")
           parent.parent.$('#revisionlink').css({"background":"lightyellow"});
-          setTimeout(function(){
+          top.setTimeout(function(){
             parent.parent.$('#revisionlink').css({"background":originalBackground});
           }, 500);
           parent.parent.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
