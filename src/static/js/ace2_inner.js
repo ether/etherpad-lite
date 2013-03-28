@@ -3650,10 +3650,10 @@ function Ace2Inner(){
         {
           evt.preventDefault();
           var originalBackground = parent.parent.$('#revisionlink').css("background")
-          parent.parent.$('#revisionlink').css({"background":"lightyellow"});
+          parent.parent.$('#revisionlink').css({"background":"lightyellow", 'box-shadow': '0 0 50px yellow'});
           top.setTimeout(function(){
-            parent.parent.$('#revisionlink').css({"background":originalBackground});
-          }, 500);
+            parent.parent.$('#revisionlink').css({"background":originalBackground, 'box-shadow': 'none'});
+          }, 1000);
           parent.parent.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
           specialHandled = true;
         }
