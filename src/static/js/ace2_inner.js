@@ -3649,6 +3649,11 @@ function Ace2Inner(){
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey)) /* Do a saved revision on ctrl S */
         {
           evt.preventDefault();
+          var originalBackground = parent.parent.$('#revisionlink').css("background")
+          parent.parent.$('#revisionlink').css({"background":"lightyellow"});
+          setTimeout(function(){
+            parent.parent.$('#revisionlink').css({"background":originalBackground});
+          }, 500);
           parent.parent.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
           specialHandled = true;
         }
