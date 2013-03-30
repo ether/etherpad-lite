@@ -27,6 +27,8 @@ var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var log4js = require('log4js');
+var authLogger = log4js.getLogger("auth");
 
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
@@ -117,14 +119,17 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
         //get information about all sessions contained in this cookie
         function(callback)
         {
-          if (!sessionCookie) {
+          if (!sessionCookie)
+          {
             callback();
             return;
           }
           
           var sessionIDs = sessionCookie.split(',');
-          async.forEach(sessionIDs, function(sessionID, callback) {
-            sessionManager.getSessionInfo(sessionID, function(err, sessionInfo) {
+          async.forEach(sessionIDs, function(sessionID, callback)
+          {
+            sessionManager.getSessionInfo(sessionID, function(err, sessionInfo)
+            {
               //skip session if it doesn't exist
               if(err && err.message == "sessionID does not exist") return;
               
@@ -133,15 +138,17 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               var now = Math.floor(new Date().getTime()/1000);
               
               //is it for this group?
-              if(sessionInfo.groupID != groupID) {
-                console.debug("Auth failed: wrong group");
+              if(sessionInfo.groupID != groupID)
+              {
+                authLogger.debug("Auth failed: wrong group");
             	  callback();
             	  return;
               }
               
               //is validUntil still ok?
-              if(sessionInfo.validUntil <= now){
-                console.debug("Auth failed: validUntil");
+              if(sessionInfo.validUntil <= now)
+              {
+                authLogger.debug("Auth failed: validUntil");
             	  callback();
             	  return;
               }
@@ -238,7 +245,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
         //--> deny access if user isn't allowed to create the pad
         if(settings.editOnly)
         {
-          console.debug("Auth failed: valid session & pad does not exist");
+          authLogger.debug("Auth failed: valid session & pad does not exist");
           statusObject.accessStatus = "deny";
         }
       }
@@ -272,7 +279,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
         //- its not public
         else if(!isPublic)
         {
-          console.debug("Auth failed: invalid session & pad is not public");
+          authLogger.debug("Auth failed: invalid session & pad is not public");
           //--> deny access
           statusObject = {accessStatus: "deny"};
         }
@@ -284,7 +291,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
       // there is no valid session avaiable AND pad doesn't exists
       else
       {
-         console.debug("Auth failed: invalid session & pad does not exist");
+         authLogger.debug("Auth failed: invalid session & pad does not exist");
          //--> deny access
          statusObject = {accessStatus: "deny"};
       }
