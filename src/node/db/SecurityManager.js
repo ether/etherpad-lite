@@ -134,12 +134,14 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               
               //is it for this group?
               if(sessionInfo.groupID != groupID) {
+                console.debug("Auth failed: wrong group");
             	  callback();
             	  return;
               }
               
               //is validUntil still ok?
               if(sessionInfo.validUntil <= now){
+                console.debug("Auth failed: validUntil");
             	  callback();
             	  return;
               }
@@ -234,7 +236,11 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
         //--> grant access
         statusObject = {accessStatus: "grant", authorID: sessionAuthor};
         //--> deny access if user isn't allowed to create the pad
-        if(settings.editOnly) statusObject.accessStatus = "deny";
+        if(settings.editOnly)
+        {
+          console.debug("Auth failed: valid session & pad does not exist");
+          statusObject.accessStatus = "deny";
+        }
       }
       // there is no valid session avaiable AND pad exists
       else if(!validSession && padExists)
@@ -266,6 +272,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
         //- its not public
         else if(!isPublic)
         {
+          console.debug("Auth failed: invalid session & pad is not public");
           //--> deny access
           statusObject = {accessStatus: "deny"};
         }
@@ -277,6 +284,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
       // there is no valid session avaiable AND pad doesn't exists
       else
       {
+         console.debug("Auth failed: invalid session & pad does not exist");
          //--> deny access
          statusObject = {accessStatus: "deny"};
       }
