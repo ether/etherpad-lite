@@ -3722,6 +3722,9 @@ function Ace2Inner(){
           specialHandled = true;
         }
         if((evt.which == 33 || evt.which == 34) && type == 'keydown'){
+
+          evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
+
           var oldVisibleLineRange = getVisibleLineRange();
           var topOffset = rep.selStart[0] - oldVisibleLineRange[0];
           if(topOffset < 0 ){
@@ -3732,29 +3735,38 @@ function Ace2Inner(){
           var isPageUp = evt.which === 33;
 
           scheduler.setTimeout(function(){
-            var newVisibleLineRange = getVisibleLineRange();
-            var linesCount = rep.lines.length();
+            var newVisibleLineRange = getVisibleLineRange(); // the visible lines IE 1,10
+            var linesCount = rep.lines.length(); // total count of lines in pad IE 10
+            var numberOfLinesInViewport = newVisibleLineRange[1] - newVisibleLineRange[0]; // How many lines are in the viewport right now?
 
-            var newCaretRow = rep.selStart[0];
             if(isPageUp){
-              newCaretRow = oldVisibleLineRange[0];
+              rep.selEnd[0] = rep.selEnd[0] - numberOfLinesInViewport; // move to the bottom line +1 in the viewport (essentially skipping over a page)
+              rep.selStart[0] = rep.selStart[0] - numberOfLinesInViewport; // move to the bottom line +1 in the viewport (essentially skipping over a page)
             }
 
-            if(isPageDown){
-              newCaretRow = newVisibleLineRange[0] + topOffset;
+            if(isPageDown){ // if we hit page down
+              if(rep.selEnd[0] >= oldVisibleLineRange[0]){ // If the new viewpoint position is actually further than where we are right now
+                rep.selStart[0] = oldVisibleLineRange[1] -1; // dont go further in the page down than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
+                rep.selEnd[0] = oldVisibleLineRange[1] -1; // dont go further in the page down than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
+              }
             }
 
             //ensure min and max
-            if(newCaretRow < 0){
-              newCaretRow = 0;
+            if(rep.selEnd[0] < 0){
+              rep.selEnd[0] = 0;
             }
-            if(newCaretRow >= linesCount){
-              newCaretRow = linesCount-1;
+            if(rep.selStart[0] < 0){
+              rep.selStart[0] = 0;
             }
-
-            rep.selStart[0] = newCaretRow;
-            rep.selEnd[0] = newCaretRow;
+            if(rep.selEnd[0] >= linesCount){
+              rep.selEnd[0] = linesCount-1;
+            }
             updateBrowserSelectionFromRep();
+            var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
+            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+            // top.console.log(caretOffsetTop);
+            setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
+
           }, 200);
         }
 
@@ -3762,32 +3774,44 @@ function Ace2Inner(){
            We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
            presses and holds the arrow key */
         if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && $.browser.chrome){
-
-          var newVisibleLineRange = getVisibleLineRange(); // get the current visible range -- This works great.
-          var lineHeight = textLineHeight(); // what Is the height of each line?
+          var viewport = getViewPortTopBottom();
           var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
           var caretOffsetTop = myselection.focusNode.parentNode.offsetTop; // get the carets selection offset in px IE 214
+          var lineHeight = $(myselection.focusNode.parentNode).parent().height(); // get the line height of the caret line
+          var caretOffsetTopBottom = caretOffsetTop + lineHeight;
+          var visibleLineRange = getVisibleLineRange(); // the visible lines IE 1,10
 
           if(caretOffsetTop){ // sometimes caretOffsetTop bugs out and returns 0, not sure why, possible Chrome bug?  Either way if it does we don't wanna mess with it
-            var lineNum = Math.round(caretOffsetTop / lineHeight) ; // Get the current Line Number IE 84
-            newVisibleLineRange[1] = newVisibleLineRange[1]-1;
-            var caretIsVisible = (lineNum > newVisibleLineRange[0] && lineNum < newVisibleLineRange[1]); // Is the cursor in the visible Range IE ie 84 > 14 and 84 < 90?
-
-            if(!caretIsVisible){ // is the cursor no longer visible to the user?
+            var caretIsNotVisible = (caretOffsetTop <= viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
+            if(caretIsNotVisible){ // is the cursor no longer visible to the user?
               // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
-              // Get the new Y by getting the line number and multiplying by the height of each line.
-              if(evt.which == 37 || evt.which == 38){ // If left or up
-                var newY = lineHeight * (lineNum -1); // -1 to go to the line above
-              }else if(evt.which == 39 || evt.which == 40){ // if down or right
-                var newY = getScrollY() + (lineHeight*3); // the offset and one additional line
+              if(evt.which == 37 || evt.which == 38){ // If left or up arrow
+                var newY = caretOffsetTop; // That was easy!
               }
-              setScrollY(newY); // set the scroll height of the browser
+              if(evt.which == 39 || evt.which == 40){ // if down or right arrow
+                // only move the viewport if we're at the bottom of the viewport, if we hit down any other time the viewport shouldn't change
+                // NOTE: This behavior only fires if Chrome decides to break the page layout after a paste, it's annoying but nothing I can do
+                var selection = getSelection();
+                // top.console.log("line #", rep.selStart[0]); // the line our caret is on
+                // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
+                // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
+
+                // Holding down arrow after a paste can lose the cursor -- This is the best fix I can find
+                if(rep.selStart[0] >= visibleLineRange[1] || rep.selStart[0] < visibleLineRange[0] ){ // if we're not at the bottom of the viewport
+                  // top.console.log(viewport, lineHeight, myselection);
+                  // TODO: Make it so chrome doesnt need to redraw the page by only applying this technique if required
+                  var newY = caretOffsetTop;
+                }else{ // we're at the bottom of the viewport so snap to a "new viewport"
+                  // top.console.log(viewport, lineHeight, myselection);
+                  var newY = caretOffsetTopBottom; // Allow continuous holding of down arrow to redraw the screen so we can see what we are going to highlight
+                }
+              }
+              if(newY){
+                setScrollY(newY); // set the scrollY offset of the viewport on the document
+              }
             }
-
           }
-
         }
-
       }
 
       if (type == "keydown")
@@ -5119,7 +5143,7 @@ function Ace2Inner(){
       setLineListType(mod[0], mod[1]);
     });
   }
-  
+
   function doInsertUnorderedList(){
     doInsertList('bullet');
   }
