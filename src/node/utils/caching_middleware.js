@@ -168,7 +168,7 @@ CachingMiddleware.prototype = new function () {
         } else if (req.method == 'GET') {
           var readStream = fs.createReadStream(pathStr);
           res.writeHead(statusCode, headers);
-          readableStream.pipe(readStream, res);
+          readStream.pipe(res);
         } else {
           res.writeHead(statusCode, headers);
           res.end();
