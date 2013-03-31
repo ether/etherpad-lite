@@ -116,7 +116,7 @@ function init() {
 //sends a message over the socket
 function sendSocketMsg(type, data)
 {
-  var sessionID = readCookie("sessionID");
+  var sessionID = decodeURIComponent(readCookie("sessionID"));
   var password = readCookie("password");
 
   var msg = { "component" : "pad", // FIXME: Remove this stupidity!
