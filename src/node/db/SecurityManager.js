@@ -133,6 +133,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               //skip session if it doesn't exist
               if(err && err.message == "sessionID does not exist")
               {
+                authLogger.debug("Auth failed: unknown session");
                 callback();
                 return;
               }
