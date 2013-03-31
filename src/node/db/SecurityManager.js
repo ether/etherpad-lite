@@ -42,6 +42,10 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
 { 
   var statusObject;
 
+  // decode session cookie to get rid of encoded ','s which mess up our .split() later,
+  // if the session is already decoded this has no effect.
+  sessionCookie = decodeURIComponent(sessionCookie);
+
   // a valid session is required (api-only mode)
   if(settings.requireSession)
   {
