@@ -131,7 +131,12 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
             sessionManager.getSessionInfo(sessionID, function(err, sessionInfo)
             {
               //skip session if it doesn't exist
-              if(err && err.message == "sessionID does not exist") return;
+              if(err && err.message == "sessionID does not exist")
+              {
+                authLogger.debug("Auth failed: unknown session");
+                callback();
+                return;
+              }
               
               if(ERR(err, callback)) return;
               
