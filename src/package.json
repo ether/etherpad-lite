@@ -16,7 +16,7 @@
                       "require-kernel"          : "1.0.5",
                       "resolve"                 : "0.2.x",
                       "socket.io"               : "0.9.x",
-                      "ueberDB"                 : "0.1.96",
+                      "ueberDB"                 : "0.2.x",
                       "async"                   : "0.1.x",
                       "express"                 : "3.x",
                       "connect"                 : "2.4.x",
