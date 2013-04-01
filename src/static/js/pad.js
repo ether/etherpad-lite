@@ -191,7 +191,7 @@ function handshake()
       createCookie("token", token, 60);
     }
     
-    var sessionID = readCookie("sessionID");
+    var sessionID = decodeURIComponent(readCookie("sessionID"));
     var password = readCookie("password");
 
     var msg = {
