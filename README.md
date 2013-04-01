@@ -38,6 +38,8 @@ Also, check out the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**, 
 
 # Installation
 
+Etherpad works with node v0.8 and v0.10, only. (We don't suppot v0.6)
+
 ## Windows
 
 ### Prebuilt windows package
