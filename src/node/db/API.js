@@ -75,6 +75,92 @@ exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 /************************/
 
 /**
+getAttributePool(padID) returns the attribute pool of a pad
+
+*/
+exports.getAttributePool = function (padID, callback) 
+{
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if (ERR(err, callback)) return;
+    callbalk(null, {pool: pad.pool});
+  });
+}
+
+/**
+getRevisionChangeset (padID, [rev])
+
+*/
+exports.getRevisionChangeset = function(padID, rev, callback)
+{
+  // check if rev is set
+  if (typeof rev === "function")
+  {
+    callback = rev;
+    rev = undefined;
+  }
+
+  // check if rev is a number
+  if (rev !== undefined && typeof rev !== "number")
+  {
+    // try to parse the number
+    if (!isNaN(parseInt(rev))
+    {
+      rev = parseInt(rev);
+    }
+    else
+    {
+      callback(new customError("rev is not a number", "apierror"));
+      return;
+    }
+  }
+
+  // ensure this is not a negative number
+  if (rev !== undefined && rev < 0)
+  {
+    callback(new customError("rev is not a negative number", "apierror"));
+    return;
+  }
+
+  // ensure this is not a float value
+  if (rev !== undefined && !is_int(rev))
+  {
+    callback(new customError("rev is a float value", "apierror"));
+    return;
+  }
+
+  // get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    //the client asked for a special revision
+    if(rev !== undefined)
+    {
+      //check if this is a valid revision
+      if(rev > pad.getHeadRevisionNumber())
+      {
+        callback(new customError("rev is higher than the head revision of the pad","apierror"));
+        return;
+      }
+      
+      //get the changeset for this revision
+      pad.getRevisionChangeset(rev, function(err, changeset)
+      {
+        if(ERR(err, callback)) return;
+        
+        callback(null, changeset);
+      })
+    }
+    //the client wants the latest changeset, lets return it to him
+    else
+    {
+      callback(null, {"changeset": pad.getRevisionChangeset(pad.getHeadRevisionNumber())});
+    }
+  });
+}
+
+/**
 getText(padID, [rev]) returns the text of a pad 
 
 Example returns:
