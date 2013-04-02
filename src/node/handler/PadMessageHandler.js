@@ -162,8 +162,7 @@ exports.handleMessage = function(client, message)
       });
       
       // If no plugins explicitly told us to drop the message, its ok to proceed
-      if(!dropMessage){
- callback() };
+      if(!dropMessage){ callback() };
     });
   }
 
