@@ -151,7 +151,6 @@ exports.handleMessage = function(client, message)
 
   var handleMessageHook = function(callback){
     var dropMessage = false;
-    
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
     // handleMessage will be called, even if the client is not authorized
     hooks.aCallAll("handleMessage", { client: client, message: message }, function ( err, messages ) {
@@ -265,7 +264,7 @@ exports.handleCustomObjectMessage = function (msg, sessionID, cb) {
     if(sessionID){ // If a sessionID is targeted then send directly to this sessionID
       socketio.sockets.socket(sessionID).json.send(msg); // send a targeted message
     }else{
-      socketio.sockets.in(msg.data.padId).json.send(msg); // broadcast to all clients on this pad
+      socketio.sockets.in(msg.data.payload.padId).json.send(msg); // broadcast to all clients on this pad
     }
   }
   cb(null, {});
