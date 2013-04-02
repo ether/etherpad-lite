@@ -242,7 +242,7 @@ function handshake()
       
       pad.collabClient.setChannelState("RECONNECTING");
       
-      disconnectTimeout = setTimeout(disconnectEvent, 10000);
+      disconnectTimeout = setTimeout(disconnectEvent, 20000);
     }
   });
 
