@@ -151,24 +151,18 @@ exports.handleMessage = function(client, message)
 
   var handleMessageHook = function(callback){
     var dropMessage = false;
-    console.warn("messsssage", message);
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
     // handleMessage will be called, even if the client is not authorized
     hooks.aCallAll("handleMessage", { client: client, message: message }, function ( err, messages ) {
-console.warn("Wut", message);
       if(ERR(err, callback)) return;
       _.each(messages, function(newMessage){
-console.warn("OH NOES!", message);
-console.warn("newMessage", newMessage);
         if ( newMessage === null ) {
-console.warn("FUCK NO!");
           dropMessage = true;
         }
       });
       
       // If no plugins explicitly told us to drop the message, its ok to proceed
       if(!dropMessage){
-console.warn("proceeding");
  callback() };
     });
   }
