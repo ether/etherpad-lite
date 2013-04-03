@@ -107,16 +107,27 @@ exports.setSocketIO = function(_socket)
       else
       {
         //this message has everything to try an authorization
+if(message.type == "COLLABROOM"){
+  console.warn("message1", message)
+  // pad if is fine
+  // sessionid is not set
+  // message.token is not set
+  // message.password is undefined..
+}
         if(message.padId !== undefined && message.sessionID !== undefined && message.token !== undefined && message.password !== undefined)
         {
+if(message.type == "COLLABROOM"){
+  console.warn("yaymessage", message); // I get here..
+}
           securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
           {
             ERR(err);
-            
+            console.warn("here too", statusObject);
             //access was granted, mark the client as authorized and handle the message
             if(statusObject.accessStatus == "grant")
             {
               clientAuthorized = true;
+// console.warn("handling message");
               handleMessage(message);
             }
             //no access, send the client a message that tell him why
