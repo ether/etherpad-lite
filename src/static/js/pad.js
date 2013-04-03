@@ -252,14 +252,22 @@ function handshake()
   socket.on('message', function(obj)
   {
     //the access was not granted, give the user a message
-    if(!receivedClientVars && obj.accessStatus)
+    if(obj.accessStatus)
     {
-      $('.passForm').submit(require(module.id).savePassword);
+      if(!receivedClientVars)
+        $('.passForm').submit(require(module.id).savePassword);
 
       if(obj.accessStatus == "deny")
       {
         $('#loading').hide();
         $("#permissionDenied").show();
+
+        if(receivedClientVars)
+        {
+          // got kicked
+          $("#editorcontainer").hide();
+          $("#editorloadingbox").show();
+        }
       }
       else if(obj.accessStatus == "needPassword")
       {
