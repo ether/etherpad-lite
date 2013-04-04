@@ -104,7 +104,7 @@ exports.getRevisionChangeset = function(padID, rev, callback)
   if (rev !== undefined && typeof rev !== "number")
   {
     // try to parse the number
-    if (!isNaN(parseInt(rev))
+    if (!isNaN(parseInt(rev)))
     {
       rev = parseInt(rev);
     }
