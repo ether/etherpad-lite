@@ -151,7 +151,6 @@ exports.handleMessage = function(client, message)
 
   var handleMessageHook = function(callback){
     var dropMessage = false;
-    
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
     // handleMessage will be called, even if the client is not authorized
     hooks.aCallAll("handleMessage", { client: client, message: message }, function ( err, messages ) {
@@ -204,17 +203,29 @@ exports.handleMessage = function(client, message)
       //check permissions
       function(callback)
       {
-        
-        // If the message has a padId we assume the client is already known to the server and needs no re-authorization
-        if(!message.padId)
-          return callback();
+        // client tried to auth for the first time (first msg from the client)
+        if(message.type == "CLIENT_READY") {
+          // Remember this information since we won't
+          // have the cookie in further socket.io messages.
+          // This information will be used to check if
+          // the sessionId of this connection is still valid
+          // since it could have been deleted by the API.
+          sessioninfos[client.id].auth =
+          {
+            sessionID: message.sessionID,
+            padID: message.padId,
+            token : message.token,
+            password: message.password
+          };
+        }
 
         // Note: message.sessionID is an entirely different kind of
-        // session from the sessions we use here! Beware! FIXME: Call
-        // our "sessions" "connections".
+        // session from the sessions we use here! Beware!
+        // FIXME: Call our "sessions" "connections".
         // FIXME: Use a hook instead
         // FIXME: Allow to override readwrite access with readonly
-        securityManager.checkAccess(message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
+        var auth = sessioninfos[client.id].auth;
+        securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, function(err, statusObject)
         {
           if(ERR(err, callback)) return;
 
@@ -265,7 +276,7 @@ exports.handleCustomObjectMessage = function (msg, sessionID, cb) {
     if(sessionID){ // If a sessionID is targeted then send directly to this sessionID
       socketio.sockets.socket(sessionID).json.send(msg); // send a targeted message
     }else{
-      socketio.sockets.in(msg.data.padId).json.send(msg); // broadcast to all clients on this pad
+      socketio.sockets.in(msg.data.payload.padId).json.send(msg); // broadcast to all clients on this pad
     }
   }
   cb(null, {});
