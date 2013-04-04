@@ -1,5 +1,5 @@
 # Really Real-Time Collaborative Editor
-![alt text](http://primarypad.com/files/2012/11/PrimaryPad1.jpg "Etherpad in action on PrimaryPad")
+![alt text](http://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
 
 # About
 Etherpad is a really-real time collaborative editor maintained by the Etherpad Community.
