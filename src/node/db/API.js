@@ -77,18 +77,50 @@ exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 /**
 getAttributePool(padID) returns the attribute pool of a pad
 
+Example returns:
+{
+ "code":0,
+ "message":"ok",
+ "data": {
+    "pool":{
+        "numToAttrib":{
+            "0":["author","a.X4m8bBWJBZJnWGSh"],
+            "1":["author","a.TotfBPzov54ihMdH"],
+            "2":["author","a.StiblqrzgeNTbK05"],
+            "3":["bold","true"]
+        },
+        "attribToNum":{
+            "author,a.X4m8bBWJBZJnWGSh":0,
+            "author,a.TotfBPzov54ihMdH":1,
+            "author,a.StiblqrzgeNTbK05":2,
+            "bold,true":3
+        },
+        "nextNum":4
+    }
+ }
+}
+
 */
 exports.getAttributePool = function (padID, callback) 
 {
   getPadSafe(padID, true, function(err, pad)
   {
     if (ERR(err, callback)) return;
-    callbalk(null, {pool: pad.pool});
+    callback(null, {pool: pad.pool});
   });
 }
 
 /**
 getRevisionChangeset (padID, [rev])
+
+get the changeset at a given revision, or last revision if 'rev' is not defined.
+
+Example returns:
+{
+    "code" : 0,
+    "message" : "ok",
+    "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
+}
 
 */
 exports.getRevisionChangeset = function(padID, rev, callback)
