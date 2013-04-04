@@ -21,11 +21,11 @@ SessionStore.prototype.get = function(sid, fn){
   db.get("sessionstorage:" + sid, function (err, sess)
   {
     if (sess) {
-      sess.cookie.expires = 'string' == typeof sess.cookie.expires ? new Date(sess.cookie.expires) : sess.cookie.expires;
-      if (!sess.cookie.expires || new Date() < sess.cookie.expires) {
-        fn(null, sess);
+      sess.cookie._expires = 'string' == typeof sess.cookie._expires ? new Date(sess.cookie._expires) : sess.cookie._expires;
+      if (!sess.cookie._expires || new Date() < sess.cookie._expires) {
+        fn(null, sess); // Looks good, proceed :)
       } else {
-        self.destroy(sid, fn);
+        self.destroy(sid, fn); // Destroy sessions that are old
       }
     } else {
       fn();
@@ -34,8 +34,10 @@ SessionStore.prototype.get = function(sid, fn){
 };
 
 SessionStore.prototype.set = function(sid, sess, fn){
+  var currentTS = new Date().getTime(); // Get current timestamp
   messageLogger.debug('SET ' + sid);
-  db.set("sessionstorage:" + sid, sess);
+  sess._expires = currentTS + 86400; // Session expires in a day
+  db.set("sessionstorage:" + sid, sess); // Write the session to the database
   process.nextTick(function(){
     if(fn) fn();
   });
