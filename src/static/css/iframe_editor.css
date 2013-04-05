@@ -17,6 +17,7 @@ ul, ol, li {
   padding: 0;
   margin: 0;
 }
+
 ul { margin-left: 1.5em; }
 ul ul { margin-left: 0 !important; }
 ul.list-bullet1 { margin-left: 1.5em; }
@@ -38,6 +39,7 @@ ul.list-bullet6 { list-style-type: square; }
 ul.list-bullet7 { list-style-type: disc; }
 ul.list-bullet8 { list-style-type: circle; }
 
+/*
 ol.list-number1 { margin-left: 1.9em; }
 ol.list-number2 { margin-left: 3em; }
 ol.list-number3 { margin-left: 4.5em; }
@@ -56,6 +58,7 @@ ol.list-number5 { list-style-type: lower-latin; }
 ol.list-number6 { list-style-type: lower-roman; }
 ol.list-number7 { list-style-type: decimal; }
 ol.list-number8 { list-style-type: lower-latin; }
+*/
 
 ul.list-indent1 { margin-left: 1.5em; }
 ul.list-indent2 { margin-left: 3em; }
@@ -186,3 +189,39 @@ p {
   overflow:hidden; 
 }
 */
+
+ol { 
+  display: list-item; 
+}
+
+ol > li {
+  display:inline;   
+}
+
+/* Set the indentation */
+ol.list-number1{
+  text-indent: 20px;
+}
+ol.list-number2{
+  text-indent: 30px;
+}
+
+/* Add styling to the first item in a list */
+ol.list1-start{
+  counter-reset: first;
+}
+ol.list2-start{
+  counter-reset: second;
+}
+
+/* The behavior for incrementing and the prefix */
+ol.list-number1:before {
+  content: counter(first) ". " ;
+  counter-increment: first;
+}
+
+ol.list-number2:before {
+  content: counter(second) ". " ;
+  counter-increment: second;
+}
+
