@@ -177,8 +177,7 @@ window.html10n = (function(window, document, undefined) {
       cb(new Error('A file couldn\'t be parsed as json.'))
       return
     }
-    
-    if (!data[lang]) lang = lang.substr(0, lang.indexOf('-') == -1? lang.length : lang.indexOf('-'))
+
     if (!data[lang]) {
       cb(new Error('Couldn\'t find translations for '+lang))
       return
@@ -667,7 +666,15 @@ window.html10n = (function(window, document, undefined) {
     var that = this
     // if only one string => create an array
     if ('string' == typeof langs) langs = [langs]
-    
+
+    // Expand two-part locale specs
+    var i=0
+    langs.forEach(function(lang) {
+      if(!lang) return
+      langs[i++] = lang
+      if(~lang.indexOf('-')) langs[i++] = lang.substr(0, lang.indexOf('-'))
+    })
+
     this.build(langs, function(er, translations) {
       html10n.translations = translations
       html10n.translateElement(translations)
