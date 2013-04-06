@@ -458,4 +458,4 @@ returns ok when the current api token is valid
 lists all pads on this epl instance
 
 *Example returns:*
- * `{code: 0, message:"ok", data: ["testPad", "thePadsOfTheOthers"]}`
+ * `{code: 0, message:"ok", data: {padIDs: ["testPad", "thePadsOfTheOthers"]}}`

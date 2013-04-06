@@ -354,7 +354,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     // Let's put this under /rest for now
     var subpath = express();
 
-    args.app.use(express.bodyParser());
     args.app.use(basePath, subpath);
 
     swagger.setAppHandler(subpath);

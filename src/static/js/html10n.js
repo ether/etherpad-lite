@@ -23,27 +23,27 @@
 window.html10n = (function(window, document, undefined) {
   
   // fix console
-  var console = window.console;
+  var console = window.console
   function interceptConsole(method){
-      if (!console) return function() {};
+      if (!console) return function() {}
 
-      var original = console[method];
+      var original = console[method]
 
       // do sneaky stuff
       if (original.bind){
         // Do this for normal browsers
-        return original.bind(console);
+        return original.bind(console)
       }else{
         return function() {
           // Do this for IE
-          var message = Array.prototype.slice.apply(arguments).join(' ');
-          original(message);
+          var message = Array.prototype.slice.apply(arguments).join(' ')
+          original(message)
         }
       }
   }
   var consoleLog = interceptConsole('log')
     , consoleWarn = interceptConsole('warn')
-    , consoleError = interceptConsole('warn');
+    , consoleError = interceptConsole('warn')
 
 
   // fix Array.prototype.instanceOf in, guess what, IE! <3
@@ -84,14 +84,14 @@ window.html10n = (function(window, document, undefined) {
    * MicroEvent - to make any js object an event emitter (server or browser)
    */
 
-  var MicroEvent  = function(){}
+  var MicroEvent	= function(){}
   MicroEvent.prototype	= {
-    bind  : function(event, fct){
+    bind	: function(event, fct){
       this._events = this._events || {};
       this._events[event] = this._events[event]	|| [];
       this._events[event].push(fct);
     },
-    unbind  : function(event, fct){
+    unbind	: function(event, fct){
       this._events = this._events || {};
       if( event in this._events === false  )	return;
       this._events[event].splice(this._events[event].indexOf(fct), 1);
@@ -100,7 +100,7 @@ window.html10n = (function(window, document, undefined) {
       this._events = this._events || {};
       if( event in this._events === false  )	return;
       for(var i = 0; i < this._events[event].length; i++){
-        this._events[event][i].apply(this, Array.prototype.slice.call(arguments, 1));
+        this._events[event][i].apply(this, Array.prototype.slice.call(arguments, 1))
       }
     }
   };
@@ -122,50 +122,50 @@ window.html10n = (function(window, document, undefined) {
    * and caching all necessary resources
    */
   function Loader(resources) {
-    this.resources = resources;
-    this.cache = {}; // file => contents
-    this.langs = {}; // lang => strings
+    this.resources = resources
+    this.cache = {} // file => contents
+    this.langs = {} // lang => strings
   }
   
   Loader.prototype.load = function(lang, cb) {
-    if(this.langs[lang]) return cb();
+    if(this.langs[lang]) return cb()
 
     if (this.resources.length > 0) {
       var reqs = 0;
       for (var i=0, n=this.resources.length; i < n; i++) {
         this.fetch(this.resources[i], lang, function(e) {
           reqs++;
-          if(e) return setTimeout(function(){ throw e }, 0);
+          if(e) console.warn(e)
           
           if (reqs < n) return;// Call back once all reqs are completed
-          cb && cb();
+          cb && cb()
         })
       }
     }
   }
   
   Loader.prototype.fetch = function(href, lang, cb) {
-    var that = this;
+    var that = this
     
     if (this.cache[href]) {
       this.parse(lang, href, this.cache[href], cb)
       return;
     }
     
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', href, /*async: */true);
+    var xhr = new XMLHttpRequest()
+    xhr.open('GET', href, /*async: */true)
     if (xhr.overrideMimeType) {
       xhr.overrideMimeType('application/json; charset=utf-8');
     }
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
         if (xhr.status == 200 || xhr.status === 0) {
-          var data = JSON.parse(xhr.responseText);
-          that.cache[href] = data;
+          var data = JSON.parse(xhr.responseText)
+          that.cache[href] = data
           // Pass on the contents for parsing
-          that.parse(lang, href, data, cb);
+          that.parse(lang, href, data, cb)
         } else {
-          cb(new Error('Failed to load '+href));
+          cb(new Error('Failed to load '+href))
         }
       }
     };
@@ -174,39 +174,38 @@ window.html10n = (function(window, document, undefined) {
   
   Loader.prototype.parse = function(lang, currHref, data, cb) {
     if ('object' != typeof data) {
-      cb(new Error('A file couldn\'t be parsed as json.'));
-      return;
+      cb(new Error('A file couldn\'t be parsed as json.'))
+      return
     }
-    
-    if (!data[lang]) lang = lang.substr(0, lang.indexOf('-') == -1? lang.length : lang.indexOf('-'));
+
     if (!data[lang]) {
-      cb(new Error('Couldn\'t find translations for '+lang));
-      return;
+      cb(new Error('Couldn\'t find translations for '+lang))
+      return
     }
     
     if ('string' == typeof data[lang]) {
       // Import rule
 
       // absolute path
-      var importUrl = data[lang];
+      var importUrl = data[lang]
 
       // relative path
       if(data[lang].indexOf("http") != 0 && data[lang].indexOf("/") != 0) {  
-        importUrl = currHref+"/../"+data[lang];
+        importUrl = currHref+"/../"+data[lang]
       }
 
-      this.fetch(importUrl, lang, cb);
-      return;
+      this.fetch(importUrl, lang, cb)
+      return
     }
 
     if ('object' != typeof data[lang]) {
-      cb(new Error('Translations should be specified as JSON objects!'));
-      return;
+      cb(new Error('Translations should be specified as JSON objects!'))
+      return
     }
 
-    this.langs[lang] = data[lang];
+    this.langs[lang] = data[lang]
     // TODO: Also store accompanying langs
-    cb();
+    cb()
   }
   
   
@@ -216,11 +215,11 @@ window.html10n = (function(window, document, undefined) {
   var html10n = 
   { language : null
   }
-  MicroEvent.mixin(html10n);
+  MicroEvent.mixin(html10n)
   
-  html10n.macros = {};
+  html10n.macros = {}
 
-  html10n.rtl = ["ar","dv","fa","ha","he","ks","ku","ps","ur","yi"];
+  html10n.rtl = ["ar","dv","fa","ha","he","ks","ku","ps","ur","yi"]
   
   /**
    * Get rules for plural forms (shared with JetPack), see:
@@ -664,14 +663,22 @@ window.html10n = (function(window, document, undefined) {
    * @param langs An array of lang codes defining fallbacks
    */
   html10n.localize = function(langs) {
-    var that = this;
+    var that = this
     // if only one string => create an array
-    if ('string' == typeof langs) langs = [langs];
-    
+    if ('string' == typeof langs) langs = [langs]
+
+    // Expand two-part locale specs
+    var i=0
+    langs.forEach(function(lang) {
+      if(!lang) return
+      langs[i++] = lang
+      if(~lang.indexOf('-')) langs[i++] = lang.substr(0, lang.indexOf('-'))
+    })
+
     this.build(langs, function(er, translations) {
-      html10n.translations = translations;
-      html10n.translateElement(translations);
-      that.trigger('localized');
+      html10n.translations = translations
+      html10n.translateElement(translations)
+      that.trigger('localized')
     })
   }
 
@@ -682,78 +689,78 @@ window.html10n = (function(window, document, undefined) {
    * @param element A DOM element, if omitted, the document element will be used
    */
   html10n.translateElement = function(translations, element) {
-    element = element || document.documentElement;
+    element = element || document.documentElement
 
     var children = element? getTranslatableChildren(element) : document.childNodes;
     for (var i=0, n=children.length; i < n; i++) {
-      this.translateNode(translations, children[i]);
+      this.translateNode(translations, children[i])
     }
 
     // translate element itself if necessary
-    this.translateNode(translations, element);
+    this.translateNode(translations, element)
   }
   
   function asyncForEach(list, iterator, cb) {
     var i = 0
-      , n = list.length;
+      , n = list.length
     iterator(list[i], i, function each(err) {
-      if(err) consoleLog(err);
-      i++;
+      if(err) consoleLog(err)
+      i++
       if (i < n) return iterator(list[i],i, each);
-      cb();
+      cb()
     })
   }
   
   function getTranslatableChildren(element) {
     if(!document.querySelectorAll) {
-      if (!element) return [];
+      if (!element) return []
       var nodes = element.getElementsByTagName('*')
-        , l10nElements = [];
+        , l10nElements = []
       for (var i=0, n=nodes.length; i < n; i++) {
         if (nodes[i].getAttribute('data-l10n-id'))
           l10nElements.push(nodes[i]);
       }
-      return l10nElements;
+      return l10nElements
     }
-    return element.querySelectorAll('*[data-l10n-id]');
+    return element.querySelectorAll('*[data-l10n-id]')
   }
   
   html10n.get = function(id, args) {
-    var translations = html10n.translations;
-    if(!translations) return consoleWarn('No translations available (yet)');
-    if(!translations[id]) return consoleWarn('Could not find string '+id);
+    var translations = html10n.translations
+    if(!translations) return consoleWarn('No translations available (yet)')
+    if(!translations[id]) return consoleWarn('Could not find string '+id)
     
     // apply args
-    var str = substArguments(translations[id], args);
+    var str = substArguments(translations[id], args)
     
     // apply macros
-    return substMacros(id, str, args);
+    return substMacros(id, str, args)
     
     // replace {{arguments}} with their values or the
     // associated translation string (based on its key)
     function substArguments(str, args) {
       var reArgs = /\{\{\s*([a-zA-Z\.]+)\s*\}\}/
-        , match;
+        , match
       
       while (match = reArgs.exec(str)) {
         if (!match || match.length < 2)
-          return str; // argument key not found
+          return str // argument key not found
 
         var arg = match[1]
-          , sub = '';
+          , sub = ''
         if (arg in args) {
-          sub = args[arg];
+          sub = args[arg]
         } else if (arg in translations) {
-          sub = translations[arg];
+          sub = translations[arg]
         } else {
-          consoleWarn('Could not find argument {{' + arg + '}}');
-          return str;
+          consoleWarn('Could not find argument {{' + arg + '}}')
+          return str
         }
 
-        str = str.substring(0, match.index) + sub + str.substr(match.index + match[0].length);
+        str = str.substring(0, match.index) + sub + str.substr(match.index + match[0].length)
       }
       
-      return str;
+      return str
     }
     
     // replace {[macros]} with their values
@@ -766,21 +773,21 @@ window.html10n = (function(window, document, undefined) {
       // a macro has been found
       // Note: at the moment, only one parameter is supported
       var macroName = reMatch[1]
-        , paramName = reMatch[2];
+        , paramName = reMatch[2]
       
-      if (!(macroName in gMacros)) return str;
+      if (!(macroName in gMacros)) return str
       
-      var param;
+      var param
       if (args && paramName in args) {
-        param = args[paramName];
+        param = args[paramName]
       } else if (paramName in translations) {
-        param = translations[paramName];
+        param = translations[paramName]
       }
 
       // there's no macro parser yet: it has to be defined in gMacros
-      var macro = html10n.macros[macroName];
-      str = macro(translations, key, str, param);
-      return str;
+      var macro = html10n.macros[macroName]
+      str = macro(translations, key, str, param)
+      return str
     }
   }
   
@@ -788,26 +795,26 @@ window.html10n = (function(window, document, undefined) {
    * Applies translations to a DOM node (recursive)
    */
   html10n.translateNode = function(translations, node) {
-    var str = {};
+    var str = {}
 
     // get id
-    str.id = node.getAttribute('data-l10n-id');
-    if (!str.id) return;
+    str.id = node.getAttribute('data-l10n-id')
+    if (!str.id) return
 
-    if(!translations[str.id]) return consoleWarn('Couldn\'t find translation key '+str.id);
+    if(!translations[str.id]) return consoleWarn('Couldn\'t find translation key '+str.id)
 
     // get args
     if(window.JSON) {
-      str.args = JSON.parse(node.getAttribute('data-l10n-args'));
+      str.args = JSON.parse(node.getAttribute('data-l10n-args'))
     }else{
       try{
-        str.args = eval(node.getAttribute('data-l10n-args'));
+        str.args = eval(node.getAttribute('data-l10n-args'))
       }catch(e) {
-        consoleWarn('Couldn\'t parse args for '+str.id);
+        consoleWarn('Couldn\'t parse args for '+str.id)
       }
     }
     
-    str.str = html10n.get(str.id, str.args);
+    str.str = html10n.get(str.id, str.args)
     
     // get attribute name to apply str to
     var prop
@@ -817,31 +824,31 @@ window.html10n = (function(window, document, undefined) {
        , "innerHTML": 1
        , "alt": 1
        , "textContent": 1
-       };
+       }
     if (index > 0 && str.id.substr(index + 1) in attrList) { // an attribute has been specified
-      prop = str.id.substr(index + 1);
+      prop = str.id.substr(index + 1)
     } else { // no attribute: assuming text content by default
-      prop = document.body.textContent ? 'textContent' : 'innerText';
+      prop = document.body.textContent ? 'textContent' : 'innerText'
     }
 
     // Apply translation
     if (node.children.length === 0 || prop != 'textContent') {
-      node[prop] = str.str;
+      node[prop] = str.str
     } else {
       var children = node.childNodes,
-          found = false;
+          found = false
       for (var i=0, n=children.length; i < n; i++) {
         if (children[i].nodeType === 3 && /\S/.test(children[i].textContent)) {
           if (!found) {
-            children[i].nodeValue = str.str;
-            found = true;
+            children[i].nodeValue = str.str
+            found = true
           } else {
-            children[i].nodeValue = '';
+            children[i].nodeValue = ''
           }
         }
       }
       if (!found) {
-        consoleWarn('Unexpected error: could not translate element content for key '+str.id, node);
+        consoleWarn('Unexpected error: could not translate element content for key '+str.id, node)
       }
     }
   }
@@ -852,32 +859,32 @@ window.html10n = (function(window, document, undefined) {
    */
   html10n.build = function(langs, cb) {
     var that = this
-      , build = {};
+      , build = {}
 
     asyncForEach(langs, function (lang, i, next) {
       if(!lang) return next();
-      that.loader.load(lang, next);
+      that.loader.load(lang, next)
     }, function() {
-      var lang;
-      langs.reverse();
+      var lang
+      langs.reverse()
       
       // loop through priority array...
       for (var i=0, n=langs.length; i < n; i++) {
-        lang = langs[i];
+        lang = langs[i]
         
         if(!lang || !(lang in that.loader.langs)) continue;
         
         // ... and apply all strings of the current lang in the list
         // to our build object
         for (var string in that.loader.langs[lang]) {
-          build[string] = that.loader.langs[lang][string];
+          build[string] = that.loader.langs[lang][string]
         }
         
         // the last applied lang will be exposed as the
         // lang the page was translated to
-        that.language = lang;
+        that.language = lang
       }
-      cb(null, build);
+      cb(null, build)
     })
   }
   
@@ -893,8 +900,8 @@ window.html10n = (function(window, document, undefined) {
    * Returns the direction of the language returned be html10n#getLanguage
    */
   html10n.getDirection = function() {
-    var langCode = this.language.indexOf('-') == -1? this.language : this.language.substr(0, this.language.indexOf('-'));
-    return html10n.rtl.indexOf(langCode) == -1? 'ltr' : 'rtl';
+    var langCode = this.language.indexOf('-') == -1? this.language : this.language.substr(0, this.language.indexOf('-'))
+    return html10n.rtl.indexOf(langCode) == -1? 'ltr' : 'rtl'
   }
 
   /**
@@ -903,28 +910,28 @@ window.html10n = (function(window, document, undefined) {
   html10n.index = function () {
     // Find all <link>s
     var links = document.getElementsByTagName('link')
-       , resources = [];
+       , resources = []
     for (var i=0, n=links.length; i < n; i++) {
       if (links[i].type != 'application/l10n+json')
         continue;
-      resources.push(links[i].href);
+      resources.push(links[i].href)
     }
-    this.loader = new Loader(resources);
-    this.trigger('indexed');
+    this.loader = new Loader(resources)
+    this.trigger('indexed')
   }
   
   if (document.addEventListener) // modern browsers and IE9+
    document.addEventListener('DOMContentLoaded', function() {
-     html10n.index();
-   }, false);
+     html10n.index()
+   }, false)
   else if (window.attachEvent)
     window.attachEvent('onload', function() {
-     html10n.index();
-   }, false);
+     html10n.index()
+   }, false)
 
   // gettext-like shortcut
   if (window._ === undefined)
     window._ = html10n.get;
 
-  return html10n;
-})(window, document);
+  return html10n
+})(window, document)

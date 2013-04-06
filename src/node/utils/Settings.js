@@ -137,12 +137,12 @@ exports.abiwordAvailable = function()
   {
     return "no";
   }
-}
+};
 
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
-  settingsFilename = path.resolve(path.join(root, settingsFilename));
+  settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
 
   var settingsStr;
   try{
@@ -157,7 +157,7 @@ exports.reloadSettings = function reloadSettings() {
   try {
     if(settingsStr) {
       settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
-      settings = JSON.parse(JSON.stringify(settings)) // fix objects having constructors of other vm.context
+      settings = JSON.parse(JSON.stringify(settings)); // fix objects having constructors of other vm.context
     }
   }catch(e){
     console.error('There was an error processing your settings.json file: '+e.message);
@@ -196,9 +196,9 @@ exports.reloadSettings = function reloadSettings() {
   }
 
   if(exports.dbType === "dirty"){
-    console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
+    console.warn("DirtyDB is used. This is fine for testing but not recommended for production.");
   }
-}
+};
 
 // initially load settings
 exports.reloadSettings();

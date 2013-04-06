@@ -1,3 +1,27 @@
+# 1.2.91
+ * NEW: Authors can now send custom object messages to other Authors making 3 way conversations possible.  This introduces WebRTC plugin support.
+ * NEW: Hook for Chat Messages Allows for Desktop Notification support
+ * NEW: FreeBSD installation docs
+ * NEW: Ctrl S for save revision makes the Icon glow for a few sconds.
+ * NEW: Various hooks and expose the document ACE object
+ * NEW: Plugin page revamp makes finding and installing plugins more sane.
+ * NEW: Icon to enable sticky chat from the Chat box
+ * Fix: Cookies inside of plugins
+ * Fix: Don't leak event emitters when accessing admin/plugins
+ * Fix: Don't allow user to send messages after they have been "kicked" from a pad
+ * Fix: Refactor Caret navigation with Arrow and Pageup/down keys stops cursor being lost
+ * Fix: Long lines in Firefox now wrap properly
+ * Fix: Session Disconnect limit is increased from 10 to 20 to support slower restarts
+ * Fix: Support Node 0.10
+ * Fix: Log HTTP on DEBUG log level
+ * Fix: Server wont crash on import fails on 0 file import.
+ * Fix: Import no longer fails consistantly
+ * Fix: Language support for non existing languages
+ * Fix: Mobile support for chat notifications are now usable
+ * Fix: Re-Enable Editbar buttons on reconnect
+ * Fix: Clearing authorship colors no longer disconnects all clients
+ * Other: New debug information for sessions
+
 # 1.2.9
  * Fix: MAJOR Security issue, where a hacker could submit content as another user
  * Fix: security issue due to unescaped user input
@@ -6,7 +30,7 @@
  * Fix: PadUsers API endpoint
  * NEW: A script to import data to all dbms
  * NEW: Add authorId to chat and userlist as a data attribute
- * NEW Refactor and fix our frontend tests
+ * NEW: Refactor and fix our frontend tests
  * NEW: Localisation updates
  
 

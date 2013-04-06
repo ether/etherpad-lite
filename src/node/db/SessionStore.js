@@ -22,7 +22,7 @@ SessionStore.prototype.get = function(sid, fn){
   {
     if (sess) {
       sess.cookie.expires = 'string' == typeof sess.cookie.expires ? new Date(sess.cookie.expires) : sess.cookie.expires;
-      if (!sess.cookie.expires || new Date() < expires) {
+      if (!sess.cookie.expires || new Date() < sess.cookie.expires) {
         fn(null, sess);
       } else {
         self.destroy(sid, fn);

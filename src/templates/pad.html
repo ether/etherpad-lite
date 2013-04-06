@@ -195,7 +195,9 @@
               <div id="wrongPassword">
                 <p data-l10n-id="pad.wrongPassword">Your password was wrong</p>
               </div>
+              <% e.begin_block("loading"); %>
               <p data-l10n-id="pad.loading" id="loading">Loading...</p>
+              <% e.end_block(); %>
               <noscript><strong>Sorry, you have to enable Javascript in order to use this.</strong></noscript>
             </div>
         </div>
@@ -376,7 +378,10 @@
         </div>
 
         <div id="chatbox">
-            <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
+            <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span>
+              <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
+              <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
+            </div>
             <div id="chattext" class="authorColors">
                 <img alt="loading.." id="chatloadmessagesball" class="chatloadmessages" src="../static/img/loading.gif" align="top">
                 <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>

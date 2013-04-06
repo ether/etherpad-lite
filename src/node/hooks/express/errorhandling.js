@@ -28,6 +28,7 @@ exports.gracefulShutdown = function(err) {
   }, 3000);
 }
 
+process.on('uncaughtException', exports.gracefulShutdown);
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   exports.app = args.app;
@@ -47,6 +48,4 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     //https://github.com/joyent/node/issues/1553
     process.on('SIGINT', exports.gracefulShutdown);
   }
-
-  process.on('uncaughtException', exports.gracefulShutdown);
 }

@@ -191,7 +191,7 @@ function handshake()
       createCookie("token", token, 60);
     }
     
-    var sessionID = readCookie("sessionID");
+    var sessionID = decodeURIComponent(readCookie("sessionID"));
     var password = readCookie("password");
 
     var msg = {
@@ -242,7 +242,7 @@ function handshake()
       
       pad.collabClient.setChannelState("RECONNECTING");
       
-      disconnectTimeout = setTimeout(disconnectEvent, 10000);
+      disconnectTimeout = setTimeout(disconnectEvent, 20000);
     }
   });
 
@@ -252,14 +252,22 @@ function handshake()
   socket.on('message', function(obj)
   {
     //the access was not granted, give the user a message
-    if(!receivedClientVars && obj.accessStatus)
+    if(obj.accessStatus)
     {
-      $('.passForm').submit(require(module.id).savePassword);
+      if(!receivedClientVars)
+        $('.passForm').submit(require(module.id).savePassword);
 
       if(obj.accessStatus == "deny")
       {
         $('#loading').hide();
         $("#permissionDenied").show();
+
+        if(receivedClientVars)
+        {
+          // got kicked
+          $("#editorcontainer").hide();
+          $("#editorloadingbox").show();
+        }
       }
       else if(obj.accessStatus == "needPassword")
       {
@@ -365,8 +373,7 @@ function handshake()
 
 $.extend($.gritter.options, { 
   position: 'bottom-right', // defaults to 'top-right' but can be 'bottom-left', 'bottom-right', 'top-left', 'top-right' (added in 1.7.1)
-  fade_in_speed: 'medium', // how fast notifications fade in (string or int)
-  fade_out_speed: 2000, // how fast the notices fade out
+  fade: false, // dont fade, too jerky on mobile
   time: 6000 // hang on the screen for...
 });
 
@@ -442,6 +449,7 @@ var pad = {
   
     //initialize the chat
     chat.init(this);
+    padcookie.init(); // initialize the cookies
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 

@@ -559,6 +559,15 @@ table#otheruserstable {
   margin: 4px 0 0 4px;
   position: absolute;
 }
+#titlesticky{
+  font-size: 10px;
+  padding-top:2px;
+  float: right;
+  text-align: right;
+  text-decoration: none;
+  cursor: pointer;
+  color: #555;
+}
 #titlecross {
   font-size: 25px;
   float: right;
@@ -828,7 +837,44 @@ input[type=checkbox] {
       padding: 4px 1px
     }
 }
-@media screen and (max-width: 400px){
+@media all and (max-width: 400px){
+  #gritter-notice-wrapper{
+    max-height:172px;
+    overflow:hidden;
+    width:100% !important;
+    background-color: #ccc;
+    bottom:20px;
+    left:0px;
+    right:0px;
+    color:#000;
+  } 
+  .gritter-close {
+    display:block !important;
+    left: auto !important;
+    right:5px;
+  }
+  #gritter-notice-wrapper.bottom-right{
+    left:0px !important;
+    bottom:30px !important;
+    right:0px !important;
+  }
+  .gritter-item p{
+    color:black;
+    font-size:16px;
+  }
+  .gritter-title{
+    text-shadow: none !important;
+    color:black;
+  }
+  .gritter-item{
+    padding:2px 11px 8px 4px;
+  }
+  .gritter-item-wrapper{
+    margin:0;
+  }
+  .gritter-item-wrapper > div{
+    background: none;
+  }
   #editorcontainer { 
     top: 68px;
   }
