@@ -1585,7 +1585,21 @@ function Ace2Inner(){
       b = range[1];
       var firstDirtyNode = (((a === 0) && root.firstChild) || getCleanNodeByKey(rep.lines.atIndex(a - 1).key).nextSibling);
       firstDirtyNode = (firstDirtyNode && isNodeDirty(firstDirtyNode) && firstDirtyNode);
-      var lastDirtyNode = (((b == rep.lines.length()) && root.lastChild) || getCleanNodeByKey(rep.lines.atIndex(b).key).previousSibling);
+      // top.console.log("b", b);
+      // top.console.log("foo", rep.lines.atIndex(b));
+      // top.console.log("mheh", getCleanNodeByKey(rep.lines.atIndex(b)));
+      try{
+        var isSane = getCleanNodeByKey(rep.lines.atIndex(b).key);
+      }catch(e){
+        top.console.error("Line key "+b+" doesn't exist in DOM, Dragging to the bottom line is currently broken");
+        top.location.reload();
+      }
+      // top.console.log("sane?", isSane);
+      if(isSane){
+        var lastDirtyNode = (((b == rep.lines.length()) && root.lastChild) || getCleanNodeByKey(rep.lines.atIndex(b).key).previousSibling);
+      }else{
+        var lastDirtyNode = ((b == rep.lines.length()) && root.lastChild);
+      }
       lastDirtyNode = (lastDirtyNode && isNodeDirty(lastDirtyNode) && lastDirtyNode);
       if (firstDirtyNode && lastDirtyNode)
       {
