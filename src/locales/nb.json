@@ -1,4 +1,9 @@
 {
+    "@metadata": {
+        "authors": [
+            "Laaknor"
+        ]
+    },
     "index.newPad": "Ny Pad",
     "index.createOpenPad": "eller opprette/\u00e5pne en ny Pad med dette navnet:",
     "pad.toolbar.bold.title": "Fet (Ctrl-B)",
@@ -112,10 +117,5 @@
     "pad.impexp.uploadFailed": "Opplastning feilet. Pr\u00f8v igjen",
     "pad.impexp.importfailed": "Import feilet",
     "pad.impexp.copypaste": "Vennligst kopier og lim inn",
-    "pad.impexp.exportdisabled": "Eksporterer som {{type}} er deaktivert. Vennligst kontakt din systemadministrator for detaljer.",
-    "@metadata": {
-        "authors": [
-            "Laaknor"
-        ]
-    }
+    "pad.impexp.exportdisabled": "Eksporterer som {{type}} er deaktivert. Vennligst kontakt din systemadministrator for detaljer."
 }
