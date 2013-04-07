@@ -26,8 +26,6 @@ var Changeset = require('./Changeset');
 function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 {
 
-//console.log("CS", Changeset);
-
   // latest official text from server
   var baseAText = Changeset.makeAText("\n");
   // changes applied to baseText that have been submitted
