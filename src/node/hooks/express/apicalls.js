@@ -62,4 +62,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/api', function (req, res) {
      res.json({"currentVersion" : apiHandler.latestApiVersion});
   });
+  
+  //Provide a possibility to query a list of all available API versions
+  args.app.get('/api/versions', function (req, res) {
+     res.json(apiHandler.versions);
+  });
 }

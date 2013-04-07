@@ -37,9 +37,16 @@ catch(e)
   fs.writeFileSync("./APIKEY.txt",apikey,"utf8");
 }
 
+//liitle helper for concatenating the following API versions
+function apiConcat(v1, v2) {
+ for (var key in v1) {
+  v2[key] = v1[key];
+ }
+ return v2;
+}
+
 //a list of all functions
-var version =
-{ "1":
+var API_V1 =
   { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
@@ -67,157 +74,44 @@ var version =
   , "setPassword"               : ["padID", "password"]
   , "isPasswordProtected"       : ["padID"]
   , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  }
-, "1.1":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
+  , "padUsersCount"             : ["padID"] };
+
+var API_V1_1 =
+  { "getAuthorName"             : ["authorID"]
+  ,  "padUsers"                 : ["padID"]
   , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  }
-, "1.2":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  }
-, "1.2.1":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  }
-, "1.2.7":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createDiffHTML"	        : ["padID", "startRev", "endRev"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
+  , "listAllGroups"             : [] };
+
+var API_V1_2 =
+  { "checkToken"                : [] };
+
+var API_V1_2_1 =
+  { "listAllPads"               : [] };
+
+var API_V1_2_7 =
+  { "createDiffHTML"            : ["padID", "startRev", "endRev"]
   , "getChatHistory"            : ["padID"]
   , "getChatHistory"            : ["padID", "start", "end"]
-  , "getChatHead"               : ["padID"]
-  }
-};
+  , "getChatHead"               : ["padID"] };
+
+API_V1_1   =  apiConcat(API_V1,     API_V1_1)   ;
+API_V1_2   =  apiConcat(API_V1_1,   API_V1_2)   ;
+API_V1_2_1 =  apiConcat(API_V1_2,   API_V1_2_1) ;
+API_V1_2_7 =  apiConcat(API_V1_2_1, API_V1_2_7) ;
+
+var version = { "1"     : API_V1
+              , "1.1"   : API_V1_1
+              , "1.2"   : API_V1_2
+              , "1.2.1" : API_V1_2_1
+              , "1.2.7" : API_V1_2_7 };
 
 // set the latest available API version here
 exports.latestApiVersion = '1.2.7';
+
+//collect all available API versions and make it available for API endpoint
+versions = [];
+for (key in version) versions.push(key);
+exports.versions = versions;
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
