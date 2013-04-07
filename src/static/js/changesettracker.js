@@ -26,6 +26,8 @@ var Changeset = require('./Changeset');
 function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 {
 
+//console.log("CS", Changeset);
+
   // latest official text from server
   var baseAText = Changeset.makeAText("\n");
   // changes applied to baseText that have been submitted
@@ -161,6 +163,40 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
       }
       else
       {
+        // Get my authorID
+        var authorId = parent.parent.pad.myUserInfo.userId;
+        // Rewrite apool authors with my author information
+
+        // We need to replace apool numToAttrib array where first value is author
+        // With thisSession.author
+        var numToAttr = apool.numToAttrib;
+        if(numToAttr){
+          for (var attr in numToAttr){
+            if (numToAttr[attr][0] === 'author'){
+              // We force write the author over a change, for sanity n stuff
+              apool.numToAttrib[attr][1] = authorId;
+            }
+          }
+        }
+
+        // Make sure the actual author is the AuthorID
+        // We need to replace apool attrToNum value where the first value before
+        // the comma is author with authorId
+        var attrToNum = apool.attribToNum;
+        if(attrToNum){
+          for (var attr in attrToNum){
+            var splitAttr = attr.split(',');
+            var isAuthor = (splitAttr[0] === 'author'); // Is it an author val?
+            if (isAuthor){
+              // We force write the author over a change, for sanity n stuff
+              var newValue = 'author,'+authorId; // Create a new value
+              var key = attrToNum[attr]; // Key is actually the value
+              delete apool.attribToNum[attr]; // Delete the old value
+              apool.attribToNum[newValue] = key; // Write a new value
+            }
+          }
+        }
+
         if (Changeset.isIdentity(userChangeset)) toSubmit = null;
         else toSubmit = userChangeset;
       }
