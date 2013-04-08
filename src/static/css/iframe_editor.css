@@ -210,47 +210,56 @@ ol.list-number8{ text-indent: 90px; }
 
 /* Add styling to the first item in a list */
 body{
-  counter-reset:first 0 second 0 third 0 fourth 0 fifth 0 sixth 0 seventh 0 eighth 0;
+  counter-reset:first 1 second 1 third 1 fourth 1 fifth 1 sixth 1 seventh 1 eighth 1;
 }
 
 /* The behavior for incrementing and the prefix */
 ol.list-number1:before {
   content: counter(first) ". " ;
-  counter-increment: first;
+  counter-increment: first 1;
 }
 
 ol.list-number2:before {
   content: counter(second) ". " ;
-  counter-increment: second;
+  counter-increment: second 1;
 }
 
 ol.list-number3:before {
   content: counter(third) ". " ;
-  counter-increment: third;
+  counter-increment: third 1;
 }
 
 ol.list-number4:before {
   content: counter(fourth) ". " ;
-  counter-increment: fourth;
+  counter-increment: fourth 1;
 }
 
 ol.list-number5:before {
   content: counter(fifth) ". " ;
-  counter-increment: fifth;
+  counter-increment: fifth 1;
 }
 
 ol.list-number6:before {
   content: counter(sixth) ". " ;
-  counter-increment: sixth;
+  counter-increment: sixth 1;
 }
 
 ol.list-number7:before {
   content: counter(seventh) ". " ;
-  counter-increment: seventh;
+  counter-increment: seventh 1;
 }
 
 ol.list-number8:before {
   content: counter(eighth) ". " ;
-  counter-increment: eighth;
+  counter-increment: eighth 1;
 }
+
+ol.list-start1:before{ counter-reset: first 0; }
+ol.list-start2:before{ counter-reset: second 0; }
+ol.list-start3:before{ counter-reset: third 0; }
+ol.list-start4:before{ counter-reset: fourth 0; }
+ol.list-start5:before{ counter-reset: fifth 0; }
+ol.list-start6:before{ counter-reset: sixth 0; }
+ol.list-start7:before{ counter-reset: seventh 0; }
+ol.list-start8:before{ counter-reset: eighth 0; }
 
