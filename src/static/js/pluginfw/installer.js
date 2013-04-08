@@ -15,7 +15,21 @@ var withNpm = function (npmfn) {
   });
 }
 
+var tasks = 0
+function wrapTaskCb(cb) {
+  tasks++
+  return function() {
+    cb && cb.apply(this, arguments);
+    tasks--;
+    if(tasks == 0) onAllTasksFinished();
+  }
+}
+function onAllTasksFinished() {
+  hooks.aCallAll("restartServer", {}, function () {});
+}
+
 exports.uninstall = function(plugin_name, cb) {
+  cb = wrapTaskCb(cb);
   withNpm(function (er) {
     if (er) return cb && cb(er);
     npm.commands.uninstall([plugin_name], function (er) {
@@ -23,13 +37,13 @@ exports.uninstall = function(plugin_name, cb) {
       hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name}, function (er, data) {
         if (er) return cb(er);
         plugins.update(cb);
-        hooks.aCallAll("restartServer", {}, function () {});
       });
     });
   });
 };
 
 exports.install = function(plugin_name, cb) {
+  cb = wrapTaskCb(cb)
   withNpm(function (er) {
     if (er) return cb && cb(er);
     npm.commands.install([plugin_name], function (er) {
@@ -37,7 +51,6 @@ exports.install = function(plugin_name, cb) {
       hooks.aCallAll("pluginInstall", {plugin_name: plugin_name}, function (er, data) {
         if (er) return cb(er);
         plugins.update(cb);
-        hooks.aCallAll("restartServer", {}, function () {});
       });
     });
   });

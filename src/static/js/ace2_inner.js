@@ -3651,7 +3651,7 @@ function Ace2Inner(){
           evt.preventDefault();
           var originalBackground = parent.parent.$('#revisionlink').css("background")
           parent.parent.$('#revisionlink').css({"background":"lightyellow"});
-          top.setTimeout(function(){
+          scheduler.setTimeout(function(){
             parent.parent.$('#revisionlink').css({"background":originalBackground});
           }, 1000);
           parent.parent.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
@@ -5180,7 +5180,6 @@ function Ace2Inner(){
       {
         if(n > lineNumbersShown) //all updated, break
         break;
-
         var h = (b.clientHeight || b.offsetHeight);
         if (b.nextSibling)
         {
@@ -5215,17 +5214,23 @@ function Ace2Inner(){
         var n = lineNumbersShown;
         var div = odoc.createElement("DIV");	
         //calculate height for new line number
-        var h = (b.clientHeight || b.offsetHeight);
+        if(b){
+          var h = (b.clientHeight || b.offsetHeight);
         
-        if (b.nextSibling)
-          h = b.nextSibling.offsetTop - b.offsetTop;
+          if (b.nextSibling){
+            h = b.nextSibling.offsetTop - b.offsetTop;
+          }
+        }
         
-        if(h) // apply style to div
+        if(h){ // apply style to div
           div.style.height = h +"px";
-			
+	}
+		
         div.appendChild(odoc.createTextNode(String(n)));
         fragment.appendChild(div);
-        b = b.nextSibling;
+        if(b){
+          b = b.nextSibling;
+        }
       }
       
       container.appendChild(fragment);
