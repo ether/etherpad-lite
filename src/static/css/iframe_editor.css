@@ -205,13 +205,23 @@ ol.list-number1{
 ol.list-number2{
   text-indent: 30px;
 }
+ol.list-number3{
+  text-indent: 40px;
+}
+ol.list-number4{
+  text-indent: 50px;
+}
+ol.list-number5{
+  text-indent: 60px;
+}
+ol.list-number6{
+  text-indent: 70px;
+}
+
 
 /* Add styling to the first item in a list */
-ol.list1-start{
-  counter-reset: first;
-}
-ol.list2-start{
-  counter-reset: second;
+body{
+   counter-reset:first 0 second 0 third 0 fourth 0 fifth 0 sixth 0;
 }
 
 /* The behavior for incrementing and the prefix */
@@ -223,5 +233,27 @@ ol.list-number1:before {
 ol.list-number2:before {
   content: counter(second) ". " ;
   counter-increment: second;
+}
+
+/* The behavior for incrementing and the prefix */
+ol.list-number3:before {
+  content: counter(third) ". " ;
+  counter-increment: third;
+}
+
+ol.list-number4:before {
+  content: counter(fourth) ". " ;
+  counter-increment: fourth;
+}
+
+/* The behavior for incrementing and the prefix */
+ol.list-number5:before {
+  content: counter(fifth) ". " ;
+  counter-increment: fifth;
+}
+
+ol.list-number6:before {
+  content: counter(sixth) ". " ;
+  counter-increment: sixth;
 }
 
