@@ -1669,14 +1669,13 @@ var lastEvent = null; // This is just a temporary measure to ensure we don't sen
 exports.prepareForWire = function (cs, pool) {
   if(cs == lastEvent){
     throw new Error("Not sending the same event twice...");
-    return false;
   }
   var newPool = new AttributePool();
   var newCs = exports.moveOpsToNewPool(cs, pool, newPool);
   lastEvent = cs;
   return {
     translated: newCs,
-   pool: newPool
+    pool: newPool
   };
 };
 
