@@ -199,29 +199,18 @@ ol > li {
 }
 
 /* Set the indentation */
-ol.list-number1{
-  text-indent: 20px;
-}
-ol.list-number2{
-  text-indent: 30px;
-}
-ol.list-number3{
-  text-indent: 40px;
-}
-ol.list-number4{
-  text-indent: 50px;
-}
-ol.list-number5{
-  text-indent: 60px;
-}
-ol.list-number6{
-  text-indent: 70px;
-}
-
+ol.list-number1{ text-indent: 20px; }
+ol.list-number2{ text-indent: 30px; }
+ol.list-number3{ text-indent: 40px; }
+ol.list-number4{ text-indent: 50px; }
+ol.list-number5{ text-indent: 60px; }
+ol.list-number6{ text-indent: 70px; }
+ol.list-number7{ text-indent: 80px; }
+ol.list-number8{ text-indent: 90px; }
 
 /* Add styling to the first item in a list */
 body{
-   counter-reset:first 0 second 0 third 0 fourth 0 fifth 0 sixth 0;
+  counter-reset:first 0 second 0 third 0 fourth 0 fifth 0 sixth 0 seventh 0 eighth 0;
 }
 
 /* The behavior for incrementing and the prefix */
@@ -235,7 +224,6 @@ ol.list-number2:before {
   counter-increment: second;
 }
 
-/* The behavior for incrementing and the prefix */
 ol.list-number3:before {
   content: counter(third) ". " ;
   counter-increment: third;
@@ -246,7 +234,6 @@ ol.list-number4:before {
   counter-increment: fourth;
 }
 
-/* The behavior for incrementing and the prefix */
 ol.list-number5:before {
   content: counter(fifth) ". " ;
   counter-increment: fifth;
@@ -255,5 +242,15 @@ ol.list-number5:before {
 ol.list-number6:before {
   content: counter(sixth) ". " ;
   counter-increment: sixth;
+}
+
+ol.list-number7:before {
+  content: counter(seventh) ". " ;
+  counter-increment: seventh;
+}
+
+ol.list-number8:before {
+  content: counter(eighth) ". " ;
+  counter-increment: eighth;
 }
 
