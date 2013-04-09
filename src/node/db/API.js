@@ -75,6 +75,124 @@ exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 /************************/
 
 /**
+getAttributePool(padID) returns the attribute pool of a pad
+
+Example returns:
+{
+ "code":0,
+ "message":"ok",
+ "data": {
+    "pool":{
+        "numToAttrib":{
+            "0":["author","a.X4m8bBWJBZJnWGSh"],
+            "1":["author","a.TotfBPzov54ihMdH"],
+            "2":["author","a.StiblqrzgeNTbK05"],
+            "3":["bold","true"]
+        },
+        "attribToNum":{
+            "author,a.X4m8bBWJBZJnWGSh":0,
+            "author,a.TotfBPzov54ihMdH":1,
+            "author,a.StiblqrzgeNTbK05":2,
+            "bold,true":3
+        },
+        "nextNum":4
+    }
+ }
+}
+
+*/
+exports.getAttributePool = function (padID, callback) 
+{
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if (ERR(err, callback)) return;
+    callback(null, {pool: pad.pool});
+  });
+}
+
+/**
+getRevisionChangeset (padID, [rev])
+
+get the changeset at a given revision, or last revision if 'rev' is not defined.
+
+Example returns:
+{
+    "code" : 0,
+    "message" : "ok",
+    "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
+}
+
+*/
+exports.getRevisionChangeset = function(padID, rev, callback)
+{
+  // check if rev is set
+  if (typeof rev === "function")
+  {
+    callback = rev;
+    rev = undefined;
+  }
+
+  // check if rev is a number
+  if (rev !== undefined && typeof rev !== "number")
+  {
+    // try to parse the number
+    if (!isNaN(parseInt(rev)))
+    {
+      rev = parseInt(rev);
+    }
+    else
+    {
+      callback(new customError("rev is not a number", "apierror"));
+      return;
+    }
+  }
+
+  // ensure this is not a negative number
+  if (rev !== undefined && rev < 0)
+  {
+    callback(new customError("rev is not a negative number", "apierror"));
+    return;
+  }
+
+  // ensure this is not a float value
+  if (rev !== undefined && !is_int(rev))
+  {
+    callback(new customError("rev is a float value", "apierror"));
+    return;
+  }
+
+  // get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    //the client asked for a special revision
+    if(rev !== undefined)
+    {
+      //check if this is a valid revision
+      if(rev > pad.getHeadRevisionNumber())
+      {
+        callback(new customError("rev is higher than the head revision of the pad","apierror"));
+        return;
+      }
+      
+      //get the changeset for this revision
+      pad.getRevisionChangeset(rev, function(err, changeset)
+      {
+        if(ERR(err, callback)) return;
+        
+        callback(null, changeset);
+      })
+    }
+    //the client wants the latest changeset, lets return it to him
+    else
+    {
+      callback(null, {"changeset": pad.getRevisionChangeset(pad.getHeadRevisionNumber())});
+    }
+  });
+}
+
+/**
 getText(padID, [rev]) returns the text of a pad 
 
 Example returns:
