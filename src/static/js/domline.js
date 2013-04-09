@@ -114,11 +114,13 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
           else
           {
             if(start){ // is it a start of a list with more than one item in?
-              if(start[1] == 1){ // if its the first one
-                preHtml = '<ol class="list-start-' + listType + ' list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-              }else{ // its the second+ item in this list level
-                preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              if(start[1] == 1){ // if its the first one at this level?
+                preHtml = '<ol start=1 class="list-start-' + listType + ' list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              }else{ // its not the first item in this list level
+                preHtml = '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
               }
+            }else{
+               preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
             }
             postHtml = '</li></ol>';
           }

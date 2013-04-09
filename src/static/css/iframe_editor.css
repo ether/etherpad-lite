@@ -192,21 +192,23 @@ p {
 
 ol { 
   display: list-item; 
+  list-style-type: decimal;
 }
 
 ol > li {
+  display:list-item;
   display:inline;   
 }
 
 /* Set the indentation */
-ol.list-number1{ text-indent: 20px; }
-ol.list-number2{ text-indent: 30px; }
-ol.list-number3{ text-indent: 40px; }
-ol.list-number4{ text-indent: 50px; }
-ol.list-number5{ text-indent: 60px; }
-ol.list-number6{ text-indent: 70px; }
-ol.list-number7{ text-indent: 80px; }
-ol.list-number8{ text-indent: 90px; }
+ol.list-number1{ text-indent: 0px; }
+ol.list-number2{ text-indent: 10px; }
+ol.list-number3{ text-indent: 20px; }
+ol.list-number4{ text-indent: 30px; }
+ol.list-number5{ text-indent: 40px; }
+ol.list-number6{ text-indent: 50px; }
+ol.list-number7{ text-indent: 60px; }
+ol.list-number8{ text-indent: 70px; }
 
 /* Add styling to the first item in a list */
 body{
