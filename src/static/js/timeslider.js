@@ -80,7 +80,6 @@ function init() {
     socket.on('message', function(message)
     {
       if(window.console) console.log(message);
-console.log(message);
       if(message.type == "CLIENT_VARS")
       {
         handleClientVars(message);
