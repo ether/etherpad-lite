@@ -254,12 +254,12 @@ ol.list-number8:before {
   counter-increment: eighth 1;
 }
 
-ol.list-start1:before{ counter-reset: first 0; }
-ol.list-start2:before{ counter-reset: second 0; }
-ol.list-start3:before{ counter-reset: third 0; }
-ol.list-start4:before{ counter-reset: fourth 0; }
-ol.list-start5:before{ counter-reset: fifth 0; }
-ol.list-start6:before{ counter-reset: sixth 0; }
-ol.list-start7:before{ counter-reset: seventh 0; }
-ol.list-start8:before{ counter-reset: eighth 0; }
+ol.list-start-number1:before{ counter-reset: first 0; }
+ol.list-start-number2:before{ counter-reset: second 0; }
+ol.list-start-number3:before{ counter-reset: third 0; }
+ol.list-start-number4:before{ counter-reset: fourth 0; }
+ol.list-start-number5:before{ counter-reset: fifth 0; }
+ol.list-start-number6:before{ counter-reset: sixth 0; }
+ol.list-start-number7:before{ counter-reset: seventh 0; }
+ol.list-start-number8:before{ counter-reset: eighth 0; }
 

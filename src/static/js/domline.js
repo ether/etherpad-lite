@@ -104,7 +104,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       if (listType)
       {
         listType = listType[1];
-        start = start?'start="'+Security.escapeHTMLAttribute(start[1])+'"':'';
         if (listType)
         {
           if(listType.indexOf("number") < 0)
@@ -114,7 +113,13 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
           }
           else
           {
-            preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            if(start){ // is it a start of a list with more than one item in?
+              if(start[1] == 1){ // if its the first one
+                preHtml = '<ol class="list-start-' + listType + ' list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              }else{ // its the second+ item in this list level
+                preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              }
+            }
             postHtml = '</li></ol>';
           }
         } 
