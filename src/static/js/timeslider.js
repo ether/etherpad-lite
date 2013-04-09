@@ -108,6 +108,7 @@ function init() {
     });
 
     exports.socket = socket; // make the socket available
+    exports.BroadcastSlider = BroadcastSlider; // Make the slider available
 
     hooks.aCallAll("postTimesliderInit");
   });
@@ -133,7 +134,7 @@ function sendSocketMsg(type, data)
 
 var fireWhenAllScriptsAreLoaded = [];
   
-var BroadcastSlider, changesetLoader;
+var changesetLoader;
 function handleClientVars(message)
 {
   //save the client Vars
