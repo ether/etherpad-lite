@@ -135,7 +135,7 @@ window.html10n = (function(window, document, undefined) {
       for (var i=0, n=this.resources.length; i < n; i++) {
         this.fetch(this.resources[i], lang, function(e) {
           reqs++;
-          if(e) console.warn(e)
+          if(e) consoleWarn(e)
           
           if (reqs < n) return;// Call back once all reqs are completed
           cb && cb()
