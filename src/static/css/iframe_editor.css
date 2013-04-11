@@ -219,14 +219,12 @@ body{
 
 .list-start-number1 { counter-reset: first second; }
 .list-start-number2 { counter-reset: second; }
-/*
-.list-start-number3 { counter-reset: third 0; }
-.list-start-number4 { counter-reset: fourth 0; }
-.list-start-number5 { counter-reset: fifth 0; }
-.list-start-number6 { counter-reset: sixth 0; }
-.list-start-number7 { counter-reset: seventh 0; }
-.list-start-number8 { counter-reset: eighth 0; }
-*/
+.list-start-number3 { counter-reset: third; }
+.list-start-number4 { counter-reset: fourth; }
+.list-start-number5 { counter-reset: fifth; }
+.list-start-number6 { counter-reset: sixth; }
+.list-start-number7 { counter-reset: seventh; }
+.list-start-number8 { counter-reset: eighth; }
 
 /* The behavior for incrementing and the prefix */
 .list-number1 li:before {
@@ -235,36 +233,36 @@ body{
 }
 
 .list-number2 li:before {
-  content: counter(first) ". " counter(second) ". ";
+  content: counter(first) "." counter(second) ". ";
   counter-increment: second;
 }
 
 .list-number3 li:before {
-  content: counter(third) ". " ;
+  content: counter(first) "." counter(second) "." counter(third) ". ";
   counter-increment: third 1;
 }
 
 .list-number4 li:before {
-  content: counter(fourth) ". " ;
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";
   counter-increment: fourth 1;
 }
 
 .list-number5 li:before {
-  content: counter(fifth) ". " ;
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";
   counter-increment: fifth 1;
 }
 
 .list-number6 li:before {
-  content: counter(sixth) ". " ;
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";
   counter-increment: sixth 1;
 }
 
 .list-number7 li:before {
-  content: counter(seventh) ". " ;
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";
   counter-increment: seventh 1;
 }
 
 .list-number8 li:before {
-  content: counter(eighth) ". " ;
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) ". " ;
   counter-increment: eighth 1;
 }
