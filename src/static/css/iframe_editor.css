@@ -191,12 +191,12 @@ p {
 */
 
 ol { 
-  display: list-item; 
+/*  display: list-item; */
   list-style-type: decimal;
 }
 
 ol > li {
-  display:list-item;
+/*  display:list-item;*/
   display:inline;   
 }
 
@@ -211,57 +211,60 @@ ol.list-number7{ text-indent: 60px; }
 ol.list-number8{ text-indent: 70px; }
 
 /* Add styling to the first item in a list */
+/*
 body{
   counter-reset:first 1 second 1 third 1 fourth 1 fifth 1 sixth 1 seventh 1 eighth 1;
 }
+*/
+
+.list-start-number1 { counter-reset: first second; }
+.list-start-number2 { counter-reset: second; }
+/*
+.list-start-number3 { counter-reset: third 0; }
+.list-start-number4 { counter-reset: fourth 0; }
+.list-start-number5 { counter-reset: fifth 0; }
+.list-start-number6 { counter-reset: sixth 0; }
+.list-start-number7 { counter-reset: seventh 0; }
+.list-start-number8 { counter-reset: eighth 0; }
+*/
 
 /* The behavior for incrementing and the prefix */
-ol.list-number1:before {
+.list-number1 li:before {
   content: counter(first) ". " ;
-  counter-increment: first 1;
+  counter-increment: first;
 }
 
-ol.list-number2:before {
-  content: counter(second) ". " ;
-  counter-increment: second 1;
+.list-number2 li:before {
+  content: counter(first) ". " counter(second) ". ";
+  counter-increment: second;
 }
 
-ol.list-number3:before {
+.list-number3 li:before {
   content: counter(third) ". " ;
   counter-increment: third 1;
 }
 
-ol.list-number4:before {
+.list-number4 li:before {
   content: counter(fourth) ". " ;
   counter-increment: fourth 1;
 }
 
-ol.list-number5:before {
+.list-number5 li:before {
   content: counter(fifth) ". " ;
   counter-increment: fifth 1;
 }
 
-ol.list-number6:before {
+.list-number6 li:before {
   content: counter(sixth) ". " ;
   counter-increment: sixth 1;
 }
 
-ol.list-number7:before {
+.list-number7 li:before {
   content: counter(seventh) ". " ;
   counter-increment: seventh 1;
 }
 
-ol.list-number8:before {
+.list-number8 li:before {
   content: counter(eighth) ". " ;
   counter-increment: eighth 1;
 }
-
-ol.list-start-number1:before{ counter-reset: first 0; }
-ol.list-start-number2:before{ counter-reset: second 0; }
-ol.list-start-number3:before{ counter-reset: third 0; }
-ol.list-start-number4:before{ counter-reset: fourth 0; }
-ol.list-start-number5:before{ counter-reset: fifth 0; }
-ol.list-start-number6:before{ counter-reset: sixth 0; }
-ol.list-start-number7:before{ counter-reset: seventh 0; }
-ol.list-start-number8:before{ counter-reset: eighth 0; }
-

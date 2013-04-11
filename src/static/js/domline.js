@@ -115,10 +115,9 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
           {
             if(start){ // is it a start of a list with more than one item in?
               if(start[1] == 1){ // if its the first one at this level?
-                preHtml = '<ol start=1 class="list-start-' + listType + ' list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-              }else{ // its not the first item in this list level
-                preHtml = '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+                lineClass = lineClass + " " + "list-start-" + listType; // Add start class to DIV node
               }
+              preHtml = '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
             }else{
                preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
             }
