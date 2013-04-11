@@ -1,3 +1,16 @@
+# 1.2.911
+ * NEW: Broadcast slider is exposed in timeslider so plugins can interact with it
+ * Fix: IE issue where pads wouldn't load due to missing console from i18n
+ * Fix: console issue in collab client would error on cross domain embeds in IE
+ * Fix: Only Restart Etherpad once plugin is installed
+ * Fix: Only redraw lines that exist after drag and drop
+ * Fix: Pasting into ordered list
+ * Fix: Import browser detection
+ * Fix: 2 Part Locale Specs
+ * Fix: Remove language string from chat element
+ * Fix: Make Saved revision Star fade back out on non Top frames
+ * Other: Remove some cruft legacy JS from old Etherpad
+
 # 1.2.91
  * NEW: Authors can now send custom object messages to other Authors making 3 way conversations possible.  This introduces WebRTC plugin support.
  * NEW: Hook for Chat Messages Allows for Desktop Notification support
