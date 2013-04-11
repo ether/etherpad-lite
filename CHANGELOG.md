@@ -1,4 +1,4 @@
-# 1.2.911
+# 1.2.10
  * NEW: Broadcast slider is exposed in timeslider so plugins can interact with it
  * Fix: IE issue where pads wouldn't load due to missing console from i18n
  * Fix: console issue in collab client would error on cross domain embeds in IE
