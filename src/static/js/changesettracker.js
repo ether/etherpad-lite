@@ -165,18 +165,43 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
         var authorId = parent.parent.pad.myUserInfo.userId;
         // Rewrite apool authors with my author information
 
-        // We need to replace apool numToAttrib array where first value is author
-        // With thisSession.author
-        var numToAttr = apool.numToAttrib;
-        if(numToAttr){
-          for (var attr in numToAttr){
-            if (numToAttr[attr][0] === 'author'){
-              // We force write the author over a change, for sanity n stuff
-              apool.numToAttrib[attr][1] = authorId;
-            }
+        // We need to replace all new author attribs with thisSession.author, in case someone copy/pasted or otherwise inserted other peoples changes
+        if(apool.numToAttrib){
+          for (var attr in apool.numToAttrib){
+            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) authorAttr = attr
           }
+          
+          // Replace all added 'author' attribs with the value of the current user
+          var cs = Changeset.unpack(userChangeset)
+            , iterator = Changeset.opIterator(cs.ops)
+            , op
+            , assem = Changeset.mergingOpAssembler();
+console.log(cs.ops)
+          while(iterator.hasNext()) {
+            op = iterator.next()
+            if(op.opcode == '+') {
+              var newAttrs = []
+console.log('\nold attribs', op.attribs)
+              op.attribs.split('*').forEach(function(attrNum) {
+                if(!attrNum) return
+                attr = apool.getAttrib(attrNum)
+                if(!attr) return
+                if('author' == attr[0] && !~newAttrs.indexOf(authorAttr))  {newAttrs += '*'+authorAttr; console.log('replacing author attribute ', attrNum, '(', attr[1], ') with', authorAttr) }
+                else newAttrs += '*'+attrNum
+              })
+              op.attribs = newAttrs
+            }
+console.log('new attribs', op.attribs)
+            assem.append(op)
+console.log('opstring', assem.toString())
+          }
+          assem.endDocument();
+          console.log(assem.toString())
+          userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank)
+          Changeset.checkRep(userChangeset)
+          console.log(userChangeset)
         }
-
+/*
         // Make sure the actual author is the AuthorID
         // We need to replace apool attrToNum value where the first value before
         // the comma is author with authorId
@@ -193,7 +218,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
               apool.attribToNum[newValue] = key; // Write a new value
             }
           }
-        }
+        }*/
 
         if (Changeset.isIdentity(userChangeset)) toSubmit = null;
         else toSubmit = userChangeset;
