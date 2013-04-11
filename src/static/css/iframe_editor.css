@@ -39,27 +39,6 @@ ul.list-bullet6 { list-style-type: square; }
 ul.list-bullet7 { list-style-type: disc; }
 ul.list-bullet8 { list-style-type: circle; }
 
-/*
-ol.list-number1 { margin-left: 1.9em; }
-ol.list-number2 { margin-left: 3em; }
-ol.list-number3 { margin-left: 4.5em; }
-ol.list-number4 { margin-left: 6em; }
-ol.list-number5 { margin-left: 7.5em; }
-ol.list-number6 { margin-left: 9em; }
-ol.list-number7 { margin-left: 10.5em; }
-ol.list-number8 { margin-left: 12em; }
-
-ol { list-style-type: decimal; }
-ol.list-number1 { list-style-type: decimal; }
-ol.list-number2 { list-style-type: lower-latin; }
-ol.list-number3 { list-style-type: lower-roman; }
-ol.list-number4 { list-style-type: decimal; }
-ol.list-number5 { list-style-type: lower-latin; }
-ol.list-number6 { list-style-type: lower-roman; }
-ol.list-number7 { list-style-type: decimal; }
-ol.list-number8 { list-style-type: lower-latin; }
-*/
-
 ul.list-indent1 { margin-left: 1.5em; }
 ul.list-indent2 { margin-left: 3em; }
 ul.list-indent3 { margin-left: 4.5em; }
@@ -191,12 +170,10 @@ p {
 */
 
 ol { 
-/*  display: list-item; */
   list-style-type: decimal;
 }
 
 ol > li {
-/*  display:list-item;*/
   display:inline;   
 }
 
@@ -211,11 +188,6 @@ ol.list-number7{ text-indent: 60px; }
 ol.list-number8{ text-indent: 70px; }
 
 /* Add styling to the first item in a list */
-/*
-body{
-  counter-reset:first 1 second 1 third 1 fourth 1 fifth 1 sixth 1 seventh 1 eighth 1;
-}
-*/
 
 .list-start-number1 { counter-reset: first second; }
 .list-start-number2 { counter-reset: second; }
