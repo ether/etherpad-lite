@@ -579,20 +579,6 @@ function handleUserChanges(client, message)
             throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
           }
         });
-
-        // Validate all added 'author' attribs to be the same value as the current user
-        var iterator = Changeset.opIterator(Changeset.unpack(changeset).ops)
-          , op
-        while(iterator.hasNext()) {
-          op = iterator.next()
-          if(op.opcode != '+') continue;
-          op.attribs.split('*').forEach(function(attr) {
-            if(!attr) return
-            attr = wireApool.getAttrib(attr)
-            if(!attr) return
-            if('author' == attr[0] && attr[1] != thisSession.author) throw "Trying to submit changes as another author"
-          })
-        }
       }
       catch(e)
       {
@@ -602,6 +588,38 @@ function handleUserChanges(client, message)
         return;
       }
         
+      // Force the change to be by the author session
+      // Make sure the actual author is this session AuthorID
+
+      // We need to replace wireApool numToAttrib array where first value is author
+      // With thisSession.author
+      var numToAttr = wireApool.numToAttrib;
+      if(numToAttr){
+        for (var attr in numToAttr){
+          if (numToAttr[attr][0] === 'author'){
+            // We force write the author over a change, for sanity n stuff
+            wireApool.numToAttrib[attr][1] = thisSession.author;
+          }
+        }
+      }
+
+      // We need to replace wireApool attrToNum value where the first value before 
+      // the comma is author with thisSession.author
+      var attrToNum = wireApool.attribToNum;
+      if(attrToNum){
+        for (var attr in attrToNum){
+          var splitAttr = attr.split(',');
+          var isAuthor = (splitAttr[0] === 'author'); // Is it an author val?
+          if (isAuthor){
+            // We force write the author over a change, for sanity n stuff
+            var newValue = 'author,'+thisSession.author; // Create a new value
+            var key = attrToNum[attr]; // Key is actually the value
+            delete wireApool.attribToNum[attr]; // Delete the old value
+            wireApool.attribToNum[newValue] = key; // Write a new value
+          }
+        }
+      }
+    
       //ex. adoptChangesetAttribs
         
       //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
