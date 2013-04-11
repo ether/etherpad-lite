@@ -135,7 +135,7 @@ window.html10n = (function(window, document, undefined) {
       for (var i=0, n=this.resources.length; i < n; i++) {
         this.fetch(this.resources[i], lang, function(e) {
           reqs++;
-          if(e) console.warn(e)
+          if(e) consoleWarn(e)
           
           if (reqs < n) return;// Call back once all reqs are completed
           cb && cb()
@@ -900,6 +900,7 @@ window.html10n = (function(window, document, undefined) {
    * Returns the direction of the language returned be html10n#getLanguage
    */
   html10n.getDirection = function() {
+    if(!this.language) return
     var langCode = this.language.indexOf('-') == -1? this.language : this.language.substr(0, this.language.indexOf('-'))
     return html10n.rtl.indexOf(langCode) == -1? 'ltr' : 'rtl'
   }
