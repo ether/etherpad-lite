@@ -180,8 +180,8 @@ console.log(cs.ops)
           while(iterator.hasNext()) {
             op = iterator.next()
             if(op.opcode == '+') {
-              var newAttrs = []
-console.log('\nold attribs', op.attribs)
+              var newAttrs = ''
+
               op.attribs.split('*').forEach(function(attrNum) {
                 if(!attrNum) return
                 attr = apool.getAttrib(attrNum)
@@ -191,15 +191,13 @@ console.log('\nold attribs', op.attribs)
               })
               op.attribs = newAttrs
             }
-console.log('new attribs', op.attribs)
             assem.append(op)
-console.log('opstring', assem.toString())
           }
           assem.endDocument();
-          console.log(assem.toString())
+console.log(assem.toString())
           userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank)
           Changeset.checkRep(userChangeset)
-          console.log(userChangeset)
+console.log(userChangeset)
         }
 /*
         // Make sure the actual author is the AuthorID
