@@ -176,7 +176,6 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
             , iterator = Changeset.opIterator(cs.ops)
             , op
             , assem = Changeset.mergingOpAssembler();
-console.log(cs.ops)
           while(iterator.hasNext()) {
             op = iterator.next()
             if(op.opcode == '+') {
@@ -186,7 +185,10 @@ console.log(cs.ops)
                 if(!attrNum) return
                 attr = apool.getAttrib(attrNum)
                 if(!attr) return
-                if('author' == attr[0] && !~newAttrs.indexOf(authorAttr))  {newAttrs += '*'+authorAttr; console.log('replacing author attribute ', attrNum, '(', attr[1], ') with', authorAttr) }
+                if('author' == attr[0] && !~newAttrs.indexOf(authorAttr))  {
+                  newAttrs += '*'+authorAttr; 
+                  // console.log('replacing author attribute ', attrNum, '(', attr[1], ') with', authorAttr) 
+                }
                 else newAttrs += '*'+attrNum
               })
               op.attribs = newAttrs
@@ -194,30 +196,9 @@ console.log(cs.ops)
             assem.append(op)
           }
           assem.endDocument();
-console.log(assem.toString())
           userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank)
           Changeset.checkRep(userChangeset)
-console.log(userChangeset)
         }
-/*
-        // Make sure the actual author is the AuthorID
-        // We need to replace apool attrToNum value where the first value before
-        // the comma is author with authorId
-        var attrToNum = apool.attribToNum;
-        if(attrToNum){
-          for (var attr in attrToNum){
-            var splitAttr = attr.split(',');
-            var isAuthor = (splitAttr[0] === 'author'); // Is it an author val?
-            if (isAuthor){
-              // We force write the author over a change, for sanity n stuff
-              var newValue = 'author,'+authorId; // Create a new value
-              var key = attrToNum[attr]; // Key is actually the value
-              delete apool.attribToNum[attr]; // Delete the old value
-              apool.attribToNum[newValue] = key; // Write a new value
-            }
-          }
-        }*/
-
         if (Changeset.isIdentity(userChangeset)) toSubmit = null;
         else toSubmit = userChangeset;
       }
