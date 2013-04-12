@@ -161,6 +161,44 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
       }
       else
       {
+        // Get my authorID
+        var authorId = parent.parent.pad.myUserInfo.userId;
+        // Rewrite apool authors with my author information
+
+        // We need to replace all new author attribs with thisSession.author, in case someone copy/pasted or otherwise inserted other peoples changes
+        if(apool.numToAttrib){
+          for (var attr in apool.numToAttrib){
+            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) authorAttr = attr
+          }
+          
+          // Replace all added 'author' attribs with the value of the current user
+          var cs = Changeset.unpack(userChangeset)
+            , iterator = Changeset.opIterator(cs.ops)
+            , op
+            , assem = Changeset.mergingOpAssembler();
+          while(iterator.hasNext()) {
+            op = iterator.next()
+            if(op.opcode == '+') {
+              var newAttrs = ''
+
+              op.attribs.split('*').forEach(function(attrNum) {
+                if(!attrNum) return
+                attr = apool.getAttrib(attrNum)
+                if(!attr) return
+                if('author' == attr[0] && !~newAttrs.indexOf(authorAttr))  {
+                  newAttrs += '*'+authorAttr; 
+                  // console.log('replacing author attribute ', attrNum, '(', attr[1], ') with', authorAttr) 
+                }
+                else newAttrs += '*'+attrNum
+              })
+              op.attribs = newAttrs
+            }
+            assem.append(op)
+          }
+          assem.endDocument();
+          userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank)
+          Changeset.checkRep(userChangeset)
+        }
         if (Changeset.isIdentity(userChangeset)) toSubmit = null;
         else toSubmit = userChangeset;
       }
