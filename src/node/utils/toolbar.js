@@ -1,7 +1,6 @@
 /**
  * The Toolbar Module creates and renders the toolbars and buttons
  */
-
 var _ = require("underscore")
   , tagAttributes
   , tag

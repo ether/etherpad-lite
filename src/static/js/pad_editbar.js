@@ -131,6 +131,9 @@ var padeditbar = (function()
         if (this.commands[cmd]) {
           this.commands[cmd](cmd, padeditor.ace);
         }
+        else {
+          console.log("Command doesn't exist", cmd);
+        }
       }
       if(padeditor.ace) padeditor.ace.focus();
     },
