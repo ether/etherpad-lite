@@ -2,11 +2,12 @@
     "@metadata": {
         "authors": {
             "0": "Rezonansowy",
-            "2": "WTM",
-            "3": "Woytecr"
+            "2": "Ty221",
+            "3": "WTM",
+            "4": "Woytecr"
         }
     },
-    "index.newPad": "Nowy Dokument",
+    "index.newPad": "Nowy dokument",
     "index.createOpenPad": "lub stw\u00f3rz/otw\u00f3rz dokument o nazwie:",
     "pad.toolbar.bold.title": "Pogrubienie (Ctrl-B)",
     "pad.toolbar.italic.title": "Kursywa (Ctrl-I)",
@@ -23,7 +24,7 @@
     "pad.toolbar.timeslider.title": "O\u015b czasu",
     "pad.toolbar.savedRevision.title": "Zapisz wersj\u0119",
     "pad.toolbar.settings.title": "Ustawienia",
-    "pad.toolbar.embed.title": "Umie\u015b\u0107 ten Notatnik",
+    "pad.toolbar.embed.title": "Podziel si\u0119 i osad\u017a ten dokument",
     "pad.toolbar.showusers.title": "Poka\u017c u\u017cytkownik\u00f3w",
     "pad.colorpicker.save": "Zapisz",
     "pad.colorpicker.cancel": "Anuluj",
