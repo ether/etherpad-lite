@@ -8,8 +8,10 @@
  * Fix: Import browser detection
  * Fix: 2 Part Locale Specs
  * Fix: Remove language string from chat element
+ * Fix: Temporary patch for Changeset Spam
  * Fix: Make Saved revision Star fade back out on non Top frames
  * Other: Remove some cruft legacy JS from old Etherpad
+ * Other: Express 3.1.2 breaks sessions, set Express to 3.1.0
 
 # 1.2.91
  * NEW: Authors can now send custom object messages to other Authors making 3 way conversations possible.  This introduces WebRTC plugin support.
