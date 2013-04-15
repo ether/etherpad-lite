@@ -1663,16 +1663,9 @@ exports.appendATextToAssembler = function (atext, assem) {
  * @param cs {Changeset} 
  * @param pool {AtributePool}
  */
-var lastEvent = null; // This is just a temporary measure to ensure we don't send the exact same changeset twice
-// Documentation for this is available at https://github.com/ether/etherpad-lite/issues/1652
-
 exports.prepareForWire = function (cs, pool) {
-  if(cs == lastEvent){
-    throw new Error("Not sending the same event twice...");
-  }
   var newPool = new AttributePool();
   var newCs = exports.moveOpsToNewPool(cs, pool, newPool);
-  lastEvent = cs;
   return {
     translated: newCs,
     pool: newPool
