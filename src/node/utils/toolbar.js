@@ -93,15 +93,12 @@ Button.load = function (btnName) {
 _.extend(Button.prototype, {
   grouping: "",
 
-  li: function (attributes, contents) {
-    attributes = _.extend({
-      "data-key": this.attributes.key,
-    }, attributes);
-    return tag("li", attributes, contents);
-  },
-
   render: function () {
-    return this.li({},
+    var liAttributes = {
+      "data-type": "button",
+      "data-key": this.attributes.key,
+    };
+    return tag("li", liAttributes,
       tag("a", { "class": this.grouping, "data-l10n-id": this.attributes.localizationId },
         tag("span", { "class": "buttonicon " + this.attributes.icon })
       )
@@ -137,8 +134,14 @@ _.extend(SelectButton.prototype, Button.prototype, {
     });
     return tag("select", attributes, options.join(""));
   },
+
   render: function () {
-    return this.li({ id: this.attributes.id },
+    var attributes = {
+      id: this.attributes.id,
+      "data-key": "",
+      "data-type": "select"
+    };
+    return this.li(attributes,
       this.select({ id: this.attributes.selectId })
     );
   }
