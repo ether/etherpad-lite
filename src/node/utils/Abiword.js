@@ -127,19 +127,21 @@ else
   doConvertTask = function(task, callback)
   {
     abiword.stdin.write("convert " + task.srcFile + " " + task.destFile + " " + task.type + "\n");
-    
     //create a callback that calls the task callback and the caller callback
     stdoutCallback = function (err)
     {
       callback();
       console.log("queue continue");
-      task.callback(err);
+      try{
+        task.callback(err);
+      }catch(e){
+        console.error("Abiword File failed to convert", e);
+      }
     };
   };
   
   //Queue with the converts we have to do
   var queue = async.queue(doConvertTask, 1);
-  
   exports.convertFile = function(srcFile, destFile, type, callback)
   {	
     queue.push({"srcFile": srcFile, "destFile": destFile, "type": type, "callback": callback});
