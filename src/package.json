@@ -18,7 +18,7 @@
                       "socket.io"               : "0.9.x",
                       "ueberDB"                 : "0.2.x",
                       "async"                   : "0.1.x",
-                      "express"                 : "3.x",
+                      "express"                 : "3.1.0",
                       "connect"                 : "2.4.x",
                       "clean-css"               : "0.3.2",
                       "uglify-js"               : "1.2.5",
@@ -46,5 +46,5 @@
   "engines"        : { "node" : ">=0.6.3",
                        "npm"  : ">=1.0"
                      }, 
-  "version"        : "1.2.91"
+  "version"        : "1.2.10"
 }
