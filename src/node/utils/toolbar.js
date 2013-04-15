@@ -138,10 +138,10 @@ _.extend(SelectButton.prototype, Button.prototype, {
   render: function () {
     var attributes = {
       id: this.attributes.id,
-      "data-key": "",
+      "data-key": this.attributes.command,
       "data-type": "select"
     };
-    return this.li(attributes,
+    return tag("li", attributes,
       this.select({ id: this.attributes.selectId })
     );
   }

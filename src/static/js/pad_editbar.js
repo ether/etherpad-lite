@@ -39,6 +39,13 @@ ToolbarItem.prototype.getValue = function () {
   }
 };
 
+ToolbarItem.prototype.setValue = function (val) {
+  if (this.isSelect()) {
+    return this.$el.find("select").val(val);
+  }
+};
+
+
 ToolbarItem.prototype.getType = function () {
   return this.$el.attr("data-type");
 };
@@ -53,15 +60,16 @@ ToolbarItem.prototype.isButton = function () {
 
 ToolbarItem.prototype.bind = function (callback) {
   var self = this;
+
   if (self.isButton()) {
     self.$el.click(function (event) {
-      callback(self.getCommand());
+      callback(self.getCommand(), self);
       event.preventDefault();
     });
   }
   else if (self.isSelect()) {
     self.$el.find("select").change(function () {
-      callback(self.getCommand(), self.getValue());
+      callback(self.getCommand(), self);
     });
   }
 };
@@ -134,8 +142,8 @@ var padeditbar = (function()
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
       $("#editbar [data-key]").each(function () {
-        (new ToolbarItem($(this))).bind(function (command, value) {
-          self.triggerCommand(command, value);
+        (new ToolbarItem($(this))).bind(function (command, item) {
+          self.triggerCommand(command, item);
         });
       });
 
@@ -173,9 +181,9 @@ var padeditbar = (function()
         }, cmd, true);
       });
     },
-    triggerCommand: function (cmd, value) {
+    triggerCommand: function (cmd, item) {
       if (self.isEnabled() && this.commands[cmd]) {
-        this.commands[cmd](cmd, padeditor.ace, value);
+        this.commands[cmd](cmd, padeditor.ace, item);
       }
       if(padeditor.ace) padeditor.ace.focus();
     },
