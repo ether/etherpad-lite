@@ -128,7 +128,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   function getLineHTML(text, attribs)
   {
-    var propVals = [false, false, false];
+    var propVals = [false, false, false, false, false, false];
     var ENTER = 1;
     var STAY = 2;
     var LEAVE = 0;
@@ -222,32 +222,41 @@ function getHTMLFromAtext(pad, atext, authorColors)
       while (iter.hasNext())
       {
         var o = iter.next();
+//console.warn("o.attribs", o.attribs);
         var propChanged = false;
         Changeset.eachAttribNumber(o.attribs, function (a)
         {
+//console.warn("a", a);
           if (a in anumMap)
           {
+//console.warn("anumapa", anumMap[a], a);
             var i = anumMap[a]; // i = 0 => bold, etc.
-            if (!propVals[i])
+console.warn("propVals[i]", propVals[i]);
+            if (!propVals[i]) // do we already have an open tag for this?
             {
+console.warn("creating ", props[i])
               propVals[i] = ENTER;
               propChanged = true;
             }
             else
             {
+console.warn("Staying ", props[i])
               propVals[i] = STAY;
             }
           }
         });
         for (var i = 0; i < propVals.length; i++)
         {
+// console.warn("Here", props[i], propVals[i]);
           if (propVals[i] === true)
           {
+console.warn("Preparing to Leave ", props[i])
             propVals[i] = LEAVE;
             propChanged = true;
           }
           else if (propVals[i] === STAY)
           {
+console.warn("Staying with ", props[i]);
             propVals[i] = true; // set it back
           }
         }
@@ -264,6 +273,15 @@ function getHTMLFromAtext(pad, atext, authorColors)
             {
               if (v === LEAVE)
               {
+                // Is another tag open that was open after this one and is it different from the current tag/
+                // If so, close it else we will get bad HTML
+console.warn(openTags);
+                var lastItem = openTags.slice(-1)[0]; // Get the last opened item IE 5
+console.warn(i, lastItem);
+                if(lastItem !== i){
+                  console.warn("Attempting to close a tag that isn't open at this level");
+                }
+console.warn("Leaving ", props[i])
                 left = true;
               }
             }
