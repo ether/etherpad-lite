@@ -35,6 +35,7 @@ var messageLogger = log4js.getLogger("message");
 var accessLogger = log4js.getLogger("access");
 var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
+var channels = require("channels");
 
 /**
  * A associative array that saves informations about a session
@@ -47,6 +48,11 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
  *   author = the author name of this session
  */
 var sessioninfos = {};
+
+/**
+ * A changeset queue per pad that is processed by handleUserChanges()
+ */
+var padChannels = new channels.channels(handleUserChanges);
 
 /**
  * Saves the Socket class we need to send and recieve data from the client
@@ -176,7 +182,7 @@ exports.handleMessage = function(client, message)
       if (sessioninfos[client.id].readonly) {
         messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
       } else if (message.data.type == "USER_CHANGES") {
-        handleUserChanges(client, message);
+        padChannels.emit(message.padId, {client: client, message: message});// add to pad queue
       } else if (message.data.type == "USERINFO_UPDATE") {
         handleUserInfoUpdate(client, message);
       } else if (message.data.type == "CHAT_MESSAGE") {
@@ -531,23 +537,26 @@ function handleUserInfoUpdate(client, message)
  * @param client the client that send this message
  * @param message the message from the client
  */
-function handleUserChanges(client, message)
+function handleUserChanges(data, cb)
 {
+  var client = data.client
+    , message = data.message
+
   // Make sure all required fields are present
   if(message.data.baseRev == null)
   {
     messageLogger.warn("Dropped message, USER_CHANGES Message has no baseRev!");
-    return;
+    return cb();
   }
   if(message.data.apool == null)
   {
     messageLogger.warn("Dropped message, USER_CHANGES Message has no apool!");
-    return;
+    return cb();
   }
   if(message.data.changeset == null)
   {
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
-    return;
+    return cb();
   }
  
   //get all Vars we need
@@ -684,10 +693,14 @@ function handleUserChanges(client, message)
         pad.appendRevision(nlChangeset);
       }
         
-      exports.updatePadClients(pad, callback);
+      exports.updatePadClients(pad, function(er) {
+        ERR(er)
+      });
+      callback();
     }
   ], function(err)
   {
+    cb();
     ERR(err);
   });
 }
