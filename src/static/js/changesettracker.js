@@ -57,6 +57,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
         {
           changeCallback();
         }
+        catch(pseudoError) {}
         finally
         {
           changeCallbackTimeout = null;
