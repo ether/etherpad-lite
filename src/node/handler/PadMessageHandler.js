@@ -684,7 +684,10 @@ function handleUserChanges(data, cb)
         pad.appendRevision(nlChangeset);
       }
         
-      exports.updatePadClients(pad, callback);
+      exports.updatePadClients(pad, function(er) {
+        ERR(er)
+      });
+      callback();
     }
   ], function(err)
   {
