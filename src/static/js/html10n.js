@@ -79,6 +79,15 @@ window.html10n = (function(window, document, undefined) {
       return -1;
     }
   }
+  
+  // fix Array.prototype.forEach in IE
+  if (!('forEach' in Array.prototype)) {
+	 Array.prototype.forEach= function(action, that /*opt*/) {
+	 for (var i= 0, n= this.length; i<n; i++)
+		if (i in this)
+	         action.call(that, this[i], i, this);
+	 };
+  }
     
   /**
    * MicroEvent - to make any js object an event emitter (server or browser)

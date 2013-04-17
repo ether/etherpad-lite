@@ -162,6 +162,16 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
       }
       else
       {
+    	  
+         // add forEach function to Array.prototype for IE8      
+         if (!('forEach' in Array.prototype)) {
+            Array.prototype.forEach= function(action, that /*opt*/) {
+                for (var i= 0, n= this.length; i<n; i++)
+                     if (i in this)
+                         action.call(that, this[i], i, this);
+             };
+         }
+    	  
         // Get my authorID
         var authorId = parent.parent.pad.myUserInfo.userId;
         // Rewrite apool authors with my author information
