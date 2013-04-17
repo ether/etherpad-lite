@@ -234,8 +234,7 @@ exports.handleMessage = function(client, message)
         // FIXME: A message might arrive but wont have an auth object, this is obviously bad so we should deny it
         // Simulate using the load testing tool
         if(!sessioninfos[client.id].auth){
-          console.error("Auth was never applied to a session", sessioninfos[client.id])
-          client.json.send({accessStatus: "deny"});
+          console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
           callback();
         }else{
           var auth = sessioninfos[client.id].auth;
