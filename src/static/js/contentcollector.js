@@ -311,7 +311,6 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       ['insertorder', 'first']
     ].concat(
       _.map(state.lineAttributes,function(value,key){
-        if (typeof(window)!= 'undefined' && window.console) console.log([key, value])
         return [key, value];
       })
     );
