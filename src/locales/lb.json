@@ -1,4 +1,9 @@
 {
+    "@metadata": {
+        "authors": [
+            "Robby"
+        ]
+    },
     "index.newPad": "Neie Pad",
     "pad.toolbar.ol.title": "Numer\u00e9iert L\u00ebscht",
     "pad.toolbar.ul.title": "Net-numer\u00e9iert L\u00ebscht",
@@ -44,10 +49,5 @@
     "pad.userlist.entername": "Gitt \u00c4ren Numm an",
     "pad.userlist.guest": "Gaascht",
     "pad.impexp.importbutton": "Elo import\u00e9ieren",
-    "pad.impexp.importing": "Import\u00e9ieren...",
-    "@metadata": {
-        "authors": [
-            "Robby"
-        ]
-    }
+    "pad.impexp.importing": "Import\u00e9ieren..."
 }
