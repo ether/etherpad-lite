@@ -75,6 +75,10 @@ exports.restartServer = function () {
     next();
   });
 
+  if(settings.trustProxy){
+    app.enable('trust proxy');
+  }
+  
   app.configure(function() {
     hooks.callAll("expressConfigure", {"app": app});
   });
