@@ -37,7 +37,8 @@
                       "underscore"              : "1.3.1",
                       "unorm"                   : "1.0.0",
                       "languages4translatewiki" : "0.1.3",
-                      "swagger-node-express"    : "1.2.3"
+                      "swagger-node-express"    : "1.2.3",
+                      "channels"                : "0.0.x"
                      },
   "bin":             { "etherpad-lite": "./node/server.js" },
   "devDependencies": {
