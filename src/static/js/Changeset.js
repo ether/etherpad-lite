@@ -2105,7 +2105,9 @@ exports.follow = function (cs1, cs2, reverseInsertOrder, pool) {
       exports.copyOp(op2, opOut);
       op2.opcode = '';
     } else if (!op2.opcode) {
-      exports.copyOp(op1, opOut);
+      // @NOTE: Critical bugfix for EPL issue #1625. We do not copy op1 here
+      // in order to prevent attributes from leaking into result changesets.
+      // exports.copyOp(op1, opOut);
       op1.opcode = '';
     } else {
       // both keeps
