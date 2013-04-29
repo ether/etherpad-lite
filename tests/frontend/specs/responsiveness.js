@@ -4,7 +4,7 @@ describe("timeslider", function(){
     helper.newPad(cb);
     this.timeout(6000);
   });
-  it("writes in 10 thousand lines", function(done) {
+  it("Tests for a slowly responding pad when lots of contents are injected", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     var chars = 'abcdefghijkl monp qrstr uvw xyz';
