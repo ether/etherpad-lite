@@ -15,36 +15,32 @@ describe("Responsiveness of Editor", function(){
 
     var textElement = inner$("div");
     textElement.sendkeys('{selectall}'); // select all
-    textElement.sendkeys('{del}'); // clear the first line
+    textElement.sendkeys('{del}'); // clear the pad text
 
     for(var i=0; i <= amount; i++) {
-      text = text + chars + " "; // add the cahrs and line break to the text
+      text = text + chars + " "; // add the chars and space to the text contents
     }
     inner$("div").first().text(text); // Put the text contents into the pad
 
-    helper.waitFor(function(){ // Wait for the new text to be on the pad
-      var newLength = inner$("div").text().length;
-      return newLength > length;
+    helper.waitFor(function(){ // Wait for the new contents to be on the pad
+      return inner$("div").text().length > length;
     }).done(function(){
-      //make sure the text has changed
-      expect( inner$("div").text().length ).to.be.greaterThan( length ); // yep :)
 
-      inner$("div").first().sendkeys(chars);
-      var start = new Date().getTime();
+      expect( inner$("div").text().length ).to.be.greaterThan( length ); // has the text changed?
+      var start = new Date().getTime(); // get the start time
+      inner$("div").first().sendkeys(chars); // send some new text to teh screen
 
-      helper.waitFor(function(){ // Wait for the new line to be on the pad
-        //length = chars.length;
-        //var withCharsLength = inner$("div").text().length;
-        //return withCharsLength > length;
+      helper.waitFor(function(){ // Wait for the ability to process
         return true; // Ghetto but works for now
       }).done(function(){
-        var end = new Date().getTime();
-        var delay = end - start;
+        var end = new Date().getTime(); // get the current time
+        var delay = end - start; // get the delay as the current time minus the start time
 
         console.log("delay:", delay);
         expect(delay).to.be.below(50);
         done();
       }, 1000);
+
     }, 10000);
   });
 
