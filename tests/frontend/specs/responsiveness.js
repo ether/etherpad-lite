@@ -1,10 +1,10 @@
-describe("timeslider", function(){
+describe("Responsiveness of Editor", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
     this.timeout(6000);
   });
-  it("Tests for a slowly responding pad when lots of contents are injected", function(done) {
+  it("Fast response to keypress in pad with large amount of contents", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     var chars = '0000000000'; // row of placeholder chars
