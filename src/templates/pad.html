@@ -108,23 +108,25 @@
                       <span class="buttonicon buttonicon-redo"></span>
                     </a>
                 </li>
+                <!-- Removed for now
                 <li class="acl-write separator"></li>
                 <li class="acl-write" id="clearAuthorship" data-key="clearauthorship">
                     <a data-l10n-id="pad.toolbar.clearAuthorship.title">
                       <span class="buttonicon buttonicon-clearauthorship"></span>
                     </a>
-                </li>
+                </li> -->
                 <% e.end_block(); %>
             </ul>
             <ul class="menu_right">
                 <% e.begin_block("editbarMenuRight"); %>
+                <!-- Removed for now
                 <li data-key="import_export">
                     <a class="grouped-left" id="importexportlink" data-l10n-id="pad.toolbar.import_export.title">
                         <span class="buttonicon buttonicon-import_export"></span>
                     </a>
-                </li>
+                </li> -->
                 <li onClick="document.location = document.location.pathname+ '/timeslider'">
-                    <a id="timesliderlink" class="grouped-middle" data-l10n-id="pad.toolbar.timeslider.title">
+                    <a id="timesliderlink" class="grouped-left" data-l10n-id="pad.toolbar.timeslider.title">
                         <span class="buttonicon buttonicon-history"></span>
                     </a>
                 </li>
@@ -135,15 +137,16 @@
                 </li>
                 <li class="acl-write separator"></li>
                 <li class="acl-write" data-key="settings">
-                    <a class="grouped-left" id="settingslink" data-l10n-id="pad.toolbar.settings.title">
+                    <a id="settingslink" data-l10n-id="pad.toolbar.settings.title">
                         <span class="buttonicon buttonicon-settings"></span>
                     </a>
                 </li>
+                <!-- Removed for now
                 <li data-key="embed">
                     <a class="grouped-right" id="embedlink" data-l10n-id="pad.toolbar.embed.title">
                         <span class="grouped-right buttonicon buttonicon-embed"></span>
                     </a>
-                </li>
+                </li> -->
                 <li class="separator"></li>
                 <li id="usericon" data-key="showusers">
                     <a data-l10n-id="pad.toolbar.showusers.title">
@@ -252,13 +255,15 @@
                     <% e.end_block(); %>
                 </table>
             </div>
-            <div class="column">
+            <!-- Removed for now
+                <div class="column">
                 <% e.begin_block("globalSettings"); %>
                 <h2 data-l10n-id="pad.settings.globalView"></h2>
                 <% e.end_block(); %>
-            </div>
+            </div> -->
         </div>
 
+        <!-- Removed for now
         <div id="importexport" class="popup">
             <h1 data-l10n-id="pad.importExport.import_export"></h1>
             <div class="column acl-write">
@@ -294,7 +299,7 @@
                 <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki" data-l10n-id="pad.importExport.exportdokuwiki"></div></a>
                 <% e.end_block(); %>
             </div>
-        </div>
+        </div> -->
         
         <div id="connectivity" class="popup">
             <% e.begin_block("modals"); %>
@@ -309,12 +314,12 @@
                   <h1 data-l10n-id="pad.modals.userdup"></h1>
                   <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
                   <p data-l10n-id="pad.modals.userdup.advice"></p>
-                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+                  <!-- Removed for now <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button> -->
                 </div>
                 <div class="unauth">
                   <h1 data-l10n-id="pad.modals.unauth"></h1>
                   <p data-l10n-id="pad.modals.unauth.explanation"></p>
-                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+                  <!-- Removed for now <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button> -->
                 </div>
                 <div class="looping">
                   <h1 data-l10n-id="pad.modals.looping"></h1>
@@ -330,7 +335,7 @@
                   <h1 data-l10n-id="pad.modals.slowcommit"></h1>
                   <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
                   <p data-l10n-id="pad.modals.slowcommit.cause"></p>
-                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+                  <!-- Removed for now <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button> -->
                 </div>
                 <div class="deleted">
                   <h1 data-l10n-id="pad.modals.deleted"></h1>
@@ -341,17 +346,19 @@
                   <h1 data-l10n-id="pad.modals.disconnected"></h1>
                   <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
                   <p data-l10n-id="pad.modals.disconnected.cause"></p>
-                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+                  <!-- Removed for now <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button> -->
                   <% e.end_block(); %>
                 </div>
+                <!-- Removed for now
                 <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
                     <input type="hidden" class="padId" name="padId">
                     <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
                     <input type="hidden" class="missedChanges" name="missedChanges">
-                </form>
+                </form> -->
             <% e.end_block(); %>
         </div>
 
+        <!-- Removed for now
         <div id="embed" class="popup">
             <% e.begin_block("embedPopup"); %>
             <div id="embedreadonly" class="right acl-write">
@@ -369,7 +376,7 @@
                 <input id="embedinput" type="text" value="">
             </div>
             <% e.end_block(); %>
-        </div>
+        </div> -->
 
         <div id="chaticon" onclick="chat.show();return false;">
             <span id="chatlabel" data-l10n-id="pad.chat"></span>

@@ -79,13 +79,13 @@
       <div class="timeslider-bar">
           <div class="editbarright toolbar" id="editbar">
             <% e.begin_block("timesliderEditbarRight"); %>
-            <ul>
+            <!-- Removed for now <ul>
               <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
                 <a id="exportlink" data-l10n-id="timeslider.toolbar.exportlink.title">
                   <div class="buttonicon buttonicon-import_export"></div>
                 </a>
               </li>
-            </ul>
+            </ul> -->
             <a id="returnbutton" data-l10n-id="timeslider.toolbar.returnbutton"></a>
           <% e.end_block(); %>
           </div>
@@ -95,10 +95,8 @@
                 <span id="revision_label"></span>
                 <span id="revision_date"></span>
               </h1>
-              <p>
-                <span data-l10n-id="timeslider.toolbar.authors"></span>
-                <span id="authorsList" data-l10n-id="timeslider.toolbar.authorsList"></span>
-              </span> </p>
+              <strong><p data-l10n-id="timeslider.toolbar.authors"></p></strong>
+              <p id="authorsList" data-l10n-id="timeslider.toolbar.authorsList"></p>
           </div>
       </div>
     <% e.end_block(); %>
@@ -127,12 +125,12 @@
       <h1 data-l10n-id="pad.modals.userdup"></h1>
       <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
       <p data-l10n-id="pad.modals.userdup.advice"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      <!-- Removed for now <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button> -->
     </div>
     <div class="unauth">
       <h1 data-l10n-id="pad.modals.unauth"></h1>
       <p data-l10n-id="pad.modals.unauth.explanation"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      <!-- Removed for now <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button> -->
     </div>
     <div class="looping">
       <h1 data-l10n-id="pad.modals.looping"></h1>
@@ -148,7 +146,7 @@
       <h1 data-l10n-id="pad.modals.slowcommit"></h1>
       <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
       <p data-l10n-id="pad.modals.slowcommit.cause"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      <!-- Removed for now <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button> -->
     </div>
     <div class="deleted">
       <h1 data-l10n-id="pad.modals.deleted"></h1>
@@ -158,13 +156,13 @@
       <h1 data-l10n-id="pad.modals.disconnected"></h1>
       <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
       <p data-l10n-id="pad.modals.disconnected.cause"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      <!-- Removed for now <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button> -->
     </div>
-    <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
+    <!-- Removed for now <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
         <input type="hidden" class="padId" name="padId">
         <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
         <input type="hidden" class="missedChanges" name="missedChanges">
-    </form>
+    </form> -->
 <% e.end_block(); %>
 </div>
 
