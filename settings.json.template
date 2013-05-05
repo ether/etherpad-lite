@@ -17,7 +17,7 @@
 
   // Session Key, used for reconnecting user sessions
   // Set this to a secure string at least 10 characters long.  Do not share this value.
-  "sessionKey" : "",
+  "sessionKey" : "nmwh8EiZwdqrKldw7bM72Wh5AUnHNqUR",
 
   /*  
   // Node native SSL support
