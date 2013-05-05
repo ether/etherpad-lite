@@ -23,3 +23,15 @@ endif
 
 clean:
 	rm -rf out/
+
+pingpong:
+	bin/installDeps.sh
+	npm install ep_disable_change_author_name
+	npm install ep_historicalsearch
+	npm install ep_page_view
+	cd src/node_modules/languages4translatewiki ;\
+       		sed -i '' 's,svenska,Svenska,g' *js *json ;\
+		gzip -c -9 languages.json > language.json.gz ;\
+		gzip -c -9 languages.min.js > languages.min.js.gz
+	ls src/locales | grep -v sv.json | grep -v en.json | xargs rm
+	echo -n 'nmwh8EiZwdqrKldw7bM72Wh5AUnHNqUR' > APIKEY.txt
