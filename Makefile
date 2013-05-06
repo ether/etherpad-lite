@@ -29,12 +29,12 @@ pingpong:
 	npm install ep_disable_change_author_name
 	npm install ep_historicalsearch
 	npm install ep_page_view
-	rsync -a pingpong-overwrite-mods/node_modules/ node_modules/
+	rsync -a pingpong_overwrite/ ./
 	cd src/node_modules/languages4translatewiki ;\
        		sed -i '' 's,svenska,Svenska,g' *js *json ;\
 		gzip -c -9 languages.json > language.json.gz ;\
 		gzip -c -9 languages.min.js > languages.min.js.gz
 	ls src/locales | grep -v sv.json | grep -v en.json | xargs rm
 	echo -n 'nmwh8EiZwdqrKldw7bM72Wh5AUnHNqUR' > APIKEY.txt
-	tar cf - $e/APIKEY.txt doc node_modules settings.json.template src tests tools var \
+	tar cf - APIKEY.txt doc node_modules settings.json.template src tests tools var \
 		| xz -9 > etherpad-`echo ${VERSION} | tr -d ' '`.tar.xz
