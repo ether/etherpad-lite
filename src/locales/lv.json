@@ -1,4 +1,9 @@
 {
+    "@metadata": {
+        "authors": [
+            "Admresdeserv."
+        ]
+    },
     "pad.toolbar.bold.title": "Treknrakst\u0101 (CTRL + B)",
     "pad.toolbar.italic.title": "Sl\u012bpraksta (Ctrl-es)",
     "pad.toolbar.underline.title": "Pasv\u012btrojuma (CTRL + U)",
@@ -45,10 +50,5 @@
     "pad.modals.disconnected.cause": "Iesp\u0113jams, ka serveris nav pieejams. L\u016bgums pazi\u0146ot mums, ja tas turpina notikt.",
     "pad.share": "Koplietot \u0161o pad",
     "pad.share.readonly": "Tikai las\u0101ms",
-    "pad.share.link": "Saite",
-    "@metadata": {
-        "authors": [
-            "Admresdeserv."
-        ]
-    }
+    "pad.share.link": "Saite"
 }
