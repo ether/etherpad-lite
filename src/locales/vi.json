@@ -1,4 +1,9 @@
 {
+    "@metadata": {
+        "authors": [
+            "Tuankiet65"
+        ]
+    },
     "index.newPad": "T\u1ea1o m\u1ed9t Pad m\u1edbi",
     "index.createOpenPad": "hay t\u1ea1o/m\u1edf m\u1ed9t Pad v\u1edbi t\u00ean:",
     "pad.toolbar.bold.title": "In \u0111\u1eadm (Ctrl-B)",
@@ -97,10 +102,5 @@
     "pad.impexp.uploadFailed": "T\u1ea3i l\u00ean kh\u00f4ng th\u00e0nh c\u00f4ng, vui l\u00f2ng th\u1eed l\u1ea1i",
     "pad.impexp.importfailed": "Nh\u1eadp th\u1ea5t b\u1ea1i",
     "pad.impexp.copypaste": "Xin vui l\u00f2ng sao ch\u00e9p v\u00e0 d\u00e1n",
-    "pad.impexp.exportdisabled": "Xu\u1ea5t ra \u0111\u1ecbnh d\u1ea1ng {{type}} \u0111\u00e3 b\u1ecb v\u00f4 hi\u1ec7u h\u00f3a. Xin h\u00e3y li\u00ean h\u1ec7 v\u1edbi qu\u1ea3n tr\u1ecb vi\u00ean h\u1ec7 th\u1ed1ng \u0111\u1ec3 bi\u1ebft th\u00eam th\u00f4ng tin chi ti\u1ebft.",
-    "@metadata": {
-        "authors": [
-            "Tuankiet65"
-        ]
-    }
+    "pad.impexp.exportdisabled": "Xu\u1ea5t ra \u0111\u1ecbnh d\u1ea1ng {{type}} \u0111\u00e3 b\u1ecb v\u00f4 hi\u1ec7u h\u00f3a. Xin h\u00e3y li\u00ean h\u1ec7 v\u1edbi qu\u1ea3n tr\u1ecb vi\u00ean h\u1ec7 th\u1ed1ng \u0111\u1ec3 bi\u1ebft th\u00eam th\u00f4ng tin chi ti\u1ebft."
 }
