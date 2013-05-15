@@ -46,6 +46,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
       var matchRegex = RegExp('^REPLACE INTO store VALUES', 'i');
 
       fp.on('data', function(data) {
+        fp.pause();
         var lines = data.split(/\r?\n/);
 
         lines[0] = buffer + data[0];
@@ -63,6 +64,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
             keyNo++;
           }
         });
+        fp.resume();
       });
 
 
