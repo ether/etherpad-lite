@@ -3,6 +3,7 @@
         "authors": [
             "Gusta",
             "Luckas",
+            "TheGabrielZaum",
             "Tuliouel"
         ]
     },
@@ -23,7 +24,7 @@
     "pad.toolbar.timeslider.title": "Linha do tempo",
     "pad.toolbar.savedRevision.title": "Salvar revis\u00e3o",
     "pad.toolbar.settings.title": "Configura\u00e7\u00f5es",
-    "pad.toolbar.embed.title": "Compartilhar e mencionar esta nota",
+    "pad.toolbar.embed.title": "Compartilhar e incorporar esta nota",
     "pad.toolbar.showusers.title": "Mostrar os usuarios nesta Nota",
     "pad.colorpicker.save": "Salvar",
     "pad.colorpicker.cancel": "Cancelar",
