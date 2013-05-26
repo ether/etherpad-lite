@@ -13,7 +13,8 @@
             "9": "Od1n",
             "10": "Peter17",
             "11": "Quenenni",
-            "13": "Tux-tn"
+            "13": "Stephane Cottin",
+            "14": "Tux-tn"
         }
     },
     "index.newPad": "Nouveau Pad",
@@ -46,7 +47,7 @@
     "pad.settings.stickychat": "Toujours afficher le chat",
     "pad.settings.colorcheck": "Couleurs d\u2019identification",
     "pad.settings.linenocheck": "Num\u00e9ros de lignes",
-    "pad.settings.rtlcheck": "Lire le contenu de droite \u00e0 gauche ?",
+    "pad.settings.rtlcheck": "Lecture de droite \u00e0 gauche",
     "pad.settings.fontType": "Police :",
     "pad.settings.fontType.normal": "Normal",
     "pad.settings.fontType.monospaced": "Monospace",
@@ -84,7 +85,7 @@
     "pad.modals.deleted.explanation": "Ce Pad a \u00e9t\u00e9 supprim\u00e9.",
     "pad.modals.disconnected": "Vous avez \u00e9t\u00e9 d\u00e9connect\u00e9.",
     "pad.modals.disconnected.explanation": "La connexion au serveur a \u00e9chou\u00e9.",
-    "pad.modals.disconnected.cause": "Il se peut que le serveur soit indisponible. Veuillez nous en informer si le probl\u00e8me persiste.",
+    "pad.modals.disconnected.cause": "Il se peut que le serveur soit indisponible. Si le probl\u00e8me persiste, veuillez nous en informer.",
     "pad.share": "Partager ce Pad",
     "pad.share.readonly": "Lecture seule",
     "pad.share.link": "Lien",
