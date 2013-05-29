@@ -90,6 +90,11 @@ exports.requireSession = false;
 exports.editOnly = false;
 
 /**
+ * A flag that bypasses password prompts for user with valid sessions
+ */
+exports.sessionNoPassword = false;
+
+/**
  * Max age that responses will have (affects caching layer).
  */
 exports.maxAge = 1000*60*60*6; // 6 hours

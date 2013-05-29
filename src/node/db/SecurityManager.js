@@ -219,6 +219,12 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
           //--> grant access
           statusObject = {accessStatus: "grant", authorID: sessionAuthor};
         }
+        //- the setting to bypass password validation is set
+        else if(settings.sessionNoPassword)
+        {
+          //--> grant access
+          statusObject = {accessStatus: "grant", authorID: sessionAuthor};
+        }
         //- the pad is password protected and password is correct
         else if(isPasswordProtected && passwordStatus == "correct")
         {
