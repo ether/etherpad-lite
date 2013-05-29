@@ -90,7 +90,7 @@ exports.requireSession = false;
 exports.editOnly = false;
 
 /**
- * A flag that bypasses password prompts for user with valid sessions
+ * A flag that bypasses password prompts for users with valid sessions
  */
 exports.sessionNoPassword = false;
 
