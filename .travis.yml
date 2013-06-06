@@ -4,14 +4,14 @@ node_js:
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(cat .git/HEAD | head -c 7)"
-before_script: 
+before_script:
   - "tests/frontend/travis/sauce_tunnel.sh"
 script:
   - "tests/frontend/travis/runner.sh"
 env:
   global:
-    - secure: "gVR70BdAh093qBS5P5+V5NzmCYnLFFeIZn3XdgTpgpGRm7UE8GP53TEobtPf\neqpEpbWRTsEbdf+QPisVWrBZcNPFU4I3nucIqdyVobIcQD0TbBQYudm0yLQd\n3Ocqck0BIx9Ni9hBklJupmKt89LDQxNvkEb+uJJqlQwo2RZd36U=" 
-    - SAUCE_USER=etherpad
+    - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
+    - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 jdk:
   - oraclejdk6
 notifications:
