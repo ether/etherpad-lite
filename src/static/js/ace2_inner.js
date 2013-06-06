@@ -213,8 +213,22 @@ function Ace2Inner(){
     if (!dynamicCSS) {
       return;
     }
-
     var authorSelector = getAuthorColorClassSelector(getAuthorClassName(author));
+
+    var authorStyleSet = hooks.callAll('aceSetAuthorStyle', {
+      dynamicCSS: dynamicCSS,
+      parentDynamicCSS: parentDynamicCSS,
+      info: info,
+      author: author,
+      authorSelector: authorSelector,
+    });
+
+    // Prevent default behaviour if any hook says so
+    if (_.any(authorStyleSet, function(it) { return it }))
+    {
+      return
+    }
+
     if (!info)
     {
       dynamicCSS.removeSelectorStyle(authorSelector);
