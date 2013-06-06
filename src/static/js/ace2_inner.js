@@ -208,6 +208,71 @@ function Ace2Inner(){
   };
   editorInfo.ace_getAuthorInfos= getAuthorInfos;
 
+  function setAuthorStyle(author, info)
+  {
+    if (!dynamicCSS) {
+      return;
+    }
+    var authorSelector = getAuthorColorClassSelector(getAuthorClassName(author));
+
+    var authorStyleSet = hooks.callAll('aceSetAuthorStyle', {
+      dynamicCSS: dynamicCSS,
+      parentDynamicCSS: parentDynamicCSS,
+      info: info,
+      author: author,
+      authorSelector: authorSelector,
+    });
+
+    // Prevent default behaviour if any hook says so
+    if (_.any(authorStyleSet, function(it) { return it }))
+    {
+      return
+    }
+
+    if (!info)
+    {
+      dynamicCSS.removeSelectorStyle(authorSelector);
+      parentDynamicCSS.removeSelectorStyle(authorSelector);
+    }
+    else
+    {
+      if (info.bgcolor)
+      {
+        var bgcolor = info.bgcolor;
+        if ((typeof info.fade) == "number")
+        {
+          bgcolor = fadeColor(bgcolor, info.fade);
+        }
+
+        var authorStyle = dynamicCSS.selectorStyle(authorSelector);
+        var parentAuthorStyle = parentDynamicCSS.selectorStyle(authorSelector);
+        var anchorStyle = dynamicCSS.selectorStyle(authorSelector + ' > a')
+
+        // author color
+        authorStyle.backgroundColor = bgcolor;
+        parentAuthorStyle.backgroundColor = bgcolor;
+
+        // text contrast
+        if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
+        {
+          authorStyle.color = '#ffffff';
+          parentAuthorStyle.color = '#ffffff';
+        }else{
+          authorStyle.color = null;
+          parentAuthorStyle.color = null;
+        }
+
+        // anchor text contrast
+        if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.55)
+        {
+          anchorStyle.color = colorutils.triple2css(colorutils.complementary(colorutils.css2triple(bgcolor)));
+        }else{
+          anchorStyle.color = null;
+        }
+      }
+    }
+  }
+
   function setAuthorInfo(author, info)
   {
     if ((typeof author) != "string")
@@ -217,56 +282,12 @@ function Ace2Inner(){
     if (!info)
     {
       delete authorInfos[author];
-      if (dynamicCSS)
-      {
-        dynamicCSS.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
-        parentDynamicCSS.removeSelectorStyle(getAuthorColorClassSelector(getAuthorClassName(author)));
-      }
     }
     else
     {
       authorInfos[author] = info;
-      if (info.bgcolor)
-      {
-        if (dynamicCSS)
-        {
-          var bgcolor = info.bgcolor;
-          if ((typeof info.fade) == "number")
-          {
-            bgcolor = fadeColor(bgcolor, info.fade);
-          }
-          
-          var authorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author)));
-          var parentAuthorStyle = parentDynamicCSS.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author)));
-          var anchorStyle = dynamicCSS.selectorStyle(getAuthorColorClassSelector(
-          getAuthorClassName(author))+' > a')
-          
-          // author color
-          authorStyle.backgroundColor = bgcolor;
-          parentAuthorStyle.backgroundColor = bgcolor;
-          
-          // text contrast
-          if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
-          {
-            authorStyle.color = '#ffffff';
-            parentAuthorStyle.color = '#ffffff';
-          }else{
-            authorStyle.color = null;
-            parentAuthorStyle.color = null;
-          }
-          
-          // anchor text contrast
-          if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.55)
-          {
-            anchorStyle.color = colorutils.triple2css(colorutils.complementary(colorutils.css2triple(bgcolor)));
-          }else{
-            anchorStyle.color = null;
-          }
-        }
-      }
     }
+    setAuthorStyle(author, info);
   }
 
   function getAuthorClassName(author)
