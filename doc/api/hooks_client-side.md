@@ -261,3 +261,18 @@ This hook is provided to allow whether a given line should be deliniated with mu
 Multiple authors in one line cause the creation of magic span lines. This might not suit you and
 now you can disable it and handle your own deliniation.
 The return value should be either true(disable) or false.
+
+## aceSetAuthorStyle
+Called from: src/static/js/ace2_inner.js
+
+Things in context:
+
+1. dynamicCSS - css manger for inner ace
+2. outerDynamicCSS - css manager for outer ace
+3. parentDynamicCSS - css manager for parent document
+4. info - author style info
+5. author - author info
+6. authorSelector - css selector for author span in inner ace
+
+This hook is provided to allow author highlight style to be modified.
+Registered hooks should return 1 if the plugin handles highlighting.  If no plugin returns 1, the core will use the default background-based highlighting.
