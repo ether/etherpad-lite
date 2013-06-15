@@ -6,7 +6,7 @@ var config = {
 	  host: "ondemand.saucelabs.com"
   , port: 80
   , username: process.env.SAUCE_USER
-  , accessKey: process.env.SAUCE_KEY
+  , accessKey: process.env.SAUCE_ACCESS_KEY
 }
 
 var allTestsPassed = true;
