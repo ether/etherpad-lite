@@ -42,13 +42,13 @@ var chat = (function()
         padcookie.setPref("chatAlwaysVisible", true);
         $('#chatbox').addClass("stickyChat");
         $('#chattext').css({"top":"0px"});
-        $('#editorcontainer').css({"right":"192px", "width":"auto"});
+        $('#editorcontainer').css({"right":"192px"});
         isStuck = true;
       } else { // Unstick it
         padcookie.setPref("chatAlwaysVisible", false);
         $('#chatbox').removeClass("stickyChat");
         $('#chattext').css({"top":"25px"});
-        $('#editorcontainer').css({"right":"0px", "width":"100%"});
+        $('#editorcontainer').css({"right":"0px"});
         isStuck = false;
       }
     },
