@@ -1,4 +1,9 @@
 {
+    "@metadata": {
+        "authors": [
+            "Mantak111"
+        ]
+    },
     "pad.toolbar.bold.title": "Pary\u0161kintasis (Ctrl-B)",
     "pad.toolbar.italic.title": "Pasvirasis (Ctrl-I)",
     "pad.toolbar.underline.title": "Pabraukimas (Ctrl-U)",
@@ -63,10 +68,5 @@
     "pad.impexp.importing": "Importuojama...",
     "pad.impexp.uploadFailed": "\u012ek\u0117limas nepavyko, bandykite dar kart\u0105",
     "pad.impexp.importfailed": "Importuoti nepavyko",
-    "pad.impexp.copypaste": "Pra\u0161ome nukopijuoti ir \u012fklijuoti",
-    "@metadata": {
-        "authors": [
-            "Mantak111"
-        ]
-    }
+    "pad.impexp.copypaste": "Pra\u0161ome nukopijuoti ir \u012fklijuoti"
 }

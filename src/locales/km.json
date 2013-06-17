@@ -1,4 +1,9 @@
 {
+    "@metadata": {
+        "authors": [
+            "\u179c\u17d0\u178e\u1790\u17b6\u179a\u17b7\u1791\u17d2\u1792"
+        ]
+    },
     "index.newPad": "\u1795\u17c1\u178f\u1790\u17d2\u1798\u17b8",
     "index.createOpenPad": "\u17ac\u1794\u1784\u17d2\u1780\u17be\u178f/\u1794\u17be\u1780\u1795\u17c1\u178f\u178a\u17c2\u179b\u1798\u17b6\u1793\u1788\u17d2\u1798\u17c4\u17c7\u17d6",
     "pad.toolbar.bold.title": "\u178a\u17b7\u178f (Ctrl-B)",
@@ -43,10 +48,5 @@
     "timeslider.month.december": "\u1792\u17d2\u1793\u17bc",
     "pad.userlist.guest": "\u1797\u17d2\u1789\u17c0\u179c",
     "pad.impexp.importbutton": "\u1793\u17b6\u17c6\u1785\u17bc\u179b\u17a5\u17a1\u17bc\u179c\u1793\u17c1\u17c7",
-    "pad.impexp.importing": "\u1780\u17c6\u1796\u17bb\u1784\u1793\u17b6\u17c6\u1785\u17bc\u179b\u200b...",
-    "@metadata": {
-        "authors": [
-            "\u179c\u17d0\u178e\u1790\u17b6\u179a\u17b7\u1791\u17d2\u1792"
-        ]
-    }
+    "pad.impexp.importing": "\u1780\u17c6\u1796\u17bb\u1784\u1793\u17b6\u17c6\u1785\u17bc\u179b\u200b..."
 }

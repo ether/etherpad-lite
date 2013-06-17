@@ -1,4 +1,9 @@
 {
+    "@metadata": {
+        "authors": [
+            "EileenSanda"
+        ]
+    },
     "index.newPad": "N\u00fdggjur teldil",
     "pad.toolbar.bold.title": "Vi\u00f0 feitum (Ctrl-B)",
     "pad.toolbar.italic.title": "Skr\u00e1skrift (Ctrl-I)",
@@ -88,10 +93,5 @@
     "pad.userlist.unnamed": "ikki-navngivi\u00f0",
     "pad.userlist.guest": "Gestur",
     "pad.userlist.deny": "Nokta",
-    "pad.userlist.approve": "G\u00f3\u00f0kenn",
-    "@metadata": {
-        "authors": [
-            "EileenSanda"
-        ]
-    }
+    "pad.userlist.approve": "G\u00f3\u00f0kenn"
 }
