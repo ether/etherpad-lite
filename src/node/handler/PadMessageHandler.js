@@ -48,6 +48,7 @@ var channels = require("channels");
  *   author = the author name of this session
  */
 var sessioninfos = {};
+exports.sessioninfos = sessioninfos;
 
 /**
  * A changeset queue per pad that is processed by handleUserChanges()
