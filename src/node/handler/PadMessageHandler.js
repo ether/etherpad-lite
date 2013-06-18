@@ -230,22 +230,30 @@ exports.handleMessage = function(client, message)
         // FIXME: Call our "sessions" "connections".
         // FIXME: Use a hook instead
         // FIXME: Allow to override readwrite access with readonly
-        var auth = sessioninfos[client.id].auth;
-        securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, function(err, statusObject)
-        {
-          if(ERR(err, callback)) return;
 
-          //access was granted
-          if(statusObject.accessStatus == "grant")
+        // FIXME: A message might arrive but wont have an auth object, this is obviously bad so we should deny it
+        // Simulate using the load testing tool
+        if(!sessioninfos[client.id].auth){
+          console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
+          callback();
+        }else{
+          var auth = sessioninfos[client.id].auth;
+          securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, function(err, statusObject)
           {
-            callback();
-          }
-          //no access, send the client a message that tell him why
-          else
-          {
-            client.json.send({accessStatus: statusObject.accessStatus})
-          }
-        });
+            if(ERR(err, callback)) return;
+ 
+            //access was granted
+            if(statusObject.accessStatus == "grant")
+            {
+              callback();
+            }
+            //no access, send the client a message that tell him why
+            else
+            {
+              client.json.send({accessStatus: statusObject.accessStatus})
+            }
+          });
+        }
       },
       finalHandler
     ]);
@@ -684,7 +692,10 @@ function handleUserChanges(data, cb)
         pad.appendRevision(nlChangeset);
       }
         
-      exports.updatePadClients(pad, callback);
+      exports.updatePadClients(pad, function(er) {
+        ERR(er)
+      });
+      callback();
     }
   ], function(err)
   {
