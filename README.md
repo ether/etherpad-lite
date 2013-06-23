@@ -81,7 +81,7 @@ Documentation can be found in `docs/`.
 # Development
 
 ## Things you should know
-Read this [git guide](http://learn.github.com/p/intro.html) and watch this [video on getting started with Etherpad Development](http://youtu.be/67-Q26YH97E).
+Read this [git guide](http://learn.github.com/p/index.html) and watch this [video on getting started with Etherpad Development](http://youtu.be/67-Q26YH97E).
 
 If you're new to node.js, start with Ryan Dahl's [Introduction to Node.js](http://youtu.be/jo_B4LTHi3I).
 
