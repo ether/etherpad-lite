@@ -3,6 +3,7 @@
         "authors": [
             "Dimension",
             "Hydra",
+            "Shangkuanlc",
             "Yfdyh000",
             "\u4e4c\u62c9\u8de8\u6c2a",
             "\u71c3\u7389"
@@ -37,6 +38,7 @@
     "pad.settings.stickychat": "\u603b\u662f\u5728\u5c4f\u5e55\u4e0a\u663e\u793a\u804a\u5929",
     "pad.settings.colorcheck": "\u4f5c\u8005\u989c\u8272",
     "pad.settings.linenocheck": "\u884c\u53f7",
+    "pad.settings.rtlcheck": "\u4ece\u53f3\u5230\u5de6\u7684\u8bfb\u53d6\u5185\u5bb9\u5417\uff1f",
     "pad.settings.fontType": "\u5b57\u4f53\u7c7b\u578b\uff1a",
     "pad.settings.fontType.normal": "\u6b63\u5e38",
     "pad.settings.fontType.monospaced": "\u7b49\u5bbd\u5b57\u4f53",
@@ -85,6 +87,7 @@
     "timeslider.exportCurrent": "\u5bfc\u51fa\u76ee\u524d\u7248\u672c\u4e3a\uff1a",
     "timeslider.version": "\u7b2c {{version}} \u7248\u672c",
     "timeslider.saved": "\u5728{{year}}\u5e74{{month}}{{day}}\u65e5\u4fdd\u5b58",
+    "timeslider.dateformat": "{{year}} \u5e74 {{month}} \u6708 {{day}} \u65e5  {{hours}}\u65f6:{{minutes}}\u5206:{{seconds}}\u79d2",
     "timeslider.month.january": "\u4e00\u6708",
     "timeslider.month.february": "\u4e8c\u6708",
     "timeslider.month.march": "\u4e09\u6708",

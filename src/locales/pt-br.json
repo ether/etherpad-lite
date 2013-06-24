@@ -2,6 +2,8 @@
     "@metadata": {
         "authors": [
             "Gusta",
+            "Luckas",
+            "TheGabrielZaum",
             "Tuliouel"
         ]
     },
@@ -22,7 +24,7 @@
     "pad.toolbar.timeslider.title": "Linha do tempo",
     "pad.toolbar.savedRevision.title": "Salvar revis\u00e3o",
     "pad.toolbar.settings.title": "Configura\u00e7\u00f5es",
-    "pad.toolbar.embed.title": "Compartilhar e mencionar esta nota",
+    "pad.toolbar.embed.title": "Compartilhar e incorporar esta nota",
     "pad.toolbar.showusers.title": "Mostrar os usuarios nesta Nota",
     "pad.colorpicker.save": "Salvar",
     "pad.colorpicker.cancel": "Cancelar",
@@ -60,7 +62,7 @@
     "pad.modals.userdup.advice": "Reconectar para usar esta janela.",
     "pad.modals.unauth": "N\u00e3o autorizado",
     "pad.modals.unauth.explanation": "Suas permiss\u00f5es foram mudadas enquanto visualizava esta p\u00e1gina. Tente reconectar.",
-    "pad.modals.looping": "Reconectado.",
+    "pad.modals.looping": "Desconectado.",
     "pad.modals.looping.explanation": "H\u00e1 problemas de comunica\u00e7\u00e3o com o servidor de sincroniza\u00e7\u00e3o.",
     "pad.modals.looping.cause": "Talvez voc\u00ea tenha conectado por um firewall ou proxy incompat\u00edvel.",
     "pad.modals.initsocketfail": "Servidor \u00e9 inalcan\u00e7\u00e1vel.",

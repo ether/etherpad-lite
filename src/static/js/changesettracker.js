@@ -57,6 +57,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
         {
           changeCallback();
         }
+        catch(pseudoError) {}
         finally
         {
           changeCallbackTimeout = null;
@@ -161,21 +162,32 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
       }
       else
       {
+    	  
+        // add forEach function to Array.prototype for IE8      
+        if (!('forEach' in Array.prototype)) {
+          Array.prototype.forEach= function(action, that /*opt*/) {
+            for (var i= 0, n= this.length; i<n; i++)
+              if (i in this)
+                action.call(that, this[i], i, this);
+          };
+        }
+    	  
         // Get my authorID
         var authorId = parent.parent.pad.myUserInfo.userId;
-        // Rewrite apool authors with my author information
 
-        // We need to replace all new author attribs with thisSession.author, in case someone copy/pasted or otherwise inserted other peoples changes
+        // Sanitize authorship
+        // We need to replace all author attribs with thisSession.author, in case they copy/pasted or otherwise inserted other peoples changes
         if(apool.numToAttrib){
           for (var attr in apool.numToAttrib){
-            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) authorAttr = attr
+            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) authorAttr = Number(attr).toString(36)
           }
-          
+
           // Replace all added 'author' attribs with the value of the current user
           var cs = Changeset.unpack(userChangeset)
             , iterator = Changeset.opIterator(cs.ops)
             , op
             , assem = Changeset.mergingOpAssembler();
+
           while(iterator.hasNext()) {
             op = iterator.next()
             if(op.opcode == '+') {
@@ -183,13 +195,13 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 
               op.attribs.split('*').forEach(function(attrNum) {
                 if(!attrNum) return
-                attr = apool.getAttrib(attrNum)
+                var attr = apool.getAttrib(parseInt(attrNum, 36))
                 if(!attr) return
-                if('author' == attr[0] && !~newAttrs.indexOf(authorAttr))  {
+                if('author' == attr[0])  {
+                  // replace that author with the current one
                   newAttrs += '*'+authorAttr; 
-                  // console.log('replacing author attribute ', attrNum, '(', attr[1], ') with', authorAttr) 
                 }
-                else newAttrs += '*'+attrNum
+                else newAttrs += '*'+attrNum // overtake all other attribs as is
               })
               op.attribs = newAttrs
             }

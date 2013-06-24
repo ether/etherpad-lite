@@ -260,7 +260,7 @@ linestylefilter.getRegexpFilter = function(regExp, tag)
 
 linestylefilter.REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;
 linestylefilter.REGEX_URLCHAR = new RegExp('(' + /[-:@a-zA-Z0-9_.,~%+\/\\?=&#!;()$]/.source + '|' + linestylefilter.REGEX_WORDCHAR.source + ')');
-linestylefilter.REGEX_URL = new RegExp(/(?:(?:https?|s?ftp|ftps|file|smb|afp|nfs|(x-)?man|gopher|txmt):\/\/|mailto:|www\.)/.source + linestylefilter.REGEX_URLCHAR.source + '*(?![:.,;])' + linestylefilter.REGEX_URLCHAR.source, 'g');
+linestylefilter.REGEX_URL = new RegExp(/(?:(?:https?|s?ftp|ftps|file|nfs):\/\/|mailto:|www\.)/.source + linestylefilter.REGEX_URLCHAR.source + '*(?![:.,;])' + linestylefilter.REGEX_URLCHAR.source, 'g');
 linestylefilter.getURLFilter = linestylefilter.getRegexpFilter(
 linestylefilter.REGEX_URL, 'url');
 

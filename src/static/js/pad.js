@@ -463,7 +463,7 @@ var pad = {
     {
       try
       {
-        doc.execCommand("BackgroundImageCache", false, true);
+        document.execCommand("BackgroundImageCache", false, true);
       }
       catch (e)
       {}
