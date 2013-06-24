@@ -1,3 +1,16 @@
+# 1.2.11
+ * NEW: New Hook for outer_ace dynamic css manager and author style hook
+ * NEW: Bump log4js for improved logging
+ * Fix: Remove URL schemes which don't have RFC standard
+ * Fix: Fix safeRun subsequent restarts issue
+ * Fix: Allow safeRun to pass arguements to run.sh
+ * Fix: Include script for more efficient import
+ * Fix: Fix sysv comptibile script
+ * Fix: Fix client side changeset spamming
+ * Fix: Don't crash on no-auth
+ * Fix: Fix some IE8 errors
+ * Fix: Fix authorship sanitation
+
 # 1.2.10
  * NEW: Broadcast slider is exposed in timeslider so plugins can interact with it
  * Fix: IE issue where pads wouldn't load due to missing console from i18n
