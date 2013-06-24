@@ -168,9 +168,9 @@ a img {
 }
 #editorcontainer {
   position: absolute;
-  width: 100%;
   top: 37px; /* + 1px border */
   left: 0px;
+  right: 0px;
   bottom: 0px;
   z-index: 1;
 }

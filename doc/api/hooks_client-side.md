@@ -126,6 +126,7 @@ Called from: src/static/js/pad.js
 Things in context:
 
 1. ace - the ace object that is applied to this editor.
+2. pad - the pad object of the current pad.
 
 There doesn't appear to be any example available of this particular hook being used, but it gets fired after the editor is all set up.
 
