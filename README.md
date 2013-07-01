@@ -15,7 +15,7 @@ There's also a full-featured plugin framework, allowing you to easily add your o
 
 Finally, Etherpad comes with translations into most languages!  Users are automatically delivered the correct language for their local settings.
 
-**Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live**
+**Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live.  Hosted by [Joyent](http://joyent.com)**
 
 Also, check out the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**, really!
 
