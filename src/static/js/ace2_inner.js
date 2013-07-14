@@ -3855,7 +3855,7 @@ function Ace2Inner(){
       }
       else if (type == "keyup")
       {
-        var wait = 200;
+        var wait = 0;
         idleWorkTimer.atLeast(wait);
         idleWorkTimer.atMost(wait);
       }
@@ -3875,7 +3875,7 @@ function Ace2Inner(){
 
       if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!inInternationalComposition))
       {
-        if (type != "keyup" || !incorpIfQuick())
+        if (type != "keyup")
         {
           observeChangesAroundSelection();
         }
