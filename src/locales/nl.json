@@ -47,7 +47,7 @@
     "pad.importExport.exporthtml": "HTML",
     "pad.importExport.exportplain": "Tekst zonder opmaak",
     "pad.importExport.exportword": "Microsoft Word",
-    "pad.importExport.exportpdf": "PDF",
+    "pad.importExport.exportpdf": "Pdf",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
     "pad.importExport.abiword.innerHTML": "U kunt alleen importeren vanuit platte tekst of een HTML-opmaak. \u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003EInstalleer abiword\u003C/a\u003E om meer geavanceerde importmogelijkheden te krijgen.",

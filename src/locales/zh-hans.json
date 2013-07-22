@@ -3,6 +3,7 @@
         "authors": [
             "Dimension",
             "Hydra",
+            "Liuxinyu970226",
             "Shangkuanlc",
             "Yfdyh000",
             "\u4e4c\u62c9\u8de8\u6c2a",
@@ -10,6 +11,7 @@
         ]
     },
     "index.newPad": "\u65b0\u8bb0\u4e8b\u672c",
+    "index.createOpenPad": "\u6216\u8005\u521b\u5efa/\u6253\u5f00\u5e26\u540d\u5b57\u7684\u8bb0\u4e8b\u672c\uff1a",
     "pad.toolbar.bold.title": "\u7c97\u4f53\uff08Ctrl-B\uff09",
     "pad.toolbar.italic.title": "\u659c\u4f53 (Ctrl-I)",
     "pad.toolbar.underline.title": "\u5e95\u7ebf\uff08Ctrl-U\uff09",
@@ -80,6 +82,7 @@
     "pad.chat": "\u804a\u5929",
     "pad.chat.title": "\u6253\u5f00\u6b64\u8bb0\u4e8b\u7c3f\u7684\u804a\u5929\u3002",
     "pad.chat.loadmessages": "\u52a0\u8f7d\u66f4\u591a\u4fe1\u606f",
+    "timeslider.pageTitle": "{{appTitle}} \u65f6\u95f4\u6ed1\u5757",
     "timeslider.toolbar.returnbutton": "\u8fd4\u56de\u8bb0\u4e8b\u672c",
     "timeslider.toolbar.authors": "\u4f5c\u8005\uff1a",
     "timeslider.toolbar.authorsList": "\u6ca1\u6709\u4f5c\u8005",

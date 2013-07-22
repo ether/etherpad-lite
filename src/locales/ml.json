@@ -1,6 +1,7 @@
 {
     "@metadata": {
         "authors": [
+            "Akhilan",
             "Hrishikesh.kb",
             "Praveenp",
             "Santhosh.thottingal"
@@ -8,7 +9,7 @@
     },
     "index.newPad": "\u0d2a\u0d41\u0d24\u0d3f\u0d2f \u0d2a\u0d3e\u0d21\u0d4d",
     "index.createOpenPad": "\u0d05\u0d32\u0d4d\u0d32\u0d46\u0d19\u0d4d\u0d15\u0d3f\u0d7d \u0d2a\u0d47\u0d30\u0d41\u0d2a\u0d2f\u0d4b\u0d17\u0d3f\u0d1a\u0d4d\u0d1a\u0d4d \u0d2a\u0d3e\u0d21\u0d4d \u0d38\u0d43\u0d37\u0d4d\u0d1f\u0d3f\u0d15\u0d4d\u0d15\u0d41\u0d15/\u0d24\u0d41\u0d31\u0d15\u0d4d\u0d15\u0d41\u0d15:",
-    "pad.toolbar.bold.title": "\u0d15\u0d1f\u0d4d\u0d1f\u0d3f\u0d15\u0d42\u0d1f\u0d4d\u0d1f\u0d3f\u0d2f\u0d46\u0d34\u0d41\u0d24\u0d41\u0d15 (Ctrl-B)",
+    "pad.toolbar.bold.title": "\u0d15\u0d1f\u0d41\u0d2a\u0d4d\u0d2a\u0d24\u0d4d\u0d24\u0d3f\u0d7d (Ctrl-B)",
     "pad.toolbar.italic.title": "\u0d1a\u0d46\u0d30\u0d3f\u0d1a\u0d4d\u0d1a\u0d46\u0d34\u0d41\u0d24\u0d41\u0d15 (Ctrl-I)",
     "pad.toolbar.underline.title": "\u0d05\u0d1f\u0d3f\u0d35\u0d30\u0d2f\u0d3f\u0d1f\u0d41\u0d15 (Ctrl-U)",
     "pad.toolbar.strikethrough.title": "\u0d35\u0d46\u0d1f\u0d4d\u0d1f\u0d41\u0d15",

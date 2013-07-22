@@ -1,7 +1,8 @@
 {
     "@metadata": {
         "authors": [
-            "Admresdeserv."
+            "Admresdeserv.",
+            "Jmg.cmdi"
         ]
     },
     "pad.toolbar.bold.title": "Treknrakst\u0101 (CTRL + B)",
@@ -16,19 +17,28 @@
     "pad.toolbar.redo.title": "Atcelt atsauk\u0161anu (CTRL + Y)",
     "pad.toolbar.clearAuthorship.title": "Not\u012brit autoru kr\u0101sas",
     "pad.toolbar.import_export.title": "Import\u0113\u0161anas/eksport\u0113\u0161anas no un uz citu failu form\u0101tiem",
+    "pad.toolbar.savedRevision.title": "Saglab\u0101t p\u0101rskat\u012b\u0161anu",
     "pad.toolbar.settings.title": "Iestat\u012bjumi",
+    "pad.toolbar.embed.title": "Koplietot un iegut \u0161o pad",
+    "pad.toolbar.showusers.title": "Par\u0101d\u012bt \u0161o padu lietot\u0101jus",
     "pad.colorpicker.save": "Saglab\u0101t",
     "pad.colorpicker.cancel": "Atcelt",
     "pad.loading": "Iel\u0101d\u0113\u2026",
     "pad.passwordRequired": "Ir nepiecie\u0161ama parole, lai piek\u013c\u016btu \u0161im pad",
     "pad.permissionDenied": "Atvaino, bet tev nav pieejas \u0161im pad.",
     "pad.wrongPassword": "J\u016bsu parole bija nepareiza",
+    "pad.settings.padSettings": "Pad Iestatijumi",
+    "pad.settings.myView": "Mans viedoklis",
+    "pad.settings.stickychat": "\u010cats vienm\u0113r ekr\u0101n\u0101",
+    "pad.settings.colorcheck": "Autor\u012bbas kr\u0101sas",
     "pad.settings.linenocheck": "Rindi\u0146u numurus",
     "pad.settings.rtlcheck": "Las\u012bt saturu no lab\u0101s puses uz kreiso?",
     "pad.settings.fontType": "Fonta tips:",
     "pad.settings.fontType.normal": "Norm\u0101ls",
     "pad.settings.globalView": "Glob\u0101lu skat\u012bjumu",
     "pad.settings.language": "Valoda:",
+    "pad.importExport.import_export": "Importet/Eksportet",
+    "pad.importExport.import": "Aug\u0161upiel\u0101d\u0113t jebkuru teksta failu vai dokumentu",
     "pad.importExport.importSuccessful": "Veiksm\u012bgi!",
     "pad.importExport.exporthtml": "HTML",
     "pad.importExport.exportplain": "Vienk\u0101r\u0161a teksta",
