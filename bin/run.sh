@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
