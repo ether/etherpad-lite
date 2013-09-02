@@ -1,6 +1,7 @@
 {
     "@metadata": {
         "authors": [
+            "Minh Nguyen",
             "Tuankiet65"
         ]
     },
@@ -9,7 +10,7 @@
     "pad.toolbar.bold.title": "In \u0111\u1eadm (Ctrl-B)",
     "pad.toolbar.italic.title": "In nghi\u00eang (Ctrl-I)",
     "pad.toolbar.underline.title": "G\u1ea1ch ch\u00e2n (Ctrl-U)",
-    "pad.toolbar.strikethrough.title": "G\u1ea1ch b\u1ecf",
+    "pad.toolbar.strikethrough.title": "G\u1ea1ch ngang",
     "pad.toolbar.ol.title": "Danh s\u00e1ch C\u00f3 \u0110\u00e1nh s\u1ed1",
     "pad.toolbar.ul.title": "Danh s\u00e1ch Kh\u00f4ng \u0110\u00e1nh s\u1ed1",
     "pad.toolbar.indent.title": "T\u0103ng l\u1ec1",

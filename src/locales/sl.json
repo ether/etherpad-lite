@@ -1,6 +1,7 @@
 {
     "@metadata": {
         "authors": [
+            "Dbc334",
             "Mateju"
         ]
     },
@@ -21,7 +22,7 @@
     "pad.toolbar.timeslider.title": "Drsnik zgodovine",
     "pad.toolbar.savedRevision.title": "Shrani predelavo",
     "pad.toolbar.settings.title": "Nastavitve",
-    "pad.toolbar.embed.title": "Vstavi dokument",
+    "pad.toolbar.embed.title": "Deli in vklju\u010di dokument",
     "pad.toolbar.showusers.title": "Poka\u017ei uporabnike dokumenta",
     "pad.colorpicker.save": "Shrani",
     "pad.colorpicker.cancel": "Prekli\u010di",
@@ -101,7 +102,7 @@
     "timeslider.month.october": "Oktober",
     "timeslider.month.november": "November",
     "timeslider.month.december": "December",
-    "timeslider.unnamedauthors": "{{num}} neimenovani avtorji",
+    "timeslider.unnamedauthors": "{{num}} {[plural(num) one: neimenovan avtor, plural(num) two: neimenovana avtorja, plural(num) few: neimenovani avtorji, other: neimenovanih avtorjev ]}",
     "pad.savedrevs.marked": "Ta predelava je ozna\u010dena kot shranjena predelava.",
     "pad.userlist.entername": "Vpi\u0161ite ime",
     "pad.userlist.unnamed": "neimenovana oseba",

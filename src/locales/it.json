@@ -104,7 +104,7 @@
     "timeslider.month.october": "ottobre",
     "timeslider.month.november": "novembre",
     "timeslider.month.december": "dicembre",
-    "timeslider.unnamedauthors": "{{num}} autori senza nome",
+    "timeslider.unnamedauthors": "{{num}} {[plural(num) one: autore, other: autori ]} senza nome",
     "pad.savedrevs.marked": "Questa revisione \u00e8 ora contrassegnata come una versione salvata",
     "pad.userlist.entername": "Inserisci il tuo nome",
     "pad.userlist.unnamed": "senza nome",

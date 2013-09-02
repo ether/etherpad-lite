@@ -2,7 +2,8 @@
     "@metadata": {
         "authors": [
             "Admresdeserv.",
-            "Jmg.cmdi"
+            "Jmg.cmdi",
+            "Papuass"
         ]
     },
     "pad.toolbar.bold.title": "Treknrakst\u0101 (CTRL + B)",
@@ -60,5 +61,26 @@
     "pad.modals.disconnected.cause": "Iesp\u0113jams, ka serveris nav pieejams. L\u016bgums pazi\u0146ot mums, ja tas turpina notikt.",
     "pad.share": "Koplietot \u0161o pad",
     "pad.share.readonly": "Tikai las\u0101ms",
-    "pad.share.link": "Saite"
+    "pad.share.link": "Saite",
+    "timeslider.toolbar.authors": "Autori:",
+    "timeslider.toolbar.authorsList": "Nav autoru",
+    "timeslider.toolbar.exportlink.title": "Eksport\u0113t",
+    "timeslider.month.january": "Janv\u0101ris",
+    "timeslider.month.february": "Febru\u0101ris",
+    "timeslider.month.march": "Marts",
+    "timeslider.month.april": "Apr\u012blis",
+    "timeslider.month.may": "Maijs",
+    "timeslider.month.june": "J\u016bnijs",
+    "timeslider.month.july": "J\u016blijs",
+    "timeslider.month.august": "Augusts",
+    "timeslider.month.september": "Septembris",
+    "timeslider.month.october": "Oktobris",
+    "timeslider.month.november": "Novembris",
+    "timeslider.month.december": "Decembris",
+    "pad.userlist.entername": "Ievadiet savu v\u0101rdu",
+    "pad.userlist.unnamed": "nenosaukts",
+    "pad.userlist.guest": "Viesis",
+    "pad.impexp.importbutton": "Import\u0113t t\u016bl\u012bt",
+    "pad.impexp.importing": "Import\u0113...",
+    "pad.impexp.importfailed": "Imports neizdev\u0101s"
 }

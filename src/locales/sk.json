@@ -101,7 +101,7 @@
     "timeslider.month.october": "okt\u00f3bra",
     "timeslider.month.november": "novembra",
     "timeslider.month.december": "decembra",
-    "timeslider.unnamedauthors": "{{num}} nemenovan\u00fdch autorov",
+    "timeslider.unnamedauthors": "{{num}} {[ plural(num) one: nemenovan\u00fd autor, few: nemenovan\u00ed autori, other: nemenovan\u00fdch autorov ]}",
     "pad.savedrevs.marked": "T\u00e1to rev\u00edzia bola ozna\u010den\u00e1 ako ulo\u017een\u00e1",
     "pad.userlist.entername": "Zadajte svoje meno",
     "pad.userlist.unnamed": "nemenovan\u00fd",
