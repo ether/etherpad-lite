@@ -1,8 +1,9 @@
 {
     "@metadata": {
-        "authors": [
-            "Robby"
-        ]
+        "authors": {
+            "0": "Robby",
+            "2": "Soued031"
+        }
     },
     "index.newPad": "Neie Pad",
     "pad.toolbar.ol.title": "Numer\u00e9iert L\u00ebscht",
@@ -14,7 +15,7 @@
     "pad.colorpicker.save": "Sp\u00e4icheren",
     "pad.colorpicker.cancel": "Ofbriechen",
     "pad.loading": "Lueden...",
-    "pad.wrongPassword": "\u00c4rt Passwuert ass falsch",
+    "pad.wrongPassword": "\u00c4ert Passwuert ass falsch",
     "pad.settings.fontType.normal": "Normal",
     "pad.settings.language": "Sprooch:",
     "pad.importExport.importSuccessful": "Erfollegr\u00e4ich",

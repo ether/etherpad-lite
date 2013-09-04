@@ -633,6 +633,9 @@ var paduserlist = (function()
               otherUsersInfo.splice(newExistingIndex, 1);
               otherUsersData.splice(newExistingIndex, 1);
               rowManager.removeRow(newExistingIndex);
+              hooks.callAll('userLeave', {
+                userInfo: info
+              });
               updateInviteNotice();
             }
           }

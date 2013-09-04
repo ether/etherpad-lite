@@ -32,6 +32,7 @@ if [ -z "${LOG}" ]; then
   exit 1
 fi
 
+shift
 while [ 1 ]
 do
   #try to touch the file if it doesn't exist
@@ -46,7 +47,6 @@ do
   fi
 
   #start the application
-  shift
   bin/run.sh $@ >>${LOG} 2>>${LOG}
   
   #Send email

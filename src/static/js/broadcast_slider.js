@@ -198,11 +198,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       });
       if (numAnonymous > 0)
       {
-        var anonymousAuthorString;
-        if(numAnonymous == 1)
-          anonymousAuthorString = html10n.get("timeslider.unnamedauthor", { num: numAnonymous });
-        else
-          anonymousAuthorString = html10n.get("timeslider.unnamedauthors", { num: numAnonymous });
+        var anonymousAuthorString = html10n.get("timeslider.unnamedauthors", { num: numAnonymous });
         
         if (numNamed !== 0){
           authorsList.append(' + ' + anonymousAuthorString);
