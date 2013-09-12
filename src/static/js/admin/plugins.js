@@ -22,22 +22,29 @@ $(document).ready(function () {
     search.searchTerm = searchTerm;
     socket.emit("search", {searchTerm: searchTerm, offset:search.offset, limit: limit, sortBy: search.sortBy, sortDir: search.sortDir});
     search.offset += limit;
+    
     $('#search-progress').show()
+    search.messages.show('fetching')
+    storeScrollPosition()
+    search.searching = true
   }
+  search.searching = false;
   search.offset = 0;
-  search.limit = 12;
+  search.limit = 25;
   search.results = [];
   search.sortBy = 'name';
   search.sortDir = /*DESC?*/true;
   search.end = true;// have we received all results already?
   search.messages = {
     show: function(msg) {
-      $('.search-results .messages').show()
+      //$('.search-results .messages').show()
       $('.search-results .messages .'+msg+'').show()
+      $('.search-results .messages .'+msg+' *').show()
     },
     hide: function(msg) {
-      $('.search-results .messages').hide()
+      //$('.search-results .messages').hide()
       $('.search-results .messages .'+msg+'').hide()
+      $('.search-results .messages .'+msg+' *').hide()
     }
   }
 
@@ -97,13 +104,25 @@ $(document).ready(function () {
   }
 
   // Infinite scroll
+  var scrollPosition
+  function storeScrollPosition() {
+    scrollPosition = $(window).scrollTop()
+  }
+  function restoreScrollPosition() {
+    setTimeout(function() {
+      $(window).scrollTop(scrollPosition)
+    }, 0)
+  }
+  
   $(window).scroll(checkInfiniteScroll)
   function checkInfiniteScroll() {
-    if(search.end) return;// don't keep requesting if there are no more results
-    try{
-      var top = $('.search-results .results > tr:last').offset().top
-      if($(window).scrollTop()+$(window).height() > top) search(search.searchTerm)
-    }catch(e){}
+    if(search.end || search.searching) return;// don't keep requesting if there are no more results
+    setTimeout(function() {
+      try{
+        var top = $('.results>tr:last').offset().top
+        if($(window).scrollTop()+$(window).height() > top) search(search.searchTerm)
+      }catch(e){}
+    }, 1)
   }
 
   function updateHandlers() {
@@ -181,8 +200,11 @@ $(document).ready(function () {
     }else {
       search.messages.show('nothing-found')
     }
+    search.messages.hide('fetching')
     $('#search-progress').hide()
+    restoreScrollPosition()
     checkInfiniteScroll()
+    search.searching = false
   });
 
   socket.on('results:installed', function (data) {
