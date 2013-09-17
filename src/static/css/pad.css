@@ -746,8 +746,9 @@ input[type=checkbox] {
   float: right
 }
 .popup {
-  font-size: 14px;
-  width: 450px;
+  font-size: 12px;
+  width: 80%;
+  max-width: 450px;
   padding: 10px;
   border-radius: 0 0 6px 6px;
   border: 1px solid #ccc;
