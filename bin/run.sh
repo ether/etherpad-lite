@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
@@ -11,7 +11,7 @@ fi
 ignoreRoot=0
 for ARG in $*
 do
-  if [ $ARG == '--root' ]; then
+  if [ "$ARG" = "--root" ]; then
     ignoreRoot=1
   fi
 done
