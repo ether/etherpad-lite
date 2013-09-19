@@ -215,24 +215,31 @@ exports.createGroupIfNotExistsFor = function(groupMapper, callback)
   {
      if(ERR(err, callback)) return;
      
+     // there is a group for this mapper
+     if(groupID) {
+       exports.doesGroupExist(groupID, function(err, exists) {
+         if(ERR(err, callback)) return;
+         if(exists) return callback(null, {groupID: groupID});
+         
+         // hah, the returned group doesn't exist, let's create one
+         createGroupForMapper(callback)
+       })
+     }
      //there is no group for this mapper, let's create a group
-     if(groupID == null)
-     {
+     else {
+       createGroupForMapper(callback)
+     }
+     
+     function createGroupForMapper(cb) {
        exports.createGroup(function(err, responseObj)
        {
-         if(ERR(err, callback)) return;
+         if(ERR(err, cb)) return;
          
          //create the mapper entry for this group
          db.set("mapper2group:"+groupMapper, responseObj.groupID);
          
-         callback(null, responseObj);
+         cb(null, responseObj);
        });
-     }
-     //there is a group for this mapper, let's return it
-     else
-     {
-       if(ERR(err, callback)) return;
-       callback(null, {groupID: groupID});
      }
   });
 }
