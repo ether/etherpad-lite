@@ -195,6 +195,8 @@ var version =
   , "setText"                   : ["padID", "text"]
   , "getHTML"                   : ["padID", "rev"]
   , "setHTML"                   : ["padID", "html"]
+  , "getJSON"                   : ["padID", "rev"]
+  , "setJSON"                   : ["padID", "json"]
   , "getRevisionsCount"         : ["padID"]
   , "getLastEdited"             : ["padID"]
   , "deletePad"                 : ["padID"]

@@ -29,6 +29,8 @@ var sessionManager = require("./SessionManager");
 var async = require("async");
 var exportHtml = require("../utils/ExportHtml");
 var importHtml = require("../utils/ImportHtml");
+var exportJSON = require("../utils/ExportJSON");
+var importJSON = require("../utils/ImportJSON");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
 
@@ -394,6 +396,90 @@ exports.setHTML = function(padID, html, callback)
   });
 }
 
+/**
+getJSON(padID, [rev]) returns the pad in JSON
+*/
+exports.getJSON = function(padID, rev, callback)
+{
+  if(typeof rev == "function")
+  {
+    callback = rev;
+    rev = undefined; 
+  }
+
+  if (rev !== undefined && typeof rev != "number")
+  {
+    if (!isNaN(parseInt(rev)))
+    {
+      rev = parseInt(rev);
+    }
+    else
+    {
+      callback(new customError("rev is not a number","apierror"));
+      return;
+    }
+  }
+
+  if(rev !== undefined && rev < 0)
+  {
+     callback(new customError("rev is a negative number","apierror"));
+     return;
+  }
+
+  if(rev !== undefined && !is_int(rev))
+  {
+    callback(new customError("rev is a float value","apierror"));
+    return;
+  }
+
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    //the client asked for a special revision
+    if(rev !== undefined)
+    {
+      //check if this is a valid revision
+      if(rev > pad.getHeadRevisionNumber())
+      {
+        callback(new customError("rev is higher than the head revision of the pad","apierror"));
+        return;
+      }
+     
+      //get the html of this revision 
+      exportJSON.getPadJSON(pad, rev, function(err, json)
+      {
+          if(ERR(err, callback)) return;
+          callback(null, json);
+      });
+    }
+    //the client wants the latest text, lets return it to him
+    else
+    {
+      exportJSON.getPadJSON(pad, undefined, function (err, json)
+      {
+        if(ERR(err, callback)) return;
+          
+        callback(null, json);
+      });
+    }
+  });
+}
+
+exports.setJSON = function(padID, json, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    importJSON.setPadJSON(pad, JSON.parse(json));
+
+    //update the clients on the pad
+    padMessageHandler.updatePadClients(pad, callback);
+
+  });
+}
 /******************/
 /**CHAT FUNCTIONS */
 /******************/

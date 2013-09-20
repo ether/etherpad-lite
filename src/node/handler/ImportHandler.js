@@ -28,7 +28,8 @@ var ERR = require("async-stacktrace")
   , settings = require('../utils/Settings')
   , formidable = require('formidable')
   , os = require("os")
-  , importHtml = require("../utils/ImportHtml");
+  , importHtml = require("../utils/ImportHtml")
+  , importJSON = require("../utils/ImportJSON");
 
 //load abiword only if its enabled
 if(settings.abiword != null)
@@ -48,7 +49,9 @@ exports.doImport = function(req, res, padId)
   
   var srcFile, destFile
     , pad
-    , text;
+    , text
+    , fileEnding;
+
   
   async.series([
     //save the uploaded file to /tmp
@@ -72,11 +75,14 @@ exports.doImport = function(req, res, padId)
       });
     },
     
+    
+
     //ensure this is a file ending we know, else we change the file ending to .txt
     //this allows us to accept source code files like .c or .java
     function(callback) {
-      var fileEnding = path.extname(srcFile).toLowerCase()
-        , knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm"]
+      fileEnding = path.extname(srcFile).toLowerCase();
+
+      var knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm", ".json"]
         , fileEndingKnown = (knownFileEndings.indexOf(fileEnding) > -1);
       
       //if the file ending is known, continue as normal
@@ -95,9 +101,12 @@ exports.doImport = function(req, res, padId)
     //convert file to html
     function(callback) {
       var randNum = Math.floor(Math.random()*0xFFFFFFFF);
-      destFile = path.join(tmpDirectory, "eplite_import_" + randNum + ".htm");
+      destFile = path.join(tmpDirectory, "eplite_import_" + randNum + fileEnding);
 
-      if (abiword) {
+      // check if this format is supported by AbiWord
+      var isAbiWordSupported = (['json'].indexOf(fileEnding) == -1);
+
+      if (abiword && isAbiWordSupported) {
         abiword.convertFile(srcFile, destFile, "htm", function(err) {
           //catch convert errors
           if(err) {
@@ -167,6 +176,8 @@ exports.doImport = function(req, res, padId)
       var fileEnding = path.extname(srcFile).toLowerCase();
       if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
         importHtml.setPadHTML(pad, text);
+      } else if (fileEnding == ".json") { 
+        importJSON.setPadJSON(pad, JSON.parse(text));
       } else {
         pad.setText(text);
       }
