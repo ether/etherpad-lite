@@ -748,7 +748,7 @@ input[type=checkbox] {
 .popup {
   font-size: 12px;
   width: 80%;
-  max-width: 450px;
+  max-width: 500px;
   padding: 10px;
   border-radius: 0 0 6px 6px;
   border: 1px solid #ccc;
@@ -805,7 +805,6 @@ input[type=checkbox] {
 }
 .column {
   float: left;
-  width: 50%;
 }
 #settings,
 #importexport,
