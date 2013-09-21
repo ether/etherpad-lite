@@ -592,6 +592,7 @@ table#otheruserstable {
   background-image: url("../../static/img/etherpad_lite_icons.png");
   color: #333;
   text-decoration: none;
+  padding-bottom:2px;
 }
 #exporthtml {
   background-position: 0px -299px
