@@ -100,7 +100,7 @@ else
     {
       //add data to buffer
       stdoutBuffer+=data.toString();
-      
+
       //we're searching for the prompt, cause this means everything we need is in the buffer
       if(stdoutBuffer.search("AbiWord:>") != -1)
       {
