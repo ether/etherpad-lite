@@ -585,6 +585,9 @@ table#otheruserstable {
   margin-right: 3px;
   margin-top: 2px;
 }
+#exportColumn{
+  margin-top:20px;
+}
 .exporttype {
   margin-top: 4px;
   background-repeat: no-repeat;
@@ -592,6 +595,7 @@ table#otheruserstable {
   background-image: url("../../static/img/etherpad_lite_icons.png");
   color: #333;
   text-decoration: none;
+  padding-bottom:2px;
 }
 #exporthtml {
   background-position: 0px -299px
@@ -627,6 +631,7 @@ table#otheruserstable {
 
 #importsubmitinput {
   margin-top: 12px;
+  padding:2px 4px 2px 4px;
 }
 #importstatusball {
   height: 50px
