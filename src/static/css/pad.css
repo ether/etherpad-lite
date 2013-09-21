@@ -585,6 +585,9 @@ table#otheruserstable {
   margin-right: 3px;
   margin-top: 2px;
 }
+#exportColumn{
+  margin-top:20px;
+}
 .exporttype {
   margin-top: 4px;
   background-repeat: no-repeat;
