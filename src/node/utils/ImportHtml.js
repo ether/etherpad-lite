@@ -31,7 +31,13 @@ function setPadHTML(pad, html, callback)
   var padText = pad.text();
 
   // Parse the incoming HTML with jsdom
-  var doc = jsdom(html.replace(/>\n+</g, '><'));
+  try{
+    var doc = jsdom(html.replace(/>\n+</g, '><'));
+  }catch(e){
+    apiLogger.warn("Error importing, possibly caused by malformed HTML");
+    var doc = jsdom("<html><body><div>Error during import, possibly malformed HTML</div></body></html>");
+  }
+
   apiLogger.debug('html:');
   apiLogger.debug(html);
 
