@@ -627,6 +627,7 @@ table#otheruserstable {
 
 #importsubmitinput {
   margin-top: 12px;
+  padding:2px 4px 2px 4px;
 }
 #importstatusball {
   height: 50px
