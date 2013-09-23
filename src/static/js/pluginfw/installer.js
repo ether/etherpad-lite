@@ -83,8 +83,8 @@ exports.search = function(searchTerm, maxCacheAge, cb) {
       searchTerm = searchTerm.toLowerCase();
     for (var pluginName in results) { // for every available plugin
       if (pluginName.indexOf(plugins.prefix) != 0) continue; // TODO: Also search in keywords here!
-      
-      if(searchTerm && pluginName.indexOf(searchTerm) < 0 && results[pluginName].description.indexOf(searchTerm) < 0) continue;
+
+      if(searchTerm && !~pluginName.toLowerCase().indexOf(searchTerm) && !~results[pluginName].description.toLowerCase().indexOf(searchTerm)) continue;
       res[pluginName] = results[pluginName];
     }
     cb && cb(null, res)
