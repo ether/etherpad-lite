@@ -617,7 +617,7 @@ function handleUserChanges(data, cb)
         // There is an error in this changeset, so just refuse it
         console.warn("Can't apply USER_CHANGES "+changeset+", because: "+e);
         client.json.send({disconnect:"badChangeset"});
-        return;
+        return callback();
       }
         
       //ex. adoptChangesetAttribs
@@ -653,7 +653,7 @@ function handleUserChanges(data, cb)
             }catch(e){
               console.warn("Can't apply USER_CHANGES "+changeset+", possibly because of mismatched follow error");
               client.json.send({disconnect:"badChangeset"});
-              return;
+              return callback();
             }
 
             if ((r - baseRev) % 200 == 0) { // don't let the stack get too deep
@@ -676,8 +676,7 @@ function handleUserChanges(data, cb)
       {
         console.warn("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
         client.json.send({disconnect:"badChangeset"});
-        callback();
-        return;
+        return callback();
       }
         
       pad.appendRevision(changeset, thisSession.author);
