@@ -3745,6 +3745,7 @@ function Ace2Inner(){
           doDeleteKey();
           specialHandled = true;
         }
+        if((evt.which == 36 && evt.ctrlKey == true)){ setScrollY(0); } // Control Home send to Y = 0
         if((evt.which == 33 || evt.which == 34) && type == 'keydown'){
 
           evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
@@ -3830,20 +3831,11 @@ function Ace2Inner(){
                 // only move the viewport if we're at the bottom of the viewport, if we hit down any other time the viewport shouldn't change
                 // NOTE: This behavior only fires if Chrome decides to break the page layout after a paste, it's annoying but nothing I can do
                 var selection = getSelection();
-                // top.console.log("line #", rep.selStart[0]); // the line our caret is on
-                // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
-                // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
-                // top.console.log(rep.selStart[0],visibleLineRange[1],rep.selStart[0], visibleLineRange[0]);
-                // Holding down arrow after a paste can lose the cursor -- This is the best fix I can find
-                if(rep.selStart[0] >= visibleLineRange[1] || rep.selStart[0] < visibleLineRange[0] ){ // if we're not at the bottom of the viewport
-                  // top.console.log("Moving down doc", viewport, lineHeight, myselection);
-                  // is the line in alignment with the bottom of the viewport cause if so we shouldnt be paginating?
-                  // TODO: Make it so chrome doesnt need to redraw the page by only applying this technique if required
-                  var newY = caretOffsetTop;
-                }else{ // we're at the bottom of the viewport so snap to a "new viewport"
-                  // top.console.log(viewport, lineHeight, myselection);
-                  var newY = caretOffsetTopBottom; // Allow continuous holding of down arrow to redraw the screen so we can see what we are going to highlight
-                }
+                top.console.log("line #", rep.selStart[0]); // the line our caret is on
+                top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
+                top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
+                top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
+                var newY = viewport.top + lineHeight;
               }
               if(newY){
                 setScrollY(newY); // set the scrollY offset of the viewport on the document
