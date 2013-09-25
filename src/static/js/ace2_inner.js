@@ -3793,21 +3793,35 @@ function Ace2Inner(){
 
           }, 200);
         }
-
         /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
            We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
-           presses and holds the arrow key */
+           presses and holds the arrow key ..  Sorry if this is ugly, blame Chrome's weird handling of viewports after new content is added*/
         if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && $.browser.chrome){
           var viewport = getViewPortTopBottom();
           var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-          var caretOffsetTop = myselection.focusNode.parentNode.offsetTop; // get the carets selection offset in px IE 214
-          var lineHeight = $(myselection.focusNode.parentNode).parent().height(); // get the line height of the caret line
+          var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+          var lineHeight = $(myselection.focusNode.parentNode).parent("div").height(); // get the line height of the caret line
+          // top.console.log("offsetTop", myselection.focusNode.parentNode.parentNode.offsetTop);
+          try {
+            lineHeight = $(myselection.focusNode).height() // needed for how chrome handles line heights of null objects
+            // console.log("lineHeight now", lineHeight);
+          }catch(e){}
           var caretOffsetTopBottom = caretOffsetTop + lineHeight;
           var visibleLineRange = getVisibleLineRange(); // the visible lines IE 1,10
 
           if(caretOffsetTop){ // sometimes caretOffsetTop bugs out and returns 0, not sure why, possible Chrome bug?  Either way if it does we don't wanna mess with it
-            var caretIsNotVisible = (caretOffsetTop <= viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
+            // top.console.log(caretOffsetTop, viewport.top, caretOffsetTopBottom, viewport.bottom);
+            var caretIsNotVisible = (caretOffsetTop < viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
+            // Expect some weird behavior caretOffsetTopBottom is greater than viewport.bottom on a keypress down
+            var offsetTopSamePlace = caretOffsetTop == viewport.top; // sometimes moving key left & up leaves the caret at the same point as the viewport.top, technically the caret is visible but it's not fully visible so we should move to it 
+            if(offsetTopSamePlace && (evt.which == 37 || evt.which == 38)){
+                var newY = caretOffsetTop;
+                setScrollY(newY);
+            }
+
             if(caretIsNotVisible){ // is the cursor no longer visible to the user?
+              // top.console.log("Caret is NOT visible to the user");
+              // top.console.log(caretOffsetTop,viewport.top,caretOffsetTopBottom,viewport.bottom);
               // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
               if(evt.which == 37 || evt.which == 38){ // If left or up arrow
                 var newY = caretOffsetTop; // That was easy!
@@ -3819,10 +3833,11 @@ function Ace2Inner(){
                 // top.console.log("line #", rep.selStart[0]); // the line our caret is on
                 // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
                 // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
-
+                // top.console.log(rep.selStart[0],visibleLineRange[1],rep.selStart[0], visibleLineRange[0]);
                 // Holding down arrow after a paste can lose the cursor -- This is the best fix I can find
                 if(rep.selStart[0] >= visibleLineRange[1] || rep.selStart[0] < visibleLineRange[0] ){ // if we're not at the bottom of the viewport
-                  // top.console.log(viewport, lineHeight, myselection);
+                  // top.console.log("Moving down doc", viewport, lineHeight, myselection);
+                  // is the line in alignment with the bottom of the viewport cause if so we shouldnt be paginating?
                   // TODO: Make it so chrome doesnt need to redraw the page by only applying this technique if required
                   var newY = caretOffsetTop;
                 }else{ // we're at the bottom of the viewport so snap to a "new viewport"
