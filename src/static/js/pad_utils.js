@@ -519,7 +519,7 @@ function setupGlobalExceptionHandler() {
         //show javascript errors to the user
         $("#editorloadingbox").css("padding", "10px");
         $("#editorloadingbox").css("padding-top", "45px");
-        $("#editorloadingbox").html("<div style='text-align:left;color:red;font-size:16px;'><b>An error occured</b><br>The error was reported with the following id: '" + errorId + "'<br><br><span style='color:black;font-weight:bold;font-size:16px'>Please send this error message to us: </span><div style='color:black;font-size:14px'>'"
+        $("#editorloadingbox").html("<div style='text-align:left;color:red;font-size:16px;'><b>An error occured</b><br>The error was reported with the following id: '" + errorId + "'<br><br><span style='color:black;font-weight:bold;font-size:16px'>Please press and hold Ctrl and press F5 to reload this page, if the problem persists please send this error message to your webmaster: </span><div style='color:black;font-size:14px'>'"
           + "ErrorId: " + errorId + "<br>URL: " + window.location.href + "<br>UserAgent: " + navigator.userAgent + "<br>" + msg + " in " + url + " at line " + linenumber + "'</div></div>");
       }
 
