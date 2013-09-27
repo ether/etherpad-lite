@@ -28,7 +28,9 @@ var ERR = require("async-stacktrace")
   , settings = require('../utils/Settings')
   , formidable = require('formidable')
   , os = require("os")
-  , importHtml = require("../utils/ImportHtml");
+  , importHtml = require("../utils/ImportHtml")
+  , log4js = require('log4js');
+
 
 //load abiword only if its enabled
 if(settings.abiword != null)
@@ -42,6 +44,8 @@ var tmpDirectory = process.env.TEMP || process.env.TMPDIR || process.env.TMP || 
  */ 
 exports.doImport = function(req, res, padId)
 {
+  var apiLogger = log4js.getLogger("ImportHandler");
+
   //pipe to a file
   //convert file to html via abiword
   //set html in the pad
@@ -169,7 +173,11 @@ exports.doImport = function(req, res, padId)
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase();
       if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
-        importHtml.setPadHTML(pad, text);
+        try{
+          importHtml.setPadHTML(pad, text);
+        }catch(e){
+          apiLogger.warn("Error importing, possibly caused by malformed HTML");
+        }
       } else {
         pad.setText(text);
       }
