@@ -2,7 +2,7 @@ This is the new load testing file: https://bitbucket.org/rbraakman/etherpad-stre
 
 BELOW is the original load testing file.
 
-This load tester is extremely useful for testing how many dormant clients can connect to etherpad lite.  
+This load tester is extremely useful for testing how many dormant clients can connect to etherpad.  
 
 TODO:
 Emulate characters being typed into a pad
@@ -10,7 +10,7 @@ Emulate characters being typed into a pad
 HOW TO USE (from @mjd75) proper formatting at: https://github.com/ether/etherpad-lite/issues/360
 
 Server 1:
-Installed Node.js (etc), EtherPad Lite and MySQL
+Installed Node.js (etc), EtherPad and MySQL
 
 Server 2:
 Installed Xvfb and PhantomJS

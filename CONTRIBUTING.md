@@ -6,7 +6,7 @@
 
 **Our goal is to iterate in small steps. Release often, release early. Evolution instead of a revolution**
 
-## General goals of Etherpad Lite
+## General goals of Etherpad
 To make sure everybody is going in the same direction:
 * easy to install for admins and easy to use for people
 * easy to integrate into other apps, but also usable as standalone

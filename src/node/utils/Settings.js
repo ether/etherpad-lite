@@ -35,7 +35,7 @@ exports.root = path.normalize(path.join(npm.dir, ".."));
 /**
  * The app title, visible e.g. in the browser window
  */
-exports.title = "Etherpad Lite";
+exports.title = "Etherpad";
 
 /**
  * The app favicon fully specified url, visible e.g. in the browser window
@@ -77,7 +77,7 @@ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
 /**
  * The default Text of a new pad
  */
-exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
+exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad on Github: http:\/\/j.mp/ep-lite\n";
 
 /**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
