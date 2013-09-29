@@ -3597,6 +3597,26 @@ function Ace2Inner(){
       return;
     }
 
+    // Is caret potentially hidden by the chat button?
+    var myselection = document.getSelection(); // get the current caret selection
+    var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+    
+    if(myselection.focusNode.wholeText){ // Is there any content?  If not lineHeight will report wrong..
+      var lineHeight = myselection.focusNode.parentNode.offsetHeight; // line height of populated links
+    }else{
+      var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
+    }
+    var heightOfChatIcon = parent.parent.$('#chaticon').height(); // height of the chat icon button
+    lineHeight = (lineHeight *2) + heightOfChatIcon;
+    var viewport = getViewPortTopBottom();
+    var viewportHeight = viewport.bottom - viewport.top - lineHeight;
+    var relCaretOffsetTop = caretOffsetTop - viewport.top; // relative Caret Offset Top to viewport
+    if (viewportHeight < relCaretOffsetTop){
+      parent.parent.$("#chaticon").css("opacity",".3"); // make chaticon opacity low when user types near it
+    }else{
+      parent.parent.$("#chaticon").css("opacity","1"); // make chaticon opacity back to full (so fully visible)
+    }
+
     //dmesg("keyevent type: "+type+", which: "+which);
     // Don't take action based on modifier keys going up and down.
     // Modifier keys do not generate "keypress" events.
