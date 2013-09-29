@@ -119,6 +119,11 @@ exports.logconfig = { appenders: [{ type: "console" }]};
 */
 exports.sessionKey = false;
 
+/*
+* Trust Proxy, whether or not trust the x-forwarded-for header.
+*/
+exports.trustProxy = false;
+
 /* This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
  * either authorization by a module, or a user with is_admin set */
