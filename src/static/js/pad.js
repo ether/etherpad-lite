@@ -334,7 +334,7 @@ function handshake()
       {
         pad.notifyChangeName(settings.globalUserName); // Notifies the server
         pad.myUserInfo.name = settings.globalUserName;
-        $('#myusernameedit').attr({"value":settings.globalUserName}); // Updates the current users UI
+        $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
       }
       if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor))
       {
