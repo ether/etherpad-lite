@@ -22,6 +22,7 @@
 var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
+var customError = require("../utils/customError");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 
 exports.getColorPalette = function(){
