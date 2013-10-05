@@ -1,7 +1,8 @@
 {
     "@metadata": {
         "authors": {
-            "1": "WikiPhoenix"
+            "0": "Lokal Profil",
+            "2": "WikiPhoenix"
         }
     },
     "index.newPad": "Nytt block",
@@ -28,7 +29,7 @@
     "pad.loading": "L\u00e4ser in...",
     "pad.passwordRequired": "Du beh\u00f6ver ett l\u00f6senord f\u00f6r att f\u00e5 tillg\u00e5ng till detta block",
     "pad.permissionDenied": "Du har inte beh\u00f6righet att f\u00e5 tillg\u00e5ng till detta block",
-    "pad.wrongPassword": "Ditt l\u00f6senord \u00e4r fel",
+    "pad.wrongPassword": "Ditt l\u00f6senord var fel",
     "pad.settings.padSettings": "Blockinst\u00e4llningar",
     "pad.settings.myView": "Min vy",
     "pad.settings.stickychat": "Chatten alltid p\u00e5 sk\u00e4rmen",
@@ -40,7 +41,7 @@
     "pad.settings.fontType.monospaced": "Fast breddsteg",
     "pad.settings.globalView": "Global vy",
     "pad.settings.language": "Spr\u00e5k:",
-    "pad.importExport.import_export": "Importera/exportera",
+    "pad.importExport.import_export": "Importera/Exportera",
     "pad.importExport.import": "Ladda upp en textfil eller dokument",
     "pad.importExport.importSuccessful": "\u00c5tg\u00e4rden slutf\u00f6rdes!",
     "pad.importExport.export": "Export aktuellt block som:",
@@ -83,7 +84,7 @@
     "timeslider.pageTitle": "Tidsreglage f\u00f6r {{appTitle}}",
     "timeslider.toolbar.returnbutton": "\u00c5terv\u00e4nd till blocket",
     "timeslider.toolbar.authors": "F\u00f6rfattare:",
-    "timeslider.toolbar.authorsList": "Ingen f\u00f6rfattare",
+    "timeslider.toolbar.authorsList": "Inga f\u00f6rfattare",
     "timeslider.toolbar.exportlink.title": "Exportera",
     "timeslider.exportCurrent": "Exportera aktuell version som:",
     "timeslider.version": "Version {{version}}",
