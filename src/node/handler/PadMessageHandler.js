@@ -1012,8 +1012,6 @@ function handleClientReady(client, message)
         var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
         var apool = attribsForWire.pool.toJsonable();
         atext.attribs = attribsForWire.translated;
-
-
         
         // Warning: never ever send padIds.padId to the client. If the
         // client is read only you would open a security hole 1 swedish
