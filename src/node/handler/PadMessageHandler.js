@@ -953,8 +953,7 @@ function handleClientReady(client, message)
             authorManager.getAuthor(authorId, function(err, author)
             {
               if(ERR(err, callback)) return;
-              delete author.timestamp;
-              historicalAuthorData[authorId] = author;
+              historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId}; // Filter author attribs (e.g. don't send author's pads to all clients)
               callback();
             });
           }, callback);
@@ -1016,10 +1015,6 @@ function handleClientReady(client, message)
         // Warning: never ever send padIds.padId to the client. If the
         // client is read only you would open a security hole 1 swedish
         // mile wide...
-        // Heh, turns out we already did when we sent historicalAuthorData so
-        // if it's a readonly pad request don't send the pad IDs of the author
-        if(sessioninfos[client.id].readonly) historicalAuthorData = {};
-
         var clientVars = {
           "accountPrivs": {
               "maxRevisions": 100
