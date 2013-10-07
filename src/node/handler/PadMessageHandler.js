@@ -953,8 +953,7 @@ function handleClientReady(client, message)
             authorManager.getAuthor(authorId, function(err, author)
             {
               if(ERR(err, callback)) return;
-              delete author.timestamp;
-              historicalAuthorData[authorId] = author;
+              historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId}; // Filter author attribs (e.g. don't send author's pads to all clients)
               callback();
             });
           }, callback);
