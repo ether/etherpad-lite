@@ -85,7 +85,6 @@ var padList = {
   }
 };
 //initialises the allknowing data structure
-padList.init();
 
 /**
  * An array of padId transformations. These represent changes in pad name policy over
@@ -159,6 +158,11 @@ exports.getPad = function(id, text, callback)
 
 exports.listAllPads = function(callback)
 {
+  // console.warn("list all pads")
+  if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+  // console.warn("pad list is empty, filling it");
+    padList.init();
+  }
   if(callback != null){
     callback(null,{padIDs: padList.getPads()});
   }else{
