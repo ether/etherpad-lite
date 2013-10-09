@@ -37,6 +37,12 @@ var globalPads = {
     set: function (name, value) 
     {
       this[':'+name] = value;
+
+      if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+        console.warn("TEHB pad list is empty, filling it");
+        padList.init();
+      }
+
       padList.addPad(name);
     },
     remove: function (name) { delete this[':'+name]; }
@@ -158,9 +164,9 @@ exports.getPad = function(id, text, callback)
 
 exports.listAllPads = function(callback)
 {
-  // console.warn("list all pads")
+  console.warn("list all pads RAA")
   if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
-  // console.warn("pad list is empty, filling it");
+  console.warn("pad list is empty, filling it asd asd ");
     padList.init();
   }
   if(callback != null){
@@ -228,6 +234,10 @@ exports.isValidPadId = function(padId)
  * Removes the pad from database and unloads it.
  */
 exports.removePad = function(padId){
+  if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+  // console.warn("pad list is empty, filling it");
+    padList.init();
+  }
   db.remove("pad:"+padId);
   exports.unloadPad(padId);
   padList.removePad(padId);
