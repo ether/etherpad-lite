@@ -1011,7 +1011,7 @@ function handleClientReady(client, message)
           atext.attribs = attribsForWire.translated;
         }catch(e) {
           console.error(e.stack || e)
-          client.json.send({disconnect:"padCorrupted"});// pull the breaks
+          client.json.send({disconnect:"corruptPad"});// pull the breaks
           return callback();
         }
         
