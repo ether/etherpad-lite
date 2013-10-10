@@ -1006,11 +1006,17 @@ function handleClientReady(client, message)
       //This is a normal first connect
       else
       {
-        //prepare all values for the wire
-        var atext = Changeset.cloneAText(pad.atext);
-        var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
-        var apool = attribsForWire.pool.toJsonable();
-        atext.attribs = attribsForWire.translated;
+        //prepare all values for the wire, there'S a chance that this throws, if the pad is corrupted
+        try {
+          var atext = Changeset.cloneAText(pad.atext);
+          var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
+          var apool = attribsForWire.pool.toJsonable();
+          atext.attribs = attribsForWire.translated;
+        }catch(e) {
+          console.error(e.stack || e)
+          client.json.send({disconnect:"padCorrupted"});// pull the breaks
+          return callback();
+        }
         
         // Warning: never ever send padIds.padId to the client. If the
         // client is read only you would open a security hole 1 swedish
