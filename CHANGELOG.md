@@ -1,3 +1,29 @@
+# 1.2.12
+ * NEW: Add explanations for more disconnect scenarios
+ * NEW: export sessioninfos so plugins can access it
+ * NEW: pass pad in postAceInit hook
+ * NEW: Add trustProxy setting. ALlows to make ep use X-forwarded-for as remoteAddress
+ * NEW: userLeave hook (UNDOCUMENTED)
+ * NEW: Plural macro for translations
+ * NEW: backlinks to main page in Admin pages
+ * NEW: New translations from translatewiki.net
+ * SECURITY FIX: Filter author data sent to clients
+ * FIX: Never keep processing a changeset if it's corrupted
+ * FIX: Some client-side performance fixes for webkit browsers
+ * FIX: Only execute listAllPads query on demand (not on start-up)
+ * FIX: HTML import (don't crash on malformed or blank HTML input; strip title out of html during import)
+ * FIX: check if uploaded file only contains ascii chars when abiword disabled
+ * FIX: Plugin search in /admin/plugins
+ * FIX: API: fix createGroupFor endpoint, if mapped group is deleted
+ * FIX: Import form for other locales
+ * FIX: Don't stop processing changeset queue if there is an error
+ * FIX: Caret movement. Chrome detects blank rows line heights as incorrect
+ * FIX: allow colons in password
+ * FIX: Polish logging of client-side errors on the server
+ * FIX: Username url param
+ * FIX: Make start script POSIX ompatible
+
+
 # 1.2.11
  * NEW: New Hook for outer_ace dynamic css manager and author style hook
  * NEW: Bump log4js for improved logging
