@@ -14,6 +14,8 @@
  * FIX: HTML import (don't crash on malformed or blank HTML input; strip title out of html during import)
  * FIX: check if uploaded file only contains ascii chars when abiword disabled
  * FIX: Plugin search in /admin/plugins
+ * FIX: Don't create new pad if a non-existant read-only pad is accessed
+ * FIX: Drop messages from unknown connections (would lead to a crash after a restart)
  * FIX: API: fix createGroupFor endpoint, if mapped group is deleted
  * FIX: Import form for other locales
  * FIX: Don't stop processing changeset queue if there is an error
