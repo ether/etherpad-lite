@@ -41,6 +41,11 @@ var authLogger = log4js.getLogger("auth");
 exports.checkAccess = function (padID, sessionCookie, token, password, callback)
 { 
   var statusObject;
+  
+  if(!padID) {
+    callback(null, {accessStatus: "deny"});
+    return;
+  }
 
   // a valid session is required (api-only mode)
   if(settings.requireSession)

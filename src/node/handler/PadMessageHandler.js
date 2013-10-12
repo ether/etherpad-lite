@@ -144,15 +144,16 @@ exports.handleDisconnect = function(client)
  */
 exports.handleMessage = function(client, message)
 { 
-
   if(message == null)
   {
-    messageLogger.warn("Message is null!");
     return;
   }
   if(!message.type)
   {
-    messageLogger.warn("Message has no type attribute!");
+    return;
+  }
+  if(!sessioninfos[client.id]) {
+    messageLogger.warn("Dropped message from an unknown connection.")
     return;
   }
 
