@@ -65,7 +65,7 @@ var padconnectionstatus = (function()
         why: msg
       };
       
-      var k = String(msg).toLowerCase(); // known reason why
+      var k = String(msg); // known reason why
       if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'badChangeset' || k == 'corruptPad'))
       {
         k = 'disconnected';
