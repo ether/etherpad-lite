@@ -77,28 +77,22 @@ exports.getPadId = function(readOnlyId, callback)
  * returns a the padId and readonlyPadId in an object for any id
  * @param {String} padIdOrReadonlyPadId read only id or real pad id
  */
-exports.getIds = function(padIdOrReadonlyPadId, callback) {
-  var handleRealPadId = function () {
-    exports.getReadOnlyId(padIdOrReadonlyPadId, function (err, value) {
+exports.getIds = function(id, callback) {
+  if (id.indexOf("r.") == 0)
+    exports.getPadId(id, function (err, value) {
+      if(ERR(err, callback)) return;
+      callback(null, {
+        readOnlyPadId: id,
+        padId: value, // Might be null, if this is an unknown read-only id
+        readonly: true
+      });
+    });
+  else
+    exports.getReadOnlyId(id, function (err, value) {
       callback(null, {
         readOnlyPadId: value,
-        padId: padIdOrReadonlyPadId,
+        padId: id,
         readonly: false
       });
     });
-  }
-
-  if (padIdOrReadonlyPadId.indexOf("r.") != 0)
-    return handleRealPadId();
-
-  exports.getPadId(padIdOrReadonlyPadId, function (err, value) {
-    if(ERR(err, callback)) return;
-    if (value == null)
-      return handleRealPadId();
-    callback(null, {
-      readOnlyPadId: padIdOrReadonlyPadId,
-      padId: value,
-      readonly: true
-    });
-  });
 }
