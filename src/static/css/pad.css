@@ -168,9 +168,9 @@ a img {
 }
 #editorcontainer {
   position: absolute;
-  width: 100%;
   top: 37px; /* + 1px border */
   left: 0px;
+  right: 0px;
   bottom: 0px;
   z-index: 1;
 }
@@ -585,6 +585,9 @@ table#otheruserstable {
   margin-right: 3px;
   margin-top: 2px;
 }
+#exportColumn{
+  margin-top:20px;
+}
 .exporttype {
   margin-top: 4px;
   background-repeat: no-repeat;
@@ -592,6 +595,7 @@ table#otheruserstable {
   background-image: url("../../static/img/etherpad_lite_icons.png");
   color: #333;
   text-decoration: none;
+  padding-bottom:2px;
 }
 #exporthtml {
   background-position: 0px -299px
@@ -626,9 +630,8 @@ table#otheruserstable {
 }
 
 #importsubmitinput {
-  height: 25px;
-  width: 85px;
   margin-top: 12px;
+  padding:2px 4px 2px 4px;
 }
 #importstatusball {
   height: 50px
@@ -746,8 +749,9 @@ input[type=checkbox] {
   float: right
 }
 .popup {
-  font-size: 14px;
-  width: 450px;
+  font-size: 12px;
+  width: 80%;
+  max-width: 500px;
   padding: 10px;
   border-radius: 0 0 6px 6px;
   border: 1px solid #ccc;
@@ -804,7 +808,6 @@ input[type=checkbox] {
 }
 .column {
   float: left;
-  width: 50%;
 }
 #settings,
 #importexport,

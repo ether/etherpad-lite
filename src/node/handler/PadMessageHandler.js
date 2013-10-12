@@ -48,6 +48,7 @@ var channels = require("channels");
  *   author = the author name of this session
  */
 var sessioninfos = {};
+exports.sessioninfos = sessioninfos;
 
 /**
  * A changeset queue per pad that is processed by handleUserChanges()
@@ -143,15 +144,16 @@ exports.handleDisconnect = function(client)
  */
 exports.handleMessage = function(client, message)
 { 
-
   if(message == null)
   {
-    messageLogger.warn("Message is null!");
     return;
   }
   if(!message.type)
   {
-    messageLogger.warn("Message has no type attribute!");
+    return;
+  }
+  if(!sessioninfos[client.id]) {
+    messageLogger.warn("Dropped message from an unknown connection.")
     return;
   }
 
@@ -593,7 +595,7 @@ function handleUserChanges(data, cb)
         // defined in the accompanying attribute pool.
         Changeset.eachAttribNumber(changeset, function(n) {
           if (! wireApool.getAttrib(n)) {
-            throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
+            throw new Error("Attribute pool is missing attribute "+n+" for changeset "+changeset);
           }
         });
 
@@ -607,22 +609,21 @@ function handleUserChanges(data, cb)
             if(!attr) return
             attr = wireApool.getAttrib(attr)
             if(!attr) return
-            if('author' == attr[0] && attr[1] != thisSession.author) throw "Trying to submit changes as another author"
+            if('author' == attr[0] && attr[1] != thisSession.author) throw new Error("Trying to submit changes as another author in changeset "+changeset);
           })
         }
+        
+        //ex. adoptChangesetAttribs
+          
+        //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
+        changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
       }
       catch(e)
       {
         // There is an error in this changeset, so just refuse it
-        console.warn("Can't apply USER_CHANGES "+changeset+", because: "+e);
         client.json.send({disconnect:"badChangeset"});
-        return;
+        return callback(new Error("Can't apply USER_CHANGES, because "+e.message));
       }
-        
-      //ex. adoptChangesetAttribs
-        
-      //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
-      changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
         
       //ex. applyUserChanges
       apool = pad.pool;
@@ -650,9 +651,8 @@ function handleUserChanges(data, cb)
             {
               changeset = Changeset.follow(c, changeset, false, apool);
             }catch(e){
-              console.warn("Can't apply USER_CHANGES "+changeset+", possibly because of mismatched follow error");
               client.json.send({disconnect:"badChangeset"});
-              return;
+              return callback(new Error("Can't apply USER_CHANGES, because "+e.message));
             }
 
             if ((r - baseRev) % 200 == 0) { // don't let the stack get too deep
@@ -673,10 +673,8 @@ function handleUserChanges(data, cb)
       
       if (Changeset.oldLen(changeset) != prevText.length) 
       {
-        console.warn("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
         client.json.send({disconnect:"badChangeset"});
-        callback();
-        return;
+        return callback(new Error("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length));
       }
         
       pad.appendRevision(changeset, thisSession.author);
@@ -700,7 +698,7 @@ function handleUserChanges(data, cb)
   ], function(err)
   {
     cb();
-    ERR(err);
+    if(err) console.warn(err.stack || err)
   });
 }
 
@@ -953,8 +951,7 @@ function handleClientReady(client, message)
             authorManager.getAuthor(authorId, function(err, author)
             {
               if(ERR(err, callback)) return;
-              delete author.timestamp;
-              historicalAuthorData[authorId] = author;
+              historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId}; // Filter author attribs (e.g. don't send author's pads to all clients)
               callback();
             });
           }, callback);
@@ -1007,11 +1004,17 @@ function handleClientReady(client, message)
       //This is a normal first connect
       else
       {
-        //prepare all values for the wire
-        var atext = Changeset.cloneAText(pad.atext);
-        var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
-        var apool = attribsForWire.pool.toJsonable();
-        atext.attribs = attribsForWire.translated;
+        //prepare all values for the wire, there'S a chance that this throws, if the pad is corrupted
+        try {
+          var atext = Changeset.cloneAText(pad.atext);
+          var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
+          var apool = attribsForWire.pool.toJsonable();
+          atext.attribs = attribsForWire.translated;
+        }catch(e) {
+          console.error(e.stack || e)
+          client.json.send({disconnect:"corruptPad"});// pull the breaks
+          return callback();
+        }
         
         // Warning: never ever send padIds.padId to the client. If the
         // client is read only you would open a security hole 1 swedish
@@ -1520,6 +1523,7 @@ exports.padUsers = function (padID, callback) {
 
         author.id = s.author;
         result.push(author);
+		callback();
       });
     }
   }, function(err) {

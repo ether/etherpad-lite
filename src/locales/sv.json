@@ -1,7 +1,8 @@
 {
     "@metadata": {
         "authors": {
-            "1": "WikiPhoenix"
+            "0": "Lokal Profil",
+            "2": "WikiPhoenix"
         }
     },
     "index.newPad": "Nytt block",
@@ -21,14 +22,14 @@
     "pad.toolbar.timeslider.title": "Tidsreglage",
     "pad.toolbar.savedRevision.title": "Spara revision",
     "pad.toolbar.settings.title": "Inst\u00e4llningar",
-    "pad.toolbar.embed.title": "B\u00e4dda in detta block",
+    "pad.toolbar.embed.title": "Dela och b\u00e4dda in detta block",
     "pad.toolbar.showusers.title": "Visa anv\u00e4ndarna p\u00e5 detta block",
     "pad.colorpicker.save": "Spara",
     "pad.colorpicker.cancel": "Avbryt",
     "pad.loading": "L\u00e4ser in...",
     "pad.passwordRequired": "Du beh\u00f6ver ett l\u00f6senord f\u00f6r att f\u00e5 tillg\u00e5ng till detta block",
     "pad.permissionDenied": "Du har inte beh\u00f6righet att f\u00e5 tillg\u00e5ng till detta block",
-    "pad.wrongPassword": "Ditt l\u00f6senord \u00e4r fel",
+    "pad.wrongPassword": "Ditt l\u00f6senord var fel",
     "pad.settings.padSettings": "Blockinst\u00e4llningar",
     "pad.settings.myView": "Min vy",
     "pad.settings.stickychat": "Chatten alltid p\u00e5 sk\u00e4rmen",
@@ -40,7 +41,7 @@
     "pad.settings.fontType.monospaced": "Fast breddsteg",
     "pad.settings.globalView": "Global vy",
     "pad.settings.language": "Spr\u00e5k:",
-    "pad.importExport.import_export": "Importera/exportera",
+    "pad.importExport.import_export": "Importera/Exportera",
     "pad.importExport.import": "Ladda upp en textfil eller dokument",
     "pad.importExport.importSuccessful": "\u00c5tg\u00e4rden slutf\u00f6rdes!",
     "pad.importExport.export": "Export aktuellt block som:",
@@ -83,7 +84,7 @@
     "timeslider.pageTitle": "Tidsreglage f\u00f6r {{appTitle}}",
     "timeslider.toolbar.returnbutton": "\u00c5terv\u00e4nd till blocket",
     "timeslider.toolbar.authors": "F\u00f6rfattare:",
-    "timeslider.toolbar.authorsList": "Ingen f\u00f6rfattare",
+    "timeslider.toolbar.authorsList": "Inga f\u00f6rfattare",
     "timeslider.toolbar.exportlink.title": "Exportera",
     "timeslider.exportCurrent": "Exportera aktuell version som:",
     "timeslider.version": "Version {{version}}",
@@ -101,8 +102,7 @@
     "timeslider.month.october": "oktober",
     "timeslider.month.november": "november",
     "timeslider.month.december": "december",
-    "timeslider.unnamedauthor": "{{num}} namnl\u00f6s f\u00f6rfattare",
-    "timeslider.unnamedauthors": "{{num}} namnl\u00f6sa f\u00f6rfattare",
+    "timeslider.unnamedauthors": "{{num}} {[plural(num) one: namnl\u00f6s f\u00f6rfattare, other: namnl\u00f6sa f\u00f6rfattare]}",
     "pad.savedrevs.marked": "Denna revision \u00e4r nu markerad som en sparad revision",
     "pad.userlist.entername": "Ange ditt namn",
     "pad.userlist.unnamed": "namnl\u00f6s",

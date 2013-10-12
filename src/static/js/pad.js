@@ -334,7 +334,7 @@ function handshake()
       {
         pad.notifyChangeName(settings.globalUserName); // Notifies the server
         pad.myUserInfo.name = settings.globalUserName;
-        $('#myusernameedit').attr({"value":settings.globalUserName}); // Updates the current users UI
+        $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
       }
       if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor))
       {
@@ -524,7 +524,7 @@ var pad = {
       if(padcookie.getPref("showAuthorshipColors") == false){
         pad.changeViewOption('showAuthorColors', false);
       }
-      hooks.aCallAll("postAceInit", {ace: padeditor.ace});
+      hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },
   dispose: function()

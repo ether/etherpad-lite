@@ -1,5 +1,5 @@
 # Localization
-Etherpad lite provides a  multi-language user interface, that's apart from your users' content, so users from different countries can collaborate on a single document, while still having the user interface displayed in their mother tongue.
+Etherpad provides a  multi-language user interface, that's apart from your users' content, so users from different countries can collaborate on a single document, while still having the user interface displayed in their mother tongue.
 
 
 ## Translating
@@ -19,9 +19,9 @@ Translations will be send back to us regularly and will eventually appear in the
 `/src/locales` contains files for all supported languages which contain the translated strings. Translation files are simple `*.json` files and look like this:
 
 ```json
-{ "pad.modals.connected": "Connecté."
-, "pad.modals.uderdup": "Ouvrir dans une nouvelle fenêtre."
-, "pad.toolbar.unindent.title": "Désindenter"
+{ "pad.modals.connected": "ConnectÃ©."
+, "pad.modals.uderdup": "Ouvrir dans une nouvelle fenÃªtre."
+, "pad.toolbar.unindent.title": "DÃ¨sindenter"
 , "pad.toolbar.undo.title": "Annuler (Ctrl-Z)"
 , "timeslider.pageTitle": "{{appTitle}} Curseur temporel"
 , ...
@@ -50,7 +50,7 @@ to:
 <option data-l10n-id="ep_heading.h1" value="0"></option>
 ```
 
-In the javascript files of your plugin, chaneg all hardcoded messages/strings...
+In the javascript files of your plugin, change all hardcoded messages/strings...
 
 from:
 ```js
@@ -75,7 +75,7 @@ alert(window._('pad.chat'));
 
 *ep_your-plugin/locales/es.json*
 ```
-{ "ep_your-plugin.h1": "Título 1"
+{ "ep_your-plugin.h1": "TÃ­tulo 1"
 }
 ```
 
@@ -83,7 +83,7 @@ Everytime the http server is started, it will auto-detect your messages and merg
 
 ### Overwrite core messages
 
-You can overwrite Etherpad Lite's core messages in your plugin's locale files.
+You can overwrite Etherpad's core messages in your plugin's locale files.
 For example, if you want to replace `Chat` with `Notes`, simply add...
 
 *ep_your-plugin/locales/en.json*

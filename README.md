@@ -15,7 +15,8 @@ There's also a full-featured plugin framework, allowing you to easily add your o
 
 Finally, Etherpad comes with translations into most languages!  Users are automatically delivered the correct language for their local settings.
 
-**Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live.  Hosted by [Joyent](http://joyent.com)**
+
+**Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live.**
 
 Also, check out the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**, really!
 
@@ -51,13 +52,13 @@ Update to the latest version with `git pull origin`, then run `bin\installOnWind
 You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
 *For Debian/Ubuntu*: `apt-get install gzip git-core curl python libssl-dev pkg-config build-essential`  
 *For Fedora/CentOS*: `yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"`
-*For FreeBSD*: `portinstall node node, npm and git (optional)`
+*For FreeBSD*: `portinstall node, npm, git (optional)`
 
 Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, be careful of installing nodejs from apt.
 
-**As any user (we recommend creating a separate user called etherpad-lite):**
+**As any user (we recommend creating a separate user called etherpad):**
 
-1. Move to a folder where you want to install Etherpad Lite. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
+1. Move to a folder where you want to install Etherpad. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code `cd etherpad-lite`
 
 Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser. 

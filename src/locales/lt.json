@@ -1,6 +1,7 @@
 {
     "@metadata": {
         "authors": [
+            "Eitvys200",
             "Mantak111"
         ]
     },
@@ -14,7 +15,10 @@
     "pad.colorpicker.save": "I\u0161saugoti",
     "pad.colorpicker.cancel": "At\u0161aukti",
     "pad.loading": "\u012ekraunama...",
+    "pad.settings.myView": "Mano Vaizdas",
+    "pad.settings.fontType": "\u0160rifto tipas:",
     "pad.settings.fontType.normal": "Normalus",
+    "pad.settings.globalView": "Bendras Vaizdas",
     "pad.settings.language": "Kalba:",
     "pad.importExport.import_export": "Importuoti/Eksportuoti",
     "pad.importExport.import": "\u012ekelkite bet kok\u012f tekstin\u012f fail\u0105 arba dokument\u0105",
@@ -57,7 +61,6 @@
     "timeslider.month.october": "Spalis",
     "timeslider.month.november": "Lapkritis",
     "timeslider.month.december": "Gruodis",
-    "timeslider.unnamedauthor": "{{num}} bevardis autorius",
     "timeslider.unnamedauthors": "{{num}} bevard\u017eiai(-i\u0173) autoriai(-i\u0173)",
     "pad.userlist.entername": "\u012eveskite savo vard\u0105",
     "pad.userlist.unnamed": "bevardis",

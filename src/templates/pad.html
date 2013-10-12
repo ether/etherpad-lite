@@ -283,7 +283,7 @@
                 </form>
                 <% e.end_block(); %>
             </div>
-            <div class="column">
+            <div class="column" id="exportColumn">
                 <h2 data-l10n-id="pad.importExport.export"></h2>
                 <% e.begin_block("exportColumn"); %>
                 <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
@@ -317,7 +317,7 @@
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <div class="looping">
-                  <h1 data-l10n-id="pad.modals.looping"></h1>
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
                   <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
                   <p data-l10n-id="pad.modals.looping.cause"></p>
                 </div>
@@ -327,10 +327,21 @@
                   <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
                 </div>
                 <div class="slowcommit">
-                  <h1 data-l10n-id="pad.modals.slowcommit"></h1>
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
                   <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
                   <p data-l10n-id="pad.modals.slowcommit.cause"></p>
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+                </div>
+                <div class="badChangeset">
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
+                  <h2 data-l10n-id="pad.modals.badChangeset.explanation"></h2>
+                  <p data-l10n-id="pad.modals.badChangeset.cause"></p>
+                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+                </div>
+                <div class="corruptPad">
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
+                  <h2 data-l10n-id="pad.modals.corruptPad.explanation"></h2>
+                  <p data-l10n-id="pad.modals.corruptPad.cause"></p>
                 </div>
                 <div class="deleted">
                   <h1 data-l10n-id="pad.modals.deleted"></h1>

@@ -23,6 +23,7 @@ var ERR = require("async-stacktrace");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var securityManager = require("../db/SecurityManager");
+var settings = require('../utils/Settings');
 
 /**
  * Saves all components
@@ -52,8 +53,14 @@ exports.setSocketIO = function(_socket) {
   //save this socket internaly
   socket = _socket;
   
-  socket.sockets.on('connection', function(client) {
-    client.set('remoteAddress', client.handshake.address.address);
+  socket.sockets.on('connection', function(client)
+  {
+    if(settings.trustProxy && client.handshake.headers['x-forwarded-for'] !== undefined){
+	  	client.set('remoteAddress', client.handshake.headers['x-forwarded-for']);
+  	}
+  	else{
+  		client.set('remoteAddress', client.handshake.address.address);
+  	}
     var clientAuthorized = false;
     
     //wrap the original send function to log the messages

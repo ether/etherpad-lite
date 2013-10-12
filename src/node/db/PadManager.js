@@ -37,6 +37,11 @@ var globalPads = {
     set: function (name, value) 
     {
       this[':'+name] = value;
+
+      if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+        padList.init();
+      }
+
       padList.addPad(name);
     },
     remove: function (name) { delete this[':'+name]; }
@@ -85,7 +90,6 @@ var padList = {
   }
 };
 //initialises the allknowing data structure
-padList.init();
 
 /**
  * An array of padId transformations. These represent changes in pad name policy over
@@ -159,6 +163,9 @@ exports.getPad = function(id, text, callback)
 
 exports.listAllPads = function(callback)
 {
+  if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+    padList.init();
+  }
   if(callback != null){
     callback(null,{padIDs: padList.getPads()});
   }else{
@@ -224,6 +231,9 @@ exports.isValidPadId = function(padId)
  * Removes the pad from database and unloads it.
  */
 exports.removePad = function(padId){
+  if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+    padList.init();
+  }
   db.remove("pad:"+padId);
   exports.unloadPad(padId);
   padList.removePad(padId);

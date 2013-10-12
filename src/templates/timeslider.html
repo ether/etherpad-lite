@@ -135,7 +135,7 @@
       <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <div class="looping">
-      <h1 data-l10n-id="pad.modals.looping"></h1>
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
       <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
       <p data-l10n-id="pad.modals.looping.cause"></p>
     </div>
@@ -145,20 +145,33 @@
       <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
     </div>
     <div class="slowcommit">
-      <h1 data-l10n-id="pad.modals.slowcommit"></h1>
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
       <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
       <p data-l10n-id="pad.modals.slowcommit.cause"></p>
       <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+    </div>
+    <div class="badChangeset">
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.badChangeset.explanation"></h2>
+      <p data-l10n-id="pad.modals.badChangeset.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+    </div>
+    <div class="corruptPad">
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.corruptPad.explanation"></h2>
+      <p data-l10n-id="pad.modals.corruptPad.cause"></p>
     </div>
     <div class="deleted">
       <h1 data-l10n-id="pad.modals.deleted"></h1>
       <p data-l10n-id="pad.modals.deleted.explanation"></p>
     </div>
     <div class="disconnected">
+      <% e.begin_block("disconnected"); %>
       <h1 data-l10n-id="pad.modals.disconnected"></h1>
       <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
       <p data-l10n-id="pad.modals.disconnected.cause"></p>
       <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      <% e.end_block(); %>
     </div>
     <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
         <input type="hidden" class="padId" name="padId">

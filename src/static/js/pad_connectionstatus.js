@@ -66,11 +66,11 @@ var padconnectionstatus = (function()
       };
       
       var k = String(msg).toLowerCase(); // known reason why
-      if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth'))
+      if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'badChangeset' || k == 'corruptPad'))
       {
         k = 'disconnected';
       }
-      
+
       padmodals.showModal(k);
       padmodals.showOverlay();
     },
