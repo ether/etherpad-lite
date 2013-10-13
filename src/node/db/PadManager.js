@@ -24,7 +24,9 @@ var Pad = require("../db/Pad").Pad;
 var db = require("./DB").db;
 
 /** 
- * An Object containing all known Pads. Provides "get" and "set" functions,
+ * A cache of all loaded Pads.
+ *
+ * Provides "get" and "set" functions,
  * which should be used instead of indexing with brackets. These prepend a
  * colon to the key, to avoid conflicting with built-in Object methods or with
  * these functions themselves.
@@ -37,44 +39,55 @@ var globalPads = {
     set: function (name, value) 
     {
       this[':'+name] = value;
-
-      if(padList.list.length == 0){ // If we haven't populated the padList.list yet
-        padList.init();
-      }
-
-      padList.addPad(name);
     },
-    remove: function (name) { delete this[':'+name]; }
+    remove: function (name) {
+      delete this[':'+name];
+    }
 };
 
+/**
+ * A cache of the list of all pads.
+ *
+ * Updated without db access as new pads are created/old ones removed.
+ */
 var padList = {
   list: [],
   sorted : false,
-  init: function()
+  initiated: false,
+  init: function(cb)
   {
     db.findKeys("pad:*", "*:*:*", function(err, dbData)
     {
-      if(ERR(err)) return;
+      if(ERR(err, cb)) return;
       if(dbData != null){
         dbData.forEach(function(val){
           padList.addPad(val.replace(/pad:/,""),false);
         });
+        padList.initiated = true
+        cb && cb()
       }
     });
     return this;
   },
+  load: function(cb) {
+    if(this.initiated) cb && cb()
+    else this.init(cb)
+  },
   /**
    * Returns all pads in alphabetical order as array.
    */
-  getPads: function(){
-    if(!this.sorted){
-      this.list=this.list.sort();
-      this.sorted=true;
-    }
-    return this.list;
+  getPads: function(cb){
+    this.load(function() {
+      if(!padList.sorted){
+        padList.list = padList.list.sort();
+        padList.sorted = true;
+      }
+      cb && cb(padList.list);
+    })
   },
   addPad: function(name)
   {
+    if(!this.initiated) return;
     if(this.list.indexOf(name) == -1){
       this.list.push(name);
       this.sorted=false;
@@ -82,7 +95,8 @@ var padList = {
   },
   removePad: function(name)
   {
-    var index=this.list.indexOf(name);
+    if(!this.initiated) return;
+    var index = this.list.indexOf(name);
     if(index>-1){
       this.list.splice(index,1);
       this.sorted=false;
@@ -161,16 +175,11 @@ exports.getPad = function(id, text, callback)
   }
 }
 
-exports.listAllPads = function(callback)
+exports.listAllPads = function(cb)
 {
-  if(padList.list.length == 0){ // If we haven't populated the padList.list yet
-    padList.init();
-  }
-  if(callback != null){
-    callback(null,{padIDs: padList.getPads()});
-  }else{
-    return {padIDs: padList.getPads()};
-  }
+  padList.getPads(function(list) {
+    cb && cb(null, {padIDs: list});
+  });
 }
 
 //checks if a pad exists
@@ -231,17 +240,13 @@ exports.isValidPadId = function(padId)
  * Removes the pad from database and unloads it.
  */
 exports.removePad = function(padId){
-  if(padList.list.length == 0){ // If we haven't populated the padList.list yet
-    padList.init();
-  }
   db.remove("pad:"+padId);
   exports.unloadPad(padId);
   padList.removePad(padId);
 }
 
-//removes a pad from the array
+//removes a pad from the cache
 exports.unloadPad = function(padId)
 {
-  if(globalPads.get(padId))
-    globalPads.remove(padId);
+  globalPads.remove(padId);
 }
