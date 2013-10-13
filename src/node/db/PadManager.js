@@ -38,7 +38,7 @@ var globalPads = {
     {
       this[':'+name] = value;
 
-      if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+      if(padList.list.length == 0){ // If we haven't populated the padList.list yet
         padList.init();
       }
 
@@ -163,7 +163,7 @@ exports.getPad = function(id, text, callback)
 
 exports.listAllPads = function(callback)
 {
-  if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+  if(padList.list.length == 0){ // If we haven't populated the padList.list yet
     padList.init();
   }
   if(callback != null){
@@ -231,7 +231,7 @@ exports.isValidPadId = function(padId)
  * Removes the pad from database and unloads it.
  */
 exports.removePad = function(padId){
-  if(!padList.list.length == 0){ // If we haven't populated the padList.list yet
+  if(padList.list.length == 0){ // If we haven't populated the padList.list yet
     padList.init();
   }
   db.remove("pad:"+padId);
