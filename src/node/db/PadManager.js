@@ -60,10 +60,10 @@ var padList = {
     {
       if(ERR(err, cb)) return;
       if(dbData != null){
+        padList.initiated = true
         dbData.forEach(function(val){
           padList.addPad(val.replace(/pad:/,""),false);
         });
-        padList.initiated = true
         cb && cb()
       }
     });
