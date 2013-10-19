@@ -71,7 +71,7 @@
     "pad.modals.deleted.explanation": "Dokument je odstranjen.",
     "pad.modals.disconnected": "Povezava je prekinjena.",
     "pad.modals.disconnected.explanation": "Povezava s stre\u017enikom je bila prekinjena.",
-    "pad.modals.disconnected.cause": "Stre\u017enik je najverjetneje nedosegljiv. Po\u0161ljite poro\u010dilo, \u010de s napaka ve\u010dkrat pojavi.",
+    "pad.modals.disconnected.cause": "Stre\u017enik je morda nedosegljiv. Prosimo, obvestite skrbnika storitve, \u010de se to zgodi ve\u010dkrat.",
     "pad.share": "Dolo\u010di souporabo dokumenta",
     "pad.share.readonly": "Le za branje",
     "pad.share.link": "Povezava",
