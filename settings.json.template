@@ -82,6 +82,9 @@
   /*when you use NginX or another proxy/ load-balancer set this to true*/
   "trustProxy": false,
   
+  /* Privacy: disable IP logging */
+  "disableIPlogging": false,  
+  
   /* Users for basic authentication. is_admin = true gives access to /admin.
      If you do not uncomment this, /admin will not be available! */
   /*
