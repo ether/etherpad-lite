@@ -22,8 +22,7 @@
  */
 
 var log4js = require('log4js')
-  , async = require('async')
-  ;
+  , async = require('async');
 
 log4js.replaceConsole();
 
@@ -48,7 +47,8 @@ async.waterfall([
     plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
     hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
     hooks.plugins = plugins;
-
+    stats = require('measured').createCollection();
+    stats.counter('totalUsers');
     callback();
   },
   
