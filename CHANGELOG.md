@@ -1,3 +1,10 @@
+# 1.3
+ * NEW: We now follow the semantic versioning scheme!
+ * NEW: Option to disable IP logging
+ * NEW: Localisation updates from http://translatewiki.net. 
+ * Fix: Fix readOnly group pads
+ * Fix: don't fetch padList on every request
+
 # 1.2.12
  * NEW: Add explanations for more disconnect scenarios
  * NEW: export sessioninfos so plugins can access it

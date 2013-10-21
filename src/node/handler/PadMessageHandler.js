@@ -130,6 +130,11 @@ exports.handleDisconnect = function(client)
   }
   
   client.get('remoteAddress', function(er, ip) {
+    //Anonymize the IP address if IP logging is disabled
+    if(settings.disableIPlogging) {
+      ip = 'ANONYMOUS';
+    }
+
     accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
   })
   
@@ -240,7 +245,7 @@ exports.handleMessage = function(client, message)
           callback();
         }else{
           var auth = sessioninfos[client.id].auth;
-          securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, function(err, statusObject)
+          var checkAccessCallback = function(err, statusObject)
           {
             if(ERR(err, callback)) return;
  
@@ -254,7 +259,17 @@ exports.handleMessage = function(client, message)
             {
               client.json.send({accessStatus: statusObject.accessStatus})
             }
-          });
+          };
+          //check if pad is requested via readOnly
+          if (auth.padID.indexOf("r.") === 0) {
+            //Pad is readOnly, first get the real Pad ID
+            readOnlyManager.getPadId(auth.padID, function(err, value) {
+              ERR(err);
+              securityManager.checkAccess(value, auth.sessionID, auth.token, auth.password, checkAccessCallback);
+            });
+          } else {
+            securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, checkAccessCallback);
+          }
         }
       },
       finalHandler
@@ -985,6 +1000,11 @@ function handleClientReady(client, message)
       
       //Log creation/(re-)entering of a pad
       client.get('remoteAddress', function(er, ip) {
+        //Anonymize the IP address if IP logging is disabled
+        if(settings.disableIPlogging) {
+          ip = 'ANONYMOUS';
+        }
+
         if(pad.head > 0) {
           accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad');
         }
