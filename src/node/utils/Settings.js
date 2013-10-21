@@ -109,6 +109,11 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
+/**
+ * Disable IP logging
+ */
+exports.disableIPlogging = false;
+
 /*
 * log4js appender configuration
 */
