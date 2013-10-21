@@ -130,6 +130,11 @@ exports.handleDisconnect = function(client)
   }
   
   client.get('remoteAddress', function(er, ip) {
+    //Anonymize the IP address if IP logging is disabled
+    if(settings.disableIPlogging) {
+      ip = 'ANONYMOUS';
+    }
+
     accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
   })
   
@@ -995,6 +1000,11 @@ function handleClientReady(client, message)
       
       //Log creation/(re-)entering of a pad
       client.get('remoteAddress', function(er, ip) {
+        //Anonymize the IP address if IP logging is disabled
+        if(settings.disableIPlogging) {
+          ip = 'ANONYMOUS';
+        }
+
         if(pad.head > 0) {
           accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad');
         }
