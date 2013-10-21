@@ -74,10 +74,10 @@
   "pad.modals.slowcommit.cause": "This could be due to problems with network connectivity.",
 
   "pad.modals.badChangeset.explanation": "An edit you have made was classified illegal by the synchronization server.",
-  "pad.modals.badChangeset.cause": "This could be due to a wrong server configuration or some other unexpected behaviour. Please contact the service administrator, if you feel this is an error. Try to reconnect in order to continue editing.",
+  "pad.modals.badChangeset.cause": "This could be due to a wrong server configuration or some other unexpected behavior. Please contact the service administrator, if you feel this is an error. Try to reconnect in order to continue editing.",
 
   "pad.modals.corruptPad.explanation": "The pad you are trying to access is corrupt.",
-  "pad.modals.corruptPad.cause": "This may be due to a wrong server configuration or some other unexpected behaviour. Please contact the service administrator.",
+  "pad.modals.corruptPad.cause": "This may be due to a wrong server configuration or some other unexpected behavior. Please contact the service administrator.",
 
   "pad.modals.deleted": "Deleted.",
   "pad.modals.deleted.explanation": "This pad has been removed.",
