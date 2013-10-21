@@ -1,3 +1,9 @@
+# 1.2.13
+ * NEW: Localisation updates from http://translatewiki.net. 
+ * NEW: Option to disable IP logging
+ * FIX: Fix readOnly group pads
+ * FIX: don't fetch padList on every request
+
 # 1.2.12
  * NEW: Add explanations for more disconnect scenarios
  * NEW: export sessioninfos so plugins can access it
