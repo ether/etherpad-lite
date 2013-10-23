@@ -9,11 +9,27 @@ describe("rtl button", function(){
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$;
 
-    var $indentButton = chrome$(".buttonicon-rtl");
-    $indentButton.click();
+    var $rtlButton = chrome$(".buttonicon-rtl");
+    $rtlButton.click();
 
     helper.waitFor(function(){
       return inner$("div").first().find("div.rtl").length === 1;
     }).done(done);
   });
+
+  it("rtl is reversible", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    var $rtlButton = chrome$(".buttonicon-rtl");
+    $rtlButton.click();
+
+    helper.waitFor(function(){
+	    $rtlButton.click();
+    	helper.waitFor(function(){
+      		return inner$("div").first().find("div.rtl").length === 0;
+	    }).done(done);
+    }).done(done);
+  });
+
 });
