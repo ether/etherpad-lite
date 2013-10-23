@@ -10,6 +10,7 @@
   "pad.toolbar.ul.title": "Unordered List",
   "pad.toolbar.indent.title": "Indent",
   "pad.toolbar.unindent.title": "Outdent",
+  "pad.toolbar.rtl.title": "Right To Left",
   "pad.toolbar.undo.title": "Undo (Ctrl-Z)",
   "pad.toolbar.redo.title": "Redo (Ctrl-Y)",
   "pad.toolbar.clearAuthorship.title": "Clear Authorship Colors",
