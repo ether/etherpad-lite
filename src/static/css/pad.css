@@ -677,6 +677,9 @@ table#otheruserstable {
 .buttonicon-strikethrough {
   background-position: 0px -200px
 }
+.buttonicon-rtl {
+  background-position: 0px -510px
+}
 .buttonicon-insertorderedlist {
   background-position: 0px -477px
 }

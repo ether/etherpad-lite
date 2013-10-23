@@ -3402,6 +3402,56 @@ function Ace2Inner(){
   }
   editorInfo.ace_doIndentOutdent = doIndentOutdent;
 
+
+  var rtlAttributeName = 'rtl';
+  function getLineRTL(lineNum)
+  {
+    return documentAttributeManager.getAttributeOnLine(lineNum, rtlAttributeName)
+  }
+
+  function setLineRTL(lineNum, rtl)
+  {
+    if(rtl == ''){
+      documentAttributeManager.removeAttributeOnLine(lineNum, rtlAttributeName);
+    }else{
+      documentAttributeManager.setAttributeOnLine(lineNum, rtlAttributeName, rtl);
+    }
+  }
+
+
+  function toggleRTL(isOut)
+  {
+    if (!((rep.selStart && rep.selEnd) ||
+        ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) &&  rep.selEnd[1] > 1)) &&
+        (isOut != true)
+       )
+    {
+      return false;
+    }
+
+    var firstLine, lastLine;
+    firstLine = rep.selStart[0];
+    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
+    var mods = [];
+    for (var n = firstLine; n <= lastLine; n++)
+    {
+		var rtl = getLineRTL(n);
+		var newRTL;
+		if (rtl.indexOf("rtl") >= 0)
+			newRTL = "";
+		else
+			newRTL = "rtl";
+
+        mods.push([n, newRTL]);
+    }
+
+    _.each(mods, function(mod){
+      setLineRTL(mod[0], mod[1]);
+    });
+    return true;
+  }
+  editorInfo.ace_toggleRTL = toggleRTL;
+
   function doTabKey(shiftDown)
   {
     if (!doIndentOutdent(shiftDown))

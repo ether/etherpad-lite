@@ -39,7 +39,8 @@ linestylefilter.ATTRIB_CLASSES = {
   'bold': 'tag:b',
   'italic': 'tag:i',
   'underline': 'tag:u',
-  'strikethrough': 'tag:s'
+  'strikethrough': 'tag:s',
+  'rtl': 'rtl'
 };
 
 var lineAttributeMarker = 'lineAttribMarker';

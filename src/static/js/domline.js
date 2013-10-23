@@ -100,7 +100,14 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     if (cls.indexOf(lineAttributeMarker) >= 0)
     {
       var listType = /(?:^| )list:(\S+)/.exec(cls);
+      var isRTL = /(?:^| )rtl/.exec(cls);
       var start = /(?:^| )start:(\S+)/.exec(cls);
+      if (isRTL)
+      {
+	preHtml = preHtml + '<div class="rtl">';
+	postHtml = '</div>' + postHtml;
+	processedMarker = true;
+      }
       if (listType)
       {
         listType = listType[1];
@@ -108,8 +115,8 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         {
           if(listType.indexOf("number") < 0)
           {
-            preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ul>';
+            preHtml = preHtml + '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            postHtml = '</li></ul>' + postHtml;
           }
           else
           {
@@ -117,23 +124,23 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
               if(start[1] == 1){ // if its the first one at this level?
                 lineClass = lineClass + " " + "list-start-" + listType; // Add start class to DIV node
               }
-              preHtml = '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            preHtml = preHtml + '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
             }else{
-               preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
+               preHtml = preHtml + '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
             }
-            postHtml = '</li></ol>';
+            postHtml = '</li></ol>' + postHtml;
           }
         } 
         processedMarker = true;
       }
-      
+
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
         domline: domline,
         cls: cls
       }), function(modifier)
       {
-        preHtml += modifier.preHtml;
-        postHtml += modifier.postHtml;
+        preHtml = preHtml + modifier.preHtml;
+        postHtml = modifier.postHtml + postHtml;
         processedMarker |= modifier.processedMarker;
       });
       
