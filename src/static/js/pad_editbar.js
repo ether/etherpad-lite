@@ -162,6 +162,10 @@ var padeditbar = (function()
             {
               ace.ace_doIndentOutdent(true);
             }
+            else if (cmd == 'rtl')
+			{
+	  			ace.ace_toggleRTL();
+			}
             else if (cmd == 'clearauthorship')
             {
               if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret())

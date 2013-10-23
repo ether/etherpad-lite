@@ -20,6 +20,7 @@ ul, ol, li {
 
 ul { margin-left: 1.5em; }
 ul ul { margin-left: 0 !important; }
+
 ul.list-bullet1 { margin-left: 1.5em; }
 ul.list-bullet2 { margin-left: 3em; }
 ul.list-bullet3 { margin-left: 4.5em; }
@@ -28,6 +29,15 @@ ul.list-bullet5 { margin-left: 7.5em; }
 ul.list-bullet6 { margin-left: 9em; }
 ul.list-bullet7 { margin-left: 10.5em; }
 ul.list-bullet8 { margin-left: 12em; }
+
+.rtl ul.list-bullet1 { margin-right: 1.5em; }
+.rtl ul.list-bullet2 { margin-right: 3em; }
+.rtl ul.list-bullet3 { margin-right: 4.5em; }
+.rtl ul.list-bullet4 { margin-right: 6em; }
+.rtl ul.list-bullet5 { margin-right: 7.5em; }
+.rtl ul.list-bullet6 { margin-right: 9em; }
+.rtl ul.list-bullet7 { margin-right: 10.5em; }
+.rtl ul.list-bullet8 { margin-right: 12em; }
 
 ul { list-style-type: disc; }
 ul.list-bullet1 { list-style-type: disc; }
@@ -47,6 +57,15 @@ ul.list-indent5 { margin-left: 7.5em; }
 ul.list-indent6 { margin-left: 9em; }
 ul.list-indent7 { margin-left: 10.5em; }
 ul.list-indent8 { margin-left: 12em; }
+
+.rtl ul.list-indent1 { margin-right: 1.5em; }
+.rtl ul.list-indent2 { margin-right: 3em; }
+.rtl ul.list-indent3 { margin-right: 4.5em; }
+.rtl ul.list-indent4 { margin-right: 6em; }
+.rtl ul.list-indent5 { margin-right: 7.5em; }
+.rtl ul.list-indent6 { margin-right: 9em; }
+.rtl ul.list-indent7 { margin-right: 10.5em; }
+.rtl ul.list-indent8 { margin-right: 12em; }
 
 ul.list-indent1 { list-style-type: none; }
 ul.list-indent2 { list-style-type: none; }
