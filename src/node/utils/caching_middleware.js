@@ -39,7 +39,9 @@ var responseCache = {};
 function CachingMiddleware() {
 }
 CachingMiddleware.prototype = new function () {
+  var rps = stats.meter('requestsPerSecond');
   function handle(req, res, next) {
+    rps.mark();
     if (!(req.method == "GET" || req.method == "HEAD") || !CACHE_DIR) {
       return next(undefined, req, res);
     }
