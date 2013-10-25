@@ -346,11 +346,9 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
 function callAPI(apiVersion, functionName, fields, req, res)
 {
   //put the function parameters in an array
-  var functionParams = [];
-  for(var i=0;i<version[apiVersion][functionName].length;i++)
-  {
-    functionParams.push(fields[ version[apiVersion][functionName][i] ]);
-  }
+  var functionParams = version[apiVersion][functionName].map(function (field) {
+    return fields[field]
+  })
   
   //add a callback function to handle the response
   functionParams.push(function(err, data)
@@ -377,5 +375,5 @@ function callAPI(apiVersion, functionName, fields, req, res)
   });
   
   //call the api function
-  api[functionName](functionParams[0],functionParams[1],functionParams[2],functionParams[3],functionParams[4]);
+  api[functionName].apply(this, functionParams);
 }
