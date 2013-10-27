@@ -194,6 +194,7 @@ exports.handleMessage = function(client, message)
       if (sessioninfos[client.id].readonly) {
         messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
       } else if (message.data.type == "USER_CHANGES") {
+        stats.counter('pendingEdits').inc()
         padChannels.emit(message.padId, {client: client, message: message});// add to pad queue
       } else if (message.data.type == "USERINFO_UPDATE") {
         handleUserInfoUpdate(client, message);
@@ -563,6 +564,9 @@ function handleUserChanges(data, cb)
   var client = data.client
     , message = data.message
 
+  // This one's no longer pending, as we're gonna process it now
+  stats.counter('pendingEdits').dec()
+
   // Make sure all required fields are present
   if(message.data.baseRev == null)
   {
@@ -590,8 +594,8 @@ function handleUserChanges(data, cb)
       
   var r, apool, pad;
 
-  // Log edit
-  stats.meter('edits').mark();
+  // Measure time to process edit
+  var stopWatch = stats.timer('edits').start();
     
   async.series([
     //get the pad
@@ -723,6 +727,7 @@ function handleUserChanges(data, cb)
     }
   ], function(err)
   {
+    stopWatch.end()
     cb();
     if(err) console.warn(err.stack || err)
   });
