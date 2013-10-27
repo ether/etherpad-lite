@@ -1,9 +1,10 @@
 {
     "@metadata": {
         "authors": {
-            "0": "Luckas",
-            "2": "Tuliouel",
-            "3": "Waldir"
+            "0": "Hamilton Abreu",
+            "1": "Luckas",
+            "3": "Tuliouel",
+            "4": "Waldir"
         }
     },
     "index.newPad": "Nova Nota",
@@ -25,7 +26,7 @@
     "pad.toolbar.settings.title": "Configura\u00e7\u00f5es",
     "pad.toolbar.embed.title": "Incorporar este Pad",
     "pad.toolbar.showusers.title": "Mostrar os utilizadores nesta Nota",
-    "pad.colorpicker.save": "Salvar",
+    "pad.colorpicker.save": "Gravar",
     "pad.colorpicker.cancel": "Cancelar",
     "pad.loading": "A carregar\u2026",
     "pad.settings.padSettings": "Configura\u00e7\u00f5es da Nota",

@@ -74,6 +74,7 @@
     "pad.modals.initsocketfail.cause": "\u8fd9\u53ef\u80fd\u662f\u7531\u4e8e\u60a8\u7684\u6d4f\u89c8\u5668\u6216\u60a8\u7684\u4e92\u8054\u7f51\u8fde\u63a5\u7684\u95ee\u9898\u3002",
     "pad.modals.slowcommit.explanation": "\u670d\u52a1\u5668\u6ca1\u6709\u54cd\u5e94\u3002",
     "pad.modals.slowcommit.cause": "\u8fd9\u53ef\u80fd\u662f\u7531\u4e8e\u7f51\u7edc\u8fde\u63a5\u95ee\u9898\u3002",
+    "pad.modals.corruptPad.explanation": "\u60a8\u8bd5\u56fe\u8fde\u63a5\u7684\u5e73\u677f\u5df2\u635f\u574f\u3002",
     "pad.modals.deleted": "\u5df2\u522a\u9664\u3002",
     "pad.modals.deleted.explanation": "\u6b64\u8bb0\u4e8b\u672c\u5df2\u88ab\u79fb\u9664\u3002",
     "pad.modals.disconnected": "\u4f60\u5df2\u65ad\u5f00\u8fde\u63a5\u3002",

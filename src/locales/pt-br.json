@@ -4,6 +4,7 @@
             "Gusta",
             "Luckas",
             "TheGabrielZaum",
+            "Titoncio",
             "Tuliouel"
         ]
     },
@@ -69,6 +70,7 @@
     "pad.modals.initsocketfail.cause": "Isto provavelmente ocorreu por um problema em seu navegador ou conex\u00e3o.",
     "pad.modals.slowcommit.explanation": "O servidor n\u00e3o responde.",
     "pad.modals.slowcommit.cause": "Isto pode ser por problemas com a conex\u00e3o de rede.",
+    "pad.modals.corruptPad.explanation": "O pad que voc\u00ea est\u00e1 tentando acessar est\u00e1 corrompido.",
     "pad.modals.deleted": "Exclu\u00eddo",
     "pad.modals.deleted.explanation": "Esta nota foi removida.",
     "pad.modals.disconnected": "Voc\u00ea foi desconectado.",

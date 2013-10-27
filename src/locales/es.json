@@ -7,8 +7,9 @@
             "3": "Larjona",
             "4": "Mklehr",
             "5": "Rubenwap",
-            "7": "Vivaelcelta",
-            "8": "Xuacu"
+            "7": "VegaDark",
+            "8": "Vivaelcelta",
+            "9": "Xuacu"
         }
     },
     "index.newPad": "Nuevo Pad",
@@ -73,6 +74,9 @@
     "pad.modals.initsocketfail.cause": "Puede ser a causa de tu navegador o de una ca\u00edda en tu conexi\u00f3n de Internet.",
     "pad.modals.slowcommit.explanation": "El servidor no responde.",
     "pad.modals.slowcommit.cause": "Puede deberse a problemas con tu conexi\u00f3n de red.",
+    "pad.modals.badChangeset.explanation": "Ha hecho una edici\u00f3n clasificada como ilegal por el servidor de sincronizaci\u00f3n.",
+    "pad.modals.badChangeset.cause": "Esto podr\u00eda ser debido a una mala configuraci\u00f3n del servidor o alg\u00fan otro comportamiento inesperado. P\u00f3ngase en contacto con el administrador del servicio, si siente que esto es un error. Intente volver a conectar con el fin de seguir editando.",
+    "pad.modals.corruptPad.cause": "Esto puede deberse a una mala configuraci\u00f3n de servidor o alg\u00fan otro comportamiento inesperado. P\u00f3ngase en contacto con el administrador del servicio.",
     "pad.modals.deleted": "Borrado.",
     "pad.modals.deleted.explanation": "Este pad ha sido borrado.",
     "pad.modals.disconnected": "Has sido desconectado.",
