@@ -5,6 +5,7 @@ var settings = require('../../utils/Settings');
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var ueberStore = require('../../db/SessionStore');
+var stats = require('ep_etherpad-lite/node/stats')
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
@@ -91,10 +92,21 @@ exports.basicAuth = function (req, res, next) {
 exports.secret = null;
 
 exports.expressConfigure = function (hook_name, args, cb) {
+  // Measure response time
+  args.app.use(function(req, res, next) {
+    var stopWatch = stats.timer('httpRequests').start();
+    var sendFn = res.send
+    res.send = function() {
+      stopWatch.end()
+      sendFn.apply(res, arguments)
+    }
+    next()
+  })
+
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
   if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
-    args.app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.DEBUG, format: ':status, :method :url -- :response-timems'}));
+    args.app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.DEBUG, format: ':status, :method :url'}));
 
   /* Do not let express create the session, so that we can retain a
    * reference to it for socket.io to use. Also, set the key (cookie

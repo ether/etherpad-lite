@@ -48,7 +48,6 @@ async.waterfall([
     plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
     hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
     hooks.plugins = plugins;
-
     callback();
   },
   
