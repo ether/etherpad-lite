@@ -487,7 +487,7 @@ Pad.prototype.remove = function remove(callback) {
 
           authorIDs.forEach(function (authorID)
           {
-        	authorManager.removePad(authorID, padID);
+            authorManager.removePad(authorID, padID);
           });
 
           callback();

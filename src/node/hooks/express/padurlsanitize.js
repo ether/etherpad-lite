@@ -12,20 +12,20 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     else
     {
       padManager.sanitizePadId(padId, function(sanitizedPadId) {
-	//the pad id was sanitized, so we redirect to the sanitized version
-	if(sanitizedPadId != padId)
-	{
+        //the pad id was sanitized, so we redirect to the sanitized version
+        if(sanitizedPadId != padId)
+        {
           var real_url = sanitizedPadId;
           var query = url.parse(req.url).query;
           if ( query ) real_url += '?' + query;
-	  res.header('Location', real_url);
-	  res.send(302, 'You should be redirected to <a href="' + real_url + '">' + real_url + '</a>');
-	}
-	//the pad id was fine, so just render it
-	else
-	{
-	  next();
-	}
+          res.header('Location', real_url);
+          res.send(302, 'You should be redirected to <a href="' + real_url + '">' + real_url + '</a>');
+        }
+        //the pad id was fine, so just render it
+        else
+        {
+          next();
+        }
       });
     }
   });

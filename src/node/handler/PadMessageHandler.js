@@ -455,7 +455,7 @@ function handleGetChatMessages(client, message)
       pad.getChatMessages(start, end, function(err, chatMessages)
       {
         if(ERR(err, callback)) return;
-		
+
         var infoMsg = {
           type: "COLLABROOM",
           data: {
@@ -463,7 +463,7 @@ function handleGetChatMessages(client, message)
             messages: chatMessages
           }
         };
-		
+
         // send the messages back to the client
         client.json.send(infoMsg);
       });
@@ -1564,7 +1564,7 @@ exports.padUsers = function (padID, callback) {
 
         author.id = s.author;
         result.push(author);
-		callback();
+        callback();
       });
     }
   }, function(err) {
