@@ -36,6 +36,7 @@ var accessLogger = log4js.getLogger("access");
 var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var channels = require("channels");
+var stats = require('../stats');
 
 /**
  * A associative array that saves informations about a session
@@ -49,6 +50,11 @@ var channels = require("channels");
  */
 var sessioninfos = {};
 exports.sessioninfos = sessioninfos;
+
+// Measure total amount of users
+stats.gauge('totalUsers', function() {
+  return Object.keys(socketio.sockets.sockets).length
+})
 
 /**
  * A changeset queue per pad that is processed by handleUserChanges()
@@ -74,7 +80,9 @@ exports.setSocketIO = function(socket_io)
  * @param client the new client
  */
 exports.handleConnect = function(client)
-{  
+{
+  stats.meter('connects').mark();
+
   //Initalize sessioninfos for this new session
   sessioninfos[client.id]={};
 }
@@ -99,12 +107,23 @@ exports.kickSessionsFromPad = function(padID)
  */
 exports.handleDisconnect = function(client)
 {  
+  stats.meter('disconnects').mark();
+  
   //save the padname of this session
   var session = sessioninfos[client.id];
   
   //if this connection was already etablished with a handshake, send a disconnect message to the others
   if(session && session.author)
   {
+    client.get('remoteAddress', function(er, ip) {
+      //Anonymize the IP address if IP logging is disabled
+      if(settings.disableIPlogging) {
+        ip = 'ANONYMOUS';
+      }
+
+      accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
+    })
+
     //get the author color out of the db
     authorManager.getAuthorColorId(session.author, function(err, color)
     {
@@ -128,15 +147,6 @@ exports.handleDisconnect = function(client)
       client.broadcast.to(session.padId).json.send(messageToTheOtherUsers);
     }); 
   }
-  
-  client.get('remoteAddress', function(er, ip) {
-    //Anonymize the IP address if IP logging is disabled
-    if(settings.disableIPlogging) {
-      ip = 'ANONYMOUS';
-    }
-
-    accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
-  })
   
   //Delete the sessioninfos entrys of this session
   delete sessioninfos[client.id]; 
@@ -189,6 +199,7 @@ exports.handleMessage = function(client, message)
       if (sessioninfos[client.id].readonly) {
         messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
       } else if (message.data.type == "USER_CHANGES") {
+        stats.counter('pendingEdits').inc()
         padChannels.emit(message.padId, {client: client, message: message});// add to pad queue
       } else if (message.data.type == "USERINFO_UPDATE") {
         handleUserInfoUpdate(client, message);
@@ -558,6 +569,9 @@ function handleUserChanges(data, cb)
   var client = data.client
     , message = data.message
 
+  // This one's no longer pending, as we're gonna process it now
+  stats.counter('pendingEdits').dec()
+
   // Make sure all required fields are present
   if(message.data.baseRev == null)
   {
@@ -584,6 +598,9 @@ function handleUserChanges(data, cb)
   var thisSession = sessioninfos[client.id];
       
   var r, apool, pad;
+
+  // Measure time to process edit
+  var stopWatch = stats.timer('edits').start();
     
   async.series([
     //get the pad
@@ -637,6 +654,7 @@ function handleUserChanges(data, cb)
       {
         // There is an error in this changeset, so just refuse it
         client.json.send({disconnect:"badChangeset"});
+        stats.meter('failedChangesets').mark();
         return callback(new Error("Can't apply USER_CHANGES, because "+e.message));
       }
         
@@ -667,6 +685,7 @@ function handleUserChanges(data, cb)
               changeset = Changeset.follow(c, changeset, false, apool);
             }catch(e){
               client.json.send({disconnect:"badChangeset"});
+              stats.meter('failedChangesets').mark();
               return callback(new Error("Can't apply USER_CHANGES, because "+e.message));
             }
 
@@ -689,6 +708,7 @@ function handleUserChanges(data, cb)
       if (Changeset.oldLen(changeset) != prevText.length) 
       {
         client.json.send({disconnect:"badChangeset"});
+        stats.meter('failedChangesets').mark();
         return callback(new Error("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length));
       }
         
@@ -712,6 +732,7 @@ function handleUserChanges(data, cb)
     }
   ], function(err)
   {
+    stopWatch.end()
     cb();
     if(err) console.warn(err.stack || err)
   });
@@ -797,7 +818,7 @@ exports.updatePadClients = function(pad, callback)
 }
 
 /**
- * Copied from the Etherpad Source Code. Don't know what this methode does excatly...
+ * Copied from the Etherpad Source Code. Don't know what this method does excatly...
  */
 function _correctMarkersInPad(atext, apool) {
   var text = atext.text;
