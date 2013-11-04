@@ -76,6 +76,7 @@
     "pad.modals.slowcommit.cause": "Puede deberse a problemas con tu conexi\u00f3n de red.",
     "pad.modals.badChangeset.explanation": "Ha hecho una edici\u00f3n clasificada como ilegal por el servidor de sincronizaci\u00f3n.",
     "pad.modals.badChangeset.cause": "Esto podr\u00eda ser debido a una mala configuraci\u00f3n del servidor o alg\u00fan otro comportamiento inesperado. P\u00f3ngase en contacto con el administrador del servicio, si siente que esto es un error. Intente volver a conectar con el fin de seguir editando.",
+    "pad.modals.corruptPad.explanation": "El pad que est\u00e1 intentando acceder est\u00e1 da\u00f1ado.",
     "pad.modals.corruptPad.cause": "Esto puede deberse a una mala configuraci\u00f3n de servidor o alg\u00fan otro comportamiento inesperado. P\u00f3ngase en contacto con el administrador del servicio.",
     "pad.modals.deleted": "Borrado.",
     "pad.modals.deleted.explanation": "Este pad ha sido borrado.",
