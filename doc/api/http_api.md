@@ -294,6 +294,65 @@ returns the text of a pad formatted as HTML
   * `{code: 0, message:"ok", data: {html:"Welcome Text<br>More Text"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
+#### setHTML(padID, text)
+ * API >= 1
+
+sets the html of a pad
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: null}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+  * `{code: 1, message:"text too long", data: null}`
+
+#### getAttributePool(padID)
+ * API >= 1.2.8
+
+returns the attribute pool of a pad
+
+*Example returns:*
+  * `{ "code":0,
+       "message":"ok",
+       "data": {
+         "pool":{
+           "numToAttrib":{
+             "0":["author","a.X4m8bBWJBZJnWGSh"],
+             "1":["author","a.TotfBPzov54ihMdH"],
+             "2":["author","a.StiblqrzgeNTbK05"],
+             "3":["bold","true"]
+           },
+           "attribToNum":{
+             "author,a.X4m8bBWJBZJnWGSh":0,
+             "author,a.TotfBPzov54ihMdH":1,
+             "author,a.StiblqrzgeNTbK05":2,
+             "bold,true":3
+           },
+           "nextNum":4
+         }
+       }
+     }`
+  * `{"code":1,"message":"padID does not exist","data":null}`
+
+#### getRevisionChangeset(padID)
+ * API >= 1.2.8
+
+get the changeset at a given revision, or last revision if 'rev' is not defined.
+
+*Example returns:*
+  * `{ "code" : 0,
+       "message" : "ok",
+       "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
+     }`
+  * `{"code":1,"message":"padID does not exist","data":null}`
+
+#### createDiffHTML(padID, startRev, endRev)
+ * API >= 1.2.7
+
+returns an object of diffs from 2 points in a pad
+
+*Example returns:*
+  * `{"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}`
+  * `{"code":4,"message":"no or wrong API Key","data":null}`
+
 ### Chat
 #### getChatHistory(padID, [start, end])
  * API >= 1.2.7
