@@ -332,7 +332,7 @@ returns the attribute pool of a pad
      }`
   * `{"code":1,"message":"padID does not exist","data":null}`
 
-#### getRevisionChangeset(padID)
+#### getRevisionChangeset(padID, [rev])
  * API >= 1.2.8
 
 get the changeset at a given revision, or last revision if 'rev' is not defined.
@@ -343,6 +343,7 @@ get the changeset at a given revision, or last revision if 'rev' is not defined.
        "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
      }`
   * `{"code":1,"message":"padID does not exist","data":null}`
+  * `{"code":1,"message":"rev is higher than the head revision of the pad","data":null}`
 
 #### createDiffHTML(padID, startRev, endRev)
  * API >= 1.2.7
