@@ -16,7 +16,7 @@ if [ $(uname) = "SunOS" ]; then
   }
 fi
 
-#Is wget installed?
+#Is curl installed?
 hash curl > /dev/null 2>&1 || { 
   echo "Please install curl" >&2
   exit 1 
