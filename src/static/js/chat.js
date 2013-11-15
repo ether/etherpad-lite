@@ -182,11 +182,11 @@ var chat = (function()
         }
       });
       
-	  // initial messages are loaded in pad.js' _afterHandshake
-	  
-	  $("#chatcounter").text(0);
-	  $("#chatloadmessagesbutton").click(function()
-	  {
+      // initial messages are loaded in pad.js' _afterHandshake
+  
+      $("#chatcounter").text(0);
+      $("#chatloadmessagesbutton").click(function()
+      {
         var start = Math.max(self.historyPointer - 20, 0);
         var end = self.historyPointer;
 
@@ -198,7 +198,7 @@ var chat = (function()
 
         pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": end});
         self.historyPointer = start;
-	  });
+      });
     }
   }
 

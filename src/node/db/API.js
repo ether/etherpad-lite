@@ -440,8 +440,8 @@ exports.getChatHistory = function(padID, start, end, callback)
     // fall back to getting the whole chat-history if a parameter is missing
     if(!start || !end)
     {
-	  start = 0;
-	  end = pad.chatHead;
+      start = 0;
+      end = pad.chatHead;
     }
     
     if(start >= chatHead && chatHead > 0)

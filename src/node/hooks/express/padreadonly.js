@@ -16,49 +16,49 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       //translate the read only pad to a padId
       function(callback)
       {
-	readOnlyManager.getPadId(req.params.id, function(err, _padId)
-	{
-	  if(ERR(err, callback)) return;
+        readOnlyManager.getPadId(req.params.id, function(err, _padId)
+        {
+          if(ERR(err, callback)) return;
 
-	  padId = _padId;
+          padId = _padId;
 
-	  //we need that to tell hasPadAcess about the pad  
-	  req.params.pad = padId; 
+          //we need that to tell hasPadAcess about the pad  
+          req.params.pad = padId; 
 
-	  callback();
-	});
+          callback();
+        })
       },
       //render the html document
       function(callback)
       {
-	//return if the there is no padId
-	if(padId == null)
-	{
-	  callback("notfound");
-	  return;
-	}
+        //return if the there is no padId
+        if(padId == null)
+        {
+          callback("notfound");
+          return;
+        }
 
-	hasPadAccess(req, res, function()
-	{
-	  //render the html document
-	  exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
-	  {
-	    if(ERR(err, callback)) return;
-	    html = _html;
-	    callback();
-	  });
-	});
+        hasPadAccess(req, res, function()
+        {
+          //render the html document
+          exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
+          {
+            if(ERR(err, callback)) return;
+            html = _html;
+            callback();
+          });
+        });
       }
     ], function(err)
     {
       //throw any unexpected error
       if(err && err != "notfound")
-	ERR(err);
+        ERR(err);
 
       if(err == "notfound")
-	res.send(404, '404 - Not Found');
+        res.send(404, '404 - Not Found');
       else
-	res.send(html);
+        res.send(html);
     });
   });
 

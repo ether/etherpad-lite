@@ -4187,7 +4187,7 @@ function Ace2Inner(){
     selection.startPoint.index+" / "+
     selection.endPoint.node.uniqueId()+","+
     selection.endPoint.index);
-	}*/
+}*/
       }
       return selection;
     }
@@ -5255,7 +5255,7 @@ function Ace2Inner(){
 
         if(h){ // apply style to div
           div.style.height = h +"px";
-	}
+        }
 
         div.appendChild(odoc.createTextNode(String(n)));
         fragment.appendChild(div);

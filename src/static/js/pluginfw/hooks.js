@@ -61,7 +61,7 @@ exports.flatten = function (lst) {
       if (lst[i] != undefined && lst[i] != null) {
         for (var j = 0; j < lst[i].length; j++) {
           res.push(lst[i][j]);
-	}
+        }
       }
     }
   }

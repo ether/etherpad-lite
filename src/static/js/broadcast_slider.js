@@ -461,10 +461,10 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         var startPos = clientVars.collab_client_vars.rev;
         if(window.location.hash.length > 1)
         {
-	      var hashRev = Number(window.location.hash.substr(1));
-	      if(!isNaN(hashRev))
-	      {
-	        // this is necessary because of the socket.io-event which loads the changesets 
+          var hashRev = Number(window.location.hash.substr(1));
+          if(!isNaN(hashRev))
+          {
+            // this is necessary because of the socket.io-event which loads the changesets 
             setTimeout(function() { setSliderPosition(hashRev); }, 1);
           }
         }
