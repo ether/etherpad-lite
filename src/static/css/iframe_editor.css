@@ -170,22 +170,32 @@ p {
 */
 
 ol { 
-  list-style-type: decimal;
-}
+  list-style: decimal inside none;
+ }
 
 ol > li {
-  display:inline;   
+  list-style-type:none;
 }
 
 /* Set the indentation */
-ol.list-number1{ text-indent: 0px; }
-ol.list-number2{ text-indent: 10px; }
-ol.list-number3{ text-indent: 20px; }
+ol.list-number1{ margin-left: 0px; }
+ol.list-number2{ margin-left: 10px; }
+ol.list-number3{ margin-left: 20px; }
 ol.list-number4{ text-indent: 30px; }
 ol.list-number5{ text-indent: 40px; }
 ol.list-number6{ text-indent: 50px; }
 ol.list-number7{ text-indent: 60px; }
 ol.list-number8{ text-indent: 70px; }
+
+/* Set the indentation */
+ol.list-number1 > li { margin-left:10px; text-indent: -13px; }
+ol.list-number2 > li { margin-left:20px; text-indent: -23px; }
+ol.list-number3 > li { margin-left:30px; text-indent: -33px; }
+ol.list-number4 > li { margin-left:40px; text-indent: -43px; }
+ol.list-number5 > li { margin-left:50px; text-indent: -53px; }
+ol.list-number6 > li { margin-left:60px; text-indent: -63px; }
+ol.list-number7 > li { margin-left:70px; text-indent: -73px; }
+ol.list-number8 > li { margin-left:80px; text-indent: -83px; }
 
 /* Add styling to the first item in a list */
 
