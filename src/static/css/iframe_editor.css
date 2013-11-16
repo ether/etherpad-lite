@@ -188,7 +188,7 @@ ol.list-number7{ text-indent: 60px; }
 ol.list-number8{ text-indent: 70px; }
 
 /* Set the indentation */
-ol.list-number1 > li { margin-left:10px; text-indent: -13px; }
+ol.list-number1 > li { margin-left:13px; text-indent: -13px; }
 ol.list-number2 > li { margin-left:20px; text-indent: -23px; }
 ol.list-number3 > li { margin-left:30px; text-indent: -33px; }
 ol.list-number4 > li { margin-left:40px; text-indent: -43px; }
