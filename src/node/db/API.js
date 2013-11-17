@@ -440,8 +440,8 @@ exports.getChatHistory = function(padID, start, end, callback)
     // fall back to getting the whole chat-history if a parameter is missing
     if(!start || !end)
     {
-	  start = 0;
-	  end = pad.chatHead;
+    start = 0;
+    end = pad.chatHead;
     }
     
     if(start >= chatHead && chatHead > 0)
@@ -552,6 +552,44 @@ exports.deletePad = function(padID, callback)
   });
 }
 
+/**
+copyPad(padID, newID) copies a pad
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.copyPad = function(padID, newID, callback)
+{
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    pad.copy(newID, callback);
+  });
+}
+
+/**
+movePad(padID, newID) moves a pad
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.movePad = function(padID, newID, callback)
+{
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    pad.copy(newID, function(err) {
+      if(ERR(err, callback)) return;
+      pad.remove(callback);
+    });
+  });
+}
 /**
 getReadOnlyLink(padID) returns the read only link of a pad 
 

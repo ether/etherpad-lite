@@ -13,6 +13,8 @@ var settings = require('../utils/Settings');
 var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
+var groupManager = require("./GroupManager");
+var customError = require("../utils/customError");
 var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
 var randomString = require("../utils/randomstring");
@@ -401,6 +403,118 @@ Pad.prototype.init = function init(text, callback) {
 
     hooks.callAll("padLoad", {'pad':_this});
     callback(null);
+  });
+};
+
+Pad.prototype.copy = function copy(newID, callback) {
+  var padID = this.id;
+  var _this = this;
+
+  //kick everyone from this pad
+  // TODO: this presents a message on the client saying that the pad was 'deleted'. Fix this?
+  padMessageHandler.kickSessionsFromPad(padID);
+
+  // flush the source pad:
+  _this.saveToDatabase();
+
+  async.series([
+    // if it's a group pad, let's make sure the group exists.
+    function(callback)
+    {
+      if (newID.indexOf("$") != -1) 
+      { 
+        groupManager.doesGroupExist(newID.split("$")[0], function (err, exists) 
+        {
+          if(ERR(err, callback)) return;
+          
+          //group does not exist
+          if(exists == false)
+          {
+            callback(new customError("groupID does not exist","apierror"));
+          }
+          //everything is fine, continue
+          else
+          {
+            callback();
+          }
+        });
+      }
+      callback();
+    },
+    // if the pad exists, we should abort.
+    function(callback)
+    {
+      padManager.doesPadExists(newID, function (err, exists) 
+      {
+        if(ERR(err, callback)) return;
+        
+        if(exists == true)
+        {
+          callback(new customError("new padID already exists","apierror"));
+        }
+        //everything is fine, continue
+        else
+        {
+          db.get("pad:"+padID, function(err, pad) {
+            db.set("pad:"+newID, pad);
+            callback();
+          });
+        }
+      });
+    },
+    //delete all relations
+    function(callback)
+    {
+      async.parallel([
+        //copy all chat messages
+        function(callback)
+        {
+          var chatHead = _this.chatHead;
+
+          for(var i=0;i<=chatHead;i++)
+          {
+            db.get("pad:"+padID+":chat:"+i, function (err, chat) {
+              db.set("pad:"+newID+":chat:"+i, chat);
+            });
+          }
+
+          callback();
+        },
+        //copy all revisions
+        function(callback)
+        {
+          var revHead = _this.head;
+
+          for(var i=0;i<=revHead;i++)
+          {
+            db.get("pad:"+padID+":revs:"+i, function (err, rev) {
+              if (ERR(err, callback)) return;
+              db.set("pad:"+newID+":revs:"+i, rev);
+            });
+          }
+
+          callback();
+        },
+        //add the new pad to all authors who contributed to the old one
+        function(callback)
+        {
+          var authorIDs = _this.getAllAuthors();
+
+          authorIDs.forEach(function (authorID)
+          {
+            authorManager.addPad(authorID, newID);
+          });
+
+          callback();
+        },
+      // parallel
+      ], callback);
+    },
+  // series
+  ], function(err)
+  {
+    if(ERR(err, callback)) return;
+    callback(null, {padID: newID});
   });
 };
 

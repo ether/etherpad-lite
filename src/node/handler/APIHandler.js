@@ -240,6 +240,8 @@ var version =
   , "getRevisionChangeset"      : ["padID", "rev"]
   , "getLastEdited"             : ["padID"]
   , "deletePad"                 : ["padID"]
+  , "copyPad"                   : ["padID", "newID"]
+  , "movePad"                   : ["padID", "newID"]
   , "getReadOnlyID"             : ["padID"]
   , "setPublicStatus"           : ["padID", "publicStatus"]
   , "getPublicStatus"           : ["padID"]
