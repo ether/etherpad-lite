@@ -406,13 +406,13 @@ Pad.prototype.init = function init(text, callback) {
   });
 };
 
-Pad.prototype.copy = function copy(newID, callback) {
-  var padID = this.id;
+Pad.prototype.copy = function copy(destinationID, callback) {
+  var sourceID = this.id;
   var _this = this;
 
   //kick everyone from this pad
   // TODO: this presents a message on the client saying that the pad was 'deleted'. Fix this?
-  padMessageHandler.kickSessionsFromPad(padID);
+  padMessageHandler.kickSessionsFromPad(sourceID);
 
   // flush the source pad:
   _this.saveToDatabase();
@@ -421,9 +421,9 @@ Pad.prototype.copy = function copy(newID, callback) {
     // if it's a group pad, let's make sure the group exists.
     function(callback)
     {
-      if (newID.indexOf("$") != -1) 
+      if (destinationID.indexOf("$") != -1) 
       { 
-        groupManager.doesGroupExist(newID.split("$")[0], function (err, exists) 
+        groupManager.doesGroupExist(destinationID.split("$")[0], function (err, exists) 
         {
           if(ERR(err, callback)) return;
           
@@ -444,7 +444,7 @@ Pad.prototype.copy = function copy(newID, callback) {
     // if the pad exists, we should abort.
     function(callback)
     {
-      padManager.doesPadExists(newID, function (err, exists) 
+      padManager.doesPadExists(destinationID, function (err, exists) 
       {
         if(ERR(err, callback)) return;
         
@@ -455,8 +455,8 @@ Pad.prototype.copy = function copy(newID, callback) {
         //everything is fine, continue
         else
         {
-          db.get("pad:"+padID, function(err, pad) {
-            db.set("pad:"+newID, pad);
+          db.get("pad:"+sourceID, function(err, pad) {
+            db.set("pad:"+destinationID, pad);
             callback();
           });
         }
@@ -473,8 +473,8 @@ Pad.prototype.copy = function copy(newID, callback) {
 
           for(var i=0;i<=chatHead;i++)
           {
-            db.get("pad:"+padID+":chat:"+i, function (err, chat) {
-              db.set("pad:"+newID+":chat:"+i, chat);
+            db.get("pad:"+sourceID+":chat:"+i, function (err, chat) {
+              db.set("pad:"+destinationID+":chat:"+i, chat);
             });
           }
 
@@ -487,9 +487,9 @@ Pad.prototype.copy = function copy(newID, callback) {
 
           for(var i=0;i<=revHead;i++)
           {
-            db.get("pad:"+padID+":revs:"+i, function (err, rev) {
+            db.get("pad:"+sourceID+":revs:"+i, function (err, rev) {
               if (ERR(err, callback)) return;
-              db.set("pad:"+newID+":revs:"+i, rev);
+              db.set("pad:"+destinationID+":revs:"+i, rev);
             });
           }
 
@@ -502,7 +502,7 @@ Pad.prototype.copy = function copy(newID, callback) {
 
           authorIDs.forEach(function (authorID)
           {
-            authorManager.addPad(authorID, newID);
+            authorManager.addPad(authorID, destinationID);
           });
 
           callback();
@@ -514,7 +514,7 @@ Pad.prototype.copy = function copy(newID, callback) {
   ], function(err)
   {
     if(ERR(err, callback)) return;
-    callback(null, {padID: newID});
+    callback(null, {padID: destinationID});
   });
 };
 

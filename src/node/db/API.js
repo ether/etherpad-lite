@@ -553,20 +553,20 @@ exports.deletePad = function(padID, callback)
 }
 
 /**
-copyPad(padID, newID) copies a pad
+copyPad(sourceID, destinationID) copies a pad
 
 Example returns:
 
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.copyPad = function(padID, newID, callback)
+exports.copyPad = function(sourceID, destinationID, callback)
 {
-  getPadSafe(padID, true, function(err, pad)
+  getPadSafe(sourceID, true, function(err, pad)
   {
     if(ERR(err, callback)) return;
     
-    pad.copy(newID, callback);
+    pad.copy(destinationID, callback);
   });
 }
 
