@@ -553,38 +553,40 @@ exports.deletePad = function(padID, callback)
 }
 
 /**
-copyPad(sourceID, destinationID) copies a pad
+copyPad(sourceID, destinationID[, force=false]) copies a pad. If force is true, 
+	the destination will be overwritten if it exists.
 
 Example returns:
 
-{code: 0, message:"ok", data: null}
+{code: 0, message:"ok", data: {padID: destinationID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.copyPad = function(sourceID, destinationID, callback)
+exports.copyPad = function(sourceID, destinationID, force, callback)
 {
   getPadSafe(sourceID, true, function(err, pad)
   {
     if(ERR(err, callback)) return;
     
-    pad.copy(destinationID, callback);
+    pad.copy(destinationID, force, callback);
   });
 }
 
 /**
-movePad(padID, newID) moves a pad
+movePad(sourceID, destinationID[, force=false]) moves a pad. If force is true, 
+	the destination will be overwritten if it exists.
 
 Example returns:
 
-{code: 0, message:"ok", data: null}
+{code: 0, message:"ok", data: {padID: destinationID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.movePad = function(padID, newID, callback)
+exports.movePad = function(sourceID, destinationID, force, callback)
 {
-  getPadSafe(padID, true, function(err, pad)
+  getPadSafe(sourceID, true, function(err, pad)
   {
     if(ERR(err, callback)) return;
     
-    pad.copy(newID, function(err) {
+    pad.copy(destinationID, force, function(err) {
       if(ERR(err, callback)) return;
       pad.remove(callback);
     });
