@@ -429,6 +429,24 @@ deletes a pad
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
+#### copyPad(sourceID, destinationID[, force=false])
+ * API >= 1.2.8
+
+copies a pad with full history and chat. If force is true and the destination pad exists, it will be overwritten.
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: null}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
+#### movePad(sourceID, destinationID[, force=false])
+ * API >= 1.2.8
+
+moves a pad. If force is true and the destination pad exists, it will be overwritten.
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: null}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
 #### getReadOnlyID(padID)
  * API >= 1
 
