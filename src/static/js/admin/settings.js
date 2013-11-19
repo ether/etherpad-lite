@@ -13,28 +13,18 @@ $(document).ready(function () {
 
   socket.on('settings', function (settings) {
 
-    /* Check to make sure the JSON is clean before proceeding */
-    if(isJSONClean(settings.results))
-    {
-      $('.settings').append(settings.results);
-      $('.settings').focus();
-      $('.settings').autosize();  
-    }
-    else{
-      alert("YOUR JSON IS BAD AND YOU SHOULD FEEL BAD");
-    }    
+    // (removed JSON validation, cause it's not JSON!)
+    $('.settings').append(settings.results);
+    $('.settings').focus();
+    $('.settings').autosize();   
   });
 
   /* When the admin clicks save Settings check the JSON then send the JSON back to the server */
   $('#saveSettings').on('click', function(){
     var editedSettings = $('.settings').val();
-    if(isJSONClean(editedSettings)){
-      // JSON is clean so emit it to the server
-      socket.emit("saveSettings", $('.settings').val());
-    }else{
-      alert("YOUR JSON IS BAD AND YOU SHOULD FEEL BAD")
-      $('.settings').focus();
-    }
+    // (removed JSON validation, cause it's not JSON!)
+    // emit it to the server
+    socket.emit("saveSettings", $('.settings').val());
   });
 
   /* Tell Etherpad Server to restart */
@@ -51,20 +41,3 @@ $(document).ready(function () {
   socket.emit("load"); // Load the JSON from the server
 
 });
-
-
-function isJSONClean(data){
-  var cleanSettings = JSON.minify(data);
-  try{
-    var response = jQuery.parseJSON(cleanSettings);
-  }
-  catch(e){
-    return false; // the JSON failed to be parsed
-  }
-  if(typeof response !== 'object'){
-    return false;
-  }else{
-    return true;
-  }
-}
-
