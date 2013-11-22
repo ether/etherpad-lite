@@ -75,7 +75,7 @@ body.grayedout { background-color: #eee !important }
 }
 
 body.doesWrap {
-  white-space: normal;
+  white-space: pre-wrap; /*Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret, walking around your screen (see #1766) */
   word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
 }
 
