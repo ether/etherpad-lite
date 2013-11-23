@@ -84,7 +84,7 @@ SocketClient("AuthenticatedSocketClient",
 
       //make sure we have a token
       this.token = readCookie("token");
-      if(this.token == null)
+      if(this.token === null)
       {
         this.token = "t." + randomString();
         createCookie("token", this.token, 60);
@@ -92,6 +92,7 @@ SocketClient("AuthenticatedSocketClient",
       this.padID = padID;
       this.sessionID = decodeURIComponent(readCookie("sessionID"));
       this.password = readCookie("password");
+      this.handlers = {};
 
       this._super(baseurl);
     },
@@ -162,7 +163,6 @@ AuthenticatedSocketClient("TimesliderClient",
   { //instance
     init: function (baseurl, padID) {
       this._super(baseurl, padID);
-      this.handlers = {};
     },
 
     onConnect: function (callback) {
@@ -247,38 +247,6 @@ function init(baseURL) {
           $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
         });
 
-/*
-    //build up the socket io connection
-    socket = io.connect(url, {resource: resource});
-
-    //send the ready message once we're connected
-    socket.on('connect', function()
-    {
-      sendSocketMsg("CLIENT_READY", {});
-    });
-
-    socket.on('disconnect', function()
-    {
-      BroadcastSlider.showReconnectUI();
-    });
-
-    //route the incoming messages
-    socket.on('message', function(message)
-    {
-      //if(window.console) console.log(message);
-
-      if(message.type == "CLIENT_VARS")
-      {
-        handleClientVars(message);
-      }
-      else if(message.accessStatus)
-      {
-        $("body").html("<h2>You have no permission to access this pad</h2>");
-      } else {
-        changesetLoader.handleMessageFromServer(message);
-      }
-    });
-*/
     //get all the export links
     export_links = $('#export > .exportlink');
 
@@ -298,25 +266,6 @@ function init(baseURL) {
 
     hooks.aCallAll("postTimesliderInit");
   });
-}
-
-//sends a message over the socket
-function sendSocketMsg(type, data)
-{
-  var sessionID = decodeURIComponent(readCookie("sessionID"));
-  var password = readCookie("password");
-
-  var msg = { "component" : "pad", // FIXME: Remove this stupidity!
-              "type": type,
-              "data": data,
-              "padId": padId,
-              "token": token,
-              "sessionID": sessionID,
-              "password": password,
-              "protocolVersion": 2};
-
-
-  socket.json.send(msg);
 }
 
 var fireWhenAllScriptsAreLoaded = [];
