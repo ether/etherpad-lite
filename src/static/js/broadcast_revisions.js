@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -23,7 +23,7 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-function loadBroadcastRevisionsJS()
+function loadBroadcastRevisionsJS(clientVars)
 {
   function Revision(revNum)
   {
@@ -44,9 +44,9 @@ function loadBroadcastRevisionsJS()
     this.changesets.push(changesetWrapper);
     this.changesets.sort(function(a, b)
     {
-      return (b.deltaRev - a.deltaRev)
+      return (b.deltaRev - a.deltaRev);
     });
-  }
+  };
 
   revisionInfo = {};
   revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta)

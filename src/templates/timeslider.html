@@ -226,17 +226,16 @@
     }
 
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-    var socket = require('ep_etherpad-lite/static/js/timeslider').socket;
-    BroadcastSlider = require('ep_etherpad-lite/static/js/timeslider').BroadcastSlider;
+    var timeslider = require('ep_etherpad-lite/static/js/timeslider')
+    var socket = timeslider.socket;
+    BroadcastSlider = timeslider.BroadcastSlider;
     plugins.baseURL = baseURL;
     
     plugins.update(function () {
       var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
       hooks.plugins = plugins;
 
-      var timeslider = require('ep_etherpad-lite/static/js/timeslider')
-      timeslider.baseURL = baseURL;
-      timeslider.init();
+      timeslider.init(baseURL);
 
       /* TODO: These globals shouldn't exist. */
       padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;

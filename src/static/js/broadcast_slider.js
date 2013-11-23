@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -24,8 +24,9 @@
  // Timeslider controller would probably be more appropriate.
 var _ = require('./underscore');
 var padmodals = require('./pad_modals').padmodals;
+require("./jquery.class");
 
-function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
+function loadBroadcastSliderJS(_clientVars, fireWhenAllScriptsAreLoaded)
 {
   var BroadcastSlider;
 
@@ -37,6 +38,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     var slidercallbacks = [];
     var savedRevisions = [];
     var sliderPlaying = false;
+    clientVars = _clientVars;
 
     function disableSelection(element)
     {
@@ -56,7 +58,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           slidercallbacks[i](newval);
         }
       }
-        
+
     var updateSliderElements = function()
       {
         for (var i = 0; i < savedRevisions.length; i++)
@@ -65,7 +67,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           savedRevisions[i].css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
         }
         $("#ui-slider-handle").css('left', sliderPos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
-      }  
+      }
 
     var addSavedRevision = function(position, info)
       {
@@ -167,7 +169,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       var height = $('#timeslider-top').height();
       $('#editorcontainerbox').css({marginTop: height});
     }, 600);
-    
+
     function setAuthors(authors)
     {
       var authorsList = $("#authorsList");
@@ -181,7 +183,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         if (author.name)
         {
           if (numNamed !== 0) authorsList.append(', ');
-          
+
           $('<span />')
             .text(author.name || "unnamed")
             .css('background-color', authorColor)
@@ -199,17 +201,17 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       if (numAnonymous > 0)
       {
         var anonymousAuthorString = html10n.get("timeslider.unnamedauthors", { num: numAnonymous });
-        
+
         if (numNamed !== 0){
           authorsList.append(' + ' + anonymousAuthorString);
         } else {
           authorsList.append(anonymousAuthorString);
         }
-        
+
         if(colorsAnonymous.length > 0){
           authorsList.append(' (');
           _.each(colorsAnonymous, function(color, i){
-            if( i > 0 ) authorsList.append(' '); 
+            if( i > 0 ) authorsList.append(' ');
             $('<span>&nbsp;</span>')
               .css('background-color', color)
               .addClass('author author-anonymous')
@@ -217,13 +219,13 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           });
           authorsList.append(')');
         }
-        
+
       }
       if (authors.length == 0)
       {
         authorsList.append(html10n.get("timeslider.toolbar.authorsList"));
       }
-      
+
       fixPadHeight();
     }
 
@@ -281,7 +283,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     {
       disableSelection($("#playpause_button")[0]);
       disableSelection($("#timeslider")[0]);
-      
+
       $(document).keyup(function(e)
       {
         var code = -1;
@@ -326,7 +328,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         else if (code == 32) playpause();
 
       });
-      
+
       $(window).resize(function()
       {
         updateSliderElements();
@@ -457,7 +459,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       if (clientVars)
       {
         $("#timeslider").show();
-        
+
         var startPos = clientVars.collab_client_vars.rev;
         if(window.location.hash.length > 1)
         {
@@ -468,15 +470,15 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
             setTimeout(function() { setSliderPosition(hashRev); }, 1);
           }
         }
-        
+
         setSliderLength(clientVars.collab_client_vars.rev);
         setSliderPosition(clientVars.collab_client_vars.rev);
-        
+
         _.each(clientVars.savedRevisions, function(revision)
         {
           addSavedRevision(revision.revNum, revision);
         })
-        
+
       }
     });
   })();

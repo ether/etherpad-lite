@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -27,13 +27,12 @@ var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
 var colorutils = require('./colorutils').colorutils;
 var _ = require('./underscore');
-
+require("./jquery.class");
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
-function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider)
+function loadBroadcastJS(tsclient, fireWhenAllScriptsAreLoaded, BroadcastSlider)
 {
-  var changesetLoader = undefined;
-
+  var changesetLoader;
   // Below Array#indexOf code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_indexof.htm
   if (!Array.prototype.indexOf)
   {
@@ -83,14 +82,14 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   var appLevelDisconnectReason = null;
 
   var padContents = {
-    currentRevision: clientVars.collab_client_vars.rev,
-    currentTime: clientVars.collab_client_vars.time,
-    currentLines: Changeset.splitTextLines(clientVars.collab_client_vars.initialAttributedText.text),
+    currentRevision: tsclient.clientVars.collab_client_vars.rev,
+    currentTime: tsclient.clientVars.collab_client_vars.time,
+    currentLines: Changeset.splitTextLines(tsclient.clientVars.collab_client_vars.initialAttributedText.text),
     currentDivs: null,
     // to be filled in once the dom loads
-    apool: (new AttribPool()).fromJsonable(clientVars.collab_client_vars.apool),
+    apool: (new AttribPool()).fromJsonable(tsclient.clientVars.collab_client_vars.apool),
     alines: Changeset.splitAttributionLines(
-    clientVars.collab_client_vars.initialAttributedText.attribs, clientVars.collab_client_vars.initialAttributedText.text),
+    tsclient.clientVars.collab_client_vars.initialAttributedText.attribs, tsclient.clientVars.collab_client_vars.initialAttributedText.text),
 
     // generates a jquery element containing HTML for a line
     lineToElement: function(line, aline)
@@ -250,7 +249,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
    */
 
   function applyChangeset(changeset, revision, preventSliderMovement, timeDelta)
-  { 
+  {
     // disable the next 'gotorevision' call handled by a timeslider update
     if (!preventSliderMovement)
     {
@@ -274,12 +273,12 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
-    
+
     var authors = _.map(padContents.getActiveAuthors(), function(name)
     {
       return authorData[name];
     });
-    
+
     BroadcastSlider.setAuthors(authors);
   }
 
@@ -292,7 +291,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         str = '0' + str;
         return str;
         }
-        
+
     var date = new Date(padContents.currentTime);
     var dateFormat = function()
       {
@@ -307,15 +306,15 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
           "month": month,
           "year": year,
           "hours": hours,
-          "minutes": minutes, 
+          "minutes": minutes,
           "seconds": seconds
         }));
         }
-        
-        
-        
-        
-        
+
+
+
+
+
     $('#timer').html(dateFormat());
     var revisionDate = html10n.get("timeslider.saved", {
       "day": date.getDate(),
@@ -338,7 +337,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     $('#revision_date').html(revisionDate)
 
   }
-  
+
   updateTimer();
 
   function goToRevision(newRevision)
@@ -401,7 +400,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
       changesetLoader.queueUp(start, 1, update);
     }
-    
+
     var authors = _.map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
     });
@@ -453,7 +452,8 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       var start = request.rev;
       var requestID = Math.floor(Math.random() * 100000);
 
-      sendSocketMsg("CHANGESET_REQ", {
+      //sendSocketMsg("CHANGESET_REQ", {
+      tsclient.sendMessage("CHANGESET_REQ", {
         "start": start,
         "granularity": granularity,
         "requestID": requestID
@@ -461,21 +461,21 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
       self.reqCallbacks[requestID] = callback;
     },
-    handleSocketResponse: function(message)
+    handle_CHANGESET_REQ: function(data)
     {
       var self = changesetLoader;
 
-      var start = message.data.start;
-      var granularity = message.data.granularity;
-      var callback = self.reqCallbacks[message.data.requestID];
-      delete self.reqCallbacks[message.data.requestID];
+      var start = data.start;
+      var granularity = data.granularity;
+      var callback = self.reqCallbacks[data.requestID];
+      delete self.reqCallbacks[data.requestID];
 
-      self.handleResponse(message.data, start, granularity, callback);
+      self.handleResponse(data, start, granularity, callback);
       setTimeout(self.loadFromQueue, 10);
     },
     handleResponse: function(data, start, granularity, callback)
     {
-      debugLog("response: ", data);
+      debugLog("handleResponse: ", data);
       var pool = (new AttribPool()).fromJsonable(data.apool);
       for (var i = 0; i < data.forwardsChangesets.length; i++)
       {
@@ -489,56 +489,44 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       }
       if (callback) callback(start - 1, start + data.forwardsChangesets.length * granularity - 1);
     },
-    handleMessageFromServer: function (obj)
+    handle_COLLABROOM: function (obj)
     {
-      debugLog("handleMessage:", arguments);
-
-      if (obj.type == "COLLABROOM")
+      debugLog("handle_COLLABROOM:", arguments);
+      if (obj.type == "NEW_CHANGES")
       {
-        obj = obj.data;
+        debugLog(obj);
+        var changeset = Changeset.moveOpsToNewPool(
+          obj.changeset, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
 
-        if (obj.type == "NEW_CHANGES")
-        {
-          debugLog(obj);
-          var changeset = Changeset.moveOpsToNewPool(
-            obj.changeset, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
+        var changesetBack = Changeset.inverse(
+          obj.changeset, padContents.currentLines, padContents.alines, padContents.apool);
 
-          var changesetBack = Changeset.inverse(
-            obj.changeset, padContents.currentLines, padContents.alines, padContents.apool);
+        changesetBack = Changeset.moveOpsToNewPool(
+          changesetBack, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
 
-          var changesetBack = Changeset.moveOpsToNewPool(
-            changesetBack, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
-
-          loadedNewChangeset(changeset, changesetBack, obj.newRev - 1, obj.timeDelta);
-        }
-        else if (obj.type == "NEW_AUTHORDATA")
-        {
-          var authorMap = {};
-          authorMap[obj.author] = obj.data;
-          receiveAuthorData(authorMap);
-
-          var authors = _.map(padContents.getActiveAuthors(), function(name) {
-            return authorData[name];
-          });
-
-          BroadcastSlider.setAuthors(authors);
-        }
-        else if (obj.type == "NEW_SAVEDREV")
-        {
-          var savedRev = obj.savedRev;
-          BroadcastSlider.addSavedRevision(savedRev.revNum, savedRev);
-        }
+        loadedNewChangeset(changeset, changesetBack, obj.newRev - 1, obj.timeDelta);
       }
-      else if(obj.type == "CHANGESET_REQ")
+      else if (obj.type == "NEW_AUTHORDATA")
       {
-        changesetLoader.handleSocketResponse(obj);
+        var authorMap = {};
+        authorMap[obj.author] = obj.data;
+        receiveAuthorData(authorMap);
+
+        var authors = _.map(padContents.getActiveAuthors(), function(name) {
+          return authorData[name];
+        });
+
+        BroadcastSlider.setAuthors(authors);
       }
-      else
+      else if (obj.type == "NEW_SAVEDREV")
       {
-        debugLog("Unknown message type: " + obj.type);
+        var savedRev = obj.savedRev;
+        BroadcastSlider.addSavedRevision(savedRev.revNum, savedRev);
       }
     }
   };
+  tsclient.on("CHANGESET_REQ", changesetLoader.handle_CHANGESET_REQ);
+  tsclient.on("COLLABROOM", changesetLoader.handle_COLLABROOM);
 
   // to start upon window load, just push a function onto this array
   //window['onloadFuncts'].push(setUpSocket);
@@ -570,7 +558,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       goToRevision.apply(goToRevision, arguments);
     }
   }
-      
+
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
   var dynamicCSS = makeCSSManager('dynamicsyntax');
@@ -581,7 +569,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     for (var author in newAuthorData)
     {
       var data = newAuthorData[author];
-      var bgcolor = typeof data.colorId == "number" ? clientVars.colorPalette[data.colorId] : data.colorId;
+      var bgcolor = typeof data.colorId == "number" ? tsclient.clientVars.colorPalette[data.colorId] : data.colorId;
       if (bgcolor && dynamicCSS)
       {
         var selector = dynamicCSS.selectorStyle('.' + linestylefilter.getAuthorClassName(author));
@@ -592,7 +580,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   }
 
-  receiveAuthorData(clientVars.collab_client_vars.historicalAuthorData);
+  receiveAuthorData(tsclient.clientVars.collab_client_vars.historicalAuthorData);
 
   return changesetLoader;
 }
