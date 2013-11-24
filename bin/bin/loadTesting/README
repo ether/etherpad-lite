@@ -1,0 +1,79 @@
+This is the new load testing file: https://bitbucket.org/rbraakman/etherpad-stresstest
+
+BELOW is the original load testing file.
+
+This load tester is extremely useful for testing how many dormant clients can connect to etherpad.  
+
+TODO:
+Emulate characters being typed into a pad
+
+HOW TO USE (from @mjd75) proper formatting at: https://github.com/ether/etherpad-lite/issues/360
+
+Server 1:
+Installed Node.js (etc), EtherPad and MySQL
+
+Server 2:
+Installed Xvfb and PhantomJS
+
+I installed Xvfb following (roughly) this guide: http://blog.martin-lyness.com/archives/installing-xvfb-on-ubuntu-9-10-karmic-koala
+
+	#sudo apt-get install xvfb
+	#sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic   
+
+Launched two instances of Xvfb directly from the terminal:
+
+	#Xvfb :0 -ac
+	#Xvfb :1 -ac
+
+I installed PhantomJS following this guide: http://code.google.com/p/phantomjs/wiki/Installation
+
+	#sudo add-apt-repository ppa:jerome-etienne/neoip
+	#sudo apt-get update
+	#sudo apt-get install phantomjs
+
+I created a small JavaScript file for PhatomJS to use to control the browser instances:
+
+### BEGIN JAVASCRIPT ###
+
+var page = new WebPage(),
+    t, address;
+
+if (phantom.args.length === 0) {
+    console.log('Usage: loader.js <some URL>');
+    phantom.exit();
+} else {
+    t = Date.now();
+    address = phantom.args[0];
+
+    var page = new WebPage();
+    page.onResourceRequested = function (request) {
+        console.log('Request ' + JSON.stringify(request, undefined, 4));
+    };
+    page.onResourceReceived = function (response) {
+        console.log('Receive ' + JSON.stringify(response, undefined, 4));
+    };
+    page.open(address);
+
+}
+
+### END JAVASCRIPT ###
+
+And finally a launcher script that uses screen to run 400 instances of PhantomJS with the above script:
+
+### BEGIN SHELL SCRIPT ###
+
+#!/bin/bash     
+
+# connect 200 instances to display :0                                                             
+for i in {1..200}
+do
+  DISPLAY=:0 screen -d -m phantomjs loader.js http://ec2-50-17-168-xx.compute-1.amazonaws.com:9001/p/pad2 && sleep 2
+done
+
+# connect 200 instances to display :1                                                             
+for i in {1..200}
+do
+  DISPLAY=:1 screen -d -m phantomjs loader.js http://ec2-50-17-168-xx.compute-1.amazonaws.com:9001/p/pad2 && sleep 2
+done
+
+### END SHELL SCRIPT ###
