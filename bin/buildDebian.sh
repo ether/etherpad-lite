@@ -17,7 +17,7 @@ rm -rf ${SRC}
 rsync -a deb-src/ ${SRC}/
 mkdir -p ${SYSROOT}/opt/
 
-rsync -a ../ ${SYSROOT}/opt/etherpad/ --delete
+rsync --exclude '.git' -a ../ ${SYSROOT}/opt/etherpad/ --delete
 
 find ${SRC}/ -type d -exec chmod 0755 {} \;
 find ${SRC}/ -type f -exec chmod go-w {} \;
