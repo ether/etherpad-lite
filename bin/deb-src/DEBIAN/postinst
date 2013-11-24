@@ -1,0 +1,6 @@
+#!/bin/bash
+# Start the services!
+
+service etherpad start
+echo "Give Etherpad about 3 minutes to install dependencies and start"
+rm -f /tmp/etherpad.log /tmp/etherpad.err
