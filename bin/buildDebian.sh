@@ -18,6 +18,7 @@ rsync -a bin/deb-src/ ${SRC}/
 mkdir -p ${SYSROOT}/opt/
 
 rsync --exclude '.git' -a . ${SYSROOT}/opt/etherpad/ --delete
+mkdir -p ${SYSROOT}/usr/share/doc
 cp README.md ${SYSROOT}/usr/share/doc/etherpad
 find ${SRC}/ -type d -exec chmod 0755 {} \;
 find ${SRC}/ -type f -exec chmod go-w {} \;
