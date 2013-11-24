@@ -21,3 +21,6 @@ then
   tar xf node-v${VER}-linux-${ARCH}.tar.gz -C /tmp/
   cp -a /tmp/node-v${VER}-linux-${ARCH}/* /usr/local/
 fi
+
+# Create Etherpad user
+adduser --system etherpad
