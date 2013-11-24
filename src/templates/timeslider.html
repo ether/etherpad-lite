@@ -52,7 +52,7 @@
     <div id="timeslider-top">
       <% e.begin_block("timesliderTop"); %>
       <div id="timeslider-wrapper">
-        <div id="timeslider" unselectable="on" style="display: none">
+          <div id="timeslider" unselectable="on"><!--style="display: none" -->
           <div id="timeslider-left"></div>
           <div id="timeslider-right"></div>
           <div id="timer"></div>
@@ -68,7 +68,6 @@
             <div class="stepper" id="rightstep"></div>
           </div>
         </div>
-        
         <div id="overlay">
           <div id="overlay-inner">
             <!-- -->
@@ -90,7 +89,7 @@
           <% e.end_block(); %>
           </div>
 
-          <div>
+          <div id="timeslider-metadata">
               <h1>
                 <span id="revision_label"></span>
                 <span id="revision_date"></span>
@@ -207,14 +206,13 @@
 <!-- Bootstrap -->
 <script type="text/javascript" >
   var clientVars = {};
-  var BroadcastSlider;  
+  var BroadcastSlider;
   (function () {
     var pathComponents = location.pathname.split('/');
-    
+
     // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
     var baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/';
-    
-    
+
     require.setRootURI(baseURL + "javascripts/src");
     require.setLibraryURI(baseURL + "javascripts/lib");
     require.setGlobalKeyPath("require");
@@ -224,13 +222,12 @@
     if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
       document.domain = document.domain; // for comet
     }
-
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
     var timeslider = require('ep_etherpad-lite/static/js/timeslider')
     var socket = timeslider.socket;
     BroadcastSlider = timeslider.BroadcastSlider;
     plugins.baseURL = baseURL;
-    
+
     plugins.update(function () {
       var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
       hooks.plugins = plugins;

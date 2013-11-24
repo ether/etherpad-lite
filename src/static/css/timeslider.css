@@ -1,3 +1,29 @@
+/*
+ * slider handles (SliderHandle)
+ */
+#timeslider .slider-handle {
+  position: absolute;
+}
+
+#timeslider .star {
+  background-image: url(../../static/img/star.png);
+  cursor: pointer;
+  height: 16px;
+  top: 40px;
+  width: 15px;
+}
+#timeslider .handle {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  background-image: url(../../static/img/crushed_current_location.png);
+  cursor: pointer;
+  height: 61px;
+  left: 0;
+  top: 0;
+  width: 13px;
+}
+
 #editorcontainerbox {
   overflow: auto;
   top: 40px;
@@ -46,18 +72,7 @@
   top: 1px;
   width: 100%;
 }
-#ui-slider-handle {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
-  background-image: url(../../static/img/crushed_current_location.png);
-  cursor: pointer;
-  height: 61px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 13px;
-}
+
 #ui-slider-bar {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -120,14 +135,6 @@
   right: 5px;
   top: 20px;
   width: 30px;
-}
-#timeslider .star {
-  background-image: url(../../static/img/star.png);
-  cursor: pointer;
-  height: 16px;
-  position: absolute;
-  top: 40px;
-  width: 15px;
 }
 #timeslider #timer {
   color: #fff;

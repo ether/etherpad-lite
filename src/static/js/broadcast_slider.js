@@ -26,19 +26,163 @@ var _ = require('./underscore');
 var padmodals = require('./pad_modals').padmodals;
 require("./jquery.class");
 
-function loadBroadcastSliderJS(_clientVars, fireWhenAllScriptsAreLoaded)
+/**
+ * A class for anything which can be hung off of the slider bar.
+ * I.e. this is for the handle, or saved-revisions (stars).
+ * TODO:
+ *  - handle mousedowns/clicks
+ *  - handle drags
+ */
+$.Class("SliderHandleUI",
+  {//statics
+  },
+  {//instance
+    /**
+     * Construct the SliderHandle.
+     * @param {SliderUI} slider The slider from which this handle will be hung.
+     * @param {Number} position The initial position for this handle.
+     */
+    init: function (slider, position, type) {
+      console.log("New SliderHandle(%d, %s)", position, type);
+      this.slider = slider;
+      this.position = position;
+      this.events = {};
+      //create the element:
+      this.element = $("<div class='slider-handle'></div>");
+      this.element.addClass(type);
+      //handle events
+      this.element.mouseup(this._dispatchEvent);
+      this.element.mousedown(this._dispatchEvent);
+    },
+    on: function (eventname, callback, context) {
+      if (!(eventname in this.events))
+        this.events[eventname] = [];
+      this.events[eventname].push({handler:callback, context: context});
+    },
+    _dispatchEvent: function (evt) {
+      if (eventname in this.events)
+        for (var i in this.events[eventname])
+        {
+          e = this.events[eventname][i];
+          e.handler(evt, e.context);
+        }
+    },
+    render: function () {
+      this.element.css('left', this.position * this.slider.getTickSize());
+    },
+    setPosition: function (position) {
+      this.position = position;
+      this.render();
+    }
+  }
+);
+
+SliderHandleUI("SliderSavedRevisionUI",
+    {//statics
+    },
+    {//instance
+      init: function(slider, revision) {
+        this._super(slider, revision.revNum, 'star');
+        this.revision = revision;
+      },
+    }
+);
+
+$.Class("SliderUI",
+  {//statics
+  },
+  {//instance
+    init: function (timeslider, root_element) {
+      this.timeslider = timeslider;
+      console.log("New SliderUI, head_revision = %d", this.timeslider.head_revision);
+      // parse the various elements we need:
+      this.elements = {};
+      this.loadElements(root_element);
+
+      this.handles=[];
+      this.main_handle = this.attachHandle(new SliderHandleUI(this, this.timeslider.head_revision, 'handle'));
+
+      this.loadSavedRevisions();
+
+      this.render();
+
+      //events:
+      _this = this;
+      $(window).resize(function() {_this.render.call(_this)});
+
+      this.elements['slider-bar'].mousedown(function(evt) {
+        var revision = Math.floor((evt.clientX-$(this).offset().left) / _this.getTickSize());
+        _this.goToRevision(revision);
+      });
+    },
+    loadElements: function (root_element) {
+      this.elements['root'] = root_element;
+      //this.elements['slider-handle'] = root_element.first("#ui-slider-handle");
+      this.elements['slider-bar'] = root_element.find("#ui-slider-bar");
+      this.elements['slider'] = root_element.find("#timeslider-slider");
+      this.elements['button-left'] = root_element.find("#leftstep");
+      this.elements['button-right'] = root_element.find("#rightstep");
+      this.elements['button-play'] = root_element.find("#playpause_button");
+      this.elements['timestamp'] = root_element.find("#timer");
+      this.elements['revision-label'] = root_element.find("#revision_label");
+      this.elements['revision-date'] = root_element.find("#revision_date");
+      this.elements['authors'] = root_element.first("#authorsList");
+    },
+    loadSavedRevisions: function () {
+      for (var r in this.timeslider.savedRevisions) {
+        var rev = this.timeslider.savedRevisions[r];
+        this.attachHandle(new SliderSavedRevisionUI(this, rev));
+      };
+    },
+    render: function () {
+      for(var h in this.handles)
+        this.handles[h].render();
+    },
+    attachHandle: function (handle) {
+      this.handles.push(handle);
+      this.elements['slider'].append(handle.element);
+      return handle;
+    },
+    getTickSize: function () {
+      return (this.elements['slider-bar'].width()) / (this.timeslider.head_revision * 1.0);
+    },
+    goToRevision: function (revNum) {
+      //TODO: this should actually do an async jump to revision (with all the server fetching
+      //and changeset rendering that that implies), and perform the setPosition in a callback.
+      if (revNum <= 0 || revNum > this.timeslider.head_revision)
+        revNum = this.timeslider.latest_revision;
+      console.log("GO TO REVISION", revNum)
+      this.main_handle.setPosition(revNum);
+    },
+
+
+  }
+);
+
+function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
 {
   var BroadcastSlider;
 
   (function()
   { // wrap this code in its own namespace
+
+    tsui = new SliderUI(tsclient, $("#timeslider-top"));
+
+    // if there was a revision specified in the 'location.hash', jump to it.
+    if (window.location.hash.length > 1) {
+      var rev = Number(window.location.hash.substr(1));
+      if(!isNaN(rev))
+        tsui.goToRevision(rev);
+    }
+
+
     var sliderLength = 1000;
     var sliderPos = 0;
     var sliderActive = false;
     var slidercallbacks = [];
     var savedRevisions = [];
     var sliderPlaying = false;
-    clientVars = _clientVars;
+    clientVars = tsclient.clientVars;
 
     function disableSelection(element)
     {
@@ -64,9 +208,10 @@ function loadBroadcastSliderJS(_clientVars, fireWhenAllScriptsAreLoaded)
         for (var i = 0; i < savedRevisions.length; i++)
         {
           var position = parseInt(savedRevisions[i].attr('pos'));
-          savedRevisions[i].css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
+          //tsui._setElementPosition(savedRevisions[i], position);
         }
-        $("#ui-slider-handle").css('left', sliderPos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
+        //tsui._setElementPosition(tsui.elements['slider-handle'], sliderPos);
+
       }
 
     var addSavedRevision = function(position, info)
@@ -76,7 +221,7 @@ function loadBroadcastSliderJS(_clientVars, fireWhenAllScriptsAreLoaded)
 
         newSavedRevision.attr('pos', position);
         newSavedRevision.css('position', 'absolute');
-        newSavedRevision.css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
+        //tsui._setElementPosition(newSavedRevision, position);
         $("#timeslider-slider").append(newSavedRevision);
         newSavedRevision.mouseup(function(evt)
         {
@@ -329,18 +474,20 @@ function loadBroadcastSliderJS(_clientVars, fireWhenAllScriptsAreLoaded)
 
       });
 
-      $(window).resize(function()
+      /*$(window).resize(function()
       {
+        tsui.render();
         updateSliderElements();
       });
+      */
 
-      $("#ui-slider-bar").mousedown(function(evt)
+      /*$("#ui-slider-bar").mousedown(function(evt)
       {
         setSliderPosition(Math.floor((evt.clientX - $("#ui-slider-bar").offset().left) * sliderLength / 742));
         $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
         $("#ui-slider-handle").trigger(evt);
       });
-
+      */
       // Slider dragging
       $("#ui-slider-handle").mousedown(function(evt)
       {
@@ -461,7 +608,7 @@ function loadBroadcastSliderJS(_clientVars, fireWhenAllScriptsAreLoaded)
         $("#timeslider").show();
 
         var startPos = clientVars.collab_client_vars.rev;
-        if(window.location.hash.length > 1)
+        /*if(window.location.hash.length > 1)
         {
           var hashRev = Number(window.location.hash.substr(1));
           if(!isNaN(hashRev))
@@ -470,14 +617,15 @@ function loadBroadcastSliderJS(_clientVars, fireWhenAllScriptsAreLoaded)
             setTimeout(function() { setSliderPosition(hashRev); }, 1);
           }
         }
-
-        setSliderLength(clientVars.collab_client_vars.rev);
-        setSliderPosition(clientVars.collab_client_vars.rev);
-
-        _.each(clientVars.savedRevisions, function(revision)
+        */
+        //setSliderLength(clientVars.collab_client_vars.rev);
+        //setSliderPosition(clientVars.collab_client_vars.rev);
+        /*
+        _.eacheach(clientVars.savedRevisions, function(revision)
         {
           addSavedRevision(revision.revNum, revision);
         })
+        */
 
       }
     });

@@ -174,6 +174,8 @@ AuthenticatedSocketClient("TimesliderClient",
     handle_CLIENT_VARS: function(data, callback) {
       console.log("[timeslider_client] handle_CLIENT_VARS: ", data);
       this.clientVars = data;
+      this.current_revision = this.head_revision = this.clientVars.collab_client_vars.rev;
+      this.savedRevisions = this.clientVars.savedRevisions;
     },
 
     handle_COLLABROOM: function(data, callback) {
@@ -222,7 +224,7 @@ function init(baseURL) {
     var timesliderclient = new TimesliderClient(url, padId)
         .on("CLIENT_VARS", function(data, context, callback) {
           //load all script that doesn't work without the clientVars
-          BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(this.clientVars,fireWhenAllScriptsAreLoaded);
+          BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(this,fireWhenAllScriptsAreLoaded);
           require('./broadcast_revisions').loadBroadcastRevisionsJS(this.clientVars);
           changesetLoader = require('./broadcast').loadBroadcastJS(this, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
