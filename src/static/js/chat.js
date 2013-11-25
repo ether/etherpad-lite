@@ -43,9 +43,11 @@ var chat = (function()
         $('#chatbox').addClass("stickyChat");
         $('#chattext').css({"top":"0px"});
         $('#editorcontainer').css({"right":"192px"});
+        $('.stickyChat').css("top",$('#editorcontainer').offset().top+"px");
         isStuck = true;
       } else { // Unstick it
         padcookie.setPref("chatAlwaysVisible", false);
+        $('.stickyChat').css("top", "auto");
         $('#chatbox').removeClass("stickyChat");
         $('#chattext').css({"top":"25px"});
         $('#editorcontainer').css({"right":"0px"});
