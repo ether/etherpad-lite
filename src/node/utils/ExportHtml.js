@@ -455,14 +455,14 @@ function getHTMLFromAtext(pad, atext, authorColors)
         attribLine: attribLines[i],
         text: textLines[i]
       }, " ", " ", "");
-	  if (lineContentFromHook)
-	  {
-	    pieces.push(lineContentFromHook, '');
-	  } 
-	  else 
-	 {
-	   pieces.push(lineContent, '<br>');
-	 }		  
+      if (lineContentFromHook)
+      {
+        pieces.push(lineContentFromHook, '');
+      } 
+      else 
+      {
+        pieces.push(lineContent, '<br>');
+      }		  
     }
   }
   
