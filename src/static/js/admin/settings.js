@@ -55,6 +55,8 @@ $(document).ready(function () {
 
 function isJSONClean(data){
   var cleanSettings = JSON.minify(data);
+  // this is a bit naive. In theory some key/value might contain the sequences ',]' or ',}'
+  cleanSettings = cleanSettings.replace(",]","]").replace(",}","}");
   try{
     var response = jQuery.parseJSON(cleanSettings);
   }
