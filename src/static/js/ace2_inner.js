@@ -2372,6 +2372,64 @@ function Ace2Inner(){
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
 
+  function getAttributeOnSelection(attributeName){
+    if (!(rep.selStart && rep.selEnd)) return;
+    var selectionAllHasIt = true;
+    var withIt = Changeset.makeAttribsString('+', [
+      [attributeName, 'true']
+    ], rep.apool);
+    var withItRegex = new RegExp(withIt.replace(/\*/g, '\\*') + "(\\*|$)");
+
+    function hasIt(attribs)
+    {
+      return withItRegex.test(attribs);
+    }
+
+    var selStartLine = rep.selStart[0];
+    var selEndLine = rep.selEnd[0];
+    for (var n = selStartLine; n <= selEndLine; n++)
+    {
+      var opIter = Changeset.opIterator(rep.alines[n]);
+      var indexIntoLine = 0;
+      var selectionStartInLine = 0;
+      var selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
+      if (n == selStartLine)
+      {
+        selectionStartInLine = rep.selStart[1];
+      }
+      if (n == selEndLine)
+      {
+        selectionEndInLine = rep.selEnd[1];
+      }
+      while (opIter.hasNext())
+      {
+        var op = opIter.next();
+        var opStartInLine = indexIntoLine;
+        var opEndInLine = opStartInLine + op.chars;
+        if (!hasIt(op.attribs))
+        {
+          // does op overlap selection?
+          if (!(opEndInLine <= selectionStartInLine || opStartInLine >= selectionEndInLine))
+          {
+            selectionAllHasIt = false;
+            break;
+          }
+        }
+        indexIntoLine = opEndInLine;
+      }
+      if (!selectionAllHasIt)
+      {
+        break;
+      }
+    }
+    if(selectionAllHasIt){
+      return true;
+    }else{
+      return false;
+    }
+  }
+  editorInfo.ace_getAttributeOnSelection = getAttributeOnSelection;
+
   function toggleAttributeOnSelection(attributeName)
   {
     if (!(rep.selStart && rep.selEnd)) return;
