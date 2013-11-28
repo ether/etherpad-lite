@@ -5,22 +5,26 @@
   position: absolute;
 }
 
-#timeslider .star {
-  background-image: url(../../static/img/star.png);
-  cursor: pointer;
-  height: 16px;
-  top: 40px;
-  width: 15px;
-}
-#timeslider .handle {
+.ui-slider-handle  {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  background-image: url(../../static/img/crushed_current_location.png);
   cursor: pointer;
+  position: absolute;
+}
+
+.ui-slider-handle-star {
+  background-image: url(../../static/img/star.png);
+  height: 16px;
+  top: 20px;
+  width: 15px;
+}
+
+.ui-slider-handle-handle {
+  background-image: url(../../static/img/crushed_current_location.png);
   height: 61px;
   left: 0;
-  top: 0;
+  top: -14px;
   width: 13px;
 }
 

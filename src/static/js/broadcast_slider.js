@@ -42,53 +42,151 @@ $.Class("SliderHandleUI",
      * @param {SliderUI} slider The slider from which this handle will be hung.
      * @param {Number} position The initial position for this handle.
      */
-    init: function (slider, position, type) {
-      console.log("New SliderHandle(%d, %s)", position, type);
+    init: function (slider, value, type) {
+      console.log("New SliderHandle(%d, %s)", value, type);
       this.slider = slider;
-      this.position = position;
-      this.events = {};
+      this.value = value;
       //create the element:
-      this.element = $("<div class='slider-handle'></div>");
-      this.element.addClass(type);
-      //handle events
-      this.element.mouseup(this._dispatchEvent);
-      this.element.mousedown(this._dispatchEvent);
+      this.element = $("<div class='ui-slider-handle'></div>");
+      if (type === "")
+        type = "handle";
+      this.element.addClass("ui-slider-handle-" + type);
+      this._mouseInit();
     },
-    on: function (eventname, callback, context) {
-      if (!(eventname in this.events))
-        this.events[eventname] = [];
-      this.events[eventname].push({handler:callback, context: context});
+    _mouseInit: function () {
+      this.element.on("mousedown.sliderhandle", null, this, function(event) {
+        console.log("sliderhandleui - mousedown")
+      })
     },
-    _dispatchEvent: function (evt) {
-      if (eventname in this.events)
-        for (var i in this.events[eventname])
-        {
-          e = this.events[eventname][i];
-          e.handler(evt, e.context);
-        }
-    },
-    render: function () {
-      this.element.css('left', this.position * this.slider.getTickSize());
-    },
-    setPosition: function (position) {
-      this.position = position;
-      this.render();
-    }
   }
 );
 
 SliderHandleUI("SliderSavedRevisionUI",
-    {//statics
+  {//statics
+  },
+  {//instance
+    init: function(slider, revision) {
+      this._super(slider, revision.revNum, 'star');
+      this.revision = revision;
     },
-    {//instance
-      init: function(slider, revision) {
-        this._super(slider, revision.revNum, 'star');
-        this.revision = revision;
-      },
-    }
+    _mouseInit: function () {
+      this.element.on("mousedown.sliderhandle", null, this, function(event) {
+        console.log("SliderSavedRevisionUI - mousedown")
+      })
+    },
+  }
 );
 
+//TODO:
+//  - window resizing is currently broken!
+//  - keyboard events
 $.Class("SliderUI",
+  {//statics
+    defaults: {
+      min: 0,
+      max: 100,
+    }
+  },
+  {//instance
+    init: function (element, options) {
+      this.options = $.extend({}, this.defaults, options);
+      this.element = element;
+      this.current_value = "value" in this.options ? this.options.value : 0;
+      this.handles = [];
+      this.attachHandle(new SliderHandleUI(this, this._current_value, 'handle'));
+      this._mouseInit();
+
+      // handle window resize
+      var _this = this;
+      $(window).resize(function() {
+        _this.render();
+      });
+    },
+    _getStep: function () {
+      return (this.element.width()) / (this.options.max * 1.0);
+    },
+    render: function () {
+      for(var h in this.handles) {
+        handle = this.handles[h];
+        handle.element.css('left', (handle.value * this._getStep()) );
+      }
+    },
+    // this internal version of _setValue should only be used to render
+    // when the handle changes position as a result of UI events handled
+    // by this slider.
+    _setValue: function (value) {
+      if (value < 0)
+        value = 0;
+      if (value > this.options.max)
+        value = this.options.max;
+      this.handles[0].value = value;
+      this.current_value = value;
+      this.render();
+    },
+    // this 'public' version of _setValue also triggers a change event
+    setValue: function(value) {
+      this._setValue(value);
+      this._trigger("change", value);
+    },
+    setMax: function (max) {
+      this.options.max = max;
+      this.render();
+    },
+    attachHandle: function (handle) {
+      this.handles.push(handle);
+      this.element.append(handle.element);
+      this.current_value = this.handles[0].value;
+      return handle;
+    },
+    _trigger: function (eventname, value) {
+      //TODO: implement trigger
+      console.log("triggering event: ", eventname);
+      if (eventname in this.options) {
+        this.options[eventname](value);
+      }
+    },
+    _mouseInit: function () {
+      // handle all mouse events for the slider and handles right here
+      var _this = this;
+      this.element.on("mousedown.slider", function (event) {
+        if (event.target == _this.element[0] || $(event.target).hasClass("ui-slider-handle")) {
+          // the click is on the slider bar itself.
+          var start_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
+          console.log("sliderbar mousedown, value:", start_value);
+          if (_this.current_value != start_value)
+            _this._setValue(start_value);
+
+          $(document).on("mousemove.slider", function (event) {
+             var current_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
+             console.log("sliderbar mousemove, value:", current_value);
+             // don't change the value if it hasn't actually changed!
+             if (_this.current_value != current_value) {
+               _this._setValue(current_value);
+               _this._trigger("slide", current_value);
+             }
+          });
+
+          $(document).on("mouseup.slider", function (event) {
+            // make sure to get rid of the handlers on document,
+            // we don't need them after this 'slide' session is done.
+            $(document).off("mouseup.slider mousemove.slider");
+             var end_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
+             console.log("sliderbar mouseup, value:", end_value);
+             // always change the value at mouseup
+            _this._setValue(end_value);
+            _this._trigger("change", end_value);
+
+          });
+        } else {
+          console.log("We shouldn't be here!")
+          console.log(event.target);
+        }
+      })
+    },
+  }
+);
+
+$.Class("RevisionSlider",
   {//statics
   },
   {//instance
@@ -98,22 +196,20 @@ $.Class("SliderUI",
       // parse the various elements we need:
       this.elements = {};
       this.loadElements(root_element);
-
-      this.handles=[];
-      this.main_handle = this.attachHandle(new SliderHandleUI(this, this.timeslider.head_revision, 'handle'));
-
+      var _this = this;
+      this.slider = new SliderUI(this.elements['slider-bar'],
+                  options = {
+                    max: this.timeslider.head_revision,
+                    change: function () { _this.onChange.apply(_this, arguments); },
+                    slide: function () { _this.onSlide.apply(_this, arguments); },
+                  });
       this.loadSavedRevisions();
-
-      this.render();
-
-      //events:
-      _this = this;
-      $(window).resize(function() {_this.render.call(_this)});
-
-      this.elements['slider-bar'].mousedown(function(evt) {
-        var revision = Math.floor((evt.clientX-$(this).offset().left) / _this.getTickSize());
-        _this.goToRevision(revision);
-      });
+    },
+    onChange: function (value) {
+      console.log("in change handler:", value);
+    },
+    onSlide: function (value) {
+      console.log("in slide handler:", value);
     },
     loadElements: function (root_element) {
       this.elements['root'] = root_element;
@@ -131,20 +227,8 @@ $.Class("SliderUI",
     loadSavedRevisions: function () {
       for (var r in this.timeslider.savedRevisions) {
         var rev = this.timeslider.savedRevisions[r];
-        this.attachHandle(new SliderSavedRevisionUI(this, rev));
+        this.slider.attachHandle(new SliderSavedRevisionUI(this, rev));
       };
-    },
-    render: function () {
-      for(var h in this.handles)
-        this.handles[h].render();
-    },
-    attachHandle: function (handle) {
-      this.handles.push(handle);
-      this.elements['slider'].append(handle.element);
-      return handle;
-    },
-    getTickSize: function () {
-      return (this.elements['slider-bar'].width()) / (this.timeslider.head_revision * 1.0);
     },
     goToRevision: function (revNum) {
       //TODO: this should actually do an async jump to revision (with all the server fetching
@@ -152,7 +236,7 @@ $.Class("SliderUI",
       if (revNum <= 0 || revNum > this.timeslider.head_revision)
         revNum = this.timeslider.latest_revision;
       console.log("GO TO REVISION", revNum)
-      this.main_handle.setPosition(revNum);
+      this.slider.setValue(revNum);
     },
 
 
@@ -166,7 +250,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
   (function()
   { // wrap this code in its own namespace
 
-    tsui = new SliderUI(tsclient, $("#timeslider-top"));
+    tsui = new RevisionSlider(tsclient, $("#timeslider-top"));
 
     // if there was a revision specified in the 'location.hash', jump to it.
     if (window.location.hash.length > 1) {
@@ -202,34 +286,6 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
           slidercallbacks[i](newval);
         }
       }
-
-    var updateSliderElements = function()
-      {
-        for (var i = 0; i < savedRevisions.length; i++)
-        {
-          var position = parseInt(savedRevisions[i].attr('pos'));
-          //tsui._setElementPosition(savedRevisions[i], position);
-        }
-        //tsui._setElementPosition(tsui.elements['slider-handle'], sliderPos);
-
-      }
-
-    var addSavedRevision = function(position, info)
-      {
-        var newSavedRevision = $('<div></div>');
-        newSavedRevision.addClass("star");
-
-        newSavedRevision.attr('pos', position);
-        newSavedRevision.css('position', 'absolute');
-        //tsui._setElementPosition(newSavedRevision, position);
-        $("#timeslider-slider").append(newSavedRevision);
-        newSavedRevision.mouseup(function(evt)
-        {
-          BroadcastSlider.setSliderPosition(position);
-        });
-        savedRevisions.push(newSavedRevision);
-      };
-
     var removeSavedRevision = function(position)
       {
         var element = $("div.star [pos=" + position + "]");
@@ -310,6 +366,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
       padmodals.showModal("disconnected");
     }
 
+    //TODO: figure out what the hell this is for
     var fixPadHeight = _.throttle(function(){
       var height = $('#timeslider-top').height();
       $('#editorcontainerbox').css({marginTop: height});
@@ -385,7 +442,6 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
         return sliderActive;
       },
       playpause: playpause,
-      addSavedRevision: addSavedRevision,
       showReconnectUI: showReconnectUI,
       setAuthors: setAuthors
     }
@@ -474,55 +530,6 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
 
       });
 
-      /*$(window).resize(function()
-      {
-        tsui.render();
-        updateSliderElements();
-      });
-      */
-
-      /*$("#ui-slider-bar").mousedown(function(evt)
-      {
-        setSliderPosition(Math.floor((evt.clientX - $("#ui-slider-bar").offset().left) * sliderLength / 742));
-        $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
-        $("#ui-slider-handle").trigger(evt);
-      });
-      */
-      // Slider dragging
-      $("#ui-slider-handle").mousedown(function(evt)
-      {
-        this.startLoc = evt.clientX;
-        this.currentLoc = parseInt($(this).css('left'));
-        var self = this;
-        sliderActive = true;
-        $(document).mousemove(function(evt2)
-        {
-          $(self).css('pointer', 'move')
-          var newloc = self.currentLoc + (evt2.clientX - self.startLoc);
-          if (newloc < 0) newloc = 0;
-          if (newloc > ($("#ui-slider-bar").width() - 2)) newloc = ($("#ui-slider-bar").width() - 2);
-          $("#revision_label").html(html10n.get("timeslider.version", { "version": Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))}));
-          $(self).css('left', newloc);
-          if (getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))) _callSliderCallbacks(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
-        });
-        $(document).mouseup(function(evt2)
-        {
-          $(document).unbind('mousemove');
-          $(document).unbind('mouseup');
-          sliderActive = false;
-          var newloc = self.currentLoc + (evt2.clientX - self.startLoc);
-          if (newloc < 0) newloc = 0;
-          if (newloc > ($("#ui-slider-bar").width() - 2)) newloc = ($("#ui-slider-bar").width() - 2);
-          $(self).css('left', newloc);
-          // if(getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width()-2)))
-          setSliderPosition(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
-          if(parseInt($(self).css('left')) < 2){
-            $(self).css('left', '2px');
-          }else{
-            self.currentLoc = parseInt($(self).css('left'));
-          }
-        });
-      })
 
       // play/pause toggling
       $("#playpause_button").mousedown(function(evt)
@@ -606,26 +613,6 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
       if (clientVars)
       {
         $("#timeslider").show();
-
-        var startPos = clientVars.collab_client_vars.rev;
-        /*if(window.location.hash.length > 1)
-        {
-          var hashRev = Number(window.location.hash.substr(1));
-          if(!isNaN(hashRev))
-          {
-            // this is necessary because of the socket.io-event which loads the changesets
-            setTimeout(function() { setSliderPosition(hashRev); }, 1);
-          }
-        }
-        */
-        //setSliderLength(clientVars.collab_client_vars.rev);
-        //setSliderPosition(clientVars.collab_client_vars.rev);
-        /*
-        _.eacheach(clientVars.savedRevisions, function(revision)
-        {
-          addSavedRevision(revision.revNum, revision);
-        })
-        */
 
       }
     });
