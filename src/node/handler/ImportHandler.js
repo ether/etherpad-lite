@@ -105,9 +105,8 @@ exports.doImport = function(req, res, padId)
         if(ERR(err, callback)) return callback();
 console.log(result);
         if(result.length > 0){ // This feels hacky and wrong..
-          apiLogger.info("Plugin handling import");
+          console.log("Plugin handling import");
           importHandledByPlugin = true;
-          srcFile = "blah.html";
           callback();
         }else{
           callback();
