@@ -41,15 +41,15 @@ var chat = (function()
       if(!isStuck || fromInitialCall) { // Stick it to
         padcookie.setPref("chatAlwaysVisible", true);
         $('#chatbox').addClass("stickyChat");
-        $('#chattext').css({"top":"0px"});
+	$('#titlesticky').hide();
         $('#editorcontainer').css({"right":"192px"});
         isStuck = true;
       } else { // Unstick it
         padcookie.setPref("chatAlwaysVisible", false);
         $('#chatbox').removeClass("stickyChat");
-        $('#chattext').css({"top":"25px"});
+	$('#titlesticky').show();
         $('#editorcontainer').css({"right":"0px"});
-        isStuck = false;
+	isStuck = false;
       }
     },
     hide: function () 

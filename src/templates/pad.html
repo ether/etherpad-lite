@@ -390,7 +390,7 @@
 
         <div id="chatbox">
             <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span>
-              <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
+              <a id="titlecross" onClick="minimizeChatbox();">-&nbsp;</a>
               <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
             </div>
             <div id="chattext" class="authorColors">
@@ -476,6 +476,18 @@
               padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
               padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
             }());
+
+            function minimizeChatbox()
+            {
+              if ($('#options-stickychat').prop('checked')) {
+                chat.stickToScreen();
+                $('#options-stickychat').prop('checked', false);
+              } else {
+                chat.hide();
+              }
+              
+              return false;
+            }	
         </script>
         <% e.end_block(); %>
 </html>
