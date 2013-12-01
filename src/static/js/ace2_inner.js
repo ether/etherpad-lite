@@ -499,14 +499,6 @@ function Ace2Inner(){
     {
       var cs = currentCallStack;
 
-          hooks.callAll('acePostEditEvent', {
-            callstack: cs,
-            editorInfo: editorInfo,
-            rep: rep,
-            documentAttributeManager: documentAttributeManager
-          });
-
-
       //console.log("Finished action for: "+type);
       if (cleanExit)
       {
