@@ -498,7 +498,6 @@ function Ace2Inner(){
     finally
     {
       var cs = currentCallStack;
-
       //console.log("Finished action for: "+type);
       if (cleanExit)
       {
