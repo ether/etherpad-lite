@@ -2393,6 +2393,9 @@ function Ace2Inner(){
       var indexIntoLine = 0;
       var selectionStartInLine = 0;
       var selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
+      if(rep.lines.atIndex(n).text.length == 0){
+        return false; // If the line length is 0 we basically treat it as having no formatting
+      }
       if (n == selStartLine)
       {
         selectionStartInLine = rep.selStart[1];
