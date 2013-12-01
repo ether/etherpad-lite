@@ -498,6 +498,15 @@ function Ace2Inner(){
     finally
     {
       var cs = currentCallStack;
+
+          hooks.callAll('acePostEditEvent', {
+            callstack: cs,
+            editorInfo: editorInfo,
+            rep: rep,
+            documentAttributeManager: documentAttributeManager
+          });
+
+
       //console.log("Finished action for: "+type);
       if (cleanExit)
       {
@@ -2395,6 +2404,9 @@ function Ace2Inner(){
       var selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
       if(rep.lines.atIndex(n).text.length == 0){
         return false; // If the line length is 0 we basically treat it as having no formatting
+      }
+      if(rep.selStart[1] == rep.selEnd[1] && rep.selStart[1] == rep.lines.atIndex(n).text.length){
+        return false; // If we're at the end of a line we treat it as having no formatting
       }
       if (n == selStartLine)
       {
