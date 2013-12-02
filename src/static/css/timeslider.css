@@ -1,9 +1,6 @@
 /*
  * slider handles (SliderHandle)
  */
-#timeslider .slider-handle {
-  position: absolute;
-}
 
 .ui-slider-handle  {
   -webkit-user-select: none;
@@ -28,6 +25,87 @@
   width: 13px;
 }
 
+/*
+ * Steppers
+ */
+
+.stepper {
+  background: url(../../static/img/stepper_buttons.png) 0 0 no-repeat;
+  height: 21px;
+  overflow: hidden;
+  position: absolute;
+}
+#leftstar {
+  background-position: 0 -44px;
+  right: 34px;
+  top: 8px;
+  width: 30px;
+}
+#rightstar {
+  background-position: -29px -44px;
+  right: 5px;
+  top: 8px;
+  width: 30px;
+}
+#leftstep:active {
+  background-position: 0 -22px;
+  right: 34px;
+  top: 20px;
+  width: 30px;
+}
+#leftstep {
+  background-position: 0 -66px;
+  right: 34px;
+  top: 20px;
+  width: 30px;
+}
+#rightstep:active {
+  background-position: -29px -22px;
+  right: 5px;
+  top: 20px;
+  width: 30px;
+}
+#rightstep {
+  background-position: -29px -66px;
+  right: 5px;
+  top: 20px;
+  width: 30px;
+}
+
+#playpause_button,
+#playpause_button_icon {
+  height: 47px;
+  position: absolute;
+  width: 47px;
+}
+#playpause_button {
+  background-image: url(../../static/img/crushed_button_undepressed.png);
+  right: 77px;
+  top: 9px;
+}
+#playpause_button:active {
+  background-image: url(../../static/img/crushed_button_depressed.png);
+  right: 77px;
+  top: 9px;
+}
+#playpause_button_icon {
+  background-image: url(../../static/img/play.png);
+  left: 0;
+  top: 0;
+}
+.pause#playpause_button_icon {
+  background-image: url(../../static/img/pause.png)
+}
+
+
+
+
+
+
+
+#timeslider .slider-handle {
+  position: absolute;
+}
 #editorcontainerbox {
   overflow: auto;
   top: 40px;
@@ -87,58 +165,6 @@
   margin-right: 150px;
   position: relative;
   top: 20px;
-}
-#playpause_button,
-#playpause_button_icon {
-  height: 47px;
-  position: absolute;
-  width: 47px;
-}
-#playpause_button {
-  background-image: url(../../static/img/crushed_button_undepressed.png);
-  right: 77px;
-  top: 9px;
-}
-#playpause_button_icon {
-  background-image: url(../../static/img/play.png);
-  left: 0;
-  top: 0;
-}
-.pause#playpause_button_icon {
-  background-image: url(../../static/img/pause.png)
-}
-#leftstar,
-#rightstar,
-#leftstep,
-#rightstep {
-  background: url(../../static/img/stepper_buttons.png) 0 0 no-repeat;
-  height: 21px;
-  overflow: hidden;
-  position: absolute;
-}
-#leftstar {
-  background-position: 0 -44px;
-  right: 34px;
-  top: 8px;
-  width: 30px;
-}
-#rightstar {
-  background-position: -29px -44px;
-  right: 5px;
-  top: 8px;
-  width: 29px;
-}
-#leftstep {
-  background-position: 0 -22px;
-  right: 34px;
-  top: 20px;
-  width: 30px;
-}
-#rightstep {
-  background-position: -29px -22px;
-  right: 5px;
-  top: 20px;
-  width: 30px;
 }
 #timeslider #timer {
   color: #fff;

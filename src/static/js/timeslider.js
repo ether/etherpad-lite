@@ -191,9 +191,6 @@ AuthenticatedSocketClient("TimesliderClient",
 function init(baseURL) {
   $(document).ready(function ()
   {
-    console.log("<<<<<<<<<<<<<<<<<<<<<<<<");
-    console.log("HELLO");
-    console.log("<<<<<<<<<<<<<<<<<<<<<<<<");
     // start the custom js
     if (typeof customStart == "function") customStart();
 

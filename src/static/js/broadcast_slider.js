@@ -192,7 +192,8 @@ $.Class("RevisionSlider",
   {//instance
     init: function (timeslider, root_element) {
       this.timeslider = timeslider;
-      console.log("New SliderUI, head_revision = %d", this.timeslider.head_revision);
+      this.revision_number = this.timeslider.head_revision;
+      console.log("New RevisionSlider, head_revision = %d", this.revision_number);
       // parse the various elements we need:
       this.elements = {};
       this.loadElements(root_element);
@@ -203,7 +204,9 @@ $.Class("RevisionSlider",
                     change: function () { _this.onChange.apply(_this, arguments); },
                     slide: function () { _this.onSlide.apply(_this, arguments); },
                   });
-      this.loadSavedRevisions();
+      this.loadSavedRevisionHandles();
+
+      this._mouseInit();
     },
     onChange: function (value) {
       console.log("in change handler:", value);
@@ -224,7 +227,7 @@ $.Class("RevisionSlider",
       this.elements['revision-date'] = root_element.find("#revision_date");
       this.elements['authors'] = root_element.first("#authorsList");
     },
-    loadSavedRevisions: function () {
+    loadSavedRevisionHandles: function () {
       for (var r in this.timeslider.savedRevisions) {
         var rev = this.timeslider.savedRevisions[r];
         this.slider.attachHandle(new SliderSavedRevisionUI(this, rev));
@@ -233,12 +236,30 @@ $.Class("RevisionSlider",
     goToRevision: function (revNum) {
       //TODO: this should actually do an async jump to revision (with all the server fetching
       //and changeset rendering that that implies), and perform the setPosition in a callback.
-      if (revNum <= 0 || revNum > this.timeslider.head_revision)
+      //TODO: we need some kind of callback for setting revision metadata.
+      //TODO: at some point we need to set window.location.hash
+      if (revNum > this.timeslider.head_revision)
         revNum = this.timeslider.latest_revision;
+      if (revNum < 0)
+        revNum = 0;
       console.log("GO TO REVISION", revNum)
+      this.elements["revision-label"].html(html10n.get("timeslider.version", { "version": revNum }));
       this.slider.setValue(revNum);
+      this.revision_number = revNum;
+      //TODO: set the enabled/disabled for button-left and button-right
     },
+    _mouseInit: function () {
+      var _this = this;
+      this.elements["button-left"].on("click", function (event) {
+        console.log("was :",  _this.revision_number);
+        _this.goToRevision(_this.revision_number - 1);
+      });
 
+      this.elements["button-right"].on("click", function (event) {
+        _this.goToRevision(_this.revision_number + 1);
+      });
+
+    }
 
   }
 );
@@ -431,6 +452,8 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
       fixPadHeight();
     }
 
+    //This API is in use by broadcast.js
+    //TODO: refactor broadcast.js to use RevisionSlider instead
     BroadcastSlider = {
       onSlider: onSlider,
       getSliderPosition: getSliderPosition,
@@ -532,7 +555,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
 
 
       // play/pause toggling
-      $("#playpause_button").mousedown(function(evt)
+      $("XXXX#playpause_button").mousedown(function(evt)
       {
         var self = this;
 
@@ -551,7 +574,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
       });
 
       // next/prev saved revision and changeset
-      $('.stepper').mousedown(function(evt)
+      $('XXX.stepper').mousedown(function(evt)
       {
         var self = this;
         var origcss = $(self).css('background-position');
