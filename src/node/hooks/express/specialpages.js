@@ -49,8 +49,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       //there is no custom favicon, send the default favicon
       if(err)
       {
-	filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
-	res.sendfile(filePath);
+        filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
+        res.sendfile(filePath);
       }
     });
   });

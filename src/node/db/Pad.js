@@ -463,7 +463,7 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         
         if(exists == true)
         {
-          if (!force)	
+          if (!force)
           {
             console.log("erroring out without force");
             callback(new customError("destinationID already exists","apierror"));
@@ -635,7 +635,7 @@ Pad.prototype.remove = function remove(callback) {
 
           authorIDs.forEach(function (authorID)
           {
-        	authorManager.removePad(authorID, padID);
+            authorManager.removePad(authorID, padID);
           });
 
           callback();

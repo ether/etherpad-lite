@@ -234,10 +234,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       result.node.innerHTML = curHTML;
     }
     if (lineClass !== null) result.node.className = lineClass;
-	
-	hooks.callAll("acePostWriteDomLineHTML", {
-        node: result.node
-	});
+
+    hooks.callAll("acePostWriteDomLineHTML", {
+      node: result.node
+    });
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;

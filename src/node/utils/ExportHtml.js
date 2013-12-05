@@ -447,7 +447,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           pieces.push('</li></ul>');
         }
         lists.length--;
-      }   
+      }
       var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
       {
         line: line,
@@ -455,14 +455,14 @@ function getHTMLFromAtext(pad, atext, authorColors)
         attribLine: attribLines[i],
         text: textLines[i]
       }, " ", " ", "");
-	  if (lineContentFromHook)
-	  {
-	    pieces.push(lineContentFromHook, '');
-	  } 
-	  else 
-	 {
-	   pieces.push(lineContent, '<br>');
-	 }		  
+      if (lineContentFromHook)
+      {
+        pieces.push(lineContentFromHook, '');
+      }
+      else
+      {
+        pieces.push(lineContent, '<br>');
+      }
     }
   }
   
@@ -490,7 +490,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
     var head = 
       (noDocType ? '' : '<!doctype html>\n') + 
       '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
-	'<title>' + Security.escapeHTML(padId) + '</title>\n' +
+        '<title>' + Security.escapeHTML(padId) + '</title>\n' +
         '<meta charset="utf-8">\n' + 
         '<style> * { font-family: arial, sans-serif;\n' + 
           'font-size: 13px;\n' + 
