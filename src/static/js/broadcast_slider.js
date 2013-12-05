@@ -25,6 +25,7 @@
 var _ = require('./underscore');
 var padmodals = require('./pad_modals').padmodals;
 var sliderui = require('./sliderui');
+require('./jquery.class');
 
 $.Class("RevisionSlider",
   {//statics
