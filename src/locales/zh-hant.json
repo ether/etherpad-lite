@@ -1,10 +1,11 @@
 {
     "@metadata": {
         "authors": {
-            "0": "Liuxinyu970226",
-            "1": "Shangkuanlc",
-            "2": "Shirayuki",
-            "4": "Simon Shek"
+            "0": "Justincheng12345",
+            "1": "Liuxinyu970226",
+            "2": "Shangkuanlc",
+            "3": "Shirayuki",
+            "5": "Simon Shek"
         }
     },
     "index.newPad": "新Pad",
@@ -69,11 +70,15 @@
     "pad.modals.initsocketfail.cause": "這可能是因為瀏覽器或網際網路連線問題所造成。",
     "pad.modals.slowcommit.explanation": "伺服器沒有回應。",
     "pad.modals.slowcommit.cause": "這可能是因為網路連線問題所造成。",
+    "pad.modals.badChangeset.explanation": "您的一個編輯被同步伺服器類為非法。",
+    "pad.modals.badChangeset.cause": "這可能由於伺服器的配置錯誤或遇到意外問題。若您認為這是錯誤，請聯繫伺服器管理員。如要繼續編輯，請嘗試重新連接。",
+    "pad.modals.corruptPad.explanation": "您試圖訪問的平板已損壞。",
+    "pad.modals.corruptPad.cause": "這可能由於伺服器的配置錯誤或遇到意外問題。請聯繫伺服器管理員。",
     "pad.modals.deleted": "已刪除。",
     "pad.modals.deleted.explanation": "此pad已被移除。",
     "pad.modals.disconnected": "您已中斷連線。",
     "pad.modals.disconnected.explanation": "伺服器連接曾中斷",
-    "pad.modals.disconnected.cause": "伺服器可能無法使用。若此情況持續發生，請通知我們。",
+    "pad.modals.disconnected.cause": "伺服器可能無法使用。若此情況持續發生，請通知伺服器管理員。",
     "pad.share": "分享此pad",
     "pad.share.readonly": "唯讀",
     "pad.share.link": "連結",
