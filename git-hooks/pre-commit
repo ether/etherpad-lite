@@ -1,0 +1,14 @@
+#!/bin/bash
+# vim:set sw=2 ts=2 sts=2 expandtab:
+
+FILES=$(git diff --cached --name-only --diff-filter=ACM HEAD)
+grep -P "^ *\t" $FILES >/dev/null 2>&1
+if [[ $? -eq 0 ]]
+then
+  echo "Tabs indentation detected (see below)"
+  echo
+  grep --color=auto -n -T -P "^ *\t" $FILES
+  echo
+  echo "Aborting commit"
+  exit 1
+fi
