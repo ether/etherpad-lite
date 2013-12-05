@@ -124,6 +124,66 @@ $.Class("RevisionCache",
         //TODO: implement short-circuit
       }
 
+      while (current_rev.lt(to_rev, is_reverse)) {
+        var changeset_iterator = DirectionalIterator(current_rev.changesets, is_reverse);
+        while (changeset_iterator.haveNext()) {
+          var current_changeset = changeset_iterator.next();
+          // we might get stuck on a particular revision if only a
+          // partial path is available.
+          old_rev = current_rev;
+          // the next (first) changeset in the current revision has a delta
+          // in the opposite direction to that in which we are trying to
+          // move, and so cannot help us. Because the changeset list is
+          // sorted, we can just stop here.
+          if (current_changeset.deltarev < 0) {
+            // When can this happen?
+            stop = true;
+          }
+
+          // the current revision has a changeset which helps us get to a revision
+          // which is closer to our target, so we should push that changeset to
+          // the list and move to that new revision to continue building a path
+          var delta_rev = this.getRevision(current_rev.revnum + current_changeset.deltarev);
+          if (delta_rev.lt(to_rev, is_reverse) {
+            changesets.push(current_changeset);
+            current_rev = delta_rev;
+            break;
+          }
+        }
+        if (stop || current_rev == old_rev)
+          break;
+      }
+
+      var status = 'partial';
+      if (current_rev == to_rev)
+        status = 'complete';
+
+      return {
+        'fromRev': from,
+        'rev': current_rev.rev,
+        'status': status,
+        'changesets': changesets,
+        /*'spans': spans,
+        'times': times
+        */
+      };
+    },
+    findPath: function (from, to) {
+      var current_rev = this.getRevision(from);
+      var to_rev = this.getRevision(to);
+      var is_reverse = !(from < to);
+      var changesets = [];
+
+      if (from == to) {
+        //TODO: implement short-circuit
+      }
+
+      if (!current_rev.changesets.length) {
+        // You cannot build a path if the starting revision hasn't
+        // got any changesets
+        //TODO: implement short-circuit
+      }
+
       while (current_rev.lt(to_rev)) {
         for (var i = 0; i < current_rev.changesets.length; i++) {
           // we might get stuck on a particular revision if only a
