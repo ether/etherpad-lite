@@ -151,16 +151,16 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               if(sessionInfo.groupID != groupID)
               {
                 authLogger.debug("Auth failed: wrong group");
-            	  callback();
-            	  return;
+                callback();
+                return;
               }
               
               //is validUntil still ok?
               if(sessionInfo.validUntil <= now)
               {
                 authLogger.debug("Auth failed: validUntil");
-            	  callback();
-            	  return;
+                callback();
+                return;
               }
               
               // There is a valid session

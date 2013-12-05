@@ -673,9 +673,9 @@ exports.textLinesMutator = function (lines) {
       }
       //print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" / "+curSplice[1]+" / "+lines.length);
 /*if (inSplice && (! isCurLineInSplice()) && (curSplice[0] + curSplice[1] < lines.length)) {
-	  print("BLAH");
-	  putCurLineInSplice();
-	}*/
+  print("BLAH");
+  putCurLineInSplice();
+}*/
       // tests case foo in remove(), which isn't otherwise covered in current impl
     }
     //debugPrint("skip");

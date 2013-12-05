@@ -79,14 +79,14 @@ Here are descriptions of the operations, where capital letters are variables:
          kept MUST be a newline, and the final newline of the document is allowed.
 "*I"   : Apply attribute I from the pool to the following +, =, |+, or |= command.
          In other words, any number of * ops can come before a +, =, or | but not
-	 between a | and the corresponding + or =.
+         between a | and the corresponding + or =.
          If +, text is inserted having this attribute.  If =, text is kept but with
-	 the attribute applied as an attribute addition or removal.
-	 Consecutive attributes must be sorted lexically by (key,value) with key
-	 and value taken as strings.  It's illegal to have duplicate keys
-	 for (key,value) pairs that apply to the same text.  It's illegal to
-	 have an empty value for a key in the case of an insertion (+), the
-	 pair should just be omitted.
+         the attribute applied as an attribute addition or removal.
+         Consecutive attributes must be sorted lexically by (key,value) with key
+         and value taken as strings.  It's illegal to have duplicate keys
+         for (key,value) pairs that apply to the same text.  It's illegal to
+         have an empty value for a key in the case of an insertion (+), the
+         pair should just be omitted.
 
 Characters from the source text that aren't accounted for are assumed to be kept
 with the same attributes.

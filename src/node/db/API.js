@@ -554,7 +554,7 @@ exports.deletePad = function(padID, callback)
 
 /**
 copyPad(sourceID, destinationID[, force=false]) copies a pad. If force is true, 
-	the destination will be overwritten if it exists.
+  the destination will be overwritten if it exists.
 
 Example returns:
 
@@ -573,7 +573,7 @@ exports.copyPad = function(sourceID, destinationID, force, callback)
 
 /**
 movePad(sourceID, destinationID[, force=false]) moves a pad. If force is true, 
-	the destination will be overwritten if it exists.
+  the destination will be overwritten if it exists.
 
 Example returns:
 
