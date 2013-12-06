@@ -157,7 +157,7 @@ exports.doImport = function(req, res, padId)
         text = _text;
         // Title needs to be stripped out else it appends it to the pad..
         text = text.replace("<title>", "<!-- <title>");
-        text = text.replace("</title>-->");
+        text = text.replace("</title>","</title>-->");
 
         //node on windows has a delay on releasing of the file lock.  
         //We add a 100ms delay to work around this
