@@ -117,7 +117,6 @@
     /*
 	  , { "type": "file"
       , "filename": "your-log-file-here.log"
-      , "maxLogSize": 1024
       , "backups": 3 // how many log files there're gonna be at max
       //, "category": "test" // only log a specific category
       }*/
