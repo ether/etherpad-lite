@@ -2399,8 +2399,8 @@ function Ace2Inner(){
       if(rep.selStart[1] == rep.selEnd[1] && rep.selStart[1] == rep.lines.atIndex(n).text.length){
         return false; // If we're at the end of a line we treat it as having no formatting
       }
-      if(rep.selStart[1] == 1 && rep.selEnd[1] == 1){
-        return false; // If we're at the start of a line we treat it as having no formatting
+      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){ 
+        return false; // If we're at the start of a line attributes get confused..
       }
       if (n == selStartLine)
       {
