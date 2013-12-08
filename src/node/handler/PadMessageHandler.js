@@ -1076,7 +1076,6 @@ function handleClientReady(client, message)
               "historicalAuthorData": historicalAuthorData,
               "apool": apool,
               "rev": pad.getHeadRevisionNumber(),
-              "globalPadId": message.padId,
               "time": currentTime,
           },
           "colorPalette": authorManager.getColorPalette(),
@@ -1093,7 +1092,6 @@ function handleClientReady(client, message)
           "readOnlyId": padIds.readOnlyPadId,
           "readonly": padIds.readonly,
           "serverTimestamp": new Date().getTime(),
-          "globalPadId": message.padId,
           "userId": author,
           "abiwordAvailable": settings.abiwordAvailable(), 
           "plugins": {

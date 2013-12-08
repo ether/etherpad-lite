@@ -40,7 +40,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   var rev = serverVars.rev;
   var padId = serverVars.padId;
-  var globalPadId = serverVars.globalPadId;
 
   var state = "IDLE";
   var stateMessage;
