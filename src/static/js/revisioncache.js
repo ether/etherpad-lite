@@ -177,10 +177,11 @@ $.Class("Thread",
   {//statics
   },
   {//instance
-    init: function () {
-      this.is_running = false;
-      this.is_stopping = false;
+    init: function (interval) {
+      this._is_running = false;
+      this._is_stopping = false;
       this._interval_id = null;
+      this._interval = interval ? interval : 1000;
     },
     _run: function () {
       console.log("[thread] tick");
@@ -190,20 +191,20 @@ $.Class("Thread",
       var _this = this;
       console.log("[thread] starting")
       var wrapper = function () {
-        if (_this.is_running && _this.is_stopping) {
+        if (_this._is_running && _this._is_stopping) {
           console.log("[thread] shutting down")
           clearInterval(_this._interval_id);
-          _this.is_running = false;
+          _this._is_running = false;
           return;
         }
         _this._run.apply(_this);
       };
-      this._interval_id = setInterval(wrapper, 1000);
-      this.is_running = true;
+      this._interval_id = setInterval(wrapper, this._interval);
+      this._is_running = true;
     },
     // stop the run loop
     stop: function () {
-      this.is_stopping = true;
+      this._is_stopping = true;
       console.log("[thread] request stop")
       // TODO: consider finding a way to make this block
       // or alternatively, having a callback which is called
@@ -228,7 +229,7 @@ Thread("ChangesetLoader",
   },
   {//instance
     init: function () {
-      this._super();
+      this._super(100);
       this.queue_large = [];
       this.queue_medium = [];
       this.queue_small = [];
