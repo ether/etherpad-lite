@@ -346,19 +346,6 @@ function Ace2Inner(){
     }
   }
 
-  function boldColorFromColor(lightColorCSS)
-  {
-    var color = colorutils.css2triple(lightColorCSS);
-
-    // amp up the saturation to full
-    color = colorutils.saturate(color);
-
-    // normalize brightness based on luminosity
-    color = colorutils.scaleColor(color, 0, 0.5 / colorutils.luminosity(color));
-
-    return colorutils.triple2css(color);
-  }
-
   function fadeColor(colorCSS, fadeFrac)
   {
     var color = colorutils.css2triple(colorCSS);
