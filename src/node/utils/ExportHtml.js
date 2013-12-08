@@ -21,7 +21,6 @@ var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var getPadPlainText = require('./ExportHelper').getPadPlainText;
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
