@@ -101,13 +101,13 @@ function Ace2Inner(){
     apool: new AttribPool()
   };
 
-  // lines, alltext, alines, and DOM are set up in setup()
+  // lines, alltext, alines, and DOM are set up in init()
   if (undoModule.enabled)
   {
     undoModule.apool = rep.apool;
   }
 
-  var root, doc; // set in setup()
+  var root, doc; // set in init()
   var isEditable = true;
   var doesWrap = true;
   var hasLineNumbers = true;
@@ -4766,54 +4766,6 @@ function Ace2Inner(){
   {
     if (present) $(elem).addClass(className);
     else $(elem).removeClass(className);
-  }
-
-  function setup()
-  {
-    doc = document; // defined as a var in scope outside
-    inCallStackIfNecessary("setup", function()
-    {
-      var body = doc.getElementById("innerdocbody");
-      root = body; // defined as a var in scope outside
-      if (browser.mozilla) addClass(root, "mozilla");
-      if (browser.safari) addClass(root, "safari");
-      if (browser.msie) addClass(root, "msie");
-      if (browser.msie)
-      {
-        // cache CSS background images
-        try
-        {
-          doc.execCommand("BackgroundImageCache", false, true);
-        }
-        catch (e)
-        { /* throws an error in some IE 6 but not others! */
-        }
-      }
-      setClassPresence(root, "authorColors", true);
-      setClassPresence(root, "doesWrap", doesWrap);
-
-      initDynamicCSS();
-
-      enforceEditability();
-
-      // set up dom and rep
-      while (root.firstChild) root.removeChild(root.firstChild);
-      var oneEntry = createDomLineEntry("");
-      doRepLineSplice(0, rep.lines.length(), [oneEntry]);
-      insertDomLines(null, [oneEntry.domInfo], null);
-      rep.alines = Changeset.splitAttributionLines(
-      Changeset.makeAttribution("\n"), "\n");
-
-      bindTheEventHandlers();
-
-    });
-
-    scheduler.setTimeout(function()
-    {
-      parent.readyFunc(); // defined in code that sets up the inner iframe
-    }, 0);
-
-    isSetUp = true;
   }
 
   function focus()
