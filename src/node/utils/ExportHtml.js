@@ -306,18 +306,20 @@ function getHTMLFromAtext(pad, atext, authorColors)
               tags2close.push(i);
               propVals[i] = false;
             }
-            else if (propVals[i] === STAY)
+            else if (propVals[i] === STAY && openTags[openTags.length - 1] != i)
             {
               //emitCloseTag(i);
               tags2close.push(i);
             }
           }
-          
           orderdCloseTags(tags2close);
-          
+
+          // open all tags that are used in this op or got closed to satisfy order
+          // e.g. <em><s><u>em&strikethrough&underline</u>strikethrough&em</s></em><s>strikethrough</s>
+          // TODO?: ensure the best ie shortest resolution
           for (var i = 0; i < propVals.length; i++)
           {
-            if (propVals[i] === ENTER || propVals[i] === STAY)
+            if (propVals[i] === ENTER || (propVals[i] === STAY && openTags[openTags.length - 1] != i))
             {
               emitOpenTag(i);
               propVals[i] = true;
