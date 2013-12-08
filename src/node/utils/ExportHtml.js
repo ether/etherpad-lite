@@ -251,17 +251,23 @@ function getHTMLFromAtext(pad, atext, authorColors)
           if (a in anumMap)
           {
             var i = anumMap[a]; // i = 0 => bold, etc.
+
+            //true branch: if false or undefined or LEAVE set ENTER and propChanged
+            //false branch: if its true (the tag was opened in one of previous op) set it STAY
             if (!propVals[i])
             {
               propVals[i] = ENTER;
               propChanged = true;
             }
-            else
+            else if(propVals[i] === true)
             {
               propVals[i] = STAY;
             }
           }
-        });
+        }); // now all attribs of this op have been parsed
+
+        // if an attrib is no longer used in this op but was used in the previous set it to LEAVE
+        // otherwise if its STAY(was previously open and still is) set it true
         for (var i = 0; i < propVals.length; i++)
         {
           if (propVals[i] === true)
