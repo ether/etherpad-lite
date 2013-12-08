@@ -44,7 +44,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   var state = "IDLE";
   var stateMessage;
-  var stateMessageSocketId;
   var channelState = "CONNECTING";
   var appLevelDisconnectReason = null;
 
@@ -52,7 +51,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   var initialStartConnectTime = 0;
 
   var userId = initialUserInfo.userId;
-  var socketId;
   //var socket;
   var userSet = {}; // userId -> userInfo
   userSet[userId] = initialUserInfo;
@@ -196,7 +194,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         changeset: userChangesData.changeset,
         apool: userChangesData.apool
       };
-      stateMessageSocketId = socketId;
       sendMessage(stateMessage);
       sentMessage = true;
       callbacks.onInternalAction("commitPerformed");
@@ -593,7 +590,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       obj.committedChangeset = stateMessage.changeset;
       obj.committedChangesetAPool = stateMessage.apool;
-      obj.committedChangesetSocketId = stateMessageSocketId;
       editor.applyPreparedChangesetToBase();
     }
     var userChangesData = editor.prepareUserChangeset();
