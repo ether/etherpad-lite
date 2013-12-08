@@ -233,9 +233,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
         // close all tags upto the outer most
         if (outermostTag != -1)
         {
-          for (i=0; i <= outermostTag; outermostTag--)
+          while ( outermostTag >= 0 )
           {
-            emitCloseTag(openTags[0])
+            emitCloseTag(openTags[0]);
+            outermostTag--;
           }
         }
 
