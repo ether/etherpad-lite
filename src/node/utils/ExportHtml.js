@@ -79,6 +79,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
+  // holds a map of used styling attributes (*1, *2, etc) in the apool
+  // and maps them to an index in props
+  // *3:2 -> the attribute *3 means strong
+  // *2:5 -> the attribute *2 means s(trikethrough)
   var anumMap = {};
   var css = "";
 
@@ -113,10 +117,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
              "}\n";
       }
     }
-    
+
     css+="</style>";
   }
 
+  // iterates over all props(h1,h2,strong,...), checks if it is used in
+  // this pad, and if yes puts its attrib id->props value into anumMap
   props.forEach(function (propName, i)
   {
     var propTrueNum = apool.putAttrib([propName, true], true);
@@ -128,7 +134,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   function getLineHTML(text, attribs)
   {
-    var propVals = [false, false, false];
+    // the current state of every attrib
+    // false if a tag was not seen or after it was pushed to tags2close
+    // true after emitOpenTag was called
+    var propVals = [false, false, false, false, false, false]; //every supported attrib
     var ENTER = 1;
     var STAY = 2;
     var LEAVE = 0;
@@ -188,7 +197,15 @@ function getHTMLFromAtext(pad, atext, authorColors)
         assem.append('>');
       }
     }
-    
+
+    // this function takes an array of tags that should be closed
+    // it iterates over the array of open tags and tags2close and if it 
+    // finds a match, it calls emitCloseTag (which removes and
+    // closes it) and decreases the iteration counter by one
+    // this ensures, that multiple tags can be closed:
+    //   opentags = ['strong','em','s']
+    //   closetags = ['s','em']
+    //
     function orderdCloseTags(tags2close)
     {
       for(var i=0;i<openTags.length;i++)
@@ -219,6 +236,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
       var iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
+      // this iterates over every op string and decides which tags to open or to close
+      // based on the attribs used
       while (iter.hasNext())
       {
         var o = iter.next();
