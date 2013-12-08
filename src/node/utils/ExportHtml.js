@@ -251,33 +251,24 @@ function getHTMLFromAtext(pad, atext, authorColors)
             propVals[i] = true; // set it back
           }
         }
+
         // now each member of propVal is in {false,LEAVE,ENTER,true}
-        // according to what happens at start of span
+        // false if not in this and not in previous, LEAVE if in previous, ENTER if new or true if
+        // in this and in the previous
+        // propChanged is true if any tag should be closed/opened
         if (propChanged)
         {
-          // leaving bold (e.g.) also leaves italics, etc.
-          var left = false;
           for (var i = 0; i < propVals.length; i++)
           {
             var v = propVals[i];
-            if (!left)
+            if (v === true && propVals.indexOf(LEAVE) != -1)
             {
-              if (v === LEAVE)
-              {
-                left = true;
-              }
-            }
-            else
-            {
-              if (v === true)
-              {
-                propVals[i] = STAY; // tag will be closed and re-opened
-              }
+              propVals[i] = STAY; // tag will be closed and re-opened
             }
           }
 
+          // close all tags that are open in previous op but not in this one
           var tags2close = [];
-
           for (var i = propVals.length - 1; i >= 0; i--)
           {
             if (propVals[i] === LEAVE)
