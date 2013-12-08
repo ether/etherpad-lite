@@ -79,7 +79,6 @@ function Ace2Inner(){
   iframe.ace_outerWin = null; // prevent IE 6 memory leak
   var sideDiv = iframe.nextSibling;
   var lineMetricsDiv = sideDiv.nextSibling;
-  var overlaysdiv = lineMetricsDiv.nextSibling;
   initLineNumbers();
 
   var outsideKeyDown = noop;
