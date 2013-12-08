@@ -1779,13 +1779,6 @@ function Ace2Inner(){
     return domChanges;
   }
 
-  function htmlForRemovedChild(n)
-  {
-    var div = doc.createElement("DIV");
-    div.appendChild(n);
-    return div.innerHTML;
-  }
-
   var STYLE_ATTRIBS = {
     bold: true,
     italic: true,
