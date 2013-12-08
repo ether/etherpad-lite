@@ -1173,34 +1173,6 @@ function Ace2Inner(){
   }
   editorInfo.ace_fastIncorp = fastIncorp;
 
-  function incorpIfQuick()
-  {
-    var me = incorpIfQuick;
-    var failures = (me.failures || 0);
-    if (failures < 5)
-    {
-      var isTimeUp = newTimeLimit(40);
-      var madeChanges = incorporateUserChanges(isTimeUp);
-      if (isTimeUp())
-      {
-        me.failures = failures + 1;
-      }
-      return true;
-    }
-    else
-    {
-      var skipCount = (me.skipCount || 0);
-      skipCount++;
-      if (skipCount == 20)
-      {
-        skipCount = 0;
-        me.failures = 0;
-      }
-      me.skipCount = skipCount;
-    }
-    return false;
-  }
-
   var idleWorkTimer = makeIdleAction(function()
   {
 
