@@ -204,17 +204,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   }
 
-  function getStats()
-  {
-    var stats = {};
-
-    stats.screen = [$(window).width(), $(window).height(), window.screen.availWidth, window.screen.availHeight, window.screen.width, window.screen.height].join(',');
-    stats.ip = serverVars.clientIp;
-    stats.useragent = serverVars.clientAgent;
-
-    return stats;
-  }
-
   function setUpSocket()
   {
     hiccupCount = 0;
