@@ -134,14 +134,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   function getLineHTML(text, attribs)
   {
-    // the current state of every attrib
-    // false if a tag was not seen or after it was pushed to tags2close
-    // true after emitOpenTag was called
-    var propVals = [false, false, false, false, false, false]; //every supported attrib
-    var ENTER = 1;
-    var STAY = 2;
-    var LEAVE = 0;
-
     // Use order of tags (b/i/u) as order of nesting, for simplicity
     // and decent nesting.  For example,
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
@@ -168,8 +160,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
       return false;
     }
 
-    // is called when an attribute is in ENTER or STAY state and saves
-    // a reference to it so it can be closed in order
     function emitOpenTag(i)
     {
       openTags.unshift(i);
@@ -187,7 +177,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
     }
 
     // this closes an open tag and removes its reference from openTags
-    // it is not directly called but via orderdCloseTags
     function emitCloseTag(i)
     {
       openTags.shift();
@@ -199,30 +188,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
         assem.append('</');
         assem.append(tags[i]);
         assem.append('>');
-      }
-    }
-
-    // this function takes an array of tags that should be closed
-    // it iterates over the array of open tags and tags2close and if it 
-    // finds a match, it calls emitCloseTag (which removes and
-    // closes it) and decreases the iteration counter by one
-    // this ensures, that multiple tags can be closed:
-    //   opentags = ['strong','em','s']
-    //   closetags = ['s','em']
-    //
-    function orderdCloseTags(tags2close)
-    {
-      for(var i=0;i<openTags.length;i++)
-      {
-        for(var j=0;j<tags2close.length;j++)
-        {
-          if(tags2close[j] == openTags[i])
-          {
-            emitCloseTag(tags2close[j]);
-            i--;
-            break;
-          }
-        }
       }
     }
 
@@ -245,7 +210,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
       while (iter.hasNext())
       {
         var o = iter.next();
-        var propChanged = false;
         var usedAttribs = [];
 
         // mark all attribs as used
