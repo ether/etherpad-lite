@@ -234,14 +234,14 @@ function getHTMLFromAtext(pad, atext, authorColors)
         // close all tags upto the outer most
         if (outermostTag != -1)
         {
-          for (var i=0; i <= outermostTag; outermostTag--)
+          for (i=0; i <= outermostTag; outermostTag--)
           {
             emitCloseTag(openTags[0])
           }
         }
 
         // open all tags that are used but not open
-        for (var i=0; i < usedAttribs.length; i++)
+        for (i=0; i < usedAttribs.length; i++)
         {
           if (openTags.indexOf(usedAttribs[i]) === -1)
           {
@@ -511,8 +511,8 @@ function _processSpaces(s){
       }
     }
     // beginning of line is nbsp
-    for (var i = 0; i < parts.length; i++){
-      var p = parts[i];
+    for (i = 0; i < parts.length; i++){
+      p = parts[i];
       if (p == " "){
         parts[i] = '&nbsp;';
         break;
@@ -524,8 +524,8 @@ function _processSpaces(s){
   }
   else
   {
-    for (var i = 0; i < parts.length; i++){
-      var p = parts[i];
+    for (i = 0; i < parts.length; i++){
+      p = parts[i];
       if (p == " "){
         parts[i] = '&nbsp;';
       }
