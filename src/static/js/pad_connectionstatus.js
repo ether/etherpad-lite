@@ -21,7 +21,6 @@
  */
 
 var padmodals = require('./pad_modals').padmodals;
-var padeditbar = require('./pad_editbar').padeditbar;
 
 var padconnectionstatus = (function()
 {
