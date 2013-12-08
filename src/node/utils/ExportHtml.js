@@ -246,87 +246,45 @@ function getHTMLFromAtext(pad, atext, authorColors)
       {
         var o = iter.next();
         var propChanged = false;
+        var usedAttribs = [];
+
+        // mark all attribs as used
         Changeset.eachAttribNumber(o.attribs, function (a)
         {
           if (a in anumMap)
           {
-            var i = anumMap[a]; // i = 0 => bold, etc.
-
-            //true branch: if false or undefined or LEAVE set ENTER and propChanged
-            //false branch: if its true (the tag was opened in one of previous op) set it STAY
-            if (!propVals[i])
-            {
-              propVals[i] = ENTER;
-              propChanged = true;
-            }
-            else if(propVals[i] === true)
-            {
-              propVals[i] = STAY;
-            }
+            usedAttribs.push(anumMap[a]); // i = 0 => bold, etc.
           }
-        }); // now all attribs of this op have been parsed
-
-        // if an attrib is no longer used in this op but was used in the previous set it to LEAVE
-        // otherwise if its STAY(was previously open and still is) set it true
-        for (var i = 0; i < propVals.length; i++)
+        });
+        var outermostTag = -1;
+        // find the outer most open tag that is no longer used
+        for (var i = openTags.length - 1; i >= 0; i--)
         {
-          if (propVals[i] === true)
+          if (usedAttribs.indexOf(openTags[i]) === -1)
           {
-            propVals[i] = LEAVE;
-            propChanged = true;
-          }
-          else if (propVals[i] === STAY)
-          {
-            propVals[i] = true; // set it back
+            outermostTag = i;
+            break;
           }
         }
 
-        // now each member of propVal is in {false,LEAVE,ENTER,true}
-        // false if not in this and not in previous, LEAVE if in previous, ENTER if new or true if
-        // in this and in the previous
-        // propChanged is true if any tag should be closed/opened
-        if (propChanged)
+        // close all tags upto the outer most
+        if (outermostTag != -1)
         {
-          for (var i = 0; i < propVals.length; i++)
+          for (var i=0; i <= outermostTag; outermostTag--)
           {
-            var v = propVals[i];
-            if (v === true && propVals.indexOf(LEAVE) != -1)
-            {
-              propVals[i] = STAY; // tag will be closed and re-opened
-            }
+            emitCloseTag(openTags[0])
           }
+        }
 
-          // close all tags that are open in previous op but not in this one
-          var tags2close = [];
-          for (var i = propVals.length - 1; i >= 0; i--)
+        // open all tags that are used but not open
+        for (var i=0; i < usedAttribs.length; i++)
+        {
+          if (openTags.indexOf(usedAttribs[i]) === -1)
           {
-            if (propVals[i] === LEAVE)
-            {
-              //emitCloseTag(i);
-              tags2close.push(i);
-              propVals[i] = false;
-            }
-            else if (propVals[i] === STAY && openTags[openTags.length - 1] != i)
-            {
-              //emitCloseTag(i);
-              tags2close.push(i);
-            }
+            emitOpenTag(usedAttribs[i])
           }
-          orderdCloseTags(tags2close);
+        }
 
-          // open all tags that are used in this op or got closed to satisfy order
-          // e.g. <em><s><u>em&strikethrough&underline</u>strikethrough&em</s></em><s>strikethrough</s>
-          // TODO?: ensure the best ie shortest resolution
-          for (var i = 0; i < propVals.length; i++)
-          {
-            if (propVals[i] === ENTER || (propVals[i] === STAY && openTags[openTags.length - 1] != i))
-            {
-              emitOpenTag(i);
-              propVals[i] = true;
-            }
-          }
-          // propVals is now all {true,false} again
-        } // end if (propChanged)
         var chars = o.chars;
         if (o.lines)
         {
@@ -343,17 +301,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
       } // end iteration over spans in line
 
       // close all the tags that are open after the last op
-      tags2close = [];
-      for (var i = propVals.length - 1; i >= 0; i--)
+      while (openTags.length > 0)
       {
-        if (propVals[i])
-        {
-          tags2close.push(i);
-          propVals[i] = false;
-        }
+        emitCloseTag(openTags[0])
       }
-
-      orderdCloseTags(tags2close);
     } // end processNextChars
     if (urls)
     {
