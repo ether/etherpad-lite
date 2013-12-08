@@ -551,16 +551,6 @@ function Ace2Inner(){
   }
   editorInfo.ace_inCallStackIfNecessary = inCallStackIfNecessary;
 
-  function recolorLineByKey(key)
-  {
-    if (rep.lines.containsKey(key))
-    {
-      var offset = rep.lines.offsetOfKey(key);
-      var width = rep.lines.atKey(key).width;
-      recolorLinesInRange(offset, offset + width);
-    }
-  }
-
   function dispose()
   {
     disposed = true;
