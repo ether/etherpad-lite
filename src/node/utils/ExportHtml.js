@@ -92,24 +92,24 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   if(authorColors){
     css+="<style>\n";
-    
+
     for (var a in apool.numToAttrib) {
       var attr = apool.numToAttrib[a];
-      
+
       //skip non author attributes
       if(attr[0] === "author" && attr[1] !== ""){
         //add to props array
         var propName = "author" + stripDotFromAuthorID(attr[1]);
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
-        
+
         css+="." + propName + " {background-color: " + authorColors[attr[1]]+ "}\n";
       } else if(attr[0] === "removed") {
         var propName = "removed";
-        
+
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
-        
+
         css+=".removed {text-decoration: line-through; " + 
              "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+ 
              "filter: alpha(opacity=80); "+
@@ -154,25 +154,27 @@ function getHTMLFromAtext(pad, atext, authorColors)
     function getSpanClassFor(i){
       //return if author colors are disabled
       if (!authorColors) return false;
-      
+
       var property = props[i];
-   
+
       if(property.substr(0,6) === "author"){
         return stripDotFromAuthorID(property);
       }
-      
+
       if(property === "removed"){
         return "removed";
       }
-      
+
       return false;
     }
 
+    // is called when an attribute is in ENTER or STAY state and saves
+    // a reference to it so it can be closed in order
     function emitOpenTag(i)
     {
       openTags.unshift(i);
       var spanClass = getSpanClassFor(i);
-      
+
       if(spanClass){
         assem.append('<span class="');
         assem.append(spanClass);
@@ -184,11 +186,13 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
     }
 
+    // this closes an open tag and removes its reference from openTags
+    // it is not directly called but via orderdCloseTags
     function emitCloseTag(i)
     {
       openTags.shift();
       var spanClass = getSpanClassFor(i);
-      
+
       if(spanClass){
         assem.append('</span>');
       } else {
@@ -339,7 +343,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           propVals[i] = false;
         }
       }
-      
+
       orderdCloseTags(tags2close);
     } // end processNextChars
     if (urls)
@@ -373,7 +377,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
-            
+
     if (line.listLevel)//If we are inside a list
     {
       // do list stuff
