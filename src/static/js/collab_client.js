@@ -54,7 +54,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   var userSet = {}; // userId -> userInfo
   userSet[userId] = initialUserInfo;
 
-  var reconnectTimes = [];
   var caughtErrors = [];
   var caughtErrorCatchers = [];
   var caughtErrorTimes = [];
@@ -499,16 +498,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       channelState = newChannelState;
       callbacks.onChannelStateChange(channelState, moreInfo);
     }
-  }
-
-  function keys(obj)
-  {
-    var array = [];
-    $.each(obj, function(k, v)
-    {
-      array.push(k);
-    });
-    return array;
   }
 
   function valuesArray(obj)
