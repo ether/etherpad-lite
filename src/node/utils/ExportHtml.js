@@ -332,17 +332,18 @@ function getHTMLFromAtext(pad, atext, authorColors)
         {
           chars--; // exclude newline at end of line, if present
         }
-        
+
         var s = taker.take(chars);
-        
+
         //removes the characters with the code 12. Don't know where they come 
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
-        
+
         assem.append(_encodeWhitespace(Security.escapeHTML(s)));
       } // end iteration over spans in line
-      
-      var tags2close = [];
+
+      // close all the tags that are open after the last op
+      tags2close = [];
       for (var i = propVals.length - 1; i >= 0; i--)
       {
         if (propVals[i])
