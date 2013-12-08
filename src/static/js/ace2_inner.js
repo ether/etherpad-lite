@@ -561,12 +561,6 @@ function Ace2Inner(){
     }
   }
 
-  function getLineKeyForOffset(charOffset)
-  {
-    return rep.lines.atOffset(charOffset).key;
-  }
-
-
   function dispose()
   {
     disposed = true;
