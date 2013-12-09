@@ -11,6 +11,9 @@
   // alternatively, set up a fully specified Url to your own favicon
   "favicon": "favicon.ico",
   
+  // apple touch icon name (bookmark icon on iOS devices)
+  "apple_touch_icon": "apple_touch_icon_114_114.png",
+  
   //IP and port which etherpad should bind at
   "ip": "0.0.0.0",
   "port" : 9001,
