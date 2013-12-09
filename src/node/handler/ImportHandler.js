@@ -103,9 +103,7 @@ exports.doImport = function(req, res, padId)
       // Logic for allowing external Import Plugins
       hooks.aCallAll("import", {srcFile: srcFile, destFile: destFile}, function(err, result){
         if(ERR(err, callback)) return callback();
-console.log(result);
         if(result.length > 0){ // This feels hacky and wrong..
-          console.log("Plugin handling import");
           importHandledByPlugin = true;
           callback();
         }else{
@@ -191,7 +189,6 @@ console.log(result);
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase();
       if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
-console.log("trying", fileEnding, abiword, text)
         try{
           importHtml.setPadHTML(pad, text);
         }catch(e){
