@@ -525,8 +525,8 @@ function loadBroadcastJS(tsclient, fireWhenAllScriptsAreLoaded, BroadcastSlider)
       }
     }
   };
-  tsclient.on("CHANGESET_REQ", changesetLoader.handle_CHANGESET_REQ);
-  tsclient.on("COLLABROOM", changesetLoader.handle_COLLABROOM);
+  //tsclient.on("CHANGESET_REQ", changesetLoader.handle_CHANGESET_REQ);
+  //tsclient.on("COLLABROOM", changesetLoader.handle_COLLABROOM);
 
   // to start upon window load, just push a function onto this array
   //window['onloadFuncts'].push(setUpSocket);

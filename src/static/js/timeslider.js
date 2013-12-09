@@ -45,30 +45,41 @@ $.Class("SocketClient",
       // setup the socket callbacks:
       _this = this;
 
-      this.socket.on("connect", function(callback) {
-        _this.onConnect(callback);
+      this.socket.on("connect", function() {
+        _this.onConnect.apply(_this, arguments);
       });
-      this.socket.on("disconnect", function(callback) {
-        _this.onDisconnect(callback);
+      this.socket.on("disconnect", function() {
+        _this.onDisconnect.apply(_this, arguments);
       });
-      this.socket.on("message", function(message, callback) {
-        _this.onMessage(message, callback);
+      this.socket.on("message", function(message) {
+        _this.onMessage.apply(_this, arguments);
       });
     },
 
-    onConnect: function(callback) {
+    onConnect: function() {
       console.log("[socket_client] > onConnect");
     },
 
-    onDisconnect: function(callback) {
+    onDisconnect: function() {
       console.log("[socket_client] > onDisconnect");
     },
 
-    onMessage: function(message, callback) {
+    /**
+     * Triggered when a new message arrives from the server.
+     * @param {object} message - The message.
+     */
+    onMessage: function(message) {
       console.log("[socket_client] > onMessage: ", message);
     },
 
+    /**
+     * Sends a message to the server.
+     * @param {object} message - The message to send
+     * @param {function} callback - A callback function which will be called after
+     * the message has been sent to the socket.
+     */
     sendMessage: function(message, callback) {
+      console.log("[socket_client] > sendMessage: ", message);
       this.socket.json.send(message);
       if (callback)
         callback();
@@ -97,6 +108,15 @@ SocketClient("AuthenticatedSocketClient",
       this._super(baseurl);
     },
 
+    /**
+     * Sends a pad message to the server, including all the neccessary
+     * session info and tokens.
+     * @param {string} type - The message type to send. See the server code for
+     *                        valid message types.
+     * @param {object} data - The data payload to be sent to the server.
+     * @param {function} callback - A callback function which will be called after
+     *                              the message has been sent to the socket.
+     */
     sendMessage: function (type, data, callback) {
       this.sessionID = decodeURIComponent(readCookie("sessionID"));
       this.password = readCookie("password");
@@ -111,49 +131,50 @@ SocketClient("AuthenticatedSocketClient",
       this._super(msg, callback);
     },
 
-    onMessage: function (message, callback) {
+    onMessage: function (message) {
       console.log("[authorized_client] > onMessage:", message);
       if (message.accessStatus)
       { //access denied?
         //TODO raise some kind of error?
         console.log("ACCESS ERROR!");
       }
-      this.dispatchMessage(message.type, message.data, callback);
+      this.dispatchMessage(message.type, message.data);
     },
 
-    dispatchMessage: function(type, data, callback) {
+    /**
+     * Dispatch incoming messages to handlers in subclasses or registered
+     * as event handlers.
+     * @param {string} type - The type of the message. See the server code
+     *                        for possible values.
+     * @param {object} data - The message payload.
+     */
+    dispatchMessage: function(type, data) {
       console.log("[authorized_client] > dispatchMessage('%s', %s)", type, data);
       // first call local handlers
       if ("handle_" + type in this)
-        this["handle_" + type](data, callback);
+        this["handle_" + type](data);
       // then call registered handlers
       if (type in this.handlers)
         for(var h in this.handlers[type])
         { //TODO: maybe chain the handlers into some kind of chain-of-responsibility?
           var handler = this.handlers[type][h];
-          handler.handler.call(this, data, handler.context, callback);
+          handler.handler.call(this, data, handler.context);
         }
     },
 
-    on: function(type, callback, context) {
+    /**
+     * Register an event handler for a given message type.
+     * @param {string} type - The message type.
+     * @param {function} handler - The handler function.
+     * @param {object} context - Optionally, some context to be passed to the handler.
+     */
+    on: function(type, handler, context) {
       if (!(type in this.handlers))
         this.handlers[type] = [];
-      this.handlers[type].push({handler: callback, context: context});
+      this.handlers[type].push({handler: handler, context: context});
       return this;
     },
 
-    registerHandler: this.on,
-    unregisterHandler: function(type, context) {
-      if(type in this.handlers)
-      {
-        for(var h in this.handlers[type])
-          if (this.handlers[type][h].context == context)
-          {
-            delete this.handlers[type][h];
-            break;
-          }
-      }
-    },
   }
 );
 
@@ -165,25 +186,25 @@ AuthenticatedSocketClient("TimesliderClient",
       this._super(baseurl, padID);
     },
 
-    onConnect: function (callback) {
+    onConnect: function () {
       this.sendMessage("CLIENT_READY", {}, function() { console.log("CLIENT_READY sent");});
     },
 
     // ------------------------------------------
     // Handling events
-    handle_CLIENT_VARS: function(data, callback) {
+    handle_CLIENT_VARS: function(data) {
       console.log("[timeslider_client] handle_CLIENT_VARS: ", data);
       this.clientVars = data;
       this.current_revision = this.head_revision = this.clientVars.collab_client_vars.rev;
       this.savedRevisions = this.clientVars.savedRevisions;
     },
 
-    handle_COLLABROOM: function(data, callback) {
+    handle_COLLABROOM: function(data) {
       console.log("[timeslider_client] handle_COLLABROOM: ", data);
     },
 
-    handle_CHANGESET_REQ: function(data, callback) {
-      console.log("[timeslider_client] handle_COLLABROOM: ", data);
+    handle_CHANGESET_REQ: function(data) {
+      console.log("[timeslider_client] handle_CHANGESET_REQ: ", data);
     },
   }
 );
@@ -217,12 +238,14 @@ function init(baseURL) {
     //find out in which subfolder we are
     var resource = baseURL.substring(1) + 'socket.io';
 
+    var cl;
     console.log(url, baseURL, resource, padId);
     var timesliderclient = new TimesliderClient(url, padId)
         .on("CLIENT_VARS", function(data, context, callback) {
           //load all script that doesn't work without the clientVars
           BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(this,fireWhenAllScriptsAreLoaded);
-          require('./broadcast_revisions').loadBroadcastRevisionsJS(this.clientVars);
+          cl = require('./revisioncache').loadBroadcastRevisionsJS(this.clientVars, this);
+          //require('./broadcast_revisions').loadBroadcastRevisionsJS(this.clientVars);
           changesetLoader = require('./broadcast').loadBroadcastJS(this, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
           //initialize export ui

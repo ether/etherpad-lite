@@ -199,8 +199,9 @@ $.Class("Thread",
         }
         _this._run.apply(_this);
       };
-      this._interval_id = setInterval(wrapper, this._interval);
       this._is_running = true;
+      this._is_stopping = false;
+      this._interval_id = setInterval(wrapper, this._interval);
     },
     // stop the run loop
     stop: function () {
@@ -217,10 +218,21 @@ $.Class("ChangesetRequest",
   {//statics
   },
   {//instance
-    init: function (start, end) {
+    init: function (start, granularity, callback) {
       this.start = start;
-      this.end = end;
+      this.granularity = granularity;
+      this.request_id = (this.start << 16) + granularity;
+      this.fulfill_callback = callback;
+    },
+    getRequestID: function () {
+      return this.request_id;
+    },
+    fulfill: function (data) {
+      console.log("[changesetrequest] Fulfilling request %d", this.getRequestID());
+      if (this.fulfill_callback)
+        this.fulfill_callback(data);
     }
+
   }
 );
 
@@ -228,41 +240,117 @@ Thread("ChangesetLoader",
   {//statics
   },
   {//instance
-    init: function () {
+    /**
+     * Create a new ChangesetLoader.
+     * @constructor
+     * @param {TimesliderClient} client - a TimesliderClient object to be used
+     *                                    for communication with the server.
+     */
+    init: function (client) {
       this._super(100);
-      this.queue_large = [];
-      this.queue_medium = [];
-      this.queue_small = [];
+      this.client = client;
+      this.queues = {
+        small: [],
+        medium: [],
+        large: [],
+      }
+      this.pending = {};
+      var _this = this;
+      this.client.on("CHANGESET_REQ", function () {
+        _this.on_response.apply(_this, arguments);
+      });
     },
-    enqueue: function (start, count) {
+    /**
+     * Enqueue a request for changesets. The changesets will be retrieved
+     * asynchronously.
+     * @param {number} start - The revision from which to start.
+     * @param {number} granularity - The granularity of the changesets. If this
+     *                               is 1, the response will include changesets which
+     *                               can be applied to go from revision r to r+1.
+     *                               If 10 is specified, the resulting changesets will
+     *                               be 'condensed', so that each changeset will go from
+     *                               r to r+10.
+     *                               If any other number is specified, that granularity will
+     *                               apply.
+     *
+     *                               TODO: there is currently no 'END' revision implemented
+     *                               in the server. The 'END' calculated at the server is:
+     *                                start + (100 * granularity)
+     *                               We should probably fix this so that you can specify
+     *                               exact ranges. Right now, the minimum number of
+     *                               changesets/revisions you can retrieve is 100, which
+     *                               feels broken.
+     * @param {function} callback - A callback which will be triggered when the request has
+     *                              been fulfilled.
+     */
+    enqueue: function (start, granularity, callback) {
       //TODO: check cache to see if we really need to fetch this
       //      maybe even to splices if we just need a smaller range
       //      in the middle
       var queue = null;
-      if (count >= 100)
-        queue = this.queue_large;
-      else if (count >= 10)
-        queue = this.queue_medium;
+      if (granularity == 1)
+        queue = this.queues.small;
+      else if (granularity == 10)
+        queue = this.queues.medium;
       else
-        queue = this.queue_small;
+        queue = this.queues.large;
 
-      queue.push(new ChangesetRequest(start, start+count));
+      queue.push(new ChangesetRequest(start, granularity, callback));
     },
     _run: function () {
       console.log("[changesetloader] tick");
       //TODO: pop an item from the queue and perform a request.
+      for (q in this.queues) {
+        var queue = this.queues[q];
+        if (queue.length > 0) {
+          // TODO: pop and handle
+          var request = queue.pop();
+          //TODO: test AGAIN to make sure that it hasn't been retrieved and cached by
+          //a previous request. This should handle the case when two requests for the
+          //same changesets are enqueued (which would be fine, as at enqueue time, we
+          //only check the cache of AVAILABLE changesets, not the pending requests),
+          //the first one is fulfilled, and then we pop the second one, and don't
+          //need to perform a server request. Note: it might be worth changing enqueue
+          //to check the pending requests queue to avoid this situation entirely.
 
+          var _this = this;
+          this.client.sendMessage("CHANGESET_REQ", {
+            start: request.start,
+            granularity: request.granularity,
+            requestID: request.getRequestID(),
+          }, function () {
+            _this.pending[request.getRequestID()] = request;
+          });
+        };
+      };
+      //TODO: this stop is just for debugging!!!!
+      //FIXME: remove when done testing
+      this.stop();
+    },
+    on_response: function (data) {
+      console.log("on_response: ", data)
+      if (!data.requestID in this.pending) {
+        console.log("[changesetloader] WTF? changeset not pending: ", data.requestID);
+        return;
+      }
+
+      // pop it from the pending list:
+      var request = this.pending[data.requestID];
+      delete this.pending[data.requestID];
+      //fulfill the request
+      request.fulfill(data);
     },
   }
 );
-function loadBroadcastRevisionsJS(clientVars)
+function loadBroadcastRevisionsJS(clientVars, client)
 {
 
       console.log("here")
-  revisionCache = new RevisionCache(clientVars.collab_client_vars.rev || 0);
-  revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
+//  revisionCache = new RevisionCache(clientVars.collab_client_vars.rev || 0);
+//  revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
-//  cl = new ChangesetLoader();
+   cl = new ChangesetLoader(client);
+   return cl;
 
 }
 
