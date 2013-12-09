@@ -29,8 +29,8 @@ var ERR = require("async-stacktrace")
   , formidable = require('formidable')
   , os = require("os")
   , importHtml = require("../utils/ImportHtml")
-  , log4js = require('log4js');
-
+  , log4js = require("log4js")
+  , hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
 //load abiword only if its enabled
 if(settings.abiword != null)
@@ -52,7 +52,10 @@ exports.doImport = function(req, res, padId)
   
   var srcFile, destFile
     , pad
-    , text;
+    , text
+    , importHandledByPlugin;
+
+  var randNum = Math.floor(Math.random()*0xFFFFFFFF);
   
   async.series([
     //save the uploaded file to /tmp
@@ -91,29 +94,42 @@ exports.doImport = function(req, res, padId)
       else {
         var oldSrcFile = srcFile;
         srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
-        
         fs.rename(oldSrcFile, srcFile, callback);
       }
     },
-    
-    //convert file to html
-    function(callback) {
-      var randNum = Math.floor(Math.random()*0xFFFFFFFF);
+    function(callback){
       destFile = path.join(tmpDirectory, "eplite_import_" + randNum + ".htm");
 
-      if (abiword) {
-        abiword.convertFile(srcFile, destFile, "htm", function(err) {
-          //catch convert errors
-          if(err) {
-            console.warn("Converting Error:", err);
-            return callback("convertFailed");
-          } else {
-            callback();
-          }
-        });
-      } else {
-        // if no abiword only rename
-        fs.rename(srcFile, destFile, callback);
+      // Logic for allowing external Import Plugins
+      hooks.aCallAll("import", {srcFile: srcFile, destFile: destFile}, function(err, result){
+        if(ERR(err, callback)) return callback();
+        if(result.length > 0){ // This feels hacky and wrong..
+          importHandledByPlugin = true;
+          callback();
+        }else{
+          callback();
+        }
+      });
+    },
+    //convert file to html
+    function(callback) {
+      if(!importHandledByPlugin){
+        if (abiword) {
+          abiword.convertFile(srcFile, destFile, "htm", function(err) {
+            //catch convert errors
+            if(err) {
+              console.warn("Converting Error:", err);
+              return callback("convertFailed");
+            } else {
+              callback();
+            }
+          });
+        } else {
+          // if no abiword only rename
+          fs.rename(srcFile, destFile, callback);
+        }
+      }else{
+        callback();
       }
     },
     
