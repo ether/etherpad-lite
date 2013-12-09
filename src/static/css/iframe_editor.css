@@ -159,8 +159,6 @@ p {
   font-family: monospace; /* overridden by lineMetricsDiv.style */
 }
 
-#overlaysdiv { position: absolute; left: -1000px; top: -1000px; }
-
 /* Stops super long lines without being spaces such as aaaaaaaaaaaaaa*100 breaking the editor
    Commented out because it stops IE from being able to render the document, crazy IE bug is crazy. */
 /*
