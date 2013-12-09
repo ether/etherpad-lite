@@ -28,9 +28,9 @@ JSON = require('./json2');
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
-var _ = require('./underscore');
+var hooks = require('./pluginfw/hooks');
 
-var socket, token, padId, export_links;
+var token, padId, export_links;
 
 function init() {
   $(document).ready(function ()
@@ -106,13 +106,17 @@ function init() {
       window.location.reload();
     });
 
+    exports.socket = socket; // make the socket available
+    exports.BroadcastSlider = BroadcastSlider; // Make the slider available
+
+    hooks.aCallAll("postTimesliderInit");
   });
 }
 
 //sends a message over the socket
 function sendSocketMsg(type, data)
 {
-  var sessionID = readCookie("sessionID");
+  var sessionID = decodeURIComponent(readCookie("sessionID"));
   var password = readCookie("password");
 
   var msg = { "component" : "pad", // FIXME: Remove this stupidity!
@@ -129,7 +133,7 @@ function sendSocketMsg(type, data)
 
 var fireWhenAllScriptsAreLoaded = [];
   
-var BroadcastSlider, changesetLoader;
+var changesetLoader;
 function handleClientVars(message)
 {
   //save the client Vars

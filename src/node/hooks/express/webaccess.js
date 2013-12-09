@@ -4,7 +4,8 @@ var httpLogger = log4js.getLogger("http");
 var settings = require('../../utils/Settings');
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-
+var ueberStore = require('../../db/SessionStore');
+var stats = require('ep_etherpad-lite/node/stats')
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
@@ -32,8 +33,8 @@ exports.basicAuth = function (req, res, next) {
     // If auth headers are present use them to authenticate...
     if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
       var userpass = new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
-      var username = userpass[0];
-      var password = userpass[1];
+      var username = userpass.shift();
+      var password = userpass.join(':');
 
       if (settings.users[username] != undefined && settings.users[username].password == password) {
         settings.users[username].username = username;
@@ -91,10 +92,21 @@ exports.basicAuth = function (req, res, next) {
 exports.secret = null;
 
 exports.expressConfigure = function (hook_name, args, cb) {
+  // Measure response time
+  args.app.use(function(req, res, next) {
+    var stopWatch = stats.timer('httpRequests').start();
+    var sendFn = res.send
+    res.send = function() {
+      stopWatch.end()
+      sendFn.apply(res, arguments)
+    }
+    next()
+  })
+
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
   if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
-    args.app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.INFO, format: ':status, :method :url'}));
+    args.app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.DEBUG, format: ':status, :method :url'}));
 
   /* Do not let express create the session, so that we can retain a
    * reference to it for socket.io to use. Also, set the key (cookie
@@ -102,15 +114,14 @@ exports.expressConfigure = function (hook_name, args, cb) {
    * handling it cleaner :) */
 
   if (!exports.sessionStore) {
-    exports.sessionStore = new express.session.MemoryStore();
-    exports.secret = randomString(32);
+    exports.sessionStore = new ueberStore();
+    exports.secret = settings.sessionKey; // Isn't this being reset each time the server spawns?
   }
-  
-  args.app.use(express.cookieParser(exports.secret));
 
+  args.app.use(express.cookieParser(exports.secret));
   args.app.sessionStore = exports.sessionStore;
-  args.app.use(express.session({store: args.app.sessionStore,
-                                key: 'express_sid' }));
+  args.app.use(express.session({secret: exports.secret, store: args.app.sessionStore, key: 'express_sid' }));
 
   args.app.use(exports.basicAuth);
 }
+

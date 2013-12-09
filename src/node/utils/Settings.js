@@ -1,5 +1,5 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides 
+ * The Settings Modul reads the settings out of settings.json and provides
  * this information to the other modules
  */
 
@@ -24,8 +24,10 @@ var os = require("os");
 var path = require('path');
 var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
-var vm = require('vm');
+var jsonminify = require("jsonminify");
 var log4js = require("log4js");
+var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -33,7 +35,7 @@ exports.root = path.normalize(path.join(npm.dir, ".."));
 /**
  * The app title, visible e.g. in the browser window
  */
-exports.title = "Etherpad Lite";
+exports.title = "Etherpad";
 
 /**
  * The app favicon fully specified url, visible e.g. in the browser window
@@ -46,7 +48,7 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  * The IP ep-lite should listen to
  */
 exports.ip = "0.0.0.0";
-  
+
 /**
  * The Port ep-lite should listen to
  */
@@ -75,7 +77,7 @@ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
 /**
  * The default Text of a new pad
  */
-exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
+exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad on Github: http:\/\/j.mp/ep-lite\n";
 
 /**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
@@ -107,10 +109,25 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
+/**
+ * Disable IP logging
+ */
+exports.disableIPlogging = false;
+
 /*
 * log4js appender configuration
 */
 exports.logconfig = { appenders: [{ type: "console" }]};
+
+/*
+* Session Key, do not sure this.
+*/
+exports.sessionKey = false;
+
+/*
+* Trust Proxy, whether or not trust the x-forwarded-for header.
+*/
+exports.trustProxy = false;
 
 /* This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
@@ -130,14 +147,12 @@ exports.abiwordAvailable = function()
   {
     return "no";
   }
-}
-
-
+};
 
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
-  settingsFilename = path.resolve(path.join(root, settingsFilename));
+  settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
 
   var settingsStr;
   try{
@@ -151,7 +166,8 @@ exports.reloadSettings = function reloadSettings() {
   var settings;
   try {
     if(settingsStr) {
-      settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
+      settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
+      settings = JSON.parse(settingsStr);
     }
   }catch(e){
     console.error('There was an error processing your settings.json file: '+e.message);
@@ -179,15 +195,20 @@ exports.reloadSettings = function reloadSettings() {
       console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
     }
   }
-  
+
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   log4js.replaceConsole();
 
-  if(exports.dbType === "dirty"){
-    console.warn("DirtyDB is used. This is fine for testing but not recommended for production.")
+  if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here
+    exports.sessionKey = randomString(32);
+    console.warn("You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts");
   }
-}
+
+  if(exports.dbType === "dirty"){
+    console.warn("DirtyDB is used. This is fine for testing but not recommended for production.");
+  }
+};
 
 // initially load settings
 exports.reloadSettings();

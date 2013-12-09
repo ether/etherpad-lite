@@ -154,6 +154,7 @@
                 <% e.end_block(); %>
             </ul>
         </div>
+        <% e.begin_block("afterEditbar"); %><% e.end_block(); %>
 
         <div id="users">
             <% e.begin_block("userlist"); %>
@@ -195,7 +196,9 @@
               <div id="wrongPassword">
                 <p data-l10n-id="pad.wrongPassword">Your password was wrong</p>
               </div>
+              <% e.begin_block("loading"); %>
               <p data-l10n-id="pad.loading" id="loading">Loading...</p>
+              <% e.end_block(); %>
               <noscript><strong>Sorry, you have to enable Javascript in order to use this.</strong></noscript>
             </div>
         </div>
@@ -216,6 +219,10 @@
                 <p>
                     <input type="checkbox" id="options-linenoscheck" checked>
                     <label for="options-linenoscheck" data-l10n-id="pad.settings.linenocheck"></label>
+                </p>
+                <p>
+                    <input type="checkbox" id="options-rtlcheck">
+                    <label for="options-rtlcheck" data-l10n-id="pad.settings.rtlcheck"></label>
                 </p>
                 <% e.end_block(); %>
                 <table>
@@ -267,7 +274,6 @@
                     <div id="import"></div>
                     <div class="importmessage" id="importmessagesuccess" data-l10n-id="pad.importExport.importSuccessful"></div>
                     <div class="importformdiv" id="importformsubmitdiv">
-                        <input type="hidden" name="padId" value="blpmaXT35R">
                         <span class="nowrap">
                             <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput">
                             <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top">
@@ -277,7 +283,7 @@
                 </form>
                 <% e.end_block(); %>
             </div>
-            <div class="column">
+            <div class="column" id="exportColumn">
                 <h2 data-l10n-id="pad.importExport.export"></h2>
                 <% e.begin_block("exportColumn"); %>
                 <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
@@ -311,7 +317,7 @@
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <div class="looping">
-                  <h1 data-l10n-id="pad.modals.looping"></h1>
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
                   <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
                   <p data-l10n-id="pad.modals.looping.cause"></p>
                 </div>
@@ -321,10 +327,21 @@
                   <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
                 </div>
                 <div class="slowcommit">
-                  <h1 data-l10n-id="pad.modals.slowcommit"></h1>
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
                   <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
                   <p data-l10n-id="pad.modals.slowcommit.cause"></p>
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+                </div>
+                <div class="badChangeset">
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
+                  <h2 data-l10n-id="pad.modals.badChangeset.explanation"></h2>
+                  <p data-l10n-id="pad.modals.badChangeset.cause"></p>
+                  <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+                </div>
+                <div class="corruptPad">
+                  <h1 data-l10n-id="pad.modals.disconnected"></h1>
+                  <h2 data-l10n-id="pad.modals.corruptPad.explanation"></h2>
+                  <p data-l10n-id="pad.modals.corruptPad.cause"></p>
                 </div>
                 <div class="deleted">
                   <h1 data-l10n-id="pad.modals.deleted"></h1>
@@ -355,12 +372,12 @@
             <h1 data-l10n-id="pad.share"></h1>
             <div id="linkcode">
                 <h2 data-l10n-id="pad.share.link"></h2>
-                <input id="linkinput" type="text" value="">
+                <input id="linkinput" type="text" value="" onclick="this.select()">
             </div>
             <br>
             <div id="embedcode">
                 <h2 data-l10n-id="pad.share.emebdcode"></h2>
-                <input id="embedinput" type="text" value="">
+                <input id="embedinput" type="text" value="" onclick="this.select()">
             </div>
             <% e.end_block(); %>
         </div>
@@ -372,7 +389,10 @@
         </div>
 
         <div id="chatbox">
-            <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span><a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a></div>
+            <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span>
+              <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
+              <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
+            </div>
             <div id="chattext" class="authorColors">
                 <img alt="loading.." id="chatloadmessagesball" class="chatloadmessages" src="../static/img/loading.gif" align="top">
                 <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>

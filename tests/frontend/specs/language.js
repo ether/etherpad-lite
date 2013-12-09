@@ -13,7 +13,6 @@ describe("Language select and change", function(){
   });
  
   // Destroy language cookies
-
   it("makes text german", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
@@ -56,10 +55,8 @@ describe("Language select and change", function(){
  
     //click the language button
     var $language = chrome$("#languagemenu");
-    var $languageoption = $language.find("[value=en]");
- 
-    //select german
-    $languageoption.attr('selected','selected');
+    //select english
+    $language.val("en");
     $language.change();
  
     //get the value of the bold button
@@ -94,9 +91,10 @@ describe("Language select and change", function(){
     var $languageoption = $language.find("[value=ar]");
  
     //select arabic
-    $languageoption.attr('selected','selected');
-    $language.change();
- 
+    // $languageoption.attr('selected','selected'); // Breaks the test..
+    $language.val("ar");
+    $languageoption.change();
+
     helper.waitFor(function() { 
       return chrome$("html")[0]["dir"] != 'ltr';
      })
@@ -106,5 +104,32 @@ describe("Language select and change", function(){
       done();
     });
   });
- 
+
+  it("changes direction when picking an ltr lang", function(done) {
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //click on the settings button to make settings visible
+    var $settingsButton = chrome$(".buttonicon-settings");
+    $settingsButton.click();
+
+    //click the language button
+    var $language = chrome$("#languagemenu");
+    var $languageoption = $language.find("[value=en]");
+
+    //select english
+    //select arabic
+    $languageoption.attr('selected','selected');
+    $language.val("en");
+    $languageoption.change();
+
+    helper.waitFor(function() {
+      return chrome$("html")[0]["dir"] != 'rtl';
+     })
+    .done(function(){
+      // check if the document's direction was changed
+      expect(chrome$("html")[0]["dir"]).to.be("ltr");
+      done();
+    });
+  });
 });

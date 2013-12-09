@@ -1,22 +1,20 @@
 language: node_js
 node_js:
-  - "0.8"
+  - "0.10"
 install:
   - "bin/installDeps.sh"
-  - "export GIT_HASH=$(cat .git/HEAD | head -c 7)"
-before_script: 
+  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+before_script:
   - "tests/frontend/travis/sauce_tunnel.sh"
 script:
   - "tests/frontend/travis/runner.sh"
 env:
   global:
-    - secure: "OxZ2s724S96xu02746LUN+4lBckAe1BOICJjfA4jnFPNpiNU6XoMH52f+LgG\nZzAwu6xMTv+NsaLGp6Avm3cx4GZ+jIiHe4NB9XOgYPa0r0TBIi3ueWYPDyVv\nCniS/4qX68DoFNV4lh7zMBXn0IIPxT4Wppm3desBpjWDP/SdoRs="
-    - SAUCE_USER=pita
+    - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
+    - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 jdk:
   - oraclejdk6
 notifications:
-  email:
-    - petermartischka@googlemail.com
   irc:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"

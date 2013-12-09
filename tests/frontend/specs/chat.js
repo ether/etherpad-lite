@@ -1,4 +1,4 @@
-describe("send chat message", function(){
+describe("Chat messages and UI", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
@@ -30,8 +30,9 @@ describe("send chat message", function(){
       var usernameValue = username.text();
       var time = $firstChatMessage.children(".time");
       var timeValue = time.text();
-      var expectedStringIncludingUserNameAndTime = usernameValue + timeValue + " " + "JohnMcLear";
-      expect(expectedStringIncludingUserNameAndTime).to.be($firstChatMessage.text());
+      var discoveredValue = $firstChatMessage.text();
+      var chatMsgExists = (discoveredValue.indexOf("JohnMcLear") !== -1);
+      expect(chatMsgExists).to.be(true);
       done();
     });
 
@@ -40,7 +41,7 @@ describe("send chat message", function(){
   it("makes sure that an empty message can't be sent", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
-	
+
     //click on the chat button to make chat visible
     var $chatButton = chrome$("#chaticon");
     $chatButton.click();
@@ -61,6 +62,38 @@ describe("send chat message", function(){
       expect(containsMessage).to.be(true);
       done();
     });
+  });
 
+  it("makes chat stick to right side of the screen", function(done) {
+    var inner$ = helper.padInner$; 
+    var chrome$ = helper.padChrome$; 
+
+    //click on the settings button to make settings visible
+    var $settingsButton = chrome$(".buttonicon-settings");
+    $settingsButton.click();
+
+    //get the chat selector
+    var $stickychatCheckbox = chrome$("#options-stickychat");
+
+    //select chat always on screen and fire change event
+    $stickychatCheckbox.attr('selected','selected');
+    $stickychatCheckbox.change();
+    $stickychatCheckbox.click();
+
+    //check if chat changed to get the stickychat Class
+    var $chatbox = chrome$("#chatbox");
+    var hasStickyChatClass = $chatbox.hasClass("stickyChat");
+    expect(hasStickyChatClass).to.be(true);
+
+    //select chat always on screen and fire change event
+    $stickychatCheckbox.attr('selected','selected');
+    $stickychatCheckbox.change();
+    $stickychatCheckbox.click();
+
+    //check if chat changed to remove the stickychat Class
+    var hasStickyChatClass = $chatbox.hasClass("stickyChat");
+    expect(hasStickyChatClass).to.be(false);
+
+    done();
   });
 });

@@ -16,7 +16,7 @@ if [ $(uname) = "SunOS" ]; then
   }
 fi
 
-#Is wget installed?
+#Is curl installed?
 hash curl > /dev/null 2>&1 || { 
   echo "Please install curl" >&2
   exit 1 
@@ -44,8 +44,8 @@ fi
 #check node version
 NODE_VERSION=$(node --version)
 NODE_V_MINOR=$(echo $NODE_VERSION | cut -d "." -f 1-2)
-if [ ! $NODE_V_MINOR = "v0.8" ] && [ ! $NODE_V_MINOR = "v0.6" ]; then
-  echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.6.x or v0.8.x" >&2
+if [ ! $NODE_V_MINOR = "v0.8" ] && [ ! $NODE_V_MINOR = "v0.10" ] && [ ! $NODE_V_MINOR = "v0.11" ]; then
+  echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.8.x, v0.10.x or v0.11.x" >&2
   exit 1 
 fi
 

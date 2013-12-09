@@ -43,7 +43,7 @@ div.innerwrapper {
   box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
   margin: auto;
   max-width: 1150px;
-  min-height: 100%;
+  min-height: 101%;/*always display a scrollbar*/
 }
 
 h1 {
@@ -102,12 +102,26 @@ input[type="text"] {
   max-width: 500px;
 }
 
+.sort {
+  cursor: pointer;
+}
+.sort:after {
+  content: '▲▼'
+}
+.sort.up:after {
+  content:'▲'
+}
+.sort.down:after {
+  content:'▼'
+}
+
 table {
   border: 1px solid #ddd;
   border-radius: 3px;
   border-spacing: 0;
   width: 100%;
   margin: 20px 0;
+  position:relative; /* Allows us to position the loading indicator relative to the table */
 }
 
 table thead tr {
@@ -122,13 +136,42 @@ td, th {
   display: none;
 }
 
-#progress {
-  position: absolute;
-  bottom: 50px;
+#installed-plugins td>div {
+  position: relative;/* Allows us to position the loading indicator relative to this row */
+  display: inline-block; /*make this fill the whole cell*/
+  width:100%;
 }
 
-#progress img {
-  vertical-align: top;
+.messages {
+  height: 5em;
+}
+.messages * {
+  display: none;
+  text-align: center;
+}
+.messages .fetching {
+  display: block;
+}
+
+.progress {
+  position: absolute;
+  top: 0; left: 0; bottom:0; right:0;
+  padding: auto;
+  
+  background: rgb(255,255,255);
+  display: none;
+}
+
+#search-progress.progress {
+  padding-top: 20%;
+  background: rgba(255,255,255,0.3);
+}
+
+.progress * {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  color: #666;
 }
 
 .settings {
@@ -147,7 +190,25 @@ a:link, a:visited, a:hover, a:focus {
 }
 
 a:focus, a:hover {
-  border-bottom: #333333 1px solid;
+  text-decoration: underline;
+}
+
+.installed-results a:link,
+.search-results a:link,
+.installed-results a:visited,
+.search-results a:visited,
+.installed-results a:hover,
+.search-results a:hover,
+.installed-results a:focus,
+.search-results a:focus  {
+  text-decoration: underline;
+}
+
+.installed-results a:focus,
+.search-results a:focus,
+.installed-results a:hover,
+.search-results a:hover {
+  text-decoration: none;
 }
 
 pre {

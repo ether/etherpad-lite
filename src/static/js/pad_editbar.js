@@ -140,7 +140,7 @@ var padeditbar = (function()
         }
         else if (cmd == 'import_export')
         {
-	      self.toggleDropDown("importexport");
+          self.toggleDropDown("importexport");
         }
         else if (cmd == 'savedRevision')
         {
@@ -156,10 +156,7 @@ var padeditbar = (function()
             else if (cmd == 'insertorderedlist') ace.ace_doInsertOrderedList();
             else if (cmd == 'indent')
             {
-              if (!ace.ace_doIndentOutdent(false))
-              {
-                ace.ace_doInsertUnorderedList();
-              }
+              ace.ace_doIndentOutdent(false);
             }
             else if (cmd == 'outdent')
             {

@@ -104,7 +104,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       if (listType)
       {
         listType = listType[1];
-        start = start?'start="'+Security.escapeHTMLAttribute(start[1])+'"':'';
         if (listType)
         {
           if(listType.indexOf("number") < 0)
@@ -114,7 +113,14 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
           }
           else
           {
-            preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            if(start){ // is it a start of a list with more than one item in?
+              if(start[1] == 1){ // if its the first one at this level?
+                lineClass = lineClass + " " + "list-start-" + listType; // Add start class to DIV node
+              }
+              preHtml = '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            }else{
+               preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
+            }
             postHtml = '</li></ol>';
           }
         } 
@@ -179,7 +185,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     {
       if (href)
       {
-        if(!~href.indexOf("http")) // if the url doesn't include http or https etc prefix it.
+        if(!~href.indexOf("://") && !~href.indexOf("mailto:")) // if the url doesn't include a protocol prefix, assume http
         {
           href = "http://"+href;
         }
@@ -228,10 +234,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       result.node.innerHTML = curHTML;
     }
     if (lineClass !== null) result.node.className = lineClass;
-	
-	hooks.callAll("acePostWriteDomLineHTML", {
-        node: result.node
-	});
+
+    hooks.callAll("acePostWriteDomLineHTML", {
+      node: result.node
+    });
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;

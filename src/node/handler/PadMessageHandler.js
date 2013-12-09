@@ -35,6 +35,8 @@ var messageLogger = log4js.getLogger("message");
 var accessLogger = log4js.getLogger("access");
 var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
+var channels = require("channels");
+var stats = require('../stats');
 
 /**
  * A associative array that saves informations about a session
@@ -47,6 +49,17 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
  *   author = the author name of this session
  */
 var sessioninfos = {};
+exports.sessioninfos = sessioninfos;
+
+// Measure total amount of users
+stats.gauge('totalUsers', function() {
+  return Object.keys(socketio.sockets.sockets).length
+})
+
+/**
+ * A changeset queue per pad that is processed by handleUserChanges()
+ */
+var padChannels = new channels.channels(handleUserChanges);
 
 /**
  * Saves the Socket class we need to send and recieve data from the client
@@ -67,7 +80,9 @@ exports.setSocketIO = function(socket_io)
  * @param client the new client
  */
 exports.handleConnect = function(client)
-{  
+{
+  stats.meter('connects').mark();
+
   //Initalize sessioninfos for this new session
   sessioninfos[client.id]={};
 }
@@ -92,12 +107,23 @@ exports.kickSessionsFromPad = function(padID)
  */
 exports.handleDisconnect = function(client)
 {  
+  stats.meter('disconnects').mark();
+  
   //save the padname of this session
   var session = sessioninfos[client.id];
   
   //if this connection was already etablished with a handshake, send a disconnect message to the others
   if(session && session.author)
   {
+    client.get('remoteAddress', function(er, ip) {
+      //Anonymize the IP address if IP logging is disabled
+      if(settings.disableIPlogging) {
+        ip = 'ANONYMOUS';
+      }
+
+      accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
+    })
+
     //get the author color out of the db
     authorManager.getAuthorColorId(session.author, function(err, color)
     {
@@ -122,10 +148,6 @@ exports.handleDisconnect = function(client)
     }); 
   }
   
-  client.get('remoteAddress', function(er, ip) {
-    accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
-  })
-  
   //Delete the sessioninfos entrys of this session
   delete sessioninfos[client.id]; 
 }
@@ -137,26 +159,25 @@ exports.handleDisconnect = function(client)
  */
 exports.handleMessage = function(client, message)
 { 
-
   if(message == null)
   {
-    messageLogger.warn("Message is null!");
     return;
   }
   if(!message.type)
   {
-    messageLogger.warn("Message has no type attribute!");
+    return;
+  }
+  if(!sessioninfos[client.id]) {
+    messageLogger.warn("Dropped message from an unknown connection.")
     return;
   }
 
   var handleMessageHook = function(callback){
     var dropMessage = false;
-    
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages 
     // handleMessage will be called, even if the client is not authorized
     hooks.aCallAll("handleMessage", { client: client, message: message }, function ( err, messages ) {
       if(ERR(err, callback)) return;
-      
       _.each(messages, function(newMessage){
         if ( newMessage === null ) {
           dropMessage = true;
@@ -178,7 +199,8 @@ exports.handleMessage = function(client, message)
       if (sessioninfos[client.id].readonly) {
         messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
       } else if (message.data.type == "USER_CHANGES") {
-        handleUserChanges(client, message);
+        stats.counter('pendingEdits').inc()
+        padChannels.emit(message.padId, {client: client, message: message});// add to pad queue
       } else if (message.data.type == "USERINFO_UPDATE") {
         handleUserInfoUpdate(client, message);
       } else if (message.data.type == "CHAT_MESSAGE") {
@@ -205,31 +227,61 @@ exports.handleMessage = function(client, message)
       //check permissions
       function(callback)
       {
-        
-        // If the message has a padId we assume the client is already known to the server and needs no re-authorization
-        if(!message.padId)
-          return callback();
+        // client tried to auth for the first time (first msg from the client)
+        if(message.type == "CLIENT_READY") {
+          // Remember this information since we won't
+          // have the cookie in further socket.io messages.
+          // This information will be used to check if
+          // the sessionId of this connection is still valid
+          // since it could have been deleted by the API.
+          sessioninfos[client.id].auth =
+          {
+            sessionID: message.sessionID,
+            padID: message.padId,
+            token : message.token,
+            password: message.password
+          };
+        }
 
         // Note: message.sessionID is an entirely different kind of
-        // session from the sessions we use here! Beware! FIXME: Call
-        // our "sessions" "connections".
+        // session from the sessions we use here! Beware!
+        // FIXME: Call our "sessions" "connections".
         // FIXME: Use a hook instead
         // FIXME: Allow to override readwrite access with readonly
-        securityManager.checkAccess(message.padId, message.sessionID, message.token, message.password, function(err, statusObject)
-        {
-          if(ERR(err, callback)) return;
 
-          //access was granted
-          if(statusObject.accessStatus == "grant")
+        // FIXME: A message might arrive but wont have an auth object, this is obviously bad so we should deny it
+        // Simulate using the load testing tool
+        if(!sessioninfos[client.id].auth){
+          console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
+          callback();
+        }else{
+          var auth = sessioninfos[client.id].auth;
+          var checkAccessCallback = function(err, statusObject)
           {
-            callback();
+            if(ERR(err, callback)) return;
+ 
+            //access was granted
+            if(statusObject.accessStatus == "grant")
+            {
+              callback();
+            }
+            //no access, send the client a message that tell him why
+            else
+            {
+              client.json.send({accessStatus: statusObject.accessStatus})
+            }
+          };
+          //check if pad is requested via readOnly
+          if (auth.padID.indexOf("r.") === 0) {
+            //Pad is readOnly, first get the real Pad ID
+            readOnlyManager.getPadId(auth.padID, function(err, value) {
+              ERR(err);
+              securityManager.checkAccess(value, auth.sessionID, auth.token, auth.password, checkAccessCallback);
+            });
+          } else {
+            securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, checkAccessCallback);
           }
-          //no access, send the client a message that tell him why
-          else
-          {
-            client.json.send({accessStatus: statusObject.accessStatus})
-          }
-        });
+        }
       },
       finalHandler
     ]);
@@ -253,6 +305,25 @@ function handleSaveRevisionMessage(client, message){
     pad.addSavedRevision(pad.head, userId);
   });
 }
+
+/**
+ * Handles a custom message, different to the function below as it handles objects not strings and you can 
+ * direct the message to specific sessionID
+ *
+ * @param msg {Object} the message we're sending
+ * @param sessionID {string} the socketIO session to which we're sending this message
+ */
+exports.handleCustomObjectMessage = function (msg, sessionID, cb) {
+  if(msg.data.type === "CUSTOM"){
+    if(sessionID){ // If a sessionID is targeted then send directly to this sessionID
+      socketio.sockets.socket(sessionID).json.send(msg); // send a targeted message
+    }else{
+      socketio.sockets.in(msg.data.payload.padId).json.send(msg); // broadcast to all clients on this pad
+    }
+  }
+  cb(null, {});
+}
+
 
 /**
  * Handles a custom message (sent via HTTP API request)
@@ -384,7 +455,7 @@ function handleGetChatMessages(client, message)
       pad.getChatMessages(start, end, function(err, chatMessages)
       {
         if(ERR(err, callback)) return;
-		
+
         var infoMsg = {
           type: "COLLABROOM",
           data: {
@@ -392,7 +463,7 @@ function handleGetChatMessages(client, message)
             messages: chatMessages
           }
         };
-		
+
         // send the messages back to the client
         client.json.send(infoMsg);
       });
@@ -493,23 +564,29 @@ function handleUserInfoUpdate(client, message)
  * @param client the client that send this message
  * @param message the message from the client
  */
-function handleUserChanges(client, message)
+function handleUserChanges(data, cb)
 {
+  var client = data.client
+    , message = data.message
+
+  // This one's no longer pending, as we're gonna process it now
+  stats.counter('pendingEdits').dec()
+
   // Make sure all required fields are present
   if(message.data.baseRev == null)
   {
     messageLogger.warn("Dropped message, USER_CHANGES Message has no baseRev!");
-    return;
+    return cb();
   }
   if(message.data.apool == null)
   {
     messageLogger.warn("Dropped message, USER_CHANGES Message has no apool!");
-    return;
+    return cb();
   }
   if(message.data.changeset == null)
   {
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
-    return;
+    return cb();
   }
  
   //get all Vars we need
@@ -521,6 +598,9 @@ function handleUserChanges(client, message)
   var thisSession = sessioninfos[client.id];
       
   var r, apool, pad;
+
+  // Measure time to process edit
+  var stopWatch = stats.timer('edits').start();
     
   async.series([
     //get the pad
@@ -547,22 +627,36 @@ function handleUserChanges(client, message)
         // defined in the accompanying attribute pool.
         Changeset.eachAttribNumber(changeset, function(n) {
           if (! wireApool.getAttrib(n)) {
-            throw "Attribute pool is missing attribute "+n+" for changeset "+changeset;
+            throw new Error("Attribute pool is missing attribute "+n+" for changeset "+changeset);
           }
         });
+
+        // Validate all added 'author' attribs to be the same value as the current user
+        var iterator = Changeset.opIterator(Changeset.unpack(changeset).ops)
+          , op
+        while(iterator.hasNext()) {
+          op = iterator.next()
+          if(op.opcode != '+') continue;
+          op.attribs.split('*').forEach(function(attr) {
+            if(!attr) return
+            attr = wireApool.getAttrib(attr)
+            if(!attr) return
+            if('author' == attr[0] && attr[1] != thisSession.author) throw new Error("Trying to submit changes as another author in changeset "+changeset);
+          })
+        }
+        
+        //ex. adoptChangesetAttribs
+          
+        //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
+        changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
       }
       catch(e)
       {
         // There is an error in this changeset, so just refuse it
-        console.warn("Can't apply USER_CHANGES "+changeset+", because it failed checkRep");
         client.json.send({disconnect:"badChangeset"});
-        return;
+        stats.meter('failedChangesets').mark();
+        return callback(new Error("Can't apply USER_CHANGES, because "+e.message));
       }
-        
-      //ex. adoptChangesetAttribs
-        
-      //Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
-      changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
         
       //ex. applyUserChanges
       apool = pad.pool;
@@ -586,7 +680,14 @@ function handleUserChanges(client, message)
             // client) are relative to revision r - 1. The follow function
             // rebases "changeset" so that it is relative to revision r
             // and can be applied after "c".
-            changeset = Changeset.follow(c, changeset, false, apool);
+            try
+            {
+              changeset = Changeset.follow(c, changeset, false, apool);
+            }catch(e){
+              client.json.send({disconnect:"badChangeset"});
+              stats.meter('failedChangesets').mark();
+              return callback(new Error("Can't apply USER_CHANGES, because "+e.message));
+            }
 
             if ((r - baseRev) % 200 == 0) { // don't let the stack get too deep
               async.nextTick(callback);
@@ -606,10 +707,9 @@ function handleUserChanges(client, message)
       
       if (Changeset.oldLen(changeset) != prevText.length) 
       {
-        console.warn("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
         client.json.send({disconnect:"badChangeset"});
-        callback();
-        return;
+        stats.meter('failedChangesets').mark();
+        return callback(new Error("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length));
       }
         
       pad.appendRevision(changeset, thisSession.author);
@@ -625,11 +725,16 @@ function handleUserChanges(client, message)
         pad.appendRevision(nlChangeset);
       }
         
-      exports.updatePadClients(pad, callback);
+      exports.updatePadClients(pad, function(er) {
+        ERR(er)
+      });
+      callback();
     }
   ], function(err)
   {
-    ERR(err);
+    stopWatch.end()
+    cb();
+    if(err) console.warn(err.stack || err)
   });
 }
 
@@ -713,7 +818,7 @@ exports.updatePadClients = function(pad, callback)
 }
 
 /**
- * Copied from the Etherpad Source Code. Don't know what this methode does excatly...
+ * Copied from the Etherpad Source Code. Don't know what this method does excatly...
  */
 function _correctMarkersInPad(atext, apool) {
   var text = atext.text;
@@ -882,8 +987,7 @@ function handleClientReady(client, message)
             authorManager.getAuthor(authorId, function(err, author)
             {
               if(ERR(err, callback)) return;
-              delete author.timestamp;
-              historicalAuthorData[authorId] = author;
+              historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId}; // Filter author attribs (e.g. don't send author's pads to all clients)
               callback();
             });
           }, callback);
@@ -917,6 +1021,11 @@ function handleClientReady(client, message)
       
       //Log creation/(re-)entering of a pad
       client.get('remoteAddress', function(er, ip) {
+        //Anonymize the IP address if IP logging is disabled
+        if(settings.disableIPlogging) {
+          ip = 'ANONYMOUS';
+        }
+
         if(pad.head > 0) {
           accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad');
         }
@@ -928,17 +1037,25 @@ function handleClientReady(client, message)
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
       {
+        //Join the pad and start receiving updates
+        client.join(padIds.padId);
         //Save the revision in sessioninfos, we take the revision from the info the client send to us
         sessioninfos[client.id].rev = message.client_rev;
       }
       //This is a normal first connect
       else
       {
-        //prepare all values for the wire
-        var atext = Changeset.cloneAText(pad.atext);
-        var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
-        var apool = attribsForWire.pool.toJsonable();
-        atext.attribs = attribsForWire.translated;
+        //prepare all values for the wire, there'S a chance that this throws, if the pad is corrupted
+        try {
+          var atext = Changeset.cloneAText(pad.atext);
+          var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
+          var apool = attribsForWire.pool.toJsonable();
+          atext.attribs = attribsForWire.translated;
+        }catch(e) {
+          console.error(e.stack || e)
+          client.json.send({disconnect:"corruptPad"});// pull the breaks
+          return callback();
+        }
         
         // Warning: never ever send padIds.padId to the client. If the
         // client is read only you would open a security hole 1 swedish
@@ -959,7 +1076,6 @@ function handleClientReady(client, message)
               "historicalAuthorData": historicalAuthorData,
               "apool": apool,
               "rev": pad.getHeadRevisionNumber(),
-              "globalPadId": message.padId,
               "time": currentTime,
           },
           "colorPalette": authorManager.getColorPalette(),
@@ -976,7 +1092,6 @@ function handleClientReady(client, message)
           "readOnlyId": padIds.readOnlyPadId,
           "readonly": padIds.readonly,
           "serverTimestamp": new Date().getTime(),
-          "globalPadId": message.padId,
           "userId": author,
           "abiwordAvailable": settings.abiwordAvailable(), 
           "plugins": {
@@ -1035,7 +1150,7 @@ function handleClientReady(client, message)
       }
 
       // notify all existing users about new user
-      client.broadcast.to(padIds.padIds).json.send(messageToTheOtherUsers);
+      client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
       
       //Run trough all sessions of this pad
       async.forEach(socketio.sockets.clients(padIds.padId), function(roomClient, callback)
@@ -1429,7 +1544,7 @@ function composePadChangesets(padId, startNum, endNum, callback)
  */
 exports.padUsersCount = function (padID, callback) {
   callback(null, {
-    padUsersCount: socketio.sockets.clients(padId).length
+    padUsersCount: socketio.sockets.clients(padID).length
   });
 }
 
@@ -1439,7 +1554,7 @@ exports.padUsersCount = function (padID, callback) {
 exports.padUsers = function (padID, callback) {
   var result = [];
 
-  async.forEach(socketio.sockets.clients(padId), function(roomClient, callback) {
+  async.forEach(socketio.sockets.clients(padID), function(roomClient, callback) {
     var s = sessioninfos[roomClient.id];
     if(s) {
       authorManager.getAuthor(s.author, function(err, author) {
@@ -1447,6 +1562,7 @@ exports.padUsers = function (padID, callback) {
 
         author.id = s.author;
         result.push(author);
+        callback();
       });
     }
   }, function(err) {
@@ -1455,3 +1571,5 @@ exports.padUsers = function (padID, callback) {
     callback(null, {padUsers: result});
   });
 }
+
+exports.sessioninfos = sessioninfos;

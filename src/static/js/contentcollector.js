@@ -311,7 +311,6 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       ['insertorder', 'first']
     ].concat(
       _.map(state.lineAttributes,function(value,key){
-        if (typeof(window)!= 'undefined' && window.console) console.log([key, value])
         return [key, value];
       })
     );
@@ -399,7 +398,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         if (endPoint && node == endPoint.node)
         {
           selEnd = _pointHere(0, state);
-			}
+        }
       }
       while (txt.length > 0)
       {
@@ -468,7 +467,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         var startNewLine= (typeof(induceLineBreak)=='object'&&induceLineBreak.length==0)?true:induceLineBreak[0];
         if(startNewLine){
           cc.startNewLine(state);
-        }		  
+        }
       }
       else if (tname == "script" || tname == "style")
       {

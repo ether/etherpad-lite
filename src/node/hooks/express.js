@@ -19,7 +19,7 @@ exports.createServer = function () {
     var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
     version = fs.readFileSync(refPath, "utf-8");
     version = version.substring(0, 7);
-    console.log("Your Etherpad Lite git version is " + version);
+    console.log("Your Etherpad git version is " + version);
   }
   catch(e) 
   {
@@ -27,11 +27,11 @@ exports.createServer = function () {
   }
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
-  serverName = "Etherpad-Lite " + version + " (http://etherpad.org)";
+  serverName = "Etherpad " + version + " (http://etherpad.org)";
 
   exports.restartServer();
 
-  console.log("You can access your Etherpad-Lite instance at http://" + settings.ip + ":" + settings.port + "/");
+  console.log("You can access your Etherpad instance at http://" + settings.ip + ":" + settings.port + "/");
   if(!_.isEmpty(settings.users)){
     console.log("The plugin admin page is at http://" + settings.ip + ":" + settings.port + "/admin/plugins");
   }
@@ -75,6 +75,10 @@ exports.restartServer = function () {
     next();
   });
 
+  if(settings.trustProxy){
+    app.enable('trust proxy');
+  }
+  
   app.configure(function() {
     hooks.callAll("expressConfigure", {"app": app});
   });

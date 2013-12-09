@@ -1,5 +1,5 @@
 # Plugins
-Etherpad-Lite allows you to extend its functionality with plugins. A plugin registers hooks (functions) for certain events (thus certain features) in Etherpad-lite to execute its own functionality based on these events.
+Etherpad allows you to extend its functionality with plugins. A plugin registers hooks (functions) for certain events (thus certain features) in Etherpad-lite to execute its own functionality based on these events.
 
 Publicly available plugins can be found in the npm registry (see <http://npmjs.org>). Etherpad-lite's naming convention for plugins is to prefix your plugins with `ep_`. So, e.g. it's `ep_flubberworms`. Thus you can install plugins from npm, using `npm install ep_flubberworm` in etherpad-lite's root directory.
 
@@ -104,7 +104,7 @@ Your plugin must also contain a [package definition file](http://npmjs.org/doc/j
 ```
 
 ## Templates
-If your plugin adds or modifies the front end HTML (e.g. adding buttons or changing their functions), you should put the necessary HTML code for such operations in `templates/`, in files of type ".ejs", since Etherpad-Lite uses EJS for HTML templating. See the following link for more information about EJS: <https://github.com/visionmedia/ejs>.
+If your plugin adds or modifies the front end HTML (e.g. adding buttons or changing their functions), you should put the necessary HTML code for such operations in `templates/`, in files of type ".ejs", since Etherpad uses EJS for HTML templating. See the following link for more information about EJS: <https://github.com/visionmedia/ejs>.
 
 ## Writing and running front-end tests for your plugin
 

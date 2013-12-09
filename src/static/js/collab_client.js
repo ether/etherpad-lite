@@ -40,11 +40,9 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   var rev = serverVars.rev;
   var padId = serverVars.padId;
-  var globalPadId = serverVars.globalPadId;
 
   var state = "IDLE";
   var stateMessage;
-  var stateMessageSocketId;
   var channelState = "CONNECTING";
   var appLevelDisconnectReason = null;
 
@@ -52,12 +50,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   var initialStartConnectTime = 0;
 
   var userId = initialUserInfo.userId;
-  var socketId;
   //var socket;
   var userSet = {}; // userId -> userInfo
   userSet[userId] = initialUserInfo;
 
-  var reconnectTimes = [];
   var caughtErrors = [];
   var caughtErrorCatchers = [];
   var caughtErrorTimes = [];
@@ -196,7 +192,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         changeset: userChangesData.changeset,
         apool: userChangesData.apool
       };
-      stateMessageSocketId = socketId;
       sendMessage(stateMessage);
       sentMessage = true;
       callbacks.onInternalAction("commitPerformed");
@@ -207,17 +202,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       // run again in a few seconds, to detect a disconnect
       setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 3000);
     }
-  }
-
-  function getStats()
-  {
-    var stats = {};
-
-    stats.screen = [$(window).width(), $(window).height(), window.screen.availWidth, window.screen.availHeight, window.screen.width, window.screen.height].join(',');
-    stats.ip = serverVars.clientIp;
-    stats.useragent = serverVars.clientAgent;
-
-    return stats;
   }
 
   function setUpSocket()
@@ -278,8 +262,9 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     if (!getSocket()) return;
     if (!evt.data) return;
     var wrapper = evt;
-    if (wrapper.type != "COLLABROOM") return;
+    if (wrapper.type != "COLLABROOM" && wrapper.type != "CUSTOM") return;
     var msg = wrapper.data;
+
     if (msg.type == "NEW_CHANGES")
     {
       var newRev = msg.newRev;
@@ -294,8 +279,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
         if (newRev != (oldRev + 1))
         {
-          dmesg("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
-          setChannelState("DISCONNECTED", "badmessage_newchanges");
+          parent.parent.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
+          // setChannelState("DISCONNECTED", "badmessage_newchanges");
           return;
         }
         msgQueue.push(msg);
@@ -304,8 +289,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        dmesg("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
-        setChannelState("DISCONNECTED", "badmessage_newchanges");
+        parent.parent.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
+        // setChannelState("DISCONNECTED", "badmessage_newchanges");
         return;
       }
       rev = newRev;
@@ -318,8 +303,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       {
         if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
         {
-          dmesg("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
-          setChannelState("DISCONNECTED", "badmessage_acceptcommit");
+          parent.parent.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+          // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
         msgQueue.push(msg);
@@ -328,8 +313,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        dmesg("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
-        setChannelState("DISCONNECTED", "badmessage_acceptcommit");
+        parent.parent.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
+        // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
         return;
       }
       rev = newRev;
@@ -390,6 +375,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         callbacks.onUserLeave(userInfo);
       }
     }
+
     else if (msg.type == "DISCONNECT_REASON")
     {
       appLevelDisconnectReason = msg.reason;
@@ -503,16 +489,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   }
 
-  function keys(obj)
-  {
-    var array = [];
-    $.each(obj, function(k, v)
-    {
-      array.push(k);
-    });
-    return array;
-  }
-
   function valuesArray(obj)
   {
     var array = [];
@@ -591,7 +567,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       obj.committedChangeset = stateMessage.changeset;
       obj.committedChangesetAPool = stateMessage.apool;
-      obj.committedChangesetSocketId = stateMessageSocketId;
       editor.applyPreparedChangesetToBase();
     }
     var userChangesData = editor.prepareUserChangeset();

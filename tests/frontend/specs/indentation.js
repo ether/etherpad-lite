@@ -5,7 +5,32 @@ describe("indentation button", function(){
     this.timeout(60000);
   });
 
-  it("indent text", function(done){
+ it("indent text with keypress", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //get the first text element out of the inner iframe
+    var $firstTextElement = inner$("div").first();
+
+    //select this text element
+    $firstTextElement.sendkeys('{selectall}');
+
+    if(inner$.browser.mozilla){ // if it's a mozilla browser
+      var evtType = "keypress";
+    }else{
+      var evtType = "keydown";
+    }
+
+    var e = inner$.Event(evtType);
+    e.keyCode = 9; // tab :|
+    inner$("#innerdocbody").trigger(e);
+
+    helper.waitFor(function(){
+      return inner$("div").first().find("ul li").length === 1;
+    }).done(done);
+  });
+
+  it("indent text with button", function(done){
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$;
 
@@ -133,8 +158,8 @@ describe("indentation button", function(){
     testHelper.selectText(firstTextElement[0], $inner);
 
     /* this test creates the below content, both should have double indentation
-		line1
-		line2
+    line1
+    line2
     
 
     firstTextElement.sendkeys('{rightarrow}'); // simulate a keypress of enter
@@ -176,4 +201,5 @@ describe("indentation button", function(){
       expect(isLI).to.be(true);
     },1000);
   });*/
+
 });
