@@ -97,7 +97,7 @@ $.Class("Revision2",
       for (var granularity in this.granularties) {
         this.next[granularity] = null;
         this.previous[granularity] = null;
-      }
+      };
     },
     addChangeset: function (target, changset, timedelta) {
       if (this.revnum == target.revnum)
@@ -105,17 +105,17 @@ $.Class("Revision2",
 
       var delta_revnum = target.revnum - this.revnum;
       // select the right edge set:
-      var edge = delta_revnum < 0 ? this.previous ? this.next;
+      var edge = delta_revnum < 0 ? this.previous : this.next;
 
       // find the correct granularity and add an edge (changeset) for that granularity
-      for (var granularity in this.granularities){
+      for (var granularity in this.granularities) {
         if (Math.abs(delta_revnum) == this.granularities[granularity]) {
           //TODO: should we check whether the edge exists?
           //TODO: modify changeset to store the REVISION, not the revnum.
           edge[granularity] = new Changeset(target, timedelta, changeset);
           return edge[granularity];
-        }
-      }
+        };
+      };
       // our delta_revnum isn't one of the granularities. Something is wrong
       //TODO: handle this case?
       return null;
@@ -124,7 +124,7 @@ $.Class("Revision2",
       //TODO: currently assuming only forward movements
       var path = [];
       var delta_revnum = target.revnum - this.revnum;
-      var edge = delta_revnum < 0; this.previous : this.next;
+      var edge = delta_revnum < 0 ? this.previous : this.next;
 
       var current = this;
       while (current.lt(target)) {
@@ -139,9 +139,9 @@ $.Class("Revision2",
             var e = edge[granularity];
             path.push(e);
             current = e.target_revision;
-          }
-        }
-      }
+          };
+        };
+      };
       return path;
     }
   }
