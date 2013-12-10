@@ -535,12 +535,12 @@ function loadBroadcastJS(tsclient, fireWhenAllScriptsAreLoaded, BroadcastSlider)
   {
     // set up the currentDivs and DOM
     padContents.currentDivs = [];
-    $("#padcontent").html("");
+    //$("#padcontent").html("");
     for (var i = 0; i < padContents.currentLines.length; i++)
     {
       var div = padContents.lineToElement(padContents.currentLines[i], padContents.alines[i]);
       padContents.currentDivs.push(div);
-      $("#padcontent").append(div);
+      //$("#padcontent").append(div);
     }
     debugLog(padContents.currentDivs);
   });

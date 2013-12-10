@@ -97,7 +97,15 @@ $.Class("RevisionCache",
   {
   },
   {//instance
-    init: function (head_revnum) {
+    /**
+     * Create a new RevisionCache.
+     * @constructor
+     * @param {TimesliderClient} connection - The connection to be used for loading changesets.
+     * @param {number} head_revnum - The current head revision number. TODO: we can probably do away with this now.
+     */
+    init: function (connection, head_revnum) {
+      this.connection = connection;
+      this.loader = new ChangesetLoader(connection);
       this.revisions = {};
       this.head_revnum = head_revnum || 0;
     },
@@ -112,25 +120,32 @@ $.Class("RevisionCache",
       var current_rev = this.getRevision(from);
       var to_rev = this.getRevision(to);
       var is_reverse = !(from < to);
-      var changesets = [];
+      var res = {
+        from: current_rev,
+        current: current_rev,
+        is_complete: false,
+        changesets: [],
+      };
 
       if (from == to) {
         //TODO: implement short-circuit
+        return res;
       }
 
-      if (!current_rev.changesets.length) {
+      if (!res.current.changesets.length) {
         // You cannot build a path if the starting revision hasn't
         // got any changesets
         //TODO: implement short-circuit
+        return res;
       }
 
-      while (current_rev.lt(to_rev, is_reverse)) {
-        var changeset_iterator = DirectionalIterator(current_rev.changesets, is_reverse);
+      while (res.current.lt(to_rev, is_reverse)) {
+        var changeset_iterator = new DirectionalIterator(res.current.changesets, is_reverse);
         while (changeset_iterator.haveNext()) {
           var current_changeset = changeset_iterator.next();
           // we might get stuck on a particular revision if only a
           // partial path is available.
-          old_rev = current_rev;
+          old_rev = res.current;
           // the next (first) changeset in the current revision has a delta
           // in the opposite direction to that in which we are trying to
           // move, and so cannot help us. Because the changeset list is
@@ -143,32 +158,45 @@ $.Class("RevisionCache",
           // the current revision has a changeset which helps us get to a revision
           // which is closer to our target, so we should push that changeset to
           // the list and move to that new revision to continue building a path
-          var delta_rev = this.getRevision(current_rev.revnum + current_changeset.deltarev);
+          var delta_rev = this.getRevision(res.current.revnum + current_changeset.deltarev);
           if (delta_rev.lt(to_rev, is_reverse)) {
-            changesets.push(current_changeset);
-            current_rev = delta_rev;
+            res.changesets.push(current_changeset);
+            res.current = delta_rev;
             break;
           }
         }
-        if (stop || current_rev == old_rev)
+        if (stop || res.current == old_rev)
           break;
       }
-      var status = 'partial';
-      if (current_rev == to_rev)
-        status = 'complete';
 
-      return {
-        'fromRev': from,
-        'rev': current_rev.rev,
-        'status': status,
-        'changesets': changesets,
-      };
+      res.is_complete = res.current == to_rev;
+
+      return res;
     },
     addChangeset: function (from, to, value, reverseValue, timedelta) {
       var from_rev = this.getRevision(from);
       var to_rev = this.getRevision(to);
       from_rev.addChangeset(to, value, timedelta);
       to_rev.addChangeset(from, reverseValue, -timedelta);
+    },
+    /**
+     * Iterate over the list of changesets required to go from one revision to another.
+     * @param {number} from - The starting revision.
+     * @param {number} to - The end revision.
+     * @param {function} callback - The function to apply to each changeset.
+     */
+    iterChangesets: function (from, to, callback) {
+      // first try to build a path from the cache:
+      var path = this.findPath(from, to);
+      if (!path.is_complete) {
+        // TODO: request load of any other changesets.
+        //       before we start iterating over existing
+        //       in the hope that some of them will be
+        //       fulfilled soon.bt
+      }
+      // we have a partial path
+      console.log(from, to, path.current.revnum);
+      // TODO: loop over existing changesets and apply
     }
   }
 );
@@ -243,12 +271,12 @@ Thread("ChangesetLoader",
     /**
      * Create a new ChangesetLoader.
      * @constructor
-     * @param {TimesliderClient} client - a TimesliderClient object to be used
+     * @param {TimesliderClient} connection - a TimesliderClient object to be used
      *                                    for communication with the server.
      */
-    init: function (client) {
+    init: function (connection) {
       this._super(100);
-      this.client = client;
+      this.connection = connection;
       this.queues = {
         small: [],
         medium: [],
@@ -256,7 +284,7 @@ Thread("ChangesetLoader",
       }
       this.pending = {};
       var _this = this;
-      this.client.on("CHANGESET_REQ", function () {
+      this.connection.on("CHANGESET_REQ", function () {
         _this.on_response.apply(_this, arguments);
       });
     },
@@ -281,7 +309,9 @@ Thread("ChangesetLoader",
      *                               changesets/revisions you can retrieve is 100, which
      *                               feels broken.
      * @param {function} callback - A callback which will be triggered when the request has
-     *                              been fulfilled.
+     *                              been fulfilled. The context of the callback will be the
+     *                              ChangesetRequest object, so you can check what you actually
+     *                              asked for.
      */
     enqueue: function (start, granularity, callback) {
       //TODO: check cache to see if we really need to fetch this
@@ -314,7 +344,7 @@ Thread("ChangesetLoader",
           //to check the pending requests queue to avoid this situation entirely.
 
           var _this = this;
-          this.client.sendMessage("CHANGESET_REQ", {
+          this.connection.sendMessage("CHANGESET_REQ", {
             start: request.start,
             granularity: request.granularity,
             requestID: request.getRequestID(),
@@ -342,16 +372,119 @@ Thread("ChangesetLoader",
     },
   }
 );
-function loadBroadcastRevisionsJS(clientVars, client)
+
+var libchangeset = require("./Changeset");
+var AttribPool = require("./AttributePool");
+var domline = require("./domline").domline;
+var linestylefilter = require("./linestylefilter").linestylefilter;
+$.Class("PadClient",
+  {//static
+  },
+  {//instance
+    /**
+     * Create a PadClient.
+     * @constructor
+     * @param {number} revision - The current revision of the pad.
+     * @param {datetime} timestamp - The timestamp of the current revision.
+     * @param {string} atext - The attributed text.
+     * @param {string} attribs - The attributes string.
+     * @param {object} apool - The attribute pool.
+     */
+    init: function (revision, timestamp, atext, attribs, apool) {
+      this.revision = revision;
+      this.timestamp = timestamp;
+      this.alines = libchangeset.splitAttributionLines(attribs, atext);
+      this.apool = (new AttribPool()).fromJsonable(apool);
+      this.lines = libchangeset.splitTextLines(atext);
+
+      //TODO: this is a kludge! we should receive the padcontent as an
+      //injected dependency
+      this.divs = [];
+      this.padcontent = $("#padcontent");
+      for (var i in this.lines) {
+        var div = this._getDivForLine(this.lines[i], this.alines[i]);
+        this.divs.push(div);
+        this.padcontent.append(div);
+      };
+
+      //TODO: monkey patch divs.splice to use our custom splice function
+      this.divs.original_splice = this.divs.splice;
+      this.divs.splice = this._spliceDivs;
+
+    },
+    applyChangeset: function (changeset) {
+      //TODO: changeset should be a Changeset object
+      //
+      // must mutate attribution lines before text lines
+      libchangeset.mutateAttributionLines(changeset, this.alines, this.apool);
+
+      // Looks like this function can take a regular array of strings
+      libchangeset.mutateTextLines(changeset, /* padcontents */ this.lines);
+
+      //TODO: get authors (and set in UI)
+
+    },
+    _getDivForLine: function (text, atext) {
+      var dominfo = domline.createDomLine(text != '\n', true);
+
+      // Here begins the magic invocation:
+      linestylefilter.populateDomLine(text, atext, this.apool, dominfo);
+      dominfo.prepareForAdd();
+
+      var div = $("<div class='" + dominfo.node.className +
+                  "' id='" + Math.random() + "'>" +
+                  dominfo.node.innerHTML + "</div>");
+      return div;
+    },
+    /**
+     * we need a customized splice function for our divs array, because we
+     * need to be able to:
+     *  - remove elements from the DOM when they are spliced out
+     *  - create a new div for line elements and add them to the array
+     *    instead of the raw line
+     *  - add the new divs to the DOM
+     * this function is fully compliant with the Array.prototype.splice
+     * spec, as we're monkey-patching it on to the divs array.
+     * @param {number} index - Index at which to start changing the array.
+     * @param {number} howMany - An integer indicating the number of old array elements to remove.
+     * @param {array} elements - The elements to add to the array. In our case, these are lines.
+     */
+    _spliceDivs: function (index, howMany, elements) {
+      // remove howMany divs starting from index. We need to remove them from
+      // the DOM.
+      for (var i = index; i < howMany && i < this.divs.length; i++)
+        this.divs[i].remove()
+
+      // generate divs for the new elements:
+      var newdivs = [];
+      for (i in elements)
+        newdivs.push(this._getDivForLine(elements[i], this.alines[index + i]));
+
+      // if we are splicing at the beginning of the array, we need to prepend
+      // to the padcontent DOM element
+      if (!this.divs[index - 1])
+        this.padcontent.prepend(newdivs);
+      // otherwise just add the new divs after the index-th div
+      else
+        this.divs[index - 1].after(newdivs);
+
+      // perform the splice on our array itself
+      // TODO: monkey patching divs.splice, so use divs.original_splice or something
+      return this.divs.splice(index, howMany, newdivs);
+    },
+  }
+);
+function loadBroadcastRevisionsJS(clientVars, connection)
 {
 
-      console.log("here")
-//  revisionCache = new RevisionCache(clientVars.collab_client_vars.rev || 0);
+    revisionCache = new RevisionCache(connection, clientVars.collab_client_vars.rev || 0);
 //  revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
-   cl = new ChangesetLoader(client);
+  var collabClientVars = clientVars.collab_client_vars;
+  p = new PadClient(collabClientVars.rev, collabClientVars.time, collabClientVars.initialAttributedText.text, collabClientVars.initialAttributedText.attribs, collabClientVars.apool);
+
+   cl = new ChangesetLoader(connection);
    return cl;
 
 }
-
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
