@@ -21,7 +21,6 @@ var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var getPadPlainText = require('./ExportHelper').getPadPlainText;
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
@@ -79,6 +78,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
+  // holds a map of used styling attributes (*1, *2, etc) in the apool
+  // and maps them to an index in props
+  // *3:2 -> the attribute *3 means strong
+  // *2:5 -> the attribute *2 means s(trikethrough)
   var anumMap = {};
   var css = "";
 
@@ -88,24 +91,24 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   if(authorColors){
     css+="<style>\n";
-    
+
     for (var a in apool.numToAttrib) {
       var attr = apool.numToAttrib[a];
-      
+
       //skip non author attributes
       if(attr[0] === "author" && attr[1] !== ""){
         //add to props array
         var propName = "author" + stripDotFromAuthorID(attr[1]);
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
-        
+
         css+="." + propName + " {background-color: " + authorColors[attr[1]]+ "}\n";
       } else if(attr[0] === "removed") {
         var propName = "removed";
-        
+
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
-        
+
         css+=".removed {text-decoration: line-through; " + 
              "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+ 
              "filter: alpha(opacity=80); "+
@@ -113,10 +116,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
              "}\n";
       }
     }
-    
+
     css+="</style>";
   }
 
+  // iterates over all props(h1,h2,strong,...), checks if it is used in
+  // this pad, and if yes puts its attrib id->props value into anumMap
   props.forEach(function (propName, i)
   {
     var propTrueNum = apool.putAttrib([propName, true], true);
@@ -128,11 +133,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   function getLineHTML(text, attribs)
   {
-    var propVals = [false, false, false];
-    var ENTER = 1;
-    var STAY = 2;
-    var LEAVE = 0;
-
     // Use order of tags (b/i/u) as order of nesting, for simplicity
     // and decent nesting.  For example,
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
@@ -145,17 +145,17 @@ function getHTMLFromAtext(pad, atext, authorColors)
     function getSpanClassFor(i){
       //return if author colors are disabled
       if (!authorColors) return false;
-      
+
       var property = props[i];
-   
+
       if(property.substr(0,6) === "author"){
         return stripDotFromAuthorID(property);
       }
-      
+
       if(property === "removed"){
         return "removed";
       }
-      
+
       return false;
     }
 
@@ -163,7 +163,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
     {
       openTags.unshift(i);
       var spanClass = getSpanClassFor(i);
-      
+
       if(spanClass){
         assem.append('<span class="');
         assem.append(spanClass);
@@ -175,33 +175,18 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
     }
 
+    // this closes an open tag and removes its reference from openTags
     function emitCloseTag(i)
     {
       openTags.shift();
       var spanClass = getSpanClassFor(i);
-      
+
       if(spanClass){
         assem.append('</span>');
       } else {
         assem.append('</');
         assem.append(tags[i]);
         assem.append('>');
-      }
-    }
-    
-    function orderdCloseTags(tags2close)
-    {
-      for(var i=0;i<openTags.length;i++)
-      {
-        for(var j=0;j<tags2close.length;j++)
-        {
-          if(tags2close[j] == openTags[i])
-          {
-            emitCloseTag(tags2close[j]);
-            i--;
-            break;
-          }
-        }
       }
     }
 
@@ -219,118 +204,71 @@ function getHTMLFromAtext(pad, atext, authorColors)
       var iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
+      // this iterates over every op string and decides which tags to open or to close
+      // based on the attribs used
       while (iter.hasNext())
       {
         var o = iter.next();
-        var propChanged = false;
+        var usedAttribs = [];
+
+        // mark all attribs as used
         Changeset.eachAttribNumber(o.attribs, function (a)
         {
           if (a in anumMap)
           {
-            var i = anumMap[a]; // i = 0 => bold, etc.
-            if (!propVals[i])
-            {
-              propVals[i] = ENTER;
-              propChanged = true;
-            }
-            else
-            {
-              propVals[i] = STAY;
-            }
+            usedAttribs.push(anumMap[a]); // i = 0 => bold, etc.
           }
         });
-        for (var i = 0; i < propVals.length; i++)
+        var outermostTag = -1;
+        // find the outer most open tag that is no longer used
+        for (var i = openTags.length - 1; i >= 0; i--)
         {
-          if (propVals[i] === true)
+          if (usedAttribs.indexOf(openTags[i]) === -1)
           {
-            propVals[i] = LEAVE;
-            propChanged = true;
-          }
-          else if (propVals[i] === STAY)
-          {
-            propVals[i] = true; // set it back
+            outermostTag = i;
+            break;
           }
         }
-        // now each member of propVal is in {false,LEAVE,ENTER,true}
-        // according to what happens at start of span
-        if (propChanged)
+
+        // close all tags upto the outer most
+        if (outermostTag != -1)
         {
-          // leaving bold (e.g.) also leaves italics, etc.
-          var left = false;
-          for (var i = 0; i < propVals.length; i++)
+          while ( outermostTag >= 0 )
           {
-            var v = propVals[i];
-            if (!left)
-            {
-              if (v === LEAVE)
-              {
-                left = true;
-              }
-            }
-            else
-            {
-              if (v === true)
-              {
-                propVals[i] = STAY; // tag will be closed and re-opened
-              }
-            }
+            emitCloseTag(openTags[0]);
+            outermostTag--;
           }
+        }
 
-          var tags2close = [];
+        // open all tags that are used but not open
+        for (i=0; i < usedAttribs.length; i++)
+        {
+          if (openTags.indexOf(usedAttribs[i]) === -1)
+          {
+            emitOpenTag(usedAttribs[i])
+          }
+        }
 
-          for (var i = propVals.length - 1; i >= 0; i--)
-          {
-            if (propVals[i] === LEAVE)
-            {
-              //emitCloseTag(i);
-              tags2close.push(i);
-              propVals[i] = false;
-            }
-            else if (propVals[i] === STAY)
-            {
-              //emitCloseTag(i);
-              tags2close.push(i);
-            }
-          }
-          
-          orderdCloseTags(tags2close);
-          
-          for (var i = 0; i < propVals.length; i++)
-          {
-            if (propVals[i] === ENTER || propVals[i] === STAY)
-            {
-              emitOpenTag(i);
-              propVals[i] = true;
-            }
-          }
-          // propVals is now all {true,false} again
-        } // end if (propChanged)
         var chars = o.chars;
         if (o.lines)
         {
           chars--; // exclude newline at end of line, if present
         }
-        
+
         var s = taker.take(chars);
-        
+
         //removes the characters with the code 12. Don't know where they come 
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
-        
+
         assem.append(_encodeWhitespace(Security.escapeHTML(s)));
       } // end iteration over spans in line
-      
-      var tags2close = [];
-      for (var i = propVals.length - 1; i >= 0; i--)
+
+      // close all the tags that are open after the last op
+      while (openTags.length > 0)
       {
-        if (propVals[i])
-        {
-          tags2close.push(i);
-          propVals[i] = false;
-        }
+        emitCloseTag(openTags[0])
       }
-      
-      orderdCloseTags(tags2close);
     } // end processNextChars
     if (urls)
     {
@@ -363,7 +301,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
-            
+
     if (line.listLevel)//If we are inside a list
     {
       // do list stuff
@@ -573,8 +511,8 @@ function _processSpaces(s){
       }
     }
     // beginning of line is nbsp
-    for (var i = 0; i < parts.length; i++){
-      var p = parts[i];
+    for (i = 0; i < parts.length; i++){
+      p = parts[i];
       if (p == " "){
         parts[i] = '&nbsp;';
         break;
@@ -586,8 +524,8 @@ function _processSpaces(s){
   }
   else
   {
-    for (var i = 0; i < parts.length; i++){
-      var p = parts[i];
+    for (i = 0; i < parts.length; i++){
+      p = parts[i];
       if (p == " "){
         parts[i] = '&nbsp;';
       }
