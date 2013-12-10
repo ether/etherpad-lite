@@ -66,6 +66,86 @@ $.Class("DirectionalIterator",
   }
 );
 
+/**
+ * Revision class. Represents a specific revision. Each instance has three
+ * possible edges in each direction. Each edge is essentially a Changeset.
+ * We store three edges at different granularities, to make skipping fast.
+ *  e.g. to go from r1 to r251, you start at r1, use the big edge to go to
+ *  r100, use the big edge again to go to r200, use the next 5 medium edges to
+ *  go from r200 to r210, etc. until reaching r250, follow the next small edge
+ *  to get to 251. A total of 8 edges are traversed (a.k.a. applied),
+ *  making this significantly cheaper than applying all 250 changesets from r1
+ *  to r251.
+ */
+$.Class("Revision2",
+  {//statics
+    // we rely on the fact that granularities are always traversed biggest to
+    // smallest. Changing this will break lots of stuff.
+    granularities: {big: 100, medium: 10, small: 1}
+  },
+  {//instance
+    /**
+     * Create a new revision for the specified revision number.
+     * @constructor
+     * @param {number} revnum - The revision number this object represents.
+     */
+    init: function (revnum) {
+      this.revnum = revnum;
+      // next/previous edges, granularityed as big, medium and small
+      this.next = {};
+      this.previous = {};
+      for (var granularity in this.granularties) {
+        this.next[granularity] = null;
+        this.previous[granularity] = null;
+      }
+    },
+    addChangeset: function (target, changset, timedelta) {
+      if (this.revnum == target.revnum)
+        return;
+
+      var delta_revnum = target.revnum - this.revnum;
+      // select the right edge set:
+      var edge = delta_revnum < 0 ? this.previous ? this.next;
+
+      // find the correct granularity and add an edge (changeset) for that granularity
+      for (var granularity in this.granularities){
+        if (Math.abs(delta_revnum) == this.granularities[granularity]) {
+          //TODO: should we check whether the edge exists?
+          //TODO: modify changeset to store the REVISION, not the revnum.
+          edge[granularity] = new Changeset(target, timedelta, changeset);
+          return edge[granularity];
+        }
+      }
+      // our delta_revnum isn't one of the granularities. Something is wrong
+      //TODO: handle this case?
+      return null;
+    },
+    findPath: function (target) {
+      //TODO: currently assuming only forward movements
+      var path = [];
+      var delta_revnum = target.revnum - this.revnum;
+      var edge = delta_revnum < 0; this.previous : this.next;
+
+      var current = this;
+      while (current.lt(target)) {
+        for (var granularity in this.granularities) {
+          if (! Math.abs(current.revnum - target.revnum) >= this.granularities[granularity]) {
+            // the delta is larger than the granularity, let's use the granularity
+            //TODO: what happens if we DON'T have the edge?
+            //      in theory we need to fetch it (and this is certainly the case for playback
+            //      at granularity = 1). However, when skipping, we might try to find the NEXT
+            //      Revision (which is not linked by the graph to current) and request revisions
+            //      from current to that Revision (at the largest possible granularity)
+            var e = edge[granularity];
+            path.push(e);
+            current = e.target_revision;
+          }
+        }
+      }
+      return path;
+    }
+  }
+);
 $.Class("Revision",
   {//statics
   },
@@ -419,7 +499,7 @@ $.Class("PadClient",
       libchangeset.mutateAttributionLines(changeset, this.alines, this.apool);
 
       // Looks like this function can take a regular array of strings
-      libchangeset.mutateTextLines(changeset, /* padcontents */ this.lines);
+      libchangeset.mutateTextLines(changeset, /* padcontents */ /*this.lines */ this.divs);
 
       //TODO: get authors (and set in UI)
 
