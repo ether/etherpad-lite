@@ -166,7 +166,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   function _isEmpty(node, state)
   {
     // consider clean blank lines pasted in IE to be empty
-    if (dom.nodeNumChildren(node) == 0) return true;
+    if (dom.nodeNumChildren(node) == 0){
+      return true;
+    }
     if (dom.nodeNumChildren(node) == 1 && getAssoc(node, "shouldBeEmpty") && dom.optNodeInnerHTML(node) == "&nbsp;" && !getAssoc(node, "unpasted"))
     {
       if (state)
@@ -452,7 +454,11 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
-      if (tname == "br")
+      if (tname == "img")
+      {
+        state.lineAttributes.image = node.outerHTML;
+      }
+      else if (tname == "br")
       {        
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
@@ -616,13 +622,13 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   };
   // each returns [line, char] or [-1,-1]
   var getSelectionStart = function()
-    {
-      return selStart;
-      };
+  {
+    return selStart;
+  };
   var getSelectionEnd = function()
-    {
-      return selEnd;
-      };
+  {
+    return selEnd;
+  };
 
   // returns array of strings for lines found, last entry will be "" if
   // last line is complete (i.e. if a following span should be on a new line).
