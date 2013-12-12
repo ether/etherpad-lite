@@ -236,7 +236,7 @@ $.Class("RevisionCache",
         var direction_edges = direction ? current.previous : current.next;
         for (var granularity in Revision.granularities) {
           if (Math.abs(delta_revnum) >= Revision.granularities[granularity]) {
-            console.log(granularity, delta_revnum, current.revnum);
+            console.log(delta_revnum, to.revnum, current.revnum);
             /*
              * the delta is larger than the granularity, let's use the granularity
              *TODO: what happens if we DON'T have the edge?
@@ -264,16 +264,6 @@ $.Class("RevisionCache",
         }
       }
 
-      function print_path(path) {
-        var res = "[";
-        for (var p in path) {
-          res += path[p].from_revision.revnum + "->" + path[p].to_revision.revnum + ", ";
-        }
-        res += "]";
-        return res;
-
-      }
-      console.log(print_path(path));
       // return either a full path, or a path ending as close as we can get to
       // the target revision.
       return {path: path, end_revision: current};
@@ -284,32 +274,56 @@ $.Class("RevisionCache",
       var current_revision = this.getRevision(from_revnum);
       var target_revision = this.getRevision(to_revnum);
 
-      var count = 100;
-      //TODO: at the moment this is pretty much a busy loop. We should probably
-      //make the requestChangesets + applyChangeset_callback into some kind of
-      //chained (self-chaining?) async callback tail.
-      while (current_revision != target_revision && count--) {
-        var res = this.findPath(current_revision, target_revision);
-        current_revision = res.end_revision;
-        if (current_revision != target_revision) {
-          // we got a partial path. We need to request changesets from end_revision
-          this.requestChangesets(current_revision, target_revision);
+      // For debugging:
+      function print_path(path) {
+        var res = "[";
+        for (var p in path) {
+          res += path[p].from_revision.revnum + "->" + path[p].to_revision.revnum + ", ";
+        }
+        res += "]";
+        return res;
+      }
+
+      var _this = this;
+      function partialTransition (current_revnum) {
+        console.log("from: %d, to: %d, current: %d", from_revnum, to_revnum, current_revnum);
+        var res = _this.findPath(_this.getRevision(from_revnum), target_revision);
+        console.log("find: ", print_path(res.path));
+        if (res.end_revision == target_revision) {
+          console.log("found: ", print_path(res.path));
+          if(applyChangeset_callback) {
+            applyChangeset_callback(res.path);
+          }
+          return;
+        }
+        else {
+          console.log("end: %d, target: %d", res.end_revision.revnum, target_revision.revnum);
         }
 
-        //Apply the path we have, whether it is full or not:
-        if (applyChangeset_callback)
-          applyChangeset_callback(res.path);
-        console.log("[revisioncache] transition PATH:", res.path);
-        break;
+        // we don't yet have all the changesets we need. Let's try to
+        // build a path from the current revision (the start of the range
+        // in the response) to the target.
+        res = _this.findPath(_this.getRevision(current_revnum), target_revision);
+        console.log(res);
+        console.log(print_path(res.path));
+        // we can now request changesets from the end of that partial path
+        // to the target:
+        _this.requestChangesets(res.end_revision, target_revision, partialTransition);
       }
+
+      partialTransition(from_revnum);
+
     },
     /**
      * Request changesets which will allow transitioning from 'from' to 'to'
      * from the server.
      * @param {Revision} from - The start revision.
      * @param {Revision} to - The end revision.
+     * @param {function} changesetsProcessed_callback - A callback triggered
+     *                              when the requested changesets have been
+     *                              received and processed (added to the graph)
      */
-    requestChangesets: function (from, to) {
+    requestChangesets: function (from, to, changesetsProcessed_callback) {
       console.log("[revisioncache] requestChangesets: %d -> %d", from.revnum, to.revnum);
       var delta = to.revnum - from.revnum;
       var sign = delta > 0 ? 1 : -1;
@@ -319,11 +333,13 @@ $.Class("RevisionCache",
 
       var _this = this;
       function process_received_changesets (data) {
-        console.log("[revisioncache] received changesets {from: %d, to: %d} @ granularity: %d", data.start, data.actualEndNum, data.granularity);
+        //console.log("[revisioncache] received changesets {from: %d, to: %d} @ granularity: %d", data.start, data.actualEndNum, data.granularity);
         var start = data.start;
         for (var i = 0; i < data.timeDeltas.length; i++, start += data.granularity) {
           _this.addChangesetPair(start, start + data.granularity, data.forwardsChangesets[i], data.backwardsChangesets[i], data.timeDeltas[i]);
         }
+        if (changesetsProcessed_callback)
+          changesetsProcessed_callback(data.start);
       }
 
 
@@ -334,17 +350,10 @@ $.Class("RevisionCache",
       for (var g in Revision.granularities) {
         var granularity = Revision.granularities[g];
         var num = Math.floor(adelta / granularity);
-        console.log(start, granularity, num, adelta);
         adelta = adelta % granularity;
         if (num) {
-          //request at this granularity
-          // now we have to translate the request to a start + granularity. We know the granularity already
-          // so lets try to find an optimal start (which will give us what we want right now, and also provide
-          // a good 'spread' for later requests?
-
-          //start = start + (sign * (num * granularity));
           this.loader.enqueue(start, granularity, process_received_changesets);
-          start = start + (sign * (num * granularity));
+          start = start + (num * granularity);
         }
       }
       if (adelta) {
@@ -486,7 +495,7 @@ Thread("ChangesetLoader",
      *                              asked for.
      */
     enqueue: function (start, granularity, callback) {
-      console.log("[changeset_loader] enqueue: %d, %d", start, granularity)
+      console.log("[changeset_loader] enqueue: %d, %d", start, granularity);
       //TODO: check cache to see if we really need to fetch this
       //      maybe even to splices if we just need a smaller range
       //      in the middle
@@ -498,7 +507,9 @@ Thread("ChangesetLoader",
       else
         queue = this.queues.large;
 
-      queue.push(new ChangesetRequest(start, granularity, callback));
+      var request = new ChangesetRequest(start, granularity, callback);
+      if (! (request.getRequestID() in this.pending))
+        queue.push(request);
     },
     _run: function () {
       console.log("[changesetloader] tick");
