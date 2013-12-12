@@ -84,7 +84,7 @@ $.Class("RevisionSlider",
       if (revNum < 0)
         revNum = 0;
       console.log("GO TO REVISION", revNum);
-      this.elements["revision-label"].html(html10n.get("timeslider.version", { "version": revNum }));
+      this.elements.revision_label.html(html10n.get("timeslider.version", { "version": revNum }));
       this.slider.setValue(revNum);
       this.revision_number = revNum;
       //TODO: set the enabled/disabled for button-left and button-right
