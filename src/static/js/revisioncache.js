@@ -236,7 +236,6 @@ $.Class("RevisionCache",
         var direction_edges = direction ? current.previous : current.next;
         for (var granularity in Revision.granularities) {
           if (Math.abs(delta_revnum) >= Revision.granularities[granularity]) {
-            console.log(delta_revnum, to.revnum, current.revnum);
             /*
              * the delta is larger than the granularity, let's use the granularity
              *TODO: what happens if we DON'T have the edge?
@@ -258,7 +257,8 @@ $.Class("RevisionCache",
               // next granularity level. BUT, if we are at the lowest
               // granularity and don't have an edge, we've reached a DISCONTINUITY
               // and can no longer continue.
-              found_discontinuity = true;
+              if (Revision.granularities[granularity] == 1)
+                found_discontinuity = true;
             }
           }
         }
