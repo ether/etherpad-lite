@@ -166,9 +166,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   function _isEmpty(node, state)
   {
     // consider clean blank lines pasted in IE to be empty
-    if (dom.nodeNumChildren(node) == 0){
-      return true;
-    }
+    if (dom.nodeNumChildren(node) == 0) return true;
     if (dom.nodeNumChildren(node) == 1 && getAssoc(node, "shouldBeEmpty") && dom.optNodeInnerHTML(node) == "&nbsp;" && !getAssoc(node, "unpasted"))
     {
       if (state)
