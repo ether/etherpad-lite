@@ -452,11 +452,14 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
-      // delete state.lineAttributes.pastedImage;
-      // The issue with above is that we comment it out import works great, if we don't import doesn't work!
+
+      // Below seems a bit abrupt but it's required, I dunno if I think it's a great idea though..
+      delete state.lineAttributes.pastedImage;
+
       if (tname == "img")
       {
         state.lineAttributes.pastedImage = node.outerHTML;
+        cc.startNewLine(state);
       }
       else if (tname == "br")
       {        
