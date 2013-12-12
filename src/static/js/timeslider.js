@@ -203,9 +203,9 @@ AuthenticatedSocketClient("TimesliderClient",
       console.log("[timeslider_client] handle_COLLABROOM: ", data);
     },
 
-    handle_CHANGESET_REQ: function(data) {
-      console.log("[timeslider_client] handle_CHANGESET_REQ: ", data);
-    },
+    //handle_CHANGESET_REQ: function(data) {
+      //console.log("[timeslider_client] handle_CHANGESET_REQ: ", data);
+    //},
   }
 );
 

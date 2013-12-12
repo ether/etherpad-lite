@@ -29,17 +29,31 @@ $.Class("Changeset",
   {//statics
   },
   {//instance
-    init: function (deltarev, deltatime, value) {
-      this.deltarev = deltarev;
+    init: function (from_revision, to_revision, deltatime, value) {
+      this.from_revision = from_revision;
+      this.to_revision = to_revision;
       this.deltatime = deltatime;
       this.value = value;
     },
     getValue: function () {
       return this.value;
     },
+    /**
+     * 'Follow' the Changeset in a given direction, returning the revision at
+     * the specified end of the edge.
+     * @param {bool} direction - If true, go to the 'from' revision, otherwise
+     *                           go to the 'to' revision.
+     * @returns {Revision}
+     */
+    follow: function (direction) {
+      if (direction)
+        return this.from_revision;
+      return this.to_revision;
+    }
   }
 );
 
+//TODO: cruft! remove?
 $.Class("DirectionalIterator",
   {//statics
   },
@@ -77,7 +91,7 @@ $.Class("DirectionalIterator",
  *  making this significantly cheaper than applying all 250 changesets from r1
  *  to r251.
  */
-$.Class("Revision2",
+$.Class("Revision",
   {//statics
     // we rely on the fact that granularities are always traversed biggest to
     // smallest. Changing this will break lots of stuff.
@@ -99,69 +113,35 @@ $.Class("Revision2",
         this.previous[granularity] = null;
       }
     },
-    addChangeset: function (target, changset, timedelta) {
+    /**
+     * Add a changeset from this revision to the target.
+     * @param {Revision} target - The target revision.
+     * @param {object} changeset - The raw changeset data.
+     * @param {time} timedelta - The difference in time between this revision
+     *                          and the target.
+     * @returns {Changeset} - The new changeset object.
+     */
+    addChangeset: function (target, changeset, timedelta) {
+      console.log("[revision] addChangeset(%d -> %d)", this.revnum, target.revnum);
       if (this.revnum == target.revnum)
+        // This should really never happen, but if it does, let's short-circuit.
         return;
 
       var delta_revnum = target.revnum - this.revnum;
       // select the right edge set:
-      var edge = delta_revnum < 0 ? this.previous : this.next;
+      var direction_edges = delta_revnum < 0 ? this.previous : this.next;
 
       // find the correct granularity and add an edge (changeset) for that granularity
-      for (var granularity in this.granularities) {
-        if (Math.abs(delta_revnum) == this.granularities[granularity]) {
+      for (var granularity in Revision.granularities) {
+        if (Math.abs(delta_revnum) == Revision.granularities[granularity]) {
           //TODO: should we check whether the edge exists?
-          //TODO: modify changeset to store the REVISION, not the revnum.
-          edge[granularity] = new Changeset(target, timedelta, changeset);
-          return edge[granularity];
+          direction_edges[granularity] = new Changeset(this, target, timedelta, changeset);
+          return direction_edges[granularity];
         }
       }
       // our delta_revnum isn't one of the granularities. Something is wrong
       //TODO: handle this case?
       return null;
-    },
-    findPath: function (target) {
-      //TODO: currently assuming only forward movements
-      var path = [];
-      var delta_revnum = target.revnum - this.revnum;
-      var edge = delta_revnum < 0 ? this.previous : this.next;
-
-      var current = this;
-      while (current.lt(target)) {
-        for (var granularity in this.granularities) {
-          if (Math.abs(current.revnum - target.revnum) >= this.granularities[granularity]) {
-            // the delta is larger than the granularity, let's use the granularity
-            //TODO: what happens if we DON'T have the edge?
-            //      in theory we need to fetch it (and this is certainly the case for playback
-            //      at granularity = 1). However, when skipping, we might try to find the NEXT
-            //      Revision (which is not linked by the graph to current) and request revisions
-            //      from current to that Revision (at the largest possible granularity)
-            var e = edge[granularity];
-            path.push(e);
-            current = e.target_revision;
-            break;
-          }
-        }
-        //TODO: none of the granularities matched. WTF? This probably means that there is NO useful
-        //edge in the direction of traversal. Is this a termination condition?
-      }
-      return path;
-    }
-  }
-);
-$.Class("Revision",
-  {//statics
-  },
-  {//instance
-    init: function (revnum) {
-      this.revnum = revnum;
-      this.changesets = [];
-    },
-    addChangeset: function (destindex, changeset, timedelta) {
-      this.changesets.push(new Changeset(destindex - this.revnum, timedelta, changeset));
-      this.changesets.sort(function (a, b) {
-        return (b.deltarev - a.deltarev);
-      });
     },
     lt: function (other, is_reverse) {
       if (is_reverse)
@@ -190,77 +170,173 @@ $.Class("RevisionCache",
       this.connection = connection;
       this.loader = new ChangesetLoader(connection);
       this.revisions = {};
-      this.head_revnum = head_revnum || 0;
+      this.head_revision = this.getRevision(head_revnum || 0);
+      this.loader.start();
     },
+    /**
+     * Get a Revision instance for the specified revision number.
+     * If we don't yet have a Revision instance for this revision, create a
+     * new one. Also make sure that the head_revision attribute always refers
+     * to the instance for the pad's head revision.
+     * @param {number} revnum - The revision number for which we want a
+     *                          Revision object.
+     * @returns {Revision}
+     */
     getRevision: function (revnum) {
       if (revnum in this.revisions)
         return this.revisions[revnum];
-      this.revisions[revnum] = new Revision(revnum);
-      this.head_revnum = Math.max(this.head_revnum, revnum);
-      return this.revisions[revnum];
+      var revision = new Revision(revnum);
+      this.revisions[revnum] = revision;
+      if (this.head_revision && revnum > this.head_revision.revnum) {
+        this.head_revision = revision;
+      }
+      return revision;
     },
-    findPath: function (from, to) {
-      var current_rev = this.getRevision(from);
-      var to_rev = this.getRevision(to);
-      var is_reverse = (from >= to);
-      var res = {
-        from: current_rev,
-        current: current_rev,
-        is_complete: false,
-        changesets: [],
-      };
-
-      if (from == to) {
-        //TODO: implement short-circuit
-        return res;
-      }
-
-      if (!res.current.changesets.length) {
-        // You cannot build a path if the starting revision hasn't
-        // got any changesets
-        //TODO: implement short-circuit
-        return res;
-      }
-
-      while (res.current.lt(to_rev, is_reverse)) {
-        var changeset_iterator = new DirectionalIterator(res.current.changesets, is_reverse);
-        while (changeset_iterator.haveNext()) {
-          var current_changeset = changeset_iterator.next();
-          // we might get stuck on a particular revision if only a
-          // partial path is available.
-          old_rev = res.current;
-          // the next (first) changeset in the current revision has a delta
-          // in the opposite direction to that in which we are trying to
-          // move, and so cannot help us. Because the changeset list is
-          // sorted, we can just stop here.
-          if (current_changeset.deltarev < 0) {
-            // When can this happen?
-            stop = true;
-          }
-
-          // the current revision has a changeset which helps us get to a revision
-          // which is closer to our target, so we should push that changeset to
-          // the list and move to that new revision to continue building a path
-          var delta_rev = this.getRevision(res.current.revnum + current_changeset.deltarev);
-          if (delta_rev.lt(to_rev, is_reverse)) {
-            res.changesets.push(current_changeset);
-            res.current = delta_rev;
-            break;
-          }
-        }
-        if (stop || res.current == old_rev)
-          break;
-      }
-
-      res.is_complete = res.current == to_rev;
-
-      return res;
-    },
-    addChangeset: function (from, to, value, reverseValue, timedelta) {
+    /**
+     * Links two revisions, specified by from and to with the changeset data
+     * in value and reverseValue respectively.
+     * @param {number} from - The revision number from which the forward
+     *                        changeset originates.
+     * @param {number} to - The revision number to which the forward changeset
+     *                      bring us.
+     * @param {changeset} forwardValue - The forward changeset data.
+     * @param {changeset} reverseValue - The reverse changeset data.
+     * @param {time} timedelta - The difference in time between the from and
+     *                           to revisions.
+     */
+    addChangesetPair: function (from, to, value, reverseValue, timedelta) {
+      console.log("[revisioncache] addChangesetPair(%d, %d)", from, to);
       var from_rev = this.getRevision(from);
       var to_rev = this.getRevision(to);
-      from_rev.addChangeset(to, value, timedelta);
-      to_rev.addChangeset(from, reverseValue, -timedelta);
+      from_rev.addChangeset(to_rev, value, timedelta);
+      to_rev.addChangeset(from_rev, reverseValue, -timedelta);
+    },
+    /**
+     * Find a (minimal) path from a given revision to another revision. If a
+     * complete path cannot be found, return a path which comes as close as
+     * possible to the to revision.
+     * @param {Revision} from - The revision from which to start.
+     * @param {Revision} to - The revision which the path should try to reach.
+     * @returns {object} - A list of Changesets which describe a (partial) path
+     *                  from 'from' to 'to', and the last revision reached.
+     */
+    findPath: function (from, to) {
+      /*
+       *TODO: currently we only ever move in the direction of sign(to-from).
+       *It might be worth implementing 'jitter' movements, so that if you,
+       *for example, you are trying to go from 0 to 99, and you have the
+       *following edges:
+       *  0 -> 100
+       *  100 -> 99
+       *The algorithm would be smart enough to provide you with that as a path
+       */
+      var path = [];
+      var found_discontinuity = false;
+      var current = from;
+
+      while (current.lt(to, direction) && !found_discontinuity) {
+        var delta_revnum = to.revnum - current.revnum;
+        var direction_edges = direction ? current.previous : current.next;
+        var direction = delta_revnum < 0;
+        for (var granularity in Revision.granularities) {
+          if (Math.abs(delta_revnum) >= Revision.granularities[granularity]) {
+            /*
+             * the delta is larger than the granularity, let's use the granularity
+             *TODO: what happens if we DON'T have the edge?
+             *      in theory we need to fetch it (and this is certainly the case for playback
+             *      at granularity = 1). However, when skipping, we might try to find the NEXT
+             *      Revision (which is not linked by the graph to current) and request revisions
+             *      from current to that Revision (at the largest possible granularity)
+             */
+            var edge = direction_edges[granularity];
+            if (edge) {
+              // add this edge to our path
+              path.push(edge);
+              // follow the edge to the next Revision node
+              current = edge.follow(direction);
+              // no need to look for smaller granularities
+              break;
+            } else {
+              // we don't have an edge. Normally we can just continue to the
+              // next granularity level. BUT, if we are at the lowest
+              // granularity and don't have an edge, we've reached a DISCONTINUITY
+              // and can no longer continue.
+              found_discontinuity = true;
+            }
+          }
+        }
+      }
+      // return either a full path, or a path ending as close as we can get to
+      // the target revision.
+      return {path: path, end_revision: current};
+    },
+    //TODO: horrible name!
+    transition: function (from_revnum, to_revnum, applyChangeset_callback) {
+      var path = [];
+      var current_revision = this.getRevision(from_revnum);
+      var target_revision = this.getRevision(to_revnum);
+
+      var count = 100;
+      //TODO: at the moment this is pretty much a busy loop. We should probably
+      //make the requestChangesets + applyChangeset_callback into some kind of
+      //chained (self-chaining?) async callback tail.
+      while (current_revision != target_revision && count--) {
+        var res = this.findPath(current_revision, target_revision);
+        current_revision = res.end_revision;
+        if (current_revision != target_revision) {
+          // we got a partial path. We need to request changesets from end_revision
+          this.requestChangesets(current_revision, target_revision);
+        }
+
+        //Apply the path we have, whether it is full or not:
+        if (applyChangeset_callback)
+          applyChangeset_callback(res.path);
+        console.log("[revisioncache] transition PATH:", res.path);
+        break;
+      }
+    },
+    /**
+     * Request changesets which will allow transitioning from 'from' to 'to'
+     * from the server.
+     * @param {Revision} from - The start revision.
+     * @param {Revision} to - The end revision.
+     */
+    requestChangesets: function (from, to) {
+      console.log("[revisioncache] requestChangesets: %d -> %d", from.revnum, to.revnum);
+      var delta = to.revnum - from.revnum;
+      var sign = delta > 0 ? 1 : -1;
+      var start = delta > 0 ? from.revnum : to.revnum;
+      var end = delta > 0 ? to.revnum : from.revnum;
+      var adelta = Math.abs(delta);
+
+      var _this = this;
+      function process_received_changesets (data) {
+        console.log("[revisioncache] received changesets {from: %d, to: %d} @ granularity: %d", data.start, data.actualEndNum, data.granularity);
+        var start = data.start;
+        for (var i = 0; i < data.timeDeltas.length; i++, start += data.granularity) {
+          _this.addChangesetPair(start, start + data.granularity, data.forwardsChangesets[i], data.backwardsChangesets[i], data.timeDeltas[i]);
+        }
+      }
+
+      for (var g in Revision.granularities) {
+        var granularity = Revision.granularities[g];
+        var num = Math.floor(adelta / granularity);
+        console.log(start, granularity, num, adelta)
+        adelta = adelta % granularity;
+        if (num) {
+          //request at this granularity
+          // now we have to translate the request to a start + granularity. We know the granularity already
+          // so lets try to find an optimal start (which will give us what we want right now, and also provide
+          // a good 'spread' for later requests?
+
+          //start = start + (sign * (num * granularity));
+          this.loader.enqueue(start, granularity, process_received_changesets);
+          start = start + (sign * (num * granularity));
+        }
+      }
+      if (adelta) {
+        //Something went wrong!
+      }
     },
     /**
      * Iterate over the list of changesets required to go from one revision to another.
@@ -332,7 +408,7 @@ $.Class("ChangesetRequest",
     init: function (start, granularity, callback) {
       this.start = start;
       this.granularity = granularity;
-      this.request_id = (this.start << 16) + granularity;
+      this.request_id = (this.granularity << 16) + this.start;
       this.fulfill_callback = callback;
     },
     getRequestID: function () {
@@ -358,7 +434,7 @@ Thread("ChangesetLoader",
      *                                    for communication with the server.
      */
     init: function (connection) {
-      this._super(100);
+      this._super(2000);
       this.connection = connection;
       this.queues = {
         small: [],
@@ -397,6 +473,7 @@ Thread("ChangesetLoader",
      *                              asked for.
      */
     enqueue: function (start, granularity, callback) {
+      console.log("[changeset_loader] enqueue: %d, %d", start, granularity)
       //TODO: check cache to see if we really need to fetch this
       //      maybe even to splices if we just need a smaller range
       //      in the middle
@@ -439,10 +516,10 @@ Thread("ChangesetLoader",
       }
       //TODO: this stop is just for debugging!!!!
       //FIXME: remove when done testing
-      this.stop();
+      //this.stop();
     },
     on_response: function (data) {
-      console.log("on_response: ", data);
+      console.log("[changesetloader] on_response: ", data);
       if (!(data.requestID in this.pending)) {
         console.log("[changesetloader] WTF? changeset not pending: ", data.requestID);
         return;
@@ -567,8 +644,6 @@ function loadBroadcastRevisionsJS(clientVars, connection)
   var collabClientVars = clientVars.collab_client_vars;
   p = new PadClient(collabClientVars.rev, collabClientVars.time, collabClientVars.initialAttributedText.text, collabClientVars.initialAttributedText.attribs, collabClientVars.apool);
 
-   cl = new ChangesetLoader(connection);
-   return cl;
 
 }
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
