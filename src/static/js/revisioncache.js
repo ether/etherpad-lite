@@ -25,6 +25,7 @@
 
 //require('./jquery.class');
 
+
 $.Class("Changeset",
   {//statics
   },
@@ -45,9 +46,7 @@ $.Class("Changeset",
      *                           go to the 'to' revision.
      * @returns {Revision}
      */
-    follow: function (direction) {
-      if (direction)
-        return this.from_revision;
+    follow: function () {
       return this.to_revision;
     }
   }
@@ -122,7 +121,6 @@ $.Class("Revision",
      * @returns {Changeset} - The new changeset object.
      */
     addChangeset: function (target, changeset, timedelta) {
-      console.log("[revision] addChangeset(%d -> %d)", this.revnum, target.revnum);
       if (this.revnum == target.revnum)
         // This should really never happen, but if it does, let's short-circuit.
         return;
@@ -205,7 +203,6 @@ $.Class("RevisionCache",
      *                           to revisions.
      */
     addChangesetPair: function (from, to, value, reverseValue, timedelta) {
-      console.log("[revisioncache] addChangesetPair(%d, %d)", from, to);
       var from_rev = this.getRevision(from);
       var to_rev = this.getRevision(to);
       from_rev.addChangeset(to_rev, value, timedelta);
@@ -233,13 +230,13 @@ $.Class("RevisionCache",
       var path = [];
       var found_discontinuity = false;
       var current = from;
-
+      var direction = (to.revnum - from.revnum) < 0;
       while (current.lt(to, direction) && !found_discontinuity) {
         var delta_revnum = to.revnum - current.revnum;
         var direction_edges = direction ? current.previous : current.next;
-        var direction = delta_revnum < 0;
         for (var granularity in Revision.granularities) {
           if (Math.abs(delta_revnum) >= Revision.granularities[granularity]) {
+            console.log(granularity, delta_revnum, current.revnum);
             /*
              * the delta is larger than the granularity, let's use the granularity
              *TODO: what happens if we DON'T have the edge?
@@ -253,7 +250,7 @@ $.Class("RevisionCache",
               // add this edge to our path
               path.push(edge);
               // follow the edge to the next Revision node
-              current = edge.follow(direction);
+              current = edge.follow();
               // no need to look for smaller granularities
               break;
             } else {
@@ -266,6 +263,17 @@ $.Class("RevisionCache",
           }
         }
       }
+
+      function print_path(path) {
+        var res = "[";
+        for (var p in path) {
+          res += path[p].from_revision.revnum + "->" + path[p].to_revision.revnum + ", ";
+        }
+        res += "]";
+        return res;
+
+      }
+      console.log(print_path(path));
       // return either a full path, or a path ending as close as we can get to
       // the target revision.
       return {path: path, end_revision: current};
@@ -318,10 +326,15 @@ $.Class("RevisionCache",
         }
       }
 
+
+      //TODO: it might be better to be stricter about start addresses.
+      //At the moment if you request changesets from 2 -> 12, it will request at granularity 10.
+      //Not sure if we shouldn't only request granularities > 1 when we have a strict multiple of 10,100 etc.
+      //This is compounded by the fact that revisions are 1 based!
       for (var g in Revision.granularities) {
         var granularity = Revision.granularities[g];
         var num = Math.floor(adelta / granularity);
-        console.log(start, granularity, num, adelta)
+        console.log(start, granularity, num, adelta);
         adelta = adelta % granularity;
         if (num) {
           //request at this granularity
