@@ -456,7 +456,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
       if (tname == "img")
       {
-        state.lineAttributes.image = node.outerHTML;
+        state.lineAttributes.pastedImage = node.outerHTML;
       }
       else if (tname == "br")
       {        
