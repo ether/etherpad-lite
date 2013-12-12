@@ -24,7 +24,7 @@
 // assigns to the global `$` and augments it with plugins.
 require('./jquery');
 require('./jquery.class');
-JSON = require('./json2');
+//JSON = require('./json2');
 
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;

@@ -50,8 +50,8 @@ $.Class("DirectionalIterator",
       self.current = self.direction ? self.list.length - 1 : 0;
     },
     haveNext: function () {
-      if ((self.direction && self.current > 0)
-        || (!self.direction && self.current < self.list.length))
+      if ((self.direction && self.current > 0) ||
+          (!self.direction && self.current < self.list.length))
         return true;
       return false;
     },
@@ -97,7 +97,7 @@ $.Class("Revision2",
       for (var granularity in this.granularties) {
         this.next[granularity] = null;
         this.previous[granularity] = null;
-      };
+      }
     },
     addChangeset: function (target, changset, timedelta) {
       if (this.revnum == target.revnum)
@@ -114,8 +114,8 @@ $.Class("Revision2",
           //TODO: modify changeset to store the REVISION, not the revnum.
           edge[granularity] = new Changeset(target, timedelta, changeset);
           return edge[granularity];
-        };
-      };
+        }
+      }
       // our delta_revnum isn't one of the granularities. Something is wrong
       //TODO: handle this case?
       return null;
@@ -129,7 +129,7 @@ $.Class("Revision2",
       var current = this;
       while (current.lt(target)) {
         for (var granularity in this.granularities) {
-          if (! Math.abs(current.revnum - target.revnum) >= this.granularities[granularity]) {
+          if (Math.abs(current.revnum - target.revnum) >= this.granularities[granularity]) {
             // the delta is larger than the granularity, let's use the granularity
             //TODO: what happens if we DON'T have the edge?
             //      in theory we need to fetch it (and this is certainly the case for playback
@@ -140,11 +140,11 @@ $.Class("Revision2",
             path.push(e);
             current = e.target_revision;
             break;
-          };
-        };
+          }
+        }
         //TODO: none of the granularities matched. WTF? This probably means that there is NO useful
         //edge in the direction of traversal. Is this a termination condition?
-      };
+      }
       return path;
     }
   }
@@ -202,7 +202,7 @@ $.Class("RevisionCache",
     findPath: function (from, to) {
       var current_rev = this.getRevision(from);
       var to_rev = this.getRevision(to);
-      var is_reverse = !(from < to);
+      var is_reverse = (from >= to);
       var res = {
         from: current_rev,
         current: current_rev,
@@ -300,10 +300,10 @@ $.Class("Thread",
     // start the run loop
     start: function () {
       var _this = this;
-      console.log("[thread] starting")
+      console.log("[thread] starting");
       var wrapper = function () {
         if (_this._is_running && _this._is_stopping) {
-          console.log("[thread] shutting down")
+          console.log("[thread] shutting down");
           clearInterval(_this._interval_id);
           _this._is_running = false;
           return;
@@ -317,7 +317,7 @@ $.Class("Thread",
     // stop the run loop
     stop: function () {
       this._is_stopping = true;
-      console.log("[thread] request stop")
+      console.log("[thread] request stop");
       // TODO: consider finding a way to make this block
       // or alternatively, having a callback which is called
       // when the thread stops
@@ -364,7 +364,7 @@ Thread("ChangesetLoader",
         small: [],
         medium: [],
         large: [],
-      }
+      };
       this.pending = {};
       var _this = this;
       this.connection.on("CHANGESET_REQ", function () {
@@ -412,8 +412,12 @@ Thread("ChangesetLoader",
     },
     _run: function () {
       console.log("[changesetloader] tick");
+      var _this = this;
+      function addToPending () {
+        _this.pending[request.getRequestID()] = request;
+      }
       //TODO: pop an item from the queue and perform a request.
-      for (q in this.queues) {
+      for (var q in this.queues) {
         var queue = this.queues[q];
         if (queue.length > 0) {
           // TODO: pop and handle
@@ -426,23 +430,20 @@ Thread("ChangesetLoader",
           //need to perform a server request. Note: it might be worth changing enqueue
           //to check the pending requests queue to avoid this situation entirely.
 
-          var _this = this;
           this.connection.sendMessage("CHANGESET_REQ", {
             start: request.start,
             granularity: request.granularity,
             requestID: request.getRequestID(),
-          }, function () {
-            _this.pending[request.getRequestID()] = request;
-          });
-        };
-      };
+          }, addToPending);
+        }
+      }
       //TODO: this stop is just for debugging!!!!
       //FIXME: remove when done testing
       this.stop();
     },
     on_response: function (data) {
-      console.log("on_response: ", data)
-      if (!data.requestID in this.pending) {
+      console.log("on_response: ", data);
+      if (!(data.requestID in this.pending)) {
         console.log("[changesetloader] WTF? changeset not pending: ", data.requestID);
         return;
       }
@@ -488,7 +489,7 @@ $.Class("PadClient",
         var div = this._getDivForLine(this.lines[i], this.alines[i]);
         this.divs.push(div);
         this.padcontent.append(div);
-      };
+      }
 
       //TODO: monkey patch divs.splice to use our custom splice function
       this.divs.original_splice = this.divs.splice;
@@ -536,7 +537,7 @@ $.Class("PadClient",
       // remove howMany divs starting from index. We need to remove them from
       // the DOM.
       for (var i = index; i < howMany && i < this.divs.length; i++)
-        this.divs[i].remove()
+        this.divs[i].remove();
 
       // generate divs for the new elements:
       var newdivs = [];

@@ -39,7 +39,7 @@ $.Class("RevisionSlider",
       this.elements = {};
       this.loadElements(root_element);
       var _this = this;
-      this.slider = new SliderUI(this.elements['slider-bar'],
+      this.slider = new SliderUI(this.elements.slider_bar,
                   options = {
                     max: this.timeslider.head_revision,
                     change: function () { _this.onChange.apply(_this, arguments); },
@@ -56,23 +56,23 @@ $.Class("RevisionSlider",
       console.log("in slide handler:", value);
     },
     loadElements: function (root_element) {
-      this.elements['root'] = root_element;
+      this.elements.root = root_element;
       //this.elements['slider-handle'] = root_element.first("#ui-slider-handle");
-      this.elements['slider-bar'] = root_element.find("#ui-slider-bar");
-      this.elements['slider'] = root_element.find("#timeslider-slider");
-      this.elements['button-left'] = root_element.find("#leftstep");
-      this.elements['button-right'] = root_element.find("#rightstep");
-      this.elements['button-play'] = root_element.find("#playpause_button");
-      this.elements['timestamp'] = root_element.find("#timer");
-      this.elements['revision-label'] = root_element.find("#revision_label");
-      this.elements['revision-date'] = root_element.find("#revision_date");
-      this.elements['authors'] = root_element.first("#authorsList");
+      this.elements.slider_bar = root_element.find("#ui-slider-bar");
+      this.elements.slider = root_element.find("#timeslider-slider");
+      this.elements.button_left = root_element.find("#leftstep");
+      this.elements.button_right = root_element.find("#rightstep");
+      this.elements.button_play = root_element.find("#playpause_button");
+      this.elements.timestamp = root_element.find("#timer");
+      this.elements.revision_label = root_element.find("#revision_label");
+      this.elements.revision_date = root_element.find("#revision_date");
+      this.elements.authors = root_element.first("#authorsList");
     },
     loadSavedRevisionHandles: function () {
       for (var r in this.timeslider.savedRevisions) {
         var rev = this.timeslider.savedRevisions[r];
         this.slider.createHandle(rev.revNum, "star");
-      };
+      }
     },
     goToRevision: function (revNum) {
       //TODO: this should actually do an async jump to revision (with all the server fetching
@@ -83,7 +83,7 @@ $.Class("RevisionSlider",
         revNum = this.timeslider.latest_revision;
       if (revNum < 0)
         revNum = 0;
-      console.log("GO TO REVISION", revNum)
+      console.log("GO TO REVISION", revNum);
       this.elements["revision-label"].html(html10n.get("timeslider.version", { "version": revNum }));
       this.slider.setValue(revNum);
       this.revision_number = revNum;
@@ -91,12 +91,12 @@ $.Class("RevisionSlider",
     },
     _mouseInit: function () {
       var _this = this;
-      this.elements["button-left"].on("click", function (event) {
+      this.elements.button_left.on("click", function (event) {
         console.log("was :",  _this.revision_number);
         _this.goToRevision(_this.revision_number - 1);
       });
 
-      this.elements["button-right"].on("click", function (event) {
+      this.elements.button_right.on("click", function (event) {
         _this.goToRevision(_this.revision_number + 1);
       });
 
@@ -147,7 +147,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
         {
           slidercallbacks[i](newval);
         }
-      }
+      };
     var removeSavedRevision = function(position)
       {
         var element = $("div.star [pos=" + position + "]");
@@ -184,10 +184,10 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
 
       $("#revision_label").html(html10n.get("timeslider.version", { "version": newpos}));
 
-      if (newpos == 0)
+      if (newpos === 0)
       {
-        $("#leftstar").css('opacity', .5);
-        $("#leftstep").css('opacity', .5);
+        $("#leftstar").css('opacity', 0.5);
+        $("#leftstep").css('opacity', 0.5);
       }
       else
       {
@@ -197,8 +197,8 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
 
       if (newpos == sliderLength)
       {
-        $("#rightstar").css('opacity', .5);
-        $("#rightstep").css('opacity', .5);
+        $("#rightstar").css('opacity', 0.5);
+        $("#rightstep").css('opacity', 0.5);
       }
       else
       {
@@ -285,7 +285,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
         }
 
       }
-      if (authors.length == 0)
+      if (authors.length === 0)
       {
         authorsList.append(html10n.get("timeslider.toolbar.authorsList"));
       }
@@ -308,7 +308,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
       playpause: playpause,
       showReconnectUI: showReconnectUI,
       setAuthors: setAuthors
-    }
+    };
 
     function playButtonUpdater()
     {
@@ -352,7 +352,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
       $(document).keyup(function(e)
       {
         var code = -1;
-        if (!e) var e = window.event;
+        if (!e) e = window.event;
         if (e.keyCode) code = e.keyCode;
         else if (e.which) code = e.which;
 
@@ -381,13 +381,13 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
           }
           else
           {
-            var nextStar = sliderLength; // default to last revision in document
-            for (var i = 0; i < savedRevisions.length; i++)
+            var _nextStar = sliderLength; // default to last revision in document
+            for (var _i = 0; _i < savedRevisions.length; _i++)
             {
-              var pos = parseInt(savedRevisions[i].attr('pos'));
-              if (pos > getSliderPosition() && nextStar > pos) nextStar = pos;
+              var _pos = parseInt(savedRevisions[_i].attr('pos'));
+              if (_pos > getSliderPosition() && _nextStar > _pos) _nextStar = _pos;
             }
-            setSliderPosition(nextStar);
+            setSliderPosition(_nextStar);
           }
         }
         else if (code == 32) playpause();
@@ -430,7 +430,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
         var newcss = (origcss.split(" ")[0] + " " + newpos + "px");
         if ($(self).css('opacity') != 1.0) newcss = origcss;
 
-        $(self).css('background-position', newcss)
+        $(self).css('background-position', newcss);
 
         $(self).mouseup(function(evt2)
         {
@@ -457,13 +457,13 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
           }
           else if ($(self).attr("id") == ("rightstar"))
           {
-            var nextStar = sliderLength; // default to last revision in document
-            for (var i = 0; i < savedRevisions.length; i++)
+            var _nextStar = sliderLength; // default to last revision in document
+            for (var _i = 0; _i < savedRevisions.length; _i++)
             {
-              var pos = parseInt(savedRevisions[i].attr('pos'));
-              if (pos > getSliderPosition() && nextStar > pos) nextStar = pos;
+              var _pos = parseInt(savedRevisions[_i].attr('pos'));
+              if (_pos > getSliderPosition() && _nextStar > _pos) _nextStar = _pos;
             }
-            setSliderPosition(nextStar);
+            setSliderPosition(_nextStar);
           }
         });
         $(document).mouseup(function(evt2)
@@ -472,7 +472,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
           $(self).unbind('mouseup');
           $(document).unbind('mouseup');
         });
-      })
+      });
 
       if (clientVars)
       {
@@ -485,7 +485,7 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
   BroadcastSlider.onSlider(function(loc)
   {
     $("#viewlatest").html(loc == BroadcastSlider.getSliderLength() ? "Viewing latest content" : "View latest content");
-  })
+  });
 
   return BroadcastSlider;
 }

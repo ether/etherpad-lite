@@ -52,8 +52,8 @@ $.Class("SliderHandleUI",
     },
     _mouseInit: function () {
       this.element.on("mousedown.sliderhandle", null, this, function(event) {
-        console.log("sliderhandleui - mousedown")
-      })
+        console.log("sliderhandleui - mousedown");
+      });
     },
   }
 );
@@ -115,7 +115,7 @@ $.Class("SliderUI",
       this.render();
     },
     createHandle: function (value, type) {
-      console.log("createHandle(%d, %s)", value, type)
+      console.log("createHandle(%d, %s)", value, type);
       var handle = new SliderHandleUI(this, value, type);
       this.handles.push(handle);
       this.element.append(handle.element);
@@ -160,10 +160,10 @@ $.Class("SliderUI",
 
           });
         } else {
-          console.log("We shouldn't be here!")
+          console.log("We shouldn't be here!");
           console.log(event.target);
         }
-      })
+      });
     },
   }
 );
