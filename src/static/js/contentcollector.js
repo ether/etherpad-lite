@@ -452,7 +452,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
-      delete state.lineAttributes.pastedImage;
+      // delete state.lineAttributes.pastedImage;
+      // The issue with above is that we comment it out import works great, if we don't import doesn't work!
       if (tname == "img")
       {
         state.lineAttributes.pastedImage = node.outerHTML;
