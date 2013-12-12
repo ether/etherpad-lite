@@ -139,8 +139,11 @@ $.Class("Revision2",
             var e = edge[granularity];
             path.push(e);
             current = e.target_revision;
+            break;
           };
         };
+        //TODO: none of the granularities matched. WTF? This probably means that there is NO useful
+        //edge in the direction of traversal. Is this a termination condition?
       };
       return path;
     }
