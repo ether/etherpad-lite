@@ -1,10 +1,4 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code.
- * This helps other people to understand this code better and helps them to improve it.
- * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
- */
-
-/**
  * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -178,6 +172,7 @@ SocketClient("AuthenticatedSocketClient",
   }
 );
 
+require('./revisioncache');
 AuthenticatedSocketClient("TimesliderClient",
   { //statics
   },
@@ -197,15 +192,16 @@ AuthenticatedSocketClient("TimesliderClient",
       this.clientVars = data;
       this.current_revision = this.head_revision = this.clientVars.collab_client_vars.rev;
       this.savedRevisions = this.clientVars.savedRevisions;
+
+      this.revisionCache = new RevisionCache(this, this.clientVars.collab_client_vars.rev || 0);
+
+      var collabClientVars = this.clientVars.collab_client_vars;
+      this.padClient = new PadClient(collabClientVars.rev, collabClientVars.time, collabClientVars.initialAttributedText.text, collabClientVars.initialAttributedText.attribs, collabClientVars.apool);
     },
 
     handle_COLLABROOM: function(data) {
       console.log("[timeslider_client] handle_COLLABROOM: ", data);
     },
-
-    //handle_CHANGESET_REQ: function(data) {
-      //console.log("[timeslider_client] handle_CHANGESET_REQ: ", data);
-    //},
   }
 );
 
@@ -243,10 +239,9 @@ function init(baseURL) {
     var timesliderclient = new TimesliderClient(url, padId)
         .on("CLIENT_VARS", function(data, context, callback) {
           //load all script that doesn't work without the clientVars
-          BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(this,fireWhenAllScriptsAreLoaded);
-          cl = require('./revisioncache').loadBroadcastRevisionsJS(this.clientVars, this);
-          //require('./broadcast_revisions').loadBroadcastRevisionsJS(this.clientVars);
-          changesetLoader = require('./broadcast').loadBroadcastJS(this, fireWhenAllScriptsAreLoaded, BroadcastSlider);
+          BroadcastSlider = require('./broadcast_slider').init(this,fireWhenAllScriptsAreLoaded);
+          //cl = require('./revisioncache').init(this.clientVars, this);
+          //changesetLoader = require('./broadcast').loadBroadcastJS(this, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
           //initialize export ui
           require('./pad_impexp').padimpexp.init();
@@ -266,7 +261,7 @@ function init(baseURL) {
           {
             fireWhenAllScriptsAreLoaded[i]();
           }
-          $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
+          //$("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
         });
 
     //get all the export links

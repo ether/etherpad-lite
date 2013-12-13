@@ -1,10 +1,4 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code.
- * This helps other people to understand this code better and helps them to improve it.
- * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
- */
-
-/**
  * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +14,6 @@
  * limitations under the License.
  */
 
- // These parameters were global, now they are injected. A reference to the
- // Timeslider controller would probably be more appropriate.
 var _ = require('./underscore');
 var padmodals = require('./pad_modals').padmodals;
 var sliderui = require('./sliderui');
@@ -31,9 +23,9 @@ $.Class("RevisionSlider",
   {//statics
   },
   {//instance
-    init: function (timeslider, root_element) {
-      this.timeslider = timeslider;
-      this.revision_number = this.timeslider.head_revision;
+    init: function (connection, root_element) {
+      this.connection = connection;
+      this.revision_number = this.connection.head_revision;
       console.log("New RevisionSlider, head_revision = %d", this.revision_number);
       // parse the various elements we need:
       this.elements = {};
@@ -41,12 +33,13 @@ $.Class("RevisionSlider",
       var _this = this;
       this.slider = new SliderUI(this.elements.slider_bar,
                   options = {
-                    max: this.timeslider.head_revision,
+                    value: this.revision_number,
+                    max: this.connection.head_revision,
                     change: function () { _this.onChange.apply(_this, arguments); },
                     slide: function () { _this.onSlide.apply(_this, arguments); },
                   });
       this.loadSavedRevisionHandles();
-
+      this.slider.render();
       this._mouseInit();
     },
     onChange: function (value) {
@@ -69,8 +62,8 @@ $.Class("RevisionSlider",
       this.elements.authors = root_element.first("#authorsList");
     },
     loadSavedRevisionHandles: function () {
-      for (var r in this.timeslider.savedRevisions) {
-        var rev = this.timeslider.savedRevisions[r];
+      for (var r in this.connection.savedRevisions) {
+        var rev = this.connection.savedRevisions[r];
         this.slider.createHandle(rev.revNum, "star");
       }
     },
@@ -79,8 +72,8 @@ $.Class("RevisionSlider",
       //and changeset rendering that that implies), and perform the setPosition in a callback.
       //TODO: we need some kind of callback for setting revision metadata.
       //TODO: at some point we need to set window.location.hash
-      if (revNum > this.timeslider.head_revision)
-        revNum = this.timeslider.latest_revision;
+      if (revNum > this.connection.head_revision)
+        revNum = this.connection.latest_revision;
       if (revNum < 0)
         revNum = 0;
       console.log("GO TO REVISION", revNum);
@@ -105,7 +98,7 @@ $.Class("RevisionSlider",
   }
 );
 
-function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
+function init(tsclient, fireWhenAllScriptsAreLoaded)
 {
   var BroadcastSlider;
 
@@ -119,6 +112,8 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
       var rev = Number(window.location.hash.substr(1));
       if(!isNaN(rev))
         tsui.goToRevision(rev);
+    } else {
+      //tsui.goToRevision()
     }
 
 
@@ -490,4 +485,4 @@ function loadBroadcastSliderJS(tsclient, fireWhenAllScriptsAreLoaded)
   return BroadcastSlider;
 }
 
-exports.loadBroadcastSliderJS = loadBroadcastSliderJS;
+exports.init = init;

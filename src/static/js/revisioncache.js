@@ -1,10 +1,4 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code.
- * This helps other people to understand this code better and helps them to improve it.
- * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
- */
-
-/**
  * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// revision info is a skip list whos entries represent a particular revision
-// of the document.  These revisions are connected together by various
-// changesets,  or deltas, between any two revisions.
-
-//require('./jquery.class');
-
+require('./jquery.class');
+var libchangeset = require("./Changeset");
 
 $.Class("Changeset",
   {//statics
@@ -40,6 +30,17 @@ $.Class("Changeset",
       return this.value;
     },
     /**
+     * Apply this changeset to the passed pad.
+     * @param {PadClient} pad - The pad to apply the changeset to.
+     */
+    apply: function (pad) {
+      // must mutate attribution lines before text lines
+      libchangeset.mutateAttributionLines(this.value, pad.alines, pad.apool);
+
+      // Looks like this function can take a regular array of strings
+      libchangeset.mutateTextLines(this.value, /* padcontents */ /*this.lines */ pad.divs);
+    },
+    /**
      * 'Follow' the Changeset in a given direction, returning the revision at
      * the specified end of the edge.
      * @param {bool} direction - If true, go to the 'from' revision, otherwise
@@ -48,33 +49,6 @@ $.Class("Changeset",
      */
     follow: function () {
       return this.to_revision;
-    }
-  }
-);
-
-//TODO: cruft! remove?
-$.Class("DirectionalIterator",
-  {//statics
-  },
-  {//instance
-    init: function (list, direction) {
-      self.list = list;
-      self.direction = direction;
-      self.current = self.direction ? self.list.length - 1 : 0;
-    },
-    haveNext: function () {
-      if ((self.direction && self.current > 0) ||
-          (!self.direction && self.current < self.list.length))
-        return true;
-      return false;
-    },
-    next: function () {
-      if (self.direction && self.current > 0)
-        return self.list[self.current--];
-      if (!self.direction && self.current < self.list.length)
-        return self.list[self.current++];
-
-      return undefined;
     }
   }
 );
@@ -360,25 +334,6 @@ $.Class("RevisionCache",
         //Something went wrong!
       }
     },
-    /**
-     * Iterate over the list of changesets required to go from one revision to another.
-     * @param {number} from - The starting revision.
-     * @param {number} to - The end revision.
-     * @param {function} callback - The function to apply to each changeset.
-     */
-    iterChangesets: function (from, to, callback) {
-      // first try to build a path from the cache:
-      var path = this.findPath(from, to);
-      if (!path.is_complete) {
-        // TODO: request load of any other changesets.
-        //       before we start iterating over existing
-        //       in the hope that some of them will be
-        //       fulfilled soon.bt
-      }
-      // we have a partial path
-      console.log(from, to, path.current.revnum);
-      // TODO: loop over existing changesets and apply
-    }
   }
 );
 
@@ -558,7 +513,6 @@ Thread("ChangesetLoader",
   }
 );
 
-var libchangeset = require("./Changeset");
 var AttribPool = require("./AttributePool");
 var domline = require("./domline").domline;
 var linestylefilter = require("./linestylefilter").linestylefilter;
@@ -659,15 +613,14 @@ $.Class("PadClient",
     },
   }
 );
-function loadBroadcastRevisionsJS(clientVars, connection)
+function init(clientVars, connection)
 {
 
-    revisionCache = new RevisionCache(connection, clientVars.collab_client_vars.rev || 0);
-//  revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
+  revisionCache = new RevisionCache(connection, clientVars.collab_client_vars.rev || 0);
 
   var collabClientVars = clientVars.collab_client_vars;
   p = new PadClient(collabClientVars.rev, collabClientVars.time, collabClientVars.initialAttributedText.text, collabClientVars.initialAttributedText.attribs, collabClientVars.apool);
 
 
 }
-exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
+exports.init = init;
