@@ -190,13 +190,17 @@ AuthenticatedSocketClient("TimesliderClient",
     handle_CLIENT_VARS: function(data) {
       console.log("[timeslider_client] handle_CLIENT_VARS: ", data);
       this.clientVars = data;
-      this.current_revision = this.head_revision = this.clientVars.collab_client_vars.rev;
+      var collabClientVars = this.clientVars.collab_client_vars;
+      this.current_revision = this.head_revision = collabClientVars.rev;
       this.savedRevisions = this.clientVars.savedRevisions;
 
-      this.revisionCache = new RevisionCache(this, this.clientVars.collab_client_vars.rev || 0);
+      this.revisionCache = new RevisionCache(this, collabClientVars.rev || 0);
 
-      var collabClientVars = this.clientVars.collab_client_vars;
-      this.padClient = new PadClient(collabClientVars.rev, collabClientVars.time, collabClientVars.initialAttributedText.text, collabClientVars.initialAttributedText.attribs, collabClientVars.apool);
+      this.padClient = new PadClient(collabClientVars.rev,
+                                     collabClientVars.time,
+                                     collabClientVars.initialAttributedText.text,
+                                     collabClientVars.initialAttributedText.attribs,
+                                     collabClientVars.apool);
     },
 
     handle_COLLABROOM: function(data) {
