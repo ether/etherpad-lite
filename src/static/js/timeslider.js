@@ -196,7 +196,8 @@ AuthenticatedSocketClient("TimesliderClient",
 
       this.revisionCache = new RevisionCache(this, collabClientVars.rev || 0);
 
-      this.padClient = new PadClient(collabClientVars.rev,
+      this.padClient = new PadClient(this.revisionCache,
+                                     collabClientVars.rev,
                                      collabClientVars.time,
                                      collabClientVars.initialAttributedText.text,
                                      collabClientVars.initialAttributedText.attribs,
@@ -206,10 +207,12 @@ AuthenticatedSocketClient("TimesliderClient",
     handle_COLLABROOM: function(data) {
       console.log("[timeslider_client] handle_COLLABROOM: ", data);
     },
+
   }
 );
 
 function init(baseURL) {
+  var timesliderclient;
   $(document).ready(function ()
   {
     // start the custom js
@@ -240,7 +243,7 @@ function init(baseURL) {
 
     var cl;
     console.log(url, baseURL, resource, padId);
-    var timesliderclient = new TimesliderClient(url, padId)
+    timesliderclient = new TimesliderClient(url, padId)
         .on("CLIENT_VARS", function(data, context, callback) {
           //load all script that doesn't work without the clientVars
           BroadcastSlider = require('./broadcast_slider').init(this,fireWhenAllScriptsAreLoaded);
@@ -287,6 +290,7 @@ function init(baseURL) {
 
     hooks.aCallAll("postTimesliderInit");
   });
+    return timesliderclient;
 }
 
 var fireWhenAllScriptsAreLoaded = [];

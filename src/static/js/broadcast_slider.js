@@ -112,8 +112,6 @@ function init(tsclient, fireWhenAllScriptsAreLoaded)
       var rev = Number(window.location.hash.substr(1));
       if(!isNaN(rev))
         tsui.goToRevision(rev);
-    } else {
-      //tsui.goToRevision()
     }
 
 

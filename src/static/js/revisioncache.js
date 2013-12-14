@@ -523,14 +523,16 @@ $.Class("PadClient",
     /**
      * Create a PadClient.
      * @constructor
+     * @param {RevisionCache} revisionCache - A RevisionCache object to use.
      * @param {number} revision - The current revision of the pad.
      * @param {datetime} timestamp - The timestamp of the current revision.
      * @param {string} atext - The attributed text.
      * @param {string} attribs - The attributes string.
      * @param {object} apool - The attribute pool.
      */
-    init: function (revision, timestamp, atext, attribs, apool) {
-      this.revision = revision;
+    init: function (revisionCache, revision, timestamp, atext, attribs, apool) {
+      this.revisionCache = revisionCache;
+      this.revision = this.revisionCache.getRevision(revision);
       this.timestamp = timestamp;
       this.alines = libchangeset.splitAttributionLines(attribs, atext);
       this.apool = (new AttribPool()).fromJsonable(apool);
@@ -548,19 +550,37 @@ $.Class("PadClient",
 
       //TODO: monkey patch divs.splice to use our custom splice function
       this.divs.original_splice = this.divs.splice;
-      this.divs.splice = this._spliceDivs;
-
+      var _this = this;
+      this.divs.splice = function () {
+        return _this._spliceDivs.apply(_this, arguments);
+      }
+      // we need to provide a get, as we want to give
+      // libchangeset the text of a div, not the div itself
+      this.divs.get = function (index) {
+        return this[index].data('text');
+      };
     },
-    applyChangeset: function (changeset) {
-      //TODO: changeset should be a Changeset object
-      //
-      // must mutate attribution lines before text lines
-      libchangeset.mutateAttributionLines(changeset, this.alines, this.apool);
+    goToRevision: function (revnum, atRevision_callback) {
+      console.log("[padclient > goToRevision] revnum: %d", revnum);
+      var _this = this;
+      this.revisionCache.transition(this.revision.revnum, revnum, function (path) {
+        console.log("[padclient > applyChangeset_callback] path:", path);
+        var time = _this.timestamp;
+        for (var p in path) {
+          console.log(p, path[p].deltatime, path[p].value);
+          var changeset = path[p];
+          time += changeset.deltatime * 1000;
+          changeset.apply(_this);
+        }
 
-      // Looks like this function can take a regular array of strings
-      libchangeset.mutateTextLines(changeset, /* padcontents */ /*this.lines */ this.divs);
-
-      //TODO: get authors (and set in UI)
+        // set revision and timestamp
+        _this.revision = path.slice(-1)[0].to_revision;
+        _this.timestamp = time;
+        console.log(_this.revision, _this.timestamp)
+        // fire the callback
+        if (atRevision_callback)
+          atRevision_callback.call(_this,_this.revision, _this.timestamp);
+      });
 
     },
     _getDivForLine: function (text, atext) {
@@ -570,8 +590,9 @@ $.Class("PadClient",
       linestylefilter.populateDomLine(text, atext, this.apool, dominfo);
       dominfo.prepareForAdd();
 
-      var div = $("<div class='" + dominfo.node.className +
-                  "' id='" + Math.random() + "'>" +
+      var div = $("<div class='" + dominfo.node.className + "' " +
+                  "id='" + Math.random() + "' " +
+                  "data-text='" + text + "'>" +
                   dominfo.node.innerHTML + "</div>");
       return div;
     },
@@ -589,9 +610,10 @@ $.Class("PadClient",
      * @param {array} elements - The elements to add to the array. In our case, these are lines.
      */
     _spliceDivs: function (index, howMany, elements) {
+      elements = Array.prototype.slice.call(arguments, 2);
       // remove howMany divs starting from index. We need to remove them from
       // the DOM.
-      for (var i = index; i < howMany && i < this.divs.length; i++)
+      for (var i = index; i < index + howMany && i < this.divs.length; i++)
         this.divs[i].remove();
 
       // generate divs for the new elements:
@@ -609,7 +631,8 @@ $.Class("PadClient",
 
       // perform the splice on our array itself
       // TODO: monkey patching divs.splice, so use divs.original_splice or something
-      return this.divs.splice(index, howMany, newdivs);
+      args = [index, howMany].concat(newdivs);
+      return this.divs.original_splice.apply(this.divs, args);
     },
   }
 );

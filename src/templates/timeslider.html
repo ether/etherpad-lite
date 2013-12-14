@@ -206,6 +206,7 @@
 <script type="text/javascript" >
   var clientVars = {};
   var BroadcastSlider;
+  var timeslider;
   (function () {
     var pathComponents = location.pathname.split('/');
 
@@ -222,16 +223,16 @@
       document.domain = document.domain; // for comet
     }
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-    var timeslider = require('ep_etherpad-lite/static/js/timeslider')
-    var socket = timeslider.socket;
-    BroadcastSlider = timeslider.BroadcastSlider;
+    var _timeslider = require('ep_etherpad-lite/static/js/timeslider')
+    var socket = _timeslider.socket;
+    BroadcastSlider = _timeslider.BroadcastSlider;
     plugins.baseURL = baseURL;
 
     plugins.update(function () {
       var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
       hooks.plugins = plugins;
 
-      timeslider.init(baseURL);
+      timeslider = _timeslider.init(baseURL);
 
       /* TODO: These globals shouldn't exist. */
       padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
