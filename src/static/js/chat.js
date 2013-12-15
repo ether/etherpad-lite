@@ -54,11 +54,18 @@ var chat = (function()
     },
     hide: function () 
     {
-      $("#chatcounter").text("0");
-      $("#chaticon").show();
-      $("#chatbox").hide();
-      $.gritter.removeAll();
-      $("#gritter-notice-wrapper").show();
+      // decide on hide logic based on chat window being maximized or not 
+      if ($('#options-stickychat').prop('checked')) {
+        chat.stickToScreen();
+        $('#options-stickychat').prop('checked', false);
+      }
+      else {  
+        $("#chatcounter").text("0");
+        $("#chaticon").show();
+        $("#chatbox").hide();
+        $.gritter.removeAll();
+        $("#gritter-notice-wrapper").show();
+      }
     },
     scrollDown: function()
     {
