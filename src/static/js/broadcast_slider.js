@@ -109,7 +109,7 @@ $.Class("RevisionSlider",
         while (str.length < length)
           str = '0' + str;
         return str;
-      }
+      };
       var months = [
                     html10n.get("timeslider.month.january"),
                     html10n.get("timeslider.month.february"),

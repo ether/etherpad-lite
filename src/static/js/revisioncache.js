@@ -419,7 +419,7 @@ Thread("ChangesetLoader",
      *                                    for communication with the server.
      */
     init: function (connection) {
-      this._super(2000);
+      this._super(200);
       this.connection = connection;
       this.queues = {
         small: [],
@@ -575,7 +575,7 @@ $.Class("PadClient",
         if (atRevision_callback)
           atRevision_callback.call(this, this.revision, this.timestamp);
         return;
-      };
+      }
 
       this.revisionCache.transition(this.revision.revnum, revnum, function (path) {
         console.log("[padclient > applyChangeset_callback] path:", path);
