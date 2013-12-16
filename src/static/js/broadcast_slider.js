@@ -203,13 +203,17 @@ $.Class("RevisionSlider",
     _mouseInit: function () {
       var _this = this;
       this.elements.button_left.on("click", function (event) {
-        if (! $(this).hasClass("disabled"))
-          _this.goToRevision(_this.revision_number - 1);
+        if ($(this).hasClass("disabled"))
+          return;
+        _this.is_playing = false;
+        _this.goToRevision(_this.revision_number - 1);
       });
 
       this.elements.button_right.on("click", function (event) {
-        if (! $(this).hasClass("disabled"))
-          _this.goToRevision(_this.revision_number + 1);
+        if ($(this).hasClass("disabled"))
+          return;
+        _this.is_playing = false;
+        _this.goToRevision(_this.revision_number + 1);
       });
 
       this.elements.button_play.on("click", function (event) {
