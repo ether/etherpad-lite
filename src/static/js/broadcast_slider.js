@@ -21,11 +21,14 @@ require('./jquery.class');
 
 $.Class("RevisionSlider",
   {//statics
+    PLAYBACK_DELAY: 400,
   },
   {//instance
     init: function (connection, root_element) {
       this.connection = connection;
       this.revision_number = this.connection.getCurrentRevision().revnum;
+      this.timestamp = 0;
+      this.is_playing = false;
       // if there was a revision specified in the 'location.hash', jump to it.
       if (window.location.hash.length > 1) {
         var rev = Number(window.location.hash.substr(1));
@@ -79,11 +82,61 @@ $.Class("RevisionSlider",
         this.slider.createHandle(rev.revNum, "star");
       }
     },
-    goToRevision: function (revnum) {
-      //TODO: this should actually do an async jump to revision (with all the server fetching
-      //and changeset rendering that that implies), and perform the setPosition in a callback.
-      //TODO: we need some kind of callback for setting revision metadata.
-      //TODO: at some point we need to set window.location.hash
+    playpause: function () {
+      if (this.is_playing) {
+        this.is_playing = false;
+        return;
+      }
+
+      var revnum = this.revision_number;
+      if (revnum == this.connection.head_revision)
+        revnum = 0;
+
+      var _this = this;
+      var keepPlaying = function (current_revnum) {
+        if (current_revnum == _this.connection.head_revision)
+          _this.is_playing = false;
+        if (!_this.is_playing)
+          return;
+        setTimeout(function () {
+          _this.goToRevision(current_revnum + 1, keepPlaying);
+        }, RevisionSlider.PLAYBACK_DELAY);
+      };
+
+      this.is_playing = true;
+      this.goToRevision(revnum, keepPlaying);
+    },
+    /**
+     * Update the UI elements to the current revision
+     */
+    render: function () {
+      this.elements.revision_label.html(html10n.get("timeslider.version", { "version": this.revision_number }));
+      this.slider.setValue(this.revision_number);
+      window.location.hash = "#" + this.revision_number;
+      this.setTimestamp(this.timestamp);
+      if (this.is_playing)
+        this.elements.button_play.find("div").addClass("pause");
+      else
+        this.elements.button_play.find("div").removeClass("pause");
+      if (this.revision_number == this.connection.head_revision)
+        this.elements.button_right.addClass("disabled");
+      else
+        this.elements.button_right.removeClass("disabled");
+      if (this.revision_number === 0)
+        this.elements.button_left.addClass("disabled");
+      else
+        this.elements.button_left.removeClass("disabled");
+    },
+    /**
+     * Go to a specific revision number. This will perform the actual
+     * transition to the revision and set the UI elements as required
+     * once the transition is done. The callback can be used to perform
+     * actions after the transition is complete and the UI has been
+     * updated.
+     * @param {number} revnum - The revision to transition to.
+     * @param {callback} atRevision_callback - The callback.
+     */
+    goToRevision: function (revnum, atRevision_callback) {
       if (revnum > this.connection.head_revision)
         revnum = this.connection.latest_revision;
       if (revnum < 0)
@@ -94,15 +147,18 @@ $.Class("RevisionSlider",
       this.connection.goToRevision(revnum, function (revision, timestamp) {
         console.log("[revisionslider > goToRevision > callback]", revision, timestamp);
         //update UI elements:
-        var revnum = revision.revnum;
-        _this.elements.revision_label.html(html10n.get("timeslider.version", { "version": revnum }));
-        _this.slider.setValue(revnum);
-        _this.revision_number = revnum;
-        window.location.hash = "#" + revnum;
-        _this.setTimestamp(timestamp);
+        _this.revision_number = revision.revnum;
+        _this.timestamp = timestamp;
+        _this.render.call(_this);
         //TODO: set the enabled/disabled for button-left and button-right
+        if (atRevision_callback)
+          atRevision_callback(revnum);
       });
     },
+    /**
+     * Set the timestamp and revision date displays
+     * @param {number} timestamp - The timestamp of the current revision.
+     */
     setTimestamp: function (timestamp) {
       var zeropad = function (str, length) {
         str = str + "";
@@ -155,6 +211,9 @@ $.Class("RevisionSlider",
         _this.goToRevision(_this.revision_number + 1);
       });
 
+      this.elements.button_play.on("click", function (event) {
+        _this.playpause();
+      });
     }
 
   }
