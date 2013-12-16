@@ -58,6 +58,7 @@ $.Class("RevisionSlider",
     },
     onSlide: function (value) {
       console.log("in slide handler:", value);
+      this.goToRevision(value);
     },
     loadElements: function (root_element) {
       this.elements.root = root_element;

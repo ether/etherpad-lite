@@ -136,14 +136,16 @@ $.Class("SliderUI",
           if (_this.current_value != start_value) {
             //_this.setValue(start_value);
           }
+          var prev_value = start_value;
 
           $(document).on("mousemove.slider", function (event) {
              var current_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
              console.log("sliderbar mousemove, value:", current_value);
              // don't change the value if it hasn't actually changed!
-             if (_this.current_value != current_value) {
+             if (prev_value != current_value) {
                //_this.setValue(current_value);
                _this._trigger("slide", current_value);
+               prev_value = current_value;
              }
           });
 
