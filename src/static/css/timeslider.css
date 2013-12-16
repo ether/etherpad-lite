@@ -108,8 +108,8 @@
 }
 #editorcontainerbox {
   overflow: auto;
-  top: 40px;
-  position: static;
+  top: 120px;
+  position: absolute;
 }
 #padcontent {
   font-size: 12px;
@@ -225,6 +225,7 @@
   overflow: hidden;
   padding-top: 3px;
   width: 100%;
+  border-bottom: thin solid #cccccc;
 }
 .timeslider-bar #editbar {
   border-bottom: none;
