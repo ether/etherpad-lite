@@ -93,10 +93,7 @@ $.Class("SliderUI",
         handle.element.css('left', (handle.value * this._getStep()) );
       }
     },
-    // this internal version of _setValue should only be used to render
-    // when the handle changes position as a result of UI events handled
-    // by this slider.
-    _setValue: function (value) {
+    setValue: function (value) {
       if (value < 0)
         value = 0;
       if (value > this.options.max)
@@ -104,11 +101,6 @@ $.Class("SliderUI",
       this.handles[0].value = value;
       this.current_value = value;
       this.render();
-    },
-    // this 'public' version of _setValue also triggers a change event
-    setValue: function(value) {
-      this._setValue(value);
-      this._trigger("change", value);
     },
     setMax: function (max) {
       this.options.max = max;
@@ -136,14 +128,14 @@ $.Class("SliderUI",
           var start_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
           console.log("sliderbar mousedown, value:", start_value);
           if (_this.current_value != start_value)
-            _this._setValue(start_value);
+            _this.setValue(start_value);
 
           $(document).on("mousemove.slider", function (event) {
              var current_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
              console.log("sliderbar mousemove, value:", current_value);
              // don't change the value if it hasn't actually changed!
              if (_this.current_value != current_value) {
-               _this._setValue(current_value);
+               _this.setValue(current_value);
                _this._trigger("slide", current_value);
              }
           });
@@ -155,7 +147,7 @@ $.Class("SliderUI",
              var end_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
              console.log("sliderbar mouseup, value:", end_value);
              // always change the value at mouseup
-            _this._setValue(end_value);
+            _this.setValue(end_value);
             _this._trigger("change", end_value);
 
           });

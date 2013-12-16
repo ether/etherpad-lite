@@ -29,6 +29,14 @@ $.Class("Changeset",
     getValue: function () {
       return this.value;
     },
+    compose: function (other, pad) {
+      var newvalue = libchangeset.compose(this.value, other.value, pad.apool);
+      var newchangeset = new Changeset(this.from_revision, other.to_revision,
+                            this.deltatime + other.deltatime, newvalue);
+      console.log(newchangeset);
+      //TODO: insert new changeset into the graph somehow.
+      return newchangeset;
+    },
     /**
      * Apply this changeset to the passed pad.
      * @param {PadClient} pad - The pad to apply the changeset to.
@@ -553,7 +561,7 @@ $.Class("PadClient",
       var _this = this;
       this.divs.splice = function () {
         return _this._spliceDivs.apply(_this, arguments);
-      }
+      };
       // we need to provide a get, as we want to give
       // libchangeset the text of a div, not the div itself
       this.divs.get = function (index) {
@@ -563,23 +571,36 @@ $.Class("PadClient",
     goToRevision: function (revnum, atRevision_callback) {
       console.log("[padclient > goToRevision] revnum: %d", revnum);
       var _this = this;
+      if (this.revision.revnum == revnum) {
+        if (atRevision_callback)
+          atRevision_callback.call(this, this.revision, this.timestamp);
+        return;
+      };
+
       this.revisionCache.transition(this.revision.revnum, revnum, function (path) {
         console.log("[padclient > applyChangeset_callback] path:", path);
         var time = _this.timestamp;
-        for (var p in path) {
-          console.log(p, path[p].deltatime, path[p].value);
-          var changeset = path[p];
-          time += changeset.deltatime * 1000;
-          changeset.apply(_this);
+        var composed = path[0];
+        var _path = path.slice(1);
+        for (var p in _path) {
+          console.log(p, _path[p].deltatime, _path[p].value);
+          var changeset = _path[p];
+          composed = composed.compose(changeset, _this);
+          //time += changeset.deltatime * 1000;
+          //changeset.apply(_this);
         }
+        composed.apply(_this);
+        time += composed.deltatime * 1000;
 
         // set revision and timestamp
         _this.revision = path.slice(-1)[0].to_revision;
         _this.timestamp = time;
-        console.log(_this.revision, _this.timestamp)
+        console.log(_this.revision, _this.timestamp);
         // fire the callback
-        if (atRevision_callback)
-          atRevision_callback.call(_this,_this.revision, _this.timestamp);
+        if (atRevision_callback) {
+          console.log("[padclient] about to call atRevision_callback", _this.revision, _this.timestamp);
+          atRevision_callback.call(_this, _this.revision, _this.timestamp);
+        }
       });
 
     },
@@ -636,14 +657,3 @@ $.Class("PadClient",
     },
   }
 );
-function init(clientVars, connection)
-{
-
-  revisionCache = new RevisionCache(connection, clientVars.collab_client_vars.rev || 0);
-
-  var collabClientVars = clientVars.collab_client_vars;
-  p = new PadClient(collabClientVars.rev, collabClientVars.time, collabClientVars.initialAttributedText.text, collabClientVars.initialAttributedText.attribs, collabClientVars.apool);
-
-
-}
-exports.init = init;

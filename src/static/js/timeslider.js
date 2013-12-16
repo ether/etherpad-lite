@@ -204,8 +204,29 @@ AuthenticatedSocketClient("TimesliderClient",
                                      collabClientVars.apool);
     },
 
+    //TODO: handle new revisions, authors etc.
     handle_COLLABROOM: function(data) {
       console.log("[timeslider_client] handle_COLLABROOM: ", data);
+    },
+
+    /**
+     * Go to the specified revision number. This abstracts the implementation
+     * of the actual goToRevision in the padClient.
+     * @param {number} revision_number - The revision to go to.
+     * @param {callback} atRevision_callback - Called when the transition to the
+     *                                         revision has completed (i.e.
+     *                                         changesets have been applied).
+     */
+    goToRevision: function (revision_number, atRevision_callback) {
+      this.padClient.goToRevision(revision_number, atRevision_callback);
+    },
+
+    /**
+     * Get the current revision.
+     * @return {Revision} - the current revision.
+     */
+    getCurrentRevision: function () {
+      return this.padClient.revision;
     },
 
   }
@@ -247,21 +268,20 @@ function init(baseURL) {
         .on("CLIENT_VARS", function(data, context, callback) {
           //load all script that doesn't work without the clientVars
           BroadcastSlider = require('./broadcast_slider').init(this,fireWhenAllScriptsAreLoaded);
-          //cl = require('./revisioncache').init(this.clientVars, this);
-          //changesetLoader = require('./broadcast').loadBroadcastJS(this, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
           //initialize export ui
           require('./pad_impexp').padimpexp.init();
 
           //change export urls when the slider moves
-          BroadcastSlider.onSlider(function(revno)
-          {
-            // export_links is a jQuery Array, so .each is allowed.
-            export_links.each(function()
-            {
-              this.setAttribute('href', this.href.replace( /(.+?)\/\w+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
-            });
-          });
+          //TODO: fix this to use the slider.change event
+          //BroadcastSlider.onSlider(function(revno)
+          //{
+            //// export_links is a jQuery Array, so .each is allowed.
+            //export_links.each(function()
+            //{
+              //this.setAttribute('href', this.href.replace( /(.+?)\/\w+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
+            //});
+          //});
 
           //fire all start functions of these scripts, formerly fired with window.load
           for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
