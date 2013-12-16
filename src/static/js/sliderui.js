@@ -93,6 +93,12 @@ $.Class("SliderUI",
         handle.element.css('left', (handle.value * this._getStep()) );
       }
     },
+    /**
+     * Update the value in the UI. This should never be called internally.
+     * It should only be called by an event handler after a transition
+     * has completed.
+     * @param {number} value - The value to set.
+     */
     setValue: function (value) {
       if (value < 0)
         value = 0;
@@ -116,7 +122,7 @@ $.Class("SliderUI",
     _trigger: function (eventname, value) {
       console.log("triggering event: ", eventname);
       if (eventname in this.options) {
-        this.options[eventname](value);
+        return this.options[eventname](value);
       }
     },
     _mouseInit: function () {
@@ -127,15 +133,16 @@ $.Class("SliderUI",
           // the click is on the slider bar itself.
           var start_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
           console.log("sliderbar mousedown, value:", start_value);
-          if (_this.current_value != start_value)
-            _this.setValue(start_value);
+          if (_this.current_value != start_value) {
+            //_this.setValue(start_value);
+          }
 
           $(document).on("mousemove.slider", function (event) {
              var current_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
              console.log("sliderbar mousemove, value:", current_value);
              // don't change the value if it hasn't actually changed!
              if (_this.current_value != current_value) {
-               _this.setValue(current_value);
+               //_this.setValue(current_value);
                _this._trigger("slide", current_value);
              }
           });
@@ -147,7 +154,8 @@ $.Class("SliderUI",
              var end_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
              console.log("sliderbar mouseup, value:", end_value);
              // always change the value at mouseup
-            _this.setValue(end_value);
+            //_this.setValue(end_value);
+            console.log("here");
             _this._trigger("change", end_value);
 
           });
