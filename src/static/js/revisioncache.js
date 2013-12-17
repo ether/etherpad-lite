@@ -212,11 +212,16 @@ $.Class("RevisionCache",
       var found_discontinuity = false;
       var current = from;
       var direction = (to.revnum - from.revnum) < 0;
+      var granularity = 0;
+
+      console.log("[findpath] from: %d, to: %d", from.revnum, to.revnum);
       while (current.lt(to, direction) && !found_discontinuity) {
+        console.log("\t[findPath] while current: ", current.revnum);
         var delta_revnum = to.revnum - current.revnum;
         var direction_edges = direction ? current.previous : current.next;
-        for (var granularity in Revision.granularities) {
+        for (granularity in Revision.granularities) {
           if (Math.abs(delta_revnum) >= Revision.granularities[granularity]) {
+            console.log("\t\t[findPath] for delta: %d, granularity: %d", delta_revnum, Revision.granularities[granularity]);
             /*
              * the delta is larger than the granularity, let's use the granularity
              *TODO: what happens if we DON'T have the edge?
@@ -226,6 +231,7 @@ $.Class("RevisionCache",
              *      from current to that Revision (at the largest possible granularity)
              */
             var edge = direction_edges[granularity];
+            console.log("\t\t[findpath] edge:", edge);
             if (edge) {
               // add this edge to our path
               path.push(edge);
@@ -245,9 +251,10 @@ $.Class("RevisionCache",
         }
       }
 
+      console.log("[findpath] ------------------");
       // return either a full path, or a path ending as close as we can get to
       // the target revision.
-      return {path: path, end_revision: current};
+      return {path: path, end_revision: current, granularity: granularity};
     },
     //TODO: horrible name!
     transition: function (from_revnum, to_revnum, applyChangeset_callback) {
@@ -289,7 +296,7 @@ $.Class("RevisionCache",
         console.log(print_path(res.path));
         // we can now request changesets from the end of that partial path
         // to the target:
-        _this.requestChangesets(res.end_revision, target_revision, partialTransition);
+        _this.requestChangesets(res.end_revision, target_revision, res.granularity, partialTransition);
       }
 
       partialTransition(from_revnum);
@@ -300,11 +307,12 @@ $.Class("RevisionCache",
      * from the server.
      * @param {Revision} from - The start revision.
      * @param {Revision} to - The end revision.
+     * @param {number} granularity - The granularity at which to request.
      * @param {function} changesetsProcessed_callback - A callback triggered
      *                              when the requested changesets have been
      *                              received and processed (added to the graph)
      */
-    requestChangesets: function (from, to, changesetsProcessed_callback) {
+    requestChangesets: function (from, to, granularity, changesetsProcessed_callback) {
       console.log("[revisioncache] requestChangesets: %d -> %d", from.revnum, to.revnum);
       var delta = to.revnum - from.revnum;
       var sign = delta > 0 ? 1 : -1;
@@ -328,18 +336,22 @@ $.Class("RevisionCache",
       //At the moment if you request changesets from 2 -> 12, it will request at granularity 10.
       //Not sure if we shouldn't only request granularities > 1 when we have a strict multiple of 10,100 etc.
       //This is compounded by the fact that revisions are 1 based!
-      for (var g in Revision.granularities) {
-        var granularity = Revision.granularities[g];
-        var num = Math.floor(adelta / granularity);
-        adelta = adelta % granularity;
-        if (num) {
-          this.loader.enqueue(start, granularity, process_received_changesets);
-          start = start + (num * granularity);
-        }
-      }
-      if (adelta) {
-        //Something went wrong!
-      }
+      /*
+       *for (var g in Revision.granularities) {
+       *  var granularity = Revision.granularities[g];
+       *  var num = Math.floor(adelta / granularity);
+       *  adelta = adelta % granularity;
+       *  if (num) {
+       *    this.loader.enqueue(start, granularity, process_received_changesets);
+       *    start = start + (num * granularity);
+       *  }
+       *}
+       *if (adelta) {
+       *  //Something went wrong!
+       *}
+       */
+      console.log(start, granularity);
+      this.loader.enqueue(start, Revision.granularities[granularity], process_received_changesets);
     },
   }
 );
