@@ -36,7 +36,7 @@ $.Class("RevisionSlider",
           this.revision_number = rev;
       }
 
-      console.log("New RevisionSlider, head_revision = %d", this.revision_number);
+      console.log("New RevisionSlider, current_revision = %d", this.revision_number);
       // parse the various elements we need:
       this.elements = {};
       this.loadElements(root_element);
@@ -44,7 +44,7 @@ $.Class("RevisionSlider",
       this.slider = new SliderUI(this.elements.slider_bar,
                   options = {
                     value: this.revision_number,
-                    max: this.connection.head_revision,
+                    max: this.connection.getHeadRevision(),
                     change: function () { _this.onChange.apply(_this, arguments); },
                     slide: function () { _this.onSlide.apply(_this, arguments); },
                   });
@@ -89,12 +89,12 @@ $.Class("RevisionSlider",
       }
 
       var revnum = this.revision_number;
-      if (revnum == this.connection.head_revision)
+      if (revnum == this.connection.getHeadRevision())
         revnum = 0;
 
       var _this = this;
       var keepPlaying = function (current_revnum) {
-        if (current_revnum == _this.connection.head_revision)
+        if (current_revnum == _this.connection.getHeadRevision())
           _this.is_playing = false;
         if (!_this.is_playing)
           return;
@@ -118,7 +118,7 @@ $.Class("RevisionSlider",
         this.elements.button_play.find("div").addClass("pause");
       else
         this.elements.button_play.find("div").removeClass("pause");
-      if (this.revision_number == this.connection.head_revision)
+      if (this.revision_number == this.connection.getHeadRevision())
         this.elements.button_right.addClass("disabled");
       else
         this.elements.button_right.removeClass("disabled");
@@ -137,7 +137,7 @@ $.Class("RevisionSlider",
      * @param {callback} atRevision_callback - The callback.
      */
     goToRevision: function (revnum, atRevision_callback) {
-      if (revnum > this.connection.head_revision)
+      if (revnum > this.connection.getHeadRevision())
         revnum = this.connection.latest_revision;
       if (revnum < 0)
         revnum = 0;

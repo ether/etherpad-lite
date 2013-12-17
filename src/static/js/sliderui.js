@@ -40,7 +40,7 @@ $.Class("SliderHandleUI",
      * @param {Number} position The initial position for this handle.
      */
     init: function (slider, value, type) {
-      console.log("New SliderHandle(%d, %s)", value, type);
+      //console.log("New SliderHandle(%d, %s)", value, type);
       this.slider = slider;
       this.value = value;
       //create the element:
@@ -52,7 +52,7 @@ $.Class("SliderHandleUI",
     },
     _mouseInit: function () {
       this.element.on("mousedown.sliderhandle", null, this, function(event) {
-        console.log("sliderhandleui - mousedown");
+        //console.log("sliderhandleui - mousedown");
       });
     },
   }
@@ -113,14 +113,14 @@ $.Class("SliderUI",
       this.render();
     },
     createHandle: function (value, type) {
-      console.log("createHandle(%d, %s)", value, type);
+      //console.log("createHandle(%d, %s)", value, type);
       var handle = new SliderHandleUI(this, value, type);
       this.handles.push(handle);
       this.element.append(handle.element);
       return handle;
     },
     _trigger: function (eventname, value) {
-      console.log("triggering event: ", eventname);
+      //console.log("triggering event: ", eventname);
       if (eventname in this.options) {
         return this.options[eventname](value);
       }
@@ -132,7 +132,7 @@ $.Class("SliderUI",
         if (event.target == _this.element[0] || $(event.target).hasClass("ui-slider-handle")) {
           // the click is on the slider bar itself.
           var start_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
-          console.log("sliderbar mousedown, value:", start_value);
+          //console.log("sliderbar mousedown, value:", start_value);
           if (_this.current_value != start_value) {
             //_this.setValue(start_value);
           }
@@ -140,10 +140,9 @@ $.Class("SliderUI",
 
           $(document).on("mousemove.slider", function (event) {
              var current_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
-             console.log("sliderbar mousemove, value:", current_value);
+             //console.log("sliderbar mousemove, value:", current_value);
              // don't change the value if it hasn't actually changed!
              if (prev_value != current_value) {
-               //_this.setValue(current_value);
                _this._trigger("slide", current_value);
                prev_value = current_value;
              }
@@ -154,10 +153,8 @@ $.Class("SliderUI",
             // we don't need them after this 'slide' session is done.
             $(document).off("mouseup.slider mousemove.slider");
              var end_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
-             console.log("sliderbar mouseup, value:", end_value);
+             //console.log("sliderbar mouseup, value:", end_value);
              // always change the value at mouseup
-            //_this.setValue(end_value);
-            console.log("here");
             _this._trigger("change", end_value);
 
           });

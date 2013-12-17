@@ -228,6 +228,13 @@ AuthenticatedSocketClient("TimesliderClient",
     getCurrentRevision: function () {
       return this.padClient.revision;
     },
+    /**
+     * Get the head revision.
+     * @return {Revision} - the head revision.
+     */
+    getHeadRevision: function () {
+      return this.head_revision;
+    },
 
   }
 );
