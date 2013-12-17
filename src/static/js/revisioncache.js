@@ -33,7 +33,6 @@ $.Class("Changeset",
       var newvalue = libchangeset.compose(this.value, other.value, pad.apool);
       var newchangeset = new Changeset(this.from_revision, other.to_revision,
                             this.deltatime + other.deltatime, newvalue);
-      console.log(newchangeset);
       //TODO: insert new changeset into the graph somehow.
       return newchangeset;
     },
@@ -526,6 +525,7 @@ var domline = require("./domline").domline;
 var linestylefilter = require("./linestylefilter").linestylefilter;
 $.Class("PadClient",
   {//static
+    USE_COMPOSE: true,
   },
   {//instance
     /**
@@ -580,22 +580,26 @@ $.Class("PadClient",
       this.revisionCache.transition(this.revision.revnum, revnum, function (path) {
         console.log("[padclient > applyChangeset_callback] path:", path);
         var time = _this.timestamp;
-        var composed = path[0];
-        var _path = path.slice(1);
-        for (var p in _path) {
-          console.log(p, _path[p].deltatime, _path[p].value);
-          var changeset = _path[p];
-          composed = composed.compose(changeset, _this);
-          //time += changeset.deltatime * 1000;
-          //changeset.apply(_this);
+        if (PadClient.USE_COMPOSE) {
+          var composed = path[0];
+          var _path = path.slice(1);
+          for (var p in _path) {
+            var changeset = _path[p];
+            composed = composed.compose(changeset, _this);
+          }
+          composed.apply(_this);
+          time += composed.deltatime * 1000;
+        } else { // Don't compose, just apply
+          for (var p in path) {
+            var changeset = path[p];
+            time += changeset.deltatime * 1000;
+            changeset.apply(_this);
+          }
         }
-        composed.apply(_this);
-        time += composed.deltatime * 1000;
 
         // set revision and timestamp
         _this.revision = path.slice(-1)[0].to_revision;
         _this.timestamp = time;
-        console.log(_this.revision, _this.timestamp);
         // fire the callback
         if (atRevision_callback) {
           console.log("[padclient] about to call atRevision_callback", _this.revision, _this.timestamp);

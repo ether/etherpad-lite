@@ -141,7 +141,6 @@ $.Class("RevisionSlider",
         revnum = this.connection.latest_revision;
       if (revnum < 0)
         revnum = 0;
-      console.log("GO TO REVISION", revnum);
 
       var _this = this;
       this.connection.goToRevision(revnum, function (revision, timestamp) {
