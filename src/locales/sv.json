@@ -1,9 +1,9 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Lokal Profil",
-            "2": "WikiPhoenix"
-        }
+        "authors": [
+            "Lokal Profil",
+            "WikiPhoenix"
+        ]
     },
     "index.newPad": "Nytt block",
     "index.createOpenPad": "eller skapa/öppna ett block med namnet:",

@@ -1,11 +1,11 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Dj",
-            "1": "Misibacsi",
-            "2": "R-Joe",
-            "4": "Tgr"
-        }
+        "authors": [
+            "Dj",
+            "Misibacsi",
+            "R-Joe",
+            "Tgr"
+        ]
     },
     "index.newPad": "Új notesz",
     "index.createOpenPad": "vagy notesz létrehozása ezen a néven:",

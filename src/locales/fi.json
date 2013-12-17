@@ -1,15 +1,16 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Artnay",
-            "1": "Jl",
-            "2": "Lliehu",
-            "3": "Nedergard",
-            "4": "Nike",
-            "6": "Stryn",
-            "7": "Veikk0.ma",
-            "8": "VezonThunder"
-        }
+        "authors": [
+            "Artnay",
+            "Jl",
+            "Lliehu",
+            "Nedergard",
+            "Nike",
+            "Stryn",
+            "Tomi Toivio",
+            "Veikk0.ma",
+            "VezonThunder"
+        ]
     },
     "index.newPad": "Uusi muistio",
     "index.createOpenPad": "tai luo tai avaa muistio nimellä:",
@@ -19,8 +20,8 @@
     "pad.toolbar.strikethrough.title": "Yliviivaus",
     "pad.toolbar.ol.title": "Numeroitu lista",
     "pad.toolbar.ul.title": "Numeroimaton lista",
-    "pad.toolbar.indent.title": "Sisennä",
-    "pad.toolbar.unindent.title": "Ulonna",
+    "pad.toolbar.indent.title": "Sisennä (TAB)",
+    "pad.toolbar.unindent.title": "Ulonna (Shift+TAB)",
     "pad.toolbar.undo.title": "Kumoa (Ctrl-Z)",
     "pad.toolbar.redo.title": "Tee uudelleen (Ctrl-Y)",
     "pad.toolbar.clearAuthorship.title": "Poista kirjoittajavärit",

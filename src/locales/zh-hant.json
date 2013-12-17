@@ -1,12 +1,12 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Justincheng12345",
-            "1": "Liuxinyu970226",
-            "2": "Shangkuanlc",
-            "3": "Shirayuki",
-            "5": "Simon Shek"
-        }
+        "authors": [
+            "Justincheng12345",
+            "Liuxinyu970226",
+            "Shangkuanlc",
+            "Shirayuki",
+            "Simon Shek"
+        ]
     },
     "index.newPad": "新Pad",
     "index.createOpenPad": "或創建／開啟以下名稱的pad：",

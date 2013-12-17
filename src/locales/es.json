@@ -1,16 +1,16 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Armando-Martin",
-            "1": "Jacobo",
-            "2": "Joker",
-            "3": "Larjona",
-            "4": "Mklehr",
-            "5": "Rubenwap",
-            "7": "VegaDark",
-            "8": "Vivaelcelta",
-            "9": "Xuacu"
-        }
+        "authors": [
+            "Armando-Martin",
+            "Jacobo",
+            "Joker",
+            "Larjona",
+            "Mklehr",
+            "Rubenwap",
+            "VegaDark",
+            "Vivaelcelta",
+            "Xuacu"
+        ]
     },
     "index.newPad": "Nuevo Pad",
     "index.createOpenPad": "o crea/abre un Pad con el nombre:",

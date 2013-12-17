@@ -1,12 +1,12 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Andriykopanytsia",
-            "1": "Base",
-            "2": "Olvin",
-            "4": "Steve.rusyn",
-            "5": "SteveR"
-        }
+        "authors": [
+            "Andriykopanytsia",
+            "Base",
+            "Olvin",
+            "Steve.rusyn",
+            "SteveR"
+        ]
     },
     "index.newPad": "Створити",
     "index.createOpenPad": "або створити/відкрити документ з назвою:",

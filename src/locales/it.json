@@ -1,11 +1,11 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Beta16",
-            "1": "Gianfranco",
-            "2": "Muxator",
-            "4": "Vituzzu"
-        }
+        "authors": [
+            "Beta16",
+            "Gianfranco",
+            "Muxator",
+            "Vituzzu"
+        ]
     },
     "index.newPad": "Nuovo Pad",
     "index.createOpenPad": "o creare o aprire un Pad con il nome:",

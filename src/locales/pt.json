@@ -1,11 +1,11 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Hamilton Abreu",
-            "1": "Luckas",
-            "3": "Tuliouel",
-            "4": "Waldir"
-        }
+        "authors": [
+            "Hamilton Abreu",
+            "Luckas",
+            "Tuliouel",
+            "Waldir"
+        ]
     },
     "index.newPad": "Nova Nota",
     "index.createOpenPad": "ou crie/abra uma Nota com o nome:",

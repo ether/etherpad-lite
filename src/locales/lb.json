@@ -1,9 +1,9 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Robby",
-            "2": "Soued031"
-        }
+        "authors": [
+            "Robby",
+            "Soued031"
+        ]
     },
     "index.newPad": "Neie Pad",
     "pad.toolbar.ol.title": "Numeréiert Lëscht",

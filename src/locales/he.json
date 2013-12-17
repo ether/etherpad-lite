@@ -1,11 +1,11 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Amire80",
-            "1": "Ofrahod",
-            "3": "YaronSh",
-            "4": "תומר ט"
-        }
+        "authors": [
+            "Amire80",
+            "Ofrahod",
+            "YaronSh",
+            "תומר ט"
+        ]
     },
     "index.newPad": "פנקס חדש",
     "index.createOpenPad": "ליצור או לפתוח פנקס בשם:",

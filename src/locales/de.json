@@ -1,11 +1,11 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Metalhead64",
-            "1": "Mklehr",
-            "2": "Nipsky",
-            "4": "Wikinaut"
-        }
+        "authors": [
+            "Metalhead64",
+            "Mklehr",
+            "Nipsky",
+            "Wikinaut"
+        ]
     },
     "index.newPad": "Neues Pad",
     "index.createOpenPad": "Pad mit folgendem Namen öffnen:",
