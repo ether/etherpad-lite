@@ -2334,7 +2334,10 @@ function Ace2Inner(){
         return false; // If we're at the end of a line we treat it as having no formatting
       }
       if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){ 
-        return false; // If we're at the start of a line attributes get confused..
+        rep.selEnd[1] == 1;
+      }
+      if(rep.selEnd[1] == -1){
+        rep.selEnd[1] = 1; // sometimes rep.selEnd is -1, not sure why..  When it is we should look at the first char
       }
       if (n == selStartLine)
       {
