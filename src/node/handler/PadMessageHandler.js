@@ -1255,7 +1255,7 @@ function handleChangesetRequest(client, message)
       //build the requested rough changesets and send them back
       getChangesetInfo(padIds.padId, start, end, granularity, function(err, changesetInfo)
       {
-        ERR(err);
+        if(err) return console.error('Error while handling a changeset request for '+padIds.padId, err, message.data);
 
         var data = changesetInfo;
         data.requestID = message.data.requestID;

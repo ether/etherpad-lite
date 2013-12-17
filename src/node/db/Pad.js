@@ -203,7 +203,11 @@ Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targe
       {
         curRev++;
         var cs = changesets[curRev];
-        atext = Changeset.applyToAText(cs, atext, apool);
+        try{
+          atext = Changeset.applyToAText(cs, atext, apool);
+        }catch(e) {
+          return callback(e)
+        }
       }
 
       callback(null);
