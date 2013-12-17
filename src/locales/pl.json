@@ -1,11 +1,11 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Rezonansowy",
-            "2": "Ty221",
-            "3": "WTM",
-            "4": "Woytecr"
-        }
+        "authors": [
+            "Rezonansowy",
+            "Ty221",
+            "WTM",
+            "Woytecr"
+        ]
     },
     "index.newPad": "Nowy dokument",
     "index.createOpenPad": "lub stwórz/otwórz dokument o nazwie:",
@@ -15,8 +15,8 @@
     "pad.toolbar.strikethrough.title": "Przekreślenie",
     "pad.toolbar.ol.title": "Lista uporządkowana",
     "pad.toolbar.ul.title": "Lista nieuporządkowana",
-    "pad.toolbar.indent.title": "Wcięcie",
-    "pad.toolbar.unindent.title": "Zmniejsz wcięcie",
+    "pad.toolbar.indent.title": "Wcięcie (TAB)",
+    "pad.toolbar.unindent.title": "Wcięcie (Shift + TAB)",
     "pad.toolbar.undo.title": "Cofnij (Ctrl-Z)",
     "pad.toolbar.redo.title": "Ponów (Ctrl-Y)",
     "pad.toolbar.clearAuthorship.title": "Usuń kolory autorów",

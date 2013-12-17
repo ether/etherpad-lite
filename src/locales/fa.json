@@ -1,13 +1,13 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "BMRG14",
-            "1": "Dalba",
-            "2": "Ebraminio",
-            "3": "Reza1615",
-            "5": "ZxxZxxZ",
-            "6": "الناز"
-        }
+        "authors": [
+            "BMRG14",
+            "Dalba",
+            "Ebraminio",
+            "Reza1615",
+            "ZxxZxxZ",
+            "الناز"
+        ]
     },
     "index.newPad": "دفترچه یادداشت تازه",
     "index.createOpenPad": "یا ایجاد/بازکردن یک دفترچه یادداشت با نام:",

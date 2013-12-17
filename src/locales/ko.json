@@ -1,9 +1,9 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Hym411",
-            "2": "아라"
-        }
+        "authors": [
+            "Hym411",
+            "아라"
+        ]
     },
     "index.newPad": "새 패드",
     "index.createOpenPad": "또는 다음 이름으로 패드 만들기/열기:",

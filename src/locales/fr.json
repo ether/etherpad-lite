@@ -1,22 +1,22 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Cquoi",
-            "1": "Crochet.david",
-            "2": "Gomoko",
-            "3": "Goofy",
-            "4": "Goofy-bz",
-            "5": "Jean-Frédéric",
-            "6": "Leviathan",
-            "7": "McDutchie",
-            "8": "Metroitendo",
-            "9": "Od1n",
-            "10": "Peter17",
-            "11": "Quenenni",
-            "12": "Rastus Vernon",
-            "14": "Stephane Cottin",
-            "15": "Tux-tn"
-        }
+        "authors": [
+            "Cquoi",
+            "Crochet.david",
+            "Gomoko",
+            "Goofy",
+            "Goofy-bz",
+            "Jean-Frédéric",
+            "Leviathan",
+            "McDutchie",
+            "Metroitendo",
+            "Od1n",
+            "Peter17",
+            "Quenenni",
+            "Rastus Vernon",
+            "Stephane Cottin",
+            "Tux-tn"
+        ]
     },
     "index.newPad": "Nouveau pad",
     "index.createOpenPad": "ou créer/ouvrir un pad intitulé :",

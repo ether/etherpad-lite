@@ -1,8 +1,8 @@
 {
     "@metadata": {
-        "authors": {
-            "1": "Xuacu"
-        }
+        "authors": [
+            "Xuacu"
+        ]
     },
     "index.newPad": "Nuevu bloc",
     "index.createOpenPad": "o crear/abrir un bloc col nome:",

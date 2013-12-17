@@ -1,8 +1,8 @@
 {
     "@metadata": {
-        "authors": {
-            "1": "Toliño"
-        }
+        "authors": [
+            "Toliño"
+        ]
     },
     "index.newPad": "Novo documento",
     "index.createOpenPad": "ou cree/abra un documento co nome:",

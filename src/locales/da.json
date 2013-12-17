@@ -1,10 +1,10 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "Christian List",
-            "1": "Peter Alberti",
-            "3": "Steenth"
-        }
+        "authors": [
+            "Christian List",
+            "Peter Alberti",
+            "Steenth"
+        ]
     },
     "index.newPad": "Ny Pad",
     "index.createOpenPad": "eller opret/åbn en Pad med navnet:",

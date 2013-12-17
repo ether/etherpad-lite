@@ -1,8 +1,8 @@
 {
     "@metadata": {
-        "authors": {
-            "1": "Unhammer"
-        }
+        "authors": [
+            "Unhammer"
+        ]
     },
     "index.newPad": "Ny blokk",
     "index.createOpenPad": "eller opprett/opna ei blokk med namnet:",

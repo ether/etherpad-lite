@@ -1,10 +1,10 @@
 {
     "@metadata": {
-        "authors": {
-            "0": "JVRKPRASAD",
-            "1": "Malkum",
-            "3": "Veeven"
-        }
+        "authors": [
+            "JVRKPRASAD",
+            "Malkum",
+            "Veeven"
+        ]
     },
     "index.newPad": "కొత్త పలక",
     "index.createOpenPad": "ఒక పేరుతో పలకని సృష్టించండి లేదా అదే పేరుతో ఉన్న పలకని తెరవండి",

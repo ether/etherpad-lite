@@ -361,6 +361,8 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, rev, function(err, html)
       {
           if(ERR(err, callback)) return;
+          html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
+          html += "</body></html>";
           data = {html: html};
           callback(null, data);
       });
@@ -371,6 +373,8 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, undefined, function (err, html)
       {
         if(ERR(err, callback)) return;
+        html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
+        html += "</body></html>";
         data = {html: html};
         callback(null, data);
       });
@@ -378,15 +382,30 @@ exports.getHTML = function(padID, rev, callback)
   });
 }
 
+/**
+setHTML(padID, html) sets the text of a pad based on HTML
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
 exports.setHTML = function(padID, html, callback)
 {
+  //html is required
+  if(typeof html != "string")
+  {
+    callback(new customError("html is no string","apierror"));
+    return;
+  }
+
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
     if(ERR(err, callback)) return;
 
     // add a new changeset with the new html to the pad
-    importHtml.setPadHTML(pad, cleanText(html));
+    importHtml.setPadHTML(pad, cleanText(html), callback);
 
     //update the clients on the pad
     padMessageHandler.updatePadClients(pad, callback);

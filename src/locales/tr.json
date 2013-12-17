@@ -3,6 +3,7 @@
         "authors": [
             "Emperyan",
             "Erdemaslancan",
+            "Joseph",
             "Meelo"
         ]
     },
@@ -14,8 +15,8 @@
     "pad.toolbar.strikethrough.title": "Üstü Çizili",
     "pad.toolbar.ol.title": "Sıralı liste",
     "pad.toolbar.ul.title": "Sırasız Liste",
-    "pad.toolbar.indent.title": "Girintiyi arttır",
-    "pad.toolbar.unindent.title": "Girintiyi azalt",
+    "pad.toolbar.indent.title": "Girintiyi arttır (TAB)",
+    "pad.toolbar.unindent.title": "Girintiyi azalt (Shift+TAB)",
     "pad.toolbar.undo.title": "Geri Al (Ctrl-Z)",
     "pad.toolbar.redo.title": "Yenile (Ctrl-Y)",
     "pad.toolbar.clearAuthorship.title": "Yazarlık Renklerini Temizle",

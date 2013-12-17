@@ -1,8 +1,8 @@
 {
     "@metadata": {
-        "authors": {
-            "1": "Purodha"
-        }
+        "authors": [
+            "Purodha"
+        ]
     },
     "index.newPad": "Neu Padd",
     "index.createOpenPad": "udder maach e Padd op med däm Naame:",
