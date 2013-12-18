@@ -1668,7 +1668,7 @@ function Ace2Inner(){
     {
       //var id = n.uniqueId();
       // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
-      n.parentNode.removeChild(n);
+      if(n.parentNode) n.parentNode.removeChild(n);
 
       //dmesg(htmlPrettyEscape(htmlForRemovedChild(n)));
       //console.log("removed: "+id);
