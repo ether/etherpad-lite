@@ -95,6 +95,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   var lineClass = 'ace-line';
   result.appendSpan = function(txt, cls)
   {
+   console.log("HAM I HERE!");
     var processedMarker = false;
     // Handle lineAttributeMarker, if present
     if (cls.indexOf(lineAttributeMarker) >= 0)
@@ -126,7 +127,9 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         } 
         processedMarker = true;
       }
-      
+
+      //doesn't get here..
+
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
         domline: domline,
         cls: cls

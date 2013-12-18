@@ -305,6 +305,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 
   function _produceLineAttributesMarker(state)
   {
+    console.log("STEP 3.1", state.lineAttributes);
     // TODO: This has to go to AttributeManager.
     var attributes = [
       ['lmkr', '1'],
@@ -314,17 +315,20 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         return [key, value];
       })
     );
-    
+    console.log("STEP 3.2", state.lineAttributes);
     lines.appendText('*', Changeset.makeAttribsString('+', attributes , apool));
   }
   cc.startNewLine = function(state)
   {
     if (state)
     {
+      console.log("startNewLine STEP 2a", state.lineAttributes);
       var atBeginningOfLine = lines.textOfLine(lines.length() - 1).length == 0;
       if (atBeginningOfLine && !_.isEmpty(state.lineAttributes))
       {
         _produceLineAttributesMarker(state);
+      console.log("startNewLine STEP 2b", state.lineAttributes);
+
       }
     }
     lines.startNew();
@@ -371,11 +375,10 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     if (isBlock) _ensureColumnZero(state);
     var startLine = lines.length() - 1;
     _reachBlockPoint(node, 0, state);
-    if (dom.isNodeText(node))
-    {
+    if (dom.isNodeText(node)){
       var txt = dom.nodeValue(node);
       var tname = dom.nodeAttr(node.parentNode,"name");
-
+// never calls this hook..
       var txtFromHook = hooks.callAll('collectContentLineText', {
         cc: this,
         state: state,
@@ -455,13 +458,30 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 
       // Below seems a bit abrupt but it's required, I dunno if I think it's a great idea though..
       delete state.lineAttributes.pastedImage;
+      delete state.lineAttributes.imageWidth;
+      delete state.lineAttributes.imageHeight;
 
       if (tname == "img")
       {
+        // Are the width and height values set?
+        var width = /(?:^| )width=\"([0-9]*)/.exec(node.outerHTML);
+        var height = /(?:^| )height=\"([0-9]*)/.exec(node.outerHTML);
+
+        // If they are then add them as line Attributes
+        if(width && width[1]) state.lineAttributes.imageWidth = width[1];
+        if(height && height[1]) state.lineAttributes.imageHeight = height[1];
         state.lineAttributes.pastedImage = node.outerHTML;
+        console.log("CONTENT COLLETOR STATE", state);
+        console.log("CONTENT COLLECTOR WIDTH", state.lineAttributes.imageWidth);
+        console.log("CONTENT COLLECTOR HEIGHT", state.lineAttributes.imageHeight);
+        console.log("CONTENT COLLETOR STATE", state.lineAttributes);
+        isEmpty = false;
+        var collectStyles = true;
+//        _produceLineAttributesMarker(state);
         cc.startNewLine(state);
       }
-      else if (tname == "br")
+
+      if (tname == "br")
       {        
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
@@ -474,7 +494,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           cls: null
         });       
         var startNewLine= (typeof(induceLineBreak)=='object'&&induceLineBreak.length==0)?true:induceLineBreak[0];
-        if(startNewLine){
+        if(startNewLine && tname != "img"){
           cc.startNewLine(state);
         }
       }

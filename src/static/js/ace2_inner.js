@@ -2876,6 +2876,7 @@ function Ace2Inner(){
 
   function doCreateDomLine(nonEmpty)
   {
+    top.console.log("BOOOOOOBLLLBIIESS"); // never gets here..
     if (browser.msie && (!nonEmpty))
     {
       var result = {
@@ -5254,6 +5255,7 @@ function Ace2Inner(){
           { /* throws an error in some IE 6 but not others! */
           }
         }
+
         setClassPresence(root, "authorColors", true);
         setClassPresence(root, "doesWrap", doesWrap);
 
