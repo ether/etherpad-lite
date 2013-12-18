@@ -3954,6 +3954,7 @@ function Ace2Inner(){
     selection.focusAtStart = !! rep.selFocusAtStart;
     setSelection(selection);
   }
+  editorInfo.ace_updateBrowserSelectionFromRep = updateBrowserSelectionFromRep;
 
   function nodeMaxIndex(nd)
   {
