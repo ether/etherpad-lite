@@ -173,6 +173,7 @@ SocketClient("AuthenticatedSocketClient",
 );
 
 require('./revisioncache');
+require('./revisionslider');
 AuthenticatedSocketClient("TimesliderClient",
   { //statics
   },
@@ -197,11 +198,20 @@ AuthenticatedSocketClient("TimesliderClient",
       this.revisionCache = new RevisionCache(this, collabClientVars.rev || 0);
 
       this.padClient = new PadClient(this.revisionCache,
-                                     collabClientVars.rev,
-                                     collabClientVars.time,
-                                     collabClientVars.initialAttributedText.text,
-                                     collabClientVars.initialAttributedText.attribs,
-                                     collabClientVars.apool);
+                                     {
+                                       revnum: collabClientVars.rev,
+                                       timestamp: collabClientVars.time,
+                                       atext: {
+                                         text: collabClientVars.initialAttributedText.text,
+                                         attributes: collabClientVars.initialAttributedText.attribs,
+                                         apool: collabClientVars.apool,
+                                       },
+                                       author_info: collabClientVars.historicalAuthorData,
+                                       palette: this.clientVars.colorPalette,
+                                     });
+
+      //TODO: not wild about the timeslider-top selector being hard-coded here.
+      this.ui = new RevisionSlider(this, $("#timeslider-top"));
     },
 
     //TODO: handle new revisions, authors etc.
@@ -220,7 +230,13 @@ AuthenticatedSocketClient("TimesliderClient",
     goToRevision: function (revision_number, atRevision_callback) {
       this.padClient.goToRevision(revision_number, atRevision_callback);
     },
-
+    /**
+     * Get the authors for the current pad.
+     * @return {dict} - A dictionary of author-id to Author objects.
+     */
+    getAuthors: function () {
+      return this.padClient.authors;
+    },
     /**
      * Get the current revision.
      * @return {Revision} - the current revision.
@@ -235,7 +251,6 @@ AuthenticatedSocketClient("TimesliderClient",
     getHeadRevision: function () {
       return this.head_revision;
     },
-
   }
 );
 

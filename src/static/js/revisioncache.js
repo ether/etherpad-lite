@@ -533,9 +533,59 @@ Thread("ChangesetLoader",
   }
 );
 
+var libcssmanager = require("./cssmanager");
+var linestylefilter = require("./linestylefilter").linestylefilter;
+var libcolorutils = require('./colorutils').colorutils;
+$.Class("Author",
+  {//static
+  },
+  {//instance
+    init: function (id, data, palette) {
+      this.id = id;
+      this.name = data.name;
+      this.is_anonymous = !this.name;
+      // if the colorId is an integer, it's an index into the color palette,
+      // otherwise we assume it is a valid css color string
+      this.background_color = typeof data.colorId == "number" ? palette[data.colorId] : data.colorId;
+      // foreground color should be black unless the luminosity of the
+      // background color is lower than 0.5. This effectively makes sure
+      // that the text is readable.
+      this.color = (libcolorutils.luminosity(libcolorutils.css2triple(this.background_color)) < 0.5 ? "#ffffff" : "#000000");
+      // generate a css class name for this author.
+      this.cssclass = linestylefilter.getAuthorClassName(this.id);
+    },
+    /**
+     * Create and add a rule to the stylesheet setting the foreground and
+     * background colors for this authors cssclass. This class can then be
+     * applied to any span authored by this author, and the colors will just work.
+     * @param {object} cssmanager - A cssmanager wrapper for the stylesheet to
+     *                              which the rules should be added.
+     */
+    addStyleRule: function (cssmanager) {
+      // retrieve a style selector for '.<authorid>' class, which is applied
+      // to blobs which were authored by that <authorid>.
+      var selector = cssmanager.selectorStyle("." + this.cssclass);
+      // apply the colors
+      selector.backgroundColor = this.background_color;
+      selector.color = this.color;
+    },
+    /**
+     * Retrieve the name of this user.
+     */
+    getName: function () {
+      return this.is_anonymous ? "anonymous" : this.name;
+    },
+    /**
+     * Retrieve the cssclass for this user.
+     */
+    getCSSClass: function () {
+      return this.cssclass;
+    },
+  }
+);
+
 var AttribPool = require("./AttributePool");
 var domline = require("./domline").domline;
-var linestylefilter = require("./linestylefilter").linestylefilter;
 $.Class("PadClient",
   {//static
     USE_COMPOSE: false,
@@ -545,19 +595,20 @@ $.Class("PadClient",
      * Create a PadClient.
      * @constructor
      * @param {RevisionCache} revisionCache - A RevisionCache object to use.
-     * @param {number} revision - The current revision of the pad.
-     * @param {datetime} timestamp - The timestamp of the current revision.
-     * @param {string} atext - The attributed text.
-     * @param {string} attribs - The attributes string.
-     * @param {object} apool - The attribute pool.
+     * @param {dict} options - All the necessary options. TODO: document this.
      */
-    init: function (revisionCache, revision, timestamp, atext, attribs, apool) {
+    init: function (revisionCache, options) {
       this.revisionCache = revisionCache;
-      this.revision = this.revisionCache.getRevision(revision);
-      this.timestamp = timestamp;
-      this.alines = libchangeset.splitAttributionLines(attribs, atext);
-      this.apool = (new AttribPool()).fromJsonable(apool);
-      this.lines = libchangeset.splitTextLines(atext);
+      this.revision = this.revisionCache.getRevision(options.revnum);
+      this.timestamp = options.timestamp;
+      this.alines = libchangeset.splitAttributionLines(options.atext.attributes, options.atext.text);
+      this.apool = (new AttribPool()).fromJsonable(options.atext.apool);
+      this.lines = libchangeset.splitTextLines(options.atext.text);
+      this.authors = {};
+      this.dynamicCSS = libcssmanager.makeCSSManager('dynamicsyntax');
+      this.palette = options.palette;
+
+      this.updateAuthors(options.author_info);
 
       //TODO: this is a kludge! we should receive the padcontent as an
       //injected dependency
@@ -620,8 +671,30 @@ $.Class("PadClient",
           atRevision_callback.call(_this, _this.revision, _this.timestamp);
         }
       });
-
     },
+    /**
+     * Update the authors of this pad.
+     * @param {object} author_info - The author info object sent by the server
+     */
+    updateAuthors: function (author_info) {
+      var authors = author_info;
+      for (var authorid in authors) {
+        if (authorid in this.authors) {
+          // just dispose of existing ones instead of trying to update existing
+          // objects.
+          delete this.authors[authorid];
+        }
+        var author = new Author(authorid, authors[authorid], this.palette);
+        this.authors[authorid] = author;
+        author.addStyleRule(this.dynamicCSS);
+      }
+    },
+    /**
+     * Get a div jquery element for a given attributed text line.
+     * @param {string} text - The text content of the line.
+     * @param {string} atext - The attributes string.
+     * @return {jquery object} - The div element ready for insertion into the DOM.
+     */
     _getDivForLine: function (text, atext) {
       var dominfo = domline.createDomLine(text != '\n', true);
 
