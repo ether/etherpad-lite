@@ -169,6 +169,15 @@ SocketClient("AuthenticatedSocketClient",
       return this;
     },
 
+    /**
+     * Dispatch COLLABROOM messages.
+     * @param {object} data - The data received from the server.
+     */
+    handle_COLLABROOM: function(data) {
+      //console.log("[authsocket_client] handle_COLLABROOM: ", data);
+      this.dispatchMessage(data.type, data);
+    },
+
   }
 );
 
@@ -186,13 +195,9 @@ AuthenticatedSocketClient("TimesliderClient",
       this.sendMessage("CLIENT_READY", {}, function() { console.log("CLIENT_READY sent");});
     },
 
-    // ------------------------------------------
-    // Handling events
-    handle_CLIENT_VARS: function(data) {
-      console.log("[timeslider_client] handle_CLIENT_VARS: ", data);
-      this.clientVars = data;
+    initialize: function (clientVars) {
+      this.clientVars = clientVars;
       var collabClientVars = this.clientVars.collab_client_vars;
-      this.current_revision = this.head_revision = collabClientVars.rev;
       this.savedRevisions = this.clientVars.savedRevisions;
 
       this.revisionCache = new RevisionCache(this, collabClientVars.rev || 0);
@@ -214,10 +219,51 @@ AuthenticatedSocketClient("TimesliderClient",
       this.ui = new RevisionSlider(this, $("#timeslider-top"));
     },
 
-    //TODO: handle new revisions, authors etc.
-    handle_COLLABROOM: function(data) {
-      console.log("[timeslider_client] handle_COLLABROOM: ", data);
+    // ------------------------------------------
+    // Handling events
+    handle_CLIENT_VARS: function(data) {
+      console.log("[timeslider_client] handle_CLIENT_VARS: ", data);
+      this.initialize(data);
     },
+
+    /**
+     * Handle USER_NEWINFO messages, which let us know that a (new) user
+     * has connected to this pad.
+     * @param {object} data - the data received from the server.
+     */
+    handle_USER_NEWINFO: function (data) {
+      console.log("[timeslider_client] handle_USER_NEWINFO: ", data.userInfo);
+      //TODO: we might not want to add EVERY new user to the users list,
+      //possibly only active users?
+      var authors = {};
+      authors[data.userInfo.userId] = data.userInfo;
+      this.padClient.updateAuthors(authors);
+      this.ui.render();
+    },
+
+    /**
+     * Handle USER_LEAVE messages, which lets us know that a user has left the
+     * pad.
+     * @param {object} data - The data received from the server.
+     */
+    handle_USER_LEAVE: function (data) {
+      console.log("[timeslider_client] handle_USER_LEAVE ", data.userInfo);
+    },
+
+    /**
+     * Handle NEW_CHANGES  messages, which lets us know that a new revision has
+     * been added to the pad.
+     * @param {object} data - The data received from the server.
+     */
+    handle_NEW_CHANGES: function (data) {
+      console.log("[timeslider_client] handle_NEW_CHANGES: ", data);
+      var changesets = this.padClient.mergeForeignChangeset(data.changeset, data.apool);
+      //TODO: handle calculation of real timedela based on currenttime
+      //TODO: deal with author?
+      this.revisionCache.appendHeadRevision(data.newRev, changesets.forward, changesets.reverse, data.timeDelta);
+      this.ui.render();
+    },
+
 
     /**
      * Go to the specified revision number. This abstracts the implementation
@@ -249,7 +295,7 @@ AuthenticatedSocketClient("TimesliderClient",
      * @return {Revision} - the head revision.
      */
     getHeadRevision: function () {
-      return this.head_revision;
+      return this.revisionCache.getHeadRevision().revnum;
     },
   }
 );

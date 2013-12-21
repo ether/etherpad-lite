@@ -153,6 +153,13 @@ $.Class("RevisionCache",
       this.loader.start();
     },
     /**
+     * Get the head revision.
+     * @returns {Revision} - the head revision.
+     */
+    getHeadRevision: function () {
+      return this.head_revision;
+    },
+    /**
      * Get a Revision instance for the specified revision number.
      * If we don't yet have a Revision instance for this revision, create a
      * new one. Also make sure that the head_revision attribute always refers
@@ -170,6 +177,18 @@ $.Class("RevisionCache",
         this.head_revision = revision;
       }
       return revision;
+    },
+    /**
+     * Add a new revision at the head.
+     * @param {number} revnum - the revision number of the new revision.
+     * @param {string} forward - the forward changeset to get here from previous head.
+     * @param {string} reverse - the reverse changeset.
+     * @param {string} timedelta - the time difference.
+     */
+    appendHeadRevision: function (revnum, forward, reverse, timedelta) {
+      this.addChangesetPair(this.head_revision.revnum, revnum, forward, reverse, timedelta);
+      this.head_revision = this.getRevision(revnum);
+      //TODO: render it if we are currently at the head_revision?
     },
     /**
      * Links two revisions, specified by from and to with the changeset data
@@ -448,6 +467,7 @@ Thread("ChangesetLoader",
      * Enqueue a request for changesets. The changesets will be retrieved
      * asynchronously.
      * @param {number} start - The revision from which to start.
+     *
      * @param {number} granularity - The granularity of the changesets. If this
      *                               is 1, the response will include changesets which
      *                               can be applied to go from revision r to r+1.
@@ -678,6 +698,7 @@ $.Class("PadClient",
      */
     updateAuthors: function (author_info) {
       var authors = author_info;
+      console.log("[updateAuthors]: ", authors);
       for (var authorid in authors) {
         if (authorid in this.authors) {
           // just dispose of existing ones instead of trying to update existing
@@ -688,6 +709,34 @@ $.Class("PadClient",
         this.authors[authorid] = author;
         author.addStyleRule(this.dynamicCSS);
       }
+    },
+    /**
+     * Merge a foreign (forward) changeset into our data. This involves rebuilding
+     * the forward changeset in our apool and building a reverse changeset.
+     * This is used to move new upstream changesets/revisions into our apool context.
+     * @param {string} changeset - The foreign changeset to merge
+     * @param {object} apool - The apool for that changeset
+     * @returns {object} - A values object with forward and reverse changesets.
+     */
+    mergeForeignChangeset: function (changeset, apool) {
+      var values = {};
+      values.forward = libchangeset.moveOpsToNewPool(
+                          changeset,
+                          (new AttribPool()).fromJsonable(apool),
+                          this.apool
+                        );
+      var reverseValue = libchangeset.inverse(
+                          changeset,
+                          this.divs,
+                          this.alines,
+                          this.apool
+                        );
+      values.reverse = libchangeset.moveOpsToNewPool(
+                          reverseValue,
+                          (new AttribPool()).fromJsonable(apool),
+                          this.apool
+                        );
+      return values;
     },
     /**
      * Get a div jquery element for a given attributed text line.

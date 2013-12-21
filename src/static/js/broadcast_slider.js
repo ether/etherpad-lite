@@ -52,65 +52,6 @@ function init(connection, fireWhenAllScriptsAreLoaded)
       $('#editorcontainerbox').css({marginTop: height});
     }, 600);
 
-    function setAuthors(authors)
-    {
-      var authorsList = $("#authorsList");
-      authorsList.empty();
-      var numAnonymous = 0;
-      var numNamed = 0;
-      var colorsAnonymous = [];
-      _.each(authors, function(author)
-      {
-        var authorColor =  clientVars.colorPalette[author.colorId] || author.colorId;
-        if (author.name)
-        {
-          if (numNamed !== 0) authorsList.append(', ');
-
-          $('<span />')
-            .text(author.name || "unnamed")
-            .css('background-color', authorColor)
-            .addClass('author')
-            .appendTo(authorsList);
-
-          numNamed++;
-        }
-        else
-        {
-          numAnonymous++;
-          if(authorColor) colorsAnonymous.push(authorColor);
-        }
-      });
-      if (numAnonymous > 0)
-      {
-        var anonymousAuthorString = html10n.get("timeslider.unnamedauthors", { num: numAnonymous });
-
-        if (numNamed !== 0){
-          authorsList.append(' + ' + anonymousAuthorString);
-        } else {
-          authorsList.append(anonymousAuthorString);
-        }
-
-        if(colorsAnonymous.length > 0){
-          authorsList.append(' (');
-          _.each(colorsAnonymous, function(color, i){
-            if( i > 0 ) authorsList.append(' ');
-            $('<span>&nbsp;</span>')
-              .css('background-color', color)
-              .addClass('author author-anonymous')
-              .appendTo(authorsList);
-          });
-          authorsList.append(')');
-        }
-
-      }
-      if (authors.length === 0)
-      {
-        authorsList.append(html10n.get("timeslider.toolbar.authorsList"));
-      }
-
-      fixPadHeight();
-    }
-
     // assign event handlers to html UI elements after page load
     //$(window).load(function ()
     fireWhenAllScriptsAreLoaded.push(function()

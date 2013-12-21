@@ -98,8 +98,10 @@ $.Class("RevisionSlider",
       var keepPlaying = function (current_revnum) {
         if (current_revnum == _this.connection.getHeadRevision())
           _this.is_playing = false;
-        if (!_this.is_playing)
+        if (!_this.is_playing) {
+          _this.render();
           return;
+        }
         setTimeout(function () {
           _this.goToRevision(current_revnum + 1, keepPlaying);
         }, RevisionSlider.PLAYBACK_DELAY);
@@ -113,6 +115,7 @@ $.Class("RevisionSlider",
      */
     render: function () {
       this.elements.revision_label.html(html10n.get("timeslider.version", { "version": this.revision_number }));
+      this.slider.setMax(this.connection.getHeadRevision());
       this.slider.setValue(this.revision_number);
       window.location.hash = "#" + this.revision_number;
       this.setTimestamp(this.timestamp);
