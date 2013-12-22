@@ -49,11 +49,13 @@ $.Class("RevisionSlider",
     },
     onChange: function (value) {
       console.log("in change handler:", value);
-      this.goToRevision(value);
+      if (!this.is_playing)
+        this.goToRevision(value);
     },
     onSlide: function (value) {
       console.log("in slide handler:", value);
-      this.goToRevision(value);
+      if (!this.is_playing)
+        this.goToRevision(value);
     },
     /**
      * Populate the elements dictionary with the various elements we might want
