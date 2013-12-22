@@ -75,7 +75,7 @@ $.Class("Revision",
   {//statics
     // we rely on the fact that granularities are always traversed biggest to
     // smallest. Changing this will break lots of stuff.
-    granularities: {big: 100, medium: 10, small: 1}
+    granularities: {huge: 1000, big: 100, medium: 10, small: 1}
   },
   {//instance
     /**
@@ -311,7 +311,6 @@ $.Class("RevisionCache",
         // build a path from the current revision (the start of the range
         // in the response) to the target.
         res = _this.findPath(_this.getRevision(current_revnum), target_revision);
-        console.log(res);
         console.log(print_path(res.path));
         // we can now request changesets from the end of that partial path
         // to the target:
@@ -360,17 +359,24 @@ $.Class("RevisionCache",
       //At the moment if you request changesets from 2 -> 12, it will request at granularity 10.
       //Not sure if we shouldn't only request granularities > 1 when we have a strict multiple of 10,100 etc.
       //This is compounded by the fact that revisions are 1 based!
+      //TODO: we need to deal with the case where we need MORE THAN 100 of a particular granularity
       //console.log("[requestChangesets] start: %d, end: %d, delta: %d, adelta: %d", start, end, delta, adelta);
       for (var g in Revision.granularities) {
         var granularity = Revision.granularities[g];
         var remainder = Math.floor(adelta / granularity);
         //console.log("\t[requestChangesets] start: %d, granularity: %d, adelta: %d, //: %d", start, granularity, adelta, remainder);
         //console.log("\t rounddown delta: %d, start: %d", rounddown(adelta, granularity), rounddown(start, granularity));
+        //console.log("\t new start:", newstart);
         if (remainder) {
           //this.loader.enqueue(start, granularity, process_received_changesets);
-          //console.log("\t[requestChangesets] REQUEST start: %d, end: %d, granularity: %d", rounddown(start, granularity), roundup(adelta, granularity), granularity);
+          console.log("\t[requestChangesets] REQUEST start: %d, end: %d, granularity: %d", rounddown(start, granularity), roundup(adelta, granularity), granularity);
           this.loader.enqueue(rounddown(start, granularity), granularity, process_received_changesets);
         }
+        // for the next granularity, we assume that we have now successfully navigated
+        // as far as required for this granularity. We should also make sure that only
+        // the significant part of the adelta is used in the next granularity.
+        start = rounddown(start, granularity) + rounddown(adelta, granularity);
+        adelta = adelta - rounddown(adelta, granularity);
       }
     },
   }
@@ -452,11 +458,10 @@ Thread("ChangesetLoader",
     init: function (connection) {
       this._super(200);
       this.connection = connection;
-      this.queues = {
-        small: [],
-        medium: [],
-        large: [],
-      };
+      this.queues = {};
+      for (var granularity in Revision.granularities) {
+        this.queues[granularity] = [];
+      }
       this.pending = {};
       var _this = this;
       this.connection.on("CHANGESET_REQ", function () {
@@ -492,15 +497,15 @@ Thread("ChangesetLoader",
     enqueue: function (start, granularity, callback) {
       console.log("[changeset_loader] enqueue: %d, %d", start, granularity);
       //TODO: check cache to see if we really need to fetch this
-      //      maybe even to splices if we just need a smaller range
+      //      maybe even do splices if we just need a smaller range
       //      in the middle
       var queue = null;
-      if (granularity == 1)
-        queue = this.queues.small;
-      else if (granularity == 10)
-        queue = this.queues.medium;
-      else
-        queue = this.queues.large;
+      for (var g in Revision.granularities) {
+        if (granularity == Revision.granularities[g]) {
+          queue = this.queues[g];
+          break;
+        }
+      }
 
       var request = new ChangesetRequest(start, granularity, callback);
       if (! (request.getRequestID() in this.pending))
@@ -518,6 +523,12 @@ Thread("ChangesetLoader",
         if (queue.length > 0) {
           // TODO: pop and handle
           var request = queue.pop();
+          if (request.getRequestID() in this.pending) {
+            //this request is already pending!
+            var id = request.getRequestID();
+            console.log("ALREADY PENDING REQUEST: %d, start: %d, granularity: %d", id, id & 0xffff, id >> 16);
+            continue;
+          }
           //TODO: test AGAIN to make sure that it hasn't been retrieved and cached by
           //a previous request. This should handle the case when two requests for the
           //same changesets are enqueued (which would be fine, as at enqueue time, we
@@ -678,7 +689,15 @@ $.Class("PadClient",
           for (p in path) {
             changeset = path[p];
             time += changeset.deltatime * 1000;
-            changeset.apply(_this);
+            try {
+              changeset.apply(_this);
+            } catch (err) {
+              console.log("Error applying changeset: ");
+              console.log("\t", changeset.value);
+              console.log("\t %d -> %d ", changeset.from_revision.revnum, changeset.to_revision.revnum);
+              console.log(err);
+              console.log("--------------");
+            }
           }
         }
 
