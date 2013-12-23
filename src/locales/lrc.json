@@ -4,6 +4,7 @@
             "Mogoeilor"
         ]
     },
+    "pad.toolbar.bold.title": "توپر",
     "pad.toolbar.italic.title": "کج کوله(ctrl-l)",
     "pad.toolbar.underline.title": "زیر خط دار بین (Ctrl-U)",
     "pad.toolbar.ol.title": "نوم گه منظم",
@@ -56,5 +57,6 @@
     "pad.userlist.unnamed": "نوم نهشته",
     "pad.userlist.guest": "میزوان",
     "pad.userlist.deny": "پرو کردن",
-    "pad.userlist.approve": "اصلا کردن"
+    "pad.userlist.approve": "اصلا کردن",
+    "pad.impexp.importing": "د حالت وارد کردن"
 }
