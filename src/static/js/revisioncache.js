@@ -16,9 +16,9 @@
 require('./jquery.class');
 var libchangeset = require("./Changeset");
 
-function log()
+function log () {
   console.log.apply(console, arguments);
-}
+};
 
 $.Class("Changeset",
   {//statics
