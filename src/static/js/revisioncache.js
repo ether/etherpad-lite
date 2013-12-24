@@ -137,6 +137,7 @@ $.Class("Revision",
 
 $.Class("RevisionCache",
   {
+    VERBOSE: false,
   },
   {//instance
     /**
@@ -146,6 +147,7 @@ $.Class("RevisionCache",
      * @param {number} head_revnum - The current head revision number. TODO: we can probably do away with this now.
      */
     init: function (connection, head_revnum) {
+      this.log = RevisionCache.VERBOSE ? console.log : function () {};
       this.connection = connection;
       this.loader = new ChangesetLoader(connection);
       this.revisions = {};
@@ -233,14 +235,14 @@ $.Class("RevisionCache",
       var direction = (to.revnum - from.revnum) < 0;
       var granularity = 0;
 
-      //console.log("[findpath] from: %d, to: %d", from.revnum, to.revnum);
+      //log("[findpath] from: %d, to: %d", from.revnum, to.revnum);
       while (current.lt(to, direction) && !found_discontinuity) {
-        //console.log("\t[findPath] while current: ", current.revnum);
+        //log("\t[findPath] while current: ", current.revnum);
         var delta_revnum = to.revnum - current.revnum;
         var direction_edges = direction ? current.previous : current.next;
         for (granularity in Revision.granularities) {
           if (Math.abs(delta_revnum) >= Revision.granularities[granularity]) {
-            //console.log("\t\t[findPath] for delta: %d, granularity: %d", delta_revnum, Revision.granularities[granularity]);
+            //log("\t\t[findPath] for delta: %d, granularity: %d", delta_revnum, Revision.granularities[granularity]);
             /*
              * the delta is larger than the granularity, let's use the granularity
              *TODO: what happens if we DON'T have the edge?
@@ -250,7 +252,7 @@ $.Class("RevisionCache",
              *      from current to that Revision (at the largest possible granularity)
              */
             var edge = direction_edges[granularity];
-            //console.log("\t\t[findpath] edge:", edge);
+            //log("\t\t[findpath] edge:", edge);
             if (edge) {
               // add this edge to our path
               path.push(edge);
@@ -270,7 +272,7 @@ $.Class("RevisionCache",
         }
       }
 
-      //console.log("[findpath] ------------------");
+      //log("[findpath] ------------------");
       // return either a full path, or a path ending as close as we can get to
       // the target revision.
       return {path: path, end_revision: current, granularity: granularity};
@@ -293,25 +295,25 @@ $.Class("RevisionCache",
 
       var _this = this;
       function partialTransition (current_revnum) {
-        console.log("from: %d, to: %d, current: %d", from_revnum, to_revnum, current_revnum);
+        //log("from: %d, to: %d, current: %d", from_revnum, to_revnum, current_revnum);
         var res = _this.findPath(_this.getRevision(from_revnum), target_revision);
-        console.log("find: ", print_path(res.path));
+        //log("find: ", print_path(res.path));
         if (res.end_revision == target_revision) {
-          console.log("found: ", print_path(res.path));
+          //log("found: ", print_path(res.path));
           if(applyChangeset_callback) {
             applyChangeset_callback(res.path);
           }
           return;
         }
         else {
-          console.log("end: %d, target: %d", res.end_revision.revnum, target_revision.revnum);
+          //log("end: %d, target: %d", res.end_revision.revnum, target_revision.revnum);
         }
 
         // we don't yet have all the changesets we need. Let's try to
         // build a path from the current revision (the start of the range
         // in the response) to the target.
         res = _this.findPath(_this.getRevision(current_revnum), target_revision);
-        console.log(print_path(res.path));
+        //log(print_path(res.path));
         // we can now request changesets from the end of that partial path
         // to the target:
         _this.requestChangesets(res.end_revision, target_revision, partialTransition);
@@ -330,7 +332,7 @@ $.Class("RevisionCache",
      *                              received and processed (added to the graph)
      */
     requestChangesets: function (from, to, changesetsProcessed_callback) {
-      console.log("[revisioncache] requestChangesets: %d -> %d", from.revnum, to.revnum);
+      this.log("[revisioncache] requestChangesets: %d -> %d", from.revnum, to.revnum);
       var delta = to.revnum - from.revnum;
       var sign = delta > 0 ? 1 : -1;
       var start = delta > 0 ? from.revnum : to.revnum;
@@ -339,7 +341,7 @@ $.Class("RevisionCache",
 
       var _this = this;
       function process_received_changesets (data) {
-        //console.log("[revisioncache] received changesets {from: %d, to: %d} @ granularity: %d", data.start, data.actualEndNum, data.granularity);
+        //log("[revisioncache] received changesets {from: %d, to: %d} @ granularity: %d", data.start, data.actualEndNum, data.granularity);
         var start = data.start;
         for (var i = 0; i < data.timeDeltas.length; i++, start += data.granularity) {
           _this.addChangesetPair(start, start + data.granularity, data.forwardsChangesets[i], data.backwardsChangesets[i], data.timeDeltas[i]);
@@ -354,22 +356,22 @@ $.Class("RevisionCache",
       var roundup = function (a, b) {
         return (Math.floor(a / b)+1) * b;
       };
-      //console.log("[requestChangesets] start: %d, end: %d, delta: %d, adelta: %d", start, end, delta, adelta);
+      //log("[requestChangesets] start: %d, end: %d, delta: %d, adelta: %d", start, end, delta, adelta);
       for (var g in Revision.granularities) {
         var granularity = Revision.granularities[g];
         var remainder = Math.floor(adelta / granularity);
-        //console.log("\t[requestChangesets] start: %d, granularity: %d, adelta: %d, //: %d", start, granularity, adelta, remainder);
-        //console.log("\t rounddown delta: %d, start: %d", rounddown(adelta, granularity), rounddown(start, granularity));
+        //log("\t[requestChangesets] start: %d, granularity: %d, adelta: %d, //: %d", start, granularity, adelta, remainder);
+        //log("\t rounddown delta: %d, start: %d", rounddown(adelta, granularity), rounddown(start, granularity));
         if (remainder) {
           //this.loader.enqueue(start, granularity, process_received_changesets);
-          //console.log("\t[requestChangesets] REQUEST start: %d, end: %d, granularity: %d", rounddown(start, granularity), roundup(adelta, granularity), granularity);
+          //log("\t[requestChangesets] REQUEST start: %d, end: %d, granularity: %d", rounddown(start, granularity), roundup(adelta, granularity), granularity);
           this.loader.enqueue(rounddown(start, granularity), granularity, process_received_changesets);
           // for the next granularity, we assume that we have now successfully navigated
           // as far as required for this granularity. We should also make sure that only
           // the significant part of the adelta is used in the next granularity.
           start = rounddown(start, granularity) + rounddown(adelta, granularity);
           adelta = adelta - rounddown(adelta, granularity);
-          //console.log("\t new start: %d, delta: %d", start, adelta);
+          //log("\t new start: %d, delta: %d", start, adelta);
         }
       }
     },
@@ -378,6 +380,7 @@ $.Class("RevisionCache",
 
 $.Class("Thread",
   {//statics
+    VERBOSE: true
   },
   {//instance
     init: function (interval) {
@@ -385,17 +388,18 @@ $.Class("Thread",
       this._is_stopping = false;
       this._interval_id = null;
       this._interval = interval ? interval : 1000;
+      this.log = Thread.VERBOSE ? console.log : function () {};
     },
     _run: function () {
-      console.log("[thread] tick");
+      this.log("[thread] tick");
     },
     // start the run loop
     start: function () {
       var _this = this;
-      console.log("[thread] starting");
+      this.log("[thread] starting");
       var wrapper = function () {
         if (_this._is_running && _this._is_stopping) {
-          console.log("[thread] shutting down");
+          this.log("[thread] shutting down");
           clearInterval(_this._interval_id);
           _this._is_running = false;
           return;
@@ -409,7 +413,7 @@ $.Class("Thread",
     // stop the run loop
     stop: function () {
       this._is_stopping = true;
-      console.log("[thread] request stop");
+      this.log("[thread] request stop");
       // TODO: consider finding a way to make this block
       // or alternatively, having a callback which is called
       // when the thread stops
@@ -422,6 +426,7 @@ $.Class("ChangesetRequest",
   },
   {//instance
     init: function (start, granularity, callback) {
+      this.log = ChangesetLoader.VERBOSE ? console.log : function () {};
       this.start = start;
       this.granularity = granularity;
       this.request_id = (this.granularity << 16) + this.start;
@@ -431,7 +436,7 @@ $.Class("ChangesetRequest",
       return this.request_id;
     },
     fulfill: function (data) {
-      console.log("[changesetrequest] Fulfilling request %d", this.getRequestID());
+      this.log("[changesetrequest] Fulfilling request %d", this.getRequestID());
       if (this.fulfill_callback)
         this.fulfill_callback(data);
     }
@@ -441,6 +446,7 @@ $.Class("ChangesetRequest",
 
 Thread("ChangesetLoader",
   {//statics
+    VERBOSE: false
   },
   {//instance
     /**
@@ -461,6 +467,7 @@ Thread("ChangesetLoader",
       this.connection.on("CHANGESET_REQ", function () {
         _this.on_response.apply(_this, arguments);
       });
+      this.log = ChangesetLoader.VERBOSE ? console.log : function () {};
     },
     /**
      * Enqueue a request for changesets. The changesets will be retrieved
@@ -489,7 +496,7 @@ Thread("ChangesetLoader",
      *                              asked for.
      */
     enqueue: function (start, granularity, callback) {
-      console.log("[changeset_loader] enqueue: %d, %d", start, granularity);
+      this.log("[changeset_loader] enqueue: %d, %d", start, granularity);
       //TODO: check cache to see if we really need to fetch this
       //      maybe even do splices if we just need a smaller range
       //      in the middle
@@ -506,7 +513,7 @@ Thread("ChangesetLoader",
         queue.push(request);
     },
     _run: function () {
-      console.log("[changesetloader] tick");
+      this.log("[changesetloader] tick");
       var _this = this;
       function addToPending () {
         _this.pending[request.getRequestID()] = request;
@@ -520,7 +527,7 @@ Thread("ChangesetLoader",
           if (request.getRequestID() in this.pending) {
             //this request is already pending!
             var id = request.getRequestID();
-            console.log("ALREADY PENDING REQUEST: %d, start: %d, granularity: %d", id, id & 0xffff, id >> 16);
+            this.log("ALREADY PENDING REQUEST: %d, start: %d, granularity: %d", id, id & 0xffff, id >> 16);
             continue;
           }
           //TODO: test AGAIN to make sure that it hasn't been retrieved and cached by
@@ -543,9 +550,9 @@ Thread("ChangesetLoader",
       //this.stop();
     },
     on_response: function (data) {
-      console.log("[changesetloader] on_response: ", data);
+      this.log("[changesetloader] on_response: ", data);
       if (!(data.requestID in this.pending)) {
-        console.log("[changesetloader] WTF? changeset not pending: ", data.requestID);
+        this.log("[changesetloader] WTF? changeset not pending: ", data.requestID);
         return;
       }
 
@@ -614,6 +621,7 @@ var domline = require("./domline").domline;
 $.Class("PadClient",
   {//static
     USE_COMPOSE: false,
+    VERBOSE: false,
   },
   {//instance
     /**
@@ -632,6 +640,7 @@ $.Class("PadClient",
       this.authors = {};
       this.dynamicCSS = libcssmanager.makeCSSManager('dynamicsyntax');
       this.palette = options.palette;
+      this.log = PadClient.VERBOSE ? console.log : function () {};
 
       this.updateAuthors(options.author_info);
 
@@ -658,7 +667,7 @@ $.Class("PadClient",
       };
     },
     goToRevision: function (revnum, atRevision_callback) {
-      console.log("[padclient > goToRevision] revnum: %d", revnum);
+      this.log("[padclient > goToRevision] revnum: %d", revnum);
       var _this = this;
       if (this.revision.revnum == revnum) {
         if (atRevision_callback)
@@ -667,7 +676,7 @@ $.Class("PadClient",
       }
 
       this.revisionCache.transition(this.revision.revnum, revnum, function (path) {
-        console.log("[padclient > applyChangeset_callback] path:", path);
+        _this.log("[padclient > applyChangeset_callback] path:", path);
         var time = _this.timestamp;
         var p, changeset = null; //pre-declare, because they're used in both blocks.
         if (PadClient.USE_COMPOSE) {
@@ -683,15 +692,16 @@ $.Class("PadClient",
           for (p in path) {
             changeset = path[p];
             time += changeset.deltatime * 1000;
-            try {
+            //try {
+              _this.log("[transition] %d -> %d, changeset: %s", changeset.from_revision.revnum, changeset.to_revision.revnum, changeset.value);
               changeset.apply(_this);
-            } catch (err) {
-              console.log("Error applying changeset: ");
-              console.log("\t", changeset.value);
-              console.log("\t %d -> %d ", changeset.from_revision.revnum, changeset.to_revision.revnum);
-              console.log(err);
-              console.log("--------------");
-            }
+            /*} catch (err) {
+              log("Error applying changeset: ");
+              log("\t", changeset.value);
+              log("\t %d -> %d ", changeset.from_revision.revnum, changeset.to_revision.revnum);
+              log(err);
+              log("--------------");
+            }*/
           }
         }
 
@@ -700,7 +710,7 @@ $.Class("PadClient",
         _this.timestamp = time;
         // fire the callback
         if (atRevision_callback) {
-          console.log("[padclient] about to call atRevision_callback", _this.revision, _this.timestamp);
+          _this.log("[padclient] about to call atRevision_callback", _this.revision, _this.timestamp);
           atRevision_callback.call(_this, _this.revision, _this.timestamp);
         }
       });
@@ -711,7 +721,7 @@ $.Class("PadClient",
      */
     updateAuthors: function (author_info) {
       var authors = author_info;
-      console.log("[updateAuthors]: ", authors);
+      this.log("[updateAuthors]: ", authors);
       for (var authorid in authors) {
         if (authorid in this.authors) {
           // just dispose of existing ones instead of trying to update existing
@@ -758,6 +768,7 @@ $.Class("PadClient",
      * @return {jquery object} - The div element ready for insertion into the DOM.
      */
     _getDivForLine: function (text, atext) {
+      this.log("[_getDivsForLine] %s; %s", text, atext);
       var dominfo = domline.createDomLine(text != '\n', true);
 
       // Here begins the magic invocation:
@@ -785,6 +796,7 @@ $.Class("PadClient",
      */
     _spliceDivs: function (index, howMany, elements) {
       elements = Array.prototype.slice.call(arguments, 2);
+      this.log("[_spliceDivs]: ", index, howMany);
       // remove howMany divs starting from index. We need to remove them from
       // the DOM.
       for (var i = index; i < index + howMany && i < this.divs.length; i++)
@@ -803,7 +815,13 @@ $.Class("PadClient",
       else
         this.divs[index - 1].after(newdivs);
       // super primitive scrollIntoView
-      newdivs[0][0].scrollIntoView(false);
+      if (newdivs.length) {
+        for(var x in newdivs){
+          var div = newdivs[x][0];
+          this.log("ND> ", div.id, div.className, div.innerHTML);
+        }
+        newdivs[0][0].scrollIntoView(false);
+      }
 
       // perform the splice on our array itself
       // TODO: monkey patching divs.splice, so use divs.original_splice or something

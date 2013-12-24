@@ -29,12 +29,14 @@ var token, padId, export_links;
 
 $.Class("SocketClient",
   { //statics
+    VERBOSE: false,
   },
   { //instance
     init: function (baseurl) {
       this.baseurl = baseurl;
+      this.log = SocketClient.VERBOSE ? console.log : function () {};
       // connect to the server
-      console.log("[socket_client] connecting to:", this.baseurl);
+      this.log("[socket_client] connecting to:", this.baseurl);
       this.socket = io.connect(this.baseurl, {resource: "socket.io"});
       // setup the socket callbacks:
       _this = this;
@@ -51,11 +53,11 @@ $.Class("SocketClient",
     },
 
     onConnect: function() {
-      console.log("[socket_client] > onConnect");
+      this.log("[socket_client] > onConnect");
     },
 
     onDisconnect: function() {
-      console.log("[socket_client] > onDisconnect");
+      this.log("[socket_client] > onDisconnect");
     },
 
     /**
@@ -63,7 +65,7 @@ $.Class("SocketClient",
      * @param {object} message - The message.
      */
     onMessage: function(message) {
-      console.log("[socket_client] > onMessage: ", message);
+      this.log("[socket_client] > onMessage: ", message);
     },
 
     /**
@@ -73,7 +75,7 @@ $.Class("SocketClient",
      * the message has been sent to the socket.
      */
     sendMessage: function(message, callback) {
-      console.log("[socket_client] > sendMessage: ", message);
+      this.log("[socket_client] > sendMessage: ", message);
       this.socket.json.send(message);
       if (callback)
         callback();
@@ -83,9 +85,11 @@ $.Class("SocketClient",
 
 SocketClient("AuthenticatedSocketClient",
   { //statics
+    VERBOSE: false,
   },
   { //instance
     init: function (baseurl, padID) {
+      this.log = AuthenticatedSocketClient.VERBOSE ? console.log : function () {};
 
       //make sure we have a token
       this.token = readCookie("token");
@@ -126,11 +130,11 @@ SocketClient("AuthenticatedSocketClient",
     },
 
     onMessage: function (message) {
-      console.log("[authorized_client] > onMessage:", message);
+      this.log("[authorized_client] > onMessage:", message);
       if (message.accessStatus)
       { //access denied?
         //TODO raise some kind of error?
-        console.log("ACCESS ERROR!");
+        this.log("ACCESS ERROR!");
       }
       this.dispatchMessage(message.type, message.data);
     },
@@ -143,7 +147,7 @@ SocketClient("AuthenticatedSocketClient",
      * @param {object} data - The message payload.
      */
     dispatchMessage: function(type, data) {
-      console.log("[authorized_client] > dispatchMessage('%s', %s)", type, data);
+      this.log("[authorized_client] > dispatchMessage('%s', %s)", type, data);
       // first call local handlers
       if ("handle_" + type in this)
         this["handle_" + type](data);
@@ -174,7 +178,7 @@ SocketClient("AuthenticatedSocketClient",
      * @param {object} data - The data received from the server.
      */
     handle_COLLABROOM: function(data) {
-      //console.log("[authsocket_client] handle_COLLABROOM: ", data);
+      //this.log("[authsocket_client] handle_COLLABROOM: ", data);
       this.dispatchMessage(data.type, data);
     },
 
@@ -185,17 +189,21 @@ require('./revisioncache');
 require('./revisionslider');
 AuthenticatedSocketClient("TimesliderClient",
   { //statics
+    VERBOSE: false,
   },
   { //instance
     init: function (baseurl, padID) {
+      this.log = TimesliderClient.VERBOSE ? console.log : function () {};
       this._super(baseurl, padID);
     },
 
     onConnect: function () {
-      this.sendMessage("CLIENT_READY", {}, function() { console.log("CLIENT_READY sent");});
+      this.sendMessage("CLIENT_READY", {});
     },
 
     initialize: function (clientVars) {
+      if (this.is_initialized)
+        return;
       this.clientVars = clientVars;
       var collabClientVars = this.clientVars.collab_client_vars;
       this.savedRevisions = this.clientVars.savedRevisions;
@@ -217,12 +225,13 @@ AuthenticatedSocketClient("TimesliderClient",
 
       //TODO: not wild about the timeslider-top selector being hard-coded here.
       this.ui = new RevisionSlider(this, $("#timeslider-top"));
+      this.is_initialized = true;
     },
 
     // ------------------------------------------
     // Handling events
     handle_CLIENT_VARS: function(data) {
-      console.log("[timeslider_client] handle_CLIENT_VARS: ", data);
+      this.log("[timeslider_client] handle_CLIENT_VARS: ", data);
       this.initialize(data);
     },
 
@@ -232,7 +241,7 @@ AuthenticatedSocketClient("TimesliderClient",
      * @param {object} data - the data received from the server.
      */
     handle_USER_NEWINFO: function (data) {
-      console.log("[timeslider_client] handle_USER_NEWINFO: ", data.userInfo);
+      this.log("[timeslider_client] handle_USER_NEWINFO: ", data.userInfo);
       //TODO: we might not want to add EVERY new user to the users list,
       //possibly only active users?
       var authors = {};
@@ -247,7 +256,7 @@ AuthenticatedSocketClient("TimesliderClient",
      * @param {object} data - The data received from the server.
      */
     handle_USER_LEAVE: function (data) {
-      console.log("[timeslider_client] handle_USER_LEAVE ", data.userInfo);
+      this.log("[timeslider_client] handle_USER_LEAVE ", data.userInfo);
     },
 
     /**
@@ -256,7 +265,7 @@ AuthenticatedSocketClient("TimesliderClient",
      * @param {object} data - The data received from the server.
      */
     handle_NEW_CHANGES: function (data) {
-      console.log("[timeslider_client] handle_NEW_CHANGES: ", data);
+      this.log("[timeslider_client] handle_NEW_CHANGES: ", data);
       var changesets = this.padClient.mergeForeignChangeset(data.changeset, data.apool);
       //TODO: handle calculation of real timedela based on currenttime
       //TODO: deal with author?
