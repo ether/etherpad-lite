@@ -181,8 +181,9 @@ $.Class("RevisionSlider",
         _this.timestamp = timestamp;
         _this.render.call(_this);
         //TODO: set the enabled/disabled for button-left and button-right
-        if (atRevision_callback)
+        if (atRevision_callback) {
           atRevision_callback(revnum);
+        }
       });
     },
     /**

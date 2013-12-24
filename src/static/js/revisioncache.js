@@ -286,7 +286,7 @@ $.Class("RevisionCache",
       var path = [];
       var current_revision = this.getRevision(from_revnum);
       var target_revision = this.getRevision(to_revnum);
-
+      this.log("[revisioncache > transition] from %d -> %d", from_revnum, to_revnum);
       // For debugging:
       function print_path(path) {
         var res = "[";
@@ -299,7 +299,7 @@ $.Class("RevisionCache",
 
       var _this = this;
       function partialTransition (current_revnum) {
-        //log("from: %d, to: %d, current: %d", from_revnum, to_revnum, current_revnum);
+        _this.log("[partialTransition] from: %d, to: %d, current: %d", from_revnum, to_revnum, current_revnum);
         var res = _this.findPath(_this.getRevision(from_revnum), target_revision);
         //log("find: ", print_path(res.path));
         if (res.end_revision == target_revision) {
@@ -313,11 +313,6 @@ $.Class("RevisionCache",
           //log("end: %d, target: %d", res.end_revision.revnum, target_revision.revnum);
         }
 
-        // we don't yet have all the changesets we need. Let's try to
-        // build a path from the current revision (the start of the range
-        // in the response) to the target.
-        res = _this.findPath(_this.getRevision(current_revnum), target_revision);
-        //log(print_path(res.path));
         // we can now request changesets from the end of that partial path
         // to the target:
         _this.requestChangesets(res.end_revision, target_revision, partialTransition);
@@ -345,7 +340,7 @@ $.Class("RevisionCache",
 
       var _this = this;
       function process_received_changesets (data) {
-        //log("[revisioncache] received changesets {from: %d, to: %d} @ granularity: %d", data.start, data.actualEndNum, data.granularity);
+        _this.log("[revisioncache] received changesets {from: %d, to: %d} @ granularity: %d", data.start, data.actualEndNum, data.granularity);
         var start = data.start;
         for (var i = 0; i < data.timeDeltas.length; i++, start += data.granularity) {
           _this.addChangesetPair(start, start + data.granularity, data.forwardsChangesets[i], data.backwardsChangesets[i], data.timeDeltas[i]);
@@ -360,22 +355,22 @@ $.Class("RevisionCache",
       var roundup = function (a, b) {
         return (Math.floor(a / b)+1) * b;
       };
-      //log("[requestChangesets] start: %d, end: %d, delta: %d, adelta: %d", start, end, delta, adelta);
+      this.log("[requestChangesets] start: %d, end: %d, delta: %d, adelta: %d", start, end, delta, adelta);
       for (var g in Revision.granularities) {
         var granularity = Revision.granularities[g];
         var remainder = Math.floor(adelta / granularity);
-        //log("\t[requestChangesets] start: %d, granularity: %d, adelta: %d, //: %d", start, granularity, adelta, remainder);
-        //log("\t rounddown delta: %d, start: %d", rounddown(adelta, granularity), rounddown(start, granularity));
+        this.log("\t[requestChangesets] start: %d, granularity: %d, adelta: %d, //: %d", start, granularity, adelta, remainder);
+        this.log("\t rounddown delta: %d, start: %d", rounddown(adelta, granularity), rounddown(start, granularity));
         if (remainder) {
           //this.loader.enqueue(start, granularity, process_received_changesets);
-          //log("\t[requestChangesets] REQUEST start: %d, end: %d, granularity: %d", rounddown(start, granularity), roundup(adelta, granularity), granularity);
+          this.log("\t[requestChangesets] REQUEST start: %d, end: %d, granularity: %d", rounddown(start, granularity), roundup(adelta, granularity), granularity);
           this.loader.enqueue(rounddown(start, granularity), granularity, process_received_changesets);
           // for the next granularity, we assume that we have now successfully navigated
           // as far as required for this granularity. We should also make sure that only
           // the significant part of the adelta is used in the next granularity.
           start = rounddown(start, granularity) + rounddown(adelta, granularity);
           adelta = adelta - rounddown(adelta, granularity);
-          //log("\t new start: %d, delta: %d", start, adelta);
+          this.log("\t new start: %d, delta: %d", start, adelta);
         }
       }
     },
@@ -440,7 +435,8 @@ $.Class("ChangesetRequest",
       return this.request_id;
     },
     fulfill: function (data) {
-      this.log("[changesetrequest] Fulfilling request %d", this.getRequestID());
+      var id = this.getRequestID();
+      this.log("[changesetrequest] Fulfilling request: %d, start: %d, granularity: %d", id, id & 0xffff, id >> 16);
       if (this.fulfill_callback)
         this.fulfill_callback(data);
     }
@@ -450,7 +446,7 @@ $.Class("ChangesetRequest",
 
 Thread("ChangesetLoader",
   {//statics
-    VERBOSE: false
+    VERBOSE: false,
   },
   {//instance
     /**
@@ -513,11 +509,13 @@ Thread("ChangesetLoader",
       }
 
       var request = new ChangesetRequest(start, granularity, callback);
-      if (! (request.getRequestID() in this.pending))
+      if (! (request.getRequestID() in this.pending)) {
         queue.push(request);
+        this.log("[changesetloader] enqueued request:", request.getRequestID())
+      }
+
     },
     _run: function () {
-      this.log("[changesetloader] tick");
       var _this = this;
       function addToPending () {
         _this.pending[request.getRequestID()] = request;
@@ -563,6 +561,7 @@ Thread("ChangesetLoader",
       // pop it from the pending list:
       var request = this.pending[data.requestID];
       delete this.pending[data.requestID];
+      this.log("[changesetloader] still pending: ", this.pending);
       //fulfill the request
       request.fulfill(data);
     },
@@ -698,7 +697,6 @@ $.Class("PadClient",
             time += changeset.deltatime * 1000;
             //try {
               _this.log("[transition] %d -> %d, changeset: %s", changeset.from_revision.revnum, changeset.to_revision.revnum, changeset.value);
-              _this.log(_this.alines, _this.lines, _this.apool);
               changeset.apply(_this);
             /*} catch (err) {
               log("Error applying changeset: ");
@@ -773,7 +771,7 @@ $.Class("PadClient",
      * @return {jquery object} - The div element ready for insertion into the DOM.
      */
     _getDivForLine: function (text, atext) {
-      this.log("[_getDivsForLine] %s; %s", text, atext);
+      //this.log("[_getDivsForLine] %s; %s", text, atext);
       var dominfo = domline.createDomLine(text != '\n', true);
 
       // Here begins the magic invocation:
@@ -801,7 +799,6 @@ $.Class("PadClient",
      */
     _spliceDivs: function (index, howMany, elements) {
       elements = Array.prototype.slice.call(arguments, 2);
-      this.log("[_spliceDivs]: ", index, howMany);
       // remove howMany divs starting from index. We need to remove them from
       // the DOM.
       for (var i = index; i < index + howMany && i < this.divs.length; i++)
@@ -821,10 +818,6 @@ $.Class("PadClient",
         this.divs[index - 1].after(newdivs);
       // super primitive scrollIntoView
       if (newdivs.length) {
-        for(var x in newdivs){
-          var div = newdivs[x][0];
-          this.log("ND> ", div.id, div.className, div.innerHTML);
-        }
         newdivs[0][0].scrollIntoView(false);
       }
 
