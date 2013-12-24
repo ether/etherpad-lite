@@ -16,6 +16,10 @@
 require('./jquery.class');
 var libchangeset = require("./Changeset");
 
+function log()
+  console.log.apply(console, arguments);
+}
+
 $.Class("Changeset",
   {//statics
   },
@@ -147,7 +151,7 @@ $.Class("RevisionCache",
      * @param {number} head_revnum - The current head revision number. TODO: we can probably do away with this now.
      */
     init: function (connection, head_revnum) {
-      this.log = RevisionCache.VERBOSE ? console.log : function () {};
+      this.log = RevisionCache.VERBOSE ? log : function () {};
       this.connection = connection;
       this.loader = new ChangesetLoader(connection);
       this.revisions = {};
@@ -388,7 +392,7 @@ $.Class("Thread",
       this._is_stopping = false;
       this._interval_id = null;
       this._interval = interval ? interval : 1000;
-      this.log = Thread.VERBOSE ? console.log : function () {};
+      this.log = Thread.VERBOSE ? log : function () {};
     },
     _run: function () {
       this.log("[thread] tick");
@@ -426,7 +430,7 @@ $.Class("ChangesetRequest",
   },
   {//instance
     init: function (start, granularity, callback) {
-      this.log = ChangesetLoader.VERBOSE ? console.log : function () {};
+      this.log = ChangesetLoader.VERBOSE ? log : function () {};
       this.start = start;
       this.granularity = granularity;
       this.request_id = (this.granularity << 16) + this.start;
@@ -467,7 +471,7 @@ Thread("ChangesetLoader",
       this.connection.on("CHANGESET_REQ", function () {
         _this.on_response.apply(_this, arguments);
       });
-      this.log = ChangesetLoader.VERBOSE ? console.log : function () {};
+      this.log = ChangesetLoader.VERBOSE ? log : function () {};
     },
     /**
      * Enqueue a request for changesets. The changesets will be retrieved
@@ -621,7 +625,7 @@ var domline = require("./domline").domline;
 $.Class("PadClient",
   {//static
     USE_COMPOSE: false,
-    VERBOSE: false,
+    VERBOSE: true,
   },
   {//instance
     /**
@@ -640,7 +644,7 @@ $.Class("PadClient",
       this.authors = {};
       this.dynamicCSS = libcssmanager.makeCSSManager('dynamicsyntax');
       this.palette = options.palette;
-      this.log = PadClient.VERBOSE ? console.log : function () {};
+      this.log = PadClient.VERBOSE ? log : function () {};
 
       this.updateAuthors(options.author_info);
 
@@ -694,6 +698,7 @@ $.Class("PadClient",
             time += changeset.deltatime * 1000;
             //try {
               _this.log("[transition] %d -> %d, changeset: %s", changeset.from_revision.revnum, changeset.to_revision.revnum, changeset.value);
+              _this.log(_this.alines, _this.lines, _this.apool);
               changeset.apply(_this);
             /*} catch (err) {
               log("Error applying changeset: ");
