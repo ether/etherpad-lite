@@ -1,6 +1,6 @@
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-var npm = require("npm");
+var npm = require("./npm-master");
 
 var npmIsLoaded = false;
 var withNpm = function (npmfn) {
