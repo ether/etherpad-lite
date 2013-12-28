@@ -17,7 +17,10 @@
     "pad.colorpicker.save": "ذخيره كردن",
     "pad.colorpicker.cancel": "رد كردن",
     "pad.loading": "د حالت سوار كرد",
+    "pad.wrongPassword": "پاسوردتو اشتوائه",
     "pad.settings.myView": "نظرگه مه",
+    "pad.settings.stickychat": "همیشه د بلگه چک چنه بکید",
+    "pad.settings.linenocheck": "شماره خطیا",
     "pad.settings.fontType": "نوع فونت:",
     "pad.settings.fontType.normal": "عادی",
     "pad.settings.fontType.monospaced": "تک جاگه",
@@ -58,5 +61,7 @@
     "pad.userlist.guest": "میزوان",
     "pad.userlist.deny": "پرو کردن",
     "pad.userlist.approve": "اصلا کردن",
-    "pad.impexp.importing": "د حالت وارد کردن"
+    "pad.impexp.importbutton": "ایسه وارد کو",
+    "pad.impexp.importing": "د حالت وارد کردن",
+    "pad.impexp.copypaste": "خواهشن وردار بدیسن"
 }
