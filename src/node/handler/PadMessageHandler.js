@@ -1256,6 +1256,49 @@ function handleChangesetRequest(client, message)
       getChangesetInfo(padIds.padId, start, end, granularity, function(err, changesetInfo)
       {
         ERR(err);
+        
+        // Assert that the paths are correct
+        var assert = require('assert')
+        padManager.getPad(message.padId, function(err, pad) {
+          if(err) return
+          var headRev = pad.getHeadRevisionNumber()
+            , fend = start-(granularity*changesetInfo.forwardsChangesets.length)
+            , bend = start+(granularity*changesetInfo.backwardsChangesets.length)
+          
+          if(start > headRev || fend > headRev || bend > headRev) return console.log('Cannot vet from ', start, 'to', end)
+
+          pad.getInternalRevisionAText(start, function(err, atextStart) {
+            ERR(err)
+            pad.getInternalRevisionAText(fend, function(err, atextFend) {
+              ERR(err)
+              pad.getInternalRevisionAText(bend, function(err, atextBend) {
+                ERR(err)
+                console.log(changesetInfo)
+
+                // check forward
+                console.log('Vetting revision path from ', fend, 'to', start)
+                var atext = atextFend
+                changesetInfo.forwardsChangesets.forEach(function(cs) {
+                  atext = Changeset.applyToAText(cs, atext)
+                })
+                assert(atext.text == atextStart.text)
+                assert(atext.attribs == atextStart.attribs)
+                console.log('OK')
+
+                // check backward /*/
+                console.log('Vetting revision path from ', bend, 'to', start)
+                atext = atextBend
+                changesetInfo.backwardsChangesets.forEach(function(cs) {
+                  atext = Changeset.applyToAText(cs, atext)
+                })
+                assert(atext.text == atextStart.text)
+                assert(atext.attribs == atextStart.attribs)
+                console.log('OK')
+
+              })
+            })
+          })
+        })
 
         var data = changesetInfo;
         data.requestID = message.data.requestID;
