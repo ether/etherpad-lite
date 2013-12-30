@@ -1262,40 +1262,44 @@ function handleChangesetRequest(client, message)
         padManager.getPad(message.padId, function(err, pad) {
           if(err) return
           var headRev = pad.getHeadRevisionNumber()
-            , fend = start-(granularity*changesetInfo.forwardsChangesets.length)
-            , bend = start+(granularity*changesetInfo.backwardsChangesets.length)
-          
-          if(start > headRev || fend > headRev || bend > headRev) return console.log('Cannot vet from ', start, 'to', end)
+            , end = start+(granularity*changesetInfo.forwardsChangesets.length)-1
+          console.log(changesetInfo)
+          if(start > headRev || end > headRev) return console.log('Cannot vet from ', start, 'to', end)
 
           pad.getInternalRevisionAText(start, function(err, atextStart) {
+            console.log(start)
             ERR(err)
-            pad.getInternalRevisionAText(fend, function(err, atextFend) {
+            pad.getInternalRevisionAText(end, function(err, atextEnd) {
+              console.log(end)
               ERR(err)
-              pad.getInternalRevisionAText(bend, function(err, atextBend) {
-                ERR(err)
-                console.log(changesetInfo)
 
                 // check forward
-                console.log('Vetting revision path from ', fend, 'to', start)
-                var atext = atextFend
+                console.log('Vetting revision path from ', start, 'to', end)
+                var atext = atextStart
+                console.log(atext)
+                if(changesetInfo.forwardsChangesets.length > headRev-1) changesetInfo.forwardsChangesets.shift() // remove the first changeset, as we already have the first revision.
+                
                 changesetInfo.forwardsChangesets.forEach(function(cs) {
                   atext = Changeset.applyToAText(cs, atext)
                 })
-                assert(atext.text == atextStart.text)
-                assert(atext.attribs == atextStart.attribs)
+                console.log(atext)
+                console.log(atextEnd)
+                assert(atext.text == atextEnd.text)
                 console.log('OK')
 
                 // check backward /*/
-                console.log('Vetting revision path from ', bend, 'to', start)
-                atext = atextBend
-                changesetInfo.backwardsChangesets.forEach(function(cs) {
+                console.log('Vetting revision path from ', end, 'to', start)
+                atext = atextEnd
+                console.log(atextEnd)
+                if(changesetInfo.backwardsChangesets.length > headRev-1) changesetInfo.backwardsChangesets.shift()
+                changesetInfo.backwardsChangesets.reverse().forEach(function(cs) {
                   atext = Changeset.applyToAText(cs, atext)
                 })
+                console.log(atext)
+                console.log(atextStart)
                 assert(atext.text == atextStart.text)
-                assert(atext.attribs == atextStart.attribs)
                 console.log('OK')
-
-              })
+                
             })
           })
         })
