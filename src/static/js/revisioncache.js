@@ -141,7 +141,7 @@ $.Class("Revision",
 
 $.Class("RevisionCache",
   {
-    VERBOSE: false,
+    VERBOSE: true,
   },
   {//instance
     /**
@@ -297,28 +297,56 @@ $.Class("RevisionCache",
         return res;
       }
 
+      // lets just keep a 'final' path, which is a list of changesets.
+      // The transition should complete when the first element's from revnum is
+      // from_revnum, and the last element's to revnum is to_revnum.
+      // (Assuming that there are no discontinuities.
+      var thePath = [];
+
+      function is_complete() {
+        console.log(thePath);
+        if (thePath.length && thePath[0].from_revision.revnum == from_revnum
+                           && thePath.slice(-1)[0].to_revision.revnum == to_revnum) {
+          return true;
+        }
+        return false;
+      }
+
+      var thePath = [];
+
       var _this = this;
-      function partialTransition (current_revnum) {
-        _this.log("[partialTransition] from: %d, to: %d, current: %d", from_revnum, to_revnum, current_revnum);
-        var res = _this.findPath(_this.getRevision(from_revnum), target_revision);
-        //log("find: ", print_path(res.path));
-        if (res.end_revision == target_revision) {
+      function partialTransition (cur_start, cur_end) {
+        _this.log("[partialTransition] from: %d, to: %d, cur_start: %d, cur_end: %d", from_revnum, to_revnum, cur_start, cur_end);
+        var cur_start_rev = _this.getRevision(cur_start);
+        var res = _this.findPath(cur_start_rev, _this.getRevision(cur_end));
+        log("find: ", print_path(res.path));
+
+        if (!res.path.length) {
+          // we got nutting, request changesets for the full path.
+          _this.requestChangesets(cur_start_rev, target_revision, partialTransition);
+          return;
+        }
+
+        //TODO: we should probably check for discontinuities
+        // just prepend the found path to thePath
+        thePath = res.path.concat(thePath);
+
+        log("THE PATH: ", print_path(thePath));
+
+            //FIXME: this should test for 'completeness'!
+        if (is_complete()) {
           //log("found: ", print_path(res.path));
           if(applyChangeset_callback) {
-            applyChangeset_callback(res.path);
+            applyChangeset_callback(thePath);
           }
           return;
         }
-        else {
-          //log("end: %d, target: %d", res.end_revision.revnum, target_revision.revnum);
-        }
-
-        // we can now request changesets from the end of that partial path
-        // to the target:
-        _this.requestChangesets(res.end_revision, target_revision, partialTransition);
+        // next iteration, we want to find a path that reaches the beginning of our
+        // current path, as we assume that the 'tail' of the path is always correct.
+        target_revision = thePath[0].from_revision;
       }
 
-      partialTransition(from_revnum);
+      partialTransition(from_revnum, to_revnum);
 
     },
     /**
@@ -345,8 +373,12 @@ $.Class("RevisionCache",
         for (var i = 0; i < data.timeDeltas.length; i++, start += data.granularity) {
           _this.addChangesetPair(start, start + data.granularity, data.forwardsChangesets[i], data.backwardsChangesets[i], data.timeDeltas[i]);
         }
-        if (changesetsProcessed_callback)
-          changesetsProcessed_callback(data.start);
+        if (changesetsProcessed_callback) {
+          if (sign == 1)
+            changesetsProcessed_callback(data.start, data.start + (data.granularity*data.timeDeltas.length));
+          else
+            changesetsProcessed_callback(data.start + (data.granularity*data.timeDeltas.length), data.start);
+        }
       }
 
       var rounddown = function (a, b) {
@@ -446,7 +478,7 @@ $.Class("ChangesetRequest",
 
 Thread("ChangesetLoader",
   {//statics
-    VERBOSE: false,
+    VERBOSE: true,
   },
   {//instance
     /**
