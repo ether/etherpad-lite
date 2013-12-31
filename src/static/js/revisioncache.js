@@ -327,8 +327,11 @@ $.Class("RevisionCache",
           return;
         }
 
-        //TODO: we should probably check for discontinuities
-        // just prepend the found path to thePath
+        //TODO: we should probably check for discontinuities which indicate a real WTF condition.
+
+        // just prepend the found path to thePath; we assume that we get further from
+        // the original target as we go. this is because we set the new target to be
+        // the head of our
         thePath = res.path.concat(thePath);
 
         log("THE PATH: ", print_path(thePath));
@@ -387,6 +390,7 @@ $.Class("RevisionCache",
       var roundup = function (a, b) {
         return (Math.floor(a / b)+1) * b;
       };
+
       this.log("[requestChangesets] start: %d, end: %d, delta: %d, adelta: %d", start, end, delta, adelta);
       for (var g in Revision.granularities) {
         var granularity = Revision.granularities[g];
