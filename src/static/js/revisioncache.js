@@ -396,7 +396,8 @@ $.Class("RevisionCache",
         var granularity = Revision.granularities[g];
         var remainder = Math.floor(adelta / granularity);
         this.log("\t[requestChangesets] start: %d, granularity: %d, adelta: %d, //: %d", start, granularity, adelta, remainder);
-        this.log("\t rounddown delta: %d, start: %d", rounddown(adelta, granularity), rounddown(start, granularity));
+        this.log("\ttest: start: %d, end: %d", rounddown(start,granularity), roundup(end,granularity));
+        this.log("\trounddown delta: %d, start: %d", rounddown(adelta, granularity), rounddown(start, granularity));
         if (remainder) {
           //this.loader.enqueue(start, granularity, process_received_changesets);
           this.log("\t[requestChangesets] REQUEST start: %d, end: %d, granularity: %d", rounddown(start, granularity), roundup(adelta, granularity), granularity);
@@ -406,7 +407,7 @@ $.Class("RevisionCache",
           // the significant part of the adelta is used in the next granularity.
           start = rounddown(start, granularity) + rounddown(adelta, granularity);
           adelta = adelta - rounddown(adelta, granularity);
-          this.log("\t new start: %d, delta: %d", start, adelta);
+          this.log("\t\tnew start: %d, delta: %d", start, adelta);
         }
       }
     },
@@ -482,7 +483,7 @@ $.Class("ChangesetRequest",
 
 Thread("ChangesetLoader",
   {//statics
-    VERBOSE: true,
+    VERBOSE: false,
   },
   {//instance
     /**
