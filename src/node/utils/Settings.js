@@ -26,7 +26,7 @@ var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
 var jsonminify = require("jsonminify");
 var log4js = require("log4js");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("./randomstring");
 
 
 /* Root path of the installation */
