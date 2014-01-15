@@ -22,7 +22,7 @@
 var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("../utils/randomstring");
 
 /**
  * returns a read only id for a pad

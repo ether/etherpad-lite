@@ -23,7 +23,7 @@ var ERR = require("async-stacktrace");
 var fs = require("fs");
 var api = require("../db/API");
 var padManager = require("../db/PadManager");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("../utils/randomstring");
 
 //ensure we have an apikey
 var apikey = null;

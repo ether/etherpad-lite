@@ -26,7 +26,6 @@ var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var log4js = require('log4js');
 var authLogger = log4js.getLogger("auth");
 
