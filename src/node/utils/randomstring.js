@@ -5,7 +5,7 @@ var crypto = require('crypto');
 
 var randomString = function randomString(len)
 {
-  crypto.randomBytes(48, function(ex, buf) {
+  crypto.randomBytes(len, function(ex, buf) {
     return buf.toString('hex');
   });
 };
