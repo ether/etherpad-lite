@@ -23,7 +23,7 @@ var ERR = require("async-stacktrace");
 var fs = require("fs");
 var api = require("../db/API");
 var padManager = require("../db/PadManager");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("../utils/randomstring");
 
 //ensure we have an apikey
 var apikey = null;
@@ -31,7 +31,7 @@ try
 {
   apikey = fs.readFileSync("./APIKEY.txt","utf8");
 }
-catch(e) 
+catch(e)
 {
   apikey = randomString(32);
   fs.writeFileSync("./APIKEY.txt",apikey,"utf8");
@@ -256,10 +256,54 @@ var version =
   , "getChatHistory"            : ["padID", "start", "end"]
   , "getChatHead"               : ["padID"]
   }
+, "1.2.9":
+  { "createGroup"               : []
+  , "createGroupIfNotExistsFor" : ["groupMapper"]
+  , "deleteGroup"               : ["groupID"]
+  , "listPads"                  : ["groupID"]
+  , "listAllPads"               : []
+  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
+  , "createPad"                 : ["padID", "text"]
+  , "createGroupPad"            : ["groupID", "padName", "text"]
+  , "createAuthor"              : ["name"]
+  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
+  , "listPadsOfAuthor"          : ["authorID"]
+  , "createSession"             : ["groupID", "authorID", "validUntil"]
+  , "deleteSession"             : ["sessionID"]
+  , "getSessionInfo"            : ["sessionID"]
+  , "listSessionsOfGroup"       : ["groupID"]
+  , "listSessionsOfAuthor"      : ["authorID"]
+  , "getText"                   : ["padID", "rev"]
+  , "setText"                   : ["padID", "text"]
+  , "getHTML"                   : ["padID", "rev"]
+  , "setHTML"                   : ["padID", "html"]
+  , "getAttributePool"          : ["padID"]
+  , "getRevisionsCount"         : ["padID"]
+  , "getRevisionChangeset"      : ["padID", "rev"]
+  , "getLastEdited"             : ["padID"]
+  , "deletePad"                 : ["padID"]
+  , "copyPad"                   : ["sourceID", "destinationID", "force"]
+  , "movePad"                   : ["sourceID", "destinationID", "force"]
+  , "getReadOnlyID"             : ["padID"]
+  , "setPublicStatus"           : ["padID", "publicStatus"]
+  , "getPublicStatus"           : ["padID"]
+  , "setPassword"               : ["padID", "password"]
+  , "isPasswordProtected"       : ["padID"]
+  , "listAuthorsOfPad"          : ["padID"]
+  , "padUsersCount"             : ["padID"]
+  , "getAuthorName"             : ["authorID"]
+  , "padUsers"                  : ["padID"]
+  , "sendClientsMessage"        : ["padID", "msg"]
+  , "listAllGroups"             : []
+  , "checkToken"                : []
+  , "getChatHistory"            : ["padID"]
+  , "getChatHistory"            : ["padID", "start", "end"]
+  , "getChatHead"               : ["padID"]
+  }
 };
 
 // set the latest available API version here
-exports.latestApiVersion = '1.2.7';
+exports.latestApiVersion = '1.2.9';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
@@ -283,7 +327,7 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
       break;
     }
   }
-  
+
   //say goodbye if this is an unkown API version
   if(!isKnownApiVersion)
   {
@@ -291,7 +335,7 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
     res.send({code: 3, message: "no such api version", data: null});
     return;
   }
-  
+
   //check if this is a valid function name
   var isKnownFunctionname = false;
   for(var knownFunctionname in version[apiVersion])
@@ -302,17 +346,17 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
       break;
     }
   }
-  
+
   //say goodbye if this is a unkown function
   if(!isKnownFunctionname)
   {
     res.send({code: 3, message: "no such function", data: null});
     return;
   }
-  
+
   //check the api key!
   fields["apikey"] = fields["apikey"] || fields["api_key"];
-  
+
   if(fields["apikey"] != apikey.trim())
   {
     res.send({code: 4, message: "no or wrong API Key", data: null});
@@ -346,21 +390,19 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
 function callAPI(apiVersion, functionName, fields, req, res)
 {
   //put the function parameters in an array
-  var functionParams = [];
-  for(var i=0;i<version[apiVersion][functionName].length;i++)
-  {
-    functionParams.push(fields[ version[apiVersion][functionName][i] ]);
-  }
-  
+  var functionParams = version[apiVersion][functionName].map(function (field) {
+    return fields[field]
+  })
+
   //add a callback function to handle the response
   functionParams.push(function(err, data)
-  {  
+  {
     // no error happend, everything is fine
     if(err == null)
     {
       if(!data)
         data = null;
-    
+
       res.send({code: 0, message: "ok", data: data});
     }
     // parameters were wrong and the api stopped execution, pass the error
@@ -375,7 +417,7 @@ function callAPI(apiVersion, functionName, fields, req, res)
       ERR(err);
     }
   });
-  
+
   //call the api function
-  api[functionName](functionParams[0],functionParams[1],functionParams[2],functionParams[3],functionParams[4]);
+  api[functionName].apply(this, functionParams);
 }

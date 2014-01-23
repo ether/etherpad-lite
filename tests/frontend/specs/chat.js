@@ -41,7 +41,7 @@ describe("Chat messages and UI", function(){
   it("makes sure that an empty message can't be sent", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
-	
+
     //click on the chat button to make chat visible
     var $chatButton = chrome$("#chaticon");
     $chatButton.click();

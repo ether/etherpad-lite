@@ -185,7 +185,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     {
       if (href)
       {
-        if(!~href.indexOf("http")) // if the url doesn't include http or https etc prefix it.
+        if(!~href.indexOf("://") && !~href.indexOf("mailto:")) // if the url doesn't include a protocol prefix, assume http
         {
           href = "http://"+href;
         }
@@ -234,10 +234,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       result.node.innerHTML = curHTML;
     }
     if (lineClass !== null) result.node.className = lineClass;
-	
-	hooks.callAll("acePostWriteDomLineHTML", {
-        node: result.node
-	});
+
+    hooks.callAll("acePostWriteDomLineHTML", {
+      node: result.node
+    });
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;

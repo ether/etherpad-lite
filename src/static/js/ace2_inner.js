@@ -51,7 +51,6 @@ function Ace2Inner(){
   var linestylefilter = require('./linestylefilter').linestylefilter;
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
-  var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
   var AttributeManager = require('./AttributeManager');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
@@ -79,7 +78,6 @@ function Ace2Inner(){
   iframe.ace_outerWin = null; // prevent IE 6 memory leak
   var sideDiv = iframe.nextSibling;
   var lineMetricsDiv = sideDiv.nextSibling;
-  var overlaysdiv = lineMetricsDiv.nextSibling;
   initLineNumbers();
 
   var outsideKeyDown = noop;
@@ -102,13 +100,13 @@ function Ace2Inner(){
     apool: new AttribPool()
   };
 
-  // lines, alltext, alines, and DOM are set up in setup()
+  // lines, alltext, alines, and DOM are set up in init()
   if (undoModule.enabled)
   {
     undoModule.apool = rep.apool;
   }
 
-  var root, doc; // set in setup()
+  var root, doc; // set in init()
   var isEditable = true;
   var doesWrap = true;
   var hasLineNumbers = true;
@@ -346,19 +344,6 @@ function Ace2Inner(){
     }
   }
 
-  function boldColorFromColor(lightColorCSS)
-  {
-    var color = colorutils.css2triple(lightColorCSS);
-
-    // amp up the saturation to full
-    color = colorutils.saturate(color);
-
-    // normalize brightness based on luminosity
-    color = colorutils.scaleColor(color, 0, 0.5 / colorutils.luminosity(color));
-
-    return colorutils.triple2css(color);
-  }
-
   function fadeColor(colorCSS, fadeFrac)
   {
     var color = colorutils.css2triple(colorCSS);
@@ -550,22 +535,6 @@ function Ace2Inner(){
     }
   }
   editorInfo.ace_inCallStackIfNecessary = inCallStackIfNecessary;
-
-  function recolorLineByKey(key)
-  {
-    if (rep.lines.containsKey(key))
-    {
-      var offset = rep.lines.offsetOfKey(key);
-      var width = rep.lines.atKey(key).width;
-      recolorLinesInRange(offset, offset + width);
-    }
-  }
-
-  function getLineKeyForOffset(charOffset)
-  {
-    return rep.lines.atOffset(charOffset).key;
-  }
-
 
   function dispose()
   {
@@ -1173,34 +1142,6 @@ function Ace2Inner(){
   }
   editorInfo.ace_fastIncorp = fastIncorp;
 
-  function incorpIfQuick()
-  {
-    var me = incorpIfQuick;
-    var failures = (me.failures || 0);
-    if (failures < 5)
-    {
-      var isTimeUp = newTimeLimit(40);
-      var madeChanges = incorporateUserChanges(isTimeUp);
-      if (isTimeUp())
-      {
-        me.failures = failures + 1;
-      }
-      return true;
-    }
-    else
-    {
-      var skipCount = (me.skipCount || 0);
-      skipCount++;
-      if (skipCount == 20)
-      {
-        skipCount = 0;
-        me.failures = 0;
-      }
-      me.skipCount = skipCount;
-    }
-    return false;
-  }
-
   var idleWorkTimer = makeIdleAction(function()
   {
 
@@ -1727,7 +1668,7 @@ function Ace2Inner(){
     {
       //var id = n.uniqueId();
       // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
-      n.parentNode.removeChild(n);
+      if(n.parentNode) n.parentNode.removeChild(n);
 
       //dmesg(htmlPrettyEscape(htmlForRemovedChild(n)));
       //console.log("removed: "+id);
@@ -1805,13 +1746,6 @@ function Ace2Inner(){
     p.end("END");
 
     return domChanges;
-  }
-
-  function htmlForRemovedChild(n)
-  {
-    var div = doc.createElement("DIV");
-    div.appendChild(n);
-    return div.innerHTML;
   }
 
   var STYLE_ATTRIBS = {
@@ -2371,6 +2305,76 @@ function Ace2Inner(){
     ]);
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
+
+  function getAttributeOnSelection(attributeName){
+    if (!(rep.selStart && rep.selEnd)) return;
+    var selectionAllHasIt = true;
+    var withIt = Changeset.makeAttribsString('+', [
+      [attributeName, 'true']
+    ], rep.apool);
+    var withItRegex = new RegExp(withIt.replace(/\*/g, '\\*') + "(\\*|$)");
+
+    function hasIt(attribs)
+    {
+      return withItRegex.test(attribs);
+    }
+
+    var selStartLine = rep.selStart[0];
+    var selEndLine = rep.selEnd[0];
+    for (var n = selStartLine; n <= selEndLine; n++)
+    {
+      var opIter = Changeset.opIterator(rep.alines[n]);
+      var indexIntoLine = 0;
+      var selectionStartInLine = 0;
+      var selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
+      if(rep.lines.atIndex(n).text.length == 0){
+        return false; // If the line length is 0 we basically treat it as having no formatting
+      }
+      if(rep.selStart[1] == rep.selEnd[1] && rep.selStart[1] == rep.lines.atIndex(n).text.length){
+        return false; // If we're at the end of a line we treat it as having no formatting
+      }
+      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){ 
+        rep.selEnd[1] == 1;
+      }
+      if(rep.selEnd[1] == -1){
+        rep.selEnd[1] = 1; // sometimes rep.selEnd is -1, not sure why..  When it is we should look at the first char
+      }
+      if (n == selStartLine)
+      {
+        selectionStartInLine = rep.selStart[1];
+      }
+      if (n == selEndLine)
+      {
+        selectionEndInLine = rep.selEnd[1];
+      }
+      while (opIter.hasNext())
+      {
+        var op = opIter.next();
+        var opStartInLine = indexIntoLine;
+        var opEndInLine = opStartInLine + op.chars;
+        if (!hasIt(op.attribs))
+        {
+          // does op overlap selection?
+          if (!(opEndInLine <= selectionStartInLine || opStartInLine >= selectionEndInLine))
+          {
+            selectionAllHasIt = false;
+            break;
+          }
+        }
+        indexIntoLine = opEndInLine;
+      }
+      if (!selectionAllHasIt)
+      {
+        break;
+      }
+    }
+    if(selectionAllHasIt){
+      return true;
+    }else{
+      return false;
+    }
+  }
+  editorInfo.ace_getAttributeOnSelection = getAttributeOnSelection;
 
   function toggleAttributeOnSelection(attributeName)
   {
@@ -3950,6 +3954,7 @@ function Ace2Inner(){
     selection.focusAtStart = !! rep.selFocusAtStart;
     setSelection(selection);
   }
+  editorInfo.ace_updateBrowserSelectionFromRep = updateBrowserSelectionFromRep;
 
   function nodeMaxIndex(nd)
   {
@@ -4187,7 +4192,7 @@ function Ace2Inner(){
     selection.startPoint.index+" / "+
     selection.endPoint.node.uniqueId()+","+
     selection.endPoint.index);
-	}*/
+}*/
       }
       return selection;
     }
@@ -4833,54 +4838,6 @@ function Ace2Inner(){
     else $(elem).removeClass(className);
   }
 
-  function setup()
-  {
-    doc = document; // defined as a var in scope outside
-    inCallStackIfNecessary("setup", function()
-    {
-      var body = doc.getElementById("innerdocbody");
-      root = body; // defined as a var in scope outside
-      if (browser.mozilla) addClass(root, "mozilla");
-      if (browser.safari) addClass(root, "safari");
-      if (browser.msie) addClass(root, "msie");
-      if (browser.msie)
-      {
-        // cache CSS background images
-        try
-        {
-          doc.execCommand("BackgroundImageCache", false, true);
-        }
-        catch (e)
-        { /* throws an error in some IE 6 but not others! */
-        }
-      }
-      setClassPresence(root, "authorColors", true);
-      setClassPresence(root, "doesWrap", doesWrap);
-
-      initDynamicCSS();
-
-      enforceEditability();
-
-      // set up dom and rep
-      while (root.firstChild) root.removeChild(root.firstChild);
-      var oneEntry = createDomLineEntry("");
-      doRepLineSplice(0, rep.lines.length(), [oneEntry]);
-      insertDomLines(null, [oneEntry.domInfo], null);
-      rep.alines = Changeset.splitAttributionLines(
-      Changeset.makeAttribution("\n"), "\n");
-
-      bindTheEventHandlers();
-
-    });
-
-    scheduler.setTimeout(function()
-    {
-      parent.readyFunc(); // defined in code that sets up the inner iframe
-    }, 0);
-
-    isSetUp = true;
-  }
-
   function focus()
   {
     window.focus();
@@ -5255,7 +5212,7 @@ function Ace2Inner(){
 
         if(h){ // apply style to div
           div.style.height = h +"px";
-	}
+        }
 
         div.appendChild(odoc.createTextNode(String(n)));
         fragment.appendChild(div);

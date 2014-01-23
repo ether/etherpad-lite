@@ -1,16 +1,13 @@
 /**
  * Generates a random String with the given length. Is needed to generate the Author, Group, readonly, session Ids
  */
+var crypto = require('crypto');
+
 var randomString = function randomString(len)
 {
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  var randomstring = '';
-  for (var i = 0; i < len; i++)
-  {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum, rnum + 1);
-  }
-  return randomstring;
+  crypto.randomBytes(len, function(ex, buf) {
+    return buf.toString('hex');
+  });
 };
 
 module.exports = randomString;

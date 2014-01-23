@@ -162,7 +162,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
       }
       else
       {
-    	  
+
         // add forEach function to Array.prototype for IE8      
         if (!('forEach' in Array.prototype)) {
           Array.prototype.forEach= function(action, that /*opt*/) {
@@ -171,7 +171,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
                 action.call(that, this[i], i, this);
           };
         }
-    	  
+
         // Get my authorID
         var authorId = parent.parent.pad.myUserInfo.userId;
 

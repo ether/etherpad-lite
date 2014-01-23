@@ -1,5 +1,5 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides 
+ * The Settings Modul reads the settings out of settings.json and provides
  * this information to the other modules
  */
 
@@ -24,9 +24,9 @@ var os = require("os");
 var path = require('path');
 var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
-var vm = require('vm');
+var jsonminify = require("jsonminify");
 var log4js = require("log4js");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("./randomstring");
 
 
 /* Root path of the installation */
@@ -48,7 +48,7 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  * The IP ep-lite should listen to
  */
 exports.ip = "0.0.0.0";
-  
+
 /**
  * The Port ep-lite should listen to
  */
@@ -166,8 +166,8 @@ exports.reloadSettings = function reloadSettings() {
   var settings;
   try {
     if(settingsStr) {
-      settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
-      settings = JSON.parse(JSON.stringify(settings)); // fix objects having constructors of other vm.context
+      settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
+      settings = JSON.parse(settingsStr);
     }
   }catch(e){
     console.error('There was an error processing your settings.json file: '+e.message);
@@ -195,7 +195,7 @@ exports.reloadSettings = function reloadSettings() {
       console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
     }
   }
-  
+
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   log4js.replaceConsole();

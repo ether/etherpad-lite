@@ -2,6 +2,10 @@ var path = require('path');
 var eejs = require('ep_etherpad-lite/node/eejs');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
+  // expose current stats
+  args.app.get('/stats', function(req, res) {
+    res.json(require('ep_etherpad-lite/node/stats').toJSON())
+  })
 
   //serve index.html under /
   args.app.get('/', function(req, res)
@@ -45,8 +49,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       //there is no custom favicon, send the default favicon
       if(err)
       {
-	filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
-	res.sendfile(filePath);
+        filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
+        res.sendfile(filePath);
       }
     });
   });
