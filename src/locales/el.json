@@ -71,6 +71,7 @@
     "pad.modals.slowcommit.explanation": "Ο διακομιστής δεν αποκρίνεται.",
     "pad.modals.slowcommit.cause": "Αυτό μπορεί να οφείλεται σε προβλήματα σύνδεσης δικτύου.",
     "pad.modals.badChangeset.explanation": "Μια επεξεργασία που κάνατε χαρακτηρίστηκε ως παράνομη από τον διακομιστή συγχρονισμού.",
+    "pad.modals.corruptPad.explanation": "Το pad που προσπαθείτε να επισκεφτείτε είναι κατεστραμμένο.",
     "pad.modals.deleted": "Διεγράφη.",
     "pad.modals.deleted.explanation": "Αυτό το pad έχει καταργηθεί.",
     "pad.modals.disconnected": "Έχετε αποσυνδεθεί.",

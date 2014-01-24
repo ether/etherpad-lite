@@ -1,7 +1,8 @@
 {
     "@metadata": {
         "authors": [
-            "វ័ណថារិទ្ធ"
+            "វ័ណថារិទ្ធ",
+            "Sovichet"
         ]
     },
     "index.newPad": "ផេតថ្មី",
@@ -36,6 +37,7 @@
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
     "pad.modals.connected": "បាន​តភ្ជាប់​។",
+    "pad.modals.deleted": "បាន​លុប។",
     "pad.share.link": "តំណ​ភ្ជាប់",
     "timeslider.month.january": "មករា",
     "timeslider.month.february": "កុម្ភៈ",
@@ -49,7 +51,11 @@
     "timeslider.month.october": "តុលា",
     "timeslider.month.november": "វិច្ឆិកា",
     "timeslider.month.december": "ធ្នូ",
+    "pad.userlist.entername": "បញ្ចូល​ឈ្មោះ​របស់​អ្នក",
+    "pad.userlist.unnamed": "គ្មាន​ឈ្មោះ",
     "pad.userlist.guest": "ភ្ញៀវ",
+    "pad.userlist.deny": "បដិសេធ",
+    "pad.userlist.approve": "យល់​ព្រម",
     "pad.impexp.importbutton": "នាំចូលឥឡូវនេះ",
     "pad.impexp.importing": "កំពុងនាំចូល​..."
 }
