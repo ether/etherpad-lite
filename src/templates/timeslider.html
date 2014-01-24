@@ -52,12 +52,11 @@
     <div id="timeslider-top">
       <% e.begin_block("timesliderTop"); %>
       <div id="timeslider-wrapper">
-        <div id="timeslider" unselectable="on" style="display: none">
+          <div id="timeslider" unselectable="on"><!--style="display: none" -->
           <div id="timeslider-left"></div>
           <div id="timeslider-right"></div>
           <div id="timer"></div>
           <div id="timeslider-slider">
-            <div id="ui-slider-handle"></div>
             <div id="ui-slider-bar"></div>
           </div>
           <div id="playpause_button">
@@ -68,7 +67,6 @@
             <div class="stepper" id="rightstep"></div>
           </div>
         </div>
-        
         <div id="overlay">
           <div id="overlay-inner">
             <!-- -->
@@ -90,7 +88,7 @@
           <% e.end_block(); %>
           </div>
 
-          <div>
+          <div id="timeslider-metadata">
               <h1>
                 <span id="revision_label"></span>
                 <span id="revision_date"></span>
@@ -207,14 +205,14 @@
 <!-- Bootstrap -->
 <script type="text/javascript" >
   var clientVars = {};
-  var BroadcastSlider;  
+  var BroadcastSlider;
+  var timeslider;
   (function () {
     var pathComponents = location.pathname.split('/');
-    
+
     // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
     var baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/';
-    
-    
+
     require.setRootURI(baseURL + "javascripts/src");
     require.setLibraryURI(baseURL + "javascripts/lib");
     require.setGlobalKeyPath("require");
@@ -224,19 +222,17 @@
     if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
       document.domain = document.domain; // for comet
     }
-
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-    var socket = require('ep_etherpad-lite/static/js/timeslider').socket;
-    BroadcastSlider = require('ep_etherpad-lite/static/js/timeslider').BroadcastSlider;
+    var _timeslider = require('ep_etherpad-lite/static/js/timeslider')
+    var socket = _timeslider.socket;
+    BroadcastSlider = _timeslider.BroadcastSlider;
     plugins.baseURL = baseURL;
-    
+
     plugins.update(function () {
       var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
       hooks.plugins = plugins;
 
-      var timeslider = require('ep_etherpad-lite/static/js/timeslider')
-      timeslider.baseURL = baseURL;
-      timeslider.init();
+      timeslider = _timeslider.init(baseURL);
 
       /* TODO: These globals shouldn't exist. */
       padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;

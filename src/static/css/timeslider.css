@@ -1,7 +1,115 @@
+/*
+ * slider handles (SliderHandle)
+ */
+
+.ui-slider-handle  {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  position: absolute;
+}
+
+.ui-slider-handle-star {
+  background-image: url(../../static/img/star.png);
+  height: 16px;
+  top: 20px;
+  width: 15px;
+}
+
+.ui-slider-handle-handle {
+  background-image: url(../../static/img/crushed_current_location.png);
+  height: 61px;
+  left: 0;
+  top: -14px;
+  width: 13px;
+}
+
+/*
+ * Steppers
+ */
+
+.stepper {
+  background: url(../../static/img/stepper_buttons.png) 0 0 no-repeat;
+  height: 21px;
+  overflow: hidden;
+  position: absolute;
+}
+#leftstar {
+  background-position: 0 -44px;
+  right: 34px;
+  top: 8px;
+  width: 30px;
+}
+#rightstar {
+  background-position: -29px -44px;
+  right: 5px;
+  top: 8px;
+  width: 30px;
+}
+#leftstep:active {
+  background-position: 0 -22px;
+  right: 34px;
+  top: 20px;
+  width: 30px;
+}
+#leftstep {
+  background-position: 0 -66px;
+  right: 34px;
+  top: 20px;
+  width: 30px;
+}
+#rightstep:active {
+  background-position: -29px -22px;
+  right: 5px;
+  top: 20px;
+  width: 30px;
+}
+#rightstep {
+  background-position: -29px -66px;
+  right: 5px;
+  top: 20px;
+  width: 30px;
+}
+
+#playpause_button,
+#playpause_button_icon {
+  height: 47px;
+  position: absolute;
+  width: 47px;
+}
+#playpause_button {
+  background-image: url(../../static/img/crushed_button_undepressed.png);
+  right: 77px;
+  top: 9px;
+}
+#playpause_button:active {
+  background-image: url(../../static/img/crushed_button_depressed.png);
+  right: 77px;
+  top: 9px;
+}
+#playpause_button_icon {
+  background-image: url(../../static/img/play.png);
+  left: 0;
+  top: 0;
+}
+.pause#playpause_button_icon {
+  background-image: url(../../static/img/pause.png)
+}
+
+
+
+
+
+
+
+#timeslider .slider-handle {
+  position: absolute;
+}
 #editorcontainerbox {
   overflow: auto;
-  top: 40px;
-  position: static;
+  top: 120px;
+  position: absolute;
 }
 #padcontent {
   font-size: 12px;
@@ -46,18 +154,7 @@
   top: 1px;
   width: 100%;
 }
-#ui-slider-handle {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
-  background-image: url(../../static/img/crushed_current_location.png);
-  cursor: pointer;
-  height: 61px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 13px;
-}
+
 #ui-slider-bar {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -68,66 +165,6 @@
   margin-right: 150px;
   position: relative;
   top: 20px;
-}
-#playpause_button,
-#playpause_button_icon {
-  height: 47px;
-  position: absolute;
-  width: 47px;
-}
-#playpause_button {
-  background-image: url(../../static/img/crushed_button_undepressed.png);
-  right: 77px;
-  top: 9px;
-}
-#playpause_button_icon {
-  background-image: url(../../static/img/play.png);
-  left: 0;
-  top: 0;
-}
-.pause#playpause_button_icon {
-  background-image: url(../../static/img/pause.png)
-}
-#leftstar,
-#rightstar,
-#leftstep,
-#rightstep {
-  background: url(../../static/img/stepper_buttons.png) 0 0 no-repeat;
-  height: 21px;
-  overflow: hidden;
-  position: absolute;
-}
-#leftstar {
-  background-position: 0 -44px;
-  right: 34px;
-  top: 8px;
-  width: 30px;
-}
-#rightstar {
-  background-position: -29px -44px;
-  right: 5px;
-  top: 8px;
-  width: 29px;
-}
-#leftstep {
-  background-position: 0 -22px;
-  right: 34px;
-  top: 20px;
-  width: 30px;
-}
-#rightstep {
-  background-position: -29px -22px;
-  right: 5px;
-  top: 20px;
-  width: 30px;
-}
-#timeslider .star {
-  background-image: url(../../static/img/star.png);
-  cursor: pointer;
-  height: 16px;
-  position: absolute;
-  top: 40px;
-  width: 15px;
 }
 #timeslider #timer {
   color: #fff;
@@ -188,6 +225,7 @@
   overflow: hidden;
   padding-top: 3px;
   width: 100%;
+  border-bottom: thin solid #cccccc;
 }
 .timeslider-bar #editbar {
   border-bottom: none;
