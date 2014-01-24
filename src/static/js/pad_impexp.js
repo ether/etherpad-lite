@@ -77,6 +77,7 @@ var padimpexp = (function()
         }
         currentImportTimer = null;
         importFailed("Request timed out.");
+        importDone();
       }, 25000); // time out after some number of seconds
       $('#importsubmitinput').attr(
       {
