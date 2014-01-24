@@ -3,11 +3,9 @@
  */
 var crypto = require('crypto');
 
-var randomString = function randomString(len)
+var randomString = function(len)
 {
-  crypto.randomBytes(len, function(ex, buf) {
-    return buf.toString('hex');
-  });
+  return crypto.randomBytes(len).toString('hex')
 };
 
 module.exports = randomString;
