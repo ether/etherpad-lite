@@ -175,6 +175,10 @@
   text-align: center;
   top: 9px;
   width: 122px;
+  background-color: #A9A9A9;
+  border: 1px solid #a8a8a8;
+  border-radius: 3px;
+  text-shadow: 0 0 3px #a5a5a5;
 }
 .topbarcenter,
 #docbar {

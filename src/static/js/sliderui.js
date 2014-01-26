@@ -68,10 +68,12 @@ $.Class("SliderUI",
       max: 100,
       value: 0,
     }
+  , animationDuration: 200
   },
   {//instance
-    init: function (element, options) {
+    init: function (element, timerEl, options) {
       this.options = $.extend({}, this.defaults, options);
+      this.timerEl = timerEl
       this.element = element;
       this.current_value = this.options.value;
       this.handles = [];
@@ -88,11 +90,21 @@ $.Class("SliderUI",
       return (this.element.width()) / (this.options.max * 1.0);
     },
     render: function () {
+      var handle
+        , left
       for(var h in this.handles) {
-        handle = this.handles[h];
+        handle = this.handles[h]
+        left = (handle.value * this._getStep())
+        // animate slider handle
         handle.element.stop()
-        handle.element.animate({left: (handle.value * this._getStep()) }, 100);
+        handle.element.animate({left: left }, SliderUI.animationDuration);
       }
+      
+      // move the timer within the boundaries of the slider (centered above the handle if possible)
+      var timerWidth = this.timerEl.width()
+        , timerPos = Math.max(7, Math.min(left-(timerWidth/2)+(handle.element.width()/2), this.element.width()-timerWidth))
+      this.timerEl.stop()
+      this.timerEl.animate({left: timerPos }, SliderUI.animationDuration);
     },
     /**
      * Update the value in the UI. This should never be called internally.

@@ -33,7 +33,7 @@ $.Class("RevisionSlider",
       this.elements = {};
       this.loadElements(root_element);
       var _this = this;
-      this.slider = new SliderUI(this.elements.slider_bar,
+      this.slider = new SliderUI(this.elements.slider_bar, this.elements.timestamp,
                   options = {
                     value: this.revision_number,
                     max: this.connection.getHeadRevision(),
