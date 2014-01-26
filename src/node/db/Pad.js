@@ -52,6 +52,10 @@ Pad.prototype.apool = function apool() {
 };
 
 Pad.prototype.getHeadRevisionNumber = function getHeadRevisionNumber() {
+  return this.head;
+};
+
+Pad.prototype.getHeadChangesetNumber = function getHeadChangesetNumber() {
   return this.head+1;
 };
 

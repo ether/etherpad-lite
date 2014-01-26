@@ -1076,6 +1076,7 @@ function handleClientReady(client, message)
               "historicalAuthorData": historicalAuthorData,
               "apool": apool,
               "rev": pad.getHeadRevisionNumber(),
+              "lastCs": pad.getHeadChangesetNumber(),
               "time": currentTime,
           },
           "colorPalette": authorManager.getColorPalette(),
@@ -1259,7 +1260,6 @@ function handleChangesetRequest(client, message)
 
         var data = changesetInfo;
         data.requestID = message.data.requestID;
-
         client.json.send({type: "CHANGESET_REQ", data: data});
       });
     }
@@ -1291,14 +1291,14 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
       {
         if(ERR(err, callback)) return;
         pad = _pad;
-        head_revision = pad.getHeadRevisionNumber();
+        head_revision = pad.getHeadChangesetNumber();
         callback();
       });
     },
     function(callback)
     {
       //calculate the last full endnum
-      var lastRev = pad.getHeadRevisionNumber();
+      var lastRev = pad.getHeadChangesetNumber();
       if (endNum > lastRev) {
         endNum = lastRev;
       }
@@ -1499,7 +1499,7 @@ function composePadChangesets(padId, startNum, endNum, callback)
     {
       var changesetsNeeded=[];
 
-      var headNum = pad.getHeadRevisionNumber();
+      var headNum = pad.getHeadChangesetNumber();
       if (endNum > headNum)
         endNum = headNum;
       if (startNum < 0)

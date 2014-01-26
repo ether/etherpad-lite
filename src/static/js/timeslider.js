@@ -212,7 +212,7 @@ AuthenticatedSocketClient("TimesliderClient",
 
       this.padClient = new PadClient(this.revisionCache,
                                      {
-                                       revnum: collabClientVars.rev,
+                                       revnum: collabClientVars.lastCs,
                                        timestamp: collabClientVars.time,
                                        atext: {
                                          text: collabClientVars.initialAttributedText.text,
