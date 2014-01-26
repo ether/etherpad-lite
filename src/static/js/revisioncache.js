@@ -150,6 +150,7 @@ $.Class("RevisionCache",
       this.revisions = {};
       this.head_revision = this.getRevision(head_revnum || 0);
       this.loader.start();
+      this.prefetch();
     },
     /**
      * Get the head revision.
@@ -324,16 +325,36 @@ console.log(direction_changesets[granularity])
         count++
 
         _this.log("[revisioncache] received changesets {from: %d, to: %d} @ granularity: %d", data.start, data.actualEndNum, data.granularity);
-        var curr = data.start;
-        for (var i = 0; i < data.timeDeltas.length; i++, curr += data.granularity) {
-          _this.addChangesetPair(curr, curr + data.granularity, data.forwardsChangesets[i], data.backwardsChangesets[i], data.timeDeltas[i]);
-        }
+        _this.processChangesetInfo(data)
 
         if (count == totalRequests) {
           changesetsProcessed_callback && changesetsProcessed_callback()
         }
       }
       
+    },
+    
+    processChangesetInfo: function(data) {
+      var curr = data.start;
+      for (var i = 0; i < data.timeDeltas.length; i++, curr += data.granularity) {
+        this.addChangesetPair(curr, curr + data.granularity, data.forwardsChangesets[i], data.backwardsChangesets[i], data.timeDeltas[i]);
+      }
+    },
+    
+    prefetch: function() {
+      var _this = this
+        , max = this.getHeadRevision().revnum
+      Revision.granularities.forEach(function(granularity) {
+        var lastHop = Math.floor( max/granularity )*granularity
+          , fetchStart = lastHop - (granularity*100)
+        if(fetchStart < 0) fetchStart = 0
+        
+        // prefetch changesets for this granularity
+        _this.loader.enqueue(fetchStart, granularity, function(data) {
+          _this.processChangesetInfo(data)
+          log('Prefetched: 100 revs @ granularity '+granularity)
+        });
+      })
     }
   }
 );
