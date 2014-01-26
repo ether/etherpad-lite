@@ -181,14 +181,14 @@ $.Class("RevisionCache",
     /**
      * Add a new revision at the head.
      * @param {number} revnum - the revision number of the new revision.
-     * @param {string} forward - the forward changeset to get here from previous head.
-     * @param {string} reverse - the reverse changeset.
-     * @param {string} timedelta - the time difference.
+     * @param {function} cb - callback
      */
-    appendHeadRevision: function (revnum, forward, reverse, timedelta) {
-      this.addChangesetPair(this.head_revision.revnum, revnum, forward, reverse, timedelta);
-      this.head_revision = this.getRevision(revnum);
-      //TODO: render it if we are currently at the head_revision?
+    fetchNewHead: function (new_revnum, cb) {
+      this.loader.enqueue(this.head_revision.revnum, 1, function() {
+        log('Fetched new head revision: ', new_revnum)
+        cb && cb()
+      })
+      this.head_revision = this.getRevision(new_revnum);
     },
     /**
      * Links two revisions, specified by from and to with the changeset data

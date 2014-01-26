@@ -87,23 +87,28 @@ $.Class("RevisionSlider",
      * Toggle (and execute) the playback mode.
      */
     playpause: function () {
+      var _this = this;
+
       if (this.is_playing) {
         this.is_playing = false;
         return;
       }
 
       var revnum = this.revision_number;
-      if (revnum == this.connection.getHeadRevision())
-        revnum = 0;
-
-      var _this = this;
+      
       var keepPlaying = function (current_revnum) {
-        if (current_revnum == _this.connection.getHeadRevision())
-          _this.is_playing = false;
-        if (!_this.is_playing) {
-          _this.render();
+        // we've been stopped
+        if(!_this.is_playing) return _this.render()
+        
+        // we're at the end
+        if (current_revnum == _this.connection.getHeadRevision()) {
+          setTimeout(function() {
+            keepPlaying(current_revnum)
+          }, 200)
           return;
         }
+
+        // next!
         setTimeout(function () {
           _this.goToRevision(current_revnum + 1, keepPlaying);
         }, RevisionSlider.PLAYBACK_DELAY);

@@ -265,12 +265,11 @@ AuthenticatedSocketClient("TimesliderClient",
      * @param {object} data - The data received from the server.
      */
     handle_NEW_CHANGES: function (data) {
+      var _this = this
       this.log("[timeslider_client] handle_NEW_CHANGES: ", data);
-      var changesets = this.padClient.mergeForeignChangeset(data.changeset, data.apool);
-      //TODO: handle calculation of real timedela based on currenttime
-      //TODO: deal with author?
-      this.revisionCache.appendHeadRevision(data.newRev, changesets.forward, changesets.reverse, data.timeDelta);
-      this.ui.render();
+      this.revisionCache.fetchNewHead(data.newRev, function() {
+        _this.ui.render();
+      });
     },
 
 
