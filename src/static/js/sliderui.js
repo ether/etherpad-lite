@@ -90,7 +90,8 @@ $.Class("SliderUI",
     render: function () {
       for(var h in this.handles) {
         handle = this.handles[h];
-        handle.element.css('left', (handle.value * this._getStep()) );
+        handle.element.stop()
+        handle.element.animate({left: (handle.value * this._getStep()) }, 100);
       }
     },
     /**

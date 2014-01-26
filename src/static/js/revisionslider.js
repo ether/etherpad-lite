@@ -6,7 +6,7 @@ $.Class("RevisionSlider",
     /**
      * The number of milliseconds to wait between revisions when playing back.
      */
-    PLAYBACK_DELAY: 400,
+    PLAYBACK_DELAY: 200,
   },
   {//instance
     /**
