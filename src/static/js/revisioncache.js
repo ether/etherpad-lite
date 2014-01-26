@@ -235,7 +235,8 @@ $.Class("RevisionCache",
         || Math.round((adelta % granularity)/granularity) == 1 // in this case it's faster to overshoot the target and then go back
         ){
           // Use the highways, e.g. 39 -> 40 -> 30 ->* 27 instead of 39 -> 29 ->* 27
-          if(from % granularity != 0 && (shortcut = Math.round(from/granularity)*granularity) <= max) {
+          if(from % granularity != 0) {
+            if((shortcut = Math.round(from/granularity)*granularity) > max) continue; // no highway nearby, so we hike to the next one...
             next = shortcut
             path = this.calcPath(from, next) // go to the highway
           }else {
@@ -311,7 +312,7 @@ $.Class("RevisionCache",
 console.log(direction_changesets[granularity])
         if(direction_changesets[granularity]) return // this edge exists already. no need to fetch it again
 
-        _this.log("\t[requestChangesets] REQUEST start: %d, end: %d", edge[0], edge[1]);
+        _this.log("\t[requestChangesets] REQUEST changeset from %d -> %d", edge[0], edge[1]);
         _this.loader.enqueue(Math.min(edge[0], edge[1]), granularity, process_received_changeset);
         totalRequests++
       })
