@@ -52,7 +52,7 @@ Pad.prototype.apool = function apool() {
 };
 
 Pad.prototype.getHeadRevisionNumber = function getHeadRevisionNumber() {
-  return this.head;
+  return this.head+1;
 };
 
 Pad.prototype.getPublicStatus = function getPublicStatus() {

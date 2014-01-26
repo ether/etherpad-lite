@@ -1299,8 +1299,8 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
     {
       //calculate the last full endnum
       var lastRev = pad.getHeadRevisionNumber();
-      if (endNum > lastRev+1) {
-        endNum = lastRev+1;
+      if (endNum > lastRev) {
+        endNum = lastRev;
       }
       endNum = Math.floor(endNum / granularity)*granularity;
 
