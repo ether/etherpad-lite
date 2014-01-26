@@ -91,18 +91,20 @@ $.Class("SliderUI",
     },
     render: function () {
       var handle
-        , left
+        , left, handleWidth
       for(var h in this.handles) {
         handle = this.handles[h]
         left = (handle.value * this._getStep())
+        handleWidth = handle.element.width()
+
         // animate slider handle
         handle.element.stop()
-        handle.element.animate({left: left }, SliderUI.animationDuration);
+        handle.element.animate({left: left-(handleWidth/2) }, SliderUI.animationDuration);
       }
       
       // move the timer within the boundaries of the slider (centered above the handle if possible)
       var timerWidth = this.timerEl.width()
-        , timerPos = Math.max(7, Math.min(left-(timerWidth/2)+(handle.element.width()/2), this.element.width()-timerWidth))
+        , timerPos = Math.max(7, Math.min(left-(timerWidth/2)+(handleWidth/2), this.element.width()-timerWidth))
       this.timerEl.stop()
       this.timerEl.animate({left: timerPos }, SliderUI.animationDuration);
     },
@@ -144,7 +146,7 @@ $.Class("SliderUI",
       this.element.on("mousedown.slider", function (event) {
         if (event.target == _this.element[0] || $(event.target).hasClass("ui-slider-handle")) {
           // the click is on the slider bar itself.
-          var start_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
+          var start_value = Math.round((event.clientX-_this.element.offset().left) / _this._getStep());
           //console.log("sliderbar mousedown, value:", start_value);
           if (_this.current_value != start_value) {
             //_this.setValue(start_value);
@@ -152,7 +154,7 @@ $.Class("SliderUI",
           var prev_value = start_value;
 
           $(document).on("mousemove.slider", function (event) {
-             var current_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
+             var current_value = Math.round((event.clientX-_this.element.offset().left) / _this._getStep());
              //console.log("sliderbar mousemove, value:", current_value);
              // don't change the value if it hasn't actually changed!
              if (prev_value != current_value) {
@@ -165,7 +167,7 @@ $.Class("SliderUI",
             // make sure to get rid of the handlers on document,
             // we don't need them after this 'slide' session is done.
             $(document).off("mouseup.slider mousemove.slider");
-             var end_value = Math.floor((event.clientX-_this.element.offset().left) / _this._getStep());
+             var end_value = Math.round((event.clientX-_this.element.offset().left) / _this._getStep());
              //console.log("sliderbar mouseup, value:", end_value);
              // always change the value at mouseup
             _this._trigger("change", end_value);
