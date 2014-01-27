@@ -52,6 +52,21 @@ $.Class("Changeset",
       libchangeset.mutateTextLines(this.value, /* padcontents */ /*this.lines */ pad.divs);
     },
     /**
+     * Return a list of all authors that took part in this change
+     * @param {Apool} apool - The attribute pool to use
+     * @returns {Object} - Like so {<authorId>: 1}
+     */
+    getAuthors: function (apool) {
+      var authors = {}
+      libchangeset.eachAttribNumber(this.value, function (attribNum) {
+        try {// Any errors thrown inside this function will go straight to area 51...
+          if(apool.getAttribKey(attribNum) != 'author') return
+          authors[apool.getAttribValue(attribNum)] = 1
+        }catch(e) {console.error(e.message)}
+      })
+      return authors
+    },
+    /**
      * 'Follow' the Changeset in a given direction, returning the revision at
      * the specified end of the edge.
      * @param {bool} direction - If true, go to the 'from' revision, otherwise
@@ -118,6 +133,15 @@ $.Class("Revision",
       direction_edges[granularity] = new Changeset(this, target, timedelta, changeset);
       
       return null;
+    },
+    getAuthors: function(apool) {
+      try {
+        var previousRev = this.previous[Revision.granularities[Revision.granularities.length-1]].to_revision
+          , changeset = previousRev.next[Revision.granularities[Revision.granularities.length-1]]
+        return changeset.getAuthors(apool)
+      }catch(e) {
+        return {} // in case it's not loaded yet
+      }
     },
     lt: function (other, is_reverse) {
       if (is_reverse)
@@ -652,6 +676,19 @@ $.Class("PadClient",
         return this[index].data('text');
       };
     },
+    
+    getVisibleAuthors: function() {
+      var authors = {}
+        , _this = this
+      this.alines.forEach(function(aline) {
+        libchangeset.eachAttribNumber(aline, function(attribNum) {
+          if(_this.apool.getAttribKey(attribNum) != 'author') return
+          authors[_this.apool.getAttribValue(attribNum)] = 1
+        })
+      })
+      return authors
+    },
+    
     goToRevision: function (revnum, atRevision_callback) {
       this.log("[padclient > goToRevision] revnum: %d", revnum);
       var _this = this;

@@ -249,12 +249,16 @@
   z-index: 1;
 }
 #authorsList .author {
-  padding-left: 0.4em;
-  padding-right: 0.4em;
+  padding: 0 0.4em;
+  margin: 0 0.4em;
+  opacity: 0.6
 }
 #authorsList .author-anonymous {
-  padding-left: 0.6em;
-  padding-right: 0.6em;
+  padding: 0 0.1em;
+}
+#authorsList .author.highlighted {
+  box-shadow: 0 0 10px #fff;
+  opacity: 1.0;
 }
 #padeditor {
   position: static

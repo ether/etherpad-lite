@@ -147,22 +147,30 @@ $.Class("RevisionSlider",
      * Render the authors line.
      */
     renderAuthors: function () {
-      //TODO: consider alphabetizing the authors?
-      var authors = this.connection.getAuthors();
+      var allAuthors = this.connection.getAuthors()
+        , visibleAuthors = this.connection.padClient.getVisibleAuthors()
+        , changesetAuthors = this.connection.getCurrentRevision().getAuthors(this.connection.padClient.apool)
+
       this.elements.authors.empty();
-      if ($.isEmptyObject(authors)) {
-        this.elements.authors.append("No authors");
-        return;
-      }
-      for (var authorid in authors) {
-        var author = authors[authorid];
+console.log('changesetAuthors',changesetAuthors,'visible authors: ',visibleAuthors,'allAuthors: ', allAuthors, this.connection.padClient.alines)
+
+      for (var authorid in visibleAuthors) {
+        if(!(authorid in allAuthors)) continue;
+        var author = allAuthors[authorid];
         var span = $("<span />")
           .text(author.getName())
           .addClass('author')
           .addClass(author.getCSSClass());
+        
+        if(authorid in changesetAuthors) span.addClass('highlighted')
         this.elements.authors.append(span);
       }
+
+      if ($.isEmptyObject(allAuthors)) {
+        this.elements.authors.append("No authors");
+      }
     },
+
     /**
      * Go to a specific revision number. This will perform the actual
      * transition to the revision and set the UI elements as required
