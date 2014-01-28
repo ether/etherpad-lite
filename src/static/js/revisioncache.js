@@ -257,7 +257,7 @@ $.Class("RevisionCache",
         granularity = Revision.granularities[g]
         if(granularity > max) continue;
         if(granularity <= adelta
-        || Math.round(from / granularity)*granularity != Math.round(to /granularity)*granularity
+        || ( Math.round(from / granularity)*granularity != Math.round(to /granularity)*granularity && Math.round(adelta / granularity)*granularity == 1 )
         // (check if it's faster to overshoot the target with a higher granularity and go back afterwards)
         ){
           // Use the highways, e.g. 39 -> 40 -> 30 ->* 27 instead of 39 -> 29 ->* 27
