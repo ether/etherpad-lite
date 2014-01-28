@@ -24,7 +24,7 @@ $.Class("RevisionSlider",
       // if there was a revision specified in the 'location.hash', jump to it.
       if (window.location.hash.length > 1) {
         var rev = Number(window.location.hash.substr(1));
-        if(!isNaN(rev))
+        if(!isNaN(rev) && this.connection.getHeadRevision().revnum >= rev)
           this.revision_number = rev;
       }
 
