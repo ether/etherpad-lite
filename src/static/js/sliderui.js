@@ -103,13 +103,16 @@ $.Class("SliderUI",
         // animate slider handle
         handle.element.stop()
         handle.element.animate({left: left-(handleWidth/2) }, duration);
+        
+        if(h == 0) {
+          // move the timer within the boundaries of the slider (centered above the handle if possible)
+          var timerWidth = this.timerEl.width()
+            , timerPos = Math.max(7, Math.min(left-(timerWidth/2)+(handleWidth/2), this.element.width()-timerWidth))
+          this.timerEl.stop()
+          this.timerEl.animate({left: timerPos }, duration);
+        }
+        
       }
-      
-      // move the timer within the boundaries of the slider (centered above the handle if possible)
-      var timerWidth = this.timerEl.width()
-        , timerPos = Math.max(7, Math.min(left-(timerWidth/2)+(handleWidth/2), this.element.width()-timerWidth))
-      this.timerEl.stop()
-      this.timerEl.animate({left: timerPos }, duration);
     },
     
     /**
