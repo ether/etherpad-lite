@@ -335,7 +335,7 @@ $.Class("RevisionCache",
           , granularity = Math.abs(delta)
           , start_rev = _this.getRevision(edge[0])
           , direction_changesets = delta > 0 ? start_rev.next : start_rev.previous
-console.log(direction_changesets[granularity])
+
         if(direction_changesets[granularity]) return // this edge exists already. no need to fetch it again
 
         _this.log("\t[requestChangesets] REQUEST changeset from %d -> %d", edge[0], edge[1]);
@@ -665,7 +665,7 @@ $.Class("PadClient",
         this.padcontent.append(div);
       }
 
-      //TODO: monkey patch divs.splice to use our custom splice function
+      // monkey patch divs.splice to use our custom splice function
       this.divs.original_splice = this.divs.splice;
       var _this = this;
       this.divs.splice = function () {
@@ -818,16 +818,16 @@ $.Class("PadClient",
      * @param {number} howMany - An integer indicating the number of old array elements to remove.
      * @param {array} elements - The elements to add to the array. In our case, these are lines.
      */
-    _spliceDivs: function (index, howMany, elements) {
-      elements = Array.prototype.slice.call(arguments, 2);
+    _spliceDivs: function (index, howMany/*, elements..*/) {
+      var elements = Array.prototype.slice.call(arguments, 2);
       // remove howMany divs starting from index. We need to remove them from
       // the DOM.
-      for (var i = index; i < index + howMany && i < this.divs.length; i++)
+      for (var i = index; i < (index + howMany) && i < this.divs.length; i++)
         this.divs[i].remove();
 
       // generate divs for the new elements:
       var newdivs = [];
-      for (i in elements)
+      for (var i=0; i<elements.length; i++)
         newdivs.push(this._getDivForLine(elements[i], this.alines[index + i]));
 
       // if we are splicing at the beginning of the array, we need to prepend
@@ -843,8 +843,7 @@ $.Class("PadClient",
       }
 
       // perform the splice on our array itself
-      // TODO: monkey patching divs.splice, so use divs.original_splice or something
-      args = [index, howMany].concat(newdivs);
+      var args = [index, howMany].concat(newdivs);
       return this.divs.original_splice.apply(this.divs, args);
     },
   }
