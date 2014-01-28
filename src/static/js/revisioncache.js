@@ -631,7 +631,7 @@ var AttribPool = require("./AttributePool");
 var domline = require("./domline").domline;
 $.Class("PadClient",
   {//static
-    USE_COMPOSE: false,
+    USE_COMPOSE: true,
     VERBOSE: true,
   },
   {//instance
