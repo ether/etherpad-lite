@@ -201,6 +201,8 @@ console.log('changesetAuthors',changesetAuthors,'visible authors: ',visibleAutho
       if (revnum < 0)
         revnum = 0;
 
+      this.slider.indicateTransition(revnum)
+
       var _this = this;
       this.connection.goToRevision(revnum, function (revision, timestamp) {
         console.log("[revisionslider > goToRevision > callback]", revision, timestamp);

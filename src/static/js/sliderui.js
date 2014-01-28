@@ -68,7 +68,7 @@ $.Class("SliderUI",
       max: 100,
       value: 0,
     }
-  , animationDuration: 200
+  , animationDuration: 250
   },
   {//instance
     init: function (element, timerEl, options) {
@@ -89,9 +89,12 @@ $.Class("SliderUI",
     _getStep: function () {
       return (this.element.width()) / (this.options.max * 1.0);
     },
-    render: function () {
+    render: function (duration) {
       var handle
         , left, handleWidth
+      
+      if(!duration) duration = SliderUI.animationDuration
+      
       for(var h in this.handles) {
         handle = this.handles[h]
         left = (handle.value * this._getStep())
@@ -99,14 +102,23 @@ $.Class("SliderUI",
 
         // animate slider handle
         handle.element.stop()
-        handle.element.animate({left: left-(handleWidth/2) }, SliderUI.animationDuration);
+        handle.element.animate({left: left-(handleWidth/2) }, duration);
       }
       
       // move the timer within the boundaries of the slider (centered above the handle if possible)
       var timerWidth = this.timerEl.width()
         , timerPos = Math.max(7, Math.min(left-(timerWidth/2)+(handleWidth/2), this.element.width()-timerWidth))
       this.timerEl.stop()
-      this.timerEl.animate({left: timerPos }, SliderUI.animationDuration);
+      this.timerEl.animate({left: timerPos }, duration);
+    },
+    
+    /**
+     * Starts moving the handle, even though the revision is not loaded, yet.
+     * @param value - The revision to move the handle towards
+     */
+    indicateTransition: function(value) {
+      this.handles[0].value = value
+      this.render(2000)
     },
     /**
      * Update the value in the UI. This should never be called internally.
