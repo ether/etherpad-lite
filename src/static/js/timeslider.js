@@ -25,7 +25,7 @@ var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 var hooks = require('./pluginfw/hooks');
 
-var token, padId, export_links;
+var token, padId;
 
 $.Class("SocketClient",
   { //statics
@@ -348,17 +348,6 @@ function init(baseURL) {
           //initialize export ui
           require('./pad_impexp').padimpexp.init();
 
-          //change export urls when the slider moves
-          //TODO: fix this to use the slider.change event
-          //BroadcastSlider.onSlider(function(revno)
-          //{
-            //// export_links is a jQuery Array, so .each is allowed.
-            //export_links.each(function()
-            //{
-              //this.setAttribute('href', this.href.replace( /(.+?)\/\w+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
-            //});
-          //});
-
           //fire all start functions of these scripts, formerly fired with window.load
           for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
           {
@@ -366,9 +355,6 @@ function init(baseURL) {
           }
           //$("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
         });
-
-    //get all the export links
-    export_links = $('#export > .exportlink');
 
     if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
       $("#returnbutton").attr("href", document.referrer);

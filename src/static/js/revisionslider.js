@@ -24,7 +24,7 @@ $.Class("RevisionSlider",
       // if there was a revision specified in the 'location.hash', jump to it.
       if (window.location.hash.length > 1) {
         var rev = Number(window.location.hash.substr(1));
-        if(!isNaN(rev) && this.connection.getHeadRevision().revnum >= rev)
+        if(!isNaN(rev) && !(rev > this.revision_number))
           this.revision_number = rev;
       }
 
@@ -73,6 +73,8 @@ $.Class("RevisionSlider",
       this.elements.revision_label = root_element.find("#revision_label");
       this.elements.revision_date = root_element.find("#revision_date");
       this.elements.authors = root_element.find("#authorsList");
+      this.elements.export_links = $('.timeslider #export > .exportlink');
+
     },
     /**
      * Create 'star' handles on the slider for each saved revision.
@@ -140,6 +142,19 @@ $.Class("RevisionSlider",
         this.elements.button_left.removeClass("disabled");
 
       this.renderAuthors();
+      this.renderExports();
+    },
+    
+    renderExports: function() {
+      var _this = this
+        , revnum = _this.revision_number -1
+
+      if(revnum < 0) revnum = 0
+
+      this.elements.export_links.each(function() {
+        var newLink = this.href.replace( /(.+?)\/\w+\/(\d+\/)?export/ , '$1/' + _this.connection.padID + '/' + revnum + '/export')
+        this.setAttribute('href', newLink);
+      });
     },
 
 
