@@ -1570,6 +1570,8 @@ exports.padUsers = function (padID, callback) {
         result.push(author);
         callback();
       });
+    } else {
+      callback();
     }
   }, function(err) {
     if(ERR(err, callback)) return;
