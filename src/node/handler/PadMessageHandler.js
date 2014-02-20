@@ -167,7 +167,8 @@ exports.handleMessage = function(client, message)
   {
     return;
   }
-  if(!sessioninfos[client.id]) {
+  var thisSession = sessioninfos[client.id]
+  if(!thisSession) {
     messageLogger.warn("Dropped message from an unknown connection.")
     return;
   }
@@ -196,7 +197,7 @@ exports.handleMessage = function(client, message)
     } else if(message.type == "CHANGESET_REQ") {
       handleChangesetRequest(client, message);
     } else if(message.type == "COLLABROOM") {
-      if (sessioninfos[client.id].readonly) {
+      if (thisSession.readonly) {
         messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
       } else if (message.data.type == "USER_CHANGES") {
         stats.counter('pendingEdits').inc()
