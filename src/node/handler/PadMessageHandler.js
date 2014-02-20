@@ -588,6 +588,14 @@ function handleUserChanges(data, cb)
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
     return cb();
   }
+  //TODO: this might happen with other messages too => find one place to copy the session 
+  //and always use the copy. atm a message will be ignored if the session is gone even 
+  //if the session was valid when the message arrived in the first place
+  if(!sessioninfos[client.id])
+  {
+    messageLogger.warn("Dropped message, disconnect happened in the mean time");
+    return cb();
+  }
 
   //get all Vars we need
   var baseRev = message.data.baseRev;
