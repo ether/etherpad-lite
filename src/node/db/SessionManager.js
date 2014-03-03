@@ -21,7 +21,7 @@
 
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("../utils/randomstring");
 var db = require("./DB").db;
 var async = require("async");
 var groupMangager = require("./GroupManager");

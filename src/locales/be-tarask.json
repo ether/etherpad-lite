@@ -2,7 +2,8 @@
     "@metadata": {
         "authors": [
             "Jim-by",
-            "Wizardist"
+            "Wizardist",
+            "Red Winged Duck"
         ]
     },
     "index.newPad": "Стварыць",
@@ -13,7 +14,7 @@
     "pad.toolbar.strikethrough.title": "Закрэсьліваньне",
     "pad.toolbar.ol.title": "Упарадкаваны сьпіс",
     "pad.toolbar.ul.title": "Неўпарадкаваны сьпіс",
-    "pad.toolbar.indent.title": "Водступ",
+    "pad.toolbar.indent.title": "Водступ (TAB)",
     "pad.toolbar.unindent.title": "Выступ",
     "pad.toolbar.undo.title": "Скасаваць(Ctrl-Z)",
     "pad.toolbar.redo.title": "Вярнуць (Ctrl-Y)",

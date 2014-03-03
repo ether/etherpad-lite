@@ -191,9 +191,18 @@ window.html10n = (function(window, document, undefined) {
       return
     }
 
+    // dat alng ain't here, man!
     if (!data[lang]) {
-      cb(new Error('Couldn\'t find translations for '+lang))
-      return
+      var msg = 'Couldn\'t find translations for '+lang
+        , l
+      if(~lang.indexOf('-')) lang = lang.split('-')[0] // then let's try related langs
+      for(l in data) {
+        if(lang != l && l.indexOf(lang) === 0 && data[l]) {
+          lang = l
+          break;
+        }
+      }
+      if(lang != l) return cb(new Error(msg))
     }
     
     if ('string' == typeof data[lang]) {
@@ -898,11 +907,22 @@ window.html10n = (function(window, document, undefined) {
       var lang
       langs.reverse()
       
-      // loop through priority array...
+      // loop through the priority array...
       for (var i=0, n=langs.length; i < n; i++) {
         lang = langs[i]
         
-        if(!lang || !(lang in that.loader.langs)) continue;
+        if(!lang) continue;
+        if(!(lang in that.loader.langs)) {// uh, we don't have this lang availbable..
+          // then check for related langs
+          if(~lang.indexOf('-')) lang = lang.split('-')[0];
+          for(var l in that.loader.langs) {
+            if(lang != l && l.indexOf(lang) === 0) {
+              lang = l
+              break;
+            }
+          }
+          if(lang != l) continue;
+        }
         
         // ... and apply all strings of the current lang in the list
         // to our build object

@@ -81,7 +81,7 @@ $(document).ready(function () {
         if(attr == "name"){ // Hack to rewrite URLS into name
           row.find(".name").html("<a target='_blank' title='Plugin details' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin['name'].substr(3)+"</a>"); // remove 'ep_'
         }else{
-          row.find("." + attr).html(plugin[attr]);
+          row.find("." + attr).text(plugin[attr]);
         }
       }
       row.find(".version").html( plugin.version );
