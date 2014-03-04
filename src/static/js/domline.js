@@ -101,6 +101,17 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     {
       var listType = /(?:^| )list:(\S+)/.exec(cls);
       var start = /(?:^| )start:(\S+)/.exec(cls);
+
+      _.map(hooks.callAll("aceDomLinePreProcessLineAttributes", {
+        domline: domline,
+        cls: cls
+      }), function(modifier)
+      {
+        preHtml += modifier.preHtml;
+        postHtml += modifier.postHtml;
+        processedMarker |= modifier.processedMarker;
+      });
+
       if (listType)
       {
         listType = listType[1];
@@ -108,8 +119,13 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         {
           if(listType.indexOf("number") < 0)
           {
-            preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ul>';
+            if(!preHtml){
+              preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              postHtml = '</li></ul>';
+            }else{
+              preHtml += '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              postHtml = '</li></ul>' + postHtml;
+            }
           }
           else
           {
@@ -117,16 +133,27 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
               if(start[1] == 1){ // if its the first one at this level?
                 lineClass = lineClass + " " + "list-start-" + listType; // Add start class to DIV node
               }
-              preHtml = '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              if(!preHtml){
+                preHtml = '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              }else{
+                preHtml += '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+              }
             }else{
-               preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
+               if(!preHtml){
+                 preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
+               }else{
+                 preHtml += '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
+               }
             }
-            postHtml = '</li></ol>';
+            if(!postHtml){
+              postHtml = '</li></ol>';
+            }else{
+              postHtml = '</li></ol>';
+            }
           }
         } 
         processedMarker = true;
       }
-      
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
         domline: domline,
         cls: cls
@@ -136,13 +163,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         postHtml += modifier.postHtml;
         processedMarker |= modifier.processedMarker;
       });
-      
       if( processedMarker ){
         result.lineMarker += txt.length;
         return; // don't append any text
       } 
-
-
     }
     var href = null;
     var simpleTags = null;
@@ -234,10 +258,9 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       result.node.innerHTML = curHTML;
     }
     if (lineClass !== null) result.node.className = lineClass;
-	
-	hooks.callAll("acePostWriteDomLineHTML", {
-        node: result.node
-	});
+    hooks.callAll("acePostWriteDomLineHTML", {
+      node: result.node
+   });
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;
@@ -245,7 +268,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   {
     return curHTML || '';
   };
-
   return result;
 };
 
