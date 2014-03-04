@@ -260,7 +260,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     if (lineClass !== null) result.node.className = lineClass;
     hooks.callAll("acePostWriteDomLineHTML", {
       node: result.node
-   });
+    });
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;
