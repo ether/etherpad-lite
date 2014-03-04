@@ -5248,6 +5248,17 @@ function Ace2Inner(){
         if (browser.mozilla) $(root).addClass("mozilla");
         if (browser.safari) $(root).addClass("safari");
         if (browser.msie) $(root).addClass("msie");
+
+        // Temporary bodge in listen for events on images -- CAKE
+        $.getScript("../static/js/jquery_ui.js");
+        $(root).on('click', 'img', function(e){
+top.console.log(e);
+          top.console.log("FUCKKK");
+          $(e.target).resizable({ proxy: 'proxy', aspectRatio: 'preserve' }); 
+          $(e.target).addClass("resizing");
+// $(e.target).remove();
+        });
+
         if (browser.msie)
         {
           // cache CSS background images
@@ -5293,6 +5304,13 @@ function Ace2Inner(){
       isSetUp = true;
     });
   }
+
+/*
+  top.console.log("listening for click events");
+  $('#innerdocbody').on('hover', 'div', function(){
+    top.console.log("FUCKKK");
+  });
+*/
 
 }
 
