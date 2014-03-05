@@ -119,13 +119,8 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         {
           if(listType.indexOf("number") < 0)
           {
-            if(!preHtml){
-              preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-              postHtml = '</li></ul>';
-            }else{
-              preHtml += '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-              postHtml = '</li></ul>' + postHtml;
-            }
+            preHtml += '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            postHtml = '</li></ul>' + postHtml;
           }
           else
           {
@@ -133,23 +128,11 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
               if(start[1] == 1){ // if its the first one at this level?
                 lineClass = lineClass + " " + "list-start-" + listType; // Add start class to DIV node
               }
-              if(!preHtml){
-                preHtml = '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-              }else{
-                preHtml += '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-              }
+              preHtml += '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
             }else{
-               if(!preHtml){
-                 preHtml = '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
-               }else{
-                 preHtml += '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
-               }
+              preHtml += '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
             }
-            if(!postHtml){
-              postHtml = '</li></ol>';
-            }else{
-              postHtml = '</li></ol>';
-            }
+            postHtml += '</li></ol>';
           }
         } 
         processedMarker = true;
