@@ -140,7 +140,7 @@ var padeditbar = (function()
         }
         else if (cmd == 'import_export')
         {
-	      self.toggleDropDown("importexport");
+          self.toggleDropDown("importexport");
         }
         else if (cmd == 'savedRevision')
         {

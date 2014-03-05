@@ -294,15 +294,14 @@ returns the text of a pad formatted as HTML
   * `{code: 0, message:"ok", data: {html:"Welcome Text<br>More Text"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-#### setHTML(padID, text)
+#### setHTML(padID, html)
  * API >= 1
 
-sets the html of a pad
+sets the text of a pad based on HTML, HTML must be well formed. Malformed HTML will send a warning to the API log.
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
-  * `{code: 1, message:"text too long", data: null}`
 
 #### getAttributePool(padID)
  * API >= 1.2.8

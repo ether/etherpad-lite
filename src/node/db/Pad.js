@@ -6,7 +6,6 @@
 var ERR = require("async-stacktrace");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var db = require("./DB").db;
 var async = require("async");
 var settings = require('../utils/Settings');
@@ -203,7 +202,11 @@ Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targe
       {
         curRev++;
         var cs = changesets[curRev];
-        atext = Changeset.applyToAText(cs, atext, apool);
+        try{
+          atext = Changeset.applyToAText(cs, atext, apool);
+        }catch(e) {
+          return callback(e)
+        }
       }
 
       callback(null);
@@ -463,7 +466,7 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         
         if(exists == true)
         {
-          if (!force)	
+          if (!force)
           {
             console.log("erroring out without force");
             callback(new customError("destinationID already exists","apierror"));
@@ -635,7 +638,7 @@ Pad.prototype.remove = function remove(callback) {
 
           authorIDs.forEach(function (authorID)
           {
-        	authorManager.removePad(authorID, padID);
+            authorManager.removePad(authorID, padID);
           });
 
           callback();
