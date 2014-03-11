@@ -95,13 +95,25 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   var lineClass = 'ace-line';
   result.appendSpan = function(txt, cls)
   {
-   console.log("HAM I HERE!");
     var processedMarker = false;
     // Handle lineAttributeMarker, if present
     if (cls.indexOf(lineAttributeMarker) >= 0)
     {
       var listType = /(?:^| )list:(\S+)/.exec(cls);
       var start = /(?:^| )start:(\S+)/.exec(cls);
+
+      console.log("WUT", cls, lineAttributeMarker)
+
+      _.map(hooks.callAll("aceDomLinePreProcessLineAttributes", {
+        domline: domline,
+        cls: cls
+      }), function(modifier)
+      {
+        preHtml += modifier.preHtml;
+        postHtml += modifier.postHtml;
+        processedMarker |= modifier.processedMarker;
+      });
+
       if (listType)
       {
         listType = listType[1];
@@ -127,9 +139,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         } 
         processedMarker = true;
       }
-
-      //doesn't get here..
-
+      
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
         domline: domline,
         cls: cls
@@ -237,10 +247,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       result.node.innerHTML = curHTML;
     }
     if (lineClass !== null) result.node.className = lineClass;
-
-    hooks.callAll("acePostWriteDomLineHTML", {
-      node: result.node
-    });
+	
+	hooks.callAll("acePostWriteDomLineHTML", {
+        node: result.node
+	});
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;

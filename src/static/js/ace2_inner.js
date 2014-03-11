@@ -5251,12 +5251,17 @@ function Ace2Inner(){
 
         // Temporary bodge in listen for events on images -- CAKE
         $.getScript("../static/js/jquery_ui.js");
-        $(root).on('click', 'img', function(e){
-top.console.log(e);
-          top.console.log("FUCKKK");
-          $(e.target).resizable({ proxy: 'proxy', aspectRatio: 'preserve' }); 
-          $(e.target).addClass("resizing");
-// $(e.target).remove();
+
+        $(root).on('mouseup', 'img', function(e){
+top.console.log("NEW WIDTH mouseup", e.target.width);
+
+          // disable content editable
+          // document.execCommand("enableObjectResizing", false, false);
+          // e.target.contentEditable = false;
+          // make it resizable
+//          $(e.target).resizable({ proxy: 'proxy', aspectRatio: 'preserve' });  // I fuck shit up in FF because I modify the DOM
+          top.console.log("All done");
+// ui-resizable-handle ui-resizable-e
         });
 
         if (browser.msie)
