@@ -2,7 +2,8 @@
     "@metadata": {
         "authors": [
             "Teslaton",
-            "Kusavica"
+            "Kusavica",
+            "Rudko"
         ]
     },
     "index.newPad": "Nový Pad",
@@ -67,6 +68,7 @@
     "pad.modals.initsocketfail.cause": "Príčinou je pravdepodobne problém s prehliadačom alebo internetovým pripojením.",
     "pad.modals.slowcommit.explanation": "Server neodpovedá.",
     "pad.modals.slowcommit.cause": "Príčinou môže byť problém so sieťovým pripojením.",
+    "pad.modals.badChangeset.explanation": "Editácia, kterú ste vykonali byla synchronizáciou serveru vyhodnotená ako nepovolená.",
     "pad.modals.deleted": "Odstránené.",
     "pad.modals.deleted.explanation": "Tento Pad bol odstránený.",
     "pad.modals.disconnected": "Boli ste odpojení.",

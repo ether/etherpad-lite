@@ -10,7 +10,7 @@
     },
     "index.newPad": "പുതിയ പാഡ്",
     "index.createOpenPad": "അല്ലെങ്കിൽ പേരുപയോഗിച്ച് പാഡ് സൃഷ്ടിക്കുക/തുറക്കുക:",
-    "pad.toolbar.bold.title": "കടുപ്പത്തിൽ (Ctrl-B)",
+    "pad.toolbar.bold.title": "കടുപ്പത്തിലെഴുതുക (Ctrl-B)",
     "pad.toolbar.italic.title": "ചെരിച്ചെഴുതുക (Ctrl-I)",
     "pad.toolbar.underline.title": "അടിവരയിടുക (Ctrl-U)",
     "pad.toolbar.strikethrough.title": "വെട്ടുക",

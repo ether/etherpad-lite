@@ -64,7 +64,7 @@
     "pad.modals.looping.cause": "Можеби сте поврзани преку нескладен огнен ѕид или застапник.",
     "pad.modals.initsocketfail": "Опслужувачот е недостапен.",
     "pad.modals.initsocketfail.explanation": "Не можев да се поврзам со усогласителниот опслужувач.",
-    "pad.modals.initsocketfail.cause": "Ова веројатно се должи на проблем со вашиот прелистувач или врската со интернет.",
+    "pad.modals.initsocketfail.cause": "Ова веројатно се должи на проблем со вашиот прелистувач или семрежната врска.",
     "pad.modals.slowcommit.explanation": "Опслужувачот не се одѕива.",
     "pad.modals.slowcommit.cause": "Ова може да се должи на проблеми со мрежното поврзување.",
     "pad.modals.badChangeset.explanation": "Опслужувачот за усогласување го смета уредувањето што го направивте за недопуштено.",
