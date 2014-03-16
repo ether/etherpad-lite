@@ -12,9 +12,9 @@ var _ = require("underscore")
 
 defaultButtonAttributes = function (name, overrides) {
   return {
-    key: name,
+    command: name,
     localizationId: "pad.toolbar." + name + ".title",
-    icon: "buttonicon-" + name
+    class: "buttonicon-" + name
   };
 };
 
@@ -96,11 +96,11 @@ _.extend(Button.prototype, {
   render: function () {
     var liAttributes = {
       "data-type": "button",
-      "data-key": this.attributes.key,
+      "data-key": this.attributes.command,
     };
     return tag("li", liAttributes,
       tag("a", { "class": this.grouping, "data-l10n-id": this.attributes.localizationId },
-        tag("span", { "class": "buttonicon " + this.attributes.icon })
+        tag("span", { "class": "buttonicon " + this.attributes.class })
       )
     );
   }
@@ -160,43 +160,43 @@ module.exports = {
     strikethrough: defaultButtonAttributes("strikethrough"),
 
     orderedlist: {
-      key: "insertorderedlist",
+      command: "insertorderedlist",
       localizationId: "pad.toolbar.ol.title",
-      icon: "buttonicon-insertorderedlist"
+      class: "buttonicon-insertorderedlist"
     },
 
     unorderedlist: {
-      key: "insertunorderedlist",
+      command: "insertunorderedlist",
       localizationId: "pad.toolbar.ul.title",
-      icon: "buttonicon-insertunorderedlist"
+      class: "buttonicon-insertunorderedlist"
     },
 
     indent: defaultButtonAttributes("indent"),
     outdent: {
-      key: "outdent",
+      command: "outdent",
       localizationId: "pad.toolbar.unindent.title",
-      icon: "buttonicon-outdent"
+      class: "buttonicon-outdent"
     },
 
     undo: defaultButtonAttributes("undo"),
     redo: defaultButtonAttributes("redo"),
 
     clearauthorship: {
-      key: "clearauthorship",
+      command: "clearauthorship",
       localizationId: "pad.toolbar.clearAuthorship.title",
-      icon: "buttonicon-clearauthorship"
+      class: "buttonicon-clearauthorship"
     },
 
     importexport: {
-      key: "import_export",
+      command: "import_export",
       localizationId: "pad.toolbar.import_export.title",
-      icon: "buttonicon-import_export"
+      class: "buttonicon-import_export"
     },
 
     timeslider: {
-      key: "showTimeSlider",
+      command: "showTimeSlider",
       localizationId: "pad.toolbar.timeslider.title",
-      icon: "buttonicon-history"
+      class: "buttonicon-history"
     },
 
     savedrevision: defaultButtonAttributes("savedRevision"),
