@@ -105,6 +105,11 @@ exports.minify = true;
 exports.abiword = null;
 
 /**
+ * The default buttons we should show on the editbar
+ */ 
+exports.toolbarItems = ["bold", "italic", "underline", "orderedList", "button", "indent", "outdent", "undo", "redo", "clearAuthorship", "importExport", "timeslider", "saveRevision", "settings", "shareEmbed", "users"];
+
+/**
  * The log level of log4js
  */
 exports.loglevel = "INFO";
@@ -208,6 +213,18 @@ exports.reloadSettings = function reloadSettings() {
   if(exports.dbType === "dirty"){
     console.warn("DirtyDB is used. This is fine for testing but not recommended for production.");
   }
+
+  //checks if any toolbar items shouldn't be visible
+  if( settings.toolbarItems ){ // if we have them set..
+    for(var i in exports.toolbarItems){ // for each setting in exports
+      // does it exist in the settings file?
+      var exists = settings.toolbarItems.indexOf(exports.toolbarItems[i] !== -1);
+      if(!exists){
+        exports.toolbarItems.splice(i,1); // if not remove it from the array of buttons
+      }
+    }
+  }
+
 };
 
 // initially load settings
