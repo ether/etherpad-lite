@@ -56,11 +56,13 @@
             </div>
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
+                <% if(settings.toolbarItems.indexOf("bold") !== -1){ %>
                 <li class="acl-write" id="bold" data-key="bold">
                     <a class="grouped-left" data-l10n-id="pad.toolbar.bold.title">
                       <span class="buttonicon buttonicon-bold"></span>
                     </a>
                 </li>
+                <% } %>
                 <li class="acl-write" id="italic" data-key="italic">
                     <a class="grouped-middle" data-l10n-id="pad.toolbar.italic.title">
                       <span class="buttonicon buttonicon-italic"></span>
