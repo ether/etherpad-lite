@@ -139,6 +139,8 @@ var padeditbar = (function()
   var self = {
     init: function() {
       var self = this;
+      self.dropdowns = [];
+      
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
       $("#editbar [data-key]").each(function () {
@@ -170,6 +172,7 @@ var padeditbar = (function()
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
+      self.dropdowns.push(dropdown)
       this.registerCommand(cmd, function () {
         self.toggleDropDown(dropdown);
       });
@@ -189,19 +192,17 @@ var padeditbar = (function()
     },
     toggleDropDown: function(moduleName, cb)
     {
-      var modules = ["settings", "connectivity", "importexport", "embed", "users"];
-
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
         var returned = false
-        for(var i=0;i<modules.length;i++)
+        for(var i=0;i<self.dropdowns.length;i++)
         {
           //skip the userlist
-          if(modules[i] == "users")
+          if(self.dropdowns[i] == "users")
             continue;
 
-          var module = $("#" + modules[i]);
+          var module = $("#" + self.dropdowns[i]);
 
           if(module.css('display') != "none")
           {
@@ -216,18 +217,18 @@ var padeditbar = (function()
       {
         // hide all modules that are not selected and remove highlighting
         // respectively add highlighting to the corresponding button
-        for(var i=0;i<modules.length;i++)
+        for(var i=0;i<self.dropdowns.length;i++)
         {
-          var module = $("#" + modules[i]);
+          var module = $("#" + self.dropdowns[i]);
 
           if(module.css('display') != "none")
           {
-            $("#" + modules[i] + "link").removeClass("selected");
+            $("#" + self.dropdowns[i] + "link").removeClass("selected");
             module.slideUp("fast");
           }
-          else if(modules[i]==moduleName)
+          else if(self.dropdowns[i]==moduleName)
           {
-            $("#" + modules[i] + "link").addClass("selected");
+            $("#" + self.dropdowns[i] + "link").addClass("selected");
             module.slideDown("fast", cb);
           }
         }
@@ -271,6 +272,7 @@ var padeditbar = (function()
     toolbar.registerDropdownCommand("settings");
     toolbar.registerDropdownCommand("connectivity");
     toolbar.registerDropdownCommand("import_export", "importexport");
+    toolbar.registerDropdownCommand("embed");
 
     toolbar.registerCommand("embed", function () {
       toolbar.setEmbedLinks();
