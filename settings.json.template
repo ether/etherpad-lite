@@ -102,6 +102,9 @@
 
   // restrict socket.io transport methods
   "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
+
+  // Toolbar items
+  "toolbarItems": ["bold", "italic", "underline", "orderedList", "button", "indent", "outdent", "undo", "redo", "clearAuthorship", "importExport", "timeslider", "saveRevision", "settings", "shareEmbed", "users"],
   
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO",
