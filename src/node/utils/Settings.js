@@ -80,6 +80,23 @@ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
 exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad on Github: http:\/\/j.mp/ep-lite\n";
 
 /**
+ * The toolbar buttons and order.
+ */
+exports.toolbar = {
+  left: [
+    ["bold", "italic", "underline", "strikethrough"],
+    ["orderedlist", "unorderedlist", "indent", "outdent"],
+    ["undo", "redo"],
+    ["clearauthorship"]
+  ],
+  right: [
+    ["importexport", "timeslider", "savedrevision"],
+    ["settings", "embed"],
+    ["showusers"]
+  ]
+}
+
+/**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
  */
 exports.requireSession = false;
