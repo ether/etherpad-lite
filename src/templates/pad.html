@@ -63,16 +63,20 @@
                     </a>
                 </li>
                 <% } %>
+                <% if(settings.toolbarItems.indexOf("italic") !== -1){ %>
                 <li class="acl-write" id="italic" data-key="italic">
                     <a class="grouped-middle" data-l10n-id="pad.toolbar.italic.title">
                       <span class="buttonicon buttonicon-italic"></span>
                     </a>
                 </li>
+                <% } %>
+                <% if(settings.toolbarItems.indexOf("underline") !== -1){ %>
                 <li class="acl-write" id="underline" data-key="underline">
                     <a class="grouped-middle" data-l10n-id="pad.toolbar.underline.title">
                       <span class="buttonicon buttonicon-underline"></span>
                     </a>
                 </li>
+                <% } %>
                 <li class="acl-write" id="strikethrough" data-key="strikethrough">
                     <a class="grouped-right" data-l10n-id="pad.toolbar.strikethrough.title">
                       <span class="buttonicon buttonicon-strikethrough"></span>
