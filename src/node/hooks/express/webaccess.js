@@ -41,7 +41,7 @@ exports.basicAuth = function (req, res, next) {
         req.session.user = settings.users[username];
         return cb(true);
       }
-        return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(cb));
+      return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(cb));
     }
     hooks.aCallFirst("authenticate", {req: req, res:res, next:next}, hookResultMangle(cb));
   }
