@@ -15,7 +15,8 @@
             "Quenenni",
             "Rastus Vernon",
             "Stephane Cottin",
-            "Tux-tn"
+            "Tux-tn",
+            "Maxim21"
         ]
     },
     "index.newPad": "Nouveau pad",
@@ -26,8 +27,8 @@
     "pad.toolbar.strikethrough.title": "Barré",
     "pad.toolbar.ol.title": "Liste ordonnée",
     "pad.toolbar.ul.title": "Liste non ordonnée",
-    "pad.toolbar.indent.title": "Indenter",
-    "pad.toolbar.unindent.title": "Désindenter",
+    "pad.toolbar.indent.title": "Indenter (TAB)",
+    "pad.toolbar.unindent.title": "Désindenter (Maj+TAB)",
     "pad.toolbar.undo.title": "Annuler (Ctrl-Z)",
     "pad.toolbar.redo.title": "Rétablir (Ctrl-Y)",
     "pad.toolbar.clearAuthorship.title": "Effacer les couleurs identifiant les auteurs",
