@@ -1372,7 +1372,7 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
       while (compositeStart < endNum)
       {
         var compositeEnd = compositeStart + granularity;
-        if (compositeEnd > endNum || compositeEnd > head_revision)
+        if (compositeEnd > endNum || compositeEnd > head_revision+1)
         {
           break;
         }
@@ -1500,8 +1500,8 @@ function composePadChangesets(padId, startNum, endNum, callback)
       var changesetsNeeded=[];
 
       var headNum = pad.getHeadRevisionNumber();
-      if (endNum > headNum)
-        endNum = headNum;
+      if (endNum > headNum+1)
+        endNum = headNum+1;
       if (startNum < 0)
         startNum = 0;
       //create a array for all changesets, we will
