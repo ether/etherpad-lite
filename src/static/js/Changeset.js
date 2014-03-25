@@ -762,7 +762,8 @@ TextLinesMutator.prototype.insert = function(text, L) {
       }
     } else {
       var sline = this._putCurLineInSplice();
-      this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + text + this._curSplice[sline].substring(this._curCol);
+      var theLine = this._curSplice[sline];
+      this._curSplice[sline] = theLine.substring(0, this._curCol) + text + theLine.substring(this._curCol);
       this._curCol += text.length;
     }
   }
