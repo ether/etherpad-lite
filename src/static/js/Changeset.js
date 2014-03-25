@@ -42,8 +42,8 @@ exports.error = function error(msg) {
 };
 
 /**
- * This method is user for assertions with Messages 
- * if assert fails, the error function called.
+ * This method is used for assertions with Messages 
+ * if assert fails, the error function is called.
  * @param b {boolean} assertion condition
  * @param msgParts {string} error to be passed if it fails
  */
@@ -120,7 +120,6 @@ function OpIterator(opsStr, optStartIndex) {
     return new OpIterator(opsStr, optStartIndex);
   }
 
-  //print(opsStr);
   this._regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
   this._curIndex = (optStartIndex || 0);
   this._prevIndex = this.curIndex;
@@ -640,10 +639,6 @@ TextLinesMutator.prototype._isCurLineInSplice = function() {
   return (this._curLine - this._curSplice[0] < (this._curSplice.length - 2));
 }
 
-TextLinesMutator.prototype._debugPrint = function(typ) {
-  print(typ + ": " + this._curSplice.toSource() + " / " + this._curLine + "," + this._curCol + " / " + this._lines.toSource());
-}
-
 TextLinesMutator.prototype._putCurLineInSplice = function() {
   if (!this._isCurLineInSplice()) {
     this._curSplice.push(this._lines.get(this._curSplice[0] + this._curSplice[1]));
@@ -674,14 +669,7 @@ TextLinesMutator.prototype.skipLines = function(L, includeInSplice) {
       this._curLine += L;
       this._curCol = 0;
     }
-    //print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" / "+curSplice[1]+" / "+lines.length);
-/*if (inSplice && (! isCurLineInSplice()) && (curSplice[0] + curSplice[1] < lines.length)) {
-  print("BLAH");
-  putCurLineInSplice();
-}*/
-    // tests case foo in remove(), which isn't otherwise covered in current impl
   }
-  //debugPrint("skip");
 }
 
 TextLinesMutator.prototype.skip = function(N, L, includeInSplice) {
@@ -696,7 +684,6 @@ TextLinesMutator.prototype.skip = function(N, L, includeInSplice) {
         this._putCurLineInSplice();
       }
       this._curCol += N;
-      //debugPrint("skip");
     }
   }
 }
@@ -714,7 +701,6 @@ TextLinesMutator.prototype.removeLines = function(L) {
     }
 
     if (this._isCurLineInSplice()) {
-      //print(curCol);
       if (this._curCol == 0) {
         removed = this._curSplice.pop();
         removed += this._nextKLinesText(L - 1);
@@ -731,7 +717,6 @@ TextLinesMutator.prototype.removeLines = function(L) {
       removed = this._nextKLinesText(L);
       this._curSplice[1] += L;
     }
-    //debugPrint("remove");
   }
   return removed;
 }
@@ -748,7 +733,6 @@ TextLinesMutator.prototype.remove = function(N, L) {
       var sline = this._putCurLineInSplice();
       removed = this._curSplice[sline].substring(this._curCol, this._curCol + N);
       this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + this._curSplice[sline].substring(this._curCol + N);
-      //debugPrint("remove");
     }
   }
   return removed;
@@ -762,13 +746,6 @@ TextLinesMutator.prototype.insert = function(text, L) {
     if (L) {
       var newLines = exports.splitTextLines(text);
       if (this._isCurLineInSplice()) {
-        //if (curCol == 0) {
-        //curSplice.length--;
-        //curSplice[1]--;
-        //Array.prototype.push.apply(curSplice, newLines);
-        //curLine += newLines.length;
-        //}
-        //else {
         var sline = this._curSplice.length - 1;
         var theLine = this._curSplice[sline];
         var lineCol = this._curCol;
@@ -779,7 +756,6 @@ TextLinesMutator.prototype.insert = function(text, L) {
         this._curLine += newLines.length;
         this._curSplice.push(theLine.substring(lineCol));
         this._curCol = 0;
-        //}
       } else {
         Array.prototype.push.apply(this._curSplice, newLines);
         this._curLine += newLines.length;
@@ -789,12 +765,10 @@ TextLinesMutator.prototype.insert = function(text, L) {
       this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + text + this._curSplice[sline].substring(this._curCol);
       this._curCol += text.length;
     }
-    //debugPrint("insert");
   }
 }
 
 TextLinesMutator.prototype.hasMore = function() {
-    //print(lines.length+" / "+inSplice+" / "+(curSplice.length - 2)+" / "+curSplice[1]);
   var docLines = this._lines.length();
   if (this._inSplice) {
     docLines += this._curSplice.length - 2 - this._curSplice[1];
@@ -804,7 +778,6 @@ TextLinesMutator.prototype.hasMore = function() {
 
 TextLinesMutator.prototype.close = function() {
   this._inSplice && this._leaveSplice();
-  //debugPrint("close");
 }
 
 /**
@@ -834,7 +807,6 @@ exports.applyZip = function (in1, idx1, in2, idx2, func) {
     if ((!op2.opcode) && iter2.hasNext()) iter2.next(op2);
     func(op1, op2, opOut);
     if (opOut.opcode) {
-      //print(opOut.toSource());
       assem.append(opOut);
       opOut.opcode = '';
     }
@@ -1002,7 +974,6 @@ exports.composeAttributes = function (att1, att2, resultIsMutation, pool) {
   for (var i = 0; i < atts.length; i++) {
     s += '*' + exports.numToString(pool.putAttrib(atts[i]));
   }
-  //print(att1+" / "+att2+" / "+buf.toString());
   return s;
 };
 
@@ -1014,7 +985,6 @@ exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
   // attOp is the op from the sequence that is being operated on, either an
   // attribution string or the earlier of two exportss being composed.
   // pool can be null if definitely not needed.
-  //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
   if (attOp.opcode == '-') {
     exports.copyOp(attOp, opOut);
     attOp.opcode = '';
@@ -1110,15 +1080,7 @@ exports.applyToAttribution = function (cs, astr, pool) {
   });
 };
 
-/*exports.oneInsertedLineAtATimeOpIterator = function(opsStr, optStartIndex, charBank) {
-  var iter = exports.opIterator(opsStr, optStartIndex);
-  var bankIndex = 0;
-
-};*/
-
 exports.mutateAttributionLines = function (cs, lines, pool) {
-  //dmesg(cs);
-  //dmesg(lines.toSource()+" ->");
   var unpacked = exports.unpack(cs);
   var csIter = exports.opIterator(unpacked.ops);
   var csBank = unpacked.charBank;
@@ -1146,7 +1108,6 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
   var lineAssem = null;
 
   function outputMutOp(op) {
-    //print("outputMutOp: "+op.toSource());
     if (!lineAssem) {
       lineAssem = exports.mergingOpAssembler();
     }
@@ -1166,15 +1127,11 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
     if ((!csOp.opcode) && csIter.hasNext()) {
       csIter.next(csOp);
     }
-    //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
-    //print(csOp.opcode+"/"+csOp.lines+"/"+csOp.attribs+"/"+lineAssem+"/"+lineIter+"/"+(lineIter?lineIter.hasNext():null));
-    //print("csOp: "+csOp.toSource());
     if ((!csOp.opcode) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       break; // done
     } else if (csOp.opcode == '=' && csOp.lines > 0 && (!csOp.attribs) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       // skip multiple lines; this is what makes small changes not order of the document size
       mut.skipLines(csOp.lines);
-      //print("skipped: "+csOp.lines);
       csOp.opcode = '';
     } else if (csOp.opcode == '+') {
       if (csOp.lines > 1) {
@@ -1195,7 +1152,6 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
       if ((!attOp.opcode) && isNextMutOp()) {
         nextMutOp(attOp);
       }
-      //print("attOp: "+attOp.toSource());
       exports._slicerZipperFunc(attOp, csOp, opOut, pool);
       if (opOut.opcode) {
         outputMutOp(opOut);
@@ -1206,8 +1162,6 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
 
   exports.assert(!lineAssem, "line assembler not finished");
   mut.close();
-
-  //dmesg("-> "+lines.toSource());
 };
 
 /**
@@ -1291,11 +1245,6 @@ exports.compose = function (cs1, cs2, pool) {
   var bankAssem = exports.stringAssembler();
 
   var newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, function (op1, op2, opOut) {
-    //var debugBuilder = exports.stringAssembler();
-    //debugBuilder.append(exports.opString(op1));
-    //debugBuilder.append(',');
-    //debugBuilder.append(exports.opString(op2));
-    //debugBuilder.append(' / ');
     var op1code = op1.opcode;
     var op2code = op2.opcode;
     if (op1code == '+' && op2code == '-') {
@@ -1309,13 +1258,6 @@ exports.compose = function (cs1, cs2, pool) {
         bankAssem.append(bankIter1.take(opOut.chars));
       }
     }
-
-    //debugBuilder.append(exports.opString(op1));
-    //debugBuilder.append(',');
-    //debugBuilder.append(exports.opString(op2));
-    //debugBuilder.append(' -> ');
-    //debugBuilder.append(exports.opString(opOut));
-    //print(debugBuilder.toString());
   });
 
   return exports.pack(len1, len3, newOps, bankAssem.toString());
@@ -1395,7 +1337,6 @@ exports.makeSplice = function (oldFullText, spliceStart, numRemoved, newText, op
  * @param cs Changeset
  */
 exports.toSplices = function (cs) {
-  // 
   var unpacked = exports.unpack(cs);
   var splices = [];
 
@@ -2204,7 +2145,6 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
   // attOp is the op from the sequence that is being operated on, either an
   // attribution string or the earlier of two exportss being composed.
   // pool can be null if definitely not needed.
-  //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
   if (attOp.opcode == '-') {
     exports.copyOp(attOp, opOut);
     attOp.opcode = '';
