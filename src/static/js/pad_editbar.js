@@ -297,7 +297,7 @@ var padeditbar = (function()
       ace.ace_doUndoRedo(cmd);
     });
 
-    toolbar.registerAceCommand("redo", function (cmd) {
+    toolbar.registerAceCommand("redo", function (cmd, ace) {
       ace.ace_doUndoRedo(cmd);
     });
 
