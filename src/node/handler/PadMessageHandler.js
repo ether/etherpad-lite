@@ -167,7 +167,8 @@ exports.handleMessage = function(client, message)
   {
     return;
   }
-  if(!sessioninfos[client.id]) {
+  var thisSession = sessioninfos[client.id]
+  if(!thisSession) {
     messageLogger.warn("Dropped message from an unknown connection.")
     return;
   }
@@ -196,7 +197,7 @@ exports.handleMessage = function(client, message)
     } else if(message.type == "CHANGESET_REQ") {
       handleChangesetRequest(client, message);
     } else if(message.type == "COLLABROOM") {
-      if (sessioninfos[client.id].readonly) {
+      if (thisSession.readonly) {
         messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
       } else if (message.data.type == "USER_CHANGES") {
         stats.counter('pendingEdits').inc()
@@ -586,6 +587,14 @@ function handleUserChanges(data, cb)
   if(message.data.changeset == null)
   {
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
+    return cb();
+  }
+  //TODO: this might happen with other messages too => find one place to copy the session 
+  //and always use the copy. atm a message will be ignored if the session is gone even 
+  //if the session was valid when the message arrived in the first place
+  if(!sessioninfos[client.id])
+  {
+    messageLogger.warn("Dropped message, disconnect happened in the mean time");
     return cb();
   }
 
