@@ -6,13 +6,14 @@
 var ERR = require("async-stacktrace");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var db = require("./DB").db;
 var async = require("async");
 var settings = require('../utils/Settings');
 var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
+var groupManager = require("./GroupManager");
+var customError = require("../utils/customError");
 var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
 var randomString = require("../utils/randomstring");
@@ -201,7 +202,11 @@ Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targe
       {
         curRev++;
         var cs = changesets[curRev];
-        atext = Changeset.applyToAText(cs, atext, apool);
+        try{
+          atext = Changeset.applyToAText(cs, atext, apool);
+        }catch(e) {
+          return callback(e)
+        }
       }
 
       callback(null);
@@ -404,6 +409,152 @@ Pad.prototype.init = function init(text, callback) {
   });
 };
 
+Pad.prototype.copy = function copy(destinationID, force, callback) {
+  var sourceID = this.id;
+  var _this = this;
+
+  // make force optional
+  if (typeof force == "function") {
+    callback = force;
+    force = false;
+  }
+  else if (force == undefined || force.toLowerCase() != "true") {
+    force = false;
+  }
+  else force = true;
+
+  //kick everyone from this pad
+  // TODO: this presents a message on the client saying that the pad was 'deleted'. Fix this?
+  padMessageHandler.kickSessionsFromPad(sourceID);
+
+  // flush the source pad:
+  _this.saveToDatabase();
+
+  async.series([
+    // if it's a group pad, let's make sure the group exists.
+    function(callback)
+    {
+      if (destinationID.indexOf("$") != -1) 
+      { 
+        groupManager.doesGroupExist(destinationID.split("$")[0], function (err, exists) 
+        {
+          if(ERR(err, callback)) return;
+          
+          //group does not exist
+          if(exists == false)
+          {
+            callback(new customError("groupID does not exist for destinationID","apierror"));
+            return;
+          }
+          //everything is fine, continue
+          else
+          {
+            callback();
+          }
+        });
+      }
+      else
+        callback();
+    },
+    // if the pad exists, we should abort, unless forced.
+    function(callback)
+    {
+      console.log("destinationID", destinationID, force);
+      padManager.doesPadExists(destinationID, function (err, exists) 
+      {
+        if(ERR(err, callback)) return;
+        
+        if(exists == true)
+        {
+          if (!force)
+          {
+            console.log("erroring out without force");
+            callback(new customError("destinationID already exists","apierror"));
+            console.log("erroring out without force - after");
+            return;
+          } 
+          else // exists and forcing
+          {
+            padManager.getPad(destinationID, function(err, pad) {
+              if (ERR(err, callback)) return;
+              pad.remove(callback);
+            });
+          }
+        }
+        else 
+        {
+          callback();
+        }
+      });
+    },
+    // copy the 'pad' entry
+    function(callback)
+    {
+      db.get("pad:"+sourceID, function(err, pad) {
+        db.set("pad:"+destinationID, pad);
+      });
+      callback();
+    },
+    //copy all relations
+    function(callback)
+    {
+      async.parallel([
+        //copy all chat messages
+        function(callback)
+        {
+          var chatHead = _this.chatHead;
+
+          for(var i=0;i<=chatHead;i++)
+          {
+            db.get("pad:"+sourceID+":chat:"+i, function (err, chat) {
+              if (ERR(err, callback)) return;
+              db.set("pad:"+destinationID+":chat:"+i, chat);
+            });
+          }
+
+          callback();
+        },
+        //copy all revisions
+        function(callback)
+        {
+          var revHead = _this.head;
+          //console.log(revHead);
+          for(var i=0;i<=revHead;i++)
+          {
+            db.get("pad:"+sourceID+":revs:"+i, function (err, rev) {
+              //console.log("HERE");
+
+              if (ERR(err, callback)) return;
+              db.set("pad:"+destinationID+":revs:"+i, rev);
+            });
+          }
+
+          callback();
+        },
+        //add the new pad to all authors who contributed to the old one
+        function(callback)
+        {
+          var authorIDs = _this.getAllAuthors();
+
+          authorIDs.forEach(function (authorID)
+          {
+            console.log("authors");
+            authorManager.addPad(authorID, destinationID);
+          });
+
+          callback();
+        },
+      // parallel
+      ], callback);
+    },
+  // series
+  ], function(err)
+  {
+    if(ERR(err, callback)) return;
+    callback(null, {padID: destinationID});
+  });
+};
+
 Pad.prototype.remove = function remove(callback) {
   var padID = this.id;
   var _this = this;
@@ -487,7 +638,7 @@ Pad.prototype.remove = function remove(callback) {
 
           authorIDs.forEach(function (authorID)
           {
-        	authorManager.removePad(authorID, padID);
+            authorManager.removePad(authorID, padID);
           });
 
           callback();

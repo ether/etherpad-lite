@@ -1,3 +1,31 @@
+# 1.4
+ * NEW: Disable toolbar items through settings.json
+ * NEW: Internal stats/metrics engine
+ * NEW: Copy/Move Pad API functions
+ * NEW: getAttributeOnSelection method
+ * NEW: CSS function when an attribute is active on caret location
+ * NEW: Various new eejs blocks
+ * NEW: Ace afterEditHook
+ * NEW: Import hook to introduce alternative export methods
+ * NEW: preProcessDomLine allows Domline attributes to be processed before native attributes
+ * Fix: Allow for lighter author colors
+ * Fix: Improved randomness of session tokens
+ * Fix: Don't panic if an author2session/group2session no longer exists
+ * Fix: Gracefully fallback to related languages if chosen language is unavailable
+ * Fix: Various changeset/stability bugs
+ * Fix: Re-enable import buttons after failed import
+ * Fix: Allow browser tabs to be cycled when in editor
+ * Fix: Better Protocol detection
+ * Fix: padList API Fix
+ * Fix: Caret walking issue
+ * Fix: Better settings.json parsing
+ * Fix: Improved import/export handling
+ * Other: Various whitespace/code clean-up
+ * Other: .deb packaging creator
+ * Other: More API Documentation
+ * Other: Lots more translations
+ * Other: Support Node 0.11
+
 # 1.3
  * NEW: We now follow the semantic versioning scheme!
  * NEW: Option to disable IP logging

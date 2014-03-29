@@ -28,7 +28,6 @@ JSON = require('./json2');
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
-var _ = require('./underscore');
 var hooks = require('./pluginfw/hooks');
 
 var token, padId, export_links;

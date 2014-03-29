@@ -57,11 +57,11 @@ exports.setSocketIO = function(_socket) {
   socket.sockets.on('connection', function(client)
   {
     if(settings.trustProxy && client.handshake.headers['x-forwarded-for'] !== undefined){
-	  	client.set('remoteAddress', client.handshake.headers['x-forwarded-for']);
-  	}
-  	else{
-  		client.set('remoteAddress', client.handshake.address.address);
-  	}
+      client.set('remoteAddress', client.handshake.headers['x-forwarded-for']);
+    }
+    else{
+      client.set('remoteAddress', client.handshake.address.address);
+    }
     var clientAuthorized = false;
     
     //wrap the original send function to log the messages

@@ -1,5 +1,6 @@
 var os = require("os");
 var db = require('../../db/DB');
+var stats = require('ep_etherpad-lite/node/stats')
 
 
 exports.onShutdown = false;
@@ -40,6 +41,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     // allowing you to respond however you like
     res.send(500, { error: 'Sorry, something bad happened!' });
     console.error(err.stack? err.stack : err.toString());
+    stats.meter('http500').mark()
   })
 
   //connect graceful shutdown with sigint and uncaughtexception

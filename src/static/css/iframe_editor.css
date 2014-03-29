@@ -61,7 +61,7 @@ body {
   margin: 0;
   white-space: nowrap;
   word-wrap: normal;
-}				 
+}
 
 #outerdocbody {
   background-color: #fff;
@@ -75,7 +75,7 @@ body.grayedout { background-color: #eee !important }
 }
 
 body.doesWrap {
-  white-space: normal;
+  white-space: pre-wrap; /*Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret, walking around your screen (see #1766) */
   word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
 }
 
@@ -158,8 +158,6 @@ p {
   font-size: 12px; /* overridden by lineMetricsDiv.style */
   font-family: monospace; /* overridden by lineMetricsDiv.style */
 }
-
-#overlaysdiv { position: absolute; left: -1000px; top: -1000px; }
 
 /* Stops super long lines without being spaces such as aaaaaaaaaaaaaa*100 breaking the editor
    Commented out because it stops IE from being able to render the document, crazy IE bug is crazy. */

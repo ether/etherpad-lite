@@ -1,6 +1,8 @@
 <%
   var settings = require("ep_etherpad-lite/node/utils/Settings")
+    , hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks')
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
+    ;
 %>
 <!doctype html>
 <% e.begin_block("htmlHead"); %>
@@ -54,106 +56,19 @@
             <div id="overlay">
                 <div id="overlay-inner"></div>
             </div>
+
             <ul class="menu_left">
                 <% e.begin_block("editbarMenuLeft"); %>
-                <li class="acl-write" id="bold" data-key="bold">
-                    <a class="grouped-left" data-l10n-id="pad.toolbar.bold.title">
-                      <span class="buttonicon buttonicon-bold"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="italic" data-key="italic">
-                    <a class="grouped-middle" data-l10n-id="pad.toolbar.italic.title">
-                      <span class="buttonicon buttonicon-italic"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="underline" data-key="underline">
-                    <a class="grouped-middle" data-l10n-id="pad.toolbar.underline.title">
-                      <span class="buttonicon buttonicon-underline"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="strikethrough" data-key="strikethrough">
-                    <a class="grouped-right" data-l10n-id="pad.toolbar.strikethrough.title">
-                      <span class="buttonicon buttonicon-strikethrough"></span>
-                    </a>
-                </li>
-                <li class="acl-write separator"></li>
-                <li class="acl-write" id="oderedlist" data-key="insertorderedlist">
-                    <a class="grouped-left" data-l10n-id="pad.toolbar.ol.title">
-                      <span class="buttonicon buttonicon-insertorderedlist"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="unoderedlist" data-key="insertunorderedlist">
-                    <a class="grouped-middle" data-l10n-id="pad.toolbar.ul.title">
-                      <span class="buttonicon buttonicon-insertunorderedlist"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="indent" data-key="indent">
-                    <a class="grouped-middle" data-l10n-id="pad.toolbar.indent.title">
-                      <span class="buttonicon buttonicon-indent"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="outdent" data-key="outdent">
-                    <a class="grouped-right" data-l10n-id="pad.toolbar.unindent.title">
-                      <span class="buttonicon buttonicon-outdent"></span>
-                    </a>
-                </li>
-                <li class="acl-write separator"></li>
-                <li class="acl-write" id="undo" data-key="undo">
-                    <a class="grouped-left" data-l10n-id="pad.toolbar.undo.title">
-                      <span class="buttonicon buttonicon-undo"></span>
-                    </a>
-                </li>
-                <li class="acl-write" id="redo" data-key="redo">
-                    <a class="grouped-right" data-l10n-id="pad.toolbar.redo.title">
-                      <span class="buttonicon buttonicon-redo"></span>
-                    </a>
-                </li>
-                <li class="acl-write separator"></li>
-                <li class="acl-write" id="clearAuthorship" data-key="clearauthorship">
-                    <a data-l10n-id="pad.toolbar.clearAuthorship.title">
-                      <span class="buttonicon buttonicon-clearauthorship"></span>
-                    </a>
-                </li>
+                <%- toolbar.menu(settings.toolbar.left) %>
                 <% e.end_block(); %>
             </ul>
             <ul class="menu_right">
                 <% e.begin_block("editbarMenuRight"); %>
-                <li data-key="import_export">
-                    <a class="grouped-left" id="importexportlink" data-l10n-id="pad.toolbar.import_export.title">
-                        <span class="buttonicon buttonicon-import_export"></span>
-                    </a>
-                </li>
-                <li onClick="document.location = document.location.pathname+ '/timeslider'">
-                    <a id="timesliderlink" class="grouped-middle" data-l10n-id="pad.toolbar.timeslider.title">
-                        <span class="buttonicon buttonicon-history"></span>
-                    </a>
-                </li>
-                <li class="acl-write" data-key="savedRevision">
-                    <a class="grouped-right" id="revisionlink" data-l10n-id="pad.toolbar.savedRevision.title">
-                        <span class="buttonicon buttonicon-savedRevision"></span>
-                    </a>
-                </li>
-                <li class="acl-write separator"></li>
-                <li class="acl-write" data-key="settings">
-                    <a class="grouped-left" id="settingslink" data-l10n-id="pad.toolbar.settings.title">
-                        <span class="buttonicon buttonicon-settings"></span>
-                    </a>
-                </li>
-                <li data-key="embed">
-                    <a class="grouped-right" id="embedlink" data-l10n-id="pad.toolbar.embed.title">
-                        <span class="grouped-right buttonicon buttonicon-embed"></span>
-                    </a>
-                </li>
-                <li class="separator"></li>
-                <li id="usericon" data-key="showusers">
-                    <a data-l10n-id="pad.toolbar.showusers.title">
-                        <span class="buttonicon buttonicon-showusers"></span>
-                        <span id="online_count">1</span>
-                    </a>
-                </li>
+                <%- toolbar.menu(settings.toolbar.right) %>
                 <% e.end_block(); %>
             </ul>
         </div>
+        <% e.begin_block("afterEditbar"); %><% e.end_block(); %>
 
         <div id="users">
             <% e.begin_block("userlist"); %>
@@ -273,7 +188,6 @@
                     <div id="import"></div>
                     <div class="importmessage" id="importmessagesuccess" data-l10n-id="pad.importExport.importSuccessful"></div>
                     <div class="importformdiv" id="importformsubmitdiv">
-                        <input type="hidden" name="padId" value="blpmaXT35R">
                         <span class="nowrap">
                             <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput">
                             <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top">
@@ -295,7 +209,7 @@
                 <% e.end_block(); %>
             </div>
         </div>
-        
+
         <div id="connectivity" class="popup">
             <% e.begin_block("modals"); %>
                 <div class="connected visible">
@@ -372,12 +286,12 @@
             <h1 data-l10n-id="pad.share"></h1>
             <div id="linkcode">
                 <h2 data-l10n-id="pad.share.link"></h2>
-                <input id="linkinput" type="text" value="">
+                <input id="linkinput" type="text" value="" onclick="this.select()">
             </div>
             <br>
             <div id="embedcode">
                 <h2 data-l10n-id="pad.share.emebdcode"></h2>
-                <input id="embedinput" type="text" value="">
+                <input id="embedinput" type="text" value="" onclick="this.select()">
             </div>
             <% e.end_block(); %>
         </div>
@@ -411,7 +325,7 @@
         <% e.begin_block("scripts"); %>
         <script type="text/javascript">
             (function() {
-              // Display errors on page load to the user 
+              // Display errors on page load to the user
               // (Gets overridden by padutils.setupGlobalExceptionHandler)
               var originalHandler = window.onerror;
               window.onerror = function(msg, url, line) {
@@ -424,7 +338,7 @@
               };
             })();
         </script>
-        
+
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 
@@ -439,10 +353,10 @@
             var clientVars = {};
             (function () {
               var pathComponents = location.pathname.split('/');
-              
+
               // Strip 'p' and the padname from the pathname and set as baseURL
               var baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/';
-                            
+
               require.setRootURI(baseURL + "javascripts/src");
               require.setLibraryURI(baseURL + "javascripts/lib");
               require.setGlobalKeyPath("require");
