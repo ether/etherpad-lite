@@ -206,7 +206,7 @@ var padeditbar = (function()
 
           if(module.css('display') != "none")
           {
-            $("#" + modules[i] + "link").removeClass("selected");
+            $("#" + module[i] + "link").removeClass("selected");
             module.slideUp("fast", cb);
             returned = true;
           }
