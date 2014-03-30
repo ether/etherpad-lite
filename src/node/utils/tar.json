@@ -46,7 +46,6 @@
   , "Changeset.js"
   , "ChangesetUtils.js"
   , "skiplist.js"
-  , "virtual_lines.js"
   , "cssmanager.js"
   , "colorutils.js"
   , "undomodule.js"

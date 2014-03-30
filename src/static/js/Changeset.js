@@ -673,9 +673,9 @@ exports.textLinesMutator = function (lines) {
       }
       //print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" / "+curSplice[1]+" / "+lines.length);
 /*if (inSplice && (! isCurLineInSplice()) && (curSplice[0] + curSplice[1] < lines.length)) {
-	  print("BLAH");
-	  putCurLineInSplice();
-	}*/
+  print("BLAH");
+  putCurLineInSplice();
+}*/
       // tests case foo in remove(), which isn't otherwise covered in current impl
     }
     //debugPrint("skip");
@@ -1841,27 +1841,11 @@ exports.inverse = function (cs, lines, alines, pool) {
     }
   }
 
-  function lines_length() {
-    if ((typeof lines.length) == "number") {
-      return lines.length;
-    } else {
-      return lines.length();
-    }
-  }
-
   function alines_get(idx) {
     if (alines.get) {
       return alines.get(idx);
     } else {
       return alines[idx];
-    }
-  }
-
-  function alines_length() {
-    if ((typeof alines.length) == "number") {
-      return alines.length;
-    } else {
-      return alines.length();
     }
   }
 
@@ -1883,7 +1867,7 @@ exports.inverse = function (cs, lines, alines, pool) {
       curLineOpIterLine = curLine;
       var indexIntoLine = 0;
       var done = false;
-      while (!done) {
+      while (!done && curLineOpIter.hasNext()) {
         curLineOpIter.next(curLineNextOp);
         if (indexIntoLine + curLineNextOp.chars >= curChar) {
           curLineNextOp.chars -= (curChar - indexIntoLine);

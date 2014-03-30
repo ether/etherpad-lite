@@ -43,9 +43,11 @@ var chat = (function()
         $('#chatbox').addClass("stickyChat");
         $('#chattext').css({"top":"0px"});
         $('#editorcontainer').css({"right":"192px"});
+        $('.stickyChat').css("top",$('#editorcontainer').offset().top+"px");
         isStuck = true;
       } else { // Unstick it
         padcookie.setPref("chatAlwaysVisible", false);
+        $('.stickyChat').css("top", "auto");
         $('#chatbox').removeClass("stickyChat");
         $('#chattext').css({"top":"25px"});
         $('#editorcontainer').css({"right":"0px"});
@@ -181,12 +183,12 @@ var chat = (function()
           self.send();
         }
       });
-      
-	  // initial messages are loaded in pad.js' _afterHandshake
-	  
-	  $("#chatcounter").text(0);
-	  $("#chatloadmessagesbutton").click(function()
-	  {
+
+      // initial messages are loaded in pad.js' _afterHandshake
+
+      $("#chatcounter").text(0);
+      $("#chatloadmessagesbutton").click(function()
+      {
         var start = Math.max(self.historyPointer - 20, 0);
         var end = self.historyPointer;
 
@@ -198,7 +200,7 @@ var chat = (function()
 
         pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": end});
         self.historyPointer = start;
-	  });
+      });
     }
   }
 

@@ -80,14 +80,9 @@
           <div class="editbarright toolbar" id="editbar">
             <% e.begin_block("timesliderEditbarRight"); %>
             <ul>
-              <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
-                <a id="exportlink" data-l10n-id="timeslider.toolbar.exportlink.title">
-                  <div class="buttonicon buttonicon-import_export"></div>
-                </a>
-              </li>
+              <%- toolbar.menu(settings.toolbar.timeslider) %>
             </ul>
-            <a id="returnbutton" data-l10n-id="timeslider.toolbar.returnbutton"></a>
-          <% e.end_block(); %>
+            <% e.end_block(); %>
           </div>
 
           <div>
@@ -241,6 +236,8 @@
       /* TODO: These globals shouldn't exist. */
       padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
       padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+
+      padeditbar.init()
     });
   })();
 </script>

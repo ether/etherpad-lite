@@ -3,7 +3,7 @@ node_js:
   - "0.10"
 install:
   - "bin/installDeps.sh"
-  - "export GIT_HASH=$(cat .git/HEAD | head -c 7)"
+  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 before_script:
   - "tests/frontend/travis/sauce_tunnel.sh"
 script:

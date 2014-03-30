@@ -21,7 +21,7 @@
 
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("../utils/randomstring");
 var db = require("./DB").db;
 var async = require("async");
 var groupMangager = require("./GroupManager");
@@ -263,12 +263,16 @@ exports.deleteSession = function(sessionID, callback)
       db.remove("session:" + sessionID);
       
       //remove session from group2sessions
-      delete group2sessions.sessionIDs[sessionID];
-      db.set("group2sessions:" + groupID, group2sessions);
-      
+      if(group2sessions != null) { // Maybe the group was already deleted
+          delete group2sessions.sessionIDs[sessionID];
+          db.set("group2sessions:" + groupID, group2sessions);
+      }
+
       //remove session from author2sessions
-      delete author2sessions.sessionIDs[sessionID];
-      db.set("author2sessions:" + authorID, author2sessions);
+      if(author2sessions != null) { // Maybe the author was already deleted
+          delete author2sessions.sessionIDs[sessionID];
+          db.set("author2sessions:" + authorID, author2sessions);
+      }
       
       callback();
     }

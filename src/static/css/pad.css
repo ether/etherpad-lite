@@ -126,6 +126,10 @@ a img {
   position: relative;
   top: 1px;
 }
+.toolbar ul li a .buttontext {
+  color: #222;
+  font-size: 14px;
+}
 .toolbar ul li a.grouped-left {
   border-radius: 3px 0 0 3px;
 }
@@ -1067,3 +1071,14 @@ input[type=checkbox] {
 }
 
 /* End of gritter stuff */
+.activeButton{
+  background: #eee;
+  background: -webkit-linear-gradient(#ddd, #fff);
+  background: -moz-linear-gradient(#ddd, #fff);
+  background: -o-linear-gradient(#ddd, #fff);
+  background: -ms-linear-gradient(#ddd, #fff);
+  background: linear-gradient(#ddd, #fff);
+  -webkit-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+  -moz-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+}

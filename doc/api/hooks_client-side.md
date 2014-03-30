@@ -10,6 +10,22 @@ nothing
 
 This hook proxies the functionality of jQuery's `$(document).ready` event.
 
+## aceDomLinePreProcessLineAttributes
+Called from: src/static/js/domline.js
+
+Things in context:
+
+1. domline - The current DOM line being processed
+2. cls - The class of the current block element (useful for styling)
+
+This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.  This hook is run BEFORE the numbered and ordered lists logic is applied.
+
+The return value of this hook should have the following structure:
+
+`{ preHtml: String, postHtml: String, processedMarker: Boolean }`
+
+The preHtml and postHtml values will be added to the HTML display of the element, and if processedMarker is true, the engine won't try to process it any more.
+
 ## aceDomLineProcessLineAttributes
 Called from: src/static/js/domline.js
 
@@ -18,7 +34,7 @@ Things in context:
 1. domline - The current DOM line being processed
 2. cls - The class of the current block element (useful for styling)
 
-This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.
+This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.  This hook is run AFTER the ordered and numbered lists logic is applied.
 
 The return value of this hook should have the following structure:
 
