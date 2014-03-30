@@ -14,7 +14,17 @@ Example:
 var orderedlist = toolbar.button({
   command: "insertorderedlist",
   localizationId: "pad.toolbar.ol.title",
-  class: "buttonicon-insertorderedlist"
+  class: "buttonicon buttonicon-insertorderedlist"
+})
+```
+
+You can also create buttons with text:
+
+```
+var myButton = toolbar.button({
+  command: "myButton",
+  localizationId: "myPlugin.toolbar.myButton",
+  class: "buttontext"
 })
 ```
 
