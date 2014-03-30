@@ -126,6 +126,10 @@ a img {
   position: relative;
   top: 1px;
 }
+.toolbar ul li a .buttontext {
+  color: #222;
+  font-size: 14px;
+}
 .toolbar ul li a.grouped-left {
   border-radius: 3px 0 0 3px;
 }
