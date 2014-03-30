@@ -206,7 +206,7 @@ var padeditbar = (function()
 
           if(module.css('display') != "none")
           {
-            $("#" + module[i] + "link").removeClass("selected");
+            $("#" + self.dropdowns[i] + "link").removeClass("selected");
             module.slideUp("fast", cb);
             returned = true;
           }
@@ -297,7 +297,7 @@ var padeditbar = (function()
       ace.ace_doUndoRedo(cmd);
     });
 
-    toolbar.registerAceCommand("redo", function (cmd, ace) {
+    toolbar.registerAceCommand("redo", function (cmd) {
       ace.ace_doUndoRedo(cmd);
     });
 
