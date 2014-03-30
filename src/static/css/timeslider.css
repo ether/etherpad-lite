@@ -157,13 +157,6 @@
 #editbarright {
   float: right
 }
-#returnbutton {
-  color: #222;
-  font-size: 16px;
-  line-height: 29px;
-  margin-top: 0;
-  padding-right: 6px;
-}
 #settings,
 #importexport,
 #embed,

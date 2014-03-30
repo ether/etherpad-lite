@@ -93,6 +93,9 @@ exports.toolbar = {
     ["importexport", "timeslider", "savedrevision"],
     ["settings", "embed"],
     ["showusers"]
+  ],
+  timeslider: [
+    ["timeslider_export", "timeslider_returnToPad"]
   ]
 }
 

@@ -331,6 +331,14 @@ var padeditbar = (function()
         ace.ace_setAttributeOnSelection('author', '');
       }
     });
+
+    toolbar.registerCommand('timeslider_returnToPad', function(cmd) {
+      if( document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1, document.referrer.lastIndexOf("/")) === "p") {
+        document.location = document.referrer;
+      } else {
+        document.location = document.location.href.substring(0,document.location.href.lastIndexOf("/"));
+      }
+    });
   }
 
   return self;
