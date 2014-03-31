@@ -52,7 +52,7 @@
     "pad.importExport.exportpdf": "PDF",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
-    "pad.importExport.abiword.innerHTML": "Du kan endast importera från oformaterad text eller html-format. För mer avancerade importeringsfunktioner, var god \u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003Einstallera abiword\u003C/a\u003E.",
+    "pad.importExport.abiword.innerHTML": "Du kan endast importera från oformaterad text eller html-format. För mer avancerade importeringsfunktioner, var god <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">installera abiword</a>.",
     "pad.modals.connected": "Ansluten.",
     "pad.modals.reconnecting": "Återansluter till ditt block...",
     "pad.modals.forcereconnect": "Tvinga återanslutning",

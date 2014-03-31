@@ -50,7 +50,7 @@
     "pad.importExport.exportpdf": "PDF",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
-    "pad.importExport.abiword.innerHTML": "Rika mung teyeng impor sekang format plain text utawa HTML. Kanggo fitur impor sing lewih maju monggo \u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003Emasang abiword\u003C/a\u003E.",
+    "pad.importExport.abiword.innerHTML": "Rika mung teyeng impor sekang format plain text utawa HTML. Kanggo fitur impor sing lewih maju monggo <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">masang abiword</a>.",
     "pad.modals.connected": "Nyambung.",
     "pad.modals.reconnecting": "Mbaleli nyambung ming pad Rika...",
     "pad.modals.forcereconnect": "Maksa nyambung maning",

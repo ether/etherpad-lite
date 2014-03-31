@@ -50,7 +50,7 @@
     "pad.importExport.exportpdf": "PDF",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
-    "pad.importExport.abiword.innerHTML": "Podètz pas importar que de formats tèxte brut o html. Per de foncionalitats d'importacion mai evoluadas, \u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003Einstallatz abiword\u003C/a\u003E.",
+    "pad.importExport.abiword.innerHTML": "Podètz pas importar que de formats tèxte brut o html. Per de foncionalitats d'importacion mai evoluadas, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">installatz abiword</a>.",
     "pad.modals.connected": "Connectat.",
     "pad.modals.reconnecting": "Reconnexion cap a vòstre Pad...",
     "pad.modals.forcereconnect": "Forçar la reconnexion.",
