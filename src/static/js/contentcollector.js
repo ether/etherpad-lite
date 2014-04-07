@@ -78,7 +78,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     "div": 1,
     "p": 1,
     "pre": 1,
-    "li": 1
+    "li": 1,
+    "img":1
   };
 
   function isBlockElement(n)
@@ -452,7 +453,12 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
-      if (tname == "br")
+      if(tname == "img"){
+        cc.incrementAttrib(state, "image");
+        isEmpty = false;
+        state.lineAttributes.pastedImage = node.outerHTML + "<br/>foo<br/>";
+      }
+      else if (tname == "br")
       {        
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
@@ -616,13 +622,13 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   };
   // each returns [line, char] or [-1,-1]
   var getSelectionStart = function()
-    {
-      return selStart;
-      };
+  {
+    return selStart;
+  };
   var getSelectionEnd = function()
-    {
-      return selEnd;
-      };
+  {
+    return selEnd;
+  };
 
   // returns array of strings for lines found, last entry will be "" if
   // last line is complete (i.e. if a following span should be on a new line).
