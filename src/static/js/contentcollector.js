@@ -456,7 +456,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       if(tname == "img"){
         cc.incrementAttrib(state, "image");
         isEmpty = false;
-        state.lineAttributes.pastedImage = node.outerHTML + "<br/>foo<br/>";
+        state.lineAttributes.pastedImage = node.outerHTML;
       }
       else if (tname == "br")
       {        
