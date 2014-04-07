@@ -55,7 +55,7 @@
     "pad.importExport.exportpdf": "PDF",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
-    "pad.importExport.abiword.innerHTML": "Você só pode importar de formatos de texto puro ou html. Para recursos de importação mais avançados \u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003Einstale o abiword\u003C/a\u003E.",
+    "pad.importExport.abiword.innerHTML": "Você só pode importar de formatos de texto puro ou html. Para recursos de importação mais avançados <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">instale o abiword</a>.",
     "pad.modals.connected": "Conectado.",
     "pad.modals.reconnecting": "Reconectando à sua nota...",
     "pad.modals.forcereconnect": "Forçar reconexão",

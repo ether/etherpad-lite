@@ -51,7 +51,7 @@
     "pad.importExport.exportpdf": "PDF (zapis Acrobat PDF)",
     "pad.importExport.exportopen": "ODF (zapis Open Document)",
     "pad.importExport.exportdokuwiki": "DokuWiki (zapis DokuWiki)",
-    "pad.importExport.abiword.innerHTML": "Uvoziti je mogoče le običajno neoblikovano besedilo in zapise HTML. Za naprednejše zmožnosti namestite \u003Ca href=\\\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\\\"\u003Eprogram Abiword\u003C/a\u003E.",
+    "pad.importExport.abiword.innerHTML": "Uvoziti je mogoče le običajno neoblikovano besedilo in zapise HTML. Za naprednejše zmožnosti namestite <a href=\\\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\\\">program Abiword</a>.",
     "pad.modals.connected": "Povezano.",
     "pad.modals.reconnecting": "Poteka povezovanje z dokumentom ...",
     "pad.modals.forcereconnect": "Vsili ponovno povezavo.",

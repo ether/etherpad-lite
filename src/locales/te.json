@@ -3,7 +3,9 @@
         "authors": [
             "JVRKPRASAD",
             "Malkum",
-            "Veeven"
+            "Veeven",
+            "Chaduvari",
+            "Ravichandra"
         ]
     },
     "index.newPad": "కొత్త పలక",
@@ -54,6 +56,8 @@
     "pad.modals.userdup.advice": "బదులుగా ఈ గవాక్షమును వాడడానికి మరల సంబంధం కలపండి",
     "pad.modals.unauth": "అధికారం లేదు",
     "pad.modals.unauth.explanation": "మీరు ఈ పుటను చూస్తూన్నప్పుడు మీ అనుమతులు మారాయి. మరల సంబంధం కలపడానికి ప్రయత్నించండి.",
+    "pad.modals.initsocketfail": "సర్వరు అందుబాటులో లేదు.",
+    "pad.modals.slowcommit.explanation": "సర్వరు స్పందించడం లేదు.",
     "pad.modals.deleted": "తొలగించబడింది ( తొలగించినది )",
     "pad.share": "ఈ పలకను పంచుకొను",
     "pad.share.readonly": "చదువుటకు మాత్రమే",
@@ -61,11 +65,15 @@
     "pad.share.emebdcode": "యు ఆర్ ఎల్ ను పొదగించండి",
     "pad.chat": "మాటామంతి",
     "pad.chat.title": "ఈ పలకకు మాటామంతిని తెరిచి ఉంచండి.",
+    "pad.chat.loadmessages": "మరిన్ని సందేశాలు తీసుకురా",
     "timeslider.pageTitle": "{{appTitle}} పనిసమయ సూచిక పరికరం",
     "timeslider.toolbar.returnbutton": "పలకకి తిరిగి వెళ్ళండి",
     "timeslider.toolbar.authors": "రచయితలు:",
     "timeslider.toolbar.authorsList": "రచయితలు లేరు",
+    "timeslider.toolbar.exportlink.title": "ఎగుమతి చెయ్యి",
     "timeslider.exportCurrent": "ప్రస్తుత అవతారాన్ని ఈ విధంగా ఎగుమతి చేయుము:",
+    "timeslider.saved": "{{year}}, {{month}} {{day}} న భద్రపరచబడింది",
+    "timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
     "timeslider.month.january": "జనవరి",
     "timeslider.month.february": "ఫిబ్రవరి",
     "timeslider.month.march": "మార్చి",
@@ -77,5 +85,17 @@
     "timeslider.month.september": "సెప్టెంబరు",
     "timeslider.month.october": "అక్టోబరు",
     "timeslider.month.november": "నవంబరు",
-    "timeslider.month.december": "డిసెంబరు"
+    "timeslider.month.december": "డిసెంబరు",
+    "pad.userlist.entername": "మీ పేరు ఇవ్వండి",
+    "pad.userlist.unnamed": "అనామకం",
+    "pad.userlist.guest": "అతిథి",
+    "pad.userlist.deny": "తిరస్కరించు",
+    "pad.userlist.approve": "ఆమోదించు",
+    "pad.impexp.importbutton": "దిగుమతి చేసెయ్యి",
+    "pad.impexp.importing": "దిగుమతి చేస్తున్నాం...",
+    "pad.impexp.confirmimport": "దిగుమతి చేసుకోవడం వల్ల ప్యాడ్ లోఉన్న పాఠ్యం తుడిచిపెట్టుకుపోతుంది. ఇది మీకు అంగీకారమేనా?",
+    "pad.impexp.convertFailed": "ఈ ఫైలును దిగుమతి చేసుకోలేకపోయాం. వేరే డాక్యుమెంట్ ఫార్మాటును వాడండి లేదా మీరే కాపీ చేసి అతికించండి",
+    "pad.impexp.uploadFailed": "ఎక్కింపు విఫలమైంది, మళ్ళీ ప్రయత్నించండి.",
+    "pad.impexp.importfailed": "దిగుమతి విఫలమైంది",
+    "pad.impexp.copypaste": "నకలు చేసి అతికించండి"
 }

@@ -61,7 +61,7 @@ Portal submits content into new blog post
 ## Usage
 
 ### API version
-The latest version is `1.2.8`
+The latest version is `1.2.9`
 
 The current version can be queried via /api.
 

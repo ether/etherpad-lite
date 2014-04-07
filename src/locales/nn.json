@@ -49,7 +49,7 @@
     "pad.importExport.exportpdf": "PDF",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
-    "pad.importExport.abiword.innerHTML": "Du kan berre importera frå rein tekst- eller HTML-format. Ver venleg og \u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003Einstaller Abiword\u003C/a\u003E om du treng meir avanserte importfunksjonar.",
+    "pad.importExport.abiword.innerHTML": "Du kan berre importera frå rein tekst- eller HTML-format. Ver venleg og <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">installer Abiword</a> om du treng meir avanserte importfunksjonar.",
     "pad.modals.connected": "Tilkopla.",
     "pad.modals.reconnecting": "Gjenopprettar tilkoplinga til blokka di …",
     "pad.modals.forcereconnect": "Tving gjentilkopling",

@@ -50,7 +50,7 @@
     "pad.importExport.exportpdf": "PDF",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
-    "pad.importExport.abiword.innerHTML": "プレーンテキストまたは HTML ファイルからのみインポートできます。より高度なインポート機能を使用するには、\u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003Eabiword をインストール\u003C/a\u003Eしてください。",
+    "pad.importExport.abiword.innerHTML": "プレーンテキストまたは HTML ファイルからのみインポートできます。より高度なインポート機能を使用するには、<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">abiword をインストール</a>してください。",
     "pad.modals.connected": "接続されました。",
     "pad.modals.reconnecting": "パッドに再接続中...",
     "pad.modals.forcereconnect": "強制的に再接続",
@@ -114,9 +114,9 @@
     "pad.impexp.importbutton": "インポートする",
     "pad.impexp.importing": "インポート中...",
     "pad.impexp.confirmimport": "ファイルをインポートすると、パッドの現在のテキストが上書きされます。本当に続行しますか?",
-    "pad.impexp.convertFailed": "このファイルをインポートできませんでした。他の文書形式を使用するか、手作業でコピー \u0026 ペーストしてください",
+    "pad.impexp.convertFailed": "このファイルをインポートできませんでした。他の文書形式を使用するか、手作業でコピー & ペーストしてください",
     "pad.impexp.uploadFailed": "アップロードに失敗しました。もう一度お試しください",
     "pad.impexp.importfailed": "インポートに失敗しました",
-    "pad.impexp.copypaste": "コピー \u0026 ペーストしてください",
+    "pad.impexp.copypaste": "コピー & ペーストしてください",
     "pad.impexp.exportdisabled": "{{type}}形式でのエクスポートは無効になっています。詳細はシステム管理者にお問い合わせください。"
 }

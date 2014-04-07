@@ -3751,7 +3751,7 @@ function Ace2Inner(){
           specialHandled = true;
         }
         if((evt.which == 36 && evt.ctrlKey == true)){ setScrollY(0); } // Control Home send to Y = 0
-        if((evt.which == 33 || evt.which == 34) && type == 'keydown'){
+        if((evt.which == 33 || evt.which == 34) && type == 'keydown' && !evt.ctrlKey){
 
           evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
 

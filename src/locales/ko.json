@@ -51,7 +51,7 @@
     "pad.importExport.exportpdf": "PDF",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DokuWiki",
-    "pad.importExport.abiword.innerHTML": "일반 텍스트나 html 형식으로만 가져올 수 있습니다. 고급 가져오기 기능에 대해서는 \u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003Eabiword를 설치\u003C/a\u003E하세요.",
+    "pad.importExport.abiword.innerHTML": "일반 텍스트나 html 형식으로만 가져올 수 있습니다. 고급 가져오기 기능에 대해서는 <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">abiword를 설치</a>하세요.",
     "pad.modals.connected": "연결했습니다.",
     "pad.modals.reconnecting": "패드에 다시 연결 중..",
     "pad.modals.forcereconnect": "강제로 다시 연결",

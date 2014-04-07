@@ -31,6 +31,7 @@ Also, keep it maintainable. We don't wanna end up as the monster Etherpad was!
 * Do generalize sooner or later! (if an old solution, quickly hacked together, poses more problems than it solves today, refactor it!)
 * Keep it compatible. Do not introduce changes to the public API, db schema or configurations too lightly. Don't make incompatible changes without good reasons!
 * If you do make changes, document them! (see below)
+* Use protocol independent urls "//"
 
 ## Branching model / git workflow
 see git flow http://nvie.com/posts/a-successful-git-branching-model/

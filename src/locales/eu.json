@@ -50,7 +50,7 @@
     "pad.importExport.exportpdf": "PDF",
     "pad.importExport.exportopen": "ODF (Open Document Format)",
     "pad.importExport.exportdokuwiki": "DocuWiki",
-    "pad.importExport.abiword.innerHTML": "Testu laua edo html formatudun testuak bakarrik inporta ditzakezu. Aurreratuagoak diren inportazio aukerak izateko \u003Ca href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"\u003Eabiword instala ezazu\u003C/a\u003E.",
+    "pad.importExport.abiword.innerHTML": "Testu laua edo html formatudun testuak bakarrik inporta ditzakezu. Aurreratuagoak diren inportazio aukerak izateko <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">abiword instala ezazu</a>.",
     "pad.modals.connected": "Konektatuta.",
     "pad.modals.reconnecting": "Zure pad-era birkonektatu...",
     "pad.modals.forcereconnect": "Berkonexioa fortzatu",
