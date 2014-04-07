@@ -2955,7 +2955,8 @@ function Ace2Inner(){
     "pre": 1,
     "li": 1,
     "ol": 1,
-    "ul": 1
+    "ul": 1,
+    "img":1
   };
 
   _.each(hooks.callAll('aceRegisterBlockElements'), function(element){
