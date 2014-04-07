@@ -5276,6 +5276,34 @@ function Ace2Inner(){
 
         bindTheEventHandlers();
 
+        var imageBeingDragged = null;
+
+        $(root)
+        .bind('dragstart', function(event){
+          imageBeingDragged = event.target;
+          top.console.log('dragstart', event.target);
+        })
+        .bind('drop',function(event){
+          top.console.log('drop', event.target);      
+          top.console.log('remove', imageBeingDragged);
+          $(imageBeingDragged).html(" ");
+          $(imageBeingDragged).parent().html(" ");
+          imageBeingDragged = null;
+        })
+        .bind('dragend',function(event){ 
+          // destroy original..
+          top.console.log('dragend', event.target);
+          $(imageBeingDragged).html(" ");
+          $(imageBeingDragged).parent().html(" ");
+          imageBeingDragged = null;
+        });
+
+/*
+        $(root).on('mouseup', 'img', function(e){
+          top.console.log("NEW WIDTH mouseup", e.target.width);
+          top.console.log("All done");
+        });
+*/
       });
 
       hooks.callAll('aceInitialized', {
