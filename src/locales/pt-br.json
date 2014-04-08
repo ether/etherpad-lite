@@ -7,6 +7,7 @@
             "TheGabrielZaum",
             "Titoncio",
             "Tuliouel"
+            "Rafael Ferreira"
         ]
     },
     "index.newPad": "Nova Nota",
@@ -26,13 +27,13 @@
     "pad.toolbar.timeslider.title": "Linha do tempo",
     "pad.toolbar.savedRevision.title": "Salvar revisão",
     "pad.toolbar.settings.title": "Configurações",
-    "pad.toolbar.embed.title": "Compartilhar e incorporar esta nota",
+    "pad.toolbar.embed.title": "Compartilhar e incorporar esta Nota",
     "pad.toolbar.showusers.title": "Mostrar os usuarios nesta Nota",
     "pad.colorpicker.save": "Salvar",
     "pad.colorpicker.cancel": "Cancelar",
     "pad.loading": "Carregando...",
     "pad.passwordRequired": "Você precisa de uma senha para acessar esta Nota",
-    "pad.permissionDenied": "Você não tem permissão para acessar esta nota",
+    "pad.permissionDenied": "Você não tem permissão para acessar esta Nota",
     "pad.wrongPassword": "Senha incorreta",
     "pad.settings.padSettings": "Configurações da Nota",
     "pad.settings.myView": "Minha Visão",
@@ -123,5 +124,5 @@
     "pad.impexp.uploadFailed": "O envio falhou. Tente outra vez",
     "pad.impexp.importfailed": "A importação falhou",
     "pad.impexp.copypaste": "Copie e cole",
-    "pad.impexp.exportdisabled": "A expostação em formato {{type}} está desativada. Comunique-se com o administrador do sistema para detalhes."
+    "pad.impexp.exportdisabled": "A exportação em formato {{type}} está desativada. Comunique-se com o administrador do sistema para detalhes."
 }
