@@ -6,7 +6,8 @@
             "Prilopes",
             "TheGabrielZaum",
             "Titoncio",
-            "Tuliouel"
+            "Tuliouel",
+            "Rafaelff"
         ]
     },
     "index.newPad": "Nova Nota",
@@ -26,13 +27,13 @@
     "pad.toolbar.timeslider.title": "Linha do tempo",
     "pad.toolbar.savedRevision.title": "Salvar revisão",
     "pad.toolbar.settings.title": "Configurações",
-    "pad.toolbar.embed.title": "Compartilhar e incorporar esta nota",
+    "pad.toolbar.embed.title": "Compartilhar e incorporar esta Nota",
     "pad.toolbar.showusers.title": "Mostrar os usuarios nesta Nota",
     "pad.colorpicker.save": "Salvar",
     "pad.colorpicker.cancel": "Cancelar",
     "pad.loading": "Carregando...",
     "pad.passwordRequired": "Você precisa de uma senha para acessar esta Nota",
-    "pad.permissionDenied": "Você não tem permissão para acessar esta nota",
+    "pad.permissionDenied": "Você não tem permissão para acessar esta Nota",
     "pad.wrongPassword": "Senha incorreta",
     "pad.settings.padSettings": "Configurações da Nota",
     "pad.settings.myView": "Minha Visão",
@@ -75,7 +76,7 @@
     "pad.modals.badChangeset.cause": "Isto pode ocorrer devido a uma configuração errada do servidor ou algum outro comportamento inesperado. Por favor contate o administrador, se você acredita que é um erro. Tente reconectar para continuar editando.",
     "pad.modals.corruptPad.explanation": "O pad que você está tentando acessar está corrompido.",
     "pad.modals.corruptPad.cause": "Isto pode ocorrer devido a uma configuração errada do servidor ou algum outro comportamento inesperado. Por favor contate o administrador.",
-    "pad.modals.deleted": "Excluído",
+    "pad.modals.deleted": "Excluído.",
     "pad.modals.deleted.explanation": "Esta nota foi removida.",
     "pad.modals.disconnected": "Você foi desconectado.",
     "pad.modals.disconnected.explanation": "A conexão com o servidor foi perdida",
@@ -123,5 +124,5 @@
     "pad.impexp.uploadFailed": "O envio falhou. Tente outra vez",
     "pad.impexp.importfailed": "A importação falhou",
     "pad.impexp.copypaste": "Copie e cole",
-    "pad.impexp.exportdisabled": "A expostação em formato {{type}} está desativada. Comunique-se com o administrador do sistema para detalhes."
+    "pad.impexp.exportdisabled": "A exportação em formato {{type}} está desativada. Comunique-se com o administrador do sistema para detalhes."
 }
