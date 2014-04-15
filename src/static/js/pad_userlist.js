@@ -728,11 +728,11 @@ var paduserlist = (function()
       $("#myswatch").css({'background-color': myUserInfo.colorId});
       
       if ($.browser.msie && parseInt($.browser.version) <= 8) {
-        $("#usericon a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
+        $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
       }
       else
       {
-        $("#usericon a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId});
+        $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId});
       }
     }
   };
