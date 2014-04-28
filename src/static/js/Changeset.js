@@ -1709,7 +1709,7 @@ exports.makeAttribsString = function (opcode, attribs, pool) {
     var result = '';
     for (var i = 0; i < attribs.length; i++) {
       var pair = attribs[i];
-      if (opcode == '=' || (opcode == '+')) {// && pair[1])) { //allow empty attrs
+      if (opcode == '=' || (opcode == '+' && pair[1])) {
         result += '*' + exports.numToString(pool.putAttrib(pair));
       }
     }
