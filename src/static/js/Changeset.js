@@ -553,6 +553,7 @@ StringAssembler.prototype.toString = function() {
  */
 function LinesCollection(lines) {
   this._lines = lines;
+  this._isNative = Object.prototype.toString.call(lines) == '[object Array]';
 }
 
 LinesCollection.prototype.get = function(index) {
@@ -561,6 +562,11 @@ LinesCollection.prototype.get = function(index) {
   } else {
     return this._lines[index];
   }
+};
+
+LinesCollection.prototype.set = function(index, line) {
+  // compatibility method for new text mutator
+  return this.applySplice([index, 1, line]);
 };
 
 LinesCollection.prototype.length = function() {
@@ -580,13 +586,122 @@ LinesCollection.prototype.slice = function(start, end) {
   }
 };
 
+LinesCollection.prototype.splice = function() {
+  // compatiblity method
+  return this.applySplice(arguments);
+};
+
 LinesCollection.prototype.applySplice = function(s) {
-  return this._lines.splice.apply(this._lines, s);
+  if(this._isNative) {
+    return this._lines.splice.apply(this._lines, s);
+  } else {
+    // so much hate it. The wrapper function on the client does not return removed rows.
+    // grab rows we need first, then splice, then return.
+    // need to use get() becase client don't bother implementing even slice()!!
+    var rows = [];
+    for(var i = 0; i < s[1]; i++) {
+      rows.push(this.get(s[0] + i));
+    }
+    this._lines.splice.apply(this._lines, s);
+    return rows;
+  }
 };
 
 // debug
 LinesCollection.prototype.toSource = function() {
   return this._lines.toSource();
+};
+
+
+
+function TextLinesMutator2(lines) {
+  if(!(this instanceof TextLinesMutator2)) {
+    return new TextLinesMutator2(lines);
+  }
+
+  this._lines = new LinesCollection(lines);
+  this._l = 0;
+  this._c = 0;
+}
+
+TextLinesMutator2.prototype.skipLines = function(L) {
+  this._l += L;
+  exports.assert(this._l <= this._lines.length(), 'line position become greater than lines count');
+
+  this._c = 0;
+};
+
+TextLinesMutator2.prototype.skip = function(N, L) {
+  exports.assert(N !== undefined, 'N was not supplied')
+  if(L) {
+    this.skipLines(L);
+  } else {
+    this._c += N;
+    exports.assert(this._c <= this._lines.get(this._l).length, 'char position become greated than line length');
+  }
+};
+
+TextLinesMutator2.prototype.removeLines = function(L) {
+  var removed = '';
+  if(L) {
+    if(this._c) {
+      var line = this._lines.get(this._l);
+      removed += line.substring(this._c) + this._lines.splice(this._l + 1, L - 1).join('');
+      // join current line with the next line
+      this._lines.set(this._l, line.substring(0, this._c) + this._lines.splice(this._l + 1, 1));
+    } else {
+      // just skip N lines
+      removed += this._lines.splice(this._l, L).join('');
+    }
+  }
+  return removed;
+};
+
+TextLinesMutator2.prototype.remove = function(N, L) {
+  var removed = '';
+  if(N) {
+    if(L) {
+      removed += this.removeLines(L);
+    } else {
+      var line = this._lines.get(this._l);
+      exports.assert((this._c + N) < line.length, 'char count to remove greated than line length');
+
+      removed += line.substr(this._c, N);
+      this._lines.set(this._l, line.substring(0, this._c) + line.substring(this._c + N));
+    }
+  }
+  return removed;
+};
+
+TextLinesMutator2.prototype.insert = function(text, L) {
+  if(text) {
+    if(L) {
+      var newLines = exports.splitTextLines(text);
+      if(this._c) {
+        var line = this._lines.get(this._l);
+        newLines[0] = line.substring(0, this._c) + newLines[0];
+
+        // new ending
+        this._lines.set(this._l, line.substring(this._c));
+      }
+      // insert the rest before new ending
+      this._lines.applySplice([this._l, 0].concat(newLines));
+      this._l += L;
+      this._c = 0;
+    } else {
+      var line = this._lines.get(this._l);
+      this._lines.set(this._l, line.substring(0, this._c) + text + line.substring(this._c));
+      this._c += text.length;
+    }
+  }
+};
+
+TextLinesMutator2.prototype.hasMore = function() {
+  return this._l < this._lines.length();
+};
+
+TextLinesMutator2.prototype.close = function() {
+  // compatibility, do nothing
 };
 
 /**
@@ -618,7 +733,7 @@ function TextLinesMutator(lines) {
   // invariant: if (inSplice && (curLine >= curSplice[0] + curSplice.length - 2)) then
   //            curCol == 0
 }
-exports.textLinesMutator = TextLinesMutator;
+exports.textLinesMutator = TextLinesMutator2;
 
 TextLinesMutator.prototype._enterSplice = function() {
   this._curSplice[0] = this._curLine;
