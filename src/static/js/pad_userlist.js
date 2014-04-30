@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -513,7 +513,7 @@ var paduserlist = (function()
       {
         info.colorId = clientVars.colorPalette[info.colorId];
       }
-      
+
       myUserInfo = $.extend(
       {}, info);
 
@@ -602,7 +602,13 @@ var paduserlist = (function()
           online++;
         }
       }
-      $("#online_count").text(online);
+      var $btn = $("#editbar [data-key=showusers] > a")
+        , $counter = $('#online_count', $btn)
+      if(!$counter.length) {
+        $counter = $('<span id="online_count">')
+        $btn.append($counter)
+      }
+      $counter.text(online);
 
       return online;
     },
@@ -724,9 +730,9 @@ var paduserlist = (function()
       {
         $("#myswatchbox").addClass('myswatchboxhoverable').removeClass('myswatchboxunhoverable');
       }
-      
+
       $("#myswatch").css({'background-color': myUserInfo.colorId});
-      
+
       if ($.browser.msie && parseInt($.browser.version) <= 8) {
         $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
       }
@@ -748,7 +754,7 @@ function getColorPickerSwatchIndex(jnode)
 function closeColorPicker(accept)
 {
   if (accept)
-  {    
+  {
     var newColor = $("#mycolorpickerpreview").css("background-color");
     var parts = newColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     // parts now should be ["rgb(0, 70, 255", "0", "70", "255"]
