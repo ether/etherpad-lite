@@ -27,6 +27,7 @@ var async = require("async");
 var fs = require("fs");
 var settings = require('../utils/Settings');
 var os = require('os');
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 
 //load abiword only if its enabled
 if(settings.abiword != null)
@@ -45,8 +46,13 @@ if(os.type().indexOf("Windows") > -1)
  */ 
 exports.doExport = function(req, res, padId, type)
 {
+  // allow fileName to be overwritten by a hook, the type type is kept static for security reasons
+  var fileName = hooks.callAll("exportFileName", padId);
+  // if fileName is not set then set it to the padId, note that fileName is returned as an array.
+  if(!fileName[0]) fileName = padId; 
+
   //tell the browser that this is a downloadable file
-  res.attachment(padId + "." + type);
+  res.attachment(fileName + "." + type);
 
   //if this is a plain text export, we can do this directly
   // We have to over engineer this because tabs are stored as attributes and not plain text
@@ -81,7 +87,7 @@ exports.doExport = function(req, res, padId, type)
         //ensure html can be collected by the garbage collector
         txt = null;
 
-        destFile = tempDirectory + "/eplite_export_" + randNum + "." + type;
+        destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
         abiword.convertFile(srcFile, destFile, type, callback);
       },
       //send the file
@@ -168,7 +174,7 @@ exports.doExport = function(req, res, padId, type)
         else //write the html export to a file
         {
           randNum = Math.floor(Math.random()*0xFFFFFFFF);
-          srcFile = tempDirectory + "/eplite_export_" + randNum + ".html";
+          srcFile = tempDirectory + "/etherpad_export_" + randNum + ".html";
           fs.writeFile(srcFile, html, callback); 
         }
       },
@@ -178,7 +184,7 @@ exports.doExport = function(req, res, padId, type)
         //ensure html can be collected by the garbage collector
         html = null;
       
-        destFile = tempDirectory + "/eplite_export_" + randNum + "." + type;
+        destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
         abiword.convertFile(srcFile, destFile, type, callback);
       },
       //send the file
