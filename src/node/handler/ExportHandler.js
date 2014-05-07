@@ -46,10 +46,15 @@ if(os.type().indexOf("Windows") > -1)
  */ 
 exports.doExport = function(req, res, padId, type)
 {
+  var fileName = padId;
+
   // allow fileName to be overwritten by a hook, the type type is kept static for security reasons
-  var fileName = hooks.callAll("exportFileName", padId);
-  // if fileName is not set then set it to the padId, note that fileName is returned as an array.
-  if(!fileName[0]) fileName = padId; 
+  hooks.aCallAll("exportFileName", padId, 
+    function(err, hookFileName){
+      // if fileName is set then set it to the padId, note that fileName is returned as an array.
+      if(fileName[0]) fileName = hookFileName; 
+    }
+  );
 
   //tell the browser that this is a downloadable file
   res.attachment(fileName + "." + type);
