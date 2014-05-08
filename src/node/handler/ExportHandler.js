@@ -22,6 +22,7 @@ var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
 var exporttxt = require("../utils/ExportTxt");
 var exportdokuwiki = require("../utils/ExportDokuWiki");
+var exportraw = require("../utils/ExportRaw");
 var padManager = require("../db/PadManager");
 var async = require("async");
 var fs = require("fs");
@@ -118,6 +119,17 @@ exports.doExport = function(req, res, padId, type)
     {
       if(err && err != "stop") ERR(err);
     })
+  }
+  else if(type == "raw")
+  {
+    padManager.getPad(padId, function(err, pad)
+    {
+      ERR(err);
+      exportraw.getPadRaw(pad, req.params.rev, function(err, json) {
+        res.attachment(padId + ".json");
+        res.send(json);
+      })
+    });
   }
   else if(type == 'dokuwiki')
   {
