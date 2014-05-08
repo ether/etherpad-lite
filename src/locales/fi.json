@@ -43,7 +43,7 @@
 	"pad.settings.colorcheck": "Kirjoittajavärit",
 	"pad.settings.linenocheck": "Rivinumerot",
 	"pad.settings.rtlcheck": "Luetaanko sisältö oikealta vasemmalle?",
-	"pad.settings.fontType": "Kirjasintyyppi:",
+	"pad.settings.fontType": "Fonttityyppi:",
 	"pad.settings.fontType.normal": "normaali",
 	"pad.settings.fontType.monospaced": "tasalevyinen",
 	"pad.settings.globalView": "Yleisnäkymä",

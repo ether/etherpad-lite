@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Laaknor"
+			"Laaknor",
+			"Cocu"
 		]
 	},
 	"index.newPad": "Ny Pad",
@@ -12,8 +13,8 @@
 	"pad.toolbar.strikethrough.title": "Gjennomstreking",
 	"pad.toolbar.ol.title": "Nummerert liste",
 	"pad.toolbar.ul.title": "Punktliste",
-	"pad.toolbar.indent.title": "Innrykk",
-	"pad.toolbar.unindent.title": "Rykk ut",
+	"pad.toolbar.indent.title": "Innrykk (TAB)",
+	"pad.toolbar.unindent.title": "Rykk ut (Shift+TAB)",
 	"pad.toolbar.undo.title": "Angre (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Gjør omigjen (Ctrl-Y)",
 	"pad.toolbar.clearAuthorship.title": "Fjern forfatterfarger",
@@ -66,6 +67,10 @@
 	"pad.modals.initsocketfail.cause": "Dette er sannsynligvis på grunn av et problem med nettleseren eller din internettoppkobling",
 	"pad.modals.slowcommit.explanation": "Serveren svarer ikke.",
 	"pad.modals.slowcommit.cause": "Dette kan være et problem med nettverkstilkoblingen",
+	"pad.modals.badChangeset.explanation": "En redigering som du gjorde ble klassifisert som ulovlig av synkroniseringsserveren.",
+	"pad.modals.badChangeset.cause": "Dette kan komme av feil serverkonfigurasjon eller en annen uventet adferd. Vennligst kontakt serviceadministratoren hvis du anser dette å være feil. Prøv å gjenopprette forbindelsen for å fortsette med redigeringen.",
+	"pad.modals.corruptPad.explanation": "Blokken du forsøker å få tilgang til er skadet.",
+	"pad.modals.corruptPad.cause": "Dette kan komme av feil serverkonfigurasjon eller en annen uventet adferd. Vennligst kontakt serviceadministratoren hvis du anser dette å være feil.",
 	"pad.modals.deleted": "Slettet.",
 	"pad.modals.deleted.explanation": "Denne padden har blitt fjernet",
 	"pad.modals.disconnected": "Du har blitt frakoblet.",
@@ -99,7 +104,7 @@
 	"timeslider.month.october": "oktober",
 	"timeslider.month.november": "november",
 	"timeslider.month.december": "desember",
-	"timeslider.unnamedauthors": "{{num}} navnløse forfattere",
+	"timeslider.unnamedauthors": "{{num}} navnløse {[plural(num) one: forfatter, other: forfattere ]}",
 	"pad.savedrevs.marked": "Denne revisjonen er nå markert som en lagret revisjon",
 	"pad.userlist.entername": "Skriv inn ditt navn",
 	"pad.userlist.unnamed": "navnløs",
