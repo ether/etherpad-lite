@@ -83,5 +83,8 @@
 	"pad.share.emebdcode": "Укласьці URL",
 	"pad.chat": "Чат",
 	"pad.chat.title": "Адкрыць чат для гэтага дакумэнту.",
-	"pad.chat.loadmessages": "Загрузіць болей паведамленьняў"
+	"pad.chat.loadmessages": "Загрузіць болей паведамленьняў",
+	"timeslider.pageTitle": "Часавая шкала {{appTitle}}",
+	"timeslider.toolbar.returnbutton": "Вярнуцца да дакумэнту",
+	"timeslider.toolbar.authors": "Аўтары:"
 }
