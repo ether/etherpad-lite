@@ -49,10 +49,10 @@ exports.doExport = function(req, res, padId, type)
   var fileName = padId;
 
   // allow fileName to be overwritten by a hook, the type type is kept static for security reasons
-  hooks.aCallAll("exportFileName", padId, 
+  hooks.aCallFirst("exportFileName", padId, 
     function(err, hookFileName){
       // if fileName is set then set it to the padId, note that fileName is returned as an array.
-      if(fileName[0]) fileName = hookFileName; 
+      if(hookFileName[0]) fileName = hookFileName[0]; 
     }
   );
 

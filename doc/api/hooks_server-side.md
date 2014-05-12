@@ -259,7 +259,7 @@ This hook will allow a plug-in developer to modify the file name of an exported 
 Example:
 
 ```
-exports.exportFileName = function(hook, padId){
-  return "newFileName"+padId;
+exports.exportFileName = function(hook, padId, callback){
+  callback("newFileName"+padId);
 }
 ```
