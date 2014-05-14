@@ -187,7 +187,12 @@ exports.getRevisionChangeset = function(padID, rev, callback)
     //the client wants the latest changeset, lets return it to him
     else
     {
-      callback(null, {"changeset": pad.getRevisionChangeset(pad.getHeadRevisionNumber())});
+      pad.getRevisionChangeset(pad.getHeadRevisionNumber(), function(err, changeset)
+      {
+        if(ERR(err, callback)) return;
+
+        callback(null, changeset);
+      })
     }
   });
 }
