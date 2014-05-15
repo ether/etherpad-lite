@@ -52,7 +52,7 @@ exports.doExport = function(req, res, padId, type)
   hooks.aCallFirst("exportFileName", padId, 
     function(err, hookFileName){
       // if fileName is set then set it to the padId, note that fileName is returned as an array.
-      if(hookFileName[0]) fileName = hookFileName; 
+      if(hookFileName) fileName = hookFileName; 
     }
   );
 
