@@ -641,6 +641,32 @@ exports.getReadOnlyID = function(padID, callback)
 }
 
 /**
+getPadID(roID) returns the padID of a pad based on the readonlyID(roID)
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getPadID = function(roID, callback)
+{
+  //get the PadId
+  readOnlyManager.getPadId(roID, function(err, padID)
+  {
+    if(ERR(err, callback)) return;
+
+    if(padID == null)
+    {
+      callback(new customError("padID does not exist","apierror"));
+    }
+    else
+    {
+      callback(null, {PadID: padID});
+    }
+  });
+}
+
+/**
 setPublicStatus(padID, publicStatus) sets a boolean for the public status of a pad 
 
 Example returns:
