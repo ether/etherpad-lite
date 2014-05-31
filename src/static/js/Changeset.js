@@ -122,7 +122,7 @@ function OpIterator(opsStr, optStartIndex) {
 
   this._regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
   this._curIndex = (optStartIndex || 0);
-  this._prevIndex = this.curIndex;
+  this._prevIndex = this._curIndex;
 
   this._opsStr = opsStr;
 
@@ -527,6 +527,10 @@ StringIterator.prototype.remaining = function() {
   return this._str.length - this._curIndex;
 }
 
+StringIterator.prototype.length = function() {
+  return this._str.length;
+};
+
 /**
  * A custom made StringBuffer 
  */
@@ -698,6 +702,15 @@ TextLinesMutator2.prototype.insert = function(text, L) {
 
 TextLinesMutator2.prototype.hasMore = function() {
   return this._l < this._lines.length();
+};
+
+TextLinesMutator2.prototype.length = function() {
+  // no better way
+  var len = 0;
+  for(var i = 0, l = this._lines.length(); i < l; i++) {
+    len += this._lines.get(i).length;
+  }
+  return len;
 };
 
 TextLinesMutator2.prototype.close = function() {
@@ -896,6 +909,41 @@ TextLinesMutator.prototype.close = function() {
   this._inSplice && this._leaveSplice();
 }
 
+/*
+ * StringMutator is compatible implementation of TextLinesMutator to manipulate on strings.
+ * Since we can't modify strings in-place, we have a special treatement for .close() method
+ */
+function StringMutator(text) {
+  if(!(this instanceof StringMutator)) {
+    return new StringMutator(lines);
+  }
+
+  this._in = exports.stringIterator(text);
+  this._out = exports.stringAssembler();
+}
+
+StringMutator.prototype.skip = function(N, L) {
+  this._out.append(this._in.take(N));
+};
+
+StringMutator.prototype.insert = function(text, L) {
+  this._out.append(text);
+};
+
+StringMutator.prototype.remove = function(N, L) {
+  this._in.skip(N);
+};
+
+StringMutator.prototype.length = function() {
+  return this._in.remaining();
+};
+
+StringMutator.prototype.close = function() {
+  this._out.append(this._in.take(this._in.remaining()));
+  return this._out.toString();
+};
+
+
 /**
  * Function allowing iterating over two Op strings. 
  * @params in1 {string} first Op string
@@ -977,28 +1025,7 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
  * @params str {string} String to which a Changeset should be applied
  */
 exports.applyToText = function (cs, str) {
-  var unpacked = exports.unpack(cs);
-  exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
-  var csIter = exports.opIterator(unpacked.ops);
-  var bankIter = exports.stringIterator(unpacked.charBank);
-  var strIter = exports.stringIterator(str);
-  var assem = exports.stringAssembler();
-  while (csIter.hasNext()) {
-    var op = csIter.next();
-    switch (op.opcode) {
-    case '+':
-      assem.append(bankIter.take(op.chars));
-      break;
-    case '-':
-      strIter.skip(op.chars);
-      break;
-    case '=':
-      assem.append(strIter.take(op.chars));
-      break;
-    }
-  }
-  assem.append(strIter.take(strIter.remaining()));
-  return assem.toString();
+  return mutate(cs, new StringMutator(str));
 };
 
 /**
@@ -1007,26 +1034,32 @@ exports.applyToText = function (cs, str) {
  * @param lines The lines to which the changeset needs to be applied
  */
 exports.mutateTextLines = function (cs, lines) {
+  mutate(cs, exports.textLinesMutator(lines));
+};
+
+function mutate(cs, mutator) {
   var unpacked = exports.unpack(cs);
+  var oldLen = mutator.length();
+  exports.assert(oldLen == unpacked.oldLen, "mismatched apply: ", oldLen, " / ", unpacked.oldLen);
   var csIter = exports.opIterator(unpacked.ops);
   var bankIter = exports.stringIterator(unpacked.charBank);
-  var mut = exports.textLinesMutator(lines);
   while (csIter.hasNext()) {
     var op = csIter.next();
     switch (op.opcode) {
     case '+':
-      mut.insert(bankIter.take(op.chars), op.lines);
+      mutator.insert(bankIter.take(op.chars), op.lines);
       break;
     case '-':
-      mut.remove(op.chars, op.lines);
+      mutator.remove(op.chars, op.lines);
       break;
     case '=':
-      mut.skip(op.chars, op.lines, ( !! op.attribs));
+      mutator.skip(op.chars, op.lines, ( !! op.attribs));
       break;
     }
   }
-  mut.close();
-};
+  return mutator.close();
+}
+
 
 /**
  * Composes two attribute strings (see below) into one.
