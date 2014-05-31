@@ -645,7 +645,7 @@ getPadID(roID) returns the padID of a pad based on the readonlyID(roID)
 
 Example returns:
 
-{code: 0, message:"ok", data: null}
+{code: 0, message:"ok", data: {padID: padID}}
 {code: 1, message:"padID does not exist", data: null}
 */
 exports.getPadID = function(roID, callback)
@@ -661,7 +661,7 @@ exports.getPadID = function(roID, callback)
     }
     else
     {
-      callback(null, {PadID: padID});
+      callback(null, {padID: padID});
     }
   });
 }
