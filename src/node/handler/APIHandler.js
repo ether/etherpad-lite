@@ -300,7 +300,7 @@ var version =
   , "getChatHistory"            : ["padID", "start", "end"]
   , "getChatHead"               : ["padID"]
   }
-, "1.4.1":
+, "1.2.10":
   { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
@@ -348,7 +348,7 @@ var version =
 };
 
 // set the latest available API version here
-exports.latestApiVersion = '1.4.1';
+exports.latestApiVersion = '1.2.10';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
