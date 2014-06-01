@@ -651,17 +651,17 @@ Example returns:
 exports.getPadID = function(roID, callback)
 {
   //get the PadId
-  readOnlyManager.getPadId(roID, function(err, padID)
+  readOnlyManager.getPadId(roID, function(err, retrievedPadID)
   {
     if(ERR(err, callback)) return;
 
-    if(padID == null)
+    if(retrievedPadID == null)
     {
       callback(new customError("padID does not exist","apierror"));
     }
     else
     {
-      callback(null, {padID: padID});
+      callback(null, {padID: retrievedPadID});
     }
   });
 }
