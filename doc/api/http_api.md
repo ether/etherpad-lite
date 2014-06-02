@@ -455,6 +455,15 @@ returns the read only link of a pad
   * `{code: 0, message:"ok", data: {readOnlyID: "r.s8oes9dhwrvt0zif"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
+#### getPadID(readOnlyID)
+ * API >= 1.2.10
+
+returns the id of a pad which is assigned to the readOnlyID
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: {padID: "p.s8oes9dhwrvt0zif"}}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
 #### setPublicStatus(padID, publicStatus)
  * API >= 1
 
