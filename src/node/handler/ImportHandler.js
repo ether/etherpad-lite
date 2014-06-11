@@ -114,7 +114,9 @@ exports.doImport = function(req, res, padId)
     //convert file to html
     function(callback) {
       if(!importHandledByPlugin){
-        if (abiword) {
+        var fileEnding = path.extname(srcFile).toLowerCase();
+        var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
+        if (abiword && !fileIsHTML) {
           abiword.convertFile(srcFile, destFile, "htm", function(err) {
             //catch convert errors
             if(err) {
