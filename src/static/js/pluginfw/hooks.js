@@ -8,7 +8,7 @@ var hookCallWrapper = function (hook, hook_name, args, cb) {
 
   // Normalize output to list for both sync and async cases
   var normalize = function(x) {
-    if (x == undefined) return [];
+    if (x === undefined) return [];
     return x;
   }
   var normalizedhook = function () {
