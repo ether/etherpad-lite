@@ -217,6 +217,8 @@ exports.handleMessage = function(client, message)
       } else {
         messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
       }
+    } else if(message.type == "CLEAR_SESSION_INFO") {
+      handleClearSessionInfo(client, message);
     } else {
       messageLogger.warn("Dropped message, unknown Message Type " + message.type);
     }
@@ -870,6 +872,32 @@ function _correctMarkersInPad(atext, apool) {
     offset = pos+1;
   });
   return builder.toString();
+}
+
+function handleClearSessionInfo(client, message)
+{
+  var infoMsg = {
+          type: "COLLABROOM",
+          data: {
+            type: "CLEAR_CHAT_MESSAGES"
+          }
+        };
+
+  // send the messages back to the client to clear the chat messages
+  client.json.send(infoMsg);
+
+  // clear the session and leave the room
+  var currentSession = sessioninfos[client.id];
+  var padId = currentSession.padId;
+  var roomClients = socketio.sockets.clients(padId);
+  for(var i = 0; i < roomClients.length; i++) {
+    var sinfo = sessioninfos[roomClients[i].id];
+    if(sinfo && sinfo == currentSession) {
+      // fix user's counter, works on page refresh or if user closes browser window and then rejoins
+      sessioninfos[roomClients[i].id] = {};
+      roomClients[i].leave(padId);
+    }
+  }
 }
 
 /**
