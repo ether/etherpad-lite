@@ -98,7 +98,7 @@ exports.doImport = function(req, res, padId)
       }
     },
     function(callback){
-      destFile = path.join(tmpDirectory, "eplite_import_" + randNum + ".htm");
+      destFile = path.join(tmpDirectory, "etherpad_import_" + randNum + ".htm");
 
       // Logic for allowing external Import Plugins
       hooks.aCallAll("import", {srcFile: srcFile, destFile: destFile}, function(err, result){
