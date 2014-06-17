@@ -71,6 +71,11 @@ exports.restartServer = function () {
   }
 
   app.use(function (req, res, next) {
+    // res.header("X-Frame-Options", "deny"); // breaks embedded pads
+    if(settings.ssl){ // if we use SSL
+      res.header("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    }
+
     res.header("Server", serverName);
     next();
   });
