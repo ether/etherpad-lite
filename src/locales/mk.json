@@ -39,7 +39,7 @@
 	"pad.settings.fontType": "Тип на фонт:",
 	"pad.settings.fontType.normal": "Нормален",
 	"pad.settings.fontType.monospaced": "Непропорционален",
-	"pad.settings.globalView": "Гобален поглед",
+	"pad.settings.globalView": "Општ поглед",
 	"pad.settings.language": "Јазик:",
 	"pad.importExport.import_export": "Увоз/Извоз",
 	"pad.importExport.import": "Подигање на било каква текстуална податотека или документ",
