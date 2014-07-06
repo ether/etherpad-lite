@@ -449,14 +449,21 @@ var pad = {
   switchToPad: function(padId)
   {
     var options = document.location.href.split('?')[1];
-    if(options != null)
-      window.history.pushState("", "", "/p/" + padId + '?' + options);
-    else
-      window.history.pushState("", "", "/p/" + padId);
-    
-    sendClearSessionInfo();
-    receivedClientVars = false;
-    sendClientReady(false);
+    var newHref = "/p/" + padId;
+    if (options != null)
+      newHref =  newHref + '?' + options;
+
+    if(window.history && window.history.pushState)
+    {
+      window.history.pushState("", "", newHref);      
+      sendClearSessionInfo();
+      receivedClientVars = false;
+      sendClientReady(false);
+    }
+    else // fallback
+    {
+      window.location.href = newHref;
+    }
   },
   sendClientMessage: function(msg)
   {
