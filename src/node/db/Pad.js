@@ -552,7 +552,7 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     },
     function(callback) {
       // Group pad? Add it to the group's list
-      if(destGroupID) db.setSub("group:" + destGroupID, ["pads", padID], 1);
+      if(destGroupID) db.setSub("group:" + destGroupID, ["pads", destinationID], 1);
 
       // Initialize the new pad (will update the listAllPads cache)
       padManager.getPad(destinationID, null, callback)
