@@ -84,33 +84,33 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
 
   db.set("pad:"+this.id+":revs:"+newRev, newRevData);
   this.saveToDatabase();
-  
+
   // set the author to pad
   if(author)
     authorManager.addPad(author, this.id);
-    
+
   if (this.head == 0) {
     hooks.callAll("padCreate", {'pad':this});
   } else {
     hooks.callAll("padUpdate", {'pad':this});
-  }    
+  }
 };
 
 //save all attributes to the database
 Pad.prototype.saveToDatabase = function saveToDatabase(){
   var dbObject = {};
-  
+
   for(var attr in this){
     if(typeof this[attr] === "function") continue;
     if(attributeBlackList.indexOf(attr) !== -1) continue;
-    
+
     dbObject[attr] = this[attr];
-    
+
     if(jsonableList.indexOf(attr) !== -1){
       dbObject[attr] = dbObject[attr].toJsonable();
     }
   }
-  
+
   db.set("pad:"+this.id, dbObject);
 }
 
@@ -337,9 +337,9 @@ Pad.prototype.getChatMessages = function getChatMessages(start, end, callback) {
     neededEntries.push({entryNum:i, order: order});
     order++;
   }
-  
+
   var _this = this;
-  
+
   //get all entries out of the database
   var entries = [];
   async.forEach(neededEntries, function(entryObject, callback)
@@ -412,6 +412,7 @@ Pad.prototype.init = function init(text, callback) {
 Pad.prototype.copy = function copy(destinationID, force, callback) {
   var sourceID = this.id;
   var _this = this;
+  var destGroupID;
 
   // make force optional
   if (typeof force == "function") {
@@ -434,12 +435,13 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     // if it's a group pad, let's make sure the group exists.
     function(callback)
     {
-      if (destinationID.indexOf("$") != -1) 
-      { 
-        groupManager.doesGroupExist(destinationID.split("$")[0], function (err, exists) 
+      if (destinationID.indexOf("$") != -1)
+      {
+        destGroupID = destinationID.split("$")[0]
+        groupManager.doesGroupExist(destGroupID, function (err, exists)
         {
           if(ERR(err, callback)) return;
-          
+
           //group does not exist
           if(exists == false)
           {
@@ -460,10 +462,10 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     function(callback)
     {
       console.log("destinationID", destinationID, force);
-      padManager.doesPadExists(destinationID, function (err, exists) 
+      padManager.doesPadExists(destinationID, function (err, exists)
       {
         if(ERR(err, callback)) return;
-        
+
         if(exists == true)
         {
           if (!force)
@@ -472,7 +474,7 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
             callback(new customError("destinationID already exists","apierror"));
             console.log("erroring out without force - after");
             return;
-          } 
+          }
           else // exists and forcing
           {
             padManager.getPad(destinationID, function(err, pad) {
@@ -481,7 +483,7 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
             });
           }
         }
-        else 
+        else
         {
           callback();
         }
@@ -493,6 +495,7 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
       db.get("pad:"+sourceID, function(err, pad) {
         db.set("pad:"+destinationID, pad);
       });
+
       callback();
     },
     //copy all relations
@@ -547,6 +550,13 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
       // parallel
       ], callback);
     },
+    function(callback) {
+      // Group pad? Add it to the group's list
+      if(destGroupID) db.setSub("group:" + destGroupID, ["pads", destinationID], 1);
+
+      // Initialize the new pad (will update the listAllPads cache)
+      padManager.getPad(destinationID, null, callback)
+    }
   // series
   ], function(err)
   {
@@ -684,7 +694,7 @@ Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, la
       return;
     }
   }
-  
+
   //build the saved revision object
   var savedRevision = {};
   savedRevision.revNum = revNum;
@@ -692,7 +702,7 @@ Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, la
   savedRevision.label = label || "Revision " + revNum;
   savedRevision.timestamp = new Date().getTime();
   savedRevision.id = randomString(10);
-  
+
   //save this new saved revision
   this.savedRevisions.push(savedRevision);
   this.saveToDatabase();
