@@ -162,19 +162,9 @@ function savePassword()
   return false;
 }
 
-function sendClearSessionInfo()
+function sendClientReady(isReconnect, messageType)
 {
-  var msg = {
-    "component": "pad",
-    "type": "CLEAR_SESSION_INFO",
-    "protocolVersion": 2
-  };
-  
-  socket.json.send(msg);
-}
-
-function sendClientReady(isReconnect)
-{
+  messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
   var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
   padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
@@ -197,7 +187,7 @@ function sendClientReady(isReconnect)
 
   var msg = {
     "component": "pad",
-    "type": "CLIENT_READY",
+    "type": messageType,
     "padId": padId,
     "sessionID": sessionID,
     "password": password,
@@ -442,9 +432,10 @@ var pad = {
   {
     return pad.myUserInfo.name;
   },
-  sendClientReady: function(isReconnect)
+  sendClientReady: function(isReconnect, messageType)
   {
-    sendClientReady(isReconnect);
+    messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
+    sendClientReady(isReconnect, messageType);
   },
   switchToPad: function(padId)
   {
@@ -455,10 +446,10 @@ var pad = {
 
     if(window.history && window.history.pushState)
     {
+      $('#chattext p').remove(); //clear the chat messages
       window.history.pushState("", "", newHref);      
-      sendClearSessionInfo();
       receivedClientVars = false;
-      sendClientReady(false);
+      sendClientReady(false, 'SWITCH_TO_PAD');
     }
     else // fallback
     {

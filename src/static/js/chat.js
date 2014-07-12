@@ -79,10 +79,6 @@ var chat = (function()
       this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
-    clearChatMessages: function()
-    {
-      $('#chattext p').remove();
-    },
     addMessage: function(msg, increment, isHistoryAdd)
     {
       //correct the time

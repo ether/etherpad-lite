@@ -388,10 +388,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       chat.addMessage(msg, true, false);
     }
-    else if (msg.type == "CLEAR_CHAT_MESSAGES")
-    {
-      chat.clearChatMessages();
-    }
     else if (msg.type == "CHAT_MESSAGES")
     {
       for(var i = msg.messages.length - 1; i >= 0; i--)
