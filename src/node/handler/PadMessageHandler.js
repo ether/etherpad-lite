@@ -871,7 +871,7 @@ function handleSwitchToPad(client, message)
   var roomClients = socketio.sockets.clients(padId);
   for(var i = 0; i < roomClients.length; i++) {
     var sinfo = sessioninfos[roomClients[i].id];
-    if(sinfo && sinfo == currentSession) {
+    if(sinfo && sinfo.author == currentSession.author) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
       sessioninfos[roomClients[i].id] = {};
       roomClients[i].leave(padId);
