@@ -178,11 +178,12 @@ exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
 
-  if (path.resolve(settingsFilename)===settingsFilename)
+  if (path.resolve(settingsFilename)===settingsFilename) {
     settingsFilename = path.resolve(settingsFilename);
-  else
+  } else {
     settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
-
+  }
+  
   var settingsStr;
   try{
     //read the settings sync
