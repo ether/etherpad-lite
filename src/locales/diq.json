@@ -39,12 +39,14 @@
 	"pad.importExport.import_export": "Zeredayış/Teberdayış",
 	"pad.importExport.importSuccessful": "Mıwafaq biye",
 	"pad.importExport.exporthtml": "HTML",
-	"pad.importExport.exportplain": "Duz metin",
+	"pad.importExport.exportplain": "Metno pan",
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
 	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.modals.connected": "Gırediya.",
+	"pad.modals.forcereconnect": "Mecbur anciya gırê de",
+	"pad.modals.userdup": "Zewbina pençere de bi a",
 	"pad.modals.unauth": "Selahiyetdar niyo",
 	"pad.modals.initsocketfail": "Nêresneyêno ciyageyroği.",
 	"pad.modals.deleted": "Esteriya.",
@@ -86,6 +88,7 @@
 	"pad.editbar.clearcolors": "Wesiqa de renge nuştoğey bıesterneye?",
 	"pad.impexp.importbutton": "Nıka miyan ke",
 	"pad.impexp.importing": "Deyeno azere...",
+	"pad.impexp.uploadFailed": "Barkerdış nêbi, kerem ke anciya bıcerebne",
 	"pad.impexp.importfailed": "Zer kerdış mıwafaq nebı",
 	"pad.impexp.copypaste": "Reca keme kopya pronayış bıkeri"
 }

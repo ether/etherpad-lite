@@ -5,7 +5,8 @@
 			"Liuxinyu970226",
 			"Shangkuanlc",
 			"Shirayuki",
-			"Simon Shek"
+			"Simon Shek",
+			"LNDDYL"
 		]
 	},
 	"index.newPad": "新Pad",
@@ -45,7 +46,7 @@
 	"pad.settings.globalView": "所有人的視窗",
 	"pad.settings.language": "語言：",
 	"pad.importExport.import_export": "匯入／匯出",
-	"pad.importExport.import": "上載任何文字檔或文檔",
+	"pad.importExport.import": "上載任何文字檔或文件",
 	"pad.importExport.importSuccessful": "完成！",
 	"pad.importExport.export": "匯出當前pad為：",
 	"pad.importExport.exporthtml": "HTML",
