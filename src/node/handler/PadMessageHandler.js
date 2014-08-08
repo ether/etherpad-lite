@@ -145,6 +145,9 @@ exports.handleDisconnect = function(client)
 
       //Go trough all user that are still on the pad, and send them the USER_LEAVE message
       client.broadcast.to(session.padId).json.send(messageToTheOtherUsers);
+
+      // Allow plugins to hook into users leaving the pad
+      hooks.callAll("userLeave", session);
     });
   }
 
