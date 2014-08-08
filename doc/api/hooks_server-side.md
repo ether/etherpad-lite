@@ -263,3 +263,20 @@ exports.exportFileName = function(hook, padId, callback){
   callback("newFileName"+padId);
 }
 ```
+
+## userLeave
+Called from src/node/handler/PadMessageHandler.js
+
+This in context:
+
+1. session (including the pad id and author id)
+
+This hook gets called when an author leaves a pad. This is useful if you want to perform certain actions after a pad has been edited
+
+Example:
+
+```
+exports.userLeave = function(hook, session, callback) {
+  console.log('%s left pad %s', session.author, session.padId);
+};
+```
