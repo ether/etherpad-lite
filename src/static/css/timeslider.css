@@ -168,8 +168,9 @@
   width: 185px
 }
 #importexport {
-  top: 118px;
+  top: 100px;
   width: 185px;
+  position: fixed;
 }
 .timeslider-bar {
   background: #f7f7f7;
