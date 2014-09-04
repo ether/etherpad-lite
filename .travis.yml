@@ -7,4 +7,4 @@ install:
   - "web: node node_modules/ep_etherpad-lite/node/server.js"
   - "cp src/package.json ./"
   - "npm install"
-  - "zip -r etherpad-lite-cf-offline ./*"
+  - "zip -r etherpad-lite-cf ./*"
