@@ -24,6 +24,18 @@ Also, check out the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**, 
 
 Etherpad works with node v0.8 and v0.10, only. (We don't support v0.6)
 
+## CloudFoundry
+
+## Install
+ 1. Download the `etherpad-lite-cf.zip` in release tab on github.
+ 2. Extract the zip file
+ 3. Go to the extracted archive with your console
+ 4. Run `cf push etherpad-lite -m 512M`
+ 5. You've done
+
+## Install new plugin(s)
+To install new etherpad plugin (you can see a list here: [https://github.com/.../Plugin,-a-list](https://github.com/ether/etherpad-lite/wiki/Plugin,-a-list) ) you shoud add them in `package.json` in the root app directory to let the nodejs buildpack build/download them.
+
 ## Windows
 
 ### Prebuilt windows package
