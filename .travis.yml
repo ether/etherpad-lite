@@ -1,10 +1,18 @@
 language: node_js
 node_js:
-  - "0.10"
+- '0.10'
 install:
-  - "bin/installDeps.sh"
-  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-  - "web: node node_modules/ep_etherpad-lite/node/server.js"
-  - "cp src/package.json ./"
-  - "npm install"
-  - "zip -r etherpad-lite-cf-offline ./*"
+- bin/installDeps.sh
+- export GIT_HASH=$(git rev-parse --verify --short HEAD)
+- 'echo "web: node node_modules/ep_etherpad-lite/node/server.js" > Procfile'
+- cp src/package.json ./
+- npm install
+- zip -r etherpad-lite-cf ./*
+deploy:
+  provider: releases
+  api_key:
+    secure: GDExihYPG0uY9ZmrA1uGYXwQiQ39Y5qbrP472b7DJ6lWrGPI1+CN1l+aFDs9dn6yQbmHt+0z/epBOCCMIAQ/LUofULzSPhAWaoi0sEOzX/xF2jAYULdOJq9cpEjfQkEI+D1xsfkxY8HMe05Wxaj/S0Wd9X+zAQbMiPfFktkUv00=
+  file: etherpad-lite-cf.zip
+  on:
+    tags: true
+    all_branches: true
