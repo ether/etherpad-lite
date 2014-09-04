@@ -36,7 +36,7 @@ Etherpad works with node v0.8 and v0.10, only. (We don't support v0.6)
 ## Install new plugin(s)
 To install new etherpad plugin (you can see a list here: [https://github.com/.../Plugin,-a-list](https://github.com/ether/etherpad-lite/wiki/Plugin,-a-list) ) you shoud add them in `package.json` in the root app directory to let the nodejs buildpack build/download them.
 
-*Note*: This version can be runned offline (with no access to internet) if you don't add any plugin in `package.json`
+**Note:** This version can be runned offline (with no access to internet) if you don't add any plugin in `package.json`
 
 ## Windows
 
