@@ -285,7 +285,7 @@ var padeditbar = (function()
     });
 
     toolbar.registerCommand("showTimeSlider", function () {
-      document.location = document.location + "/timeslider";
+      document.location = document.location.pathname+ '/timeslider';
     });
 
     toolbar.registerAceCommand("bold", aceAttributeCommand);

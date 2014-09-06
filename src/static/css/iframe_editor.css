@@ -70,12 +70,12 @@ body.grayedout { background-color: #eee !important }
 
 #innerdocbody {
   font-size: 12px; /* overridden by body.style */
-  font-family: monospace; /* overridden by body.style */
+  font-family:Arial, sans-serif; /* overridden by body.style */
   line-height: 16px; /* overridden by body.style */
 }
 
 body.doesWrap {
-  white-space: pre-wrap; /*Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret, walking around your screen (see #1766) */
+  white-space: pre-wrap; /*Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret, walking around your screen (see #1766), WARNING: Enabling this causes Paste as plain text in Chrome to remove line breaks, this is probably undesirable */
   word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
 }
 

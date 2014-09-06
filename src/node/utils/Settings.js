@@ -110,6 +110,11 @@ exports.requireSession = false;
 exports.editOnly = false;
 
 /**
+ * A flag that bypasses password prompts for users with valid sessions
+ */
+exports.sessionNoPassword = false;
+
+/**
  * Max age that responses will have (affects caching layer).
  */
 exports.maxAge = 1000*60*60*6; // 6 hours
@@ -172,8 +177,13 @@ exports.abiwordAvailable = function()
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
-  settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
 
+  if (path.resolve(settingsFilename)===settingsFilename) {
+    settingsFilename = path.resolve(settingsFilename);
+  } else {
+    settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
+  }
+  
   var settingsStr;
   try{
     //read the settings sync

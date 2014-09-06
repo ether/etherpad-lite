@@ -16,7 +16,7 @@
                       "require-kernel"          : "1.0.5",
                       "resolve"                 : "0.2.x",
                       "socket.io"               : "0.9.x",
-                      "ueberDB"                 : "0.2.x",
+                      "ueberDB"                 : ">=0.2.2",
                       "express"                 : "3.1.0",
                       "async"                   : "0.1.x",
                       "connect"                 : "2.7.x",
@@ -52,5 +52,5 @@
   "repository"     : { "type" : "git",
                        "url" : "http://github.com/ether/etherpad-lite.git"
                      },
-  "version"        : "1.4.0"
+  "version"        : "1.4.1"
 }
