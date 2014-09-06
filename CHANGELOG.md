@@ -1,3 +1,22 @@
+# 1.4.1
+ * NEW: Translations
+ * NEW: userLeave Hook
+ * NEW: Script to reinsert all DB values of a Pad
+ * NEW: Allow for absolute settings paths
+ * NEW: API: Get Pad ID from read Only Pad ID
+ * NEW: Huge improvement on MySQL database read/write (InnoDB to MyISAM)
+ * NEW: Hook for Export File Name
+ * NEW: Preprocessor Hook for DOMLine attributes (allows plugins to wrap entire line contents)
+ * Fix: Exception on Plugin Search and fix for plugins not being fetched
+ * Fix: Font on innerdoc body can be arial on paste
+ * Fix: Fix Dropping of messages in handleMessage
+ * Fix: Don't use Abiword for HTML exports
+ * Fix: Color issues with user Icon
+ * Fix: Timeslider Button
+ * Fix: Session Deletion error
+ * Fix: Allow browser tabs to be cycled when focus is in editor
+ * Fix: Various Editor issues with Easysync potentially entering forever loop on bad changeset
+ 
 # 1.4
  * NEW: Disable toolbar items through settings.json
  * NEW: Internal stats/metrics engine
