@@ -334,7 +334,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
       $("#ui-slider-bar").mousedown(function(evt)
       {
-        setSliderPosition(Math.floor((evt.clientX - $("#ui-slider-bar").offset().left) * sliderLength / 742));
         $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
         $("#ui-slider-handle").trigger(evt);
       });
