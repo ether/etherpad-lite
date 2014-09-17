@@ -6,7 +6,8 @@
 {
   // Name your instance!
   "title": "Etherpad",
-
+  "dbService": "DATABASE",
+  "ldapService": "LDAP",
   // favicon default name
   // alternatively, set up a fully specified Url to your own favicon
   "favicon": "favicon.ico",

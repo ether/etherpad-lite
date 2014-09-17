@@ -27,7 +27,9 @@ var npm = require("npm/lib/npm.js");
 var jsonminify = require("jsonminify");
 var log4js = require("log4js");
 var randomString = require("./randomstring");
+var cfenv = require("cfenv");
 
+var appEnv = cfenv.getAppEnv();
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -72,7 +74,7 @@ exports.dbType = "dirty";
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
+exports.dbSettings = { "filename": path.join(exports.root, "dirty.db") };
 
 /**
  * The default Text of a new pad
@@ -83,17 +85,17 @@ exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized 
  * The toolbar buttons and order.
  */
 exports.toolbar = {
-  left: [
-    ["bold", "italic", "underline", "strikethrough"],
-    ["orderedlist", "unorderedlist", "indent", "outdent"],
-    ["undo", "redo"],
-    ["clearauthorship"]
-  ],
-  right: [
-    ["importexport", "timeslider", "savedrevision"],
-    ["settings", "embed"],
-    ["showusers"]
-  ]
+    left: [
+        ["bold", "italic", "underline", "strikethrough"],
+        ["orderedlist", "unorderedlist", "indent", "outdent"],
+        ["undo", "redo"],
+        ["clearauthorship"]
+    ],
+    right: [
+        ["importexport", "timeslider", "savedrevision"],
+        ["settings", "embed"],
+        ["showusers"]
+    ]
 }
 
 /**
@@ -109,7 +111,7 @@ exports.editOnly = false;
 /**
  * Max age that responses will have (affects caching layer).
  */
-exports.maxAge = 1000*60*60*6; // 6 hours
+exports.maxAge = 1000 * 60 * 60 * 6; // 6 hours
 
 /**
  * A flag that shows if minification is enabled or not
@@ -132,18 +134,20 @@ exports.loglevel = "INFO";
 exports.disableIPlogging = false;
 
 /*
-* log4js appender configuration
-*/
-exports.logconfig = { appenders: [{ type: "console" }]};
+ * log4js appender configuration
+ */
+exports.logconfig = { appenders: [
+    { type: "console" }
+]};
 
 /*
-* Session Key, do not sure this.
-*/
+ * Session Key, do not sure this.
+ */
 exports.sessionKey = false;
 
 /*
-* Trust Proxy, whether or not trust the x-forwarded-for header.
-*/
+ * Trust Proxy, whether or not trust the x-forwarded-for header.
+ */
 exports.trustProxy = false;
 
 /* This setting is used if you need authentication and/or
@@ -154,77 +158,95 @@ exports.requireAuthorization = false;
 exports.users = {};
 
 //checks if abiword is avaiable
-exports.abiwordAvailable = function()
-{
-  if(exports.abiword != null)
-  {
-    return os.type().indexOf("Windows") != -1 ? "withoutPDF" : "yes";
-  }
-  else
-  {
-    return "no";
-  }
+exports.abiwordAvailable = function () {
+    if (exports.abiword != null) {
+        return os.type().indexOf("Windows") != -1 ? "withoutPDF" : "yes";
+    }
+    else {
+        return "no";
+    }
 };
 
 exports.reloadSettings = function reloadSettings() {
-  // Discover where the settings file lives
-  var settingsFilename = argv.settings || "settings.json";
-  settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
+    // Discover where the settings file lives
+    var settingsFilename = argv.settings || "settings.json";
+    settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
 
-  var settingsStr;
-  try{
-    //read the settings sync
-    settingsStr = fs.readFileSync(settingsFilename).toString();
-  } catch(e){
-    console.warn('No settings file found. Continuing using defaults!');
-  }
-
-  // try to parse the settings
-  var settings;
-  try {
-    if(settingsStr) {
-      settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
-      settings = JSON.parse(settingsStr);
-    }
-  }catch(e){
-    console.error('There was an error processing your settings.json file: '+e.message);
-    process.exit(1);
-  }
-
-  //loop trough the settings
-  for(var i in settings)
-  {
-    //test if the setting start with a low character
-    if(i.charAt(0).search("[a-z]") !== 0)
-    {
-      console.warn("Settings should start with a low character: '" + i + "'");
+    var settingsStr;
+    try {
+        //read the settings sync
+        settingsStr = fs.readFileSync(settingsFilename).toString();
+    } catch (e) {
+        console.warn('No settings file found. Continuing using defaults!');
     }
 
-    //we know this setting, so we overwrite it
-    //or it's a settings hash, specific to a plugin
-    if(exports[i] !== undefined || i.indexOf('ep_')==0)
-    {
-      exports[i] = settings[i];
+    // try to parse the settings
+    var settings;
+    try {
+        if (settingsStr) {
+            settingsStr = jsonminify(settingsStr).replace(",]", "]").replace(",}", "}");
+            settings = JSON.parse(settingsStr);
+        }
+    } catch (e) {
+        console.error('There was an error processing your settings.json file: ' + e.message);
+        process.exit(1);
     }
-    //this setting is unkown, output a warning and throw it away
-    else
-    {
-      console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+
+    //loop trough the settings
+    for (var i in settings) {
+        //test if the setting start with a low character
+        if (i.charAt(0).search("[a-z]") !== 0) {
+            console.warn("Settings should start with a low character: '" + i + "'");
+        }
+
+        //we know this setting, so we overwrite it
+        //or it's a settings hash, specific to a plugin
+        if (exports[i] !== undefined || i.indexOf('ep_') == 0) {
+            exports[i] = settings[i];
+        }
+        //this setting is unkown, output a warning and throw it away
+        else {
+            console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+        }
     }
-  }
+    var dbService = settings.dbService || "DATABASE";
 
-  log4js.configure(exports.logconfig);//Configure the logging appenders
-  log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
-  log4js.replaceConsole();
+    if (appEnv.getService(dbService) != null
+        && appEnv.getService(dbService).credentials.uri != undefined
+        && appEnv.getService(dbService).credentials.uri != null) {
+        var parseDbUrl = require("parse-database-url");
+        var dbConfig = parseDbUrl(appEnv.getService(dbService).credentials.uri);
 
-  if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here
-    exports.sessionKey = randomString(32);
-    console.warn("You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts");
-  }
+        exports.dbType = dbConfig.driver;
+        /**
+         * This setting is passed with dbType to ueberDB to set up the database
+         */
+        exports.dbSettings = {
+            "user": dbConfig.user,
+            "password": dbConfig.password,
+            "host": dbConfig.host,
+            "port": dbConfig.port,
+            "database": dbConfig.database
+        }
+    }
 
-  if(exports.dbType === "dirty"){
-    console.warn("DirtyDB is used. This is fine for testing but not recommended for production.");
-  }
+    var ldapService = settings.ldapService || "LDAP";
+
+    if (appEnv.getService(ldapService) != null) {
+        exports.users.ldapauth = appEnv.getService(ldapService).credentials;
+    }
+    log4js.configure(exports.logconfig);//Configure the logging appenders
+    log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
+    log4js.replaceConsole();
+
+    if (!exports.sessionKey) { // If the secretKey isn't set we also create yet another unique value here
+        exports.sessionKey = randomString(32);
+        console.warn("You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts");
+    }
+
+    if (exports.dbType === "dirty") {
+        console.warn("DirtyDB is used. This is fine for testing but not recommended for production.");
+    }
 };
 
 // initially load settings

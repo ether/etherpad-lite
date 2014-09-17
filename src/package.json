@@ -1,57 +1,88 @@
 {
-  "name"           : "ep_etherpad-lite",
-  "description"    : "A Etherpad based on node.js",
-  "homepage"       : "https://github.com/ether/etherpad-lite",
-  "keywords"       : ["etherpad", "realtime", "collaborative", "editor"],
-  "author"         : "Peter 'Pita' Martischka <petermartischka@googlemail.com> - Primary Technology Ltd",
-  "contributors"   : [
-                      { "name": "John McLear" },
-                      { "name": "Hans Pinckaers" },
-                      { "name": "Robin Buse" },
-                      { "name": "Marcel Klehr" }
-                     ],
-  "dependencies"   : {
-                      "yajsml"                  : "1.1.6",
-                      "request"                 : "2.9.100",
-                      "require-kernel"          : "1.0.5",
-                      "resolve"                 : "0.2.x",
-                      "socket.io"               : "0.9.x",
-                      "ueberDB"                 : "0.2.x",
-                      "express"                 : "3.1.0",
-                      "async"                   : "0.1.x",
-                      "connect"                 : "2.7.x",
-                      "clean-css"               : "0.3.2",
-                      "uglify-js"               : "1.2.5",
-                      "formidable"              : "1.0.9",
-                      "log4js"                  : "0.6.6",
-                      "nodemailer"              : "0.3.x",
-                      "jsdom-nocontextifiy"     : "0.2.10",
-                      "async-stacktrace"        : "0.0.2",
-                      "npm"                     : "1.4.x",
-                      "ejs"                     : "0.6.1",
-                      "graceful-fs"             : "1.1.5",
-                      "slide"                   : "1.1.3",
-                      "semver"                  : "1.0.13",
-                      "security"                : "1.0.0",
-                      "tinycon"                 : "0.0.1",
-                      "underscore"              : "1.3.1",
-                      "unorm"                   : "1.0.0",
-                      "languages4translatewiki" : "0.1.3",
-                      "swagger-node-express"    : "1.2.3",
-                      "channels"                : "0.0.x",
-                      "jsonminify"              : "0.2.2",
-                      "measured"                : "0.1.3",
-                      "hashish"                 : "0.0.4"
-                     },
-  "bin":             { "etherpad-lite": "./node/server.js" },
-  "devDependencies": {
-                      "wd"      : "0.0.31"
-                     },
-  "engines"        : { "node" : ">=0.6.3",
-                       "npm"  : ">=1.0"
-                     },
-  "repository"     : { "type" : "git",
-                       "url" : "http://github.com/ether/etherpad-lite.git"
-                     },
-  "version"        : "1.4.0"
+    "name": "ep_etherpad-lite",
+    "description": "A Etherpad based on node.js",
+    "homepage": "https://github.com/ether/etherpad-lite",
+    "keywords": ["etherpad", "realtime", "collaborative", "editor"],
+    "author": "Peter 'Pita' Martischka <petermartischka@googlemail.com> - Primary Technology Ltd",
+    "contributors": [
+        {
+            "name": "John McLear"
+        },
+        {
+            "name": "Hans Pinckaers"
+        },
+        {
+            "name": "Robin Buse"
+        },
+        {
+            "name": "Marcel Klehr"
+        }
+    ],
+    "dependencies": {
+        "yajsml": "1.1.6",
+        "request": "2.9.100",
+        "require-kernel": "1.0.5",
+        "resolve": "0.2.x",
+        "socket.io": "0.9.x",
+        "ueberDB": "0.2.x",
+        "express": "3.1.0",
+        "async": "0.1.x",
+        "connect": "2.7.x",
+        "clean-css": "0.3.2",
+        "uglify-js": "1.2.5",
+        "formidable": "1.0.9",
+        "log4js": "0.6.6",
+        "nodemailer": "0.3.x",
+        "jsdom-nocontextifiy": "0.2.10",
+        "async-stacktrace": "0.0.2",
+        "npm": "1.4.x",
+        "ejs": "0.6.1",
+        "graceful-fs": "1.1.5",
+        "slide": "1.1.3",
+        "semver": "1.0.13",
+        "security": "1.0.0",
+        "tinycon": "0.0.1",
+        "underscore": "1.3.1",
+        "unorm": "1.0.0",
+        "languages4translatewiki": "0.1.3",
+        "swagger-node-express": "1.2.3",
+        "channels": "0.0.x",
+        "jsonminify": "0.2.2",
+        "measured": "0.1.3",
+        "hashish": "0.0.4",
+        "ep_ldapauth": "https://github.com/ArthurHlt/ep_ldapauth/tarball/master",
+        "ep_tables": "0.1.1",
+        "ep_syntaxhighlighting": "0.1.4",
+        "ep_list_pads": "0.0.3",
+        "ep_scrollto": "0.0.5",
+        "ep_colors": "0.0.3",
+        "ep_headings": "0.1.6",
+        "ep_previewimages": "0.0.7",
+        "ep_tasklist": "0.0.8",
+        "ep_wrap": "0.0.3",
+        "ep_email_notifications": "0.1.2",
+        "ep_autoscrolldown": "0.0.6",
+        "ep_historicalsearch": "0.0.8",
+        "ep_markdownify": "0.0.3",
+        "ep_ruler": "https://github.com/ArthurHlt/ep_ruler/tarball/master",
+        "ep_table_of_contents": "0.1.3",
+        "ep_prompt_for_name": "0.1.0",
+        "cfenv": "1.0.0",
+        "parse-database-url": "*"
+    },
+    "bin": {
+        "etherpad-lite": "./node/server.js"
+    },
+    "devDependencies": {
+        "wd": "0.0.31"
+    },
+    "engines": {
+        "node": ">=0.6.3",
+        "npm": ">=1.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cloudfoundry-community/etherpad-lite-cf.git"
+    },
+    "version": "1.4.0-cf"
 }

@@ -1,3 +1,4 @@
+.idea
 node_modules
 settings.json
 !settings.json.template
@@ -16,3 +17,4 @@ npm-debug.log
 *.crt
 *.key
 bin/etherpad-1.deb
+*.iml
