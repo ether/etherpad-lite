@@ -8,8 +8,9 @@ This repo contains a modified version of the original etherpad-lite modified to 
  1. Download the `etherpad-lite-cf.zip` in release tab on github.
  2. Extract the zip file
  3. Go to the extracted archive with your console
- 4. Run `cf push etherpad-lite -m 512M` and you will have a sqlite instance on your app created
- 4. (With a database user provided) Follow this [instructions](#using-database-from-user-provided-service) and run `cf push etherpad-lite -m 512M`
+ 4. 
+    - Run `cf push etherpad-lite -m 512M` and you will have a sqlite instance on your app created
+    - (With a database user provided) Follow this [instructions](#using-database-from-user-provided-service) and run `cf push etherpad-lite -m 512M`
  5. You've done
 
 ## Install new plugin(s)
