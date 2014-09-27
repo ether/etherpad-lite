@@ -55,11 +55,14 @@ You'll need gzip, git, curl, libssl develop libraries, python and gcc.
 *For FreeBSD*: `portinstall node, npm, git (optional)`
 
 Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, be careful of installing nodejs from apt.
+*Installing node.js* with `apt-get install nodejs` does create program nodejs,
+so we need to *create symbolic link*: `ln -s /usr/bin/nodejs /usr/bin/node`
 
 **As any user (we recommend creating a separate user called etherpad):**
 
-1. Move to a folder where you want to install Etherpad. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
-2. Change into the new directory containing the cloned source code `cd etherpad-lite`
+1. Move to a folder where you want to install Etherpad. (this is not like webpage /var/www where you access it)
+2. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
+3. Change into the new directory containing the cloned source code `cd etherpad-lite`
 
 Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser. 
 
