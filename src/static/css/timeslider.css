@@ -50,14 +50,23 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  background-image: url(../../static/img/crushed_current_location.png);
+/*  background-image: url(../../static/img/crushed_current_location.png);/**/
   cursor: pointer;
   height: 61px;
   left: 0;
   position: absolute;
-  top: 0;
-  width: 13px;
+  top: 28px;
+  width: 10px;
 }
+#ui-slider-handle:before {
+    content: "\f000";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    color: #88A;
+    font-size: 18px;
+}/**/
 #ui-slider-bar {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -75,24 +84,37 @@
   position: absolute;
   width: 47px;
 }
+
 #playpause_button {
-  background-image: url(../../static/img/crushed_button_undepressed.png);
-  right: 77px;
-  top: 9px;
+      right: 77px;
+     top: 8px;
+     cursor: pointer
 }
-#playpause_button_icon {
-  background-image: url(../../static/img/play.png);
-  left: 0;
-  top: 0;
+#playpause_button_icon:before {
+    content: "\f01d";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    color: #888;
+    font-size: 50px;
+    cursor: pointer;
 }
-.pause#playpause_button_icon {
-  background-image: url(../../static/img/pause.png)
+
+.pause#playpause_button_icon:before {
+    content:  "\f144";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    color: #888;
+    font-size: 50px;
+    cursor: pointer;
 }
 #leftstar,
 #rightstar,
 #leftstep,
 #rightstep {
-  background: url(../../static/img/stepper_buttons.png) 0 0 no-repeat;
   height: 21px;
   overflow: hidden;
   position: absolute;
@@ -110,24 +132,64 @@
   width: 29px;
 }
 #leftstep {
-  background-position: 0 -22px;
-  right: 34px;
-  top: 20px;
-  width: 30px;
+  cursor: pointer;
+  right: 44px;
+  top: 21px;
+}
+#leftstep:before {
+  content: "\f191";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  color: #888;
+  font-size: 22px;
 }
 #rightstep {
-  background-position: -29px -22px;
-  right: 5px;
-  top: 20px;
-  width: 30px;
+  cursor:pointer;
+  right: 22px;
+  top: 21px;
+
+}
+#rightstep:before {
+  content: "\f152";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  color: #888;
+  font-size: 22px;
+  cursor: pointer;
 }
 #timeslider .star {
-  background-image: url(../../static/img/star.png);
   cursor: pointer;
   height: 16px;
   position: absolute;
   top: 40px;
   width: 15px;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+
+}
+#timeslider .star:before {
+  content: "\f005";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  color: yellow;
+  font-size: 16px;
+}
+#timeslider .star:after {
+  content: "\f006";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  left: 16px;
+  color: #FA0;
+  font-size: 16px;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
 }
 #timeslider #timer {
   color: #fff;
