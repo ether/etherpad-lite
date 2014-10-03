@@ -206,7 +206,7 @@ var padeditbar = (function()
 
           if(module.css('display') != "none")
           {
-            $("#" + self.dropdowns[i] + "link").removeClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
             module.slideUp("fast", cb);
             returned = true;
           }
@@ -223,12 +223,12 @@ var padeditbar = (function()
 
           if(module.css('display') != "none")
           {
-            $("#" + self.dropdowns[i] + "link").removeClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
             module.slideUp("fast");
           }
           else if(self.dropdowns[i]==moduleName)
           {
-            $("#" + self.dropdowns[i] + "link").addClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").addClass("selected");
             module.slideDown("fast", cb);
           }
         }
@@ -271,7 +271,7 @@ var padeditbar = (function()
     toolbar.registerDropdownCommand("showusers", "users");
     toolbar.registerDropdownCommand("settings");
     toolbar.registerDropdownCommand("connectivity");
-    toolbar.registerDropdownCommand("import_export", "importexport");
+    toolbar.registerDropdownCommand("import_export");
     toolbar.registerDropdownCommand("embed");
 
     toolbar.registerCommand("embed", function () {
