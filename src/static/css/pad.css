@@ -166,9 +166,10 @@ li[data-key=showusers] > a {
 }
 li[data-key=showusers] > a #online_count {
   color: #777;
-  font-size: 10px;
+  font-size: 11px;
   position: relative;
   top: 2px;
+  padding-left: 2px;
 }
 #editorcontainer {
   position: absolute;
@@ -735,9 +736,6 @@ table#otheruserstable {
   filter: alpha(opacity=1);
   opacity: 0.01;
   display: none;
-}
-#online_count {
-  color: #888;
 }
 .rtl {
   direction: RTL
