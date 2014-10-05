@@ -73,6 +73,10 @@ a img {
 .toolbar ul li {
   float: left;
   margin-left: 2px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .toolbar ul li.separator {
   border: inherit;
