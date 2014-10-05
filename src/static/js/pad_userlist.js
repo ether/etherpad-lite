@@ -468,6 +468,8 @@ var paduserlist = (function()
 
       self.setMyUserInfo(myInitialUserInfo);
 
+      $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
+
       $("#otheruserstable tr").remove();
 
       if (pad.getUserIsGuest())
@@ -602,13 +604,8 @@ var paduserlist = (function()
           online++;
         }
       }
-      var $btn = $("#editbar [data-key=showusers] > a")
-        , $counter = $('#online_count', $btn)
-      if(!$counter.length) {
-        $counter = $('<span id="online_count">')
-        $btn.append($counter)
-      }
-      $counter.text(online);
+
+      $('#online_count').text(online);
 
       return online;
     },
