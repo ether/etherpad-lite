@@ -5,7 +5,7 @@
   "pad.toolbar.bold.title": "Bold (Ctrl-B)",
   "pad.toolbar.italic.title": "Italic (Ctrl-I)",
   "pad.toolbar.underline.title": "Underline (Ctrl-U)",
-  "pad.toolbar.strikethrough.title": "Strikethrough",
+  "pad.toolbar.strikethrough.title": "Strikethrough (Ctrl-5)",
   "pad.toolbar.ol.title": "Ordered list",
   "pad.toolbar.ul.title": "Unordered List",
   "pad.toolbar.indent.title": "Indent (TAB)",
@@ -85,7 +85,7 @@
   "pad.modals.disconnected": "You have been disconnected.",
   "pad.modals.disconnected.explanation": "The connection to the server was lost",
   "pad.modals.disconnected.cause": "The server may be unavailable. Please notify the service administrator if this continues to happen.",
-  
+
   "pad.share": "Share this pad",
   "pad.share.readonly": "Read only",
   "pad.share.link": "Link",

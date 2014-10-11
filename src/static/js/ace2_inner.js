@@ -2333,7 +2333,7 @@ function Ace2Inner(){
       if(rep.selStart[1] == rep.selEnd[1] && rep.selStart[1] == rep.lines.atIndex(n).text.length){
         return false; // If we're at the end of a line we treat it as having no formatting
       }
-      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){ 
+      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){
         rep.selEnd[1] == 1;
       }
       if(rep.selEnd[1] == -1){
@@ -3741,6 +3741,14 @@ function Ace2Inner(){
           toggleAttributeOnSelection('underline');
           specialHandled = true;
         }
+       if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "5" && (evt.metaKey || evt.ctrlKey))
+        {
+          // cmd-5 (strikethrough)
+          fastIncorp(13);
+          evt.preventDefault();
+          toggleAttributeOnSelection('strikethrough');
+          specialHandled = true;
+        }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "h" && (evt.ctrlKey))
         {
           // cmd-H (backspace)
@@ -3818,7 +3826,7 @@ function Ace2Inner(){
             // top.console.log(caretOffsetTop, viewport.top, caretOffsetTopBottom, viewport.bottom);
             var caretIsNotVisible = (caretOffsetTop < viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
             // Expect some weird behavior caretOffsetTopBottom is greater than viewport.bottom on a keypress down
-            var offsetTopSamePlace = caretOffsetTop == viewport.top; // sometimes moving key left & up leaves the caret at the same point as the viewport.top, technically the caret is visible but it's not fully visible so we should move to it 
+            var offsetTopSamePlace = caretOffsetTop == viewport.top; // sometimes moving key left & up leaves the caret at the same point as the viewport.top, technically the caret is visible but it's not fully visible so we should move to it
             if(offsetTopSamePlace && (evt.which == 37 || evt.which == 38)){
                 var newY = caretOffsetTop;
                 setScrollY(newY);
