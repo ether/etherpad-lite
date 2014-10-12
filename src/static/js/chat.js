@@ -18,6 +18,7 @@ var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
 var Tinycon = require('tinycon/tinycon');
 var hooks = require('./pluginfw/hooks');
+var Hammer = require('./hammer');
 
 var chat = (function()
 {
@@ -149,6 +150,7 @@ var chat = (function()
           $("#chatcounter").text(count);
 
           if(!chatOpen) {
+
             $.gritter.add({
               // (string | mandatory) the heading of the notification
               title: ctx.authorName,
@@ -157,7 +159,15 @@ var chat = (function()
               // (bool | optional) if you want it to fade out on its own or just sit there
               sticky: ctx.sticky,
               // (int | optional) the time you want it to be alive for before fading out
-              time: '4000'
+              time: '4000',
+              // after open allow it to be swiped
+              after_open: function(e){
+                var gritterNotification = document.getElementById(e.context.id);
+                var hammertime = new Hammer(gritterNotification);
+                hammertime.on("swiperight", function(ev){
+                  $(gritterNotification).fadeOut();
+                });
+              }
             });
           }
         }

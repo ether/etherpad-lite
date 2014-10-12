@@ -48,7 +48,6 @@ var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 var gritter = require('./gritter').gritter;
-
 var hooks = require('./pluginfw/hooks');
 
 function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
@@ -937,4 +936,3 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
-

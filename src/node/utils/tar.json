@@ -15,6 +15,7 @@
   , "pad_connectionstatus.js"
   , "chat.js"
   , "gritter.js"
+  , "hammer.js"
   , "$tinycon/tinycon.js"
   , "excanvas.js"
   , "farbtastic.js"
