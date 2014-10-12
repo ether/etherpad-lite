@@ -666,6 +666,8 @@ table#otheruserstable {
   filter: alpha(opacity=80);
   opacity: .8;
 }
+
+/*
 .buttonicon {
   width: 16px;
   height: 16px;
@@ -674,59 +676,75 @@ table#otheruserstable {
   display: inline-block;
   vertical-align: middle;
 }
-.buttonicon-bold {
-  background-position: 0px -116px
+*/
+
+.buttonicon {
+  background-image: none;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+  color: #888;
+  font-size: 15px;
 }
-.buttonicon-italic {
-  background-position: 0px 0px
+
+.buttonicon-bold:before {
+  content: "\f032";
 }
-.buttonicon-underline {
-  background-position: 0px -236px
+.buttonicon-italic:before {
+  content: "\f033";
 }
-.buttonicon-strikethrough {
-  background-position: 0px -200px
+.buttonicon-underline:before {
+  content: "\f0cd";
 }
-.buttonicon-insertorderedlist {
-  background-position: 0px -477px
+.buttonicon-strikethrough:before {
+  content: "\f0cc";
 }
-.buttonicon-insertunorderedlist {
-  background-position: 0px -34px
+.buttonicon-insertorderedlist:before {
+  content: "\f0cb";
 }
-.buttonicon-indent {
-  background-position: 0px -52px
+.buttonicon-insertunorderedlist:before {
+  content: "\f0ca";
 }
-.buttonicon-outdent {
-  background-position: 0px -134px
+.buttonicon-indent:before {
+  content: "\f03c";
 }
-.buttonicon-undo {
-  background-position: 0px -255px
+.buttonicon-outdent:before {
+  content: "\f03b";
 }
-.buttonicon-redo {
-  background-position: 0px -166px
+.buttonicon-undo:before {
+  content: "\f0e2";
 }
-.buttonicon-clearauthorship {
-  background-position: 0px -86px
+.buttonicon-redo:before {
+  content: "\f01e";
 }
-.buttonicon-settings {
-  background-position: 0px -436px
+.buttonicon-clearauthorship:before {
+  content: "\f070";
 }
-.buttonicon-import_export {
-  background-position: 0px -68px
+.buttonicon-settings:before {
+  content: "\f085";
 }
-.buttonicon-embed {
-  background-position: 0px -18px
+.buttonicon-import_export:before {
+  content: "\f0ec";
 }
-.buttonicon-history {
-  background-position: 0px -218px
+.buttonicon-embed:before {
+  content: "\f121";
 }
-.buttonicon-chat {
-  background-position: 0px -102px;
+.buttonicon-history:before {
+  content: "\f1da";
 }
-.buttonicon-showusers {
-  background-position: 0px -183px;
+.buttonicon-chat:before {
+  content: "\f0e6";
 }
-.buttonicon-savedRevision {
-  background-position: 0px -493px
+.buttonicon-showusers:before {
+  content: "\f0c0";
+}
+.buttonicon-savedRevision:before {
+  content: "\f005";
 }
 #focusprotector {
   z-index: 100;
