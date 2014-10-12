@@ -3749,6 +3749,22 @@ function Ace2Inner(){
           toggleAttributeOnSelection('strikethrough');
           specialHandled = true;
         }
+	if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which) == "L" && (evt.metaKey || evt.ctrlKey))
+        {
+          // cmd-shift-L (unorderedlist)
+          fastIncorp(9);
+          evt.preventDefault();
+          doInsertUnorderedList()
+          specialHandled = true;
+	}
+	if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which) == "N" && (evt.metaKey || evt.ctrlKey))
+        {
+          // cmd-shift-N (orderedlist)
+          fastIncorp(9);
+          evt.preventDefault();
+          doInsertOrderedList()
+          specialHandled = true;
+	}
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "h" && (evt.ctrlKey))
         {
           // cmd-H (backspace)
