@@ -838,7 +838,7 @@ input[type=checkbox] {
   border-left: 1px solid #ccc !important;
   width: 185px !important;
 }
-@media screen and (max-width: 600px) { 
+@media screen and (max-width: 600px) {
     .toolbar ul li.separator {
       display: none;
     }
@@ -856,7 +856,7 @@ input[type=checkbox] {
     left:0px;
     right:0px;
     color:#000;
-  } 
+  }
   .gritter-close {
     display:block !important;
     left: auto !important;
@@ -884,13 +884,13 @@ input[type=checkbox] {
   .gritter-item-wrapper > div{
     background: none;
   }
-  #editorcontainer { 
-    top: 68px;
+  #editorcontainer {
+    top: 37px;
   }
-  #editbar { 
-    height: 62px;
+  #editbar {
+    height: 31px;
   }
-  .toolbar ul.menu_right { 
+  .toolbar ul.menu_right {
     float: left;
     margin-top:2px;
   }
