@@ -3749,7 +3749,7 @@ function Ace2Inner(){
           toggleAttributeOnSelection('strikethrough');
           specialHandled = true;
         }
-	if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which) == "L" && (evt.metaKey || evt.ctrlKey))
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "l" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
         {
           // cmd-shift-L (unorderedlist)
           fastIncorp(9);
@@ -3757,7 +3757,7 @@ function Ace2Inner(){
           doInsertUnorderedList()
           specialHandled = true;
 	}
-	if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which) == "N" && (evt.metaKey || evt.ctrlKey))
+	  if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
         {
           // cmd-shift-N (orderedlist)
           fastIncorp(9);
