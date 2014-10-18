@@ -73,6 +73,10 @@ a img {
 .toolbar ul li {
   float: left;
   margin-left: 2px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .toolbar ul li.separator {
   border: inherit;
@@ -160,15 +164,16 @@ a img {
   border: 1px solid #ccc;
   outline: none;
 }
-#usericon a {
+li[data-key=showusers] > a {
   min-width: 30px;
   text-align: left;
 }
-#usericon a #online_count {
+li[data-key=showusers] > a #online_count {
   color: #777;
-  font-size: 10px;
+  font-size: 11px;
   position: relative;
   top: 2px;
+  padding-left: 2px;
 }
 #editorcontainer {
   position: absolute;
@@ -664,64 +669,68 @@ table#otheruserstable {
 .buttonicon {
   width: 16px;
   height: 16px;
-  background-image: url('../../static/img/etherpad_lite_icons.png');
-  background-repeat: no-repeat;
   display: inline-block;
   vertical-align: middle;
+
+  font-family: "fontawesome-etherpad";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: normal;
+  color: #666;
 }
-.buttonicon-bold {
-  background-position: 0px -116px
+.buttonicon-bold:before {
+  content: "\e803";
 }
-.buttonicon-italic {
-  background-position: 0px 0px
+.buttonicon-italic:before {
+  content: "\e804";
 }
-.buttonicon-underline {
-  background-position: 0px -236px
+.buttonicon-underline:before {
+  content: "\e80a";
 }
-.buttonicon-strikethrough {
-  background-position: 0px -200px
+.buttonicon-strikethrough:before {
+  content: "\e809";
 }
-.buttonicon-insertorderedlist {
-  background-position: 0px -477px
+.buttonicon-insertorderedlist:before {
+  content: "\e808";
 }
-.buttonicon-insertunorderedlist {
-  background-position: 0px -34px
+.buttonicon-insertunorderedlist:before {
+  content: "\e807";
 }
-.buttonicon-indent {
-  background-position: 0px -52px
+.buttonicon-indent:before {
+  content: "\e806";
 }
-.buttonicon-outdent {
-  background-position: 0px -134px
+.buttonicon-outdent:before {
+  content: "\e805";
 }
-.buttonicon-undo {
-  background-position: 0px -255px
+.buttonicon-undo:before {
+  content: "\e80c";
 }
-.buttonicon-redo {
-  background-position: 0px -166px
+.buttonicon-redo:before {
+  content: "\e80b";
 }
-.buttonicon-clearauthorship {
-  background-position: 0px -86px
+.buttonicon-clearauthorship:before {
+  content: "\e80e";
 }
-.buttonicon-settings {
-  background-position: 0px -436px
+.buttonicon-settings:before {
+  content: "\e802";
 }
-.buttonicon-import_export {
-  background-position: 0px -68px
+.buttonicon-import_export:before {
+  content: "\e816";
 }
-.buttonicon-embed {
-  background-position: 0px -18px
+.buttonicon-embed:before {
+  content: "\e815";
 }
-.buttonicon-history {
-  background-position: 0px -218px
+.buttonicon-history:before {
+  content: "\e80d";
 }
-.buttonicon-chat {
-  background-position: 0px -102px;
+.buttonicon-chat:before {
+  content: "\e817";
 }
-.buttonicon-showusers {
-  background-position: 0px -183px;
+.buttonicon-showusers:before {
+  content: "\e800";
 }
-.buttonicon-savedRevision {
-  background-position: 0px -493px
+.buttonicon-savedRevision:before {
+  content: "\e801";
 }
 #focusprotector {
   z-index: 100;
@@ -735,9 +744,6 @@ table#otheruserstable {
   filter: alpha(opacity=1);
   opacity: 0.01;
   display: none;
-}
-#online_count {
-  color: #888;
 }
 .rtl {
   direction: RTL
@@ -814,7 +820,7 @@ input[type=checkbox] {
   float: left;
 }
 #settings,
-#importexport,
+#import_export,
 #embed,
 #connectivity,
 #users {
@@ -836,7 +842,7 @@ input[type=checkbox] {
   border-left: 1px solid #ccc !important;
   width: 185px !important;
 }
-@media screen and (max-width: 600px) { 
+@media screen and (max-width: 600px) {
     .toolbar ul li.separator {
       display: none;
     }
@@ -854,7 +860,7 @@ input[type=checkbox] {
     left:0px;
     right:0px;
     color:#000;
-  } 
+  }
   .gritter-close {
     display:block !important;
     left: auto !important;
@@ -882,13 +888,13 @@ input[type=checkbox] {
   .gritter-item-wrapper > div{
     background: none;
   }
-  #editorcontainer { 
+  #editorcontainer {
     top: 68px;
   }
-  #editbar { 
+  #editbar {
     height: 62px;
   }
-  .toolbar ul.menu_right { 
+  .toolbar ul.menu_right {
     float: left;
     margin-top:2px;
   }
@@ -1071,14 +1077,3 @@ input[type=checkbox] {
 }
 
 /* End of gritter stuff */
-.activeButton{
-  background: #eee;
-  background: -webkit-linear-gradient(#ddd, #fff);
-  background: -moz-linear-gradient(#ddd, #fff);
-  background: -o-linear-gradient(#ddd, #fff);
-  background: -ms-linear-gradient(#ddd, #fff);
-  background: linear-gradient(#ddd, #fff);
-  -webkit-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-  -moz-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-}

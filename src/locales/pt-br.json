@@ -7,7 +7,8 @@
 			"TheGabrielZaum",
 			"Titoncio",
 			"Tuliouel",
-			"Rafaelff"
+			"Rafaelff",
+			"Dianakc"
 		]
 	},
 	"index.newPad": "Nova Nota",
@@ -83,7 +84,7 @@
 	"pad.modals.disconnected.cause": "O servidor pode estar indisponível. Por favor, notifique o administrador caso isso continue.",
 	"pad.share": "Compartilhar esta nota",
 	"pad.share.readonly": "Somente leitura",
-	"pad.share.link": "Ligação",
+	"pad.share.link": "Link",
 	"pad.share.emebdcode": "Incorporar o URL",
 	"pad.chat": "Bate-papo",
 	"pad.chat.title": "Abrir o bate-papo desta nota.",

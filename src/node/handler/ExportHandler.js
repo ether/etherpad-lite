@@ -52,7 +52,7 @@ exports.doExport = function(req, res, padId, type)
   hooks.aCallFirst("exportFileName", padId, 
     function(err, hookFileName){
       // if fileName is set then set it to the padId, note that fileName is returned as an array.
-      if(hookFileName) fileName = hookFileName; 
+      if(hookFileName.length) fileName = hookFileName;
 
 
       //tell the browser that this is a downloadable file
