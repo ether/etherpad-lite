@@ -482,7 +482,7 @@ var padutils = {
   },
   bindCheckboxChange: function(node, func)
   {
-    $(node).bind("click change", func);
+    $(node).change(func);
   },
   encodeUserId: function(userId)
   {
