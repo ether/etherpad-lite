@@ -16,6 +16,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   /* Require an express session cookie to be present, and load the
    * session. See http://www.danielbaulig.de/socket-ioexpress for more
    * info */
+  /*
   io.set('authorization', function (data, accept) {
     if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
 
@@ -35,11 +36,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       });
     });
   });
+  */
 
   // there shouldn't be a browser that isn't compatible to all 
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  io.set('transports', settings.socketTransportProtocols );
+  // io.set('transports', settings.socketTransportProtocols );
 
   var socketIOLogger = log4js.getLogger("socket.io");
   /*
@@ -65,7 +67,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   //minify socket.io javascript
   if(settings.minify)
-    io.enable('browser client minification');
+    // io.enable('browser client minification');
 
   //Initalize the Socket.IO Router
   socketIORouter.setSocketIO(io);
