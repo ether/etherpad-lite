@@ -54,7 +54,7 @@ You'll need gzip, git, curl, libssl develop libraries, python and gcc.
 *For Fedora/CentOS*: `yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"`
 *For FreeBSD*: `portinstall node, npm, git (optional)`
 
-Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, be careful of installing nodejs from apt.
+Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
