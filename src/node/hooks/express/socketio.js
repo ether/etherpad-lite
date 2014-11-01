@@ -42,6 +42,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   io.set('transports', settings.socketTransportProtocols );
 
   var socketIOLogger = log4js.getLogger("socket.io");
+  /*
   io.set('logger', {
     debug: function (str)
     {
@@ -60,6 +61,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       socketIOLogger.error.apply(socketIOLogger, arguments);
     },
   });
+  */
 
   //minify socket.io javascript
   if(settings.minify)
