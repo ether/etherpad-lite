@@ -89,7 +89,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   function textify(str)
   {
     return sanitizeUnicode(
-    str.replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
+    str.replace(/\n/g, '').replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
   }
 
   function getAssoc(node, name)

@@ -16,8 +16,6 @@
 
 var jsdom = require('jsdom-nocontextifiy').jsdom;
 var log4js = require('log4js');
-
-
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
 
