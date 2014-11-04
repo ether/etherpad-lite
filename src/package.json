@@ -17,7 +17,7 @@
                       "resolve"                 : ">=1.0.0",
                       "socket.io"               : ">=1.2.0",
                       "ueberDB"                 : ">=0.2.6",
-                      "express"                 : "3.1.0",
+                      "express"                 : ">3.1.0 <3.9.0",
                       "async"                   : "0.1.x",
                       "connect"                 : "2.7.x",
                       "clean-css"               : "0.3.2",
