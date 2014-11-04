@@ -1021,8 +1021,13 @@ function handleClientReady(client, message)
         return callback();
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
-/*
-      var roomClients = socketio.sockets.clients(padIds.padId);
+      var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
+      if (room) {
+        for (var id in room) {
+          roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+        }
+      }
+
       for(var i = 0; i < roomClients.length; i++) {
         var sinfo = sessioninfos[roomClients[i].id];
         if(sinfo && sinfo.author == author) {
@@ -1032,7 +1037,6 @@ function handleClientReady(client, message)
           roomClients[i].json.send({disconnect:"userdup"});
         }
       }
-*/
 
       //Save in sessioninfos that this session belonges to this pad
       sessioninfos[client.id].padId = padIds.padId;
