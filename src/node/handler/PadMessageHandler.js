@@ -754,9 +754,14 @@ function handleUserChanges(data, cb)
 
 exports.updatePadClients = function(pad, callback)
 {
-  /*
   //skip this step if noone is on this pad
-  var roomClients = socketio.sockets.clients(pad.id);
+  var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
+
   if(roomClients.length==0)
     return callback();
 
@@ -769,10 +774,8 @@ exports.updatePadClients = function(pad, callback)
   var revCache = {};
 
   //go trough all sessions on this pad
-  async.forEach(roomClients, function(client, callback)
-  {
+  async.forEach(roomClients, function(client, callback){
     var sid = client.id;
-
     //https://github.com/caolan/async#whilst
     //send them all new changesets
     async.whilst(
@@ -802,7 +805,8 @@ exports.updatePadClients = function(pad, callback)
 
             if(author == sessioninfos[sid].author)
             {
-              client.json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
+              // client.json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
+              socketio.in(pad).send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
             }
             else
             {
@@ -817,7 +821,9 @@ exports.updatePadClients = function(pad, callback)
                                      timeDelta: currentTime - sessioninfos[sid].time
                                     }};
 
-              client.json.send(wireMsg);
+              // client.json.send(wireMsg);
+              socketio.in(pad).send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
+
             }
 
             sessioninfos[sid].time = currentTime;
@@ -830,7 +836,6 @@ exports.updatePadClients = function(pad, callback)
       callback
     );
   },callback);
-  */
 }
 
 /**
