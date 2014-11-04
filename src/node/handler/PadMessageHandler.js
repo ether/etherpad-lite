@@ -1110,7 +1110,7 @@ function handleClientReady(client, message)
           // tell the client the number of the latest chat-message, which will be
           // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
           "chatHead": pad.chatHead,
-          "numConnectedUsers": 0,
+          "numConnectedUsers": roomClients.length,
           "readOnlyId": padIds.readOnlyPadId,
           "readonly": padIds.readonly,
           "serverTimestamp": new Date().getTime(),
