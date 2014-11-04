@@ -805,8 +805,7 @@ exports.updatePadClients = function(pad, callback)
 
             if(author == sessioninfos[sid].author)
             {
-              // client.json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
-              socketio.in(pad).send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
+              client.json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
             }
             else
             {
@@ -821,9 +820,7 @@ exports.updatePadClients = function(pad, callback)
                                      timeDelta: currentTime - sessioninfos[sid].time
                                     }};
 
-              // client.json.send(wireMsg);
-              socketio.in(pad).send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
-
+              client.json.send(wireMsg);
             }
 
             sessioninfos[sid].time = currentTime;
