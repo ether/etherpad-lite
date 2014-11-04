@@ -117,8 +117,6 @@ exports.handleDisconnect = function(client)
   if(session && session.author)
   {
 
-console.log(remoteAddress);
-
     // Get the IP address from our persistant object
     var ip = remoteAddress[client.id];
 
@@ -1047,21 +1045,19 @@ function handleClientReady(client, message)
       sessioninfos[client.id].readonly = padIds.readonly;
 
       //Log creation/(re-)entering of a pad
-/*
-      client.get('remoteAddress', function(er, ip) {
-        //Anonymize the IP address if IP logging is disabled
-        if(settings.disableIPlogging) {
-          ip = 'ANONYMOUS';
-        }
+      var ip = remoteAddress[client.id];
 
-        if(pad.head > 0) {
-          accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad');
-        }
-        else if(pad.head == 0) {
-          accessLogger.info('[CREATE] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" created the pad');
-        }
-      })
-*/
+      //Anonymize the IP address if IP logging is disabled
+      if(settings.disableIPlogging) {
+        ip = 'ANONYMOUS';
+      }
+
+      if(pad.head > 0) {
+        accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad');
+      }
+      else if(pad.head == 0) {
+        accessLogger.info('[CREATE] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" created the pad');
+      }
 
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
