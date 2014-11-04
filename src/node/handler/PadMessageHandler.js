@@ -1179,8 +1179,14 @@ function handleClientReady(client, message)
       client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
 
       //Run trough all sessions of this pad
-/*
-      async.forEach(socketio.sockets.clients(padIds.padId), function(roomClient, callback)
+      var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
+      if (room) {
+        for (var id in room) {
+          roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+        }
+      }
+
+      async.forEach(roomClients, function(roomClient, callback)
       {
         var author;
 
@@ -1226,7 +1232,6 @@ function handleClientReady(client, message)
           }
         ], callback);
       }, callback);
-*/
     }
   ],function(err)
   {
