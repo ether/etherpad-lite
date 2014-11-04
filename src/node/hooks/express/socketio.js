@@ -16,8 +16,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   /* Require an express session cookie to be present, and load the
    * session. See http://www.danielbaulig.de/socket-ioexpress for more
    * info */
-  /*
-  io.set('authorization', function (data, accept) {
+
+  io.use(function(socket, accept) {
+    var data = socket.request;
     if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
 
     // Use connect's cookie parser, because it knows how to parse signed cookies
@@ -36,7 +37,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       });
     });
   });
-  */
 
   // there shouldn't be a browser that isn't compatible to all 
   // transports in this list at once
