@@ -51,9 +51,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // This debug logging environment is set in Settings.js
 
   //minify socket.io javascript
-  if(settings.minify)
-    // io.enable('browser client minification');
-
+  // Due to a shitty decision by the SocketIO team minification is
+  // no longer available, details available at:
+  // http://stackoverflow.com/questions/23981741/minify-socket-io-socket-io-js-with-1-0
+  // if(settings.minify) io.enable('browser client minification');
+  
   //Initalize the Socket.IO Router
   socketIORouter.setSocketIO(io);
   socketIORouter.addComponent("pad", padMessageHandler);

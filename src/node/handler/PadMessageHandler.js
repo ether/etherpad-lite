@@ -37,6 +37,7 @@ var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var channels = require("channels");
 var stats = require('../stats');
+var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
 
 /**
  * A associative array that saves informations about a session
@@ -115,16 +116,18 @@ exports.handleDisconnect = function(client)
   //if this connection was already etablished with a handshake, send a disconnect message to the others
   if(session && session.author)
   {
-    /*
-    client.get('remoteAddress', function(er, ip) {
-      //Anonymize the IP address if IP logging is disabled
-      if(settings.disableIPlogging) {
-        ip = 'ANONYMOUS';
-      }
 
-      accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
-    })
-    */
+console.log(remoteAddress);
+
+    // Get the IP address from our persistant object
+    var ip = remoteAddress[client.id];
+
+    // Anonymize the IP address if IP logging is disabled
+    if(settings.disableIPlogging) {
+      ip = 'ANONYMOUS';
+    }
+
+    accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
 
     //get the author color out of the db
     authorManager.getAuthorColorId(session.author, function(err, color)
