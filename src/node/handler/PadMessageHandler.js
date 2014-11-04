@@ -115,6 +115,7 @@ exports.handleDisconnect = function(client)
   //if this connection was already etablished with a handshake, send a disconnect message to the others
   if(session && session.author)
   {
+    /*
     client.get('remoteAddress', function(er, ip) {
       //Anonymize the IP address if IP logging is disabled
       if(settings.disableIPlogging) {
@@ -123,6 +124,7 @@ exports.handleDisconnect = function(client)
 
       accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
     })
+    */
 
     //get the author color out of the db
     authorManager.getAuthorColorId(session.author, function(err, color)
@@ -752,6 +754,7 @@ function handleUserChanges(data, cb)
 
 exports.updatePadClients = function(pad, callback)
 {
+  /*
   //skip this step if noone is on this pad
   var roomClients = socketio.sockets.clients(pad.id);
   if(roomClients.length==0)
@@ -827,6 +830,7 @@ exports.updatePadClients = function(pad, callback)
       callback
     );
   },callback);
+  */
 }
 
 /**
