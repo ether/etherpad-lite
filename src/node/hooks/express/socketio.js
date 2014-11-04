@@ -1,9 +1,16 @@
 var log4js = require('log4js');
-var socketio = require('socket.io');
 var settings = require('../../utils/Settings');
 var socketIORouter = require("../../handler/SocketIORouter");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
+
+// there shouldn't be a browser that isn't compatible to all 
+// transports in this list at once
+// e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
+
+var socketio = require('socket.io')({
+  transports: settings.socketTransportProtocols
+});
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
 
@@ -38,32 +45,10 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  // there shouldn't be a browser that isn't compatible to all 
-  // transports in this list at once
-  // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  // io.set('transports', settings.socketTransportProtocols );
-
-  var socketIOLogger = log4js.getLogger("socket.io");
-  /*
-  io.set('logger', {
-    debug: function (str)
-    {
-      socketIOLogger.debug.apply(socketIOLogger, arguments);
-    }, 
-    info: function (str)
-    {
-      socketIOLogger.info.apply(socketIOLogger, arguments);
-    },
-    warn: function (str)
-    {
-      socketIOLogger.warn.apply(socketIOLogger, arguments);
-    },
-    error: function (str)
-    {
-      socketIOLogger.error.apply(socketIOLogger, arguments);
-    },
-  });
-  */
+  // var socketIOLogger = log4js.getLogger("socket.io");
+  // Debug logging now has to be set at an environment level, this is stupid.
+  // https://github.com/Automattic/socket.io/wiki/Migrating-to-1.0
+  // This debug logging environment is set in Settings.js
 
   //minify socket.io javascript
   if(settings.minify)
