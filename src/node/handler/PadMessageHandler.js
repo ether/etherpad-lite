@@ -1015,6 +1015,7 @@ function handleClientReady(client, message)
         return callback();
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
+/*
       var roomClients = socketio.sockets.clients(padIds.padId);
       for(var i = 0; i < roomClients.length; i++) {
         var sinfo = sessioninfos[roomClients[i].id];
@@ -1025,6 +1026,7 @@ function handleClientReady(client, message)
           roomClients[i].json.send({disconnect:"userdup"});
         }
       }
+*/
 
       //Save in sessioninfos that this session belonges to this pad
       sessioninfos[client.id].padId = padIds.padId;
@@ -1032,6 +1034,7 @@ function handleClientReady(client, message)
       sessioninfos[client.id].readonly = padIds.readonly;
 
       //Log creation/(re-)entering of a pad
+/*
       client.get('remoteAddress', function(er, ip) {
         //Anonymize the IP address if IP logging is disabled
         if(settings.disableIPlogging) {
@@ -1045,6 +1048,7 @@ function handleClientReady(client, message)
           accessLogger.info('[CREATE] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" created the pad');
         }
       })
+*/
 
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
@@ -1100,7 +1104,7 @@ function handleClientReady(client, message)
           // tell the client the number of the latest chat-message, which will be
           // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
           "chatHead": pad.chatHead,
-          "numConnectedUsers": roomClients.length,
+          "numConnectedUsers": 0,
           "readOnlyId": padIds.readOnlyPadId,
           "readonly": padIds.readonly,
           "serverTimestamp": new Date().getTime(),
@@ -1165,6 +1169,7 @@ function handleClientReady(client, message)
       client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
 
       //Run trough all sessions of this pad
+/*
       async.forEach(socketio.sockets.clients(padIds.padId), function(roomClient, callback)
       {
         var author;
@@ -1211,6 +1216,7 @@ function handleClientReady(client, message)
           }
         ], callback);
       }, callback);
+*/
     }
   ],function(err)
   {

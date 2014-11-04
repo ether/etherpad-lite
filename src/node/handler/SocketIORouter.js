@@ -56,11 +56,13 @@ exports.setSocketIO = function(_socket) {
   
   socket.sockets.on('connection', function(client)
   {
+
+// Broken: See http://stackoverflow.com/questions/4647348/send-message-to-specific-client-with-socket-io-and-node-js
     if(settings.trustProxy && client.handshake.headers['x-forwarded-for'] !== undefined){
-      client.set('remoteAddress', client.handshake.headers['x-forwarded-for']);
+//      client.set('remoteAddress', client.handshake.headers['x-forwarded-for']);
     }
     else{
-      client.set('remoteAddress', client.handshake.address.address);
+//      client.set('remoteAddress', client.handshake.address);
     }
     var clientAuthorized = false;
     
