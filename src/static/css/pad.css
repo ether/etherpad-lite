@@ -933,6 +933,7 @@ input[type=checkbox] {
       margin-bottom: 33px
     }
     .toolbar ul.menu_left {
+      right:0px;
     }
     .toolbar ul.menu_right {
       background: #f7f7f7;
