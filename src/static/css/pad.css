@@ -59,16 +59,13 @@ a img {
   height: 32px;
 }
 .toolbar ul {
-  position: relative;
+  position: absolute;
   list-style: none;
   padding-right: 3px;
   padding-left: 1px;
   z-index: 2;
   overflow: hidden;
   float: left
-}
-.toolbar ul.menu_right {
-  float: right
 }
 .toolbar ul li {
   float: left;
@@ -84,6 +81,7 @@ a img {
   visibility: hidden;
   width: 0px;
   padding: 5px;
+  height:20px;
 }
 .toolbar ul li a:hover {
   text-decoration: none;
@@ -164,6 +162,15 @@ a img {
   border: 1px solid #ccc;
   outline: none;
 }
+.toolbar ul.menu_left {
+  left:0px;
+  right:250px;
+}
+  
+.toolbar ul.menu_right {
+  right:0px;
+}
+
 li[data-key=showusers] > a {
   min-width: 30px;
   text-align: left;
@@ -843,12 +850,16 @@ input[type=checkbox] {
   width: 185px !important;
 }
 @media screen and (max-width: 600px) {
-    .toolbar ul li.separator {
-      display: none;
-    }
-    .toolbar ul li a {
-      padding: 4px 1px
-    }
+  .toolbar ul li.separator {
+    display: none;
+  }
+  .toolbar ul li a {
+    padding: 4px 1px
+  }
+  .toolbar ul.menu_left {
+    left:0px;
+    right:150px;
+  }
 }
 @media all and (max-width: 400px){
   #gritter-notice-wrapper{
@@ -894,9 +905,13 @@ input[type=checkbox] {
   #editbar {
     height: 62px;
   }
+  .toolbar ul.menu_left {
+    left:0px;
+    right:100px;
+  }
+  
   .toolbar ul.menu_right {
-    float: left;
-    margin-top:2px;
+    right:0px;
   }
   .popup {
     width:100%;
@@ -916,6 +931,8 @@ input[type=checkbox] {
     }
     #editorcontainer {
       margin-bottom: 33px
+    }
+    .toolbar ul.menu_left {
     }
     .toolbar ul.menu_right {
       background: #f7f7f7;
