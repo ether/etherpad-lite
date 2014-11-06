@@ -370,6 +370,18 @@ function handshake()
   $('#readonlyinput').on('click',function(){
     padeditbar.setEmbedLinks();
   });
+  // Listen for resize events (sucks but needed as iFrame ace_inner has to be position absolute
+  // A CSS fix for this would be nice but I'm not sure how we'd do it.
+  $(window).resize(function(){
+    redrawEditbar();
+  });
+  redrawEditbar();
+}
+
+var redrawEditbar = function(){
+  var height = $('.menu_left').height() + 4 + "px";
+  $('#editbar').css("height", height);
+  $('#editorcontainer').css("top", height);
 }
 
 $.extend($.gritter.options, { 
@@ -937,4 +949,3 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
-
