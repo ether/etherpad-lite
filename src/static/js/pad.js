@@ -379,9 +379,10 @@ function handshake()
 }
 
 var redrawEditbar = function(){
-  var height = $('.menu_left').height() + 4 + "px";
-  $('#editbar').css("height", height);
-  $('#editorcontainer').css("top", height);
+  var editbarHeight = $('.menu_left').height() + 2 + "px";
+  var containerTop = $('.menu_left').height() + 5 + "px";
+  $('#editbar').css("height", editbarHeight);
+  $('#editorcontainer').css("top", containerTop);
 }
 
 $.extend($.gritter.options, { 
