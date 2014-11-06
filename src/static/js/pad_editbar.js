@@ -154,6 +154,8 @@ var padeditbar = (function()
         });
       });
 
+      $('#editbar').show();
+
       this.redrawHeight();
 
       registerDefaultCommands(self);

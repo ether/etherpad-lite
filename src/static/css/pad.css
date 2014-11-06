@@ -182,6 +182,9 @@ li[data-key=showusers] > a #online_count {
   top: 2px;
   padding-left: 2px;
 }
+#editbar{
+  display:none;
+}
 #editorcontainer {
   position: absolute;
   top: 37px; /* + 1px border */
