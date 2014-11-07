@@ -3757,7 +3757,7 @@ function Ace2Inner(){
           doInsertUnorderedList()
           specialHandled = true;
 	}
-	  if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
         {
           // cmd-shift-N (orderedlist)
           fastIncorp(9);
@@ -3765,6 +3765,12 @@ function Ace2Inner(){
           doInsertOrderedList()
           specialHandled = true;
 	}
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "c" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey) {
+          // cmd-shift-C (clearauthorship)
+          fastIncorp(9);
+          evt.preventDefault();
+          CMDS.clearauthorship();
+        }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "h" && (evt.ctrlKey))
         {
           // cmd-H (backspace)
