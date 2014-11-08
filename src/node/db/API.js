@@ -575,7 +575,14 @@ exports.deletePad = function(padID, callback)
     pad.remove(callback);
   });
 }
+/**
+ restoreRevision(padID, [rev]) Restores revision from past as new changeset
 
+ Example returns:
+
+ {code:0, message:"ok", data:null}
+ {code: 1, message:"padID does not exist", data: null}
+ */
 exports.restoreRevision = function(padID, rev, callback)
 {
     var Changeset = require("ep_etherpad-lite/static/js/Changeset");
@@ -668,7 +675,7 @@ exports.restoreRevision = function(padID, rev, callback)
             //append the changeset
             pad.appendRevision(changeset);
             //
-            callback(null, changeset);
+            callback(null, null);
         });
 
     });
