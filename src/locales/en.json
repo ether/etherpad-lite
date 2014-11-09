@@ -12,7 +12,7 @@
   "pad.toolbar.unindent.title": "Outdent (Shift+TAB)",
   "pad.toolbar.undo.title": "Undo (Ctrl+Z)",
   "pad.toolbar.redo.title": "Redo (Ctrl+Y)",
-  "pad.toolbar.clearAuthorship.title": "Clear Authorship Colors",
+  "pad.toolbar.clearAuthorship.title": "Clear Authorship Colors (Ctrl+Shift+C)",
   "pad.toolbar.import_export.title": "Import/Export from/to different file formats",
   "pad.toolbar.timeslider.title": "Timeslider",
   "pad.toolbar.savedRevision.title": "Save Revision",
