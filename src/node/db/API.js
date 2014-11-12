@@ -587,6 +587,7 @@ exports.restoreRevision = function (padID, rev, callback)
 {
 	var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 	var padMessage = require("ep_etherpad-lite/node/handler/PadMessageHandler.js");
+
 	//check if rev is a number
 	if (rev !== undefined && typeof rev != "number")
 	{
@@ -682,7 +683,6 @@ exports.restoreRevision = function (padID, rev, callback)
 			});
 			callback(null, null);
 		});
-
 	});
 };
 
