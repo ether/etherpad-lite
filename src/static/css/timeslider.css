@@ -173,6 +173,7 @@
 #import_export {
   top: 115px;
   width: 185px;
+  position: fixed;
 }
 .timeslider-bar {
   background: #f7f7f7;
