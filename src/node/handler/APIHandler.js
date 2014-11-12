@@ -345,7 +345,7 @@ var version =
   , "getChatHistory"            : ["padID", "start", "end"]
   , "getChatHead"               : ["padID"]
   }
-  , "1.2.11":
+, "1.2.11":
   { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
