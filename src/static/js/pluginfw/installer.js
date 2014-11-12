@@ -67,9 +67,9 @@ exports.getAvailablePlugins = function(maxCacheAge, cb) {
       return cb && cb(null, exports.availablePlugins)
     }
     plugins = JSON.parse(plugins);
-      exports.availablePlugins = plugins;
-      cacheTimestamp = Math.round(+new Date/1000);
-      cb && cb(null, plugins)
+    exports.availablePlugins = plugins;
+    cacheTimestamp = Math.round(+new Date/1000);
+    cb && cb(null, plugins)
   });
 };
 
