@@ -152,7 +152,6 @@ function Ace2Inner(){
   var dmesg = noop;
   window.dmesg = noop;
 
-
   var scheduler = parent; // hack for opera required
 
   var textFace = 'monospace';
@@ -597,6 +596,13 @@ function Ace2Inner(){
         fixView();
       });
     }, 0);
+
+    // Chrome can't handle the truth..  If CSS rule white-space:pre-wrap
+    // is true then any paste event will insert two lines..
+    if(browser.chrome){
+      $("#innerdocbody").css({"white-space":"normal"});
+    }
+
   }
 
   function setStyled(newVal)
