@@ -878,7 +878,12 @@ function handleSwitchToPad(client, message)
   // clear the session and leave the room
   var currentSession = sessioninfos[client.id];
   var padId = currentSession.padId;
-  var roomClients = socketio.sockets.clients(padId);
+  var roomClients = [], room = socketio.sockets.adapter.rooms[padId];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
   for(var i = 0; i < roomClients.length; i++) {
     var sinfo = sessioninfos[roomClients[i].id];
     if(sinfo && sinfo.author == currentSession.author) {
