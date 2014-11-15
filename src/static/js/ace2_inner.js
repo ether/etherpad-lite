@@ -152,7 +152,6 @@ function Ace2Inner(){
   var dmesg = noop;
   window.dmesg = noop;
 
-
   var scheduler = parent; // hack for opera required
 
   var textFace = 'monospace';
@@ -597,6 +596,13 @@ function Ace2Inner(){
         fixView();
       });
     }, 0);
+
+    // Chrome can't handle the truth..  If CSS rule white-space:pre-wrap
+    // is true then any paste event will insert two lines..
+    if(browser.chrome){
+      $("#innerdocbody").css({"white-space":"normal"});
+    }
+
   }
 
   function setStyled(newVal)
@@ -3757,7 +3763,7 @@ function Ace2Inner(){
           doInsertUnorderedList()
           specialHandled = true;
 	}
-	  if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
         {
           // cmd-shift-N (orderedlist)
           fastIncorp(9);
@@ -3765,6 +3771,12 @@ function Ace2Inner(){
           doInsertOrderedList()
           specialHandled = true;
 	}
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "c" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey) {
+          // cmd-shift-C (clearauthorship)
+          fastIncorp(9);
+          evt.preventDefault();
+          CMDS.clearauthorship();
+        }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "h" && (evt.ctrlKey))
         {
           // cmd-H (backspace)
@@ -3816,7 +3828,7 @@ function Ace2Inner(){
             }
             updateBrowserSelectionFromRep();
             var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
             // top.console.log(caretOffsetTop);
             setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
 
