@@ -26,6 +26,7 @@ describe("timeslider", function(){
       setTimeout(function() {
         var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
         var $sliderBar = timeslider$('#ui-slider-bar');
+        var originalDateTime = timeslider$('#timer').text();
         
         var latestContents = timeslider$('#padcontent').text();
 
@@ -35,6 +36,7 @@ describe("timeslider", function(){
         setTimeout(function() {
           //make sure the text has changed
           expect( timeslider$('#timer').text() ).not.to.eql( "" );
+          expect( timeslider$('#timer').text() ).not.to.eql( originalDateTime );
           // expect( timeslider$('#revision_date').text() ).not.to.eql( "" );
           // expect( timeslider$('#revision_label').text() ).not.to.eql( "" );
           var includesNaN = timeslider$('#revision_label').text().indexOf("NaN"); // NaN is bad. Naan ist gut
