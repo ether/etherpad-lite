@@ -83,7 +83,7 @@ For any two changesets $A$, $B$ such that
 
 \begin{itemize}
 \item[] $A=(n_1\rightarrow n_2)[\cdots]$
-\item[] $A=(n_2\rightarrow n_3)[\cdots]$
+\item[] $B=(n_2\rightarrow n_3)[\cdots]$
 \end{itemize}
 it is clear that there is a third changeset $C=(n_1\rightarrow n_3)[\cdots]$ such that applying $C$ to a document $X$ yeilds the same resulting document as does applying $A$ and then $B$.  In this case, we write $AB=C$.
 
@@ -97,14 +97,14 @@ It is impossible to compute $(XA)B$ because $B$ can only be applied to a documen
 
 This is where \emph{merging} comes in.  Merging takes two changesets that apply to the same initial document (and that cannot be composed), and computes a single new changeset that presevers the intent of both changes.  The merge of $A$ and $B$ is written as $m(A,B)$.  For the Etherpad system to work, we require that $m(A,B)=m(B,A)$.
 
-Aside from what we have said so far about merging, there aremany different implementations that will lead to a workable system.  We have created one implementation for text that has the following constraints.
+Aside from what we have said so far about merging, there are many different implementations that will lead to a workable system.  We have created one implementation for text that has the following constraints.
 
 \section{Follows} \label{follows}
 
 When users $A$ and $B$ have the same document $X$ on their screen, and they proceed to make respective changesets $A$ and $B$, it is no use to compute $m(A,B)$, because $m(A,B)$ applies to document $X$, but the users are already looking at document $XA$ and $XB$.  What we really want is to compute $B'$ and $A'$ such that
 $$XAB' = XBA' = Xm(A,B)$$
 
-``Following'' computes these $B'$ and $A'$ changesets.  The definition of the ``follow'' function $f$ is such that $Af(A,B)=Bf(B,A)=m(A,B)=m(B,A)$.  When we computer $f(A,B)$.
+``Following'' computes these $B'$ and $A'$ changesets.  The definition of the ``follow'' function $f$ is such that $Af(A,B)=Bf(B,A)=m(A,B)=m(B,A)$.  When we compute $f(A,B)$
 \begin{itemize}
 \item Insertions in $A$ become retained characters in $f(A,B)$
 \item Insertions in $B$ become insertions in $f(A,B)$

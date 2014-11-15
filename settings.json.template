@@ -59,6 +59,9 @@
 
   /* Users may edit pads but not create new ones. Pad creation is only via the API. This applies both to group pads and regular pads. */
   "editOnly" : false,
+
+  /* Users, who have a valid session, automatically get granted access to password protected pads */
+  "sessionNoPassword" : false,
   
   /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly, 
      but makes it impossible to debug the javascript/css */
@@ -71,19 +74,22 @@
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to advanced import/export features of pads*/  
   "abiword" : null,
+
+  /* Allow import of file types other than the supported types: txt, doc, docx, rtf, odt, html & htm */
+  "allowUnknownFileEnds" : true,
  
   /* This setting is used if you require authentication of all users.
      Note: /admin always requires authentication. */
-  "requireAuthentication": false,
+  "requireAuthentication" : false,
 
   /* Require authorization by a module, or a user with is_admin set, see below. */
-  "requireAuthorization": false,
+  "requireAuthorization" : false,
   
   /*when you use NginX or another proxy/ load-balancer set this to true*/
-  "trustProxy": false,
+  "trustProxy" : false,
   
   /* Privacy: disable IP logging */
-  "disableIPlogging": false,  
+  "disableIPlogging" : false,  
   
   /* Users for basic authentication. is_admin = true gives access to /admin.
      If you do not uncomment this, /admin will not be available! */
@@ -103,6 +109,25 @@
   // restrict socket.io transport methods
   "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
   
+  /* The toolbar buttons configuration.
+  "toolbar": {
+    "left": [
+      ["bold", "italic", "underline", "strikethrough"],
+      ["orderedlist", "unorderedlist", "indent", "outdent"],
+      ["undo", "redo"],
+      ["clearauthorship"]
+    ],
+    "right": [
+      ["importexport", "timeslider", "savedrevision"],
+      ["settings", "embed"],
+      ["showusers"]
+    ],
+    "timeslider": [
+      ["timeslider_export", "timeslider_returnToPad"]
+    ]
+  },
+  */
+
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO",
   

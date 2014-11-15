@@ -67,7 +67,7 @@ function createCookie(name, value, days, path){ /* Warning Internet Explorer doe
   }
   
   //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if(navigator.appName=='Microsoft Internet Explorer'){
+  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
     document.cookie = name + "=" + value + expires + "; path="+document.location;
   }
   else{
@@ -254,8 +254,9 @@ function handshake()
     //the access was not granted, give the user a message
     if(obj.accessStatus)
     {
-      if(!receivedClientVars)
+      if(!receivedClientVars){
         $('.passForm').submit(require(module.id).savePassword);
+      }
 
       if(obj.accessStatus == "deny")
       {
@@ -936,4 +937,3 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
-

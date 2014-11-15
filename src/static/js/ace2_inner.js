@@ -152,7 +152,6 @@ function Ace2Inner(){
   var dmesg = noop;
   window.dmesg = noop;
 
-
   var scheduler = parent; // hack for opera required
 
   var textFace = 'monospace';
@@ -597,6 +596,13 @@ function Ace2Inner(){
         fixView();
       });
     }, 0);
+
+    // Chrome can't handle the truth..  If CSS rule white-space:pre-wrap
+    // is true then any paste event will insert two lines..
+    if(browser.chrome){
+      $("#innerdocbody").css({"white-space":"normal"});
+    }
+
   }
 
   function setStyled(newVal)
@@ -1668,7 +1674,7 @@ function Ace2Inner(){
     {
       //var id = n.uniqueId();
       // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
-      n.parentNode.removeChild(n);
+      if(n.parentNode) n.parentNode.removeChild(n);
 
       //dmesg(htmlPrettyEscape(htmlForRemovedChild(n)));
       //console.log("removed: "+id);
@@ -2333,8 +2339,11 @@ function Ace2Inner(){
       if(rep.selStart[1] == rep.selEnd[1] && rep.selStart[1] == rep.lines.atIndex(n).text.length){
         return false; // If we're at the end of a line we treat it as having no formatting
       }
-      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){ 
-        return false; // If we're at the start of a line attributes get confused..
+      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){
+        rep.selEnd[1] == 1;
+      }
+      if(rep.selEnd[1] == -1){
+        rep.selEnd[1] = 1; // sometimes rep.selEnd is -1, not sure why..  When it is we should look at the first char
       }
       if (n == selStartLine)
       {
@@ -3598,6 +3607,26 @@ function Ace2Inner(){
       return;
     }
 
+    // Is caret potentially hidden by the chat button?
+    var myselection = document.getSelection(); // get the current caret selection
+    var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+    
+    if(myselection.focusNode.wholeText){ // Is there any content?  If not lineHeight will report wrong..
+      var lineHeight = myselection.focusNode.parentNode.offsetHeight; // line height of populated links
+    }else{
+      var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
+    }
+    var heightOfChatIcon = parent.parent.$('#chaticon').height(); // height of the chat icon button
+    lineHeight = (lineHeight *2) + heightOfChatIcon;
+    var viewport = getViewPortTopBottom();
+    var viewportHeight = viewport.bottom - viewport.top - lineHeight;
+    var relCaretOffsetTop = caretOffsetTop - viewport.top; // relative Caret Offset Top to viewport
+    if (viewportHeight < relCaretOffsetTop){
+      parent.parent.$("#chaticon").css("opacity",".3"); // make chaticon opacity low when user types near it
+    }else{
+      parent.parent.$("#chaticon").css("opacity","1"); // make chaticon opacity back to full (so fully visible)
+    }
+
     //dmesg("keyevent type: "+type+", which: "+which);
     // Don't take action based on modifier keys going up and down.
     // Modifier keys do not generate "keypress" events.
@@ -3738,6 +3767,36 @@ function Ace2Inner(){
           toggleAttributeOnSelection('underline');
           specialHandled = true;
         }
+       if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "5" && (evt.metaKey || evt.ctrlKey))
+        {
+          // cmd-5 (strikethrough)
+          fastIncorp(13);
+          evt.preventDefault();
+          toggleAttributeOnSelection('strikethrough');
+          specialHandled = true;
+        }
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "l" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
+        {
+          // cmd-shift-L (unorderedlist)
+          fastIncorp(9);
+          evt.preventDefault();
+          doInsertUnorderedList()
+          specialHandled = true;
+	}
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
+        {
+          // cmd-shift-N (orderedlist)
+          fastIncorp(9);
+          evt.preventDefault();
+          doInsertOrderedList()
+          specialHandled = true;
+	}
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "c" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey) {
+          // cmd-shift-C (clearauthorship)
+          fastIncorp(9);
+          evt.preventDefault();
+          CMDS.clearauthorship();
+        }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "h" && (evt.ctrlKey))
         {
           // cmd-H (backspace)
@@ -3747,7 +3806,7 @@ function Ace2Inner(){
           specialHandled = true;
         }
         if((evt.which == 36 && evt.ctrlKey == true)){ setScrollY(0); } // Control Home send to Y = 0
-        if((evt.which == 33 || evt.which == 34) && type == 'keydown'){
+        if((evt.which == 33 || evt.which == 34) && type == 'keydown' && !evt.ctrlKey){
 
           evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
 
@@ -3789,7 +3848,7 @@ function Ace2Inner(){
             }
             updateBrowserSelectionFromRep();
             var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
             // top.console.log(caretOffsetTop);
             setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
 
@@ -3815,7 +3874,7 @@ function Ace2Inner(){
             // top.console.log(caretOffsetTop, viewport.top, caretOffsetTopBottom, viewport.bottom);
             var caretIsNotVisible = (caretOffsetTop < viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
             // Expect some weird behavior caretOffsetTopBottom is greater than viewport.bottom on a keypress down
-            var offsetTopSamePlace = caretOffsetTop == viewport.top; // sometimes moving key left & up leaves the caret at the same point as the viewport.top, technically the caret is visible but it's not fully visible so we should move to it 
+            var offsetTopSamePlace = caretOffsetTop == viewport.top; // sometimes moving key left & up leaves the caret at the same point as the viewport.top, technically the caret is visible but it's not fully visible so we should move to it
             if(offsetTopSamePlace && (evt.which == 37 || evt.which == 38)){
                 var newY = caretOffsetTop;
                 setScrollY(newY);
@@ -3951,6 +4010,7 @@ function Ace2Inner(){
     selection.focusAtStart = !! rep.selFocusAtStart;
     setSelection(selection);
   }
+  editorInfo.ace_updateBrowserSelectionFromRep = updateBrowserSelectionFromRep;
 
   function nodeMaxIndex(nd)
   {

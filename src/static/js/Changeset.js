@@ -1867,7 +1867,7 @@ exports.inverse = function (cs, lines, alines, pool) {
       curLineOpIterLine = curLine;
       var indexIntoLine = 0;
       var done = false;
-      while (!done) {
+      while (!done && curLineOpIter.hasNext()) {
         curLineOpIter.next(curLineNextOp);
         if (indexIntoLine + curLineNextOp.chars >= curChar) {
           curLineNextOp.chars -= (curChar - indexIntoLine);

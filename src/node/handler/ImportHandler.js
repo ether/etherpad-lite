@@ -92,13 +92,18 @@ exports.doImport = function(req, res, padId)
       }
       //we need to rename this file with a .txt ending
       else {
-        var oldSrcFile = srcFile;
-        srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
-        fs.rename(oldSrcFile, srcFile, callback);
+        if(settings.allowUnknownFileEnds === true){
+          var oldSrcFile = srcFile;
+          srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
+          fs.rename(oldSrcFile, srcFile, callback);
+        }else{
+          console.warn("Not allowing unknown file type to be imported", fileEnding);
+          callback("uploadFailed");
+        }
       }
     },
     function(callback){
-      destFile = path.join(tmpDirectory, "eplite_import_" + randNum + ".htm");
+      destFile = path.join(tmpDirectory, "etherpad_import_" + randNum + ".htm");
 
       // Logic for allowing external Import Plugins
       hooks.aCallAll("import", {srcFile: srcFile, destFile: destFile}, function(err, result){
@@ -114,7 +119,9 @@ exports.doImport = function(req, res, padId)
     //convert file to html
     function(callback) {
       if(!importHandledByPlugin){
-        if (abiword) {
+        var fileEnding = path.extname(srcFile).toLowerCase();
+        var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
+        if (abiword && !fileIsHTML) {
           abiword.convertFile(srcFile, destFile, "htm", function(err) {
             //catch convert errors
             if(err) {

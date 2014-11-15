@@ -356,12 +356,6 @@ function init(baseURL) {
           //$("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
         });
 
-    if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
-      $("#returnbutton").attr("href", document.referrer);
-    } else {
-      $("#returnbutton").attr("href", document.location.href.substring(0,document.location.href.lastIndexOf("/")));
-    }
-
     $('button#forcereconnect').click(function()
     {
       window.location.reload();

@@ -26,7 +26,7 @@ var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
 var jsonminify = require("jsonminify");
 var log4js = require("log4js");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("./randomstring");
 
 
 /* Root path of the installation */
@@ -80,6 +80,26 @@ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
 exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad on Github: http:\/\/j.mp/ep-lite\n";
 
 /**
+ * The toolbar buttons and order.
+ */
+exports.toolbar = {
+  left: [
+    ["bold", "italic", "underline", "strikethrough"],
+    ["orderedlist", "unorderedlist", "indent", "outdent"],
+    ["undo", "redo"],
+    ["clearauthorship"]
+  ],
+  right: [
+    ["importexport", "timeslider", "savedrevision"],
+    ["settings", "embed"],
+    ["showusers"]
+  ],
+  timeslider: [
+    ["timeslider_export", "timeslider_returnToPad"]
+  ]
+}
+
+/**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
  */
 exports.requireSession = false;
@@ -88,6 +108,11 @@ exports.requireSession = false;
  * A flag that prevents users from creating new pads
  */
 exports.editOnly = false;
+
+/**
+ * A flag that bypasses password prompts for users with valid sessions
+ */
+exports.sessionNoPassword = false;
 
 /**
  * Max age that responses will have (affects caching layer).
@@ -103,6 +128,11 @@ exports.minify = true;
  * The path of the abiword executable
  */
 exports.abiword = null;
+
+/**
+ * Should we support none natively supported file types on import?
+ */
+exports.allowUnknownFileEnds = true;
 
 /**
  * The log level of log4js
@@ -152,8 +182,13 @@ exports.abiwordAvailable = function()
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
-  settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
 
+  if (path.resolve(settingsFilename)===settingsFilename) {
+    settingsFilename = path.resolve(settingsFilename);
+  } else {
+    settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
+  }
+  
   var settingsStr;
   try{
     //read the settings sync
@@ -198,6 +233,7 @@ exports.reloadSettings = function reloadSettings() {
 
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
+  process.env['DEBUG'] = 'socket.io:' + exports.loglevel; // Used by SocketIO for Debug
   log4js.replaceConsole();
 
   if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here

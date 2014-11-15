@@ -61,7 +61,7 @@ Portal submits content into new blog post
 ## Usage
 
 ### API version
-The latest version is `1.2.8`
+The latest version is `1.2.9`
 
 The current version can be queried via /api.
 
@@ -453,6 +453,15 @@ returns the read only link of a pad
 
 *Example returns:*
   * `{code: 0, message:"ok", data: {readOnlyID: "r.s8oes9dhwrvt0zif"}}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
+#### getPadID(readOnlyID)
+ * API >= 1.2.10
+
+returns the id of a pad which is assigned to the readOnlyID
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: {padID: "p.s8oes9dhwrvt0zif"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
 #### setPublicStatus(padID, publicStatus)

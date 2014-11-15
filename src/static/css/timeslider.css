@@ -198,26 +198,23 @@
 #editbarright {
   float: right
 }
-#returnbutton {
-  color: #222;
-  font-size: 16px;
-  line-height: 29px;
-  margin-top: 0;
-  padding-right: 6px;
-}
 #settings,
-#importexport,
+#import_export,
 #embed,
 #connectivity,
 #users {
     top: 62px;
 }
-#importexport .popup {
-  width: 185px
+#import_export .popup {
+  width: 183px;
+  border-top: none;
+  border-right: none;
+  border-radius: 0 0 0 6px;
 }
-#importexport {
-  top: 118px;
+#import_export {
+  top: 115px;
   width: 185px;
+  position: fixed;
 }
 .timeslider-bar {
   background: #f7f7f7;

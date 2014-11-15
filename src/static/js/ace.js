@@ -124,6 +124,7 @@ function Ace2Editor()
 
   editor.getInInternationalComposition = function()
   {
+    if (!loaded) return false;
     return info.ace_getInInternationalComposition();
   };
 

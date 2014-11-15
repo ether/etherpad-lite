@@ -62,8 +62,8 @@ function init(connection, fireWhenAllScriptsAreLoaded)
       if (clientVars)
       {
         $("#timeslider").show();
-
       }
+
     });
   })();
 
