@@ -130,6 +130,11 @@ exports.minify = true;
 exports.abiword = null;
 
 /**
+ * Should we support none natively supported file types on import?
+ */
+exports.allowUnknownFileEnds = true;
+
+/**
  * The log level of log4js
  */
 exports.loglevel = "INFO";

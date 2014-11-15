@@ -92,9 +92,14 @@ exports.doImport = function(req, res, padId)
       }
       //we need to rename this file with a .txt ending
       else {
-        var oldSrcFile = srcFile;
-        srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
-        fs.rename(oldSrcFile, srcFile, callback);
+        if(settings.allowUnknownFileEnds === true){
+          var oldSrcFile = srcFile;
+          srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
+          fs.rename(oldSrcFile, srcFile, callback);
+        }else{
+          console.warn("Not allowing unknown file type to be imported", fileEnding);
+          callback("uploadFailed");
+        }
       }
     },
     function(callback){

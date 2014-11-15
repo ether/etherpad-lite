@@ -74,19 +74,22 @@
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to advanced import/export features of pads*/  
   "abiword" : null,
+
+  /* Allow import of file types other than the supported types: txt, doc, docx, rtf, odt, html & htm */
+  "allowUnknownFileEnds" : true,
  
   /* This setting is used if you require authentication of all users.
      Note: /admin always requires authentication. */
-  "requireAuthentication": false,
+  "requireAuthentication" : false,
 
   /* Require authorization by a module, or a user with is_admin set, see below. */
-  "requireAuthorization": false,
+  "requireAuthorization" : false,
   
   /*when you use NginX or another proxy/ load-balancer set this to true*/
-  "trustProxy": false,
+  "trustProxy" : false,
   
   /* Privacy: disable IP logging */
-  "disableIPlogging": false,  
+  "disableIPlogging" : false,  
   
   /* Users for basic authentication. is_admin = true gives access to /admin.
      If you do not uncomment this, /admin will not be available! */
