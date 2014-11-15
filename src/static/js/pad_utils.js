@@ -55,7 +55,7 @@ function createCookie(name, value, days, path){ /* Used by IE */
   }
 
   //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if(navigator.appName=='Microsoft Internet Explorer'){
+  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
     document.cookie = name + "=" + value + expires + "; path=/"; /* Note this bodge fix for IE is temporary until auth is rewritten */
   }
   else{
@@ -482,7 +482,7 @@ var padutils = {
   },
   bindCheckboxChange: function(node, func)
   {
-    $(node).bind("click change", func);
+    $(node).change(func);
   },
   encodeUserId: function(userId)
   {

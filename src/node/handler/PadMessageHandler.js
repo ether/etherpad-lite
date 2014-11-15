@@ -37,6 +37,7 @@ var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var channels = require("channels");
 var stats = require('../stats');
+var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
 
 /**
  * A associative array that saves informations about a session
@@ -115,14 +116,16 @@ exports.handleDisconnect = function(client)
   //if this connection was already etablished with a handshake, send a disconnect message to the others
   if(session && session.author)
   {
-    client.get('remoteAddress', function(er, ip) {
-      //Anonymize the IP address if IP logging is disabled
-      if(settings.disableIPlogging) {
-        ip = 'ANONYMOUS';
-      }
 
-      accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
-    })
+    // Get the IP address from our persistant object
+    var ip = remoteAddress[client.id];
+
+    // Anonymize the IP address if IP logging is disabled
+    if(settings.disableIPlogging) {
+      ip = 'ANONYMOUS';
+    }
+
+    accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
 
     //get the author color out of the db
     authorManager.getAuthorColorId(session.author, function(err, color)
@@ -753,7 +756,13 @@ function handleUserChanges(data, cb)
 exports.updatePadClients = function(pad, callback)
 {
   //skip this step if noone is on this pad
-  var roomClients = socketio.sockets.clients(pad.id);
+  var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
+
   if(roomClients.length==0)
     return callback();
 
@@ -766,10 +775,8 @@ exports.updatePadClients = function(pad, callback)
   var revCache = {};
 
   //go trough all sessions on this pad
-  async.forEach(roomClients, function(client, callback)
-  {
+  async.forEach(roomClients, function(client, callback){
     var sid = client.id;
-
     //https://github.com/caolan/async#whilst
     //send them all new changesets
     async.whilst(
@@ -1015,7 +1022,13 @@ function handleClientReady(client, message)
         return callback();
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
-      var roomClients = socketio.sockets.clients(padIds.padId);
+      var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
+      if (room) {
+        for (var id in room) {
+          roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+        }
+      }
+
       for(var i = 0; i < roomClients.length; i++) {
         var sinfo = sessioninfos[roomClients[i].id];
         if(sinfo && sinfo.author == author) {
@@ -1032,19 +1045,19 @@ function handleClientReady(client, message)
       sessioninfos[client.id].readonly = padIds.readonly;
 
       //Log creation/(re-)entering of a pad
-      client.get('remoteAddress', function(er, ip) {
-        //Anonymize the IP address if IP logging is disabled
-        if(settings.disableIPlogging) {
-          ip = 'ANONYMOUS';
-        }
+      var ip = remoteAddress[client.id];
 
-        if(pad.head > 0) {
-          accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad');
-        }
-        else if(pad.head == 0) {
-          accessLogger.info('[CREATE] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" created the pad');
-        }
-      })
+      //Anonymize the IP address if IP logging is disabled
+      if(settings.disableIPlogging) {
+        ip = 'ANONYMOUS';
+      }
+
+      if(pad.head > 0) {
+        accessLogger.info('[ENTER] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" entered the pad');
+      }
+      else if(pad.head == 0) {
+        accessLogger.info('[CREATE] Pad "'+padIds.padId+'": Client '+client.id+' with IP "'+ip+'" created the pad');
+      }
 
       //If this is a reconnect, we don't have to send the client the ClientVars again
       if(message.reconnect == true)
@@ -1165,7 +1178,14 @@ function handleClientReady(client, message)
       client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
 
       //Run trough all sessions of this pad
-      async.forEach(socketio.sockets.clients(padIds.padId), function(roomClient, callback)
+      var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
+      if (room) {
+        for (var id in room) {
+          roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+        }
+      }
+
+      async.forEach(roomClients, function(roomClient, callback)
       {
         var author;
 

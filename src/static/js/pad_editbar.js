@@ -140,7 +140,12 @@ var padeditbar = (function()
     init: function() {
       var self = this;
       self.dropdowns = [];
-      
+      // Listen for resize events (sucks but needed as iFrame ace_inner has to be position absolute
+      // A CSS fix for this would be nice but I'm not sure how we'd do it.
+      $(window).resize(function(){
+        self.redrawHeight();
+      });
+
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
       $("#editbar [data-key]").each(function () {
@@ -148,6 +153,10 @@ var padeditbar = (function()
           self.triggerCommand(command, item);
         });
       });
+
+      $('#editbar').show();
+
+      this.redrawHeight();
 
       registerDefaultCommands(self);
 
@@ -169,6 +178,12 @@ var padeditbar = (function()
     registerCommand: function (cmd, callback) {
       this.commands[cmd] = callback;
       return this;
+    },
+    redrawHeight: function(){
+      var editbarHeight = $('.menu_left').height() + 2 + "px";
+      var containerTop = $('.menu_left').height() + 5 + "px";
+      $('#editbar').css("height", editbarHeight);
+      $('#editorcontainer').css("top", containerTop);
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
