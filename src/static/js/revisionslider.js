@@ -28,7 +28,7 @@ $.Class("RevisionSlider",
           this.revision_number = rev;
       }
 
-      console.log("New RevisionSlider, current_revision = %d", this.revision_number);
+      // console.log("New RevisionSlider, current_revision = %d", this.revision_number);
       // parse the various elements we need:
       this.elements = {};
       this.loadElements(root_element);
@@ -48,12 +48,12 @@ $.Class("RevisionSlider",
       this.goToRevision(this.revision_number);
     },
     onChange: function (value) {
-      console.log("in change handler:", value);
+      // console.log("in change handler:", value);
       if (!this.is_playing)
         this.goToRevision(value);
     },
     onSlide: function (value) {
-      console.log("in slide handler:", value);
+      // console.log("in slide handler:", value);
       if (!this.is_playing)
         this.goToRevision(value);
     },
@@ -167,7 +167,7 @@ $.Class("RevisionSlider",
         , changesetAuthors = this.connection.getCurrentRevision().getAuthors(this.connection.padClient.apool)
 
       this.elements.authors.empty();
-console.log('changesetAuthors',changesetAuthors,'visible authors: ',visibleAuthors,'allAuthors: ', allAuthors, this.connection.padClient.alines)
+      // console.log('changesetAuthors',changesetAuthors,'visible authors: ',visibleAuthors,'allAuthors: ', allAuthors, this.connection.padClient.alines)
 
       for (var authorid in visibleAuthors) {
         if(!(authorid in allAuthors)) continue;
@@ -205,7 +205,7 @@ console.log('changesetAuthors',changesetAuthors,'visible authors: ',visibleAutho
 
       var _this = this;
       this.connection.goToRevision(revnum, function (revision, timestamp) {
-        console.log("[revisionslider > goToRevision > callback]", revision, timestamp);
+        // console.log("[revisionslider > goToRevision > callback]", revision, timestamp);
         //update UI elements:
         _this.revision_number = revision.revnum;
         _this.timestamp = timestamp;
