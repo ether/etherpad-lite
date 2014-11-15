@@ -23,28 +23,16 @@
 window.html10n = (function(window, document, undefined) {
   
   // fix console
-  var console = window.console
-  function interceptConsole(method){
-      if (!console) return function() {}
-
-      var original = console[method]
-
-      // do sneaky stuff
-      if (original.bind){
-        // Do this for normal browsers
-        return original.bind(console)
-      }else{
-        return function() {
-          // Do this for IE
-          var message = Array.prototype.slice.apply(arguments).join(' ')
-          original(message)
-        }
+  (function() {
+    var noop = function() {};
+    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    var console = (window.console = window.console || {});
+    for (var i = 0; i < names.length; ++i) {
+      if (!console[names[i]]) {
+        console[names[i]] = noop;
       }
-  }
-  var consoleLog = interceptConsole('log')
-    , consoleWarn = interceptConsole('warn')
-    , consoleError = interceptConsole('warn')
-
+    }
+  }());
 
   // fix Array#forEach in IE
   // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
@@ -148,7 +136,7 @@ window.html10n = (function(window, document, undefined) {
       for (var i=0, n=this.resources.length; i < n; i++) {
         this.fetch(this.resources[i], lang, function(e) {
           reqs++;
-          if(e) consoleWarn(e)
+          if(e) console.warn(e)
           
           if (reqs < n) return;// Call back once all reqs are completed
           cb && cb()
@@ -647,7 +635,7 @@ window.html10n = (function(window, document, undefined) {
     // return a function that gives the plural form name for a given integer
     var index = locales2rules[lang.replace(/-.*$/, '')];
     if (!(index in pluralRules)) {
-      consoleWarn('plural form unknown for [' + lang + ']');
+      console.warn('plural form unknown for [' + lang + ']');
       return function() { return 'other'; };
     }
     return pluralRules[index];
@@ -727,7 +715,7 @@ window.html10n = (function(window, document, undefined) {
     var i = 0
       , n = list.length
     iterator(list[i], i, function each(err) {
-      if(err) consoleLog(err)
+      if(err) console.error(err)
       i++
       if (i < n) return iterator(list[i],i, each);
       cb()
@@ -750,8 +738,8 @@ window.html10n = (function(window, document, undefined) {
   
   html10n.get = function(id, args) {
     var translations = html10n.translations
-    if(!translations) return consoleWarn('No translations available (yet)')
-    if(!translations[id]) return consoleWarn('Could not find string '+id)
+    if(!translations) return console.warn('No translations available (yet)')
+    if(!translations[id]) return console.warn('Could not find string '+id)
     
     // apply macros
     var str = translations[id]
@@ -781,7 +769,7 @@ window.html10n = (function(window, document, undefined) {
       } else if (arg in translations) {
         sub = translations[arg]
       } else {
-        consoleWarn('Could not find argument {{' + arg + '}}')
+        console.warn('Could not find argument {{' + arg + '}}')
         return str
       }
 
@@ -840,7 +828,7 @@ window.html10n = (function(window, document, undefined) {
     str.id = node.getAttribute('data-l10n-id')
     if (!str.id) return
 
-    if(!translations[str.id]) return consoleWarn('Couldn\'t find translation key '+str.id)
+    if(!translations[str.id]) return console.warn('Couldn\'t find translation key '+str.id)
 
     // get args
     if(window.JSON) {
@@ -849,7 +837,7 @@ window.html10n = (function(window, document, undefined) {
       try{
         str.args = eval(node.getAttribute('data-l10n-args'))
       }catch(e) {
-        consoleWarn('Couldn\'t parse args for '+str.id)
+        console.warn('Couldn\'t parse args for '+str.id)
       }
     }
     
@@ -887,7 +875,7 @@ window.html10n = (function(window, document, undefined) {
         }
       }
       if (!found) {
-        consoleWarn('Unexpected error: could not translate element content for key '+str.id, node)
+        console.warn('Unexpected error: could not translate element content for key '+str.id, node)
       }
     }
   }
