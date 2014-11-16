@@ -115,55 +115,54 @@ exports.newLen = function (cs) {
  * @param optStartIndex {int} from where in the string should the iterator start 
  * @return {Op} type object iterator 
  */
-exports.opIterator = function (opsStr, optStartIndex) {
-  //print(opsStr);
-  var regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
-  var startIndex = (optStartIndex || 0);
-  var curIndex = startIndex;
-  var prevIndex = curIndex;
-
-  function nextRegexMatch() {
-    prevIndex = curIndex;
-    var result;
-    regex.lastIndex = curIndex;
-    result = regex.exec(opsStr);
-    curIndex = regex.lastIndex;
-    if (result[0] == '?') {
-      exports.error("Hit error opcode in op stream");
-    }
-  
-    return result;
-  }
-  var regexResult = nextRegexMatch();
-  var obj = exports.newOp();
-
-  function next(optObj) {
-    var op = (optObj || obj);
-    if (regexResult[0]) {
-      op.attribs = regexResult[1];
-      op.lines = exports.parseNum(regexResult[2] || 0);
-      op.opcode = regexResult[3];
-      op.chars = exports.parseNum(regexResult[4]);
-      regexResult = nextRegexMatch();
-    } else {
-      exports.clearOp(op);
-    }
-    return op;
+function OpIterator(opsStr, optStartIndex) {
+  if(!(this instanceof OpIterator)) {
+    return new OpIterator(opsStr, optStartIndex);
   }
 
-  function hasNext() {
-    return !!(regexResult[0]);
-  }
+  this._regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
+  this._curIndex = (optStartIndex || 0);
+  this._prevIndex = this._curIndex;
 
-  function lastIndex() {
-    return prevIndex;
+  this._opsStr = opsStr;
+
+  this._regexResult = this._nextRegexMatch();
+  this._obj = exports.newOp();
+}
+exports.opIterator = OpIterator;
+
+OpIterator.prototype._nextRegexMatch = function() {
+  this._prevIndex = this._curIndex;
+  this._regex.lastIndex = this._curIndex;
+  var result = this._regex.exec(this._opsStr);
+  this._curIndex = this._regex.lastIndex;
+  if (result[0] == '?') {
+    exports.error("Hit error opcode in op stream");
   }
-  return {
-    next: next,
-    hasNext: hasNext,
-    lastIndex: lastIndex
-  };
-};
+  return result;
+}
+
+OpIterator.prototype.next = function(optObj) {
+  var op = (optObj || this._obj);
+  if (this._regexResult[0]) {
+    op.attribs = this._regexResult[1];
+    op.lines = exports.parseNum(this._regexResult[2] || 0);
+    op.opcode = this._regexResult[3];
+    op.chars = exports.parseNum(this._regexResult[4]);
+    this._regexResult = this._nextRegexMatch();
+  } else {
+    exports.clearOp(op);
+  }
+  return op;
+}
+
+OpIterator.prototype.hasNext = function() {
+  return !!(this._regexResult[0]);
+}
+
+OpIterator.prototype.lastIndex = function() {
+  return this._prevIndex;
+}
 
 /**
  * Cleans an Op object
@@ -281,7 +280,7 @@ exports.checkRep = function (cs) {
 
   assem.endDocument();
   var normalized = exports.pack(oldLen, calcNewLen, assem.toString(), charBank);
-  exports.assert(normalized == cs, 'Invalid changeset (checkRep failed)');
+  exports.assert(normalized == cs, normalized, ' != ', cs);
 
   return cs;
 }
@@ -295,7 +294,11 @@ exports.checkRep = function (cs) {
  * creates an object that allows you to append operations (type Op) and also
  * compresses them if possible
  */
-exports.smartOpAssembler = function () {
+function SmartOpAssembler() {
+  if(!(this instanceof SmartOpAssembler)) {
+    return new SmartOpAssembler();
+  }
+
   // Like opAssembler but able to produce conforming exportss
   // from slightly looser input, at the cost of speed.
   // Specifically:
@@ -303,261 +306,415 @@ exports.smartOpAssembler = function () {
   // - strips final "="
   // - ignores 0-length changes
   // - reorders consecutive + and - (which margingOpAssembler doesn't do)
-  var minusAssem = exports.mergingOpAssembler();
-  var plusAssem = exports.mergingOpAssembler();
-  var keepAssem = exports.mergingOpAssembler();
-  var assem = exports.stringAssembler();
-  var lastOpcode = '';
-  var lengthChange = 0;
+  this._minusAssem = exports.mergingOpAssembler();
+  this._plusAssem = exports.mergingOpAssembler();
+  this._keepAssem = exports.mergingOpAssembler();
+  this._assem = exports.stringAssembler();
+  this._lastOpcode = '';
+  this._lengthChange = 0;
+}
+exports.smartOpAssembler = SmartOpAssembler;
 
-  function flushKeeps() {
-    assem.append(keepAssem.toString());
-    keepAssem.clear();
-  }
+SmartOpAssembler.prototype._flushKeeps = function() {
+  this._assem.append(this._keepAssem.toString());
+  this._keepAssem.clear();
+}
 
-  function flushPlusMinus() {
-    assem.append(minusAssem.toString());
-    minusAssem.clear();
-    assem.append(plusAssem.toString());
-    plusAssem.clear();
-  }
+SmartOpAssembler.prototype._flushPlusMinus = function() {
+  this._assem.append(this._minusAssem.toString());
+  this._minusAssem.clear();
+  this._assem.append(this._plusAssem.toString());
+  this._plusAssem.clear();
+}
 
-  function append(op) {
-    if (!op.opcode) return;
-    if (!op.chars) return;
+SmartOpAssembler.prototype.append = function(op) {
+  if (!op.opcode) return;
+  if (!op.chars) return;
 
-    if (op.opcode == '-') {
-      if (lastOpcode == '=') {
-        flushKeeps();
-      }
-      minusAssem.append(op);
-      lengthChange -= op.chars;
-    } else if (op.opcode == '+') {
-      if (lastOpcode == '=') {
-        flushKeeps();
-      }
-      plusAssem.append(op);
-      lengthChange += op.chars;
-    } else if (op.opcode == '=') {
-      if (lastOpcode != '=') {
-        flushPlusMinus();
-      }
-      keepAssem.append(op);
+  if (op.opcode == '-') {
+    if (this._lastOpcode == '=') {
+      this._flushKeeps();
     }
-    lastOpcode = op.opcode;
-  }
-
-  function appendOpWithText(opcode, text, attribs, pool) {
-    var op = exports.newOp(opcode);
-    op.attribs = exports.makeAttribsString(opcode, attribs, pool);
-    var lastNewlinePos = text.lastIndexOf('\n');
-    if (lastNewlinePos < 0) {
-      op.chars = text.length;
-      op.lines = 0;
-      append(op);
-    } else {
-      op.chars = lastNewlinePos + 1;
-      op.lines = text.match(/\n/g).length;
-      append(op);
-      op.chars = text.length - (lastNewlinePos + 1);
-      op.lines = 0;
-      append(op);
+    this._minusAssem.append(op);
+    this._lengthChange -= op.chars;
+  } else if (op.opcode == '+') {
+    if (this._lastOpcode == '=') {
+      this._flushKeeps();
     }
+    this._plusAssem.append(op);
+    this._lengthChange += op.chars;
+  } else if (op.opcode == '=') {
+    if (this._lastOpcode != '=') {
+      this._flushPlusMinus();
+    }
+    this._keepAssem.append(op);
   }
+  this._lastOpcode = op.opcode;
+}
 
-  function toString() {
-    flushPlusMinus();
-    flushKeeps();
-    return assem.toString();
+SmartOpAssembler.prototype.appendOpWithText = function(opcode, text, attribs, pool) {
+  var op = exports.newOp(opcode);
+  op.attribs = exports.makeAttribsString(opcode, attribs, pool);
+  var lastNewlinePos = text.lastIndexOf('\n');
+  if (lastNewlinePos < 0) {
+    op.chars = text.length;
+    op.lines = 0;
+    this.append(op);
+  } else {
+    op.chars = lastNewlinePos + 1;
+    op.lines = text.match(/\n/g).length;
+    this.append(op);
+    op.chars = text.length - (lastNewlinePos + 1);
+    op.lines = 0;
+    this.append(op);
   }
+}
 
-  function clear() {
-    minusAssem.clear();
-    plusAssem.clear();
-    keepAssem.clear();
-    assem.clear();
-    lengthChange = 0;
+SmartOpAssembler.prototype.toString = function() {
+  this._flushPlusMinus();
+  this._flushKeeps();
+  return this._assem.toString();
+}
+
+SmartOpAssembler.prototype.clear = function() {
+  this._minusAssem.clear();
+  this._plusAssem.clear();
+  this._keepAssem.clear();
+  this._assem.clear();
+  this._lastOpcode = '';
+  this._lengthChange = 0;
+}
+
+SmartOpAssembler.prototype.endDocument = function() {
+  this._keepAssem.endDocument();
+}
+
+SmartOpAssembler.prototype.getLengthChange = function() {
+  return this._lengthChange;
+}
+
+function MergingOpAssembler() {
+  if(!(this instanceof MergingOpAssembler)) {
+    return new MergingOpAssembler();
   }
-
-  function endDocument() {
-    keepAssem.endDocument();
-  }
-
-  function getLengthChange() {
-    return lengthChange;
-  }
-
-  return {
-    append: append,
-    toString: toString,
-    clear: clear,
-    endDocument: endDocument,
-    appendOpWithText: appendOpWithText,
-    getLengthChange: getLengthChange
-  };
-};
-
-
-exports.mergingOpAssembler = function () {
   // This assembler can be used in production; it efficiently
   // merges consecutive operations that are mergeable, ignores
   // no-ops, and drops final pure "keeps".  It does not re-order
   // operations.
-  var assem = exports.opAssembler();
-  var bufOp = exports.newOp();
+  this._assem = exports.opAssembler();
+  this._bufOp = exports.newOp();
 
   // If we get, for example, insertions [xxx\n,yyy], those don't merge,
   // but if we get [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n].
   // This variable stores the length of yyy and any other newline-less
   // ops immediately after it.
-  var bufOpAdditionalCharsAfterNewline = 0;
+  this._bufOpAdditionalCharsAfterNewline = 0;
+}
+exports.mergingOpAssembler = MergingOpAssembler;
 
-  function flush(isEndDocument) {
-    if (bufOp.opcode) {
-      if (isEndDocument && bufOp.opcode == '=' && !bufOp.attribs) {
-        // final merged keep, leave it implicit
-      } else {
-        assem.append(bufOp);
-        if (bufOpAdditionalCharsAfterNewline) {
-          bufOp.chars = bufOpAdditionalCharsAfterNewline;
-          bufOp.lines = 0;
-          assem.append(bufOp);
-          bufOpAdditionalCharsAfterNewline = 0;
-        }
-      }
-      bufOp.opcode = '';
-    }
-  }
-
-  function append(op) {
-    if (op.chars > 0) {
-      if (bufOp.opcode == op.opcode && bufOp.attribs == op.attribs) {
-        if (op.lines > 0) {
-          // bufOp and additional chars are all mergeable into a multi-line op
-          bufOp.chars += bufOpAdditionalCharsAfterNewline + op.chars;
-          bufOp.lines += op.lines;
-          bufOpAdditionalCharsAfterNewline = 0;
-        } else if (bufOp.lines == 0) {
-          // both bufOp and op are in-line
-          bufOp.chars += op.chars;
-        } else {
-          // append in-line text to multi-line bufOp
-          bufOpAdditionalCharsAfterNewline += op.chars;
-        }
-      } else {
-        flush();
-        exports.copyOp(op, bufOp);
+MergingOpAssembler.prototype._flush = function(isEndDocument) {
+  if (this._bufOp.opcode) {
+    if (isEndDocument && this._bufOp.opcode == '=' && !this._bufOp.attribs) {
+      // final merged keep, leave it implicit
+    } else {
+      this._assem.append(this._bufOp);
+      if (this._bufOpAdditionalCharsAfterNewline) {
+        this._bufOp.chars = this._bufOpAdditionalCharsAfterNewline;
+        this._bufOp.lines = 0;
+        this._assem.append(this._bufOp);
+        this._bufOpAdditionalCharsAfterNewline = 0;
       }
     }
+    this._bufOp.opcode = '';
+  }
+}
+
+MergingOpAssembler.prototype.append = function(op) {
+  if (op.chars > 0) {
+    if (this._bufOp.opcode == op.opcode && this._bufOp.attribs == op.attribs) {
+      if (op.lines > 0) {
+        // bufOp and additional chars are all mergeable into a multi-line op
+        this._bufOp.chars += this._bufOpAdditionalCharsAfterNewline + op.chars;
+        this._bufOp.lines += op.lines;
+        this._bufOpAdditionalCharsAfterNewline = 0;
+      } else if (this._bufOp.lines == 0) {
+        // both bufOp and op are in-line
+        this._bufOp.chars += op.chars;
+      } else {
+        // append in-line text to multi-line bufOp
+        this._bufOpAdditionalCharsAfterNewline += op.chars;
+      }
+    } else {
+      this._flush();
+      exports.copyOp(op, this._bufOp);
+    }
+  }
+}
+
+MergingOpAssembler.prototype.endDocument = function() {
+  this._flush(true);
+}
+
+MergingOpAssembler.prototype.toString = function() {
+  this._flush();
+  return this._assem.toString();
+}
+
+MergingOpAssembler.prototype.clear = function() {
+  this._assem.clear();
+  exports.clearOp(this._bufOp);
+}
+
+function OpAssembler() {
+  if(!(this instanceof OpAssembler)) {
+    return new OpAssembler();
   }
 
-  function endDocument() {
-    flush(true);
-  }
+  this._s = '';
+}
+exports.opAssembler = OpAssembler;
 
-  function toString() {
-    flush();
-    return assem.toString();
-  }
-
-  function clear() {
-    assem.clear();
-    exports.clearOp(bufOp);
-  }
-  return {
-    append: append,
-    toString: toString,
-    clear: clear,
-    endDocument: endDocument
-  };
-};
-
-
-
-exports.opAssembler = function () {
-  var pieces = [];
   // this function allows op to be mutated later (doesn't keep a ref)
+OpAssembler.prototype.append = function(op) {
+  this._s += (op.attribs || '') + (op.lines ? ('|' + exports.numToString(op.lines)) : '') 
+    + op.opcode + exports.numToString(op.chars);
+}
 
-  function append(op) {
-    pieces.push(op.attribs);
-    if (op.lines) {
-      pieces.push('|', exports.numToString(op.lines));
-    }
-    pieces.push(op.opcode);
-    pieces.push(exports.numToString(op.chars));
-  }
+OpAssembler.prototype.toString = function() {
+  return this._s;
+}
 
-  function toString() {
-    return pieces.join('');
-  }
-
-  function clear() {
-    pieces.length = 0;
-  }
-  return {
-    append: append,
-    toString: toString,
-    clear: clear
-  };
-};
+OpAssembler.prototype.clear = function() {
+  this._s = '';
+}
 
 /**
  * A custom made String Iterator
  * @param str {string} String to be iterated over
  */ 
-exports.stringIterator = function (str) {
-  var curIndex = 0;
+function StringIterator(str) {
+  if(!(this instanceof StringIterator))
+    return new StringIterator(str);
 
-  function assertRemaining(n) {
-    exports.assert(n <= remaining(), "!(", n, " <= ", remaining(), ")");
-  }
+  this._str = str;
+  this._curIndex = 0;
+}
+exports.stringIterator = StringIterator;
 
-  function take(n) {
-    assertRemaining(n);
-    var s = str.substr(curIndex, n);
-    curIndex += n;
-    return s;
-  }
+StringIterator.prototype._assertRemaining = function(n) {
+  exports.assert(n <= this.remaining(), "!(", n, " <= ", this.remaining(), ")");
+}
 
-  function peek(n) {
-    assertRemaining(n);
-    var s = str.substr(curIndex, n);
-    return s;
-  }
+StringIterator.prototype.take = function(n) {
+  this._assertRemaining(n);
+  var s = this._str.substr(this._curIndex, n);
+  this._curIndex += n;
+  return s;
+}
 
-  function skip(n) {
-    assertRemaining(n);
-    curIndex += n;
-  }
+StringIterator.prototype.peek = function(n) {
+  this._assertRemaining(n);
+  var s = this._str.substr(this._curIndex, n);
+  return s;
+}
 
-  function remaining() {
-    return str.length - curIndex;
-  }
-  return {
-    take: take,
-    skip: skip,
-    remaining: remaining,
-    peek: peek
-  };
+StringIterator.prototype.skip = function(n) {
+  this._assertRemaining(n);
+  this._curIndex += n;
+}
+
+StringIterator.prototype.remaining = function() {
+  return this._str.length - this._curIndex;
+}
+
+StringIterator.prototype.length = function() {
+  return this._str.length;
 };
 
 /**
  * A custom made StringBuffer 
  */
-exports.stringAssembler = function () {
-  var pieces = [];
-
-  function append(x) {
-    pieces.push(String(x));
+function StringAssembler() {
+  if(!(this instanceof StringAssembler)) {
+    return new StringAssembler();
   }
 
-  function toString() {
-    return pieces.join('');
+  this._s = '';
+}
+exports.stringAssembler = StringAssembler;
+
+StringAssembler.prototype.append = function(x) {
+  this._s += x;
+}
+
+StringAssembler.prototype.toString = function() {
+  return this._s;
+}
+
+/*
+ * A lines wrapper class, provides an interface for working with collection of lines. Underneath implementation
+ * can vary.
+ */
+function LinesCollection(lines) {
+  this._lines = lines;
+  this._isNative = Object.prototype.toString.call(lines) == '[object Array]';
+}
+
+LinesCollection.prototype.get = function(index) {
+  if(this._lines.get) {
+    return this._lines.get(index);
+  } else {
+    return this._lines[index];
   }
-  return {
-    append: append,
-    toString: toString
-  };
+};
+
+LinesCollection.prototype.set = function(index, line) {
+  // compatibility method for new text mutator
+  return this.applySplice([index, 1, line]);
+};
+
+LinesCollection.prototype.length = function() {
+  if ((typeof this._lines.length) == "function") {
+    return this._lines.length();
+  } else {
+    return this._lines.length;
+  }
+};
+
+LinesCollection.prototype.slice = function(start, end) {
+  // can be unimplemented if removeLines's return value not needed
+  if(this._lines.slice) {
+    return this._lines.slice(start, end);
+  } else {
+    return [];
+  }
+};
+
+LinesCollection.prototype.splice = function() {
+  // compatiblity method
+  return this.applySplice(arguments);
+};
+
+LinesCollection.prototype.applySplice = function(s) {
+  if(this._isNative) {
+    return this._lines.splice.apply(this._lines, s);
+  } else {
+    // so much hate it. The wrapper function on the client does not return removed rows.
+    // grab rows we need first, then splice, then return.
+    // need to use get() becase client don't bother implementing even slice()!!
+    var rows = [];
+    for(var i = 0; i < s[1]; i++) {
+      rows.push(this.get(s[0] + i));
+    }
+    this._lines.splice.apply(this._lines, s);
+    return rows;
+  }
+};
+
+// debug
+LinesCollection.prototype.toSource = function() {
+  return this._lines.toSource();
+};
+
+
+
+function TextLinesMutator2(lines) {
+  if(!(this instanceof TextLinesMutator2)) {
+    return new TextLinesMutator2(lines);
+  }
+
+  this._lines = new LinesCollection(lines);
+  this._l = 0;
+  this._c = 0;
+}
+
+TextLinesMutator2.prototype.skipLines = function(L) {
+  this._l += L;
+  exports.assert(this._l <= this._lines.length(), 'line position become greater than lines count');
+
+  this._c = 0;
+};
+
+TextLinesMutator2.prototype.skip = function(N, L) {
+  exports.assert(N !== undefined, 'N was not supplied')
+  if(L) {
+    this.skipLines(L);
+  } else {
+    this._c += N;
+    exports.assert(this._c <= this._lines.get(this._l).length, 'char position become greated than line length');
+  }
+};
+
+TextLinesMutator2.prototype.removeLines = function(L) {
+  var removed = '';
+  if(L) {
+    if(this._c) {
+      var line = this._lines.get(this._l);
+      removed += line.substring(this._c) + this._lines.splice(this._l + 1, L - 1).join('');
+      // join current line with the next line
+      this._lines.set(this._l, line.substring(0, this._c) + this._lines.splice(this._l + 1, 1));
+    } else {
+      // just skip N lines
+      removed += this._lines.splice(this._l, L).join('');
+    }
+  }
+  return removed;
+};
+
+TextLinesMutator2.prototype.remove = function(N, L) {
+  var removed = '';
+  if(N) {
+    if(L) {
+      removed += this.removeLines(L);
+    } else {
+      var line = this._lines.get(this._l);
+      exports.assert((this._c + N) < line.length, 'char count to remove greated than line length');
+
+      removed += line.substr(this._c, N);
+      this._lines.set(this._l, line.substring(0, this._c) + line.substring(this._c + N));
+    }
+  }
+  return removed;
+};
+
+TextLinesMutator2.prototype.insert = function(text, L) {
+  if(text) {
+    if(L) {
+      var newLines = exports.splitTextLines(text);
+      if(this._c) {
+        var line = this._lines.get(this._l);
+        newLines[0] = line.substring(0, this._c) + newLines[0];
+
+        // new ending
+        this._lines.set(this._l, line.substring(this._c));
+      }
+      // insert the rest before new ending
+      this._lines.applySplice([this._l, 0].concat(newLines));
+      this._l += L;
+      this._c = 0;
+    } else {
+      var line = this._lines.get(this._l);
+      this._lines.set(this._l, line.substring(0, this._c) + text + line.substring(this._c));
+      this._c += text.length;
+    }
+  }
+};
+
+TextLinesMutator2.prototype.hasMore = function() {
+  return this._l < this._lines.length();
+};
+
+TextLinesMutator2.prototype.length = function() {
+  // no better way
+  var len = 0;
+  for(var i = 0, l = this._lines.length(); i < l; i++) {
+    len += this._lines.get(i).length;
+  }
+  return len;
+};
+
+TextLinesMutator2.prototype.close = function() {
+  // compatibility, do nothing
 };
 
 /**
@@ -565,7 +722,12 @@ exports.stringAssembler = function () {
  * It is used for applying Changesets on arrays of lines
  * Note from prev docs: "lines" need not be an array as long as it supports certain calls (lines_foo inside).
  */
-exports.textLinesMutator = function (lines) {
+function TextLinesMutator(lines) {
+  if(!(this instanceof TextLinesMutator)) {
+    return new TextLinesMutator(lines);
+  }
+
+  this._lines = new LinesCollection(lines);
   // Mutates lines, an array of strings, in place.
   // Mutation operations have the same constraints as exports operations
   // with respect to newlines, but not the other additional constraints
@@ -574,250 +736,213 @@ exports.textLinesMutator = function (lines) {
   // is not actually a newline, but for the purposes of N and L values,
   // the caller should pretend it is, and for things to work right in that case, the input
   // to insert() should be a single line with no newlines.
-  var curSplice = [0, 0];
-  var inSplice = false;
+  this._curSplice = [0, 0];
+  this._inSplice = false;
   // position in document after curSplice is applied:
-  var curLine = 0,
-      curCol = 0;
+  this._curLine = 0;
+  this._curCol = 0;
   // invariant: if (inSplice) then (curLine is in curSplice[0] + curSplice.length - {2,3}) &&
   //            curLine >= curSplice[0]
   // invariant: if (inSplice && (curLine >= curSplice[0] + curSplice.length - 2)) then
   //            curCol == 0
+}
+exports.textLinesMutator = TextLinesMutator2;
 
-  function lines_applySplice(s) {
-    lines.splice.apply(lines, s);
+TextLinesMutator.prototype._enterSplice = function() {
+  this._curSplice[0] = this._curLine;
+  this._curSplice[1] = 0;
+  if (this._curCol > 0) {
+      this._putCurLineInSplice();
   }
+  this._inSplice = true;
+}
 
-  function lines_toSource() {
-    return lines.toSource();
+TextLinesMutator.prototype._leaveSplice = function() {
+  this._lines.applySplice(this._curSplice);
+  this._curSplice = [0, 0];
+  this._inSplice = false;
+}
+
+TextLinesMutator.prototype._isCurLineInSplice = function() {
+  return (this._curLine - this._curSplice[0] < (this._curSplice.length - 2));
+}
+
+TextLinesMutator.prototype._putCurLineInSplice = function() {
+  if (!this._isCurLineInSplice()) {
+    this._curSplice.push(this._lines.get(this._curSplice[0] + this._curSplice[1]));
+    this._curSplice[1]++;
   }
+  return 2 + this._curLine - this._curSplice[0];
+}
 
-  function lines_get(idx) {
-    if (lines.get) {
-      return lines.get(idx);
+TextLinesMutator.prototype.skipLines = function(L, includeInSplice) {
+  if (L) {
+    if (includeInSplice) {
+      if (!this._inSplice) {
+        this._enterSplice();
+      }
+      for (var i = 0; i < L; i++) {
+        this._curCol = 0;
+        this._putCurLineInSplice();
+        this._curLine++;
+      }
     } else {
-      return lines[idx];
-    }
-  }
-  // can be unimplemented if removeLines's return value not needed
-
-  function lines_slice(start, end) {
-    if (lines.slice) {
-      return lines.slice(start, end);
-    } else {
-      return [];
-    }
-  }
-
-  function lines_length() {
-    if ((typeof lines.length) == "number") {
-      return lines.length;
-    } else {
-      return lines.length();
-    }
-  }
-
-  function enterSplice() {
-    curSplice[0] = curLine;
-    curSplice[1] = 0;
-    if (curCol > 0) {
-      putCurLineInSplice();
-    }
-    inSplice = true;
-  }
-
-  function leaveSplice() {
-    lines_applySplice(curSplice);
-    curSplice.length = 2;
-    curSplice[0] = curSplice[1] = 0;
-    inSplice = false;
-  }
-
-  function isCurLineInSplice() {
-    return (curLine - curSplice[0] < (curSplice.length - 2));
-  }
-
-  function debugPrint(typ) {
-    print(typ + ": " + curSplice.toSource() + " / " + curLine + "," + curCol + " / " + lines_toSource());
-  }
-
-  function putCurLineInSplice() {
-    if (!isCurLineInSplice()) {
-      curSplice.push(lines_get(curSplice[0] + curSplice[1]));
-      curSplice[1]++;
-    }
-    return 2 + curLine - curSplice[0];
-  }
-
-  function skipLines(L, includeInSplice) {
-    if (L) {
-      if (includeInSplice) {
-        if (!inSplice) {
-          enterSplice();
-        }
-        for (var i = 0; i < L; i++) {
-          curCol = 0;
-          putCurLineInSplice();
-          curLine++;
-        }
-      } else {
-        if (inSplice) {
-          if (L > 1) {
-            leaveSplice();
-          } else {
-            putCurLineInSplice();
-          }
-        }
-        curLine += L;
-        curCol = 0;
-      }
-      //print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" / "+curSplice[1]+" / "+lines.length);
-/*if (inSplice && (! isCurLineInSplice()) && (curSplice[0] + curSplice[1] < lines.length)) {
-  print("BLAH");
-  putCurLineInSplice();
-}*/
-      // tests case foo in remove(), which isn't otherwise covered in current impl
-    }
-    //debugPrint("skip");
-  }
-
-  function skip(N, L, includeInSplice) {
-    if (N) {
-      if (L) {
-        skipLines(L, includeInSplice);
-      } else {
-        if (includeInSplice && !inSplice) {
-          enterSplice();
-        }
-        if (inSplice) {
-          putCurLineInSplice();
-        }
-        curCol += N;
-        //debugPrint("skip");
-      }
-    }
-  }
-
-  function removeLines(L) {
-    var removed = '';
-    if (L) {
-      if (!inSplice) {
-        enterSplice();
-      }
-
-      function nextKLinesText(k) {
-        var m = curSplice[0] + curSplice[1];
-        return lines_slice(m, m + k).join('');
-      }
-      if (isCurLineInSplice()) {
-        //print(curCol);
-        if (curCol == 0) {
-          removed = curSplice[curSplice.length - 1];
-          // print("FOO"); // case foo
-          curSplice.length--;
-          removed += nextKLinesText(L - 1);
-          curSplice[1] += L - 1;
+      if (this._inSplice) {
+        if (L > 1) {
+          this._leaveSplice();
         } else {
-          removed = nextKLinesText(L - 1);
-          curSplice[1] += L - 1;
-          var sline = curSplice.length - 1;
-          removed = curSplice[sline].substring(curCol) + removed;
-          curSplice[sline] = curSplice[sline].substring(0, curCol) + lines_get(curSplice[0] + curSplice[1]);
-          curSplice[1] += 1;
+          this._putCurLineInSplice();
         }
+      }
+      this._curLine += L;
+      this._curCol = 0;
+    }
+  }
+}
+
+TextLinesMutator.prototype.skip = function(N, L, includeInSplice) {
+  if (N) {
+    if (L) {
+      this.skipLines(L, includeInSplice);
+    } else {
+      if (includeInSplice && !this._inSplice) {
+        this._enterSplice();
+      }
+      if (this._inSplice) {
+        this._putCurLineInSplice();
+      }
+      this._curCol += N;
+    }
+  }
+}
+
+TextLinesMutator.prototype._nextKLinesText = function(k) {
+  var m = this._curSplice[0] + this._curSplice[1];
+  return this._lines.slice(m, m + k).join('');
+}
+
+TextLinesMutator.prototype.removeLines = function(L) {
+  var removed = '';
+  if (L) {
+    if (!this._inSplice) {
+      this._enterSplice();
+    }
+
+    if (this._isCurLineInSplice()) {
+      if (this._curCol == 0) {
+        removed = this._curSplice.pop();
+        removed += this._nextKLinesText(L - 1);
+        this._curSplice[1] += L - 1;
       } else {
-        removed = nextKLinesText(L);
-        curSplice[1] += L;
+        removed = this._nextKLinesText(L - 1);
+        this._curSplice[1] += L - 1;
+        var sline = this._curSplice.length - 1;
+        removed = this._curSplice[sline].substring(this._curCol) + removed;
+        this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + this._lines.get(this._curSplice[0] + this._curSplice[1]);
+        this._curSplice[1] += 1;
       }
-      //debugPrint("remove");
+    } else {
+      removed = this._nextKLinesText(L);
+      this._curSplice[1] += L;
     }
-    return removed;
   }
+  return removed;
+}
 
-  function remove(N, L) {
-    var removed = '';
-    if (N) {
-      if (L) {
-        return removeLines(L);
+TextLinesMutator.prototype.remove = function(N, L) {
+  var removed = '';
+  if (N) {
+    if (L) {
+      return this.removeLines(L);
+    } else {
+      if (!this._inSplice) {
+        this._enterSplice();
+      }
+      var sline = this._putCurLineInSplice();
+      removed = this._curSplice[sline].substring(this._curCol, this._curCol + N);
+      this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + this._curSplice[sline].substring(this._curCol + N);
+    }
+  }
+  return removed;
+}
+
+TextLinesMutator.prototype.insert = function(text, L) {
+  if (text) {
+    if (!this._inSplice) {
+      this._enterSplice();
+    }
+    if (L) {
+      var newLines = exports.splitTextLines(text);
+      if (this._isCurLineInSplice()) {
+        var sline = this._curSplice.length - 1;
+        var theLine = this._curSplice[sline];
+        var lineCol = this._curCol;
+        this._curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
+        this._curLine++;
+        newLines.shift();
+        Array.prototype.push.apply(this._curSplice, newLines);
+        this._curLine += newLines.length;
+        this._curSplice.push(theLine.substring(lineCol));
+        this._curCol = 0;
       } else {
-        if (!inSplice) {
-          enterSplice();
-        }
-        var sline = putCurLineInSplice();
-        removed = curSplice[sline].substring(curCol, curCol + N);
-        curSplice[sline] = curSplice[sline].substring(0, curCol) + curSplice[sline].substring(curCol + N);
-        //debugPrint("remove");
+        Array.prototype.push.apply(this._curSplice, newLines);
+        this._curLine += newLines.length;
       }
-    }
-    return removed;
-  }
-
-  function insert(text, L) {
-    if (text) {
-      if (!inSplice) {
-        enterSplice();
-      }
-      if (L) {
-        var newLines = exports.splitTextLines(text);
-        if (isCurLineInSplice()) {
-          //if (curCol == 0) {
-          //curSplice.length--;
-          //curSplice[1]--;
-          //Array.prototype.push.apply(curSplice, newLines);
-          //curLine += newLines.length;
-          //}
-          //else {
-          var sline = curSplice.length - 1;
-          var theLine = curSplice[sline];
-          var lineCol = curCol;
-          curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
-          curLine++;
-          newLines.splice(0, 1);
-          Array.prototype.push.apply(curSplice, newLines);
-          curLine += newLines.length;
-          curSplice.push(theLine.substring(lineCol));
-          curCol = 0;
-          //}
-        } else {
-          Array.prototype.push.apply(curSplice, newLines);
-          curLine += newLines.length;
-        }
-      } else {
-        var sline = putCurLineInSplice();
-        curSplice[sline] = curSplice[sline].substring(0, curCol) + text + curSplice[sline].substring(curCol);
-        curCol += text.length;
-      }
-      //debugPrint("insert");
+    } else {
+      var sline = this._putCurLineInSplice();
+      var theLine = this._curSplice[sline];
+      this._curSplice[sline] = theLine.substring(0, this._curCol) + text + theLine.substring(this._curCol);
+      this._curCol += text.length;
     }
   }
+}
 
-  function hasMore() {
-    //print(lines.length+" / "+inSplice+" / "+(curSplice.length - 2)+" / "+curSplice[1]);
-    var docLines = lines_length();
-    if (inSplice) {
-      docLines += curSplice.length - 2 - curSplice[1];
-    }
-    return curLine < docLines;
+TextLinesMutator.prototype.hasMore = function() {
+  var docLines = this._lines.length();
+  if (this._inSplice) {
+    docLines += this._curSplice.length - 2 - this._curSplice[1];
+  }
+  return this._curLine < docLines;
+}
+
+TextLinesMutator.prototype.close = function() {
+  this._inSplice && this._leaveSplice();
+}
+
+/*
+ * StringMutator is compatible implementation of TextLinesMutator to manipulate on strings.
+ * Since we can't modify strings in-place, we have a special treatement for .close() method
+ */
+function StringMutator(text) {
+  if(!(this instanceof StringMutator)) {
+    return new StringMutator(lines);
   }
 
-  function close() {
-    if (inSplice) {
-      leaveSplice();
-    }
-    //debugPrint("close");
-  }
+  this._in = exports.stringIterator(text);
+  this._out = exports.stringAssembler();
+}
 
-  var self = {
-    skip: skip,
-    remove: remove,
-    insert: insert,
-    close: close,
-    hasMore: hasMore,
-    removeLines: removeLines,
-    skipLines: skipLines
-  };
-  return self;
+StringMutator.prototype.skip = function(N, L) {
+  this._out.append(this._in.take(N));
 };
+
+StringMutator.prototype.insert = function(text, L) {
+  this._out.append(text);
+};
+
+StringMutator.prototype.remove = function(N, L) {
+  this._in.skip(N);
+};
+
+StringMutator.prototype.length = function() {
+  return this._in.remaining();
+};
+
+StringMutator.prototype.close = function() {
+  this._out.append(this._in.take(this._in.remaining()));
+  return this._out.toString();
+};
+
 
 /**
  * Function allowing iterating over two Op strings. 
@@ -846,7 +971,6 @@ exports.applyZip = function (in1, idx1, in2, idx2, func) {
     if ((!op2.opcode) && iter2.hasNext()) iter2.next(op2);
     func(op1, op2, opOut);
     if (opOut.opcode) {
-      //print(opOut.toSource());
       assem.append(opOut);
       opOut.opcode = '';
     }
@@ -892,9 +1016,7 @@ exports.unpack = function (cs) {
 exports.pack = function (oldLen, newLen, opsStr, bank) {
   var lenDiff = newLen - oldLen;
   var lenDiffStr = (lenDiff >= 0 ? '>' + exports.numToString(lenDiff) : '<' + exports.numToString(-lenDiff));
-  var a = [];
-  a.push('Z:', exports.numToString(oldLen), lenDiffStr, opsStr, '$', bank);
-  return a.join('');
+  return 'Z:' + exports.numToString(oldLen) + lenDiffStr + opsStr + '$' + bank;
 };
 
 /**
@@ -903,28 +1025,7 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
  * @params str {string} String to which a Changeset should be applied
  */
 exports.applyToText = function (cs, str) {
-  var unpacked = exports.unpack(cs);
-  exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
-  var csIter = exports.opIterator(unpacked.ops);
-  var bankIter = exports.stringIterator(unpacked.charBank);
-  var strIter = exports.stringIterator(str);
-  var assem = exports.stringAssembler();
-  while (csIter.hasNext()) {
-    var op = csIter.next();
-    switch (op.opcode) {
-    case '+':
-      assem.append(bankIter.take(op.chars));
-      break;
-    case '-':
-      strIter.skip(op.chars);
-      break;
-    case '=':
-      assem.append(strIter.take(op.chars));
-      break;
-    }
-  }
-  assem.append(strIter.take(strIter.remaining()));
-  return assem.toString();
+  return mutate(cs, new StringMutator(str));
 };
 
 /**
@@ -933,26 +1034,32 @@ exports.applyToText = function (cs, str) {
  * @param lines The lines to which the changeset needs to be applied
  */
 exports.mutateTextLines = function (cs, lines) {
+  mutate(cs, exports.textLinesMutator(lines));
+};
+
+function mutate(cs, mutator) {
   var unpacked = exports.unpack(cs);
+  var oldLen = mutator.length();
+  exports.assert(oldLen == unpacked.oldLen, "mismatched apply: ", oldLen, " / ", unpacked.oldLen);
   var csIter = exports.opIterator(unpacked.ops);
   var bankIter = exports.stringIterator(unpacked.charBank);
-  var mut = exports.textLinesMutator(lines);
   while (csIter.hasNext()) {
     var op = csIter.next();
     switch (op.opcode) {
     case '+':
-      mut.insert(bankIter.take(op.chars), op.lines);
+      mutator.insert(bankIter.take(op.chars), op.lines);
       break;
     case '-':
-      mut.remove(op.chars, op.lines);
+      mutator.remove(op.chars, op.lines);
       break;
     case '=':
-      mut.skip(op.chars, op.lines, ( !! op.attribs));
+      mutator.skip(op.chars, op.lines, ( !! op.attribs));
       break;
     }
   }
-  mut.close();
-};
+  return mutator.close();
+}
+
 
 /**
  * Composes two attribute strings (see below) into one.
@@ -982,22 +1089,25 @@ exports.composeAttributes = function (att1, att2, resultIsMutation, pool) {
     // attributes that are already gone, so don't do this optimization.
     return att2;
   }
-  if (!att2) return att1;
+  if (!att2) {
+    return att1;
+  }
+
   var atts = [];
-  att1.replace(/\*([0-9a-z]+)/g, function (_, a) {
-    atts.push(pool.getAttrib(exports.parseNum(a)));
-    return '';
+  exports.eachAttribNumber(att1, function(n) {
+    atts.push(pool.getAttrib(n));
   });
-  att2.replace(/\*([0-9a-z]+)/g, function (_, a) {
-    var pair = pool.getAttrib(exports.parseNum(a));
+
+  exports.eachAttribNumber(att2, function(n) {
+    var pair = pool.getAttrib(n);
     var found = false;
-    for (var i = 0; i < atts.length; i++) {
-      var oldPair = atts[i];
+    for (var j = 0; j < atts.length; j++) {
+      var oldPair = atts[j];
       if (oldPair[0] == pair[0]) {
         if (pair[1] || resultIsMutation) {
           oldPair[1] = pair[1];
         } else {
-          atts.splice(i, 1);
+          atts.splice(j, 1);
         }
         found = true;
         break;
@@ -1006,16 +1116,14 @@ exports.composeAttributes = function (att1, att2, resultIsMutation, pool) {
     if ((!found) && (pair[1] || resultIsMutation)) {
       atts.push(pair);
     }
-    return '';
   });
+
   atts.sort();
-  var buf = exports.stringAssembler();
+  var s = '';
   for (var i = 0; i < atts.length; i++) {
-    buf.append('*');
-    buf.append(exports.numToString(pool.putAttrib(atts[i])));
+    s += '*' + exports.numToString(pool.putAttrib(atts[i]));
   }
-  //print(att1+" / "+att2+" / "+buf.toString());
-  return buf.toString();
+  return s;
 };
 
 /**
@@ -1026,7 +1134,6 @@ exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
   // attOp is the op from the sequence that is being operated on, either an
   // attribution string or the earlier of two exportss being composed.
   // pool can be null if definitely not needed.
-  //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
   if (attOp.opcode == '-') {
     exports.copyOp(attOp, opOut);
     attOp.opcode = '';
@@ -1122,15 +1229,7 @@ exports.applyToAttribution = function (cs, astr, pool) {
   });
 };
 
-/*exports.oneInsertedLineAtATimeOpIterator = function(opsStr, optStartIndex, charBank) {
-  var iter = exports.opIterator(opsStr, optStartIndex);
-  var bankIndex = 0;
-
-};*/
-
 exports.mutateAttributionLines = function (cs, lines, pool) {
-  //dmesg(cs);
-  //dmesg(lines.toSource()+" ->");
   var unpacked = exports.unpack(cs);
   var csIter = exports.opIterator(unpacked.ops);
   var csBank = unpacked.charBank;
@@ -1158,7 +1257,6 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
   var lineAssem = null;
 
   function outputMutOp(op) {
-    //print("outputMutOp: "+op.toSource());
     if (!lineAssem) {
       lineAssem = exports.mergingOpAssembler();
     }
@@ -1178,15 +1276,11 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
     if ((!csOp.opcode) && csIter.hasNext()) {
       csIter.next(csOp);
     }
-    //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
-    //print(csOp.opcode+"/"+csOp.lines+"/"+csOp.attribs+"/"+lineAssem+"/"+lineIter+"/"+(lineIter?lineIter.hasNext():null));
-    //print("csOp: "+csOp.toSource());
     if ((!csOp.opcode) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       break; // done
     } else if (csOp.opcode == '=' && csOp.lines > 0 && (!csOp.attribs) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       // skip multiple lines; this is what makes small changes not order of the document size
       mut.skipLines(csOp.lines);
-      //print("skipped: "+csOp.lines);
       csOp.opcode = '';
     } else if (csOp.opcode == '+') {
       if (csOp.lines > 1) {
@@ -1207,7 +1301,6 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
       if ((!attOp.opcode) && isNextMutOp()) {
         nextMutOp(attOp);
       }
-      //print("attOp: "+attOp.toSource());
       exports._slicerZipperFunc(attOp, csOp, opOut, pool);
       if (opOut.opcode) {
         outputMutOp(opOut);
@@ -1218,8 +1311,6 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
 
   exports.assert(!lineAssem, "line assembler not finished");
   mut.close();
-
-  //dmesg("-> "+lines.toSource());
 };
 
 /**
@@ -1303,11 +1394,6 @@ exports.compose = function (cs1, cs2, pool) {
   var bankAssem = exports.stringAssembler();
 
   var newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, function (op1, op2, opOut) {
-    //var debugBuilder = exports.stringAssembler();
-    //debugBuilder.append(exports.opString(op1));
-    //debugBuilder.append(',');
-    //debugBuilder.append(exports.opString(op2));
-    //debugBuilder.append(' / ');
     var op1code = op1.opcode;
     var op2code = op2.opcode;
     if (op1code == '+' && op2code == '-') {
@@ -1321,13 +1407,6 @@ exports.compose = function (cs1, cs2, pool) {
         bankAssem.append(bankIter1.take(opOut.chars));
       }
     }
-
-    //debugBuilder.append(exports.opString(op1));
-    //debugBuilder.append(',');
-    //debugBuilder.append(exports.opString(op2));
-    //debugBuilder.append(' -> ');
-    //debugBuilder.append(exports.opString(opOut));
-    //print(debugBuilder.toString());
   });
 
   return exports.pack(len1, len3, newOps, bankAssem.toString());
@@ -1407,7 +1486,6 @@ exports.makeSplice = function (oldFullText, spliceStart, numRemoved, newText, op
  * @param cs Changeset
  */
 exports.toSplices = function (cs) {
-  // 
   var unpacked = exports.unpack(cs);
   var splices = [];
 
@@ -1493,21 +1571,13 @@ exports.characterRangeFollow = function (cs, startChar, endChar, insertionsAfter
  * @return {string} the new Changeset
  */
 exports.moveOpsToNewPool = function (cs, oldPool, newPool) {
-  // works on exports or attribution string
-  var dollarPos = cs.indexOf('$');
-  if (dollarPos < 0) {
-    dollarPos = cs.length;
-  }
-  var upToDollar = cs.substring(0, dollarPos);
-  var fromDollar = cs.substring(dollarPos);
-  // order of attribs stays the same
-  return upToDollar.replace(/\*([0-9a-z]+)/g, function (_, a) {
-    var oldNum = exports.parseNum(a);
-    var pair = oldPool.getAttrib(oldNum);
-    if(!pair) exports.error('Can\'t copy unknown attrib (reference attrib string to non-existant pool entry). Inconsistent attrib state!');
-    var newNum = newPool.putAttrib(pair);
-    return '*' + exports.numToString(newNum);
-  }) + fromDollar;
+  return exports.mapAttribNumbers(cs, function(n) {
+    var pair = oldPool.getAttrib(n);
+    if(!pair) {
+      exports.error('Can\'t copy unknown attrib (reference attrib string to non-existant pool entry). Inconsistent attrib state!');
+    }
+    return newPool.putAttrib(pair);
+  });
 };
 
 /**
@@ -1527,16 +1597,19 @@ exports.makeAttribution = function (text) {
  * @param func {function} function to be called
  */ 
 exports.eachAttribNumber = function (cs, func) {
+  var upToDollar;
   var dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
-    dollarPos = cs.length;
+    upToDollar = cs;
+  } else {
+    upToDollar = cs.substring(0, dollarPos);
   }
-  var upToDollar = cs.substring(0, dollarPos);
 
-  upToDollar.replace(/\*([0-9a-z]+)/g, function (_, a) {
+  var matches = upToDollar.match(/\*([0-9a-z]+)/g);
+  for(var i = 0, n = matches && matches.length; i < n; i++) {
+    var a = matches[i].substr(1);
     func(exports.parseNum(a));
-    return '';
-  });
+  }
 };
 
 /**
@@ -1555,24 +1628,27 @@ exports.filterAttribNumbers = function (cs, filter) {
  * does exactly the same as exports.filterAttribNumbers 
  */ 
 exports.mapAttribNumbers = function (cs, func) {
+  var upToDollar;
+  var fromDollar;
   var dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
-    dollarPos = cs.length;
+    upToDollar = cs;
+    fromDollar = "";
+  } else {
+    upToDollar = cs.substring(0, dollarPos);
+    fromDollar = cs.substring(dollarPos);
   }
-  var upToDollar = cs.substring(0, dollarPos);
 
-  var newUpToDollar = upToDollar.replace(/\*([0-9a-z]+)/g, function (s, a) {
-    var n = func(exports.parseNum(a));
-    if (n === true) {
-      return s;
-    } else if ((typeof n) === "number") {
-      return '*' + exports.numToString(n);
-    } else {
-      return '';
-    }
-  });
-
-  return newUpToDollar + cs.substring(dollarPos);
+  return upToDollar.replace(/\*([0-9a-z]+)/g, function (s, a) {
+      var n = func(exports.parseNum(a));
+      if (n === true) {
+        return s;
+      } else if ((typeof n) === "number") {
+        return '*' + exports.numToString(n);
+      } else {
+        return '';
+      }
+    }) + fromDollar;
 };
 
 /**
@@ -1682,8 +1758,7 @@ exports.isIdentity = function (cs) {
 };
 
 /**
- * returns all the values of attributes with a certain key 
- * in an Op attribs string 
+ * returns the value of attribute with a certain key if it exists in the Op attribs string
  * @param attribs {string} Attribute string of a Op
  * @param key {string} string to be seached for
  * @param pool {AttribPool} attribute pool
@@ -1693,8 +1768,7 @@ exports.opAttributeValue = function (op, key, pool) {
 };
 
 /**
- * returns all the values of attributes with a certain key 
- * in an attribs string 
+ * returns the value of attribute with a certain key if it exists in the attribs string
  * @param attribs {string} Attribute string
  * @param key {string} string to be seached for
  * @param pool {AttribPool} attribute pool
@@ -1703,8 +1777,9 @@ exports.attribsAttributeValue = function (attribs, key, pool) {
   var value = '';
   if (attribs) {
     exports.eachAttribNumber(attribs, function (n) {
-      if (pool.getAttribKey(n) == key) {
-        value = pool.getAttribValue(n);
+      var pair = pool.getAttrib(n);
+      if(pair[0] == key) {
+        value = pair[1];
       }
     });
   }
@@ -1716,47 +1791,57 @@ exports.attribsAttributeValue = function (attribs, key, pool) {
  * length oldLen. Allows to add/remove parts of it
  * @param oldLen {int} Old length
  */
-exports.builder = function (oldLen) {
-  var assem = exports.smartOpAssembler();
-  var o = exports.newOp();
-  var charBank = exports.stringAssembler();
+function Builder(oldLen) {
+  if(!(this instanceof Builder)) {
+    return new Builder(oldLen);
+  }
 
-  var self = {
-    // attribs are [[key1,value1],[key2,value2],...] or '*0*1...' (no pool needed in latter case)
-    keep: function (N, L, attribs, pool) {
-      o.opcode = '=';
-      o.attribs = (attribs && exports.makeAttribsString('=', attribs, pool)) || '';
-      o.chars = N;
-      o.lines = (L || 0);
-      assem.append(o);
-      return self;
-    },
-    keepText: function (text, attribs, pool) {
-      assem.appendOpWithText('=', text, attribs, pool);
-      return self;
-    },
-    insert: function (text, attribs, pool) {
-      assem.appendOpWithText('+', text, attribs, pool);
-      charBank.append(text);
-      return self;
-    },
-    remove: function (N, L) {
-      o.opcode = '-';
-      o.attribs = '';
-      o.chars = N;
-      o.lines = (L || 0);
-      assem.append(o);
-      return self;
-    },
-    toString: function () {
-      assem.endDocument();
-      var newLen = oldLen + assem.getLengthChange();
-      return exports.pack(oldLen, newLen, assem.toString(), charBank.toString());
-    }
-  };
+  this._assem = exports.smartOpAssembler();
+  this._o = exports.newOp();
+  this._charBank = exports.stringAssembler();
+  this._oldLen = oldLen;
+}
+exports.builder = Builder;
 
-  return self;
-};
+// attribs are [[key1,value1],[key2,value2],...] or '*0*1...' (no pool needed in latter case)
+Builder.prototype.keep = function (N, L, attribs, pool) {
+  var o = this._o;
+
+  o.opcode = '=';
+  o.attribs = (attribs && exports.makeAttribsString('=', attribs, pool)) || '';
+  o.chars = N;
+  o.lines = (L || 0);
+  this._assem.append(o);
+  return this;
+}
+
+Builder.prototype.keepText = function (text, attribs, pool) {
+  this._assem.appendOpWithText('=', text, attribs, pool);
+  return this;
+}
+
+Builder.prototype.insert = function (text, attribs, pool) {
+  this._assem.appendOpWithText('+', text, attribs, pool);
+  this._charBank.append(text);
+  return this;
+}
+
+Builder.prototype.remove = function (N, L) {
+  var o = this._o;
+
+  o.opcode = '-';
+  o.attribs = '';
+  o.chars = N;
+  o.lines = (L || 0);
+  this._assem.append(o);
+  return this;
+}
+
+Builder.prototype.toString = function () {
+  this._assem.endDocument();
+  var newLen = this._oldLen + this._assem.getLengthChange();
+  return exports.pack(this._oldLen, newLen, this._assem.toString(), this._charBank.toString());
+}
 
 exports.makeAttribsString = function (opcode, attribs, pool) {
   // makeAttribsString(opcode, '*3') or makeAttribsString(opcode, [['foo','bar']], myPool) work
@@ -1769,14 +1854,14 @@ exports.makeAttribsString = function (opcode, attribs, pool) {
       attribs = attribs.slice();
       attribs.sort();
     }
-    var result = [];
+    var result = '';
     for (var i = 0; i < attribs.length; i++) {
       var pair = attribs[i];
       if (opcode == '=' || (opcode == '+' && pair[1])) {
-        result.push('*' + exports.numToString(pool.putAttrib(pair)));
+        result += '*' + exports.numToString(pool.putAttrib(pair));
       }
     }
-    return result.join('');
+    return result;
   }
 };
 
@@ -1952,8 +2037,9 @@ exports.inverse = function (cs, lines, alines, pool) {
         attribKeys.length = 0;
         attribValues.length = 0;
         exports.eachAttribNumber(csOp.attribs, function (n) {
-          attribKeys.push(pool.getAttribKey(n));
-          attribValues.push(pool.getAttribValue(n));
+          var pair = pool.getAttrib(n);
+          attribKeys.push(pair[0]);
+          attribValues.push(pair[1]);
         });
         var undoBackToAttribs = cachedStrFunc(function (attribs) {
           var backAttribs = [];
@@ -2140,15 +2226,19 @@ exports.followAttributes = function (att1, att2, pool) {
   // both attribute sets are taken.  This operation is the "follow",
   // so a set of changes is produced that can be applied to att1
   // to produce the merged set.
-  if ((!att2) || (!pool)) return '';
-  if (!att1) return att2;
-  var atts = [];
-  att2.replace(/\*([0-9a-z]+)/g, function (_, a) {
-    atts.push(pool.getAttrib(exports.parseNum(a)));
+  if ((!att2) || (!pool)) {
     return '';
+  }
+  if (!att1) {
+    return att2;
+  }
+
+  var atts = [];
+  exports.eachAttribNumber(att2, function(n) {
+    atts.push(pool.getAttrib(n));
   });
-  att1.replace(/\*([0-9a-z]+)/g, function (_, a) {
-    var pair1 = pool.getAttrib(exports.parseNum(a));
+  exports.eachAttribNumber(att1, function(n) {
+    var pair1 = pool.getAttrib(n);
     for (var i = 0; i < atts.length; i++) {
       var pair2 = atts[i];
       if (pair1[0] == pair2[0]) {
@@ -2159,15 +2249,13 @@ exports.followAttributes = function (att1, att2, pool) {
         break;
       }
     }
-    return '';
   });
   // we've only removed attributes, so they're already sorted
-  var buf = exports.stringAssembler();
+  var s = '';
   for (var i = 0; i < atts.length; i++) {
-    buf.append('*');
-    buf.append(exports.numToString(pool.putAttrib(atts[i])));
+    s += '*' + exports.numToString(pool.putAttrib(atts[i]));
   }
-  return buf.toString();
+  return s;
 };
 
 exports.composeWithDeletions = function (cs1, cs2, pool) {
@@ -2200,13 +2288,12 @@ exports.composeWithDeletions = function (cs1, cs2, pool) {
   return exports.pack(len1, len3, newOps, bankAssem.toString());
 };
 
-// This function is 95% like _slicerZipperFunc, we just changed two lines to ensure it merges the attribs of deletions properly. 
+// This function is 95% like _slicerZipperFunc, we just changed two lines to ensure it merges the attribs of deletions properly.
 // This is necassary for correct paddiff. But to ensure these changes doesn't affect anything else, we've created a seperate function only used for paddiffs
 exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
   // attOp is the op from the sequence that is being operated on, either an
   // attribution string or the earlier of two exportss being composed.
   // pool can be null if definitely not needed.
-  //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
   if (attOp.opcode == '-') {
     exports.copyOp(attOp, opOut);
     attOp.opcode = '';
@@ -2215,7 +2302,7 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
     csOp.opcode = '';
   } else {
     switch (csOp.opcode) {
-    case '-':
+      case '-':
       {
         if (csOp.chars <= attOp.chars) {
           // delete or delete part
@@ -2245,14 +2332,14 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
         }
         break;
       }
-    case '+':
+      case '+':
       {
         // insert
         exports.copyOp(csOp, opOut);
         csOp.opcode = '';
         break;
       }
-    case '=':
+      case '=':
       {
         if (csOp.chars <= attOp.chars) {
           // keep or keep part
@@ -2278,7 +2365,7 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
         }
         break;
       }
-    case '':
+      case '':
       {
         exports.copyOp(attOp, opOut);
         attOp.opcode = '';
