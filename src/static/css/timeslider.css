@@ -102,10 +102,10 @@
   border: solid 1px #666;
 }
 .pause:before {
-  line-height:48px;  
-  padding-left:4px;
+  line-height:44px;  
+  padding-left:2px;
   font-family: fontawesome-etherpad;
-  content: "\e811";
+  content: "\e813" !important;
   font-size:24px;
   color:#666;
 }
