@@ -611,28 +611,36 @@ table#otheruserstable {
   margin-top: 4px;
   background-repeat: no-repeat;
   padding-left: 25px;
-  background-image: url("../../static/img/etherpad_lite_icons.png");
   color: #333;
   text-decoration: none;
   padding-bottom:2px;
+  display:inline;
+  padding-left:5px;
+  font-family: "Arial";
 }
-#exporthtml {
-  background-position: 0px -299px
+.exportlink{
+  font-family: "fontawesome-etherpad";
+  display:block;
+  margin:5px;
+  color:#666;
 }
-#exportplain {
-  background-position: 0px -395px
+#exporthtmla:before {
+  content: "\e826";
 }
-#exportword {
-  background-position: 0px -275px
+#exportplaina:before {
+  content: "\e802";
 }
-#exportpdf {
-  background-position: 0px -371px
+#exportworda:before {
+  content: "\e804";
 }
-#exportopen {
-  background-position: 0px -347px
+#exportpdfa:before {
+  content: "\e803";
 }
-#exportdokuwiki {
-  background-position: 0px -459px
+#exportopena:before {
+  content: "\e805";
+}
+#exportdokuwikia:before {
+  content: "\e805";
 }
 
 /* hidden element */
@@ -692,58 +700,58 @@ table#otheruserstable {
   color: #666;
 }
 .buttonicon-bold:before {
-  content: "\e803";
+  content: "\e81c";
 }
 .buttonicon-italic:before {
-  content: "\e804";
+  content: "\e81d";
 }
 .buttonicon-underline:before {
-  content: "\e80a";
-}
-.buttonicon-strikethrough:before {
-  content: "\e809";
-}
-.buttonicon-insertorderedlist:before {
-  content: "\e808";
-}
-.buttonicon-insertunorderedlist:before {
-  content: "\e807";
-}
-.buttonicon-indent:before {
-  content: "\e806";
-}
-.buttonicon-outdent:before {
-  content: "\e805";
-}
-.buttonicon-undo:before {
-  content: "\e80c";
-}
-.buttonicon-redo:before {
-  content: "\e80b";
-}
-.buttonicon-clearauthorship:before {
-  content: "\e80e";
-}
-.buttonicon-settings:before {
-  content: "\e802";
-}
-.buttonicon-import_export:before {
-  content: "\e816";
-}
-.buttonicon-embed:before {
-  content: "\e815";
-}
-.buttonicon-history:before {
-  content: "\e80d";
-}
-.buttonicon-chat:before {
   content: "\e817";
 }
+.buttonicon-strikethrough:before {
+  content: "\e818";
+}
+.buttonicon-insertorderedlist:before {
+  content: "\e816";
+}
+.buttonicon-insertunorderedlist:before {
+  content: "\e815";
+}
+.buttonicon-indent:before {
+  content: "\e814";
+}
+.buttonicon-outdent:before {
+  content: "\e813";
+}
+.buttonicon-undo:before {
+  content: "\e823";
+}
+.buttonicon-redo:before {
+  content: "\e824";
+}
+.buttonicon-clearauthorship:before {
+  content: "\e80d";
+}
+.buttonicon-settings:before {
+  content: "\e833";
+}
+.buttonicon-import_export:before {
+  content: "\e834";
+}
+.buttonicon-embed:before {
+  content: "\e827";
+}
+.buttonicon-history:before {
+  content: "\e837";
+}
+.buttonicon-chat:before {
+  content: "\e829";
+}
 .buttonicon-showusers:before {
-  content: "\e800";
+  content: "\e808";
 }
 .buttonicon-savedRevision:before {
-  content: "\e801";
+  content: "\e835";
 }
 #focusprotector {
   z-index: 100;
