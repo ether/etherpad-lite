@@ -191,7 +191,7 @@
                     <div class="importformdiv" id="importformsubmitdiv">
                         <span class="nowrap">
                             <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput">
-                            <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top">
+                            <div alt="" id="importstatusball" class="loadingAnimation" align="top"></div>
                         </span>
                     </div>
                 </form>
@@ -308,7 +308,7 @@
               <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
             </div>
             <div id="chattext" class="authorColors">
-                <img alt="loading.." id="chatloadmessagesball" class="chatloadmessages" src="../static/img/loading.gif" align="top">
+                <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
                 <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>
             </div>
             <div id="chatinputbox">
