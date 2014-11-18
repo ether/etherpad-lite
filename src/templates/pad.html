@@ -42,7 +42,11 @@
         <% e.begin_block("styles"); %>
         <link href="../static/css/fontawesome-etherpad.css" rel="stylesheet">
         <link href="../static/css/pad.css" rel="stylesheet">
+
+        <% e.begin_block("customStyles"); %>
         <link href="../static/custom/pad.css" rel="stylesheet">
+        <% e.end_block(); %>
+
         <style title="dynamicsyntax"></style>
         <% e.end_block(); %>
 
@@ -347,7 +351,9 @@
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
 
+        <% e.begin_block("customScripts"); %>
         <script type="text/javascript" src="../static/custom/pad.js"></script>
+        <% e.end_block(); %>
 
         <!-- Bootstrap page -->
         <script type="text/javascript">
