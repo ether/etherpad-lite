@@ -108,6 +108,7 @@
   content: "\e813" !important;
   font-size:24px;
   color:#666;
+  padding-left:0 !important;
 }
 #leftstar,
 #rightstar,
@@ -133,7 +134,7 @@ stepper:active{
 }
 
 #leftstep {
-  right: 36px;
+  right: 38px;
   top: 20px;
   width: 25px;
 }
@@ -147,7 +148,7 @@ stepper:active{
 }
 
 #rightstep {
-  right: 10px;
+  right: 12px;
   top: 20px;
   width: 25px;
 }
