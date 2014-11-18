@@ -637,10 +637,13 @@ table#otheruserstable {
 
 /* hidden element */
 #importstatusball,
-#importarrow,
 #importmessagesuccess,
 #importmessageabiword {
   display: none;
+}
+
+.throbbold{
+  font-weight:bold;
 }
 
 #importmessageabiword {
