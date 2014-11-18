@@ -22,7 +22,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 exports.socketio = function (hook_name, args, cb) {
   var io = args.io.of("/settings");
   io.on('connection', function (socket) {
-    if (!socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
+    console.warn ("THIS IS BROKEN");
+
+    if (!socket.handshake.session || !socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
 
     socket.on("load", function (query) {
       fs.readFile('settings.json', 'utf8', function (err,data) {
