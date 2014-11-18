@@ -22,9 +22,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 exports.socketio = function (hook_name, args, cb) {
   var io = args.io.of("/settings");
   io.on('connection', function (socket) {
-    console.warn ("THIS IS BROKEN");
 
-    if (!socket.handshake.session || !socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
+    console.warn ("The middleware now handles auth but I'm not convinced SocketIO is being responsible enough here so this needs reviewing before hitting master");
+    // if (!socket.handshake.session || !socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
 
     socket.on("load", function (query) {
       fs.readFile('settings.json', 'utf8', function (err,data) {
