@@ -66,7 +66,12 @@ exports.getAvailablePlugins = function(maxCacheAge, cb) {
     if(exports.availablePlugins && maxCacheAge && Math.round(+new Date/1000)-cacheTimestamp <= maxCacheAge) {
       return cb && cb(null, exports.availablePlugins)
     }
-    plugins = JSON.parse(plugins);
+    try {
+      plugins = JSON.parse(plugins);
+    } catch (err) {
+      console.error('error parsing plugins.json:', err);
+      plugins = [];
+    }
     exports.availablePlugins = plugins;
     cacheTimestamp = Math.round(+new Date/1000);
     cb && cb(null, plugins)
