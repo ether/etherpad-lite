@@ -177,15 +177,15 @@ lists all existing groups
 ### Author
 These authors are bound to the attributes the users choose (color and name). 
 
-#### createAuthor([name])
- * API >= 1
+#### createAuthor([name], [color])
+ * API >= 1, color since 1.4.12
 
-creates a new author
+creates a new author with the given name and color in `#f20f0f` format
 
 *Example returns:*
   * `{code: 0, message:"ok", data: {authorID: "a.s8oes9dhwrvt0zif"}}`
 
-#### createAuthorIfNotExistsFor(authorMapper [, name])
+#### createAuthorIfNotExistsFor(authorMapper [, name[, color]])
  * API >= 1
 
 this functions helps you to map your application author ids to Etherpad author ids 

@@ -61,9 +61,10 @@ exports.getAuthor4Token = function (token, callback)
  * Returns the AuthorID for a mapper. 
  * @param {String} token The mapper
  * @param {String} name The name of the author (optional)
+ * @param {String} color The color of the author (optional)
  * @param {Function} callback callback (err, author) 
  */
-exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
+exports.createAuthorIfNotExistsFor = function (authorMapper, name, color, callback)
 {
   mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
   {
@@ -72,6 +73,8 @@ exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
     //set the name of this author
     if(name)
       exports.setAuthorName(author.authorID, name);
+    if(color)
+      exports.setAuthorColorId(author.authorID, color);
       
     //return the authorID
     callback(null, author);
@@ -95,7 +98,7 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
     //there is no author with this mapper, so create one
     if(author == null)
     {
-      exports.createAuthor(null, function(err, author)
+      exports.createAuthor(null, null, function(err, author)
       {
         if(ERR(err, callback)) return;
         
@@ -119,16 +122,21 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
 }
 
 /**
- * Internal function that creates the database entry for an author 
- * @param {String} name The name of the author 
+ * Internal function that creates the database entry for an author
+ * @param {String} name The name of the author
+ * @param {String} color The color of the author
  */
-exports.createAuthor = function(name, callback)
+exports.createAuthor = function(name, color, callback)
 {
   //create the new author name
   var author = "a." + randomString(16);
         
   //create the globalAuthors db entry
-  var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
+  var authorObj = {
+    "colorId" : color || Math.floor(Math.random()*32),
+    "name": name,
+    "timestamp": new Date().getTime()
+  };
         
   //set the global author db entry
   db.set("globalAuthor:" + author, authorObj);
