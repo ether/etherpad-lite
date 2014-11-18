@@ -10,7 +10,8 @@ $(document).ready(function () {
     resource = baseURL.substring(1) + "socket.io";
 
   //connect
-  socket = io.connect(url, {resource : resource}).of("/pluginfw/installer");
+  var room = url + "pluginfw/installer";
+  socket = io.connect(room, {resource : resource});
 
   function search(searchTerm, limit) {
     if(search.searchTerm != searchTerm) {
