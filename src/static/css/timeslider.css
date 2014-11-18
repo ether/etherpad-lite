@@ -84,6 +84,7 @@
   height:50px;
   background: background-linear-gradient( #F7F7F7, #F1F1F1 80%) repeat scroll 0 0 transparent;
   border-radius:24px;
+  cursor:hand;
 }
 #playpause_button_icon:before {
   line-height:44px;  
