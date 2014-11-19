@@ -1141,3 +1141,42 @@ input[type=checkbox] {
   text-shadow: none;
 }
 /* End of gritter stuff */
+
+@font-face {
+  font-family: "fontawesome-etherpad";
+  src:url("../font/fontawesome-etherpad.eot");
+  src:url("../font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
+    url("../font/fontawesome-etherpad.woff") format("woff"),
+    url("../font/fontawesome-etherpad.ttf") format("truetype"),
+    url("../font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+[data-icon]:before {
+  font-family: "fontawesome-etherpad" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "fontawesome-etherpad" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
