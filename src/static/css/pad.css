@@ -230,6 +230,8 @@ li[data-key=showusers] > a #online_count {
   font-family: "fontawesome-etherpad";
   font-size:24px;
   z-index:150;
+  width:25px;
+  height:25px;
 }
 
 .loadingAnimation:before{
