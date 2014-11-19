@@ -90,7 +90,7 @@
   line-height:44px;  
   padding-left:2px;
   font-family: fontawesome-etherpad;
-  content: "\e810";
+  content: "\e82c";
   font-size:24px;
   color:#666;
 }
@@ -105,7 +105,7 @@
   line-height:44px;  
   padding-left:2px;
   font-family: fontawesome-etherpad;
-  content: "\e813" !important;
+  content: "\e82e" !important;
   font-size:24px;
   color:#666;
   padding-left:0 !important;
@@ -139,11 +139,11 @@ stepper:active{
   width: 25px;
 }
 #leftstep:before{
-  content: '\e811';
+  content: '\e821';
   vertical-align:middle;
 }
 #rightstep:before{
-  content: "\e812";
+  content: "\e822";
   vertical-align:middle;
 }
 
