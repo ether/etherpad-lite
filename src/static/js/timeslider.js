@@ -59,10 +59,10 @@ function init() {
     //create the url
     var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
     //find out in which subfolder we are
-    var resource = exports.baseURL.substring(1) + 'socket.io';
+    var path = exports.baseURL + 'socket.io';
     
     //build up the socket io connection
-    socket = io.connect(url, {resource: resource});
+    socket = io.connect(url, {path: path});
 
     //send the ready message once we're connected
     socket.on('connect', function()
