@@ -40,9 +40,12 @@
         <link rel="shortcut icon" href="<%=settings.faviconPad%>">
 
         <% e.begin_block("styles"); %>
-        <link href="../static/css/fontawesome-etherpad.css" rel="stylesheet">
         <link href="../static/css/pad.css" rel="stylesheet">
+
+        <% e.begin_block("customStyles"); %>
         <link href="../static/custom/pad.css" rel="stylesheet">
+        <% e.end_block(); %>
+
         <style title="dynamicsyntax"></style>
         <% e.end_block(); %>
 
@@ -191,8 +194,7 @@
                     <div class="importformdiv" id="importformsubmitdiv">
                         <span class="nowrap">
                             <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput">
-                            <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top">
-                            <img alt="" id="importarrow" src="../static/img/leftarrow.png" align="top">
+                            <div alt="" id="importstatusball" class="loadingAnimation" align="top"></div>
                         </span>
                     </div>
                 </form>
@@ -218,7 +220,7 @@
                 </div>
                 <div class="reconnecting">
                   <h1 data-l10n-id="pad.modals.reconnecting"></h1>
-                  <p><img alt="" border="0" src="../static/img/connectingbar.gif" /></p>
+                  <p class='loadingAnimation'></p>
                 </div>
                 <div class="userdup">
                   <h1 data-l10n-id="pad.modals.userdup"></h1>
@@ -309,7 +311,7 @@
               <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
             </div>
             <div id="chattext" class="authorColors">
-                <img alt="loading.." id="chatloadmessagesball" class="chatloadmessages" src="../static/img/loading.gif" align="top">
+                <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
                 <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>
             </div>
             <div id="chatinputbox">
@@ -347,7 +349,9 @@
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
 
+        <% e.begin_block("customScripts"); %>
         <script type="text/javascript" src="../static/custom/pad.js"></script>
+        <% e.end_block(); %>
 
         <!-- Bootstrap page -->
         <script type="text/javascript">
