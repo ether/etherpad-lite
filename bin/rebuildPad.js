@@ -38,7 +38,7 @@ async.series([
      // Get references to the original pad and to a newly created pad
      // HACK: This is a standalone script, so we want to write everything
      // out to the database immediately.  The only problem with this is
-     // that a driver (like the mysql driver) hardcodes these values.
+     // that a driver (like the mysql driver) can hardcode these values.
      db.db.db.settings = {cache: 0, writeInterval: 0, json: true};
      PadManager = require('../src/node/db/PadManager');
      PadManager.getPad(padId, function(err, _pad)  {
@@ -69,32 +69,22 @@ async.series([
     for(var i = 1; i <= newRevHead; i++) {
       db.db.get("pad:" + padId + ":revs:" + i, function(err, rev) {
         var author = rev.meta.author;
-        var timestamp = rev.meta.timestamp;
         var changeset = rev.changeset;
- 
-        var newAText = Changeset.applyToAText(changeset, newPad.atext, newPad.pool);
-        Changeset.copyAText(newAText, newPad.atext);
-
         var newRev = ++newPad.head;
+        var newRevId = "pad:" + newPad.id + ":revs:" + newRev;
+        var newAtext = Changeset.applyToAText(changeset, newPad.atext, newPad.pool);
 
-        var newRevData = {};
-        newRevData.changeset = changeset;
-        newRevData.meta = {};
-        newRevData.meta.author = author;
-        newRevData.meta.timestamp = timestamp;
-
+        AuthorManager.addPad(author, newPad.id);
         newPad.pool.putAttrib(['author', author || '']);
 
-        if(newRev % 100 == 0)
-        {
-          newRevData.meta.atext = newPad.atext;
+        Changeset.copyAText(newAtext, newPad.atext);
+
+        db.db.set(newRevId, rev);
+        if(newRev % 100 == 0) {
+          db.db.setSub(newRevId, ["meta", "atext"], newPad.atext)
         }
 
-        db.db.set("pad:"+newPad.id+":revs:"+newRev, newRevData);
         console.log("Created: Revision: pad:" + newPad.id + ":revs:" + newRev);
-
-        if(author)
-          AuthorManager.addPad(author, newPad.id);
 
         if (newRev == newRevHead) {
           callback();
