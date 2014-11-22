@@ -24,7 +24,7 @@
 // requires: plugins
 // requires: undefined
 
-var KERNEL_SOURCE = '../static/js/require-kernel.js';
+var KERNEL_SOURCE = '../static/js/browserify.js';
 
 Ace2Editor.registry = {
   nextId: 1

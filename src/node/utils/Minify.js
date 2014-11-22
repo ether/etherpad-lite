@@ -28,7 +28,7 @@ var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-var RequireKernel = require('require-kernel');
+var RequireKernel = require('browserify');
 var urlutil = require('url');
 
 var ROOT_DIR = path.normalize(__dirname + "/../../static/");
@@ -252,7 +252,7 @@ function getAceFile(callback) {
       founds = [];
     }
     // Always include the require kernel.
-    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
+    founds.push('$$INCLUDE_JS("../static/js/browserify.js")');
 
     data += ';\n';
     data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
@@ -297,7 +297,7 @@ function statFile(filename, callback, dirStatLimit) {
     lastModifiedDateOfEverything(function (error, date) {
       callback(error, date, !error);
     });
-  } else if (filename == 'js/require-kernel.js') {
+  } else if (filename == 'js/browserify.js') {
     callback(null, requireLastModified(), true);
   } else {
     fs.stat(ROOT_DIR + filename, function (error, stats) {
@@ -392,7 +392,7 @@ function getFileCompressed(filename, contentType, callback) {
 function getFile(filename, callback) {
   if (filename == 'js/ace.js') {
     getAceFile(callback);
-  } else if (filename == 'js/require-kernel.js') {
+  } else if (filename == 'js/browserify.js') {
     callback(undefined, requireDefinition());
   } else {
     fs.readFile(ROOT_DIR + filename, callback);
