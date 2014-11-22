@@ -28,7 +28,6 @@ $ = jQuery = require('./rjquery').$;
 _ = require("./underscore");
 
 var isNodeText = Ace2Common.isNodeText,
-  browser = $.browser,
   getAssoc = Ace2Common.getAssoc,
   setAssoc = Ace2Common.setAssoc,
   isTextNode = Ace2Common.isTextNode,
@@ -52,6 +51,7 @@ function Ace2Inner(){
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
+  var browser = require('./browser');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
@@ -3722,7 +3722,6 @@ function Ace2Inner(){
         }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "z" && (evt.metaKey || evt.ctrlKey) && !evt.altKey)
         {
-          // cmd-Z (undo)
           fastIncorp(6);
           evt.preventDefault();
           if (evt.shiftKey)
@@ -3857,7 +3856,7 @@ function Ace2Inner(){
         /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
            We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
            presses and holds the arrow key ..  Sorry if this is ugly, blame Chrome's weird handling of viewports after new content is added*/
-        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && $.browser.chrome){
+        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && browser.chrome){
           var viewport = getViewPortTopBottom();
           var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
           var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214

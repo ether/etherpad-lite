@@ -43,7 +43,6 @@ var padsavedrevs = require('./pad_savedrevs');
 var paduserlist = require('./pad_userlist').paduserlist;
 var padutils = require('./pad_utils').padutils;
 var colorutils = require('./colorutils').colorutils;
-
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
@@ -453,13 +452,13 @@ var pad = {
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
+    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0)))
     {
       document.domain = document.domain; // for comet
     }
 
     // for IE
-    if ($.browser.msie)
+    if (browser.msie)
     {
       try
       {
