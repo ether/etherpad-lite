@@ -93,6 +93,9 @@ exports.handleConnect = function(client)
  */
 exports.kickSessionsFromPad = function(padID)
 {
+  if(typeof socketio.sockets['clients'] !== 'function')
+   return;
+
   //skip if there is nobody on this pad
   if(socketio.sockets.clients(padID).length == 0)
     return;
