@@ -3722,6 +3722,7 @@ function Ace2Inner(){
         }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "z" && (evt.metaKey || evt.ctrlKey) && !evt.altKey)
         {
+          // cmd-Z (undo)
           fastIncorp(6);
           evt.preventDefault();
           if (evt.shiftKey)
