@@ -94,6 +94,9 @@ exports.handleConnect = function(client)
  */
 exports.kickSessionsFromPad = function(padID)
 {
+  if(typeof socketio.sockets['clients'] !== 'function')
+   return;
+
   //skip if there is nobody on this pad
   if(socketio.sockets.clients(padID).length == 0)
     return;
@@ -496,14 +499,19 @@ function handleSuggestUserName(client, message)
     return;
   }
 
-  var padId = sessioninfos[client.id].padId,
-      clients = socketio.sockets.clients(padId);
+  var padId = sessioninfos[client.id].padId;
+  var roomClients = [], room = socketio.sockets.adapter.rooms[padId];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
 
   //search the author and send him this message
-  for(var i = 0; i < clients.length; i++) {
-    var session = sessioninfos[clients[i].id];
+  for(var i = 0; i < roomClients.length; i++) {
+    var session = sessioninfos[roomClients[i].id];
     if(session && session.author == message.data.payload.unnamedId) {
-      clients[i].json.send(message);
+      roomClients[i].json.send(message);
       break;
     }
   }

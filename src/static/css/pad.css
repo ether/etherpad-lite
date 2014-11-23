@@ -224,6 +224,41 @@ li[data-key=showusers] > a #online_count {
   padding:10px;
 }
 
+.loadingAnimation{
+  -webkit-animation: loadingAnimation 2s infinite linear;
+  animation: loadingAnimation 2s infinite linear;
+  font-family: "fontawesome-etherpad";
+  font-size:24px;
+  z-index:150;
+  width:25px;
+  height:25px;
+}
+
+.loadingAnimation:before{
+  content: "\e80e";
+}
+
+@-webkit-keyframes loadingAnimation {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes loadingAnimation {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+
 #editorcontainerbox {
   position: absolute;
   bottom: 0;
@@ -611,36 +646,47 @@ table#otheruserstable {
   margin-top: 4px;
   background-repeat: no-repeat;
   padding-left: 25px;
-  background-image: url("../../static/img/etherpad_lite_icons.png");
   color: #333;
   text-decoration: none;
   padding-bottom:2px;
+  display:inline;
+  padding-left:5px;
+  font-family: "Arial";
 }
-#exporthtml {
-  background-position: 0px -299px
+.exportlink{
+  font-family: "fontawesome-etherpad";
+  display:block;
+  margin:5px;
+  color:#666;
 }
-#exportplain {
-  background-position: 0px -395px
+#exporthtmla:before {
+  content: "\e826";
 }
-#exportword {
-  background-position: 0px -275px
+#exportplaina:before {
+  content: "\e802";
 }
-#exportpdf {
-  background-position: 0px -371px
+#exportworda:before {
+  content: "\e804";
 }
-#exportopen {
-  background-position: 0px -347px
+#exportpdfa:before {
+  content: "\e803";
 }
-#exportdokuwiki {
-  background-position: 0px -459px
+#exportopena:before {
+  content: "\e805";
+}
+#exportdokuwikia:before {
+  content: "\e805";
 }
 
 /* hidden element */
 #importstatusball,
-#importarrow,
 #importmessagesuccess,
 #importmessageabiword {
   display: none;
+}
+
+.throbbold{
+  font-weight:bold;
 }
 
 #importmessageabiword {
@@ -651,9 +697,6 @@ table#otheruserstable {
 #importsubmitinput {
   margin-top: 12px;
   padding:2px 4px 2px 4px;
-}
-#importstatusball {
-  height: 50px
 }
 #chatthrob {
   display: none;
@@ -689,58 +732,58 @@ table#otheruserstable {
   color: #666;
 }
 .buttonicon-bold:before {
-  content: "\e803";
+  content: "\e81c";
 }
 .buttonicon-italic:before {
-  content: "\e804";
+  content: "\e81d";
 }
 .buttonicon-underline:before {
-  content: "\e80a";
-}
-.buttonicon-strikethrough:before {
-  content: "\e809";
-}
-.buttonicon-insertorderedlist:before {
-  content: "\e808";
-}
-.buttonicon-insertunorderedlist:before {
-  content: "\e807";
-}
-.buttonicon-indent:before {
-  content: "\e806";
-}
-.buttonicon-outdent:before {
-  content: "\e805";
-}
-.buttonicon-undo:before {
-  content: "\e80c";
-}
-.buttonicon-redo:before {
-  content: "\e80b";
-}
-.buttonicon-clearauthorship:before {
-  content: "\e80e";
-}
-.buttonicon-settings:before {
-  content: "\e802";
-}
-.buttonicon-import_export:before {
-  content: "\e816";
-}
-.buttonicon-embed:before {
-  content: "\e815";
-}
-.buttonicon-history:before {
-  content: "\e80d";
-}
-.buttonicon-chat:before {
   content: "\e817";
 }
+.buttonicon-strikethrough:before {
+  content: "\e818";
+}
+.buttonicon-insertorderedlist:before {
+  content: "\e816";
+}
+.buttonicon-insertunorderedlist:before {
+  content: "\e815";
+}
+.buttonicon-indent:before {
+  content: "\e814";
+}
+.buttonicon-outdent:before {
+  content: "\e813";
+}
+.buttonicon-undo:before {
+  content: "\e823";
+}
+.buttonicon-redo:before {
+  content: "\e824";
+}
+.buttonicon-clearauthorship:before {
+  content: "\e80d";
+}
+.buttonicon-settings:before {
+  content: "\e833";
+}
+.buttonicon-import_export:before {
+  content: "\e834";
+}
+.buttonicon-embed:before {
+  content: "\e827";
+}
+.buttonicon-history:before {
+  content: "\e837";
+}
+.buttonicon-chat:before {
+  content: "\e829";
+}
 .buttonicon-showusers:before {
-  content: "\e800";
+  content: "\e808";
 }
 .buttonicon-savedRevision:before {
-  content: "\e801";
+  content: "\e835";
 }
 #focusprotector {
   z-index: 100;
@@ -1096,5 +1139,43 @@ input[type=checkbox] {
 .gritter-light .gritter-title {
   text-shadow: none;
 }
-
 /* End of gritter stuff */
+
+@font-face {
+  font-family: "fontawesome-etherpad";
+  src:url("../font/fontawesome-etherpad.eot");
+  src:url("../font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
+    url("../font/fontawesome-etherpad.woff") format("woff"),
+    url("../font/fontawesome-etherpad.ttf") format("truetype"),
+    url("../font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+[data-icon]:before {
+  font-family: "fontawesome-etherpad" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "fontawesome-etherpad" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+

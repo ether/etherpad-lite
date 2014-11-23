@@ -379,16 +379,16 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       {
         var self = this;
 
-        $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
+        // $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
         $(self).mouseup(function(evt2)
         {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
           $(self).unbind('mouseup');
           BroadcastSlider.playpause();
         });
         $(document).mouseup(function(evt2)
         {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
           $(document).unbind('mouseup');
         });
       });
