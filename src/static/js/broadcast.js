@@ -66,7 +66,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   }
 
   // for IE
-  if ($.browser.msie)
+  if (browser.msie)
   {
     try
     {
