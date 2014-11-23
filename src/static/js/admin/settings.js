@@ -9,7 +9,8 @@ $(document).ready(function () {
     resource = baseURL.substring(1) + "socket.io";
 
   //connect
-  socket = io.connect(url, {resource : resource}).of("/settings");
+  var room = url + "settings";
+  socket = io.connect(room, {resource : resource});
 
   socket.on('settings', function (settings) {
 
