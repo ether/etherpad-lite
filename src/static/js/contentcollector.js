@@ -54,6 +54,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     },
     nodeNumChildren: function(n)
     {
+console.log("childNodes", n.childNodes);
       return n.childNodes.length;
     },
     nodeChild: function(n, i)
@@ -124,10 +125,13 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       },
       appendText: function(txt, attrString)
       {
+console.log("appendText", txt);
+console.log("attrString", attrString);
         textArray[textArray.length - 1] += txt;
         //dmesg(txt+" / "+attrString);
         op.attribs = attrString;
         op.chars = txt.length;
+console.log("op", op);
         attribsBuilder.append(op);
       },
       textLines: function()
@@ -218,12 +222,15 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   }
   cc.incrementAttrib = function(state, attribName)
   {
+    console.log("incrementAttrib");
     if (!state.attribs[attribName])
     {
       state.attribs[attribName] = 1;
+      console.log("incAttrib nope");
     }
     else
     {
+      console.log("incAttrib yep");
       state.attribs[attribName]++;
     }
     _recalcAttribString(state);
@@ -305,6 +312,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
 
   function _produceLineAttributesMarker(state)
   {
+    console.log("STEP 3.1", state.lineAttributes);
     // TODO: This has to go to AttributeManager.
     var attributes = [
       ['lmkr', '1'],
@@ -314,19 +322,25 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         return [key, value];
       })
     );
-    
+    console.log("STEP 3.2", state.lineAttributes);
+    console.log("attributes", attributes);
+    console.log("apool", apool);
+// CAKE I NEED TO REMOVE OLD ATTRIBUTES HERE!
     lines.appendText('*', Changeset.makeAttribsString('+', attributes , apool));
   }
   cc.startNewLine = function(state)
   {
     if (state)
     {
+      console.log("startNewLine STEP 2a", state.lineAttributes);
       var atBeginningOfLine = lines.textOfLine(lines.length() - 1).length == 0;
       if (atBeginningOfLine && !_.isEmpty(state.lineAttributes))
       {
         _produceLineAttributesMarker(state);
+      console.log("startNewLine STEP 2b", state.lineAttributes);
       }
     }
+    console.log("START NEW");
     lines.startNew();
   }
   cc.notifySelection = function(sel)
@@ -346,8 +360,12 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   };
   cc.collectContent = function(node, state)
   {
+    console.log("NODE 2", node);
+    console.log("State 2", state);
     if (!state)
     {
+
+      console.log("No state on ", node);
       state = {
         flags: { /*name -> nesting counter*/
         },
@@ -371,11 +389,10 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     if (isBlock) _ensureColumnZero(state);
     var startLine = lines.length() - 1;
     _reachBlockPoint(node, 0, state);
-    if (dom.isNodeText(node))
-    {
+    if (dom.isNodeText(node)){
       var txt = dom.nodeValue(node);
       var tname = dom.nodeAttr(node.parentNode,"name");
-
+// never calls this hook..
       var txtFromHook = hooks.callAll('collectContentLineText', {
         cc: this,
         state: state,
@@ -452,6 +469,35 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
+
+      // Below seems a bit abrupt but it's required, I dunno if I think it's a great idea though..
+      delete state.lineAttributes.pastedImage;
+      delete state.lineAttributes.imageWidth;
+      delete state.lineAttributes.imageHeight;
+
+top.console.log("tname", tname);
+
+      if (tname == "img")
+      {
+        // Are the width and height values set?
+        var width = /(?:^| )width=\"([0-9]*)/.exec(node.outerHTML);
+        var height = /(?:^| )height=\"([0-9]*)/.exec(node.outerHTML);
+
+        // If they are then add them as line Attributes
+        if(width && width[1]) state.lineAttributes.imageWidth = width[1];
+        if(height && height[1]) state.lineAttributes.imageHeight = height[1];
+        state.lineAttributes.pastedImage = node.outerHTML;
+//        console.log("CONTENT COLLETOR STATE", state);
+//        console.log("CONTENT COLLECTOR WIDTH", state.lineAttributes.imageWidth);
+//        console.log("CONTENT COLLECTOR HEIGHT", state.lineAttributes.imageHeight);
+//        console.log("CONTENT COLLETOR STATE", state.lineAttributes);
+        isEmpty = false;
+        var collectStyles = true;
+//       _recalcAttribString(state);
+        _produceLineAttributesMarker(state);
+//        cc.startNewLine(state);
+      }
+
       if (tname == "br")
       {        
         this.breakLine = true;
@@ -465,7 +511,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           cls: null
         });       
         var startNewLine= (typeof(induceLineBreak)=='object'&&induceLineBreak.length==0)?true:induceLineBreak[0];
-        if(startNewLine){
+        if(startNewLine && tname != "img"){
           cc.startNewLine(state);
         }
       }
@@ -476,7 +522,10 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
       else if (!isEmpty)
       {
         var styl = dom.nodeAttr(node, "style");
+styl = "width:500px;height:500px";
+console.log("styl", styl);
         var cls = dom.nodeProp(node, "className");
+console.log("cls", cls);
 
         var isPre = (tname == "pre");
         if ((!isPre) && browser.safari)
@@ -495,6 +544,8 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
             styl: styl,
             cls: cls
           });
+// cc.doAttrib(state, "imageHeight:500");
+
           if (tname == "b" || (styl && /\bfont-weight:\s*bold\b/i.exec(styl)) || tname == "strong")
           {
             cc.doAttrib(state, "bold");
@@ -542,9 +593,12 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         }
 
         var nc = dom.nodeNumChildren(node);
+console.log("node", node);
+console.log("nc", nc);
         for (var i = 0; i < nc; i++)
         {
           var c = dom.nodeChild(node, i);
+ console.log("state still", state, c); // never gets here
           cc.collectContent(c, state);
         }
 
@@ -558,6 +612,9 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
             cls: cls
           });
         }
+console.log("state now", state);
+console.log("styl", styl);
+console.log("cls now", cls);
 
         if (isPre) cc.decrementFlag(state, 'preMode');
         if (state.localAttribs)
@@ -616,13 +673,13 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   };
   // each returns [line, char] or [-1,-1]
   var getSelectionStart = function()
-    {
-      return selStart;
-      };
+  {
+    return selStart;
+  };
   var getSelectionEnd = function()
-    {
-      return selEnd;
-      };
+  {
+    return selEnd;
+  };
 
   // returns array of strings for lines found, last entry will be "" if
   // last line is complete (i.e. if a following span should be on a new line).
