@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-var jsdom = require('jsdom-nocontextifiy').jsdom;
+var jsdom = require('jsdom').jsdom;
 var log4js = require('log4js');
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
+var cheerio = require('cheerio');
 
 function setPadHTML(pad, html, callback)
 {
   var apiLogger = log4js.getLogger("ImportHtml");
 
+  console.error("attempting to jsdom this bitch");
   // Parse the incoming HTML with jsdom
+
   try{
     var doc = jsdom(html.replace(/>\n+</g, '><'));
   }catch(e){
     apiLogger.warn("Error importing, possibly caused by malformed HTML");
     var doc = jsdom("<html><body><div>Error during import, possibly malformed HTML</div></body></html>");
   }
+  console.error("doc", doc);
+
+  var cheerio = require('cheerio')
+  doc = cheerio.load(html);
+  console.error("doc", doc);
+  console.warn("doc parse HTML", doc.parseHTML());
 
   apiLogger.debug('html:');
   apiLogger.debug(html);
@@ -45,6 +54,8 @@ function setPadHTML(pad, html, callback)
   }
 
   var result = cc.finish();
+
+  console.error("result", result);
 
   apiLogger.debug('Lines:');
   var i;
