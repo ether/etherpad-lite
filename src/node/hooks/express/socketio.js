@@ -1,16 +1,9 @@
 var log4js = require('log4js');
 var settings = require('../../utils/Settings');
+var socketio = require('socket.io');
 var socketIORouter = require("../../handler/SocketIORouter");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
-
-// there shouldn't be a browser that isn't compatible to all 
-// transports in this list at once
-// e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-
-var socketio = require('socket.io')({
-  transports: settings.socketTransportProtocols
-});
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
 
@@ -18,7 +11,12 @@ var connect = require('connect');
  
 exports.expressCreateServer = function (hook_name, args, cb) {
   //init socket.io and redirect all requests to the MessageHandler
-  var io = socketio.listen(args.server);
+  // there shouldn't be a browser that isn't compatible to all
+  // transports in this list at once
+  // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
+  var io = socketio({
+    transports: settings.socketTransportProtocols
+  }).listen(args.server);
 
   /* Require an express session cookie to be present, and load the
    * session. See http://www.danielbaulig.de/socket-ioexpress for more
