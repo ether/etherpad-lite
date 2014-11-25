@@ -35,32 +35,10 @@ var padimpexp = (function()
 
   function fileInputUpdated()
   {
+    $('#importsubmitinput').addClass('throbbold');
     $('#importformfilediv').addClass('importformenabled');
     $('#importsubmitinput').removeAttr('disabled');
-    $('#importmessagefail').fadeOut("fast");
-    $('#importarrow').show();
-    $('#importarrow').animate(
-    {
-      paddingLeft: "0px"
-    }, 500).animate(
-    {
-      paddingLeft: "10px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "0px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "10px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "0px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "10px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "0px"
-    }, 150, 'swing');
+    $('#importmessagefail').fadeOut('fast');
   }
 
   function fileInputSubmit()
@@ -77,6 +55,7 @@ var padimpexp = (function()
         }
         currentImportTimer = null;
         importFailed("Request timed out.");
+        importDone();
       }, 25000); // time out after some number of seconds
       $('#importsubmitinput').attr(
       {

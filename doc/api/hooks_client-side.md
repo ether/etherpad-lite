@@ -10,6 +10,22 @@ nothing
 
 This hook proxies the functionality of jQuery's `$(document).ready` event.
 
+## aceDomLinePreProcessLineAttributes
+Called from: src/static/js/domline.js
+
+Things in context:
+
+1. domline - The current DOM line being processed
+2. cls - The class of the current block element (useful for styling)
+
+This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.  This hook is run BEFORE the numbered and ordered lists logic is applied.
+
+The return value of this hook should have the following structure:
+
+`{ preHtml: String, postHtml: String, processedMarker: Boolean }`
+
+The preHtml and postHtml values will be added to the HTML display of the element, and if processedMarker is true, the engine won't try to process it any more.
+
 ## aceDomLineProcessLineAttributes
 Called from: src/static/js/domline.js
 
@@ -18,7 +34,7 @@ Things in context:
 1. domline - The current DOM line being processed
 2. cls - The class of the current block element (useful for styling)
 
-This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.
+This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.  This hook is run AFTER the ordered and numbered lists logic is applied.
 
 The return value of this hook should have the following structure:
 
@@ -126,8 +142,14 @@ Called from: src/static/js/pad.js
 Things in context:
 
 1. ace - the ace object that is applied to this editor.
+2. pad - the pad object of the current pad.
 
 There doesn't appear to be any example available of this particular hook being used, but it gets fired after the editor is all set up.
+
+## postTimesliderInit
+Called from: src/static/js/timeslider.js
+
+There doesn't appear to be any example available of this particular hook being used, but it gets fired after the timeslider is all set up.
 
 ## userJoinOrUpdate
 Called from: src/static/js/pad_userlist.js
@@ -137,6 +159,20 @@ Things in context:
 1. info - the user information
 
 This hook is called on the client side whenever a user joins or changes. This can be used to create notifications or an alternate user list.
+
+## chatNewMessage
+Called from: src/static/js/chat.js
+
+Things in context:
+
+1. authorName - The user that wrote this message
+2. author - The authorID of the user that wrote the message
+2. text - the message text
+3. sticky (boolean) - if you want the gritter notification bubble to fade out on its own or just sit there
+3. timestamp - the timestamp of the chat message
+4. timeStr - the timestamp as a formatted string
+
+This hook is called on the client side whenever a chat message is received from the server. It can be used to create different notifications for chat messages.
 
 ## collectContentPre
 Called from: src/static/js/contentcollector.js
@@ -242,3 +278,18 @@ This hook is provided to allow whether a given line should be deliniated with mu
 Multiple authors in one line cause the creation of magic span lines. This might not suit you and
 now you can disable it and handle your own deliniation.
 The return value should be either true(disable) or false.
+
+## aceSetAuthorStyle
+Called from: src/static/js/ace2_inner.js
+
+Things in context:
+
+1. dynamicCSS - css manger for inner ace
+2. outerDynamicCSS - css manager for outer ace
+3. parentDynamicCSS - css manager for parent document
+4. info - author style info
+5. author - author info
+6. authorSelector - css selector for author span in inner ace
+
+This hook is provided to allow author highlight style to be modified.
+Registered hooks should return 1 if the plugin handles highlighting.  If no plugin returns 1, the core will use the default background-based highlighting.

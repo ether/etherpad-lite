@@ -8,7 +8,7 @@ var hookCallWrapper = function (hook, hook_name, args, cb) {
 
   // Normalize output to list for both sync and async cases
   var normalize = function(x) {
-    if (x == undefined) return [];
+    if (x === undefined) return [];
     return x;
   }
   var normalizedhook = function () {
@@ -61,7 +61,7 @@ exports.flatten = function (lst) {
       if (lst[i] != undefined && lst[i] != null) {
         for (var j = 0; j < lst[i].length; j++) {
           res.push(lst[i][j]);
-	}
+    }
       }
     }
   }
@@ -70,10 +70,12 @@ exports.flatten = function (lst) {
 
 exports.callAll = function (hook_name, args) {
   if (!args) args = {};
-  if (exports.plugins.hooks[hook_name] === undefined) return [];
-  return _.flatten(_.map(exports.plugins.hooks[hook_name], function (hook) {
-    return hookCallWrapper(hook, hook_name, args);
-  }), true);
+  if (exports.plugins){
+    if (exports.plugins.hooks[hook_name] === undefined) return [];
+    return _.flatten(_.map(exports.plugins.hooks[hook_name], function (hook) {
+      return hookCallWrapper(hook, hook_name, args);
+    }), true);
+  }
 }
 
 exports.aCallAll = function (hook_name, args, cb) {

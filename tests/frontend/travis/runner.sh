@@ -3,7 +3,7 @@
 #Move to the base folder
 cd `dirname $0`
 
-#start etherpad lite
+#start Etherpad
 ../../../bin/run.sh > /dev/null &
 sleep 10
 

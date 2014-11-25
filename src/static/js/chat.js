@@ -17,6 +17,7 @@
 var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
 var Tinycon = require('tinycon/tinycon');
+var hooks = require('./pluginfw/hooks');
 
 var chat = (function()
 {
@@ -41,13 +42,15 @@ var chat = (function()
         padcookie.setPref("chatAlwaysVisible", true);
         $('#chatbox').addClass("stickyChat");
         $('#chattext').css({"top":"0px"});
-        $('#editorcontainer').css({"right":"192px", "width":"auto"});
+        $('#editorcontainer').css({"right":"192px"});
+        $('.stickyChat').css("top",$('#editorcontainer').offset().top+"px");
         isStuck = true;
       } else { // Unstick it
         padcookie.setPref("chatAlwaysVisible", false);
+        $('.stickyChat').css("top", "auto");
         $('#chatbox').removeClass("stickyChat");
         $('#chattext').css({"top":"25px"});
-        $('#editorcontainer').css({"right":"0px", "width":"100%"});
+        $('#editorcontainer').css({"right":"0px"});
         isStuck = false;
       }
     },
@@ -77,7 +80,7 @@ var chat = (function()
       $("#chatinput").val("");
     },
     addMessage: function(msg, increment, isHistoryAdd)
-    {    
+    {
       //correct the time
       msg.time += this._pad.clientTimeOffset;
       
@@ -99,74 +102,68 @@ var chat = (function()
 
       var text = padutils.escapeHtmlWithClickableLinks(msg.text, "_blank");
 
-      /* Performs an action if your name is mentioned */
-      var myName = $('#myusernameedit').val();
-      myName = myName.toLowerCase();
-      var chatText = text.toLowerCase();
-      var wasMentioned = false;
-      if (chatText.indexOf(myName) !== -1 && myName != "undefined"){
-        wasMentioned = true;
+      var authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName);
+
+      // the hook args
+      var ctx = {
+        "authorName" : authorName,
+        "author" : msg.userId,
+        "text" : text,
+        "sticky" : false,
+        "timestamp" : msg.time,
+        "timeStr" : timeStr
       }
-      /* End of new action */
 
-      var authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName); 
-      
-      var html = "<p class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + timeStr + "</span> " + text + "</p>";
-      if(isHistoryAdd)
-        $(html).insertAfter('#chatloadmessagesbutton');
-      else
-        $("#chattext").append(html);
-      
-      //should we increment the counter??
-      if(increment && !isHistoryAdd)
-      {
-        var count = Number($("#chatcounter").text());
-        count++;
-        
-        // is the users focus already in the chatbox?
-        var alreadyFocused = $("#chatinput").is(":focus");
-        
-        // does the user already have the chatbox open?
-        var chatOpen = $("#chatbox").is(":visible");
+      // is the users focus already in the chatbox?
+      var alreadyFocused = $("#chatinput").is(":focus");
 
-        $("#chatcounter").text(count);
-        // chat throb stuff -- Just make it throw for twice as long
-        if(wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen)
-        { // If the user was mentioned show for twice as long and flash the browser window
-          $.gritter.add({
-            // (string | mandatory) the heading of the notification
-            title: authorName,
-            // (string | mandatory) the text inside the notification
-            text: text,
-            // (bool | optional) if you want it to fade out on its own or just sit there
-            sticky: true,
-            // (int | optional) the time you want it to be alive for before fading out
-            time: '2000'
-          });
+      // does the user already have the chatbox open?
+      var chatOpen = $("#chatbox").is(":visible");
 
-          chatMentions++;
-          Tinycon.setBubble(chatMentions);
-        }
+      // does this message contain this user's name? (is the curretn user mentioned?)
+      var myName = $('#myusernameedit').val();
+      var wasMentioned = (text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName != "undefined");
+
+      if(wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen)
+      { // If the user was mentioned show for twice as long and flash the browser window
+        chatMentions++;
+        Tinycon.setBubble(chatMentions);
+        ctx.sticky = true;
+      }
+
+      // Call chat message hook
+      hooks.aCallAll("chatNewMessage", ctx, function() {
+
+        var html = "<p data-authorId='" + msg.userId + "' class='" + authorClass + "'><b>" + authorName + ":</b><span class='time " + authorClass + "'>" + ctx.timeStr + "</span> " + ctx.text + "</p>";
+        if(isHistoryAdd)
+          $(html).insertAfter('#chatloadmessagesbutton');
         else
+          $("#chattext").append(html);
+
+        //should we increment the counter??
+        if(increment && !isHistoryAdd)
         {
-          if(!chatOpen){
+          // Update the counter of unread messages
+          var count = Number($("#chatcounter").text());
+          count++;
+          $("#chatcounter").text(count);
+
+          if(!chatOpen) {
             $.gritter.add({
               // (string | mandatory) the heading of the notification
-              title: authorName,
+              title: ctx.authorName,
               // (string | mandatory) the text inside the notification
-              text: text,
-
+              text: ctx.text,
               // (bool | optional) if you want it to fade out on its own or just sit there
-              sticky: false,
+              sticky: ctx.sticky,
               // (int | optional) the time you want it to be alive for before fading out
               time: '4000'
             });
-            Tinycon.setBubble(count);
-
           }
         }
-      }
-       // Clear the chat mentions when the user clicks on the chat input box
+      });
+
+      // Clear the chat mentions when the user clicks on the chat input box
       $('#chatinput').click(function(){
         chatMentions = 0;
         Tinycon.setBubble(0);
@@ -186,12 +183,12 @@ var chat = (function()
           self.send();
         }
       });
-      
-	  // initial messages are loaded in pad.js' _afterHandshake
-	  
-	  $("#chatcounter").text(0);
-	  $("#chatloadmessagesbutton").click(function()
-	  {
+
+      // initial messages are loaded in pad.js' _afterHandshake
+
+      $("#chatcounter").text(0);
+      $("#chatloadmessagesbutton").click(function()
+      {
         var start = Math.max(self.historyPointer - 20, 0);
         var end = self.historyPointer;
 
@@ -203,7 +200,7 @@ var chat = (function()
 
         pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": end});
         self.historyPointer = start;
-	  });
+      });
     }
   }
 

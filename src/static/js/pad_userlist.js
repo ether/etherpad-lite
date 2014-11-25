@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -116,12 +116,12 @@ var paduserlist = (function()
         nameHtml = '<input data-l10n-id="pad.userlist.unnamed" type="text" class="editempty newinput" value="'+_('pad.userlist.unnamed')+'" ' + (isNameEditable(data) ? '' : 'disabled="disabled" ') + '/>';
       }
 
-      return ['<td style="height:', height, 'px" class="usertdswatch"><div class="swatch" style="background:' + data.color + '">&nbsp;</div></td>', '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
+      return ['<td style="height:', height, 'px" class="usertdswatch"><div class="swatch" style="background:' + padutils.escapeHtml(data.color) + '">&nbsp;</div></td>', '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
     }
 
-    function getRowHtml(id, innerHtml)
+    function getRowHtml(id, innerHtml, authorId)
     {
-      return '<tr id="' + id + '">' + innerHtml + '</tr>';
+      return '<tr data-authorId="'+authorId+'" id="' + id + '">' + innerHtml + '</tr>';
     }
 
     function rowNode(row)
@@ -191,18 +191,20 @@ var paduserlist = (function()
         domId: domId,
         animationPower: animationPower
       };
+      var authorId = data.id;
+
       handleRowData(row);
       rowsPresent.splice(position, 0, row);
       var tr;
       if (animationPower == 0)
       {
-        tr = $(getRowHtml(domId, getUserRowHtml(getAnimationHeight(0), data)));
+        tr = $(getRowHtml(domId, getUserRowHtml(getAnimationHeight(0), data), authorId));
         row.animationStep = 0;
       }
       else
       {
         rowsFadingIn.push(row);
-        tr = $(getRowHtml(domId, getEmptyRowHtml(getAnimationHeight(ANIMATION_START))));
+        tr = $(getRowHtml(domId, getEmptyRowHtml(getAnimationHeight(ANIMATION_START)), authorId));
       }
       handleRowNode(tr, data);
       if (position == 0)
@@ -466,6 +468,8 @@ var paduserlist = (function()
 
       self.setMyUserInfo(myInitialUserInfo);
 
+      $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
+
       $("#otheruserstable tr").remove();
 
       if (pad.getUserIsGuest())
@@ -511,7 +515,7 @@ var paduserlist = (function()
       {
         info.colorId = clientVars.colorPalette[info.colorId];
       }
-      
+
       myUserInfo = $.extend(
       {}, info);
 
@@ -600,7 +604,8 @@ var paduserlist = (function()
           online++;
         }
       }
-      $("#online_count").text(online);
+
+      $('#online_count').text(online);
 
       return online;
     },
@@ -631,6 +636,9 @@ var paduserlist = (function()
               otherUsersInfo.splice(newExistingIndex, 1);
               otherUsersData.splice(newExistingIndex, 1);
               rowManager.removeRow(newExistingIndex);
+              hooks.callAll('userLeave', {
+                userInfo: info
+              });
               updateInviteNotice();
             }
           }
@@ -719,15 +727,15 @@ var paduserlist = (function()
       {
         $("#myswatchbox").addClass('myswatchboxhoverable').removeClass('myswatchboxunhoverable');
       }
-      
+
       $("#myswatch").css({'background-color': myUserInfo.colorId});
-      
-      if ($.browser.msie && parseInt($.browser.version) <= 8) {
-        $("#usericon a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
+
+      if (browser.msie && parseInt(browser.version) <= 8) {
+        $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
       }
       else
       {
-        $("#usericon a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId});
+        $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId});
       }
     }
   };
@@ -743,7 +751,7 @@ function getColorPickerSwatchIndex(jnode)
 function closeColorPicker(accept)
 {
   if (accept)
-  {    
+  {
     var newColor = $("#mycolorpickerpreview").css("background-color");
     var parts = newColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     // parts now should be ["rgb(0, 70, 255", "0", "70", "255"]

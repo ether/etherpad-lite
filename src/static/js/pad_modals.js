@@ -20,7 +20,6 @@
  * limitations under the License.
  */
  
-var padutils = require('./pad_utils').padutils;
 var padeditbar = require('./pad_editbar').padeditbar;
 
 var padmodals = (function()
@@ -39,23 +38,11 @@ var padmodals = (function()
         padeditbar.toggleDropDown("connectivity");
       });
     },
-    showOverlay: function(duration) {
-      $("#overlay").show().css(
-      {
-        'opacity': 0
-      }).animate(
-      {
-        'opacity': 1
-      }, duration);
+    showOverlay: function() {
+      $("#overlay").show();
     },
-    hideOverlay: function(duration) {
-      $("#overlay").animate(
-      {
-        'opacity': 0
-      }, duration, function()
-      {
-        $("#modaloverlay").hide();
-      });
+    hideOverlay: function() {
+      $("#overlay").hide();
     }
   };
   return self;

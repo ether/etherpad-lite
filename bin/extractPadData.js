@@ -13,8 +13,8 @@ var padId = process.argv[2];
 var db, dirty, padManager, pad, settings;
 var neededDBValues = ["pad:"+padId];
 
-var npm = require("../src/node_modules/npm");
-var async = require("../src/node_modules/async");
+var npm = require("../node_modules/ep_etherpad-lite/node_modules/npm");
+var async = require("../node_modules/ep_etherpad-lite/node_modules/async");
 
 async.series([
   // load npm
@@ -33,9 +33,10 @@ async.series([
   },
   // load modules
   function(callback) {
-    settings = require('../src/node/utils/Settings');
-    db = require('../src/node/db/DB');
-    dirty = require("../src/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
+    settings = require('../node_modules/ep_etherpad-lite/node/utils/Settings');
+    db = require('../node_modules/ep_etherpad-lite/node/db/DB');
+    dirty = require("../node_modules/ep_etherpad-lite/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
+    callback();
   },
   //intallize the database
   function (callback)
@@ -45,7 +46,7 @@ async.series([
   //get the pad 
   function (callback)
   {
-    padManager = require('../node/db/PadManager');
+    padManager = require('../node_modules/ep_etherpad-lite/node/db/PadManager');
     
     padManager.getPad(padId, function(err, _pad)  
     {
@@ -82,7 +83,10 @@ async.series([
       db.db.db.wrappedDB.get(dbkey, function(err, dbvalue)
       {
         if(err) { callback(err); return}
-        dbvalue=JSON.parse(dbvalue);
+
+        if(dbvalue && typeof dbvalue != 'object'){
+          dbvalue=JSON.parse(dbvalue); // if its not json then parse it as json
+        }
         
         dirty.set(dbkey, dbvalue, callback);
       });

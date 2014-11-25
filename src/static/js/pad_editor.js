@@ -62,20 +62,36 @@ var padeditor = (function()
     },
     initViewOptions: function()
     {
+      // Line numbers
       padutils.bindCheckboxChange($("#options-linenoscheck"), function()
       {
         pad.changeViewOption('showLineNumbers', padutils.getCheckbox($("#options-linenoscheck")));
       });
+
+      // Author colors
       padutils.bindCheckboxChange($("#options-colorscheck"), function()
       {
         padcookie.setPref('showAuthorshipColors', padutils.getCheckbox("#options-colorscheck"));
         pad.changeViewOption('showAuthorColors', padutils.getCheckbox("#options-colorscheck"));
       });
+
+      // Right to left
+      padutils.bindCheckboxChange($("#options-rtlcheck"), function()
+      {
+        pad.changeViewOption('rtlIsTrue', padutils.getCheckbox($("#options-rtlcheck")))
+      });
+      html10n.bind('localized', function() {
+        pad.changeViewOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
+        padutils.setCheckbox($("#options-rtlcheck"), ('rtl' == html10n.getDirection()));
+      })
+
+      // font face
       $("#viewfontmenu").change(function()
       {
         pad.changeViewOption('useMonospaceFont', $("#viewfontmenu").val() == 'monospace');
       });
       
+      // Language
       html10n.bind('localized', function() {
         $("#languagemenu").val(html10n.getLanguage());
         // translate the value of 'unnamed' and 'Enter your name' textboxes in the userlist
@@ -104,12 +120,14 @@ var padeditor = (function()
         if (value == "false") return false;
         return defaultValue;
       }
-      self.ace.setProperty("rtlIsTrue", settings.rtlIsTrue);
 
       var v;
 
-      v = getOption('rtlIsTrue', false);
+      v = getOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
+      // Override from parameters if true
+      if(settings.rtlIsTrue === true) v = true;
       self.ace.setProperty("rtlIsTrue", v);
+      padutils.setCheckbox($("#options-rtlcheck"), v);
 
       v = getOption('showLineNumbers', true);
       self.ace.setProperty("showslinenumbers", v);
