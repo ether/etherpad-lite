@@ -234,8 +234,19 @@ exports.doImport = function(req, res, padId)
     ERR(err);
   
     //close the connection
-    res.send("<head><script type='text/javascript' src='../../static/js/jquery.js'></script></head><script>$(window).load(function(){   if(navigator.userAgent.indexOf('MSIE') === -1){    document.domain = document.domain;   }  var impexp = window.parent.padimpexp.handleFrameCall('" + status + "'); })</script>", 200);
-
+    res.send(
+      "<head> \
+        <script type='text/javascript' src='../../static/js/jquery.js'></script> \
+      </head> \
+      <script> \
+        $(window).load(function(){ \
+          if(navigator.userAgent.indexOf('MSIE') === -1){ \
+            document.domain = document.domain; \
+          } \
+          var impexp = window.parent.padimpexp.handleFrameCall('" + status + "'); \
+        }) \
+      </script>"
+    , 200);
   });
 }
 
