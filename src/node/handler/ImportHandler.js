@@ -234,8 +234,8 @@ exports.doImport = function(req, res, padId)
     ERR(err);
   
     //close the connection
-    // res.send("<head><script type='text/javascript' src='../../static/js/jquery.js'></script><script type='text/javascript' src='../../static/js/browser.js'></script></head><script>$(window).load(function(){if ( (!browser.msie) && (!(browser.mozilla && browser.version.indexOf(\"1.8.\") == 0)) ){document.domain = document.domain;}var impexp = window.parent.padimpexp.handleFrameCall('" + status + "');})</script>", 200);
-    res.send("<head><script type='text/javascript' src='../../static/js/jquery.js'></script><script type='text/javascript' src='../../static/js/browser.js'></script></head><script>$(window).load(function(){document.domain = document.domain;var impexp = window.parent.padimpexp.handleFrameCall('" + status + "');})</script>", 200);
+    res.send("<head><script type='text/javascript' src='../../static/js/jquery.js'></script></head><script>$(window).load(function(){   if(navigator.userAgent.indexOf('MSIE') === -1){    document.domain = document.domain;   }  var impexp = window.parent.padimpexp.handleFrameCall('" + status + "'); })</script>", 200);
+
   });
 }
 
