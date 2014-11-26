@@ -24,8 +24,12 @@ function setPadHTML(pad, html, callback)
   var apiLogger = log4js.getLogger("ImportHtml");
 
   var $ = cheerio.load(html);
-  var doc = $('html')[0];
 
+  // Appends a line break, used by Etherpad to ensure a caret is available
+  // below the last line of an import
+  $('body').append("<p></p>");
+
+  var doc = $('html')[0];
   apiLogger.debug('html:');
   apiLogger.debug(html);
 
