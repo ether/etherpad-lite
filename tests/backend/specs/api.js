@@ -67,14 +67,21 @@ describe('deletePad', function(){
 describe('createPad', function(){
   it('creates a new Pad', function(done) {
     api.get(endPoint('createPad')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Unable to create new Pad");
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
 })
 
-describe('getRevisions', function(){
+describe('getRevisionsCount', function(){
   it('gets revision count of Pad', function(done) {
-    api.get(endPoint('getRevisions')+"&padID="+testPadId)
+    api.get(endPoint('getRevisionsCount')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Unable to get Revision Count");
+      if(res.body.data.revisions !== 0) throw new Error("Incorrect Revision Count");
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -83,6 +90,9 @@ describe('getRevisions', function(){
 describe('getHTML', function(){
   it('get the HTML of Pad', function(done) {
     api.get(endPoint('getHTML')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.html.length <= 1) throw new Error("Unable to get Revision Count");
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -91,14 +101,20 @@ describe('getHTML', function(){
 describe('deletePad', function(){
   it('deletes a Pad', function(done) {
     api.get(endPoint('deletePad')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Deletion failed")
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
 })
 
 describe('getHTML', function(){
-  it('get the HTML of a Pad', function(done) {
+  it('get the HTML of a Pad -- Should return a failure', function(done) {
     api.get(endPoint('getHTML')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 1) throw new Error("Pad deletion failed")
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -106,15 +122,21 @@ describe('getHTML', function(){
 
 describe('createPad', function(){
   it('creates a new Pad with text', function(done) {
-    api.get(endPoint('createPad')+"&padID="+testPadId+"&test=testText")
+    api.get(endPoint('createPad')+"&padID="+testPadId+"&text=testText")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Creation failed")
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
 })
 
 describe('getText', function(){
-  it('gets the Pad text', function(done) {
+  it('gets the Pad text and expect it to be testText with \n which is a line break', function(done) {
     api.get(endPoint('getText')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.text !== "testText\n") throw new Error("Pad Creation with text")
+    }) 
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -122,7 +144,10 @@ describe('getText', function(){
 
 describe('setText', function(){
   it('creates a new Pad with text', function(done) {
-    api.get(endPoint('createPad')+"&padID="+testPadId+"&test=testText")
+    api.get(endPoint('setText')+"&padID="+testPadId+"&text=testTextTwo")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad setting text failed");
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -131,14 +156,20 @@ describe('setText', function(){
 describe('getText', function(){
   it('gets the Pad text', function(done) {
     api.get(endPoint('getText')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.text !== "testTextTwo\n") throw new Error("Setting Text")
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
 })
 
-describe('getRevisions', function(){
+describe('getRevisionsCount', function(){
   it('gets Revision Coutn of a Pad', function(done) {
-    api.get(endPoint('getRevisions')+"&padID="+testPadId)
+    api.get(endPoint('getRevisionsCount')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.revisions !== 1) throw new Error("Unable to set text revision count")
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -147,14 +178,20 @@ describe('getRevisions', function(){
 describe('padUsersCount', function(){
   it('gets Revision Coutn of a Pad', function(done) {
     api.get(endPoint('padUsersCount')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.padUsersCount !== 0) throw new Error("Incorrect Pad User count")
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
 })
 
-describe('getReadOnlyId', function(){
+describe('getReadOnlyID', function(){
   it('Gets the Read Only ID of a Pad', function(done) {
-    api.get(endPoint('getReadOnlyId')+"&padID="+testPadId)
+    api.get(endPoint('getReadOnlyID')+"&padID="+testPadId)
+    .expect(function(res){
+      if(!res.body.data.readOnlyID) throw new Error("No Read Only ID for Pad")
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -163,14 +200,6 @@ describe('getReadOnlyId', function(){
 
 
 /* Endpoints Still to interact with.. 
-/ createPad(padID [, text]) 
-/ getRevisions(padID) 
-/ deletePad(padID) 
-/ getReadOnlyID(padID) 
-/ getHTML(padID, [rev]) 
-/ setText(padID, text) 
-/ getText(padID, [rev])
-
 padUsersCount(padID) 
 setPublicStatus(padID, publicStatus) 
 getPublicStatus(padID) 
