@@ -39,7 +39,6 @@ describe('API Versioning', function(){
     -> createAuthor([name]) -- should return an authorID
      -> createAuthorIfNotExistsFor(authorMapper [, name]) -- should return an authorID
       -> getAuthorName(authorID) -- should return a name IE "john"
-       -> listPadsOfAuthor(authorID)
 
 -> createSession(groupID, authorID, validUntil)
  -> getSessionInfo(sessionID)
@@ -56,6 +55,8 @@ describe('API Versioning', function(){
       -> isPasswordProtected(padID) -- should be false
        -> setPassword(padID, password)
         -> isPasswordProtected(padID) -- should be true
+
+-> listPadsOfAuthor(authorID)
 */
 
 describe('createGroup', function(){
@@ -119,7 +120,7 @@ describe('createAuthor', function(){
   it('Creates an author with a name set', function(done) {
     api.get(endPoint('createAuthor'))
     .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.authorID) throw new Error("Sessions show as existing for this group");
+      if(res.body.code !== 0 || !res.body.data.authorID) throw new Error("Unable to create author");
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -220,11 +221,14 @@ describe('getSessionInfo', function(){
   });
 })
 
+// GROUP PAD MANAGEMENT
+///////////////////////////////////////
+///////////////////////////////////////
+
 describe('listPads', function(){
   it('Lists Pads of a Group', function(done) {
     api.get(endPoint('listPads')+"&groupID="+groupID)
     .expect(function(res){
-console.log(res.body.data.padIDs);
       if(res.body.code !== 0 || res.body.data.padIDs.length !== 0) throw new Error("Group already had pads for some reason"+res.body.data.padIDs);
     })
     .expect('Content-Type', /json/)
@@ -254,6 +258,10 @@ describe('listPads', function(){
     .expect(200, done)
   });
 })
+
+// PAD SECURITY /-_-\
+///////////////////////////////////////
+///////////////////////////////////////
 
 describe('getPublicStatus', function(){
   it('Gets the public status of a pad', function(done) {
@@ -288,43 +296,54 @@ describe('getPublicStatus', function(){
   });
 })
 
+describe('isPasswordProtected', function(){
+  it('Gets the public status of a pad', function(done) {
+    api.get(endPoint('isPasswordProtected')+"&padID="+padID)
+    .expect(function(res){
+      if(res.body.code !== 0 || res.body.data.isPasswordProtected) throw new Error("Pad is password protected by default");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
-/* Endpoints Still to interact with..
--> isPasswordProtected(padID) -- should be false
- -> setPassword(padID, password)
-  -> isPasswordProtected(padID) -- should be true
-   -> listPadsOfAuthor(authorID)
-*/
+describe('setPassword', function(){
+  it('Gets the public status of a pad', function(done) {
+    api.get(endPoint('setPassword')+"&padID="+padID+"&password=test")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Unabe to set password");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+describe('isPasswordProtected', function(){
+  it('Gets the public status of a pad', function(done) {
+    api.get(endPoint('isPasswordProtected')+"&padID="+padID)
+    .expect(function(res){
+      if(res.body.code !== 0 || !res.body.data.isPasswordProtected) throw new Error("Pad password protection has not applied");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
 
+// NOT SURE HOW TO POPULAT THIS /-_-\
+///////////////////////////////////////
+///////////////////////////////////////
 
+describe('listPadsOfAuthor', function(){
+  it('Gets the Pads of an Author', function(done) {
+    api.get(endPoint('listPadsOfAuthor')+"&authorID="+authorID)
+    .expect(function(res){
+      if(res.body.code !== 0 || res.body.data.padIDs.length !== 0) throw new Error("Pad password protection has not applied");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
 
 
