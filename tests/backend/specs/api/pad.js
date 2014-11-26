@@ -9,6 +9,7 @@ var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 var apiVersion = 1;
 var testPadId = makeid();
+var lastEdited = "";
 
 describe('Connectivity', function(){
   it('errors if can not connect', function(done) {
@@ -43,7 +44,7 @@ describe('Permission', function(){
 /* Pad Tests Order of execution
 -> deletePad -- This gives us a guaranteed clear environment
  -> createPad
-  -> getRevisions(0) -- Should be 0
+  -> getRevisions -- Should be 0
    -> getHTML -- Should be the default pad text in HTML format
     -> deletePad -- Should just delete a pad
      -> getHTML -- Should return an error
@@ -54,6 +55,10 @@ describe('Permission', function(){
           -> getRevisions -- Should be 0 still?
            -> padUsersCount -- Should be 0
             -> getReadOnlyId -- Should be a value
+             -> listAuthorsOfPad(padID) -- should be empty array?
+              -> getLastEdited(padID) -- Should be when pad was made
+               -> setText(padId)
+                -> getLastEdited(padID) -- Should be when setText was performed
 */
 
 describe('deletePad', function(){
@@ -176,7 +181,7 @@ describe('getRevisionsCount', function(){
 })
 
 describe('padUsersCount', function(){
-  it('gets Revision Coutn of a Pad', function(done) {
+  it('gets User Count of a Pad', function(done) {
     api.get(endPoint('padUsersCount')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.data.padUsersCount !== 0) throw new Error("Incorrect Pad User count")
@@ -196,6 +201,57 @@ describe('getReadOnlyID', function(){
     .expect(200, done)
   });
 })
+
+describe('listAuthorsOfPad', function(){
+  it('Get Authors of the Pad', function(done) {
+    api.get(endPoint('listAuthorsOfPad')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.authorIDs.length !== 0) throw new Error("# of Authors of pad is not 0")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getLastEdited', function(){
+  it('Get When Pad was left Edited', function(done) {
+    api.get(endPoint('getLastEdited')+"&padID="+testPadId)
+    .expect(function(res){
+      if(!res.body.data.lastEdited){
+        throw new Error("# of Authors of pad is not 0")
+      }else{
+        lastEdited = res.body.data.lastEdited;
+      }
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setText', function(){
+  it('creates a new Pad with text', function(done) {
+    api.get(endPoint('setText')+"&padID="+testPadId+"&text=testTextTwo")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad setting text failed");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getLastEdited', function(){
+  it('Get When Pad was left Edited', function(done) {
+    api.get(endPoint('getLastEdited')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.lastEdited <= lastEdited){
+        throw new Error("Editing A Pad is not updating when it was last edited")
+      }
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
 
 var endPoint = function(point){
   return '/api/'+apiVersion+'/'+point+'?apikey='+apiKey;
