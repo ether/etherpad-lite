@@ -34,10 +34,9 @@ describe('Permission', function(){
   it('errors if can connect without correct APIKey', function(done) {
     // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
     // If your APIKey is password you deserve to fail all tests anyway
-    throw new Error("Erroring anyway just because the API seems broken here");
-    api.get('/api/'+apiVersion+'/createPad&apikey=password&padID=test')
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+    var permErrorURL = '/api/'+apiVersion+'/createPad?apikey=password&padID=test';
+    api.get(permErrorURL)
+    .expect(401, done)
   });
 })
 
