@@ -4,7 +4,7 @@ var assert = require('assert')
        api = supertest('http://localhost:9001');
       path = require('path');
 
-var filePath = path.join(__dirname, '../../../APIKEY.txt');
+var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 var apiVersion = 1;
@@ -196,46 +196,6 @@ describe('getReadOnlyID', function(){
     .expect(200, done)
   });
 })
-
-
-
-/* Endpoints Still to interact with.. 
-padUsersCount(padID) 
-setPublicStatus(padID, publicStatus) 
-getPublicStatus(padID) 
-setPassword(padID, password) 
-isPasswordProtected(padID) 
-listAuthorsOfPad(padID) 
-getLastEdited(padID) 
-listSessionsOfGroup(groupID)
-getSessionInfo(sessionID) 
-deleteSession(sessionID) 
-createSession(groupID, authorID, validUntil) 
-listPadsOfAuthor(authorID)
-createAuthorIfNotExistsFor(authorMapper [, name]) 
-createAuthor([name])
-createGroupPad(groupID, padName [, text]) 
-listPads(groupID) 
-deleteGroup(groupID) 
-createGroupIfNotExistsFor(groupMapper)
-createGroup() 
-*/
-
-
-/*
-describe('getRevisionsCount', function(){
-  it('gets the revision counts of a new pad', function(done) {
-    // This is broken because Etherpad doesn't handle HTTP codes properly see #2$
-    // If your APIKey is password you deserve to fail all tests anyway
-    api.get(endPoint('getRevisionsCount')+"&padID="+testPadId) 
-    .expect('Content-Type', /json/)
-    .expect(function(res){
-      console.log(res.body);
-    })
-    .expect(200, done)
-  });
-})
-*/
 
 var endPoint = function(point){
   return '/api/'+apiVersion+'/'+point+'?apikey='+apiKey;
