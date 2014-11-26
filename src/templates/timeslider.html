@@ -114,7 +114,7 @@
     </div>
     <div class="reconnecting">
       <h1 data-l10n-id="pad.modals.reconnecting"></h1>
-      <p><img alt="" border="0" src="../../static/img/connectingbar.gif" /></p>
+      <p class="loadingAnimation"></p>
     </div>
     <div class="userdup">
       <h1 data-l10n-id="pad.modals.userdup"></h1>
@@ -213,8 +213,9 @@
     require.setGlobalKeyPath("require");
 
     $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
+    browser = require('ep_etherpad-lite/static/js/browser').browser;
 
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
       document.domain = document.domain; // for comet
     }
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');

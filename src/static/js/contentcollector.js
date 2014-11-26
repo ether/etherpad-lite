@@ -54,10 +54,14 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     },
     nodeNumChildren: function(n)
     {
+      if(n.childNodes == null) return 0;
       return n.childNodes.length;
     },
     nodeChild: function(n, i)
     {
+      if(n.childNodes.item == null){
+        return n.childNodes[i];
+      }
       return n.childNodes.item(i);
     },
     nodeProp: function(n, p)
@@ -66,6 +70,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     },
     nodeAttr: function(n, a)
     {
+      if(n.getAttribute == null) return null;
       return n.getAttribute(a);
     },
     optNodeInnerHTML: function(n)

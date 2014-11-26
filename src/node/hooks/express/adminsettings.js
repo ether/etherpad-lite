@@ -22,7 +22,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 exports.socketio = function (hook_name, args, cb) {
   var io = args.io.of("/settings");
   io.on('connection', function (socket) {
-    if (!socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
+
+    if (!socket.conn.request.session || !socket.conn.request.session.user || !socket.conn.request.session.user.is_admin) return;
 
     socket.on("load", function (query) {
       fs.readFile('settings.json', 'utf8', function (err,data) {

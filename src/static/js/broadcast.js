@@ -65,7 +65,7 @@ function loadBroadcastJS(tsclient, fireWhenAllScriptsAreLoaded, BroadcastSlider)
   }
 
   // for IE
-  if ($.browser.msie)
+  if (browser.msie)
   {
     try
     {

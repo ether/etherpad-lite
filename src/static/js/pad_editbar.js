@@ -181,7 +181,7 @@ var padeditbar = (function()
     },
     redrawHeight: function(){
       var editbarHeight = $('.menu_left').height() + 2 + "px";
-      var containerTop = $('.menu_left').height() + 5 + "px";
+      var containerTop = $('.menu_left').height() + 7 + "px";
       $('#editbar').css("height", editbarHeight);
       $('#editorcontainer').css("top", containerTop);
     },
