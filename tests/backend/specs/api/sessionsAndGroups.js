@@ -11,6 +11,7 @@ var apiVersion = 1;
 var testPadId = makeid();
 var groupID = "";
 var authorID = "";
+var sessionID = "";
 
 describe('API Versioning', function(){
   it('errors if can not connect', function(done) {
@@ -23,6 +24,10 @@ describe('API Versioning', function(){
     .expect(200, done)
   });
 })
+
+// BEGIN GROUP AND AUTHOR TESTS
+/////////////////////////////////////
+/////////////////////////////////////
 
 /* Tests performed
 -> createGroup() -- should return a groupID
@@ -142,17 +147,67 @@ describe('getAuthorName', function(){
   });
 })
 
+// BEGIN SESSION TESTS
+///////////////////////////////////////
+///////////////////////////////////////
+
+describe('createSession', function(){
+  it('Creates a session for an Author', function(done) {
+    api.get(endPoint('createSession')+"&authorID="+authorID+"&groupID="+groupID+"&validUntil=999999999999")
+    .expect(function(res){
+      if(res.body.code !== 0 || !res.body.data.sessionID) throw new Error("Unable to create Session");
+      sessionID = res.body.data.sessionID;
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getSessionInfo', function(){
+  it('Gets session inf', function(done) {
+    api.get(endPoint('getSessionInfo')+"&sessionID="+sessionID)
+    .expect(function(res){
+      if(res.body.code !== 0 || !res.body.data.groupID || !res.body.data.authorID || !res.body.data.validUntil) throw new Error("Unable to get Session info");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('listSessionsOfGroup', function(){
+  it('Gets sessions of a group', function(done) {
+    api.get(endPoint('listSessionsOfGroup')+"&groupID="+groupID)
+    .expect(function(res){
+      if(res.body.code !== 0 || typeof res.body.data !== "object") throw new Error("Unable to get sessions of a group");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('deleteSession', function(){
+  it('Deletes a session', function(done) {
+    api.get(endPoint('deleteSession')+"&sessionID="+sessionID)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Unable to delete a session");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getSessionInfo', function(){
+  it('Gets session info', function(done) {
+    api.get(endPoint('getSessionInfo')+"&sessionID="+sessionID)
+    .expect(function(res){
+      if(res.body.code !== 1) throw new Error("Session was not properly deleted");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
 /* Endpoints Still to interact with..
-      -> getAuthorName(authorID) -- should return a name IE "john"
-       -> listPadsOfAuthor(authorID)
-
--> createSession(groupID, authorID, validUntil)
- -> getSessionInfo(sessionID)
-  -> listSessionsOfGroup(groupID) -- should be 1
-   -> deleteSession(sessionID)
-    -> getSessionInfo(sessionID) -- should have author id etc in
-
 -> listPads(groupID) -- should be empty array
  -> createGroupPad(groupID, padName [, text])
   -> listPads(groupID) -- should be empty array
@@ -161,6 +216,8 @@ describe('getAuthorName', function(){
      -> isPasswordProtected(padID) -- should be false
       -> setPassword(padID, password)
        -> isPasswordProtected(padID) -- should be true
+
+       -> listPadsOfAuthor(authorID)
 */
 
 
