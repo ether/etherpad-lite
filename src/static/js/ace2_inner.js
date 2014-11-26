@@ -3700,7 +3700,7 @@ function Ace2Inner(){
           }, 0);
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey)) /* Do a saved revision on ctrl S */
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey) && !evt.altKey) /* Do a saved revision on ctrl S */
         {
           evt.preventDefault();
           var originalBackground = parent.parent.$('#revisionlink').css("background")
