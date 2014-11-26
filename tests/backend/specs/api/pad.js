@@ -1,5 +1,5 @@
 var assert = require('assert')
- supertest = require('supertest'),
+ supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
         fs = require('fs'),
        api = supertest('http://localhost:9001');
       path = require('path');
