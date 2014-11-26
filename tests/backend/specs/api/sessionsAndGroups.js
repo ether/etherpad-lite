@@ -12,6 +12,7 @@ var testPadId = makeid();
 var groupID = "";
 var authorID = "";
 var sessionID = "";
+var padID = makeid();
 
 describe('API Versioning', function(){
   it('errors if can not connect', function(done) {
@@ -51,9 +52,10 @@ describe('API Versioning', function(){
   -> listPads(groupID) -- should be empty array
    -> getPublicStatus(padId)
     -> setPublicStatus(padId, status)
-     -> isPasswordProtected(padID) -- should be false
-      -> setPassword(padID, password)
-       -> isPasswordProtected(padID) -- should be true
+     -> getPublicStatus(padId)
+      -> isPasswordProtected(padID) -- should be false
+       -> setPassword(padID, password)
+        -> isPasswordProtected(padID) -- should be true
 */
 
 describe('createGroup', function(){
@@ -95,7 +97,18 @@ describe('createGroupIfNotExistsFor', function(){
     api.get(endPoint('createGroupIfNotExistsFor')+"&groupMapper=management")
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.groupID) throw new Error("Sessions show as existing for this group");
-      groupID = res.body.data.groupID
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('createGroup', function(){
+  it('creates a new group', function(done) {
+    api.get(endPoint('createGroup'))
+    .expect(function(res){
+      if(res.body.code !== 0 || !res.body.data.groupID) throw new Error("Unable to create new Pad");
+      groupID = res.body.data.groupID;
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -207,17 +220,80 @@ describe('getSessionInfo', function(){
   });
 })
 
-/* Endpoints Still to interact with..
--> listPads(groupID) -- should be empty array
- -> createGroupPad(groupID, padName [, text])
-  -> listPads(groupID) -- should be empty array
-   -> getPublicStatus(padId)
-    -> setPublicStatus(padId, status)
-     -> isPasswordProtected(padID) -- should be false
-      -> setPassword(padID, password)
-       -> isPasswordProtected(padID) -- should be true
+describe('listPads', function(){
+  it('Lists Pads of a Group', function(done) {
+    api.get(endPoint('listPads')+"&groupID="+groupID)
+    .expect(function(res){
+console.log(res.body.data.padIDs);
+      if(res.body.code !== 0 || res.body.data.padIDs.length !== 0) throw new Error("Group already had pads for some reason"+res.body.data.padIDs);
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
-       -> listPadsOfAuthor(authorID)
+describe('createGroupPad', function(){
+  it('Creates a Group Pad', function(done) {
+    api.get(endPoint('createGroupPad')+"&groupID="+groupID+"&padName="+padID)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Unable to create group pad");
+      padID = res.body.data.padID;
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('listPads', function(){
+  it('Lists Pads of a Group', function(done) {
+    api.get(endPoint('listPads')+"&groupID="+groupID)
+    .expect(function(res){
+      if(res.body.code !== 0 || res.body.data.padIDs.length !== 1) throw new Error("Group isnt listing this pad");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getPublicStatus', function(){
+  it('Gets the public status of a pad', function(done) {
+    api.get(endPoint('getPublicStatus')+"&padID="+padID)
+    .expect(function(res){
+      if(res.body.code !== 0 || res.body.data.publicstatus) throw new Error("Unable to get public status of this pad");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setPublicStatus', function(){
+  it('Sets the public status of a pad', function(done) {
+    api.get(endPoint('setPublicStatus')+"&padID="+padID+"&publicStatus=true")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Setting status did not work");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getPublicStatus', function(){
+  it('Gets the public status of a pad', function(done) {
+    api.get(endPoint('getPublicStatus')+"&padID="+padID)
+    .expect(function(res){
+      if(res.body.code !== 0 || !res.body.data.publicStatus) throw new Error("Setting public status of this pad did not work");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+
+/* Endpoints Still to interact with..
+-> isPasswordProtected(padID) -- should be false
+ -> setPassword(padID, password)
+  -> isPasswordProtected(padID) -- should be true
+   -> listPadsOfAuthor(authorID)
 */
 
 
