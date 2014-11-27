@@ -43,7 +43,7 @@ describe("bold button", function(){
 
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
-    if(inner$.browser.mozilla){ // if it's a mozilla browser
+    if(inner$(window)[0].bowser.mozilla){ // if it's a mozilla browser
       var evtType = "keypress";
     }else{
       var evtType = "keydown";

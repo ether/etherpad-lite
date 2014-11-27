@@ -2,6 +2,12 @@ describe("As the caret is moved is the UI properly updated?", function(){
   var padName;
   var numberOfRows = 50;
 
+  //create a new pad before each test run
+  beforeEach(function(cb){
+    helper.newPad(cb);
+    this.timeout(60000);
+  });
+
   it("creates a pad", function(done) {
     padName = helper.newPad(done);
     this.timeout(60000);
@@ -224,7 +230,6 @@ describe("As the caret is moved is the UI properly updated?", function(){
     });
     var i = 0;
     while(i < numberOfRows){ // press down arrow
-console.log("dwn");
       keyEvent(inner$, 40, false, false);
       i++;
     }
@@ -287,7 +292,7 @@ function prepareDocument(n, target){ // generates a random document with random 
 }
 
 function keyEvent(target, charCode, ctrl, shift){ // sends a charCode to the window
-  if(target.browser.mozilla){ // if it's a mozilla browser
+  if(inner$(window)[0].bowser.mozilla){ // if it's a mozilla browser
     var evtType = "keypress";
   }else{
     var evtType = "keydown";
