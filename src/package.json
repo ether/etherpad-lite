@@ -13,7 +13,7 @@
   "dependencies"   : {
                       "yajsml"                  : "1.1.6",
                       "request"                 : "2.9.100",
-                      "require-kernel"          : "1.0.5",
+                      "etherpad-require-kernel" : "1.0.5",
                       "resolve"                 : ">=1.0.0",
                       "socket.io"               : ">=1.2.0",
                       "ueberDB"                 : ">=0.2.9",
