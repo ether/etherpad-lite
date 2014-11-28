@@ -184,6 +184,9 @@ var padeditbar = (function()
       var containerTop = $('.menu_left').height() + 7 + "px";
       $('#editbar').css("height", editbarHeight);
       $('#editorcontainer').css("top", containerTop);
+      if($('#options-stickychat').is(":checked")){
+        $('#chatbox').css("top", containerTop);
+      };
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
