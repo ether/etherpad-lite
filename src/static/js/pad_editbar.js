@@ -183,7 +183,11 @@ var padeditbar = (function()
       var editbarHeight = $('.menu_left').height() + 2 + "px";
       var containerTop = $('.menu_left').height() + 7 + "px";
       $('#editbar').css("height", editbarHeight);
+
       $('#editorcontainer').css("top", containerTop);
+      if($('#options-stickychat').is(":checked")){
+        $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
+      };
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;

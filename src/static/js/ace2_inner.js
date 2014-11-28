@@ -35,7 +35,7 @@ var isNodeText = Ace2Common.isNodeText,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
   var hooks = require('./pluginfw/hooks');
-
+  var browser = require('./browser').browser;
 
 function Ace2Inner(){
 
@@ -51,7 +51,6 @@ function Ace2Inner(){
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
-  var browser = require('./browser');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
