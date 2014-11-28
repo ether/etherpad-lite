@@ -2,8 +2,9 @@
 (function($) {
     $.fn.purgeFrame = function() {
         var deferred;
+        var browser = bowser;
 
-        if ($.browser.msie && parseFloat($.browser.version, 10) < 9) {
+        if (browser.msie && parseFloat(browser.version, 10) < 9) {
             deferred = purge(this);
         } else {
             this.remove();
