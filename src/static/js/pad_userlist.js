@@ -730,7 +730,7 @@ var paduserlist = (function()
 
       $("#myswatch").css({'background-color': myUserInfo.colorId});
 
-      if ($.browser.msie && parseInt($.browser.version) <= 8) {
+      if (browser.msie && parseInt(browser.version) <= 8) {
         $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
       }
       else

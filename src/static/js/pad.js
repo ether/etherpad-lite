@@ -43,7 +43,6 @@ var padsavedrevs = require('./pad_savedrevs');
 var paduserlist = require('./pad_userlist').paduserlist;
 var padutils = require('./pad_utils').padutils;
 var colorutils = require('./colorutils').colorutils;
-
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
@@ -386,7 +385,6 @@ var pad = {
   diagnosticInfo: {},
   initTime: 0,
   clientTimeOffset: null,
-  preloadedImages: false,
   padOptions: {},
 
   // these don't require init; clientVars should all go through here
@@ -454,13 +452,13 @@ var pad = {
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
+    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0)))
     {
       document.domain = document.domain; // for comet
     }
 
     // for IE
-    if ($.browser.msie)
+    if (browser.msie)
     {
       try
       {
@@ -728,19 +726,6 @@ var pad = {
   },
   handleIsFullyConnected: function(isConnected, isInitialConnect)
   {
-    // load all images referenced from CSS, one at a time,
-    // starting one second after connection is first established.
-    if (isConnected && !pad.preloadedImages)
-    {
-      window.setTimeout(function()
-      {
-        if (!pad.preloadedImages)
-        {
-          pad.preloadImages();
-          pad.preloadedImages = true;
-        }
-      }, 1000);
-    }
 
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
@@ -837,34 +822,6 @@ var pad = {
     {
       pad.collabClient.addHistoricalAuthors(data);
     }
-  },
-  preloadImages: function()
-  {
-    var images = ["../static/img/connectingbar.gif"];
-
-    function loadNextImage()
-    {
-      if (images.length == 0)
-      {
-        return;
-      }
-      var img = new Image();
-      img.src = images.shift();
-      if (img.complete)
-      {
-        scheduleLoadNextImage();
-      }
-      else
-      {
-        $(img).bind('error load onreadystatechange', scheduleLoadNextImage);
-      }
-    }
-
-    function scheduleLoadNextImage()
-    {
-      window.setTimeout(loadNextImage, 0);
-    }
-    scheduleLoadNextImage();
   }
 };
 

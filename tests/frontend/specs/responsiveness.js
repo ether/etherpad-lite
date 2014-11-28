@@ -19,7 +19,7 @@ describe('Responsiveness of Editor', function() {
     helper.newPad(cb);
     this.timeout(6000);
   });
-  it('Fast response to keypress in pad with large amount of contents', function(done) {
+  xit('Fast response to keypress in pad with large amount of contents', function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
     var chars = '0000000000'; // row of placeholder chars

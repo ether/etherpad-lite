@@ -94,8 +94,18 @@ exports.handleConnect = function(client)
  */
 exports.kickSessionsFromPad = function(padID)
 {
+  if(typeof socketio.sockets['clients'] !== 'function')
+   return;
+
   //skip if there is nobody on this pad
-  if(socketio.sockets.clients(padID).length == 0)
+  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
+
+  if(roomClients.length == 0)
     return;
 
   //disconnect everyone from this pad
@@ -496,14 +506,19 @@ function handleSuggestUserName(client, message)
     return;
   }
 
-  var padId = sessioninfos[client.id].padId,
-      clients = socketio.sockets.clients(padId);
+  var padId = sessioninfos[client.id].padId;
+  var roomClients = [], room = socketio.sockets.adapter.rooms[padId];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
 
   //search the author and send him this message
-  for(var i = 0; i < clients.length; i++) {
-    var session = sessioninfos[clients[i].id];
+  for(var i = 0; i < roomClients.length; i++) {
+    var session = sessioninfos[roomClients[i].id];
     if(session && session.author == message.data.payload.unnamedId) {
-      clients[i].json.send(message);
+      roomClients[i].json.send(message);
       break;
     }
   }
@@ -1581,8 +1596,16 @@ function composePadChangesets(padId, startNum, endNum, callback)
  * Get the number of users in a pad
  */
 exports.padUsersCount = function (padID, callback) {
+
+  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
+
   callback(null, {
-    padUsersCount: socketio.sockets.clients(padID).length
+    padUsersCount: roomClients.length
   });
 }
 
@@ -1592,7 +1615,14 @@ exports.padUsersCount = function (padID, callback) {
 exports.padUsers = function (padID, callback) {
   var result = [];
 
-  async.forEach(socketio.sockets.clients(padID), function(roomClient, callback) {
+  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
+
+  async.forEach(roomClients, function(roomClient, callback) {
     var s = sessioninfos[roomClient.id];
     if(s) {
       authorManager.getAuthor(s.author, function(err, author) {
