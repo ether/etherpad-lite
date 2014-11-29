@@ -974,6 +974,8 @@ input[type=checkbox] {
     }
     #mycolorpicker {
       left: -73px;
+      top:auto !important;
+      bottom:33px !important;
       /* #mycolorpicker: width -#users: width */;
     }
     #editorcontainer {
