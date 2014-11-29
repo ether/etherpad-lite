@@ -1050,6 +1050,10 @@ input[type=checkbox] {
       position:absolute;
       bottom:33px;
     }
+    #gritter-notice-wrapper{
+      bottom:43px !important;
+      right:10px !important;
+    }
 }
 
 #passwordRequired{
