@@ -967,12 +967,15 @@ input[type=checkbox] {
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
     #users {
-      top: 36px;
-      bottom: 40px;
-      border-radius: none;
+      top: auto;
+      right:0px !important;
+      bottom: 33px;
+      border-radius: 0px !important;
     }
     #mycolorpicker {
       left: -73px;
+      top:auto !important;
+      bottom:33px !important;
       /* #mycolorpicker: width -#users: width */;
     }
     #editorcontainer {
@@ -989,6 +992,7 @@ input[type=checkbox] {
       background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
       background: linear-gradient(#f7f7f7, #f1f1f1 80%);
       width: 100%;
+      right:0px !important;
       overflow: hidden;
       height: 32px;
       position: fixed;
@@ -1008,8 +1012,16 @@ input[type=checkbox] {
     .toolbar ul li a.selected {
       background: none !important
     }
-    #chaticon, #timesliderlink {
-      display: none !important
+    li[data-key="showusers"] > a {
+      
+      margin-top:-10px;
+      padding-top:2px !important;
+      line-height:20px;
+      vertical-align:top !important;
+    }
+    #chaticon {
+      position:absolute;
+      right:48px;
     }
     .popup {
       -webkit-border-radius: 0;
@@ -1022,11 +1034,11 @@ input[type=checkbox] {
       width: 100%;
     }
     #settings,
-    #importexport,
+    #import_export,
     #connectivity,
     #embed {
+      top:auto;
       left: 0;
-      top: 0;
       bottom: 33px;
       right: 0;
     }
@@ -1035,6 +1047,14 @@ input[type=checkbox] {
     }
     #online_count {
       line-height: 24px
+    }
+    #chatbox{
+      position:absolute;
+      bottom:33px;
+    }
+    #gritter-notice-wrapper{
+      bottom:43px !important;
+      right:10px !important;
     }
 }
 
