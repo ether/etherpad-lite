@@ -838,10 +838,10 @@ exports.updatePadClients = function(pad, callback)
 
               client.json.send(wireMsg);
             }
-
-            sessioninfos[sid].time = currentTime;
-            sessioninfos[sid].rev = r;
-
+            if(sessioninfos[sid]){
+              sessioninfos[sid].time = currentTime;
+              sessioninfos[sid].rev = r;
+            }
             callback(null);
           }
         ], callback);
