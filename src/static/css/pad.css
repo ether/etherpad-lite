@@ -871,6 +871,7 @@ input[type=checkbox] {
 }
 .column {
   float: left;
+  width:50%;
 }
 #settings,
 #import_export,
