@@ -3,8 +3,8 @@
   known "good" revision.
 */
 
-if(process.argv.length != 4) {
-  console.error("Use: node bin/repairPad.js $PADID $REV");
+if(process.argv.length != 4 && process.argv.length != 5) {
+  console.error("Use: node bin/repairPad.js $PADID $REV [$NEWPADID]");
   process.exit(1);
 }
 
@@ -14,10 +14,10 @@ var ueberDB = require("../src/node_modules/ueberDB");
 
 var padId = process.argv[2];
 var newRevHead = process.argv[3];
-var newPadId = padId + "-rebuilt";
+var newPadId = process.argv[4] || padId + "-rebuilt";
 
-var db, pad, newPad, settings;
-var AuthorManager, ChangeSet, PadManager;
+var db, oldPad, newPad, settings;
+var AuthorManager, ChangeSet, Pad, PadManager;
 
 async.series([
   function(callback) {
@@ -35,26 +35,37 @@ async.series([
     db = require('../src/node/db/DB');
     db.init(callback);
   }, function(callback) {
+     PadManager = require('../src/node/db/PadManager');
+     Pad = require('../src/node/db/Pad').Pad;
      // Get references to the original pad and to a newly created pad
      // HACK: This is a standalone script, so we want to write everything
      // out to the database immediately.  The only problem with this is
      // that a driver (like the mysql driver) can hardcode these values.
      db.db.db.settings = {cache: 0, writeInterval: 0, json: true};
-     PadManager = require('../src/node/db/PadManager');
-     PadManager.getPad(padId, function(err, _pad)  {
-       pad = _pad;
-       PadManager.getPad(newPadId, function(err, _newPad) {
-         newPad = _newPad;
-         callback();
-       });
+     // Validate the newPadId if specified and that a pad with that ID does
+     // not already exist to avoid overwriting it.
+     if (!PadManager.isValidPadId(newPadId)) {
+       console.error("Cannot create a pad with that id as it is invalid");
+       process.exit(1);
+     }
+     PadManager.doesPadExists(newPadId, function(err, exists) {
+       if (exists) {
+         console.error("Cannot create a pad with that id as it already exists");
+         process.exit(1);
+       }
+     });
+     PadManager.getPad(padId, function(err, pad)  {
+       oldPad = pad;
+       newPad = new Pad(newPadId);
+       callback();
      });
   }, function(callback) {
     // Clone all Chat revisions
-    var chatHead = pad.chatHead;
-    for(var i = 0; i <= chatHead; i++) {
+    var chatHead = oldPad.chatHead;
+    for(var i = 0, curHeadNum = 0; i <= chatHead; i++) {
       db.db.get("pad:" + padId + ":chat:" + i, function (err, chat) {
-        db.db.set("pad:" + newPadId + ":chat:" + i, chat);
-        console.log("Created: Chat Revision: pad:" + newPadId + ":chat:" + i)
+        db.db.set("pad:" + newPadId + ":chat:" + curHeadNum++, chat);
+        console.log("Created: Chat Revision: pad:" + newPadId + ":chat:" + curHeadNum);
       });
     }
     callback();
@@ -65,28 +76,16 @@ async.series([
     // Author attributes are derived from changesets, but there can also be
     // non-author attributes with specific mappings that changesets depend on
     // and, AFAICT, cannot be recreated any other way
-    newPad.pool.numToAttrib = pad.pool.numToAttrib;
-    for(var i = 1; i <= newRevHead; i++) {
-      db.db.get("pad:" + padId + ":revs:" + i, function(err, rev) {
-        var author = rev.meta.author;
-        var changeset = rev.changeset;
-        var newRev = ++newPad.head;
-        var newRevId = "pad:" + newPad.id + ":revs:" + newRev;
-        var newAtext = Changeset.applyToAText(changeset, newPad.atext, newPad.pool);
-
-        AuthorManager.addPad(author, newPad.id);
-        newPad.pool.putAttrib(['author', author || '']);
-
-        Changeset.copyAText(newAtext, newPad.atext);
-
+    newPad.pool.numToAttrib = oldPad.pool.numToAttrib;
+    for(var curRevNum = 0; curRevNum <= newRevHead; curRevNum++) {
+      db.db.get("pad:" + padId + ":revs:" + curRevNum, function(err, rev) {
+        var newRevNum = ++newPad.head;
+        var newRevId = "pad:" + newPad.id + ":revs:" + newRevNum;
         db.db.set(newRevId, rev);
-        if(newRev % 100 == 0) {
-          db.db.setSub(newRevId, ["meta", "atext"], newPad.atext)
-        }
-
-        console.log("Created: Revision: pad:" + newPad.id + ":revs:" + newRev);
-
-        if (newRev == newRevHead) {
+        AuthorManager.addPad(rev.meta.author, newPad.id);
+        newPad.atext = Changeset.applyToAText(rev.changeset, newPad.atext, newPad.pool);
+        console.log("Created: Revision: pad:" + newPad.id + ":revs:" + newRevNum);
+        if (newRevNum == newRevHead) {
           callback();
         }
       });
@@ -95,8 +94,8 @@ async.series([
     // Add saved revisions up to the new revision head
     console.log(newPad.head);
     var newSavedRevisions = [];
-    for(var i in pad.savedRevisions) {
-      savedRev = pad.savedRevisions[i]
+    for(var i in oldPad.savedRevisions) {
+      savedRev = oldPad.savedRevisions[i]
       if (savedRev.revNum <= newRevHead) {
         newSavedRevisions.push(savedRev);
         console.log("Added: Saved Revision: " + savedRev.revNum);
