@@ -742,7 +742,16 @@ function handleUserChanges(data, cb)
         return callback(new Error("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length));
       }
 
-      pad.appendRevision(changeset, thisSession.author);
+      try
+      {
+        pad.appendRevision(changeset, thisSession.author);
+      }
+      catch(e)
+      {
+        client.json.send({disconnect:"badChangeset"});
+        stats.meter('failedChangesets').mark();
+        return callback(e)
+      }
 
       var correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
       if (correctionChangeset) {
