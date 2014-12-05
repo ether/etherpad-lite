@@ -6,11 +6,10 @@ $(document).ready(function () {
     pathComponents = location.pathname.split('/'),
     // Strip admin/plugins
     baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/',
-    resource = baseURL.substring(1) + "socket.io";
+    path = baseURL + "socket.io";
 
   //connect
-  var room = url + "settings";
-  socket = io.connect(room, {resource : resource});
+  socket = io.connect(url, {path : path}).of("/settings");
 
   socket.on('settings', function (settings) {
 
