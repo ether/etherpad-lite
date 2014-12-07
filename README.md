@@ -11,22 +11,25 @@ that allows your web application to manage pads, users and groups. It is recomme
 
 There is also a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
-There's also a full-featured plugin framework, allowing you to easily add your own features.  By default your Etherpad is rather sparce and because Etherpad takes a lot of it's inspiration from Wordpress plugins are really easy to install and update.  Once you have Etherpad installed you should visit the plugin page and take control.
+There's also a full-featured plugin framework, allowing you to easily add your own features.  By default your Etherpad is rather sparse and because Etherpad takes a lot of it's inspiration from Wordpress plugins are really easy to install and update.  Once you have Etherpad installed you should visit the plugin page and take control.
 
 Finally, Etherpad comes with translations into most languages!  Users are automatically delivered the correct language for their local settings.
+
+
+**Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live.**
 
 Also, check out the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**, really!
 
 # Installation
 
-Etherpad works with node v0.8 and v0.10, only. (We don't support v0.6)
+Etherpad works with node v0.8, v0.10 and v0.11, only. (We don't support v0.6)
 
 ## Windows
 
 ### Prebuilt windows package
 This package works out of the box on any windows machine, but it's not very useful for developing purposes...
 
-1. [Download the latest windows package](http://etherpad.org/downloads/etherpad-lite-win-1.2.91-7492fb18a4.zip)
+1. [Download the latest windows package](http://etherpad.org/#download)
 2. Extract the folder
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
@@ -47,15 +50,15 @@ Update to the latest version with `git pull origin`, then run `bin\installOnWind
 
 ## GNU/Linux and other UNIX-like systems
 You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
-*For Debian/Ubuntu*: `apt-get install gzip git-core curl python libssl-dev pkg-config build-essential`  
-*For Fedora/CentOS*: `yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"`
-*For FreeBSD*: `portinstall node node, npm and git (optional)`
+- *For Debian/Ubuntu*: `apt-get install gzip git-core curl python libssl-dev pkg-config build-essential`  
+- *For Fedora/CentOS*: `yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"`
+- *For FreeBSD*: `portinstall node, npm, git (optional)`
 
-Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, be careful of installing nodejs from apt.
+Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
 
-**As any user (we recommend creating a separate user called etherpad-lite):**
+**As any user (we recommend creating a separate user called etherpad):**
 
-1. Move to a folder where you want to install Etherpad Lite. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
+1. Move to a folder where you want to install Etherpad. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code `cd etherpad-lite`
 
 Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser. 
@@ -70,6 +73,10 @@ You like it? [Next steps](#next-steps).
 You can initially modify the settings in `settings.json`. (If you need to handle multiple settings files, you can pass the path to a settings file to `bin/run.sh` using the `-s|--settings` option. This allows you to run multiple Etherpad instances from the same installation.)  Once you have access to your /admin section settings can be modified through the web browser.
 
 You should use a dedicated database such as "mysql", if you are planning on using etherpad-in a production environment, since the "dirtyDB" database driver is only for testing and/or development purposes.
+
+## Plugins and themes
+
+Etherpad is very customizable through plugins. Instructions for installing themes and plugins can be found in [the plugin wiki article](https://github.com/ether/etherpad-lite/wiki/Available-Plugins).
 
 ## Helpful resources
 The [wiki](https://github.com/ether/etherpad-lite/wiki) is your one-stop resource for Tutorials and How-to's, really check it out! Also, feel free to improve these wiki pages.

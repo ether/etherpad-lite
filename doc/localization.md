@@ -1,5 +1,5 @@
 # Localization
-Etherpad lite provides a  multi-language user interface, that's apart from your users' content, so users from different countries can collaborate on a single document, while still having the user interface displayed in their mother tongue.
+Etherpad provides a  multi-language user interface, that's apart from your users' content, so users from different countries can collaborate on a single document, while still having the user interface displayed in their mother tongue.
 
 
 ## Translating
@@ -83,7 +83,7 @@ Everytime the http server is started, it will auto-detect your messages and merg
 
 ### Overwrite core messages
 
-You can overwrite Etherpad Lite's core messages in your plugin's locale files.
+You can overwrite Etherpad's core messages in your plugin's locale files.
 For example, if you want to replace `Chat` with `Notes`, simply add...
 
 *ep_your-plugin/locales/en.json*

@@ -8,7 +8,7 @@ var hookCallWrapper = function (hook, hook_name, args, cb) {
 
   // Normalize output to list for both sync and async cases
   var normalize = function(x) {
-    if (x == undefined) return [];
+    if (x === undefined) return [];
     return x;
   }
   var normalizedhook = function () {
@@ -61,7 +61,7 @@ exports.flatten = function (lst) {
       if (lst[i] != undefined && lst[i] != null) {
         for (var j = 0; j < lst[i].length; j++) {
           res.push(lst[i][j]);
-	}
+    }
       }
     }
   }

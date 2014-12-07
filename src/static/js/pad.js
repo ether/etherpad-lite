@@ -43,7 +43,6 @@ var padsavedrevs = require('./pad_savedrevs');
 var paduserlist = require('./pad_userlist').paduserlist;
 var padutils = require('./pad_utils').padutils;
 var colorutils = require('./colorutils').colorutils;
-
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
@@ -67,7 +66,7 @@ function createCookie(name, value, days, path){ /* Warning Internet Explorer doe
   }
   
   //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if(navigator.appName=='Microsoft Internet Explorer'){
+  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
     document.cookie = name + "=" + value + expires + "; path="+document.location;
   }
   else{
@@ -254,8 +253,9 @@ function handshake()
     //the access was not granted, give the user a message
     if(obj.accessStatus)
     {
-      if(!receivedClientVars)
+      if(!receivedClientVars){
         $('.passForm').submit(require(module.id).savePassword);
+      }
 
       if(obj.accessStatus == "deny")
       {
@@ -334,7 +334,7 @@ function handshake()
       {
         pad.notifyChangeName(settings.globalUserName); // Notifies the server
         pad.myUserInfo.name = settings.globalUserName;
-        $('#myusernameedit').attr({"value":settings.globalUserName}); // Updates the current users UI
+        $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
       }
       if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor))
       {
@@ -385,7 +385,6 @@ var pad = {
   diagnosticInfo: {},
   initTime: 0,
   clientTimeOffset: null,
-  preloadedImages: false,
   padOptions: {},
 
   // these don't require init; clientVars should all go through here
@@ -453,13 +452,13 @@ var pad = {
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
+    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0)))
     {
       document.domain = document.domain; // for comet
     }
 
     // for IE
-    if ($.browser.msie)
+    if (browser.msie)
     {
       try
       {
@@ -727,19 +726,6 @@ var pad = {
   },
   handleIsFullyConnected: function(isConnected, isInitialConnect)
   {
-    // load all images referenced from CSS, one at a time,
-    // starting one second after connection is first established.
-    if (isConnected && !pad.preloadedImages)
-    {
-      window.setTimeout(function()
-      {
-        if (!pad.preloadedImages)
-        {
-          pad.preloadImages();
-          pad.preloadedImages = true;
-        }
-      }, 1000);
-    }
 
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
@@ -836,34 +822,6 @@ var pad = {
     {
       pad.collabClient.addHistoricalAuthors(data);
     }
-  },
-  preloadImages: function()
-  {
-    var images = ["../static/img/connectingbar.gif"];
-
-    function loadNextImage()
-    {
-      if (images.length == 0)
-      {
-        return;
-      }
-      var img = new Image();
-      img.src = images.shift();
-      if (img.complete)
-      {
-        scheduleLoadNextImage();
-      }
-      else
-      {
-        $(img).bind('error load onreadystatechange', scheduleLoadNextImage);
-      }
-    }
-
-    function scheduleLoadNextImage()
-    {
-      window.setTimeout(loadNextImage, 0);
-    }
-    scheduleLoadNextImage();
   }
 };
 
@@ -936,4 +894,3 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
-

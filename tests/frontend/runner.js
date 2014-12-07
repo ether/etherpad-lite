@@ -162,7 +162,8 @@ $(function(){
   }
 
   //allow cross iframe access
-  if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+  var browser = bowser;
+  if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
     document.domain = document.domain; // for comet
   }
 
@@ -188,14 +189,14 @@ $(function(){
 
   //initalize the test helper
   helper.init(function(){
-	  //configure and start the test framework
+    //configure and start the test framework
     var grep = getURLParameter("grep");
     if(grep != "null"){
       mocha.grep(grep);
     }
 
-	  mocha.ignoreLeaks();
-		
+    mocha.ignoreLeaks();
+
     mocha.reporter(WebdriverAndHtmlReporter(mocha._reporter));
 
     mocha.run();

@@ -15,7 +15,7 @@ describe("indentation button", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(inner$.browser.mozilla){ // if it's a mozilla browser
+    if(inner$(window)[0].bowser.firefox){ // if it's a mozilla browser
       var evtType = "keypress";
     }else{
       var evtType = "keydown";
@@ -158,8 +158,8 @@ describe("indentation button", function(){
     testHelper.selectText(firstTextElement[0], $inner);
 
     /* this test creates the below content, both should have double indentation
-		line1
-		line2
+    line1
+    line2
     
 
     firstTextElement.sendkeys('{rightarrow}'); // simulate a keypress of enter

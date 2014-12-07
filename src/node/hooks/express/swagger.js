@@ -86,7 +86,7 @@ var API = {
     },
     "createIfNotExistsFor" : {
       "func": "createGroupIfNotExistsFor",
-      "description": "this functions helps you to map your application group ids to etherpad lite group ids",
+      "description": "this functions helps you to map your application group ids to Etherpad group ids",
       "response": {"groupID":{"type":"string"}}
     },
     "delete" : {
@@ -124,7 +124,7 @@ var API = {
     },
     "createIfNotExistsFor": {
       "func": "createAuthorIfNotExistsFor",
-      "description": "this functions helps you to map your application author ids to etherpad lite author ids",
+      "description": "this functions helps you to map your application author ids to Etherpad author ids",
       "response": {"authorID":{"type":"string"}}
     },
     "listPads": {

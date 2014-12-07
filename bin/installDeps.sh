@@ -16,7 +16,7 @@ if [ $(uname) = "SunOS" ]; then
   }
 fi
 
-#Is wget installed?
+#Is curl installed?
 hash curl > /dev/null 2>&1 || { 
   echo "Please install curl" >&2
   exit 1 
@@ -36,16 +36,17 @@ hash npm > /dev/null 2>&1 || {
 
 #check npm version
 NPM_VERSION=$(npm --version)
-if [ ! $(echo $NPM_VERSION | cut -d "." -f 1) = "1" ]; then
-  echo "You're running a wrong version of npm, you're using $NPM_VERSION, we need 1.x" >&2
+NPM_MAIN_VERSION=$(echo $NPM_VERSION | cut -d "." -f 1)
+if [ $(echo $NPM_MAIN_VERSION) = "0" ]; then
+  echo "You're running a wrong version of npm, you're using $NPM_VERSION, we need 1.x or higher" >&2
   exit 1 
 fi
 
 #check node version
 NODE_VERSION=$(node --version)
 NODE_V_MINOR=$(echo $NODE_VERSION | cut -d "." -f 1-2)
-if [ ! $NODE_V_MINOR = "v0.8" ] && [ ! $NODE_V_MINOR = "v0.10" ]; then
-  echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.8.x or v0.10.x" >&2
+if [ ! $NODE_V_MINOR = "v0.8" ] && [ ! $NODE_V_MINOR = "v0.10" ] && [ ! $NODE_V_MINOR = "v0.11" ]; then
+  echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.8.x, v0.10.x or v0.11.x" >&2
   exit 1 
 fi
 
@@ -98,7 +99,7 @@ fi
 echo "Clear minfified cache..."
 rm -f var/minified*
 
-echo "ensure custom css/js files are created..."
+echo "Ensure custom css/js files are created..."
 
 for f in "index" "pad" "timeslider"
 do

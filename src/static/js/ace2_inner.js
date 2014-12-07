@@ -28,7 +28,6 @@ $ = jQuery = require('./rjquery').$;
 _ = require("./underscore");
 
 var isNodeText = Ace2Common.isNodeText,
-  browser = $.browser,
   getAssoc = Ace2Common.getAssoc,
   setAssoc = Ace2Common.setAssoc,
   isTextNode = Ace2Common.isTextNode,
@@ -36,7 +35,7 @@ var isNodeText = Ace2Common.isNodeText,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
   var hooks = require('./pluginfw/hooks');
-
+  var browser = require('./browser').browser;
 
 function Ace2Inner(){
 
@@ -51,7 +50,6 @@ function Ace2Inner(){
   var linestylefilter = require('./linestylefilter').linestylefilter;
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
-  var makeVirtualLineView = require('./virtual_lines').makeVirtualLineView;
   var AttributeManager = require('./AttributeManager');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
@@ -79,7 +77,6 @@ function Ace2Inner(){
   iframe.ace_outerWin = null; // prevent IE 6 memory leak
   var sideDiv = iframe.nextSibling;
   var lineMetricsDiv = sideDiv.nextSibling;
-  var overlaysdiv = lineMetricsDiv.nextSibling;
   initLineNumbers();
 
   var outsideKeyDown = noop;
@@ -102,13 +99,13 @@ function Ace2Inner(){
     apool: new AttribPool()
   };
 
-  // lines, alltext, alines, and DOM are set up in setup()
+  // lines, alltext, alines, and DOM are set up in init()
   if (undoModule.enabled)
   {
     undoModule.apool = rep.apool;
   }
 
-  var root, doc; // set in setup()
+  var root, doc; // set in init()
   var isEditable = true;
   var doesWrap = true;
   var hasLineNumbers = true;
@@ -153,7 +150,6 @@ function Ace2Inner(){
   // only calling it in error cases or while debugging.
   var dmesg = noop;
   window.dmesg = noop;
-
 
   var scheduler = parent; // hack for opera required
 
@@ -344,19 +340,6 @@ function Ace2Inner(){
       spanStyle.paddingTop = extraTodding + "px";
       spanStyle.paddingBottom = extraBodding + "px";
     }
-  }
-
-  function boldColorFromColor(lightColorCSS)
-  {
-    var color = colorutils.css2triple(lightColorCSS);
-
-    // amp up the saturation to full
-    color = colorutils.saturate(color);
-
-    // normalize brightness based on luminosity
-    color = colorutils.scaleColor(color, 0, 0.5 / colorutils.luminosity(color));
-
-    return colorutils.triple2css(color);
   }
 
   function fadeColor(colorCSS, fadeFrac)
@@ -551,22 +534,6 @@ function Ace2Inner(){
   }
   editorInfo.ace_inCallStackIfNecessary = inCallStackIfNecessary;
 
-  function recolorLineByKey(key)
-  {
-    if (rep.lines.containsKey(key))
-    {
-      var offset = rep.lines.offsetOfKey(key);
-      var width = rep.lines.atKey(key).width;
-      recolorLinesInRange(offset, offset + width);
-    }
-  }
-
-  function getLineKeyForOffset(charOffset)
-  {
-    return rep.lines.atOffset(charOffset).key;
-  }
-
-
   function dispose()
   {
     disposed = true;
@@ -628,6 +595,13 @@ function Ace2Inner(){
         fixView();
       });
     }, 0);
+
+    // Chrome can't handle the truth..  If CSS rule white-space:pre-wrap
+    // is true then any paste event will insert two lines..
+    if(browser.chrome){
+      $("#innerdocbody").css({"white-space":"normal"});
+    }
+
   }
 
   function setStyled(newVal)
@@ -1173,34 +1147,6 @@ function Ace2Inner(){
   }
   editorInfo.ace_fastIncorp = fastIncorp;
 
-  function incorpIfQuick()
-  {
-    var me = incorpIfQuick;
-    var failures = (me.failures || 0);
-    if (failures < 5)
-    {
-      var isTimeUp = newTimeLimit(40);
-      var madeChanges = incorporateUserChanges(isTimeUp);
-      if (isTimeUp())
-      {
-        me.failures = failures + 1;
-      }
-      return true;
-    }
-    else
-    {
-      var skipCount = (me.skipCount || 0);
-      skipCount++;
-      if (skipCount == 20)
-      {
-        skipCount = 0;
-        me.failures = 0;
-      }
-      me.skipCount = skipCount;
-    }
-    return false;
-  }
-
   var idleWorkTimer = makeIdleAction(function()
   {
 
@@ -1727,7 +1673,7 @@ function Ace2Inner(){
     {
       //var id = n.uniqueId();
       // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
-      n.parentNode.removeChild(n);
+      if(n.parentNode) n.parentNode.removeChild(n);
 
       //dmesg(htmlPrettyEscape(htmlForRemovedChild(n)));
       //console.log("removed: "+id);
@@ -1805,13 +1751,6 @@ function Ace2Inner(){
     p.end("END");
 
     return domChanges;
-  }
-
-  function htmlForRemovedChild(n)
-  {
-    var div = doc.createElement("DIV");
-    div.appendChild(n);
-    return div.innerHTML;
   }
 
   var STYLE_ATTRIBS = {
@@ -2371,6 +2310,76 @@ function Ace2Inner(){
     ]);
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
+
+  function getAttributeOnSelection(attributeName){
+    if (!(rep.selStart && rep.selEnd)) return;
+    var selectionAllHasIt = true;
+    var withIt = Changeset.makeAttribsString('+', [
+      [attributeName, 'true']
+    ], rep.apool);
+    var withItRegex = new RegExp(withIt.replace(/\*/g, '\\*') + "(\\*|$)");
+
+    function hasIt(attribs)
+    {
+      return withItRegex.test(attribs);
+    }
+
+    var selStartLine = rep.selStart[0];
+    var selEndLine = rep.selEnd[0];
+    for (var n = selStartLine; n <= selEndLine; n++)
+    {
+      var opIter = Changeset.opIterator(rep.alines[n]);
+      var indexIntoLine = 0;
+      var selectionStartInLine = 0;
+      var selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
+      if(rep.lines.atIndex(n).text.length == 0){
+        return false; // If the line length is 0 we basically treat it as having no formatting
+      }
+      if(rep.selStart[1] == rep.selEnd[1] && rep.selStart[1] == rep.lines.atIndex(n).text.length){
+        return false; // If we're at the end of a line we treat it as having no formatting
+      }
+      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){
+        rep.selEnd[1] == 1;
+      }
+      if(rep.selEnd[1] == -1){
+        rep.selEnd[1] = 1; // sometimes rep.selEnd is -1, not sure why..  When it is we should look at the first char
+      }
+      if (n == selStartLine)
+      {
+        selectionStartInLine = rep.selStart[1];
+      }
+      if (n == selEndLine)
+      {
+        selectionEndInLine = rep.selEnd[1];
+      }
+      while (opIter.hasNext())
+      {
+        var op = opIter.next();
+        var opStartInLine = indexIntoLine;
+        var opEndInLine = opStartInLine + op.chars;
+        if (!hasIt(op.attribs))
+        {
+          // does op overlap selection?
+          if (!(opEndInLine <= selectionStartInLine || opStartInLine >= selectionEndInLine))
+          {
+            selectionAllHasIt = false;
+            break;
+          }
+        }
+        indexIntoLine = opEndInLine;
+      }
+      if (!selectionAllHasIt)
+      {
+        break;
+      }
+    }
+    if(selectionAllHasIt){
+      return true;
+    }else{
+      return false;
+    }
+  }
+  editorInfo.ace_getAttributeOnSelection = getAttributeOnSelection;
 
   function toggleAttributeOnSelection(attributeName)
   {
@@ -3597,6 +3606,26 @@ function Ace2Inner(){
       return;
     }
 
+    // Is caret potentially hidden by the chat button?
+    var myselection = document.getSelection(); // get the current caret selection
+    var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+    
+    if(myselection.focusNode.wholeText){ // Is there any content?  If not lineHeight will report wrong..
+      var lineHeight = myselection.focusNode.parentNode.offsetHeight; // line height of populated links
+    }else{
+      var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
+    }
+    var heightOfChatIcon = parent.parent.$('#chaticon').height(); // height of the chat icon button
+    lineHeight = (lineHeight *2) + heightOfChatIcon;
+    var viewport = getViewPortTopBottom();
+    var viewportHeight = viewport.bottom - viewport.top - lineHeight;
+    var relCaretOffsetTop = caretOffsetTop - viewport.top; // relative Caret Offset Top to viewport
+    if (viewportHeight < relCaretOffsetTop){
+      parent.parent.$("#chaticon").css("opacity",".3"); // make chaticon opacity low when user types near it
+    }else{
+      parent.parent.$("#chaticon").css("opacity","1"); // make chaticon opacity back to full (so fully visible)
+    }
+
     //dmesg("keyevent type: "+type+", which: "+which);
     // Don't take action based on modifier keys going up and down.
     // Modifier keys do not generate "keypress" events.
@@ -3670,7 +3699,7 @@ function Ace2Inner(){
           }, 0);
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey)) /* Do a saved revision on ctrl S */
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey) && !evt.altKey) /* Do a saved revision on ctrl S */
         {
           evt.preventDefault();
           var originalBackground = parent.parent.$('#revisionlink').css("background")
@@ -3737,6 +3766,36 @@ function Ace2Inner(){
           toggleAttributeOnSelection('underline');
           specialHandled = true;
         }
+       if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "5" && (evt.metaKey || evt.ctrlKey))
+        {
+          // cmd-5 (strikethrough)
+          fastIncorp(13);
+          evt.preventDefault();
+          toggleAttributeOnSelection('strikethrough');
+          specialHandled = true;
+        }
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "l" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
+        {
+          // cmd-shift-L (unorderedlist)
+          fastIncorp(9);
+          evt.preventDefault();
+          doInsertUnorderedList()
+          specialHandled = true;
+	}
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
+        {
+          // cmd-shift-N (orderedlist)
+          fastIncorp(9);
+          evt.preventDefault();
+          doInsertOrderedList()
+          specialHandled = true;
+	}
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "c" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey) {
+          // cmd-shift-C (clearauthorship)
+          fastIncorp(9);
+          evt.preventDefault();
+          CMDS.clearauthorship();
+        }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "h" && (evt.ctrlKey))
         {
           // cmd-H (backspace)
@@ -3745,7 +3804,8 @@ function Ace2Inner(){
           doDeleteKey();
           specialHandled = true;
         }
-        if((evt.which == 33 || evt.which == 34) && type == 'keydown'){
+        if((evt.which == 36 && evt.ctrlKey == true)){ setScrollY(0); } // Control Home send to Y = 0
+        if((evt.which == 33 || evt.which == 34) && type == 'keydown' && !evt.ctrlKey){
 
           evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
 
@@ -3787,27 +3847,41 @@ function Ace2Inner(){
             }
             updateBrowserSelectionFromRep();
             var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+            var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
             // top.console.log(caretOffsetTop);
             setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
 
           }, 200);
         }
-
         /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
            We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
-           presses and holds the arrow key */
-        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && $.browser.chrome){
+           presses and holds the arrow key ..  Sorry if this is ugly, blame Chrome's weird handling of viewports after new content is added*/
+        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && browser.chrome){
           var viewport = getViewPortTopBottom();
           var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-          var caretOffsetTop = myselection.focusNode.parentNode.offsetTop; // get the carets selection offset in px IE 214
-          var lineHeight = $(myselection.focusNode.parentNode).parent().height(); // get the line height of the caret line
+          var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+          var lineHeight = $(myselection.focusNode.parentNode).parent("div").height(); // get the line height of the caret line
+          // top.console.log("offsetTop", myselection.focusNode.parentNode.parentNode.offsetTop);
+          try {
+            lineHeight = $(myselection.focusNode).height() // needed for how chrome handles line heights of null objects
+            // console.log("lineHeight now", lineHeight);
+          }catch(e){}
           var caretOffsetTopBottom = caretOffsetTop + lineHeight;
           var visibleLineRange = getVisibleLineRange(); // the visible lines IE 1,10
 
           if(caretOffsetTop){ // sometimes caretOffsetTop bugs out and returns 0, not sure why, possible Chrome bug?  Either way if it does we don't wanna mess with it
-            var caretIsNotVisible = (caretOffsetTop <= viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
+            // top.console.log(caretOffsetTop, viewport.top, caretOffsetTopBottom, viewport.bottom);
+            var caretIsNotVisible = (caretOffsetTop < viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
+            // Expect some weird behavior caretOffsetTopBottom is greater than viewport.bottom on a keypress down
+            var offsetTopSamePlace = caretOffsetTop == viewport.top; // sometimes moving key left & up leaves the caret at the same point as the viewport.top, technically the caret is visible but it's not fully visible so we should move to it
+            if(offsetTopSamePlace && (evt.which == 37 || evt.which == 38)){
+                var newY = caretOffsetTop;
+                setScrollY(newY);
+            }
+
             if(caretIsNotVisible){ // is the cursor no longer visible to the user?
+              // top.console.log("Caret is NOT visible to the user");
+              // top.console.log(caretOffsetTop,viewport.top,caretOffsetTopBottom,viewport.bottom);
               // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
               if(evt.which == 37 || evt.which == 38){ // If left or up arrow
                 var newY = caretOffsetTop; // That was easy!
@@ -3816,19 +3890,11 @@ function Ace2Inner(){
                 // only move the viewport if we're at the bottom of the viewport, if we hit down any other time the viewport shouldn't change
                 // NOTE: This behavior only fires if Chrome decides to break the page layout after a paste, it's annoying but nothing I can do
                 var selection = getSelection();
-                // top.console.log("line #", rep.selStart[0]); // the line our caret is on
-                // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
-                // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
-
-                // Holding down arrow after a paste can lose the cursor -- This is the best fix I can find
-                if(rep.selStart[0] >= visibleLineRange[1] || rep.selStart[0] < visibleLineRange[0] ){ // if we're not at the bottom of the viewport
-                  // top.console.log(viewport, lineHeight, myselection);
-                  // TODO: Make it so chrome doesnt need to redraw the page by only applying this technique if required
-                  var newY = caretOffsetTop;
-                }else{ // we're at the bottom of the viewport so snap to a "new viewport"
-                  // top.console.log(viewport, lineHeight, myselection);
-                  var newY = caretOffsetTopBottom; // Allow continuous holding of down arrow to redraw the screen so we can see what we are going to highlight
-                }
+                top.console.log("line #", rep.selStart[0]); // the line our caret is on
+                top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
+                top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
+                top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
+                var newY = viewport.top + lineHeight;
               }
               if(newY){
                 setScrollY(newY); // set the scrollY offset of the viewport on the document
@@ -3943,6 +4009,7 @@ function Ace2Inner(){
     selection.focusAtStart = !! rep.selFocusAtStart;
     setSelection(selection);
   }
+  editorInfo.ace_updateBrowserSelectionFromRep = updateBrowserSelectionFromRep;
 
   function nodeMaxIndex(nd)
   {
@@ -4180,7 +4247,7 @@ function Ace2Inner(){
     selection.startPoint.index+" / "+
     selection.endPoint.node.uniqueId()+","+
     selection.endPoint.index);
-	}*/
+}*/
       }
       return selection;
     }
@@ -4826,54 +4893,6 @@ function Ace2Inner(){
     else $(elem).removeClass(className);
   }
 
-  function setup()
-  {
-    doc = document; // defined as a var in scope outside
-    inCallStackIfNecessary("setup", function()
-    {
-      var body = doc.getElementById("innerdocbody");
-      root = body; // defined as a var in scope outside
-      if (browser.mozilla) addClass(root, "mozilla");
-      if (browser.safari) addClass(root, "safari");
-      if (browser.msie) addClass(root, "msie");
-      if (browser.msie)
-      {
-        // cache CSS background images
-        try
-        {
-          doc.execCommand("BackgroundImageCache", false, true);
-        }
-        catch (e)
-        { /* throws an error in some IE 6 but not others! */
-        }
-      }
-      setClassPresence(root, "authorColors", true);
-      setClassPresence(root, "doesWrap", doesWrap);
-
-      initDynamicCSS();
-
-      enforceEditability();
-
-      // set up dom and rep
-      while (root.firstChild) root.removeChild(root.firstChild);
-      var oneEntry = createDomLineEntry("");
-      doRepLineSplice(0, rep.lines.length(), [oneEntry]);
-      insertDomLines(null, [oneEntry.domInfo], null);
-      rep.alines = Changeset.splitAttributionLines(
-      Changeset.makeAttribution("\n"), "\n");
-
-      bindTheEventHandlers();
-
-    });
-
-    scheduler.setTimeout(function()
-    {
-      parent.readyFunc(); // defined in code that sets up the inner iframe
-    }, 0);
-
-    isSetUp = true;
-  }
-
   function focus()
   {
     window.focus();
@@ -5248,7 +5267,7 @@ function Ace2Inner(){
 
         if(h){ // apply style to div
           div.style.height = h +"px";
-	}
+        }
 
         div.appendChild(odoc.createTextNode(String(n)));
         fragment.appendChild(div);

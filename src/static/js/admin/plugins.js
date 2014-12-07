@@ -10,7 +10,8 @@ $(document).ready(function () {
     resource = baseURL.substring(1) + "socket.io";
 
   //connect
-  socket = io.connect(url, {resource : resource}).of("/pluginfw/installer");
+  var room = url + "pluginfw/installer";
+  socket = io.connect(room, {resource : resource});
 
   function search(searchTerm, limit) {
     if(search.searchTerm != searchTerm) {
@@ -81,7 +82,7 @@ $(document).ready(function () {
         if(attr == "name"){ // Hack to rewrite URLS into name
           row.find(".name").html("<a target='_blank' title='Plugin details' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin['name'].substr(3)+"</a>"); // remove 'ep_'
         }else{
-          row.find("." + attr).html(plugin[attr]);
+          row.find("." + attr).text(plugin[attr]);
         }
       }
       row.find(".version").html( plugin.version );

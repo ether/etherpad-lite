@@ -1,3 +1,7 @@
+html {
+  border-top: solid green 5pt;
+}
+
 body.apidoc {
   width: 60%;
   min-width: 10cm;
@@ -5,8 +9,7 @@ body.apidoc {
 }
 
 #header {
-  background-color: #5a5;
-  padding: 10px;
+  padding: 1pc 0;
   color: #111;
 }
 

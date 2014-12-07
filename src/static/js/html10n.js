@@ -23,28 +23,16 @@
 window.html10n = (function(window, document, undefined) {
   
   // fix console
-  var console = window.console
-  function interceptConsole(method){
-      if (!console) return function() {}
-
-      var original = console[method]
-
-      // do sneaky stuff
-      if (original.bind){
-        // Do this for normal browsers
-        return original.bind(console)
-      }else{
-        return function() {
-          // Do this for IE
-          var message = Array.prototype.slice.apply(arguments).join(' ')
-          original(message)
-        }
+  (function() {
+    var noop = function() {};
+    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    var console = (window.console = window.console || {});
+    for (var i = 0; i < names.length; ++i) {
+      if (!console[names[i]]) {
+        console[names[i]] = noop;
       }
-  }
-  var consoleLog = interceptConsole('log')
-    , consoleWarn = interceptConsole('warn')
-    , consoleError = interceptConsole('warn')
-
+    }
+  }());
 
   // fix Array#forEach in IE
   // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
@@ -97,21 +85,21 @@ window.html10n = (function(window, document, undefined) {
    * MicroEvent - to make any js object an event emitter (server or browser)
    */
 
-  var MicroEvent	= function(){}
-  MicroEvent.prototype	= {
-    bind	: function(event, fct){
+  var MicroEvent = function(){}
+  MicroEvent.prototype = {
+    bind: function(event, fct){
       this._events = this._events || {};
-      this._events[event] = this._events[event]	|| [];
+      this._events[event] = this._events[event] || [];
       this._events[event].push(fct);
     },
-    unbind	: function(event, fct){
+    unbind: function(event, fct){
       this._events = this._events || {};
-      if( event in this._events === false  )	return;
+      if( event in this._events === false  ) return;
       this._events[event].splice(this._events[event].indexOf(fct), 1);
     },
-    trigger	: function(event /* , args... */){
+    trigger: function(event /* , args... */){
       this._events = this._events || {};
-      if( event in this._events === false  )	return;
+      if( event in this._events === false  ) return;
       for(var i = 0; i < this._events[event].length; i++){
         this._events[event][i].apply(this, Array.prototype.slice.call(arguments, 1))
       }
@@ -121,8 +109,8 @@ window.html10n = (function(window, document, undefined) {
    * mixin will delegate all MicroEvent.js function in the destination object
    * @param {Object} the object which will support MicroEvent
    */
-  MicroEvent.mixin	= function(destObject){
-    var props	= ['bind', 'unbind', 'trigger'];
+  MicroEvent.mixin = function(destObject){
+    var props = ['bind', 'unbind', 'trigger'];
     if(!destObject) return;
     for(var i = 0; i < props.length; i ++){
       destObject[props[i]] = MicroEvent.prototype[props[i]];
@@ -148,7 +136,7 @@ window.html10n = (function(window, document, undefined) {
       for (var i=0, n=this.resources.length; i < n; i++) {
         this.fetch(this.resources[i], lang, function(e) {
           reqs++;
-          if(e) consoleWarn(e)
+          if(e) console.warn(e)
           
           if (reqs < n) return;// Call back once all reqs are completed
           cb && cb()
@@ -191,9 +179,18 @@ window.html10n = (function(window, document, undefined) {
       return
     }
 
+    // dat alng ain't here, man!
     if (!data[lang]) {
-      cb(new Error('Couldn\'t find translations for '+lang))
-      return
+      var msg = 'Couldn\'t find translations for '+lang
+        , l
+      if(~lang.indexOf('-')) lang = lang.split('-')[0] // then let's try related langs
+      for(l in data) {
+        if(lang != l && l.indexOf(lang) === 0 && data[l]) {
+          lang = l
+          break;
+        }
+      }
+      if(lang != l) return cb(new Error(msg))
     }
     
     if ('string' == typeof data[lang]) {
@@ -638,7 +635,7 @@ window.html10n = (function(window, document, undefined) {
     // return a function that gives the plural form name for a given integer
     var index = locales2rules[lang.replace(/-.*$/, '')];
     if (!(index in pluralRules)) {
-      consoleWarn('plural form unknown for [' + lang + ']');
+      console.warn('plural form unknown for [' + lang + ']');
       return function() { return 'other'; };
     }
     return pluralRules[index];
@@ -718,7 +715,7 @@ window.html10n = (function(window, document, undefined) {
     var i = 0
       , n = list.length
     iterator(list[i], i, function each(err) {
-      if(err) consoleLog(err)
+      if(err) console.error(err)
       i++
       if (i < n) return iterator(list[i],i, each);
       cb()
@@ -741,8 +738,8 @@ window.html10n = (function(window, document, undefined) {
   
   html10n.get = function(id, args) {
     var translations = html10n.translations
-    if(!translations) return consoleWarn('No translations available (yet)')
-    if(!translations[id]) return consoleWarn('Could not find string '+id)
+    if(!translations) return console.warn('No translations available (yet)')
+    if(!translations[id]) return console.warn('Could not find string '+id)
     
     // apply macros
     var str = translations[id]
@@ -772,7 +769,7 @@ window.html10n = (function(window, document, undefined) {
       } else if (arg in translations) {
         sub = translations[arg]
       } else {
-        consoleWarn('Could not find argument {{' + arg + '}}')
+        console.warn('Could not find argument {{' + arg + '}}')
         return str
       }
 
@@ -831,7 +828,7 @@ window.html10n = (function(window, document, undefined) {
     str.id = node.getAttribute('data-l10n-id')
     if (!str.id) return
 
-    if(!translations[str.id]) return consoleWarn('Couldn\'t find translation key '+str.id)
+    if(!translations[str.id]) return console.warn('Couldn\'t find translation key '+str.id)
 
     // get args
     if(window.JSON) {
@@ -840,7 +837,7 @@ window.html10n = (function(window, document, undefined) {
       try{
         str.args = eval(node.getAttribute('data-l10n-args'))
       }catch(e) {
-        consoleWarn('Couldn\'t parse args for '+str.id)
+        console.warn('Couldn\'t parse args for '+str.id)
       }
     }
     
@@ -878,7 +875,7 @@ window.html10n = (function(window, document, undefined) {
         }
       }
       if (!found) {
-        consoleWarn('Unexpected error: could not translate element content for key '+str.id, node)
+        console.warn('Unexpected error: could not translate element content for key '+str.id, node)
       }
     }
   }
@@ -898,11 +895,22 @@ window.html10n = (function(window, document, undefined) {
       var lang
       langs.reverse()
       
-      // loop through priority array...
+      // loop through the priority array...
       for (var i=0, n=langs.length; i < n; i++) {
         lang = langs[i]
         
-        if(!lang || !(lang in that.loader.langs)) continue;
+        if(!lang) continue;
+        if(!(lang in that.loader.langs)) {// uh, we don't have this lang availbable..
+          // then check for related langs
+          if(~lang.indexOf('-')) lang = lang.split('-')[0];
+          for(var l in that.loader.langs) {
+            if(lang != l && l.indexOf(lang) === 0) {
+              lang = l
+              break;
+            }
+          }
+          if(lang != l) continue;
+        }
         
         // ... and apply all strings of the current lang in the list
         // to our build object

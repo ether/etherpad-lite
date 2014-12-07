@@ -334,7 +334,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
       $("#ui-slider-bar").mousedown(function(evt)
       {
-        setSliderPosition(Math.floor((evt.clientX - $("#ui-slider-bar").offset().left) * sliderLength / 742));
         $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
         $("#ui-slider-handle").trigger(evt);
       });
@@ -380,16 +379,16 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       {
         var self = this;
 
-        $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
+        // $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
         $(self).mouseup(function(evt2)
         {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
           $(self).unbind('mouseup');
           BroadcastSlider.playpause();
         });
         $(document).mouseup(function(evt2)
         {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
           $(document).unbind('mouseup');
         });
       });
@@ -461,10 +460,10 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         var startPos = clientVars.collab_client_vars.rev;
         if(window.location.hash.length > 1)
         {
-	      var hashRev = Number(window.location.hash.substr(1));
-	      if(!isNaN(hashRev))
-	      {
-	        // this is necessary because of the socket.io-event which loads the changesets 
+          var hashRev = Number(window.location.hash.substr(1));
+          if(!isNaN(hashRev))
+          {
+            // this is necessary because of the socket.io-event which loads the changesets
             setTimeout(function() { setSliderPosition(hashRev); }, 1);
           }
         }

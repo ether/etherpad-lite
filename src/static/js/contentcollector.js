@@ -32,7 +32,7 @@ var _ = require('./underscore');
 
 function sanitizeUnicode(s)
 {
-  return UNorm.nfc(s).replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
+  return UNorm.nfc(s);
 }
 
 function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
@@ -54,10 +54,14 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     },
     nodeNumChildren: function(n)
     {
+      if(n.childNodes == null) return 0;
       return n.childNodes.length;
     },
     nodeChild: function(n, i)
     {
+      if(n.childNodes.item == null){
+        return n.childNodes[i];
+      }
       return n.childNodes.item(i);
     },
     nodeProp: function(n, p)
@@ -66,6 +70,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     },
     nodeAttr: function(n, a)
     {
+      if(n.getAttribute == null) return null;
       return n.getAttribute(a);
     },
     optNodeInnerHTML: function(n)
@@ -89,7 +94,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   function textify(str)
   {
     return sanitizeUnicode(
-    str.replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
+    str.replace(/\n/g, '').replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
   }
 
   function getAssoc(node, name)
@@ -398,7 +403,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         if (endPoint && node == endPoint.node)
         {
           selEnd = _pointHere(0, state);
-			}
+        }
       }
       while (txt.length > 0)
       {
@@ -467,7 +472,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         var startNewLine= (typeof(induceLineBreak)=='object'&&induceLineBreak.length==0)?true:induceLineBreak[0];
         if(startNewLine){
           cc.startNewLine(state);
-        }		  
+        }
       }
       else if (tname == "script" || tname == "style")
       {

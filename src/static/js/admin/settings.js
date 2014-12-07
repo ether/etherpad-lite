@@ -9,7 +9,8 @@ $(document).ready(function () {
     resource = baseURL.substring(1) + "socket.io";
 
   //connect
-  socket = io.connect(url, {resource : resource}).of("/settings");
+  var room = url + "settings";
+  socket = io.connect(room, {resource : resource});
 
   socket.on('settings', function (settings) {
 
@@ -55,6 +56,8 @@ $(document).ready(function () {
 
 function isJSONClean(data){
   var cleanSettings = JSON.minify(data);
+  // this is a bit naive. In theory some key/value might contain the sequences ',]' or ',}'
+  cleanSettings = cleanSettings.replace(",]","]").replace(",}","}");
   try{
     var response = jQuery.parseJSON(cleanSettings);
   }

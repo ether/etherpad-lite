@@ -80,14 +80,9 @@
           <div class="editbarright toolbar" id="editbar">
             <% e.begin_block("timesliderEditbarRight"); %>
             <ul>
-              <li onClick="window.padeditbar.toolbarClick('import_export');return false;">
-                <a id="exportlink" data-l10n-id="timeslider.toolbar.exportlink.title">
-                  <div class="buttonicon buttonicon-import_export"></div>
-                </a>
-              </li>
+              <%- toolbar.menu(settings.toolbar.timeslider) %>
             </ul>
-            <a id="returnbutton" data-l10n-id="timeslider.toolbar.returnbutton"></a>
-          <% e.end_block(); %>
+            <% e.end_block(); %>
           </div>
 
           <div>
@@ -121,7 +116,7 @@
     </div>
     <div class="reconnecting">
       <h1 data-l10n-id="pad.modals.reconnecting"></h1>
-      <p><img alt="" border="0" src="../../static/img/connectingbar.gif" /></p>
+      <p class="loadingAnimation"></p>
     </div>
     <div class="userdup">
       <h1 data-l10n-id="pad.modals.userdup"></h1>
@@ -135,7 +130,7 @@
       <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
     </div>
     <div class="looping">
-      <h1 data-l10n-id="pad.modals.looping"></h1>
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
       <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
       <p data-l10n-id="pad.modals.looping.cause"></p>
     </div>
@@ -145,20 +140,33 @@
       <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
     </div>
     <div class="slowcommit">
-      <h1 data-l10n-id="pad.modals.slowcommit"></h1>
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
       <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
       <p data-l10n-id="pad.modals.slowcommit.cause"></p>
       <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+    </div>
+    <div class="badChangeset">
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.badChangeset.explanation"></h2>
+      <p data-l10n-id="pad.modals.badChangeset.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+    </div>
+    <div class="corruptPad">
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.corruptPad.explanation"></h2>
+      <p data-l10n-id="pad.modals.corruptPad.cause"></p>
     </div>
     <div class="deleted">
       <h1 data-l10n-id="pad.modals.deleted"></h1>
       <p data-l10n-id="pad.modals.deleted.explanation"></p>
     </div>
     <div class="disconnected">
+      <% e.begin_block("disconnected"); %>
       <h1 data-l10n-id="pad.modals.disconnected"></h1>
       <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
       <p data-l10n-id="pad.modals.disconnected.cause"></p>
       <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      <% e.end_block(); %>
     </div>
     <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
         <input type="hidden" class="padId" name="padId">
@@ -169,7 +177,7 @@
 </div>
 
 <!-- export code -->
-<div id="importexport">
+<div id="import_export">
 
 <div id="export" class="popup">
   <p data-l10n-id="timeslider.exportCurrent"></p>
@@ -207,8 +215,9 @@
     require.setGlobalKeyPath("require");
 
     $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
+    browser = require('ep_etherpad-lite/static/js/browser').browser;
 
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
       document.domain = document.domain; // for comet
     }
 
@@ -228,6 +237,8 @@
       /* TODO: These globals shouldn't exist. */
       padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
       padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+
+      padeditbar.init()
     });
   })();
 </script>

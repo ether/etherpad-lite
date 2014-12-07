@@ -28,7 +28,9 @@ var ERR = require("async-stacktrace")
   , settings = require('../utils/Settings')
   , formidable = require('formidable')
   , os = require("os")
-  , importHtml = require("../utils/ImportHtml");
+  , importHtml = require("../utils/ImportHtml")
+  , log4js = require("log4js")
+  , hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
 //load abiword only if its enabled
 if(settings.abiword != null)
@@ -42,13 +44,18 @@ var tmpDirectory = process.env.TEMP || process.env.TMPDIR || process.env.TMP || 
  */ 
 exports.doImport = function(req, res, padId)
 {
+  var apiLogger = log4js.getLogger("ImportHandler");
+
   //pipe to a file
   //convert file to html via abiword
   //set html in the pad
   
   var srcFile, destFile
     , pad
-    , text;
+    , text
+    , importHandledByPlugin;
+
+  var randNum = Math.floor(Math.random()*0xFFFFFFFF);
   
   async.series([
     //save the uploaded file to /tmp
@@ -85,31 +92,51 @@ exports.doImport = function(req, res, padId)
       }
       //we need to rename this file with a .txt ending
       else {
-        var oldSrcFile = srcFile;
-        srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
-        
-        fs.rename(oldSrcFile, srcFile, callback);
+        if(settings.allowUnknownFileEnds === true){
+          var oldSrcFile = srcFile;
+          srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
+          fs.rename(oldSrcFile, srcFile, callback);
+        }else{
+          console.warn("Not allowing unknown file type to be imported", fileEnding);
+          callback("uploadFailed");
+        }
       }
     },
-    
+    function(callback){
+      destFile = path.join(tmpDirectory, "etherpad_import_" + randNum + ".htm");
+
+      // Logic for allowing external Import Plugins
+      hooks.aCallAll("import", {srcFile: srcFile, destFile: destFile}, function(err, result){
+        if(ERR(err, callback)) return callback();
+        if(result.length > 0){ // This feels hacky and wrong..
+          importHandledByPlugin = true;
+          callback();
+        }else{
+          callback();
+        }
+      });
+    },
     //convert file to html
     function(callback) {
-      var randNum = Math.floor(Math.random()*0xFFFFFFFF);
-      destFile = path.join(tmpDirectory, "eplite_import_" + randNum + ".htm");
-
-      if (abiword) {
-        abiword.convertFile(srcFile, destFile, "htm", function(err) {
-          //catch convert errors
-          if(err) {
-            console.warn("Converting Error:", err);
-            return callback("convertFailed");
-          } else {
-            callback();
-          }
-        });
-      } else {
-        // if no abiword only rename
-        fs.rename(srcFile, destFile, callback);
+      if(!importHandledByPlugin){
+        var fileEnding = path.extname(srcFile).toLowerCase();
+        var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
+        if (abiword && !fileIsHTML) {
+          abiword.convertFile(srcFile, destFile, "htm", function(err) {
+            //catch convert errors
+            if(err) {
+              console.warn("Converting Error:", err);
+              return callback("convertFailed");
+            } else {
+              callback();
+            }
+          });
+        } else {
+          // if no abiword only rename
+          fs.rename(srcFile, destFile, callback);
+        }
+      }else{
+        callback();
       }
     },
     
@@ -153,7 +180,7 @@ exports.doImport = function(req, res, padId)
         text = _text;
         // Title needs to be stripped out else it appends it to the pad..
         text = text.replace("<title>", "<!-- <title>");
-        text = text.replace("</title>-->");
+        text = text.replace("</title>","</title>-->");
 
         //node on windows has a delay on releasing of the file lock.  
         //We add a 100ms delay to work around this
@@ -169,7 +196,11 @@ exports.doImport = function(req, res, padId)
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase();
       if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
-        importHtml.setPadHTML(pad, text);
+        try{
+          importHtml.setPadHTML(pad, text);
+        }catch(e){
+          apiLogger.warn("Error importing, possibly caused by malformed HTML");
+        }
       } else {
         pad.setText(text);
       }
@@ -203,7 +234,19 @@ exports.doImport = function(req, res, padId)
     ERR(err);
   
     //close the connection
-    res.send("<head><script type='text/javascript' src='../../static/js/jquery.js'></script><script type='text/javascript' src='../../static/js/jquery_browser.js'></script></head><script>$(window).load(function(){if ( (!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf(\"1.8.\") == 0)) ){document.domain = document.domain;}var impexp = window.parent.padimpexp.handleFrameCall('" + status + "');})</script>", 200);
+    res.send(
+      "<head> \
+        <script type='text/javascript' src='../../static/js/jquery.js'></script> \
+      </head> \
+      <script> \
+        $(window).load(function(){ \
+          if(navigator.userAgent.indexOf('MSIE') === -1){ \
+            document.domain = document.domain; \
+          } \
+          var impexp = window.parent.padimpexp.handleFrameCall('" + status + "'); \
+        }) \
+      </script>"
+    , 200);
   });
 }
 

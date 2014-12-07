@@ -26,7 +26,6 @@ var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var log4js = require('log4js');
 var authLogger = log4js.getLogger("auth");
 
@@ -41,6 +40,11 @@ var authLogger = log4js.getLogger("auth");
 exports.checkAccess = function (padID, sessionCookie, token, password, callback)
 { 
   var statusObject;
+  
+  if(!padID) {
+    callback(null, {accessStatus: "deny"});
+    return;
+  }
 
   // a valid session is required (api-only mode)
   if(settings.requireSession)
@@ -146,16 +150,16 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               if(sessionInfo.groupID != groupID)
               {
                 authLogger.debug("Auth failed: wrong group");
-            	  callback();
-            	  return;
+                callback();
+                return;
               }
               
               //is validUntil still ok?
               if(sessionInfo.validUntil <= now)
               {
                 authLogger.debug("Auth failed: validUntil");
-            	  callback();
-            	  return;
+                callback();
+                return;
               }
               
               // There is a valid session
@@ -215,6 +219,12 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
       {
         //- the pad is not password protected
         if(!isPasswordProtected)
+        {
+          //--> grant access
+          statusObject = {accessStatus: "grant", authorID: sessionAuthor};
+        }
+        //- the setting to bypass password validation is set
+        else if(settings.sessionNoPassword)
         {
           //--> grant access
           statusObject = {accessStatus: "grant", authorID: sessionAuthor};

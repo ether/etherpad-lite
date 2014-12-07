@@ -23,6 +23,9 @@ var ERR = require("async-stacktrace");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var securityManager = require("../db/SecurityManager");
+var readOnlyManager = require("../db/ReadOnlyManager");
+var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
+var settings = require('../utils/Settings');
 
 /**
  * Saves all components
@@ -52,8 +55,18 @@ exports.setSocketIO = function(_socket) {
   //save this socket internaly
   socket = _socket;
   
-  socket.sockets.on('connection', function(client) {
-    client.set('remoteAddress', client.handshake.address.address);
+  socket.sockets.on('connection', function(client)
+  {
+
+    // Broken: See http://stackoverflow.com/questions/4647348/send-message-to-specific-client-with-socket-io-and-node-js
+    // Fixed by having a persistant object, ideally this would actually be in the database layer
+    // TODO move to database layer
+    if(settings.trustProxy && client.handshake.headers['x-forwarded-for'] !== undefined){
+      remoteAddress[client.id] = client.handshake.headers['x-forwarded-for'];
+    }
+    else{
+      remoteAddress[client.id] = client.handshake.address;
+    }
     var clientAuthorized = false;
     
     //wrap the original send function to log the messages
@@ -80,23 +93,29 @@ exports.setSocketIO = function(_socket) {
         handleMessage(client, message);
       } else { //try to authorize the client
         if(message.padId !== undefined && message.sessionID !== undefined && message.token !== undefined && message.password !== undefined) {
-          //this message has everything to try an authorization
-          securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password,
-            function(err, statusObject) {
-              ERR(err);
+          var checkAccessCallback = function(err, statusObject) {
+            ERR(err);
 
-              //access was granted, mark the client as authorized and handle the message
-              if(statusObject.accessStatus == "grant") {
-                clientAuthorized = true;
-                handleMessage(client, message);
-              }
-              //no access, send the client a message that tell him why
-              else {
-                messageLogger.warn("Authentication try failed:" + stringifyWithoutPassword(message));
-                client.json.send({accessStatus: statusObject.accessStatus});
-              }
+            //access was granted, mark the client as authorized and handle the message
+            if(statusObject.accessStatus == "grant") {
+              clientAuthorized = true;
+              handleMessage(client, message);
             }
-          );
+            //no access, send the client a message that tell him why
+            else {
+              messageLogger.warn("Authentication try failed:" + stringifyWithoutPassword(message));
+              client.json.send({accessStatus: statusObject.accessStatus});
+            }
+          };
+          if (message.padId.indexOf("r.") === 0) {
+            readOnlyManager.getPadId(message.padId, function(err, value) {
+              ERR(err);
+              securityManager.checkAccess (value, message.sessionID, message.token, message.password, checkAccessCallback);
+            });
+          } else {
+            //this message has everything to try an authorization
+            securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, checkAccessCallback);
+          }
         } else { //drop message
           messageLogger.warn("Dropped message cause of bad permissions:" + stringifyWithoutPassword(message));
         }
