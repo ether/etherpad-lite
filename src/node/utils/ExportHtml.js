@@ -426,7 +426,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
     if(ERR(err, callback)) return;
 
     // Include some Styles into the Head for Export
-    var stylesForExport = hooks.callAllStr("stylesForExport") || ''
+    var stylesForExport = hooks.callAllStr("stylesForExport", padId) || ''
 
     var head = 
       (noDocType ? '' : '<!doctype html>\n') + 
