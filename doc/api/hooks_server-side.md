@@ -259,8 +259,8 @@ This hook will allow a plug-in developer to append Styles to the Exported HTML.
 Example:
 
 ```
-exports.stylesForExport = function(hook, context){
-  return("body{margin-left:20px;body{color:orange}");
+exports.stylesForExport = function(hook, padId, cb){
+  cb("body{font-size:13.37em !important}");
 }
 ```
 
