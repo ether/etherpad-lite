@@ -247,6 +247,23 @@ Things in context:
 
 This hook will allow a plug-in developer to re-write each line when exporting to HTML.
 
+## stylesForExport
+Called from: src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. padId - The Pad Id
+
+This hook will allow a plug-in developer to append Styles to the Exported HTML.
+
+Example:
+
+```
+exports.stylesForExport = function(hook, context){
+  return("body{margin-left:20px;body{color:orange}");
+}
+```
+
 ## exportFileName
 Called from src/node/handler/ExportHandler.js 
 

@@ -425,6 +425,9 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
   {
     if(ERR(err, callback)) return;
 
+    // Include some Styles into the Head for Export
+    var stylesForExport = hooks.callAllStr("stylesForExport") || ''
+
     var head = 
       (noDocType ? '' : '<!doctype html>\n') + 
       '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
@@ -442,6 +445,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
           'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
           'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
           'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+          stylesForExport + 
           '</style>\n' + '</head>\n') + 
       '<body>';
 
@@ -452,6 +456,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
       if(ERR(err, callback)) return;
       callback(null, head + html + foot);
     });
+
   });
 };
 
