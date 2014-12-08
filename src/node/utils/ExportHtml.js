@@ -426,37 +426,37 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
     if(ERR(err, callback)) return;
 
     // Include some Styles into the Head for Export
-    var stylesForExport = hooks.callAllStr("stylesForExport", padId) || ''
+    hooks.aCallAll("stylesForExport", padId, function(err, stylesForExport){
 
-    var head = 
-      (noDocType ? '' : '<!doctype html>\n') + 
-      '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
-        '<title>' + Security.escapeHTML(padId) + '</title>\n' +
-        '<meta charset="utf-8">\n' + 
-        '<style> * { font-family: arial, sans-serif;\n' + 
-          'font-size: 13px;\n' + 
-          'line-height: 17px; }' + 
-          'ul.indent { list-style-type: none; }' +
-          'ol { list-style-type: decimal; }' +
-          'ol ol { list-style-type: lower-latin; }' +
-          'ol ol ol { list-style-type: lower-roman; }' +
-          'ol ol ol ol { list-style-type: decimal; }' +
-          'ol ol ol ol ol { list-style-type: lower-latin; }' +
-          'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
-          'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-          'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
-          stylesForExport + 
-          '</style>\n' + '</head>\n') + 
-      '<body>';
+      // Core inclusion of head etc.
+      var head = 
+        (noDocType ? '' : '<!doctype html>\n') + 
+        '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+          '<title>' + Security.escapeHTML(padId) + '</title>\n' +
+          '<meta charset="utf-8">\n' + 
+          '<style> * { font-family: arial, sans-serif;\n' + 
+            'font-size: 13px;\n' + 
+            'line-height: 17px; }' + 
+            'ul.indent { list-style-type: none; }' +
+            'ol { list-style-type: decimal; }' +
+            'ol ol { list-style-type: lower-latin; }' +
+            'ol ol ol { list-style-type: lower-roman; }' +
+            'ol ol ol ol { list-style-type: decimal; }' +
+            'ol ol ol ol ol { list-style-type: lower-latin; }' +
+            'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
+            'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
+            'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+            stylesForExport + 
+            '</style>\n' + '</head>\n') + 
+        '<body>';
+      var foot = '</body>\n</html>\n';
 
-    var foot = '</body>\n</html>\n';
-
-    getPadHTML(pad, revNum, function (err, html)
-    {
-      if(ERR(err, callback)) return;
-      callback(null, head + html + foot);
+      getPadHTML(pad, revNum, function (err, html)
+      {
+        if(ERR(err, callback)) return;
+        callback(null, head + html + foot);
+      });
     });
-
   });
 };
 
