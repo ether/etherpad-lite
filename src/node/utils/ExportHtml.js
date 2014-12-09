@@ -433,9 +433,12 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
   {
     if(ERR(err, callback)) return;
 
+    var stylesForExportCSS = "";
     // Include some Styles into the Head for Export
     hooks.aCallAll("stylesForExport", padId, function(err, stylesForExport){
-
+      stylesForExport.forEach(function(css){
+        stylesForExportCSS += css;
+      });
       // Core inclusion of head etc.
       var head = 
         (noDocType ? '' : '<!doctype html>\n') + 
@@ -454,7 +457,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
             'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
             'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
-            stylesForExport + 
+            stylesForExportCSS + 
             '</style>\n' + '</head>\n') + 
         '<body>';
       var foot = '</body>\n</html>\n';
