@@ -298,6 +298,24 @@ exports.exportFileName = function(hook, padId, callback){
 }
 ```
 
+## exportHtmlAdditionalTags
+Called from src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. Pad object
+
+This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export.  An Array should be returned.
+
+Example:
+```
+// Add the props to be supported in export
+exports.exportHtmlAdditionalTags = function(hook, pad, cb){
+  var padId = pad.id;
+  cb(["massive","jugs"]);
+};
+
+
 ## userLeave
 Called from src/node/handler/PadMessageHandler.js
 
