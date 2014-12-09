@@ -80,6 +80,22 @@ This hook is called during the attribute processing procedure, and should be use
 
 The return value for this function should be a list of classes, which will then be parsed into a valid class string.
 
+## aceAttribClasses
+Called from: src/static/js/linestylefilter.js
+
+Things in context:
+1. Attributes - Object of Attributes
+
+This hook is called when attributes are investigated on a line.  It is useful if you want to add another attribute type or property type to a pad.
+
+Example:
+```
+exports.aceAttribClasses = function(hook_name, attr, cb){
+  attr.sub = 'tag:sub';
+  cb(attr);
+}
+```
+
 ## aceGetFilterStack
 Called from: src/static/js/linestylefilter.js
 
