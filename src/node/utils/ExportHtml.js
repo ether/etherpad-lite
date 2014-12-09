@@ -78,6 +78,14 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
+
+  hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
+    newProps.forEach(function (propName, i){
+      tags.push(propName);
+      props.push(propName);
+    });
+  });
+
   // holds a map of used styling attributes (*1, *2, etc) in the apool
   // and maps them to an index in props
   // *3:2 -> the attribute *3 means strong
