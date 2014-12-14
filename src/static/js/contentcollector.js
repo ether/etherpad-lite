@@ -663,7 +663,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             //var semiloc = oldString.lastIndexOf(';', lineLimit-1);
             //var lengthToTake = (semiloc >= 0 ? (semiloc+1) : lineLimit);
-            lengthToTake = lineLimit;
+            var lengthToTake = lineLimit;
             newStrings.push(oldString.substring(0, lengthToTake));
             oldString = oldString.substring(lengthToTake);
             newAttribStrings.push(Changeset.subattribution(oldAttribString, 0, lengthToTake));

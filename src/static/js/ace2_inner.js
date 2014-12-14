@@ -5038,7 +5038,7 @@ function Ace2Inner(){
     //3-renumber every list item of the same level from the beginning, level 1
     //IMPORTANT: never skip a level because there imbrication may be arbitrary
     var builder = Changeset.builder(rep.lines.totalWidth());
-    loc = [0,0];
+    var loc = [0,0];
     function applyNumberList(line, level)
     {
       //init

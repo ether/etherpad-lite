@@ -135,7 +135,7 @@ Pad.prototype.getRevisionDate = function getRevisionDate(revNum, callback) {
 Pad.prototype.getAllAuthors = function getAllAuthors() {
   var authors = [];
 
-  for(key in this.pool.numToAttrib)
+  for(var key in this.pool.numToAttrib)
   {
     if(this.pool.numToAttrib[key][0] == "author" && this.pool.numToAttrib[key][1] != "")
     {
