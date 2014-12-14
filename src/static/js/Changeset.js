@@ -507,6 +507,10 @@ exports.opAssembler = function () {
  */ 
 exports.stringIterator = function (str) {
   var curIndex = 0;
+  var newLines = str.split("\n").length - 1
+  function getnewLines(){
+    return newLines
+  }
 
   function assertRemaining(n) {
     exports.assert(n <= remaining(), "!(", n, " <= ", remaining(), ")");
@@ -515,6 +519,7 @@ exports.stringIterator = function (str) {
   function take(n) {
     assertRemaining(n);
     var s = str.substr(curIndex, n);
+    newLines -= s.split("\n").length - 1
     curIndex += n;
     return s;
   }
@@ -537,7 +542,8 @@ exports.stringIterator = function (str) {
     take: take,
     skip: skip,
     remaining: remaining,
-    peek: peek
+    peek: peek,
+    newlines: getnewLines
   };
 };
 
