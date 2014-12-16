@@ -152,7 +152,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
     // apply msgQueue changeset.
     if (msgQueue.length != 0) {
-      while (var msg = msgQueue.shift()) {
+      var msg;
+      while (msg = msgQueue.shift()) {
         var newRev = msg.newRev;
         rev=newRev;
         if (msg.type == "ACCEPT_COMMIT")
