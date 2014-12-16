@@ -929,7 +929,7 @@ exports.applyToText = function (cs, str) {
       removedLines += op.lines;
       newlines = strIter.newlines()
       strIter.skip(op.chars);
-      if(!(newlines - strIter.newlines() == op.lines)){
+      if(!(newlines - strIter.newlines() == 0) && (newlines - strIter.newlines() != op.lines)){
         newlinefail = true
       }
       break;
