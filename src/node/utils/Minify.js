@@ -261,7 +261,6 @@ function getAceFile(callback) {
     // them into the file.
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
-      var request = require('request');
 
       var baseURI = 'http://localhost:' + settings.port;
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));

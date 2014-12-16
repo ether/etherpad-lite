@@ -1,7 +1,5 @@
-var path = require('path');
 var eejs = require('ep_etherpad-lite/node/eejs');
 var settings = require('ep_etherpad-lite/node/utils/Settings');
-var installer = require('ep_etherpad-lite/static/js/pluginfw/installer');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var fs = require('fs');
 
