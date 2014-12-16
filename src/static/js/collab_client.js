@@ -152,7 +152,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
     // apply msgQueue changeset.
     if (msgQueue.length != 0) {
-      while (msg = msgQueue.shift()) {
+      while (var msg = msgQueue.shift()) {
         var newRev = msg.newRev;
         rev=newRev;
         if (msg.type == "ACCEPT_COMMIT")
@@ -274,7 +274,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       // When inInternationalComposition, msg pushed msgQueue.
       if (msgQueue.length > 0 || editor.getInInternationalComposition()) {
-        if (msgQueue.length > 0) oldRev = msgQueue[msgQueue.length - 1].newRev;
+        if (msgQueue.length > 0) var oldRev = msgQueue[msgQueue.length - 1].newRev;
         else oldRev = rev;
 
         if (newRev != (oldRev + 1))
