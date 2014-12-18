@@ -690,7 +690,7 @@ Pad.prototype.isPasswordProtected = function isPasswordProtected() {
 Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, label) {
   //if this revision is already saved, return silently
   for(var i in this.savedRevisions){
-    if(this.savedRevisions.revNum === revNum){
+    if(this.savedRevisions[i] && this.savedRevisions[i].revNum === revNum){
       return;
     }
   }
