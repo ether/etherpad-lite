@@ -52,6 +52,9 @@
 
   /* Users may edit pads but not create new ones. Pad creation is only via the API. This applies both to group pads and regular pads. */
   "editOnly" : false,
+
+  /* Users, who have a valid session, automatically get granted access to password protected pads */
+  "sessionNoPassword" : false,
   
   /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly, 
      but makes it impossible to debug the javascript/css */
@@ -71,7 +74,13 @@
 
   /* Require authorization by a module, or a user with is_admin set, see below. */
   "requireAuthorization": false,
-
+  
+  /*when you use NginX or another proxy/ load-balancer set this to true*/
+  "trustProxy": false,
+  
+  /* Privacy: disable IP logging */
+  "disableIPlogging": false,  
+  
   /* Users for basic authentication. is_admin = true gives access to /admin.
      If you do not uncomment this, /admin will not be available! */
   "users": {
@@ -84,6 +93,28 @@
       "is_admin": false
     }
   },
+
+  // restrict socket.io transport methods
+  "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
+  
+  /* The toolbar buttons configuration.
+  "toolbar": {
+    "left": [
+      ["bold", "italic", "underline", "strikethrough"],
+      ["orderedlist", "unorderedlist", "indent", "outdent"],
+      ["undo", "redo"],
+      ["clearauthorship"]
+    ],
+    "right": [
+      ["importexport", "timeslider", "savedrevision"],
+      ["settings", "embed"],
+      ["showusers"]
+    ],
+    "timeslider": [
+      ["timeslider_export", "timeslider_returnToPad"]
+    ]
+  },
+  */
 
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO",
@@ -99,28 +130,36 @@
            , "backups": 3 // how many log files there're gonna be at max
         }
     /*
-	  , { "type": "logLevelFilter"
-	    , "level": "warn" // filters out all log messages that have a lower level than "error"
-	    , "appender":
-	      {  Use whatever appender you want here  }
-      }*/
+      , { "type": "file"
+      , "filename": "your-log-file-here.log"
+      , "maxLogSize": 1024
+      , "backups": 3 // how many log files there're gonna be at max
+      //, "category": "test" // only log a specific category
+        }*/
     /*
-	  , { "type": "logLevelFilter"
-	    , "level": "error" // filters out all log messages that have a lower level than "error"
-	    , "appender":
-	      { "type": "smtp"
-        , "subject": "An error occured in your EPL instance!"
-        , "recipients": "bar@blurdybloop.com, baz@blurdybloop.com"
-        , "sendInterval": 60*5 // in secs -- will buffer log messages; set to 0 to send a mail for every message
-        , "transport": "SMTP", "SMTP": { // see https://github.com/andris9/Nodemailer#possible-transport-methods
-            "host": "smtp.example.com", "port": 465,
-            "secureConnection": true,
-            "auth": {
-                "user": "foo@example.com",
-                "pass": "bar_foo"
+      , { "type": "logLevelFilter"
+        , "level": "warn" // filters out all log messages that have a lower level than "error"
+        , "appender":
+          {  Use whatever appender you want here  }
+        }*/
+    /*
+      , { "type": "logLevelFilter"
+        , "level": "error" // filters out all log messages that have a lower level than "error"
+        , "appender":
+          { "type": "smtp"
+          , "subject": "An error occured in your EPL instance!"
+          , "recipients": "bar@blurdybloop.com, baz@blurdybloop.com"
+          , "sendInterval": 60*5 // in secs -- will buffer log messages; set to 0 to send a mail for every message
+          , "transport": "SMTP", "SMTP": { // see https://github.com/andris9/Nodemailer#possible-transport-methods
+              "host": "smtp.example.com", "port": 465,
+              "secureConnection": true,
+              "auth": {
+                  "user": "foo@example.com",
+                  "pass": "bar_foo"
+              }
             }
-        }
-        }
-      }*/
-	] }
+          }
+        }*/
+      ]
+    }
 }

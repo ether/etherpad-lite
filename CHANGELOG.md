@@ -1,3 +1,98 @@
+# 1.4.1
+ * NEW: Translations
+ * NEW: userLeave Hook
+ * NEW: Script to reinsert all DB values of a Pad
+ * NEW: Allow for absolute settings paths
+ * NEW: API: Get Pad ID from read Only Pad ID
+ * NEW: Huge improvement on MySQL database read/write (InnoDB to MyISAM)
+ * NEW: Hook for Export File Name
+ * NEW: Preprocessor Hook for DOMLine attributes (allows plugins to wrap entire line contents)
+ * Fix: Exception on Plugin Search and fix for plugins not being fetched
+ * Fix: Font on innerdoc body can be arial on paste
+ * Fix: Fix Dropping of messages in handleMessage
+ * Fix: Don't use Abiword for HTML exports
+ * Fix: Color issues with user Icon
+ * Fix: Timeslider Button
+ * Fix: Session Deletion error
+ * Fix: Allow browser tabs to be cycled when focus is in editor
+ * Fix: Various Editor issues with Easysync potentially entering forever loop on bad changeset
+ 
+# 1.4
+ * NEW: Disable toolbar items through settings.json
+ * NEW: Internal stats/metrics engine
+ * NEW: Copy/Move Pad API functions
+ * NEW: getAttributeOnSelection method
+ * NEW: CSS function when an attribute is active on caret location
+ * NEW: Various new eejs blocks
+ * NEW: Ace afterEditHook
+ * NEW: Import hook to introduce alternative export methods
+ * NEW: preProcessDomLine allows Domline attributes to be processed before native attributes
+ * Fix: Allow for lighter author colors
+ * Fix: Improved randomness of session tokens
+ * Fix: Don't panic if an author2session/group2session no longer exists
+ * Fix: Gracefully fallback to related languages if chosen language is unavailable
+ * Fix: Various changeset/stability bugs
+ * Fix: Re-enable import buttons after failed import
+ * Fix: Allow browser tabs to be cycled when in editor
+ * Fix: Better Protocol detection
+ * Fix: padList API Fix
+ * Fix: Caret walking issue
+ * Fix: Better settings.json parsing
+ * Fix: Improved import/export handling
+ * Other: Various whitespace/code clean-up
+ * Other: .deb packaging creator
+ * Other: More API Documentation
+ * Other: Lots more translations
+ * Other: Support Node 0.11
+
+# 1.3
+ * NEW: We now follow the semantic versioning scheme!
+ * NEW: Option to disable IP logging
+ * NEW: Localisation updates from http://translatewiki.net. 
+ * Fix: Fix readOnly group pads
+ * Fix: don't fetch padList on every request
+
+# 1.2.12
+ * NEW: Add explanations for more disconnect scenarios
+ * NEW: export sessioninfos so plugins can access it
+ * NEW: pass pad in postAceInit hook
+ * NEW: Add trustProxy setting. ALlows to make ep use X-forwarded-for as remoteAddress
+ * NEW: userLeave hook (UNDOCUMENTED)
+ * NEW: Plural macro for translations
+ * NEW: backlinks to main page in Admin pages
+ * NEW: New translations from translatewiki.net
+ * SECURITY FIX: Filter author data sent to clients
+ * FIX: Never keep processing a changeset if it's corrupted
+ * FIX: Some client-side performance fixes for webkit browsers
+ * FIX: Only execute listAllPads query on demand (not on start-up)
+ * FIX: HTML import (don't crash on malformed or blank HTML input; strip title out of html during import)
+ * FIX: check if uploaded file only contains ascii chars when abiword disabled
+ * FIX: Plugin search in /admin/plugins
+ * FIX: Don't create new pad if a non-existant read-only pad is accessed
+ * FIX: Drop messages from unknown connections (would lead to a crash after a restart)
+ * FIX: API: fix createGroupFor endpoint, if mapped group is deleted
+ * FIX: Import form for other locales
+ * FIX: Don't stop processing changeset queue if there is an error
+ * FIX: Caret movement. Chrome detects blank rows line heights as incorrect
+ * FIX: allow colons in password
+ * FIX: Polish logging of client-side errors on the server
+ * FIX: Username url param
+ * FIX: Make start script POSIX ompatible
+
+
+# 1.2.11
+ * NEW: New Hook for outer_ace dynamic css manager and author style hook
+ * NEW: Bump log4js for improved logging
+ * Fix: Remove URL schemes which don't have RFC standard
+ * Fix: Fix safeRun subsequent restarts issue
+ * Fix: Allow safeRun to pass arguements to run.sh
+ * Fix: Include script for more efficient import
+ * Fix: Fix sysv comptibile script
+ * Fix: Fix client side changeset spamming
+ * Fix: Don't crash on no-auth
+ * Fix: Fix some IE8 errors
+ * Fix: Fix authorship sanitation
+
 # 1.2.10
  * NEW: Broadcast slider is exposed in timeslider so plugins can interact with it
  * Fix: IE issue where pads wouldn't load due to missing console from i18n

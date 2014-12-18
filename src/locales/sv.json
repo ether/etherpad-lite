@@ -1,9 +1,11 @@
 {
-    "@metadata": {
-        "authors": {
-            "1": "WikiPhoenix"
-        }
-    },
+	"@metadata": {
+		"authors": [
+			"Lokal Profil",
+			"WikiPhoenix",
+			"Jopparn"
+		]
+	},
     "index.newPad": "Nytt dokument",
     "index.createOpenPad": "eller skapa/\u00f6ppna ett dokument med namnet:",
     "pad.toolbar.bold.title": "Fet (Ctrl-B)",
@@ -40,7 +42,6 @@
     "pad.settings.fontType.monospaced": "Fast breddsteg",
     "pad.settings.globalView": "Global vy",
     "pad.settings.language": "Spr\u00e5k:",
-    "pad.settings.pageview": "Sidvy",
     "pad.importExport.import_export": "Importera/exportera",
     "pad.importExport.import": "Ladda upp en textfil eller dokument",
     "pad.importExport.importSuccessful": "\u00c5tg\u00e4rden slutf\u00f6rdes!",
@@ -60,15 +61,17 @@
     "pad.modals.userdup.advice": "Ladda om sidan f\u00f6r att anv\u00e4nda detta f\u00f6nster ist\u00e4llet.",
     "pad.modals.unauth": "Inte godk\u00e4nd",
     "pad.modals.unauth.explanation": "Din beh\u00f6righet \u00e4ndrades medan du visar denna sida. F\u00f6rs\u00f6k att ladda om sidan.",
-    "pad.modals.looping": "Fr\u00e5nkopplad.",
     "pad.modals.looping.explanation": "Kommunikationsproblem med synkroniseringsservern har uppst\u00e5tt.",
     "pad.modals.looping.cause": "Kanske du \u00e4r ansluten via en inkompatibel brandv\u00e4gg eller proxy.",
     "pad.modals.initsocketfail": "Servern inte kan n\u00e5s.",
     "pad.modals.initsocketfail.explanation": "Det gick inte att ansluta till synkroniseringsservern.",
     "pad.modals.initsocketfail.cause": "Detta \u00e4r beror troligen p\u00e5 ett problem med din webbl\u00e4sare eller din internetanslutning.",
-    "pad.modals.slowcommit": "Fr\u00e5nkopplad.",
-    "pad.modals.slowcommit.explanation": "Servern svarar inte.",
-    "pad.modals.slowcommit.cause": "Detta kan bero p\u00e5 problem med n\u00e4tverksanslutningen.",
+	"pad.modals.slowcommit.explanation": "Servern svarar inte.",
+	"pad.modals.slowcommit.cause": "Detta kan bero på problem med nätverksanslutningen.",
+	"pad.modals.badChangeset.explanation": "En redigering som du gjort klassificerades som otillåten av synkroniseringsservern.",
+	"pad.modals.badChangeset.cause": "Detta kan bero på en felaktig konfiguration av servern eller något annat oväntad beteende. Var god kontakta tjänstadministratören om du anser att detta är ett fel. Försök ansluta igen för att fortsätta redigera.",
+	"pad.modals.corruptPad.explanation": "Blocket du försöker komma åt är skadat.",
+	"pad.modals.corruptPad.cause": "Detta kan bero på en felaktig konfiguration av servern eller något annat oväntad beteende. Var god kontakta tjänstadministratören.",
     "pad.modals.deleted": "Raderad.",
     "pad.modals.deleted.explanation": "Detta dokument har tagits bort.",
     "pad.modals.disconnected": "Du har kopplats fr\u00e5n.",
@@ -102,11 +105,7 @@
     "timeslider.month.october": "oktober",
     "timeslider.month.november": "november",
     "timeslider.month.december": "december",
-    "timeslider.unnamedauthor": "{{num}} namnl\u00f6s f\u00f6rfattare",
-    "timeslider.unnamedauthors": "{{num}} namnl\u00f6sa f\u00f6rfattare",
-    "timeslider.historical-search.button": "Sök",
-    "timeslider.historical-search.title": "Sök i dokumentets historik",
-    "timeslider.historical-search.heading": "Sök i historiken (Söker i all historik för dokumentet)",
+	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: namnlös författare, other: namnlösa författare]}",
     "pad.savedrevs.marked": "Denna revision \u00e4r nu markerad som en sparad revision",
     "pad.userlist.entername": "Ange ditt namn",
     "pad.userlist.unnamed": "namnl\u00f6s",

@@ -254,8 +254,9 @@ function handshake()
     //the access was not granted, give the user a message
     if(obj.accessStatus)
     {
-      if(!receivedClientVars)
+      if(!receivedClientVars){
         $('.passForm').submit(require(module.id).savePassword);
+      }
 
       if(obj.accessStatus == "deny")
       {
@@ -334,7 +335,7 @@ function handshake()
       {
         pad.notifyChangeName(settings.globalUserName); // Notifies the server
         pad.myUserInfo.name = settings.globalUserName;
-        $('#myusernameedit').attr({"value":settings.globalUserName}); // Updates the current users UI
+        $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
       }
       if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor))
       {
@@ -463,7 +464,7 @@ var pad = {
     {
       try
       {
-        doc.execCommand("BackgroundImageCache", false, true);
+        document.execCommand("BackgroundImageCache", false, true);
       }
       catch (e)
       {}
@@ -524,7 +525,7 @@ var pad = {
       if(padcookie.getPref("showAuthorshipColors") == false){
         pad.changeViewOption('showAuthorColors', false);
       }
-      hooks.aCallAll("postAceInit", {ace: padeditor.ace});
+      hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },
   dispose: function()

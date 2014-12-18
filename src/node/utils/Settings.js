@@ -1,5 +1,5 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides 
+ * The Settings Modul reads the settings out of settings.json and provides
  * this information to the other modules
  */
 
@@ -24,9 +24,9 @@ var os = require("os");
 var path = require('path');
 var argv = require('./Cli').argv;
 var npm = require("npm/lib/npm.js");
-var vm = require('vm');
+var jsonminify = require("jsonminify");
 var log4js = require("log4js");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("./randomstring");
 
 
 /* Root path of the installation */
@@ -35,7 +35,7 @@ exports.root = path.normalize(path.join(npm.dir, ".."));
 /**
  * The app title, visible e.g. in the browser window
  */
-exports.title = "Etherpad Lite";
+exports.title = "Etherpad";
 
 /**
  * The app favicon fully specified url, visible e.g. in the browser window
@@ -48,7 +48,7 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  * The IP ep-lite should listen to
  */
 exports.ip = "0.0.0.0";
-  
+
 /**
  * The Port ep-lite should listen to
  */
@@ -77,7 +77,27 @@ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
 /**
  * The default Text of a new pad
  */
-exports.defaultPadText = "Welcome to Etherpad Lite!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad Lite on Github: http:\/\/j.mp/ep-lite\n";
+exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad on Github: http:\/\/j.mp/ep-lite\n";
+
+/**
+ * The toolbar buttons and order.
+ */
+exports.toolbar = {
+  left: [
+    ["bold", "italic", "underline", "strikethrough"],
+    ["orderedlist", "unorderedlist", "indent", "outdent"],
+    ["undo", "redo"],
+    ["clearauthorship"]
+  ],
+  right: [
+    ["importexport", "timeslider", "savedrevision"],
+    ["settings", "embed"],
+    ["showusers"]
+  ],
+  timeslider: [
+    ["timeslider_export", "timeslider_returnToPad"]
+  ]
+}
 
 /**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
@@ -88,6 +108,11 @@ exports.requireSession = false;
  * A flag that prevents users from creating new pads
  */
 exports.editOnly = false;
+
+/**
+ * A flag that bypasses password prompts for users with valid sessions
+ */
+exports.sessionNoPassword = false;
 
 /**
  * Max age that responses will have (affects caching layer).
@@ -109,6 +134,11 @@ exports.abiword = null;
  */
 exports.loglevel = "INFO";
 
+/**
+ * Disable IP logging
+ */
+exports.disableIPlogging = false;
+
 /*
 * log4js appender configuration
 */
@@ -118,6 +148,11 @@ exports.logconfig = { appenders: [{ type: "console" }]};
 * Session Key, do not sure this.
 */
 exports.sessionKey = false;
+
+/*
+* Trust Proxy, whether or not trust the x-forwarded-for header.
+*/
+exports.trustProxy = false;
 
 /* This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
@@ -142,8 +177,13 @@ exports.abiwordAvailable = function()
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
-  settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
 
+  if (path.resolve(settingsFilename)===settingsFilename) {
+    settingsFilename = path.resolve(settingsFilename);
+  } else {
+    settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
+  }
+  
   var settingsStr;
   try{
     //read the settings sync
@@ -156,8 +196,8 @@ exports.reloadSettings = function reloadSettings() {
   var settings;
   try {
     if(settingsStr) {
-      settings = vm.runInContext('exports = '+settingsStr, vm.createContext(), "settings.json");
-      settings = JSON.parse(JSON.stringify(settings)); // fix objects having constructors of other vm.context
+      settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
+      settings = JSON.parse(settingsStr);
     }
   }catch(e){
     console.error('There was an error processing your settings.json file: '+e.message);
@@ -185,7 +225,7 @@ exports.reloadSettings = function reloadSettings() {
       console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
     }
   }
-  
+
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   log4js.replaceConsole();

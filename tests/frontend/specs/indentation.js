@@ -158,8 +158,8 @@ describe("indentation button", function(){
     testHelper.selectText(firstTextElement[0], $inner);
 
     /* this test creates the below content, both should have double indentation
-		line1
-		line2
+    line1
+    line2
     
 
     firstTextElement.sendkeys('{rightarrow}'); // simulate a keypress of enter

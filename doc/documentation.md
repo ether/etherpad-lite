@@ -2,7 +2,7 @@
 
 <!-- type=misc -->
 
-The goal of this documentation is to comprehensively explain Etherpad-Lite,
+The goal of this documentation is to comprehensively explain Etherpad,
 both from a reference as well as a conceptual point of view.
 
 Where appropriate, property types, method arguments, and the arguments

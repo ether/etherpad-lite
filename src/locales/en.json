@@ -7,8 +7,8 @@
   "pad.toolbar.strikethrough.title": "Strikethrough",
   "pad.toolbar.ol.title": "Ordered list",
   "pad.toolbar.ul.title": "Unordered List",
-  "pad.toolbar.indent.title": "Indent",
-  "pad.toolbar.unindent.title": "Outdent",
+  "pad.toolbar.indent.title": "Indent (TAB)",
+  "pad.toolbar.unindent.title": "Outdent (Shift+TAB)",
   "pad.toolbar.undo.title": "Undo (Ctrl-Z)",
   "pad.toolbar.redo.title": "Redo (Ctrl-Y)",
   "pad.toolbar.clearAuthorship.title": "Clear Authorship Colors",
@@ -20,6 +20,7 @@
   "pad.toolbar.showusers.title": "Show the users on this document",
   "pad.colorpicker.save": "Save",
   "pad.colorpicker.cancel": "Cancel",
+
   "pad.loading": "Loading...",
   "pad.passwordRequired": "You need a password to access this document",
   "pad.permissionDenied": "You do not have permission to access this document",
@@ -35,7 +36,7 @@
   "pad.settings.fontType.monospaced": "Monospace",
   "pad.settings.globalView": "Global View",
   "pad.settings.language": "Language:",
-  "pad.settings.pageview": "Page view",
+
   "pad.importExport.import_export": "Import/Export",
   "pad.importExport.import": "Upload any text file or document",
   "pad.importExport.importSuccessful": "Successful!",
@@ -46,10 +47,12 @@
   "pad.importExport.exportpdf": "PDF",
   "pad.importExport.exportopen": "ODF (Open Document Format)",
   "pad.importExport.exportdokuwiki": "DokuWiki",
-  "pad.importExport.abiword.innerHTML": "You only can import from plain text or html formats. For more advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
+  "pad.importExport.abiword.innerHTML": "You only can import from plain text or HTML formats. For more advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
+
   "pad.modals.connected": "Connected.",
   "pad.modals.reconnecting": "Reconnecting to your document..",
   "pad.modals.forcereconnect": "Force reconnect",
+
   "pad.modals.userdup": "Opened in another window",
   "pad.modals.userdup.explanation": "This document seems to be opened in more than one browser window on this computer.",
   "pad.modals.userdup.advice": "Reload the page to use this window instead.",
@@ -58,12 +61,20 @@
   "pad.modals.looping": "Disconnected.",
   "pad.modals.looping.explanation": "There are communication problems with the synchronization server.",
   "pad.modals.looping.cause": "Perhaps you connected through an incompatible firewall or proxy.",
+
   "pad.modals.initsocketfail": "Server is unreachable.",
   "pad.modals.initsocketfail.explanation": "Couldn't connect to the synchronization server.",
   "pad.modals.initsocketfail.cause": "This is probably due to a problem with your browser or your internet connection.",
-  "pad.modals.slowcommit": "Disconnected.",
+
   "pad.modals.slowcommit.explanation": "The server is not responding.",
   "pad.modals.slowcommit.cause": "This could be due to problems with network connectivity.",
+
+  "pad.modals.badChangeset.explanation": "An edit you have made was classified illegal by the synchronization server.",
+  "pad.modals.badChangeset.cause": "This could be due to a wrong server configuration or some other unexpected behavior. Please contact the service administrator, if you feel this is an error. Try to reconnect in order to continue editing.",
+
+  "pad.modals.corruptPad.explanation": "The pad you are trying to access is corrupt.",
+  "pad.modals.corruptPad.cause": "This may be due to a wrong server configuration or some other unexpected behavior. Please contact the service administrator.",
+
   "pad.modals.deleted": "Deleted.",
   "pad.modals.deleted.explanation": "This document has been removed.",
   "pad.modals.disconnected": "You have been disconnected.",
@@ -76,6 +87,7 @@
   "pad.chat": "Chat",
   "pad.chat.title": "Open the chat for this document.",
   "pad.chat.loadmessages": "Load more messages",
+
   "timeslider.pageTitle": "{{appTitle}} Timeslider",
   "timeslider.toolbar.returnbutton": "Return to document",
   "timeslider.toolbar.authors": "Authors:",
@@ -84,6 +96,7 @@
   "timeslider.exportCurrent": "Export current version as:",
   "timeslider.version": "Version {{version}}",
   "timeslider.saved": "Saved {{month}} {{day}}, {{year}}",
+
   "timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
   "timeslider.month.january": "January",
   "timeslider.month.february": "February",
@@ -97,11 +110,8 @@
   "timeslider.month.october": "October",
   "timeslider.month.november": "November",
   "timeslider.month.december": "December",
-  "timeslider.unnamedauthor": "{{num}} unnamed author",
-  "timeslider.unnamedauthors": "{{num}} unnamed authors",
-  "timeslider.historical-search.button": "Search",
-  "timeslider.historical-search.title": "Search history of pad",
-  "timeslider.historical-search.heading": "Historical Search (Searches through entire history of document)",
+
+  "timeslider.unnamedauthors": "{{num}} unnamed {[plural(num) one: author, other: authors ]}",
   "pad.savedrevs.marked": "This revision is now marked as a saved revision",
   "pad.userlist.entername": "Enter your name",
   "pad.userlist.unnamed": "unnamed",
@@ -109,6 +119,7 @@
   "pad.userlist.deny": "Deny",
   "pad.userlist.approve": "Approve",
   "pad.editbar.clearcolors": "Clear authorship colors on entire document?",
+
   "pad.impexp.importbutton": "Import Now",
   "pad.impexp.importing": "Importing...",
   "pad.impexp.confirmimport": "Importing a file will overwrite the current text of the document. Are you sure you want to proceed?",

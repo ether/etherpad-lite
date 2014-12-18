@@ -6,3 +6,5 @@
 @include editorInfo
 @include changeset_library
 @include pluginfw
+@include toolbar
+@include editbar

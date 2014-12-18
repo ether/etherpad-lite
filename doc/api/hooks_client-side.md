@@ -10,6 +10,22 @@ nothing
 
 This hook proxies the functionality of jQuery's `$(document).ready` event.
 
+## aceDomLinePreProcessLineAttributes
+Called from: src/static/js/domline.js
+
+Things in context:
+
+1. domline - The current DOM line being processed
+2. cls - The class of the current block element (useful for styling)
+
+This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.  This hook is run BEFORE the numbered and ordered lists logic is applied.
+
+The return value of this hook should have the following structure:
+
+`{ preHtml: String, postHtml: String, processedMarker: Boolean }`
+
+The preHtml and postHtml values will be added to the HTML display of the element, and if processedMarker is true, the engine won't try to process it any more.
+
 ## aceDomLineProcessLineAttributes
 Called from: src/static/js/domline.js
 
@@ -18,7 +34,7 @@ Things in context:
 1. domline - The current DOM line being processed
 2. cls - The class of the current block element (useful for styling)
 
-This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.
+This hook is called for elements in the DOM that have the "lineMarkerAttribute" set. You can add elements into this category with the aceRegisterBlockElements hook above.  This hook is run AFTER the ordered and numbered lists logic is applied.
 
 The return value of this hook should have the following structure:
 
@@ -126,6 +142,7 @@ Called from: src/static/js/pad.js
 Things in context:
 
 1. ace - the ace object that is applied to this editor.
+2. pad - the pad object of the current pad.
 
 There doesn't appear to be any example available of this particular hook being used, but it gets fired after the editor is all set up.
 
@@ -261,3 +278,18 @@ This hook is provided to allow whether a given line should be deliniated with mu
 Multiple authors in one line cause the creation of magic span lines. This might not suit you and
 now you can disable it and handle your own deliniation.
 The return value should be either true(disable) or false.
+
+## aceSetAuthorStyle
+Called from: src/static/js/ace2_inner.js
+
+Things in context:
+
+1. dynamicCSS - css manger for inner ace
+2. outerDynamicCSS - css manager for outer ace
+3. parentDynamicCSS - css manager for parent document
+4. info - author style info
+5. author - author info
+6. authorSelector - css selector for author span in inner ace
+
+This hook is provided to allow author highlight style to be modified.
+Registered hooks should return 1 if the plugin handles highlighting.  If no plugin returns 1, the core will use the default background-based highlighting.

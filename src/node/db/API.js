@@ -187,7 +187,12 @@ exports.getRevisionChangeset = function(padID, rev, callback)
     //the client wants the latest changeset, lets return it to him
     else
     {
-      callback(null, {"changeset": pad.getRevisionChangeset(pad.getHeadRevisionNumber())});
+      pad.getRevisionChangeset(pad.getHeadRevisionNumber(), function(err, changeset)
+      {
+        if(ERR(err, callback)) return;
+
+        callback(null, changeset);
+      })
     }
   });
 }
@@ -361,6 +366,8 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, rev, function(err, html)
       {
           if(ERR(err, callback)) return;
+          html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
+          html += "</body></html>";
           data = {html: html};
           callback(null, data);
       });
@@ -371,6 +378,8 @@ exports.getHTML = function(padID, rev, callback)
       exportHtml.getPadHTML(pad, undefined, function (err, html)
       {
         if(ERR(err, callback)) return;
+        html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
+        html += "</body></html>";
         data = {html: html};
         callback(null, data);
       });
@@ -378,15 +387,30 @@ exports.getHTML = function(padID, rev, callback)
   });
 }
 
+/**
+setHTML(padID, html) sets the text of a pad based on HTML
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
 exports.setHTML = function(padID, html, callback)
 {
+  //html is required
+  if(typeof html != "string")
+  {
+    callback(new customError("html is no string","apierror"));
+    return;
+  }
+
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {
     if(ERR(err, callback)) return;
 
     // add a new changeset with the new html to the pad
-    importHtml.setPadHTML(pad, cleanText(html));
+    importHtml.setPadHTML(pad, cleanText(html), callback);
 
     //update the clients on the pad
     padMessageHandler.updatePadClients(pad, callback);
@@ -440,8 +464,8 @@ exports.getChatHistory = function(padID, start, end, callback)
     // fall back to getting the whole chat-history if a parameter is missing
     if(!start || !end)
     {
-	  start = 0;
-	  end = pad.chatHead;
+    start = 0;
+    end = pad.chatHead;
     }
     
     if(start >= chatHead && chatHead > 0)
@@ -553,6 +577,46 @@ exports.deletePad = function(padID, callback)
 }
 
 /**
+copyPad(sourceID, destinationID[, force=false]) copies a pad. If force is true, 
+  the destination will be overwritten if it exists.
+
+Example returns:
+
+{code: 0, message:"ok", data: {padID: destinationID}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.copyPad = function(sourceID, destinationID, force, callback)
+{
+  getPadSafe(sourceID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    pad.copy(destinationID, force, callback);
+  });
+}
+
+/**
+movePad(sourceID, destinationID[, force=false]) moves a pad. If force is true, 
+  the destination will be overwritten if it exists.
+
+Example returns:
+
+{code: 0, message:"ok", data: {padID: destinationID}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.movePad = function(sourceID, destinationID, force, callback)
+{
+  getPadSafe(sourceID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    pad.copy(destinationID, force, function(err) {
+      if(ERR(err, callback)) return;
+      pad.remove(callback);
+    });
+  });
+}
+/**
 getReadOnlyLink(padID) returns the read only link of a pad 
 
 Example returns:
@@ -573,6 +637,32 @@ exports.getReadOnlyID = function(padID, callback)
       if(ERR(err, callback)) return;
       callback(null, {readOnlyID: readOnlyId});
     });
+  });
+}
+
+/**
+getPadID(roID) returns the padID of a pad based on the readonlyID(roID)
+
+Example returns:
+
+{code: 0, message:"ok", data: {padID: padID}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getPadID = function(roID, callback)
+{
+  //get the PadId
+  readOnlyManager.getPadId(roID, function(err, retrievedPadID)
+  {
+    if(ERR(err, callback)) return;
+
+    if(retrievedPadID == null)
+    {
+      callback(new customError("padID does not exist","apierror"));
+    }
+    else
+    {
+      callback(null, {padID: retrievedPadID});
+    }
   });
 }
 
@@ -778,7 +868,7 @@ createDiffHTML(padID, startRev, endRev) returns an object of diffs from 2 points
 
 Example returns:
 
-{"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad Lite!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}
+{"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
 exports.createDiffHTML = function(padID, startRev, endRev, callback){

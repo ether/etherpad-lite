@@ -15,20 +15,21 @@ There's also a full-featured plugin framework, allowing you to easily add your o
 
 Finally, Etherpad comes with translations into most languages!  Users are automatically delivered the correct language for their local settings.
 
-**Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live**
+
+**Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live.**
 
 Also, check out the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**, really!
 
 # Installation
 
-Etherpad works with node v0.8 and v0.10, only. (We don't support v0.6)
+Etherpad works with node v0.8, v0.10 and v0.11, only. (We don't support v0.6)
 
 ## Windows
 
 ### Prebuilt windows package
 This package works out of the box on any windows machine, but it's not very useful for developing purposes...
 
-1. [Download the latest windows package](http://etherpad.org/downloads/etherpad-lite-win-1.2.91-7492fb18a4.zip)
+1. [Download the latest windows package](http://etherpad.org/#download)
 2. Extract the folder
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
@@ -51,13 +52,13 @@ Update to the latest version with `git pull origin`, then run `bin\installOnWind
 You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
 *For Debian/Ubuntu*: `apt-get install gzip git-core curl python libssl-dev pkg-config build-essential`  
 *For Fedora/CentOS*: `yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"`
-*For FreeBSD*: `portinstall node node, npm and git (optional)`
+*For FreeBSD*: `portinstall node, npm, git (optional)`
 
 Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, be careful of installing nodejs from apt.
 
-**As any user (we recommend creating a separate user called etherpad-lite):**
+**As any user (we recommend creating a separate user called etherpad):**
 
-1. Move to a folder where you want to install Etherpad Lite. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
+1. Move to a folder where you want to install Etherpad. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code `cd etherpad-lite`
 
 Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser. 
@@ -81,7 +82,7 @@ Documentation can be found in `docs/`.
 # Development
 
 ## Things you should know
-Read this [git guide](http://learn.github.com/p/intro.html) and watch this [video on getting started with Etherpad Development](http://youtu.be/67-Q26YH97E).
+Read this [git guide](http://learn.github.com/p/index.html) and watch this [video on getting started with Etherpad Development](http://youtu.be/67-Q26YH97E).
 
 If you're new to node.js, start with Ryan Dahl's [Introduction to Node.js](http://youtu.be/jo_B4LTHi3I).
 

@@ -142,11 +142,13 @@ td, th {
   width:100%;
 }
 
-.messages td>* {
+.messages {
+  height: 5em;
+}
+.messages * {
   display: none;
   text-align: center;
 }
-
 .messages .fetching {
   display: block;
 }
@@ -162,7 +164,7 @@ td, th {
 
 #search-progress.progress {
   padding-top: 20%;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.3);
 }
 
 .progress * {

@@ -79,10 +79,19 @@ exports.search = function(searchTerm, maxCacheAge, cb) {
   exports.getAvailablePlugins(maxCacheAge, function(er, results) {
     if(er) return cb && cb(er);
     var res = {};
-    searchTerm = searchTerm.toLowerCase();
+    if (searchTerm)
+      searchTerm = searchTerm.toLowerCase();
     for (var pluginName in results) { // for every available plugin
       if (pluginName.indexOf(plugins.prefix) != 0) continue; // TODO: Also search in keywords here!
-      if(pluginName.indexOf(searchTerm) < 0 && results[pluginName].description.indexOf(searchTerm) < 0) continue;
+
+      if(searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm)
+         && (typeof results[pluginName].description != "undefined" && !~results[pluginName].description.toLowerCase().indexOf(searchTerm) )
+           ){
+           if(typeof results[pluginName].description === "undefined"){
+             console.debug('plugin without Description: %s', results[pluginName].name);
+           }
+           continue;
+      }
       res[pluginName] = results[pluginName];
     }
     cb && cb(null, res)

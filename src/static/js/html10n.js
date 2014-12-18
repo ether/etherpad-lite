@@ -46,7 +46,20 @@ window.html10n = (function(window, document, undefined) {
     , consoleError = interceptConsole('warn')
 
 
-  // fix Array.prototype.instanceOf in, guess what, IE! <3
+  // fix Array#forEach in IE
+  // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
+  if (!Array.prototype.forEach) {
+    Array.prototype.forEach = function(fn, scope) {
+      for(var i = 0, len = this.length; i < len; ++i) {
+        if (i in this) {
+          fn.call(scope, this[i], i, this);
+        }
+      }
+    };
+  }
+
+  // fix Array#indexOf in, guess what, IE! <3
+  // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
       "use strict";
@@ -84,21 +97,21 @@ window.html10n = (function(window, document, undefined) {
    * MicroEvent - to make any js object an event emitter (server or browser)
    */
 
-  var MicroEvent	= function(){}
-  MicroEvent.prototype	= {
-    bind	: function(event, fct){
+  var MicroEvent = function(){}
+  MicroEvent.prototype = {
+    bind: function(event, fct){
       this._events = this._events || {};
-      this._events[event] = this._events[event]	|| [];
+      this._events[event] = this._events[event] || [];
       this._events[event].push(fct);
     },
-    unbind	: function(event, fct){
+    unbind: function(event, fct){
       this._events = this._events || {};
-      if( event in this._events === false  )	return;
+      if( event in this._events === false  ) return;
       this._events[event].splice(this._events[event].indexOf(fct), 1);
     },
-    trigger	: function(event /* , args... */){
+    trigger: function(event /* , args... */){
       this._events = this._events || {};
-      if( event in this._events === false  )	return;
+      if( event in this._events === false  ) return;
       for(var i = 0; i < this._events[event].length; i++){
         this._events[event][i].apply(this, Array.prototype.slice.call(arguments, 1))
       }
@@ -108,8 +121,8 @@ window.html10n = (function(window, document, undefined) {
    * mixin will delegate all MicroEvent.js function in the destination object
    * @param {Object} the object which will support MicroEvent
    */
-  MicroEvent.mixin	= function(destObject){
-    var props	= ['bind', 'unbind', 'trigger'];
+  MicroEvent.mixin = function(destObject){
+    var props = ['bind', 'unbind', 'trigger'];
     if(!destObject) return;
     for(var i = 0; i < props.length; i ++){
       destObject[props[i]] = MicroEvent.prototype[props[i]];
@@ -178,9 +191,18 @@ window.html10n = (function(window, document, undefined) {
       return
     }
 
+    // dat alng ain't here, man!
     if (!data[lang]) {
-      cb(new Error('Couldn\'t find translations for '+lang))
-      return
+      var msg = 'Couldn\'t find translations for '+lang
+        , l
+      if(~lang.indexOf('-')) lang = lang.split('-')[0] // then let's try related langs
+      for(l in data) {
+        if(lang != l && l.indexOf(lang) === 0 && data[l]) {
+          lang = l
+          break;
+        }
+      }
+      if(lang != l) return cb(new Error(msg))
     }
     
     if ('string' == typeof data[lang]) {
@@ -634,25 +656,26 @@ window.html10n = (function(window, document, undefined) {
   /**
    * pre-defined 'plural' macro
    */
-  html10n.macros.plural = function(translations, key, str, param) {
-    var n = parseFloat(param);
+  html10n.macros.plural = function(key, param, opts) {
+    var str
+      , n = parseFloat(param);
     if (isNaN(n))
-      return str;
+      return;
 
     // initialize _pluralRules
     if (!this._pluralRules)
       this._pluralRules = getPluralRules(html10n.language);
-    var index = '[' + this._pluralRules(n) + ']';
+    var index = this._pluralRules(n);
 
     // try to find a [zero|one|two] key if it's defined
-    if (n === 0 && (key + '[zero]') in translations) {
-      str = translations[key + '[zero]'];
-    } else if (n == 1 && (key + '[one]') in translations) {
-      str = translations[key + '[one]'];
-    } else if (n == 2 && (key + '[two]') in translations) {
-      str = translations[key + '[two]'];
-    } else if ((key + index) in translations) {
-      str = translations[key + index][prop];
+    if (n === 0 && ('zero') in opts) {
+      str = opts['zero'];
+    } else if (n == 1 && ('one') in opts) {
+      str = opts['one'];
+    } else if (n == 2 && ('two') in opts) {
+      str = opts['two'];
+    } else if (index in opts) {
+      str = opts[index];
     }
 
     return str;
@@ -730,65 +753,81 @@ window.html10n = (function(window, document, undefined) {
     if(!translations) return consoleWarn('No translations available (yet)')
     if(!translations[id]) return consoleWarn('Could not find string '+id)
     
-    // apply args
-    var str = substArguments(translations[id], args)
-    
     // apply macros
-    return substMacros(id, str, args)
+    var str = translations[id]
     
-    // replace {{arguments}} with their values or the
-    // associated translation string (based on its key)
-    function substArguments(str, args) {
-      var reArgs = /\{\{\s*([a-zA-Z\.]+)\s*\}\}/
-        , match
-      
-      while (match = reArgs.exec(str)) {
-        if (!match || match.length < 2)
-          return str // argument key not found
+    str = substMacros(id, str, args)
+    
+    // apply args
+    str = substArguments(str, args)
+    
+    return str
+  }
+  
+  // replace {{arguments}} with their values or the
+  // associated translation string (based on its key)
+  function substArguments(str, args) {
+    var reArgs = /\{\{\s*([a-zA-Z\.]+)\s*\}\}/
+      , match
+    
+    while (match = reArgs.exec(str)) {
+      if (!match || match.length < 2)
+        return str // argument key not found
 
-        var arg = match[1]
-          , sub = ''
-        if (arg in args) {
-          sub = args[arg]
-        } else if (arg in translations) {
-          sub = translations[arg]
-        } else {
-          consoleWarn('Could not find argument {{' + arg + '}}')
-          return str
-        }
-
-        str = str.substring(0, match.index) + sub + str.substr(match.index + match[0].length)
+      var arg = match[1]
+        , sub = ''
+      if (arg in args) {
+        sub = args[arg]
+      } else if (arg in translations) {
+        sub = translations[arg]
+      } else {
+        consoleWarn('Could not find argument {{' + arg + '}}')
+        return str
       }
-      
-      return str
+
+      str = str.substring(0, match.index) + sub + str.substr(match.index + match[0].length)
     }
     
-    // replace {[macros]} with their values
-    function substMacros(key, str, args) {
-      var regex = /\{\[\s*([a-zA-Z]+):([a-zA-Z]+)\s*\]\}/
-        , match = regex.exec(str);
-      if (!match || !match.length)
-        return str;
-
+    return str
+  }
+  
+  // replace {[macros]} with their values
+  function substMacros(key, str, args) {
+    var regex = /\{\[\s*([a-zA-Z]+)\(([a-zA-Z]+)\)((\s*([a-zA-Z]+)\: ?([ a-zA-Z{}]+),?)+)*\s*\]\}/ //.exec('{[ plural(n) other: are {{n}}, one: is ]}')
+      , match
+    
+    while(match = regex.exec(str)) {
       // a macro has been found
       // Note: at the moment, only one parameter is supported
-      var macroName = reMatch[1]
-        , paramName = reMatch[2]
+      var macroName = match[1]
+        , paramName = match[2]
+        , optv = match[3]
+        , opts = {}
       
-      if (!(macroName in gMacros)) return str
+      if (!(macroName in html10n.macros)) continue
+      
+      if(optv) {
+        optv.match(/(?=\s*)([a-zA-Z]+)\: ?([ a-zA-Z{}]+)(?=,?)/g).forEach(function(arg) {
+          var parts = arg.split(':')
+            , name = parts[0]
+            , value = parts[1].trim()
+          opts[name] = value
+        })
+      }
       
       var param
       if (args && paramName in args) {
         param = args[paramName]
-      } else if (paramName in translations) {
+      } else if (paramName in html10n.translations) {
         param = translations[paramName]
       }
 
-      // there's no macro parser yet: it has to be defined in gMacros
+      // there's no macro parser: it has to be defined in html10n.macros
       var macro = html10n.macros[macroName]
-      str = macro(translations, key, str, param)
-      return str
+      str = str.substr(0, match.index) + macro(key, param, opts) + str.substr(match.index+match[0].length)
     }
+    
+    return str
   }
   
   /**
@@ -868,11 +907,22 @@ window.html10n = (function(window, document, undefined) {
       var lang
       langs.reverse()
       
-      // loop through priority array...
+      // loop through the priority array...
       for (var i=0, n=langs.length; i < n; i++) {
         lang = langs[i]
         
-        if(!lang || !(lang in that.loader.langs)) continue;
+        if(!lang) continue;
+        if(!(lang in that.loader.langs)) {// uh, we don't have this lang availbable..
+          // then check for related langs
+          if(~lang.indexOf('-')) lang = lang.split('-')[0];
+          for(var l in that.loader.langs) {
+            if(lang != l && l.indexOf(lang) === 0) {
+              lang = l
+              break;
+            }
+          }
+          if(lang != l) continue;
+        }
         
         // ... and apply all strings of the current lang in the list
         // to our build object

@@ -2,7 +2,7 @@ This is the new load testing file: https://bitbucket.org/rbraakman/etherpad-stre
 
 BELOW is the original load testing file.
 
-This load tester is extremely useful for testing how many dormant clients can connect to etherpad lite.  
+This load tester is extremely useful for testing how many dormant clients can connect to etherpad.  
 
 TODO:
 Emulate characters being typed into a pad
@@ -10,26 +10,26 @@ Emulate characters being typed into a pad
 HOW TO USE (from @mjd75) proper formatting at: https://github.com/ether/etherpad-lite/issues/360
 
 Server 1:
-Installed Node.js (etc), EtherPad Lite and MySQL
+Installed Node.js (etc), EtherPad and MySQL
 
 Server 2:
 Installed Xvfb and PhantomJS
 
 I installed Xvfb following (roughly) this guide: http://blog.martin-lyness.com/archives/installing-xvfb-on-ubuntu-9-10-karmic-koala
 
-	#sudo apt-get install xvfb
-	#sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic   
+    #sudo apt-get install xvfb
+    #sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic
 
 Launched two instances of Xvfb directly from the terminal:
 
-	#Xvfb :0 -ac
-	#Xvfb :1 -ac
+    #Xvfb :0 -ac
+    #Xvfb :1 -ac
 
 I installed PhantomJS following this guide: http://code.google.com/p/phantomjs/wiki/Installation
 
-	#sudo add-apt-repository ppa:jerome-etienne/neoip
-	#sudo apt-get update
-	#sudo apt-get install phantomjs
+    #sudo add-apt-repository ppa:jerome-etienne/neoip
+    #sudo apt-get update
+    #sudo apt-get install phantomjs
 
 I created a small JavaScript file for PhatomJS to use to control the browser instances:
 
