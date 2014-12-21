@@ -48,7 +48,7 @@ function loadBroadcastRevisionsJS()
     });
   }
 
-  var revisionInfo = {};
+  revisionInfo = {};
   revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta)
   {
     var startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
