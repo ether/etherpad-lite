@@ -263,7 +263,7 @@ exports.getText = function(padID, rev, callback)
       {
         if(ERR(err, callback)) return;
         
-        data = {text: atext.text};
+        var data = {text: atext.text};
         
         callback(null, data);
       })
@@ -368,7 +368,7 @@ exports.getHTML = function(padID, rev, callback)
           if(ERR(err, callback)) return;
           html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
           html += "</body></html>";
-          data = {html: html};
+          var data = {html: html};
           callback(null, data);
       });
     }
@@ -380,7 +380,7 @@ exports.getHTML = function(padID, rev, callback)
         if(ERR(err, callback)) return;
         html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
         html += "</body></html>";
-        data = {html: html};
+        var data = {html: html};
         callback(null, data);
       });
     }

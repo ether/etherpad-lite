@@ -71,7 +71,7 @@ exports.begin_define_block = function (name) {
 }
 
 exports.end_define_block = function () {
-  content = exports.end_capture();
+  var content = exports.end_capture();
   return content;
 }
 

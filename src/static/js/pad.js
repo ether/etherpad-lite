@@ -170,7 +170,9 @@ function handshake()
   var resource =  exports.baseURL.substring(1)  + "socket.io";
   //connect
   socket = pad.socket = io.connect(url, {
-    resource: resource,
+    // Allow deployers to host Etherpad on a non-root path
+    'path': exports.baseURL + "socket.io",
+    'resource': resource,
     'max reconnection attempts': 3,
     'sync disconnect on unload' : false
   });
