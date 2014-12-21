@@ -23,7 +23,7 @@ var ERR = require("async-stacktrace");
 var settings = require('./Settings');
 var async = require('async');
 var fs = require('fs');
-var CleanCSS = require('clean-css');
+var cleanCSS = require('clean-css');
 var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
@@ -411,8 +411,7 @@ function compressJS(values)
 function compressCSS(values)
 {
   var complete = values.join("\n");
-  var cleanCSS = new CleanCSS({}).minify(complete);
-  return cleanCSS;
+  return cleanCSS.process(complete);
 }
 
 exports.minify = minify;
