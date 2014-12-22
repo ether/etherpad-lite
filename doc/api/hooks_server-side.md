@@ -247,6 +247,40 @@ Things in context:
 
 This hook will allow a plug-in developer to re-write each line when exporting to HTML.
 
+## stylesForExport
+Called from: src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. padId - The Pad Id
+
+This hook will allow a plug-in developer to append Styles to the Exported HTML.
+
+Example:
+
+```
+exports.stylesForExport = function(hook, padId, cb){
+  cb("body{font-size:13.37em !important}");
+}
+```
+
+## aceAttribClasses
+Called from: src/static/js/linestylefilter.js
+
+Things in context:
+1. Attributes - Object of Attributes
+
+This hook is called when attributes are investigated on a line.  It is useful if you want to add another attribute type or property type to a pad.
+
+Example:
+
+```
+exports.aceAttribClasses = function(hook_name, attr, cb){
+  attr.sub = 'tag:sub';
+  cb(attr);
+}
+```
+
 ## exportFileName
 Called from src/node/handler/ExportHandler.js 
 
@@ -263,6 +297,24 @@ exports.exportFileName = function(hook, padId, callback){
   callback("newFileName"+padId);
 }
 ```
+
+## exportHtmlAdditionalTags
+Called from src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. Pad object
+
+This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export.  An Array should be returned.
+
+Example:
+```
+// Add the props to be supported in export
+exports.exportHtmlAdditionalTags = function(hook, pad, cb){
+  var padId = pad.id;
+  cb(["massive","jugs"]);
+};
+
 
 ## userLeave
 Called from src/node/handler/PadMessageHandler.js
