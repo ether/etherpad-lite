@@ -30,23 +30,8 @@ describe("timeslider", function(){
         
         var latestContents = timeslider$('#padcontent').text();
 
-        // Click somewhere on the timeslider
-        var e = new jQuery.Event('mousedown');
-        e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 45;
-        $sliderBar.trigger(e);
-        
-        e = new jQuery.Event('mousedown');
-        e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 40;
-        $sliderBar.trigger(e);
-        
-        e = new jQuery.Event('mousedown');
-        e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 50;
-        $sliderBar.trigger(e);
-        
-        $sliderBar.trigger('mouseup')
+        // Go back a revision
+        timeslider$('#leftstep').click();
 
         setTimeout(function() {
           //make sure the text has changed
@@ -86,12 +71,9 @@ describe("timeslider", function(){
         var latestContents = timeslider$('#padcontent').text();
         var oldUrl = $('#iframe-container iframe')[0].contentWindow.location.hash;
         
-        // Click somewhere on the timeslider
-        var e = new jQuery.Event('mousedown');
-        e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 60;
-        $sliderBar.trigger(e);
-        
+        // Go back a revision
+        timeslider$('#leftstep').click();
+
         helper.waitFor(function(){
           return $('#iframe-container iframe')[0].contentWindow.location.hash != oldUrl;
         }, 6000).always(function(){

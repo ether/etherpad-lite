@@ -1116,6 +1116,7 @@ function handleClientReady(client, message)
               "historicalAuthorData": historicalAuthorData,
               "apool": apool,
               "rev": pad.getHeadRevisionNumber(),
+              "lastCs": pad.getHeadChangesetNumber(),
               "time": currentTime,
           },
           "colorPalette": authorManager.getColorPalette(),
@@ -1306,7 +1307,6 @@ function handleChangesetRequest(client, message)
 
         var data = changesetInfo;
         data.requestID = message.data.requestID;
-
         client.json.send({type: "CHANGESET_REQ", data: data});
       });
     }
@@ -1338,16 +1338,16 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
       {
         if(ERR(err, callback)) return;
         pad = _pad;
-        head_revision = pad.getHeadRevisionNumber();
+        head_revision = pad.getHeadChangesetNumber();
         callback();
       });
     },
     function(callback)
     {
       //calculate the last full endnum
-      var lastRev = pad.getHeadRevisionNumber();
-      if (endNum > lastRev+1) {
-        endNum = lastRev+1;
+      var lastRev = pad.getHeadChangesetNumber();
+      if (endNum > lastRev) {
+        endNum = lastRev;
       }
       endNum = Math.floor(endNum / granularity)*granularity;
 
@@ -1545,10 +1545,9 @@ function composePadChangesets(padId, startNum, endNum, callback)
     function(callback)
     {
       var changesetsNeeded=[];
-
-      var headNum = pad.getHeadRevisionNumber();
-      if (endNum > headNum+1)
-        endNum = headNum+1;
+      var headNum = pad.getHeadChangesetNumber();
+      if (endNum > headNum)
+        endNum = headNum;
       if (startNum < 0)
         startNum = 0;
       //create a array for all changesets, we will

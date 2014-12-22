@@ -54,6 +54,10 @@ Pad.prototype.getHeadRevisionNumber = function getHeadRevisionNumber() {
   return this.head;
 };
 
+Pad.prototype.getHeadChangesetNumber = function getHeadChangesetNumber() {
+  return this.head+1;
+};
+
 Pad.prototype.getPublicStatus = function getPublicStatus() {
   return this.publicStatus;
 };
