@@ -78,6 +78,14 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
+
+  hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
+    newProps.forEach(function (propName, i){
+      tags.push(propName);
+      props.push(propName);
+    });
+  });
+
   // holds a map of used styling attributes (*1, *2, etc) in the apool
   // and maps them to an index in props
   // *3:2 -> the attribute *3 means strong
@@ -425,32 +433,40 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
   {
     if(ERR(err, callback)) return;
 
-    var head = 
-      (noDocType ? '' : '<!doctype html>\n') + 
-      '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
-        '<title>' + Security.escapeHTML(padId) + '</title>\n' +
-        '<meta charset="utf-8">\n' + 
-        '<style> * { font-family: arial, sans-serif;\n' + 
-          'font-size: 13px;\n' + 
-          'line-height: 17px; }' + 
-          'ul.indent { list-style-type: none; }' +
-          'ol { list-style-type: decimal; }' +
-          'ol ol { list-style-type: lower-latin; }' +
-          'ol ol ol { list-style-type: lower-roman; }' +
-          'ol ol ol ol { list-style-type: decimal; }' +
-          'ol ol ol ol ol { list-style-type: lower-latin; }' +
-          'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
-          'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-          'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
-          '</style>\n' + '</head>\n') + 
-      '<body>';
+    var stylesForExportCSS = "";
+    // Include some Styles into the Head for Export
+    hooks.aCallAll("stylesForExport", padId, function(err, stylesForExport){
+      stylesForExport.forEach(function(css){
+        stylesForExportCSS += css;
+      });
+      // Core inclusion of head etc.
+      var head = 
+        (noDocType ? '' : '<!doctype html>\n') + 
+        '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+          '<title>' + Security.escapeHTML(padId) + '</title>\n' +
+          '<meta charset="utf-8">\n' + 
+          '<style> * { font-family: arial, sans-serif;\n' + 
+            'font-size: 13px;\n' + 
+            'line-height: 17px; }' + 
+            'ul.indent { list-style-type: none; }' +
+            'ol { list-style-type: decimal; }' +
+            'ol ol { list-style-type: lower-latin; }' +
+            'ol ol ol { list-style-type: lower-roman; }' +
+            'ol ol ol ol { list-style-type: decimal; }' +
+            'ol ol ol ol ol { list-style-type: lower-latin; }' +
+            'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
+            'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
+            'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+            stylesForExportCSS + 
+            '</style>\n' + '</head>\n') + 
+        '<body>';
+      var foot = '</body>\n</html>\n';
 
-    var foot = '</body>\n</html>\n';
-
-    getPadHTML(pad, revNum, function (err, html)
-    {
-      if(ERR(err, callback)) return;
-      callback(null, head + html + foot);
+      getPadHTML(pad, revNum, function (err, html)
+      {
+        if(ERR(err, callback)) return;
+        callback(null, head + html + foot);
+      });
     });
   });
 };

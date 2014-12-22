@@ -105,6 +105,17 @@ a img {
   -moz-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
   box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
 }
+.toolbar ul li .activeButton {
+  background: #eee;
+  background: -webkit-linear-gradient(#ddd, #fff);
+  background: -moz-linear-gradient(#ddd, #fff);
+  background: -o-linear-gradient(#ddd, #fff);
+  background: -ms-linear-gradient(#ddd, #fff);
+  background: linear-gradient(#ddd, #fff);
+  -webkit-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+  -moz-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+}
 .toolbar ul li a {
   background: #fff;
   background: -webkit-linear-gradient(#fff, #f0f0f0);
@@ -436,6 +447,12 @@ table#otheruserstable {
   height: 13px;
   overflow: hidden;
   margin: 0 4px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .usertdswatch {
   width: 1%
@@ -871,6 +888,7 @@ input[type=checkbox] {
 }
 .column {
   float: left;
+  width:50%;
 }
 #settings,
 #import_export,
@@ -967,12 +985,15 @@ input[type=checkbox] {
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
     #users {
-      top: 36px;
-      bottom: 40px;
-      border-radius: none;
+      top: auto;
+      right:0px !important;
+      bottom: 33px;
+      border-radius: 0px !important;
     }
     #mycolorpicker {
       left: -73px;
+      top:auto !important;
+      bottom:33px !important;
       /* #mycolorpicker: width -#users: width */;
     }
     #editorcontainer {
@@ -989,6 +1010,7 @@ input[type=checkbox] {
       background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
       background: linear-gradient(#f7f7f7, #f1f1f1 80%);
       width: 100%;
+      right:0px !important;
       overflow: hidden;
       height: 32px;
       position: fixed;
@@ -1008,8 +1030,16 @@ input[type=checkbox] {
     .toolbar ul li a.selected {
       background: none !important
     }
-    #chaticon, #timesliderlink {
-      display: none !important
+    li[data-key="showusers"] > a {
+      
+      margin-top:-10px;
+      padding-top:2px !important;
+      line-height:20px;
+      vertical-align:top !important;
+    }
+    #chaticon {
+      position:absolute;
+      right:48px;
     }
     .popup {
       -webkit-border-radius: 0;
@@ -1022,11 +1052,11 @@ input[type=checkbox] {
       width: 100%;
     }
     #settings,
-    #importexport,
+    #import_export,
     #connectivity,
     #embed {
+      top:auto;
       left: 0;
-      top: 0;
       bottom: 33px;
       right: 0;
     }
@@ -1035,6 +1065,14 @@ input[type=checkbox] {
     }
     #online_count {
       line-height: 24px
+    }
+    #chatbox{
+      position:absolute;
+      bottom:33px;
+    }
+    #gritter-notice-wrapper{
+      bottom:43px !important;
+      right:10px !important;
     }
 }
 
@@ -1057,6 +1095,7 @@ input[type=checkbox] {
   right:20px;
   width:301px;
   z-index:9999;
+  background-color:#666;
 }
 #gritter-notice-wrapper.bottom-right {
   top: auto;
@@ -1070,14 +1109,12 @@ input[type=checkbox] {
 }
 
 .gritter-top {
-  background:url(../../static/img/gritter.png) no-repeat left -30px;
   height:10px;
 }
 .hover .gritter-top {
   background-position:right -30px;
 }
 .gritter-bottom {
-  background:url(../../static/img/gritter.png) no-repeat left bottom;
   height:8px;
   margin:0;
 }
@@ -1086,7 +1123,6 @@ input[type=checkbox] {
 }
 .gritter-item {
   display:block;
-  background:url(../../static/img/gritter.png) no-repeat left -40px;
   color:#eee;
   padding:2px 11px 8px 11px;
   font-size: 11px;
@@ -1104,7 +1140,6 @@ input[type=checkbox] {
   position:absolute;
   top:5px;
   left:3px;
-  background:url('../../static/img/gritter.png') no-repeat left top;
   cursor:pointer;
   width:30px;
   height:30px;

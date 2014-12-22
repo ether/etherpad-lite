@@ -32,7 +32,7 @@ var _ = require('./underscore');
 
 function sanitizeUnicode(s)
 {
-  return UNorm.nfc(s).replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
+  return UNorm.nfc(s);
 }
 
 function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
@@ -668,7 +668,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             //var semiloc = oldString.lastIndexOf(';', lineLimit-1);
             //var lengthToTake = (semiloc >= 0 ? (semiloc+1) : lineLimit);
-            lengthToTake = lineLimit;
+            var lengthToTake = lineLimit;
             newStrings.push(oldString.substring(0, lengthToTake));
             oldString = oldString.substring(lengthToTake);
             newAttribStrings.push(Changeset.subattribution(oldAttribString, 0, lengthToTake));
