@@ -255,20 +255,20 @@ exports.checkRep = function (cs) {
     var o = iter.next();
     switch (o.opcode) {
     case '=':
+      exports.assert(o.chars >= o.lines, o.chars, " chars and ", o.lines, " lines in op ",cs);
       oldPos += o.chars;
       calcNewLen += o.chars;
       break;
     case '-':
+      exports.assert(o.chars >= o.lines, o.chars, " chars and ", o.lines, " lines in op ",cs);
       oldPos += o.chars;
       exports.assert(oldPos < oldLen, oldPos, " >= ", oldLen, " in ", cs);
       break;
     case '+':
-      {
-        calcNewLen += o.chars;
-        numInserted += o.chars;
-        exports.assert(calcNewLen < newLen, calcNewLen, " >= ", newLen, " in ", cs);
-        break;
-      }
+      exports.assert(o.chars >= o.lines, o.chars, " chars and ", o.lines, " lines in op ",cs);
+      calcNewLen += o.chars;
+      exports.assert(calcNewLen < newLen, calcNewLen, " >= ", newLen, " in ", cs);
+      break;
     }
     assem.append(o);
   }
@@ -903,6 +903,8 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
  * @params str {string} String to which a Changeset should be applied
  */
 exports.applyToText = function (cs, str) {
+  var totalNrOfLines = str.split("\n").length;
+  var removedLines = 0;
   var unpacked = exports.unpack(cs);
   exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
   var csIter = exports.opIterator(unpacked.ops);
@@ -916,6 +918,7 @@ exports.applyToText = function (cs, str) {
       assem.append(bankIter.take(op.chars));
       break;
     case '-':
+      removedLines += op.lines;
       strIter.skip(op.chars);
       break;
     case '=':
@@ -923,6 +926,7 @@ exports.applyToText = function (cs, str) {
       break;
     }
   }
+  exports.assert(totalNrOfLines >= removedLines,"cannot remove ", removedLines, " lines from text with ", totalNrOfLines, " lines");
   assem.append(strIter.take(strIter.remaining()));
   return assem.toString();
 };
