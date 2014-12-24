@@ -59,6 +59,7 @@ describe('Permission', function(){
               -> getLastEdited(padID) -- Should be when pad was made
                -> setText(padId)
                 -> getLastEdited(padID) -- Should be when setText was performed
+                 -> padUsers(padID) -- Should be when setText was performed
 */
 
 describe('deletePad', function(){
@@ -251,6 +252,18 @@ describe('getLastEdited', function(){
     .expect(200, done)
   });
 })
+
+describe('padUsers', function(){
+  it('gets User Count of a Pad', function(done) {
+    api.get(endPoint('padUsers')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.padUsers.length !== 0) throw new Error("Incorrect Pad Users")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
 
 
 var endPoint = function(point){
