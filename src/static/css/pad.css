@@ -74,6 +74,7 @@ a img {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  height:32px;
 }
 .toolbar ul li.separator {
   border: inherit;
@@ -81,7 +82,7 @@ a img {
   visibility: hidden;
   width: 0px;
   padding: 5px;
-  height:20px;
+  height:22px;
 }
 .toolbar ul li a:hover {
   text-decoration: none;
