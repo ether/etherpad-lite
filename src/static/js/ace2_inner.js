@@ -2313,6 +2313,25 @@ function Ace2Inner(){
 
   function getAttributeOnSelection(attributeName){
     if (!(rep.selStart && rep.selEnd)) return;
+
+    // get the previous/next characters formatting when we have nothing selected
+    // To fix this we just change the focus area, we don't actually check anything yet.
+    if(rep.selStart[1] == rep.selEnd[1]){
+      // if we're at the beginning of a line bump end forward so we get the right attribute
+      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){
+        rep.selEnd[1] = 1;
+      }
+      if(rep.selStart[1] < 0){
+        rep.selStart[1] = 0;
+      }
+      var line = rep.lines.atIndex(rep.selStart[0]);
+      // if we're at the end of the line bmp the start back 1 so we get hte attribute
+      if(rep.selEnd[1] == line.text.length){
+        rep.selStart[1] = rep.selStart[1] -1;
+      }
+    }
+
+    // Do the detection
     var selectionAllHasIt = true;
     var withIt = Changeset.makeAttribsString('+', [
       [attributeName, 'true']
