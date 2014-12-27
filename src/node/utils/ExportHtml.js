@@ -456,7 +456,15 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'ol ol ol ol ol { list-style-type: lower-latin; }' +
             'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
             'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-            'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+            'ol ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+            'ol ol ol ol ol ol ol ol ol { list-style-type: decimal; }' +
+            'ol ol ol ol ol ol ol ol ol ol { list-style-type: lower-latin; }' +
+            'ol ol ol ol ol ol ol ol ol ol ol { list-style-type: lower-roman; }' +
+            'ol ol ol ol ol ol ol ol ol ol ol ol { list-style-type: decimal; }' +
+            'ol ol ol ol ol ol ol ol ol ol ol ol ol { list-style-type: lower-latin; }' +
+            'ol ol ol ol ol ol ol ol ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
+            'ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol { list-style-type: decimal; }' +
+            'ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
             stylesForExportCSS + 
             '</style>\n' + '</head>\n') + 
         '<body>';
