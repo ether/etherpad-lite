@@ -22,9 +22,8 @@ var cheerio = require("cheerio");
 function setPadHTML(pad, html, callback)
 {
   var apiLogger = log4js.getLogger("ImportHtml");
-
+console.warn("setting padhtml");
   var $ = cheerio.load(html);
-
   // Appends a line break, used by Etherpad to ensure a caret is available
   // below the last line of an import
   $('body').append("<p></p>");
@@ -40,7 +39,7 @@ function setPadHTML(pad, html, callback)
     cc.collectContent(doc);
   }catch(e){
     apiLogger.warn("HTML was not properly formed", e);
-    return; // We don't process the HTML because it was bad..
+    return callback(e); // We don't process the HTML because it was bad..
   }
 
   var result = cc.finish();
@@ -91,6 +90,7 @@ function setPadHTML(pad, html, callback)
   apiLogger.debug('The changeset: ' + theChangeset);
   pad.setText("");
   pad.appendRevision(theChangeset);
+  callback();
 }
 
 exports.setPadHTML = setPadHTML;

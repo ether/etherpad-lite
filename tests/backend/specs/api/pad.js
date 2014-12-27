@@ -61,6 +61,9 @@ describe('Permission', function(){
                -> setText(padId)
                 -> getLastEdited(padID) -- Should be when setText was performed
                  -> padUsers(padID) -- Should be when setText was performed
+                  -> setHTML(padID) -- Should fail on invalid HTML
+                   -> setHTML(padID) -- Should fail on invalid HTML
+                    -> getHTML(padID) -- Should return HTML close to posted HTML
 */
 
 describe('deletePad', function(){
@@ -259,6 +262,42 @@ describe('padUsers', function(){
     api.get(endPoint('padUsers')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.data.padUsers.length !== 0) throw new Error("Incorrect Pad Users")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad', function(done) {
+    var html = "<!DOCTYPE html><html><head><title>Hello HTML</title></head><body<p>Hello World!</p></body></html>";
+    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Error importing HTML")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
+    var html = "<div><b>Hello HTML</title></head></div>";
+    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
+    .expect(function(res){
+      if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
+    var html = "<!DOCTYPE html><html><head></head><body><ul><li>Hello World!</li><li>foo</li></ul></body></html>";
+    api.get(endPoint('setHTML')+"&padID=test&html="+html)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("List HTML cant be imported")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)

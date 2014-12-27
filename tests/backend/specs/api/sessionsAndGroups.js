@@ -5,7 +5,6 @@ var assert = require('assert')
       path = require('path');
 
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');
-
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 apiKey = apiKey.replace(/\n$/, "");
 var apiVersion = 1;
