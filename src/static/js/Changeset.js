@@ -507,6 +507,10 @@ exports.opAssembler = function () {
  */ 
 exports.stringIterator = function (str) {
   var curIndex = 0;
+  var newLines = str.split("\n").length - 1
+  function getnewLines(){
+    return newLines
+  }
 
   function assertRemaining(n) {
     exports.assert(n <= remaining(), "!(", n, " <= ", remaining(), ")");
@@ -515,6 +519,7 @@ exports.stringIterator = function (str) {
   function take(n) {
     assertRemaining(n);
     var s = str.substr(curIndex, n);
+    newLines -= s.split("\n").length - 1
     curIndex += n;
     return s;
   }
@@ -537,7 +542,8 @@ exports.stringIterator = function (str) {
     take: take,
     skip: skip,
     remaining: remaining,
-    peek: peek
+    peek: peek,
+    newlines: getnewLines
   };
 };
 
@@ -908,6 +914,8 @@ exports.applyToText = function (cs, str) {
   var csIter = exports.opIterator(unpacked.ops);
   var bankIter = exports.stringIterator(unpacked.charBank);
   var strIter = exports.stringIterator(str);
+  var newlines = 0
+  var newlinefail = false
   var assem = exports.stringAssembler();
   while (csIter.hasNext()) {
     var op = csIter.next();
@@ -916,15 +924,23 @@ exports.applyToText = function (cs, str) {
       assem.append(bankIter.take(op.chars));
       break;
     case '-':
+      newlines = strIter.newlines()
       strIter.skip(op.chars);
+      if(!(newlines - strIter.newlines() == 0) && (newlines - strIter.newlines() != op.lines)){
+        newlinefail = true
+      }
       break;
     case '=':
+      newlines = strIter.newlines()
       assem.append(strIter.take(op.chars));
+      if(!(newlines - strIter.newlines() == op.lines)){
+        newlinefail = true
+      }
       break;
     }
   }
   assem.append(strIter.take(strIter.remaining()));
-  return assem.toString();
+  return [assem.toString(),newlinefail];
 };
 
 /**
@@ -1595,8 +1611,12 @@ exports.makeAText = function (text, attribs) {
  * @param pool {AttribPool} Attribute Pool to add to
  */
 exports.applyToAText = function (cs, atext, pool) {
+  var text = exports.applyToText(cs, atext.text)
+  if(text[1]){
+    throw new Error()
+  }
   return {
-    text: exports.applyToText(cs, atext.text),
+    text: text[0],
     attribs: exports.applyToAttribution(cs, atext.attribs, pool)
   };
 };
