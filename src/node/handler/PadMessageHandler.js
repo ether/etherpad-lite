@@ -1020,7 +1020,12 @@ function handleClientReady(client, message)
           {
             authorManager.getAuthor(authorId, function(err, author)
             {
-              if(ERR(err, callback) || !author) return;
+              if(!author && !err)
+              {
+                messageLogger.error("There is no author for authorId:", authorId);
+                return callback();
+              }
+              if(ERR(err, callback)) return;
               historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId}; // Filter author attribs (e.g. don't send author's pads to all clients)
               callback();
             });

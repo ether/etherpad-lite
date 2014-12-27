@@ -177,23 +177,26 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       var colorsAnonymous = [];
       _.each(authors, function(author)
       {
-        var authorColor =  clientVars.colorPalette[author.colorId] || author.colorId;
-        if (author.name)
+        if(author)
         {
-          if (numNamed !== 0) authorsList.append(', ');
-          
-          $('<span />')
-            .text(author.name || "unnamed")
-            .css('background-color', authorColor)
-            .addClass('author')
-            .appendTo(authorsList);
+          var authorColor = clientVars.colorPalette[author.colorId] || author.colorId;
+          if (author.name)
+          {
+            if (numNamed !== 0) authorsList.append(', ');
+            
+            $('<span />')
+              .text(author.name || "unnamed")
+              .css('background-color', authorColor)
+              .addClass('author')
+              .appendTo(authorsList);
 
-          numNamed++;
-        }
-        else
-        {
-          numAnonymous++;
-          if(authorColor) colorsAnonymous.push(authorColor);
+            numNamed++;
+          }
+          else
+          {
+            numAnonymous++;
+            if(authorColor) colorsAnonymous.push(authorColor);
+          }
         }
       });
       if (numAnonymous > 0)
