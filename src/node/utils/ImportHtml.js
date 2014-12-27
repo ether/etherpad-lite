@@ -89,7 +89,7 @@ function setPadHTML(pad, html, callback)
   apiLogger.debug('The changeset: ' + theChangeset);
   pad.setText("");
   pad.appendRevision(theChangeset);
-  callback();
+  callback(null);
 }
 
 exports.setPadHTML = setPadHTML;
