@@ -692,9 +692,6 @@ table#otheruserstable {
 #exportopena:before {
   content: "\e805";
 }
-#exportdokuwikia:before {
-  content: "\e805";
-}
 
 /* hidden element */
 #importstatusball,

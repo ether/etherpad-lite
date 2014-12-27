@@ -199,7 +199,6 @@ var padimpexp = (function()
       // build the export links
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
       $("#exportplaina").attr("href", pad_root_path + "/export/txt");
-      $("#exportdokuwikia").attr("href", pad_root_path + "/export/dokuwiki");
 
       // activate action to import in the form
       $("#importform").attr('action', pad_root_url + "/import");
