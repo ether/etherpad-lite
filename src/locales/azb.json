@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Amir a57",
-			"Mousa"
+			"Mousa",
+			"Koroğlu"
 		]
 	},
 	"index.newPad": "یئنی یادداشت دفترچه سی",
@@ -45,7 +46,6 @@
 	"pad.importExport.exportword": "مایکروسافت وورد",
 	"pad.importExport.exportpdf": "پی دی اف",
 	"pad.importExport.exportopen": "او دی اف",
-	"pad.importExport.exportdokuwiki": "دوکو ویکی",
 	"pad.modals.connected": "متصل اولدی",
 	"pad.modals.reconnecting": "سیزین یادداشت دفترچه سینه یئنی دن متصیل اولدی",
 	"pad.modals.forcereconnect": "یئنی اتصال اوچون زورلاما",
@@ -68,5 +68,21 @@
 	"timeslider.pageTitle": "{{appTitle}}زمان اسلایدری",
 	"timeslider.toolbar.returnbutton": "یادداشت دفترچه سینه قاییت",
 	"timeslider.toolbar.authors": "یازیچیلار",
-	"timeslider.toolbar.authorsList": "یازیچی سیز"
+	"timeslider.toolbar.authorsList": "یازیچی سیز",
+	"timeslider.month.january": "ژانویه",
+	"timeslider.month.february": "فوریه",
+	"timeslider.month.march": "مارس",
+	"timeslider.month.april": "آپریل",
+	"timeslider.month.may": "مای",
+	"timeslider.month.june": "ژوئن",
+	"timeslider.month.july": "جولای",
+	"timeslider.month.august": "آقوست",
+	"timeslider.month.september": "سپتامبر",
+	"timeslider.month.october": "اوْکتوبر",
+	"timeslider.month.november": "نوْوامبر",
+	"timeslider.month.december": "دسامبر",
+	"pad.userlist.unnamed": "آدسیز",
+	"pad.userlist.guest": "قوْناق",
+	"pad.userlist.deny": "دانماق",
+	"pad.userlist.approve": "اوْنایلا"
 }

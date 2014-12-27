@@ -49,7 +49,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "Móžeš jenož z formatow luteho teksta abo z HTML-formata importować. Za bóle rozšěrjene importowanske funkcije <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">instaluj prošu Abiword</a>.",
 	"pad.modals.connected": "Zwjazany.",
 	"pad.modals.reconnecting": "Zwjazuje so znowa z twojim zapisnikom...",

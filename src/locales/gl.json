@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Toliño"
+			"Toliño",
+			"Elisardojm"
 		]
 	},
 	"index.newPad": "Novo documento",
@@ -9,14 +10,14 @@
 	"pad.toolbar.bold.title": "Negra (Ctrl-B)",
 	"pad.toolbar.italic.title": "Cursiva (Ctrl-I)",
 	"pad.toolbar.underline.title": "Subliñar (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "Riscar",
-	"pad.toolbar.ol.title": "Lista ordenada",
-	"pad.toolbar.ul.title": "Lista sen ordenar",
+	"pad.toolbar.strikethrough.title": "Riscar (Ctrl+5)",
+	"pad.toolbar.ol.title": "Lista ordenada (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "Lista sen ordenar (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Sangría (TAB)",
 	"pad.toolbar.unindent.title": "Sen sangría (Maiús.+TAB)",
 	"pad.toolbar.undo.title": "Desfacer (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Refacer (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "Limpar as cores de identificación dos autores",
+	"pad.toolbar.clearAuthorship.title": "Limpar as cores de identificación dos autores (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Importar/Exportar desde/a diferentes formatos de ficheiro",
 	"pad.toolbar.timeslider.title": "Liña do tempo",
 	"pad.toolbar.savedRevision.title": "Gardar a revisión",
@@ -49,7 +50,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "Só pode importar texto simple ou formatos HTML. Para obter máis información sobre as características de importación avanzadas <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">instale abiword</a>.",
 	"pad.modals.connected": "Conectado.",
 	"pad.modals.reconnecting": "Reconectando co seu documento...",
