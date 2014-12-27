@@ -11,6 +11,7 @@ apiKey = apiKey.replace(/\n$/, "");
 var apiVersion = 1;
 var testPadId = makeid();
 var lastEdited = "";
+var ULhtml = '<!DOCTYPE html><html><body><ul class="bullet"><li>one</li><li>2</li></ul><br><ul class="bullet"><ul class="bullet"><li>UL2</li></ul></ul></body></html>';
 
 describe('Connectivity', function(){
   it('errors if can not connect', function(done) {
@@ -62,7 +63,7 @@ describe('Permission', function(){
                 -> getLastEdited(padID) -- Should be when setText was performed
                  -> padUsers(padID) -- Should be when setText was performed
                   -> setHTML(padID) -- Should fail on invalid HTML
-                   -> setHTML(padID) -- Should fail on invalid HTML
+                   -> setHTML(padID) *3 -- Should fail on invalid HTML
                     -> getHTML(padID) -- Should return HTML close to posted HTML
 */
 
@@ -294,8 +295,7 @@ describe('setHTML', function(){
 
 describe('setHTML', function(){
   it('Sets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
-    var html = "<!DOCTYPE html><html><head></head><body><ul><li>one</li><li>2</li></ul><br/><ul><ul><li>UL2</li></ul></ul></body></html>";
-    api.get(endPoint('setHTML')+"&padID=test&html="+html)
+    api.get(endPoint('setHTML')+"&padID=test&html="+ULhtml)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("List HTML cant be imported")
     })
@@ -304,6 +304,31 @@ describe('setHTML', function(){
   });
 })
 
+describe('getHTML', function(){
+  // will fail due to https://github.com/ether/etherpad-lite/issues/1604
+  // reminder to self this is how the HTML looks
+  // <ul>
+  //   <li>one</li>
+  //   <li>2</li>
+  // </ul>
+  // <br>
+  // <ul class="bullet">
+  //   <ul class="bullet">
+  //     <li>UL2</li>
+  //   </ul>
+  // </ul>
+  // It will look right in the browser but the export will get it horriby wrong
+
+  it('Gets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
+    api.get(endPoint('getHTML')+"&padID=test")
+    .expect(function(res){
+      console.log(res.body.data.html);
+      if(res.body.data !== ULhtml) throw new Error("Imported HTML does not match served HTML")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
 
 var endPoint = function(point){
