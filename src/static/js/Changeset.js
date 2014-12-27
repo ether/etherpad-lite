@@ -255,20 +255,20 @@ exports.checkRep = function (cs) {
     var o = iter.next();
     switch (o.opcode) {
     case '=':
-      exports.assert(o.chars >= o.lines, o.chars, " chars and ", o.lines, " lines in op ",cs);
       oldPos += o.chars;
       calcNewLen += o.chars;
       break;
     case '-':
-      exports.assert(o.chars >= o.lines, o.chars, " chars and ", o.lines, " lines in op ",cs);
       oldPos += o.chars;
       exports.assert(oldPos < oldLen, oldPos, " >= ", oldLen, " in ", cs);
       break;
     case '+':
-      exports.assert(o.chars >= o.lines, o.chars, " chars and ", o.lines, " lines in op ",cs);
-      calcNewLen += o.chars;
-      exports.assert(calcNewLen < newLen, calcNewLen, " >= ", newLen, " in ", cs);
-      break;
+      {
+        calcNewLen += o.chars;
+        numInserted += o.chars;
+        exports.assert(calcNewLen < newLen, calcNewLen, " >= ", newLen, " in ", cs);
+        break;
+      }
     }
     assem.append(o);
   }
