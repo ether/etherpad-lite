@@ -22,7 +22,6 @@ var cheerio = require("cheerio");
 function setPadHTML(pad, html, callback)
 {
   var apiLogger = log4js.getLogger("ImportHtml");
-console.warn("setting padhtml");
   var $ = cheerio.load(html);
   // Appends a line break, used by Etherpad to ensure a caret is available
   // below the last line of an import

@@ -416,7 +416,6 @@ exports.setHTML = function(padID, html, callback)
       }else{
         //update the clients on the pad
         padMessageHandler.updatePadClients(pad, callback);
-        callback();
         return;
       }
     });

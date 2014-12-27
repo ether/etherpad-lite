@@ -294,7 +294,7 @@ describe('setHTML', function(){
 
 describe('setHTML', function(){
   it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
-    var html = "<!DOCTYPE html><html><head></head><body><ul><li>Hello World!</li><li>foo</li></ul></body></html>";
+    var html = "<!DOCTYPE html><html><head></head><body><ul><li>UL1</li><ul><li>UL2</li></ul></ul></body></html>";
     api.get(endPoint('setHTML')+"&padID=test&html="+html)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("List HTML cant be imported")
