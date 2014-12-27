@@ -37,6 +37,8 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  background-color:#fff;
+  /* bgcolor is reuqired so you can't see pad content behind it */
 }
 #timeslider #timeslider-slider {
   height: 61px;
