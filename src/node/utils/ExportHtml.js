@@ -332,12 +332,23 @@ function getHTMLFromAtext(pad, atext, authorColors)
           pieces.push('</li>')
         }
         lists.push([line.listLevel, line.listTypeName]);
+
+        // if there is a previous list we need to open x tags, where x is the difference of the levels
+        // if there is no previous list we need to open x tags, where x is the wanted level
+        var toOpen = lists.length > 1 ? line.listLevel - lists[lists.length - 2][0] - 1 : line.listLevel - 1
+
         if(line.listTypeName == "number")
         {
+          if(toOpen > 0){
+            pieces.push(new Array(toOpen + 1).join('<ol>'))
+          }
           pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
         else
         {
+          if(toOpen > 0){
+            pieces.push(new Array(toOpen + 1).join('<ul>'))
+          }
           pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
       }
@@ -383,28 +394,19 @@ function getHTMLFromAtext(pad, atext, authorColors)
         pieces.push('</li><li>', lineContent || '<br>');
       }
     }
-    else//outside any list
+    else//outside any list, need to close line.listLevel of lists
     {
       if(lists.length > 0){
         if(lists[lists.length - 1][1] == "number"){
           pieces.push('</li></ol>');
+          pieces.push(new Array(lists[lists.length - 1][0]).join('</ol>'))
         } else {
           pieces.push('</li></ul>');
+          pieces.push(new Array(lists[lists.length - 1][0]).join('</ul>'))
         }
-        lists.length--;
       }
-      while (lists.length > 0)//if was in a list: close it before
-      {
-        if(lists[lists.length - 1][1] == "number")
-        {
-          pieces.push('</ol>');
-        }
-        else
-        {
-          pieces.push('</ul>');
-        }
-        lists.length--;
-      }
+      lists = []
+
       var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
       {
         line: line,
