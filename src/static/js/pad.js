@@ -50,6 +50,8 @@ var gritter = require('./gritter').gritter;
 
 var hooks = require('./pluginfw/hooks');
 
+var receivedClientVars = false;
+
 function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
   if (days)
   {
@@ -159,6 +161,49 @@ function savePassword()
   return false;
 }
 
+function sendClientReady(isReconnect, messageType)
+{
+  messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
+  var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
+  padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
+
+  if(!isReconnect)
+  {
+    var titleArray = document.title.split('|');
+    var title = titleArray[titleArray.length - 1];
+    document.title = padId.replace(/_+/g, ' ') + " | " + title;
+  }
+
+  var token = readCookie("token");
+  if (token == null)
+  {
+    token = "t." + randomString();
+    createCookie("token", token, 60);
+  }
+  
+  var sessionID = decodeURIComponent(readCookie("sessionID"));
+  var password = readCookie("password");
+
+  var msg = {
+    "component": "pad",
+    "type": messageType,
+    "padId": padId,
+    "sessionID": sessionID,
+    "password": password,
+    "token": token,
+    "protocolVersion": 2
+  };
+  
+  //this is a reconnect, lets tell the server our revisionnumber
+  if(isReconnect == true)
+  {
+    msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
+    msg.reconnect=true;
+  }
+  
+  socket.json.send(msg);
+}
+
 function handshake()
 {
   var loc = document.location;
@@ -177,44 +222,6 @@ function handshake()
     'sync disconnect on unload' : false
   });
 
-  function sendClientReady(isReconnect)
-  {
-    var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
-    padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
-
-    if(!isReconnect)
-      document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
-
-    var token = readCookie("token");
-    if (token == null)
-    {
-      token = "t." + randomString();
-      createCookie("token", token, 60);
-    }
-    
-    var sessionID = decodeURIComponent(readCookie("sessionID"));
-    var password = readCookie("password");
-
-    var msg = {
-      "component": "pad",
-      "type": "CLIENT_READY",
-      "padId": padId,
-      "sessionID": sessionID,
-      "password": password,
-      "token": token,
-      "protocolVersion": 2
-    };
-    
-    //this is a reconnect, lets tell the server our revisionnumber
-    if(isReconnect == true)
-    {
-      msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
-      msg.reconnect=true;
-    }
-    
-    socket.json.send(msg);
-  };
-
   var disconnectTimeout;
 
   socket.once('connect', function () {
@@ -229,7 +236,7 @@ function handshake()
     }
 
     pad.collabClient.setChannelState("CONNECTED");
-    sendClientReady(true);
+    pad.sendClientReady(true);
   });
   
   socket.on('disconnect', function (reason) {
@@ -247,7 +254,6 @@ function handshake()
     }
   });
 
-  var receivedClientVars = false;
   var initalized = false;
 
   socket.on('message', function(obj)
@@ -287,7 +293,7 @@ function handshake()
     }
     
     //if we haven't recieved the clientVars yet, then this message should it be
-    else if (!receivedClientVars)
+    else if (!receivedClientVars && obj.type == "CLIENT_VARS")
     {
       //log the message
       if (window.console) console.log(obj);
@@ -425,6 +431,30 @@ var pad = {
   getUserName: function()
   {
     return pad.myUserInfo.name;
+  },
+  sendClientReady: function(isReconnect, messageType)
+  {
+    messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
+    sendClientReady(isReconnect, messageType);
+  },
+  switchToPad: function(padId)
+  {
+    var options = document.location.href.split('?')[1];
+    var newHref = "/p/" + padId;
+    if (options != null)
+      newHref =  newHref + '?' + options;
+
+    if(window.history && window.history.pushState)
+    {
+      $('#chattext p').remove(); //clear the chat messages
+      window.history.pushState("", "", newHref);      
+      receivedClientVars = false;
+      sendClientReady(false, 'SWITCH_TO_PAD');
+    }
+    else // fallback
+    {
+      window.location.href = newHref;
+    }
   },
   sendClientMessage: function(msg)
   {
