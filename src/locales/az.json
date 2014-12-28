@@ -51,7 +51,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Açıq Sənəd Formatı)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "Siz yalnız adi mətndən və ya HTML-dən idxal edə bilərsiniz. İdxalın daha mürəkkəb funksiyaları üçün, zəhmət olmasa, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\"> AbiWord-i quraşdırın</a>.",
 	"pad.modals.connected": "Bağlandı.",
 	"pad.modals.reconnecting": "Sizin pad yenidən qoşulur..",

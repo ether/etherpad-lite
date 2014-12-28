@@ -1,7 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Siebrand"
+			"Siebrand",
+			"Macofe",
+			"Robin0van0der0vliet"
 		]
 	},
 	"index.newPad": "Nieuw pad",
@@ -9,14 +11,14 @@
 	"pad.toolbar.bold.title": "Vet (Ctrl-B)",
 	"pad.toolbar.italic.title": "Cursief (Ctrl-I)",
 	"pad.toolbar.underline.title": "Onderstrepen (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "Doorhalen",
-	"pad.toolbar.ol.title": "Geordende lijst",
-	"pad.toolbar.ul.title": "Ongeordende lijst",
+	"pad.toolbar.strikethrough.title": "Doorhalen (Ctrl+5)",
+	"pad.toolbar.ol.title": "Geordende lijst (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "Ongeordende lijst (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Inspringen (Tab)",
 	"pad.toolbar.unindent.title": "Inspringing verkleinen (Shift+Tab)",
 	"pad.toolbar.undo.title": "Ongedaan maken (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Opnieuw uitvoeren (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "Kleuren auteurs wissen",
+	"pad.toolbar.clearAuthorship.title": "Kleuren auteurs wissen (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Naar/van andere opmaak exporteren/importeren",
 	"pad.toolbar.timeslider.title": "Tijdlijn",
 	"pad.toolbar.savedRevision.title": "Versie opslaan",
@@ -49,7 +51,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "Pdf",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "U kunt alleen importeren vanuit platte tekst of een HTML-opmaak. <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">Installeer abiword</a> om meer geavanceerde importmogelijkheden te krijgen.",
 	"pad.modals.connected": "Verbonden.",
 	"pad.modals.reconnecting": "Opnieuw verbinding maken met uw pad...",

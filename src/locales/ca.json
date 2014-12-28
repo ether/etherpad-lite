@@ -4,7 +4,8 @@
 			"Alvaro Vidal-Abarca",
 			"Pginer",
 			"Pitort",
-			"Toniher"
+			"Toniher",
+			"Macofe"
 		]
 	},
 	"index.newPad": "Nou pad",
@@ -19,7 +20,7 @@
 	"pad.toolbar.unindent.title": "Sagnat invers (Majúsc+TAB)",
 	"pad.toolbar.undo.title": "Desfés (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Refés (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "Neteja els colors d'autoria",
+	"pad.toolbar.clearAuthorship.title": "Neteja els colors d'autoria (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Importa/exporta a partir de diferents formats de fitxer",
 	"pad.toolbar.timeslider.title": "Línia temporal",
 	"pad.toolbar.savedRevision.title": "Desa la revisió",
@@ -52,7 +53,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "Només podeu importar de text net o html. Per a opcions d'importació més avançades <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">instal·leu l'Abiword</a>.",
 	"pad.modals.connected": "Connectat.",
 	"pad.modals.reconnecting": "S'està tornant a connectar al vostre pad…",

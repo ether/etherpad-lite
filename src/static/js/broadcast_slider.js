@@ -29,6 +29,9 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 {
   var BroadcastSlider;
 
+  // Hack to ensure timeslider i18n values are in
+  $("[data-key='timeslider_returnToPad'] > a > span").html(html10n.get("timeslider.toolbar.returnbutton"));
+
   (function()
   { // wrap this code in its own namespace
     var sliderLength = 1000;

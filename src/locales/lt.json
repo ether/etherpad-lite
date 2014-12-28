@@ -28,7 +28,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Atvirasis dokumento formatas)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.modals.connected": "Prisijungta.",
 	"pad.modals.unauth": "Neleidžiama",
 	"pad.modals.initsocketfail": "Serveris yra nepasiekiamas.",

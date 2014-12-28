@@ -57,7 +57,7 @@ function Ace2Inner(){
   var isSetUp = false;
 
   var THE_TAB = '    '; //4
-  var MAX_LIST_LEVEL = 8;
+  var MAX_LIST_LEVEL = 16;
 
   var LINE_NUMBER_PADDING_RIGHT = 4;
   var LINE_NUMBER_PADDING_LEFT = 4;
@@ -3363,7 +3363,7 @@ function Ace2Inner(){
     if (listType)
     {
       var text = rep.lines.atIndex(lineNum).text;
-      listType = /([a-z]+)([12345678])/.exec(listType);
+      listType = /([a-z]+)([0-9]+)/.exec(listType);
       var type  = listType[1];
       var level = Number(listType[2]);
 
@@ -3415,7 +3415,7 @@ function Ace2Inner(){
       var level = 0;
       if (listType)
       {
-        listType = /([a-z]+)([12345678])/.exec(listType);
+        listType = /([a-z]+)([0-9]+)/.exec(listType);
         if (listType)
         {
           t = listType[1];
@@ -5100,7 +5100,7 @@ function Ace2Inner(){
     {
       return null;
     }
-    type = /([a-z]+)[12345678]/.exec(type);
+    type = /([a-z]+)[0-9+]/.exec(type);
     if(type[1] == "indent")
     {
       return null;
@@ -5109,7 +5109,7 @@ function Ace2Inner(){
     //2-find the first line of the list
     while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
     {
-      type = /([a-z]+)[12345678]/.exec(type);
+      type = /([a-z]+)[0-9+]/.exec(type);
       if(type[1] == "indent")
         break;
       lineNum--;
@@ -5129,7 +5129,7 @@ function Ace2Inner(){
       while(listType = getLineListType(line))
       {
         //apply new num
-        listType = /([a-z]+)([12345678])/.exec(listType);
+        listType = /([a-z]+)([0-9+])/.exec(listType);
         curLevel = Number(listType[2]);
         if(isNaN(curLevel) || listType[0] == "indent")
         {
@@ -5197,7 +5197,7 @@ function Ace2Inner(){
     {
       var t = '';
       var level = 0;
-      var listType = /([a-z]+)([12345678])/.exec(getLineListType(n));
+      var listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
       if (listType)
       {
         t = listType[1];
