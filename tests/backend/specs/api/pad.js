@@ -11,6 +11,7 @@ apiKey = apiKey.replace(/\n$/, "");
 var apiVersion = 1;
 var testPadId = makeid();
 var lastEdited = "";
+var ULhtml = '<!DOCTYPE html><html><body><ul class="bullet"><li>one</li><li>2</li></ul><br><ul class="bullet"><ul class="bullet"><li>UL2</li></ul></ul></body></html>';
 
 describe('Connectivity', function(){
   it('errors if can not connect', function(done) {
@@ -61,6 +62,9 @@ describe('Permission', function(){
                -> setText(padId)
                 -> getLastEdited(padID) -- Should be when setText was performed
                  -> padUsers(padID) -- Should be when setText was performed
+                  -> setHTML(padID) -- Should fail on invalid HTML
+                   -> setHTML(padID) *3 -- Should fail on invalid HTML
+                    -> getHTML(padID) -- Should return HTML close to posted HTML
 */
 
 describe('deletePad', function(){
@@ -265,6 +269,66 @@ describe('padUsers', function(){
   });
 })
 
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad', function(done) {
+    var html = "<!DOCTYPE html><html><head><title>Hello HTML</title></head><body<p>Hello World!</p></body></html>";
+    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Error importing HTML")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
+    var html = "<div><b>Hello HTML</title></head></div>";
+    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
+    .expect(function(res){
+      if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
+    api.get(endPoint('setHTML')+"&padID=test&html="+ULhtml)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("List HTML cant be imported")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getHTML', function(){
+  // will fail due to https://github.com/ether/etherpad-lite/issues/1604
+  // reminder to self this is how the HTML looks
+  // <ul>
+  //   <li>one</li>
+  //   <li>2</li>
+  // </ul>
+  // <br>
+  // <ul class="bullet">
+  //   <ul class="bullet">
+  //     <li>UL2</li>
+  //   </ul>
+  // </ul>
+  // It will look right in the browser but the export will get it horriby wrong
+
+  it('Gets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
+    api.get(endPoint('getHTML')+"&padID=test")
+    .expect(function(res){
+      console.log(res.body.data.html);
+      if(res.body.data !== ULhtml) throw new Error("Imported HTML does not match served HTML")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
 
 var endPoint = function(point){
