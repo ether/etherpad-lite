@@ -233,6 +233,8 @@ exports.handleMessage = function(client, message)
       } else {
         messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
       }
+    } else if(message.type == "SWITCH_TO_PAD") {
+      handleSwitchToPad(client, message);
     } else {
       messageLogger.warn("Dropped message, unknown Message Type " + message.type);
     }
@@ -246,18 +248,7 @@ exports.handleMessage = function(client, message)
       {
         // client tried to auth for the first time (first msg from the client)
         if(message.type == "CLIENT_READY") {
-          // Remember this information since we won't
-          // have the cookie in further socket.io messages.
-          // This information will be used to check if
-          // the sessionId of this connection is still valid
-          // since it could have been deleted by the API.
-          sessioninfos[client.id].auth =
-          {
-            sessionID: message.sessionID,
-            padID: message.padId,
-            token : message.token,
-            password: message.password
-          };
+          createSessionInfo(client, message);
         }
 
         // Note: message.sessionID is an entirely different kind of
@@ -904,6 +895,42 @@ function _correctMarkersInPad(atext, apool) {
     offset = pos+1;
   });
   return builder.toString();
+}
+
+function handleSwitchToPad(client, message)
+{
+  // clear the session and leave the room
+  var currentSession = sessioninfos[client.id];
+  var padId = currentSession.padId;
+  var roomClients = socketio.sockets.clients(padId);
+  for(var i = 0; i < roomClients.length; i++) {
+    var sinfo = sessioninfos[roomClients[i].id];
+    if(sinfo && sinfo.author == currentSession.author) {
+      // fix user's counter, works on page refresh or if user closes browser window and then rejoins
+      sessioninfos[roomClients[i].id] = {};
+      roomClients[i].leave(padId);
+    }
+  }
+  
+  // start up the new pad
+  createSessionInfo(client, message);
+  handleClientReady(client, message);
+}
+
+function createSessionInfo(client, message)
+{
+  // Remember this information since we won't
+  // have the cookie in further socket.io messages.
+  // This information will be used to check if
+  // the sessionId of this connection is still valid
+  // since it could have been deleted by the API.
+  sessioninfos[client.id].auth =
+  {
+    sessionID: message.sessionID,
+    padID: message.padId,
+    token : message.token,
+    password: message.password
+  };
 }
 
 /**
