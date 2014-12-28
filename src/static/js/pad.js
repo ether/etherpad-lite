@@ -450,7 +450,7 @@ var pad = {
       if (!readCookie("test"))
       {
         $('#loading').hide();
-        $('#nocookie').show();
+        $('#noCookie').show();
       }
     });
   },
