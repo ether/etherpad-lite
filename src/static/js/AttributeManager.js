@@ -172,7 +172,9 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
      
      if(hasMarker){
        ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
-       ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 1]), attribs, this.rep.apool);
+       // If length == 4, there's [author, lmkr, insertorder, + the attrib being removed] thus we can remove the marker entirely
+       if(attribs.length == 4) ChangesetUtils.buildRemoveRange(this.rep, builder, loc, (loc = [lineNum, 1]))
+       else ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 1]), attribs, this.rep.apool);
      }
      
      return this.applyChangeset(builder);
