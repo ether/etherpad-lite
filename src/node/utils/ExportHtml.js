@@ -328,6 +328,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
       {
+        if(lists.length > 0){
+          pieces.push('</li>')
+        }
         lists.push([line.listLevel, line.listTypeName]);
         if(line.listTypeName == "number")
         {
@@ -363,7 +366,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           pieces.push('<br><br>');
         }
       }*/
-      else//means we are getting closer to the lowest level of indentation
+      else//means we are getting closer to the lowest level of indentation or are at the same level 
       {
         while (whichList < lists.length - 1)
         {
@@ -382,15 +385,23 @@ function getHTMLFromAtext(pad, atext, authorColors)
     }
     else//outside any list
     {
+      if(lists.length > 0){
+        if(lists[lists.length - 1][1] == "number"){
+          pieces.push('</li></ol>');
+        } else {
+          pieces.push('</li></ul>');
+        }
+        lists.length--;
+      }
       while (lists.length > 0)//if was in a list: close it before
       {
         if(lists[lists.length - 1][1] == "number")
         {
-          pieces.push('</li></ol>');
+          pieces.push('</ol>');
         }
         else
         {
-          pieces.push('</li></ul>');
+          pieces.push('</ul>');
         }
         lists.length--;
       }
