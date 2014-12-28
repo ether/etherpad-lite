@@ -41,7 +41,7 @@ var chat = (function()
       if(!isStuck || fromInitialCall) { // Stick it to
         padcookie.setPref("chatAlwaysVisible", true);
         $('#chatbox').addClass("stickyChat");
-        $('#chattext').css({"top":"0px"});
+        $('#titlesticky').hide();
         $('#editorcontainer').css({"right":"192px"});
         $('.stickyChat').css("top",$('#editorcontainer').offset().top+"px");
         isStuck = true;
@@ -49,18 +49,25 @@ var chat = (function()
         padcookie.setPref("chatAlwaysVisible", false);
         $('.stickyChat').css("top", "auto");
         $('#chatbox').removeClass("stickyChat");
-        $('#chattext').css({"top":"25px"});
+        $('#titlesticky').show();
         $('#editorcontainer').css({"right":"0px"});
         isStuck = false;
       }
     },
     hide: function () 
     {
-      $("#chatcounter").text("0");
-      $("#chaticon").show();
-      $("#chatbox").hide();
-      $.gritter.removeAll();
-      $("#gritter-notice-wrapper").show();
+      // decide on hide logic based on chat window being maximized or not 
+      if ($('#options-stickychat').prop('checked')) {
+        chat.stickToScreen();
+        $('#options-stickychat').prop('checked', false);
+      }
+      else {  
+        $("#chatcounter").text("0");
+        $("#chaticon").show();
+        $("#chatbox").hide();
+        $.gritter.removeAll();
+        $("#gritter-notice-wrapper").show();
+      }
     },
     scrollDown: function()
     {
