@@ -305,10 +305,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
   var lists = []; // e.g. [[1,'bullet'], [3,'bullet'], ...]
+  var listLevels = []
   for (var i = 0; i < textLines.length; i++)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
+    listLevels.push(line.listLevel)
 
     if (line.listLevel)//If we are inside a list
     {
@@ -379,19 +381,23 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }*/
       else//means we are getting closer to the lowest level of indentation or are at the same level 
       {
-        while (whichList < lists.length - 1)
-        {
+        var toClose = lists.length > 0 ? listLevels[listLevels.length - 2] - line.listLevel : 0
+        if( toClose > 0){
+          pieces.push('</li>')
           if(lists[lists.length - 1][1] == "number")
           {
-            pieces.push('</li></ol>');
+            pieces.push(new Array(toClose+1).join('</ol>'))
+            pieces.push('<li>', lineContent || '<br>');
           }
           else
           {
-            pieces.push('</li></ul>');
+            pieces.push(new Array(toClose+1).join('</ul>'))
+            pieces.push('<li>', lineContent || '<br>');
           }
-          lists.length--;
+          lists = lists.slice(0,whichList+1)
+        } else {
+          pieces.push('</li><li>', lineContent || '<br>');
         }
-        pieces.push('</li><li>', lineContent || '<br>');
       }
     }
     else//outside any list, need to close line.listLevel of lists
@@ -399,10 +405,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
       if(lists.length > 0){
         if(lists[lists.length - 1][1] == "number"){
           pieces.push('</li></ol>');
-          pieces.push(new Array(lists[lists.length - 1][0]).join('</ol>'))
+          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ol>'))
         } else {
           pieces.push('</li></ul>');
-          pieces.push(new Array(lists[lists.length - 1][0]).join('</ul>'))
+          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ul>'))
         }
       }
       lists = []
