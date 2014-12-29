@@ -1,4 +1,3 @@
-var log4js = require('log4js');
 var settings = require('../../utils/Settings');
 var socketio = require('socket.io');
 var socketIORouter = require("../../handler/SocketIORouter");

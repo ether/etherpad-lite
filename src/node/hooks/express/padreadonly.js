@@ -10,7 +10,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   { 
     var html;
     var padId;
-    var pad;
 
     async.series([
       //translate the read only pad to a padId

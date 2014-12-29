@@ -1,4 +1,3 @@
-var log4js = require('log4js');
 var express = require('express');
 var apiHandler = require('../../handler/APIHandler');
 var apiCaller = require('./apicalls').apiCaller;

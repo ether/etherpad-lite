@@ -4,7 +4,6 @@
 var _ = require("underscore")
   , tagAttributes
   , tag
-  , defaultButtons
   , Button
   , ButtonsGroup
   , Separator
@@ -122,8 +121,7 @@ _.extend(SelectButton.prototype, Button.prototype, {
   },
 
   select: function (attributes) {
-    var self = this
-      , options = [];
+      var options = [];
 
     _.each(this.options, function (opt) {
       var a = _.extend({
