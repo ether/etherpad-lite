@@ -555,6 +555,15 @@ var pad = {
       if(padcookie.getPref("showAuthorshipColors") == false){
         pad.changeViewOption('showAuthorColors', false);
       }
+      if(padcookie.getPref("showLineNumbers") == false){
+        pad.changeViewOption('showLineNumbers', false);
+      }
+      if(padcookie.getPref("rtlIsTrue") == true){
+        pad.changeViewOption('rtlIsTrue', true);
+      }
+      if(padcookie.getPref("useMonospaceFont") == true){
+        pad.changeViewOption('useMonospaceFont', true);
+      }
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },
@@ -605,6 +614,7 @@ var pad = {
       for (var k in opts.view)
       {
         pad.padOptions.view[k] = opts.view[k];
+        padcookie.setPref(k, opts.view[k]);
       }
       padeditor.setViewOptions(pad.padOptions.view);
     }
@@ -758,10 +768,8 @@ var pad = {
   },
   handleIsFullyConnected: function(isConnected, isInitialConnect)
   {
-
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
-
   },
   determineChatVisibility: function(asNowConnectedFeedback){
     var chatVisCookie = padcookie.getPref('chatAlwaysVisible');
