@@ -23,7 +23,6 @@ exports.setPadRaw = function(padId, records, callback){
   
   async.eachSeries(Object.keys(records), function(key, cb){
     var value = records[key]
-
     // rewrite padId
     var oldPadId = key.split(":");
     oldPadId[1] = padId;

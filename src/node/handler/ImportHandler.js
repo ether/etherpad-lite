@@ -121,12 +121,24 @@ exports.doImport = function(req, res, padId)
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase()
       var fileIsEtherpad = (fileEnding === ".etherpad");
+
       if(fileIsEtherpad){
-        fs.readFile(srcFile, "utf8", function(err, _text){
-          directDatabaseAccess = true;
-          importEtherpad.setPadRaw(padId, _text, function(err){
-            callback();
-          });
+        // we do this here so we can see if the pad has quit ea few edits
+        padManager.getPad(padId, function(err, _pad){
+          console.error(_pad);
+          var headCount = _pad.head;
+          console.error(headCount);
+          if(headCount >= 10){
+            apiLogger.warn("Direct database Import attempt of a pad that already has content, we wont be doing this")
+            return callback("padHasData");
+          }else{
+            fs.readFile(srcFile, "utf8", function(err, _text){
+              directDatabaseAccess = true;
+              importEtherpad.setPadRaw(padId, _text, function(err){
+                callback();
+              });
+            });
+          }  
         });
       }else{
         callback();
@@ -264,7 +276,7 @@ exports.doImport = function(req, res, padId)
     var status = "ok";
     
     //check for known errors and replace the status
-    if(err == "uploadFailed" || err == "convertFailed")
+    if(err == "uploadFailed" || err == "convertFailed" || err == "padHasData")
     {
       status = err;
       err = null;
