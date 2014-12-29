@@ -140,10 +140,29 @@ describe("import functionality", function(){
     expect(results[1][1]).to.be('\t* bullet line 1\n\n\t* bullet line 2\n\t\t* bullet2 line 1\n\n\t\t\t\t* bullet4 line 2 bisu\n\t\t\t\t* bullet4 line 2 bs\n\t\t\t\t* bullet4 line 2 uuis\n\n')
     done()
   })
-
-
-  //RESULT IS WRONG AT THE LAST LINE
-  xit("import a pad with 8 levels of bullets and newlines and attributes from html", function(done){
+  it("import a pad with nested bullets from html", function(done){
+    var importurl = helper.padChrome$.window.location.href+'/import'
+    var htmlWithBullets = '<html><body><ul class="list-bullet1"><li>bullet line 1</li></ul><ul class="list-bullet1"><li>bullet line 2</li><ul class="list-bullet2"><li>bullet2 line 1</li></ul></ul><ul class="list-bullet1"><ul class="list-bullet2"><ul class="list-bullet3"><ul class="list-bullet4"><li>bullet4 line 2</li><li>bullet4 line 2</li><li>bullet4 line 2</li></ul><li>bullet3 line 1</li></ul></ul><li>bullet2 line 1</li></ul></body></html>'
+    importrequest(htmlWithBullets,importurl,"html")
+    var oldtext=getinnertext()
+    helper.waitFor(function(){
+      return oldtext != getinnertext()
+//      return expect(getinnertext()).to.be('\
+//<ul class="list-bullet1"><li><span class="">bullet line 1</span></li></ul>\n\
+//<ul class="list-bullet1"><li><span class="">bullet line 2</span></li></ul>\n\
+//<ul class="list-bullet2"><li><span class="">bullet2 line 1</span></li></ul>\n\
+//<ul class="list-bullet4"><li><span class="">bullet4 line 2</span></li></ul>\n\
+//<ul class="list-bullet4"><li><span class="">bullet4 line 2</span></li></ul>\n\
+//<ul class="list-bullet4"><li><span class="">bullet4 line 2</span></li></ul>\n\
+//<br>\n')
+    })
+    
+    var results = exportfunc(helper.padChrome$.window.location.href)
+    expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li><ul><ul class="bullet"><li>bullet4 line 2</li><li>bullet4 line 2</li><li>bullet4 line 2</li></ul><li>bullet3 line 1</li></ul></ul><li>bullet2 line 1</li></ul><br>')
+    expect(results[1][1]).to.be('\t* bullet line 1\n\t* bullet line 2\n\t\t* bullet2 line 1\n\t\t\t\t* bullet4 line 2\n\t\t\t\t* bullet4 line 2\n\t\t\t\t* bullet4 line 2\n\t\t\t* bullet3 line 1\n\t* bullet2 line 1\n\n')
+    done()
+  })
+  it("import a pad with 8 levels of bullets and newlines and attributes from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ul class="list-bullet1"><li>bullet line 1</li></ul><br/><ul class="list-bullet1"><li>bullet line 2</li><ul class="list-bullet2"><li>bullet2 line 1</li></ul></ul><br/><ul class="list-bullet1"><ul class="list-bullet2"><ul class="list-bullet3"><ul class="list-bullet4"><li><span class="b s i u"><b><i><s><u>bullet4 line 2 bisu</u></s></i></b></span></li><li><span class="b s "><b><s>bullet4 line 2 bs</s></b></span></li><li><span class="u"><u>bullet4 line 2 u</u></span><span class="u i s"><i><s><u>uis</u></s></i></span></li><ul class="list-bullet5"><ul class="list-bullet6"><ul class="list-bullet7"><ul class="list-bullet8"><li><span class="">foo</span></li><li><span class="b s"><b><s>foobar bs</b></s></span></li></ul></ul></ul></ul><ul class="list-bullet5"><li>foobar</li></ul></ul></ul></ul></body></html>'
     importrequest(htmlWithBullets,importurl,"html")
@@ -161,45 +180,11 @@ describe("import functionality", function(){
 <br>\n')
     })
     var results = exportfunc(helper.padChrome$.window.location.href)
-    expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li></ul><br><ul class="bullet"><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li></ul></ul><br><ul><ul><ul><ul class="bullet"><li><strong><em><s><u>bullet4 line 2 bisu</u></s></em></strong></li><li><strong><s>bullet4 line 2 bs</s></strong></li><li><u>bullet4 line 2 u<em><s>uis</s></em></u></li><ul><ul><ul><ul class="bullet"><li>foo</li><li><strong><s>foobar bs</s></strong></li><li>foobar</li></ul></ul></ul></ul></ul></ul></ul></ul><br>')
+    expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li></ul><br><ul class="bullet"><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li></ul></ul><br><ul><ul><ul><ul class="bullet"><li><strong><em><s><u>bullet4 line 2 bisu</u></s></em></strong></li><li><strong><s>bullet4 line 2 bs</s></strong></li><li><u>bullet4 line 2 u<em><s>uis</s></em></u></li><ul><ul><ul><ul class="bullet"><li>foo</li><li><strong><s>foobar bs</s></strong></li></ul></ul></ul><li>foobar</li></ul></ul></ul></ul></ul><br>') 
     expect(results[1][1]).to.be('\t* bullet line 1\n\n\t* bullet line 2\n\t\t* bullet2 line 1\n\n\t\t\t\t* bullet4 line 2 bisu\n\t\t\t\t* bullet4 line 2 bs\n\t\t\t\t* bullet4 line 2 uuis\n\t\t\t\t\t\t\t\t* foo\n\t\t\t\t\t\t\t\t* foobar bs\n\t\t\t\t\t* foobar\n\n')
     done()
   })
  
-  xit("import a pad with indents from html", function(done){
-    var importurl = helper.padChrome$.window.location.href+'/import'
-    var htmlWithIndents = '<html><body><ul class="list-indent1"><li>indent line 1</li><li>indent line 2</li><ul class="list-indent2"><li>indent2 line 1</li><li>indent2 line 2</li></ul></ul></body></html>'
-    importrequest(htmlWithIndents,importurl,"html")
-    console.error(getinnertext())
-    expect(getinnertext()).to.be('\
-<ul class="list-indent1"><li><span class="">indent line 1</span></li></ul>\n\
-<ul class="list-indent1"><li><span class="">indent line 2</span></li></ul>\n\
-<ul class="list-indent2"><li><span class="">indent2 line 1</span></li></ul>\n\
-<ul class="list-indent2"><li><span class="">indent2 line 2</span></li></ul>\n\
-<br>\n')
-    var results = exportfunc(helper.padChrome$.window.location.href)
-    console.error(results[0][1])
-    expect(results[0][1]).to.be('<ul class="list-indent1"><li><span class="">indent line 1</span></li><li><span class="">indent line 2</span></li><ul class="list-indent2"><li><span class="">indent2 line 1</span></li><li><span class="">indent2 line 2</span></li></ul></ul>')
-    expect(results[1][1]).to.be('')
-    done()
-  })
-  xit("import a pad with indented lists and newlines from html", function(done){
-    var importurl = helper.padChrome$.window.location.href+'/import'
-    var htmlWithIndents = '<html><body><ul class="list-indent1"><li>indent line 1</li></ul><br/><ul class="list-indent1"><li>indent 10 line 2</li><ul class="list-indent2"><li>indent 2 times line 1</li></ul></ul><br/><ul class="list-indent1"><ul class="list-indent2"><li>indent 2 times line 2</li></ul></ul></body></html>'
-    importrequest(htmlWithIndents,importurl,"html")
-    expect(getinnertext()).to.be('\
-<ul class="list-indent1"><li><span class="">indent line 1</span></li></ul>\n\
-<br>\n\
-<ul class="list-indent1"><li><span class="">indent 10 line 2</span></li></ul>\n\
-<ul class="list-indent2"><li><span class="">indent 2 times line 1</span></li></ul>\n\
-<br>\n\
-<ul class="list-indent2"><li><span class="">indent 2 times line 2</span></li></ul>\n\
-<br>\n')
-    var results = exportfunc(helper.padChrome$.window.location.href)
-    expect(results[0][1]).to.be('')
-    expect(results[1][1]).to.be('')
-    done()
-  })
   xit("import a pad with ordered lists from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ol class="list-number1" start="1"><li>number 1 line 1</li></ol><ol class="list-number1" start="2"><li>number 2 line 2</li></ol></body></html>'
