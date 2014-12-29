@@ -125,10 +125,11 @@ exports.doImport = function(req, res, padId)
         fs.readFile(srcFile, "utf8", function(err, _text){
           directDatabaseAccess = true;
           importEtherpad.setPadRaw(padId, _text, function(err){
-            console.log("returning");
-            return callback(null);
+            callback();
           });
         });
+      }else{
+        callback();
       }
     },
     //convert file to html
@@ -156,24 +157,28 @@ exports.doImport = function(req, res, padId)
     },
     
     function(callback) {
-      if (!abiword || !directDatabaseAccess) {
-        // Read the file with no encoding for raw buffer access.
-        fs.readFile(destFile, function(err, buf) {
-          if (err) throw err;
-          var isAscii = true;
-          // Check if there are only ascii chars in the uploaded file
-          for (var i=0, len=buf.length; i<len; i++) {
-            if (buf[i] > 240) {
-              isAscii=false;
-              break;
+      if (!abiword){
+        if(!directDatabaseAccess) {
+          // Read the file with no encoding for raw buffer access.
+          fs.readFile(destFile, function(err, buf) {
+            if (err) throw err;
+            var isAscii = true;
+            // Check if there are only ascii chars in the uploaded file
+            for (var i=0, len=buf.length; i<len; i++) {
+              if (buf[i] > 240) {
+                isAscii=false;
+                break;
+              }
             }
-          }
-          if (isAscii) {
-            callback();
-          } else {
-            callback("uploadFailed");
-          }
-        });
+            if (isAscii) {
+              callback();
+            } else {
+              callback("uploadFailed");
+            }
+          });
+        }else{
+          callback();
+        }
       } else {
         callback();
       }
@@ -256,7 +261,6 @@ exports.doImport = function(req, res, padId)
       }
     }
   ], function(err) {
-
     var status = "ok";
     
     //check for known errors and replace the status
