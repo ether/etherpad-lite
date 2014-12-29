@@ -273,7 +273,7 @@ API[">=1"].getText = function(padID, rev, callback)
       {
         if(ERR(err, callback)) return;
         
-        data = {text: atext.text};
+        var data = {text: atext.text};
         
         callback(null, data);
       })

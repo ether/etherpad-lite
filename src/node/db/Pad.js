@@ -135,7 +135,7 @@ Pad.prototype.getRevisionDate = function getRevisionDate(revNum, callback) {
 Pad.prototype.getAllAuthors = function getAllAuthors() {
   var authors = [];
 
-  for(key in this.pool.numToAttrib)
+  for(var key in this.pool.numToAttrib)
   {
     if(this.pool.numToAttrib[key][0] == "author" && this.pool.numToAttrib[key][1] != "")
     {
@@ -690,7 +690,7 @@ Pad.prototype.isPasswordProtected = function isPasswordProtected() {
 Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, label) {
   //if this revision is already saved, return silently
   for(var i in this.savedRevisions){
-    if(this.savedRevisions.revNum === revNum){
+    if(this.savedRevisions[i] && this.savedRevisions[i].revNum === revNum){
       return;
     }
   }

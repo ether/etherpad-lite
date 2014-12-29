@@ -1,7 +1,6 @@
 var languages = require('languages4translatewiki')
   , fs = require('fs')
   , path = require('path')
-  , express = require('express')
   , _ = require('underscore')
   , npm = require('npm')
   , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins

@@ -233,6 +233,8 @@ exports.handleMessage = function(client, message)
       } else {
         messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
       }
+    } else if(message.type == "SWITCH_TO_PAD") {
+      handleSwitchToPad(client, message);
     } else {
       messageLogger.warn("Dropped message, unknown Message Type " + message.type);
     }
@@ -246,18 +248,7 @@ exports.handleMessage = function(client, message)
       {
         // client tried to auth for the first time (first msg from the client)
         if(message.type == "CLIENT_READY") {
-          // Remember this information since we won't
-          // have the cookie in further socket.io messages.
-          // This information will be used to check if
-          // the sessionId of this connection is still valid
-          // since it could have been deleted by the API.
-          sessioninfos[client.id].auth =
-          {
-            sessionID: message.sessionID,
-            padID: message.padId,
-            token : message.token,
-            password: message.password
-          };
+          createSessionInfo(client, message);
         }
 
         // Note: message.sessionID is an entirely different kind of
@@ -712,6 +703,14 @@ function handleUserChanges(data, cb)
             // and can be applied after "c".
             try
             {
+              // a changeset can be based on an old revision with the same changes in it
+              // prevent eplite from accepting it TODO: better send the client a NEW_CHANGES
+              // of that revision
+              if(baseRev+1 == r && c == changeset) {
+                client.json.send({disconnect:"badChangeset"});
+                stats.meter('failedChangesets').mark();
+                return callback(new Error("Won't apply USER_CHANGES, because it contains an already accepted changeset"));
+              }
               changeset = Changeset.follow(c, changeset, false, apool);
             }catch(e){
               client.json.send({disconnect:"badChangeset"});
@@ -742,7 +741,16 @@ function handleUserChanges(data, cb)
         return callback(new Error("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length));
       }
 
-      pad.appendRevision(changeset, thisSession.author);
+      try
+      {
+        pad.appendRevision(changeset, thisSession.author);
+      }
+      catch(e)
+      {
+        client.json.send({disconnect:"badChangeset"});
+        stats.meter('failedChangesets').mark();
+        return callback(e)
+      }
 
       var correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
       if (correctionChangeset) {
@@ -838,10 +846,10 @@ exports.updatePadClients = function(pad, callback)
 
               client.json.send(wireMsg);
             }
-
-            sessioninfos[sid].time = currentTime;
-            sessioninfos[sid].rev = r;
-
+            if(sessioninfos[sid]){
+              sessioninfos[sid].time = currentTime;
+              sessioninfos[sid].rev = r;
+            }
             callback(null);
           }
         ], callback);
@@ -895,6 +903,48 @@ function _correctMarkersInPad(atext, apool) {
     offset = pos+1;
   });
   return builder.toString();
+}
+
+function handleSwitchToPad(client, message)
+{
+  // clear the session and leave the room
+  var currentSession = sessioninfos[client.id];
+  var padId = currentSession.padId;
+  var roomClients = [], room = socketio.sockets.adapter.rooms[padId];
+  if (room) {
+    for (var id in room) {
+      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
+    }
+  }
+
+  for(var i = 0; i < roomClients.length; i++) {
+    var sinfo = sessioninfos[roomClients[i].id];
+    if(sinfo && sinfo.author == currentSession.author) {
+      // fix user's counter, works on page refresh or if user closes browser window and then rejoins
+      sessioninfos[roomClients[i].id] = {};
+      roomClients[i].leave(padId);
+    }
+  }
+  
+  // start up the new pad
+  createSessionInfo(client, message);
+  handleClientReady(client, message);
+}
+
+function createSessionInfo(client, message)
+{
+  // Remember this information since we won't
+  // have the cookie in further socket.io messages.
+  // This information will be used to check if
+  // the sessionId of this connection is still valid
+  // since it could have been deleted by the API.
+  sessioninfos[client.id].auth =
+  {
+    sessionID: message.sessionID,
+    padID: message.padId,
+    token : message.token,
+    password: message.password
+  };
 }
 
 /**
@@ -1020,7 +1070,7 @@ function handleClientReady(client, message)
           {
             authorManager.getAuthor(authorId, function(err, author)
             {
-              if(ERR(err, callback)) return;
+              if(ERR(err, callback) || !author) return;
               historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId}; // Filter author attribs (e.g. don't send author's pads to all clients)
               callback();
             });

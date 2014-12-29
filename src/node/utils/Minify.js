@@ -28,7 +28,7 @@ var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-var RequireKernel = require('require-kernel');
+var RequireKernel = require('etherpad-require-kernel');
 var urlutil = require('url');
 
 var ROOT_DIR = path.normalize(__dirname + "/../../static/");
@@ -261,7 +261,6 @@ function getAceFile(callback) {
     // them into the file.
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
-      var request = require('request');
 
       var baseURI = 'http://localhost:' + settings.port;
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));

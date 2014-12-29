@@ -99,7 +99,7 @@ fi
 echo "Clear minfified cache..."
 rm -f var/minified*
 
-echo "ensure custom css/js files are created..."
+echo "Ensure custom css/js files are created..."
 
 for f in "index" "pad" "timeslider"
 do

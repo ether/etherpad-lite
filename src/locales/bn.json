@@ -4,7 +4,8 @@
 			"Bellayet",
 			"Nasir8891",
 			"Sankarshan",
-			"Aftab1995"
+			"Aftab1995",
+			"Aftabuzzaman"
 		]
 	},
 	"index.newPad": "নতুন প্যাড",
@@ -18,7 +19,7 @@
 	"pad.toolbar.unindent.title": "আউটডেন্ট (Shift+TAB)",
 	"pad.toolbar.undo.title": "বাতিল করুন (Ctrl-Z)",
 	"pad.toolbar.redo.title": "পুনরায় করুন (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "কৃতি রং পরিষ্কার করুন",
+	"pad.toolbar.clearAuthorship.title": "কৃতি রং পরিষ্কার করুন  (Ctrl+Shift+C)",
 	"pad.toolbar.timeslider.title": "টাইমস্লাইডার",
 	"pad.toolbar.savedRevision.title": "সংস্করণ সংরক্ষণ করুন",
 	"pad.toolbar.settings.title": "সেটিং",
@@ -49,7 +50,6 @@
 	"pad.importExport.exportword": "মাইক্রোসফট ওয়ার্ড",
 	"pad.importExport.exportpdf": "পিডিএফ",
 	"pad.importExport.exportopen": "ওডিএফ (ওপেন ডকুমেন্ট ফরম্যাট)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.modals.connected": "যোগাযোগ সফল",
 	"pad.modals.reconnecting": "আপনার প্যাডের সাথে সংযোগস্থাপন করা হচ্ছে..",
 	"pad.modals.forcereconnect": "পুনরায় সংযোগস্থাপনের চেষ্টা",

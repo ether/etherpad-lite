@@ -449,6 +449,7 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
 
   if(fields["apikey"] != apikey.trim())
   {
+    res.statusCode = 401;
     res.send({code: 4, message: "no or wrong API Key", data: null});
     return;
   }

@@ -468,7 +468,7 @@ var paduserlist = (function()
 
       self.setMyUserInfo(myInitialUserInfo);
 
-      $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
+      if($('#online_count').length === 0) $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
 
       $("#otheruserstable tr").remove();
 

@@ -37,6 +37,8 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  background-color:#fff;
+  /* bgcolor is reuqired so you can't see pad content behind it */
 }
 #timeslider #timeslider-slider {
   height: 61px;
@@ -186,8 +188,15 @@ stepper:active{
   -ms-user-select: none;
   user-select: none;
 }
-#editbarright {
-  float: right
+.editbarright {
+  float: right;
+  text-align: right;
+  height: 30px !important;
+}
+.toolbar ul{
+  position:relative;
+  float:right;
+  height:30px;
 }
 #settings,
 #import_export,
@@ -222,7 +231,6 @@ stepper:active{
   border-bottom: none;
   float: right;
   width: 170px;
-  width: initial;
 }
 .timeslider-bar h1 {
   margin: 5px

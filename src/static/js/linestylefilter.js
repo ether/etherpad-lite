@@ -34,7 +34,6 @@ var linestylefilter = {};
 var _ = require('./underscore');
 var AttributeManager = require('./AttributeManager');
 
-
 linestylefilter.ATTRIB_CLASSES = {
   'bold': 'tag:b',
   'italic': 'tag:i',
@@ -58,6 +57,13 @@ linestylefilter.getAuthorClassName = function(author)
 // but may be falsy if lineLength == 0
 linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFunc, apool)
 {
+
+  // Plugin Hook to add more Attrib Classes
+  hooks.aCallAll('aceAttribClasses', linestylefilter.ATTRIB_CLASSES, function(err, ATTRIB_CLASSES){
+    if(ATTRIB_CLASSES.length >= 1){
+      linestylefilter.ATTRIB_CLASSES = ATTRIB_CLASSES[0];
+    }
+  });
 
   if (lineLength == 0) return textAndClassFunc;
 

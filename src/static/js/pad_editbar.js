@@ -149,6 +149,7 @@ var padeditbar = (function()
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
       $("#editbar [data-key]").each(function () {
+        $(this).unbind("click");
         (new ToolbarItem($(this))).bind(function (command, item) {
           self.triggerCommand(command, item);
         });
@@ -180,10 +181,14 @@ var padeditbar = (function()
       return this;
     },
     redrawHeight: function(){
-      var editbarHeight = $('.menu_left').height() + 2 + "px";
-      var containerTop = $('.menu_left').height() + 7 + "px";
+      var editbarHeight = $('.menu_left').height() + 1 + "px";
+      var containerTop = $('.menu_left').height() + 6 + "px";
       $('#editbar').css("height", editbarHeight);
+
       $('#editorcontainer').css("top", containerTop);
+      if($('#options-stickychat').is(":checked")){
+        $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
+      };
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;

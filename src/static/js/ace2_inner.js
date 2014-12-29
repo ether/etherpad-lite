@@ -35,7 +35,7 @@ var isNodeText = Ace2Common.isNodeText,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
   var hooks = require('./pluginfw/hooks');
-
+  var browser = require('./browser').browser;
 
 function Ace2Inner(){
 
@@ -51,14 +51,13 @@ function Ace2Inner(){
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
-  var browser = require('./browser');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
   var isSetUp = false;
 
   var THE_TAB = '    '; //4
-  var MAX_LIST_LEVEL = 8;
+  var MAX_LIST_LEVEL = 16;
 
   var LINE_NUMBER_PADDING_RIGHT = 4;
   var LINE_NUMBER_PADDING_LEFT = 4;
@@ -2314,6 +2313,25 @@ function Ace2Inner(){
 
   function getAttributeOnSelection(attributeName){
     if (!(rep.selStart && rep.selEnd)) return;
+
+    // get the previous/next characters formatting when we have nothing selected
+    // To fix this we just change the focus area, we don't actually check anything yet.
+    if(rep.selStart[1] == rep.selEnd[1]){
+      // if we're at the beginning of a line bump end forward so we get the right attribute
+      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){
+        rep.selEnd[1] = 1;
+      }
+      if(rep.selStart[1] < 0){
+        rep.selStart[1] = 0;
+      }
+      var line = rep.lines.atIndex(rep.selStart[0]);
+      // if we're at the end of the line bmp the start back 1 so we get hte attribute
+      if(rep.selEnd[1] == line.text.length){
+        rep.selStart[1] = rep.selStart[1] -1;
+      }
+    }
+
+    // Do the detection
     var selectionAllHasIt = true;
     var withIt = Changeset.makeAttribsString('+', [
       [attributeName, 'true']
@@ -3339,7 +3357,7 @@ function Ace2Inner(){
     if (listType)
     {
       var text = rep.lines.atIndex(lineNum).text;
-      listType = /([a-z]+)([12345678])/.exec(listType);
+      listType = /([a-z]+)([0-9]+)/.exec(listType);
       var type  = listType[1];
       var level = Number(listType[2]);
 
@@ -3391,7 +3409,7 @@ function Ace2Inner(){
       var level = 0;
       if (listType)
       {
-        listType = /([a-z]+)([12345678])/.exec(listType);
+        listType = /([a-z]+)([0-9]+)/.exec(listType);
         if (listType)
         {
           t = listType[1];
@@ -3700,7 +3718,7 @@ function Ace2Inner(){
           }, 0);
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey)) /* Do a saved revision on ctrl S */
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey) && !evt.altKey) /* Do a saved revision on ctrl S */
         {
           evt.preventDefault();
           var originalBackground = parent.parent.$('#revisionlink').css("background")
@@ -5076,7 +5094,7 @@ function Ace2Inner(){
     {
       return null;
     }
-    type = /([a-z]+)[12345678]/.exec(type);
+    type = /([a-z]+)[0-9+]/.exec(type);
     if(type[1] == "indent")
     {
       return null;
@@ -5085,7 +5103,7 @@ function Ace2Inner(){
     //2-find the first line of the list
     while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
     {
-      type = /([a-z]+)[12345678]/.exec(type);
+      type = /([a-z]+)[0-9+]/.exec(type);
       if(type[1] == "indent")
         break;
       lineNum--;
@@ -5094,7 +5112,7 @@ function Ace2Inner(){
     //3-renumber every list item of the same level from the beginning, level 1
     //IMPORTANT: never skip a level because there imbrication may be arbitrary
     var builder = Changeset.builder(rep.lines.totalWidth());
-    loc = [0,0];
+    var loc = [0,0];
     function applyNumberList(line, level)
     {
       //init
@@ -5105,7 +5123,7 @@ function Ace2Inner(){
       while(listType = getLineListType(line))
       {
         //apply new num
-        listType = /([a-z]+)([12345678])/.exec(listType);
+        listType = /([a-z]+)([0-9+])/.exec(listType);
         curLevel = Number(listType[2]);
         if(isNaN(curLevel) || listType[0] == "indent")
         {
@@ -5173,7 +5191,7 @@ function Ace2Inner(){
     {
       var t = '';
       var level = 0;
-      var listType = /([a-z]+)([12345678])/.exec(getLineListType(n));
+      var listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
       if (listType)
       {
         t = listType[1];
