@@ -125,9 +125,7 @@ exports.doImport = function(req, res, padId)
       if(fileIsEtherpad){
         // we do this here so we can see if the pad has quit ea few edits
         padManager.getPad(padId, function(err, _pad){
-          console.error(_pad);
           var headCount = _pad.head;
-          console.error(headCount);
           if(headCount >= 10){
             apiLogger.warn("Direct database Import attempt of a pad that already has content, we wont be doing this")
             return callback("padHasData");
