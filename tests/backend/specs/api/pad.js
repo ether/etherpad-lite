@@ -11,6 +11,7 @@ apiKey = apiKey.replace(/\n$/, "");
 var apiVersion = 1;
 var testPadId = makeid();
 var lastEdited = "";
+var text = generateLongText();
 
 describe('Connectivity', function(){
   it('errors if can not connect', function(done) {
@@ -302,7 +303,7 @@ describe('createPad', function(){
 
 describe('setText', function(){
   it('Sets text on a pad Id', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text=hello world")
+    api.get(endPoint('setText')+"&padID="+testPadId+"&text="+text)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Set Text failed")
     })
@@ -316,7 +317,7 @@ describe('getText', function(){
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Get Text failed")
-      if(res.body.data.text !== "hello world\n") throw new Error("Pad Text not set properly");
+      if(res.body.data.text !== text+"\n") throw new Error("Pad Text not set properly");
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -338,7 +339,6 @@ describe('movePad', function(){
   it('Move a Pad to a different Pad ID', function(done) {
     api.get(endPoint('movePad')+"&sourceID="+testPadId+"&destinationID="+newPadId+"&force=true")
     .expect(function(res){
-      console.log(res.body);
       if(res.body.code !== 0) throw new Error("Moving Pad Failed")
     })
     .expect('Content-Type', /json/)
@@ -350,7 +350,8 @@ describe('getText', function(){
   it('Gets text on a pad Id', function(done) {
     api.get(endPoint('getText')+"&padID="+newPadId)
     .expect(function(res){
-      if(res.body.data.text !== "hello world\n") throw new Error("Pad Get Text failed")
+      console.log(res.body.data.text);
+      if(res.body.data.text !== text+"\n") throw new Error("Pad Get Text failed")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -372,7 +373,7 @@ describe('getText', function(){
   it('Gets text on a pad Id', function(done) {
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
-      if(res.body.data.text !== "hello world\n") throw new Error("Pad Get Text failed")
+      if(res.body.data.text !== text+"\n") throw new Error("Pad Get Text failed")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -405,6 +406,16 @@ function makeid()
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   for( var i=0; i < 5; i++ ){
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
+function generateLongText(){
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for( var i=0; i < 80000; i++ ){
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
