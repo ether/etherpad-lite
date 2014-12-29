@@ -703,6 +703,14 @@ function handleUserChanges(data, cb)
             // and can be applied after "c".
             try
             {
+              // a changeset can be based on an old revision with the same changes in it
+              // prevent eplite from accepting it TODO: better send the client a NEW_CHANGES
+              // of that revision
+              if(baseRev+1 == r && c == changeset) {
+                client.json.send({disconnect:"badChangeset"});
+                stats.meter('failedChangesets').mark();
+                return callback(new Error("Won't apply USER_CHANGES, because it contains an already accepted changeset"));
+              }
               changeset = Changeset.follow(c, changeset, false, apool);
             }catch(e){
               client.json.send({disconnect:"badChangeset"});
