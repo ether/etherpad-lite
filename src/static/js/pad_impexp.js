@@ -109,6 +109,8 @@ var padimpexp = (function()
       msg = html10n.get("pad.impexp.convertFailed");
     } else if(status === "uploadFailed"){
       msg = html10n.get("pad.impexp.uploadFailed");
+    } else if(status === "padHasData"){
+      msg = html10n.get("pad.impexp.padHasData");
     }
   
     function showError(fade)
