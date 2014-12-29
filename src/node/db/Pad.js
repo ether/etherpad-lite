@@ -461,7 +461,6 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     // if the pad exists, we should abort, unless forced.
     function(callback)
     {
-      console.log("destinationID", destinationID, force);
       padManager.doesPadExists(destinationID, function (err, exists)
       {
         if(ERR(err, callback)) return;
@@ -470,9 +469,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         {
           if (!force)
           {
-            console.log("erroring out without force");
+            console.error("erroring out without force");
             callback(new customError("destinationID already exists","apierror"));
-            console.log("erroring out without force - after");
+            console.error("erroring out without force - after");
             return;
           }
           else // exists and forcing
@@ -521,12 +520,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         function(callback)
         {
           var revHead = _this.head;
-          //console.log(revHead);
           for(var i=0;i<=revHead;i++)
           {
             db.get("pad:"+sourceID+":revs:"+i, function (err, rev) {
-              //console.log("HERE");
-
               if (ERR(err, callback)) return;
               db.set("pad:"+destinationID+":revs:"+i, rev);
             });
@@ -538,10 +534,8 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         function(callback)
         {
           var authorIDs = _this.getAllAuthors();
-
           authorIDs.forEach(function (authorID)
           {
-            console.log("authors");
             authorManager.addPad(authorID, destinationID);
           });
 
@@ -555,7 +549,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
       if(destGroupID) db.setSub("group:" + destGroupID, ["pads", destinationID], 1);
 
       // Initialize the new pad (will update the listAllPads cache)
-      padManager.getPad(destinationID, null, callback)
+      setTimeout(function(){
+        padManager.getPad(destinationID, null, callback) // this runs too early.
+      },10);
     }
   // series
   ], function(err)
