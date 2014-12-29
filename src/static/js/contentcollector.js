@@ -518,9 +518,24 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           }
           if (tname == "ul" || tname == "ol")
           {
-            var type;
+            var type = node.attribs.class;
             var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);
-            type = rr && rr[1] || (tname == "ul" ? "bullet" : "number") + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
+            // lists do not need to have a type, so before we make a wrong guess, check if we find a better hint within the node's children
+            if(!rr && !type){
+              for (var i in node.children){
+                if(node.children[i] && node.children[i].name=='ul'){
+                  type = node.children[i].attribs.class
+                  if(type){
+                    break
+                  }
+                }
+              }
+            }
+            if(rr && rr[1]){
+              type = rr[1]
+            } else {
+              type = (tname == "ul" ? (type.match("indent") || node.attribs.class && node.attribs.class.match("indent") ? "indent" : "bullet") : "number") + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
+            }
             oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
           else if ((tname == "div" || tname == "p") && cls && cls.match(/(?:^| )ace-line\b/))
