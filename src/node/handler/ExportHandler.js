@@ -59,7 +59,6 @@ exports.doExport = function(req, res, padId, type)
       //if this is a plain text export, we can do this directly
       // We have to over engineer this because tabs are stored as attributes and not plain text
       if(type == "etherpad"){
-        console.log("Exporting Etherpad");
         exportEtherpad.getPadRaw(padId, function(err, pad){
           if(!err){
             res.send(pad);
