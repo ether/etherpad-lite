@@ -2,7 +2,6 @@ var express = require('express');
 var log4js = require('log4js');
 var httpLogger = log4js.getLogger("http");
 var settings = require('../../utils/Settings');
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var ueberStore = require('../../db/SessionStore');
 var stats = require('ep_etherpad-lite/node/stats')

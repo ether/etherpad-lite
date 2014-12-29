@@ -18,12 +18,7 @@
  * limitations under the License.
  */
 
-var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var padManager = require("../db/PadManager");
-var ERR = require("async-stacktrace");
-var Security = require('ep_etherpad-lite/static/js/security');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 exports.getPadPlainText = function(pad, revNum){
   var atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext());

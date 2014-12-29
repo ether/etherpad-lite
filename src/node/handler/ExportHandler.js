@@ -21,7 +21,6 @@
 var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
 var exporttxt = require("../utils/ExportTxt");
-var padManager = require("../db/PadManager");
 var async = require("async");
 var fs = require("fs");
 var settings = require('../utils/Settings');
