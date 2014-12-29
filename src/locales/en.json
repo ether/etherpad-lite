@@ -44,6 +44,7 @@
   "pad.importExport.import": "Upload any text file or document",
   "pad.importExport.importSuccessful": "Successful!",
   "pad.importExport.export": "Export current pad as:",
+  "pad.importExport.exportetherpad": "Etherpad",
   "pad.importExport.exporthtml": "HTML",
   "pad.importExport.exportplain": "Plain text",
   "pad.importExport.exportword": "Microsoft Word",

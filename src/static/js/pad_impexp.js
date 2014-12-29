@@ -198,6 +198,7 @@ var padimpexp = (function()
 
       // build the export links
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
+      $("#exportetherpada").attr("href", pad_root_path + "/export/etherpad");
       $("#exportplaina").attr("href", pad_root_path + "/export/txt");
 
       // activate action to import in the form

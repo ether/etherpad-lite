@@ -29,6 +29,7 @@ var ERR = require("async-stacktrace")
   , formidable = require('formidable')
   , os = require("os")
   , importHtml = require("../utils/ImportHtml")
+  , importEtherpad = require("../utils/ImportEtherpad")
   , log4js = require("log4js")
   , hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
@@ -53,7 +54,8 @@ exports.doImport = function(req, res, padId)
   var srcFile, destFile
     , pad
     , text
-    , importHandledByPlugin;
+    , importHandledByPlugin
+    , directDatabaseAccess;
 
   var randNum = Math.floor(Math.random()*0xFFFFFFFF);
   
@@ -83,7 +85,7 @@ exports.doImport = function(req, res, padId)
     //this allows us to accept source code files like .c or .java
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase()
-        , knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm"]
+        , knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm", ".etherpad"]
         , fileEndingKnown = (knownFileEndings.indexOf(fileEnding) > -1);
       
       //if the file ending is known, continue as normal
@@ -116,9 +118,22 @@ exports.doImport = function(req, res, padId)
         }
       });
     },
+    function(callback) {
+      var fileEnding = path.extname(srcFile).toLowerCase()
+      var fileIsEtherpad = (fileEnding === ".etherpad");
+      if(fileIsEtherpad){
+        fs.readFile(srcFile, "utf8", function(err, _text){
+          directDatabaseAccess = true;
+          importEtherpad.setPadRaw(padId, _text, function(err){
+            console.log("returning");
+            return callback(null);
+          });
+        });
+      }
+    },
     //convert file to html
     function(callback) {
-      if(!importHandledByPlugin){
+      if(!importHandledByPlugin || !directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
         var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
         if (abiword && !fileIsHTML) {
@@ -141,7 +156,7 @@ exports.doImport = function(req, res, padId)
     },
     
     function(callback) {
-      if (!abiword) {
+      if (!abiword || !directDatabaseAccess) {
         // Read the file with no encoding for raw buffer access.
         fs.readFile(destFile, function(err, buf) {
           if (err) throw err;
@@ -175,50 +190,70 @@ exports.doImport = function(req, res, padId)
     
     //read the text
     function(callback) {
-      fs.readFile(destFile, "utf8", function(err, _text){
-        if(ERR(err, callback)) return;
-        text = _text;
-        // Title needs to be stripped out else it appends it to the pad..
-        text = text.replace("<title>", "<!-- <title>");
-        text = text.replace("</title>","</title>-->");
-
-        //node on windows has a delay on releasing of the file lock.  
-        //We add a 100ms delay to work around this
-        if(os.type().indexOf("Windows") > -1){
-           setTimeout(function() {callback();}, 100);
-        } else {
-          callback();
-        }
-      });
+      if(!directDatabaseAccess){
+        fs.readFile(destFile, "utf8", function(err, _text){
+          if(ERR(err, callback)) return;
+          text = _text;
+          // Title needs to be stripped out else it appends it to the pad..
+          text = text.replace("<title>", "<!-- <title>");
+          text = text.replace("</title>","</title>-->");
+  
+          //node on windows has a delay on releasing of the file lock.  
+          //We add a 100ms delay to work around this
+          if(os.type().indexOf("Windows") > -1){
+             setTimeout(function() {callback();}, 100);
+          } else {
+            callback();
+          }
+        });
+      }else{
+        callback();
+      }
     },
     
     //change text of the pad and broadcast the changeset
     function(callback) {
-      var fileEnding = path.extname(srcFile).toLowerCase();
-      if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
-        try{
-          importHtml.setPadHTML(pad, text);
-        }catch(e){
-          apiLogger.warn("Error importing, possibly caused by malformed HTML");
+      if(!directDatabaseAccess){
+        var fileEnding = path.extname(srcFile).toLowerCase();
+        if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
+          try{
+            importHtml.setPadHTML(pad, text);
+          }catch(e){
+            apiLogger.warn("Error importing, possibly caused by malformed HTML");
+          }
+        } else {
+          pad.setText(text);
         }
-      } else {
-        pad.setText(text);
       }
-      padMessageHandler.updatePadClients(pad, callback);
+
+      // Load the Pad into memory then brodcast updates to all clients
+      padManager.unloadPad(padId);
+      padManager.getPad(padId, function(err, _pad){
+        var pad = _pad;
+        padManager.unloadPad(padId);
+        padMessageHandler.updatePadClients(pad, function(){
+          callback();
+        });
+      });
+
     },
     
     //clean up temporary files
     function(callback) {
-      //for node < 0.7 compatible
-      var fileExists = fs.exists || path.exists;
-      async.parallel([
-        function(callback){
-          fileExists (srcFile, function(exist) { (exist)? fs.unlink(srcFile, callback): callback(); });
-        },
-        function(callback){
-          fileExists (destFile, function(exist) { (exist)? fs.unlink(destFile, callback): callback(); });
-        }
-      ], callback);
+      if(!directDatabaseAccess){
+        //for node < 0.7 compatible
+        var fileExists = fs.exists || path.exists;
+        async.parallel([
+          function(callback){
+            fileExists (srcFile, function(exist) { (exist)? fs.unlink(srcFile, callback): callback(); });
+          },
+          function(callback){
+            fileExists (destFile, function(exist) { (exist)? fs.unlink(destFile, callback): callback(); });
+          }
+        ], callback);
+      }else{
+        callback();
+      }
     }
   ], function(err) {
 

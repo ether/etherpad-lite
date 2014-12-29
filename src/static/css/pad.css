@@ -689,6 +689,9 @@ table#otheruserstable {
 #exportpdfa:before {
   content: "\e803";
 }
+#exportetherpada:before {
+  content: "\e806";
+}
 #exportopena:before {
   content: "\e805";
 }
