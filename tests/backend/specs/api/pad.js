@@ -61,6 +61,16 @@ describe('Permission', function(){
                -> setText(padId)
                 -> getLastEdited(padID) -- Should be when setText was performed
                  -> padUsers(padID) -- Should be when setText was performed
+
+                  -> setText(padId, "hello world")
+                   -> getLastEdited(padID) -- Should be when pad was made
+                    -> getText(padId) -- Should be "hello world"
+                     -> movePad(padID, newPadId) -- Should provide consistant pad data
+                      -> getText(newPadId) -- Should be "hello world"
+                       -> movePad(newPadID, originalPadId) -- Should provide consistant pad data
+                        -> getText(originalPadId) -- Should be "hello world"
+                         -> getLastEdited(padID) -- Should not be 0
+
 */
 
 describe('deletePad', function(){
@@ -265,7 +275,125 @@ describe('padUsers', function(){
   });
 })
 
+describe('deletePad', function(){
+  it('deletes a Pad', function(done) {
+    api.get(endPoint('deletePad')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Deletion failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
 
+var originalPadId = testPadId;
+var newPadId = makeid();
+
+describe('createPad', function(){
+  it('creates a new Pad with text', function(done) {
+    api.get(endPoint('createPad')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Creation failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setText', function(){
+  it('Sets text on a pad Id', function(done) {
+    api.get(endPoint('setText')+"&padID="+testPadId+"&text=hello world")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Set Text failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getText', function(){
+  it('Gets text on a pad Id', function(done) {
+    api.get(endPoint('getText')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Get Text failed")
+      if(res.body.data.text !== "hello world\n") throw new Error("Pad Text not set properly");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getLastEdited', function(){
+  it('Gets when pad was last edited', function(done) {
+    api.get(endPoint('getLastEdited')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.lastEdited === 0) throw new Error("Get Last Edited Failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('movePad', function(){
+  it('Move a Pad to a different Pad ID', function(done) {
+    api.get(endPoint('movePad')+"&sourceID="+testPadId+"&destinationID="+newPadId+"&force=true")
+    .expect(function(res){
+      console.log(res.body);
+      if(res.body.code !== 0) throw new Error("Moving Pad Failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getText', function(){
+  it('Gets text on a pad Id', function(done) {
+    api.get(endPoint('getText')+"&padID="+newPadId)
+    .expect(function(res){
+      if(res.body.data.text !== "hello world\n") throw new Error("Pad Get Text failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('movePad', function(){
+  it('Move a Pad to a different Pad ID', function(done) {
+    api.get(endPoint('movePad')+"&sourceID="+newPadId+"&destinationID="+testPadId+"&force=false")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Moving Pad Failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getText', function(){
+  it('Gets text on a pad Id', function(done) {
+    api.get(endPoint('getText')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.data.text !== "hello world\n") throw new Error("Pad Get Text failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getLastEdited', function(){
+  it('Gets when pad was last edited', function(done) {
+    api.get(endPoint('getLastEdited')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.lastEdited === 0) throw new Error("Get Last Edited Failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+/*
+                          -> movePadForce Test
+
+*/
 
 var endPoint = function(point){
   return '/api/'+apiVersion+'/'+point+'?apikey='+apiKey;
