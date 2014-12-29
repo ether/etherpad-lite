@@ -23,10 +23,19 @@ exports.setPadRaw = function(padId, records, callback){
   
   async.eachSeries(Object.keys(records), function(key, cb){
     var value = records[key]
+
     // rewrite padId
     var oldPadId = key.split(":");
     oldPadId[1] = padId;
-    var newKey = oldPadId.join(":"); // create the new key
+    if(oldPadId[0] === "pad"){
+      var newKey = oldPadId.join(":"); // create the new key
+    }
+
+    // Add the author to this new pad
+    if(oldPadId[0] === "globalAuthor"){
+      value.padIDs[padId] = 1	;
+      var newKey = value;
+    }
 
     // Write the value to the server
     db.set(newKey, value);
