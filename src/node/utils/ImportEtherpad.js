@@ -20,26 +20,34 @@ var db = require("../db/DB").db;
 
 exports.setPadRaw = function(padId, records, callback){
   records = JSON.parse(records);
-  
+
   async.eachSeries(Object.keys(records), function(key, cb){
     var value = records[key]
 
-    // rewrite padId
-    var oldPadId = key.split(":");
-    oldPadId[1] = padId;
-    if(oldPadId[0] === "pad"){
-      var newKey = oldPadId.join(":"); // create the new key
-    }
+    // we know its an author
+    if(value.padIDs){
+      // rewrite author pad ids
+      value.padIDs[padId] = 1;
+      var newKey = key;
 
-    // Add the author to this new pad
-    if(oldPadId[0] === "globalAuthor"){
-      value.padIDs[padId] = 1	;
-      var newKey = value;
-    }
+    }else{
+      // we can split it to look to see if its pad data
+      var oldPadId = key.split(":");
 
+      // we know its pad data..
+      if(oldPadId[0] === "pad"){
+
+        // so set the new pad id for the author
+        oldPadId[1] = padId;
+        
+        // and create the value
+        var newKey = oldPadId.join(":"); // create the new key
+      }
+
+    }
     // Write the value to the server
     db.set(newKey, value);
-   
+
     cb();
   }, function(){
     callback(null, true);
