@@ -469,31 +469,38 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'line-height: 17px; }' + 
             'ul.indent { list-style-type: none; }' +
 
-            'ol { list-style-type: none; }' +
+            'ol { list-style-type: none; padding-left:0;}' +
             'body > ol { counter-reset: first second; }' +
             'ol > li:before {' +
             'content: counter(first) ". " ;'+
             'counter-increment: first;}' +
 
-            'ol > li > ol > li:before {' +
+            'ol > ol > li:before {' +
             'content: counter(first) "." counter(second) ". " ;'+
             'counter-increment: second;}' +
 
-            'ol > li > ol > li > ol > li:before {' +
+            'ol > ol > ol > li:before {' +
             'content: counter(first) "." counter(second) "." counter(third) ". ";'+
             'counter-increment: third;}' +
 
-            'ol > li > ol > li > ol > li > ol > li:before {' +
+            'ol > ol > ol > ol > li:before {' +
             'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";'+
             'counter-increment: fourth;}' +
 
-            'ol > li > ol > li > ol > li > ol > li > ol > li:before {' +
+            'ol > ol > ol > ol > ol > li:before {' +
             'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";'+
             'counter-increment: fifth;}' +
 
-            'ol > li > ol > li > ol > li > ol > li > ol > li > ol > li:before {' +
+            'ol > ol > ol > ol > ol > ol > li:before {' +
             'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";'+
             'counter-increment: sixth;}' +
+
+            'ol{ text-indent: 0px; }' +
+            'ol > ol{ text-indent: 10px; }' +
+            'ol > ol > ol{ text-indent: 20px; }' +
+            'ol > ol > ol > ol{ text-indent: 30px; }' +
+            'ol > ol > ol > ol > ol{ text-indent: 40px; }' +
+            'ol > ol > ol > ol > ol > ol{ text-indent: 50px; }' +
 
             stylesForExportCSS + 
             '</style>\n' + '</head>\n') + 
