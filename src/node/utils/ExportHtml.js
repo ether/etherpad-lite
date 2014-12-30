@@ -449,22 +449,33 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'font-size: 13px;\n' + 
             'line-height: 17px; }' + 
             'ul.indent { list-style-type: none; }' +
-            'ol { list-style-type: decimal; }' +
-            'ol ol { list-style-type: lower-latin; }' +
-            'ol ol ol { list-style-type: lower-roman; }' +
-            'ol ol ol ol { list-style-type: decimal; }' +
-            'ol ol ol ol ol { list-style-type: lower-latin; }' +
-            'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
-            'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-            'ol ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
-            'ol ol ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-            'ol ol ol ol ol ol ol ol ol ol { list-style-type: lower-latin; }' +
-            'ol ol ol ol ol ol ol ol ol ol ol { list-style-type: lower-roman; }' +
-            'ol ol ol ol ol ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-            'ol ol ol ol ol ol ol ol ol ol ol ol ol { list-style-type: lower-latin; }' +
-            'ol ol ol ol ol ol ol ol ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
-            'ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-            'ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
+
+            'ol { list-style-type: none; }' +
+            'body > ol { counter-reset: first second; }' +
+            'ol > li:before {' +
+            'content: counter(first) ". " ;'+
+            'counter-increment: first;}' +
+
+            'ol > li > ol > li:before {' +
+            'content: counter(first) "." counter(second) ". " ;'+
+            'counter-increment: second;}' +
+
+            'ol > li > ol > li > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) ". ";'+
+            'counter-increment: third;}' +
+
+            'ol > li > ol > li > ol > li > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";'+
+            'counter-increment: fourth;}' +
+
+            'ol > li > ol > li > ol > li > ol > li > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";'+
+            'counter-increment: fifth;}' +
+
+            'ol > li > ol > li > ol > li > ol > li > ol > li > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";'+
+            'counter-increment: sixth;}' +
+
             stylesForExportCSS + 
             '</style>\n' + '</head>\n') + 
         '<body>';
@@ -478,7 +489,6 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
     });
   });
 };
-
 
 // copied from ACE
 var _REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;
