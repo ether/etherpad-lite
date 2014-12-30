@@ -472,6 +472,16 @@ var pad = {
       if (typeof customStart == "function") customStart();
       getParams();
       handshake();
+
+      // To use etherpad you have to allow cookies.
+      // This will check if the creation of a test-cookie has success.
+      // Otherwise it shows up a message to the user.
+      createCookie("test", "test");
+      if (!readCookie("test"))
+      {
+        $('#loading').hide();
+        $('#noCookie').show();
+      }
     });
   },
   _afterHandshake: function()

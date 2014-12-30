@@ -1086,6 +1086,10 @@ input[type=checkbox] {
   display:none;
 }
 
+#noCookie{
+  display:none;
+}
+
 /* gritter stuff */
 #gritter-notice-wrapper {
   position:fixed;
