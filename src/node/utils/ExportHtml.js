@@ -305,10 +305,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
   var lists = []; // e.g. [[1,'bullet'], [3,'bullet'], ...]
+  var listLevels = []
   for (var i = 0; i < textLines.length; i++)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
+    listLevels.push(line.listLevel)
 
     if (line.listLevel)//If we are inside a list
     {
@@ -328,13 +330,27 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
       {
+        if(lists.length > 0){
+          pieces.push('</li>')
+        }
         lists.push([line.listLevel, line.listTypeName]);
+
+        // if there is a previous list we need to open x tags, where x is the difference of the levels
+        // if there is no previous list we need to open x tags, where x is the wanted level
+        var toOpen = lists.length > 1 ? line.listLevel - lists[lists.length - 2][0] - 1 : line.listLevel - 1
+
         if(line.listTypeName == "number")
         {
+          if(toOpen > 0){
+            pieces.push(new Array(toOpen + 1).join('<ol>'))
+          }
           pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
         else
         {
+          if(toOpen > 0){
+            pieces.push(new Array(toOpen + 1).join('<ul>'))
+          }
           pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
       }
@@ -363,37 +379,40 @@ function getHTMLFromAtext(pad, atext, authorColors)
           pieces.push('<br><br>');
         }
       }*/
-      else//means we are getting closer to the lowest level of indentation
+      else//means we are getting closer to the lowest level of indentation or are at the same level 
       {
-        while (whichList < lists.length - 1)
-        {
+        var toClose = lists.length > 0 ? listLevels[listLevels.length - 2] - line.listLevel : 0
+        if( toClose > 0){
+          pieces.push('</li>')
           if(lists[lists.length - 1][1] == "number")
           {
-            pieces.push('</li></ol>');
+            pieces.push(new Array(toClose+1).join('</ol>'))
+            pieces.push('<li>', lineContent || '<br>');
           }
           else
           {
-            pieces.push('</li></ul>');
+            pieces.push(new Array(toClose+1).join('</ul>'))
+            pieces.push('<li>', lineContent || '<br>');
           }
-          lists.length--;
+          lists = lists.slice(0,whichList+1)
+        } else {
+          pieces.push('</li><li>', lineContent || '<br>');
         }
-        pieces.push('</li><li>', lineContent || '<br>');
       }
     }
-    else//outside any list
+    else//outside any list, need to close line.listLevel of lists
     {
-      while (lists.length > 0)//if was in a list: close it before
-      {
-        if(lists[lists.length - 1][1] == "number")
-        {
+      if(lists.length > 0){
+        if(lists[lists.length - 1][1] == "number"){
           pieces.push('</li></ol>');
-        }
-        else
-        {
+          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ol>'))
+        } else {
           pieces.push('</li></ul>');
+          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ul>'))
         }
-        lists.length--;
       }
+      lists = []
+
       var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
       {
         line: line,
