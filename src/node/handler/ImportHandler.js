@@ -247,9 +247,16 @@ exports.doImport = function(req, res, padId)
       padManager.getPad(padId, function(err, _pad){
         var pad = _pad;
         padManager.unloadPad(padId);
-        padMessageHandler.updatePadClients(pad, function(){
+
+        // direct Database Access means a pad user should perform a switchToPad
+        // and not attempt to recieve updated pad data..
+        if(!directDatabaseAccess){
+          padMessageHandler.updatePadClients(pad, function(){
+            callback();
+          });
+        }else{
           callback();
-        });
+        }
       });
 
     },
@@ -282,7 +289,7 @@ exports.doImport = function(req, res, padId)
     }
 
     ERR(err);
-  
+
     //close the connection
     res.send(
       "<head> \
@@ -293,7 +300,7 @@ exports.doImport = function(req, res, padId)
           if(navigator.userAgent.indexOf('MSIE') === -1){ \
             document.domain = document.domain; \
           } \
-          var impexp = window.parent.padimpexp.handleFrameCall('" + status + "'); \
+          var impexp = window.parent.padimpexp.handleFrameCall('" + directDatabaseAccess +"', '" + status + "'); \
         }) \
       </script>"
     , 200);

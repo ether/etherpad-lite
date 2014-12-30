@@ -237,13 +237,13 @@ var padimpexp = (function()
       $('#importform').submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
-    handleFrameCall: function(status)
+    handleFrameCall: function(directDatabaseAccess, status)
     {
       if (status !== "ok")
       {
         importFailed(status);
       }
-      
+      if(directDatabaseAccess) pad.switchToPad(clientVars.padId);
       importDone();
     },
     disable: function()
