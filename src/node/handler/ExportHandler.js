@@ -4,6 +4,7 @@
 
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
+ * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +22,7 @@
 var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
 var exporttxt = require("../utils/ExportTxt");
+var exportEtherpad = require("../utils/ExportEtherpad");
 var async = require("async");
 var fs = require("fs");
 var settings = require('../utils/Settings');
@@ -52,14 +54,20 @@ exports.doExport = function(req, res, padId, type)
       // if fileName is set then set it to the padId, note that fileName is returned as an array.
       if(hookFileName.length) fileName = hookFileName;
 
-
       //tell the browser that this is a downloadable file
       res.attachment(fileName + "." + type);
     
       //if this is a plain text export, we can do this directly
       // We have to over engineer this because tabs are stored as attributes and not plain text
-    
-      if(type == "txt")
+      if(type == "etherpad"){
+        exportEtherpad.getPadRaw(padId, function(err, pad){
+          if(!err){
+            res.send(pad);
+            // return;
+          }
+        });
+      }
+      else if(type == "txt")
       {
         var txt;
         var randNum;

@@ -109,6 +109,8 @@ var padimpexp = (function()
       msg = html10n.get("pad.impexp.convertFailed");
     } else if(status === "uploadFailed"){
       msg = html10n.get("pad.impexp.uploadFailed");
+    } else if(status === "padHasData"){
+      msg = html10n.get("pad.impexp.padHasData");
     }
   
     function showError(fade)
@@ -198,6 +200,7 @@ var padimpexp = (function()
 
       // build the export links
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
+      $("#exportetherpada").attr("href", pad_root_path + "/export/etherpad");
       $("#exportplaina").attr("href", pad_root_path + "/export/txt");
 
       // activate action to import in the form
@@ -234,13 +237,13 @@ var padimpexp = (function()
       $('#importform').submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
-    handleFrameCall: function(status)
+    handleFrameCall: function(directDatabaseAccess, status)
     {
       if (status !== "ok")
       {
         importFailed(status);
       }
-      
+      if(directDatabaseAccess) pad.switchToPad(clientVars.padId);
       importDone();
     },
     disable: function()
