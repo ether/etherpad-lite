@@ -2311,93 +2311,72 @@ function Ace2Inner(){
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
 
+
   function getAttributeOnSelection(attributeName){
-    if (!(rep.selStart && rep.selEnd)) return;
-
-    // get the previous/next characters formatting when we have nothing selected
-    // To fix this we just change the focus area, we don't actually check anything yet.
-    if(rep.selStart[1] == rep.selEnd[1]){
-      // if we're at the beginning of a line bump end forward so we get the right attribute
-      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){
-        rep.selEnd[1] = 1;
-      }
-      if(rep.selStart[1] < 0){
-        rep.selStart[1] = 0;
-      }
-      var line = rep.lines.atIndex(rep.selStart[0]);
-      // if we're at the end of the line bmp the start back 1 so we get hte attribute
-      if(rep.selEnd[1] == line.text.length){
-        rep.selStart[1] = rep.selStart[1] -1;
-      }
-    }
-
-    // Do the detection
-    var selectionAllHasIt = true;
+    if (!(rep.selStart && rep.selEnd)) return
+    
     var withIt = Changeset.makeAttribsString('+', [
       [attributeName, 'true']
     ], rep.apool);
     var withItRegex = new RegExp(withIt.replace(/\*/g, '\\*') + "(\\*|$)");
-
     function hasIt(attribs)
     {
       return withItRegex.test(attribs);
     }
 
-    var selStartLine = rep.selStart[0];
-    var selEndLine = rep.selEnd[0];
-    for (var n = selStartLine; n <= selEndLine; n++)
-    {
-      var opIter = Changeset.opIterator(rep.alines[n]);
-      var indexIntoLine = 0;
-      var selectionStartInLine = 0;
-      var selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
-      if(rep.lines.atIndex(n).text.length == 0){
-        return false; // If the line length is 0 we basically treat it as having no formatting
+    return rangeHasAttrib(rep.selStart, rep.selEnd)
+    
+    function rangeHasAttrib(selStart, selEnd) {
+      // if range is collapsed -> no attribs in range
+      if(selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false
+      
+      if(selStart[0] != selEnd[0]) { // -> More than one line selected
+        var hasAttrib = true
+        
+        // from selStart to the end of the first line
+        hasAttrib = hasAttrib && rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length])
+
+        // for all lines in between
+        for(var n=selStart[0]+1; n < selEnd[0]; n++) {
+          hasAttrib = hasAttrib && rangeHasAttrib([n, 0], [n, rep.lines.atIndex(n).text.length])
+        }
+
+        // for the last, potentially partial, line
+        hasAttrib = hasAttrib && rangeHasAttrib([selEnd[0], 0], [selEnd[0], selEnd[1]])
+        
+        return hasAttrib
       }
-      if(rep.selStart[1] == rep.selEnd[1] && rep.selStart[1] == rep.lines.atIndex(n).text.length){
-        return false; // If we're at the end of a line we treat it as having no formatting
-      }
-      if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){
-        rep.selEnd[1] == 1;
-      }
-      if(rep.selEnd[1] == -1){
-        rep.selEnd[1] = 1; // sometimes rep.selEnd is -1, not sure why..  When it is we should look at the first char
-      }
-      if (n == selStartLine)
-      {
-        selectionStartInLine = rep.selStart[1];
-      }
-      if (n == selEndLine)
-      {
-        selectionEndInLine = rep.selEnd[1];
-      }
-      while (opIter.hasNext())
-      {
+      
+      // Logic tells us we now have a range on a single line
+      
+      var lineNum = selStart[0]
+        , start = selStart[1]
+        , end = selEnd[1]
+        , hasAttrib = true
+      
+      // Iterate over attribs on this line
+      
+      var opIter = Changeset.opIterator(rep.alines[lineNum])
+        , indexIntoLine = 0
+      
+      while (opIter.hasNext()) {
         var op = opIter.next();
         var opStartInLine = indexIntoLine;
         var opEndInLine = opStartInLine + op.chars;
-        if (!hasIt(op.attribs))
-        {
+        if (!hasIt(op.attribs)) {
           // does op overlap selection?
-          if (!(opEndInLine <= selectionStartInLine || opStartInLine >= selectionEndInLine))
-          {
-            selectionAllHasIt = false;
+          if (!(opEndInLine <= start || opStartInLine >= end)) {
+            hasAttrib = false; // since it's overlapping but hasn't got the attrib -> range hasn't got it
             break;
           }
         }
         indexIntoLine = opEndInLine;
       }
-      if (!selectionAllHasIt)
-      {
-        break;
-      }
-    }
-    if(selectionAllHasIt){
-      return true;
-    }else{
-      return false;
+      
+      return hasAttrib
     }
   }
+  
   editorInfo.ace_getAttributeOnSelection = getAttributeOnSelection;
 
   function toggleAttributeOnSelection(attributeName)
