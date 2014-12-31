@@ -518,7 +518,11 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           }
           if (tname == "ul" || tname == "ol")
           {
-            var type = node.attribs.class;
+            if(node.attribs){
+              var type = node.attribs.class;
+            }else{
+              var type = null;
+            }
             var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);
             // lists do not need to have a type, so before we make a wrong guess, check if we find a better hint within the node's children
             if(!rr && !type){
