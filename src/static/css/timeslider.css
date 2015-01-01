@@ -154,11 +154,17 @@ stepper:active{
   top: 20px;
   width: 25px;
 }
+.star:before{
+  font-family: fontawesome-etherpad;
+  content: "\e835";
+  vertical-align:middle;
+  font-size:16px;
+}
 #timeslider .star {
   cursor: pointer;
   height: 16px;
   position: absolute;
-  top: 40px;
+  top: 25px;
   width: 15px;
 }
 #timeslider #timer {
