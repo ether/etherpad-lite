@@ -32,7 +32,7 @@ var _ = require('./underscore');
 
 function sanitizeUnicode(s)
 {
-  return UNorm.nfc(s).replace(/[\uffff\ufffe\ufeff\ufdd0-\ufdef\ud800-\udfff]/g, '?');
+  return UNorm.nfc(s);
 }
 
 function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
@@ -54,10 +54,14 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     },
     nodeNumChildren: function(n)
     {
+      if(n.childNodes == null) return 0;
       return n.childNodes.length;
     },
     nodeChild: function(n, i)
     {
+      if(n.childNodes.item == null){
+        return n.childNodes[i];
+      }
       return n.childNodes.item(i);
     },
     nodeProp: function(n, p)
@@ -66,6 +70,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
     },
     nodeAttr: function(n, a)
     {
+      if(n.getAttribute == null) return null;
       return n.getAttribute(a);
     },
     optNodeInnerHTML: function(n)
@@ -89,7 +94,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
   function textify(str)
   {
     return sanitizeUnicode(
-    str.replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
+    str.replace(/\n/g, '').replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
   }
 
   function getAssoc(node, name)
@@ -513,9 +518,28 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           }
           if (tname == "ul" || tname == "ol")
           {
-            var type;
+            if(node.attribs){
+              var type = node.attribs.class;
+            }else{
+              var type = null;
+            }
             var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);
-            type = rr && rr[1] || (tname == "ul" ? "bullet" : "number") + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
+            // lists do not need to have a type, so before we make a wrong guess, check if we find a better hint within the node's children
+            if(!rr && !type){
+              for (var i in node.children){
+                if(node.children[i] && node.children[i].name=='ul'){
+                  type = node.children[i].attribs.class
+                  if(type){
+                    break
+                  }
+                }
+              }
+            }
+            if(rr && rr[1]){
+              type = rr[1]
+            } else {
+              type = (tname == "ul" ? (type.match("indent") || node.attribs.class && node.attribs.class.match("indent") ? "indent" : "bullet") : "number") + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
+            }
             oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
           else if ((tname == "div" || tname == "p") && cls && cls.match(/(?:^| )ace-line\b/))
@@ -663,7 +687,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
           {
             //var semiloc = oldString.lastIndexOf(';', lineLimit-1);
             //var lengthToTake = (semiloc >= 0 ? (semiloc+1) : lineLimit);
-            lengthToTake = lineLimit;
+            var lengthToTake = lineLimit;
             newStrings.push(oldString.substring(0, lengthToTake));
             oldString = oldString.substring(lengthToTake);
             newAttribStrings.push(Changeset.subattribution(oldAttribString, 0, lengthToTake));

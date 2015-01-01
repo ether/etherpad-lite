@@ -56,7 +56,7 @@ exports.restartServer = function () {
     console.log( "SSL -- server key file: " + settings.ssl.key );
     console.log( "SSL -- Certificate Authority's certificate file: " + settings.ssl.cert );
     
-    options = {
+    var options = {
       key: fs.readFileSync( settings.ssl.key ),
       cert: fs.readFileSync( settings.ssl.cert )
     };

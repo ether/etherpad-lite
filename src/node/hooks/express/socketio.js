@@ -1,6 +1,5 @@
-var log4js = require('log4js');
-var socketio = require('socket.io');
 var settings = require('../../utils/Settings');
+var socketio = require('socket.io');
 var socketIORouter = require("../../handler/SocketIORouter");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
@@ -11,12 +10,19 @@ var connect = require('connect');
  
 exports.expressCreateServer = function (hook_name, args, cb) {
   //init socket.io and redirect all requests to the MessageHandler
-  var io = socketio.listen(args.server);
+  // there shouldn't be a browser that isn't compatible to all
+  // transports in this list at once
+  // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
+  var io = socketio({
+    transports: settings.socketTransportProtocols
+  }).listen(args.server);
 
   /* Require an express session cookie to be present, and load the
    * session. See http://www.danielbaulig.de/socket-ioexpress for more
    * info */
-  io.set('authorization', function (data, accept) {
+
+  io.use(function(socket, accept) {
+    var data = socket.request;
     if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
 
     // Use connect's cookie parser, because it knows how to parse signed cookies
@@ -36,35 +42,17 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  // there shouldn't be a browser that isn't compatible to all 
-  // transports in this list at once
-  // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  io.set('transports', settings.socketTransportProtocols );
-
-  var socketIOLogger = log4js.getLogger("socket.io");
-  io.set('logger', {
-    debug: function (str)
-    {
-      socketIOLogger.debug.apply(socketIOLogger, arguments);
-    }, 
-    info: function (str)
-    {
-      socketIOLogger.info.apply(socketIOLogger, arguments);
-    },
-    warn: function (str)
-    {
-      socketIOLogger.warn.apply(socketIOLogger, arguments);
-    },
-    error: function (str)
-    {
-      socketIOLogger.error.apply(socketIOLogger, arguments);
-    },
-  });
+  // var socketIOLogger = log4js.getLogger("socket.io");
+  // Debug logging now has to be set at an environment level, this is stupid.
+  // https://github.com/Automattic/socket.io/wiki/Migrating-to-1.0
+  // This debug logging environment is set in Settings.js
 
   //minify socket.io javascript
-  if(settings.minify)
-    io.enable('browser client minification');
-
+  // Due to a shitty decision by the SocketIO team minification is
+  // no longer available, details available at:
+  // http://stackoverflow.com/questions/23981741/minify-socket-io-socket-io-js-with-1-0
+  // if(settings.minify) io.enable('browser client minification');
+  
   //Initalize the Socket.IO Router
   socketIORouter.setSocketIO(io);
   socketIORouter.addComponent("pad", padMessageHandler);

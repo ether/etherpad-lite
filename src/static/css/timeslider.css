@@ -14,14 +14,14 @@
   top: 0;
 }
 #timeslider-left {
-  background-image: url(../../static/img/timeslider_left.png);
+  background-color:#fff;
   height: 63px;
   left: 0;
   position: absolute;
   width: 134px;
 }
 #timeslider-right {
-  background-image: url(../../static/img/timeslider_right.png);
+  background-color:#fff;
   height: 63px;
   position: absolute;
   right: 0;
@@ -29,7 +29,6 @@
   width: 155px;
 }
 #timeslider {
-  background-image: url(../../static/img/timeslider_background.png);
   height: 63px;
   margin: 0 9px;
   -webkit-touch-callout: none;
@@ -38,6 +37,8 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  background-color:#fff;
+  /* bgcolor is reuqired so you can't see pad content behind it */
 }
 #timeslider #timeslider-slider {
   height: 61px;
@@ -50,7 +51,7 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  background-image: url(../../static/img/crushed_current_location.png);
+  background-color: #666;
   cursor: pointer;
   height: 61px;
   left: 0;
@@ -63,66 +64,97 @@
   -moz-user-select: none;
   user-select: none;
   cursor: pointer;
-  height: 35px;
+  height: 60px;
   margin-left: 5px;
   margin-right: 150px;
   position: relative;
-  top: 20px;
+  top: 0px;
 }
+
 #playpause_button,
 #playpause_button_icon {
-  height: 47px;
+  height: 44px;
   position: absolute;
-  width: 47px;
+  width: 44px;
+  text-align:center;
+  vertical-align:middle;
 }
 #playpause_button {
-  background-image: url(../../static/img/crushed_button_undepressed.png);
   right: 77px;
   top: 9px;
+  height:50px;
+  height:50px;
+  background: background-linear-gradient( #F7F7F7, #F1F1F1 80%) repeat scroll 0 0 transparent;
+  border-radius:24px;
+  cursor:hand;
 }
+#playpause_button_icon:before {
+  line-height:44px;  
+  padding-left:2px;
+  font-family: fontawesome-etherpad;
+  content: "\e82c";
+  font-size:24px;
+  color:#666;
+}
+
 #playpause_button_icon {
-  background-image: url(../../static/img/play.png);
   left: 0;
   top: 0;
+  border-radius:48px;
+  border: solid 1px #666;
 }
-.pause#playpause_button_icon {
-  background-image: url(../../static/img/pause.png)
+.pause:before {
+  line-height:44px;  
+  padding-left:2px;
+  font-family: fontawesome-etherpad;
+  content: "\e82e" !important;
+  font-size:24px;
+  color:#666;
+  padding-left:0 !important;
 }
 #leftstar,
 #rightstar,
 #leftstep,
 #rightstep {
-  background: url(../../static/img/stepper_buttons.png) 0 0 no-repeat;
-  height: 21px;
+  background-color: white;
   overflow: hidden;
   position: absolute;
 }
-#leftstar {
-  background-position: 0 -44px;
-  right: 34px;
-  top: 8px;
-  width: 30px;
+
+.stepper{
+  font-family: fontawesome-etherpad;
+  border-radius:2px;
+  border: #666 solid 1px;
+  line-height:18px;
+  text-align:center;
+  height:22px;
+  color:#666;
 }
-#rightstar {
-  background-position: -29px -44px;
-  right: 5px;
-  top: 8px;
-  width: 29px;
+
+stepper:active{
+  color:#000;
 }
+
 #leftstep {
-  background-position: 0 -22px;
-  right: 34px;
+  right: 38px;
   top: 20px;
-  width: 30px;
+  width: 25px;
 }
+#leftstep:before{
+  content: '\e821';
+  vertical-align:middle;
+}
+#rightstep:before{
+  content: "\e822";
+  vertical-align:middle;
+}
+
 #rightstep {
-  background-position: -29px -22px;
-  right: 5px;
+  right: 12px;
   top: 20px;
-  width: 30px;
+  width: 25px;
 }
 #timeslider .star {
-  background-image: url(../../static/img/star.png);
   cursor: pointer;
   height: 16px;
   position: absolute;
@@ -130,7 +162,9 @@
   width: 15px;
 }
 #timeslider #timer {
-  color: #fff;
+  background: linear-gradient(#F7F7F7, #F1F1F1 80%) repeat scroll 0% 0% transparent;
+  padding:2px;
+  border-radius:2px;
   font-family: Arial, sans-serif;
   font-size: 11px;
   left: 7px;
@@ -154,22 +188,33 @@
   -ms-user-select: none;
   user-select: none;
 }
-#editbarright {
-  float: right
+.editbarright {
+  float: right;
+  text-align: right;
+  height: 30px !important;
+}
+.toolbar ul{
+  position:relative;
+  float:right;
+  height:30px;
 }
 #settings,
-#importexport,
+#import_export,
 #embed,
 #connectivity,
 #users {
     top: 62px;
 }
-#importexport .popup {
-  width: 185px
+#import_export .popup {
+  width: 183px;
+  border-top: none;
+  border-right: none;
+  border-radius: 0 0 0 6px;
 }
-#importexport {
-  top: 118px;
+#import_export {
+  top: 115px;
   width: 185px;
+  position: fixed;
 }
 .timeslider-bar {
   background: #f7f7f7;
@@ -186,7 +231,6 @@
   border-bottom: none;
   float: right;
   width: 170px;
-  width: initial;
 }
 .timeslider-bar h1 {
   margin: 5px
@@ -286,17 +330,4 @@ OL {
 .list-number3,
 .list-number6 {
   list-style-type: lower-roman
-}
-/* IE 6/7 fixes */
-* HTML #ui-slider-handle {
-  background-image: url(../../static/img/current_location.gif)
-}
-* HTML #timeslider .star {
-  background-image: url(../../static/img/star.gif)
-}
-* HTML #playpause_button_icon {
-  background-image: url(../../static/img/play.gif)
-}
-* HTML .pause#playpause_button_icon {
-  background-image: url(../../static/img/pause.gif)
 }

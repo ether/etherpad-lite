@@ -59,7 +59,7 @@ a img {
   height: 32px;
 }
 .toolbar ul {
-  position: relative;
+  position: absolute;
   list-style: none;
   padding-right: 3px;
   padding-left: 1px;
@@ -67,12 +67,14 @@ a img {
   overflow: hidden;
   float: left
 }
-.toolbar ul.menu_right {
-  float: right
-}
 .toolbar ul li {
   float: left;
   margin-left: 2px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  height:32px;
 }
 .toolbar ul li.separator {
   border: inherit;
@@ -80,6 +82,7 @@ a img {
   visibility: hidden;
   width: 0px;
   padding: 5px;
+  height:22px;
 }
 .toolbar ul li a:hover {
   text-decoration: none;
@@ -93,6 +96,17 @@ a img {
   background: linear-gradient(#f4f4f4, #e4e4e4);
 }
 .toolbar ul li a:active {
+  background: #eee;
+  background: -webkit-linear-gradient(#ddd, #fff);
+  background: -moz-linear-gradient(#ddd, #fff);
+  background: -o-linear-gradient(#ddd, #fff);
+  background: -ms-linear-gradient(#ddd, #fff);
+  background: linear-gradient(#ddd, #fff);
+  -webkit-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+  -moz-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+}
+.toolbar ul li .activeButton {
   background: #eee;
   background: -webkit-linear-gradient(#ddd, #fff);
   background: -moz-linear-gradient(#ddd, #fff);
@@ -160,15 +174,28 @@ a img {
   border: 1px solid #ccc;
   outline: none;
 }
-#usericon a {
+.toolbar ul.menu_left {
+  left:0px;
+  right:250px;
+}
+  
+.toolbar ul.menu_right {
+  right:0px;
+}
+
+li[data-key=showusers] > a {
   min-width: 30px;
   text-align: left;
 }
-#usericon a #online_count {
+li[data-key=showusers] > a #online_count {
   color: #777;
-  font-size: 10px;
+  font-size: 11px;
   position: relative;
   top: 2px;
+  padding-left: 2px;
+}
+#editbar{
+  display:none;
 }
 #editorcontainer {
   position: absolute;
@@ -207,6 +234,41 @@ a img {
 
 #editorloadingbox button{
   padding:10px;
+}
+
+.loadingAnimation{
+  -webkit-animation: loadingAnimation 2s infinite linear;
+  animation: loadingAnimation 2s infinite linear;
+  font-family: "fontawesome-etherpad";
+  font-size:24px;
+  z-index:150;
+  width:25px;
+  height:25px;
+}
+
+.loadingAnimation:before{
+  content: "\e80e";
+}
+
+@-webkit-keyframes loadingAnimation {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes loadingAnimation {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }
 
 #editorcontainerbox {
@@ -386,6 +448,12 @@ table#otheruserstable {
   height: 13px;
   overflow: hidden;
   margin: 0 4px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .usertdswatch {
   width: 1%
@@ -596,36 +664,47 @@ table#otheruserstable {
   margin-top: 4px;
   background-repeat: no-repeat;
   padding-left: 25px;
-  background-image: url("../../static/img/etherpad_lite_icons.png");
   color: #333;
   text-decoration: none;
   padding-bottom:2px;
+  display:inline;
+  padding-left:5px;
+  font-family: "Arial";
 }
-#exporthtml {
-  background-position: 0px -299px
+.exportlink{
+  font-family: "fontawesome-etherpad";
+  display:block;
+  margin:5px;
+  color:#666;
 }
-#exportplain {
-  background-position: 0px -395px
+#exporthtmla:before {
+  content: "\e826";
 }
-#exportword {
-  background-position: 0px -275px
+#exportplaina:before {
+  content: "\e802";
 }
-#exportpdf {
-  background-position: 0px -371px
+#exportworda:before {
+  content: "\e804";
 }
-#exportopen {
-  background-position: 0px -347px
+#exportpdfa:before {
+  content: "\e803";
 }
-#exportdokuwiki {
-  background-position: 0px -459px
+#exportetherpada:before {
+  content: "\e806";
+}
+#exportopena:before {
+  content: "\e805";
 }
 
 /* hidden element */
 #importstatusball,
-#importarrow,
 #importmessagesuccess,
 #importmessageabiword {
   display: none;
+}
+
+.throbbold{
+  font-weight:bold;
 }
 
 #importmessageabiword {
@@ -636,9 +715,6 @@ table#otheruserstable {
 #importsubmitinput {
   margin-top: 12px;
   padding:2px 4px 2px 4px;
-}
-#importstatusball {
-  height: 50px
 }
 #chatthrob {
   display: none;
@@ -664,64 +740,68 @@ table#otheruserstable {
 .buttonicon {
   width: 16px;
   height: 16px;
-  background-image: url('../../static/img/etherpad_lite_icons.png');
-  background-repeat: no-repeat;
   display: inline-block;
   vertical-align: middle;
+
+  font-family: "fontawesome-etherpad";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: normal;
+  color: #666;
 }
-.buttonicon-bold {
-  background-position: 0px -116px
+.buttonicon-bold:before {
+  content: "\e81c";
 }
-.buttonicon-italic {
-  background-position: 0px 0px
+.buttonicon-italic:before {
+  content: "\e81d";
 }
-.buttonicon-underline {
-  background-position: 0px -236px
+.buttonicon-underline:before {
+  content: "\e817";
 }
-.buttonicon-strikethrough {
-  background-position: 0px -200px
+.buttonicon-strikethrough:before {
+  content: "\e818";
 }
-.buttonicon-insertorderedlist {
-  background-position: 0px -477px
+.buttonicon-insertorderedlist:before {
+  content: "\e816";
 }
-.buttonicon-insertunorderedlist {
-  background-position: 0px -34px
+.buttonicon-insertunorderedlist:before {
+  content: "\e815";
 }
-.buttonicon-indent {
-  background-position: 0px -52px
+.buttonicon-indent:before {
+  content: "\e814";
 }
-.buttonicon-outdent {
-  background-position: 0px -134px
+.buttonicon-outdent:before {
+  content: "\e813";
 }
-.buttonicon-undo {
-  background-position: 0px -255px
+.buttonicon-undo:before {
+  content: "\e823";
 }
-.buttonicon-redo {
-  background-position: 0px -166px
+.buttonicon-redo:before {
+  content: "\e824";
 }
-.buttonicon-clearauthorship {
-  background-position: 0px -86px
+.buttonicon-clearauthorship:before {
+  content: "\e80d";
 }
-.buttonicon-settings {
-  background-position: 0px -436px
+.buttonicon-settings:before {
+  content: "\e833";
 }
-.buttonicon-import_export {
-  background-position: 0px -68px
+.buttonicon-import_export:before {
+  content: "\e834";
 }
-.buttonicon-embed {
-  background-position: 0px -18px
+.buttonicon-embed:before {
+  content: "\e827";
 }
-.buttonicon-history {
-  background-position: 0px -218px
+.buttonicon-history:before {
+  content: "\e837";
 }
-.buttonicon-chat {
-  background-position: 0px -102px;
+.buttonicon-chat:before {
+  content: "\e829";
 }
-.buttonicon-showusers {
-  background-position: 0px -183px;
+.buttonicon-showusers:before {
+  content: "\e808";
 }
-.buttonicon-savedRevision {
-  background-position: 0px -493px
+.buttonicon-savedRevision:before {
+  content: "\e835";
 }
 #focusprotector {
   z-index: 100;
@@ -735,9 +815,6 @@ table#otheruserstable {
   filter: alpha(opacity=1);
   opacity: 0.01;
   display: none;
-}
-#online_count {
-  color: #888;
 }
 .rtl {
   direction: RTL
@@ -812,9 +889,10 @@ input[type=checkbox] {
 }
 .column {
   float: left;
+  width:50%;
 }
 #settings,
-#importexport,
+#import_export,
 #embed,
 #connectivity,
 #users {
@@ -836,13 +914,17 @@ input[type=checkbox] {
   border-left: 1px solid #ccc !important;
   width: 185px !important;
 }
-@media screen and (max-width: 600px) { 
-    .toolbar ul li.separator {
-      display: none;
-    }
-    .toolbar ul li a {
-      padding: 4px 1px
-    }
+@media screen and (max-width: 600px) {
+  .toolbar ul li.separator {
+    display: none;
+  }
+  .toolbar ul li a {
+    padding: 4px 1px
+  }
+  .toolbar ul.menu_left {
+    left:0px;
+    right:150px;
+  }
 }
 @media all and (max-width: 400px){
   #gritter-notice-wrapper{
@@ -854,7 +936,7 @@ input[type=checkbox] {
     left:0px;
     right:0px;
     color:#000;
-  } 
+  }
   .gritter-close {
     display:block !important;
     left: auto !important;
@@ -882,15 +964,19 @@ input[type=checkbox] {
   .gritter-item-wrapper > div{
     background: none;
   }
-  #editorcontainer { 
+  #editorcontainer {
     top: 68px;
   }
-  #editbar { 
+  #editbar {
     height: 62px;
   }
-  .toolbar ul.menu_right { 
-    float: left;
-    margin-top:2px;
+  .toolbar ul.menu_left {
+    left:0px;
+    right:100px;
+  }
+  
+  .toolbar ul.menu_right {
+    right:0px;
   }
   .popup {
     width:100%;
@@ -900,16 +986,22 @@ input[type=checkbox] {
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
     #users {
-      top: 36px;
-      bottom: 40px;
-      border-radius: none;
+      top: auto;
+      right:0px !important;
+      bottom: 33px;
+      border-radius: 0px !important;
     }
     #mycolorpicker {
       left: -73px;
+      top:auto !important;
+      bottom:33px !important;
       /* #mycolorpicker: width -#users: width */;
     }
     #editorcontainer {
       margin-bottom: 33px
+    }
+    .toolbar ul.menu_left {
+      right:0px;
     }
     .toolbar ul.menu_right {
       background: #f7f7f7;
@@ -919,6 +1011,7 @@ input[type=checkbox] {
       background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
       background: linear-gradient(#f7f7f7, #f1f1f1 80%);
       width: 100%;
+      right:0px !important;
       overflow: hidden;
       height: 32px;
       position: fixed;
@@ -938,8 +1031,16 @@ input[type=checkbox] {
     .toolbar ul li a.selected {
       background: none !important
     }
-    #chaticon, #timesliderlink {
-      display: none !important
+    li[data-key="showusers"] > a {
+      
+      margin-top:-10px;
+      padding-top:2px !important;
+      line-height:20px;
+      vertical-align:top !important;
+    }
+    #chaticon {
+      position:absolute;
+      right:48px;
     }
     .popup {
       -webkit-border-radius: 0;
@@ -952,11 +1053,11 @@ input[type=checkbox] {
       width: 100%;
     }
     #settings,
-    #importexport,
+    #import_export,
     #connectivity,
     #embed {
+      top:auto;
       left: 0;
-      top: 0;
       bottom: 33px;
       right: 0;
     }
@@ -965,6 +1066,14 @@ input[type=checkbox] {
     }
     #online_count {
       line-height: 24px
+    }
+    #chatbox{
+      position:absolute;
+      bottom:33px;
+    }
+    #gritter-notice-wrapper{
+      bottom:43px !important;
+      right:10px !important;
     }
 }
 
@@ -980,6 +1089,10 @@ input[type=checkbox] {
   display:none;
 }
 
+#noCookie{
+  display:none;
+}
+
 /* gritter stuff */
 #gritter-notice-wrapper {
   position:fixed;
@@ -987,6 +1100,7 @@ input[type=checkbox] {
   right:20px;
   width:301px;
   z-index:9999;
+  background-color:#666;
 }
 #gritter-notice-wrapper.bottom-right {
   top: auto;
@@ -1000,14 +1114,12 @@ input[type=checkbox] {
 }
 
 .gritter-top {
-  background:url(../../static/img/gritter.png) no-repeat left -30px;
   height:10px;
 }
 .hover .gritter-top {
   background-position:right -30px;
 }
 .gritter-bottom {
-  background:url(../../static/img/gritter.png) no-repeat left bottom;
   height:8px;
   margin:0;
 }
@@ -1016,7 +1128,6 @@ input[type=checkbox] {
 }
 .gritter-item {
   display:block;
-  background:url(../../static/img/gritter.png) no-repeat left -40px;
   color:#eee;
   padding:2px 11px 8px 11px;
   font-size: 11px;
@@ -1034,7 +1145,6 @@ input[type=checkbox] {
   position:absolute;
   top:5px;
   left:3px;
-  background:url('../../static/img/gritter.png') no-repeat left top;
   cursor:pointer;
   width:30px;
   height:30px;
@@ -1069,16 +1179,43 @@ input[type=checkbox] {
 .gritter-light .gritter-title {
   text-shadow: none;
 }
-
 /* End of gritter stuff */
-.activeButton{
-  background: #eee;
-  background: -webkit-linear-gradient(#ddd, #fff);
-  background: -moz-linear-gradient(#ddd, #fff);
-  background: -o-linear-gradient(#ddd, #fff);
-  background: -ms-linear-gradient(#ddd, #fff);
-  background: linear-gradient(#ddd, #fff);
-  -webkit-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-  -moz-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+
+@font-face {
+  font-family: "fontawesome-etherpad";
+  src:url("../font/fontawesome-etherpad.eot");
+  src:url("../font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
+    url("../font/fontawesome-etherpad.woff") format("woff"),
+    url("../font/fontawesome-etherpad.ttf") format("truetype"),
+    url("../font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
 }
+
+[data-icon]:before {
+  font-family: "fontawesome-etherpad" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "fontawesome-etherpad" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+

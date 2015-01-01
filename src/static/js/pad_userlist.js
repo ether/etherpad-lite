@@ -468,6 +468,8 @@ var paduserlist = (function()
 
       self.setMyUserInfo(myInitialUserInfo);
 
+      if($('#online_count').length === 0) $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
+
       $("#otheruserstable tr").remove();
 
       if (pad.getUserIsGuest())
@@ -602,13 +604,8 @@ var paduserlist = (function()
           online++;
         }
       }
-      var $btn = $("#editbar [data-key=showusers] > a")
-        , $counter = $('#online_count', $btn)
-      if(!$counter.length) {
-        $counter = $('<span id="online_count">')
-        $btn.append($counter)
-      }
-      $counter.text(online);
+
+      $('#online_count').text(online);
 
       return online;
     },
@@ -733,7 +730,7 @@ var paduserlist = (function()
 
       $("#myswatch").css({'background-color': myUserInfo.colorId});
 
-      if ($.browser.msie && parseInt($.browser.version) <= 8) {
+      if (browser.msie && parseInt(browser.version) <= 8) {
         $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
       }
       else

@@ -1,6 +1,7 @@
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm");
+var request = require("request");
 
 var npmIsLoaded = false;
 var withNpm = function (npmfn) {
@@ -60,17 +61,20 @@ exports.availablePlugins = null;
 var cacheTimestamp = 0;
 
 exports.getAvailablePlugins = function(maxCacheAge, cb) {
-  withNpm(function (er) {
+  request("http://etherpad.org/plugins.json", function(er, response, plugins){
     if (er) return cb && cb(er);
     if(exports.availablePlugins && maxCacheAge && Math.round(+new Date/1000)-cacheTimestamp <= maxCacheAge) {
       return cb && cb(null, exports.availablePlugins)
     }
-    npm.commands.search(['ep_'], /*silent?*/true, function(er, results) {
-      if(er) return cb && cb(er);
-      exports.availablePlugins = results;
-      cacheTimestamp = Math.round(+new Date/1000);
-      cb && cb(null, results)
-    })
+    try {
+      plugins = JSON.parse(plugins);
+    } catch (err) {
+      console.error('error parsing plugins.json:', err);
+      plugins = [];
+    }
+    exports.availablePlugins = plugins;
+    cacheTimestamp = Math.round(+new Date/1000);
+    cb && cb(null, plugins)
   });
 };
 

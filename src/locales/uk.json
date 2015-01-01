@@ -53,7 +53,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (документ OpenOffice)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "Ви можете імпортувати лище формати простого тексту або html. Для більш просунутих способів імпорту <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">встановіть abiword</a>.",
 	"pad.modals.connected": "З'єднано.",
 	"pad.modals.reconnecting": "Перепідлючення до Вашого документу..",

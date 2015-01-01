@@ -46,7 +46,6 @@
 	"pad.importExport.exportword": "Programma Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open dokumenta formāts)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.modals.userdup": "Atvērts citā logā",
 	"pad.modals.unauth": "Nav atļauts",
 	"pad.modals.looping.explanation": "Pastāv sakaru problēmas ar sinhronizācijas servera.",

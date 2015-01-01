@@ -4,7 +4,6 @@
 var _ = require("underscore")
   , tagAttributes
   , tag
-  , defaultButtons
   , Button
   , ButtonsGroup
   , Separator
@@ -99,8 +98,8 @@ _.extend(Button.prototype, {
       "data-key": this.attributes.command,
     };
     return tag("li", liAttributes,
-      tag("a", { "class": this.grouping },
-        tag("span", { "class": " "+ this.attributes.class, "data-l10n-id": this.attributes.localizationId })
+      tag("a", { "class": this.grouping, "data-l10n-id": this.attributes.localizationId },
+        tag("span", { "class": " "+ this.attributes.class })
       )
     );
   }
@@ -122,8 +121,7 @@ _.extend(SelectButton.prototype, Button.prototype, {
   },
 
   select: function (attributes) {
-    var self = this
-      , options = [];
+      var options = [];
 
     _.each(this.options, function (opt) {
       var a = _.extend({
@@ -203,13 +201,13 @@ module.exports = {
     settings: defaultButtonAttributes("settings"),
     embed: defaultButtonAttributes("embed"),
     showusers: defaultButtonAttributes("showusers"),
-    
+
     timeslider_export: {
       command: "import_export",
       localizationId: "timeslider.toolbar.exportlink.title",
       class: "buttonicon buttonicon-import_export"
     },
-    
+
     timeslider_returnToPad: {
       command: "timeslider_returnToPad",
       localizationId: "timeslider.toolbar.returnbutton",

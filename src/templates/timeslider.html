@@ -116,7 +116,7 @@
     </div>
     <div class="reconnecting">
       <h1 data-l10n-id="pad.modals.reconnecting"></h1>
-      <p><img alt="" border="0" src="../../static/img/connectingbar.gif" /></p>
+      <p class="loadingAnimation"></p>
     </div>
     <div class="userdup">
       <h1 data-l10n-id="pad.modals.userdup"></h1>
@@ -177,7 +177,7 @@
 </div>
 
 <!-- export code -->
-<div id="importexport">
+<div id="import_export">
 
 <div id="export" class="popup">
   <p data-l10n-id="timeslider.exportCurrent"></p>
@@ -186,7 +186,6 @@
   <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>
   <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></div></a>
   <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen" data-l10n-id="pad.importExport.exportopen"></div></a>
-  <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki" data-l10n-id="pad.importExport.exportdokuwiki"></div></a>
 </div>
 </div>
 
@@ -215,8 +214,9 @@
     require.setGlobalKeyPath("require");
 
     $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
+    browser = require('ep_etherpad-lite/static/js/browser').browser;
 
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
       document.domain = document.domain; // for comet
     }
 

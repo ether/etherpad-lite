@@ -263,7 +263,7 @@ exports.getText = function(padID, rev, callback)
       {
         if(ERR(err, callback)) return;
         
-        data = {text: atext.text};
+        var data = {text: atext.text};
         
         callback(null, data);
       })
@@ -368,7 +368,7 @@ exports.getHTML = function(padID, rev, callback)
           if(ERR(err, callback)) return;
           html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
           html += "</body></html>";
-          data = {html: html};
+          var data = {html: html};
           callback(null, data);
       });
     }
@@ -380,7 +380,7 @@ exports.getHTML = function(padID, rev, callback)
         if(ERR(err, callback)) return;
         html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
         html += "</body></html>";
-        data = {html: html};
+        var data = {html: html};
         callback(null, data);
       });
     }
@@ -575,6 +575,117 @@ exports.deletePad = function(padID, callback)
     pad.remove(callback);
   });
 }
+/**
+ restoreRevision(padID, [rev]) Restores revision from past as new changeset
+
+ Example returns:
+
+ {code:0, message:"ok", data:null}
+ {code: 1, message:"padID does not exist", data: null}
+ */
+exports.restoreRevision = function (padID, rev, callback)
+{
+  var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+  var padMessage = require("ep_etherpad-lite/node/handler/PadMessageHandler.js");
+
+  //check if rev is a number
+  if (rev !== undefined && typeof rev != "number")
+  {
+    //try to parse the number
+    if (!isNaN(parseInt(rev)))
+    {
+      rev = parseInt(rev);
+    }
+    else
+    {
+      callback(new customError("rev is not a number", "apierror"));
+      return;
+    }
+  }
+
+  //ensure this is not a negativ number
+  if (rev !== undefined && rev < 0)
+  {
+    callback(new customError("rev is a negativ number", "apierror"));
+    return;
+  }
+
+  //ensure this is not a float value
+  if (rev !== undefined && !is_int(rev))
+  {
+    callback(new customError("rev is a float value", "apierror"));
+    return;
+  }
+
+  //get the pad
+  getPadSafe(padID, true, function (err, pad)
+  {
+    if (ERR(err, callback)) return;
+
+
+    //check if this is a valid revision
+    if (rev > pad.getHeadRevisionNumber())
+    {
+      callback(new customError("rev is higher than the head revision of the pad", "apierror"));
+      return;
+    }
+
+    pad.getInternalRevisionAText(rev, function (err, atext)
+    {
+      if (ERR(err, callback)) return;
+
+      var oldText = pad.text();
+      atext.text += "\n";
+      function eachAttribRun(attribs, func)
+      {
+        var attribsIter = Changeset.opIterator(attribs);
+        var textIndex = 0;
+        var newTextStart = 0;
+        var newTextEnd = atext.text.length;
+        while (attribsIter.hasNext())
+        {
+          var op = attribsIter.next();
+          var nextIndex = textIndex + op.chars;
+          if (!(nextIndex <= newTextStart || textIndex >= newTextEnd))
+          {
+            func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
+          }
+          textIndex = nextIndex;
+        }
+      }
+
+      // create a new changeset with a helper builder object
+      var builder = Changeset.builder(oldText.length);
+
+      // assemble each line into the builder
+      eachAttribRun(atext.attribs, function (start, end, attribs)
+      {
+        builder.insert(atext.text.substring(start, end), attribs);
+      });
+
+      var lastNewlinePos = oldText.lastIndexOf('\n');
+      if (lastNewlinePos < 0)
+      {
+        builder.remove(oldText.length - 1, 0);
+      } else
+      {
+        builder.remove(lastNewlinePos, oldText.match(/\n/g).length - 1);
+        builder.remove(oldText.length - lastNewlinePos - 1, 0);
+      }
+
+      var changeset = builder.toString();
+
+      //append the changeset
+      pad.appendRevision(changeset);
+      //
+      padMessage.updatePadClients(pad, function ()
+      {
+      });
+      callback(null, null);
+    });
+
+  });
+};
 
 /**
 copyPad(sourceID, destinationID[, force=false]) copies a pad. If force is true, 

@@ -97,6 +97,32 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   },
   
   /*
+    Gets all attributes on a line
+    @param lineNum: the number of the line to set the attribute for 
+  */
+  getAttributesOnLine: function(lineNum){
+    // get attributes of first char of line
+    var aline = this.rep.alines[lineNum];
+    var attributes = []
+    if (aline)
+    {
+      var opIter = Changeset.opIterator(aline)
+        , op
+      if (opIter.hasNext())
+      {
+        op = opIter.next()
+        if(!op.attribs) return []
+        
+        Changeset.eachAttribNumber(op.attribs, function(n) {
+          attributes.push([this.rep.apool.getAttribKey(n), this.rep.apool.getAttribValue(n)])
+        }.bind(this))
+        return attributes;
+      }
+    }
+    return [];
+  },
+  
+  /*
     Sets a specified attribute on a line
     @param lineNum: the number of the line to set the attribute for
     @param attributeKey: the name of the attribute to set, e.g. list
@@ -134,14 +160,21 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
 
    */
    removeAttributeOnLine: function(lineNum, attributeName, attributeValue){
-     
      var loc = [0,0];
      var builder = Changeset.builder(this.rep.lines.totalWidth());
      var hasMarker = this.lineHasMarker(lineNum);
+     var attribs
      
+     attribs = this.getAttributesOnLine(lineNum).map(function(attrib) {
+       if(attrib[0] === attributeName) return [attributeName, null]
+       return attrib
+     })
+
      if(hasMarker){
        ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
-       ChangesetUtils.buildRemoveRange(this.rep, builder, loc, (loc = [lineNum, 1]));
+       // If length == 4, there's [author, lmkr, insertorder, + the attrib being removed] thus we can remove the marker entirely
+       if(attribs.length <= 4) ChangesetUtils.buildRemoveRange(this.rep, builder, loc, (loc = [lineNum, 1]))
+       else ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 1]), attribs, this.rep.apool);
      }
      
      return this.applyChangeset(builder);

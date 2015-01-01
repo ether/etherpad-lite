@@ -36,8 +36,9 @@ hash npm > /dev/null 2>&1 || {
 
 #check npm version
 NPM_VERSION=$(npm --version)
-if [ ! $(echo $NPM_VERSION | cut -d "." -f 1) = "1" ]; then
-  echo "You're running a wrong version of npm, you're using $NPM_VERSION, we need 1.x" >&2
+NPM_MAIN_VERSION=$(echo $NPM_VERSION | cut -d "." -f 1)
+if [ $(echo $NPM_MAIN_VERSION) = "0" ]; then
+  echo "You're running a wrong version of npm, you're using $NPM_VERSION, we need 1.x or higher" >&2
   exit 1 
 fi
 
@@ -98,7 +99,7 @@ fi
 echo "Clear minfified cache..."
 rm -f var/minified*
 
-echo "ensure custom css/js files are created..."
+echo "Ensure custom css/js files are created..."
 
 for f in "index" "pad" "timeslider"
 do

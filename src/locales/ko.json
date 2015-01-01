@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Hym411",
-			"아라"
+			"아라",
+			"Revi"
 		]
 	},
 	"index.newPad": "새 패드",
@@ -10,14 +11,14 @@
 	"pad.toolbar.bold.title": "굵게 (Ctrl-B)",
 	"pad.toolbar.italic.title": "기울임 (Ctrl-I)",
 	"pad.toolbar.underline.title": "밑줄 (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "취소선",
-	"pad.toolbar.ol.title": "순서 있는 목록",
-	"pad.toolbar.ul.title": "순서 없는 목록",
+	"pad.toolbar.strikethrough.title": "취소선 (Ctrl+5)",
+	"pad.toolbar.ol.title": "순서 있는 목록 (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "순서 없는 목록 (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "들여쓰기 (TAB)",
 	"pad.toolbar.unindent.title": "내어쓰기 (Shift+TAB)",
 	"pad.toolbar.undo.title": "실행 취소 (Ctrl-Z)",
 	"pad.toolbar.redo.title": "다시 실행 (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "저자의 색 지우기",
+	"pad.toolbar.clearAuthorship.title": "저자의 색 지우기 (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "다른 파일 형식으로 가져오기/내보내기",
 	"pad.toolbar.timeslider.title": "시간슬라이더",
 	"pad.toolbar.savedRevision.title": "판 저장",
@@ -50,7 +51,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "일반 텍스트나 html 형식으로만 가져올 수 있습니다. 고급 가져오기 기능에 대해서는 <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">abiword를 설치</a>하세요.",
 	"pad.modals.connected": "연결했습니다.",
 	"pad.modals.reconnecting": "패드에 다시 연결 중..",

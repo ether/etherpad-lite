@@ -140,14 +140,24 @@ var padeditbar = (function()
     init: function() {
       var self = this;
       self.dropdowns = [];
-      
+      // Listen for resize events (sucks but needed as iFrame ace_inner has to be position absolute
+      // A CSS fix for this would be nice but I'm not sure how we'd do it.
+      $(window).resize(function(){
+        self.redrawHeight();
+      });
+
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
       $("#editbar [data-key]").each(function () {
+        $(this).unbind("click");
         (new ToolbarItem($(this))).bind(function (command, item) {
           self.triggerCommand(command, item);
         });
       });
+
+      $('#editbar').show();
+
+      this.redrawHeight();
 
       registerDefaultCommands(self);
 
@@ -169,6 +179,16 @@ var padeditbar = (function()
     registerCommand: function (cmd, callback) {
       this.commands[cmd] = callback;
       return this;
+    },
+    redrawHeight: function(){
+      var editbarHeight = $('.menu_left').height() + 1 + "px";
+      var containerTop = $('.menu_left').height() + 6 + "px";
+      $('#editbar').css("height", editbarHeight);
+
+      $('#editorcontainer').css("top", containerTop);
+      if($('#options-stickychat').is(":checked")){
+        $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
+      };
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
@@ -206,7 +226,7 @@ var padeditbar = (function()
 
           if(module.css('display') != "none")
           {
-            $("#" + self.dropdowns[i] + "link").removeClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
             module.slideUp("fast", cb);
             returned = true;
           }
@@ -223,12 +243,12 @@ var padeditbar = (function()
 
           if(module.css('display') != "none")
           {
-            $("#" + self.dropdowns[i] + "link").removeClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
             module.slideUp("fast");
           }
           else if(self.dropdowns[i]==moduleName)
           {
-            $("#" + self.dropdowns[i] + "link").addClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").addClass("selected");
             module.slideDown("fast", cb);
           }
         }
@@ -271,7 +291,7 @@ var padeditbar = (function()
     toolbar.registerDropdownCommand("showusers", "users");
     toolbar.registerDropdownCommand("settings");
     toolbar.registerDropdownCommand("connectivity");
-    toolbar.registerDropdownCommand("import_export", "importexport");
+    toolbar.registerDropdownCommand("import_export");
     toolbar.registerDropdownCommand("embed");
 
     toolbar.registerCommand("embed", function () {
