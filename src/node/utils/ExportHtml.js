@@ -495,12 +495,62 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";'+
             'counter-increment: sixth;}' +
 
+            'ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";'+
+            'counter-increment: seventh;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) ". ";'+
+            'counter-increment: eigth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eight) "." counter(ninth) ". ";'+
+            'counter-increment: ninth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) ". ";'+
+            'counter-increment: tenth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";'+
+            'counter-increment: eleventh;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) ". ";'+
+            'counter-increment: twelth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) ". ";'+
+            'counter-increment: thirteenth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) "." counter(fourteenth) ". ";'+
+            'counter-increment: fourteenth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "."  counter(eigth) "."  counter(ninth) "."  counter(tenth) "."  counter(eleventh) "."  counter(twelth) "."  counter(thirteenth) "."  counter(fourteenth) "." counter(fifteenth) ". ";'+
+            'counter-increment: fifteenth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "."  counter(eigth) "."  counter(ninth) "."  counter(tenth) "."  counter(eleventh) "."  counter(twelth) "."  counter(thirteenth) "."  counter(fourteenth) "."  counter(fifteenth) "."  counter(sixthteenth) ". ";'+
+            'counter-increment: sixthteenth;}' +
+
             'ol{ text-indent: 0px; }' +
             'ol > ol{ text-indent: 10px; }' +
             'ol > ol > ol{ text-indent: 20px; }' +
             'ol > ol > ol > ol{ text-indent: 30px; }' +
             'ol > ol > ol > ol > ol{ text-indent: 40px; }' +
             'ol > ol > ol > ol > ol > ol{ text-indent: 50px; }' +
+            'ol > ol > ol > ol > ol > ol > ol{ text-indent: 60px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 70px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 80px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 90px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 100px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 110px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol { text-indent: 120px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 130px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 140px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 150px; }' +
 
             stylesForExportCSS + 
             '</style>\n' + '</head>\n') + 

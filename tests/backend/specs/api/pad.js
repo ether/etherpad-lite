@@ -350,7 +350,6 @@ describe('getText', function(){
   it('Gets text on a pad Id', function(done) {
     api.get(endPoint('getText')+"&padID="+newPadId)
     .expect(function(res){
-      console.log(res.body.data.text);
       if(res.body.data.text !== text+"\n") throw new Error("Pad Get Text failed")
     })
     .expect('Content-Type', /json/)

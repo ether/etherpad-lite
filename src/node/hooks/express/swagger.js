@@ -355,7 +355,17 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     args.app.use(basePath, subpath);
 
-    swagger.setAppHandler(subpath);
+    //hack!
+    var swagger_temp = swagger
+    swagger = swagger.createNew(subpath);
+    swagger.params = swagger_temp.params
+    swagger.queryParam = swagger_temp.queryParam
+    swagger.pathParam = swagger_temp.pathParam
+    swagger.bodyParam = swagger_temp.bodyParam
+    swagger.formParam = swagger_temp.formParam
+    swagger.headerParam = swagger_temp.headerParam
+    swagger.error = swagger_temp.error
+    //swagger.setAppHandler(subpath);
 
     swagger.addModels(swaggerModels);
 

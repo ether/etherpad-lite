@@ -236,6 +236,19 @@ exports.reloadSettings = function reloadSettings() {
   process.env['DEBUG'] = 'socket.io:' + exports.loglevel; // Used by SocketIO for Debug
   log4js.replaceConsole();
 
+  if(exports.abiword){
+    // Check abiword actually exists
+    if(exports.abiword != null)
+    {
+      fs.exists(exports.abiword, function(exists) {
+        if (!exists) {
+          console.error("Abiword does not exist at this path, check your settings file");
+          exports.abiword = null;
+        }
+      });
+    }
+  }
+
   if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here
     exports.sessionKey = randomString(32);
     console.warn("You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts");

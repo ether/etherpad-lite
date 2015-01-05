@@ -5052,6 +5052,7 @@ function Ace2Inner(){
   {
     if(listType == ''){
       documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
+      documentAttributeManager.removeAttributeOnLine(lineNum, 'start');
     }else{
       documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType);
     }
