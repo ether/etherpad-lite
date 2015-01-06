@@ -158,8 +158,12 @@ exports.doExport = function(req, res, padId, type)
             //if this is a html export, we can send this from here directly
             if(type == "html")
             {
-              res.send(html);
-              callback("stop");  
+              // do any final changes the plugin might want to make cake
+              hooks.aCallFirst("exportHTMLSend", html, function(err, newHTML){
+                if(newHTML.length) html = newHTML;
+                res.send(html);
+                callback("stop");  
+              });
             }
             else //write the html export to a file
             {
