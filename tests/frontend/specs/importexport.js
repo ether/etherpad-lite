@@ -6,6 +6,9 @@ describe("import functionality", function(){
 
   function getinnertext(){
     var inner = helper.padInner$
+    if(!inner){
+      return ""
+    }
     var newtext = ""
     inner("div").each(function(line,el){
       newtext += el.innerHTML+"\n"
