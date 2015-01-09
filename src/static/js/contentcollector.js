@@ -538,7 +538,16 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
             if(rr && rr[1]){
               type = rr[1]
             } else {
-              type = (tname == "ul" ? (type.match("indent") || node.attribs.class && node.attribs.class.match("indent") ? "indent" : "bullet") : "number") + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
+              if(tname == "ul"){
+                if((type && type.match("indent")) || (node.attribs && node.attribs.class && node.attribs.class.match("indent"))){
+                  type = "indent"
+                } else {
+                  type = "bullet"
+                }
+              } else {
+                type = "number"
+              }
+              type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             }
             oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
