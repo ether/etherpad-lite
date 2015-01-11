@@ -2316,19 +2316,25 @@ function Ace2Inner(){
 
     // get the previous/next characters formatting when we have nothing selected
     // To fix this we just change the focus area, we don't actually check anything yet.
-    if(rep.selStart[1] == rep.selEnd[1]){
+    // if we're not actually highlighting anything, we just know caret position
+    if(rep.selStart[1] == rep.selEnd[1] && rep.selStart[0] == rep.selEnd[0]){
+
       // if we're at the beginning of a line bump end forward so we get the right attribute
       if(rep.selStart[1] == 0 && rep.selEnd[1] == 0){
         rep.selEnd[1] = 1;
       }
-      if(rep.selStart[1] < 0){
-        rep.selStart[1] = 0;
-      }
+
+      // if we're at the end of the line bump the start back 1 so we get hte attribute
       var line = rep.lines.atIndex(rep.selStart[0]);
-      // if we're at the end of the line bmp the start back 1 so we get hte attribute
       if(rep.selEnd[1] == line.text.length){
         rep.selStart[1] = rep.selStart[1] -1;
       }
+
+      // selStart[1] should never be less than 0 but if it is make it 0
+      if(rep.selStart[1] < 0){
+        rep.selStart[1] = 0;
+      }
+
     }
 
     // Do the detection
