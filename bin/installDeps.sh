@@ -23,6 +23,7 @@ hash curl > /dev/null 2>&1 || {
 }
 
 #Is node installed?
+#not checking io.js, default installation creates a symbolic link to node
 hash node > /dev/null 2>&1 || { 
   echo "Please install node.js ( http://nodejs.org )" >&2
   exit 1 
@@ -45,9 +46,13 @@ fi
 #check node version
 NODE_VERSION=$(node --version)
 NODE_V_MINOR=$(echo $NODE_VERSION | cut -d "." -f 1-2)
+#iojs version checking added
+IOJS_VERSION=$(iojs --version)
 if [ ! $NODE_V_MINOR = "v0.8" ] && [ ! $NODE_V_MINOR = "v0.10" ] && [ ! $NODE_V_MINOR = "v0.11" ]; then
-  echo "You're running a wrong version of node, you're using $NODE_VERSION, we need v0.8.x, v0.10.x or v0.11.x" >&2
-  exit 1 
+  if [ ! $IOJS_VERSION ]; then
+    echo "You're running a wrong version of node, or io.js is not installed. You're using $NODE_VERSION, we need v0.8.x, v0.10.x or v0.11.x" >&2
+    exit 1 
+  fi
 fi
 
 #Get the name of the settings file
