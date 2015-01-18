@@ -181,6 +181,7 @@ $(document).ready(function () {
 
   socket.on('results:search', function (data) {
     if(!data.results.length) search.end = true;
+    if(data.query.offset == 0) search.results = [];
     search.messages.hide('nothing-found')
     search.messages.hide('fetching')
     $("#search-query").removeAttr('disabled')
