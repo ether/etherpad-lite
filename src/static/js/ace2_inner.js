@@ -3867,7 +3867,10 @@ function Ace2Inner(){
             updateBrowserSelectionFromRep();
             var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
             var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
-            // top.console.log(caretOffsetTop);
+
+            // sometimes the first selection is -1 which causes problems (Especially with ep_page_view)
+            // so use focusNode.offsetTop value.
+            if(caretOffsetTop === -1) caretOffsetTop = myselection.focusNode.offsetTop;
             setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
 
           }, 200);
