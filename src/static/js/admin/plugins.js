@@ -131,6 +131,11 @@ $(document).ready(function () {
     $("#search-query").unbind('keyup').keyup(function () {
       search($("#search-query").val());
     });
+    
+    // Prevent form submit
+    $('#search-query').parent().bind('submit', function() {
+      return false;
+    });
 
     // update & install
     $(".do-install, .do-update").unbind('click').click(function (e) {
