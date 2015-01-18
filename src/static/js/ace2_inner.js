@@ -4858,6 +4858,14 @@ function Ace2Inner(){
       $(document).on("click", handleIEOuterClick);
     }
     if (browser.msie) $(root).on("paste", handleIEPaste);
+
+    // Don't paste on middle click of links
+    $(root).on("paste", function(e){
+      if(e.target.a){
+        e.preventDefault();
+      }
+    })
+
     // CompositionEvent is not implemented below IE version 8
     if ( !(browser.msie && browser.version < 9) && document.documentElement)
     {
