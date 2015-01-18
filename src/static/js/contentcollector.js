@@ -23,7 +23,7 @@
  * limitations under the License.
  */
 
-var _MAX_LIST_LEVEL = 8;
+var _MAX_LIST_LEVEL = 16;
 
 var UNorm = require('unorm');
 var Changeset = require('./Changeset');
@@ -523,7 +523,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
             }else{
               var type = null;
             }
-            var rr = cls && /(?:^| )list-([a-z]+[12345678])\b/.exec(cls);
+            var rr = cls && /(?:^| )list-([a-z]+[0-9]+)\b/.exec(cls);
             // lists do not need to have a type, so before we make a wrong guess, check if we find a better hint within the node's children
             if(!rr && !type){
               for (var i in node.children){
