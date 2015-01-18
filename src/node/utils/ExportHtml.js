@@ -470,7 +470,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'ul.indent { list-style-type: none; }' +
 
             'ol { list-style-type: none; padding-left:0;}' +
-            'body > ol { counter-reset: first second; }' +
+            'body > ol { counter-reset: first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelth thirteenth fourteenth fifteenth sixteenth; }' +
             'ol > li:before {' +
             'content: counter(first) ". " ;'+
             'counter-increment: first;}' +
