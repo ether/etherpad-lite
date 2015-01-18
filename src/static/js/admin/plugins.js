@@ -131,6 +131,11 @@ $(document).ready(function () {
     $("#search-query").unbind('keyup').keyup(function () {
       search($("#search-query").val());
     });
+    
+    // Prevent form submit
+    $('#search-query').parent().bind('submit', function() {
+      return false;
+    });
 
     // update & install
     $(".do-install, .do-update").unbind('click').click(function (e) {
@@ -176,6 +181,7 @@ $(document).ready(function () {
 
   socket.on('results:search', function (data) {
     if(!data.results.length) search.end = true;
+    if(data.query.offset == 0) search.results = [];
     search.messages.hide('nothing-found')
     search.messages.hide('fetching')
     $("#search-query").removeAttr('disabled')
