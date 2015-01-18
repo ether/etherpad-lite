@@ -26,12 +26,11 @@ $(document).ready(function () {
     
     $('#search-progress').show()
     search.messages.show('fetching')
-    storeScrollPosition()
     search.searching = true
   }
   search.searching = false;
   search.offset = 0;
-  search.limit = 25;
+  search.limit = 999;
   search.results = [];
   search.sortBy = 'name';
   search.sortDir = /*DESC?*/true;
@@ -43,7 +42,7 @@ $(document).ready(function () {
       $('.search-results .messages .'+msg+' *').show()
     },
     hide: function(msg) {
-      //$('.search-results .messages').hide()
+      $('.search-results .messages').hide()
       $('.search-results .messages .'+msg+'').hide()
       $('.search-results .messages .'+msg+' *').hide()
     }
@@ -102,28 +101,6 @@ $(document).ready(function () {
       // a must be equal to b
       return 0;
     })
-  }
-
-  // Infinite scroll
-  var scrollPosition
-  function storeScrollPosition() {
-    scrollPosition = $(window).scrollTop()
-  }
-  function restoreScrollPosition() {
-    setTimeout(function() {
-      $(window).scrollTop(scrollPosition)
-    }, 0)
-  }
-  
-  $(window).scroll(checkInfiniteScroll)
-  function checkInfiniteScroll() {
-    if(search.end || search.searching) return;// don't keep requesting if there are no more results
-    setTimeout(function() {
-      try{
-        var top = $('.results>tr:last').offset().top
-        if($(window).scrollTop()+$(window).height() > top) search(search.searchTerm)
-      }catch(e){}
-    }, 1)
   }
 
   function updateHandlers() {
@@ -209,8 +186,6 @@ $(document).ready(function () {
     }
     search.messages.hide('fetching')
     $('#search-progress').hide()
-    restoreScrollPosition()
-    checkInfiniteScroll()
     search.searching = false
   });
 
