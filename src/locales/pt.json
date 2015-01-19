@@ -6,7 +6,8 @@
 			"Tuliouel",
 			"Waldir",
 			"Imperadeiro98",
-			"Macofe"
+			"Macofe",
+			"Ti4goc"
 		]
 	},
 	"index.newPad": "Nova Nota",
@@ -105,6 +106,7 @@
 	"pad.impexp.importbutton": "Importar agora",
 	"pad.impexp.importing": "Importando...",
 	"pad.impexp.confirmimport": "A importação de um ficheiro irá substituir o texto atual do pad. Tem certeza que deseja continuar?",
+	"pad.impexp.padHasData": "Não fomos capazes de importar este ficheiro porque esta Almofada já tinha alterações, consulte importar para um novo bloco",
 	"pad.impexp.uploadFailed": "O upload falhou. Por favor, tente novamente",
 	"pad.impexp.importfailed": "A importação falhou",
 	"pad.impexp.copypaste": "Por favor, copie e cole"

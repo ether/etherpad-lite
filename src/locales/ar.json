@@ -3,7 +3,8 @@
 		"authors": [
 			"Ali1",
 			"Tux-tn",
-			"Alami"
+			"Alami",
+			"Meno25"
 		]
 	},
 	"index.newPad": "باد جديد",
@@ -11,14 +12,14 @@
 	"pad.toolbar.bold.title": "سميك (Ctrl-B)",
 	"pad.toolbar.italic.title": "مائل (Ctrl-I)",
 	"pad.toolbar.underline.title": "تسطير (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "شطب",
-	"pad.toolbar.ol.title": "قائمة مرتبة",
-	"pad.toolbar.ul.title": "قائمة غير مرتبة",
+	"pad.toolbar.strikethrough.title": "شطب (Ctrl+5)",
+	"pad.toolbar.ol.title": "قائمة مرتبة (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "قائمة غير مرتبة (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "إزاحة",
 	"pad.toolbar.unindent.title": "حذف الإزاحة",
 	"pad.toolbar.undo.title": "فك (Ctrl-Z)",
 	"pad.toolbar.redo.title": "تكرار (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "مسح ألوان التأليف",
+	"pad.toolbar.clearAuthorship.title": "مسح ألوان التأليف (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "استيراد/تصدير من/إلى تنسيقات ملفات مختلفة",
 	"pad.toolbar.timeslider.title": "متصفح التاريخ",
 	"pad.toolbar.savedRevision.title": "حفظ المراجعة",
@@ -46,6 +47,7 @@
 	"pad.importExport.import": "تحميل أي ملف نصي أو وثيقة",
 	"pad.importExport.importSuccessful": "ناجح!",
 	"pad.importExport.export": "تصدير الباد الحالي بصفة:",
+	"pad.importExport.exportetherpad": "إيثرباد",
 	"pad.importExport.exporthtml": "إتش تي إم إل",
 	"pad.importExport.exportplain": "نص عادي",
 	"pad.importExport.exportword": "مايكروسوفت وورد",

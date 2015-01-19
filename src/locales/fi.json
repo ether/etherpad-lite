@@ -10,7 +10,8 @@
 			"Tomi Toivio",
 			"Veikk0.ma",
 			"VezonThunder",
-			"Macofe"
+			"Macofe",
+			"MrTapsa"
 		]
 	},
 	"index.newPad": "Uusi muistio",
@@ -35,6 +36,7 @@
 	"pad.colorpicker.save": "Tallenna",
 	"pad.colorpicker.cancel": "Peru",
 	"pad.loading": "Ladataan…",
+	"pad.noCookie": "Evästettä ei löytynyt. Ole hyvä, ja salli evästeet selaimessasi!",
 	"pad.passwordRequired": "Tämä muistio on suojattu salasanalla.",
 	"pad.permissionDenied": "Käyttöoikeutesi eivät riitä tämän muistion käyttämiseen.",
 	"pad.wrongPassword": "Väärä salasana",

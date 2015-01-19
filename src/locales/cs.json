@@ -48,6 +48,7 @@
 	"pad.importExport.import": "Nahrát libovolný textový soubor nebo dokument",
 	"pad.importExport.importSuccessful": "Úspěšně!",
 	"pad.importExport.export": "Exportovat stávající Pad jako:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Prostý text",
 	"pad.importExport.exportword": "Microsoft Word",
