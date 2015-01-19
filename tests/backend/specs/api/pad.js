@@ -319,6 +319,18 @@ describe('getHTML', function(){
   // </ul>
   // It will look right in the browser but the export will get it horriby wrong
 
+  // This is what the export puts out
+  // <ul class="bullet">
+  //  <li>one</li>
+  //  <li>2</li>
+  // </ul>
+  // <br>
+  // <ul class="bullet">
+  // NOTE THIS IS WHAT'S MISSING
+  //   <li>UL2</li>
+  // </ul>
+  // <br>
+
   it('Gets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
     api.get(endPoint('getHTML')+"&padID=test")
     .expect(function(res){
