@@ -399,6 +399,7 @@ describe('setHTML', function(){
     var html = "<div><b>Hello HTML</title></head></div>";
     api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
     .expect(function(res){
+console.log(res.body.code);
       if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
     })
     .expect('Content-Type', /json/)
@@ -418,35 +419,6 @@ describe('setHTML', function(){
 })
 
 describe('getHTML', function(){
-  // will fail due to https://github.com/ether/etherpad-lite/issues/1604
-  // reminder to self this is how the HTML looks
-  // <ul>
-  //   <li>one</li>
-  //   <li>2</li>
-  // </ul>
-  // <br>
-  // <ul class="bullet">
-  //   <ul class="bullet">
-  //     <li>UL2</li>
-  //   </ul>
-  // </ul>
-  // It will look right in the browser but the export will get it horriby wrong
-
-  // This is what the export puts out
-  // <!DOCTYPE HTML><html><body>
-  // <ul class="bullet">
-  //   <li>one</li>
-  //   <li>2</li>
-  // </ul>
-  // <br>
-  // <ul>
-  //   <ul class="bullet">
-  //     <li>UL2</li>
-  //   </ul>
-  // </ul>
-  // <br>
-  // </body></html>
-
   it('Gets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
     api.get(endPoint('getHTML')+"&padID="+testPadId)
     .expect(function(res){
