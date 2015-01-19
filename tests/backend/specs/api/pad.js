@@ -12,6 +12,7 @@ var apiVersion = 1;
 var testPadId = makeid();
 var lastEdited = "";
 var text = generateLongText();
+var ULhtml = '<!DOCTYPE html><html><body><ul class="bullet"><li>one</li><li>2</li></ul><br><ul class="bullet"><ul class="bullet"><li>UL2</li></ul></ul></body></html>';
 
 describe('Connectivity', function(){
   it('errors if can not connect', function(done) {
@@ -71,6 +72,9 @@ describe('Permission', function(){
                        -> movePad(newPadID, originalPadId) -- Should provide consistant pad data
                         -> getText(originalPadId) -- Should be "hello world"
                          -> getLastEdited(padID) -- Should not be 0
+                          -> setHTML(padID) -- Should fail on invalid HTML
+                           -> setHTML(padID) *3 -- Should fail on invalid HTML
+                            -> getHTML(padID) -- Should return HTML close to posted HTML
 
 */
 
@@ -389,6 +393,69 @@ describe('getLastEdited', function(){
     .expect(200, done)
   });
 })
+
+
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
+    var html = "<div><b>Hello HTML</title></head></div>";
+    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
+    .expect(function(res){
+      if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
+    api.get(endPoint('setHTML')+"&padID=test&html="+ULhtml)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("List HTML cant be imported")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getHTML', function(){
+  // will fail due to https://github.com/ether/etherpad-lite/issues/1604
+  // reminder to self this is how the HTML looks
+  // <ul>
+  //   <li>one</li>
+  //   <li>2</li>
+  // </ul>
+  // <br>
+  // <ul class="bullet">
+  //   <ul class="bullet">
+  //     <li>UL2</li>
+  //   </ul>
+  // </ul>
+  // It will look right in the browser but the export will get it horriby wrong
+
+  // This is what the export puts out
+  // <ul class="bullet">
+  //  <li>one</li>
+  //  <li>2</li>
+  // </ul>
+  // <br>
+  // <ul class="bullet">
+  // NOTE THIS IS WHAT'S MISSING
+  //   <li>UL2</li>
+  // </ul>
+  // <br>
+
+  it('Gets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
+    api.get(endPoint('getHTML')+"&padID=test")
+    .expect(function(res){
+      console.log(res.body.data.html);
+      if(res.body.data !== ULhtml) throw new Error("Imported HTML does not match served HTML")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
 
 /*
                           -> movePadForce Test

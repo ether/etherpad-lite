@@ -40,7 +40,7 @@ function setPadHTML(pad, html, callback)
     cc.collectContent(doc);
   }catch(e){
     apiLogger.warn("HTML was not properly formed", e);
-    return; // We don't process the HTML because it was bad..
+    return callback(e); // We don't process the HTML because it was bad..
   }
 
   var result = cc.finish();
