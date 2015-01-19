@@ -420,10 +420,6 @@ exports.setHTML = function(padID, html, callback)
         return;
       }
     });
-
-    //update the clients on the pad
-    padMessageHandler.updatePadClients(pad, callback);
-
   });
 }
 
