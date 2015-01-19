@@ -1910,6 +1910,7 @@ function Ace2Inner(){
     if (charsLeft === 0)
     {
       var index = 0;
+      browser.msie = false; // Temp fix to resolve enter and backspace issues..
       if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0)
       {
         // best to stay at end of last empty div in IE
@@ -2905,7 +2906,6 @@ function Ace2Inner(){
   {
     if (browser.msie && (!nonEmpty))
     {
-top.console.log("here");
       var result = {
         node: null,
         appendSpan: noop,
