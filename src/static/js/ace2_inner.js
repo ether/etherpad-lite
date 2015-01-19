@@ -1605,7 +1605,7 @@ function Ace2Inner(){
 
         if (linesWrapped > 0)
         {
-          if(!browser.ie){
+          if(!browser.msie){
             // chrome decides in it's infinite wisdom that its okay to put the browsers visisble window in the middle of the span
             // an outcome of this is that the first chars of the string are no longer visible to the user..  Yay chrome..
             // Move the browsers visible area to the left hand side of the span
@@ -2905,6 +2905,7 @@ function Ace2Inner(){
   {
     if (browser.msie && (!nonEmpty))
     {
+top.console.log("here");
       var result = {
         node: null,
         appendSpan: noop,
@@ -3583,6 +3584,7 @@ function Ace2Inner(){
     // On Mac and Linux, move right moves to end of word and move left moves to start;
     // on Windows, always move to start of word.
     // On Windows, Firefox and IE disagree on whether to stop for punctuation (FF says no).
+    /*
     if (browser.windows && forwardNotBack)
     {
       while ((!isDone()) && isWordChar(nextChar()))
@@ -3605,6 +3607,7 @@ function Ace2Inner(){
         advance();
       }
     }
+    */
 
     return i;
   }
@@ -4867,7 +4870,7 @@ function Ace2Inner(){
     })
 
     // CompositionEvent is not implemented below IE version 8
-    if ( !(browser.msie && browser.version < 9) && document.documentElement)
+    if ( !(browser.msie && parseInt(browser.version) < 9) && document.documentElement)
     {
       $(document.documentElement).on("compositionstart", handleCompositionEvent);
       $(document.documentElement).on("compositionend", handleCompositionEvent);
