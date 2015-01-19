@@ -32,6 +32,7 @@
   "pad.settings.padSettings": "Pad Settings",
   "pad.settings.myView": "My View",
   "pad.settings.stickychat": "Chat always on screen",
+  "pad.settings.chatAndUsers": "Show Chat and Users",
   "pad.settings.colorcheck": "Authorship colors",
   "pad.settings.linenocheck": "Line numbers",
   "pad.settings.rtlcheck": "Read content from right to left?",

@@ -914,6 +914,17 @@ input[type=checkbox] {
   border-left: 1px solid #ccc !important;
   width: 185px !important;
 }
+.chatAndUsers{
+  display:block !important;
+  right:0px !important;
+  border-radius:0px !important;
+  height:185px !important;
+  width:180px !important;
+}
+.chatAndUsersChat{
+  top:300px !important;
+}
+
 @media screen and (max-width: 600px) {
   .toolbar ul li.separator {
     display: none;
