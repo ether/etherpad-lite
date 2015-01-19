@@ -232,11 +232,9 @@ exports.doImport = function(req, res, padId)
       if(!directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
         if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
-          try{
-            importHtml.setPadHTML(pad, text);
-          }catch(e){
-            apiLogger.warn("Error importing, possibly caused by malformed HTML");
-          }
+          importHtml.setPadHTML(pad, text, function(e){
+            if(e) apiLogger.warn("Error importing, possibly caused by malformed HTML");
+          });
         } else {
           pad.setText(text);
         }
