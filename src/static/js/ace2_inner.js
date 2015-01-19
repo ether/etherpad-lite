@@ -5106,7 +5106,7 @@ function Ace2Inner(){
     {
       return null;
     }
-    type = /([a-z]+)[0-9+]/.exec(type);
+    type = /([a-z]+)[0-9]+/.exec(type);
     if(type[1] == "indent")
     {
       return null;
@@ -5115,7 +5115,7 @@ function Ace2Inner(){
     //2-find the first line of the list
     while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
     {
-      type = /([a-z]+)[0-9+]/.exec(type);
+      type = /([a-z]+)[0-9]+/.exec(type);
       if(type[1] == "indent")
         break;
       lineNum--;
@@ -5135,7 +5135,7 @@ function Ace2Inner(){
       while(listType = getLineListType(line))
       {
         //apply new num
-        listType = /([a-z]+)([0-9+])/.exec(listType);
+        listType = /([a-z]+)([0-9]+)/.exec(listType);
         curLevel = Number(listType[2]);
         if(isNaN(curLevel) || listType[0] == "indent")
         {
