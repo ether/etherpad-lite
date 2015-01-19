@@ -394,7 +394,6 @@ describe('getLastEdited', function(){
   });
 })
 
-
 describe('setHTML', function(){
   it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
     var html = "<div><b>Hello HTML</title></head></div>";
@@ -409,7 +408,7 @@ describe('setHTML', function(){
 
 describe('setHTML', function(){
   it('Sets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
-    api.get(endPoint('setHTML')+"&padID=test&html="+ULhtml)
+    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+ULhtml)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("List HTML cant be imported")
     })
@@ -446,9 +445,9 @@ describe('getHTML', function(){
   // <br>
 
   it('Gets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
-    api.get(endPoint('getHTML')+"&padID=test")
+    api.get(endPoint('getHTML')+"&padID="+testPadId)
     .expect(function(res){
-      console.log(res.body.data.html);
+      console.log("foo", res.body.data.html);
       if(res.body.data !== ULhtml) throw new Error("Imported HTML does not match served HTML")
     })
     .expect('Content-Type', /json/)
