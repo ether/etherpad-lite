@@ -62,8 +62,8 @@ function init() {
     var resource = exports.baseURL.substring(1) + 'socket.io';
     
     //build up the socket io connection
-    socket = io.connect(url, {resource: resource});
-
+    socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
+    
     //send the ready message once we're connected
     socket.on('connect', function()
     {

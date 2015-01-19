@@ -5,7 +5,8 @@
 			"Ty221",
 			"WTM",
 			"Woytecr",
-			"Macofe"
+			"Macofe",
+			"Pan Cube"
 		]
 	},
 	"index.newPad": "Nowy dokument",
@@ -48,6 +49,7 @@
 	"pad.importExport.import": "Prześlij dowolny plik tekstowy lub dokument",
 	"pad.importExport.importSuccessful": "Sukces!",
 	"pad.importExport.export": "Eksportuj bieżący dokument jako:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Zwykły tekst",
 	"pad.importExport.exportword": "Microsoft Word",
