@@ -60,8 +60,6 @@ function init() {
     var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
     //find out in which subfolder we are
     var resource = exports.baseURL.substring(1) + 'socket.io';
-
-    console.log(exports.baseURL);
     
     //build up the socket io connection
     socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
