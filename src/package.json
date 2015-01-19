@@ -11,7 +11,7 @@
                       { "name": "Marcel Klehr" }
                      ],
   "dependencies"   : {
-                      "etherpad-yajsml"         : ">=0.0.1",
+                      "etherpad-yajsml"         : ">=0.0.2",
                       "request"                 : ">=2.48.0",
                       "etherpad-require-kernel" : ">=1.0.7",
                       "resolve"                 : ">=1.0.0",
