@@ -46,6 +46,12 @@ Now, run `start.bat` and open <http://localhost:9001> in your browser.
 
 Update to the latest version with `git pull origin`, then run `bin\installOnWindows.bat`, again.
 
+If cloning to a subdirectory within another project, you may need to do the following:
+
+1. Start the server manually (e.g. `node/node_modules/ep_etherpad-lite/node/server.js]`)
+2. Edit the db `filename` in `settings.json` to the relative directory with the file (e.g. `application/lib/etherpad-lite/var/dirty.db`)
+3. Add auto-generated files to the main project `.gitignore`
+
 [Next steps](#next-steps).
 
 ## GNU/Linux and other UNIX-like systems
