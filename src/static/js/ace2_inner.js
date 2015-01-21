@@ -28,6 +28,7 @@ if(browser.msie){
   if(parseInt(browser.version) >= 11){
     delete browser.msie;
     browser.chrome = true;
+    browser.modernIE = true;
   }
 }
 
