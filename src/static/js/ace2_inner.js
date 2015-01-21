@@ -21,6 +21,15 @@
  */
 var _, $, jQuery, plugins, Ace2Common, mybrowser;
 mybrowser = require('./browser').browser;
+
+if(mybrowser.msie){
+  // Honestly fuck IE royally.
+  // Basically every hack we have since V11 causes a problem
+  if(parseInt(mybrowser.version) >= 11){
+    delete mybrowser.msie;
+    mybrowser.firefox = true;
+  }
+}
 Ace2Common = require('./ace2_common');
 
 plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
@@ -1311,9 +1320,7 @@ function Ace2Inner(){
     else
     {
       var offsetIntoLine = 0;
-mybrowser.msie = false; // cake 1
       var filteredFunc = linestylefilter.getFilterStack(text, textAndClassFunc, mybrowser);
-mybrowser.msie = true;
       var lineNum = rep.lines.indexOfEntry(lineEntry);
       var aline = rep.alines[lineNum];
       filteredFunc = linestylefilter.getLineStyleFilter(
@@ -1355,7 +1362,7 @@ mybrowser.msie = true;
     // (from how it looks in our representation) and record them in a way
     // that can be used to "normalize" the document (apply the changes to our
     // representation, and put the DOM in a canonical form).
-    //top.console.log("observeChangesAroundNode(%o)", node);
+    // top.console.log("observeChangesAroundNode(%o)", node);
     var cleanNode;
     var hasAdjacentDirtyness;
     if (!isNodeDirty(node))
@@ -1561,10 +1568,7 @@ mybrowser.msie = true;
       lastDirtyNode = (lastDirtyNode && isNodeDirty(lastDirtyNode) && lastDirtyNode);
       if (firstDirtyNode && lastDirtyNode)
       {
-// cake 2
-mybrowser.msie = false;
         var cc = makeContentCollector(isStyled, mybrowser, rep.apool, null, className2Author);
-mybrowser.msie = true;
         cc.notifySelection(selection);
         var dirtyNodes = [];
         for (var n = firstDirtyNode; n && !(n.previousSibling && n.previousSibling == lastDirtyNode);
@@ -2964,15 +2968,11 @@ mybrowser.msie = true;
       {
         return "";
       };
-
       return result;
     }
     else
     {
-      // cake 3
-mybrowser.msie = false;
       return domline.createDomLine(nonEmpty, doesWrap, mybrowser, doc);
-mybrowser.msie = true;
     }
   }
 
@@ -3632,7 +3632,6 @@ mybrowser.msie = true;
       evt.preventDefault();
       return;
     }
-
     // Is caret potentially hidden by the chat button?
     var myselection = document.getSelection(); // get the current caret selection
     var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
@@ -3669,8 +3668,7 @@ mybrowser.msie = true;
 
     var specialHandled = false;
     var isTypeForSpecialKey = ((mybrowser.msie || mybrowser.safari || mybrowser.chrome) ? (type == "keydown") : (type == "keypress"));
-    var isTypeForCmdKey = ((mybrowser.msie || mybrowser.safari || mybrowser.chrome) ? (type == "keydown") : (type == "keypress"));
-
+    var isTypeForCmdKey = (type === "keydown")
     var stopped = false;
 
     inCallStackIfNecessary("handleKeyEvent", function()
@@ -3920,10 +3918,10 @@ mybrowser.msie = true;
                 // only move the viewport if we're at the bottom of the viewport, if we hit down any other time the viewport shouldn't change
                 // NOTE: This behavior only fires if Chrome decides to break the page layout after a paste, it's annoying but nothing I can do
                 var selection = getSelection();
-                top.console.log("line #", rep.selStart[0]); // the line our caret is on
-                top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
-                top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
-                top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
+                // top.console.log("line #", rep.selStart[0]); // the line our caret is on
+                // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
+                // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
+                // top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
                 var newY = viewport.top + lineHeight;
               }
               if(newY){
