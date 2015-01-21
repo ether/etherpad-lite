@@ -19,8 +19,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _, $, jQuery, plugins, Ace2Common;
-
+var _, $, jQuery, plugins, Ace2Common, mybrowser;
+mybrowser = require('./browser').browser;
 Ace2Common = require('./ace2_common');
 
 plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
@@ -36,7 +36,6 @@ var isNodeText = Ace2Common.isNodeText,
   noop = Ace2Common.noop;
 
 var hooks = require('./pluginfw/hooks');
-var browser = require('./browser').browser;
 
 function Ace2Inner(){
 
@@ -599,7 +598,7 @@ function Ace2Inner(){
 
     // Chrome can't handle the truth..  If CSS rule white-space:pre-wrap
     // is true then any paste event will insert two lines..
-    if(browser.chrome){
+    if(mybrowser.chrome){
       $("#innerdocbody").css({"white-space":"normal"});
     }
 
@@ -945,7 +944,7 @@ function Ace2Inner(){
       showslinenumbers : function(value){
         hasLineNumbers = !! value;
         // disable line numbers on mobile devices
-        // if (browser.mobile) hasLineNumbers = false;
+        // if (mybrowser.mobile) hasLineNumbers = false;
         setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
         fixView();
       },
@@ -1312,7 +1311,9 @@ function Ace2Inner(){
     else
     {
       var offsetIntoLine = 0;
-      var filteredFunc = linestylefilter.getFilterStack(text, textAndClassFunc, browser);
+mybrowser.msie = false; // cake 1
+      var filteredFunc = linestylefilter.getFilterStack(text, textAndClassFunc, mybrowser);
+mybrowser.msie = true;
       var lineNum = rep.lines.indexOfEntry(lineEntry);
       var aline = rep.alines[lineNum];
       filteredFunc = linestylefilter.getLineStyleFilter(
@@ -1560,13 +1561,16 @@ function Ace2Inner(){
       lastDirtyNode = (lastDirtyNode && isNodeDirty(lastDirtyNode) && lastDirtyNode);
       if (firstDirtyNode && lastDirtyNode)
       {
-        var cc = makeContentCollector(isStyled, browser, rep.apool, null, className2Author);
+// cake 2
+mybrowser.msie = false;
+        var cc = makeContentCollector(isStyled, mybrowser, rep.apool, null, className2Author);
+mybrowser.msie = true;
         cc.notifySelection(selection);
         var dirtyNodes = [];
         for (var n = firstDirtyNode; n && !(n.previousSibling && n.previousSibling == lastDirtyNode);
         n = n.nextSibling)
         {
-          if (browser.msie)
+          if (mybrowser.msie)
           {
             // try to undo IE's pesky and overzealous linkification
             try
@@ -1606,7 +1610,7 @@ function Ace2Inner(){
 
         if (linesWrapped > 0)
         {
-          if(!browser.msie){
+          if(!mybrowser.msie){
             // chrome decides in it's infinite wisdom that its okay to put the browsers visisble window in the middle of the span
             // an outcome of this is that the first chars of the string are no longer visible to the user..  Yay chrome..
             // Move the browsers visible area to the left hand side of the span
@@ -1911,7 +1915,7 @@ function Ace2Inner(){
     if (charsLeft === 0)
     {
       var index = 0;
-      if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0)
+      if (mybrowser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0)
       {
         // best to stay at end of last empty div in IE
         index = 1;
@@ -2904,7 +2908,7 @@ function Ace2Inner(){
 
   function doCreateDomLine(nonEmpty)
   {
-    if (browser.msie && (!nonEmpty))
+    if (mybrowser.msie && (!nonEmpty))
     {
       var result = {
         node: null,
@@ -2965,8 +2969,10 @@ function Ace2Inner(){
     }
     else
     {
-      // cake
-      return domline.createDomLine(nonEmpty, doesWrap, browser, doc);
+      // cake 3
+mybrowser.msie = false;
+      return domline.createDomLine(nonEmpty, doesWrap, mybrowser, doc);
+mybrowser.msie = true;
     }
   }
 
@@ -3233,7 +3239,7 @@ function Ace2Inner(){
     var dirtiness = {};
     dirtiness.nodeId = uniqueId(n);
     dirtiness.knownHTML = n.innerHTML;
-    if (browser.msie)
+    if (mybrowser.msie)
     {
       // adding a space to an "empty" div in IE designMode doesn't
       // change the innerHTML of the div's parent; also, other
@@ -3250,7 +3256,7 @@ function Ace2Inner(){
     var data = getAssoc(n, "dirtiness");
     if (!data) return true;
     if (n.id !== data.nodeId) return true;
-    if (browser.msie)
+    if (mybrowser.msie)
     {
       if (n.innerText !== data.knownText) return true;
     }
@@ -3585,7 +3591,7 @@ function Ace2Inner(){
     // On Mac and Linux, move right moves to end of word and move left moves to start;
     // on Windows, always move to start of word.
     // On Windows, Firefox and IE disagree on whether to stop for punctuation (FF says no).
-    if (browser.msie && forwardNotBack)
+    if (mybrowser.msie && forwardNotBack)
     {
       while ((!isDone()) && isWordChar(nextChar()))
       {
@@ -3657,13 +3663,13 @@ function Ace2Inner(){
     if (isModKey) return;
 
     // If the key is a keypress and the browser is opera and the key is enter, do nothign at all as this fires twice.
-    if (keyCode == 13 && browser.opera && (type == "keypress")){
+    if (keyCode == 13 && mybrowser.opera && (type == "keypress")){
       return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
     }
 
     var specialHandled = false;
-    var isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
-    var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
+    var isTypeForSpecialKey = ((mybrowser.msie || mybrowser.safari || mybrowser.chrome) ? (type == "keydown") : (type == "keypress"));
+    var isTypeForCmdKey = ((mybrowser.msie || mybrowser.safari || mybrowser.chrome) ? (type == "keydown") : (type == "keypress"));
 
     var stopped = false;
 
@@ -3880,7 +3886,7 @@ function Ace2Inner(){
         /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
            We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
            presses and holds the arrow key ..  Sorry if this is ugly, blame Chrome's weird handling of viewports after new content is added*/
-        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && browser.chrome){
+        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && mybrowser.chrome){
           var viewport = getViewPortTopBottom();
           var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
           var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
@@ -3951,10 +3957,10 @@ function Ace2Inner(){
       }
 
       // Is part of multi-keystroke international character on Firefox Mac
-      var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode === 0 && keyCode === 0);
+      var isFirefoxHalfCharacter = (mybrowser.firefox && evt.altKey && charCode === 0 && keyCode === 0);
 
       // Is part of multi-keystroke international character on Safari Mac
-      var isSafariHalfCharacter = (browser.safari && evt.altKey && keyCode == 229);
+      var isSafariHalfCharacter = (mybrowser.safari && evt.altKey && keyCode == 229);
 
       if (thisKeyDoesntTriggerNormalize || isFirefoxHalfCharacter || isSafariHalfCharacter)
       {
@@ -4068,7 +4074,7 @@ function Ace2Inner(){
     // each of which has node (a magicdom node), index, and maxIndex.  If the node
     // is a text node, maxIndex is the length of the text; else maxIndex is 1.
     // index is between 0 and maxIndex, inclusive.
-    if (browser.msie)
+    if (mybrowser.msie)
     {
       var browserSelection;
       try
@@ -4364,7 +4370,7 @@ function Ace2Inner(){
         maxIndex: pt.maxIndex
       };
     }
-    if (browser.msie)
+    if (mybrowser.msie)
     {
       // Oddly enough, accessing scrollHeight fixes return key handling on IE 8,
       // presumably by forcing some kind of internal DOM update.
@@ -4653,17 +4659,17 @@ function Ace2Inner(){
     for (var i = 0; i < 2; i++)
     {
       var newHeight = root.clientHeight;
-      var newWidth = (browser.msie ? root.createTextRange().boundingWidth : root.clientWidth);
+      var newWidth = root.clientWidth;
       var viewHeight = getInnerHeight() - iframePadBottom - iframePadTop;
       var viewWidth = getInnerWidth() - iframePadLeft - iframePadRight;
       if (newHeight < viewHeight)
       {
         newHeight = viewHeight;
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'auto');
+//        if (mybrowser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'auto');
       }
       else
       {
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'scroll');
+//        if (mybrowser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'scroll');
       }
       if (doesWrap)
       {
@@ -4677,7 +4683,7 @@ function Ace2Inner(){
       setIfNecessary(iframe.style, "width", newWidth + "px");
       setIfNecessary(sideDiv.style, "height", newHeight + "px");
     }
-    if (browser.mozilla)
+    if (mybrowser.firefox)
     {
       if (!doesWrap)
       {
@@ -4776,14 +4782,14 @@ function Ace2Inner(){
         }
         return false;
       }
-      if (browser.msie || browser.safari)
+      if (mybrowser.msie || mybrowser.safari)
       {
         setIfNecessary(root, 'contentEditable', (newVal ? 'true' : 'false'));
       }
       else
       {
         var wasSet = setIfNecessary(doc, 'designMode', (newVal ? 'on' : 'off'));
-        if (wasSet && newVal && browser.opera)
+        if (wasSet && newVal && mybrowser.opera)
         {
           // turning on designMode clears event handlers
           bindTheEventHandlers();
@@ -4849,11 +4855,11 @@ function Ace2Inner(){
     $(document).on("keyup", handleKeyEvent);
     $(document).on("click", handleClick);
     $(root).on("blur", handleBlur);
-    if (browser.msie)
+    if (mybrowser.msie)
     {
       $(document).on("click", handleIEOuterClick);
     }
-    if (browser.msie) $(root).on("paste", handleIEPaste);
+    if (mybrowser.msie) $(root).on("paste", handleIEPaste);
 
     // Don't paste on middle click of links
     $(root).on("paste", function(e){
@@ -4863,7 +4869,7 @@ function Ace2Inner(){
     })
 
     // CompositionEvent is not implemented below IE version 8
-    if ( !(browser.msie && browser.version <= 9) && document.documentElement)
+    if ( !(mybrowser.msie && mybrowser.version <= 9) && document.documentElement)
     {
       $(document.documentElement).on("compositionstart", handleCompositionEvent);
       $(document.documentElement).on("compositionend", handleCompositionEvent);
@@ -4926,7 +4932,7 @@ function Ace2Inner(){
 
   function handleBlur(evt)
   {
-    if (browser.msie)
+    if (mybrowser.msie)
     {
       // a fix: in IE, clicking on a control like a button outside the
       // iframe can "blur" the editor, causing it to stop getting
@@ -4997,7 +5003,7 @@ function Ace2Inner(){
     var win = outerWin;
     var odoc = win.document;
     var h;
-    if (browser.opera) h = win.innerHeight;
+    if (mybrowser.opera) h = win.innerHeight;
     else h = odoc.documentElement.clientHeight;
     if (h) return h;
 
@@ -5326,20 +5332,9 @@ function Ace2Inner(){
       {
         var body = doc.getElementById("innerdocbody");
         root = body; // defined as a var in scope outside
-        if (browser.mozilla) $(root).addClass("mozilla");
-        if (browser.safari) $(root).addClass("safari");
-        if (browser.msie) $(root).addClass("msie");
-        if (browser.msie)
-        {
-          // cache CSS background images
-          try
-          {
-            doc.execCommand("BackgroundImageCache", false, true);
-          }
-          catch (e)
-          { /* throws an error in some IE 6 but not others! */
-          }
-        }
+        if (mybrowser.firefox) $(root).addClass("mozilla");
+        if (mybrowser.safari) $(root).addClass("safari");
+        if (mybrowser.msie) $(root).addClass("msie");
         setClassPresence(root, "authorColors", true);
         setClassPresence(root, "doesWrap", doesWrap);
 

@@ -82,7 +82,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {}
   };
 
-  if (browser.mozilla)
+  if (browser.firefox)
   {
     // Prevent "escape" from taking effect and canceling a comet connection;
     // doesn't work if focus is on an iframe.

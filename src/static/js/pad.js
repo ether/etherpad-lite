@@ -494,7 +494,8 @@ var pad = {
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
-    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0)))
+console.log("pad", browser);
+    if ((!browser.msie) && (!(browser.firefox && browser.version.indexOf("1.8.") == 0)))
     {
       document.domain = document.domain; // for comet
     }
