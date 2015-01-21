@@ -120,6 +120,7 @@ var getParameters = [
   { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); } },
   { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
   { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
+  { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
   { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); } }
 ];
 
@@ -562,6 +563,10 @@ var pad = {
         chat.stickToScreen(true); // stick it to the screen
         $('#options-stickychat').prop("checked", true); // set the checkbox to on
       }
+      if(padcookie.getPref("chatAndUsers")){ // if we have a cookie for always showing chat then show it
+        chat.chatAndUsers(true); // stick it to the screen
+        $('#options-chatandusers').prop("checked", true); // set the checkbox to on
+      }
       if(padcookie.getPref("showAuthorshipColors") == false){
         pad.changeViewOption('showAuthorColors', false);
       }
@@ -789,6 +794,16 @@ var pad = {
     }
     else{
       $('#options-stickychat').prop("checked", false); // set the checkbox for off
+    }
+  },
+  determineChatAndUsersVisibility: function(){
+    var chatAUVisCookie = padcookie.getPref('chatAndUsersVisible');
+    if(chatAUVisCookie){ // if the cookie is set for chat always visible
+      chat.chatAndUsers(true); // stick it to the screen
+      $('#options-chatandusers').prop("checked", true); // set the checkbox to on
+    }
+    else{
+      $('#options-chatandusers').prop("checked", false); // set the checkbox for off
     }
   },
   determineAuthorshipColorsVisibility: function(){
