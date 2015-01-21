@@ -34,8 +34,9 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
-  var hooks = require('./pluginfw/hooks');
-  var browser = require('./browser').browser;
+
+var hooks = require('./pluginfw/hooks');
+var browser = require('./browser').browser;
 
 function Ace2Inner(){
 
@@ -944,7 +945,7 @@ function Ace2Inner(){
       showslinenumbers : function(value){
         hasLineNumbers = !! value;
         // disable line numbers on mobile devices
-        if (browser.mobile) hasLineNumbers = false;
+        // if (browser.mobile) hasLineNumbers = false;
         setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
         fixView();
       },
@@ -1605,7 +1606,7 @@ function Ace2Inner(){
 
         if (linesWrapped > 0)
         {
-          if(!browser.ie){
+          if(!browser.msie){
             // chrome decides in it's infinite wisdom that its okay to put the browsers visisble window in the middle of the span
             // an outcome of this is that the first chars of the string are no longer visible to the user..  Yay chrome..
             // Move the browsers visible area to the left hand side of the span
@@ -2964,6 +2965,7 @@ function Ace2Inner(){
     }
     else
     {
+      // cake
       return domline.createDomLine(nonEmpty, doesWrap, browser, doc);
     }
   }
@@ -3583,7 +3585,7 @@ function Ace2Inner(){
     // On Mac and Linux, move right moves to end of word and move left moves to start;
     // on Windows, always move to start of word.
     // On Windows, Firefox and IE disagree on whether to stop for punctuation (FF says no).
-    if (browser.windows && forwardNotBack)
+    if (browser.msie && forwardNotBack)
     {
       while ((!isDone()) && isWordChar(nextChar()))
       {
@@ -4264,12 +4266,6 @@ function Ace2Inner(){
         end.collapse(false);
         selection.startPoint = pointFromCollapsedRange(start);
         selection.endPoint = pointFromCollapsedRange(end);
-/*if ((!selection.startPoint.node.isText) && (!selection.endPoint.node.isText)) {
-  console.log(selection.startPoint.node.uniqueId()+","+
-    selection.startPoint.index+" / "+
-    selection.endPoint.node.uniqueId()+","+
-    selection.endPoint.index);
-}*/
       }
       return selection;
     }
@@ -4867,7 +4863,7 @@ function Ace2Inner(){
     })
 
     // CompositionEvent is not implemented below IE version 8
-    if ( !(browser.msie && browser.version < 9) && document.documentElement)
+    if ( !(browser.msie && browser.version <= 9) && document.documentElement)
     {
       $(document.documentElement).on("compositionstart", handleCompositionEvent);
       $(document.documentElement).on("compositionend", handleCompositionEvent);

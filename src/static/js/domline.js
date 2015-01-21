@@ -65,7 +65,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     lineMarker: 0
   };
 
-  var browser = (optBrowser || {});
+  // var browser = (optBrowser || {});
   var document = optDocument;
 
   if (document)
@@ -225,7 +225,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       {
         newHTML += '&nbsp;';
       }
-      else if (!browser.msie)
+      else if (!optBrowser.msie)
       {
         newHTML += '<br/>';
       }

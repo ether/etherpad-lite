@@ -37,7 +37,8 @@ function sanitizeUnicode(s)
 
 function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
 {
-  browser = browser || {};
+  // browser = browser || {};
+  // I don't like the above.
 
   var dom = domInterface || {
     isNodeText: function(n)
