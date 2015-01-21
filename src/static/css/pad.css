@@ -918,11 +918,12 @@ input[type=checkbox] {
   display:block !important;
   right:0px !important;
   border-radius:0px !important;
-  height:200px !important;
   width:182px !important;
   margin:2px 0 0 0 !important;
   border: none !important;
   border-bottom: 1px solid #ccc !important;
+  height:155px !important;
+  border-left: 1px solid #ccc !important;
 }
 .chatAndUsersChat > div > #titlecross{
   display:none;
@@ -932,10 +933,11 @@ input[type=checkbox] {
   padding:0 !important;
   margin:0 !important;
   right:0 !important;
-  top: 315px !important;
+  top: 200px !important;
   width:182px !important;
   border: none !important;
   padding:5px !important;
+  border-left: 1px solid #ccc !important;
 }
 
 @media screen and (max-width: 600px) {
