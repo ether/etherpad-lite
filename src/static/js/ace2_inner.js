@@ -1919,6 +1919,7 @@ function Ace2Inner(){
     if (charsLeft === 0)
     {
       var index = 0;
+      browser.msie = false; // Temp fix to resolve enter and backspace issues..
       if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0)
       {
         // best to stay at end of last empty div in IE
@@ -4867,7 +4868,7 @@ function Ace2Inner(){
     })
 
     // CompositionEvent is not implemented below IE version 8
-    if ( !(browser.msie && browser.version <= 9) && document.documentElement)
+    if ( !(browser.msie && parseInt(browser.version <= 9)) && document.documentElement)
     {
       $(document.documentElement).on("compositionstart", handleCompositionEvent);
       $(document.documentElement).on("compositionend", handleCompositionEvent);

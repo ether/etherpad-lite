@@ -626,13 +626,11 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         _ensureColumnZero(state);
       }
     }
-
     if (abrowser.msie)
     {
       // in IE, a point immediately after a DIV appears on the next line
       _reachBlockPoint(node, 1, state);
     }
-
     state.localAttribs = localAttribs;
   };
   // can pass a falsy value for end of doc
