@@ -62,6 +62,7 @@ var chat = (function()
         $('#users').addClass("chatAndUsers");
         $("#chatbox").addClass("chatAndUsersChat");
       }else{
+        padcookie.setPref("chatAndUsers", false);
         chat.stickToScreen(false);
         $('#options-stickychat').prop("disabled", false);
         $('#users').removeClass("chatAndUsers");
