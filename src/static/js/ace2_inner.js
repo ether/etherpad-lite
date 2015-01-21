@@ -21,6 +21,17 @@
  */
 var _, $, jQuery, plugins, Ace2Common;
 
+var browser = require('./browser').browser;
+if(browser.msie){
+  // Honestly fuck IE royally.
+  // Basically every hack we have since V11 causes a problem
+  if(parseInt(browser.version) >= 11){
+    delete browser.msie;
+    browser.chrome = true;
+    browser.modernIE = true;
+  }
+}
+
 Ace2Common = require('./ace2_common');
 
 plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
@@ -34,8 +45,7 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
-  var hooks = require('./pluginfw/hooks');
-  var browser = require('./browser').browser;
+var hooks = require('./pluginfw/hooks');
 
 function Ace2Inner(){
 
@@ -1353,7 +1363,7 @@ function Ace2Inner(){
     // (from how it looks in our representation) and record them in a way
     // that can be used to "normalize" the document (apply the changes to our
     // representation, and put the DOM in a canonical form).
-    //top.console.log("observeChangesAroundNode(%o)", node);
+    // top.console.log("observeChangesAroundNode(%o)", node);
     var cleanNode;
     var hasAdjacentDirtyness;
     if (!isNodeDirty(node))
@@ -2960,7 +2970,6 @@ function Ace2Inner(){
       {
         return "";
       };
-
       return result;
     }
     else
@@ -3584,8 +3593,7 @@ function Ace2Inner(){
     // On Mac and Linux, move right moves to end of word and move left moves to start;
     // on Windows, always move to start of word.
     // On Windows, Firefox and IE disagree on whether to stop for punctuation (FF says no).
-    /*
-    if (browser.windows && forwardNotBack)
+    if (browser.msie && forwardNotBack)
     {
       while ((!isDone()) && isWordChar(nextChar()))
       {
@@ -3607,7 +3615,6 @@ function Ace2Inner(){
         advance();
       }
     }
-    */
 
     return i;
   }
@@ -3627,7 +3634,6 @@ function Ace2Inner(){
       evt.preventDefault();
       return;
     }
-
     // Is caret potentially hidden by the chat button?
     var myselection = document.getSelection(); // get the current caret selection
     var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
@@ -3665,7 +3671,6 @@ function Ace2Inner(){
     var specialHandled = false;
     var isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
     var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
-
     var stopped = false;
 
     inCallStackIfNecessary("handleKeyEvent", function()
@@ -3915,10 +3920,10 @@ function Ace2Inner(){
                 // only move the viewport if we're at the bottom of the viewport, if we hit down any other time the viewport shouldn't change
                 // NOTE: This behavior only fires if Chrome decides to break the page layout after a paste, it's annoying but nothing I can do
                 var selection = getSelection();
-                top.console.log("line #", rep.selStart[0]); // the line our caret is on
-                top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
-                top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
-                top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
+                // top.console.log("line #", rep.selStart[0]); // the line our caret is on
+                // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
+                // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
+                // top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
                 var newY = viewport.top + lineHeight;
               }
               if(newY){
@@ -3952,7 +3957,7 @@ function Ace2Inner(){
       }
 
       // Is part of multi-keystroke international character on Firefox Mac
-      var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode === 0 && keyCode === 0);
+      var isFirefoxHalfCharacter = (browser.firefox && evt.altKey && charCode === 0 && keyCode === 0);
 
       // Is part of multi-keystroke international character on Safari Mac
       var isSafariHalfCharacter = (browser.safari && evt.altKey && keyCode == 229);
@@ -4267,12 +4272,6 @@ function Ace2Inner(){
         end.collapse(false);
         selection.startPoint = pointFromCollapsedRange(start);
         selection.endPoint = pointFromCollapsedRange(end);
-/*if ((!selection.startPoint.node.isText) && (!selection.endPoint.node.isText)) {
-  console.log(selection.startPoint.node.uniqueId()+","+
-    selection.startPoint.index+" / "+
-    selection.endPoint.node.uniqueId()+","+
-    selection.endPoint.index);
-}*/
       }
       return selection;
     }
@@ -4684,7 +4683,7 @@ function Ace2Inner(){
       setIfNecessary(iframe.style, "width", newWidth + "px");
       setIfNecessary(sideDiv.style, "height", newHeight + "px");
     }
-    if (browser.mozilla)
+    if (browser.firefox)
     {
       if (!doesWrap)
       {
@@ -4870,7 +4869,7 @@ function Ace2Inner(){
     })
 
     // CompositionEvent is not implemented below IE version 8
-    if ( !(browser.msie && parseInt(browser.version) < 9) && document.documentElement)
+    if ( !(browser.msie && parseInt(browser.version <= 9)) && document.documentElement)
     {
       $(document.documentElement).on("compositionstart", handleCompositionEvent);
       $(document.documentElement).on("compositionend", handleCompositionEvent);
@@ -5333,20 +5332,9 @@ function Ace2Inner(){
       {
         var body = doc.getElementById("innerdocbody");
         root = body; // defined as a var in scope outside
-        if (browser.mozilla) $(root).addClass("mozilla");
+        if (browser.firefox) $(root).addClass("mozilla");
         if (browser.safari) $(root).addClass("safari");
         if (browser.msie) $(root).addClass("msie");
-        if (browser.msie)
-        {
-          // cache CSS background images
-          try
-          {
-            doc.execCommand("BackgroundImageCache", false, true);
-          }
-          catch (e)
-          { /* throws an error in some IE 6 but not others! */
-          }
-        }
         setClassPresence(root, "authorColors", true);
         setClassPresence(root, "doesWrap", doesWrap);
 

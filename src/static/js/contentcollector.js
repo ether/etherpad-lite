@@ -35,9 +35,10 @@ function sanitizeUnicode(s)
   return UNorm.nfc(s);
 }
 
-function makeContentCollector(collectStyles, browser, apool, domInterface, className2Author)
+function makeContentCollector(collectStyles, abrowser, apool, domInterface, className2Author)
 {
-  browser = browser || {};
+  abrowser = abrowser || {};
+  // I don't like the above.
 
   var dom = domInterface || {
     isNodeText: function(n)
@@ -484,7 +485,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         var cls = dom.nodeProp(node, "className");
 
         var isPre = (tname == "pre");
-        if ((!isPre) && browser.safari)
+        if ((!isPre) && abrowser.safari)
         {
           isPre = (styl && /\bwhite-space:\s*pre\b/i.exec(styl));
         }
@@ -610,7 +611,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         }
       }
     }
-    if (!browser.msie)
+    if (!abrowser.msie)
     {
       _reachBlockPoint(node, 1, state);
     }
@@ -625,7 +626,7 @@ function makeContentCollector(collectStyles, browser, apool, domInterface, class
         _ensureColumnZero(state);
       }
     }
-    if (browser.msie)
+    if (abrowser.msie)
     {
       // in IE, a point immediately after a DIV appears on the next line
       _reachBlockPoint(node, 1, state);
