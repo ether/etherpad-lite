@@ -784,6 +784,7 @@ var pad = {
   handleIsFullyConnected: function(isConnected, isInitialConnect)
   {
     pad.determineChatVisibility(isConnected && !isInitialConnect);
+    pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
   },
   determineChatVisibility: function(asNowConnectedFeedback){
@@ -796,7 +797,7 @@ var pad = {
       $('#options-stickychat').prop("checked", false); // set the checkbox for off
     }
   },
-  determineChatAndUsersVisibility: function(){
+  determineChatAndUsersVisibility: function(asNowConnectedFeedback){
     var chatAUVisCookie = padcookie.getPref('chatAndUsersVisible');
     if(chatAUVisCookie){ // if the cookie is set for chat always visible
       chat.chatAndUsers(true); // stick it to the screen
