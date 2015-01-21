@@ -19,9 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _, $, jQuery, plugins, Ace2Common, bowser;
-bowser = require('./browser').browser;
+var _, $, jQuery, plugins, Ace2Common;
 
+var bowser = require('./browser').browser;
 if(bowser.msie){
   // Honestly fuck IE royally.
   // Basically every hack we have since V11 causes a problem
@@ -30,6 +30,7 @@ if(bowser.msie){
     bowser.chrome = true;
   }
 }
+
 Ace2Common = require('./ace2_common');
 
 plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
@@ -43,7 +44,6 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
-
 var hooks = require('./pluginfw/hooks');
 
 function Ace2Inner(){
@@ -953,7 +953,7 @@ function Ace2Inner(){
       showslinenumbers : function(value){
         hasLineNumbers = !! value;
         // disable line numbers on mobile devices
-        // if (bowser.mobile) hasLineNumbers = false;
+        if (bowser.mobile) hasLineNumbers = false;
         setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
         fixView();
       },
@@ -4657,17 +4657,17 @@ function Ace2Inner(){
     for (var i = 0; i < 2; i++)
     {
       var newHeight = root.clientHeight;
-      var newWidth = root.clientWidth;
+      var newWidth = (browser.msie ? root.createTextRange().boundingWidth : root.clientWidth);
       var viewHeight = getInnerHeight() - iframePadBottom - iframePadTop;
       var viewWidth = getInnerWidth() - iframePadLeft - iframePadRight;
       if (newHeight < viewHeight)
       {
         newHeight = viewHeight;
-//        if (bowser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'auto');
+        if (bowser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'auto');
       }
       else
       {
-//        if (bowser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'scroll');
+        if (bowser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'scroll');
       }
       if (doesWrap)
       {
