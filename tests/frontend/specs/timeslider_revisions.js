@@ -19,6 +19,7 @@ describe("timeslider", function(){
         inner$("div").first().sendkeys('a');
       }, timePerRev*i);
     }
+    chrome$('.buttonicon-savedRevision').click();
     
     setTimeout(function() {
       // go to timeslider
@@ -51,6 +52,8 @@ describe("timeslider", function(){
         setTimeout(function() {
           //make sure the text has changed
           expect( timeslider$('#padcontent').text() ).not.to.eql( latestContents );
+          var starIsVisible = timeslider$('.star').is(":visible");
+          expect( starIsVisible ).to.eql( true );
           done();
         }, 1000);
         

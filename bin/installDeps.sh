@@ -81,9 +81,9 @@ DOWNLOAD_JQUERY="true"
 NEEDED_VERSION="1.9.1"
 if [ -f "src/static/js/jquery.js" ]; then
   if [ $(uname) = "SunOS" ]; then
-    VERSION=$(cat src/static/js/jquery.js | head -n 3 | ggrep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?");
+    VERSION=$(head -n 3 src/static/js/jquery.js | ggrep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?")
   else
-    VERSION=$(cat src/static/js/jquery.js | head -n 3 | grep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?");
+    VERSION=$(head -n 3 src/static/js/jquery.js | grep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?")
   fi
 
   if [ ${VERSION#v} = $NEEDED_VERSION ]; then

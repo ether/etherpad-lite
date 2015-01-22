@@ -1,3 +1,11 @@
+# 1.5.1
+ * NEW: icon
+ * Fix: Export into HTML
+ * Fix: Support ejs 2.0
+ * Fix: Timeslider stars
+ * Fix: Translation update
+ * Fix: Check filesystem if Abiword exists
+
 # 1.5.0
  * NEW: Lots of performance improvements for page load times
  * NEW: Hook for adding CSS to Exports

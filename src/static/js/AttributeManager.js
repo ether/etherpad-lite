@@ -164,11 +164,19 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
      var builder = Changeset.builder(this.rep.lines.totalWidth());
      var hasMarker = this.lineHasMarker(lineNum);
      var attribs
+     var foundAttrib = false
      
      attribs = this.getAttributesOnLine(lineNum).map(function(attrib) {
-       if(attrib[0] === attributeName) return [attributeName, null]
+       if(attrib[0] === attributeName) {
+         foundAttrib = true
+         return [attributeName, null] // remove this attrib from the linemarker
+       }
        return attrib
      })
+
+     if(!foundAttrib) {
+       return
+     }
 
      if(hasMarker){
        ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
