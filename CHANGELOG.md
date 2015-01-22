@@ -1,6 +1,6 @@
 # 1.5.1
- * NEW: Export into HTML
  * NEW: icon
+ * Fix: Export into HTML
  * Fix: Support ejs 2.0
  * Fix: Timeslider stars
  * Fix: Translation update
