@@ -554,7 +554,9 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           }
           else if ((tname == "div" || tname == "p") && cls && cls.match(/(?:^| )ace-line\b/))
           {
-            oldListTypeOrNull = (_enterList(state, type) || 'none');
+            // This has undesirable behavior in Chrome but is right in other browsers.
+            // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
+            if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
           if (className2Author && cls)
           {
