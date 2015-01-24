@@ -418,7 +418,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
         attribLine: attribLines[i],
         text: textLines[i]
       }, function(err, newLineContent){
-          if(newLineContent.length !== 0) lineContent = newLineContent[0];
+//new Line Content is an array of each of the responses from aCallAll..  We should return a function to it
+console.error(newLineContent);
+          if(newLineContent.length !== 0){
+console.error("lC", newLineContent[0]);
+            lineContent = newLineContent[0];
+          }
         // modified lineContent here
       });
 
