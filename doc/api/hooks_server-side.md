@@ -247,6 +247,30 @@ Things in context:
 
 This hook will allow a plug-in developer to re-write each line when exporting to HTML.
 
+Example:
+```
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+
+exports.getLineHTMLForExport = function (hook, context) {
+  var header = _analyzeLine(context.attribLine, context.apool);
+  if (header) {
+    return "<" + header + ">" + context.lineContents + "</" + header + ">";
+  }
+}
+
+function _analyzeLine(alineAttrs, apool) {
+  var header = null;
+  if (alineAttrs) {
+    var opIter = Changeset.opIterator(alineAttrs);
+    if (opIter.hasNext()) {
+      var op = opIter.next();
+      header = Changeset.opAttributeValue(op, 'heading', apool);
+    }
+  }
+  return header;
+}
+```
+
 ## stylesForExport
 Called from: src/node/utils/ExportHtml.js
 
@@ -314,7 +338,7 @@ exports.exportHtmlAdditionalTags = function(hook, pad, cb){
   var padId = pad.id;
   cb(["massive","jugs"]);
 };
-
+```
 
 ## userLeave
 Called from src/node/handler/PadMessageHandler.js
