@@ -30,8 +30,6 @@ function getPadHTML(pad, revNum, callback)
   var html;
   async.waterfall([
   // fetch revision atext
-
-
   function (callback)
   {
     if (revNum != undefined)
@@ -416,6 +414,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
       {
         line: line,
+        lineContent: lineContent,
         apool: apool,
         attribLine: attribLines[i],
         text: textLines[i]

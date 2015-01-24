@@ -66,18 +66,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   }
 
-  // for IE
-  if (browser.msie)
-  {
-    try
-    {
-      document.execCommand("BackgroundImageCache", false, true);
-    }
-    catch (e)
-    {}
-  }
-
-
   //var socket;
   var channelState = "DISCONNECTED";
 

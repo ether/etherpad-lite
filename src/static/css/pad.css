@@ -914,6 +914,36 @@ input[type=checkbox] {
   border-left: 1px solid #ccc !important;
   width: 185px !important;
 }
+.chatAndUsers{
+  display:block !important;
+  right:0px !important;
+  border-radius:0px !important;
+  width:182px !important;
+  margin:2px 0 0 0 !important;
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  height:155px !important;
+  border-left: 1px solid #ccc !important;
+}
+.chatAndUsers > #otherusers{
+  max-height: 100px;
+  overflow-y: auto;
+}
+.chatAndUsersChat > div > #titlecross{
+  display:none;
+}
+.chatAndUsersChat{
+  bottom:0px !important;
+  padding:0 !important;
+  margin:0 !important;
+  right:0 !important;
+  top: 200px !important;
+  width:182px !important;
+  border: none !important;
+  padding:5px !important;
+  border-left: 1px solid #ccc !important;
+}
+
 @media screen and (max-width: 600px) {
   .toolbar ul li.separator {
     display: none;

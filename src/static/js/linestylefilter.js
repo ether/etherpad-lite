@@ -318,20 +318,20 @@ linestylefilter.textAndClassFuncSplitter = function(func, splitPointsOpt)
   return spanHandler;
 };
 
-linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
+linestylefilter.getFilterStack = function(lineText, textAndClassFunc, abrowser)
 {
   var func = linestylefilter.getURLFilter(lineText, textAndClassFunc);
 
   var hookFilters = hooks.callAll("aceGetFilterStack", {
     linestylefilter: linestylefilter,
-    browser: browser
+    browser: abrowser
   });
   _.map(hookFilters ,function(hookFilter)
   {
     func = hookFilter(lineText, func);
   });
 
-  if (browser !== undefined && browser.msie)
+  if (abrowser !== undefined && abrowser.msie)
   {
     // IE7+ will take an e-mail address like <foo@bar.com> and linkify it to foo@bar.com.
     // We then normalize it back to text with no angle brackets.  It's weird.  So always

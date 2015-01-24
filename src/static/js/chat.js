@@ -54,6 +54,22 @@ var chat = (function()
         isStuck = false;
       }
     },
+    chatAndUsers: function(fromInitialCall)
+    {
+      if(fromInitialCall || $('#options-chatandusers').prop('checked')){
+        padcookie.setPref("chatAndUsers", true);
+        chat.stickToScreen(true);
+        $('#options-stickychat').prop('checked', true)
+        $('#options-stickychat').prop("disabled", "disabled");
+        $('#users').addClass("chatAndUsers");
+        $("#chatbox").addClass("chatAndUsersChat");
+      }else{
+        padcookie.setPref("chatAndUsers", false);
+        $('#options-stickychat').prop("disabled", false);
+        $('#users').removeClass("chatAndUsers");
+        $("#chatbox").removeClass("chatAndUsersChat");
+      }
+    },
     hide: function () 
     {
       // decide on hide logic based on chat window being maximized or not 
