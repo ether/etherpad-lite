@@ -1,5 +1,5 @@
 # 1.5.1
- * NEW: High rez ICON
+ * NEW: High resolution Icon
  * NEW: Use HTTPS for plugins.json download
  * NEW: Add 'last update' column
  * NEW: Show users and chat at the same time
