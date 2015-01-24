@@ -141,14 +141,14 @@ $(document).ready(function () {
 
     // Sort
     $('.sort.up').unbind('click').click(function() {
-      search.sortBy = $(this).text().toLowerCase();
+      search.sortBy = $(this).attr('data-label').toLowerCase();
       search.sortDir = false;
       search.offset = 0;
       search(search.searchTerm, search.results.length);
       search.results = [];
     })
     $('.sort.down, .sort.none').unbind('click').click(function() {
-      search.sortBy = $(this).text().toLowerCase();
+      search.sortBy = $(this).attr('data-label').toLowerCase();
       search.sortDir = true;
       search.offset = 0;
       search(search.searchTerm, search.results.length);
