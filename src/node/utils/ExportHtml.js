@@ -411,6 +411,18 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
       lists = []
 
+      hooks.aCallAll("asyncLineHTMLForExport", {
+        line: line,
+        lineContent: lineContent,
+        apool: apool,
+        attribLine: attribLines[i],
+        text: textLines[i]
+      }, function(err, newLineContent){
+          if(newLineContent.length !== 0) lineContent = newLineContent[0];
+        // modified lineContent here
+      });
+
+      // Old hook probably not to be used..
       var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
       {
         line: line,
@@ -419,6 +431,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
         attribLine: attribLines[i],
         text: textLines[i]
       }, " ", " ", "");
+
       if (lineContentFromHook)
       {
         pieces.push(lineContentFromHook, '');
