@@ -411,31 +411,26 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
       lists = []
 
-      hooks.aCallAll("asyncLineHTMLForExport", {
+      var context = {
         line: line,
         lineContent: lineContent,
         apool: apool,
         attribLine: attribLines[i],
         text: textLines[i]
-      }, function(err, newLineContent){
-//new Line Content is an array of each of the responses from aCallAll..  We should return a function to it
-console.error(newLineContent);
-          if(newLineContent.length !== 0){
-console.error("lC", newLineContent[0]);
-            lineContent = newLineContent[0];
-          }
-        // modified lineContent here
+      }
+
+      // first context below seems superfluos
+      hooks.aCallAll("asyncLineHTMLForExport", context, function(err, newLineFunction){
+        newLineFunction.forEach(function(fn){
+          context.lineContent = fn(context); // note the fn
+        });
+        //new Line Content is an array of each of the responses from aCallAll..  
+        // We should return a function to it
+        lineContent = context.lineContent; // modified lineContent here
       });
 
       // Old hook probably not to be used..
-      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
-      {
-        line: line,
-        lineContent: lineContent,
-        apool: apool,
-        attribLine: attribLines[i],
-        text: textLines[i]
-      }, " ", " ", "");
+      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", context, " ", " ", "");
 
       if (lineContentFromHook)
       {
