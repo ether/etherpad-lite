@@ -314,7 +314,7 @@ exports.exportHtmlAdditionalTags = function(hook, pad, cb){
   var padId = pad.id;
   cb(["massive","jugs"]);
 };
-
+```
 
 ## userLeave
 Called from src/node/handler/PadMessageHandler.js
