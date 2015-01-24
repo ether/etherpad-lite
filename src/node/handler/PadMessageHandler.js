@@ -257,11 +257,10 @@ exports.handleMessage = function(client, message)
         // FIXME: Use a hook instead
         // FIXME: Allow to override readwrite access with readonly
 
-        // FIXME: A message might arrive but wont have an auth object, this is obviously bad so we should deny it
         // Simulate using the load testing tool
         if(!sessioninfos[client.id].auth){
           console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
-          callback();
+          return;
         }else{
           var auth = sessioninfos[client.id].auth;
           var checkAccessCallback = function(err, statusObject)
