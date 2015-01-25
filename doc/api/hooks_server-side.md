@@ -245,7 +245,7 @@ Things in context:
 2. attribLine - line attributes
 3. text - line text
 
-This hook will allow a plug-in developer to re-write each line when exporting to HTML.  Note that you problably don't want to use this plugin and will probably get better results from `asyncLineHTMLForExport`
+This hook will allow a plug-in developer to re-write each line when exporting to HTML.
 
 Example:
 ```
@@ -268,39 +268,6 @@ function _analyzeLine(alineAttrs, apool) {
     }
   }
   return header;
-}
-```
-
-## asyncLineHTMLForExport
-Called from: src/node/utils/ExportHtml.js
-
-Things in context:
-
-1. The context of the line
-2. lineContents - The HTML of the line
-3. Attribute pool
-4. Attribute line
-5. Line Text
-
-This hook will allow functions to be returned to modify the HTML.
-
-Example: 
-
-```
-exports.asyncLineHTMLForExport = function (hook, context, cb) {
-  cb(rewriteLine);
-}
-
-function rewriteLine(context){
-  var lineContent = context.lineContent;
-  sizes.forEach(function(size){
-    size = size.replace("fs","");
-    if(lineContent){
-      lineContent = lineContent.replace("<fs"+size, "<span style='font-size:"+size+"px'");
-      lineContent = lineContent.replace("</fs"+size, "</span");
-    }
-  });
-  return lineContent;
 }
 ```
 
