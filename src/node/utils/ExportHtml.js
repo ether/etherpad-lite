@@ -420,14 +420,11 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
 
       // See https://github.com/ether/etherpad-lite/issues/2486
-      hooks.aCallAll("asyncLineHTMLForExport", context, function(err, newLineFunction){
-        // For each function returned by the hook call
-        // Process the text based on the function
-        newLineFunction.forEach(function(fn){
-          context.lineContent = fn(context); // note the fn
-        });
-        // We now have a line that has been processed by each hook function
-        lineContent = context.lineContent; // modified lineContent here
+      hooks.aCallAll("asyncLineHTMLForExport", context, function(err, lineContents){
+        if(lineContents[1]){
+          context.lineContent = lineContents[1]; // modified lineContent here
+          lineContent = lineContents[1];
+        }
       });
 
       // Old hook probably not to be used..

@@ -288,10 +288,6 @@ Example:
 
 ```
 exports.asyncLineHTMLForExport = function (hook, context, cb) {
-  cb(rewriteLine);
-}
-
-function rewriteLine(context){
   var lineContent = context.lineContent;
   sizes.forEach(function(size){
     size = size.replace("fs","");
@@ -300,7 +296,7 @@ function rewriteLine(context){
       lineContent = lineContent.replace("</fs"+size, "</span");
     }
   });
-  return lineContent;
+  cb(lineContent);
 }
 ```
 
