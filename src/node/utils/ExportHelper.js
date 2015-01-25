@@ -55,7 +55,7 @@ exports._analyzeLine = function(text, aline, apool){
       var listType = Changeset.opAttributeValue(opIter.next(), 'list', apool);
       if (listType){
         lineMarker = 1;
-        listType = /([a-z]+)([12345678])/.exec(listType);
+        listType = /([a-z]+)([0-9]+)/.exec(listType);
         if (listType){
           line.listTypeName = listType[1];
           line.listLevel = Number(listType[2]);

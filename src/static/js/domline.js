@@ -65,7 +65,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     lineMarker: 0
   };
 
-  var browser = (optBrowser || {});
   var document = optDocument;
 
   if (document)
@@ -93,8 +92,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   var perTextNodeProcess = (doesWrap ? _.identity : processSpaces);
   var perHtmlLineProcess = (doesWrap ? processSpaces : _.identity);
   var lineClass = 'ace-line';
+
   result.appendSpan = function(txt, cls)
   {
+
     var processedMarker = false;
     // Handle lineAttributeMarker, if present
     if (cls.indexOf(lineAttributeMarker) >= 0)
@@ -225,7 +226,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       {
         newHTML += '&nbsp;';
       }
-      else if (!browser.msie)
+      else if (!optBrowser.msie)
       {
         newHTML += '<br/>';
       }

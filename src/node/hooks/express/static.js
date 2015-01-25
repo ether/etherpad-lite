@@ -2,7 +2,7 @@ var minify = require('../../utils/Minify');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var CachingMiddleware = require('../../utils/caching_middleware');
 var settings = require("../../utils/Settings");
-var Yajsml = require('yajsml');
+var Yajsml = require('etherpad-yajsml');
 var _ = require("underscore");
 
 exports.expressCreateServer = function (hook_name, args, cb) {

@@ -21,6 +21,17 @@
  */
 var _, $, jQuery, plugins, Ace2Common;
 
+var browser = require('./browser').browser;
+if(browser.msie){
+  // Honestly fuck IE royally.
+  // Basically every hack we have since V11 causes a problem
+  if(parseInt(browser.version) >= 11){
+    delete browser.msie;
+    browser.chrome = true;
+    browser.modernIE = true;
+  }
+}
+
 Ace2Common = require('./ace2_common');
 
 plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
@@ -34,8 +45,7 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
-  var hooks = require('./pluginfw/hooks');
-  var browser = require('./browser').browser;
+var hooks = require('./pluginfw/hooks');
 
 function Ace2Inner(){
 
@@ -1353,7 +1363,7 @@ function Ace2Inner(){
     // (from how it looks in our representation) and record them in a way
     // that can be used to "normalize" the document (apply the changes to our
     // representation, and put the DOM in a canonical form).
-    //top.console.log("observeChangesAroundNode(%o)", node);
+    // top.console.log("observeChangesAroundNode(%o)", node);
     var cleanNode;
     var hasAdjacentDirtyness;
     if (!isNodeDirty(node))
@@ -1605,7 +1615,7 @@ function Ace2Inner(){
 
         if (linesWrapped > 0)
         {
-          if(!browser.ie){
+          if(!browser.msie){
             // chrome decides in it's infinite wisdom that its okay to put the browsers visisble window in the middle of the span
             // an outcome of this is that the first chars of the string are no longer visible to the user..  Yay chrome..
             // Move the browsers visible area to the left hand side of the span
@@ -1910,6 +1920,7 @@ function Ace2Inner(){
     if (charsLeft === 0)
     {
       var index = 0;
+      browser.msie = false; // Temp fix to resolve enter and backspace issues..
       if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0)
       {
         // best to stay at end of last empty div in IE
@@ -2959,7 +2970,6 @@ function Ace2Inner(){
       {
         return "";
       };
-
       return result;
     }
     else
@@ -3583,7 +3593,7 @@ function Ace2Inner(){
     // On Mac and Linux, move right moves to end of word and move left moves to start;
     // on Windows, always move to start of word.
     // On Windows, Firefox and IE disagree on whether to stop for punctuation (FF says no).
-    if (browser.windows && forwardNotBack)
+    if (browser.msie && forwardNotBack)
     {
       while ((!isDone()) && isWordChar(nextChar()))
       {
@@ -3624,7 +3634,6 @@ function Ace2Inner(){
       evt.preventDefault();
       return;
     }
-
     // Is caret potentially hidden by the chat button?
     var myselection = document.getSelection(); // get the current caret selection
     var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
@@ -3662,7 +3671,6 @@ function Ace2Inner(){
     var specialHandled = false;
     var isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
     var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
-
     var stopped = false;
 
     inCallStackIfNecessary("handleKeyEvent", function()
@@ -3867,7 +3875,10 @@ function Ace2Inner(){
             updateBrowserSelectionFromRep();
             var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
             var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
-            // top.console.log(caretOffsetTop);
+
+            // sometimes the first selection is -1 which causes problems (Especially with ep_page_view)
+            // so use focusNode.offsetTop value.
+            if(caretOffsetTop === -1) caretOffsetTop = myselection.focusNode.offsetTop;
             setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
 
           }, 200);
@@ -3909,10 +3920,10 @@ function Ace2Inner(){
                 // only move the viewport if we're at the bottom of the viewport, if we hit down any other time the viewport shouldn't change
                 // NOTE: This behavior only fires if Chrome decides to break the page layout after a paste, it's annoying but nothing I can do
                 var selection = getSelection();
-                top.console.log("line #", rep.selStart[0]); // the line our caret is on
-                top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
-                top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
-                top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
+                // top.console.log("line #", rep.selStart[0]); // the line our caret is on
+                // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
+                // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
+                // top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
                 var newY = viewport.top + lineHeight;
               }
               if(newY){
@@ -3946,7 +3957,7 @@ function Ace2Inner(){
       }
 
       // Is part of multi-keystroke international character on Firefox Mac
-      var isFirefoxHalfCharacter = (browser.mozilla && evt.altKey && charCode === 0 && keyCode === 0);
+      var isFirefoxHalfCharacter = (browser.firefox && evt.altKey && charCode === 0 && keyCode === 0);
 
       // Is part of multi-keystroke international character on Safari Mac
       var isSafariHalfCharacter = (browser.safari && evt.altKey && keyCode == 229);
@@ -4261,12 +4272,6 @@ function Ace2Inner(){
         end.collapse(false);
         selection.startPoint = pointFromCollapsedRange(start);
         selection.endPoint = pointFromCollapsedRange(end);
-/*if ((!selection.startPoint.node.isText) && (!selection.endPoint.node.isText)) {
-  console.log(selection.startPoint.node.uniqueId()+","+
-    selection.startPoint.index+" / "+
-    selection.endPoint.node.uniqueId()+","+
-    selection.endPoint.index);
-}*/
       }
       return selection;
     }
@@ -4678,7 +4683,7 @@ function Ace2Inner(){
       setIfNecessary(iframe.style, "width", newWidth + "px");
       setIfNecessary(sideDiv.style, "height", newHeight + "px");
     }
-    if (browser.mozilla)
+    if (browser.firefox)
     {
       if (!doesWrap)
       {
@@ -4855,8 +4860,16 @@ function Ace2Inner(){
       $(document).on("click", handleIEOuterClick);
     }
     if (browser.msie) $(root).on("paste", handleIEPaste);
+
+    // Don't paste on middle click of links
+    $(root).on("paste", function(e){
+      if(e.target.a){
+        e.preventDefault();
+      }
+    })
+
     // CompositionEvent is not implemented below IE version 8
-    if ( !(browser.msie && browser.version < 9) && document.documentElement)
+    if ( !(browser.msie && parseInt(browser.version <= 9)) && document.documentElement)
     {
       $(document.documentElement).on("compositionstart", handleCompositionEvent);
       $(document.documentElement).on("compositionend", handleCompositionEvent);
@@ -5095,7 +5108,7 @@ function Ace2Inner(){
     {
       return null;
     }
-    type = /([a-z]+)[0-9+]/.exec(type);
+    type = /([a-z]+)[0-9]+/.exec(type);
     if(type[1] == "indent")
     {
       return null;
@@ -5104,7 +5117,7 @@ function Ace2Inner(){
     //2-find the first line of the list
     while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
     {
-      type = /([a-z]+)[0-9+]/.exec(type);
+      type = /([a-z]+)[0-9]+/.exec(type);
       if(type[1] == "indent")
         break;
       lineNum--;
@@ -5124,7 +5137,7 @@ function Ace2Inner(){
       while(listType = getLineListType(line))
       {
         //apply new num
-        listType = /([a-z]+)([0-9+])/.exec(listType);
+        listType = /([a-z]+)([0-9]+)/.exec(listType);
         curLevel = Number(listType[2]);
         if(isNaN(curLevel) || listType[0] == "indent")
         {
@@ -5319,20 +5332,9 @@ function Ace2Inner(){
       {
         var body = doc.getElementById("innerdocbody");
         root = body; // defined as a var in scope outside
-        if (browser.mozilla) $(root).addClass("mozilla");
+        if (browser.firefox) $(root).addClass("mozilla");
         if (browser.safari) $(root).addClass("safari");
         if (browser.msie) $(root).addClass("msie");
-        if (browser.msie)
-        {
-          // cache CSS background images
-          try
-          {
-            doc.execCommand("BackgroundImageCache", false, true);
-          }
-          catch (e)
-          { /* throws an error in some IE 6 but not others! */
-          }
-        }
         setClassPresence(root, "authorColors", true);
         setClassPresence(root, "doesWrap", doesWrap);
 

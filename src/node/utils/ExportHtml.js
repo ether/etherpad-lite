@@ -30,8 +30,6 @@ function getPadHTML(pad, revNum, callback)
   var html;
   async.waterfall([
   // fetch revision atext
-
-
   function (callback)
   {
     if (revNum != undefined)
@@ -413,13 +411,16 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
       lists = []
 
-      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
-      {
+      var context = {
         line: line,
+        lineContent: lineContent,
         apool: apool,
         attribLine: attribLines[i],
         text: textLines[i]
-      }, " ", " ", "");
+      }
+
+      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", context, " ", " ", "");
+
       if (lineContentFromHook)
       {
         pieces.push(lineContentFromHook, '');
@@ -470,7 +471,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'ul.indent { list-style-type: none; }' +
 
             'ol { list-style-type: none; padding-left:0;}' +
-            'body > ol { counter-reset: first second; }' +
+            'body > ol { counter-reset: first second third fourth fifth sixth seventh eigth ninth tenth eleventh twelth thirteenth fourteenth fifteenth sixteenth; }' +
             'ol > li:before {' +
             'content: counter(first) ". " ;'+
             'counter-increment: first;}' +
@@ -504,15 +505,15 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'counter-increment: eigth;}' +
 
             'ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eight) "." counter(ninth) ". ";'+
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) ". ";'+
             'counter-increment: ninth;}' +
 
             'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) ". ";'+
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) ". ";'+
             'counter-increment: tenth;}' +
 
             'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";'+
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";'+
             'counter-increment: eleventh;}' +
 
             'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +

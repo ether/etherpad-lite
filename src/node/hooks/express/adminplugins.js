@@ -83,7 +83,7 @@ exports.socketio = function (hook_name, args, cb) {
     socket.on("install", function (plugin_name) {
       installer.install(plugin_name, function (er) {
         if(er) console.warn(er)
-        socket.emit("finished:install", {plugin: plugin_name, error: er? er.message : null});
+        socket.emit("finished:install", {plugin: plugin_name, code: er? er.code : null, error: er? er.message : null});
       });
     });
 

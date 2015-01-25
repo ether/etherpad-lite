@@ -410,11 +410,16 @@ exports.setHTML = function(padID, html, callback)
     if(ERR(err, callback)) return;
 
     // add a new changeset with the new html to the pad
-    importHtml.setPadHTML(pad, cleanText(html), callback);
-
-    //update the clients on the pad
-    padMessageHandler.updatePadClients(pad, callback);
-
+    importHtml.setPadHTML(pad, cleanText(html), function(e){
+      if(e){
+        callback(new customError("HTML is malformed","apierror"));
+        return;
+      }else{
+        //update the clients on the pad
+        padMessageHandler.updatePadClients(pad, callback);
+        return;
+      }
+    });
   });
 }
 

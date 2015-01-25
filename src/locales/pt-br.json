@@ -10,7 +10,8 @@
 			"Rafaelff",
 			"Dianakc",
 			"Macofe",
-			"Rodrigo codignoli"
+			"Rodrigo codignoli",
+			"Webysther"
 		]
 	},
 	"index.newPad": "Nova Nota",
@@ -35,6 +36,7 @@
 	"pad.colorpicker.save": "Salvar",
 	"pad.colorpicker.cancel": "Cancelar",
 	"pad.loading": "Carregando...",
+	"pad.noCookie": "Cookie não foi encontrado. Por favor, habilite cookies no seu navegador!",
 	"pad.passwordRequired": "Você precisa de uma senha para acessar esta Nota",
 	"pad.permissionDenied": "Você não tem permissão para acessar esta Nota",
 	"pad.wrongPassword": "Senha incorreta",
@@ -53,6 +55,7 @@
 	"pad.importExport.import": "Enviar um arquivo texto ou documento",
 	"pad.importExport.importSuccessful": "Completo!",
 	"pad.importExport.export": "Exportar a presente nota como:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Texto puro",
 	"pad.importExport.exportword": "Microsoft Word",
@@ -123,6 +126,7 @@
 	"pad.impexp.importing": "Importando...",
 	"pad.impexp.confirmimport": "Importar um arquivo sobrescreverá o atual texto da nota. Tem certeza de que deseja prosseguir?",
 	"pad.impexp.convertFailed": "Não foi possível importar este arquivo. Use outro formato ou copie e cole manualmente",
+	"pad.impexp.padHasData": "Não foi possível importar este arquivo porque este bloco de notas já tinha alterações, consulte como importar para um novo bloco de notas",
 	"pad.impexp.uploadFailed": "O envio falhou. Tente outra vez",
 	"pad.impexp.importfailed": "A importação falhou",
 	"pad.impexp.copypaste": "Copie e cole",
