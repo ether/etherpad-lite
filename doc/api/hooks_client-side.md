@@ -213,6 +213,7 @@ Things in context:
 3. tname - the tag name of this node currently being processed
 4. style - the style applied to the node (probably CSS)
 5. cls - the HTML class string of the node
+6. node - the node being modified
 
 This hook is called before the content of an image node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad.
 
