@@ -4,7 +4,8 @@
 			"Ali1",
 			"Tux-tn",
 			"Alami",
-			"Meno25"
+			"Meno25",
+			"Test Create account"
 		]
 	},
 	"index.newPad": "باد جديد",
@@ -29,6 +30,7 @@
 	"pad.colorpicker.save": "تسجيل",
 	"pad.colorpicker.cancel": "إلغاء",
 	"pad.loading": "جاري التحميل...",
+	"pad.noCookie": "الكوكيز غير متاحة. الرجاء السماح بتحميل الكوكيز على متصفحك!",
 	"pad.passwordRequired": "تحتاج إلى كلمة مرور للوصول إلى هذا الباد",
 	"pad.permissionDenied": "ليس لديك إذن لدخول هذا الباد",
 	"pad.wrongPassword": "كانت كلمة المرور خاطئة",
@@ -118,6 +120,7 @@
 	"pad.impexp.importing": "الاستيراد...",
 	"pad.impexp.confirmimport": "استيراد ملف سيؤدي للكتابة فوق النص الحالي بالباد. هل أنت متأكد من أنك تريد المتابعة؟",
 	"pad.impexp.convertFailed": "لم نتمكن من استيراد هذا الملف. يرجى استخدام تنسيق مستند مختلف، أو النسخ واللصق يدوياً",
+	"pad.impexp.padHasData": "لا يمكننا استيراد هذا الملف لأن هذه اللوحة تم بالفعل تغييره, الرجاء استيراد لوحة جديد",
 	"pad.impexp.uploadFailed": "فشل التحميل، الرجاء المحاولة مرة أخرى",
 	"pad.impexp.importfailed": "فشل الاستيراد",
 	"pad.impexp.copypaste": "الرجاء نسخ/لصق",
