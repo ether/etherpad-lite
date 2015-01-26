@@ -458,7 +458,18 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
-      if (tname == "br")
+
+      if (tname == "img"){
+        var context = hooks.callAll('collectContentImage', {
+          cc: cc,
+          state: state,
+          tname: tname,
+          styl: styl,
+          cls: cls,
+          node: node
+        });
+      }
+      else if (tname == "br")
       {        
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
