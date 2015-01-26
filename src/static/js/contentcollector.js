@@ -461,15 +461,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
       // Images shouldn't be defined as empty.
       if (tname == "img"){
-        isEmpty = false;
-        hooks.callAll('collectContentImage', {
+        var context = hooks.callAll('collectContentImage', {
           cc: cc,
           state: state,
           tname: tname,
           styl: styl,
           cls: cls,
           node: node
-        });        
+        });
       }
 
       if (tname == "br")
