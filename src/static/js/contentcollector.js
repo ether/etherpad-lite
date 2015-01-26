@@ -459,7 +459,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
 
-      // Images shouldn't be defined as empty.
       if (tname == "img"){
         var context = hooks.callAll('collectContentImage', {
           cc: cc,
@@ -470,8 +469,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           node: node
         });
       }
-
-      if (tname == "br")
+      else if (tname == "br")
       {        
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
