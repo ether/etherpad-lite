@@ -59,7 +59,7 @@
 	"pad.modals.forcereconnect": "Məcbur təkrarən bağlan",
 	"pad.modals.userdup": "Başqa pəncərədə artıq açıqdır",
 	"pad.modals.userdup.explanation": "Bu lövhə, ola bilsin ki, bu kompüterdəki brauzerin bir neçə pəncərəsində açılmışdır.",
-	"pad.modals.userdup.advice": "Bu pəncərədən istifadəylə yenidən qoşulun.",
+	"pad.modals.userdup.advice": "Bu pəncərəni istifadə etmək üçün yenidən qoşul.",
 	"pad.modals.unauth": "İcazəli deyil",
 	"pad.modals.unauth.explanation": "Bu səhifəyə baxdığınız vaxt sizin icazəniz  dəyişilib. Bərpa etmək üşün yenidən cəhd edin.",
 	"pad.modals.looping.explanation": "Sinxronlaşdırma serveri ilə kommunikasiya xətası var.",
