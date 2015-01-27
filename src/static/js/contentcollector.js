@@ -87,6 +87,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     "li": 1
   };
 
+  _.each(hooks.callAll('aceRegisterBlockElements'), function(element){
+    _blockElems[element] = 1;
+  });
+
   function isBlockElement(n)
   {
     return !!_blockElems[(dom.nodeTagName(n) || "").toLowerCase()];
