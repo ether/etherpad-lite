@@ -87,7 +87,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     "li": 1
   };
 
-  _.each(hooks.callAll('aceRegisterBlockElements'), function(element){
+  _.each(hooks.callAll('ccRegisterBlockElements'), function(element){
     _blockElems[element] = 1;
   });
 
