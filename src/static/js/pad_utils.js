@@ -220,7 +220,10 @@ var padutils = {
         var startIndex = urls[j][0];
         var href = urls[j][1];
         advanceTo(startIndex);
-        pieces.push('<a ', (target ? 'target="' + Security.escapeHTMLAttribute(target) + '" ' : ''), 'href="', Security.escapeHTMLAttribute(href), '">');
+        // Using rel="noreferrer" stops leaking the URL/location of the pad when clicking links in the document.
+        // Not all browsers understand this attribute, but it's part of the HTML5 standard.
+        // http://www.w3.org/TR/html5/links.html#link-type-noreferrer
+        pieces.push('<a ', (target ? 'target="' + Security.escapeHTMLAttribute(target) + '" ' : ''), 'href="', Security.escapeHTMLAttribute(href), '" rel="noreferrer">');
         advanceTo(startIndex + href.length);
         pieces.push('</a>');
       }
