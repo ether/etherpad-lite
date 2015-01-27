@@ -285,7 +285,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
         var url = urlData[1];
         var urlLength = url.length;
         processNextChars(startIndex - idx);
-        assem.append('<a href="' + Security.escapeHTMLAttribute(url) + '">');
+        // Using rel="noreferrer" stops leaking the URL/location of the exported HTML when clicking links in the document.
+        // Not all browsers understand this attribute, but it's part of the HTML5 standard.
+        // http://www.w3.org/TR/html5/links.html#link-type-noreferrer
+        assem.append('<a href="' + Security.escapeHTMLAttribute(url) + '" rel="noreferrer">');
         processNextChars(urlLength);
         assem.append('</a>');
       });
