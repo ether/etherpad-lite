@@ -464,7 +464,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
 
       if (tname == "img"){
-        var context = hooks.callAll('collectContentImage', {
+        var collectContentImage = hooks.callAll('collectContentImage', {
           cc: cc,
           state: state,
           tname: tname,
