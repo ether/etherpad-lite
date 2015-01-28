@@ -324,7 +324,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         return [key, value];
       })
     );
-    
     lines.appendText('*', Changeset.makeAttribsString('+', attributes , apool));
   }
   cc.startNewLine = function(state)
@@ -472,9 +471,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           cls: cls,
           node: node
         });
+      }else{
+        // THIS SEEMS VERY HACKY! -- Please submit a better fix!
+        delete state.lineAttributes.img
       }
-      else if (tname == "br")
-      {        
+
+      if (tname == "br")
+      {
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
         var induceLineBreak = hooks.callAll('collectContentLineBreak', {
@@ -498,7 +501,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       {
         var styl = dom.nodeAttr(node, "style");
         var cls = dom.nodeProp(node, "className");
-
         var isPre = (tname == "pre");
         if ((!isPre) && abrowser.safari)
         {
