@@ -21,7 +21,7 @@
                       "express"                 : "3.8.1",
                       "async"                   : "0.9.0",
                       "connect"                 : "2.7.11",
-                      "clean-css"               : "0.3.2",
+                      "clean-css"               : "3.0.8",
                       "uglify-js"               : "2.4.16",
                       "formidable"              : "1.0.16",
                       "log4js"                  : "0.6.22",
