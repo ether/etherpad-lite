@@ -29,11 +29,9 @@ var chat = (function()
   var self = {
     show: function () 
     {      
-console.log("here");
       $("#chaticon").hide();
       $("#chatbox").show();
       $("#gritter-notice-wrapper").hide();
-      console.log("scroll down 1");
       self.scrollDown();
       chatMentions = 0;
       Tinycon.setBubble(0);
@@ -199,7 +197,6 @@ console.log("here");
       });
       if(!isHistoryAdd)
         self.scrollDown();
-         console.log("scroll down 2");
     },
     init: function(pad)
     {
