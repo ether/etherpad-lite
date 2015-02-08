@@ -93,7 +93,7 @@ var chat = (function()
         if(!self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < $('#chattext').height()) {
           // if we use a slow animate here we can have a race condition when a users focus can not be moved away
           // from the last message recieved.
-          $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "fast");
+          $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, { duration: 400, queue: false });
           self.lastMessage = $('#chattext > p').eq(-1);
         }
       }
