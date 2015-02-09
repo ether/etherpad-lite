@@ -494,6 +494,33 @@ exports.getChatHistory = function(padID, start, end, callback)
   });
 }
 
+/**
+appendChatMessage(padID, text, userID, time), creates a chat message for the pad id
+
+Example returns:
+
+{code: 0, message:"ok", data: null
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.appendChatMessage = function(padID, text, userID, time, callback)
+{
+  //text is required
+  if(typeof text != "string")
+  {
+    callback(new customError("text is no string","apierror"));
+    return;
+  }
+
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+    
+    pad.appendChatMessage(text, userID, parseInt(time));
+    callback();
+  });
+}
+
 /*****************/
 /**PAD FUNCTIONS */
 /*****************/
