@@ -936,9 +936,8 @@ input[type=checkbox] {
 .chatAndUsersChat{
   bottom:0px !important;
   padding:0 !important;
-  margin:0 !important;
+  margin: 165px 0px 0px 0px;
   right:0 !important;
-  top: 200px;
   width:182px !important;
   border: none !important;
   padding:5px !important;

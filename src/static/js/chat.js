@@ -57,7 +57,8 @@ var chat = (function()
     },
     chatAndUsers: function(fromInitialCall)
     {
-      if(!userAndChat || fromInitialCall){
+      var toEnable = $('#options-chatandusers').is(":checked");
+      if(toEnable || !userAndChat || fromInitialCall){
         padcookie.setPref("chatAndUsers", true);
         chat.stickToScreen(true);
         $('#options-stickychat').prop('checked', true)
