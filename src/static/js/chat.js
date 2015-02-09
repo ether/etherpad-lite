@@ -22,7 +22,6 @@ var hooks = require('./pluginfw/hooks');
 var chat = (function()
 {
   var isStuck = false;
-  var userAndChat = false;
   var gotInitialMessages = false;
   var historyPointer = 0;
   var chatMentions = 0;
@@ -58,14 +57,15 @@ var chat = (function()
     chatAndUsers: function(fromInitialCall)
     {
       var toEnable = $('#options-chatandusers').is(":checked");
-      if(toEnable || !userAndChat || fromInitialCall){
+      if(toEnable || fromInitialCall){
         padcookie.setPref("chatAndUsers", true);
         chat.stickToScreen(true);
         $('#options-stickychat').prop('checked', true)
         $('#options-stickychat').prop("disabled", "disabled");
         $('#users').addClass("chatAndUsers");
         $("#chatbox").addClass("chatAndUsersChat");
-        userAndChat = true;
+        // redraw
+        padeditbar.redrawHeight()
       }else{
         padcookie.setPref("chatAndUsers", false);
         $('#options-stickychat').prop("disabled", false);

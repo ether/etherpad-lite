@@ -897,7 +897,7 @@ input[type=checkbox] {
 #connectivity,
 #users {
   position: absolute;
-  top: 36px;
+  top: 38px;
   right: 20px;
   display: none;
   z-index: 500;
