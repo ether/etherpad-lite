@@ -187,6 +187,9 @@ var padeditbar = (function()
 
       $('#editorcontainer').css("top", containerTop);
 
+      // make sure pop ups are in the right place
+      $('.popup').css("top", $('#editorcontainer').offset().top + "px");
+
       // If sticky chat is enabled..
       if($('#options-stickychat').is(":checked")){
         $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
