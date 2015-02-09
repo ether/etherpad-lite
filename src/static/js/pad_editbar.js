@@ -195,9 +195,6 @@ var padeditbar = (function()
       // If chat and Users is enabled..
       if($('#options-chatandusers').is(":checked")){
         $('#users').css("top", $('#editorcontainer').offset().top + "px");
-
-        // We also need to move the chatbox lower..
-        $('#chatbox').css("top", 10 + $('#users').height() + $('#editorcontainer').offset().top + "px");
       }
 
     },
