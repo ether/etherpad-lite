@@ -188,16 +188,22 @@ var padeditbar = (function()
       $('#editorcontainer').css("top", containerTop);
 
       // make sure pop ups are in the right place
-      $('.popup').css("top", $('#editorcontainer').offset().top + "px");
+      if($('#editorcontainer').offset()){
+        $('.popup').css("top", $('#editorcontainer').offset().top + "px");
+      }
 
       // If sticky chat is enabled..
       if($('#options-stickychat').is(":checked")){
-        $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
+        if($('#editorcontainer').offset()){
+          $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
+        }
       };
 
       // If chat and Users is enabled..
       if($('#options-chatandusers').is(":checked")){
-        $('#users').css("top", $('#editorcontainer').offset().top + "px");
+        if($('#editorcontainer').offset()){
+          $('#users').css("top", $('#editorcontainer').offset().top + "px");
+        }
       }
 
     },
