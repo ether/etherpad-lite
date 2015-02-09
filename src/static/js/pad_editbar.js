@@ -186,9 +186,20 @@ var padeditbar = (function()
       $('#editbar').css("height", editbarHeight);
 
       $('#editorcontainer').css("top", containerTop);
+
+      // If sticky chat is enabled..
       if($('#options-stickychat').is(":checked")){
         $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
       };
+
+      // If chat and Users is enabled..
+      if($('#options-chatandusers').is(":checked")){
+        $('#users').css("top", $('#editorcontainer').offset().top + "px");
+
+        // We also need to move the chatbox lower..
+        $('#chatbox').css("top", 10 + $('#users').height() + $('#editorcontainer').offset().top + "px");
+      }
+
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
