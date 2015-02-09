@@ -373,7 +373,7 @@ li[data-key=showusers] > a #online_count {
   border-radius: 5px;
 }
 #myusernameform {
-  margin-left: 35px
+  margin-left: 30px
 }
 #myusernameedit {
   font-size: 1.3em;
@@ -382,7 +382,7 @@ li[data-key=showusers] > a #online_count {
   height: 18px;
   margin: 0;
   border: 0;
-  width: 117px;
+  width: 122px;
   background: transparent;
 }
 #myusernameform input.editable {
