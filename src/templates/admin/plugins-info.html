@@ -23,7 +23,7 @@
 
       <div class="innerwrapper">
         <h2>Etherpad Git Commit</h2>
-        <pre><%= gitCommit %></pre>
+        <p><a href='https://github.com/ether/etherpad-lite/commit/<%= gitCommit %>'><%= gitCommit %></a></p>
 
         <h2>Installed plugins</h2>
         <pre><%- plugins.formatPlugins().replace(", ","\n") %></pre>
