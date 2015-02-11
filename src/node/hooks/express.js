@@ -10,24 +10,9 @@ var server;
 var serverName;
 
 exports.createServer = function () {
-  //try to get the git version
-  var version = "";
-  try
-  {
-    var rootPath = path.resolve(npm.dir, '..');
-    var ref = fs.readFileSync(rootPath + "/.git/HEAD", "utf-8");
-    var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
-    version = fs.readFileSync(refPath, "utf-8");
-    version = version.substring(0, 7);
-    console.log("Your Etherpad git version is " + version);
-  }
-  catch(e) 
-  {
-    console.warn("Can't get git version for server header\n" + e.message)
-  }
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
-  serverName = "Etherpad " + version + " (http://etherpad.org)";
+  serverName = "Etherpad " + settings.getGitCommit() + " (http://etherpad.org)";
 
   exports.restartServer();
 
@@ -38,7 +23,6 @@ exports.createServer = function () {
   else{
     console.warn("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
   }
-
 }
 
 exports.restartServer = function () {
