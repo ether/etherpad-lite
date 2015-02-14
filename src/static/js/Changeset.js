@@ -927,16 +927,12 @@ exports.applyToText = function (cs, str) {
       break;
     case '-':
       removedLines += op.lines;
-      newlines = strIter.newlines()
       strIter.skip(op.chars);
-      if(!(newlines - strIter.newlines() == 0) && (newlines - strIter.newlines() != op.lines)){
-        newlinefail = true
-      }
       break;
     case '=':
       newlines = strIter.newlines()
       assem.append(strIter.take(op.chars));
-      if(!(newlines - strIter.newlines() == op.lines)){
+      if(newlines - strIter.newlines() != op.lines){
         newlinefail = true
       }
       break;
