@@ -910,14 +910,11 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
  * @params str {string} String to which a Changeset should be applied
  */
 exports.applyToText = function (cs, str) {
-  var totalNrOfLines = str.split("\n").length - 1;
-  var removedLines = 0;
   var unpacked = exports.unpack(cs);
   exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
   var csIter = exports.opIterator(unpacked.ops);
   var bankIter = exports.stringIterator(unpacked.charBank);
   var strIter = exports.stringIterator(str);
-  var newlines = 0
   var newlinefail = false
   var assem = exports.stringAssembler();
   while (csIter.hasNext()) {
@@ -937,7 +934,6 @@ exports.applyToText = function (cs, str) {
       if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
         newlinefail = true
       }
-      removedLines += op.lines;
       strIter.skip(op.chars);
       break;
     case '=':
@@ -946,12 +942,10 @@ exports.applyToText = function (cs, str) {
       if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
         newlinefail = true
       }
-      newlines = strIter.newlines()
       assem.append(strIter.take(op.chars));
       break;
     }
   }
-  exports.assert(totalNrOfLines >= removedLines,"cannot remove ", removedLines, " lines from text with ", totalNrOfLines, " lines");
   assem.append(strIter.take(strIter.remaining()));
   return [assem.toString(),newlinefail];
 };
