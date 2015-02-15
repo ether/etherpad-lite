@@ -1239,7 +1239,7 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
     }
   }
 
-  exports.assert(!lineAssem, "line assembler not finished");
+  exports.assert(!lineAssem, "line assembler not finished:"+cs);
   mut.close();
 
   //dmesg("-> "+lines.toSource());
