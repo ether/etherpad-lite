@@ -924,18 +924,30 @@ exports.applyToText = function (cs, str) {
     var op = csIter.next();
     switch (op.opcode) {
     case '+':
+      //op is + and op.lines 0: no newlines must be in op.chars
+      //op is + and op.lines >0: op.chars must include op.lines newlines
+      if(op.lines != bankIter.peek(op.chars).split("\n").length - 1){
+        newlinefail = true
+      }
       assem.append(bankIter.take(op.chars));
       break;
     case '-':
+      //op is - and op.lines 0: no newlines must be in the deleted string
+      //op is - and op.lines >0: op.lines newlines must be in the deleted string
+      if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
+        newlinefail = true
+      }
       removedLines += op.lines;
       strIter.skip(op.chars);
       break;
     case '=':
-      newlines = strIter.newlines()
-      assem.append(strIter.take(op.chars));
-      if(newlines - strIter.newlines() != op.lines){
+      //op is = and op.lines 0: no newlines must be in the copied string
+      //op is = and op.lines >0: op.lines newlines must be in the copied string
+      if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
         newlinefail = true
       }
+      newlines = strIter.newlines()
+      assem.append(strIter.take(op.chars));
       break;
     }
   }
