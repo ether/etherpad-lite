@@ -507,6 +507,7 @@ exports.opAssembler = function () {
  */ 
 exports.stringIterator = function (str) {
   var curIndex = 0;
+  // newLines is the number of \n between curIndex and str.length
   var newLines = str.split("\n").length - 1
   function getnewLines(){
     return newLines
