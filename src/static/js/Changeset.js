@@ -910,7 +910,7 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
  * @params str {string} String to which a Changeset should be applied
  */
 exports.applyToText = function (cs, str) {
-  var totalNrOfLines = str.split("\n").length;
+  var totalNrOfLines = str.split("\n").length - 1;
   var removedLines = 0;
   var unpacked = exports.unpack(cs);
   exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
