@@ -1620,7 +1620,7 @@ exports.makeAText = function (text, attribs) {
 exports.applyToAText = function (cs, atext, pool) {
   var text = exports.applyToText(cs, atext.text)
   if(text[1]){
-    throw new Error("newline count is wrong, cs:"+cs+" and text:"+atext)
+    throw new Error("newline count is wrong, cs:"+cs+" and text:"+atext.text)
   }
   return {
     text: text[0],
