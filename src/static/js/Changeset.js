@@ -915,7 +915,6 @@ exports.applyToText = function (cs, str) {
   var csIter = exports.opIterator(unpacked.ops);
   var bankIter = exports.stringIterator(unpacked.charBank);
   var strIter = exports.stringIterator(str);
-  var newlinefail = false;
   var assem = exports.stringAssembler();
   while (csIter.hasNext()) {
     var op = csIter.next();
@@ -924,7 +923,7 @@ exports.applyToText = function (cs, str) {
       //op is + and op.lines 0: no newlines must be in op.chars
       //op is + and op.lines >0: op.chars must include op.lines newlines
       if(op.lines != bankIter.peek(op.chars).split("\n").length - 1){
-        newlinefail = true;
+        throw new Error("newline count is wrong in op +; cs:"+cs+" and text:"+str);
       }
       assem.append(bankIter.take(op.chars));
       break;
@@ -932,7 +931,7 @@ exports.applyToText = function (cs, str) {
       //op is - and op.lines 0: no newlines must be in the deleted string
       //op is - and op.lines >0: op.lines newlines must be in the deleted string
       if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
-        newlinefail = true;
+        throw new Error("newline count is wrong in op -; cs:"+cs+" and text:"+str);
       }
       strIter.skip(op.chars);
       break;
@@ -940,14 +939,14 @@ exports.applyToText = function (cs, str) {
       //op is = and op.lines 0: no newlines must be in the copied string
       //op is = and op.lines >0: op.lines newlines must be in the copied string
       if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
-        newlinefail = true;
+        throw new Error("newline count is wrong in op =; cs:"+cs+" and text:"+str);
       }
       assem.append(strIter.take(op.chars));
       break;
     }
   }
   assem.append(strIter.take(strIter.remaining()));
-  return [assem.toString(),newlinefail];
+  return assem.toString();
 };
 
 /**
@@ -1618,12 +1617,8 @@ exports.makeAText = function (text, attribs) {
  * @param pool {AttribPool} Attribute Pool to add to
  */
 exports.applyToAText = function (cs, atext, pool) {
-  var text = exports.applyToText(cs, atext.text)
-  if(text[1]){
-    throw new Error("newline count is wrong, cs:"+cs+" and text:"+atext.text);
-  }
   return {
-    text: text[0],
+    text: exports.applyToText(cs, atext.text),
     attribs: exports.applyToAttribution(cs, atext.attribs, pool)
   };
 };
