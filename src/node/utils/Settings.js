@@ -144,6 +144,11 @@ exports.loglevel = "INFO";
  */
 exports.disableIPlogging = false;
 
+/** 
+ * Disable Load Testing
+ */
+exports.loadTest = false;
+
 /*
 * log4js appender configuration
 */

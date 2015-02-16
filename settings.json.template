@@ -108,6 +108,9 @@
 
   // restrict socket.io transport methods
   "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
+
+  // Allow Load Testing tools to hit the Etherpad Instance.  Warning this will disable security on the instance.
+  "loadTest": false,
   
   /* The toolbar buttons configuration.
   "toolbar": {
