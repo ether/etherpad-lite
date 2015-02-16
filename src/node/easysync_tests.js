@@ -149,7 +149,7 @@ function runTests() {
 
     var correctText = correct.join('');
     //print(literal(cs));
-    var outText = Changeset.applyToText(cs, inText)[0];
+    var outText = Changeset.applyToText(cs, inText);
     assertEqualStrings(correctText, outText);
   }
 
@@ -585,9 +585,9 @@ function runTests() {
     var change123a = Changeset.checkRep(Changeset.compose(change1, change23, p));
     assertEqualStrings(change123, change123a);
 
-    assertEqualStrings(text2, Changeset.applyToText(change12, startText)[0]);
-    assertEqualStrings(text3, Changeset.applyToText(change23, text1)[0]);
-    assertEqualStrings(text3, Changeset.applyToText(change123, startText)[0]);
+    assertEqualStrings(text2, Changeset.applyToText(change12, startText));
+    assertEqualStrings(text3, Changeset.applyToText(change23, text1));
+    assertEqualStrings(text3, Changeset.applyToText(change123, startText));
   }
 
   for (var i = 0; i < 30; i++) testCompose(i);
@@ -699,7 +699,7 @@ function runTests() {
     print("> testMakeSplice");
 
     var t = "a\nb\nc\n";
-    var t2 = Changeset.applyToText(Changeset.makeSplice(t, 5, 0, "def"), t)[0];
+    var t2 = Changeset.applyToText(Changeset.makeSplice(t, 5, 0, "def"), t);
     assertEqualStrings("a\nb\ncdef\n", t2);
 
   })();
