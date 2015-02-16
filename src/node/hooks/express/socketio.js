@@ -23,8 +23,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   io.use(function(socket, accept) {
     var data = socket.request;
-    if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
-
+    // Use a setting if we want to allow load Testing
+    if(!data.headers.cookie && settings.loadTest){
+      accept(null, true);
+    }else{
+      if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
+    }
     // Use connect's cookie parser, because it knows how to parse signed cookies
     connect.cookieParser(webaccess.secret)(data, {}, function(err){
       if(err) {
