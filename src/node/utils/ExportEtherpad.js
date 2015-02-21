@@ -48,7 +48,7 @@ exports.getPadRaw = function(padId, callback){
 
               // Get the author info
               db.get("globalAuthor:"+authorId, function(e, authorEntry){
-                authorEntry.padIDs = padId;
+                if(authorEntry && authorEntry.padIDs) authorEntry.padIDs = padId;
                 if(!e) data["globalAuthor:"+authorId] = authorEntry;
               });
 
