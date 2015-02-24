@@ -54,6 +54,18 @@ Pad.prototype.getHeadRevisionNumber = function getHeadRevisionNumber() {
   return this.head;
 };
 
+Pad.prototype.getSavedRevisionsNumber = function getSavedRevisionsNumber() {
+  return this.savedRevisions.length;
+};
+
+Pad.prototype.getSavedRevisionsList = function getSavedRevisionsList() {
+  var savedRev = new Array();
+  for(var rev in this.savedRevisions){
+    savedRev.push(this.savedRevisions[rev].revNum);
+  }
+  return savedRev;
+};
+
 Pad.prototype.getPublicStatus = function getPublicStatus() {
   return this.publicStatus;
 };

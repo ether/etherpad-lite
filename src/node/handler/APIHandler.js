@@ -368,6 +368,8 @@ var version =
   , "setHTML"                   : ["padID", "html"]
   , "getAttributePool"          : ["padID"]
   , "getRevisionsCount"         : ["padID"]
+  , "getSavedRevisionsCount"    : ["padID"]
+  , "listSavedRevisions"        : ["padID"]
   , "getRevisionChangeset"      : ["padID", "rev"]
   , "getLastEdited"             : ["padID"]
   , "deletePad"                 : ["padID"]

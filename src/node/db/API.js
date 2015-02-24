@@ -518,6 +518,44 @@ exports.getRevisionsCount = function(padID, callback)
 }
 
 /**
+getSavedRevisionsCount(padID) returns the number of saved revisions of this pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {savedRevisions: 42}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getSavedRevisionsCount = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    callback(null, {savedRevisions: pad.getSavedRevisionsNumber()});
+  });
+}
+
+/**
+listSavedRevisions(padID) returns the list of saved revisions of this pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {savedRevisions: [2, 42, 1337]}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.listSavedRevisions = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    callback(null, {savedRevisions: pad.getSavedRevisionsList()});
+  });
+}
+
+/**
 getLastEdited(padID) returns the timestamp of the last revision of the pad
 
 Example returns:
