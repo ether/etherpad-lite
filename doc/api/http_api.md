@@ -420,6 +420,15 @@ returns the list of saved revisions of this pad
   * `{code: 0, message:"ok", data: {savedRevisions: [2, 42, 1337]}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
+#### saveRevision(padID [, rev])
+ * API >= 1.2.11
+
+saves a revision
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: null}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
 #### padUsersCount(padID)
  * API >= 1
 
