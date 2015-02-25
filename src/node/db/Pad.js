@@ -63,6 +63,9 @@ Pad.prototype.getSavedRevisionsList = function getSavedRevisionsList() {
   for(var rev in this.savedRevisions){
     savedRev.push(this.savedRevisions[rev].revNum);
   }
+  savedRev.sort(function(a, b) {
+    return a - b;
+  });
   return savedRev;
 };
 
