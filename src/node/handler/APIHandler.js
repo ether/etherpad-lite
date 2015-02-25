@@ -370,6 +370,7 @@ var version =
   , "getRevisionsCount"         : ["padID"]
   , "getSavedRevisionsCount"    : ["padID"]
   , "listSavedRevisions"        : ["padID"]
+  , "saveRevision"              : ["padID", "rev"]
   , "getRevisionChangeset"      : ["padID", "rev"]
   , "getLastEdited"             : ["padID"]
   , "deletePad"                 : ["padID"]
