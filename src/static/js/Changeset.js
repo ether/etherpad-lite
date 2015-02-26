@@ -1318,7 +1318,7 @@ exports.compose = function (cs1, cs2, pool) {
   var unpacked2 = exports.unpack(cs2);
   var len1 = unpacked1.oldLen;
   var len2 = unpacked1.newLen;
-  exports.assert(len2 == unpacked2.oldLen, "mismatched composition of two changesets");
+  exports.assert(len2 == unpacked2.oldLen, "mismatched composition of two changesets - cs1:",cs1," and cs2:",cs2);
   var len3 = unpacked2.newLen;
   var bankIter1 = exports.stringIterator(unpacked1.charBank);
   var bankIter2 = exports.stringIterator(unpacked2.charBank);

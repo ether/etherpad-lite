@@ -1629,10 +1629,14 @@ function composePadChangesets(padId, startNum, endNum, callback)
       changeset = changesets[startNum];
       var pool = pad.apool();
 
-      for(var r=startNum+1;r<endNum;r++)
-      {
-        var cs = changesets[r];
-        changeset = Changeset.compose(changeset, cs, pool);
+      try {
+        for(var r=startNum+1;r<endNum;r++) {
+          var cs = changesets[r];
+          changeset = Changeset.compose(changeset, cs, pool);
+        }
+      } catch(e){
+        console.warn("failed to compose cs in pad:",padId);
+        return;
       }
 
       callback(null);
