@@ -2,6 +2,8 @@
 
 # A really-real time collaborative word processor for the web
 ![alt text](http://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
+[![Inline docs](http://inch-ci.org/github/ether/etherpad-lite.svg?branch=develop)](http://inch-ci.org/github/ether/etherpad-lite)
+[![Code Climate](https://codeclimate.com/github/ether/etherpad-lite/badges/gpa.svg)](https://codeclimate.com/github/ether/etherpad-lite)
 
 # About
 Etherpad is a really-real time collaborative editor maintained by the Etherpad Community.
