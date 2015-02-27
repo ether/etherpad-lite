@@ -518,6 +518,117 @@ exports.getRevisionsCount = function(padID, callback)
 }
 
 /**
+getSavedRevisionsCount(padID) returns the number of saved revisions of this pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {savedRevisions: 42}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getSavedRevisionsCount = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    callback(null, {savedRevisions: pad.getSavedRevisionsNumber()});
+  });
+}
+
+/**
+listSavedRevisions(padID) returns the list of saved revisions of this pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {savedRevisions: [2, 42, 1337]}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.listSavedRevisions = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    callback(null, {savedRevisions: pad.getSavedRevisionsList()});
+  });
+}
+
+/**
+saveRevision(padID) returns the list of saved revisions of this pad
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.saveRevision = function(padID, rev, callback)
+{
+  //check if rev is set
+  if(typeof rev == "function")
+  {
+    callback = rev;
+    rev = undefined;
+  }
+
+  //check if rev is a number
+  if(rev !== undefined && typeof rev != "number")
+  {
+    //try to parse the number
+    if(!isNaN(parseInt(rev)))
+    {
+      rev = parseInt(rev);
+    }
+    else
+    {
+      callback(new customError("rev is not a number", "apierror"));
+      return;
+    }
+  }
+
+  //ensure this is not a negativ number
+  if(rev !== undefined && rev < 0)
+  {
+    callback(new customError("rev is a negativ number","apierror"));
+    return;
+  }
+
+  //ensure this is not a float value
+  if(rev !== undefined && !is_int(rev))
+  {
+    callback(new customError("rev is a float value","apierror"));
+    return;
+  }
+
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    //the client asked for a special revision
+    if(rev !== undefined)
+    {
+      //check if this is a valid revision
+      if(rev > pad.getHeadRevisionNumber())
+      {
+        callback(new customError("rev is higher than the head revision of the pad","apierror"));
+        return;
+      }
+    } else {
+      rev = pad.getHeadRevisionNumber();
+    }
+
+    authorManager.createAuthor('API', function(err, author) {
+      if(ERR(err, callback)) return;
+
+      pad.addSavedRevision(rev, author.authorID, 'Saved through API call');
+      callback();
+    });
+  });
+}
+
+/**
 getLastEdited(padID) returns the timestamp of the last revision of the pad
 
 Example returns:
