@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ether/etherpad-lite.svg?branch=develop)](https://travis-ci.org/ether/etherpad-lite)
+
 # A really-real time collaborative word processor for the web
 ![alt text](http://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
 
