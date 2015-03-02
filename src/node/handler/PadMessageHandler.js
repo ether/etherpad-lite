@@ -1635,7 +1635,8 @@ function composePadChangesets(padId, startNum, endNum, callback)
           changeset = Changeset.compose(changeset, cs, pool);
         }
       } catch(e){
-        console.warn("failed to compose cs in pad:",padId);
+        // r-1 indicates the rev that was build starting with startNum, applying startNum+1, +2, +3
+        console.warn("failed to compose cs in pad:",padId," startrev:",startNum," current rev:",r);
         return callback(e);
       }
 
