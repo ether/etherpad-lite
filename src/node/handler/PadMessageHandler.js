@@ -1636,7 +1636,7 @@ function composePadChangesets(padId, startNum, endNum, callback)
         }
       } catch(e){
         console.warn("failed to compose cs in pad:",padId);
-        return;
+        return callback(e);
       }
 
       callback(null);
