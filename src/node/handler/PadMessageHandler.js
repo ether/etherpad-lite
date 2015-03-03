@@ -665,7 +665,8 @@ function handleUserChanges(data, cb)
             if(!attr) return
             attr = wireApool.getAttrib(attr)
             if(!attr) return
-            if('author' == attr[0] && attr[1] != thisSession.author) throw new Error("Trying to submit changes as another author in changeset "+changeset);
+            //the empty author is used in the clearAuthorship functionality so this should be the only exception
+            if('author' == attr[0] && (attr[1] != thisSession.author && attr[1] != '')) throw new Error("Trying to submit changes as another author in changeset "+changeset);
           })
         }
 
