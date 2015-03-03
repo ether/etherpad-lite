@@ -659,8 +659,7 @@ function handleUserChanges(data, cb)
 
           //+ can add text with attribs
           //= can change or add attribs
-          //- can have attribs, but they are discarded and don't show up in the apool
-          if(op.opcode == '-') continue;
+          //- can have attribs, but they are discarded and don't show up in the attribs - but do show up in the  pool
 
           op.attribs.split('*').forEach(function(attr) {
             if(!attr) return
