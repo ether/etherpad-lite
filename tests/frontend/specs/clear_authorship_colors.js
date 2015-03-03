@@ -47,6 +47,10 @@ describe("clear authorship colors button", function(){
       var hasAuthorClass = inner$("div").first().attr("class").indexOf("author") !== -1;
       expect(hasAuthorClass).to.be(false);
 
+
+      var disconnectVisible = chrome$("div.disconnected").attr("class").indexOf("visible") === -1
+      expect(disconnectVisible).to.be(false);
+
       done();
     });
 
