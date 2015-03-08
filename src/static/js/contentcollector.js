@@ -461,7 +461,16 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
-
+      var helpers = {
+                //returns attributes like style, id
+                getAttr: function(htmlAttr){
+                    return dom.nodeAttr(node, htmlAttr);
+                },
+                //gets property of node
+                getProp: function(htmlProp){
+                    return dom.nodeProp(node, htmlProp);
+                }
+      };
       if (tname == "img"){
         var collectContentImage = hooks.callAll('collectContentImage', {
           cc: cc,
@@ -516,7 +525,8 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             state: state,
             tname: tname,
             styl: styl,
-            cls: cls
+            cls: cls,
+            helpers: helpers
           });
           if (tname == "b" || (styl && /\bfont-weight:\s*bold\b/i.exec(styl)) || tname == "strong")
           {
@@ -606,7 +616,8 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             state: state,
             tname: tname,
             styl: styl,
-            cls: cls
+            cls: cls,
+            helpers: helpers
           });
         }
 
