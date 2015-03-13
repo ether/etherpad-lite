@@ -3319,6 +3319,7 @@ function Ace2Inner(){
     {
       doDeleteKey(evt);
     });
+    return true;
   }
 
   function handleClick(evt)
