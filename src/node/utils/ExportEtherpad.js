@@ -23,9 +23,19 @@ exports.getPadRaw = function(padId, callback){
   async.waterfall([
   function(cb){
 
-    // Get the Pad available content keys
-    db.findKeys("pad:"+padId+"*", null, function(err,records){
+    // Get the Pad
+    db.findKeys("pad:"+padId, null, function(err,padcontent){
       if(!err){
+        cb(err, padcontent);
+      }
+    })
+  },
+  function(padcontent,cb){
+
+    // Get the Pad available content keys
+    db.findKeys("pad:"+padId+":*", null, function(err,records){
+      if(!err){
+        for (var key in padcontent) { records.push(padcontent[key]);}
         cb(err, records);
       }
     })
