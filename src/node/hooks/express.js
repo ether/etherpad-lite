@@ -40,10 +40,27 @@ exports.restartServer = function () {
     console.log( "SSL -- server key file: " + settings.ssl.key );
     console.log( "SSL -- Certificate Authority's certificate file: " + settings.ssl.cert );
     
+    if (settings.ssl.ca) {
+      var ca = [];
+      var chain = fs.readFileSync(settings.ssl.ca, 'utf8');
+      chain = chain.split("\n");
+      var cert = [];
+      for (_i = 0, _len = chain.length; _i < _len; _i++) {
+        line = chain[_i];
+        if (!(line.length !== 0)) continue;
+        cert.push(line);
+        if (line.match(/-END CERTIFICATE-/)) {
+          ca.push(cert.join("\n"));
+          cert = [];
+        }
+      }
+    }
+    
     var options = {
       key: fs.readFileSync( settings.ssl.key ),
       cert: fs.readFileSync( settings.ssl.cert )
     };
+    if (settings.ssl.ca) options.ca = ca;
     
     var https = require('https');
     server = https.createServer(options, app);
