@@ -1,3 +1,14 @@
+# 1.5.2
+ * NEW: Support for node version 0.12.x
+ * NEW: API endpoint saveRevision, getSavedRevisionCount and listSavedRevisions
+ * NEW: setting to allow load testing
+ * Fix: Rare scroll issue
+ * Fix: Handling of custom pad path
+ * Fix: Better error handling of imports and exports of type "etherpad"
+ * Fix: Walking caret in chrome
+ * Fix: Better handling for changeset problems
+ * SECURITY Fix: Information leak for etherpad exports (CVE-2015-2298)
+
 # 1.5.1
  * NEW: High resolution Icon
  * NEW: Use HTTPS for plugins.json download

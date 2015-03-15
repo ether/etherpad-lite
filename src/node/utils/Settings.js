@@ -144,6 +144,11 @@ exports.loglevel = "INFO";
  */
 exports.disableIPlogging = false;
 
+/** 
+ * Disable Load Testing
+ */
+exports.loadTest = false;
+
 /*
 * log4js appender configuration
 */
@@ -178,6 +183,25 @@ exports.abiwordAvailable = function()
     return "no";
   }
 };
+
+// Provide git version if available
+exports.getGitCommit = function() {
+  var version = "";
+  try
+  {
+    var rootPath = path.resolve(npm.dir, '..');
+    var ref = fs.readFileSync(rootPath + "/.git/HEAD", "utf-8");
+    var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
+    version = fs.readFileSync(refPath, "utf-8");
+    version = version.substring(0, 7);
+    console.log("Your Etherpad git version is " + version);
+  }
+  catch(e)
+  {
+    console.warn("Can't get git version for server header\n" + e.message)
+  }
+  return version;
+}
 
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
@@ -261,3 +285,5 @@ exports.reloadSettings = function reloadSettings() {
 
 // initially load settings
 exports.reloadSettings();
+
+

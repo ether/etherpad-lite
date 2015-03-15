@@ -3313,6 +3313,15 @@ function Ace2Inner(){
     return [rep.lines.offsetOfIndex(lineRange[0]), rep.lines.offsetOfIndex(lineRange[1])];
   }
 
+  function handleCut(evt)
+  {
+    inCallStackIfNecessary("handleCut", function()
+    {
+      doDeleteKey(evt);
+    });
+    return true;
+  }
+
   function handleClick(evt)
   {
     inCallStackIfNecessary("handleClick", function()
@@ -4854,6 +4863,7 @@ function Ace2Inner(){
     $(document).on("keypress", handleKeyEvent);
     $(document).on("keyup", handleKeyEvent);
     $(document).on("click", handleClick);
+    $(document).on("cut", handleCut);
     $(root).on("blur", handleBlur);
     if (browser.msie)
     {

@@ -48,6 +48,7 @@
 	"pad.importExport.import": "Загрузить любой текстовый файл или документ",
 	"pad.importExport.importSuccessful": "Успешно!",
 	"pad.importExport.export": "Экспортировать текущий документ как:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Обычный текст",
 	"pad.importExport.exportword": "Microsoft Word",

@@ -11,7 +11,10 @@ span { cursor: auto; }
   background: #acf;
 }
 
-a { cursor: pointer !important; }
+a { 
+  cursor: pointer !important; 
+  white-space:pre-wrap;
+}
 
 ul, ol, li {
   padding: 0;

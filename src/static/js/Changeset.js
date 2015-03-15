@@ -507,6 +507,7 @@ exports.opAssembler = function () {
  */ 
 exports.stringIterator = function (str) {
   var curIndex = 0;
+  // newLines is the number of \n between curIndex and str.length
   var newLines = str.split("\n").length - 1
   function getnewLines(){
     return newLines
@@ -909,42 +910,43 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
  * @params str {string} String to which a Changeset should be applied
  */
 exports.applyToText = function (cs, str) {
-  var totalNrOfLines = str.split("\n").length;
-  var removedLines = 0;
   var unpacked = exports.unpack(cs);
   exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
   var csIter = exports.opIterator(unpacked.ops);
   var bankIter = exports.stringIterator(unpacked.charBank);
   var strIter = exports.stringIterator(str);
-  var newlines = 0
-  var newlinefail = false
   var assem = exports.stringAssembler();
   while (csIter.hasNext()) {
     var op = csIter.next();
     switch (op.opcode) {
     case '+':
+      //op is + and op.lines 0: no newlines must be in op.chars
+      //op is + and op.lines >0: op.chars must include op.lines newlines
+      if(op.lines != bankIter.peek(op.chars).split("\n").length - 1){
+        throw new Error("newline count is wrong in op +; cs:"+cs+" and text:"+str);
+      }
       assem.append(bankIter.take(op.chars));
       break;
     case '-':
-      removedLines += op.lines;
-      newlines = strIter.newlines()
-      strIter.skip(op.chars);
-      if(!(newlines - strIter.newlines() == 0) && (newlines - strIter.newlines() != op.lines)){
-        newlinefail = true
+      //op is - and op.lines 0: no newlines must be in the deleted string
+      //op is - and op.lines >0: op.lines newlines must be in the deleted string
+      if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
+        throw new Error("newline count is wrong in op -; cs:"+cs+" and text:"+str);
       }
+      strIter.skip(op.chars);
       break;
     case '=':
-      newlines = strIter.newlines()
-      assem.append(strIter.take(op.chars));
-      if(!(newlines - strIter.newlines() == op.lines)){
-        newlinefail = true
+      //op is = and op.lines 0: no newlines must be in the copied string
+      //op is = and op.lines >0: op.lines newlines must be in the copied string
+      if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
+        throw new Error("newline count is wrong in op =; cs:"+cs+" and text:"+str);
       }
+      assem.append(strIter.take(op.chars));
       break;
     }
   }
-  exports.assert(totalNrOfLines >= removedLines,"cannot remove ", removedLines, " lines from text with ", totalNrOfLines, " lines");
   assem.append(strIter.take(strIter.remaining()));
-  return [assem.toString(),newlinefail];
+  return assem.toString();
 };
 
 /**
@@ -1236,7 +1238,7 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
     }
   }
 
-  exports.assert(!lineAssem, "line assembler not finished");
+  exports.assert(!lineAssem, "line assembler not finished:"+cs);
   mut.close();
 
   //dmesg("-> "+lines.toSource());
@@ -1615,12 +1617,8 @@ exports.makeAText = function (text, attribs) {
  * @param pool {AttribPool} Attribute Pool to add to
  */
 exports.applyToAText = function (cs, atext, pool) {
-  var text = exports.applyToText(cs, atext.text)
-  if(text[1]){
-    throw new Error()
-  }
   return {
-    text: text[0],
+    text: exports.applyToText(cs, atext.text),
     attribs: exports.applyToAttribution(cs, atext.attribs, pool)
   };
 };

@@ -373,7 +373,7 @@ li[data-key=showusers] > a #online_count {
   border-radius: 5px;
 }
 #myusernameform {
-  margin-left: 35px
+  margin-left: 30px
 }
 #myusernameedit {
   font-size: 1.3em;
@@ -382,7 +382,7 @@ li[data-key=showusers] > a #online_count {
   height: 18px;
   margin: 0;
   border: 0;
-  width: 117px;
+  width: 122px;
   background: transparent;
 }
 #myusernameform input.editable {
@@ -897,7 +897,7 @@ input[type=checkbox] {
 #connectivity,
 #users {
   position: absolute;
-  top: 36px;
+  top: 38px;
   right: 20px;
   display: none;
   z-index: 500;
@@ -919,7 +919,8 @@ input[type=checkbox] {
   right:0px !important;
   border-radius:0px !important;
   width:182px !important;
-  margin:2px 0 0 0 !important;
+/* Below makes UI look weird when X makes editbar flow onto two lines */
+/*  margin:2px 0 0 0 !important;*/
   border: none !important;
   border-bottom: 1px solid #ccc !important;
   height:155px !important;
@@ -935,9 +936,8 @@ input[type=checkbox] {
 .chatAndUsersChat{
   bottom:0px !important;
   padding:0 !important;
-  margin:0 !important;
+  margin: 165px 0px 0px 0px;
   right:0 !important;
-  top: 200px !important;
   width:182px !important;
   border: none !important;
   padding:5px !important;
@@ -1014,12 +1014,16 @@ input[type=checkbox] {
     top: 72px !important;
   }
 }
+
+/* Mobile devices */
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
     #users {
       top: auto;
       right:0px !important;
       bottom: 33px;
       border-radius: 0px !important;
+      height: 55px !important;
+      overflow: auto;
     }
     #mycolorpicker {
       left: -73px;
@@ -1099,7 +1103,8 @@ input[type=checkbox] {
     }
     #chatbox{
       position:absolute;
-      bottom:33px;
+      bottom:33px !important;
+      margin: 65px 0 0 0;
     }
     #gritter-notice-wrapper{
       bottom:43px !important;

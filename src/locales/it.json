@@ -5,7 +5,8 @@
 			"Gianfranco",
 			"Muxator",
 			"Vituzzu",
-			"Macofe"
+			"Macofe",
+			"Nivit"
 		]
 	},
 	"index.newPad": "Nuovo Pad",
@@ -36,6 +37,7 @@
 	"pad.settings.padSettings": "Impostazioni del Pad",
 	"pad.settings.myView": "Mia visualizzazione",
 	"pad.settings.stickychat": "Chat sempre sullo schermo",
+	"pad.settings.chatandusers": "Mostra chat e utenti",
 	"pad.settings.colorcheck": "Colori che indicano gli autori",
 	"pad.settings.linenocheck": "Numeri di riga",
 	"pad.settings.rtlcheck": "Leggere il contenuto da destra a sinistra?",
@@ -48,6 +50,7 @@
 	"pad.importExport.import": "Carica un file di testo o un documento",
 	"pad.importExport.importSuccessful": "Riuscito!",
 	"pad.importExport.export": "Esportare il Pad corrente come:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Solo testo",
 	"pad.importExport.exportword": "Microsoft Word",

@@ -61,7 +61,7 @@ Portal submits content into new blog post
 ## Usage
 
 ### API version
-The latest version is `1.2.9`
+The latest version is `1.2.11`
 
 The current version can be queried via /api.
 
@@ -400,6 +400,33 @@ returns the number of revisions of this pad
 
 *Example returns:*
   * `{code: 0, message:"ok", data: {revisions: 56}}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
+#### getSavedRevisionsCount(padID)
+ * API >= 1.2.11
+
+returns the number of saved revisions of this pad
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: {savedRevisions: 42}}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
+#### listSavedRevisions(padID)
+ * API >= 1.2.11
+
+returns the list of saved revisions of this pad
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: {savedRevisions: [2, 42, 1337]}}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+
+#### saveRevision(padID [, rev])
+ * API >= 1.2.11
+
+saves a revision
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
 #### padUsersCount(padID)

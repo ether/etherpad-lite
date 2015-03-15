@@ -11,7 +11,8 @@
 			"Dianakc",
 			"Macofe",
 			"Rodrigo codignoli",
-			"Webysther"
+			"Webysther",
+			"Fasouzafreitas"
 		]
 	},
 	"index.newPad": "Nova Nota",
@@ -43,6 +44,7 @@
 	"pad.settings.padSettings": "Configurações da Nota",
 	"pad.settings.myView": "Minha Visão",
 	"pad.settings.stickychat": "Conversa sempre visível",
+	"pad.settings.chatandusers": "Mostrar o chat e os usuários",
 	"pad.settings.colorcheck": "Cores de autoria",
 	"pad.settings.linenocheck": "Números de linha",
 	"pad.settings.rtlcheck": "Ler conteúdo da direita para esquerda?",
@@ -116,6 +118,7 @@
 	"timeslider.month.december": "Dezembro",
 	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: autor anônimo, other: autores anônimos ]}",
 	"pad.savedrevs.marked": "Esta revisão foi marcada como salva",
+	"pad.savedrevs.timeslider": "Pode consultar as revisões salvas visitando a linha do tempo",
 	"pad.userlist.entername": "Insira o seu nome",
 	"pad.userlist.unnamed": "Sem título",
 	"pad.userlist.guest": "Convidado",

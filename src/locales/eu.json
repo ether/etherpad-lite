@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Theklan"
+			"Theklan",
+			"Subi"
 		]
 	},
 	"index.newPad": "Pad berria",
@@ -44,6 +45,7 @@
 	"pad.importExport.import": "Igo edozein testu fitxategi edo dokumentu",
 	"pad.importExport.importSuccessful": "Arrakastatsua!",
 	"pad.importExport.export": "Oraingo pad hau honela esportatu:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Testu laua",
 	"pad.importExport.exportword": "Microsoft Word",
