@@ -189,13 +189,15 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
    },
   
    /*
-     Sets a specified attribute on a line
-     @param lineNum: the number of the line to set the attribute for
-     @param attributeKey: the name of the attribute to set, e.g. list
-     @param attributeValue: an optional parameter to pass to the attribute (e.g. indention level)
+     Toggles a line attribute for the specified line number
+     If a line attribute with the specified name exists with any value it will be removed
+     Otherwise it will be set to the given value
+     @param lineNum: the number of the line to toggle the attribute for
+     @param attributeKey: the name of the attribute to toggle, e.g. list
+     @param attributeValue: the value to pass to the attribute (e.g. indention level)
   */
   toggleAttributeOnLine: function(lineNum, attributeName, attributeValue) {
-    return this.getAttributeOnLine(attributeName) ?
+    return this.getAttributeOnLine(lineNum, attributeName) ?
       this.removeAttributeOnLine(lineNum, attributeName) :
       this.setAttributeOnLine(lineNum, attributeName, attributeValue);
     
