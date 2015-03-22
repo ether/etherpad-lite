@@ -462,14 +462,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
       var helpers = {
-                //returns attributes like style, id
-                getAttr: function(htmlAttr){
-                    return dom.nodeAttr(node, htmlAttr);
-                },
-                //gets property of node
-                getProp: function(htmlProp){
-                    return dom.nodeProp(node, htmlProp);
-                }
+        //returns attributes like style, id
+        getAttr: function(htmlAttr){
+            return dom.nodeAttr(node, htmlAttr);
+        },
+        //gets property of node
+        getProp: function(htmlProp){
+            return dom.nodeProp(node, htmlProp);
+        }
       };
       if (tname == "img"){
         var collectContentImage = hooks.callAll('collectContentImage', {
