@@ -179,9 +179,9 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
        var list = _.chain(attribs).filter(function(a){return !!a[1];}).map(function(a){return a[0];}).value();
        //if we have marker and any of attributes don't need to have marker. we need delete it
        if(hasMarker && !_.intersection(lineAttributes,list)){
-           ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 0], [lineNum, 1]);
+           ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 1], [lineNum, 2]);
        }else{
-           ChangesetUtils.buildKeepRange(this.rep, builder, [lineNum, 0], [lineNum, 1], attribs, this.rep.apool);
+           ChangesetUtils.buildKeepRange(this.rep, builder, [lineNum, 1], [lineNum, 2], attribs, this.rep.apool);
        }
      
      return this.applyChangeset(builder);
