@@ -297,7 +297,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       if (state.attribs[a])
       {
-        lst.push([a, 'true']);
+        if (a.indexOf(',') !== -1)
+        {
+           lst.push(a.split(','));
+        }
+        else
+        {
+           lst.push([a, 'true']);
+        }
       }
     }
     if (state.authorLevel > 0)
