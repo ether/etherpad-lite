@@ -471,11 +471,11 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       var helpers = {
         //returns attributes like style, id
         getAttr: function(htmlAttr){
-            return dom.nodeAttr(node, htmlAttr);
+          return dom.nodeAttr(node, htmlAttr);
         },
         //gets property of node
         getProp: function(htmlProp){
-            return dom.nodeProp(node, htmlProp);
+          return dom.nodeProp(node, htmlProp);
         }
       };
       if (tname == "img"){
