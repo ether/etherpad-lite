@@ -159,33 +159,37 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
    *  @param attributeName the name of the attribute to remove, e.g. list
    *  @param attributeValue if given only attributes with equal value will be removed
    */
-   removeAttributeOnLine: function(lineNum, attributeName, attributeValue){
-       var builder = Changeset.builder(this.rep.lines.totalWidth());
-       var hasMarker = this.lineHasMarker(lineNum);
-       var found = false;
+ removeAttributeOnLine: function(lineNum, attributeName, attributeValue){
+   var builder = Changeset.builder(this.rep.lines.totalWidth());
+   var hasMarker = this.lineHasMarker(lineNum);
+   var found = false;
 
-       var attribs = _(this.getAttributesOnLine(lineNum)).map(function (attrib) {
-           if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)){
-               found = true;
-               return [attributeName, ''];
-           }
-           return attrib;
-       });
+   var attribs = _(this.getAttributesOnLine(lineNum)).map(function (attrib) {
+     if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)){
+       found = true;
+       return [attributeName, ''];
+     }
+     return attrib;
+   });
 
-       if (!found) {
-           return;
-       }
-       ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
-       var list = _.chain(attribs).filter(function(a){return !!a[1];}).map(function(a){return a[0];}).value();
-       //if we have marker and any of attributes don't need to have marker. we need delete it
-       if(hasMarker && !_.intersection(lineAttributes,list)){
-           ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 1], [lineNum, 2]);
-       }else{
-           ChangesetUtils.buildKeepRange(this.rep, builder, [lineNum, 1], [lineNum, 2], attribs, this.rep.apool);
-       }
-     
-     return this.applyChangeset(builder);
-   },
+   if (!found) {
+     return;
+   }
+
+   ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
+
+   var countAttribsWithMarker = _.chain(attribs).filter(function(a){return !!a[1];})
+     .map(function(a){return a[0];}).difference(['author', 'lmkr', 'insertorder', 'start']).size().value();
+
+   //if we have marker and any of attributes don't need to have marker. we need delete it
+   if(hasMarker && !countAttribsWithMarker){
+     ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 0], [lineNum, 1]);
+   }else{
+     ChangesetUtils.buildKeepRange(this.rep, builder, [lineNum, 0], [lineNum, 1], attribs, this.rep.apool);
+   }
+
+   return this.applyChangeset(builder);
+ },
   
    /*
      Sets a specified attribute on a line
