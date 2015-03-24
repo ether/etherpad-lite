@@ -4863,8 +4863,11 @@ function Ace2Inner(){
     $(document).on("keypress", handleKeyEvent);
     $(document).on("keyup", handleKeyEvent);
     $(document).on("click", handleClick);
-    // $(document).on("cut", handleCut); // Disabled: https://github.com/ether/etherpad-lite/issues/2546
-    // Disabling this can break OL numbering: https://github.com/ether/etherpad-lite/pull/2533
+
+    // Disabled: https://github.com/ether/etherpad-lite/issues/2546
+    // Will break OL re-numbering: https://github.com/ether/etherpad-lite/pull/2533
+    // $(document).on("cut", handleCut); 
+
     $(root).on("blur", handleBlur);
     if (browser.msie)
     {
