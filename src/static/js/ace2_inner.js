@@ -3707,6 +3707,19 @@ function Ace2Inner(){
           evt:evt
         });
         specialHandled = (specialHandledInHook&&specialHandledInHook.length>0)?specialHandledInHook[0]:specialHandled;
+        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 120){
+          // Alt F9 focuses on the File Menu and/or editbar.
+          // Note that while most editors use Alt F10 this is not desirable
+          // As ubuntu cannot use Alt F10....
+          evt.preventDefault();
+          // Focus on the editbar.
+          top.console.log("focusing on first child in menu");
+          var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
+          firstEditbarElement.focus();
+          top.console.log(firstEditbarElement);
+          top.console.log(parent.parent.$(':focus'));
+          $(this).blur(); 
+        }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)
         {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
@@ -4951,6 +4964,7 @@ function Ace2Inner(){
       // a fix: in IE, clicking on a control like a button outside the
       // iframe can "blur" the editor, causing it to stop getting
       // events, though typing still affects it(!).
+      top.console.log("blur handled");
       setSelection(null);
     }
   }

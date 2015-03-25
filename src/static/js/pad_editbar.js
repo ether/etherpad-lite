@@ -155,6 +155,10 @@ var padeditbar = (function()
         });
       });
 
+      $('#editbar').on("keyup", function(evt){
+        editbarKeyEvent(evt);
+      });
+
       $('#editbar').show();
 
       this.redrawHeight();
@@ -299,6 +303,36 @@ var padeditbar = (function()
       }
     }
   };
+
+  function editbarKeyEvent(evt){
+    // On arrow keys go to next/previous button item in editbar
+    if(evt.keyCode !== 39 && evt.keyCode !== 37) return;
+
+    // Get our current Focus (Which editbar icon we're currently on)
+    var currentFocus = $(':focus');
+
+    // On left arrow move to next button in editbar
+    if(evt.keyCode === 37){
+      var nextFocus = $(currentFocus).parent().parent().prev();
+      // No button in this focus so move on
+      if(nextFocus.find("button").length === 0){
+        $(nextFocus).prev().find("button").focus();
+      }else{
+        $(currentFocus).parent().parent().prev().find("button").focus();      
+      }
+    }
+
+    // On right arrow move to next button in editbar
+    if(evt.keyCode === 39){
+      var nextFocus = $(currentFocus).parent().parent().next();
+      // No button in this focus so move on
+      if(nextFocus.find("button").length === 0){
+        $(nextFocus).next().find("button").focus();
+      }else{
+        $(currentFocus).parent().parent().next().find("button").focus();      
+      }
+    }
+  }
 
   function aceAttributeCommand(cmd, ace) {
     ace.ace_toggleAttributeOnSelection(cmd);
