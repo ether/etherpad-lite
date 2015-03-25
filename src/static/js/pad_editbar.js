@@ -155,7 +155,7 @@ var padeditbar = (function()
         });
       });
 
-      $('#editbar').on("keyup", function(evt){
+      $('#editbar').on("keydown", function(evt){
         editbarKeyEvent(evt);
       });
 
@@ -307,6 +307,13 @@ var padeditbar = (function()
   var editbarPosition = 0;
 
   function editbarKeyEvent(evt){
+    // If the event is Alt F9 (we're already in the editbar menu
+    // Send the users focus back to the pad
+    if(evt.keyCode === 120){
+      // If we're in the editbar already..
+      padeditor.ace.focus(); // Sends focus back
+    }
+
     // On arrow keys go to next/previous button item in editbar
     if(evt.keyCode !== 39 && evt.keyCode !== 37) return;
 
@@ -337,6 +344,20 @@ var padeditbar = (function()
     toolbar.registerDropdownCommand("connectivity");
     toolbar.registerDropdownCommand("import_export");
     toolbar.registerDropdownCommand("embed");
+
+    toolbar.registerCommand("import_export", function () {
+      setTimeout(function(){
+        $('#importfileinput').focus();
+      },100);
+      toolbar.toggleDropDown("import_export");
+    });
+
+    toolbar.registerCommand("showusers", function () {
+      setTimeout(function(){
+        $('#myusernameedit').focus(); // TODO: Not working
+      },100);
+      toolbar.toggleDropDown("users");
+    });
 
     toolbar.registerCommand("embed", function () {
       toolbar.setEmbedLinks();

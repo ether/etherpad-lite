@@ -3712,12 +3712,9 @@ function Ace2Inner(){
           // Note that while most editors use Alt F10 this is not desirable
           // As ubuntu cannot use Alt F10....
           evt.preventDefault();
-          // Focus on the editbar.
-          top.console.log("focusing on first child in menu");
+          // Focus on the editbar. -- TODO: Move Focus back to previous state (we know it so we can use it)
           var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
           firstEditbarElement.focus();
-          top.console.log(firstEditbarElement);
-          top.console.log(parent.parent.$(':focus'));
           $(this).blur(); 
         }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)
