@@ -576,9 +576,18 @@ var pad = {
       if(padcookie.getPref("rtlIsTrue") == true){
         pad.changeViewOption('rtlIsTrue', true);
       }
-      if(padcookie.getPref("useMonospaceFont") == true){
-        pad.changeViewOption('useMonospaceFont', true);
-      }
+
+      var fonts = ['useMonospaceFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
+        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
+        'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
+        'useSerifFont'];
+
+      $.each(fonts, function(i, font){
+        if(padcookie.getPref(font) == true){
+          pad.changeViewOption(font, true);
+        }
+      })
+
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },
@@ -629,6 +638,7 @@ var pad = {
       for (var k in opts.view)
       {
         pad.padOptions.view[k] = opts.view[k];
+console.log("setpref", k, opts.view[k]);
         padcookie.setPref(k, opts.view[k]);
       }
       padeditor.setViewOptions(pad.padOptions.view);
