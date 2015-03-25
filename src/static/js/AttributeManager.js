@@ -166,7 +166,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   },
   
   /*
-    Gets all attributes at caret position
+    Gets all attributes at caret position 
+    if the user selected a range, the start of the selection is taken
   */
   getAttributesOnCaret: function(){
     return this.getAttributesOnPosition(this.rep.selStart[0], this.rep.selStart[1]);
