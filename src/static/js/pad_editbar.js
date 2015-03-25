@@ -347,6 +347,13 @@ var padeditbar = (function()
     toolbar.registerDropdownCommand("import_export");
     toolbar.registerDropdownCommand("embed");
 
+    toolbar.registerCommand("settings", function () {
+      setTimeout(function(){
+        $('#options-stickychat').focus();
+      },100);
+      toolbar.toggleDropDown("settings");
+    });
+
     toolbar.registerCommand("import_export", function () {
       setTimeout(function(){
         $('#importfileinput').focus();
@@ -363,7 +370,9 @@ var padeditbar = (function()
 
     toolbar.registerCommand("embed", function () {
       toolbar.setEmbedLinks();
-      $('#linkinput').focus().select();
+      setTimeout(function(){
+        $('#linkinput').focus().select();
+      }, 100);
       toolbar.toggleDropDown("embed");
     });
 

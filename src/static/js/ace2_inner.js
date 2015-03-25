@@ -4962,7 +4962,6 @@ function Ace2Inner(){
       // a fix: in IE, clicking on a control like a button outside the
       // iframe can "blur" the editor, causing it to stop getting
       // events, though typing still affects it(!).
-      top.console.log("blur handled");
       setSelection(null);
     }
   }
