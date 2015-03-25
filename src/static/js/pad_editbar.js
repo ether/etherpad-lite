@@ -63,6 +63,7 @@ ToolbarItem.prototype.bind = function (callback) {
 
   if (self.isButton()) {
     self.$el.click(function (event) {
+      $(':focus').blur();
       callback(self.getCommand(), self);
       event.preventDefault();
     });
@@ -311,6 +312,7 @@ var padeditbar = (function()
     // Send the users focus back to the pad
     if(evt.keyCode === 120){
       // If we're in the editbar already..
+      $(':focus').blur(); // required to do not try to remove!
       padeditor.ace.focus(); // Sends focus back
     }
 
