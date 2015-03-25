@@ -186,7 +186,6 @@ var padeditor = (function()
 
       // No font has been previously selected so use the Normal font
       if(normalFont){
-        console.log("Enabling a normal font");
         self.ace.setProperty("textface", "Arial, sans-serif");
         // $("#viewfontmenu").val("normal");
       }
