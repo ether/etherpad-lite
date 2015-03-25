@@ -638,7 +638,6 @@ var pad = {
       for (var k in opts.view)
       {
         pad.padOptions.view[k] = opts.view[k];
-console.log("setpref", k, opts.view[k]);
         padcookie.setPref(k, opts.view[k]);
       }
       padeditor.setViewOptions(pad.padOptions.view);
