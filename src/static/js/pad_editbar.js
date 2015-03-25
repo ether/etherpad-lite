@@ -304,34 +304,27 @@ var padeditbar = (function()
     }
   };
 
+  var editbarPosition = 0;
+
   function editbarKeyEvent(evt){
     // On arrow keys go to next/previous button item in editbar
     if(evt.keyCode !== 39 && evt.keyCode !== 37) return;
 
-    // Get our current Focus (Which editbar icon we're currently on)
-    var currentFocus = $(':focus');
+    // Get all the focusable items in the editbar
+    var focusItems = $('#editbar').find('button, select');
 
     // On left arrow move to next button in editbar
     if(evt.keyCode === 37){
-      var nextFocus = $(currentFocus).parent().parent().prev();
-      // No button in this focus so move on
-      if(nextFocus.find("button").length === 0){
-        $(nextFocus).prev().find("button").focus();
-      }else{
-        $(currentFocus).parent().parent().prev().find("button").focus();      
-      }
+      editbarPosition--;
+      $(focusItems[editbarPosition]).focus();
     }
 
     // On right arrow move to next button in editbar
     if(evt.keyCode === 39){
-      var nextFocus = $(currentFocus).parent().parent().next();
-      // No button in this focus so move on
-      if(nextFocus.find("button").length === 0){
-        $(nextFocus).next().find("button").focus();
-      }else{
-        $(currentFocus).parent().parent().next().find("button").focus();      
-      }
+      editbarPosition++;
+      $(focusItems[editbarPosition]).focus();
     }
+
   }
 
   function aceAttributeCommand(cmd, ace) {
