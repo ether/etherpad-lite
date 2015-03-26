@@ -156,7 +156,7 @@ var padeditbar = (function()
         });
       });
 
-      $('#editbar').on("keydown", function(evt){
+      $('#editbar, .popup').on("keydown", function(evt){
         editbarKeyEvent(evt);
       });
 
@@ -308,12 +308,16 @@ var padeditbar = (function()
   var editbarPosition = 0;
 
   function editbarKeyEvent(evt){
-    // If the event is Alt F9 (we're already in the editbar menu
+    // If the event is Alt F9 or Escape & we're already in the editbar menu
     // Send the users focus back to the pad
     if(evt.keyCode === 120 || evt.keyCode === 27){
       // If we're in the editbar already..
+      // Close any dropdowns we have open..
+      padeditbar.toggleDropDown("none");
+
+      // Shift focus away from any drop downs
       $(':focus').blur(); // required to do not try to remove!
-      padeditor.ace.focus(); // Sends focus back
+      padeditor.ace.focus(); // Sends focus back to pad
     }
 
     // On arrow keys go to next/previous button item in editbar
