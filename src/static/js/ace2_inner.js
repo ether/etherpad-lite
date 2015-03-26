@@ -3636,6 +3636,7 @@ function Ace2Inner(){
     var charCode = evt.charCode;
     var keyCode = evt.keyCode;
     var which = evt.which;
+    var altKey = evt.altKey;
 
     // prevent ESC key
     if (keyCode == 27)
@@ -3718,11 +3719,11 @@ function Ace2Inner(){
           firstEditbarElement.focus();
           evt.preventDefault();
         }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 67){
+        if ((!specialHandled) && altKey && keyCode == 67){
           // Alt c focuses on the Chat window
+          $(this).blur(); 
           parent.parent.chat.show();
           parent.parent.chat.focus();
-          $(this).blur(); 
           evt.preventDefault();
         }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)

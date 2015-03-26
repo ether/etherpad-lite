@@ -18,6 +18,7 @@ var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
 var Tinycon = require('tinycon/tinycon');
 var hooks = require('./pluginfw/hooks');
+var padeditor = require('./pad_editor').padeditor;
 
 var chat = (function()
 {
@@ -38,7 +39,11 @@ var chat = (function()
     },
     focus: function () 
     {
-      $("#chatinput").focus();
+      // I'm not sure why we need a setTimeout here but without it we don't get focus...
+      // Animation maybe?
+      setTimeout(function(){
+        $("#chatinput").focus();
+      },100);
     },
     stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
@@ -209,8 +214,18 @@ var chat = (function()
     init: function(pad)
     {
       this._pad = pad;
-      $("#chatinput").keypress(function(evt)
+      $("#chatinput").keyup(function(evt)
       {
+        // If the event is Alt C or Escape & we're already in the chat menu
+        // Send the users focus back to the pad
+        if((evt.altKey == true && evt.which === 67) || evt.which === 27){
+          // If we're in chat already..
+          $(':focus').blur(); // required to do not try to remove!
+          padeditor.ace.focus(); // Sends focus back to pad
+        }
+      });
+
+      $("#chatinput").keypress(function(evt){
         //if the user typed enter, fire the send
         if(evt.which == 13 || evt.which == 10)
         {
