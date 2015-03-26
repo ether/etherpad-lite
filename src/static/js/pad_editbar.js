@@ -325,7 +325,7 @@ var padeditbar = (function()
     // On left arrow move to next button in editbar
     if(evt.keyCode === 37){
       editbarPosition--;
-      $(focusItems[editbarPosition]).focus();
+      $(focusItems[editbarPosition]).focus()
     }
 
     // On right arrow move to next button in editbar

@@ -320,6 +320,7 @@ window.onload = function () {\n\
       var outerFrame = document.createElement("IFRAME");
       outerFrame.name = "ace_outer";
       outerFrame.frameBorder = 0; // for IE
+      outerFrame.title = "Ether";
       info.frame = outerFrame;
       document.getElementById(containerId).appendChild(outerFrame);
 

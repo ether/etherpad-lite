@@ -61,12 +61,12 @@
                 <div id="overlay-inner"></div>
             </div>
 
-            <ul class="menu_left">
+            <ul class="menu_left" role="toolbar">
                 <% e.begin_block("editbarMenuLeft"); %>
                 <%- toolbar.menu(settings.toolbar.left) %>
                 <% e.end_block(); %>
             </ul>
-            <ul class="menu_right">
+            <ul class="menu_right" role="toolbar">
                 <% e.begin_block("editbarMenuRight"); %>
                 <%- toolbar.menu(settings.toolbar.right) %>
                 <% e.end_block(); %>
