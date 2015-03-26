@@ -279,6 +279,7 @@ window.onload = function () {\n\
   setTimeout(function () {\n\
     var iframe = document.createElement("IFRAME");\n\
     iframe.name = "ace_inner";\n\
+    iframe.title = "pad";\n\
     iframe.scrolling = "no";\n\
     var outerdocbody = document.getElementById("outerdocbody");\n\
     iframe.frameBorder = 0;\n\
