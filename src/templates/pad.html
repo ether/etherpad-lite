@@ -332,7 +332,7 @@
               <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
               <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
             </div>
-            <div id="chattext" class="authorColors">
+            <div id="chattext" class="authorColors" aria-live="polite" aria-relevant="additions removals text" role="log" aria-atomic="false">
                 <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
                 <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>
             </div>

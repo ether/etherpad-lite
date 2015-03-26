@@ -3718,6 +3718,13 @@ function Ace2Inner(){
           firstEditbarElement.focus();
           evt.preventDefault();
         }
+        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 67){
+          // Alt c focuses on the Chat window
+          parent.parent.chat.show();
+          parent.parent.chat.focus();
+          $(this).blur(); 
+          evt.preventDefault();
+        }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)
         {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,

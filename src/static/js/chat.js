@@ -36,6 +36,10 @@ var chat = (function()
       chatMentions = 0;
       Tinycon.setBubble(0);
     },
+    focus: function () 
+    {
+      $("#chatinput").focus();
+    },
     stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
       chat.show();
