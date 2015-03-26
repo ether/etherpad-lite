@@ -310,7 +310,7 @@ var padeditbar = (function()
   function editbarKeyEvent(evt){
     // If the event is Alt F9 (we're already in the editbar menu
     // Send the users focus back to the pad
-    if(evt.keyCode === 120){
+    if(evt.keyCode === 120 || evt.keyCode === 27){
       // If we're in the editbar already..
       $(':focus').blur(); // required to do not try to remove!
       padeditor.ace.focus(); // Sends focus back
