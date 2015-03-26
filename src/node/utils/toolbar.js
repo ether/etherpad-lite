@@ -99,7 +99,7 @@ _.extend(Button.prototype, {
     };
     return tag("li", liAttributes,
       tag("a", { "class": this.grouping, "data-l10n-id": this.attributes.localizationId },
-        tag("button", { "class": " "+ this.attributes.class })
+        tag("button", { "class": " "+ this.attributes.class, "title": this.attributes.command })
       )
     );
   }
