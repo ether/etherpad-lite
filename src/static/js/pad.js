@@ -110,7 +110,7 @@ function randomString()
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
-  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').hide(); $('#editorcontainer').css({"top":"0px"}); } },
+  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
   { name: "showChat",         checkVal: "false", callback: function(val) { $('#chaticon').hide(); } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },

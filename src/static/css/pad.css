@@ -1262,3 +1262,9 @@ input[type=checkbox] {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.hideControlsEditor{
+  top:0px !important;
+}
+.hideControlsEditbar{
+  display:none !important;
+}
