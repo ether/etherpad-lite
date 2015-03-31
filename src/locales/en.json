@@ -121,6 +121,10 @@
   "timeslider.version": "Version {{version}}",
   "timeslider.saved": "Saved {{month}} {{day}}, {{year}}",
 
+  "timeslider.playpause": "Playback / Pause Pad Contents",
+  "timeslider.backrevision":"Go back a revision in this Pad",
+  "timeslider.forwardrevision":"Go forward a revision in this Pad",
+
   "timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
   "timeslider.month.january": "January",
   "timeslider.month.february": "February",
