@@ -320,6 +320,7 @@ var padeditbar = (function()
       padeditor.ace.focus(); // Sends focus back to pad
       // The above focus doesn't always work in FF, you have to hit enter afterwards
       // This still needs fixing cake
+      evt.preventDefault();
     }
 
     // On arrow keys go to next/previous button item in editbar

@@ -3708,13 +3708,12 @@ function Ace2Inner(){
           evt:evt
         });
         specialHandled = (specialHandledInHook&&specialHandledInHook.length>0)?specialHandledInHook[0]:specialHandled;
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 120){
+        if ((!specialHandled) && altKey && isTypeForSpecialKey && keyCode == 120){
           // Alt F9 focuses on the File Menu and/or editbar.
           // Note that while most editors use Alt F10 this is not desirable
           // As ubuntu cannot use Alt F10....
           // Focus on the editbar. -- TODO: Move Focus back to previous state (we know it so we can use it)
           var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
-          // top.console.log("fEE", firstEditbarElement);
           $(this).blur(); 
           firstEditbarElement.focus();
           evt.preventDefault();
@@ -4960,7 +4959,6 @@ function Ace2Inner(){
 
   function focus()
   {
-    top.console.log("window.focus there is a bug with me in FF");
     window.focus();
   }
 
