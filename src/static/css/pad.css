@@ -137,8 +137,21 @@ a img {
   top: 1px;
 }
 .toolbar ul li a .buttontext {
-  color: #222;
+  color: #666;
   font-size: 14px;
+  border:none;
+  background:none;
+  margin-top:1px;
+  color:#666;
+}
+.buttontext::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+.buttontext:focus{
+  border: 1px solid #666;
+}
+
 }
 .toolbar ul li a.grouped-left {
   border-radius: 3px 0 0 3px;

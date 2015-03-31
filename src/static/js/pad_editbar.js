@@ -308,6 +308,10 @@ var padeditbar = (function()
   var editbarPosition = 0;
 
   function bodyKeyEvent(evt){
+    // Check we're on a pad and not on the timeslider
+    // Or some other window I haven't thought about!
+    if(typeof pad === 'undefined') return false;
+
     // If the event is Alt F9 or Escape & we're already in the editbar menu
     // Send the users focus back to the pad
     if((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27){

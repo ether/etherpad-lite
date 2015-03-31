@@ -330,7 +330,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           }
         }
         else if (code == 32) playpause();
-
       });
       
       $(window).resize(function()
