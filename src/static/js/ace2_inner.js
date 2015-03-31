@@ -3677,7 +3677,6 @@ function Ace2Inner(){
     if (keyCode == 13 && browser.opera && (type == "keypress")){
       return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
     }
-
     var specialHandled = false;
     var isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
     var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
@@ -3724,6 +3723,45 @@ function Ace2Inner(){
           parent.parent.chat.show();
           parent.parent.chat.focus();
           evt.preventDefault();
+        }
+        if ((!specialHandled) && altKey && keyCode == 65 && type === "keydown"){
+          // Alt A shows a gritter popup showing a line author
+          var lineNumber = rep.selEnd[0];
+          var alineAttrs = rep.alines[lineNumber];
+          var apool = rep.apool;
+
+          // TODO: support selection ranges
+          // TODO: Support multiple authors
+          // TODO: Still work when authorship colors have been cleared
+          // TODO: i18n
+          // TODO: There appears to be a race condition or so.
+
+          var author = null;
+          if (alineAttrs) {
+            var opIter = Changeset.opIterator(alineAttrs);
+            if (opIter.hasNext()) {
+              var op = opIter.next();
+              authorId = Changeset.opAttributeValue(op, 'author', apool);
+            }
+          }
+          if(authorId.length === 0){
+            author = "not available";
+          }else{
+            var authorObj = parent.parent.clientVars.collab_client_vars.historicalAuthorData[authorId];
+            author = authorObj.name;
+            if(author === "") author = "not available";
+          }
+
+          parent.parent.$.gritter.add({
+            // (string | mandatory) the heading of the notification
+            title: 'Authors',
+            // (string | mandatory) the text inside the notification
+            text: 'The author of this line is ' + author,
+            // (bool | optional) if you want it to fade out on its own or just sit there
+            sticky: false,
+            // (int | optional) the time you want it to be alive for before fading out
+            time: '4000'
+          });
         }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)
         {
