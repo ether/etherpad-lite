@@ -1634,10 +1634,15 @@ function composePadChangesets(padId, startNum, endNum, callback)
       changeset = changesets[startNum];
       var pool = pad.apool();
 
-      for(var r=startNum+1;r<endNum;r++)
-      {
-        var cs = changesets[r];
-        changeset = Changeset.compose(changeset, cs, pool);
+      try {
+        for(var r=startNum+1;r<endNum;r++) {
+          var cs = changesets[r];
+          changeset = Changeset.compose(changeset, cs, pool);
+        }
+      } catch(e){
+        // r-1 indicates the rev that was build starting with startNum, applying startNum+1, +2, +3
+        console.warn("failed to compose cs in pad:",padId," startrev:",startNum," current rev:",r);
+        return callback(e);
       }
 
       callback(null);
