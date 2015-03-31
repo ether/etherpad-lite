@@ -352,32 +352,30 @@ var padeditbar = (function()
     toolbar.registerDropdownCommand("embed");
 
     toolbar.registerCommand("settings", function () {
-      setTimeout(function(){
+      toolbar.toggleDropDown("settings", function(){
         $('#options-stickychat').focus();
-      },100);
-      toolbar.toggleDropDown("settings");
+      });
     });
 
     toolbar.registerCommand("import_export", function () {
-      setTimeout(function(){
-        $('#importfileinput').focus();
-      },100);
-      toolbar.toggleDropDown("import_export");
+      toolbar.toggleDropDown("import_export", function(){
+        setTimeout(function(){
+          $('#importfileinput').focus();
+        }, 100);
+      });
     });
 
     toolbar.registerCommand("showusers", function () {
-      setTimeout(function(){
-        $('#myusernameedit').focus(); // TODO: Not working
-      },100);
-      toolbar.toggleDropDown("users");
+      toolbar.toggleDropDown("users", function(){
+        $('#myusernameedit').focus();
+      });
     });
 
     toolbar.registerCommand("embed", function () {
       toolbar.setEmbedLinks();
-      setTimeout(function(){
+      toolbar.toggleDropDown("embed", function(){
         $('#linkinput').focus().select();
-      }, 100);
-      toolbar.toggleDropDown("embed");
+      });
     });
 
     toolbar.registerCommand("savedRevision", function () {
