@@ -98,7 +98,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   
   /*
     Gets all attributes on a line
-    @param lineNum: the number of the line to set the attribute for 
+    @param lineNum: the number of the line to get the attribute for 
   */
   getAttributesOnLine: function(lineNum){
     // get attributes of first char of line
@@ -120,6 +120,59 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       }
     }
     return [];
+  },
+  
+  /*
+    Gets all attributes at a position containing line number and column
+    @param lineNumber starting with zero
+    @param column starting with zero
+    returns a list of attributes in the format 
+    [ ["key","value"], ["key","value"], ...  ]
+  */
+  getAttributesOnPosition: function(lineNumber, column){
+    // get all attributes of the line
+    var aline = this.rep.alines[lineNumber];
+    
+    if (!aline) {
+        return [];
+    }
+    // iterate through all operations of a line
+    var opIter = Changeset.opIterator(aline);
+    
+    // we need to sum up how much characters each operations take until the wanted position
+    var currentPointer = 0;
+    var attributes = [];    
+    var currentOperation;
+    
+    while (opIter.hasNext()) {
+      currentOperation = opIter.next();
+      currentPointer = currentPointer + currentOperation.chars;      
+      
+      if (currentPointer > column) {
+        // we got the operation of the wanted position, now collect all its attributes
+        Changeset.eachAttribNumber(currentOperation.attribs, function (n) {
+          attributes.push([
+            this.rep.apool.getAttribKey(n),
+            this.rep.apool.getAttribValue(n)
+          ]);
+        }.bind(this));
+        
+        // skip the loop
+        return attributes;
+      }
+    }
+    return attributes;
+    
+  },
+  
+  /*
+    Gets all attributes at caret position 
+    if the user selected a range, the start of the selection is taken
+    returns a list of attributes in the format 
+    [ ["key","value"], ["key","value"], ...  ]
+  */
+  getAttributesOnCaret: function(){
+    return this.getAttributesOnPosition(this.rep.selStart[0], this.rep.selStart[1]);
   },
   
   /*
