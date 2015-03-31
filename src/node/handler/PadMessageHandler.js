@@ -656,12 +656,17 @@ function handleUserChanges(data, cb)
           , op
         while(iterator.hasNext()) {
           op = iterator.next()
-          if(op.opcode != '+') continue;
+
+          //+ can add text with attribs
+          //= can change or add attribs
+          //- can have attribs, but they are discarded and don't show up in the attribs - but do show up in the  pool
+
           op.attribs.split('*').forEach(function(attr) {
             if(!attr) return
             attr = wireApool.getAttrib(attr)
             if(!attr) return
-            if('author' == attr[0] && attr[1] != thisSession.author) throw new Error("Trying to submit changes as another author in changeset "+changeset);
+            //the empty author is used in the clearAuthorship functionality so this should be the only exception
+            if('author' == attr[0] && (attr[1] != thisSession.author && attr[1] != '')) throw new Error("Trying to submit changes as another author in changeset "+changeset);
           })
         }
 
