@@ -3731,32 +3731,71 @@ function Ace2Inner(){
           var apool = rep.apool;
 
           // TODO: support selection ranges
-          // TODO: Support multiple authors
           // TODO: Still work when authorship colors have been cleared
           // TODO: i18n
           // TODO: There appears to be a race condition or so.
 
           var author = null;
           if (alineAttrs) {
+            var authors = [];
+            var authorNames = [];
             var opIter = Changeset.opIterator(alineAttrs);
-            if (opIter.hasNext()) {
+
+            while (opIter.hasNext()){
               var op = opIter.next();
               authorId = Changeset.opAttributeValue(op, 'author', apool);
+
+              // Only push unique authors and ones with values
+              if(authors.indexOf(authorId) === -1 && authorId !== ""){
+                authors.push(authorId);
+              }
+
             }
+
           }
-          if(authorId.length === 0){
-            author = "not available";
-          }else{
-            var authorObj = parent.parent.clientVars.collab_client_vars.historicalAuthorData[authorId];
-            author = authorObj.name;
-            if(author === "") author = "not available";
+
+          // No author information is available IE on a new pad.
+          if(authors.length === 0){
+            var authorString = "No author information is available";
           }
+          else{
+            // Known authors info, both current and historical
+            var padAuthors = parent.parent.pad.userList();
+            var authorObj = {};
+            authors.forEach(function(authorId){
+              padAuthors.forEach(function(padAuthor){
+                // If the person doing the lookup is the author..
+                if(padAuthor.userId === authorId){
+                  if(parent.parent.clientVars.userId === authorId){
+                    authorObj = {
+                      name: "Me"
+                    }
+                  }else{
+                    authorObj = padAuthor;
+                  }
+                }
+              });
+              if(!authorObj){
+                author = "Unknown";
+                return;
+              }
+              author = authorObj.name;
+              if(!author) author = "Unknown";
+              authorNames.push(author);
+            })
+          }
+          if(authors.length === 1){
+            var authorString = "The author of this line is " + authorNames;
+          }
+          if(authors.length > 1){
+            var authorString = "The authors of this line are " + authorNames.join(" & ");
+	  }
 
           parent.parent.$.gritter.add({
             // (string | mandatory) the heading of the notification
-            title: 'Authors',
+            title: 'Line Authors',
             // (string | mandatory) the text inside the notification
-            text: 'The author of this line is ' + author,
+            text: authorString,
             // (bool | optional) if you want it to fade out on its own or just sit there
             sticky: false,
             // (int | optional) the time you want it to be alive for before fading out

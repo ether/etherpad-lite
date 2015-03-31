@@ -433,6 +433,10 @@ var pad = {
   {
     return pad.myUserInfo.name;
   },
+  userList: function()
+  {
+    return paduserlist.users();
+  },
   sendClientReady: function(isReconnect, messageType)
   {
     messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
