@@ -308,9 +308,6 @@ var padeditbar = (function()
   var editbarPosition = 0;
 
   function bodyKeyEvent(evt){
-    // Check we're on a pad and not on the timeslider
-    // Or some other window I haven't thought about!
-    if(typeof pad === 'undefined') return false;
 
     // If the event is Alt F9 or Escape & we're already in the editbar menu
     // Send the users focus back to the pad
@@ -318,6 +315,10 @@ var padeditbar = (function()
       // If we're in the editbar already..
       // Close any dropdowns we have open..
       padeditbar.toggleDropDown("none");
+
+      // Check we're on a pad and not on the timeslider
+      // Or some other window I haven't thought about!
+      if(typeof pad === 'undefined') return false;
 
       // Shift focus away from any drop downs
       $(':focus').blur(); // required to do not try to remove!
@@ -366,9 +367,14 @@ var padeditbar = (function()
 
     toolbar.registerCommand("import_export", function () {
       toolbar.toggleDropDown("import_export", function(){
-        setTimeout(function(){
-          $('#importfileinput').focus();
-        }, 100);
+        // If Import file input exists then focus on it..
+        if($('#importfileinput').length !== 0){
+          setTimeout(function(){
+            $('#importfileinput').focus();
+          }, 100);
+        }else{
+          $('.exportlink').first().focus();
+        }
       });
     });
 
