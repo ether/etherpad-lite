@@ -4960,6 +4960,7 @@ function Ace2Inner(){
 
   function focus()
   {
+    top.console.log("window.focus there is a bug with me in FF");
     window.focus();
   }
 

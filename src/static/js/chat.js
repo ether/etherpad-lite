@@ -225,6 +225,16 @@ var chat = (function()
         }
       });
 
+      $('body:not(#chatinput)').on("keydown", function(evt){
+        if (evt.altKey && evt.which == 67){
+          // Alt c focuses on the Chat window
+          $(this).blur();
+          parent.parent.chat.show();
+          parent.parent.chat.focus();
+          evt.preventDefault();
+        }
+      });
+
       $("#chatinput").keypress(function(evt){
         //if the user typed enter, fire the send
         if(evt.which == 13 || evt.which == 10)
