@@ -324,7 +324,6 @@ var padeditbar = (function()
       $(':focus').blur(); // required to do not try to remove!
       padeditor.ace.focus(); // Sends focus back to pad
       // The above focus doesn't always work in FF, you have to hit enter afterwards
-      // This still needs fixing cake
       evt.preventDefault();
     }
 
@@ -336,13 +335,23 @@ var padeditbar = (function()
 
     // On left arrow move to next button in editbar
     if(evt.keyCode === 37){
+      // If a dropdown is visible or we're in an input don't move to the next button
+      if($('.popup').is(":visible") || evt.target.localName === "input") return;
+
       editbarPosition--;
+      // Allow focus to shift back to end of row and start of row
+      if(editbarPosition === -1) editbarPosition = focusItems.length -1;
       $(focusItems[editbarPosition]).focus()
     }
 
     // On right arrow move to next button in editbar
     if(evt.keyCode === 39){
+      // If a dropdown is visible or we're in an input don't move to the next button
+      if($('.popup').is(":visible") || evt.target.localName === "input") return;
+
       editbarPosition++;
+      // Allow focus to shift back to end of row and start of row
+      if(editbarPosition >= focusItems.length) editbarPosition = 0;
       $(focusItems[editbarPosition]).focus();
     }
 
