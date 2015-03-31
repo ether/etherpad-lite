@@ -756,7 +756,7 @@ table#otheruserstable {
 }
 
 .buttonicon:focus{
-  border: 1px solid #fff;
+  border: 1px solid #666;
 }
 .buttonicon-bold:before {
   content: "\e81c";
