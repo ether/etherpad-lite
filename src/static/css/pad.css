@@ -747,6 +747,7 @@ table#otheruserstable {
   font-style: normal;
   font-weight: normal;
   color: #666;
+  cursor: pointer;
 }
 
 .buttonicon::-moz-focus-inner {
