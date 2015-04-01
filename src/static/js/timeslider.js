@@ -157,6 +157,12 @@ function handleClientVars(message)
     fireWhenAllScriptsAreLoaded[i]();
   }
   $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
+
+  // Translate some strings where we only want to set the title not the actual values
+  $('#playpause_button_icon').attr("title", html10n.get("timeslider.playPause"));
+  $('#leftstep').attr("title", html10n.get("timeslider.backRevision"));
+  $('#rightstep').attr("title", html10n.get("timeslider.forwardRevision"));
+
 }
 
 exports.baseURL = '';
