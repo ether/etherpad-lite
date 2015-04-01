@@ -417,6 +417,9 @@ var version =
   , "setHTML"                   : ["padID", "html"]
   , "getAttributePool"          : ["padID"]
   , "getRevisionsCount"         : ["padID"]
+  , "getSavedRevisionsCount"    : ["padID"]
+  , "listSavedRevisions"        : ["padID"]
+  , "saveRevision"              : ["padID", "rev"]
   , "getRevisionChangeset"      : ["padID", "rev"]
   , "getLastEdited"             : ["padID"]
   , "deletePad"                 : ["padID"]
@@ -435,10 +438,10 @@ var version =
   , "sendClientsMessage"        : ["padID", "msg"]
   , "listAllGroups"             : []
   , "checkToken"                : []
+  , "appendChatMessage"         : ["padID", "text", "authorID", "time"]
   , "getChatHistory"            : ["padID"]
   , "getChatHistory"            : ["padID", "start", "end"]
   , "getChatHead"               : ["padID"]
-  , "appendChatMessage"         : ["padID", "text", "authorID", "time"]
   , "restoreRevision"           : ["padID", "rev"]
   }
 };

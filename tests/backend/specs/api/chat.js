@@ -32,7 +32,7 @@ describe('API Versioning', function(){
 /* Tests performed
 -> createPad(padID)
  -> createAuthor([name]) -- should return an authorID
-  -> appendChatMessage(padID, text, userID, time)
+  -> appendChatMessage(padID, text, authorID, time)
    -> getChatHead(padID)
     -> getChatHistory(padID)
 */
