@@ -432,8 +432,8 @@ getChatHistory(padId, start, end), returns a part of or the whole chat-history o
 
 Example returns:
 
-{"code":0,"message":"ok","data":{"messages":[{"text":"foo","userId":"a.foo","time":1359199533759,"userName":"test"},
-                                             {"text":"bar","userId":"a.foo","time":1359199534622,"userName":"test"}]}}
+{"code":0,"message":"ok","data":{"messages":[{"text":"foo","authorID":"a.foo","time":1359199533759,"userName":"test"},
+                                             {"text":"bar","authorID":"a.foo","time":1359199534622,"userName":"test"}]}}
 
 {code: 1, message:"start is higher or equal to the current chatHead", data: null}
 
@@ -495,14 +495,14 @@ exports.getChatHistory = function(padID, start, end, callback)
 }
 
 /**
-appendChatMessage(padID, text, userID, time), creates a chat message for the pad id
+appendChatMessage(padID, text, authorID, time), creates a chat message for the pad id, time is a timestamp
 
 Example returns:
 
 {code: 0, message:"ok", data: null
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.appendChatMessage = function(padID, text, userID, time, callback)
+exports.appendChatMessage = function(padID, text, authorID, time, callback)
 {
   //text is required
   if(typeof text != "string")
@@ -516,7 +516,7 @@ exports.appendChatMessage = function(padID, text, userID, time, callback)
   {
     if(ERR(err, callback)) return;
     
-    pad.appendChatMessage(text, userID, parseInt(time));
+    pad.appendChatMessage(text, authorID, parseInt(time));
     callback();
   });
 }

@@ -438,13 +438,13 @@ var version =
   , "getChatHistory"            : ["padID"]
   , "getChatHistory"            : ["padID", "start", "end"]
   , "getChatHead"               : ["padID"]
-  , "appendChatMessage"         : ["padID", "text", "userID", "time"]
+  , "appendChatMessage"         : ["padID", "text", "authorID", "time"]
   , "restoreRevision"           : ["padID", "rev"]
   }
 };
 
 // set the latest available API version here
-exports.latestApiVersion = '1.2.11';
+exports.latestApiVersion = '1.2.12';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
