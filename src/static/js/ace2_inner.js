@@ -3616,6 +3616,7 @@ function Ace2Inner(){
     var keyCode = evt.keyCode;
     var which = evt.which;
     var altKey = evt.altKey;
+    var shiftKey = evt.shiftKey;
 
     // prevent ESC key
     if (keyCode == 27)
@@ -3703,8 +3704,8 @@ function Ace2Inner(){
           parent.parent.chat.focus();
           evt.preventDefault();
         }
-        if ((!specialHandled) && altKey && keyCode == 65 && type === "keydown"){
-          // Alt A shows a gritter popup showing a line author
+        if ((!specialHandled) && altKey && shiftKey && keyCode == 65 && type === "keydown"){
+          // Alt-Shift-A shows a gritter popup showing a line author
           var lineNumber = rep.selEnd[0];
           var alineAttrs = rep.alines[lineNumber];
           var apool = rep.apool;
