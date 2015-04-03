@@ -312,47 +312,61 @@ var padeditbar = (function()
     // If the event is Alt F9 or Escape & we're already in the editbar menu
     // Send the users focus back to the pad
     if((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27){
-      // If we're in the editbar already..
-      // Close any dropdowns we have open..
-      padeditbar.toggleDropDown("none");
-
-      // Check we're on a pad and not on the timeslider
-      // Or some other window I haven't thought about!
-      if(typeof pad === 'undefined') return false;
-
-      // Shift focus away from any drop downs
-      $(':focus').blur(); // required to do not try to remove!
-      padeditor.ace.focus(); // Sends focus back to pad
-      // The above focus doesn't always work in FF, you have to hit enter afterwards
-      evt.preventDefault();
+      if($(':focus').parents(".toolbar").length === 1){
+        // If we're in the editbar already..
+        // Close any dropdowns we have open..
+        padeditbar.toggleDropDown("none");
+        // Check we're on a pad and not on the timeslider
+        // Or some other window I haven't thought about!
+        if(typeof pad === 'undefined'){
+          // Timeslider probably..
+          // Shift focus away from any drop downs
+          $(':focus').blur(); // required to do not try to remove!
+          $('#padmain').focus(); // Focus back onto the pad
+        }else{
+          // Shift focus away from any drop downs
+          $(':focus').blur(); // required to do not try to remove!
+          padeditor.ace.focus(); // Sends focus back to pad
+          // The above focus doesn't always work in FF, you have to hit enter afterwards
+          evt.preventDefault();
+        }
+      }else{
+        // Focus on the editbar :)
+        var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
+        $(this).blur();
+        firstEditbarElement.focus();
+        evt.preventDefault();
+      }
     }
+    // Are we in the toolbar??
+    if($(':focus').parents(".toolbar").length === 1){
+      // On arrow keys go to next/previous button item in editbar
+      if(evt.keyCode !== 39 && evt.keyCode !== 37) return;
 
-    // On arrow keys go to next/previous button item in editbar
-    if(evt.keyCode !== 39 && evt.keyCode !== 37) return;
+      // Get all the focusable items in the editbar
+      var focusItems = $('#editbar').find('button, select');
 
-    // Get all the focusable items in the editbar
-    var focusItems = $('#editbar').find('button, select');
+      // On left arrow move to next button in editbar
+      if(evt.keyCode === 37){
+        // If a dropdown is visible or we're in an input don't move to the next button
+        if($('.popup').is(":visible") || evt.target.localName === "input") return;
 
-    // On left arrow move to next button in editbar
-    if(evt.keyCode === 37){
-      // If a dropdown is visible or we're in an input don't move to the next button
-      if($('.popup').is(":visible") || evt.target.localName === "input") return;
+        editbarPosition--;
+        // Allow focus to shift back to end of row and start of row
+        if(editbarPosition === -1) editbarPosition = focusItems.length -1;
+        $(focusItems[editbarPosition]).focus()
+      }
 
-      editbarPosition--;
-      // Allow focus to shift back to end of row and start of row
-      if(editbarPosition === -1) editbarPosition = focusItems.length -1;
-      $(focusItems[editbarPosition]).focus()
-    }
+      // On right arrow move to next button in editbar
+      if(evt.keyCode === 39){
+        // If a dropdown is visible or we're in an input don't move to the next button
+        if($('.popup').is(":visible") || evt.target.localName === "input") return;
 
-    // On right arrow move to next button in editbar
-    if(evt.keyCode === 39){
-      // If a dropdown is visible or we're in an input don't move to the next button
-      if($('.popup').is(":visible") || evt.target.localName === "input") return;
-
-      editbarPosition++;
-      // Allow focus to shift back to end of row and start of row
-      if(editbarPosition >= focusItems.length) editbarPosition = 0;
-      $(focusItems[editbarPosition]).focus();
+        editbarPosition++;
+        // Allow focus to shift back to end of row and start of row
+        if(editbarPosition >= focusItems.length) editbarPosition = 0;
+        $(focusItems[editbarPosition]).focus();
+      }
     }
 
   }
