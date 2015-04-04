@@ -103,7 +103,7 @@ if [ $DOWNLOAD_JQUERY = "true" ]; then
 fi
 
 #Remove all minified data to force node creating it new
-echo "Clear minfified cache..."
+echo "Clearing minified cache..."
 rm -f var/minified*
 
 echo "Ensure custom css/js files are created..."
