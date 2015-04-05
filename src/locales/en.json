@@ -38,6 +38,7 @@
   "pad.settings.rtlcheck": "Read content from right to left?",
   "pad.settings.fontType": "Font type:",
   "pad.settings.fontType.normal": "Normal",
+  "pad.settings.fontType.opendyslexic": "Open Dyslexic",
   "pad.settings.fontType.monospaced": "Monospace",
   "pad.settings.fontType.comicsans": "Comic Sans",
   "pad.settings.fontType.couriernew": "Courier New",

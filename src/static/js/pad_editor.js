@@ -30,7 +30,7 @@ var padeditor = (function()
   var settings = undefined;
 
   // Array of available fonts
-  var fonts = ['useMonospaceFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
+  var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
     'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
     'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
     'useSerifFont'];
@@ -163,6 +163,7 @@ var padeditor = (function()
           font = font.replace("Font","");
           font = font.toLowerCase();
           if(font === "monospace") self.ace.setProperty("textface", "Courier new");
+          if(font === "opendyslexic") self.ace.setProperty("textface", "OpenDyslexic");
           if(font === "comicsans") self.ace.setProperty("textface", "Comic Sans MS");
           if(font === "georgia") self.ace.setProperty("textface", "Georgia");
           if(font === "impact") self.ace.setProperty("textface", "Impact");

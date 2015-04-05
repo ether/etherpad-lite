@@ -1284,3 +1284,9 @@ input[type=checkbox] {
 .hideControlsEditbar{
   display:none !important;
 }
+
+
+@font-face {
+  font-family: opendyslexic;
+  src: url("../font/opendyslexic.otf") format("opentype");
+}
