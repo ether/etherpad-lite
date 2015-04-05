@@ -1241,6 +1241,11 @@ input[type=checkbox] {
 /* End of gritter stuff */
 
 @font-face {
+  font-family: opendyslexic;
+  src: url("../../static/font/opendyslexic.otf") format("opentype");
+}
+
+@font-face {
   font-family: "fontawesome-etherpad";
   src:url("../font/fontawesome-etherpad.eot");
   src:url("../font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
@@ -1286,7 +1291,3 @@ input[type=checkbox] {
 }
 
 
-@font-face {
-  font-family: opendyslexic;
-  src: url("../font/opendyslexic.otf") format("opentype");
-}
