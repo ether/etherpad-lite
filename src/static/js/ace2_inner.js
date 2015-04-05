@@ -3704,8 +3704,8 @@ function Ace2Inner(){
           parent.parent.chat.focus();
           evt.preventDefault();
         }
-        if ((!specialHandled) && altKey && shiftKey && keyCode == 65 && type === "keydown"){
-          // Alt-Shift-A shows a gritter popup showing a line author
+        if ((!specialHandled) && evt.ctrlKey && shiftKey && keyCode == 50 && type === "keydown"){
+          // Control-Shift-2 shows a gritter popup showing a line author
           var lineNumber = rep.selEnd[0];
           var alineAttrs = rep.alines[lineNumber];
           var apool = rep.apool;
