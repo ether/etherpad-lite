@@ -95,7 +95,7 @@ exports.toolbar = {
     ["showusers"]
   ],
   timeslider: [
-    ["timeslider_export", "timeslider_returnToPad"]
+    ["timeslider_export", "timeslider_settings", "timeslider_returnToPad"]
   ]
 }
 

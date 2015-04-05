@@ -163,6 +163,32 @@ function handleClientVars(message)
   $('#leftstep').attr("title", html10n.get("timeslider.backRevision"));
   $('#rightstep').attr("title", html10n.get("timeslider.forwardRevision"));
 
+  // font family change
+  $("#viewfontmenu").change(function(){
+    var font = $("#viewfontmenu").val();
+    if(font === "monospace") setFont("Courier new");
+    if(font === "opendyslexic") setFont("OpenDyslexic");
+    if(font === "comicsans") setFont("Comic Sans MS");
+    if(font === "georgia") setFont("Georgia");
+    if(font === "impact") setFont("Impact");
+    if(font === "lucida") setFont("Lucida");
+    if(font === "lucidasans") setFont("Lucida Sans Unicode");
+    if(font === "palatino") setFont("Palatino Linotype");
+    if(font === "tahoma") setFont("Tahoma");
+    if(font === "timesnewroman") setFont("Times New Roman");
+    if(font === "trebuchet") setFont("Trebuchet MS");
+    if(font === "verdana") setFont("Verdana");
+    if(font === "symbol") setFont("Symbol");
+    if(font === "webdings") setFont("Webdings");
+    if(font === "wingdings") setFont("Wingdings");
+    if(font === "sansserif") setFont("MS Sans Serif");
+    if(font === "serif") setFont("MS Serif");
+  });
+
+}
+
+function setFont(font){
+  $('#padcontent').css("font-family", font);
 }
 
 exports.baseURL = '';

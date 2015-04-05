@@ -205,12 +205,9 @@ stepper:active{
   float:right;
   height:30px;
 }
-#settings,
-#import_export,
-#embed,
-#connectivity,
-#users {
-    top: 62px;
+#import_export, #settings{
+  top: 115px;
+  position: fixed;
 }
 #import_export .popup {
   width: 183px;
@@ -219,9 +216,7 @@ stepper:active{
   border-radius: 0 0 0 6px;
 }
 #import_export {
-  top: 115px;
   width: 185px;
-  position: fixed;
 }
 .timeslider-bar {
   background: #f7f7f7;
@@ -237,7 +232,7 @@ stepper:active{
 .timeslider-bar #editbar {
   border-bottom: none;
   float: right;
-  width: 170px;
+  width: 180px;
 }
 .timeslider-bar h1 {
   margin: 5px

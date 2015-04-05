@@ -210,6 +210,12 @@ module.exports = {
       class: "buttonicon buttonicon-import_export"
     },
 
+    timeslider_settings: {
+      command: "settings",
+      localizationId: "pad.toolbar.settings.title",
+      class: "buttonicon buttonicon-settings"
+    },
+
     timeslider_returnToPad: {
       command: "timeslider_returnToPad",
       localizationId: "timeslider.toolbar.returnbutton",
