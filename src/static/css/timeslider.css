@@ -78,6 +78,7 @@
   width: 44px;
   text-align:center;
   vertical-align:middle;
+  background:none;
 }
 #playpause_button {
   right: 77px;
@@ -125,7 +126,7 @@
   font-family: fontawesome-etherpad;
   border-radius:2px;
   border: #666 solid 1px;
-  line-height:18px;
+/*  line-height:18px; */
   text-align:center;
   height:22px;
   color:#666;
@@ -204,12 +205,9 @@ stepper:active{
   float:right;
   height:30px;
 }
-#settings,
-#import_export,
-#embed,
-#connectivity,
-#users {
-    top: 62px;
+#import_export, #settings{
+  top: 115px;
+  position: fixed;
 }
 #import_export .popup {
   width: 183px;
@@ -218,9 +216,7 @@ stepper:active{
   border-radius: 0 0 0 6px;
 }
 #import_export {
-  top: 115px;
   width: 185px;
-  position: fixed;
 }
 .timeslider-bar {
   background: #f7f7f7;
@@ -236,7 +232,7 @@ stepper:active{
 .timeslider-bar #editbar {
   border-bottom: none;
   float: right;
-  width: 170px;
+  width: 180px;
 }
 .timeslider-bar h1 {
   margin: 5px
@@ -337,3 +333,19 @@ OL {
 .list-number6 {
   list-style-type: lower-roman
 }
+
+button{
+  margin:0;
+  padding:0;
+  cursor:pointer;
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0
+}
+
+button:focus{
+  border: 1px solid #666;
+}
+

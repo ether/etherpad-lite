@@ -56,17 +56,17 @@
         <!-- head and body had been removed intentionally -->
 
         <% e.begin_block("body"); %>
-        <div id="editbar" class="toolbar">
+        <div id="editbar" class="toolbar" title="Toolbar (Alt F9)">
             <div id="overlay">
                 <div id="overlay-inner"></div>
             </div>
 
-            <ul class="menu_left">
+            <ul class="menu_left" role="toolbar">
                 <% e.begin_block("editbarMenuLeft"); %>
                 <%- toolbar.menu(settings.toolbar.left) %>
                 <% e.end_block(); %>
             </ul>
-            <ul class="menu_right">
+            <ul class="menu_right" role="toolbar">
                 <% e.begin_block("editbarMenuRight"); %>
                 <%- toolbar.menu(settings.toolbar.right) %>
                 <% e.end_block(); %>
@@ -88,7 +88,7 @@
                 <div id="myusernameform"><input type="text" id="myusernameedit" disabled="disabled" data-l10n-id="pad.userlist.entername"></div>
                 <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled"></div>
             </div>
-            <div id="otherusers">
+            <div id="otherusers" aria-role="document">
                 <div id="guestprompts"></div>
                 <table id="otheruserstable" cellspacing="0" cellpadding="0" border="0">
                     <tr><td></td></tr>
@@ -160,6 +160,22 @@
                             <select id="viewfontmenu">
                                 <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
                                 <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
+                                <option value="opendyslexic" data-l10n-id="pad.settings.fontType.opendyslexic"></option>
+                                <option value="comicsans" data-l10n-id="pad.settings.fontType.comicsans"></option>
+                                <option value="georgia" data-l10n-id="pad.settings.fontType.georgia"></option>
+                                <option value="impact" data-l10n-id="pad.settings.fontType.impact"></option>
+                                <option value="lucida" data-l10n-id="pad.settings.fontType.lucida"></option>
+                                <option value="lucidasans" data-l10n-id="pad.settings.fontType.lucidasans"></option>
+                                <option value="palatino" data-l10n-id="pad.settings.fontType.palatino"></option>
+                                <option value="tahoma" data-l10n-id="pad.settings.fontType.tahoma"></option>
+                                <option value="timesnewroman" data-l10n-id="pad.settings.fontType.timesnewroman"></option>
+                                <option value="trebuchet" data-l10n-id="pad.settings.fontType.trebuchet"></option>
+                                <option value="verdana" data-l10n-id="pad.settings.fontType.verdana"></option>
+                                <option value="symbol" data-l10n-id="pad.settings.fontType.symbol"></option>
+                                <option value="webdings" data-l10n-id="pad.settings.fontType.webdings"></option>
+                                <option value="wingdings" data-l10n-id="pad.settings.fontType.wingdings"></option>
+                                <option value="sansserif" data-l10n-id="pad.settings.fontType.sansserif"></option>
+                                <option value="serif" data-l10n-id="pad.settings.fontType.serif"></option>
                             </select>
                         </td>
                     </tr>
@@ -306,7 +322,7 @@
             <% e.end_block(); %>
         </div>
 
-        <div id="chaticon" onclick="chat.show();return false;">
+        <div id="chaticon" onclick="chat.show();return false;" title="Chat (Alt C)">
             <span id="chatlabel" data-l10n-id="pad.chat"></span>
             <span class="buttonicon buttonicon-chat"></span>
             <span id="chatcounter">0</span>
@@ -317,7 +333,7 @@
               <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
               <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
             </div>
-            <div id="chattext" class="authorColors">
+            <div id="chattext" class="authorColors" aria-live="polite" aria-relevant="additions removals text" role="log" aria-atomic="false">
                 <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
                 <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>
             </div>

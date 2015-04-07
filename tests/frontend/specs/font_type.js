@@ -24,7 +24,7 @@ describe("font select", function(){
 
     //check if font changed to monospace
     var fontFamily = inner$("body").css("font-family").toLowerCase();
-    expect(fontFamily).to.be("monospace");
+    expect(fontFamily).to.be("courier new");
 
     done();
   });

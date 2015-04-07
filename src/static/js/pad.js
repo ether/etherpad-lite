@@ -110,7 +110,7 @@ function randomString()
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
-  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').hide(); $('#editorcontainer').css({"top":"0px"}); } },
+  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
   { name: "showChat",         checkVal: "false", callback: function(val) { $('#chaticon').hide(); } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
@@ -433,6 +433,10 @@ var pad = {
   {
     return pad.myUserInfo.name;
   },
+  userList: function()
+  {
+    return paduserlist.users();
+  },
   sendClientReady: function(isReconnect, messageType)
   {
     messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
@@ -576,9 +580,18 @@ var pad = {
       if(padcookie.getPref("rtlIsTrue") == true){
         pad.changeViewOption('rtlIsTrue', true);
       }
-      if(padcookie.getPref("useMonospaceFont") == true){
-        pad.changeViewOption('useMonospaceFont', true);
-      }
+
+      var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
+        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
+        'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
+        'useSerifFont'];
+
+      $.each(fonts, function(i, font){
+        if(padcookie.getPref(font) == true){
+          pad.changeViewOption(font, true);
+        }
+      })
+
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },

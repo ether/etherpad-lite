@@ -3618,6 +3618,8 @@ function Ace2Inner(){
     var charCode = evt.charCode;
     var keyCode = evt.keyCode;
     var which = evt.which;
+    var altKey = evt.altKey;
+    var shiftKey = evt.shiftKey;
 
     // prevent ESC key
     if (keyCode == 27)
@@ -3658,7 +3660,6 @@ function Ace2Inner(){
     if (keyCode == 13 && browser.opera && (type == "keypress")){
       return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
     }
-
     var specialHandled = false;
     var isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
     var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
@@ -3689,6 +3690,101 @@ function Ace2Inner(){
           evt:evt
         });
         specialHandled = (specialHandledInHook&&specialHandledInHook.length>0)?specialHandledInHook[0]:specialHandled;
+        if ((!specialHandled) && altKey && isTypeForSpecialKey && keyCode == 120){
+          // Alt F9 focuses on the File Menu and/or editbar.
+          // Note that while most editors use Alt F10 this is not desirable
+          // As ubuntu cannot use Alt F10....
+          // Focus on the editbar. -- TODO: Move Focus back to previous state (we know it so we can use it)
+          var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
+          $(this).blur(); 
+          firstEditbarElement.focus();
+          evt.preventDefault();
+        }
+        if ((!specialHandled) && altKey && keyCode == 67){
+          // Alt c focuses on the Chat window
+          $(this).blur(); 
+          parent.parent.chat.show();
+          parent.parent.chat.focus();
+          evt.preventDefault();
+        }
+        if ((!specialHandled) && evt.ctrlKey && shiftKey && keyCode == 50 && type === "keydown"){
+          // Control-Shift-2 shows a gritter popup showing a line author
+          var lineNumber = rep.selEnd[0];
+          var alineAttrs = rep.alines[lineNumber];
+          var apool = rep.apool;
+
+          // TODO: support selection ranges
+          // TODO: Still work when authorship colors have been cleared
+          // TODO: i18n
+          // TODO: There appears to be a race condition or so.
+
+          var author = null;
+          if (alineAttrs) {
+            var authors = [];
+            var authorNames = [];
+            var opIter = Changeset.opIterator(alineAttrs);
+
+            while (opIter.hasNext()){
+              var op = opIter.next();
+              authorId = Changeset.opAttributeValue(op, 'author', apool);
+
+              // Only push unique authors and ones with values
+              if(authors.indexOf(authorId) === -1 && authorId !== ""){
+                authors.push(authorId);
+              }
+
+            }
+
+          }
+
+          // No author information is available IE on a new pad.
+          if(authors.length === 0){
+            var authorString = "No author information is available";
+          }
+          else{
+            // Known authors info, both current and historical
+            var padAuthors = parent.parent.pad.userList();
+            var authorObj = {};
+            authors.forEach(function(authorId){
+              padAuthors.forEach(function(padAuthor){
+                // If the person doing the lookup is the author..
+                if(padAuthor.userId === authorId){
+                  if(parent.parent.clientVars.userId === authorId){
+                    authorObj = {
+                      name: "Me"
+                    }
+                  }else{
+                    authorObj = padAuthor;
+                  }
+                }
+              });
+              if(!authorObj){
+                author = "Unknown";
+                return;
+              }
+              author = authorObj.name;
+              if(!author) author = "Unknown";
+              authorNames.push(author);
+            })
+          }
+          if(authors.length === 1){
+            var authorString = "The author of this line is " + authorNames;
+          }
+          if(authors.length > 1){
+            var authorString = "The authors of this line are " + authorNames.join(" & ");
+	  }
+
+          parent.parent.$.gritter.add({
+            // (string | mandatory) the heading of the notification
+            title: 'Line Authors',
+            // (string | mandatory) the text inside the notification
+            text: authorString,
+            // (bool | optional) if you want it to fade out on its own or just sit there
+            sticky: false,
+            // (int | optional) the time you want it to be alive for before fading out
+            time: '4000'
+          });
+        }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8)
         {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
