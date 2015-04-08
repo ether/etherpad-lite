@@ -113,6 +113,11 @@ body.doesWrap {
   word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
 }
 
+body.doesWrap > div{
+  /* Related to #1766 */
+  white-space: pre-wrap;
+}
+
 #innerdocbody {
   padding-top: 1px; /* important for some reason? */
   padding-right: 10px;
