@@ -55,7 +55,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         ERR(err);
 
       if(err == "notfound")
-        res.send(404, '404 - Not Found');
+        res.status(404).send('404 - Not Found');
       else
         res.send(html);
     });

@@ -69,10 +69,8 @@ exports.restartServer = function () {
   if(settings.trustProxy){
     app.enable('trust proxy');
   }
-  
-  app.configure(function() {
-    hooks.callAll("expressConfigure", {"app": app});
-  });
+
+  hooks.callAll("expressConfigure", {"app": app});
   hooks.callAll("expressCreateServer", {"app": app, "server": server});
 
   server.listen(settings.port, settings.ip);
