@@ -199,13 +199,17 @@ exports.getGitCommit = function() {
     var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
     version = fs.readFileSync(refPath, "utf-8");
     version = version.substring(0, 7);
-    console.log("Your Etherpad git version is " + version);
   }
   catch(e)
   {
     console.warn("Can't get git version for server header\n" + e.message)
   }
   return version;
+}
+
+// Return etherpad version from package.json
+exports.getEpVersion = function() {
+  return require('ep_etherpad-lite/package.json').version;
 }
 
 exports.reloadSettings = function reloadSettings() {

@@ -17,7 +17,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
   args.app.get('/admin/plugins/info', function(req, res) {
     var gitCommit = settings.getGitCommit();
-    res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html", {gitCommit:gitCommit}) );
+    var epVersion = settings.getEpVersion();
+    res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html",
+      {
+        gitCommit: gitCommit,
+        epVersion: epVersion
+      }) 
+    );
   });
 }
 
