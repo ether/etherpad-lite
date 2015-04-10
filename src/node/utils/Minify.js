@@ -145,7 +145,6 @@ function minify(req, res, next)
   filename = path.normalize(path.join(ROOT_DIR, filename));
   if (filename.indexOf(ROOT_DIR) == 0) {
     filename = filename.slice(ROOT_DIR.length);
-    filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
   } else {
     res.writeHead(404, {});
     res.end();
