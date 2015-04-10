@@ -57,10 +57,10 @@ exports.basicAuth = function (req, res, next) {
       res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
       if (req.headers.authorization) {
         setTimeout(function () {
-          res.send(401, 'Authentication required');
+          res.status(401).send('Authentication required');
         }, 1000);
       } else {
-        res.send(401, 'Authentication required');
+        res.status(401).send('Authentication required');
       }
     }));
   }

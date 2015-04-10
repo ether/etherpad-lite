@@ -13,7 +13,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
-  args.app.all('/static/:filename', minify.minify);
+  args.app.all('/static/:filename(*)', minify.minify);
 
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
