@@ -1,3 +1,14 @@
+# 1.5.3
+ * NEW: Accessibility support for Screen readers, includes new fonts and keyboard shortcuts
+ * NEW: API endpoint for Append Chat Message and Chat Backend Tests
+ * NEW: Error messages displayed on load are included in Default Pad Text (can be supressed)
+ * NEW: Content Collector can handle key values
+ * NEW: getAttributesOnPosition Method
+ * FIX: Firefox keeps attributes (bold etc) on cut/copy -> paste
+ * Fix: showControls=false now works
+ * Fix: Cut and Paste works...
+ * SECURITY: Don't allow read files on directory traversal
+
 # 1.5.2
  * NEW: Support for node version 0.12.x
  * NEW: API endpoint saveRevision, getSavedRevisionCount and listSavedRevisions
