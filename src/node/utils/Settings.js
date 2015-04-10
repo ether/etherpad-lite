@@ -207,6 +207,11 @@ exports.getGitCommit = function() {
   return version;
 }
 
+// Return etherpad version from package.json
+exports.getEpVersion = function() {
+  return require('ep_etherpad-lite/package.json').version;
+}
+
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
