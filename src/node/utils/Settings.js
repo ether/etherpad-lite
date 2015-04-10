@@ -199,7 +199,6 @@ exports.getGitCommit = function() {
     var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
     version = fs.readFileSync(refPath, "utf-8");
     version = version.substring(0, 7);
-    console.log("Your Etherpad git version is " + version);
   }
   catch(e)
   {

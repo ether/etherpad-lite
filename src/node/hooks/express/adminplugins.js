@@ -4,6 +4,7 @@ var installer = require('ep_etherpad-lite/static/js/pluginfw/installer');
 var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
 var _ = require('underscore');
 var semver = require('semver');
+var epVersion = require('ep_etherpad-lite/package.json').version;
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/admin/plugins', function(req, res) {
@@ -17,7 +18,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
   args.app.get('/admin/plugins/info', function(req, res) {
     var gitCommit = settings.getGitCommit();
-    res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html", {gitCommit:gitCommit}) );
+    res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html",
+      {
+        gitCommit: gitCommit,
+        epVersion: epVersion
+      }) 
+    );
   });
 }
 
