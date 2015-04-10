@@ -4,7 +4,7 @@
  * This is not used for authors that are created via the API at current
  */
 
-var Store = require('ep_etherpad-lite/node_modules/connect/lib/middleware/session/store'),
+var Store = require('ep_etherpad-lite/node_modules/express-session').Store,
   db = require('ep_etherpad-lite/node/db/DB').db,
   log4js = require('ep_etherpad-lite/node_modules/log4js'),
   messageLogger = log4js.getLogger("SessionStore");

@@ -50,7 +50,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   args.app.get('/tests/frontend/*', function (req, res) {
     var filePath = url2FilePath(req.url);
-    res.sendfile(filePath);
+    res.sendFile(filePath);
   });
 
   args.app.get('/tests/frontend', function (req, res) {

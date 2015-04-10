@@ -103,7 +103,7 @@ exports.doExport = function(req, res, padId, type)
           //send the file
           function(callback)
           {
-            res.sendfile(destFile, null, callback);
+            res.sendFile(destFile, null, callback);
           },
           //clean up temporary files
           function(callback)
@@ -184,7 +184,7 @@ exports.doExport = function(req, res, padId, type)
           //send the file
           function(callback)
           {
-            res.sendfile(destFile, null, callback);
+            res.sendFile(destFile, null, callback);
           },
           //clean up temporary files
           function(callback)
