@@ -91,7 +91,7 @@ exports.expressCreateServer = function(n, args) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send('{"'+locale+'":'+JSON.stringify(locales[locale])+'}');
     } else {
-      res.send(404, 'Language not available');
+      res.status(404).send('Language not available');
     }
   })
   

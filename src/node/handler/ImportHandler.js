@@ -303,7 +303,7 @@ exports.doImport = function(req, res, padId)
           var impexp = window.parent.padimpexp.handleFrameCall('" + directDatabaseAccess +"', '" + status + "'); \
         }) \
       </script>"
-    , 200);
+    );
   });
 }
 
