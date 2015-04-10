@@ -508,6 +508,30 @@ var paduserlist = (function()
       });
       //
     },
+    users: function(){
+      // Returns an object of users who have been on this pad
+      // Firstly we have to get live data..
+      var userList = otherUsersInfo;
+      // Now we need to add ourselves..
+      userList.push(myUserInfo);
+      // Now we add historical authors
+      var historical = clientVars.collab_client_vars.historicalAuthorData;
+      for (var key in historical){
+        var userId = historical[key].userId;
+        // Check we don't already have this author in our array
+        var exists = false;
+
+        userList.forEach(function(user){
+          if(user.userId === userId) exists = true;
+        });
+
+        if(exists === false){
+          userList.push(historical[key]);
+        }
+
+      }
+      return userList;
+    },
     setMyUserInfo: function(info)
     {
       //translate the colorId

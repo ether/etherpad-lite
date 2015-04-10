@@ -297,7 +297,23 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       if (state.attribs[a])
       {
-        lst.push([a, 'true']);
+        // The following splitting of the attribute name is a workaround
+        // to enable the content collector to store key-value attributes
+        // see https://github.com/ether/etherpad-lite/issues/2567 for more information
+        // in long term the contentcollector should be refactored to get rid of this workaround
+        var ATTRIBUTE_SPLIT_STRING = "::";
+        
+        // see if attributeString is splittable
+        var attributeSplits = a.split(ATTRIBUTE_SPLIT_STRING);
+        if (attributeSplits.length > 1) {
+            // the attribute name follows the convention key::value
+            // so save it as a key value attribute
+            lst.push([attributeSplits[0], attributeSplits[1]]);
+        } else {
+            // the "normal" case, the attribute is just a switch
+            // so set it true
+            lst.push([a, 'true']);
+        }
       }
     }
     if (state.authorLevel > 0)
@@ -571,7 +587,9 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           }
           else if ((tname == "div" || tname == "p") && cls && cls.match(/(?:^| )ace-line\b/))
           {
-            oldListTypeOrNull = (_enterList(state, type) || 'none');
+            // This has undesirable behavior in Chrome but is right in other browsers.
+            // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
+            if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
           if (className2Author && cls)
           {

@@ -70,10 +70,6 @@ a img {
 .toolbar ul li {
   float: left;
   margin-left: 2px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   height:32px;
 }
 .toolbar ul li.separator {
@@ -141,9 +137,24 @@ a img {
   top: 1px;
 }
 .toolbar ul li a .buttontext {
-  color: #222;
+  color: #666;
   font-size: 14px;
+  border:none;
+  background:none;
+  margin-top:1px;
+  color:#666;
 }
+
+.buttontext::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+.buttontext:focus{
+  /* Not sure why important is required here but it is */
+  border: 1px solid #666 !important;
+}
+
 .toolbar ul li a.grouped-left {
   border-radius: 3px 0 0 3px;
 }
@@ -197,6 +208,7 @@ li[data-key=showusers] > a #online_count {
 #editbar{
   display:none;
 }
+
 #editorcontainer {
   position: absolute;
   top: 37px; /* + 1px border */
@@ -742,12 +754,24 @@ table#otheruserstable {
   height: 16px;
   display: inline-block;
   vertical-align: middle;
-
+  border: none;
+  padding: 0;
+  background: none;
   font-family: "fontawesome-etherpad";
   font-size: 15px;
   font-style: normal;
   font-weight: normal;
   color: #666;
+  cursor: pointer;
+}
+
+.buttonicon::-moz-focus-inner {
+  padding: 0;
+  border: 0
+}
+
+.buttonicon:focus{
+  border: 1px solid #666;
 }
 .buttonicon-bold:before {
   content: "\e81c";
@@ -1217,6 +1241,11 @@ input[type=checkbox] {
 /* End of gritter stuff */
 
 @font-face {
+  font-family: opendyslexic;
+  src: url("../../static/font/opendyslexic.otf") format("opentype");
+}
+
+@font-face {
   font-family: "fontawesome-etherpad";
   src:url("../font/fontawesome-etherpad.eot");
   src:url("../font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
@@ -1253,4 +1282,12 @@ input[type=checkbox] {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.hideControlsEditor{
+  top:0px !important;
+}
+.hideControlsEditbar{
+  display:none !important;
+}
+
 

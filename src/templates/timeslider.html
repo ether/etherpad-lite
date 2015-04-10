@@ -61,11 +61,11 @@
             <div id="ui-slider-bar"></div>
           </div>
           <div id="playpause_button">
-            <div id="playpause_button_icon" class=""></div>
+            <button id="playpause_button_icon" class=""></button>
           </div>
           <div id="steppers">
-            <div class="stepper" id="leftstep"></div>
-            <div class="stepper" id="rightstep"></div>
+            <button class="stepper" id="leftstep"></button>
+            <button class="stepper" id="rightstep"></button>
           </div>
         </div>
         
@@ -176,11 +176,41 @@
 <% e.end_block(); %>
 </div>
 
+<div class="popup" id="settings">
+  <tr>
+    <td>
+      <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
+    </td>
+    <td>
+      <select id="viewfontmenu">
+        <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
+        <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
+        <option value="opendyslexic" data-l10n-id="pad.settings.fontType.opendyslexic"></option>
+        <option value="comicsans" data-l10n-id="pad.settings.fontType.comicsans"></option>
+        <option value="georgia" data-l10n-id="pad.settings.fontType.georgia"></option>
+        <option value="impact" data-l10n-id="pad.settings.fontType.impact"></option>
+        <option value="lucida" data-l10n-id="pad.settings.fontType.lucida"></option>
+        <option value="lucidasans" data-l10n-id="pad.settings.fontType.lucidasans"></option>
+        <option value="palatino" data-l10n-id="pad.settings.fontType.palatino"></option>
+        <option value="tahoma" data-l10n-id="pad.settings.fontType.tahoma"></option>
+        <option value="timesnewroman" data-l10n-id="pad.settings.fontType.timesnewroman"></option>
+        <option value="trebuchet" data-l10n-id="pad.settings.fontType.trebuchet"></option>
+        <option value="verdana" data-l10n-id="pad.settings.fontType.verdana"></option>
+        <option value="symbol" data-l10n-id="pad.settings.fontType.symbol"></option>
+        <option value="webdings" data-l10n-id="pad.settings.fontType.webdings"></option>
+        <option value="wingdings" data-l10n-id="pad.settings.fontType.wingdings"></option>
+        <option value="sansserif" data-l10n-id="pad.settings.fontType.sansserif"></option>
+        <option value="serif" data-l10n-id="pad.settings.fontType.serif"></option>
+      </select>
+    </td>
+  </tr>
+</div>
+
 <!-- export code -->
 <div id="import_export">
-
 <div id="export" class="popup">
   <p data-l10n-id="timeslider.exportCurrent"></p>
+  <a id="exportetherpada" target="_blank" class="exportlink"><div class="exporttype" id="exportetherpad" data-l10n-id="pad.importExport.exportetherpad"></div></a>
   <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
   <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain" data-l10n-id="pad.importExport.exportplain"></div></a>
   <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>

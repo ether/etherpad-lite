@@ -284,6 +284,10 @@ var API = {
         }
       },
       "response": {"chatHead":{"type":"Message"}}
+    },
+    "appendChatMessage": {
+      "func": "appendChatMessage",
+      "description": "appends a chat message"
     }
   }
 };

@@ -148,6 +148,9 @@ exports.doImport = function(req, res, padId)
       if(!importHandledByPlugin || !directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
         var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
+        var fileIsTXT = (fileEnding === ".txt");
+        if (fileIsTXT) abiword = false; // Don't use abiword for text files
+        // See https://github.com/ether/etherpad-lite/issues/2572
         if (abiword && !fileIsHTML) {
           abiword.convertFile(srcFile, destFile, "htm", function(err) {
             //catch convert errors
@@ -213,7 +216,7 @@ exports.doImport = function(req, res, padId)
           // Title needs to be stripped out else it appends it to the pad..
           text = text.replace("<title>", "<!-- <title>");
           text = text.replace("</title>","</title>-->");
-  
+
           //node on windows has a delay on releasing of the file lock.  
           //We add a 100ms delay to work around this
           if(os.type().indexOf("Windows") > -1){
@@ -245,7 +248,6 @@ exports.doImport = function(req, res, padId)
       padManager.getPad(padId, function(err, _pad){
         var pad = _pad;
         padManager.unloadPad(padId);
-
         // direct Database Access means a pad user should perform a switchToPad
         // and not attempt to recieve updated pad data..
         if(!directDatabaseAccess){

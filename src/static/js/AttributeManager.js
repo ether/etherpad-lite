@@ -98,7 +98,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   
   /*
     Gets all attributes on a line
-    @param lineNum: the number of the line to set the attribute for 
+    @param lineNum: the number of the line to get the attribute for 
   */
   getAttributesOnLine: function(lineNum){
     // get attributes of first char of line
@@ -120,6 +120,59 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       }
     }
     return [];
+  },
+  
+  /*
+    Gets all attributes at a position containing line number and column
+    @param lineNumber starting with zero
+    @param column starting with zero
+    returns a list of attributes in the format 
+    [ ["key","value"], ["key","value"], ...  ]
+  */
+  getAttributesOnPosition: function(lineNumber, column){
+    // get all attributes of the line
+    var aline = this.rep.alines[lineNumber];
+    
+    if (!aline) {
+        return [];
+    }
+    // iterate through all operations of a line
+    var opIter = Changeset.opIterator(aline);
+    
+    // we need to sum up how much characters each operations take until the wanted position
+    var currentPointer = 0;
+    var attributes = [];    
+    var currentOperation;
+    
+    while (opIter.hasNext()) {
+      currentOperation = opIter.next();
+      currentPointer = currentPointer + currentOperation.chars;      
+      
+      if (currentPointer > column) {
+        // we got the operation of the wanted position, now collect all its attributes
+        Changeset.eachAttribNumber(currentOperation.attribs, function (n) {
+          attributes.push([
+            this.rep.apool.getAttribKey(n),
+            this.rep.apool.getAttribValue(n)
+          ]);
+        }.bind(this));
+        
+        // skip the loop
+        return attributes;
+      }
+    }
+    return attributes;
+    
+  },
+  
+  /*
+    Gets all attributes at caret position 
+    if the user selected a range, the start of the selection is taken
+    returns a list of attributes in the format 
+    [ ["key","value"], ["key","value"], ...  ]
+  */
+  getAttributesOnCaret: function(){
+    return this.getAttributesOnPosition(this.rep.selStart[0], this.rep.selStart[1]);
   },
   
   /*
@@ -153,49 +206,54 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     return this.applyChangeset(builder);
   },
   
-  /*
-     Removes a specified attribute on a line
-     @param lineNum: the number of the affected line
-     @param attributeKey: the name of the attribute to remove, e.g. list
-
+ /**
+   * Removes a specified attribute on a line
+   *  @param lineNum the number of the affected line
+   *  @param attributeName the name of the attribute to remove, e.g. list
+   *  @param attributeValue if given only attributes with equal value will be removed
    */
-   removeAttributeOnLine: function(lineNum, attributeName, attributeValue){
-     var loc = [0,0];
-     var builder = Changeset.builder(this.rep.lines.totalWidth());
-     var hasMarker = this.lineHasMarker(lineNum);
-     var attribs
-     var foundAttrib = false
-     
-     attribs = this.getAttributesOnLine(lineNum).map(function(attrib) {
-       if(attrib[0] === attributeName) {
-         foundAttrib = true
-         return [attributeName, null] // remove this attrib from the linemarker
-       }
-       return attrib
-     })
+ removeAttributeOnLine: function(lineNum, attributeName, attributeValue){
+   var builder = Changeset.builder(this.rep.lines.totalWidth());
+   var hasMarker = this.lineHasMarker(lineNum);
+   var found = false;
 
-     if(!foundAttrib) {
-       return
+   var attribs = _(this.getAttributesOnLine(lineNum)).map(function (attrib) {
+     if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)){
+       found = true;
+       return [attributeName, ''];
      }
+     return attrib;
+   });
 
-     if(hasMarker){
-       ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
-       // If length == 4, there's [author, lmkr, insertorder, + the attrib being removed] thus we can remove the marker entirely
-       if(attribs.length <= 4) ChangesetUtils.buildRemoveRange(this.rep, builder, loc, (loc = [lineNum, 1]))
-       else ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 1]), attribs, this.rep.apool);
-     }
-     
-     return this.applyChangeset(builder);
-   },
+   if (!found) {
+     return;
+   }
+
+   ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
+
+   var countAttribsWithMarker = _.chain(attribs).filter(function(a){return !!a[1];})
+     .map(function(a){return a[0];}).difference(['author', 'lmkr', 'insertorder', 'start']).size().value();
+
+   //if we have marker and any of attributes don't need to have marker. we need delete it
+   if(hasMarker && !countAttribsWithMarker){
+     ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 0], [lineNum, 1]);
+   }else{
+     ChangesetUtils.buildKeepRange(this.rep, builder, [lineNum, 0], [lineNum, 1], attribs, this.rep.apool);
+   }
+
+   return this.applyChangeset(builder);
+ },
   
    /*
-     Sets a specified attribute on a line
-     @param lineNum: the number of the line to set the attribute for
-     @param attributeKey: the name of the attribute to set, e.g. list
-     @param attributeValue: an optional parameter to pass to the attribute (e.g. indention level)
+     Toggles a line attribute for the specified line number
+     If a line attribute with the specified name exists with any value it will be removed
+     Otherwise it will be set to the given value
+     @param lineNum: the number of the line to toggle the attribute for
+     @param attributeKey: the name of the attribute to toggle, e.g. list
+     @param attributeValue: the value to pass to the attribute (e.g. indention level)
   */
   toggleAttributeOnLine: function(lineNum, attributeName, attributeValue) {
-    return this.getAttributeOnLine(attributeName) ?
+    return this.getAttributeOnLine(lineNum, attributeName) ?
       this.removeAttributeOnLine(lineNum, attributeName) :
       this.setAttributeOnLine(lineNum, attributeName, attributeValue);
     

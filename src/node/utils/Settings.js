@@ -27,7 +27,7 @@ var npm = require("npm/lib/npm.js");
 var jsonminify = require("jsonminify");
 var log4js = require("log4js");
 var randomString = require("./randomstring");
-
+var suppressDisableMsg = " -- To suppress these warning messages change suppressErrorsInPadText to true in your settings.json\n";
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -53,6 +53,11 @@ exports.ip = "0.0.0.0";
  * The Port ep-lite should listen to
  */
 exports.port = process.env.PORT || 9001;
+
+/**
+ * Should we suppress Error messages from being in Pad Contents
+ */
+exports.suppressErrorsInPadText = false;
 
 /**
  * The SSL signed server key and the Certificate Authority's own certificate
@@ -95,7 +100,7 @@ exports.toolbar = {
     ["showusers"]
   ],
   timeslider: [
-    ["timeslider_export", "timeslider_returnToPad"]
+    ["timeslider_export", "timeslider_settings", "timeslider_returnToPad"]
   ]
 }
 
@@ -194,13 +199,17 @@ exports.getGitCommit = function() {
     var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
     version = fs.readFileSync(refPath, "utf-8");
     version = version.substring(0, 7);
-    console.log("Your Etherpad git version is " + version);
   }
   catch(e)
   {
     console.warn("Can't get git version for server header\n" + e.message)
   }
   return version;
+}
+
+// Return etherpad version from package.json
+exports.getEpVersion = function() {
+  return require('ep_etherpad-lite/package.json').version;
 }
 
 exports.reloadSettings = function reloadSettings() {
@@ -266,7 +275,11 @@ exports.reloadSettings = function reloadSettings() {
     {
       fs.exists(exports.abiword, function(exists) {
         if (!exists) {
-          console.error("Abiword does not exist at this path, check your settings file");
+          var abiwordError = "Abiword does not exist at this path, check your settings file";
+          if(!exports.suppressErrorsInPadText){
+            exports.defaultPadText = exports.defaultPadText + "\nError: " + abiwordError + suppressDisableMsg;
+          }
+          console.error(abiwordError);
           exports.abiword = null;
         }
       });
@@ -275,11 +288,19 @@ exports.reloadSettings = function reloadSettings() {
 
   if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here
     exports.sessionKey = randomString(32);
-    console.warn("You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts");
+    var sessionWarning = "You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts";
+    if(!exports.suppressErrorsInPadText){
+      exports.defaultPadText = exports.defaultPadText + "\nWarning: " + sessionWarning + suppressDisableMsg;
+    }
+    console.warn(sessionWarning);
   }
 
   if(exports.dbType === "dirty"){
-    console.warn("DirtyDB is used. This is fine for testing but not recommended for production.");
+    var dirtyWarning = "DirtyDB is used. This is fine for testing but not recommended for production.";
+    if(!exports.suppressErrorsInPadText){
+      exports.defaultPadText = exports.defaultPadText + "\nWarning: " + dirtyWarning + suppressDisableMsg;
+    }
+    console.warn(dirtyWarning);
   }
 };
 
