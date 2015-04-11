@@ -286,13 +286,15 @@ exports.reloadSettings = function reloadSettings() {
     }
   }
 
-  if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here
-    exports.sessionKey = randomString(32);
-    var sessionWarning = "You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts";
-    if(!exports.suppressErrorsInPadText){
-      exports.defaultPadText = exports.defaultPadText + "\nWarning: " + sessionWarning + suppressDisableMsg;
+  if (!exports.sessionKey) {
+    try {
+      exports.sessionKey = fs.readFileSync("./SESSIONKEY.txt","utf8");
+    } catch(e) {
+      exports.sessionKey = randomString(32);
+      fs.writeFileSync("./SESSIONKEY.txt",exports.sessionKey,"utf8");
     }
-    console.warn(sessionWarning);
+  } else {
+    console.warn("Declaring the sessionKey in the settings.json is deprecated. This value is auto-generated now. Please remove the setting from the file.");
   }
 
   if(exports.dbType === "dirty"){
