@@ -23,7 +23,10 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   });
 
-  var rootTestFolder = path.join(npm.root, "..", "/tests/frontend/");
+
+  // path.join seems to normalize by default, but we'll just be explicit
+  var rootTestFolder = path.normalize(path.join(npm.root, "../tests/frontend/"));
+
   var url2FilePath = function(url){
     var subPath = url.substr("/tests/frontend".length);
     if (subPath == ""){
@@ -34,7 +37,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     var filePath = path.normalize(path.join(rootTestFolder, subPath));
     // make sure we jail the paths to the test folder, otherwise serve index
     if (filePath.indexOf(rootTestFolder) !== 0) {
-      filePath = path.normalize(path.join(rootTestFolder, "index.html"));
+      filePath = path.join(rootTestFolder, "index.html");
     }
     return filePath;
   }
