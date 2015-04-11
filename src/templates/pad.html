@@ -371,8 +371,8 @@
         <script type="text/javascript" src="../static/plugins/requirejs/require.js"></script>
 
         <!-- Include base packages manually (this help with debugging) -->
-        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
-        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
+        <!-- script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
+        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script -->
 
         <% e.begin_block("customScripts"); %>
         <script type="text/javascript" src="../static/custom/pad.js"></script>
@@ -391,38 +391,44 @@
               require.setLibraryURI(baseURL + "javascripts/lib");
               require.setGlobalKeyPath("require");
 
+              window.requireKernel = require;
+
               requirejs.config({
-                 baseUrl: baseURL + "static/plugins"
+                 baseUrl: baseURL + "static/plugins",
+paths: {'underscore': baseURL + "static/plugins/underscore/underscore"}
               });
 
-              $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
-              browser = require('ep_etherpad-lite/static/js/browser').browser;
-              if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
-                document.domain = document.domain; // for comet
-              }
+              requirejs(["ep_etherpad-lite/static/js/rjquery", 'ep_etherpad-lite/static/js/pluginfw/client_plugins'], function ($, plugins) {
+                window.$ = $; // Expose jQuery #HACK
+                window.jQuery = $;
 
-              var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-              var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+                browser = require('ep_etherpad-lite/static/js/browser').browser;
+                if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
+                  document.domain = document.domain; // for comet
+                }
 
-              plugins.baseURL = baseURL;
-              plugins.update(function () {
-                hooks.plugins = plugins;
+                var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
-                // Call documentReady hook
-                $(function() {
-                  hooks.aCallAll('documentReady');
+                plugins.baseURL = baseURL;
+                plugins.update(function () {
+                  hooks.plugins = plugins;
+
+                  // Call documentReady hook
+                  $(function() {
+                    hooks.aCallAll('documentReady');
+                  });
+
+                  var pad = require('ep_etherpad-lite/static/js/pad');
+                  pad.baseURL = baseURL;
+                  pad.init();
                 });
 
-                var pad = require('ep_etherpad-lite/static/js/pad');
-                pad.baseURL = baseURL;
-                pad.init();
+                /* TODO: These globals shouldn't exist. */
+                pad = require('ep_etherpad-lite/static/js/pad').pad;
+                chat = require('ep_etherpad-lite/static/js/chat').chat;
+                padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+                padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
               });
-
-              /* TODO: These globals shouldn't exist. */
-              pad = require('ep_etherpad-lite/static/js/pad').pad;
-              chat = require('ep_etherpad-lite/static/js/chat').chat;
-              padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-              padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
             }());
         </script>
         <% e.end_block(); %>

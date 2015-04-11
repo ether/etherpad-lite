@@ -19,7 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _, $, jQuery, plugins, Ace2Common;
+
+define(["ep_etherpad-lite/static/js/rjquery", "underscore"], function ($, _) {
+  var exports = {};
 
 var browser = require('./browser').browser;
 if(browser.msie){
@@ -32,11 +34,7 @@ if(browser.msie){
   }
 }
 
-Ace2Common = require('./ace2_common');
-
-plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-$ = jQuery = require('./rjquery').$;
-_ = require("./underscore");
+var Ace2Common = require('./ace2_common');
 
 var isNodeText = Ace2Common.isNodeText,
   getAssoc = Ace2Common.getAssoc,
@@ -45,7 +43,7 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
-var hooks = require('./pluginfw/hooks');
+ var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 function Ace2Inner(){
 
@@ -5470,3 +5468,6 @@ exports.init = function () {
   var editor = new Ace2Inner()
   editor.init();
 };
+
+  return exports;
+});

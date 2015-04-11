@@ -21,7 +21,7 @@
  */
 
 var padutils = require('./pad_utils').padutils;
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 var myUserInfo = {};
 

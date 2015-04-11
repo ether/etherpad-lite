@@ -21,7 +21,7 @@
  */
 
 var chat = require('./chat').chat;
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 // Dependency fill on init. This exists for `pad.socket` only.
 // TODO: bind directly to the socket.

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
 var padsavedrevs = require('./pad_savedrevs');

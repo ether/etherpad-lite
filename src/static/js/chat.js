@@ -17,7 +17,7 @@
 var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
 var Tinycon = require('tinycon/tinycon');
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var padeditor = require('./pad_editor').padeditor;
 
 var chat = (function()

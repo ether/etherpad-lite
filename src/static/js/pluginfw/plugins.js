@@ -8,8 +8,6 @@ var util = require("util");
 var _ = require("underscore");
 var requirejs = require('requirejs');
 
-var pluginUtils = require('./shared');
-
 exports.prefix = 'ep_';
 exports.loaded = false;
 exports.plugins = {};
@@ -76,8 +74,13 @@ exports.callInit = function (cb) {
   );
 }
 
-exports.pathNormalization = function (part, hook_fn_name) {
-  return path.normalize(path.join(path.dirname(exports.plugins[part.plugin].package.path), hook_fn_name));
+exports.loadModule = function(path, cb) {
+  try {
+    cb(require(path));
+    console.warn("Module uses old CommonJS format: " + path);
+  } catch (e) {
+    requirejs([path], cb);
+  }
 }
 
 exports.update = function (cb) {
@@ -94,13 +97,16 @@ exports.update = function (cb) {
         if (err) cb(err);
         exports.plugins = plugins;
         exports.parts = sortParts(parts);
-        pluginUtils.extractHooks(exports.parts, "hooks", exports.pathNormalization, function (err, hooks) {
-          exports.hooks = hooks;
-          // Load client side hooks here too, so we don't have to call it from formatHooks (which is synchronous)
-          pluginUtils.extractHooks(exports.parts, "client_hooks", exports.pathNormalization, function (err, hooks) {
-            exports.client_hooks = hooks;
-            exports.loaded = true;
-            exports.callInit(cb);
+
+        requirejs(["ep_etherpad-lite/static/js/pluginfw/shared"], function (pluginUtils) {
+          pluginUtils.extractHooks(exports.parts, "hooks", exports.loadModule, function (err, hooks) {
+            exports.hooks = hooks;
+            // Load client side hooks here too, so we don't have to call it from formatHooks (which is synchronous)
+            pluginUtils.extractHooks(exports.parts, "client_hooks", exports.loadModule, function (err, hooks) {
+              exports.client_hooks = hooks;
+              exports.loaded = true;
+              exports.callInit(cb);
+            });
           });
         });
       }

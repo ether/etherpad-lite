@@ -27,7 +27,7 @@ var _MAX_LIST_LEVEL = 16;
 
 var UNorm = require('unorm');
 var Changeset = require('./Changeset');
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var _ = require('./underscore');
 
 function sanitizeUnicode(s)

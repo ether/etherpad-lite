@@ -48,7 +48,7 @@ var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 var gritter = require('./gritter').gritter;
 
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 var receivedClientVars = false;
 

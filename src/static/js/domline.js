@@ -27,7 +27,7 @@
 // requires: undefined
 
 var Security = require('./security');
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var _ = require('./underscore');
 var lineAttributeMarker = require('./linestylefilter').lineAttributeMarker;
 var noop = function(){};

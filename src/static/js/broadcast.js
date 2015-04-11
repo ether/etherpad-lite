@@ -27,7 +27,7 @@ var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
 var colorutils = require('./colorutils').colorutils;
 var _ = require('./underscore');
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.

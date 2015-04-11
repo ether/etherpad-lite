@@ -29,7 +29,7 @@
 // requires: undefined
 
 var Changeset = require('./Changeset');
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var linestylefilter = {};
 var _ = require('./underscore');
 var AttributeManager = require('./AttributeManager');
