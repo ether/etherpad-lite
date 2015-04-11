@@ -29,7 +29,7 @@
                       "cheerio"                 : "0.19.0",
                       "async-stacktrace"        : "0.0.2",
                       "npm"                     : "2.7.5",
-                      "ejs"                     : "1.0.0",
+                      "ejs"                     : "2.3.1",
                       "graceful-fs"             : "3.0.6",
                       "slide"                   : "1.1.6",
                       "semver"                  : "4.3.3",
