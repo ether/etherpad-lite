@@ -32,6 +32,8 @@ exports.info = {
   args: []
 };
 
+var require_cache = {};
+
 function getCurrentFile() {
   return exports.info.file_stack[exports.info.file_stack.length-1];
 }
@@ -89,42 +91,67 @@ exports.inherit = function (name, args) {
     getCurrentFile().inherit.push({name:name, args:args});
 }
 
-exports.require = function (name, args, mod) {
-  if (args == undefined) args = {};
-
+function get_template(name, mod) {
   var basedir = __dirname;
-  var paths = [];
 
   if (exports.info.file_stack.length) {
     basedir = path.dirname(getCurrentFile().path);
   }
   if (mod) {
     basedir = path.dirname(mod.filename);
-    paths = mod.paths;
   }
 
-  var ejspath = resolve.sync(
-    name,
-    {
-      paths : paths,
-      basedir : basedir,
-      extensions : [ '.html', '.ejs' ],
+  var key = basedir + '#' + name;
+
+  if (!require_cache[key]) {
+    var paths = mod ? mod.paths : [];
+
+    var ejspath = resolve.sync(
+      name,
+      {
+        paths : paths,
+        basedir : basedir,
+        extensions : [ '.html', '.ejs' ],
+      }
+    )
+
+    var template_string = '<% e._init(__output); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
+    require_cache[key] = {
+      str: template_string,
+      path: ejspath
     }
-  )
+    console.log('[template] ADDED ' + key);
+  } else {
+    console.log('[template] FOUND ' + key);
+  }
+
+  var ret = require_cache[key]
+
+  if (exports.NO_CACHE) {
+    delete require_cache[key];
+  }
+
+  return ret;
+}
+
+
+exports.require = function (name, args, mod) {
+  if (args == undefined) args = {};
+
+  var template = get_template(name, mod);
 
   args.e = exports;
   args.require = require;
-  var template = '<% e._init(__output); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
-  
   exports.info.args.push(args);
-  exports.info.file_stack.push({path: ejspath, inherit: []});
+  exports.info.file_stack.push({path: template.path, inherit: []});
 
-  var res = ejs.render(template, args);
+  var res = ejs.render(template.str, args);
   exports.info.file_stack.pop();
   exports.info.args.pop();
 
   return res;
 }
+
 
 exports._require = function (name, args) {
   exports.info.__output.push(exports.require(name, args));
