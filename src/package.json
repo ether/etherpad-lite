@@ -54,5 +54,5 @@
   "repository"     : { "type" : "git",
                        "url" : "http://github.com/ether/etherpad-lite.git"
                      },
-  "version"        : "1.5.3"
+  "version"        : "1.5.4"
 }

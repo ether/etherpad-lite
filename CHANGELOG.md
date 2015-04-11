@@ -1,3 +1,6 @@
+# 1.5.4
+ * SECURITY: Also don't allow read files on directory traversal on frontend tests path
+
 # 1.5.3
  * NEW: Accessibility support for Screen readers, includes new fonts and keyboard shortcuts
  * NEW: API endpoint for Append Chat Message and Chat Backend Tests
