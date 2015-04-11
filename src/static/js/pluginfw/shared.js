@@ -23,8 +23,6 @@ function loadFn(path, hookName, cb) {
     functionName = parts[1];
   }
 
-  console.log(["loadName", path, functionName]);
-
   var handleFunction = function (fn) {
     functionName = functionName ? functionName : hookName;
 
@@ -38,6 +36,7 @@ function loadFn(path, hookName, cb) {
     /* We're apparently in NodeJS, so try to load using the built-in require first */
     try {
       handleFunction(require(path));
+      console.warn("Module uses old CommonJS format: " + path);
     } catch (e) {
       requirejs([path], handleFunction);
     }

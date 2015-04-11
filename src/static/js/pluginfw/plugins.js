@@ -19,17 +19,13 @@ exports.hooks = {};
 exports.ensure = function (cb) {
   if (!exports.loaded)
     exports.getPackages(function (er, packages) {
-pkg = Object.keys(packages).map(function (name) {
+      requirejs.config({
+        packages: Object.keys(packages).map(function (name) {
             return {
               name: name,
               location: packages[name].realPath
             }
         })
-;
-
-        console.log(["AAAAAAAAA", pkg]);
-      requirejs.config({
-        packages: pkg
       });
 
       exports.update(cb);
