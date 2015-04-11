@@ -166,6 +166,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       padmodals.showModal("disconnected");
     }
 
+    // Throttle seems like overkill here...  Not sure why we do it!
     var fixPadHeight = _.throttle(function(){
       var height = $('#timeslider-top').height();
       $('#editorcontainerbox').css({marginTop: height});
