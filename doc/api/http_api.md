@@ -232,7 +232,7 @@ creates a new session. validUntil is an unix timestamp in seconds
 deletes a session
 
 *Example returns:*
-  * `{code: 1, message:"ok", data: null}`
+  * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"sessionID does not exist", data: null}`
 
 #### getSessionInfo(sessionID)
