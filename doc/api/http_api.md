@@ -388,10 +388,12 @@ Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security
  * API >= 1
 
 creates a new (non-group) pad.  Note that if you need to create a group Pad, you should call **createGroupPad**.
+You get an error message if you use one of the following characters in the padID: "/", "?", "&" or "#".
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`
-  * `{code: 1, message:"pad does already exist", data: null}`
+  * `{code: 1, message:"padID does already exist", data: null}`
+  * `{code: 1, message:"malformed padID: Remove special characters", data: null}`
 
 #### getRevisionsCount(padID)
  * API >= 1
