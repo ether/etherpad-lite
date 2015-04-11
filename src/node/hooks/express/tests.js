@@ -23,6 +23,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   });
 
+  var rootTestFolder = path.join(npm.root, "..", "/tests/frontend/");
   var url2FilePath = function(url){
     var subPath = url.substr("/tests/frontend".length);
     if (subPath == ""){
@@ -30,8 +31,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     }
     subPath = subPath.split("?")[0];
 
-    var filePath = path.normalize(npm.root + "/../tests/frontend/")
-    filePath += subPath.replace("..", "");
+    var filePath = path.normalize(path.join(rootTestFolder, subPath));
+    // make sure we jail the paths to the test folder, otherwise serve index
+    if (filePath.indexOf(rootTestFolder) !== 0) {
+      filePath = path.normalize(path.join(rootTestFolder, "index.html"));
+    }
     return filePath;
   }
 
