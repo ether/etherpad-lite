@@ -28,6 +28,7 @@ var jsonminify = require("jsonminify");
 var log4js = require("log4js");
 var randomString = require("./randomstring");
 var suppressDisableMsg = " -- To suppress these warning messages change suppressErrorsInPadText to true in your settings.json\n";
+var _ = require("underscore");
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -272,7 +273,11 @@ exports.reloadSettings = function reloadSettings() {
     //or it's a settings hash, specific to a plugin
     if(exports[i] !== undefined || i.indexOf('ep_')==0)
     {
-      exports[i] = settings[i];
+      if (_.isObject(settings[i]) && !_.isArray(settings[i])) {
+        exports[i] = _.defaults(settings[i], exports[i]);
+      } else {
+        exports[i] = settings[i];
+      }
     }
     //this setting is unkown, output a warning and throw it away
     else
