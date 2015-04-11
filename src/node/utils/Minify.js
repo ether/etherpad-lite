@@ -42,6 +42,7 @@ var LIBRARY_WHITELIST = [
     , 'tinycon'
     , 'underscore'
     , 'unorm'
+    , 'requirejs'
     ];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.

@@ -15,6 +15,7 @@ function loadFn(path, hookName) {
     functionName = parts[1];
   }
 
+    console.log(["LOADING", path]);
   var fn = require(path);
   functionName = functionName ? functionName : hookName;
 
