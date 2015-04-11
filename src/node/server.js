@@ -63,7 +63,7 @@ async.waterfall([
   },
 
   function(callback) {
-    plugins.update(callback)
+    plugins.ensure(callback)
   },
 
   function (callback) {

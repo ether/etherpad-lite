@@ -26,9 +26,11 @@ exports.update = function (cb) {
   jQuery.getJSON(exports.baseURL + 'pluginfw/plugin-definitions.json', function(data) {
     exports.plugins = data.plugins;
     exports.parts = data.parts;
-    exports.hooks = pluginUtils.extractHooks(exports.parts, "client_hooks");
-    exports.loaded = true;
-    callback();
+    pluginUtils.extractHooks(exports.parts, "client_hooks", undefined, function (err, hooks) {
+      exports.hooks = hooks;
+      exports.loaded = true;
+      callback();
+    });
    }).error(function(xhr, s, err){
      console.error("Failed to load plugin-definitions: " + err);
      callback();

@@ -6,6 +6,7 @@ var fs = require("fs");
 var tsort = require("./tsort");
 var util = require("util");
 var _ = require("underscore");
+var requirejs = require('requirejs');
 
 var pluginUtils = require('./shared');
 
@@ -17,7 +18,22 @@ exports.hooks = {};
 
 exports.ensure = function (cb) {
   if (!exports.loaded)
-    exports.update(cb);
+    exports.getPackages(function (er, packages) {
+pkg = Object.keys(packages).map(function (name) {
+            return {
+              name: name,
+              location: packages[name].realPath
+            }
+        })
+;
+
+        console.log(["AAAAAAAAA", pkg]);
+      requirejs.config({
+        packages: pkg
+      });
+
+      exports.update(cb);
+    });
   else
     cb();
 };
@@ -32,7 +48,7 @@ exports.formatParts = function () {
 
 exports.formatHooks = function (hook_set_name) {
   var res = [];
-  var hooks = pluginUtils.extractHooks(exports.parts, hook_set_name || "hooks");
+  var hooks = exports[hook_set_name || "hooks"];
 
   _.chain(hooks).keys().forEach(function (hook_name) {
     _.forEach(hooks[hook_name], function (hook) {
@@ -82,9 +98,15 @@ exports.update = function (cb) {
         if (err) cb(err);
         exports.plugins = plugins;
         exports.parts = sortParts(parts);
-        exports.hooks = pluginUtils.extractHooks(exports.parts, "hooks", exports.pathNormalization);
-        exports.loaded = true;
-        exports.callInit(cb);
+        pluginUtils.extractHooks(exports.parts, "hooks", exports.pathNormalization, function (err, hooks) {
+          exports.hooks = hooks;
+          // Load client side hooks here too, so we don't have to call it from formatHooks (which is synchronous)
+          pluginUtils.extractHooks(exports.parts, "client_hooks", exports.pathNormalization, function (err, hooks) {
+            exports.client_hooks = hooks;
+            exports.loaded = true;
+            exports.callInit(cb);
+          });
+        });
       }
     );
   });

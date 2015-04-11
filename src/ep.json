@@ -1,8 +1,8 @@
 {
   "parts": [
     { "name": "express", "hooks": {
-      "createServer": "ep_etherpad-lite/node/hooks/express:createServer",
-      "restartServer": "ep_etherpad-lite/node/hooks/express:restartServer"
+      "createServer": "ep_etherpad-lite/node/hooks/express/main:createServer",
+      "restartServer": "ep_etherpad-lite/node/hooks/express/main:restartServer"
       } },
     { "name": "static", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static:expressCreateServer" } },
     { "name": "i18n", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/i18n:expressCreateServer" } },
