@@ -2,7 +2,8 @@ var assert = require('assert')
  supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
         fs = require('fs'),
        api = supertest('http://localhost:9001');
-      path = require('path');
+      path = require('path'),
+     async = require(__dirname+'/../../../../src/node_modules/async');
 
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
@@ -80,6 +81,7 @@ describe('Permission', function(){
                                -> setHTML(padID) -- Should fail on invalid HTML
                                 -> setHTML(padID) *3 -- Should fail on invalid HTML
                                  -> getHTML(padID) -- Should return HTML close to posted HTML
+                                  -> createPad -- Tries to create pads with bad url characters
 
 */
 
@@ -491,6 +493,23 @@ describe('getHTML', function(){
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
+  });
+})
+
+describe('createPad', function(){
+  it('errors if pad can be created', function(done) {
+    var badUrlChars = ["/", "%23", "%3F", "%26"];
+    async.map(
+      badUrlChars, 
+      function (badUrlChar, cb) {
+        api.get(endPoint('createPad')+"&padID="+badUrlChar)
+        .expect(function(res){
+          if(res.body.code !== 1) throw new Error("Pad with bad characters was created");
+        })
+        .expect('Content-Type', /json/)
+        .end(cb);
+      },
+      done);
   });
 })
 
