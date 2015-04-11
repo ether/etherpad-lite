@@ -210,8 +210,9 @@ ol {
   list-style-type: decimal;
 }
 
+/* Fixes #2223 and #1836 */
 ol > li {
-  display:inline;   
+  display:block;
 }
 
 /* Set the indentation */

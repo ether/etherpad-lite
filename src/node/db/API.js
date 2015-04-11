@@ -687,12 +687,21 @@ Example returns:
 exports.createPad = function(padID, text, callback)
 {  
   //ensure there is no $ in the padID
-  if(padID && padID.indexOf("$") != -1)
+  if(padID)
   {
-    callback(new customError("createPad can't create group pads","apierror"));
-    return;
+    if(padID.indexOf("$") != -1)
+    {
+      callback(new customError("createPad can't create group pads","apierror"));
+      return;
+    }
+    //check for url special characters
+    else if(padID.match(/(\/|\?|&|#)/))
+    {
+      callback(new customError("malformed padID: Remove special characters","apierror"));
+      return;
+    }
   }
-  
+
   //create pad
   getPadSafe(padID, false, text, function(err)
   {

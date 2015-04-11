@@ -4955,7 +4955,10 @@ function Ace2Inner(){
 
     // Don't paste on middle click of links
     $(root).on("paste", function(e){
-      if(e.target.a){
+      // TODO: this breaks pasting strings into URLS when using 
+      // Control C and Control V -- the Event is never available
+      // here.. :(
+      if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
       }
     })

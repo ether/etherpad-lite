@@ -9,7 +9,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // Cache both minified and static.
   var assetCache = new CachingMiddleware;
-  args.app.all(/\/(javascripts|static)\/(.*)/, assetCache.handle);
+  args.app.all(/\/javascripts\/(.*)/, assetCache.handle);
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
