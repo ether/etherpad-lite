@@ -2,6 +2,7 @@ node_modules
 settings.json
 !settings.json.template
 APIKEY.txt
+SESSIONKEY.txt
 bin/abiword.exe
 bin/node.exe
 etherpad-lite-win.zip

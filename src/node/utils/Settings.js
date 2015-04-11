@@ -28,6 +28,7 @@ var jsonminify = require("jsonminify");
 var log4js = require("log4js");
 var randomString = require("./randomstring");
 var suppressDisableMsg = " -- To suppress these warning messages change suppressErrorsInPadText to true in your settings.json\n";
+var _ = require("underscore");
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -83,6 +84,23 @@ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
  * The default Text of a new pad
  */
 exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad on Github: http:\/\/j.mp/ep-lite\n";
+
+/**
+ * The default Pad Settings for a user (Can be overridden by changing the setting
+ */
+exports.padOptions = {
+  "noColors": false,
+  "showControls": true,
+  "showChat": true,
+  "showLineNumbers": true,
+  "useMonospaceFont": false,
+  "userName": false,
+  "userColor": false,
+  "rtl": false,
+  "alwaysShowChat": false,
+  "chatAndUsers": false,
+  "lang": "en-gb"
+}
 
 /**
  * The toolbar buttons and order.
@@ -255,7 +273,11 @@ exports.reloadSettings = function reloadSettings() {
     //or it's a settings hash, specific to a plugin
     if(exports[i] !== undefined || i.indexOf('ep_')==0)
     {
-      exports[i] = settings[i];
+      if (_.isObject(settings[i]) && !_.isArray(settings[i])) {
+        exports[i] = _.defaults(settings[i], exports[i]);
+      } else {
+        exports[i] = settings[i];
+      }
     }
     //this setting is unkown, output a warning and throw it away
     else
