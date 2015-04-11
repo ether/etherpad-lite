@@ -265,7 +265,7 @@ plugins.ensure(function () {\n\
         iframeHTML: iframeHTML
       });
 
-      iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
+      iframeHTML.push('</head><body id="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
       // Expose myself to global for my child frame.
       var thisFunctionsName = "ChildAccessibleAce2Editor";
@@ -279,6 +279,7 @@ window.onload = function () {\n\
   setTimeout(function () {\n\
     var iframe = document.createElement("IFRAME");\n\
     iframe.name = "ace_inner";\n\
+    iframe.title = "pad";\n\
     iframe.scrolling = "no";\n\
     var outerdocbody = document.getElementById("outerdocbody");\n\
     iframe.frameBorder = 0;\n\
@@ -319,6 +320,7 @@ window.onload = function () {\n\
       var outerFrame = document.createElement("IFRAME");
       outerFrame.name = "ace_outer";
       outerFrame.frameBorder = 0; // for IE
+      outerFrame.title = "Ether";
       info.frame = outerFrame;
       document.getElementById(containerId).appendChild(outerFrame);
 

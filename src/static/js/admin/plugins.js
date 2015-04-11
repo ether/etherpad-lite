@@ -10,7 +10,8 @@ $(document).ready(function () {
     resource = baseURL.substring(1) + "socket.io";
 
   //connect
-  socket = io.connect(url, {resource : resource}).of("/pluginfw/installer");
+  var room = url + "pluginfw/installer";
+  socket = io.connect(room, {resource : resource});
 
   function search(searchTerm, limit) {
     if(search.searchTerm != searchTerm) {
@@ -25,12 +26,11 @@ $(document).ready(function () {
     
     $('#search-progress').show()
     search.messages.show('fetching')
-    storeScrollPosition()
     search.searching = true
   }
   search.searching = false;
   search.offset = 0;
-  search.limit = 25;
+  search.limit = 999;
   search.results = [];
   search.sortBy = 'name';
   search.sortDir = /*DESC?*/true;
@@ -42,7 +42,7 @@ $(document).ready(function () {
       $('.search-results .messages .'+msg+' *').show()
     },
     hide: function(msg) {
-      //$('.search-results .messages').hide()
+      $('.search-results .messages').hide()
       $('.search-results .messages .'+msg+'').hide()
       $('.search-results .messages .'+msg+' *').hide()
     }
@@ -103,32 +103,15 @@ $(document).ready(function () {
     })
   }
 
-  // Infinite scroll
-  var scrollPosition
-  function storeScrollPosition() {
-    scrollPosition = $(window).scrollTop()
-  }
-  function restoreScrollPosition() {
-    setTimeout(function() {
-      $(window).scrollTop(scrollPosition)
-    }, 0)
-  }
-  
-  $(window).scroll(checkInfiniteScroll)
-  function checkInfiniteScroll() {
-    if(search.end || search.searching) return;// don't keep requesting if there are no more results
-    setTimeout(function() {
-      try{
-        var top = $('.results>tr:last').offset().top
-        if($(window).scrollTop()+$(window).height() > top) search(search.searchTerm)
-      }catch(e){}
-    }, 1)
-  }
-
   function updateHandlers() {
     // Search
     $("#search-query").unbind('keyup').keyup(function () {
       search($("#search-query").val());
+    });
+    
+    // Prevent form submit
+    $('#search-query').parent().bind('submit', function() {
+      return false;
     });
 
     // update & install
@@ -158,14 +141,14 @@ $(document).ready(function () {
 
     // Sort
     $('.sort.up').unbind('click').click(function() {
-      search.sortBy = $(this).text().toLowerCase();
+      search.sortBy = $(this).attr('data-label').toLowerCase();
       search.sortDir = false;
       search.offset = 0;
       search(search.searchTerm, search.results.length);
       search.results = [];
     })
     $('.sort.down, .sort.none').unbind('click').click(function() {
-      search.sortBy = $(this).text().toLowerCase();
+      search.sortBy = $(this).attr('data-label').toLowerCase();
       search.sortDir = true;
       search.offset = 0;
       search(search.searchTerm, search.results.length);
@@ -175,6 +158,7 @@ $(document).ready(function () {
 
   socket.on('results:search', function (data) {
     if(!data.results.length) search.end = true;
+    if(data.query.offset == 0) search.results = [];
     search.messages.hide('nothing-found')
     search.messages.hide('fetching')
     $("#search-query").removeAttr('disabled')
@@ -202,8 +186,6 @@ $(document).ready(function () {
     }
     search.messages.hide('fetching')
     $('#search-progress').hide()
-    restoreScrollPosition()
-    checkInfiniteScroll()
     search.searching = false
   });
 
@@ -243,6 +225,9 @@ $(document).ready(function () {
 
   socket.on('finished:install', function(data) {
     if(data.error) {
+      if(data.code === "EPEERINVALID"){
+        alert("This plugin requires that you update Etherpad so it can operate in it's true glory");
+      }
       alert('An error occured while installing '+data.plugin+' \n'+data.error)
       $('#installed-plugins .'+data.plugin).remove()
     }

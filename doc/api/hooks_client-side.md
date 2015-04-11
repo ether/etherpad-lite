@@ -80,6 +80,22 @@ This hook is called during the attribute processing procedure, and should be use
 
 The return value for this function should be a list of classes, which will then be parsed into a valid class string.
 
+## aceAttribClasses
+Called from: src/static/js/linestylefilter.js
+
+Things in context:
+1. Attributes - Object of Attributes
+
+This hook is called when attributes are investigated on a line.  It is useful if you want to add another attribute type or property type to a pad.
+
+Example:
+```
+exports.aceAttribClasses = function(hook_name, attr, cb){
+  attr.sub = 'tag:sub';
+  cb(attr);
+}
+```
+
 ## aceGetFilterStack
 Called from: src/static/js/linestylefilter.js
 
@@ -186,6 +202,36 @@ Things in context:
 5. cls - the HTML class string of the node
 
 This hook is called before the content of a node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad. See, for example, the heading1 plugin for etherpad original.
+
+E.g. if you need to apply an attribute to newly inserted characters, 
+call cc.doAttrib(state, "attributeName") which results in an attribute attributeName=true.
+
+If you want to specify also a value, call cc.doAttrib(state, "attributeName:value")
+which results in an attribute attributeName=value.
+
+
+## collectContentImage
+Called from: src/static/js/contentcollector.js
+
+Things in context:
+
+1. cc - the contentcollector object
+2. state - the current state of the change being made
+3. tname - the tag name of this node currently being processed
+4. style - the style applied to the node (probably CSS)
+5. cls - the HTML class string of the node
+6. node - the node being modified
+
+This hook is called before the content of an image node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad.
+
+Example:
+
+```
+exports.collectContentImage = function(name, context){
+  context.state.lineAttributes.img = context.node.outerHTML;
+}
+
+```
 
 ## collectContentPost
 Called from: src/static/js/contentcollector.js

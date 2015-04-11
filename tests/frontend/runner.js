@@ -162,7 +162,8 @@ $(function(){
   }
 
   //allow cross iframe access
-  if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+  var browser = bowser;
+  if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
     document.domain = document.domain; // for comet
   }
 

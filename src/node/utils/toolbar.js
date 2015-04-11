@@ -4,7 +4,6 @@
 var _ = require("underscore")
   , tagAttributes
   , tag
-  , defaultButtons
   , Button
   , ButtonsGroup
   , Separator
@@ -100,11 +99,13 @@ _.extend(Button.prototype, {
     };
     return tag("li", liAttributes,
       tag("a", { "class": this.grouping, "data-l10n-id": this.attributes.localizationId },
-        tag("span", { "class": " "+ this.attributes.class })
+        tag("button", { "class": " "+ this.attributes.class, "data-l10n-id": this.attributes.localizationId })
       )
     );
   }
 });
+
+
 
 SelectButton = function (attributes) {
   this.attributes = attributes;
@@ -122,8 +123,7 @@ _.extend(SelectButton.prototype, Button.prototype, {
   },
 
   select: function (attributes) {
-    var self = this
-      , options = [];
+      var options = [];
 
     _.each(this.options, function (opt) {
       var a = _.extend({
@@ -208,6 +208,12 @@ module.exports = {
       command: "import_export",
       localizationId: "timeslider.toolbar.exportlink.title",
       class: "buttonicon buttonicon-import_export"
+    },
+
+    timeslider_settings: {
+      command: "settings",
+      localizationId: "pad.toolbar.settings.title",
+      class: "buttonicon buttonicon-settings"
     },
 
     timeslider_returnToPad: {

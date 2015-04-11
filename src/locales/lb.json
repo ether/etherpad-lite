@@ -6,8 +6,8 @@
 		]
 	},
 	"index.newPad": "Neie Pad",
-	"pad.toolbar.ol.title": "Numeréiert Lëscht",
-	"pad.toolbar.ul.title": "Net-numeréiert Lëscht",
+	"pad.toolbar.ol.title": "Numeréiert Lëscht (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "Net-numeréiert Lëscht (Ctrl+Shift+L)",
 	"pad.toolbar.undo.title": "Réckgängeg (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Widderhuelen (Ctrl-Y)",
 	"pad.toolbar.savedRevision.title": "Versioun späicheren",
@@ -15,6 +15,7 @@
 	"pad.colorpicker.save": "Späicheren",
 	"pad.colorpicker.cancel": "Ofbriechen",
 	"pad.loading": "Lueden...",
+	"pad.noCookie": "Cookie gouf net fonnt. Erlaabt w.e.g. Cookien an Ärem Browser!",
 	"pad.wrongPassword": "Äert Passwuert ass falsch",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Sprooch:",

@@ -468,7 +468,7 @@ var paduserlist = (function()
 
       self.setMyUserInfo(myInitialUserInfo);
 
-      $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
+      if($('#online_count').length === 0) $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
 
       $("#otheruserstable tr").remove();
 
@@ -507,6 +507,30 @@ var paduserlist = (function()
         closeColorPicker(false);
       });
       //
+    },
+    users: function(){
+      // Returns an object of users who have been on this pad
+      // Firstly we have to get live data..
+      var userList = otherUsersInfo;
+      // Now we need to add ourselves..
+      userList.push(myUserInfo);
+      // Now we add historical authors
+      var historical = clientVars.collab_client_vars.historicalAuthorData;
+      for (var key in historical){
+        var userId = historical[key].userId;
+        // Check we don't already have this author in our array
+        var exists = false;
+
+        userList.forEach(function(user){
+          if(user.userId === userId) exists = true;
+        });
+
+        if(exists === false){
+          userList.push(historical[key]);
+        }
+
+      }
+      return userList;
     },
     setMyUserInfo: function(info)
     {
@@ -730,7 +754,7 @@ var paduserlist = (function()
 
       $("#myswatch").css({'background-color': myUserInfo.colorId});
 
-      if ($.browser.msie && parseInt($.browser.version) <= 8) {
+      if (browser.msie && parseInt(browser.version) <= 8) {
         $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
       }
       else

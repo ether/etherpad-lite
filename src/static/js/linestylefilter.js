@@ -34,7 +34,6 @@ var linestylefilter = {};
 var _ = require('./underscore');
 var AttributeManager = require('./AttributeManager');
 
-
 linestylefilter.ATTRIB_CLASSES = {
   'bold': 'tag:b',
   'italic': 'tag:i',
@@ -58,6 +57,13 @@ linestylefilter.getAuthorClassName = function(author)
 // but may be falsy if lineLength == 0
 linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFunc, apool)
 {
+
+  // Plugin Hook to add more Attrib Classes
+  hooks.aCallAll('aceAttribClasses', linestylefilter.ATTRIB_CLASSES, function(err, ATTRIB_CLASSES){
+    if(ATTRIB_CLASSES.length >= 1){
+      linestylefilter.ATTRIB_CLASSES = ATTRIB_CLASSES[0];
+    }
+  });
 
   if (lineLength == 0) return textAndClassFunc;
 
@@ -312,20 +318,20 @@ linestylefilter.textAndClassFuncSplitter = function(func, splitPointsOpt)
   return spanHandler;
 };
 
-linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
+linestylefilter.getFilterStack = function(lineText, textAndClassFunc, abrowser)
 {
   var func = linestylefilter.getURLFilter(lineText, textAndClassFunc);
 
   var hookFilters = hooks.callAll("aceGetFilterStack", {
     linestylefilter: linestylefilter,
-    browser: browser
+    browser: abrowser
   });
   _.map(hookFilters ,function(hookFilter)
   {
     func = hookFilter(lineText, func);
   });
 
-  if (browser !== undefined && browser.msie)
+  if (abrowser !== undefined && abrowser.msie)
   {
     // IE7+ will take an e-mail address like <foo@bar.com> and linkify it to foo@bar.com.
     // We then normalize it back to text with no angle brackets.  It's weird.  So always

@@ -19,7 +19,6 @@ var Buffer = require('buffer').Buffer;
 var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
-var util = require('util');
 var settings = require('./Settings');
 var semver = require('semver');
 

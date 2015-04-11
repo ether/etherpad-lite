@@ -6,7 +6,8 @@
 			"Tuliouel",
 			"Waldir",
 			"Imperadeiro98",
-			"Macofe"
+			"Macofe",
+			"Ti4goc"
 		]
 	},
 	"index.newPad": "Nova Nota",
@@ -21,7 +22,7 @@
 	"pad.toolbar.unindent.title": "Recuar (Shift+TAB)",
 	"pad.toolbar.undo.title": "Desfazer (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Refazer (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "Limpar cores de autoria",
+	"pad.toolbar.clearAuthorship.title": "Limpar cores de autoria (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Importar/exportar de/para diferentes formatos de ficheiro",
 	"pad.toolbar.timeslider.title": "Linha de tempo",
 	"pad.toolbar.savedRevision.title": "Salvar revisão",
@@ -54,7 +55,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.modals.connected": "Ligado.",
 	"pad.modals.reconnecting": "Reconectando-se ao seu bloco…",
 	"pad.modals.forcereconnect": "Forçar reconexão",
@@ -106,6 +106,7 @@
 	"pad.impexp.importbutton": "Importar agora",
 	"pad.impexp.importing": "Importando...",
 	"pad.impexp.confirmimport": "A importação de um ficheiro irá substituir o texto atual do pad. Tem certeza que deseja continuar?",
+	"pad.impexp.padHasData": "Não fomos capazes de importar este ficheiro porque esta Almofada já tinha alterações, consulte importar para um novo bloco",
 	"pad.impexp.uploadFailed": "O upload falhou. Por favor, tente novamente",
 	"pad.impexp.importfailed": "A importação falhou",
 	"pad.impexp.copypaste": "Por favor, copie e cole"

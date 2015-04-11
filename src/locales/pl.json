@@ -4,7 +4,9 @@
 			"Rezonansowy",
 			"Ty221",
 			"WTM",
-			"Woytecr"
+			"Woytecr",
+			"Macofe",
+			"Pan Cube"
 		]
 	},
 	"index.newPad": "Nowy dokument",
@@ -19,7 +21,7 @@
 	"pad.toolbar.unindent.title": "Wcięcie (Shift + TAB)",
 	"pad.toolbar.undo.title": "Cofnij (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Ponów (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "Usuń kolory autorów",
+	"pad.toolbar.clearAuthorship.title": "Usuń kolory autorów (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Import/eksport z/do różnych formatów plików",
 	"pad.toolbar.timeslider.title": "Oś czasu",
 	"pad.toolbar.savedRevision.title": "Zapisz wersję",
@@ -47,12 +49,12 @@
 	"pad.importExport.import": "Prześlij dowolny plik tekstowy lub dokument",
 	"pad.importExport.importSuccessful": "Sukces!",
 	"pad.importExport.export": "Eksportuj bieżący dokument jako:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Zwykły tekst",
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "Możesz importować pliki tylko w formacie zwykłego tekstu lub html. Aby umożliwić bardziej zaawansowane funkcje importu, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">zainstaluj abiword</a>.",
 	"pad.modals.connected": "Połączony.",
 	"pad.modals.reconnecting": "Ponowne łączenie z dokumentem...",

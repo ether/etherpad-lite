@@ -1,10 +1,9 @@
-var path = require('path');
 var eejs = require('ep_etherpad-lite/node/eejs');
+var settings = require('ep_etherpad-lite/node/utils/Settings');
 var installer = require('ep_etherpad-lite/static/js/pluginfw/installer');
 var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
 var _ = require('underscore');
 var semver = require('semver');
-var async = require('async');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/admin/plugins', function(req, res) {
@@ -14,18 +13,25 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       search_results: {},
       errors: [],
     };
-
     res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins.html", render_args) );
   });
   args.app.get('/admin/plugins/info', function(req, res) {
-    res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html", {}) );
+    var gitCommit = settings.getGitCommit();
+    var epVersion = settings.getEpVersion();
+    res.send( eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html",
+      {
+        gitCommit: gitCommit,
+        epVersion: epVersion
+      }) 
+    );
   });
 }
 
 exports.socketio = function (hook_name, args, cb) {
   var io = args.io.of("/pluginfw/installer");
   io.on('connection', function (socket) {
-    if (!socket.handshake.session.user || !socket.handshake.session.user.is_admin) return;
+
+    if (!socket.conn.request.session || !socket.conn.request.session.user || !socket.conn.request.session.user.is_admin) return;
 
     socket.on("getInstalled", function (query) {
       // send currently installed plugins
@@ -85,7 +91,7 @@ exports.socketio = function (hook_name, args, cb) {
     socket.on("install", function (plugin_name) {
       installer.install(plugin_name, function (er) {
         if(er) console.warn(er)
-        socket.emit("finished:install", {plugin: plugin_name, error: er? er.message : null});
+        socket.emit("finished:install", {plugin: plugin_name, code: er? er.code : null, error: er? er.message : null});
       });
     });
 

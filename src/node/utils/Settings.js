@@ -27,7 +27,7 @@ var npm = require("npm/lib/npm.js");
 var jsonminify = require("jsonminify");
 var log4js = require("log4js");
 var randomString = require("./randomstring");
-
+var suppressDisableMsg = " -- To suppress these warning messages change suppressErrorsInPadText to true in your settings.json\n";
 
 /* Root path of the installation */
 exports.root = path.normalize(path.join(npm.dir, ".."));
@@ -53,6 +53,11 @@ exports.ip = "0.0.0.0";
  * The Port ep-lite should listen to
  */
 exports.port = process.env.PORT || 9001;
+
+/**
+ * Should we suppress Error messages from being in Pad Contents
+ */
+exports.suppressErrorsInPadText = false;
 
 /**
  * The SSL signed server key and the Certificate Authority's own certificate
@@ -95,7 +100,7 @@ exports.toolbar = {
     ["showusers"]
   ],
   timeslider: [
-    ["timeslider_export", "timeslider_returnToPad"]
+    ["timeslider_export", "timeslider_settings", "timeslider_returnToPad"]
   ]
 }
 
@@ -130,6 +135,11 @@ exports.minify = true;
 exports.abiword = null;
 
 /**
+ * Should we support none natively supported file types on import?
+ */
+exports.allowUnknownFileEnds = true;
+
+/**
  * The log level of log4js
  */
 exports.loglevel = "INFO";
@@ -138,6 +148,11 @@ exports.loglevel = "INFO";
  * Disable IP logging
  */
 exports.disableIPlogging = false;
+
+/** 
+ * Disable Load Testing
+ */
+exports.loadTest = false;
 
 /*
 * log4js appender configuration
@@ -173,6 +188,29 @@ exports.abiwordAvailable = function()
     return "no";
   }
 };
+
+// Provide git version if available
+exports.getGitCommit = function() {
+  var version = "";
+  try
+  {
+    var rootPath = path.resolve(npm.dir, '..');
+    var ref = fs.readFileSync(rootPath + "/.git/HEAD", "utf-8");
+    var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
+    version = fs.readFileSync(refPath, "utf-8");
+    version = version.substring(0, 7);
+  }
+  catch(e)
+  {
+    console.warn("Can't get git version for server header\n" + e.message)
+  }
+  return version;
+}
+
+// Return etherpad version from package.json
+exports.getEpVersion = function() {
+  return require('ep_etherpad-lite/package.json').version;
+}
 
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
@@ -228,17 +266,45 @@ exports.reloadSettings = function reloadSettings() {
 
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
+  process.env['DEBUG'] = 'socket.io:' + exports.loglevel; // Used by SocketIO for Debug
   log4js.replaceConsole();
+
+  if(exports.abiword){
+    // Check abiword actually exists
+    if(exports.abiword != null)
+    {
+      fs.exists(exports.abiword, function(exists) {
+        if (!exists) {
+          var abiwordError = "Abiword does not exist at this path, check your settings file";
+          if(!exports.suppressErrorsInPadText){
+            exports.defaultPadText = exports.defaultPadText + "\nError: " + abiwordError + suppressDisableMsg;
+          }
+          console.error(abiwordError);
+          exports.abiword = null;
+        }
+      });
+    }
+  }
 
   if(!exports.sessionKey){ // If the secretKey isn't set we also create yet another unique value here
     exports.sessionKey = randomString(32);
-    console.warn("You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts");
+    var sessionWarning = "You need to set a sessionKey value in settings.json, this will allow your users to reconnect to your Etherpad Instance if your instance restarts";
+    if(!exports.suppressErrorsInPadText){
+      exports.defaultPadText = exports.defaultPadText + "\nWarning: " + sessionWarning + suppressDisableMsg;
+    }
+    console.warn(sessionWarning);
   }
 
   if(exports.dbType === "dirty"){
-    console.warn("DirtyDB is used. This is fine for testing but not recommended for production.");
+    var dirtyWarning = "DirtyDB is used. This is fine for testing but not recommended for production.";
+    if(!exports.suppressErrorsInPadText){
+      exports.defaultPadText = exports.defaultPadText + "\nWarning: " + dirtyWarning + suppressDisableMsg;
+    }
+    console.warn(dirtyWarning);
   }
 };
 
 // initially load settings
 exports.reloadSettings();
+
+

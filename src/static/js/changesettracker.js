@@ -179,7 +179,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
         // We need to replace all author attribs with thisSession.author, in case they copy/pasted or otherwise inserted other peoples changes
         if(apool.numToAttrib){
           for (var attr in apool.numToAttrib){
-            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) authorAttr = Number(attr).toString(36)
+            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) var authorAttr = Number(attr).toString(36)
           }
 
           // Replace all added 'author' attribs with the value of the current user

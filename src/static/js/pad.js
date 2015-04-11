@@ -43,13 +43,14 @@ var padsavedrevs = require('./pad_savedrevs');
 var paduserlist = require('./pad_userlist').paduserlist;
 var padutils = require('./pad_utils').padutils;
 var colorutils = require('./colorutils').colorutils;
-
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 var gritter = require('./gritter').gritter;
 
 var hooks = require('./pluginfw/hooks');
+
+var receivedClientVars = false;
 
 function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
   if (days)
@@ -67,7 +68,7 @@ function createCookie(name, value, days, path){ /* Warning Internet Explorer doe
   }
   
   //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if(navigator.appName=='Microsoft Internet Explorer'){
+  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
     document.cookie = name + "=" + value + expires + "; path="+document.location;
   }
   else{
@@ -109,7 +110,7 @@ function randomString()
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
-  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').hide(); $('#editorcontainer').css({"top":"0px"}); } },
+  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
   { name: "showChat",         checkVal: "false", callback: function(val) { $('#chaticon').hide(); } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
@@ -119,6 +120,7 @@ var getParameters = [
   { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); } },
   { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
   { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
+  { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
   { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); } }
 ];
 
@@ -160,6 +162,49 @@ function savePassword()
   return false;
 }
 
+function sendClientReady(isReconnect, messageType)
+{
+  messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
+  var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
+  padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
+
+  if(!isReconnect)
+  {
+    var titleArray = document.title.split('|');
+    var title = titleArray[titleArray.length - 1];
+    document.title = padId.replace(/_+/g, ' ') + " | " + title;
+  }
+
+  var token = readCookie("token");
+  if (token == null)
+  {
+    token = "t." + randomString();
+    createCookie("token", token, 60);
+  }
+  
+  var sessionID = decodeURIComponent(readCookie("sessionID"));
+  var password = readCookie("password");
+
+  var msg = {
+    "component": "pad",
+    "type": messageType,
+    "padId": padId,
+    "sessionID": sessionID,
+    "password": password,
+    "token": token,
+    "protocolVersion": 2
+  };
+  
+  //this is a reconnect, lets tell the server our revisionnumber
+  if(isReconnect == true)
+  {
+    msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
+    msg.reconnect=true;
+  }
+  
+  socket.json.send(msg);
+}
+
 function handshake()
 {
   var loc = document.location;
@@ -171,48 +216,12 @@ function handshake()
   var resource =  exports.baseURL.substring(1)  + "socket.io";
   //connect
   socket = pad.socket = io.connect(url, {
-    resource: resource,
+    // Allow deployers to host Etherpad on a non-root path
+    'path': exports.baseURL + "socket.io",
+    'resource': resource,
     'max reconnection attempts': 3,
     'sync disconnect on unload' : false
   });
-
-  function sendClientReady(isReconnect)
-  {
-    var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
-    padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
-
-    if(!isReconnect)
-      document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
-
-    var token = readCookie("token");
-    if (token == null)
-    {
-      token = "t." + randomString();
-      createCookie("token", token, 60);
-    }
-    
-    var sessionID = decodeURIComponent(readCookie("sessionID"));
-    var password = readCookie("password");
-
-    var msg = {
-      "component": "pad",
-      "type": "CLIENT_READY",
-      "padId": padId,
-      "sessionID": sessionID,
-      "password": password,
-      "token": token,
-      "protocolVersion": 2
-    };
-    
-    //this is a reconnect, lets tell the server our revisionnumber
-    if(isReconnect == true)
-    {
-      msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
-      msg.reconnect=true;
-    }
-    
-    socket.json.send(msg);
-  };
 
   var disconnectTimeout;
 
@@ -228,7 +237,7 @@ function handshake()
     }
 
     pad.collabClient.setChannelState("CONNECTED");
-    sendClientReady(true);
+    pad.sendClientReady(true);
   });
   
   socket.on('disconnect', function (reason) {
@@ -246,7 +255,6 @@ function handshake()
     }
   });
 
-  var receivedClientVars = false;
   var initalized = false;
 
   socket.on('message', function(obj)
@@ -286,7 +294,7 @@ function handshake()
     }
     
     //if we haven't recieved the clientVars yet, then this message should it be
-    else if (!receivedClientVars)
+    else if (!receivedClientVars && obj.type == "CLIENT_VARS")
     {
       //log the message
       if (window.console) console.log(obj);
@@ -386,7 +394,6 @@ var pad = {
   diagnosticInfo: {},
   initTime: 0,
   clientTimeOffset: null,
-  preloadedImages: false,
   padOptions: {},
 
   // these don't require init; clientVars should all go through here
@@ -426,6 +433,34 @@ var pad = {
   {
     return pad.myUserInfo.name;
   },
+  userList: function()
+  {
+    return paduserlist.users();
+  },
+  sendClientReady: function(isReconnect, messageType)
+  {
+    messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
+    sendClientReady(isReconnect, messageType);
+  },
+  switchToPad: function(padId)
+  {
+    var options = document.location.href.split('?')[1];
+    var newHref = "/p/" + padId;
+    if (options != null)
+      newHref =  newHref + '?' + options;
+
+    if(window.history && window.history.pushState)
+    {
+      $('#chattext p').remove(); //clear the chat messages
+      window.history.pushState("", "", newHref);      
+      receivedClientVars = false;
+      sendClientReady(false, 'SWITCH_TO_PAD');
+    }
+    else // fallback
+    {
+      window.location.href = newHref;
+    }
+  },
   sendClientMessage: function(msg)
   {
     pad.collabClient.sendClientMessage(msg);
@@ -442,6 +477,16 @@ var pad = {
       if (typeof customStart == "function") customStart();
       getParams();
       handshake();
+
+      // To use etherpad you have to allow cookies.
+      // This will check if the creation of a test-cookie has success.
+      // Otherwise it shows up a message to the user.
+      createCookie("test", "test");
+      if (!readCookie("test"))
+      {
+        $('#loading').hide();
+        $('#noCookie').show();
+      }
     });
   },
   _afterHandshake: function()
@@ -454,13 +499,13 @@ var pad = {
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
-    if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0)))
+    if ((!browser.msie) && (!(browser.firefox && browser.version.indexOf("1.8.") == 0)))
     {
       document.domain = document.domain; // for comet
     }
 
     // for IE
-    if ($.browser.msie)
+    if (browser.msie)
     {
       try
       {
@@ -522,9 +567,31 @@ var pad = {
         chat.stickToScreen(true); // stick it to the screen
         $('#options-stickychat').prop("checked", true); // set the checkbox to on
       }
+      if(padcookie.getPref("chatAndUsers")){ // if we have a cookie for always showing chat then show it
+        chat.chatAndUsers(true); // stick it to the screen
+        $('#options-chatandusers').prop("checked", true); // set the checkbox to on
+      }
       if(padcookie.getPref("showAuthorshipColors") == false){
         pad.changeViewOption('showAuthorColors', false);
       }
+      if(padcookie.getPref("showLineNumbers") == false){
+        pad.changeViewOption('showLineNumbers', false);
+      }
+      if(padcookie.getPref("rtlIsTrue") == true){
+        pad.changeViewOption('rtlIsTrue', true);
+      }
+
+      var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
+        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
+        'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
+        'useSerifFont'];
+
+      $.each(fonts, function(i, font){
+        if(padcookie.getPref(font) == true){
+          pad.changeViewOption(font, true);
+        }
+      })
+
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },
@@ -575,6 +642,7 @@ var pad = {
       for (var k in opts.view)
       {
         pad.padOptions.view[k] = opts.view[k];
+        padcookie.setPref(k, opts.view[k]);
       }
       padeditor.setViewOptions(pad.padOptions.view);
     }
@@ -728,23 +796,9 @@ var pad = {
   },
   handleIsFullyConnected: function(isConnected, isInitialConnect)
   {
-    // load all images referenced from CSS, one at a time,
-    // starting one second after connection is first established.
-    if (isConnected && !pad.preloadedImages)
-    {
-      window.setTimeout(function()
-      {
-        if (!pad.preloadedImages)
-        {
-          pad.preloadImages();
-          pad.preloadedImages = true;
-        }
-      }, 1000);
-    }
-
     pad.determineChatVisibility(isConnected && !isInitialConnect);
+    pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
-
   },
   determineChatVisibility: function(asNowConnectedFeedback){
     var chatVisCookie = padcookie.getPref('chatAlwaysVisible');
@@ -754,6 +808,16 @@ var pad = {
     }
     else{
       $('#options-stickychat').prop("checked", false); // set the checkbox for off
+    }
+  },
+  determineChatAndUsersVisibility: function(asNowConnectedFeedback){
+    var chatAUVisCookie = padcookie.getPref('chatAndUsersVisible');
+    if(chatAUVisCookie){ // if the cookie is set for chat always visible
+      chat.chatAndUsers(true); // stick it to the screen
+      $('#options-chatandusers').prop("checked", true); // set the checkbox to on
+    }
+    else{
+      $('#options-chatandusers').prop("checked", false); // set the checkbox for off
     }
   },
   determineAuthorshipColorsVisibility: function(){
@@ -837,34 +901,6 @@ var pad = {
     {
       pad.collabClient.addHistoricalAuthors(data);
     }
-  },
-  preloadImages: function()
-  {
-    var images = ["../static/img/connectingbar.gif"];
-
-    function loadNextImage()
-    {
-      if (images.length == 0)
-      {
-        return;
-      }
-      var img = new Image();
-      img.src = images.shift();
-      if (img.complete)
-      {
-        scheduleLoadNextImage();
-      }
-      else
-      {
-        $(img).bind('error load onreadystatechange', scheduleLoadNextImage);
-      }
-    }
-
-    function scheduleLoadNextImage()
-    {
-      window.setTimeout(loadNextImage, 0);
-    }
-    scheduleLoadNextImage();
   }
 };
 
@@ -937,4 +973,3 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
-
