@@ -39,33 +39,35 @@ var padeditor = (function()
     ace: null,
     // this is accessed directly from other files
     viewZoom: 100,
-    init: function(readyFunc, initialViewOptions, _pad)
-    {
-      Ace2Editor = require('./ace').Ace2Editor;
-      pad = _pad;
-      settings = pad.settings;
+    init: function(readyFunc, initialViewOptions, _pad) {
+      requirejs(['ep_etherpad-lite/static/js/ace'], function (ace) {
 
-      function aceReady()
-      {
-        $("#editorloadingbox").hide();
-        if (readyFunc)
+        Ace2Editor = ace.Ace2Editor;
+        pad = _pad;
+        settings = pad.settings;
+
+        function aceReady()
         {
-          readyFunc();
+          $("#editorloadingbox").hide();
+          if (readyFunc)
+          {
+            readyFunc();
+          }
         }
-      }
 
-      self.ace = new Ace2Editor();
-      self.ace.init("editorcontainer", "", aceReady);
-      self.ace.setProperty("wraps", true);
-      if (pad.getIsDebugEnabled())
-      {
-        self.ace.setProperty("dmesg", pad.dmesg);
-      }
-      self.initViewOptions();
-      self.setViewOptions(initialViewOptions);
+        self.ace = new Ace2Editor();
+        self.ace.init("editorcontainer", "", aceReady);
+        self.ace.setProperty("wraps", true);
+        if (pad.getIsDebugEnabled())
+        {
+          self.ace.setProperty("dmesg", pad.dmesg);
+        }
+        self.initViewOptions();
+        self.setViewOptions(initialViewOptions);
 
-      // view bar
-      $("#viewbarcontents").show();
+        // view bar
+        $("#viewbarcontents").show();
+      });
     },
     initViewOptions: function()
     {

@@ -474,7 +474,10 @@ var pad = {
       // start the custom js
       if (typeof customStart == "function") customStart();
       getParams();
-      handshake();
+
+      padeditor.init(function () {
+        handshake();
+      }, pad.padOptions.view || {}, pad);
 
       // To use etherpad you have to allow cookies.
       // This will check if the creation of a test-cookie has success.
@@ -525,12 +528,9 @@ var pad = {
     padimpexp.init(this);
     padsavedrevs.init(this);
 
-    padeditor.init(postAceInit, pad.padOptions.view || {}, this);
-
     paduserlist.init(pad.myUserInfo, this);
     padconnectionstatus.init();
     padmodals.init(this);
-
     pad.collabClient = getCollabClient(padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo, {
       colorPalette: pad.getColorPalette()
     }, pad);
@@ -554,44 +554,41 @@ var pad = {
       $("#chatloadmessagesbutton").css("display", "none");
     }
 
-    function postAceInit()
+    padeditbar.init();
+    setTimeout(function()
     {
-      padeditbar.init();
-      setTimeout(function()
-      {
-        padeditor.ace.focus();
-      }, 0);
-      if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
-        chat.stickToScreen(true); // stick it to the screen
-        $('#options-stickychat').prop("checked", true); // set the checkbox to on
-      }
-      if(padcookie.getPref("chatAndUsers")){ // if we have a cookie for always showing chat then show it
-        chat.chatAndUsers(true); // stick it to the screen
-        $('#options-chatandusers').prop("checked", true); // set the checkbox to on
-      }
-      if(padcookie.getPref("showAuthorshipColors") == false){
-        pad.changeViewOption('showAuthorColors', false);
-      }
-      if(padcookie.getPref("showLineNumbers") == false){
-        pad.changeViewOption('showLineNumbers', false);
-      }
-      if(padcookie.getPref("rtlIsTrue") == true){
-        pad.changeViewOption('rtlIsTrue', true);
-      }
-
-      var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
-        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
-        'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
-        'useSerifFont'];
-
-      $.each(fonts, function(i, font){
-        if(padcookie.getPref(font) == true){
-          pad.changeViewOption(font, true);
-        }
-      })
-
-      hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
+      padeditor.ace.focus();
+    }, 0);
+    if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
+      chat.stickToScreen(true); // stick it to the screen
+      $('#options-stickychat').prop("checked", true); // set the checkbox to on
     }
+    if(padcookie.getPref("chatAndUsers")){ // if we have a cookie for always showing chat then show it
+      chat.chatAndUsers(true); // stick it to the screen
+      $('#options-chatandusers').prop("checked", true); // set the checkbox to on
+    }
+    if(padcookie.getPref("showAuthorshipColors") == false){
+      pad.changeViewOption('showAuthorColors', false);
+    }
+    if(padcookie.getPref("showLineNumbers") == false){
+      pad.changeViewOption('showLineNumbers', false);
+    }
+    if(padcookie.getPref("rtlIsTrue") == true){
+      pad.changeViewOption('rtlIsTrue', true);
+    }
+
+    var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
+      'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
+      'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
+      'useSerifFont'];
+
+    $.each(fonts, function(i, font){
+      if(padcookie.getPref(font) == true){
+        pad.changeViewOption(font, true);
+      }
+    })
+
+    hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
   },
   dispose: function()
   {
