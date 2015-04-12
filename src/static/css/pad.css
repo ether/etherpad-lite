@@ -54,6 +54,9 @@ a img {
   width: 100%;
   white-space: nowrap;
   height: 32px;
+  position:fixed;
+  top:0;
+  z-index:9;
 }
 .toolbar ul {
   position: absolute;
