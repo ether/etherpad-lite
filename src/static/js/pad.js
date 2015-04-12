@@ -48,8 +48,6 @@ var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 var gritter = require('./gritter').gritter;
 
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-
 var receivedClientVars = false;
 
 function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
@@ -947,8 +945,13 @@ var alertBar = (function()
   return self;
 }());
 
+var hooks = undefined;
+
 function init() {
-  return pad.init();
+  requirejs(['ep_etherpad-lite/static/js/pluginfw/hooks'], function (h) {
+    hooks = h;
+    return pad.init();
+  });
 }
 
 var settings = {

@@ -398,37 +398,41 @@
                  paths: {'underscore': baseURL + "static/plugins/underscore/underscore"},
               });
 
-              requirejs(["ep_etherpad-lite/static/js/rjquery", 'ep_etherpad-lite/static/js/pluginfw/client_plugins'], function ($, plugins) {
-                window.$ = $; // Expose jQuery #HACK
-                window.jQuery = $;
+              requirejs(
+                [
+                  'ep_etherpad-lite/static/js/rjquery',
+                  'ep_etherpad-lite/static/js/pluginfw/client_plugins',
+                  'ep_etherpad-lite/static/js/pluginfw/hooks'
+                ], function ($, plugins, hooks) {
+                  window.$ = $; // Expose jQuery #HACK
+                  window.jQuery = $;
 
-                browser = require('ep_etherpad-lite/static/js/browser').browser;
-                if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
-                  document.domain = document.domain; // for comet
-                }
+                  browser = require('ep_etherpad-lite/static/js/browser').browser;
+                  if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
+                    document.domain = document.domain; // for comet
+                  }
 
-                var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+                  plugins.baseURL = baseURL;
+                  plugins.update(function () {
+                    hooks.plugins = plugins;
 
-                plugins.baseURL = baseURL;
-                plugins.update(function () {
-                  hooks.plugins = plugins;
+                    // Call documentReady hook
+                    $(function() {
+                      hooks.aCallAll('documentReady');
+                    });
 
-                  // Call documentReady hook
-                  $(function() {
-                    hooks.aCallAll('documentReady');
+                    var pad = require('ep_etherpad-lite/static/js/pad');
+                    pad.baseURL = baseURL;
+                    pad.init();
                   });
 
-                  var pad = require('ep_etherpad-lite/static/js/pad');
-                  pad.baseURL = baseURL;
-                  pad.init();
-                });
-
-                /* TODO: These globals shouldn't exist. */
-                pad = require('ep_etherpad-lite/static/js/pad').pad;
-                chat = require('ep_etherpad-lite/static/js/chat').chat;
-                padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-                padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
-              });
+                  /* TODO: These globals shouldn't exist. */
+                  pad = require('ep_etherpad-lite/static/js/pad').pad;
+                  chat = require('ep_etherpad-lite/static/js/chat').chat;
+                  padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+                  padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+                }
+              );
             }());
         </script>
         <% e.end_block(); %>
