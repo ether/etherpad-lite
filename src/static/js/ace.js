@@ -24,8 +24,6 @@
 // requires: plugins
 // requires: undefined
 
-var KERNEL_SOURCE = '../static/js/require-kernel.js';
-
 Ace2Editor.registry = {
   nextId: 1
 };
@@ -150,42 +148,9 @@ function Ace2Editor()
     return info.ace_getUnhandledErrors();
   };
 
-
-
-  function sortFilesByEmbeded(files) {
-    var embededFiles = [];
-    var remoteFiles = [];
-
-    if (Ace2Editor.EMBEDED) {
-      for (var i = 0, ii = files.length; i < ii; i++) {
-        var file = files[i];
-        if (Object.prototype.hasOwnProperty.call(Ace2Editor.EMBEDED, file)) {
-          embededFiles.push(file);
-        } else {
-          remoteFiles.push(file);
-        }
-      }
-    } else {
-      remoteFiles = files;
-    }
-
-    return {embeded: embededFiles, remote: remoteFiles};
-  }
   function pushStyleTagsFor(buffer, files) {
-    var sorted = sortFilesByEmbeded(files);
-    var embededFiles = sorted.embeded;
-    var remoteFiles = sorted.remote;
-
-    if (embededFiles.length > 0) {
-      buffer.push('<style type="text/css">');
-      for (var i = 0, ii = embededFiles.length; i < ii; i++) {
-        var file = embededFiles[i];
-        buffer.push((Ace2Editor.EMBEDED[file] || '').replace(/<\//g, '<\\/'));
-      }
-      buffer.push('<\/style>');
-    }
-    for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
-      var file = remoteFiles[i];
+    for (var i = 0, ii = files.length; i < ii; i++) {
+      var file = files[i];
       buffer.push('<link rel="stylesheet" type="text/css" href="' + file + '"\/>');
     }
   }
@@ -219,29 +184,17 @@ function Ace2Editor()
       iframeHTML.push(doctype);
       iframeHTML.push("<html><head>");
 
-      // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-      // and compressed, putting the compressed code from the named file directly into the
-      // source here.
-      // these lines must conform to a specific format because they are passed by the build script:
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
-      $$INCLUDE_CSS("../static/css/iframe_editor.css");
-      $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/custom/pad.css");
-
+      var includedCSS = ["../static/css/iframe_editor.css",
+                         "../static/css/pad.css",
+                         "../static/custom/pad.css"]
+        
       var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
       includedCSS = includedCSS.concat(additionalCSS);
 
       pushStyleTagsFor(iframeHTML, includedCSS);
 
-      if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
-        // Remotely src'd script tag will not work in IE; it must be embedded, so
-        // throw an error if it is not.
-        throw new Error("Require kernel could not be found.");
-      }
-
-      iframeHTML.push(scriptTag(
-        Ace2Editor.EMBEDED[KERNEL_SOURCE] + '\n\
+      iframeHTML.push('<script type="text/javascript" src="../static/js/require-kernel.js"></script>');
+      iframeHTML.push(scriptTag('\n\
         require.setRootURI("../javascripts/src");\n\
         require.setLibraryURI("../javascripts/lib");\n\
         require.setGlobalKeyPath("require");\n\
@@ -313,12 +266,10 @@ window.onload = function () {\n\
 
       var outerHTML = [doctype, '<html><head>']
 
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
-      $$INCLUDE_CSS("../static/css/iframe_editor.css");
-      $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/custom/pad.css");
-
+      var includedCSS = [
+          "../static/css/iframe_editor.css",
+          "../static/css/pad.css",
+          "../static/custom/pad.css"];
 
       var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
       includedCSS = includedCSS.concat(additionalCSS);
