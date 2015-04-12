@@ -1,12 +1,11 @@
-var languages = require('languages4translatewiki')
-  , fs = require('fs')
-  , path = require('path')
-  , _ = require('underscore')
-  , npm = require('npm')
-  , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
-  , semver = require('semver')
-  , existsSync = semver.gt(process.version, '0.7.0') ? fs.existsSync : path.existsSync
-;
+function defineHooks(_, languages, fs, path, npm, plugins, semver, exports) {
+  if (exports == undefined){
+    var exports = {};
+  }
+
+
+
+var existsSync = semver.gt(process.version, '0.7.0') ? fs.existsSync : path.existsSync;
 
 
 // returns all existing messages merged together and grouped by langcode
@@ -101,4 +100,23 @@ exports.expressCreateServer = function(n, args) {
   })
   
 }
+  return exports;
+};
 
+if (typeof(define) != 'undefined' && define.amd != undefined && typeof(exports) == 'undefined') {
+  define(["underscore"], function(_) {
+    defineHooks(_, require.nodeRequire("languages4translatewiki"), require.nodeRequire("fs"), require.nodeRequire("path"), require.nodeRequire("npm"), require.nodeRequire("ep_etherpad-lite/static/js/pluginfw/plugins.js").plugins, require.nodeRequire("semver"));
+  });
+} else {
+  // only happens if we are attempted to be loaded as AMD module
+  defineHooks(
+    require("underscore")
+  , require('languages4translatewiki')
+  , require('fs')
+  , require('path')
+  , require('npm')
+  , require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
+  , require('semver')
+  , exports);
+
+}
