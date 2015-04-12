@@ -241,47 +241,6 @@ function minify(req, res, next)
   });
 }
 
-// find all includes in ace.js and embed them.
-function getAceFile(callback) {
-  fs.readFile(ROOT_DIR + 'js/ace.js', "utf8", function(err, data) {
-    if(ERR(err, callback)) return;
-
-    // Find all includes in ace.js and embed them
-    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\("[^"]*"\)/gi);
-    if (!settings.minify) {
-      founds = [];
-    }
-    // Always include the require kernel.
-    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
-
-    data += ';\n';
-    data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
-
-    // Request the contents of the included file on the server-side and write
-    // them into the file.
-    async.forEach(founds, function (item, callback) {
-      var filename = item.match(/"([^"]*)"/)[1];
-
-      var baseURI = 'http://localhost:' + settings.port;
-      var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
-      resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
-
-      requestURI(resourceURI, 'GET', {}, function (status, headers, body) {
-        var error = !(status == 200 || status == 404);
-        if (!error) {
-          data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-              +  JSON.stringify(status == 200 ? body || '' : null) + ';\n';
-        } else {
-          // Silence?
-        }
-        callback();
-      });
-    }, function(error) {
-      callback(error, data);
-    });
-  });
-}
-
 // Check for the existance of the file and get the last modification date.
 function statFile(filename, callback, dirStatLimit) {
   if (typeof dirStatLimit === 'undefined') {
@@ -290,12 +249,6 @@ function statFile(filename, callback, dirStatLimit) {
 
   if (dirStatLimit < 1 || filename == '' || filename == '/') {
     callback(null, null, false);
-  } else if (filename == 'js/ace.js') {
-    // Sometimes static assets are inlined into this file, so we have to stat
-    // everything.
-    lastModifiedDateOfEverything(function (error, date) {
-      callback(error, date, !error);
-    });
   } else if (filename == 'js/require-kernel.js') {
     callback(null, requireLastModified(), true);
   } else {
@@ -389,9 +342,7 @@ function getFileCompressed(filename, contentType, callback) {
 }
 
 function getFile(filename, callback) {
-  if (filename == 'js/ace.js') {
-    getAceFile(callback);
-  } else if (filename == 'js/require-kernel.js') {
+  if (filename == 'js/require-kernel.js') {
     callback(undefined, requireDefinition());
   } else {
     fs.readFile(ROOT_DIR + filename, callback);
