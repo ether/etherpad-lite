@@ -5338,7 +5338,7 @@ function Ace2Inner(editorInfo){
     //update height of all current line numbers
 
     var a = sideDivInner.firstChild;
-    var b = doc.body.firstChild;
+    var b = innerdocbody.firstChild;
     var n = 0;
 
     if (currentCallStack && currentCallStack.domClean)
@@ -5376,6 +5376,7 @@ function Ace2Inner(editorInfo){
       var container = sideDivInner;
       var odoc = window.document;
       var fragment = odoc.createDocumentFragment();
+
       while (lineNumbersShown < newNumLines)
       {
         lineNumbersShown++;
