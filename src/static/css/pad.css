@@ -532,7 +532,7 @@ table#otheruserstable {
 }
 
 #chatbox {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   right: 20px;
   width: 180px;
