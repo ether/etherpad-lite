@@ -23,9 +23,12 @@ exports.ensure = function (cb) {
               name: name,
               location: packages[name].realPath
             }
-        })
+        }),
+        // nodeRequire gives us the ability to access node.js native
+        // require syntax from within requirejs, to do this use the syntax
+        // var fs = requirejs.nodeRequire("fs");
+        nodeRequire: require
       });
-
       exports.update(cb);
     });
   else
