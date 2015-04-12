@@ -370,10 +370,6 @@
 
         <script type="text/javascript" src="../static/plugins/requirejs/require.js"></script>
 
-        <!-- Include base packages manually (this help with debugging) -->
-        <!-- script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
-        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script -->
-
         <% e.begin_block("customScripts"); %>
         <script type="text/javascript" src="../static/custom/pad.js"></script>
         <% e.end_block(); %>
@@ -402,8 +398,11 @@
                 [
                   'ep_etherpad-lite/static/js/rjquery',
                   'ep_etherpad-lite/static/js/pluginfw/client_plugins',
-                  'ep_etherpad-lite/static/js/pluginfw/hooks'
-                ], function ($, plugins, hooks) {
+                  'ep_etherpad-lite/static/js/pluginfw/hooks',
+                  'ep_etherpad-lite/static/js/pad',
+                  'ep_etherpad-lite/static/js/chat',
+                  'ep_etherpad-lite/static/js/pad_editbar',
+                ], function ($, plugins, hooks, padMod, chatMod, padEditbarMod) {
                   window.$ = $; // Expose jQuery #HACK
                   window.jQuery = $;
 
@@ -421,16 +420,15 @@
                       hooks.aCallAll('documentReady');
                     });
 
-                    var pad = require('ep_etherpad-lite/static/js/pad');
-                    pad.baseURL = baseURL;
-                    pad.init();
+                    padMod.baseURL = baseURL;
+                    padMod.init();
                   });
 
                   /* TODO: These globals shouldn't exist. */
-                  pad = require('ep_etherpad-lite/static/js/pad').pad;
-                  chat = require('ep_etherpad-lite/static/js/chat').chat;
-                  padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-                  padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+                  pad = padMod.pad;
+                  chat = chatMod.chat;
+                  padeditbar = padEditbarMod.padeditbar;
+                  padimpexp = window.requireKernel('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
                 }
               );
             }());

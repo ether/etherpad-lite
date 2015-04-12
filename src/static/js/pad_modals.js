@@ -20,32 +20,40 @@
  * limitations under the License.
  */
  
-var padeditbar = require('./pad_editbar').padeditbar;
+define([
+  'ep_etherpad-lite/static/js/pad_editbar'
+], function (padEditbarModule) {
+  var exports = {};
 
-var padmodals = (function()
-{
-  var pad = undefined;
-  var self = {
-    init: function(_pad)
-    {
-      pad = _pad;
-    },
-    showModal: function(messageId)
-    {
-      padeditbar.toggleDropDown("none", function() {
-        $("#connectivity .visible").removeClass('visible');
-        $("#connectivity ."+messageId).addClass('visible');
-        padeditbar.toggleDropDown("connectivity");
-      });
-    },
-    showOverlay: function() {
-      $("#overlay").show();
-    },
-    hideOverlay: function() {
-      $("#overlay").hide();
-    }
-  };
-  return self;
-}());
+  var padeditbar = padEditbarModule.padeditbar;
 
-exports.padmodals = padmodals;
+  var padmodals = (function()
+  {
+    var pad = undefined;
+    var self = {
+      init: function(_pad)
+      {
+        pad = _pad;
+      },
+      showModal: function(messageId)
+      {
+        padeditbar.toggleDropDown("none", function() {
+          $("#connectivity .visible").removeClass('visible');
+          $("#connectivity ."+messageId).addClass('visible');
+          padeditbar.toggleDropDown("connectivity");
+        });
+      },
+      showOverlay: function() {
+        $("#overlay").show();
+      },
+      hideOverlay: function() {
+        $("#overlay").hide();
+      }
+    };
+    return self;
+  }());
+
+  exports.padmodals = padmodals;
+
+  return exports;
+});

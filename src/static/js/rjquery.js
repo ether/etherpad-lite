@@ -3,5 +3,7 @@
  */
 define.amd.jQuery = true;
 define(["ep_etherpad-lite/static/js/jquery"], function (dummy) {
-  return window.$.noConflict(true);
+  return window.$;
+  // Loading jQuery extensions won't work if you use noConflict :/
+  // return window.$.noConflict(true);
 });

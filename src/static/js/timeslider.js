@@ -22,174 +22,184 @@
 
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
-require('./jquery');
-JSON = require('./json2');
 
-var createCookie = require('./pad_utils').createCookie;
-var readCookie = require('./pad_utils').readCookie;
-var randomString = require('./pad_utils').randomString;
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+define([
+  'ep_etherpad-lite/static/js/rjquery',
+  'ep_etherpad-lite/static/js/pluginfw/hooks',
+  'ep_etherpad-lite/static/js/pad_utils',
+  'ep_etherpad-lite/static/js/broadcast_slider'
+], function($, hooks, padUtilsMod, broadcastSliderMod) {
+  var exports = {};
 
-var token, padId, export_links;
+  JSON = window.requireKernel('./json2');
 
-function init() {
-  $(document).ready(function ()
-  {
-    // start the custom js
-    if (typeof customStart == "function") customStart();
+  var createCookie = padUtilsMod.createCookie;
+  var readCookie = padUtilsMod.readCookie;
+  var randomString = padUtilsMod.randomString;
 
-    //get the padId out of the url
-    var urlParts= document.location.pathname.split("/");
-    padId = decodeURIComponent(urlParts[urlParts.length-2]);
+  var token, padId, export_links;
 
-    //set the title
-    document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
-
-    //ensure we have a token
-    token = readCookie("token");
-    if(token == null)
+  function init() {
+    $(document).ready(function ()
     {
-      token = "t." + randomString();
-      createCookie("token", token, 60);
-    }
+      // start the custom js
+      if (typeof customStart == "function") customStart();
 
-    var loc = document.location;
-    //get the correct port
-    var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
-    //create the url
-    var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
-    //find out in which subfolder we are
-    var resource = exports.baseURL.substring(1) + 'socket.io';
-    
-    //build up the socket io connection
-    socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
-    
-    //send the ready message once we're connected
-    socket.on('connect', function()
-    {
-      sendSocketMsg("CLIENT_READY", {});
-    });
+      //get the padId out of the url
+      var urlParts= document.location.pathname.split("/");
+      padId = decodeURIComponent(urlParts[urlParts.length-2]);
 
-    socket.on('disconnect', function()
-    {
-      BroadcastSlider.showReconnectUI();
-    });
+      //set the title
+      document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
 
-    //route the incoming messages
-    socket.on('message', function(message)
-    {
-      if(window.console) console.log(message);
-
-      if(message.type == "CLIENT_VARS")
+      //ensure we have a token
+      token = readCookie("token");
+      if(token == null)
       {
-        handleClientVars(message);
+        token = "t." + randomString();
+        createCookie("token", token, 60);
       }
-      else if(message.accessStatus)
+
+      var loc = document.location;
+      //get the correct port
+      var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
+      //create the url
+      var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
+      //find out in which subfolder we are
+      var resource = exports.baseURL.substring(1) + 'socket.io';
+
+      //build up the socket io connection
+      socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
+
+      //send the ready message once we're connected
+      socket.on('connect', function()
       {
-        $("body").html("<h2>You have no permission to access this pad</h2>")
-      } else {
-        changesetLoader.handleMessageFromServer(message);
-      }
+        sendSocketMsg("CLIENT_READY", {});
+      });
+
+      socket.on('disconnect', function()
+      {
+        BroadcastSlider.showReconnectUI();
+      });
+
+      //route the incoming messages
+      socket.on('message', function(message)
+      {
+        if(window.console) console.log(message);
+
+        if(message.type == "CLIENT_VARS")
+        {
+          handleClientVars(message);
+        }
+        else if(message.accessStatus)
+        {
+          $("body").html("<h2>You have no permission to access this pad</h2>")
+        } else {
+          changesetLoader.handleMessageFromServer(message);
+        }
+      });
+
+      //get all the export links
+      export_links = $('#export > .exportlink')
+
+      $('button#forcereconnect').click(function()
+      {
+        window.location.reload();
+      });
+
+      exports.socket = socket; // make the socket available
+      exports.BroadcastSlider = BroadcastSlider; // Make the slider available
+
+      hooks.aCallAll("postTimesliderInit");
     });
-
-    //get all the export links
-    export_links = $('#export > .exportlink')
-
-    $('button#forcereconnect').click(function()
-    {
-      window.location.reload();
-    });
-
-    exports.socket = socket; // make the socket available
-    exports.BroadcastSlider = BroadcastSlider; // Make the slider available
-
-    hooks.aCallAll("postTimesliderInit");
-  });
-}
-
-//sends a message over the socket
-function sendSocketMsg(type, data)
-{
-  var sessionID = decodeURIComponent(readCookie("sessionID"));
-  var password = readCookie("password");
-
-  var msg = { "component" : "pad", // FIXME: Remove this stupidity!
-              "type": type,
-              "data": data,
-              "padId": padId,
-              "token": token,
-              "sessionID": sessionID,
-              "password": password,
-              "protocolVersion": 2};
-
-  socket.json.send(msg);
-}
-
-var fireWhenAllScriptsAreLoaded = [];
-  
-var changesetLoader;
-function handleClientVars(message)
-{
-  //save the client Vars
-  clientVars = message.data;
-  
-  //load all script that doesn't work without the clientVars
-  BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
-  require('./broadcast_revisions').loadBroadcastRevisionsJS();
-  changesetLoader = require('./broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
-
-  //initialize export ui
-  require('./pad_impexp').padimpexp.init();
-
-  //change export urls when the slider moves
-  BroadcastSlider.onSlider(function(revno)
-  {
-    // export_links is a jQuery Array, so .each is allowed.
-    export_links.each(function()
-    {
-      this.setAttribute('href', this.href.replace( /(.+?)\/\w+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
-    });
-  });
-
-  //fire all start functions of these scripts, formerly fired with window.load
-  for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
-  {
-    fireWhenAllScriptsAreLoaded[i]();
   }
-  $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
 
-  // Translate some strings where we only want to set the title not the actual values
-  $('#playpause_button_icon').attr("title", html10n.get("timeslider.playPause"));
-  $('#leftstep').attr("title", html10n.get("timeslider.backRevision"));
-  $('#rightstep').attr("title", html10n.get("timeslider.forwardRevision"));
+  //sends a message over the socket
+  function sendSocketMsg(type, data)
+  {
+    var sessionID = decodeURIComponent(readCookie("sessionID"));
+    var password = readCookie("password");
 
-  // font family change
-  $("#viewfontmenu").change(function(){
-    var font = $("#viewfontmenu").val();
-    if(font === "monospace") setFont("Courier new");
-    if(font === "opendyslexic") setFont("OpenDyslexic");
-    if(font === "comicsans") setFont("Comic Sans MS");
-    if(font === "georgia") setFont("Georgia");
-    if(font === "impact") setFont("Impact");
-    if(font === "lucida") setFont("Lucida");
-    if(font === "lucidasans") setFont("Lucida Sans Unicode");
-    if(font === "palatino") setFont("Palatino Linotype");
-    if(font === "tahoma") setFont("Tahoma");
-    if(font === "timesnewroman") setFont("Times New Roman");
-    if(font === "trebuchet") setFont("Trebuchet MS");
-    if(font === "verdana") setFont("Verdana");
-    if(font === "symbol") setFont("Symbol");
-    if(font === "webdings") setFont("Webdings");
-    if(font === "wingdings") setFont("Wingdings");
-    if(font === "sansserif") setFont("MS Sans Serif");
-    if(font === "serif") setFont("MS Serif");
-  });
+    var msg = { "component" : "pad", // FIXME: Remove this stupidity!
+                "type": type,
+                "data": data,
+                "padId": padId,
+                "token": token,
+                "sessionID": sessionID,
+                "password": password,
+                "protocolVersion": 2};
 
-}
+    socket.json.send(msg);
+  }
 
-function setFont(font){
-  $('#padcontent').css("font-family", font);
-}
+  var fireWhenAllScriptsAreLoaded = [];
 
-exports.baseURL = '';
-exports.init = init;
+  var changesetLoader;
+  function handleClientVars(message)
+  {
+    //save the client Vars
+    clientVars = message.data;
+
+    //load all script that doesn't work without the clientVars
+    BroadcastSlider = broadcastSliderMod.loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
+    require('./broadcast_revisions').loadBroadcastRevisionsJS();
+    changesetLoader = require('./broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
+
+    //initialize export ui
+    require('./pad_impexp').padimpexp.init();
+
+    //change export urls when the slider moves
+    BroadcastSlider.onSlider(function(revno)
+    {
+      // export_links is a jQuery Array, so .each is allowed.
+      export_links.each(function()
+      {
+        this.setAttribute('href', this.href.replace( /(.+?)\/\w+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
+      });
+    });
+
+    //fire all start functions of these scripts, formerly fired with window.load
+    for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
+    {
+      fireWhenAllScriptsAreLoaded[i]();
+    }
+    $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
+
+    // Translate some strings where we only want to set the title not the actual values
+    $('#playpause_button_icon').attr("title", html10n.get("timeslider.playPause"));
+    $('#leftstep').attr("title", html10n.get("timeslider.backRevision"));
+    $('#rightstep').attr("title", html10n.get("timeslider.forwardRevision"));
+
+    // font family change
+    $("#viewfontmenu").change(function(){
+      var font = $("#viewfontmenu").val();
+      if(font === "monospace") setFont("Courier new");
+      if(font === "opendyslexic") setFont("OpenDyslexic");
+      if(font === "comicsans") setFont("Comic Sans MS");
+      if(font === "georgia") setFont("Georgia");
+      if(font === "impact") setFont("Impact");
+      if(font === "lucida") setFont("Lucida");
+      if(font === "lucidasans") setFont("Lucida Sans Unicode");
+      if(font === "palatino") setFont("Palatino Linotype");
+      if(font === "tahoma") setFont("Tahoma");
+      if(font === "timesnewroman") setFont("Times New Roman");
+      if(font === "trebuchet") setFont("Trebuchet MS");
+      if(font === "verdana") setFont("Verdana");
+      if(font === "symbol") setFont("Symbol");
+      if(font === "webdings") setFont("Webdings");
+      if(font === "wingdings") setFont("Wingdings");
+      if(font === "sansserif") setFont("MS Sans Serif");
+      if(font === "serif") setFont("MS Serif");
+    });
+
+  }
+
+  function setFont(font){
+    $('#padcontent').css("font-family", font);
+  }
+
+  exports.baseURL = '';
+  exports.init = init;
+
+  return exports;
+});

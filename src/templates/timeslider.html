@@ -222,9 +222,7 @@
 <script type="text/javascript" src="../../static/js/require-kernel.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
-<!-- Include base packages manually (this help with debugging) -->
-<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
-<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
+<script type="text/javascript" src="../static/plugins/requirejs/require.js"></script>
 
 <script type="text/javascript" src="../../static/custom/timeslider.js"></script>
 
@@ -243,31 +241,47 @@
     require.setLibraryURI(baseURL + "javascripts/lib");
     require.setGlobalKeyPath("require");
 
-    $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
-    browser = require('ep_etherpad-lite/static/js/browser').browser;
+    window.requireKernel = require;
 
-    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
-      document.domain = document.domain; // for comet
-    }
+    requirejs.config({
+       baseUrl: baseURL + "static/plugins",
+       paths: {'underscore': baseURL + "static/plugins/underscore/underscore"},
+    });
 
-    var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-    var socket = require('ep_etherpad-lite/static/js/timeslider').socket;
-    BroadcastSlider = require('ep_etherpad-lite/static/js/timeslider').BroadcastSlider;
-    plugins.baseURL = baseURL;
-    
-    plugins.update(function () {
-      var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-      hooks.plugins = plugins;
+    requirejs([
+      'ep_etherpad-lite/static/js/rjquery',
+      'ep_etherpad-lite/static/js/pluginfw/client_plugins',
+      'ep_etherpad-lite/static/js/pluginfw/hooks'
+      'ep_etherpad-lite/static/js/pad_editbar',
+      'ep_etherpad-lite/static/js/browser',
+      'ep_etherpad-lite/static/js/timeslider'
+    ], function ($, plugins, hooks, padEditbarMod, browserMod, timesliderMod) {
+      window.$ = $; // Expose jQuery #HACK
+      window.jQuery = $;
 
-      var timeslider = require('ep_etherpad-lite/static/js/timeslider')
-      timeslider.baseURL = baseURL;
-      timeslider.init();
+      browser = browserMod.browser;
 
-      /* TODO: These globals shouldn't exist. */
-      padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-      padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+      if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
+        document.domain = document.domain; // for comet
+      }
 
-      padeditbar.init()
+
+      var socket = timesliderMod.socket;
+      BroadcastSlider = timesliderMod.BroadcastSlider;
+      plugins.baseURL = baseURL;
+
+      plugins.update(function () {
+        hooks.plugins = plugins;
+
+        timesliderMod.baseURL = baseURL;
+        timesliderMod.init();
+
+        /* TODO: These globals shouldn't exist. */
+        padeditbar = padEditbarMod.padeditbar;
+        padimpexp = window.requireKernel('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+
+        padeditbar.init();
+      });
     });
   })();
 </script>

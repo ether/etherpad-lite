@@ -20,69 +20,77 @@
  * limitations under the License.
  */
 
-var padmodals = require('./pad_modals').padmodals;
+define([
+  'ep_etherpad-lite/static/js/pad_modals'
+], function(padModalsModule) {
+  var exports = {};
 
-var padconnectionstatus = (function()
-{
+  var padmodals = padModalsModule.padmodals;
 
-  var status = {
-    what: 'connecting'
-  };
+  var padconnectionstatus = (function()
+  {
 
-  var self = {
-    init: function()
-    {
-      $('button#forcereconnect').click(function()
+    var status = {
+      what: 'connecting'
+    };
+
+    var self = {
+      init: function()
       {
-        window.location.reload();
-      });
-    },
-    connected: function()
-    {
-      status = {
-        what: 'connected'
-      };
-      padmodals.showModal('connected');
-      padmodals.hideOverlay();
-    },
-    reconnecting: function()
-    {
-      status = {
-        what: 'reconnecting'
-      };
-      
-      padmodals.showModal('reconnecting');
-      padmodals.showOverlay();
-    },
-    disconnected: function(msg)
-    {
-      if(status.what == "disconnected")
-        return;
-      
-      status = {
-        what: 'disconnected',
-        why: msg
-      };
-      
-      var k = String(msg); // known reason why
-      if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'badChangeset' || k == 'corruptPad'))
+        $('button#forcereconnect').click(function()
+        {
+          window.location.reload();
+        });
+      },
+      connected: function()
       {
-        k = 'disconnected';
+        status = {
+          what: 'connected'
+        };
+        padmodals.showModal('connected');
+        padmodals.hideOverlay();
+      },
+      reconnecting: function()
+      {
+        status = {
+          what: 'reconnecting'
+        };
+
+        padmodals.showModal('reconnecting');
+        padmodals.showOverlay();
+      },
+      disconnected: function(msg)
+      {
+        if(status.what == "disconnected")
+          return;
+
+        status = {
+          what: 'disconnected',
+          why: msg
+        };
+
+        var k = String(msg); // known reason why
+        if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'badChangeset' || k == 'corruptPad'))
+        {
+          k = 'disconnected';
+        }
+
+        padmodals.showModal(k);
+        padmodals.showOverlay();
+      },
+      isFullyConnected: function()
+      {
+        return status.what == 'connected';
+      },
+      getStatus: function()
+      {
+        return status;
       }
+    };
+    return self;
+  }());
 
-      padmodals.showModal(k);
-      padmodals.showOverlay();
-    },
-    isFullyConnected: function()
-    {
-      return status.what == 'connected';
-    },
-    getStatus: function()
-    {
-      return status;
-    }
-  };
-  return self;
-}());
+  exports.padconnectionstatus = padconnectionstatus;
 
-exports.padconnectionstatus = padconnectionstatus;
+  return exports;
+});

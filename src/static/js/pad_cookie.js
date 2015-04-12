@@ -21,113 +21,118 @@
  */
 
 
-var padcookie = (function()
-{
-  function getRawCookie()
+define([], function () {
+  var exports = {};
+  var padcookie = (function()
   {
-    // returns null if can't get cookie text
-    if (!document.cookie)
+    function getRawCookie()
     {
-      return null;
-    }
-    // look for (start of string OR semicolon) followed by whitespace followed by prefs=(something);
-    var regexResult = document.cookie.match(/(?:^|;)\s*prefs=([^;]*)(?:;|$)/);
-    if ((!regexResult) || (!regexResult[1]))
-    {
-      return null;
-    }
-    return regexResult[1];
-  }
-
-  function setRawCookie(safeText)
-  {
-    var expiresDate = new Date();
-    expiresDate.setFullYear(3000);
-    document.cookie = ('prefs=' + safeText + ';expires=' + expiresDate.toGMTString());
-  }
-
-  function parseCookie(text)
-  {
-    // returns null if can't parse cookie.
-    try
-    {
-      var cookieData = JSON.parse(unescape(text));
-      return cookieData;
-    }
-    catch (e)
-    {
-      return null;
-    }
-  }
-
-  function stringifyCookie(data)
-  {
-    return escape(JSON.stringify(data));
-  }
-
-  function saveCookie()
-  {
-    if (!inited)
-    {
-      return;
-    }
-    setRawCookie(stringifyCookie(cookieData));
-
-    if ((!getRawCookie()) && (!alreadyWarnedAboutNoCookies))
-    {
-      alert("Warning: it appears that your browser does not have cookies enabled." + " EtherPad uses cookies to keep track of unique users for the purpose" + " of putting a quota on the number of active users.  Using EtherPad without " + " cookies may fill up your server's user quota faster than expected.");
-      alreadyWarnedAboutNoCookies = true;
-    }
-  }
-
-  var wasNoCookie = true;
-  var cookieData = {};
-  var alreadyWarnedAboutNoCookies = false;
-  var inited = false;
-
-  var pad = undefined;
-  var self = {
-    init: function(prefsToSet, _pad)
-    {
-      pad = _pad;
-
-      var rawCookie = getRawCookie();
-      if (rawCookie)
+      // returns null if can't get cookie text
+      if (!document.cookie)
       {
-        var cookieObj = parseCookie(rawCookie);
-        if (cookieObj)
+        return null;
+      }
+      // look for (start of string OR semicolon) followed by whitespace followed by prefs=(something);
+      var regexResult = document.cookie.match(/(?:^|;)\s*prefs=([^;]*)(?:;|$)/);
+      if ((!regexResult) || (!regexResult[1]))
+      {
+        return null;
+      }
+      return regexResult[1];
+    }
+
+    function setRawCookie(safeText)
+    {
+      var expiresDate = new Date();
+      expiresDate.setFullYear(3000);
+      document.cookie = ('prefs=' + safeText + ';expires=' + expiresDate.toGMTString());
+    }
+
+    function parseCookie(text)
+    {
+      // returns null if can't parse cookie.
+      try
+      {
+        var cookieData = JSON.parse(unescape(text));
+        return cookieData;
+      }
+      catch (e)
+      {
+        return null;
+      }
+    }
+
+    function stringifyCookie(data)
+    {
+      return escape(JSON.stringify(data));
+    }
+
+    function saveCookie()
+    {
+      if (!inited)
+      {
+        return;
+      }
+      setRawCookie(stringifyCookie(cookieData));
+
+      if ((!getRawCookie()) && (!alreadyWarnedAboutNoCookies))
+      {
+        alert("Warning: it appears that your browser does not have cookies enabled." + " EtherPad uses cookies to keep track of unique users for the purpose" + " of putting a quota on the number of active users.  Using EtherPad without " + " cookies may fill up your server's user quota faster than expected.");
+        alreadyWarnedAboutNoCookies = true;
+      }
+    }
+
+    var wasNoCookie = true;
+    var cookieData = {};
+    var alreadyWarnedAboutNoCookies = false;
+    var inited = false;
+
+    var pad = undefined;
+    var self = {
+      init: function(prefsToSet, _pad)
+      {
+        pad = _pad;
+
+        var rawCookie = getRawCookie();
+        if (rawCookie)
         {
-          wasNoCookie = false; // there was a cookie
-          delete cookieObj.userId;
-          delete cookieObj.name;
-          delete cookieObj.colorId;
-          cookieData = cookieObj;
+          var cookieObj = parseCookie(rawCookie);
+          if (cookieObj)
+          {
+            wasNoCookie = false; // there was a cookie
+            delete cookieObj.userId;
+            delete cookieObj.name;
+            delete cookieObj.colorId;
+            cookieData = cookieObj;
+          }
         }
-      }
 
-      for (var k in prefsToSet)
+        for (var k in prefsToSet)
+        {
+          cookieData[k] = prefsToSet[k];
+        }
+
+        inited = true;
+        saveCookie();
+      },
+      wasNoCookie: function()
       {
-        cookieData[k] = prefsToSet[k];
+        return wasNoCookie;
+      },
+      getPref: function(prefName)
+      {
+        return cookieData[prefName];
+      },
+      setPref: function(prefName, value)
+      {
+        cookieData[prefName] = value;
+        saveCookie();
       }
+    };
+    return self;
+  }());
 
-      inited = true;
-      saveCookie();
-    },
-    wasNoCookie: function()
-    {
-      return wasNoCookie;
-    },
-    getPref: function(prefName)
-    {
-      return cookieData[prefName];
-    },
-    setPref: function(prefName, value)
-    {
-      cookieData[prefName] = value;
-      saveCookie();
-    }
-  };
-  return self;
-}());
+  exports.padcookie = padcookie;
 
-exports.padcookie = padcookie;
+  return exports;
+});

@@ -82,6 +82,7 @@ exports.loadModule = function(path, cb) {
     cb(require(path));
     console.warn("Module uses old CommonJS format: " + path);
   } catch (e) {
+    console.warn("Error loading CommonJS module: " + path + "\n" + e.toString());
     requirejs([path], cb);
   }
 }
