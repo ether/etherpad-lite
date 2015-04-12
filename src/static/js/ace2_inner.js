@@ -373,7 +373,7 @@ function Ace2Inner(editorInfo){
 
     if (currentCallStack)
     {
-      console.error("Can't enter callstack " + type + ", already in " + currentCallStack.type);
+      console.log("Can't enter callstack " + type + ", already in " + currentCallStack.type);
     }
 
     var profiling = false;
@@ -3334,10 +3334,6 @@ function Ace2Inner(editorInfo){
         }
         evt.preventDefault();
       }
-    }
-    //hide the dropdownso
-    if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/ether/etherpad-lite/issues/327
-      window.parent.parent.padeditbar.toggleDropDown("none");
     }
   }
 
