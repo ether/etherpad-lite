@@ -93,7 +93,7 @@ sauceTestWorker.push({
 
 // IE 9
 sauceTestWorker.push({
-    'platform'       : 'Windows 2008'
+    'platform'       : 'Windows XP'
   , 'browserName'    : 'iexplore'
   , 'version'        : '9'
 });
