@@ -1,5 +1,5 @@
-var async = require("async");
-var _ = require("underscore");
+function defineHooks(_, async, exports) {
+  if (exports == undefined) exports = {};
 
 exports.bubbleExceptions = true
 
@@ -124,4 +124,14 @@ exports.callAllStr = function(hook_name, args, sep, pre, post) {
     newCallhooks[i] = pre + callhooks[i] + post;
   }
   return newCallhooks.join(sep || "");
+}
+
+  return exports;
+}
+
+
+if (typeof(define) != 'undefined' && define.amd != undefined && typeof(exports) == 'undefined') {
+  define(["underscore", "async/lib/async"], defineHooks);
+} else {       
+  defineHooks(require("underscore"), require("async"), exports);
 }

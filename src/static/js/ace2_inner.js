@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-define(["ep_etherpad-lite/static/js/rjquery", "underscore"], function ($, _) {
+define(["ep_etherpad-lite/static/js/rjquery", "underscore", 'ep_etherpad-lite/static/js/pluginfw/hooks'], function ($, _, hooks) {
   var exports = {};
 
 var browser = require('./browser').browser;
@@ -43,7 +43,6 @@ var isNodeText = Ace2Common.isNodeText,
   binarySearchInfinite = Ace2Common.binarySearchInfinite,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
- var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 function Ace2Inner(){
 
