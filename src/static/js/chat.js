@@ -229,8 +229,8 @@ var chat = (function()
         if (evt.altKey && evt.which == 67){
           // Alt c focuses on the Chat window
           $(this).blur();
-          parent.parent.chat.show();
-          parent.parent.chat.focus();
+          window.chat.show();
+          window.chat.focus();
           evt.preventDefault();
         }
       });

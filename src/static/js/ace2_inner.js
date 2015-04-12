@@ -3336,8 +3336,8 @@ function Ace2Inner(editorInfo){
       }
     }
     //hide the dropdownso
-    if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/ether/etherpad-lite/issues/327
-      window.parent.parent.padeditbar.toggleDropDown("none");
+    if(window.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/ether/etherpad-lite/issues/327
+      window.padeditbar.toggleDropDown("none");
     }
   }
 
@@ -3632,15 +3632,15 @@ function Ace2Inner(editorInfo){
     }else{
       var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
     }
-    var heightOfChatIcon = parent.parent.$('#chaticon').height(); // height of the chat icon button
+    var heightOfChatIcon = $('#chaticon').height(); // height of the chat icon button
     lineHeight = (lineHeight *2) + heightOfChatIcon;
     var viewport = getViewPortTopBottom();
     var viewportHeight = viewport.bottom - viewport.top - lineHeight;
     var relCaretOffsetTop = caretOffsetTop - viewport.top; // relative Caret Offset Top to viewport
     if (viewportHeight < relCaretOffsetTop){
-      parent.parent.$("#chaticon").css("opacity",".3"); // make chaticon opacity low when user types near it
+      $("#chaticon").css("opacity",".3"); // make chaticon opacity low when user types near it
     }else{
-      parent.parent.$("#chaticon").css("opacity","1"); // make chaticon opacity back to full (so fully visible)
+      $("#chaticon").css("opacity","1"); // make chaticon opacity back to full (so fully visible)
     }
 
     //dmesg("keyevent type: "+type+", which: "+which);
@@ -3691,7 +3691,7 @@ function Ace2Inner(editorInfo){
           // Note that while most editors use Alt F10 this is not desirable
           // As ubuntu cannot use Alt F10....
           // Focus on the editbar. -- TODO: Move Focus back to previous state (we know it so we can use it)
-          var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
+          var firstEditbarElement = $('#editbar').children("ul").first().children().first().children().first().children().first();
           $(this).blur(); 
           firstEditbarElement.focus();
           evt.preventDefault();
@@ -3699,8 +3699,8 @@ function Ace2Inner(editorInfo){
         if ((!specialHandled) && altKey && keyCode == 67){
           // Alt c focuses on the Chat window
           $(this).blur(); 
-          parent.parent.chat.show();
-          parent.parent.chat.focus();
+          window.chat.show();
+          window.chat.focus();
           evt.preventDefault();
         }
         if ((!specialHandled) && evt.ctrlKey && shiftKey && keyCode == 50 && type === "keydown"){
@@ -3739,13 +3739,13 @@ function Ace2Inner(editorInfo){
           }
           else{
             // Known authors info, both current and historical
-            var padAuthors = parent.parent.pad.userList();
+            var padAuthors = window.pad.userList();
             var authorObj = {};
             authors.forEach(function(authorId){
               padAuthors.forEach(function(padAuthor){
                 // If the person doing the lookup is the author..
                 if(padAuthor.userId === authorId){
-                  if(parent.parent.clientVars.userId === authorId){
+                  if(window.clientVars.userId === authorId){
                     authorObj = {
                       name: "Me"
                     }
@@ -3770,7 +3770,7 @@ function Ace2Inner(editorInfo){
             var authorString = "The authors of this line are " + authorNames.join(" & ");
 	  }
 
-          parent.parent.$.gritter.add({
+          $.gritter.add({
             // (string | mandatory) the heading of the notification
             title: 'Line Authors',
             // (string | mandatory) the text inside the notification
@@ -3812,12 +3812,12 @@ function Ace2Inner(editorInfo){
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey) && !evt.altKey) /* Do a saved revision on ctrl S */
         {
           evt.preventDefault();
-          var originalBackground = parent.parent.$('#revisionlink').css("background")
-          parent.parent.$('#revisionlink').css({"background":"lightyellow"});
+          var originalBackground = $('#revisionlink').css("background")
+          $('#revisionlink').css({"background":"lightyellow"});
           scheduler.setTimeout(function(){
-            parent.parent.$('#revisionlink').css({"background":originalBackground});
+            $('#revisionlink').css({"background":originalBackground});
           }, 1000);
-          parent.parent.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
+          window.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
           specialHandled = true;
         }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 9 && !(evt.metaKey || evt.ctrlKey))

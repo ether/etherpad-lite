@@ -173,7 +173,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
         }
 
         // Get my authorID
-        var authorId = parent.parent.pad.myUserInfo.userId;
+        var authorId = window.pad.myUserInfo.userId;
 
         // Sanitize authorship
         // We need to replace all author attribs with thisSession.author, in case they copy/pasted or otherwise inserted other peoples changes
