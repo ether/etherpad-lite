@@ -395,7 +395,7 @@
 
               requirejs.config({
                  baseUrl: baseURL + "static/plugins",
-paths: {'underscore': baseURL + "static/plugins/underscore/underscore"}
+                 paths: {'underscore': baseURL + "static/plugins/underscore/underscore"},
               });
 
               requirejs(["ep_etherpad-lite/static/js/rjquery", 'ep_etherpad-lite/static/js/pluginfw/client_plugins'], function ($, plugins) {
