@@ -41,6 +41,8 @@
 
         <% e.begin_block("styles"); %>
         <link href="../static/css/pad.css" rel="stylesheet">
+        <link href="../static/css/iframe_editor.css" rel="stylesheet">
+        <link href="../static/custom/pad.css" rel="stylesheet">
 
         <% e.begin_block("customStyles"); %>
         <link href="../static/custom/pad.css" rel="stylesheet">
@@ -100,7 +102,13 @@
         </div>
 
         <div id="editorcontainerbox">
-            <div id="editorcontainer"></div>
+            <div id="editorcontainer">
+              <div id="outerdocbody">
+                <div id="sidediv"><!-- --></div>
+                <div id="linemetricsdiv">x</div>
+              </div>
+              <div id="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</div>
+            </div>
             <div id="editorloadingbox">
               <div id="passwordRequired">
                 <p data-l10n-id="pad.passwordRequired">You need a password to access this pad</p>

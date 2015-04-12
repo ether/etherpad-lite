@@ -16,9 +16,6 @@ body,
 textarea {
   font-family: Helvetica, Arial, sans-serif
 }
-iframe {
-  position: absolute
-}
 .readonly .acl-write {
   display: none;
 }
@@ -216,13 +213,6 @@ li[data-key=showusers] > a #online_count {
   right: 0px;
   bottom: 0px;
   z-index: 1;
-}
-#editorcontainer iframe {
-  height: 100%;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  left: 0; /* Required for safari fixes RTL */
 }
 #editorloadingbox {
   padding-top: 100px;

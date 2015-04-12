@@ -47,7 +47,7 @@ var isNodeText = Ace2Common.isNodeText,
   noop = Ace2Common.noop;
 var hooks = require('./pluginfw/hooks');
 
-function Ace2Inner(){
+function Ace2Inner(editorInfo){
 
   var makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   var colorutils = require('./colorutils').colorutils;
@@ -80,13 +80,9 @@ function Ace2Inner(){
   var thisAuthor = '';
 
   var disposed = false;
-  var editorInfo = parent.editorInfo;
-
-  var iframe = window.frameElement;
-  var outerWin = iframe.ace_outerWin;
-  iframe.ace_outerWin = null; // prevent IE 6 memory leak
-  var sideDiv = iframe.nextSibling;
-  var lineMetricsDiv = sideDiv.nextSibling;
+  var sideDiv = $('#sidediv')[0];
+  var lineMetricsDiv = $('#linemetricsdiv')[0];
+  var innerdocbody = $('#innerdocbody')[0];
   initLineNumbers();
 
   var outsideKeyDown = noop;
@@ -961,7 +957,7 @@ function Ace2Inner(){
         setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
         fixView();
       },
-      grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
+      grayedout: setClassPresenceNamed(window.document.body, "grayedout"),
       dmesg: function(){ dmesg = window.dmesg = value; },
       userauthor: function(value){
         thisAuthor = String(value);
@@ -3263,7 +3259,7 @@ function Ace2Inner(){
   function getViewPortTopBottom()
   {
     var theTop = getScrollY();
-    var doc = outerWin.document;
+    var doc = window.document;
     var height = doc.documentElement.clientHeight;
     return {
       top: theTop,
@@ -3809,7 +3805,7 @@ function Ace2Inner(){
           //scrollSelectionIntoView();
           scheduler.setTimeout(function()
           {
-            outerWin.scrollBy(-100, 0);
+            window.scrollBy(-100, 0);
           }, 0);
           specialHandled = true;
         }
@@ -4721,6 +4717,7 @@ function Ace2Inner(){
 
   function fixView()
   {
+    //return; // TODO: look into this later
     // calling this method repeatedly should be fast
     if (getInnerWidth() === 0 || getInnerHeight() === 0)
     {
@@ -4740,7 +4737,7 @@ function Ace2Inner(){
     if (newSideDivWidth < MIN_LINEDIV_WIDTH) newSideDivWidth = MIN_LINEDIV_WIDTH;
     iframePadLeft = EDIT_BODY_PADDING_LEFT;
     if (hasLineNumbers) iframePadLeft += newSideDivWidth + LINE_NUMBER_PADDING_RIGHT;
-    setIfNecessary(iframe.style, "left", iframePadLeft + "px");
+    setIfNecessary(innerdocbody.style, "left", iframePadLeft + "px");
     setIfNecessary(sideDiv.style, "width", newSideDivWidth + "px");
 
     for (var i = 0; i < 2; i++)
@@ -4752,11 +4749,11 @@ function Ace2Inner(){
       if (newHeight < viewHeight)
       {
         newHeight = viewHeight;
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'auto');
+        if (browser.msie) setIfNecessary(window.document.documentElement.style, 'overflowY', 'auto');
       }
       else
       {
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'scroll');
+        if (browser.msie) setIfNecessary(window.document.documentElement.style, 'overflowY', 'scroll');
       }
       if (doesWrap)
       {
@@ -4766,8 +4763,8 @@ function Ace2Inner(){
       {
         if (newWidth < viewWidth) newWidth = viewWidth;
       }
-      setIfNecessary(iframe.style, "height", newHeight + "px");
-      setIfNecessary(iframe.style, "width", newWidth + "px");
+      setIfNecessary(innerdocbody.style, "height", newHeight + "px");
+      setIfNecessary(innerdocbody.style, "width", newWidth + "px");
       setIfNecessary(sideDiv.style, "height", newHeight + "px");
     }
     if (browser.firefox)
@@ -4792,7 +4789,7 @@ function Ace2Inner(){
     // if near edge, scroll to edge
     var scrollX = getScrollX();
     var scrollY = getScrollY();
-    var win = outerWin;
+    var win = window;
     var r = 20;
 
     enforceEditability();
@@ -4802,8 +4799,8 @@ function Ace2Inner(){
 
   function getScrollXY()
   {
-    var win = outerWin;
-    var odoc = outerWin.document;
+    var win = window;
+    var odoc = window.document;
     if (typeof(win.pageYOffset) == "number")
     {
       return {
@@ -4833,17 +4830,17 @@ function Ace2Inner(){
 
   function setScrollX(x)
   {
-    outerWin.scrollTo(x, getScrollY());
+    window.scrollTo(x, getScrollY());
   }
 
   function setScrollY(y)
   {
-    outerWin.scrollTo(getScrollX(), y);
+    window.scrollTo(getScrollX(), y);
   }
 
   function setScrollXY(x, y)
   {
-    outerWin.scrollTo(x, y);
+    window.scrollTo(x, y);
   }
 
   var _teardownActions = [];
@@ -5077,7 +5074,7 @@ function Ace2Inner(){
 
   function getPageHeight()
   {
-    var win = outerWin;
+    var win = window;
     var odoc = win.document;
     if (win.innerHeight && win.scrollMaxY) return win.innerHeight + win.scrollMaxY;
     else if (odoc.body.scrollHeight > odoc.body.offsetHeight) return odoc.body.scrollHeight;
@@ -5086,7 +5083,7 @@ function Ace2Inner(){
 
   function getPageWidth()
   {
-    var win = outerWin;
+    var win = window;
     var odoc = win.document;
     if (win.innerWidth && win.scrollMaxX) return win.innerWidth + win.scrollMaxX;
     else if (odoc.body.scrollWidth > odoc.body.offsetWidth) return odoc.body.scrollWidth;
@@ -5095,7 +5092,7 @@ function Ace2Inner(){
 
   function getInnerHeight()
   {
-    var win = outerWin;
+    var win = window;
     var odoc = win.document;
     var h;
     if (browser.opera) h = win.innerHeight;
@@ -5109,7 +5106,7 @@ function Ace2Inner(){
 
   function getInnerWidth()
   {
-    var win = outerWin;
+    var win = window;
     var odoc = win.document;
     return odoc.documentElement.clientWidth;
   }
@@ -5119,8 +5116,8 @@ function Ace2Inner(){
     // requires element (non-text) node;
     // if node extends above top of viewport or below bottom of viewport (or top of scrollbar),
     // scroll it the minimum distance needed to be completely in view.
-    var win = outerWin;
-    var odoc = outerWin.document;
+    var win = window;
+    var odoc = window.document;
     var distBelowTop = node.offsetTop + iframePadTop - win.scrollY;
     var distAboveBottom = win.scrollY + getInnerHeight() - (node.offsetTop + iframePadTop + node.offsetHeight);
 
@@ -5136,8 +5133,8 @@ function Ace2Inner(){
 
   function scrollXHorizontallyIntoView(pixelX)
   {
-    var win = outerWin;
-    var odoc = outerWin.document;
+    var win = window;
+    var odoc = window.document;
     pixelX += iframePadLeft;
     var distInsideLeft = pixelX - win.scrollX;
     var distInsideRight = win.scrollX + getInnerWidth() - pixelX;
@@ -5331,7 +5328,7 @@ function Ace2Inner(){
   {
     lineNumbersShown = 1;
     sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner"><div>1</div></td></tr></table>';
-    sideDivInner = outerWin.document.getElementById("sidedivinner");
+    sideDivInner = window.document.getElementById("sidedivinner");
   }
 
   function updateLineNumbers()
@@ -5377,7 +5374,7 @@ function Ace2Inner(){
     if (newNumLines != lineNumbersShown)
     {
       var container = sideDivInner;
-      var odoc = outerWin.document;
+      var odoc = window.document;
       var fragment = odoc.createDocumentFragment();
       while (lineNumbersShown < newNumLines)
       {
@@ -5457,7 +5454,7 @@ function Ace2Inner(){
 
       scheduler.setTimeout(function()
       {
-        parent.readyFunc(); // defined in code that sets up the inner iframe
+        editorInfo.onEditorReady(); // defined in code that sets up the inner iframe
       }, 0);
 
       isSetUp = true;
@@ -5466,7 +5463,7 @@ function Ace2Inner(){
 
 }
 
-exports.init = function () {
-  var editor = new Ace2Inner()
+exports.init = function (editorInfo) {
+  var editor = new Ace2Inner(editorInfo)
   editor.init();
 };
