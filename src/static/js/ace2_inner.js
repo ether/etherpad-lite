@@ -1923,7 +1923,11 @@ function Ace2Inner(){
     if (charsLeft === 0)
     {
       var index = 0;
-      browser.msie = false; // Temp fix to resolve enter and backspace issues..
+
+      if (browser.msie && parseInt(browser.version) >= 11) {
+        browser.msie = false; // Temp fix to resolve enter and backspace issues..
+        // Note that this makes MSIE behave like modern browsers..
+      }
       if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0)
       {
         // best to stay at end of last empty div in IE
@@ -4955,7 +4959,10 @@ function Ace2Inner(){
 
     // Don't paste on middle click of links
     $(root).on("paste", function(e){
-      if(e.target.a){
+      // TODO: this breaks pasting strings into URLS when using 
+      // Control C and Control V -- the Event is never available
+      // here.. :(
+      if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
       }
     })

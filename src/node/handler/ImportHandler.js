@@ -113,10 +113,8 @@ exports.doImport = function(req, res, padId)
         if(ERR(err, callback)) return callback();
         if(result.length > 0){ // This feels hacky and wrong..
           importHandledByPlugin = true;
-          callback();
-        }else{
-          callback();
         }
+        callback();
       });
     },
     function(callback) {
@@ -145,7 +143,7 @@ exports.doImport = function(req, res, padId)
     },
     //convert file to html
     function(callback) {
-      if(!importHandledByPlugin || !directDatabaseAccess){
+      if(!importHandledByPlugin && !directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
         var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
         var fileIsTXT = (fileEnding === ".txt");
@@ -171,28 +169,24 @@ exports.doImport = function(req, res, padId)
     },
     
     function(callback) {
-      if (!abiword){
-        if(!directDatabaseAccess) {
-          // Read the file with no encoding for raw buffer access.
-          fs.readFile(destFile, function(err, buf) {
-            if (err) throw err;
-            var isAscii = true;
-            // Check if there are only ascii chars in the uploaded file
-            for (var i=0, len=buf.length; i<len; i++) {
-              if (buf[i] > 240) {
-                isAscii=false;
-                break;
-              }
+      if (!abiword && !directDatabaseAccess){
+        // Read the file with no encoding for raw buffer access.
+        fs.readFile(destFile, function(err, buf) {
+          if (err) throw err;
+          var isAscii = true;
+          // Check if there are only ascii chars in the uploaded file
+          for (var i=0, len=buf.length; i<len; i++) {
+            if (buf[i] > 240) {
+              isAscii=false;
+              break;
             }
-            if (isAscii) {
-              callback();
-            } else {
-              callback("uploadFailed");
-            }
-          });
-        }else{
-          callback();
-        }
+          }
+          if (isAscii) {
+            callback();
+          } else {
+            callback("uploadFailed");
+          }
+        });
       } else {
         callback();
       }
@@ -303,7 +297,7 @@ exports.doImport = function(req, res, padId)
           var impexp = window.parent.padimpexp.handleFrameCall('" + directDatabaseAccess +"', '" + status + "'); \
         }) \
       </script>"
-    , 200);
+    );
   });
 }
 

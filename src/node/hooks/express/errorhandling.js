@@ -39,7 +39,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     // if an error occurs Connect will pass it down
     // through these "error-handling" middleware
     // allowing you to respond however you like
-    res.send(500, { error: 'Sorry, something bad happened!' });
+    res.status(500).send({ error: 'Sorry, something bad happened!' });
     console.error(err.stack? err.stack : err.toString());
     stats.meter('http500').mark()
   })

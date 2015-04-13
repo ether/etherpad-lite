@@ -9,7 +9,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // Cache both minified and static.
   var assetCache = new CachingMiddleware;
-  args.app.all('/(javascripts|static)/*', assetCache.handle);
+  args.app.all(/\/javascripts\/(.*)/, assetCache.handle);
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
@@ -30,7 +30,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     Yajsml.associators.associationsForSimpleMapping(minify.tar);
   var associator = new StaticAssociator(associations);
   jsServer.setAssociator(associator);
-  args.app.use(jsServer);
+
+  args.app.use(jsServer.handle.bind(jsServer));
 
   // serve plugin definitions
   // not very static, but served here so that client can do require("pluginfw/static/js/plugin-definitions.js");

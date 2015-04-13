@@ -19,13 +19,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/robots.txt', function(req, res)
   {
     var filePath = path.normalize(__dirname + "/../../../static/custom/robots.txt");
-    res.sendfile(filePath, function(err)
+    res.sendFile(filePath, function(err)
     {
       //there is no custom favicon, send the default robots.txt which dissallows all
       if(err)
       {
         filePath = path.normalize(__dirname + "/../../../static/robots.txt");
-        res.sendfile(filePath);
+        res.sendFile(filePath);
       }
     });
   });
@@ -60,13 +60,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get( /\/favicon.ico$/, function(req, res)
   {
     var filePath = path.normalize(__dirname + "/../../../static/custom/favicon.ico");
-    res.sendfile(filePath, function(err)
+    res.sendFile(filePath, function(err)
     {
       //there is no custom favicon, send the default favicon
       if(err)
       {
         filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
-        res.sendfile(filePath);
+        res.sendFile(filePath);
       }
     });
   });

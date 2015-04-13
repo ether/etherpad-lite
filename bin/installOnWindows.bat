@@ -8,7 +8,7 @@ cmd /C node -e "" || ( echo "Please install node.js ( http://nodejs.org )" && ex
 
 echo _
 echo Checking node version...
-set check_version="if(['8','10'].indexOf(process.version.split('.')[1].toString()) === -1) { console.log('You are running a wrong version of Node. Etherpad requires v0.8.x or v0.10.x'); process.exit(1) }"
+set check_version="if(['10','11','12'].indexOf(process.version.split('.')[1]) === -1 && process.version.split('.')[0] !== '1') { console.log('You are running a wrong version of Node. Etherpad requires v0.10+'); process.exit(1) }"
 cmd /C node -e %check_version% || exit /B 1
 
 echo _

@@ -26,7 +26,7 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var resolve = require("resolve");
 
 exports.info = {
-  buf_stack: [],
+  __output_stack: [],
   block_stack: [],
   file_stack: [],
   args: []
@@ -41,27 +41,27 @@ function createBlockId(name) {
 }
 
 exports._init = function (b, recursive) {
-  exports.info.buf_stack.push(exports.info.buf);
-  exports.info.buf = b;
+  exports.info.__output_stack.push(exports.info.__output);
+  exports.info.__output = b;
 }
 
 exports._exit = function (b, recursive) {
   getCurrentFile().inherit.forEach(function (item) {
     exports._require(item.name, item.args);
   });
-  exports.info.buf = exports.info.buf_stack.pop();
+  exports.info.__output = exports.info.__output_stack.pop();
 }
 
 exports.begin_capture = function() {
-  exports.info.buf_stack.push(exports.info.buf.concat());
-  exports.info.buf.splice(0, exports.info.buf.length);
+  exports.info.__output_stack.push(exports.info.__output.concat());
+  exports.info.__output.splice(0, exports.info.__output.length);
 }
 
 exports.end_capture = function () {
-  var res = exports.info.buf.join("");
-  exports.info.buf.splice.apply(
-    exports.info.buf,
-    [0, exports.info.buf.length].concat(exports.info.buf_stack.pop()));
+  var res = exports.info.__output.join("");
+  exports.info.__output.splice.apply(
+    exports.info.__output,
+    [0, exports.info.__output.length].concat(exports.info.__output_stack.pop()));
   return res;
 }
 
@@ -80,7 +80,7 @@ exports.end_block = function () {
   var renderContext = exports.info.args[exports.info.args.length-1];
   var args = {content: exports.end_define_block(), renderContext: renderContext};
   hooks.callAll("eejsBlock_" + name, args);
-  exports.info.buf.push(args.content);
+  exports.info.__output.push(args.content);
 }
 
 exports.begin_block = exports.begin_define_block;
@@ -114,7 +114,7 @@ exports.require = function (name, args, mod) {
 
   args.e = exports;
   args.require = require;
-  var template = '<% e._init(buf); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
+  var template = '<% e._init(__output); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
   
   exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath, inherit: []});
@@ -127,5 +127,5 @@ exports.require = function (name, args, mod) {
 }
 
 exports._require = function (name, args) {
-  exports.info.buf.push(exports.require(name, args));
+  exports.info.__output.push(exports.require(name, args));
 }

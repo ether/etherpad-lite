@@ -126,6 +126,18 @@ var getParameters = [
 
 function getParams()
 {
+  // Tries server enforced options first..
+  for(var i = 0; i < getParameters.length; i++)
+  {
+   var setting = getParameters[i];
+    var value = clientVars.padOptions[setting.name];
+    if(value.toString() === setting.checkVal)
+    {
+      setting.callback(value);
+    }
+  }
+  
+  // Then URL applied stuff
   var params = getUrlVars()
   
   for(var i = 0; i < getParameters.length; i++)
@@ -475,7 +487,6 @@ var pad = {
     {
       // start the custom js
       if (typeof customStart == "function") customStart();
-      getParams();
       handshake();
 
       // To use etherpad you have to allow cookies.
@@ -495,6 +506,8 @@ var pad = {
   
     //initialize the chat
     chat.init(this);
+    getParams();
+
     padcookie.init(); // initialize the cookies
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;

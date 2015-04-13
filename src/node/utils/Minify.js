@@ -165,7 +165,6 @@ function minify(req, res, next)
       var plugin = plugins.plugins[library];
       var pluginPath = plugin.package.realPath;
       filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
-      filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
     } else if (LIBRARY_WHITELIST.indexOf(library) != -1) {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
