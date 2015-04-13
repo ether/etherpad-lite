@@ -681,9 +681,9 @@ window.html10n = (function(window, document, undefined) {
     // Expand two-part locale specs
     var i=0
     langs.forEach(function(lang) {
-      if(!lang) return
-      langs[i++] = lang
-      if(~lang.indexOf('-')) langs[i++] = lang.substr(0, lang.indexOf('-'))
+      if(!lang) return;
+      langs[i++] = lang;
+      if(~lang.indexOf('-')) langs[i++] = lang.substr(0, lang.indexOf('-'));
     })
 
     this.build(langs, function(er, translations) {
