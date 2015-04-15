@@ -143,8 +143,11 @@ function minify(req, res, next)
 
   // No relative paths, especially if they may go up the file hierarchy.
   filename = path.normalize(path.join(ROOT_DIR, filename));
+  filename = filename.replace(/\.\./g, '')
+
   if (filename.indexOf(ROOT_DIR) == 0) {
     filename = filename.slice(ROOT_DIR.length);
+    filename = filename.replace(/\\/g, '/')
   } else {
     res.writeHead(404, {});
     res.end();
@@ -165,6 +168,7 @@ function minify(req, res, next)
       var plugin = plugins.plugins[library];
       var pluginPath = plugin.package.realPath;
       filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
+      filename = filename.replace(/\\/g, '/'); // windows path fix
     } else if (LIBRARY_WHITELIST.indexOf(library) != -1) {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
