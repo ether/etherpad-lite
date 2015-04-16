@@ -1,3 +1,6 @@
+# 1.5.6
+ * Fix: Error on windows installations
+
 # 1.5.5
  * SECURITY: Also don't allow read files on directory traversal on minify paths
  * NEW: padOptions can be set in settings.json now
