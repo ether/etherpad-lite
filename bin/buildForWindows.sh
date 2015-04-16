@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NODE_VERSION="0.10.38"
+NODE_VERSION="0.12.2"
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
@@ -56,8 +56,6 @@ echo "remove git history to reduce folder size"
 rm -rf .git/objects
 
 echo "remove windows jsdom-nocontextify/test folder"
-rm -rf /tmp/etherpad-lite-win/node_modules/ep_etherpad-lite/node_modules/jsdom-nocontextifiy/test/
-rm -rf /tmp/etherpad-lite-win/src/node_modules/jsdom-nocontextifiy/test/
 rm -rf /tmp/etherpad-lite-win/src/node_modules/wd/node_modules/request/node_modules/form-data/node_modules/combined-stream/test
 rm -rf /tmp/etherpad-lite-win/src/node_modules/nodemailer/node_modules/mailcomposer/node_modules/mimelib/node_modules/encoding/node_modules/iconv-lite/encodings/tables
 
