@@ -3680,6 +3680,11 @@ function Ace2Inner(){
           stopped = true;
         }
       }
+      else if (evt.key === "Dead"){
+        // If it's a dead key we don't want to do any Etherpad behavior.
+        stopped = true;
+        return true;
+      }
       else if (type == "keydown")
       {
         outsideKeyDown(evt);
