@@ -254,7 +254,7 @@ var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 exports.getLineHTMLForExport = function (hook, context) {
   var header = _analyzeLine(context.attribLine, context.apool);
   if (header) {
-    return "<" + header + ">" + context.lineContents + "</" + header + ">";
+    return "<" + header + ">" + context.lineContent + "</" + header + ">";
   }
 }
 
