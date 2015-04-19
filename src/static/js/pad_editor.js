@@ -144,8 +144,6 @@ define([
         var v;
 
         v = getOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
-        // Override from parameters if true
-        if(settings.rtlIsTrue === true) v = true;
         self.ace.setProperty("rtlIsTrue", v);
         padutils.setCheckbox($("#options-rtlcheck"), v);
 

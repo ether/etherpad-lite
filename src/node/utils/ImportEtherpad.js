@@ -21,20 +21,11 @@ var db = require("../db/DB").db;
 exports.setPadRaw = function(padId, records, callback){
   records = JSON.parse(records);
 
-  // !! HACK !!
-  // If you have a really large pad it will cause a Maximum Range Stack crash
-  // This is a temporary patch for that so things are kept stable.
-  var recordCount = Object.keys(records).length;
-  if(recordCount >= 50000){
-    console.warn("Etherpad file is too large to import..  We need to fix this.  See https://github.com/ether/etherpad-lite/issues/2524");
-    return callback("tooLarge", false);
-  }
-
   async.eachSeries(Object.keys(records), function(key, cb){
     var value = records[key]
 
     if(!value){
-      cb(); // null values are bad.
+      return setImmediate(cb);
     }
 
     // Author data
@@ -76,7 +67,7 @@ exports.setPadRaw = function(padId, records, callback){
     // Write the value to the server
     db.set(newKey, value);
 
-    cb();
+    setImmediate(cb);
   }, function(){
     callback(null, true);
   });
