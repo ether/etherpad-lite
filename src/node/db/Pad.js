@@ -28,7 +28,8 @@ var jsonableList = ["pool"];
  * @param txt
  */
 exports.cleanText = function (txt) {
-  return txt.replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\t/g, '        ').replace(/\xa0/g, ' ');
+  return txt.replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\t/g, '        ').replace(/\xa0/g, ' ')
+    .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g,"\uFFFD\uFFFD");
 };
 
 
@@ -77,6 +78,8 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
   if(!author)
     author = '';
 
+  //HACK
+  aChangeset = aChangeset.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g,"\uFFFD\uFFFD");
   var newAText = Changeset.applyToAText(aChangeset, this.atext, this.pool);
   Changeset.copyAText(newAText, this.atext);
 
@@ -297,6 +300,9 @@ Pad.prototype.setText = function setText(newText) {
 };
 
 Pad.prototype.appendChatMessage = function appendChatMessage(text, userId, time) {
+  // Replace Unicode above \uFFFF with \uFFFD
+  text = text.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g,"\uFFFD\uFFFD");
+
   this.chatHead++;
   //save the chat entry in the database
   db.set("pad:"+this.id+":chat:"+this.chatHead, {"text": text, "userId": userId, "time": time});
