@@ -1309,7 +1309,7 @@ function handleClientReady(client, message)
     }
   ],function(err)
   {
-    ERR(err);
+    if(err) console.error(err);
   });
 }
 

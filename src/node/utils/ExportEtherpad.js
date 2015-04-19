@@ -47,6 +47,12 @@ exports.getPadRaw = function(padId, callback){
 
       // For each piece of info about a pad.
       db.get(records[key], function(err, entry){
+        // if the db errors we still try to return all the data without the offending key
+        if(err) {
+          console.error(err);
+          r(err);
+        }
+
         data[records[key]] = entry;
 
         // Get the Pad Authors
