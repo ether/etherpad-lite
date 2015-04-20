@@ -136,11 +136,13 @@ exports.handleDisconnect = function(client)
     }
 
     accessLogger.info('[LEAVE] Pad "'+session.padId+'": Author "'+session.author+'" on client '+client.id+' with IP "'+ip+'" left the pad')
-
     //get the author color out of the db
     authorManager.getAuthorColorId(session.author, function(err, color)
     {
-      ERR(err);
+      if(ERR(err)){
+        console.error("error in getAuthorColorId: ",err);
+        return;
+      }
 
       //prepare the notification for the other users on the pad, that this user left
       var messageToTheOtherUsers = {
@@ -411,7 +413,10 @@ function handleChatMessage(client, message)
     }
   ], function(err)
   {
-    ERR(err);
+    if(ERR(err)){
+      console.error("error in handleChatMessage: ",err);
+      return;
+    }
   });
 }
 
