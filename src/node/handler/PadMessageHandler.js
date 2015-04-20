@@ -139,8 +139,8 @@ exports.handleDisconnect = function(client)
     //get the author color out of the db
     authorManager.getAuthorColorId(session.author, function(err, color)
     {
-      if(ERR(err)){
-        console.error("error in getAuthorColorId: ",err);
+      if(err.message.match(/^JSON-PROBLEM/)){
+        console.error("JSON-Problem in getAuthorColorId: ",err);
         return;
       }
 
@@ -413,8 +413,8 @@ function handleChatMessage(client, message)
     }
   ], function(err)
   {
-    if(ERR(err)){
-      console.error("error in handleChatMessage: ",err);
+    if(err.match(/^JSON-PROBLEM/)){
+      console.error("JSON problem in handleChatMessage: ",err);
       return;
     }
   });
