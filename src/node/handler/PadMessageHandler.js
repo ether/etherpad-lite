@@ -139,7 +139,7 @@ exports.handleDisconnect = function(client)
     //get the author color out of the db
     authorManager.getAuthorColorId(session.author, function(err, color)
     {
-      if(err.message.match(/^JSON-PROBLEM/)){
+      if(err && err.message.match(/^JSON-PROBLEM/)){
         console.error("JSON-Problem in getAuthorColorId: ",err);
         return;
       }
