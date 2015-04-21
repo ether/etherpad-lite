@@ -413,7 +413,7 @@ function handleChatMessage(client, message)
     }
   ], function(err)
   {
-    if(err.match(/^JSON-PROBLEM/)){
+    if(err && err.match(/^JSON-PROBLEM/)){
       console.error("JSON problem in handleChatMessage: ",err);
       return;
     }
