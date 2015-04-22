@@ -46,6 +46,13 @@ exports.restartServer = function () {
       key: fs.readFileSync( settings.ssl.key ),
       cert: fs.readFileSync( settings.ssl.cert )
     };
+    if (settings.ssl.ca) {
+      options.ca = [];
+      for(var i = 0; i < settings.ssl.ca.length; i++) {
+        var caFileName = settings.ssl.ca[i];
+        options.ca.push(fs.readFileSync(caFileName));
+      }
+    }
     
     var https = require('https');
     server = https.createServer(options, app);
