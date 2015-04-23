@@ -198,7 +198,7 @@ Things in context:
 1. cc - the contentcollector object
 2. state - the current state of the change being made
 3. tname - the tag name of this node currently being processed
-4. style - the style applied to the node (probably CSS)
+4. styl - the style applied to the node (probably CSS) -- Note the typo
 5. cls - the HTML class string of the node
 
 This hook is called before the content of a node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad. See, for example, the heading1 plugin for etherpad original.
