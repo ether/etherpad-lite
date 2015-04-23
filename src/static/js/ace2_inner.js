@@ -612,7 +612,7 @@ function Ace2Inner(){
     // So this has to be set to pre-wrap ;(
     // We need to file a bug w/ the Chromium team.
     if(browser.chrome){
-      $("#innerdocbody").css({"white-space":"pre-wrap"});
+      $("#innerdocbody, body.doesWrap > div").css({"white-space":"pre-wrap"});
     }
 
   }
