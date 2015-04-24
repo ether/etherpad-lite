@@ -375,7 +375,6 @@ define([
     },
     getIsDebugEnabled: function()
     {
-<<<<<<< HEAD
       return clientVars.debugEnabled;
     },
     getPrivilege: function(name)
@@ -409,11 +408,10 @@ define([
       var newHref = "/p/" + padId;
       if (options != null)
         newHref =  newHref + '?' + options;
-=======
+
       // start the custom js
       if (typeof customStart == "function") customStart();
       handshake();
->>>>>>> d31523aa08d123f421248e249e2194f7689f0b06
 
       if(window.history && window.history.pushState)
       {
@@ -422,33 +420,7 @@ define([
         receivedClientVars = false;
         sendClientReady(false, 'SWITCH_TO_PAD');
       }
-<<<<<<< HEAD
       else // fallback
-=======
-    });
-  },
-  _afterHandshake: function()
-  {
-    pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
-  
-    //initialize the chat
-    chat.init(this);
-    getParams();
-
-    padcookie.init(); // initialize the cookies
-    pad.initTime = +(new Date());
-    pad.padOptions = clientVars.initialOptions;
-
-    if ((!browser.msie) && (!(browser.firefox && browser.version.indexOf("1.8.") == 0)))
-    {
-      document.domain = document.domain; // for comet
-    }
-
-    // for IE
-    if (browser.msie)
-    {
-      try
->>>>>>> d31523aa08d123f421248e249e2194f7689f0b06
       {
         window.location.href = newHref;
       }
