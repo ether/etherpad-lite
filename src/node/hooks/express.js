@@ -69,6 +69,9 @@ exports.restartServer = function () {
       res.header("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     }
 
+    // Stop IE going into compatability mode
+    // https://github.com/ether/etherpad-lite/issues/2547
+    res.header("X-UA-Compatible", "IE=Edge,chrome=1");
     res.header("Server", serverName);
     next();
   });
