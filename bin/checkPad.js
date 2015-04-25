@@ -4,31 +4,38 @@
 
 if(process.argv.length != 3)
 {
-  console.error("Use: node checkPad.js $PADID");
+  console.error("Use: node bin/checkPad.js $PADID");
   process.exit(1);
 }
 //get the padID
 var padId = process.argv[2];
 
-//initalize the database
-var log4js = require("log4js");
-log4js.setGlobalLogLevel("INFO");
-var async = require("async");
-var db = require('../node/db/DB');
-var CommonCode = require('../node/utils/common_code');
-var Changeset = CommonCode.require("/Changeset");
-var padManager;
+//initalize the variables
+var db, settings, padManager;
+var npm = require("../src/node_modules/npm");
+var async = require("../src/node_modules/async");
+
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 
 async.series([
-  //intallize the database
-  function (callback)
-  {
+  //load npm
+  function(callback) {
+    npm.load({}, function(er) {
+      callback(er);
+    })
+  },
+  //load modules
+  function(callback) {
+    settings = require('../src/node/utils/Settings');
+    db = require('../src/node/db/DB');
+
+    //intallize the database
     db.init(callback);
   },
   //get the pad 
   function (callback)
   {
-    padManager = require('../node/db/PadManager');
+    padManager = require('../src/node/db/PadManager');
     
     padManager.doesPadExists(padId, function(err, exists)
     {

@@ -1,12 +1,11 @@
-var CommonCode = require('../node/utils/common_code');
 var startTime = new Date().getTime();
 var fs = require("fs");
-var ueberDB = require("ueberDB");
-var mysql = require("mysql");
-var async = require("async");
-var Changeset = CommonCode.require("/Changeset");
-var randomString = CommonCode.require('/pad_utils').randomString;
-var AttributePoolFactory = CommonCode.require("/AttributePoolFactory");
+var ueberDB = require("../src/node_modules/ueberDB");
+var mysql = require("../src/node_modules/ueberDB/node_modules/mysql");
+var async = require("../src/node_modules/async");
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 
 var settingsFile = process.argv[2];
 var sqlOutputFile = process.argv[3];
@@ -338,7 +337,7 @@ function convertPad(padId, callback)
         var oldName2newName = {};
         
         //replace the authors with generated authors
-        // we need to do that cause etherpad saves pad local authors, etherpad lite uses them global
+        // we need to do that cause where the original etherpad saves pad local authors, the new (lite) etherpad uses them global
         for(var i in apool.numToAttrib)
         {
           var key = apool.numToAttrib[i][0];
@@ -384,7 +383,7 @@ function convertPad(padId, callback)
         }
         
         //generate the latest atext
-        var fullAPool = AttributePoolFactory.createAttributePool().fromJsonable(apool);
+        var fullAPool = (new AttributePool()).fromJsonable(apool);
         var keyRev = Math.floor(padmeta.head / padmeta.keyRevInterval) * padmeta.keyRevInterval;
         var atext = changesetsMeta[keyRev].atext;
         var curRev = keyRev;
@@ -403,7 +402,7 @@ function convertPad(padId, callback)
       }
       catch(e)
       {
-        console.error("Error while converting pad " + padId + ", pad skiped");
+        console.error("Error while converting pad " + padId + ", pad skipped");
         console.error(e.stack ? e.stack : JSON.stringify(e));
         callback();
         return;

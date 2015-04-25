@@ -22,8 +22,7 @@ node-inspector &
 
 echo "If you are new to node-inspector, take a look at this video: http://youtu.be/AOnK3NVnxL8"
 
-cd "node"
-node --debug server.js
+node --debug node_modules/ep_etherpad-lite/node/server.js $*
 
 #kill node-inspector before ending 
 kill $!

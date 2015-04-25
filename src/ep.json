@@ -1,0 +1,29 @@
+{
+  "parts": [
+    { "name": "express", "hooks": {
+      "createServer": "ep_etherpad-lite/node/hooks/express:createServer",
+      "restartServer": "ep_etherpad-lite/node/hooks/express:restartServer"
+      } },
+    { "name": "static", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static:expressCreateServer" } },
+    { "name": "i18n", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/i18n:expressCreateServer" } },
+    { "name": "specialpages", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/specialpages:expressCreateServer" } },
+    { "name": "padurlsanitize", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padurlsanitize:expressCreateServer" } },
+    { "name": "padreadonly", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padreadonly:expressCreateServer" } },
+    { "name": "webaccess", "hooks": { "expressConfigure": "ep_etherpad-lite/node/hooks/express/webaccess:expressConfigure" } },
+    { "name": "apicalls", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/apicalls:expressCreateServer" } },
+    { "name": "importexport", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/importexport:expressCreateServer" } },
+    { "name": "errorhandling", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/errorhandling:expressCreateServer" } },
+    { "name": "socketio", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/socketio:expressCreateServer" } },
+    { "name": "tests", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/tests:expressCreateServer" } },
+    { "name": "admin", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/admin:expressCreateServer" } },
+    { "name": "adminplugins", "hooks": {
+      "expressCreateServer": "ep_etherpad-lite/node/hooks/express/adminplugins:expressCreateServer",
+      "socketio": "ep_etherpad-lite/node/hooks/express/adminplugins:socketio" } 
+    },
+    { "name": "adminsettings", "hooks": {
+      "expressCreateServer": "ep_etherpad-lite/node/hooks/express/adminsettings:expressCreateServer",
+      "socketio": "ep_etherpad-lite/node/hooks/express/adminsettings:socketio" }
+    },
+    { "name": "swagger", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/swagger:expressCreateServer" } }
+  ]
+}

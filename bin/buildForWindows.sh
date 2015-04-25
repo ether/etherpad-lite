@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NODE_VERSION="0.6.5"
+NODE_VERSION="0.12.2"
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
@@ -41,7 +41,7 @@ echo "do a normal unix install first..."
 bin/installDeps.sh || exit 1
 
 echo "copy the windows settings template..."
-cp settings.json.template_windows settings.json
+cp settings.json.template settings.json
 
 echo "resolve symbolic links..."
 cp -rL node_modules node_modules_resolved
@@ -50,7 +50,14 @@ mv node_modules_resolved node_modules
 
 echo "download windows node..."
 cd bin
-wget "http://nodejs.org/dist/v$NODE_VERSION/node.exe" -O node.exe
+wget "http://nodejs.org/dist/v$NODE_VERSION/node.exe" -O ../node.exe
+
+echo "remove git history to reduce folder size"
+rm -rf .git/objects
+
+echo "remove windows jsdom-nocontextify/test folder"
+rm -rf /tmp/etherpad-lite-win/src/node_modules/wd/node_modules/request/node_modules/form-data/node_modules/combined-stream/test
+rm -rf /tmp/etherpad-lite-win/src/node_modules/nodemailer/node_modules/mailcomposer/node_modules/mimelib/node_modules/encoding/node_modules/iconv-lite/encodings/tables
 
 echo "create the zip..."
 cd /tmp
@@ -60,4 +67,4 @@ mv etherpad-lite-win.zip $START_FOLDER
 echo "clean up..."
 rm -rf /tmp/etherpad-lite-win
 
-echo "Finished. You can find the zip in the Etherpad Lite root folder, it's called etherpad-lite-win.zip"
+echo "Finished. You can find the zip in the Etherpad root folder, it's called etherpad-lite-win.zip"

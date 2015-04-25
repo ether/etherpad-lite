@@ -1,0 +1,281 @@
+html, body {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: #333;
+  font: 14px helvetica, sans-serif;
+  background: #eee;
+}
+
+div.menu {
+  height: 100%;
+  padding: 15px;
+  width: 220px;
+  border-right: 1px solid #ccc;
+  position: fixed;
+}
+
+div.menu ul {
+  padding: 0;
+}
+
+div.menu li {
+  list-style: none;
+  margin-left: 3px;
+  line-height: 3;
+  border-top: 1px solid #ccc;
+}
+
+div.menu li:last-child {
+  border-bottom: 1px solid #ccc;
+}
+
+div.innerwrapper {
+  padding: 15px;
+  padding-left: 265px;
+}
+
+#wrapper {
+  background: none repeat scroll 0px 0px #FFFFFF;
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
+  margin: auto;
+  max-width: 1150px;
+  min-height: 101%;/*always display a scrollbar*/
+}
+
+h1 {
+  font-size: 29px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+.separator {
+  margin: 10px 0;
+  height: 1px;
+  background: #aaa;
+  background: -webkit-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
+  background: -moz-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
+  background: -ms-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
+  background: -o-linear-gradient(left, #fff, #aaa 20%, #aaa 80%, #fff);
+}
+
+form {
+  margin-bottom: 0;
+}
+
+#inner {
+  width: 300px;
+  margin: 0 auto;
+}
+
+input {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+input[type="button"] {
+  padding: 4px 6px;
+  margin: 0;
+}
+
+table input[type="button"] {
+  float: right;
+  width: 100px;
+}
+
+input[type="text"] {
+  border-radius: 3px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 10px;
+  *padding: 0;
+ /* IE7 hack */
+  width: 100%;
+  outline: none;
+  border: 1px solid #ddd;
+  margin: 0 0 5px 0;
+  max-width: 500px;
+}
+
+.sort {
+  cursor: pointer;
+}
+.sort:after {
+  content: '▲▼'
+}
+.sort.up:after {
+  content:'▲'
+}
+.sort.down:after {
+  content:'▼'
+}
+
+table {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  border-spacing: 0;
+  width: 100%;
+  margin: 20px 0;
+  position:relative; /* Allows us to position the loading indicator relative to the table */
+}
+
+table thead tr {
+  background: #eee;
+}
+
+td, th {
+  padding: 5px;
+}
+
+.template {
+  display: none;
+}
+
+#installed-plugins td>div {
+  position: relative;/* Allows us to position the loading indicator relative to this row */
+  display: inline-block; /*make this fill the whole cell*/
+  width:100%;
+}
+
+.messages {
+  height: 5em;
+}
+.messages * {
+  display: none;
+  text-align: center;
+}
+.messages .fetching {
+  display: block;
+}
+
+.progress {
+  position: absolute;
+  top: 0; left: 0; bottom:0; right:0;
+  padding: auto;
+  
+  background: rgb(255,255,255);
+  display: none;
+}
+
+#search-progress.progress {
+  padding-top: 20%;
+  background: rgba(255,255,255,0.3);
+}
+
+.progress * {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  color: #666;
+}
+
+.settings {
+  outline: none;
+  width: 100%;
+  min-height: 500px;
+}
+
+#response {
+  display: inline;
+}
+
+a:link, a:visited, a:hover, a:focus {
+  color: #333333;
+  text-decoration: none;
+}
+
+a:focus, a:hover {
+  text-decoration: underline;
+}
+
+.installed-results a:link,
+.search-results a:link,
+.installed-results a:visited,
+.search-results a:visited,
+.installed-results a:hover,
+.search-results a:hover,
+.installed-results a:focus,
+.search-results a:focus  {
+  text-decoration: underline;
+}
+
+.installed-results a:focus,
+.search-results a:focus,
+.installed-results a:hover,
+.search-results a:hover {
+  text-decoration: none;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+@media (max-width: 720px) {
+  div.innerwrapper {
+    padding: 0 15px 15px 15px;
+  }
+
+  div.menu {
+    padding: 1px 15px 0 15px;
+    position: static;
+    height: auto;
+    border-right: none;
+    width: auto;
+  }
+
+  table {
+    border: none;
+  }
+
+  table, thead, tbody, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    border-radius: 3px;
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
+    text-align: left;
+  }
+
+  td.name {
+    word-wrap: break-word;
+  }
+
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    text-align: left;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+    content: attr(data-label);
+  }
+
+  td:last-child {
+    border-bottom: none;
+  }
+
+  table input[type="button"] {
+    float: none;
+  }
+}

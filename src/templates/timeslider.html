@@ -1,0 +1,277 @@
+<%
+  var settings = require("ep_etherpad-lite/node/utils/Settings")
+    , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
+%>
+<!doctype html>
+<html>
+<title data-l10n-id="timeslider.pageTitle" data-l10n-args='{ "appTitle": "<%=settings.title%>" }'><%=settings.title%> Timeslider</title>
+<script>
+  /*
+  |@licstart  The following is the entire license notice for the
+  JavaScript code in this page.|
+
+  Copyright 2011 Peter Martischka, Primary Technology.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  |@licend  The above is the entire license notice
+  for the JavaScript code in this page.|
+  */
+</script>
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="shortcut icon" href="<%=settings.faviconTimeslider%>">
+  <% e.begin_block("timesliderStyles"); %>
+  <link rel="stylesheet" href="../../static/css/pad.css">
+  <link rel="stylesheet" href="../../static/css/timeslider.css">
+  <link rel="stylesheet" href="../../static/custom/timeslider.css">
+  <style type="text/css" title="dynamicsyntax"></style>
+  <% e.end_block(); %>
+
+  <link rel="localizations" type="application/l10n+json" href="../../locales.json" />
+  <% e.begin_block("timesliderScripts"); %>
+  <script type="text/javascript" src="../../static/js/html10n.js"></script>
+  <script type="text/javascript" src="../../static/js/l10n.js"></script>
+  <% e.end_block(); %>
+</head>
+
+<% e.begin_block("timesliderBody"); %>
+<body id="padbody" class="timeslider limwidth">
+  <div id="padpage">
+    <div id="timeslider-top">
+      <% e.begin_block("timesliderTop"); %>
+      <div id="timeslider-wrapper">
+        <div id="timeslider" unselectable="on" style="display: none">
+          <div id="timeslider-left"></div>
+          <div id="timeslider-right"></div>
+          <div id="timer"></div>
+          <div id="timeslider-slider">
+            <div id="ui-slider-handle"></div>
+            <div id="ui-slider-bar"></div>
+          </div>
+          <div id="playpause_button">
+            <button id="playpause_button_icon" class=""></button>
+          </div>
+          <div id="steppers">
+            <button class="stepper" id="leftstep"></button>
+            <button class="stepper" id="rightstep"></button>
+          </div>
+        </div>
+        
+        <div id="overlay">
+          <div id="overlay-inner">
+            <!-- -->
+          </div>
+        </div>
+      </div>
+
+      <div class="timeslider-bar">
+          <div class="editbarright toolbar" id="editbar">
+            <% e.begin_block("timesliderEditbarRight"); %>
+            <ul>
+              <%- toolbar.menu(settings.toolbar.timeslider) %>
+            </ul>
+            <% e.end_block(); %>
+          </div>
+
+          <div>
+              <h1>
+                <span id="revision_label"></span>
+                <span id="revision_date"></span>
+              </h1>
+              <p>
+                <span data-l10n-id="timeslider.toolbar.authors"></span>
+                <span id="authorsList" data-l10n-id="timeslider.toolbar.authorsList"></span>
+              </span> </p>
+          </div>
+      </div>
+    <% e.end_block(); %>
+    </div>
+
+    <div id="padmain">
+      <div id="padeditor">
+        <div id="editorcontainerbox">
+          <div id="padcontent">
+          </div>
+        </div>
+      </div><!-- /padeditor -->
+    </div><!-- /padmain -->
+  </div><!-- /padpage -->
+
+<div id="connectivity" class="popup">
+<% e.begin_block("modals"); %>
+    <div class="connected visible">
+      <h2 data-l10n-id="pad.modals.connected"></h2>
+    </div>
+    <div class="reconnecting">
+      <h1 data-l10n-id="pad.modals.reconnecting"></h1>
+      <p class="loadingAnimation"></p>
+    </div>
+    <div class="userdup">
+      <h1 data-l10n-id="pad.modals.userdup"></h1>
+      <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
+      <p data-l10n-id="pad.modals.userdup.advice"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+    </div>
+    <div class="unauth">
+      <h1 data-l10n-id="pad.modals.unauth"></h1>
+      <p data-l10n-id="pad.modals.unauth.explanation"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+    </div>
+    <div class="looping">
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
+      <p data-l10n-id="pad.modals.looping.cause"></p>
+    </div>
+    <div class="initsocketfail">
+      <h1 data-l10n-id="pad.modals.initsocketfail"></h1>
+      <h2 data-l10n-id="pad.modals.initsocketfail.explanation"></h2>
+      <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
+    </div>
+    <div class="slowcommit">
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
+      <p data-l10n-id="pad.modals.slowcommit.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+    </div>
+    <div class="badChangeset">
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.badChangeset.explanation"></h2>
+      <p data-l10n-id="pad.modals.badChangeset.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+    </div>
+    <div class="corruptPad">
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.corruptPad.explanation"></h2>
+      <p data-l10n-id="pad.modals.corruptPad.cause"></p>
+    </div>
+    <div class="deleted">
+      <h1 data-l10n-id="pad.modals.deleted"></h1>
+      <p data-l10n-id="pad.modals.deleted.explanation"></p>
+    </div>
+    <div class="disconnected">
+      <% e.begin_block("disconnected"); %>
+      <h1 data-l10n-id="pad.modals.disconnected"></h1>
+      <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
+      <p data-l10n-id="pad.modals.disconnected.cause"></p>
+      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      <% e.end_block(); %>
+    </div>
+    <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
+        <input type="hidden" class="padId" name="padId">
+        <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
+        <input type="hidden" class="missedChanges" name="missedChanges">
+    </form>
+<% e.end_block(); %>
+</div>
+
+<div class="popup" id="settings">
+  <tr>
+    <td>
+      <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
+    </td>
+    <td>
+      <select id="viewfontmenu">
+        <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
+        <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
+        <option value="opendyslexic" data-l10n-id="pad.settings.fontType.opendyslexic"></option>
+        <option value="comicsans" data-l10n-id="pad.settings.fontType.comicsans"></option>
+        <option value="georgia" data-l10n-id="pad.settings.fontType.georgia"></option>
+        <option value="impact" data-l10n-id="pad.settings.fontType.impact"></option>
+        <option value="lucida" data-l10n-id="pad.settings.fontType.lucida"></option>
+        <option value="lucidasans" data-l10n-id="pad.settings.fontType.lucidasans"></option>
+        <option value="palatino" data-l10n-id="pad.settings.fontType.palatino"></option>
+        <option value="tahoma" data-l10n-id="pad.settings.fontType.tahoma"></option>
+        <option value="timesnewroman" data-l10n-id="pad.settings.fontType.timesnewroman"></option>
+        <option value="trebuchet" data-l10n-id="pad.settings.fontType.trebuchet"></option>
+        <option value="verdana" data-l10n-id="pad.settings.fontType.verdana"></option>
+        <option value="symbol" data-l10n-id="pad.settings.fontType.symbol"></option>
+        <option value="webdings" data-l10n-id="pad.settings.fontType.webdings"></option>
+        <option value="wingdings" data-l10n-id="pad.settings.fontType.wingdings"></option>
+        <option value="sansserif" data-l10n-id="pad.settings.fontType.sansserif"></option>
+        <option value="serif" data-l10n-id="pad.settings.fontType.serif"></option>
+      </select>
+    </td>
+  </tr>
+</div>
+
+<!-- export code -->
+<div id="import_export">
+<div id="export" class="popup">
+  <p data-l10n-id="timeslider.exportCurrent"></p>
+  <a id="exportetherpada" target="_blank" class="exportlink"><div class="exporttype" id="exportetherpad" data-l10n-id="pad.importExport.exportetherpad"></div></a>
+  <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
+  <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain" data-l10n-id="pad.importExport.exportplain"></div></a>
+  <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>
+  <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></div></a>
+  <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen" data-l10n-id="pad.importExport.exportopen"></div></a>
+</div>
+</div>
+
+<script type="text/javascript" src="../../static/js/require-kernel.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+<!-- Include base packages manually (this help with debugging) -->
+<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
+<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
+
+<script type="text/javascript" src="../../static/custom/timeslider.js"></script>
+
+<!-- Bootstrap -->
+<script type="text/javascript" >
+  var clientVars = {};
+  var BroadcastSlider;  
+  (function () {
+    var pathComponents = location.pathname.split('/');
+    
+    // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
+    var baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/';
+    
+    
+    require.setRootURI(baseURL + "javascripts/src");
+    require.setLibraryURI(baseURL + "javascripts/lib");
+    require.setGlobalKeyPath("require");
+
+    $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
+    browser = require('ep_etherpad-lite/static/js/browser').browser;
+
+    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
+      document.domain = document.domain; // for comet
+    }
+
+    var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+    var socket = require('ep_etherpad-lite/static/js/timeslider').socket;
+    BroadcastSlider = require('ep_etherpad-lite/static/js/timeslider').BroadcastSlider;
+    plugins.baseURL = baseURL;
+    
+    plugins.update(function () {
+      var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+      hooks.plugins = plugins;
+
+      var timeslider = require('ep_etherpad-lite/static/js/timeslider')
+      timeslider.baseURL = baseURL;
+      timeslider.init();
+
+      /* TODO: These globals shouldn't exist. */
+      padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+      padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+
+      padeditbar.init()
+    });
+  })();
+</script>
+<% e.end_block(); %>
+</body>
+</html>
+

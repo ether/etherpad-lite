@@ -1,0 +1,351 @@
+#editorcontainerbox {
+  overflow: auto;
+  top: 40px;
+  position: static;
+}
+#padcontent {
+  font-size: 12px;
+  padding: 10px;
+}
+#timeslider-wrapper {
+  left: 0;
+  position: relative;
+  right: 0;
+  top: 0;
+}
+#timeslider-left {
+  background-color:#fff;
+  height: 63px;
+  left: 0;
+  position: absolute;
+  width: 134px;
+}
+#timeslider-right {
+  background-color:#fff;
+  height: 63px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 155px;
+}
+#timeslider {
+  height: 63px;
+  margin: 0 9px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color:#fff;
+  /* bgcolor is reuqired so you can't see pad content behind it */
+}
+#timeslider #timeslider-slider {
+  height: 61px;
+  left: 0;
+  position: absolute;
+  top: 1px;
+  width: 100%;
+}
+#ui-slider-handle {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  background-color: #666;
+  cursor: pointer;
+  height: 61px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 13px;
+}
+#ui-slider-bar {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  height: 60px;
+  margin-left: 5px;
+  margin-right: 150px;
+  position: relative;
+  top: 0px;
+}
+
+#playpause_button,
+#playpause_button_icon {
+  height: 44px;
+  position: absolute;
+  width: 44px;
+  text-align:center;
+  vertical-align:middle;
+  background:none;
+}
+#playpause_button {
+  right: 77px;
+  top: 9px;
+  height:50px;
+  height:50px;
+  background: background-linear-gradient( #F7F7F7, #F1F1F1 80%) repeat scroll 0 0 transparent;
+  border-radius:24px;
+  cursor:hand;
+}
+#playpause_button_icon:before {
+  line-height:44px;  
+  padding-left:2px;
+  font-family: fontawesome-etherpad;
+  content: "\e82c";
+  font-size:24px;
+  color:#666;
+}
+
+#playpause_button_icon {
+  left: 0;
+  top: 0;
+  border-radius:48px;
+  border: solid 1px #666;
+}
+.pause:before {
+  line-height:44px;  
+  padding-left:2px;
+  font-family: fontawesome-etherpad;
+  content: "\e82e" !important;
+  font-size:24px;
+  color:#666;
+  padding-left:0 !important;
+}
+#leftstar,
+#rightstar,
+#leftstep,
+#rightstep {
+  background-color: white;
+  overflow: hidden;
+  position: absolute;
+}
+
+.stepper{
+  font-family: fontawesome-etherpad;
+  border-radius:2px;
+  border: #666 solid 1px;
+/*  line-height:18px; */
+  text-align:center;
+  height:22px;
+  color:#666;
+}
+
+stepper:active{
+  color:#000;
+}
+
+#leftstep {
+  right: 38px;
+  top: 20px;
+  width: 25px;
+}
+#leftstep:before{
+  content: '\e821';
+  vertical-align:middle;
+}
+#rightstep:before{
+  content: "\e822";
+  vertical-align:middle;
+}
+
+#rightstep {
+  right: 12px;
+  top: 20px;
+  width: 25px;
+}
+.star:before{
+  font-family: fontawesome-etherpad;
+  content: "\e835";
+  vertical-align:middle;
+  font-size:16px;
+}
+#timeslider .star {
+  cursor: pointer;
+  height: 16px;
+  position: absolute;
+  top: 25px;
+  width: 15px;
+}
+#timeslider #timer {
+  background: linear-gradient(#F7F7F7, #F1F1F1 80%) repeat scroll 0% 0% transparent;
+  padding:2px;
+  border-radius:2px;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  left: 7px;
+  position: absolute;
+  text-align: center;
+  top: 9px;
+  width: 122px;
+}
+.topbarcenter,
+#docbar {
+  display: none
+}
+#padmain {
+  top: 0px !important
+}
+#editbar{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.editbarright {
+  float: right;
+  text-align: right;
+  height: 30px !important;
+}
+.toolbar ul{
+  position:relative;
+  float:right;
+  height:30px;
+}
+#import_export, #settings{
+  top: 115px;
+  position: fixed;
+}
+#import_export .popup {
+  width: 183px;
+  border-top: none;
+  border-right: none;
+  border-radius: 0 0 0 6px;
+}
+#import_export {
+  width: 185px;
+}
+.timeslider-bar {
+  background: #f7f7f7;
+  background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
+  background: linear-gradient(#f7f7f7, #f1f1f1 80%);
+  overflow: hidden;
+  padding-top: 3px;
+  width: 100%;
+}
+.timeslider-bar #editbar {
+  border-bottom: none;
+  float: right;
+  width: 180px;
+}
+.timeslider-bar h1 {
+  margin: 5px
+}
+.timeslider-bar p {
+  margin: 5px
+}
+#timeslider-top {
+  width: 100%;
+  position: fixed;
+  z-index: 1;
+}
+#authorsList .author {
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+}
+#authorsList .author-anonymous {
+  padding-left: 0.6em;
+  padding-right: 0.6em;
+}
+#padeditor {
+  position: static
+}
+/* lists */
+.list-bullet2,
+.list-indent2,
+.list-number2 {
+  margin-left: 3em
+}
+.list-bullet3,
+.list-indent3,
+.list-number3 {
+  margin-left: 4.5em
+}
+.list-bullet4,
+.list-indent4,
+.list-number4 {
+  margin-left: 6em
+}
+.list-bullet5,
+.list-indent5,
+.list-number5 {
+  margin-left: 7.5em
+}
+.list-bullet6,
+.list-indent6,
+.list-number6 {
+  margin-left: 9em
+}
+.list-bullet7,
+.list-indent7,
+.list-number7 {
+  margin-left: 10.5em
+}
+.list-bullet8,
+.list-indent8,
+.list-number8 {
+  margin-left: 12em
+}
+/* unordered lists */
+UL {
+  list-style-type: disc;
+  margin-left: 1.5em;
+}
+UL UL {
+  margin-left: 0 !important
+}
+.list-bullet2,
+.list-bullet5,
+.list-bullet8 {
+  list-style-type: circle
+}
+.list-bullet3,
+.list-bullet6 {
+  list-style-type: square
+}
+.list-indent1,
+.list-indent2,
+.list-indent3,
+.list-indent5,
+.list-indent5,
+.list-indent6,
+.list-indent7,
+.list-indent8 {
+  list-style-type: none
+}
+/* ordered lists */
+OL {
+  list-style-type: decimal;
+  margin-left: 1.5em;
+}
+.list-number2,
+.list-number5,
+.list-number8 {
+  list-style-type: lower-latin
+}
+.list-number3,
+.list-number6 {
+  list-style-type: lower-roman
+}
+
+button{
+  margin:0;
+  padding:0;
+  cursor:pointer;
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0
+}
+
+button:focus{
+  border: 1px solid #666;
+}
+

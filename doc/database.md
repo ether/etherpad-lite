@@ -1,5 +1,10 @@
 # Database structure
 
+## Keys and their values
+
+### groups
+A list of all existing groups (a JSON object with groupIDs as keys and `1` as values).
+
 ### pad:$PADID
 Saves all informations about pads
 
