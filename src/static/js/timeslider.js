@@ -27,8 +27,9 @@ define([
   'ep_etherpad-lite/static/js/rjquery',
   'ep_etherpad-lite/static/js/pluginfw/hooks',
   'ep_etherpad-lite/static/js/pad_utils',
-  'ep_etherpad-lite/static/js/broadcast_slider'
-], function($, hooks, padUtilsMod, broadcastSliderMod) {
+  'ep_etherpad-lite/static/js/broadcast_slider',
+  'ep_etherpad-lite/static/js/broadcast',
+], function($, hooks, padUtilsMod, broadcastSliderMod, broadcastMod) {
   var exports = {};
 
   JSON = window.requireKernel('./json2');
@@ -36,6 +37,11 @@ define([
   var createCookie = padUtilsMod.createCookie;
   var readCookie = padUtilsMod.readCookie;
   var randomString = padUtilsMod.randomString;
+  var broadcastRevisionsMod = require('./broadcast_revisions');
+  var padimpexpMod = require('./pad_impexp');
+
+    //initialize export ui
+    require('./pad_impexp').padimpexp.init();
 
   var token, padId, export_links;
 
@@ -142,11 +148,11 @@ define([
 
     //load all script that doesn't work without the clientVars
     BroadcastSlider = broadcastSliderMod.loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
-    require('./broadcast_revisions').loadBroadcastRevisionsJS();
-    changesetLoader = require('./broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
+    broadcastRevisionsMod.loadBroadcastRevisionsJS();
+    changesetLoader = broadcastMod.loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
     //initialize export ui
-    require('./pad_impexp').padimpexp.init();
+    padimpexpMod.padimpexp.init();
 
     //change export urls when the slider moves
     BroadcastSlider.onSlider(function(revno)
