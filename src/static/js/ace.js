@@ -163,7 +163,6 @@ define(['ep_etherpad-lite/static/js/pluginfw/hooks', 'underscore'], function (ho
 
     editor.init = function(containerId, initialCode, doneFunc)
     {
-
       editor.importText(initialCode);
 
       info.onEditorReady = function()
@@ -173,124 +172,11 @@ define(['ep_etherpad-lite/static/js/pluginfw/hooks', 'underscore'], function (ho
         doneFunc();
       };
 
-      (function()
-      {
-        var doctype = "<!doctype html>";
-
-        var iframeHTML = [];
-
-        iframeHTML.push(doctype);
-        iframeHTML.push("<html><head>");
-
-        var includedCSS = ["../static/css/iframe_editor.css",
-                           "../static/css/pad.css",
-                           "../static/custom/pad.css"]
-
-        var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
-        includedCSS = includedCSS.concat(additionalCSS);
-
-        pushStyleTagsFor(iframeHTML, includedCSS);
-
-        iframeHTML.push('<script type="text/javascript" src="../static/js/require-kernel.js"></script>');
-        iframeHTML.push(scriptTag('\n\
-          require.setRootURI("../javascripts/src");\n\
-          require.setLibraryURI("../javascripts/lib");\n\
-          require.setGlobalKeyPath("require");\n\
-          '));
-
-        iframeHTML.push('<script type="text/javascript" src="../static/plugins/requirejs/require.js"></script>');
-
-        iframeHTML.push(scriptTag('\n\
-          var pathComponents = parent.parent.location.pathname.split("/");\n\
-          var baseURL = pathComponents.slice(0,pathComponents.length-2).join("/") + "/";\n\
-          requirejs.config({\n\
-            baseUrl: baseURL + "static/plugins",\n\
-            paths: {underscore: baseURL + "static/plugins/underscore/underscore"}\n\
-          });\n\
-          \n\
-          requirejs(["ep_etherpad-lite/static/js/rjquery", "ep_etherpad-lite/static/js/pluginfw/client_plugins", "ep_etherpad-lite/static/js/ace2_inner"], function (j, plugins, Ace2Inner) {\n\
-            jQuery = $ = window.jQuery = window.$ = j; // Expose jQuery #HACK\n\
-            \n\
-            plugins.adoptPluginsFromAncestorsOf(window, function () {\n\
-              var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
-              hooks.plugins = plugins;\n\
-              \n\
-              plugins.ensure(function () {\n\
-                Ace2Inner.init();\n\
-              });\n\
-            });\n\
-          });\n\
-        '));
-
-        iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
-
-        hooks.callAll("aceInitInnerdocbodyHead", {
-          iframeHTML: iframeHTML
-        });
-
-        iframeHTML.push('</head><body id="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</body></html>');
-
-        // Expose myself to global for my child frame.
-        var thisFunctionsName = "ChildAccessibleAce2Editor";
-        (function () {return this}())[thisFunctionsName] = Ace2Editor;
-
-        var outerScript = '\
-  editorId = ' + JSON.stringify(info.id) + ';\n\
-  editorInfo = parent[' + JSON.stringify(thisFunctionsName) + '].registry[editorId];\n\
-  window.onload = function () {\n\
-    window.onload = null;\n\
-    setTimeout(function () {\n\
-      var iframe = document.createElement("IFRAME");\n\
-      iframe.name = "ace_inner";\n\
-      iframe.title = "pad";\n\
-      iframe.scrolling = "no";\n\
-      var outerdocbody = document.getElementById("outerdocbody");\n\
-      iframe.frameBorder = 0;\n\
-      iframe.allowTransparency = true; // for IE\n\
-      outerdocbody.insertBefore(iframe, outerdocbody.firstChild);\n\
-      iframe.ace_outerWin = window;\n\
-      readyFunc = function () {\n\
-        editorInfo.onEditorReady();\n\
-        readyFunc = null;\n\
-        editorInfo = null;\n\
-      };\n\
-      var doc = iframe.contentWindow.document;\n\
-      doc.open();\n\
-      var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');\n\
-      doc.write(text);\n\
-      doc.close();\n\
-    }, 0);\n\
-  }';
-
-        var outerHTML = [doctype, '<html><head>']
-
-        var includedCSS = [
-            "../static/css/iframe_editor.css",
-            "../static/css/pad.css",
-            "../static/custom/pad.css"];
-
-        var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
-        includedCSS = includedCSS.concat(additionalCSS);
-
-        pushStyleTagsFor(outerHTML, includedCSS);
-
-        // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
-        // (throbs busy while typing)
-        outerHTML.push('<style type="text/css" title="dynamicsyntax"></style>', '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', scriptTag(outerScript), '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div></body></html>');
-
-        var outerFrame = document.createElement("IFRAME");
-        outerFrame.name = "ace_outer";
-        outerFrame.frameBorder = 0; // for IE
-        outerFrame.title = "Ether";
-        info.frame = outerFrame;
-        document.getElementById(containerId).appendChild(outerFrame);
-
-        var editorDocument = outerFrame.contentWindow.document;
-
-        editorDocument.open();
-        editorDocument.write(outerHTML.join(''));
-        editorDocument.close();
-      })();
+      requirejs(["ep_etherpad-lite/static/js/ace2_inner"], function (Ace2Inner) {
+        var editorId = info.id;
+        var editorInfo = Ace2Editor.registry[editorId];
+        Ace2Inner.init(editorInfo);
+      });
     };
 
     return editor;

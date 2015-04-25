@@ -44,7 +44,7 @@ var isNodeText = Ace2Common.isNodeText,
   htmlPrettyEscape = Ace2Common.htmlPrettyEscape,
   noop = Ace2Common.noop;
 
-function Ace2Inner(){
+function Ace2Inner(editorInfo){
 
   var makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   var colorutils = require('./colorutils').colorutils;
@@ -77,13 +77,9 @@ function Ace2Inner(){
   var thisAuthor = '';
 
   var disposed = false;
-  var editorInfo = parent.editorInfo;
-
-  var iframe = window.frameElement;
-  var outerWin = iframe.ace_outerWin;
-  iframe.ace_outerWin = null; // prevent IE 6 memory leak
-  var sideDiv = iframe.nextSibling;
-  var lineMetricsDiv = sideDiv.nextSibling;
+  var sideDiv = $('#sidediv')[0];
+  var lineMetricsDiv = $('#linemetricsdiv')[0];
+  var innerdocbody = $('#innerdocbody')[0];
   initLineNumbers();
 
   var outsideKeyDown = noop;
@@ -374,7 +370,7 @@ function Ace2Inner(){
 
     if (currentCallStack)
     {
-      console.error("Can't enter callstack " + type + ", already in " + currentCallStack.type);
+      console.log("Can't enter callstack " + type + ", already in " + currentCallStack.type);
     }
 
     var profiling = false;
@@ -475,6 +471,7 @@ function Ace2Inner(){
       //console.log("Just did action for: "+type);
       cleanExit = true;
     }
+      /*
     catch (e)
     {
       caughtErrors.push(
@@ -485,6 +482,7 @@ function Ace2Inner(){
       dmesg(e.toString());
       throw e;
     }
+*/
     finally
     {
       var cs = currentCallStack;
@@ -958,7 +956,7 @@ function Ace2Inner(){
         setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
         fixView();
       },
-      grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
+      grayedout: setClassPresenceNamed(window.document.body, "grayedout"),
       dmesg: function(){ dmesg = window.dmesg = value; },
       userauthor: function(value){
         thisAuthor = String(value);
@@ -3264,7 +3262,7 @@ function Ace2Inner(){
   function getViewPortTopBottom()
   {
     var theTop = getScrollY();
-    var doc = outerWin.document;
+    var doc = window.document;
     var height = doc.documentElement.clientHeight;
     return {
       top: theTop,
@@ -3339,10 +3337,6 @@ function Ace2Inner(){
         }
         evt.preventDefault();
       }
-    }
-    //hide the dropdownso
-    if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/ether/etherpad-lite/issues/327
-      window.parent.parent.padeditbar.toggleDropDown("none");
     }
   }
 
@@ -3637,15 +3631,15 @@ function Ace2Inner(){
     }else{
       var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
     }
-    var heightOfChatIcon = parent.parent.$('#chaticon').height(); // height of the chat icon button
+    var heightOfChatIcon = $('#chaticon').height(); // height of the chat icon button
     lineHeight = (lineHeight *2) + heightOfChatIcon;
     var viewport = getViewPortTopBottom();
     var viewportHeight = viewport.bottom - viewport.top - lineHeight;
     var relCaretOffsetTop = caretOffsetTop - viewport.top; // relative Caret Offset Top to viewport
     if (viewportHeight < relCaretOffsetTop){
-      parent.parent.$("#chaticon").css("opacity",".3"); // make chaticon opacity low when user types near it
+      $("#chaticon").css("opacity",".3"); // make chaticon opacity low when user types near it
     }else{
-      parent.parent.$("#chaticon").css("opacity","1"); // make chaticon opacity back to full (so fully visible)
+      $("#chaticon").css("opacity","1"); // make chaticon opacity back to full (so fully visible)
     }
 
     //dmesg("keyevent type: "+type+", which: "+which);
@@ -3696,7 +3690,7 @@ function Ace2Inner(){
           // Note that while most editors use Alt F10 this is not desirable
           // As ubuntu cannot use Alt F10....
           // Focus on the editbar. -- TODO: Move Focus back to previous state (we know it so we can use it)
-          var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
+          var firstEditbarElement = $('#editbar').children("ul").first().children().first().children().first().children().first();
           $(this).blur(); 
           firstEditbarElement.focus();
           evt.preventDefault();
@@ -3704,8 +3698,8 @@ function Ace2Inner(){
         if ((!specialHandled) && altKey && keyCode == 67){
           // Alt c focuses on the Chat window
           $(this).blur(); 
-          parent.parent.chat.show();
-          parent.parent.chat.focus();
+          window.chat.show();
+          window.chat.focus();
           evt.preventDefault();
         }
         if ((!specialHandled) && evt.ctrlKey && shiftKey && keyCode == 50 && type === "keydown"){
@@ -3744,13 +3738,13 @@ function Ace2Inner(){
           }
           else{
             // Known authors info, both current and historical
-            var padAuthors = parent.parent.pad.userList();
+            var padAuthors = window.pad.userList();
             var authorObj = {};
             authors.forEach(function(authorId){
               padAuthors.forEach(function(padAuthor){
                 // If the person doing the lookup is the author..
                 if(padAuthor.userId === authorId){
-                  if(parent.parent.clientVars.userId === authorId){
+                  if(window.clientVars.userId === authorId){
                     authorObj = {
                       name: "Me"
                     }
@@ -3775,7 +3769,7 @@ function Ace2Inner(){
             var authorString = "The authors of this line are " + authorNames.join(" & ");
 	  }
 
-          parent.parent.$.gritter.add({
+          $.gritter.add({
             // (string | mandatory) the heading of the notification
             title: 'Line Authors',
             // (string | mandatory) the text inside the notification
@@ -3810,19 +3804,19 @@ function Ace2Inner(){
           //scrollSelectionIntoView();
           scheduler.setTimeout(function()
           {
-            outerWin.scrollBy(-100, 0);
+            window.scrollBy(-100, 0);
           }, 0);
           specialHandled = true;
         }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey) && !evt.altKey) /* Do a saved revision on ctrl S */
         {
           evt.preventDefault();
-          var originalBackground = parent.parent.$('#revisionlink').css("background")
-          parent.parent.$('#revisionlink').css({"background":"lightyellow"});
+          var originalBackground = $('#revisionlink').css("background")
+          $('#revisionlink').css({"background":"lightyellow"});
           scheduler.setTimeout(function(){
-            parent.parent.$('#revisionlink').css({"background":originalBackground});
+            $('#revisionlink').css({"background":originalBackground});
           }, 1000);
-          parent.parent.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
+          window.pad.collabClient.sendMessage({"type":"SAVE_REVISION"}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
           specialHandled = true;
         }
         if ((!specialHandled) && isTypeForSpecialKey && keyCode == 9 && !(evt.metaKey || evt.ctrlKey))
@@ -4722,6 +4716,7 @@ function Ace2Inner(){
 
   function fixView()
   {
+    //return; // TODO: look into this later
     // calling this method repeatedly should be fast
     if (getInnerWidth() === 0 || getInnerHeight() === 0)
     {
@@ -4741,7 +4736,7 @@ function Ace2Inner(){
     if (newSideDivWidth < MIN_LINEDIV_WIDTH) newSideDivWidth = MIN_LINEDIV_WIDTH;
     iframePadLeft = EDIT_BODY_PADDING_LEFT;
     if (hasLineNumbers) iframePadLeft += newSideDivWidth + LINE_NUMBER_PADDING_RIGHT;
-    setIfNecessary(iframe.style, "left", iframePadLeft + "px");
+    setIfNecessary(innerdocbody.style, "left", iframePadLeft + "px");
     setIfNecessary(sideDiv.style, "width", newSideDivWidth + "px");
 
     for (var i = 0; i < 2; i++)
@@ -4753,11 +4748,11 @@ function Ace2Inner(){
       if (newHeight < viewHeight)
       {
         newHeight = viewHeight;
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'auto');
+        if (browser.msie) setIfNecessary(window.document.documentElement.style, 'overflowY', 'auto');
       }
       else
       {
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'scroll');
+        if (browser.msie) setIfNecessary(window.document.documentElement.style, 'overflowY', 'scroll');
       }
       if (doesWrap)
       {
@@ -4767,8 +4762,8 @@ function Ace2Inner(){
       {
         if (newWidth < viewWidth) newWidth = viewWidth;
       }
-      setIfNecessary(iframe.style, "height", newHeight + "px");
-      setIfNecessary(iframe.style, "width", newWidth + "px");
+      setIfNecessary(innerdocbody.style, "height", newHeight + "px");
+      setIfNecessary(innerdocbody.style, "width", newWidth + "px");
       setIfNecessary(sideDiv.style, "height", newHeight + "px");
     }
     if (browser.firefox)
@@ -4793,7 +4788,7 @@ function Ace2Inner(){
     // if near edge, scroll to edge
     var scrollX = getScrollX();
     var scrollY = getScrollY();
-    var win = outerWin;
+    var win = window;
     var r = 20;
 
     enforceEditability();
@@ -4803,8 +4798,8 @@ function Ace2Inner(){
 
   function getScrollXY()
   {
-    var win = outerWin;
-    var odoc = outerWin.document;
+    var win = window;
+    var odoc = window.document;
     if (typeof(win.pageYOffset) == "number")
     {
       return {
@@ -4834,17 +4829,17 @@ function Ace2Inner(){
 
   function setScrollX(x)
   {
-    outerWin.scrollTo(x, getScrollY());
+    window.scrollTo(x, getScrollY());
   }
 
   function setScrollY(y)
   {
-    outerWin.scrollTo(getScrollX(), y);
+    window.scrollTo(getScrollX(), y);
   }
 
   function setScrollXY(x, y)
   {
-    outerWin.scrollTo(x, y);
+    window.scrollTo(x, y);
   }
 
   var _teardownActions = [];
@@ -5078,7 +5073,7 @@ function Ace2Inner(){
 
   function getPageHeight()
   {
-    var win = outerWin;
+    var win = window;
     var odoc = win.document;
     if (win.innerHeight && win.scrollMaxY) return win.innerHeight + win.scrollMaxY;
     else if (odoc.body.scrollHeight > odoc.body.offsetHeight) return odoc.body.scrollHeight;
@@ -5087,7 +5082,7 @@ function Ace2Inner(){
 
   function getPageWidth()
   {
-    var win = outerWin;
+    var win = window;
     var odoc = win.document;
     if (win.innerWidth && win.scrollMaxX) return win.innerWidth + win.scrollMaxX;
     else if (odoc.body.scrollWidth > odoc.body.offsetWidth) return odoc.body.scrollWidth;
@@ -5096,7 +5091,7 @@ function Ace2Inner(){
 
   function getInnerHeight()
   {
-    var win = outerWin;
+    var win = window;
     var odoc = win.document;
     var h;
     if (browser.opera) h = win.innerHeight;
@@ -5110,7 +5105,7 @@ function Ace2Inner(){
 
   function getInnerWidth()
   {
-    var win = outerWin;
+    var win = window;
     var odoc = win.document;
     return odoc.documentElement.clientWidth;
   }
@@ -5120,8 +5115,8 @@ function Ace2Inner(){
     // requires element (non-text) node;
     // if node extends above top of viewport or below bottom of viewport (or top of scrollbar),
     // scroll it the minimum distance needed to be completely in view.
-    var win = outerWin;
-    var odoc = outerWin.document;
+    var win = window;
+    var odoc = window.document;
     var distBelowTop = node.offsetTop + iframePadTop - win.scrollY;
     var distAboveBottom = win.scrollY + getInnerHeight() - (node.offsetTop + iframePadTop + node.offsetHeight);
 
@@ -5137,8 +5132,8 @@ function Ace2Inner(){
 
   function scrollXHorizontallyIntoView(pixelX)
   {
-    var win = outerWin;
-    var odoc = outerWin.document;
+    var win = window;
+    var odoc = window.document;
     pixelX += iframePadLeft;
     var distInsideLeft = pixelX - win.scrollX;
     var distInsideRight = win.scrollX + getInnerWidth() - pixelX;
@@ -5332,7 +5327,7 @@ function Ace2Inner(){
   {
     lineNumbersShown = 1;
     sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner"><div>1</div></td></tr></table>';
-    sideDivInner = outerWin.document.getElementById("sidedivinner");
+    sideDivInner = window.document.getElementById("sidedivinner");
   }
 
   function updateLineNumbers()
@@ -5342,7 +5337,7 @@ function Ace2Inner(){
     //update height of all current line numbers
 
     var a = sideDivInner.firstChild;
-    var b = doc.body.firstChild;
+    var b = innerdocbody.firstChild;
     var n = 0;
 
     if (currentCallStack && currentCallStack.domClean)
@@ -5378,8 +5373,9 @@ function Ace2Inner(){
     if (newNumLines != lineNumbersShown)
     {
       var container = sideDivInner;
-      var odoc = outerWin.document;
+      var odoc = window.document;
       var fragment = odoc.createDocumentFragment();
+
       while (lineNumbersShown < newNumLines)
       {
         lineNumbersShown++;
@@ -5458,7 +5454,7 @@ function Ace2Inner(){
 
       scheduler.setTimeout(function()
       {
-        parent.readyFunc(); // defined in code that sets up the inner iframe
+        editorInfo.onEditorReady(); // defined in code that sets up the inner iframe
       }, 0);
 
       isSetUp = true;
@@ -5467,8 +5463,8 @@ function Ace2Inner(){
 
 }
 
-exports.init = function () {
-  var editor = new Ace2Inner()
+exports.init = function (editorInfo) {
+  var editor = new Ace2Inner(editorInfo)
   editor.init();
 };
 

@@ -1,8 +1,8 @@
 /* These CSS rules are included in both the outer and inner ACE iframe.
    Also see inner.css, included only in the inner one.
 */
-html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
-span { cursor: auto; }
+#innerdocbody html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
+#innerdocbody span { cursor: auto; }
 
 ::selection {
   background: #acf;
@@ -11,18 +11,18 @@ span { cursor: auto; }
   background: #acf;
 }
 
-a { 
+#innerdocbody a { 
   cursor: pointer !important; 
   white-space:pre-wrap;
 }
 
-ul, ol, li {
+#innerdocbody ul, #innerdocbody ol, #innerdocbody li {
   padding: 0;
   margin: 0;
 }
 
-ul { margin-left: 1.5em; }
-ul ul { margin-left: 0 !important; }
+#innerdocbody ul { margin-left: 1.5em; }
+#innerdocbody ul ul { margin-left: 0 !important; }
 ul.list-bullet1 { margin-left: 1.5em; }
 ul.list-bullet2 { margin-left: 3em; }
 ul.list-bullet3 { margin-left: 4.5em; }
@@ -80,21 +80,19 @@ ul.list-indent6, ul.list-indent7, ul.list-indent8, ul.list-indent9, ul.list-inde
 ul.list-indent11, ul.list-indent12, ul.list-indent13, 
 ul.list-indent14, ul.list-indent15, ul.list-indent16 { list-style-type: none; }
 
-body {
-  margin: 0;
-  white-space: nowrap;
-  word-wrap: normal;
-}
-
 #outerdocbody {
   background-color: #fff;
 }
-body.grayedout { background-color: #eee !important }
+
+#innerdocbody.grayedout { background-color: #eee !important }
 
 #innerdocbody {
   font-size: 12px; /* overridden by body.style */
   font-family:Arial, sans-serif; /* overridden by body.style */
   line-height: 16px; /* overridden by body.style */
+  margin: 0;
+  white-space: nowrap;
+  word-wrap: normal;
 }
 
 body.doesWrap {
@@ -119,11 +117,8 @@ body.doesWrap > div{
 }
 
 #innerdocbody {
-  padding-top: 1px; /* important for some reason? */
-  padding-right: 10px;
-  padding-bottom: 8px;
-  padding-left: 1px /* prevents characters from looking chopped off in FF3 -- Removed because it added too much whitespace */;
-  overflow: hidden;
+  position: absolute;
+  top: 8px;
   /* blank 1x1 gif, so that IE8 doesn't consider the body transparent */
   background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);
 }
