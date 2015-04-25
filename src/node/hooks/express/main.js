@@ -46,6 +46,13 @@ exports.restartServer = function () {
       key: fs.readFileSync( settings.ssl.key ),
       cert: fs.readFileSync( settings.ssl.cert )
     };
+    if (settings.ssl.ca) {
+      options.ca = [];
+      for(var i = 0; i < settings.ssl.ca.length; i++) {
+        var caFileName = settings.ssl.ca[i];
+        options.ca.push(fs.readFileSync(caFileName));
+      }
+    }
     
     var https = require('https');
     server = https.createServer(options, app);
@@ -62,6 +69,9 @@ exports.restartServer = function () {
       res.header("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     }
 
+    // Stop IE going into compatability mode
+    // https://github.com/ether/etherpad-lite/issues/2547
+    res.header("X-UA-Compatible", "IE=Edge,chrome=1");
     res.header("Server", serverName);
     next();
   });

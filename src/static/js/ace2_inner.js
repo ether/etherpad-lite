@@ -719,6 +719,15 @@ define(["ep_etherpad-lite/static/js/rjquery", "underscore", 'ep_etherpad-lite/st
       {
         throw new Error("mismatch error setting raw text in importText");
       }
+
+      // Chrome can't handle the truth..  If CSS rule white-space:pre-wrap
+      // is true then any paste event will insert two lines..
+      // Sadly this will mean you get a walking Caret in Chrome when clicking on a URL
+      // So this has to be set to pre-wrap ;(
+      // We need to file a bug w/ the Chromium team.
+      if(browser.chrome){
+        $("#innerdocbody, body.doesWrap > div").css({"white-space":"pre-wrap"});
+      }
     }
 
     function importAText(atext, apoolJsonObj, undoable)
