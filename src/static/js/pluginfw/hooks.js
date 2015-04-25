@@ -70,32 +70,30 @@ exports.flatten = function (lst) {
 
 exports.callAll = function (hook_name, args) {
   if (!args) args = {};
-  if (exports.plugins){
-    if (exports.plugins.hooks[hook_name] === undefined) return [];
-    return _.flatten(_.map(exports.plugins.hooks[hook_name], function (hook) {
-      return hookCallWrapper(hook, hook_name, args);
-    }), true);
-  }
+  if (exports.plugins === undefined || exports.plugins.hooks[hook_name] === undefined) return [];
+  return _.flatten(_.map(exports.plugins.hooks[hook_name], function (hook) {
+    return hookCallWrapper(hook, hook_name, args);
+  }), true);
 }
 
 exports.aCallAll = function (hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
-  if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
+  if (exports.plugins === undefined || exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
   async.map(
     exports.plugins.hooks[hook_name],
     function (hook, cb) {
       hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
     function (err, res) {
-        cb(null, _.flatten(res, true));
+      cb(null, _.flatten(res, true));
     }
   );
 }
 
 exports.callFirst = function (hook_name, args) {
   if (!args) args = {};
-  if (exports.plugins.hooks[hook_name] === undefined) return [];
+  if (exports.plugins === undefined || exports.plugins.hooks[hook_name] === undefined) return [];
   return exports.syncMapFirst(exports.plugins.hooks[hook_name], function (hook) {
     return hookCallWrapper(hook, hook_name, args);
   });
@@ -104,7 +102,7 @@ exports.callFirst = function (hook_name, args) {
 exports.aCallFirst = function (hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
-  if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
+  if (exports.plugins === undefined || exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
   exports.mapFirst(
     exports.plugins.hooks[hook_name],
     function (hook, cb) {

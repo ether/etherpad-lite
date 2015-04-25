@@ -48,12 +48,12 @@ define(["ep_etherpad-lite/static/js/rjquery", "underscore", './shared'], functio
     }
   }
 
-    function adoptPluginsFromAncestorsOf(frame, cb) {
+  function adoptPluginsFromAncestorsOf(frame, cb) {
     // Bind plugins with parent;
     var parentRequire = null;
     try {
       while (frame = frame.parent) {
-        if (typeof (frame.require) !== "undefined") {
+        if (typeof (frame.requirejs) !== "undefined") {
           parentRequire = frame.requirejs;
           break;
         }

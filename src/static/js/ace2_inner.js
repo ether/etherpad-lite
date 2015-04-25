@@ -20,7 +20,9 @@
  * limitations under the License.
  */
 
-define(["ep_etherpad-lite/static/js/rjquery", "underscore", 'ep_etherpad-lite/static/js/pluginfw/hooks'], function ($, _, hooks) {
+define(["ep_etherpad-lite/static/js/rjquery", "underscore", 'ep_etherpad-lite/static/js/pluginfw/hooks', 'ep_etherpad-lite/static/js/linestylefilter', 'ep_etherpad-lite/static/js/domline'], function ($, _, hooks, linestylefilterMod, domlineMod) {
+  var linestylefilter = linestylefilterMod.linestylefilter;
+  var domline = domlineMod.domline;
   var exports = {};
 
 var browser = require('./browser').browser;
@@ -50,11 +52,9 @@ function Ace2Inner(){
   var colorutils = require('./colorutils').colorutils;
   var makeContentCollector = require('./contentcollector').makeContentCollector;
   var makeCSSManager = require('./cssmanager').makeCSSManager;
-  var domline = require('./domline').domline;
   var AttribPool = require('./AttributePool');
   var Changeset = require('./Changeset');
   var ChangesetUtils = require('./ChangesetUtils');
-  var linestylefilter = require('./linestylefilter').linestylefilter;
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
@@ -475,6 +475,7 @@ function Ace2Inner(){
       //console.log("Just did action for: "+type);
       cleanExit = true;
     }
+/*
     catch (e)
     {
       caughtErrors.push(
@@ -485,6 +486,7 @@ function Ace2Inner(){
       dmesg(e.toString());
       throw e;
     }
+*/
     finally
     {
       var cs = currentCallStack;

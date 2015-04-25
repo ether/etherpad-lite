@@ -199,28 +199,7 @@ define(['ep_etherpad-lite/static/js/pluginfw/hooks', 'underscore'], function (ho
           '));
 
         iframeHTML.push('<script type="text/javascript" src="../static/plugins/requirejs/require.js"></script>');
-
-        iframeHTML.push(scriptTag('\n\
-          var pathComponents = parent.parent.location.pathname.split("/");\n\
-          var baseURL = pathComponents.slice(0,pathComponents.length-2).join("/") + "/";\n\
-          requirejs.config({\n\
-            baseUrl: baseURL + "static/plugins",\n\
-            paths: {underscore: baseURL + "static/plugins/underscore/underscore"}\n\
-          });\n\
-          \n\
-          requirejs(["ep_etherpad-lite/static/js/rjquery", "ep_etherpad-lite/static/js/pluginfw/client_plugins", "ep_etherpad-lite/static/js/ace2_inner"], function (j, plugins, Ace2Inner) {\n\
-            jQuery = $ = window.jQuery = window.$ = j; // Expose jQuery #HACK\n\
-            \n\
-            plugins.adoptPluginsFromAncestorsOf(window, function () {\n\
-              var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
-              hooks.plugins = plugins;\n\
-              \n\
-              plugins.ensure(function () {\n\
-                Ace2Inner.init();\n\
-              });\n\
-            });\n\
-          });\n\
-        '));
+        iframeHTML.push('<script type="text/javascript" src="../static/plugins/ep_etherpad-lite/static/js/ace2_inner_main.js"></script>');
 
         iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
 
