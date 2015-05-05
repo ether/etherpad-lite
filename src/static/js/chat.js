@@ -39,8 +39,6 @@ var chat = (function()
     },
     focus: function () 
     {
-      // I'm not sure why we need a setTimeout here but without it we don't get focus...
-      // Animation maybe?
       setTimeout(function(){
         $("#chatinput").focus();
       },100);
@@ -214,23 +212,24 @@ var chat = (function()
     init: function(pad)
     {
       this._pad = pad;
-      $("#chatinput").keyup(function(evt)
-      {
+      $("#chatinput").on("keydown", function(evt){
         // If the event is Alt C or Escape & we're already in the chat menu
         // Send the users focus back to the pad
         if((evt.altKey == true && evt.which === 67) || evt.which === 27){
           // If we're in chat already..
           $(':focus').blur(); // required to do not try to remove!
           padeditor.ace.focus(); // Sends focus back to pad
+          evt.preventDefault();
+          return false;
         }
       });
 
-      $('body:not(#chatinput)').on("keydown", function(evt){
+      $('body:not(#chatinput)').on("keypress", function(evt){
         if (evt.altKey && evt.which == 67){
           // Alt c focuses on the Chat window
           $(this).blur();
-          parent.parent.chat.show();
-          parent.parent.chat.focus();
+          chat.show();
+          $("#chatinput").focus();
           evt.preventDefault();
         }
       });
