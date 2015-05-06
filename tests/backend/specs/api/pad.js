@@ -210,7 +210,7 @@ describe('getText', function(){
   it('gets the Pad text', function(done) {
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
-      if(res.body.data.text !== "testTextTwo\n") throw new Error("Setting Text")
+      if(res.body.data.text !== "testTextTwo") throw new Error("Setting Text")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -386,7 +386,7 @@ describe('getText', function(){
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Get Text failed")
-      if(res.body.data.text !== text+"\n") throw new Error("Pad Text not set properly");
+      if(res.body.data.text !== text) throw new Error("Pad Text not set properly");
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -419,7 +419,7 @@ describe('getText', function(){
   it('Gets text on a pad Id', function(done) {
     api.get(endPoint('getText')+"&padID="+newPadId)
     .expect(function(res){
-      if(res.body.data.text !== text+"\n") throw new Error("Pad Get Text failed")
+      if(res.body.data.text !== text) throw new Error("Pad Get Text failed")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -441,7 +441,7 @@ describe('getText', function(){
   it('Gets text on a pad Id', function(done) {
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
-      if(res.body.data.text !== text+"\n") throw new Error("Pad Get Text failed")
+      if(res.body.data.text !== text) throw new Error("Pad Get Text failed")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
