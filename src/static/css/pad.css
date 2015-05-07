@@ -860,6 +860,7 @@ input[type=checkbox] {
   padding: 10px;
   border-radius: 0 0 6px 6px;
   border: 1px solid #ccc;
+  border-top: none;
   background: #f7f7f7;
   background: -webkit-linear-gradient(#F7F7F7, #EEE);
   background: -moz-linear-gradient(#F7F7F7, #EEE);

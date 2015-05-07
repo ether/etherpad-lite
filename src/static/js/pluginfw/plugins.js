@@ -26,6 +26,17 @@ exports.formatPlugins = function () {
   return _.keys(exports.plugins).join(", ");
 };
 
+exports.formatPluginsWithVersion = function () {
+  var plugins = [];
+  _.forEach(exports.plugins, function(plugin){
+    if(plugin.package.name !== "ep_etherpad-lite"){
+      var pluginStr = plugin.package.name + "@" + plugin.package.version;
+      plugins.push(pluginStr);
+    }
+  });
+  return plugins.join(", ");
+};
+
 exports.formatParts = function () {
   return _.map(exports.parts, function (part) { return part.full_name; }).join("\n");
 };

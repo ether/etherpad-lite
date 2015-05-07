@@ -25,6 +25,7 @@
   "ssl" : {
             "key"  : "/path-to-your/epl-server.key",
             "cert" : "/path-to-your/epl-server.crt"
+            "ca": ["/path-to-your/epl-intermediate-cert1.crt", "/path-to-your/epl-intermediate-cert2.crt"]
           },
 
   */

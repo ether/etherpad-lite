@@ -38,6 +38,7 @@
 	"pad.settings.language": "Zıwan:",
 	"pad.importExport.import_export": "Zeredayış/Teberdayış",
 	"pad.importExport.importSuccessful": "Mıwafaq biye",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Metno pan",
 	"pad.importExport.exportword": "Microsoft Word",

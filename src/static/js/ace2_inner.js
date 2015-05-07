@@ -612,7 +612,7 @@ function Ace2Inner(){
     // So this has to be set to pre-wrap ;(
     // We need to file a bug w/ the Chromium team.
     if(browser.chrome){
-      $("#innerdocbody").css({"white-space":"pre-wrap"});
+      $("#innerdocbody").addClass("noprewrap");
     }
 
   }
@@ -3640,6 +3640,7 @@ function Ace2Inner(){
     }else{
       var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
     }
+
     var heightOfChatIcon = parent.parent.$('#chaticon').height(); // height of the chat icon button
     lineHeight = (lineHeight *2) + heightOfChatIcon;
     var viewport = getViewPortTopBottom();
@@ -3709,11 +3710,11 @@ function Ace2Inner(){
           firstEditbarElement.focus();
           evt.preventDefault();
         }
-        if ((!specialHandled) && altKey && keyCode == 67){
+        if ((!specialHandled) && altKey && keyCode == 67 && type === "keydown"){
           // Alt c focuses on the Chat window
           $(this).blur(); 
           parent.parent.chat.show();
-          parent.parent.chat.focus();
+          parent.parent.$("#chatinput").focus();
           evt.preventDefault();
         }
         if ((!specialHandled) && evt.ctrlKey && shiftKey && keyCode == 50 && type === "keydown"){
@@ -3905,7 +3906,7 @@ function Ace2Inner(){
           doInsertUnorderedList()
           specialHandled = true;
 	}
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
+        if ((!specialHandled) && isTypeForCmdKey && (String.fromCharCode(which).toLowerCase() == "n" || String.fromCharCode(which) == 1) && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
         {
           // cmd-shift-N (orderedlist)
           fastIncorp(9);

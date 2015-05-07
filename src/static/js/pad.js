@@ -456,10 +456,11 @@ var pad = {
   },
   switchToPad: function(padId)
   {
-    var options = document.location.href.split('?')[1];
-    var newHref = "/p/" + padId;
-    if (options != null)
-      newHref =  newHref + '?' + options;
+    var newHref = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
+    newHref = newHref[0];    
+    if (options != null){
+      newHref = newHref + '?' + options;
+    }
 
     if(window.history && window.history.pushState)
     {

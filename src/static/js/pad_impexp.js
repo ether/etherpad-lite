@@ -235,7 +235,7 @@ var padimpexp = (function()
     
       addImportFrames();
       $("#importfileinput").change(fileInputUpdated);
-      $('#importform').submit(fileInputSubmit);
+      $('#importform').unbind("submit").submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
     handleFrameCall: function(directDatabaseAccess, status)

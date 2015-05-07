@@ -290,7 +290,7 @@ Pad.prototype.setText = function setText(newText) {
   var oldText = this.text();
 
   //create the changeset
-  var changeset = Changeset.makeSplice(oldText, 0, oldText.length-1, newText);
+  var changeset = Changeset.makeSplice(oldText, 0, oldText.length, newText);
 
   //append the changeset
   this.appendRevision(changeset);
