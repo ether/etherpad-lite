@@ -1982,7 +1982,11 @@ function Ace2Inner(){
 
   function nodeText(n)
   {
-    return n.innerText || n.textContent || n.nodeValue || '';
+      if (browser.msie) {
+	  return n.innerText;
+      } else {
+	  return n.textContent || n.nodeValue || '';
+      }
   }
 
   function getLineAndCharForPoint(point)
