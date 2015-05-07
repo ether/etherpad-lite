@@ -3681,6 +3681,11 @@ function Ace2Inner(){
           stopped = true;
         }
       }
+      else if (evt.key === "Dead"){
+        // If it's a dead key we don't want to do any Etherpad behavior.
+        stopped = true;
+        return true;
+      }
       else if (type == "keydown")
       {
         outsideKeyDown(evt);
@@ -3885,7 +3890,7 @@ function Ace2Inner(){
           toggleAttributeOnSelection('underline');
           specialHandled = true;
         }
-       if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "5" && (evt.metaKey || evt.ctrlKey))
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "5" && (evt.metaKey || evt.ctrlKey) && evt.altKey !== true)
         {
           // cmd-5 (strikethrough)
           fastIncorp(13);
