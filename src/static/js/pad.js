@@ -813,6 +813,9 @@ var pad = {
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
+    setTimeout(function(){
+      padeditbar.toggleDropDown("none");
+    }, 1000);
   },
   determineChatVisibility: function(asNowConnectedFeedback){
     var chatVisCookie = padcookie.getPref('chatAlwaysVisible');
