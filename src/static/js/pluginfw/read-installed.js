@@ -88,13 +88,26 @@ as far as the left-most node_modules folder.
 
 */
 
+define(
+  [
+    'npm', 
+    'graceful-fs', 
+    'path', 
+    'asyncMap', 
+    'semver', 
+    'log'
+  ], 
+  function (npm, fs, path, asyncMap, semver, log) {
 
 var npm = require("npm/lib/npm.js")
   , fs = require("graceful-fs")
   , path = require("path")
-  , asyncMap = require("slide").asyncMap
+  , asyncMap = require("slide")
   , semver = require("semver")
-  , log = require("log4js").getLogger('pluginfw')
+  , log = require("log4js");
+
+asyncMap = asyncMap.asyncMap;
+log = log.getLogger('pluginfw');
 
 function readJson(file, callback) {
   fs.readFile(file, function(er, buf) {
@@ -335,3 +348,5 @@ if (module === require.main) {
     return map
   }
 }
+
+});
