@@ -1,13 +1,27 @@
+define(
+  [
+    'languages4translatewiki', 
+    'fs', 
+    'path', 
+    'underscore', 
+    'npm', 
+    'ep_etherpad-lite/static/js/pluginfw/plugins', 
+    'semver'
+  ], 
+  function(languages, fs, path, _, npm, plugins, semver){
+
+var exports = {};
+
 var languages = require('languages4translatewiki')
   , fs = require('fs')
   , path = require('path')
   , _ = require('underscore')
   , npm = require('npm')
-  , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
-  , semver = require('semver')
-  , existsSync = semver.gt(process.version, '0.7.0') ? fs.existsSync : path.existsSync
-;
+  , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js')
+  , semver = require('semver');
 
+var existsSync = semver.gt(process.version, '0.7.0') ? fs.existsSync : path.existsSync
+plugins = plugins.plugins;
 
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}
@@ -102,3 +116,4 @@ exports.expressCreateServer = function(n, args) {
   
 }
 
+});
