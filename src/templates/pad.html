@@ -349,99 +349,15 @@
         <% e.end_block(); %>
 
         <% e.begin_block("scripts"); %>
-        <script type="text/javascript">
-            (function() {
-              // Display errors on page load to the user
-              // (Gets overridden by padutils.setupGlobalExceptionHandler)
-              var originalHandler = window.onerror;
-              window.onerror = function(msg, url, line) {
-                var box   = document.getElementById('editorloadingbox');
-                box.innerHTML = '<p><b>An error occured while loading the pad</b></p>'
-                              + '<p><b>'+msg+'</b> '
-                              + '<small>in '+ url +' (line '+ line +')</small></p>';
-                // call original error handler
-                if(typeof(originalHandler) == 'function') originalHandler.call(null, arguments);
-              };
-            })();
-        </script>
+          <script type="text/javascript" src="../static/plugins/ep_etherpad-lite/static/js/error_handler.js"></script>
+          <script type="text/javascript" src="../socket.io/socket.io.js"></script>
+          <script type="text/javascript" src="../static/plugins/requirejs/require.js"></script>
+          <script type="text/javascript" src="../static/js/require-kernel.js"></script>
 
-        <script type="text/javascript" src="../static/js/require-kernel.js"></script>
-        <script type="text/javascript" src="../socket.io/socket.io.js"></script>
+          <% e.begin_block("customScripts"); %>
+            <script type="text/javascript" src="../static/custom/pad.js"></script>
+          <% e.end_block(); %>
 
-        <script type="text/javascript" src="../static/plugins/requirejs/require.js"></script>
-
-        <% e.begin_block("customScripts"); %>
-        <script type="text/javascript" src="../static/custom/pad.js"></script>
-        <% e.end_block(); %>
-
-        <!-- Bootstrap page -->
-        <script type="text/javascript">
-            var clientVars = {};
-            (function () {
-              var pathComponents = location.pathname.split('/');
-
-              // Strip 'p' and the padname from the pathname and set as baseURL
-              var baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/';
-
-              require.setRootURI(baseURL + "javascripts/src");
-              require.setLibraryURI(baseURL + "javascripts/lib");
-              require.setGlobalKeyPath("require");
-
-              window.requireKernel = require;
-
-              requirejs.config({
-                 baseUrl: baseURL + "static/plugins",
-                 paths: {'underscore': baseURL + "static/plugins/underscore/underscore"},
-              });
-
-              requirejs(
-                [
-                  'ep_etherpad-lite/static/js/rjquery',
-                  'ep_etherpad-lite/static/js/pluginfw/client_plugins',
-                  'ep_etherpad-lite/static/js/pluginfw/hooks'
-                ], function ($, plugins, hooks) {
-            console.log("hooks & plugins modules loaded");
-                  window.$ = $; // Expose jQuery #HACK
-                  window.jQuery = $;
-
-                  browser = require('ep_etherpad-lite/static/js/browser').browser;
-                  if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
-                    document.domain = document.domain; // for comet
-                  }
-
-                  plugins.baseURL = baseURL;
-                  plugins.update(function () {
-                    hooks.plugins = plugins;
-
-            console.log("hooks.plugins initialized");
-
-                    // Call documentReady hook
-                    $(function() {
-                      hooks.aCallAll('documentReady');
-                    });
-
-                    requirejs(
-                      [
-                        'ep_etherpad-lite/static/js/pad',
-                        'ep_etherpad-lite/static/js/chat',
-                        'ep_etherpad-lite/static/js/pad_editbar',
-                      ], function (padMod, chatMod, padEditbarMod) {
-            console.log("pad loaded");
-
-                        padMod.baseURL = baseURL;
-                        padMod.init();
-
-                        /* TODO: These globals shouldn't exist. */
-                        pad = padMod.pad;
-                        chat = chatMod.chat;
-                        padeditbar = padEditbarMod.padeditbar;
-                        padimpexp = window.requireKernel('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
-                      }
-                    );
-                  });
-                }
-              );
-            }());
-        </script>
+          <script type="text/javascript" src="../static/plugins/ep_etherpad-lite/static/js/main.js"></script>
         <% e.end_block(); %>
 </html>
