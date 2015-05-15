@@ -828,8 +828,12 @@ table#otheruserstable {
   content: "\e835";
 }
 .buttonicon-fullscreen:before {
-  content: "\e839";
+  content: "\e838";
 }
+.buttonicon-exit-fullscreen:before {
+  content: "\e83a";
+}
+
 
 #focusprotector {
   z-index: 100;
