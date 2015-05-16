@@ -24,6 +24,8 @@ function setPadHTML(pad, html, callback) {
     var apiLogger = log4js.getLogger("ImportHtml");
 
     // @see https://github.com/punkave/sanitize-html
+    // if ACE still complains we may use the filters to feed it the right stuff
+    // currently all elements and attribs are allowed
     var cleanHTML = sanitizeHTML(html, {
         allowedTags: false,
         allowedAttributes: false
