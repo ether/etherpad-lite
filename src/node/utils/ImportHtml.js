@@ -23,8 +23,6 @@ var sanitizeHTML = require("sanitize-html");
 function setPadHTML(pad, html, callback) {
     var apiLogger = log4js.getLogger("ImportHtml");
 
-
-
     // @see https://github.com/punkave/sanitize-html
     var cleanHTML = sanitizeHTML(html, {
         allowedTags: false,
