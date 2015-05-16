@@ -18,80 +18,94 @@ var log4js = require('log4js');
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
 var cheerio = require("cheerio");
+var sanitizeHTML = require("sanitize-html");
 
-function setPadHTML(pad, html, callback)
-{
-  var apiLogger = log4js.getLogger("ImportHtml");
+function setPadHTML(pad, html, callback) {
+    var apiLogger = log4js.getLogger("ImportHtml");
 
-  var $ = cheerio.load(html);
+    // @see https://github.com/punkave/sanitize-html
+    // if ACE still complains we may use the filters to feed it the right stuff
+    // currently all elements and attribs are allowed
+    var cleanHTML = sanitizeHTML(html, {
+        allowedTags: false,
+        allowedAttributes: false
+    });
 
-  // Appends a line break, used by Etherpad to ensure a caret is available
-  // below the last line of an import
-  $('body').append("<p></p>");
+    cleanHTML =
+        '<!DOCTYPE html>' +
+        '<html>' +
+        '<body>' +
+        cleanHTML +
+        '</body>' +
+        '</html>';
 
-  var doc = $('html')[0];
-  apiLogger.debug('html:');
-  apiLogger.debug(html);
+    var $ = cheerio.load(cleanHTML);
 
-  // Convert a dom tree into a list of lines and attribute liens
-  // using the content collector object
-  var cc = contentcollector.makeContentCollector(true, null, pad.pool);
-  try{ // we use a try here because if the HTML is bad it will blow up
-    cc.collectContent(doc);
-  }catch(e){
-    apiLogger.warn("HTML was not properly formed", e);
-    return callback(e); // We don't process the HTML because it was bad..
-  }
+    // Appends a line break, used by Etherpad to ensure a caret is available
+    // below the last line of an import
+    $('body').append("<p></p>");
 
-  var result = cc.finish();
+    var doc = $('html')[0];
 
-  apiLogger.debug('Lines:');
-  var i;
-  for (i = 0; i < result.lines.length; i += 1)
-  {
-    apiLogger.debug('Line ' + (i + 1) + ' text: ' + result.lines[i]);
-    apiLogger.debug('Line ' + (i + 1) + ' attributes: ' + result.lineAttribs[i]);
-  }
+    apiLogger.debug('html:');
+    apiLogger.debug(html);
 
-  // Get the new plain text and its attributes
-  var newText = result.lines.join('\n');
-  apiLogger.debug('newText:');
-  apiLogger.debug(newText);
-  var newAttribs = result.lineAttribs.join('|1+1') + '|1+1';
+    // throw foo;
 
-  function eachAttribRun(attribs, func /*(startInNewText, endInNewText, attribs)*/ )
-  {
-    var attribsIter = Changeset.opIterator(attribs);
-    var textIndex = 0;
-    var newTextStart = 0;
-    var newTextEnd = newText.length;
-    while (attribsIter.hasNext())
-    {
-      var op = attribsIter.next();
-      var nextIndex = textIndex + op.chars;
-      if (!(nextIndex <= newTextStart || textIndex >= newTextEnd))
-      {
-        func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
-      }
-      textIndex = nextIndex;
+    // Convert a dom tree into a list of lines and attribute liens
+    // using the content collector object
+    var cc = contentcollector.makeContentCollector(true, null, pad.pool);
+    try { // we use a try here because if the HTML is bad it will blow up
+        cc.collectContent(doc);
+    } catch (e) {
+        apiLogger.warn("HTML was not properly formed", e);
+        return callback(e); // We don't process the HTML because it was bad..
     }
-  }
 
-  // create a new changeset with a helper builder object
-  var builder = Changeset.builder(1);
+    var result = cc.finish();
 
-  // assemble each line into the builder
-  eachAttribRun(newAttribs, function(start, end, attribs)
-  {
-    builder.insert(newText.substring(start, end), attribs);
-  });
+    apiLogger.debug('Lines:');
+    var i;
+    for (i = 0; i < result.lines.length; i += 1) {
+        apiLogger.debug('Line ' + (i + 1) + ' text: ' + result.lines[i]);
+        apiLogger.debug('Line ' + (i + 1) + ' attributes: ' + result.lineAttribs[i]);
+    }
 
-  // the changeset is ready!
-  var theChangeset = builder.toString();
-  apiLogger.debug('The changeset: ' + theChangeset);
-  pad.setText("\n");
-  pad.appendRevision(theChangeset);
-  callback(null);
+    // Get the new plain text and its attributes
+    var newText = result.lines.join('\n');
+    apiLogger.debug('newText:');
+    apiLogger.debug(newText);
+    var newAttribs = result.lineAttribs.join('|1+1') + '|1+1';
+
+    function eachAttribRun(attribs, func /*(startInNewText, endInNewText, attribs)*/ ) {
+        var attribsIter = Changeset.opIterator(attribs);
+        var textIndex = 0;
+        var newTextStart = 0;
+        var newTextEnd = newText.length;
+        while (attribsIter.hasNext()) {
+            var op = attribsIter.next();
+            var nextIndex = textIndex + op.chars;
+            if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
+                func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
+            }
+            textIndex = nextIndex;
+        }
+    }
+
+    // create a new changeset with a helper builder object
+    var builder = Changeset.builder(1);
+
+    // assemble each line into the builder
+    eachAttribRun(newAttribs, function (start, end, attribs) {
+        builder.insert(newText.substring(start, end), attribs);
+    });
+
+    // the changeset is ready!
+    var theChangeset = builder.toString();
+    apiLogger.debug('The changeset: ' + theChangeset);
+    pad.setText("\n");
+    pad.appendRevision(theChangeset);
+    callback(null);
 }
 
 exports.setPadHTML = setPadHTML;
