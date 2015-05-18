@@ -153,6 +153,11 @@ exports.minify = true;
 exports.abiword = null;
 
 /**
+ * The path of the tidy executable
+ */
+exports.tidyHtml = null;
+
+/**
  * Should we support none natively supported file types on import?
  */
 exports.allowUnknownFileEnds = true;
@@ -167,7 +172,7 @@ exports.loglevel = "INFO";
  */
 exports.disableIPlogging = false;
 
-/** 
+/**
  * Disable Load Testing
  */
 exports.loadTest = false;
@@ -239,7 +244,7 @@ exports.reloadSettings = function reloadSettings() {
   } else {
     settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
   }
-  
+
   var settingsStr;
   try{
     //read the settings sync
