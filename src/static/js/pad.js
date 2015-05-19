@@ -322,6 +322,11 @@ function handshake()
       pad._afterHandshake();
       initalized = true;
 
+      if(clientVars.readonly){
+        $('#myusernameedit').attr("disabled", true);
+        $('#chatinput').attr("disabled", true);
+      }
+
       $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
 
       padeditor.ace.callWithAce(function (ace) {
