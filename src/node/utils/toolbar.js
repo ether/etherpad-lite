@@ -236,10 +236,32 @@ module.exports = {
   selectButton: function (attributes) {
     return new SelectButton(attributes);
   },
-  menu: function (buttons) {
+  menu: function (buttons, isReadOnly) {
+    if(isReadOnly){
+      // The best way to detect if it's the left editbar is to check for a bold button
+      if(buttons[0].indexOf("bold") !== -1){
+        // Clear all formatting buttons
+        buttons = []
+      }else{
+        // Remove Save Revision from the right menu
+        buttons[0].remove("savedrevision");
+      }
+    }
+
     var groups = _.map(buttons, function (group) {
       return ButtonsGroup.fromArray(group).render();
     });
     return groups.join(this.separator());
   }
+};
+
+Array.prototype.remove = function() {
+  var what, a = arguments, L = a.length, ax;
+  while (L && this.length) {
+    what = a[--L];
+    while ((ax = this.indexOf(what)) !== -1) {
+      this.splice(ax, 1);
+    }
+  }
+  return this;
 };
