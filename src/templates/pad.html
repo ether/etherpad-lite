@@ -63,12 +63,12 @@
 
             <ul class="menu_left" role="toolbar">
                 <% e.begin_block("editbarMenuLeft"); %>
-                <%- toolbar.menu(settings.toolbar.left) %>
+                <%- toolbar.menu(settings.toolbar.left, isReadOnly) %>
                 <% e.end_block(); %>
             </ul>
             <ul class="menu_right" role="toolbar">
                 <% e.begin_block("editbarMenuRight"); %>
-                <%- toolbar.menu(settings.toolbar.right) %>
+                <%- toolbar.menu(settings.toolbar.right, isReadOnly) %>
                 <% e.end_block(); %>
             </ul>
         </div>
