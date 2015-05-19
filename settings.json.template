@@ -10,12 +10,12 @@
   // favicon default name
   // alternatively, set up a fully specified Url to your own favicon
   "favicon": "favicon.ico",
-  
+
   //IP and port which etherpad should bind at
   "ip": "0.0.0.0",
   "port" : 9001,
 
-  /*  
+  /*
   // Node native SSL support
   // this is disabled by default
   //
@@ -37,17 +37,17 @@
   "dbSettings" : {
                    "filename" : "var/dirty.db"
                  },
-                 
+
   /* An Example of MySQL Configuration
    "dbType" : "mysql",
    "dbSettings" : {
-                    "user"    : "root", 
-                    "host"    : "localhost", 
-                    "password": "", 
+                    "user"    : "root",
+                    "host"    : "localhost",
+                    "password": "",
                     "database": "store"
                   },
   */
-  
+
   //the default text of a pad
   "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
 
@@ -65,7 +65,7 @@
     "chatAndUsers": false,
     "lang": "en-gb"
   },
-  
+
   /* Shoud we suppress errors from being visible in the default Pad Text? */
   "suppressErrorsInPadText" : false,
 
@@ -77,35 +77,39 @@
 
   /* Users, who have a valid session, automatically get granted access to password protected pads */
   "sessionNoPassword" : false,
-  
-  /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly, 
+
+  /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly,
      but makes it impossible to debug the javascript/css */
   "minify" : true,
 
   /* How long may clients use served javascript code (in seconds)? Without versioning this
      may cause problems during deployment. Set to 0 to disable caching */
   "maxAge" : 21600, // 60 * 60 * 6 = 6 hours
-  
+
   /* This is the path to the Abiword executable. Setting it to null, disables abiword.
-     Abiword is needed to advanced import/export features of pads*/  
+     Abiword is needed to advanced import/export features of pads*/
   "abiword" : null,
+
+  /* This is the path to the Tidy executable. Setting it to null, disables Tidy.
+     Tidy is used to improve the quality of exported pads*/
+  "tidyHtml" : null,
 
   /* Allow import of file types other than the supported types: txt, doc, docx, rtf, odt, html & htm */
   "allowUnknownFileEnds" : true,
- 
+
   /* This setting is used if you require authentication of all users.
      Note: /admin always requires authentication. */
   "requireAuthentication" : false,
 
   /* Require authorization by a module, or a user with is_admin set, see below. */
   "requireAuthorization" : false,
-  
+
   /*when you use NginX or another proxy/ load-balancer set this to true*/
   "trustProxy" : false,
-  
+
   /* Privacy: disable IP logging */
-  "disableIPlogging" : false,  
-  
+  "disableIPlogging" : false,
+
   /* Users for basic authentication. is_admin = true gives access to /admin.
      If you do not uncomment this, /admin will not be available! */
   /*
@@ -126,7 +130,7 @@
 
   // Allow Load Testing tools to hit the Etherpad Instance.  Warning this will disable security on the instance.
   "loadTest": false,
-  
+
   /* The toolbar buttons configuration.
   "toolbar": {
     "left": [
@@ -148,7 +152,7 @@
 
   /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
   "loglevel": "INFO",
-  
+
   //Logging configuration. See log4js documentation for further information
   // https://github.com/nomiddlename/log4js-node
   // You can add as many appenders as you want here:
