@@ -190,6 +190,16 @@ exports.handleMessage = function(client, message)
   }
 
   var handleMessageHook = function(callback){
+    // Allow plugins to bypass the readonly message blocker
+    hooks.aCallAll("handleMessageSecurity", { client: client, message: message }, function ( err, messages ) {
+      if(ERR(err, callback)) return;
+      _.each(messages, function(newMessage){
+        if ( newMessage === true ) {
+          thisSession.readonly = false;
+        }
+      });
+    });
+
     var dropMessage = false;
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages
     // handleMessage will be called, even if the client is not authorized
@@ -204,6 +214,7 @@ exports.handleMessage = function(client, message)
       // If no plugins explicitly told us to drop the message, its ok to proceed
       if(!dropMessage){ callback() };
     });
+
   }
 
   var finalHandler = function () {

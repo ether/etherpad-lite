@@ -325,6 +325,9 @@ function handshake()
       if(clientVars.readonly){
         $('#myusernameedit').attr("disabled", true);
         $('#chatinput').attr("disabled", true);
+        $('#chaticon').hide();
+        $('#options-chatandusers').parent().hide();
+        $('#options-stickychat').parent().hide();
       }
 
       $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
