@@ -323,6 +323,7 @@ function handshake()
       initalized = true;
 
       if(clientVars.readonly){
+        chat.hide();
         $('#myusernameedit').attr("disabled", true);
         $('#chatinput').attr("disabled", true);
         $('#chaticon').hide();
