@@ -544,14 +544,22 @@ function handleUserInfoUpdate(client, message)
     return;
   }
 
+  // Check that we have a valid session and author to update.
+  var session = sessioninfos[client.id];
+  if(!session || !session.author || !session.padId)
+  {
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Session not ready." + message.data);
+    return;
+  }
+
   //Find out the author name of this session
-  var author = sessioninfos[client.id].author;
+  var author = session.author;
 
   //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
 
-  var padId = sessioninfos[client.id].padId;
+  var padId = session.padId;
 
   var infoMsg = {
     type: "COLLABROOM",
