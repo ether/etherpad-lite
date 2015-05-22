@@ -7,7 +7,16 @@ var _ = require("underscore")
   , Button
   , ButtonsGroup
   , Separator
-  , defaultButtonAttributes;
+  , defaultButtonAttributes
+  , removeItem;
+
+removeItem = function(array,what) {
+  var ax;
+  while ((ax = array.indexOf(what)) !== -1) {
+    array.splice(ax, 1);
+  }
+ return array;
+};
 
 defaultButtonAttributes = function (name, overrides) {
   return {
@@ -244,7 +253,7 @@ module.exports = {
         buttons = []
       }else{
         // Remove Save Revision from the right menu
-        buttons[0].removeItem("savedrevision");
+        removeItem(buttons[0],"savedrevision");
       }
     }
 
@@ -253,15 +262,4 @@ module.exports = {
     });
     return groups.join(this.separator());
   }
-};
-
-Array.prototype.removeItem = function() {
-  var what, a = arguments, L = a.length, ax;
-  while (L && this.length) {
-    what = a[--L];
-    while ((ax = this.indexOf(what)) !== -1) {
-      this.splice(ax, 1);
-    }
-  }
-  return this;
 };
