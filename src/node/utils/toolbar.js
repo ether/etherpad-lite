@@ -244,7 +244,7 @@ module.exports = {
         buttons = []
       }else{
         // Remove Save Revision from the right menu
-        buttons[0].remove("savedrevision");
+        buttons[0].removeItem("savedrevision");
       }
     }
 
@@ -255,7 +255,7 @@ module.exports = {
   }
 };
 
-Array.prototype.remove = function() {
+Array.prototype.removeItem = function() {
   var what, a = arguments, L = a.length, ax;
   while (L && this.length) {
     what = a[--L];
