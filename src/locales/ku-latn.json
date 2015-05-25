@@ -56,6 +56,7 @@
 	"timeslider.toolbar.authorsList": "Nivîser Tine",
 	"timeslider.version": "Guhertoya {{version}}",
 	"timeslider.saved": "Di dîroka {{day}} {{month}} {{year}} de hate tomarkirin",
+	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{hours}}.{{minutes}}.{{seconds}}",
 	"timeslider.month.january": "rêbendan",
 	"timeslider.month.february": "reşemî",
 	"timeslider.month.march": "adar",

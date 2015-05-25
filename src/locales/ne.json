@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"सरोज कुमार ढकाल"
+			"सरोज कुमार ढकाल",
+			"Nirjal stha"
 		]
 	},
 	"index.newPad": "नयाँ प्याड",
@@ -9,14 +10,14 @@
 	"pad.toolbar.bold.title": "मोटो (Ctrl-B)",
 	"pad.toolbar.italic.title": "ढल्के (Ctrl-I)",
 	"pad.toolbar.underline.title": "निम्न रेखाङ्कन (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "बीचको धर्को",
-	"pad.toolbar.ol.title": "क्रमवद्ध सूची",
-	"pad.toolbar.ul.title": "अक्रमाङ्कित सूची",
+	"pad.toolbar.strikethrough.title": "बीचको धर्को (Ctrl+5)",
+	"pad.toolbar.ol.title": "क्रमवद्ध सूची (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "अक्रमाङ्कित सूची (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "इन्डेन्ट (TAB)",
 	"pad.toolbar.unindent.title": "आउटडेन्ट (Shift+TAB)",
 	"pad.toolbar.undo.title": "रद्द (Ctrl-Z)",
 	"pad.toolbar.redo.title": "पुन:लागु (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "लेखकीय रङ्ग हटाउने",
+	"pad.toolbar.clearAuthorship.title": "लेखकीय रङ्ग हटाउने (Ctrl+Shift+C)",
 	"pad.toolbar.timeslider.title": "टाइमस्लाइडर",
 	"pad.toolbar.savedRevision.title": "पुनरावलोकन संग्रहगर्ने",
 	"pad.toolbar.settings.title": "सेटिङ्गहरू",
@@ -31,6 +32,7 @@
 	"pad.settings.padSettings": "प्याड सेटिङ्गहरू",
 	"pad.settings.myView": "मेरो दृष्य",
 	"pad.settings.stickychat": "पर्दामा सधै च्याट गर्ने",
+	"pad.settings.chatandusers": "वार्ता तथा प्रयोगकर्ताहरू देखाउने",
 	"pad.settings.colorcheck": "लेखकीय रङ्ग",
 	"pad.settings.linenocheck": "हरफ संख्या",
 	"pad.settings.rtlcheck": "के सामग्री दाहिने देखि देब्रे पढ्ने हो ?",
@@ -43,6 +45,7 @@
 	"pad.importExport.import": "कुनै पनि पाठ रहेको फाइल या कागजात अपलोड गर्नुहोस्",
 	"pad.importExport.importSuccessful": "सफल भयो!",
 	"pad.importExport.export": "निम्न रुपमा प्याड निर्यात गर्ने :",
+	"pad.importExport.exportetherpad": "इथरप्याड",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "साधारण पाठ",
 	"pad.importExport.exportword": "माइक्रोसफ्ट वर्ड",
@@ -54,6 +57,7 @@
 	"pad.modals.userdup": "अर्को सन्झ्यालमा खोल्ने",
 	"pad.modals.unauth": "अनुमती नदिइएको",
 	"pad.modals.initsocketfail": "सर्भरमा पहुँच पुर्‍याउन सकिएन ।",
+	"pad.modals.slowcommit.explanation": "सर्भरसँग सम्पर्क हुने सकेन ।",
 	"pad.modals.deleted": "मेटिएको ।",
 	"pad.modals.deleted.explanation": "यो प्याड हटाइसकेको छ ।",
 	"pad.modals.disconnected": "तपाईँको जडान अवरुद्ध भयो ।",
@@ -73,6 +77,9 @@
 	"timeslider.exportCurrent": "हालको संस्करण निम्म रुपमा निर्यात गर्ने :",
 	"timeslider.version": "संस्करण {{version}}",
 	"timeslider.saved": "सङ्ग्रह गरिएको {{month}} {{day}}, {{year}}",
+	"timeslider.playPause": "प्याडको सामग्रीहरूलाई चालु/बन्द गर्नुहोस",
+	"timeslider.backRevision": "यो प्याडको एक संस्करण पहिले जानुहोस्",
+	"timeslider.forwardRevision": "यो प्याडको एक संस्करण पछि जानुहोस्",
 	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "जनवरी",
 	"timeslider.month.february": "फेब्रुअरी",
@@ -95,6 +102,7 @@
 	"pad.userlist.approve": "स्वीकृत गर्ने",
 	"pad.impexp.importbutton": "अहिले आयात गर्ने",
 	"pad.impexp.importing": "आयात गर्ने...",
+	"pad.impexp.uploadFailed": "अपलोड असफल भयो , कृपया पुन: प्रयास गर्नुहोस् ।",
 	"pad.impexp.importfailed": "आयात असफल भयो",
 	"pad.impexp.copypaste": "कृपया कपी पेस्ट गर्नुहोस"
 }
