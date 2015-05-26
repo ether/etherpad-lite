@@ -7,7 +7,16 @@ var _ = require("underscore")
   , Button
   , ButtonsGroup
   , Separator
-  , defaultButtonAttributes;
+  , defaultButtonAttributes
+  , removeItem;
+
+removeItem = function(array,what) {
+  var ax;
+  while ((ax = array.indexOf(what)) !== -1) {
+    array.splice(ax, 1);
+  }
+ return array;
+};
 
 defaultButtonAttributes = function (name, overrides) {
   return {
@@ -236,7 +245,18 @@ module.exports = {
   selectButton: function (attributes) {
     return new SelectButton(attributes);
   },
-  menu: function (buttons) {
+  menu: function (buttons, isReadOnly) {
+    if(isReadOnly){
+      // The best way to detect if it's the left editbar is to check for a bold button
+      if(buttons[0].indexOf("bold") !== -1){
+        // Clear all formatting buttons
+        buttons = []
+      }else{
+        // Remove Save Revision from the right menu
+        removeItem(buttons[0],"savedrevision");
+      }
+    }
+
     var groups = _.map(buttons, function (group) {
       return ButtonsGroup.fromArray(group).render();
     });

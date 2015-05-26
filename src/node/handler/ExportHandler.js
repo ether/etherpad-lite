@@ -28,6 +28,7 @@ var fs = require("fs");
 var settings = require('../utils/Settings');
 var os = require('os');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
+var TidyHtml = require('../utils/TidyHtml');
 
 //load abiword only if its enabled
 if(settings.abiword != null)
@@ -35,28 +36,28 @@ if(settings.abiword != null)
 
 var tempDirectory = "/tmp";
 
-//tempDirectory changes if the operating system is windows 
+//tempDirectory changes if the operating system is windows
 if(os.type().indexOf("Windows") > -1)
 {
   tempDirectory = process.env.TEMP;
 }
-  
+
 /**
  * do a requested export
- */ 
+ */
 exports.doExport = function(req, res, padId, type)
 {
   var fileName = padId;
 
   // allow fileName to be overwritten by a hook, the type type is kept static for security reasons
-  hooks.aCallFirst("exportFileName", padId, 
+  hooks.aCallFirst("exportFileName", padId,
     function(err, hookFileName){
       // if fileName is set then set it to the padId, note that fileName is returned as an array.
       if(hookFileName.length) fileName = hookFileName;
 
       //tell the browser that this is a downloadable file
       res.attachment(fileName + "." + type);
-    
+
       //if this is a plain text export, we can do this directly
       // We have to over engineer this because tabs are stored as attributes and not plain text
       if(type == "etherpad"){
@@ -72,7 +73,7 @@ exports.doExport = function(req, res, padId, type)
         var txt;
         var randNum;
         var srcFile, destFile;
-    
+
         async.series([
           //render the txt document
           function(callback)
@@ -96,7 +97,7 @@ exports.doExport = function(req, res, padId, type)
           {
             //ensure html can be collected by the garbage collector
             txt = null;
-    
+
             destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
             abiword.convertFile(srcFile, destFile, type, callback);
           },
@@ -140,7 +141,7 @@ exports.doExport = function(req, res, padId, type)
         var html;
         var randNum;
         var srcFile, destFile;
-    
+
         async.series([
           //render the html document
           function(callback)
@@ -150,7 +151,7 @@ exports.doExport = function(req, res, padId, type)
               if(ERR(err, callback)) return;
               html = _html;
               callback();
-            });   
+            });
           },
           //decide what to do with the html export
           function(callback)
@@ -162,22 +163,29 @@ exports.doExport = function(req, res, padId, type)
               hooks.aCallFirst("exportHTMLSend", html, function(err, newHTML){
                 if(newHTML.length) html = newHTML;
                 res.send(html);
-                callback("stop");  
+                callback("stop");
               });
             }
             else //write the html export to a file
             {
               randNum = Math.floor(Math.random()*0xFFFFFFFF);
               srcFile = tempDirectory + "/etherpad_export_" + randNum + ".html";
-              fs.writeFile(srcFile, html, callback); 
+              fs.writeFile(srcFile, html, callback);
             }
           },
-          //send the convert job to abiword
+
+          // Tidy up the exported HTML
           function(callback)
           {
             //ensure html can be collected by the garbage collector
             html = null;
-          
+
+            TidyHtml.tidy(srcFile, callback);
+          },
+
+          //send the convert job to abiword
+          function(callback)
+          {
             destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
             abiword.convertFile(srcFile, destFile, type, callback);
           },
@@ -199,7 +207,7 @@ exports.doExport = function(req, res, padId, type)
                 //100ms delay to accomidate for slow windows fs
                 if(os.type().indexOf("Windows") > -1)
                 {
-                  setTimeout(function() 
+                  setTimeout(function()
                   {
                     fs.unlink(destFile, callback);
                   }, 100);
