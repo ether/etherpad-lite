@@ -18,7 +18,6 @@
  * limitations under the License.
  */
  
-var util  = require('util');
 var spawn = require('child_process').spawn;
 var async = require("async");
 var settings = require("./Settings");

@@ -70,9 +70,10 @@
             }
             #button {
               margin: 0 auto;
-              border-radius: 3px;
               text-align: center;
               font: 36px verdana,arial,sans-serif;
+              width:300px;
+              border:none;
               color: white;
               text-shadow: 0 -1px 0 rgba(0,0,0,.8);
               height: 70px;
@@ -100,6 +101,7 @@
               text-align: left;
               text-shadow: 0 1px 1px #fff;
               margin: 16px auto 0;
+              display:block;
             }
             #padname{
               height:38px;
@@ -158,8 +160,8 @@
         <div id="wrapper">
         <% e.begin_block("indexWrapper"); %>
             <div id="inner">
-                <div id="button" onclick="go2Random()" data-l10n-id="index.newPad"></div>
-                <div id="label" data-l10n-id="index.createOpenPad"></div> 
+                <buttOn id="button" onclick="go2Random()" data-l10n-id="index.newPad"></button>
+                <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label> 
                 <form action="#" onsubmit="go2Name();return false;"> 
                     <input type="text" id="padname" autofocus x-webkit-speech> 
                     <button type="submit">OK</button>

@@ -41,7 +41,7 @@ exports.syncMapFirst = function (lst, fn) {
 exports.mapFirst = function (lst, fn, cb) {
   var i = 0;
 
-  next = function () {
+  var next = function () {
     if (i >= lst.length) return cb(undefined);
     fn(lst[i++], function (err, result) {
       if (err) return cb(err);

@@ -30,8 +30,6 @@ function getPadHTML(pad, revNum, callback)
   var html;
   async.waterfall([
   // fetch revision atext
-
-
   function (callback)
   {
     if (revNum != undefined)
@@ -78,6 +76,14 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
+
+  hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
+    newProps.forEach(function (propName, i){
+      tags.push(propName);
+      props.push(propName);
+    });
+  });
+
   // holds a map of used styling attributes (*1, *2, etc) in the apool
   // and maps them to an index in props
   // *3:2 -> the attribute *3 means strong
@@ -297,10 +303,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
   var lists = []; // e.g. [[1,'bullet'], [3,'bullet'], ...]
+  var listLevels = []
   for (var i = 0; i < textLines.length; i++)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
+    listLevels.push(line.listLevel)
 
     if (line.listLevel)//If we are inside a list
     {
@@ -320,13 +328,27 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
       {
+        if(lists.length > 0){
+          pieces.push('</li>')
+        }
         lists.push([line.listLevel, line.listTypeName]);
+
+        // if there is a previous list we need to open x tags, where x is the difference of the levels
+        // if there is no previous list we need to open x tags, where x is the wanted level
+        var toOpen = lists.length > 1 ? line.listLevel - lists[lists.length - 2][0] - 1 : line.listLevel - 1
+
         if(line.listTypeName == "number")
         {
+          if(toOpen > 0){
+            pieces.push(new Array(toOpen + 1).join('<ol>'))
+          }
           pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
         else
         {
+          if(toOpen > 0){
+            pieces.push(new Array(toOpen + 1).join('<ul>'))
+          }
           pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
       }
@@ -355,44 +377,50 @@ function getHTMLFromAtext(pad, atext, authorColors)
           pieces.push('<br><br>');
         }
       }*/
-      else//means we are getting closer to the lowest level of indentation
+      else//means we are getting closer to the lowest level of indentation or are at the same level 
       {
-        while (whichList < lists.length - 1)
-        {
+        var toClose = lists.length > 0 ? listLevels[listLevels.length - 2] - line.listLevel : 0
+        if( toClose > 0){
+          pieces.push('</li>')
           if(lists[lists.length - 1][1] == "number")
           {
-            pieces.push('</li></ol>');
+            pieces.push(new Array(toClose+1).join('</ol>'))
+            pieces.push('<li>', lineContent || '<br>');
           }
           else
           {
-            pieces.push('</li></ul>');
+            pieces.push(new Array(toClose+1).join('</ul>'))
+            pieces.push('<li>', lineContent || '<br>');
           }
-          lists.length--;
+          lists = lists.slice(0,whichList+1)
+        } else {
+          pieces.push('</li><li>', lineContent || '<br>');
         }
-        pieces.push('</li><li>', lineContent || '<br>');
       }
     }
-    else//outside any list
+    else//outside any list, need to close line.listLevel of lists
     {
-      while (lists.length > 0)//if was in a list: close it before
-      {
-        if(lists[lists.length - 1][1] == "number")
-        {
+      if(lists.length > 0){
+        if(lists[lists.length - 1][1] == "number"){
           pieces.push('</li></ol>');
-        }
-        else
-        {
+          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ol>'))
+        } else {
           pieces.push('</li></ul>');
+          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ul>'))
         }
-        lists.length--;
       }
-      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
-      {
+      lists = []
+
+      var context = {
         line: line,
+        lineContent: lineContent,
         apool: apool,
         attribLine: attribLines[i],
         text: textLines[i]
-      }, " ", " ", "");
+      }
+
+      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", context, " ", " ", "");
+
       if (lineContentFromHook)
       {
         pieces.push(lineContentFromHook, '');
@@ -425,36 +453,119 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
   {
     if(ERR(err, callback)) return;
 
-    var head = 
-      (noDocType ? '' : '<!doctype html>\n') + 
-      '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
-        '<title>' + Security.escapeHTML(padId) + '</title>\n' +
-        '<meta charset="utf-8">\n' + 
-        '<style> * { font-family: arial, sans-serif;\n' + 
-          'font-size: 13px;\n' + 
-          'line-height: 17px; }' + 
-          'ul.indent { list-style-type: none; }' +
-          'ol { list-style-type: decimal; }' +
-          'ol ol { list-style-type: lower-latin; }' +
-          'ol ol ol { list-style-type: lower-roman; }' +
-          'ol ol ol ol { list-style-type: decimal; }' +
-          'ol ol ol ol ol { list-style-type: lower-latin; }' +
-          'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
-          'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-          'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
-          '</style>\n' + '</head>\n') + 
-      '<body>';
+    var stylesForExportCSS = "";
+    // Include some Styles into the Head for Export
+    hooks.aCallAll("stylesForExport", padId, function(err, stylesForExport){
+      stylesForExport.forEach(function(css){
+        stylesForExportCSS += css;
+      });
+      // Core inclusion of head etc.
+      var head = 
+        (noDocType ? '' : '<!doctype html>\n') + 
+        '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+          '<title>' + Security.escapeHTML(padId) + '</title>\n' +
+          '<meta charset="utf-8">\n' + 
+          '<style> * { font-family: arial, sans-serif;\n' + 
+            'font-size: 13px;\n' + 
+            'line-height: 17px; }' + 
+            'ul.indent { list-style-type: none; }' +
 
-    var foot = '</body>\n</html>\n';
+            'ol { list-style-type: none; padding-left:0;}' +
+            'body > ol { counter-reset: first second third fourth fifth sixth seventh eigth ninth tenth eleventh twelth thirteenth fourteenth fifteenth sixteenth; }' +
+            'ol > li:before {' +
+            'content: counter(first) ". " ;'+
+            'counter-increment: first;}' +
 
-    getPadHTML(pad, revNum, function (err, html)
-    {
-      if(ERR(err, callback)) return;
-      callback(null, head + html + foot);
+            'ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) ". " ;'+
+            'counter-increment: second;}' +
+
+            'ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) ". ";'+
+            'counter-increment: third;}' +
+
+            'ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";'+
+            'counter-increment: fourth;}' +
+
+            'ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";'+
+            'counter-increment: fifth;}' +
+
+            'ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";'+
+            'counter-increment: sixth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";'+
+            'counter-increment: seventh;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) ". ";'+
+            'counter-increment: eigth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) ". ";'+
+            'counter-increment: ninth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) ". ";'+
+            'counter-increment: tenth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";'+
+            'counter-increment: eleventh;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) ". ";'+
+            'counter-increment: twelth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) ". ";'+
+            'counter-increment: thirteenth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) "." counter(fourteenth) ". ";'+
+            'counter-increment: fourteenth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "."  counter(eigth) "."  counter(ninth) "."  counter(tenth) "."  counter(eleventh) "."  counter(twelth) "."  counter(thirteenth) "."  counter(fourteenth) "." counter(fifteenth) ". ";'+
+            'counter-increment: fifteenth;}' +
+
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
+            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "."  counter(eigth) "."  counter(ninth) "."  counter(tenth) "."  counter(eleventh) "."  counter(twelth) "."  counter(thirteenth) "."  counter(fourteenth) "."  counter(fifteenth) "."  counter(sixthteenth) ". ";'+
+            'counter-increment: sixthteenth;}' +
+
+            'ol{ text-indent: 0px; }' +
+            'ol > ol{ text-indent: 10px; }' +
+            'ol > ol > ol{ text-indent: 20px; }' +
+            'ol > ol > ol > ol{ text-indent: 30px; }' +
+            'ol > ol > ol > ol > ol{ text-indent: 40px; }' +
+            'ol > ol > ol > ol > ol > ol{ text-indent: 50px; }' +
+            'ol > ol > ol > ol > ol > ol > ol{ text-indent: 60px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 70px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 80px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 90px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 100px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 110px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol { text-indent: 120px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 130px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 140px; }' +
+            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 150px; }' +
+
+            stylesForExportCSS + 
+            '</style>\n' + '</head>\n') + 
+        '<body>';
+      var foot = '</body>\n</html>\n';
+
+      getPadHTML(pad, revNum, function (err, html)
+      {
+        if(ERR(err, callback)) return;
+        callback(null, head + html + foot);
+      });
     });
   });
 };
-
 
 // copied from ACE
 var _REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;

@@ -214,6 +214,32 @@ function handleMessage ( hook, context, callback ) {
 };
 ```
 
+## handleMessageSecurity
+Called from: src/node/handler/PadMessageHandler.js
+
+Things in context:
+
+1. message - the message being handled
+2. client - the client object from socket.io
+
+This hook will be called once a message arrives. If a plugin calls `callback(true)` the message will be allowed to be processed. This is especially useful if you want read only pad visitors to update pad contents for whatever reason.
+
+**WARNING**: handleMessageSecurity will be called, even if the client is not authorized to send this message. It's up to the plugin to check permissions.
+
+Example:
+
+```
+function handleMessageSecurity ( hook, context, callback ) {
+  if ( context.message.boomerang == 'hipster' ) {
+    // If the message boomer is hipster, allow the request
+    callback(true);
+  }else{
+    callback();
+  }
+};
+```
+
+
 ## clientVars
 Called from: src/node/handler/PadMessageHandler.js
 
@@ -247,6 +273,64 @@ Things in context:
 
 This hook will allow a plug-in developer to re-write each line when exporting to HTML.
 
+Example:
+```
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+
+exports.getLineHTMLForExport = function (hook, context) {
+  var header = _analyzeLine(context.attribLine, context.apool);
+  if (header) {
+    return "<" + header + ">" + context.lineContent + "</" + header + ">";
+  }
+}
+
+function _analyzeLine(alineAttrs, apool) {
+  var header = null;
+  if (alineAttrs) {
+    var opIter = Changeset.opIterator(alineAttrs);
+    if (opIter.hasNext()) {
+      var op = opIter.next();
+      header = Changeset.opAttributeValue(op, 'heading', apool);
+    }
+  }
+  return header;
+}
+```
+
+## stylesForExport
+Called from: src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. padId - The Pad Id
+
+This hook will allow a plug-in developer to append Styles to the Exported HTML.
+
+Example:
+
+```
+exports.stylesForExport = function(hook, padId, cb){
+  cb("body{font-size:13.37em !important}");
+}
+```
+
+## aceAttribClasses
+Called from: src/static/js/linestylefilter.js
+
+Things in context:
+1. Attributes - Object of Attributes
+
+This hook is called when attributes are investigated on a line.  It is useful if you want to add another attribute type or property type to a pad.
+
+Example:
+
+```
+exports.aceAttribClasses = function(hook_name, attr, cb){
+  attr.sub = 'tag:sub';
+  cb(attr);
+}
+```
+
 ## exportFileName
 Called from src/node/handler/ExportHandler.js 
 
@@ -262,6 +346,24 @@ Example:
 exports.exportFileName = function(hook, padId, callback){
   callback("newFileName"+padId);
 }
+```
+
+## exportHtmlAdditionalTags
+Called from src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. Pad object
+
+This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export.  An Array should be returned.
+
+Example:
+```
+// Add the props to be supported in export
+exports.exportHtmlAdditionalTags = function(hook, pad, cb){
+  var padId = pad.id;
+  cb(["massive","jugs"]);
+};
 ```
 
 ## userLeave

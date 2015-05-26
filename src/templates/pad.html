@@ -40,9 +40,12 @@
         <link rel="shortcut icon" href="<%=settings.faviconPad%>">
 
         <% e.begin_block("styles"); %>
-        <link href="../static/css/fontawesome-etherpad.css" rel="stylesheet">
         <link href="../static/css/pad.css" rel="stylesheet">
+
+        <% e.begin_block("customStyles"); %>
         <link href="../static/custom/pad.css" rel="stylesheet">
+        <% e.end_block(); %>
+
         <style title="dynamicsyntax"></style>
         <% e.end_block(); %>
 
@@ -53,19 +56,19 @@
         <!-- head and body had been removed intentionally -->
 
         <% e.begin_block("body"); %>
-        <div id="editbar" class="toolbar">
+        <div id="editbar" class="toolbar" title="Toolbar (Alt F9)">
             <div id="overlay">
                 <div id="overlay-inner"></div>
             </div>
 
-            <ul class="menu_left">
+            <ul class="menu_left" role="toolbar">
                 <% e.begin_block("editbarMenuLeft"); %>
-                <%- toolbar.menu(settings.toolbar.left) %>
+                <%- toolbar.menu(settings.toolbar.left, isReadOnly) %>
                 <% e.end_block(); %>
             </ul>
-            <ul class="menu_right">
+            <ul class="menu_right" role="toolbar">
                 <% e.begin_block("editbarMenuRight"); %>
-                <%- toolbar.menu(settings.toolbar.right) %>
+                <%- toolbar.menu(settings.toolbar.right, isReadOnly) %>
                 <% e.end_block(); %>
             </ul>
         </div>
@@ -85,7 +88,7 @@
                 <div id="myusernameform"><input type="text" id="myusernameedit" disabled="disabled" data-l10n-id="pad.userlist.entername"></div>
                 <div id="mystatusform"><input type="text" id="mystatusedit" disabled="disabled"></div>
             </div>
-            <div id="otherusers">
+            <div id="otherusers" aria-role="document">
                 <div id="guestprompts"></div>
                 <table id="otheruserstable" cellspacing="0" cellpadding="0" border="0">
                     <tr><td></td></tr>
@@ -111,6 +114,9 @@
               <div id="wrongPassword">
                 <p data-l10n-id="pad.wrongPassword">Your password was wrong</p>
               </div>
+              <div id="noCookie">
+                <p data-l10n-id="pad.noCookie">Cookie could not be found. Please allow cookies in your browser!</p>
+              </div>
               <% e.begin_block("loading"); %>
               <p data-l10n-id="pad.loading" id="loading">Loading...</p>
               <% e.end_block(); %>
@@ -126,6 +132,10 @@
                 <p>
                     <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
                     <label for="options-stickychat" data-l10n-id="pad.settings.stickychat"></label>
+                </p>
+                <p>
+                    <input type="checkbox" id="options-chatandusers" onClick="chat.chatAndUsers();">
+                    <label for="options-chatandusers" data-l10n-id="pad.settings.chatandusers"></label>
                 </p>
                 <p>
                     <input type="checkbox" id="options-colorscheck">
@@ -150,6 +160,22 @@
                             <select id="viewfontmenu">
                                 <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
                                 <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
+                                <option value="opendyslexic" data-l10n-id="pad.settings.fontType.opendyslexic"></option>
+                                <option value="comicsans" data-l10n-id="pad.settings.fontType.comicsans"></option>
+                                <option value="georgia" data-l10n-id="pad.settings.fontType.georgia"></option>
+                                <option value="impact" data-l10n-id="pad.settings.fontType.impact"></option>
+                                <option value="lucida" data-l10n-id="pad.settings.fontType.lucida"></option>
+                                <option value="lucidasans" data-l10n-id="pad.settings.fontType.lucidasans"></option>
+                                <option value="palatino" data-l10n-id="pad.settings.fontType.palatino"></option>
+                                <option value="tahoma" data-l10n-id="pad.settings.fontType.tahoma"></option>
+                                <option value="timesnewroman" data-l10n-id="pad.settings.fontType.timesnewroman"></option>
+                                <option value="trebuchet" data-l10n-id="pad.settings.fontType.trebuchet"></option>
+                                <option value="verdana" data-l10n-id="pad.settings.fontType.verdana"></option>
+                                <option value="symbol" data-l10n-id="pad.settings.fontType.symbol"></option>
+                                <option value="webdings" data-l10n-id="pad.settings.fontType.webdings"></option>
+                                <option value="wingdings" data-l10n-id="pad.settings.fontType.wingdings"></option>
+                                <option value="sansserif" data-l10n-id="pad.settings.fontType.sansserif"></option>
+                                <option value="serif" data-l10n-id="pad.settings.fontType.serif"></option>
                             </select>
                         </td>
                     </tr>
@@ -191,8 +217,7 @@
                     <div class="importformdiv" id="importformsubmitdiv">
                         <span class="nowrap">
                             <input type="submit" name="submit" value="Import Now" disabled="disabled" id="importsubmitinput">
-                            <img alt="" id="importstatusball" src="../static/img/loading.gif" align="top">
-                            <img alt="" id="importarrow" src="../static/img/leftarrow.png" align="top">
+                            <div alt="" id="importstatusball" class="loadingAnimation" align="top"></div>
                         </span>
                     </div>
                 </form>
@@ -201,12 +226,12 @@
             <div class="column" id="exportColumn">
                 <h2 data-l10n-id="pad.importExport.export"></h2>
                 <% e.begin_block("exportColumn"); %>
+                <a id="exportetherpada" target="_blank" class="exportlink"><div class="exporttype" id="exportetherpad" data-l10n-id="pad.importExport.exportetherpad"></div></a>
                 <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
                 <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain" data-l10n-id="pad.importExport.exportplain"></div></a>
                 <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>
                 <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></div></a>
                 <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen" data-l10n-id="pad.importExport.exportopen"></div></a>
-                <a id="exportdokuwikia" target="_blank" class="exportlink"><div class="exporttype" id="exportdokuwiki" data-l10n-id="pad.importExport.exportdokuwiki"></div></a>
                 <% e.end_block(); %>
             </div>
         </div>
@@ -218,7 +243,7 @@
                 </div>
                 <div class="reconnecting">
                   <h1 data-l10n-id="pad.modals.reconnecting"></h1>
-                  <p><img alt="" border="0" src="../static/img/connectingbar.gif" /></p>
+                  <p class='loadingAnimation'></p>
                 </div>
                 <div class="userdup">
                   <h1 data-l10n-id="pad.modals.userdup"></h1>
@@ -297,7 +322,7 @@
             <% e.end_block(); %>
         </div>
 
-        <div id="chaticon" onclick="chat.show();return false;">
+        <div id="chaticon" onclick="chat.show();return false;" title="Chat (Alt C)">
             <span id="chatlabel" data-l10n-id="pad.chat"></span>
             <span class="buttonicon buttonicon-chat"></span>
             <span id="chatcounter">0</span>
@@ -308,8 +333,8 @@
               <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
               <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
             </div>
-            <div id="chattext" class="authorColors">
-                <img alt="loading.." id="chatloadmessagesball" class="chatloadmessages" src="../static/img/loading.gif" align="top">
+            <div id="chattext" class="authorColors" aria-live="polite" aria-relevant="additions removals text" role="log" aria-atomic="false">
+                <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
                 <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>
             </div>
             <div id="chatinputbox">
@@ -347,7 +372,9 @@
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
 
+        <% e.begin_block("customScripts"); %>
         <script type="text/javascript" src="../static/custom/pad.js"></script>
+        <% e.end_block(); %>
 
         <!-- Bootstrap page -->
         <script type="text/javascript">
@@ -363,8 +390,8 @@
               require.setGlobalKeyPath("require");
 
               $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
-
-              if ((!$.browser.msie) && (!($.browser.mozilla && $.browser.version.indexOf("1.8.") == 0))) {
+              browser = require('ep_etherpad-lite/static/js/browser').browser;
+              if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
                 document.domain = document.domain; // for comet
               }
 

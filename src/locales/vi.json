@@ -3,7 +3,8 @@
 		"authors": [
 			"Baonguyen21022003",
 			"Minh Nguyen",
-			"Tuankiet65"
+			"Tuankiet65",
+			"Max20091"
 		]
 	},
 	"index.newPad": "Tạo một Pad mới",
@@ -11,9 +12,9 @@
 	"pad.toolbar.bold.title": "In đậm (Ctrl-B)",
 	"pad.toolbar.italic.title": "In nghiêng (Ctrl-I)",
 	"pad.toolbar.underline.title": "Gạch chân (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "Gạch ngang",
-	"pad.toolbar.ol.title": "Danh sách Có Đánh số",
-	"pad.toolbar.ul.title": "Danh sách Không Đánh số",
+	"pad.toolbar.strikethrough.title": "Gạch ngang (Ctrl+5)",
+	"pad.toolbar.ol.title": "Danh sách Có Đánh số (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "Danh sách Không Đánh số (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Tăng lề (TAB)",
 	"pad.toolbar.unindent.title": "Giảm lề (Shift+TAB)",
 	"pad.toolbar.undo.title": "Hoàn tác (Ctrl-Z)",
@@ -51,7 +52,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "Bạn chỉ có thể nhập vào từ văn bản thuần túy hay định dạng HTML. Nếu muốn có nhiều chức năng nhập hơn xin hãy <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">cài đặt abiword</a>.",
 	"pad.modals.connected": "Đã kết nối lại.",
 	"pad.modals.reconnecting": "Kết nối lại tới pad của bạn",

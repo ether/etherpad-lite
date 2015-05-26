@@ -35,32 +35,10 @@ var padimpexp = (function()
 
   function fileInputUpdated()
   {
+    $('#importsubmitinput').addClass('throbbold');
     $('#importformfilediv').addClass('importformenabled');
     $('#importsubmitinput').removeAttr('disabled');
-    $('#importmessagefail').fadeOut("fast");
-    $('#importarrow').show();
-    $('#importarrow').animate(
-    {
-      paddingLeft: "0px"
-    }, 500).animate(
-    {
-      paddingLeft: "10px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "0px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "10px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "0px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "10px"
-    }, 150, 'swing').animate(
-    {
-      paddingLeft: "0px"
-    }, 150, 'swing');
+    $('#importmessagefail').fadeOut('fast');
   }
 
   function fileInputSubmit()
@@ -131,6 +109,8 @@ var padimpexp = (function()
       msg = html10n.get("pad.impexp.convertFailed");
     } else if(status === "uploadFailed"){
       msg = html10n.get("pad.impexp.uploadFailed");
+    } else if(status === "padHasData"){
+      msg = html10n.get("pad.impexp.padHasData");
     }
   
     function showError(fade)
@@ -208,7 +188,8 @@ var padimpexp = (function()
       pad = _pad;
 
       //get /p/padname
-      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname);
+      // if /p/ isn't available due to a rewrite we use the clientVars padId
+      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
       //get http://example.com/p/padname without Params
       var pad_root_url = document.location.protocol + '//' + document.location.host + document.location.pathname;
 
@@ -220,8 +201,8 @@ var padimpexp = (function()
 
       // build the export links
       $("#exporthtmla").attr("href", pad_root_path + "/export/html");
+      $("#exportetherpada").attr("href", pad_root_path + "/export/etherpad");
       $("#exportplaina").attr("href", pad_root_path + "/export/txt");
-      $("#exportdokuwikia").attr("href", pad_root_path + "/export/dokuwiki");
 
       // activate action to import in the form
       $("#importform").attr('action', pad_root_url + "/import");
@@ -254,16 +235,16 @@ var padimpexp = (function()
     
       addImportFrames();
       $("#importfileinput").change(fileInputUpdated);
-      $('#importform').submit(fileInputSubmit);
+      $('#importform').unbind("submit").submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
-    handleFrameCall: function(status)
+    handleFrameCall: function(directDatabaseAccess, status)
     {
       if (status !== "ok")
       {
         importFailed(status);
       }
-      
+      if(directDatabaseAccess) pad.switchToPad(clientVars.padId);
       importDone();
     },
     disable: function()
