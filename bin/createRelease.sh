@@ -41,13 +41,12 @@ echo -n "Enter new version (x.x.x): "
 read VERSION
 
 # get the message for the changelogs
-echo -n "Enter new changelog entries (enter a blank line to end): "
-while read -r line; do
-	if [ "$line" = "" ]; then
-		break
-	fi
-	changelogText="$changelogText * $line\n"
-done
+read -p "Enter new changelog entries (press enter): "
+tmp=$(mktemp)
+"${EDITOR:-vi}" $tmp
+changelogText=$(<$tmp)
+echo "$changelogText"
+rm $tmp
 
 if [ "$changelogText" != "" ]; then
 	changelogText="# $VERSION\n$changelogText"
@@ -58,10 +57,10 @@ echo -n "Enter your github api token: "
 read API_TOKEN
 
 function check_api_token {
-	echo "Checking if github api token is valid..."
-       	CURL_RESPONSE=$(curl --silent -i https://api.github.com/user?access_token=$API_TOKEN)
-	HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
-        [[ $HTTP_STATUS != "200" ]] && echo "Aborting: Invalid github api token" && exit 1
+  echo "Checking if github api token is valid..."
+  CURL_RESPONSE=$(curl --silent -i https://api.github.com/user?access_token=$API_TOKEN)
+  HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
+  [[ $HTTP_STATUS != "200" ]] && echo "Aborting: Invalid github api token" && exit 1
 }
 
 function modify_files {
