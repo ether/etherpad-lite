@@ -58,7 +58,7 @@ read API_TOKEN
 
 function check_api_token {
   echo "Checking if github api token is valid..."
-  CURL_RESPONSE=$(curl --silent -i https://api.github.com/user?access_token=$API_TOKEN)
+  CURL_RESPONSE=$(curl --silent -i https://api.github.com/user?access_token=$API_TOKEN | iconv -f utf8)
   HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
   [[ $HTTP_STATUS != "200" ]] && echo "Aborting: Invalid github api token" && exit 1
 }
@@ -93,7 +93,7 @@ function create_release_branch {
 function merge_release_branch {
 	echo "Merging release to master branch on github..."
 	API_JSON=$(printf '{"base": "master","head": "release/%s","commit_message": "Merge new release into master branch!"}' $VERSION)
-	CURL_RESPONSE=$(curl --silent -i --data "$API_JSON" https://api.github.com/repos/ether/etherpad-lite/merges?access_token=$API_TOKEN)
+	CURL_RESPONSE=$(curl --silent -i --data "$API_JSON" https://api.github.com/repos/ether/etherpad-lite/merges?access_token=$API_TOKEN  | iconv -f utf8)
 	echo $CURL_RESPONSE
 	HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
 	[[ $HTTP_STATUS != "200" ]] && echo "Aborting: Error merging release branch on github" && exit 1
@@ -137,7 +137,7 @@ function push_builds {
 function merge_web_branch {
         echo "Merging release to master branch on github..."
         API_JSON=$(printf '{"base": "master","head": "release_%s","commit_message": "Release version %s"}' $VERSION $VERSION)
-       	CURL_RESPONSE=$(curl --silent -i --data "$API_JSON" https://api.github.com/repos/ether/ether.github.com/merges?access_token=$API_TOKEN)
+       	CURL_RESPONSE=$(curl --silent -i --data "$API_JSON" https://api.github.com/repos/ether/ether.github.com/merges?access_token=$API_TOKEN | iconv -f utf8)
 	echo $CURL_RESPONSE
 	HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
 	[[ $HTTP_STATUS != "200" ]] && echo "Aborting: Error merging release branch" && exit 1
@@ -149,7 +149,7 @@ function publish_release {
 	if [ $PUBLISH_RELEASE = "y" ]; then
 		# create a new release on github
 		API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "Release %s","body": "%s","draft": false,"prerelease": false}' $VERSION $VERSION $changelogText)
-		CURL_RESPONSE=$(curl --silent -i --data "$API_JSON" https://api.github.com/repos/ether/etherpad-lite/releases?access_token=$API_TOKEN)
+		CURL_RESPONSE=$(curl --silent -i --data "$API_JSON" https://api.github.com/repos/ether/etherpad-lite/releases?access_token=$API_TOKEN | iconv -f utf8)
 		HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
 		[[ $HTTP_STATUS != "201" ]] && echo "Aborting: Error publishing release on github" && exit 1
 	else
