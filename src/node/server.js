@@ -23,8 +23,7 @@
 
 var log4js = require('log4js')
   , async = require('async')
-  , stats = require('./stats')
-  ;
+  , stats = require('./stats');
 
 log4js.replaceConsole();
 
@@ -81,6 +80,22 @@ async.waterfall([
   function (callback)
   {
     hooks.callAll("createServer", {});
-    callback(null);  
+
+    // Create minified files
+    var minify = require('./utils/Minify');
+
+    minify.getFileCompressed("js/ace.js", "text/javascript", function(){
+      callback(null);
+    });
+    /*
+    minify.getFileCompressed("js/require-kernel.js", "text/javascript", function(){
+      callback(null);
+    });
+    */
+    minify.getFileCompressed("css/pad.css", "text/css", function(){
+      callback(null);
+    });
+
   }
+
 ]);

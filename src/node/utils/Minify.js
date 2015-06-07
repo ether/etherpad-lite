@@ -35,7 +35,6 @@ var ROOT_DIR = path.normalize(__dirname + "/../../static/");
 var TAR_PATH = path.join(__dirname, 'tar.json');
 var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
-
 var LIBRARY_WHITELIST = [
       'async'
     , 'security'
@@ -225,6 +224,7 @@ function minify(req, res, next)
         res.writeHead(200, {});
         res.end();
       } else if (req.method == 'GET') {
+// console.warn("filename", filename, "cT", contentType);
         getFileCompressed(filename, contentType, function (error, content) {
           if(ERR(error, function(){
             res.writeHead(500, {});
@@ -245,6 +245,8 @@ function minify(req, res, next)
 
 // find all includes in ace.js and embed them.
 function getAceFile(callback) {
+  console.warn("Minify happening, this sould only happen once...");
+
   fs.readFile(ROOT_DIR + 'js/ace.js', "utf8", function(err, data) {
     if(ERR(err, callback)) return;
 
@@ -263,7 +265,7 @@ function getAceFile(callback) {
     // them into the file.
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
-
+      console.debug("Read file", filename);
       var baseURI = 'http://localhost:' + settings.port;
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
@@ -312,8 +314,10 @@ function statFile(filename, callback, dirStatLimit) {
           callback(error);
         }
       } else if (stats.isFile()) {
+// console.warn("stats is file");
         callback(null, stats.mtime.getTime(), true);
       } else {
+// console.warn("stats not file");
         callback(null, stats.mtime.getTime(), false);
       }
     });
@@ -402,6 +406,7 @@ function getFile(filename, callback) {
 
 function compressJS(values)
 {
+  console.debug("compressed JS");
   var complete = values.join("\n");
   var ast = jsp.parse(complete); // parse code and get the initial AST
   ast = pro.ast_mangle(ast); // get a new AST with mangled names
@@ -411,6 +416,7 @@ function compressJS(values)
 
 function compressCSS(values)
 {
+  console.debug("compressed CSS");
   var complete = values.join("\n");
   var minimized = new CleanCSS().minify(complete).styles;
   return minimized;
@@ -420,3 +426,4 @@ exports.minify = minify;
 
 exports.requestURI = requestURI;
 exports.requestURIs = requestURIs;
+exports.getFileCompressed = getFileCompressed;
