@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Theklan",
-			"Subi"
+			"Subi",
+			"Xabier Armendaritz"
 		]
 	},
 	"index.newPad": "Pad berria",
@@ -87,7 +88,7 @@
 	"timeslider.exportCurrent": "Gorde bertsio hau honela:",
 	"timeslider.version": "Bertsioa {{version}}",
 	"timeslider.saved": "{{year}}ko {{month}}ren {{day}}an gordeta",
-	"timeslider.dateformat": "{{year}}/{{month}}/{{day}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateformat": "{{year}}-{{month}}-{{day}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Urtarrila",
 	"timeslider.month.february": "Otsaila",
 	"timeslider.month.march": "Martxoa",
