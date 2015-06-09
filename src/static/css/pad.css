@@ -827,6 +827,14 @@ table#otheruserstable {
 .buttonicon-savedRevision:before {
   content: "\e835";
 }
+.buttonicon-fullscreen:before {
+  content: "\e838";
+}
+.buttonicon-exit-fullscreen:before {
+  content: "\e83a";
+}
+
+
 #focusprotector {
   z-index: 100;
   position: absolute;
