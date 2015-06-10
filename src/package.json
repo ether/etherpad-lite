@@ -27,7 +27,6 @@
     }
   ],
   "dependencies": {
-   
     "async": "0.9.0",
     "async-stacktrace": "0.0.2",
     "channels": "0.0.4",
@@ -67,11 +66,12 @@
     "etherpad-lite": "./node/server.js"
   },
   "devDependencies": {
-    "browserify": "^5.9.3",
-    "vinyl-transform": "0.0.1",
-    "gulp": "^3.8.7",
-    "gulp-uglify": "^0.3.1",
     "aliasify": "^1.7.2",
+    "browserify": "^5.9.3",
+    "gulp": "^3.8.7",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^0.3.1",
+    "vinyl-transform": "0.0.1",
     "wd": "0.3.11"
   },
   "engines": {

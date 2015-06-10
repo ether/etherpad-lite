@@ -365,7 +365,7 @@
             })();
         </script>
 
-        <script type="text/javascript" src="../static/__build.js"></script>
+        <script id="minified_bundle" type="text/javascript" src="../static/js/__build.js"></script>
         
         <script type="text/javascript">
         // console.log(require);
@@ -415,24 +415,24 @@
               var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
               plugins.baseURL = baseURL;
-              // plugins.update(function () {
-              //   hooks.plugins = plugins;
+              plugins.update(function () {
+                hooks.plugins = plugins;
 
-              //   // Call documentReady hook
-              //   $(function() {
-              //     hooks.aCallAll('documentReady');
-              //   });
+                // Call documentReady hook
+                $(function() {
+                  hooks.aCallAll('documentReady');
+                });
 
-              //   var pad = require('ep_etherpad-lite/static/js/pad');
-              //   pad.baseURL = baseURL;
-              // });
+                var pad = require('ep_etherpad-lite/static/js/pad');
+                pad.baseURL = baseURL;
+              });
 
               /* TODO: These globals shouldn't exist. */
               pad = require('ep_etherpad-lite/static/js/pad').pad;
-                pad.init();
-              // chat = require('ep_etherpad-lite/static/js/chat').chat;
-              // padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-              // padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+              pad.init();
+               chat = require('ep_etherpad-lite/static/js/chat').chat;
+               padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+               padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
             }());
         </script>
         <% e.end_block(); %>

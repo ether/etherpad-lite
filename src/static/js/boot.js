@@ -24,18 +24,28 @@
 //   return {foo:'bar'};
 // });
 
-// require('ep_etherpad-lite/static/js/browser');
-// require('ep_etherpad-lite/static/js/chat');
-// require('ep_etherpad-lite/static/js/pad_editbar');
-// require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-// require('ep_etherpad-lite/static/js/pluginfw/hooks');
+require('ep_etherpad-lite/static/js/browser');
+require('ep_etherpad-lite/static/js/chat');
+require('ep_etherpad-lite/static/js/pad_editbar');
+var client_plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
-// var $ = require('ep_etherpad-lite/static/js/rjquery').$;
-// window.$ = window.jQuery = $;
-require('ep_etherpad-lite/static/js/pad');
+var $ = require('ep_etherpad-lite/static/js/rjquery').$;
+window.$ = window.jQuery = $;
+var pad = require('ep_etherpad-lite/static/js/pad');
+
+// require('ep_etherpad-lite/static/js/pad_editor');
+require('ep_etherpad-lite/static/js/ace2_inner');
 
 // exports.foo='bar';
 // exports.require=require;
 
-window.bundleRequire=require;
-window.ETHER_BUNDLE={require:require};
+window.bundleRequire = require;
+window.require = require;
+window.ETHER_BUNDLE = {
+  pad: pad,
+  require: require,
+  hooks: hooks,
+  client_plugins: client_plugins,
+  jquery: $
+};

@@ -69,7 +69,7 @@ exports.expressCreateServer = function(hook_name, args, cb) {
       apiLogger.warn(parsedURL);
       apiLogger.warn('******', type, filename);
       switch (type) {
-
+        // @NOTE: obsolete
         case 'BUNDLED_MODULE':
           var oldURL = req.url;
           // req.url = req.url.replace('/javascripts/lib/ep_etherpad-lite', '');
