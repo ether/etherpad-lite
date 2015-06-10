@@ -4,17 +4,29 @@ var gulp = require('gulp');
 var browserify = require('browserify');
 var transform = require('vinyl-transform');
 var uglify = require('gulp-uglify');
+// @see https://www.npmjs.com/package/aliasify
 var aliasify = require('aliasify');
+var path = require('path');
+
+var SRC_ROOT = path.normalize(__dirname + '/../../../static');
+var PACKAGE_ROOT = path.normalize(__dirname + '/../../../');
+
+console.log('SRC_ROOT', SRC_ROOT);
+console.log('PACKAGE_ROOT', PACKAGE_ROOT);
 
 
 var aliasifyConfig = {
-    aliases: {
-        "underscore": "./src/a_subst.js"
-    },
-    verbose: true
+  configDir: PACKAGE_ROOT,
+  aliases: {
+    "underscore": "./src/a_subst.js",
+    "./static/js/pad.js": "./src/a_subst.js",
+    "pad": "./src/a_subst.js",
+    "ep_etherpad-lite/static/js/pad": __dirname + "/src/a_subst.js",
+  },
+  verbose: true
 }
 
-gulp.task('browserify', function () {
+gulp.task('browserify', function() {
 
   // use `vinyl-transform` to wrap around the regular ReadableStream returned by b.bundle();
   // so that we can use it down a vinyl pipeline as a vinyl file object.
@@ -25,9 +37,10 @@ gulp.task('browserify', function () {
     return b.bundle();
   });
 
-  return gulp.src(['./src/*.js'])
+  // return gulp.src(['./src/main.js'])
+  return gulp.src([SRC_ROOT + '/js/boot.js'])
     .pipe(browserified)
-    .pipe(uglify())
+    // .pipe(uglify())
     .pipe(gulp.dest('./dist'));
 });
 
