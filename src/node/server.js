@@ -84,3 +84,22 @@ async.waterfall([
     callback(null);  
   }
 ]);
+
+ 
+ 
+process.on('SIGTERM', function () {
+    // shutDown();
+    process.exit();
+});
+process.on('SIGINT', function () {
+    // shutDown();
+    process.exit();
+});
+
+
+process.on('exit', function () {
+    // shutDown();
+    console.log( 'ETHERPAD CLOSED SERVER');
+//        socket.server.close(); 
+//        socket.close();
+});

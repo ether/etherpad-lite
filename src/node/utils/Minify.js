@@ -1,7 +1,7 @@
 /**
  * This Module manages all /minified/* requests. It controls the 
  * minification && compression of Javascript and CSS. 
- */ 
+ */
 
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
@@ -37,12 +37,12 @@ var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 
 var LIBRARY_WHITELIST = [
-      'async'
-    , 'security'
-    , 'tinycon'
-    , 'underscore'
-    , 'unorm'
-    ];
+  'async'
+  , 'security'
+  , 'tinycon'
+  , 'underscore'
+  , 'unorm'
+];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
@@ -56,16 +56,15 @@ function prefixLocalLibraryPath(path) {
 }
 
 for (var key in tar) {
-  exports.tar[prefixLocalLibraryPath(key)] =
-    tar[key].map(prefixLocalLibraryPath).concat(
-      tar[key].map(prefixLocalLibraryPath).map(function (p) {
-        return p.replace(/\.js$/, '');
-      })
-    ).concat(
-      tar[key].map(prefixLocalLibraryPath).map(function (p) {
-        return p.replace(/\.js$/, '') + '/index.js';
-      })
-    );
+  exports.tar[prefixLocalLibraryPath(key)] = tar[key].map(prefixLocalLibraryPath).concat(
+    tar[key].map(prefixLocalLibraryPath).map(function(p) {
+      return p.replace(/\.js$/, '');
+    })
+  ).concat(
+    tar[key].map(prefixLocalLibraryPath).map(function(p) {
+      return p.replace(/\.js$/, '') + '/index.js';
+    })
+  );
 }
 
 // What follows is a terrible hack to avoid loop-back within the server.
@@ -73,33 +72,37 @@ for (var key in tar) {
 function requestURI(url, method, headers, callback, redirectCount) {
   var parsedURL = urlutil.parse(url);
 
-  var status = 500, headers = {}, content = [];
+  var status = 500,
+    headers = {},
+    content = [];
 
   var mockRequest = {
-    url: url
-  , method: method
-  , params: {filename: parsedURL.path.replace(/^\/static\//, '')}
-  , headers: headers
+    url: url,
+    method: method,
+    params: {
+      filename: parsedURL.path.replace(/^\/static\//, '')
+    },
+    headers: headers
   };
   var mockResponse = {
-    writeHead: function (_status, _headers) {
+    writeHead: function(_status, _headers) {
       status = _status;
       for (var header in _headers) {
         if (Object.prototype.hasOwnProperty.call(_headers, header)) {
           headers[header] = _headers[header];
         }
       }
-    }
-  , setHeader: function (header, value) {
+    },
+    setHeader: function(header, value) {
       headers[header.toLowerCase()] = value.toString();
-    }
-  , header: function (header, value) {
+    },
+    header: function(header, value) {
       headers[header.toLowerCase()] = value.toString();
-    }
-  , write: function (_content) {
-    _content && content.push(_content);
-    }
-  , end: function (_content) {
+    },
+    write: function(_content) {
+      _content && content.push(_content);
+    },
+    end: function(_content) {
       _content && content.push(_content);
       callback(status, headers, content.join(''));
     }
@@ -112,7 +115,7 @@ function requestURIs(locations, method, headers, callback) {
   var responses = [];
 
   function respondFor(i) {
-    return function (status, headers, content) {
+    return function(status, headers, content) {
       responses[i] = [status, headers, content];
       if (--pendingRequests == 0) {
         completed();
@@ -125,9 +128,15 @@ function requestURIs(locations, method, headers, callback) {
   }
 
   function completed() {
-    var statuss = responses.map(function (x) {return x[0];});
-    var headerss = responses.map(function (x) {return x[1];});
-    var contentss = responses.map(function (x) {return x[2];});
+    var statuss = responses.map(function(x) {
+      return x[0];
+    });
+    var headerss = responses.map(function(x) {
+      return x[1];
+    });
+    var contentss = responses.map(function(x) {
+      return x[2];
+    });
     callback(statuss, headerss, contentss);
   }
 }
@@ -137,8 +146,7 @@ function requestURIs(locations, method, headers, callback) {
  * @param req the Express request
  * @param res the Express response
  */
-function minify(req, res, next)
-{
+function minify(req, res, next) {
   var filename = req.params['filename'];
 
   // No relative paths, especially if they may go up the file hierarchy.
@@ -151,7 +159,7 @@ function minify(req, res, next)
   } else {
     res.writeHead(404, {});
     res.end();
-    return; 
+    return;
   }
 
   /* Handle static files for plugins/libraries:
@@ -198,13 +206,13 @@ function minify(req, res, next)
     contentType = "application/octet-stream";
   }
 
-  statFile(filename, function (error, date, exists) {
+  statFile(filename, function(error, date, exists) {
     if (date) {
       date = new Date(date);
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
       if (settings.maxAge !== undefined) {
-        var expiresDate = new Date((new Date()).getTime()+settings.maxAge*1000);
+        var expiresDate = new Date((new Date()).getTime() + settings.maxAge * 1000);
         res.setHeader('expires', expiresDate.toUTCString());
         res.setHeader('cache-control', 'max-age=' + settings.maxAge);
       }
@@ -225,18 +233,20 @@ function minify(req, res, next)
         res.writeHead(200, {});
         res.end();
       } else if (req.method == 'GET') {
-        getFileCompressed(filename, contentType, function (error, content) {
-          if(ERR(error, function(){
-            res.writeHead(500, {});
-            res.end();
-          })) return;
+        getFileCompressed(filename, contentType, function(error, content) {
+          if (ERR(error, function() {
+              res.writeHead(500, {});
+              res.end();
+            })) return;
           res.header("Content-Type", contentType);
           res.writeHead(200, {});
           res.write(content);
           res.end();
         });
       } else {
-        res.writeHead(405, {'allow': 'HEAD, GET'});
+        res.writeHead(405, {
+          'allow': 'HEAD, GET'
+        });
         res.end();
       }
     }
@@ -246,7 +256,7 @@ function minify(req, res, next)
 // find all includes in ace.js and embed them.
 function getAceFile(callback) {
   fs.readFile(ROOT_DIR + 'js/ace.js', "utf8", function(err, data) {
-    if(ERR(err, callback)) return;
+    if (ERR(err, callback)) return;
 
     // Find all includes in ace.js and embed them
     var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\("[^"]*"\)/gi);
@@ -261,18 +271,18 @@ function getAceFile(callback) {
 
     // Request the contents of the included file on the server-side and write
     // them into the file.
-    async.forEach(founds, function (item, callback) {
+    async.forEach(founds, function(item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
 
       var baseURI = 'http://localhost:' + settings.port;
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
-      requestURI(resourceURI, 'GET', {}, function (status, headers, body) {
+      requestURI(resourceURI, 'GET', {}, function(status, headers, body) {
         var error = !(status == 200 || status == 404);
         if (!error) {
           data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-              +  JSON.stringify(status == 200 ? body || '' : null) + ';\n';
+            + JSON.stringify(status == 200 ? body || '' : null) + ';\n';
         } else {
           // Silence?
         }
@@ -295,19 +305,19 @@ function statFile(filename, callback, dirStatLimit) {
   } else if (filename == 'js/ace.js') {
     // Sometimes static assets are inlined into this file, so we have to stat
     // everything.
-    lastModifiedDateOfEverything(function (error, date) {
+    lastModifiedDateOfEverything(function(error, date) {
       callback(error, date, !error);
     });
   } else if (filename == 'js/require-kernel.js') {
     callback(null, requireLastModified(), true);
   } else {
-    fs.stat(ROOT_DIR + filename, function (error, stats) {
+    fs.stat(ROOT_DIR + filename, function(error, stats) {
       if (error) {
         if (error.code == "ENOENT") {
           // Stat the directory instead.
-          statFile(path.dirname(filename), function (error, date, exists) {
+          statFile(path.dirname(filename), function(error, date, exists) {
             callback(error, date, false);
-          }, dirStatLimit-1);
+          }, dirStatLimit - 1);
         } else {
           callback(error);
         }
@@ -323,30 +333,25 @@ function lastModifiedDateOfEverything(callback) {
   var folders2check = [ROOT_DIR + 'js/', ROOT_DIR + 'css/'];
   var latestModification = 0;
   //go trough this two folders
-  async.forEach(folders2check, function(path, callback)
-  {
+  async.forEach(folders2check, function(path, callback) {
     //read the files in the folder
-    fs.readdir(path, function(err, files)
-    {
-      if(ERR(err, callback)) return;
+    fs.readdir(path, function(err, files) {
+      if (ERR(err, callback)) return;
 
       //we wanna check the directory itself for changes too
       files.push(".");
 
       //go trough all files in this folder
-      async.forEach(files, function(filename, callback)
-      {
+      async.forEach(files, function(filename, callback) {
         //get the stat data of this file
-        fs.stat(path + "/" + filename, function(err, stats)
-        {
-          if(ERR(err, callback)) return;
+        fs.stat(path + "/" + filename, function(err, stats) {
+          if (ERR(err, callback)) return;
 
           //get the modification time
           var modificationTime = stats.mtime.getTime();
 
           //compare the modification time to the highest found
-          if(modificationTime > latestModification)
-          {
+          if (modificationTime > latestModification) {
             latestModification = modificationTime;
           }
 
@@ -354,7 +359,7 @@ function lastModifiedDateOfEverything(callback) {
         });
       }, callback);
     });
-  }, function () {
+  }, function() {
     callback(null, latestModification);
   });
 }
@@ -370,7 +375,7 @@ function requireDefinition() {
 }
 
 function getFileCompressed(filename, contentType, callback) {
-  getFile(filename, function (error, content) {
+  getFile(filename, function(error, content) {
     if (error || !content) {
       callback(error, content);
     } else {
@@ -391,6 +396,9 @@ function getFileCompressed(filename, contentType, callback) {
 }
 
 function getFile(filename, callback) {
+
+  console.warn(filename);
+
   if (filename == 'js/ace.js') {
     getAceFile(callback);
   } else if (filename == 'js/require-kernel.js') {
@@ -400,8 +408,7 @@ function getFile(filename, callback) {
   }
 }
 
-function compressJS(values)
-{
+function compressJS(values) {
   var complete = values.join("\n");
   var ast = jsp.parse(complete); // parse code and get the initial AST
   ast = pro.ast_mangle(ast); // get a new AST with mangled names
@@ -409,8 +416,7 @@ function compressJS(values)
   return pro.gen_code(ast); // compressed code here
 }
 
-function compressCSS(values)
-{
+function compressCSS(values) {
   var complete = values.join("\n");
   var minimized = new CleanCSS().minify(complete).styles;
   return minimized;

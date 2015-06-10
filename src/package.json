@@ -27,6 +27,10 @@
     }
   ],
   "dependencies": {
+     "browserify": "^5.9.3",
+      "vinyl-transform": "0.0.1",
+       "gulp": "^3.8.7",
+        "gulp-uglify": "^0.3.1",
     "async": "0.9.0",
     "async-stacktrace": "0.0.2",
     "channels": "0.0.4",

@@ -20,68 +20,64 @@
  * limitations under the License.
  */
 
-/* global $, window */
+/* global $, window, require */
 
 var socket;
 
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
-require('./jquery');
-require('./farbtastic');
-require('./excanvas');
-JSON = require('./json2');
+require('ep_etherpad-lite/static/js/jquery');
+require('ep_etherpad-lite/static/js/farbtastic');
+require('ep_etherpad-lite/static/js/excanvas');
+window.JSON = require('ep_etherpad-lite/static/js/json2');
 
-var chat = require('./chat').chat;
-var getCollabClient = require('./collab_client').getCollabClient;
-var padconnectionstatus = require('./pad_connectionstatus').padconnectionstatus;
-var padcookie = require('./pad_cookie').padcookie;
-var padeditbar = require('./pad_editbar').padeditbar;
-var padeditor = require('./pad_editor').padeditor;
-var padimpexp = require('./pad_impexp').padimpexp;
-var padmodals = require('./pad_modals').padmodals;
-var padsavedrevs = require('./pad_savedrevs');
-var paduserlist = require('./pad_userlist').paduserlist;
-var padutils = require('./pad_utils').padutils;
-var colorutils = require('./colorutils').colorutils;
-var createCookie = require('./pad_utils').createCookie;
-var readCookie = require('./pad_utils').readCookie;
-var randomString = require('./pad_utils').randomString;
-var gritter = require('./gritter').gritter;
+//module-relative paths fixes browserify 'invisibility'
+var chat = require('ep_etherpad-lite/static/js/chat').chat;
+var getCollabClient = require('ep_etherpad-lite/static/js/collab_client').getCollabClient;
+var padconnectionstatus = require('ep_etherpad-lite/static/js/pad_connectionstatus').padconnectionstatus;
+var padcookie = require('ep_etherpad-lite/static/js/pad_cookie').padcookie;
+var padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+var padeditor = require('ep_etherpad-lite/static/js/pad_editor').padeditor;
+var padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+var padmodals = require('ep_etherpad-lite/static/js/pad_modals').padmodals;
+var padsavedrevs = require('ep_etherpad-lite/static/js/pad_savedrevs');
+var paduserlist = require('ep_etherpad-lite/static/js/pad_userlist').paduserlist;
+var padutils = require('ep_etherpad-lite/static/js/pad_utils').padutils;
+var colorutils = require('ep_etherpad-lite/static/js/colorutils').colorutils;
+var createCookie = require('ep_etherpad-lite/static/js/pad_utils').createCookie;
+var readCookie = require('ep_etherpad-lite/static/js/pad_utils').readCookie;
+var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var gritter = require('ep_etherpad-lite/static/js/gritter').gritter;
 
-var hooks = require('./pluginfw/hooks');
+var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 var receivedClientVars = false;
 
-function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
-  if (days)
-  {
+function createCookie(name, value, days, path) { /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
+  if (days) {
     var date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
     var expires = "; expires=" + date.toGMTString();
-  }
-  else{
+  } else {
     var expires = "";
   }
-  
-  if(!path){ // If the path isn't set then just whack the cookie on the root path
+
+  if (!path) { // If the path isn't set then just whack the cookie on the root path
     path = "/";
   }
-  
+
   //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
-    document.cookie = name + "=" + value + expires + "; path="+document.location;
-  }
-  else{
+  if ((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))) {
+    document.cookie = name + "=" + value + expires + "; path=" + document.location;
+  } else {
     document.cookie = name + "=" + value + expires + "; path=" + path;
   }
 }
 
-function readCookie(name)
-{
+function readCookie(name) {
   var nameEQ = name + "=";
   var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++)
-  {
+  for (var i = 0; i < ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0) == ' ') c = c.substring(1, c.length);
     if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
@@ -89,13 +85,11 @@ function readCookie(name)
   return null;
 }
 
-function randomString()
-{
+function randomString() {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var string_length = 20;
   var randomstring = '';
-  for (var i = 0; i < string_length; i++)
-  {
+  for (var i = 0; i < string_length; i++) {
     var rnum = Math.floor(Math.random() * chars.length);
     randomstring += chars.substring(rnum, rnum + 1);
   }
@@ -109,55 +103,114 @@ function randomString()
 //                * the parameter was supplied and checkVal is null
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
 var getParameters = [
-  { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
-  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
-  { name: "showChat",         checkVal: "false", callback: function(val) { $('#chaticon').hide(); } },
-  { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
-  { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
+  {
+    name: "noColors",
+    checkVal: "true",
+    callback: function(val) {
+      settings.noColors = true; $('#clearAuthorship').hide();
+    }
+  },
+  {
+    name: "showControls",
+    checkVal: "false",
+    callback: function(val) {
+      $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor');
+    }
+  },
+  {
+    name: "showChat",
+    checkVal: "false",
+    callback: function(val) {
+      $('#chaticon').hide();
+    }
+  },
+  {
+    name: "showLineNumbers",
+    checkVal: "false",
+    callback: function(val) {
+      settings.LineNumbersDisabled = true;
+    }
+  },
+  {
+    name: "useMonospaceFont",
+    checkVal: "true",
+    callback: function(val) {
+      settings.useMonospaceFontGlobal = true;
+    }
+  },
   // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
-  { name: "userName",         checkVal: null,    callback: function(val) { settings.globalUserName = decodeURIComponent(val); } },
+  {
+    name: "userName",
+    checkVal: null,
+    callback: function(val) {
+      settings.globalUserName = decodeURIComponent(val);
+    }
+  },
   // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
-  { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); } },
-  { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
-  { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
-  { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
-  { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); } }
+  {
+    name: "userColor",
+    checkVal: null,
+    callback: function(val) {
+      settings.globalUserColor = decodeURIComponent(val);
+    }
+  },
+  {
+    name: "rtl",
+    checkVal: "true",
+    callback: function(val) {
+      settings.rtlIsTrue = true
+    }
+  },
+  {
+    name: "alwaysShowChat",
+    checkVal: "true",
+    callback: function(val) {
+      chat.stickToScreen();
+    }
+  },
+  {
+    name: "chatAndUsers",
+    checkVal: "true",
+    callback: function(val) {
+      chat.chatAndUsers();
+    }
+  },
+  {
+    name: "lang",
+    checkVal: null,
+    callback: function(val) {
+      window.html10n.localize([val, 'en']);
+    }
+  }
 ];
 
-function getParams()
-{
+function getParams() {
   // Tries server enforced options first..
-  for(var i = 0; i < getParameters.length; i++)
-  {
-   var setting = getParameters[i];
+  for (var i = 0; i < getParameters.length; i++) {
+    var setting = getParameters[i];
     var value = clientVars.padOptions[setting.name];
-    if(value.toString() === setting.checkVal)
-    {
+    if (value.toString() === setting.checkVal) {
       setting.callback(value);
     }
   }
-  
+
   // Then URL applied stuff
   var params = getUrlVars()
-  
-  for(var i = 0; i < getParameters.length; i++)
-  {
+
+  for (var i = 0; i < getParameters.length; i++) {
     var setting = getParameters[i];
     var value = params[setting.name];
-    
-    if(value && (value == setting.checkVal || setting.checkVal == null))
-    {
+
+    if (value && (value == setting.checkVal || setting.checkVal == null)) {
       setting.callback(value);
     }
   }
 }
 
-function getUrlVars()
-{
+function getUrlVars() {
   var vars = [], hash;
   var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-  for(var i = 0; i < hashes.length; i++)
-  {
+  for (var i = 0; i < hashes.length; i++) {
     hash = hashes[i].split('=');
     vars.push(hash[0]);
     vars[hash[0]] = hash[1];
@@ -165,35 +218,31 @@ function getUrlVars()
   return vars;
 }
 
-function savePassword()
-{
+function savePassword() {
   //set the password cookie
-  createCookie("password",$("#passwordinput").val(),null,document.location.pathname);
+  createCookie("password", $("#passwordinput").val(), null, document.location.pathname);
   //reload
-  document.location=document.location;
+  document.location = document.location;
   return false;
 }
 
-function sendClientReady(isReconnect, messageType)
-{
+function sendClientReady(isReconnect, messageType) {
   messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
   var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
   padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
-  if(!isReconnect)
-  {
+  if (!isReconnect) {
     var titleArray = document.title.split('|');
     var title = titleArray[titleArray.length - 1];
     document.title = padId.replace(/_+/g, ' ') + " | " + title;
   }
 
   var token = readCookie("token");
-  if (token == null)
-  {
+  if (token == null) {
     token = "t." + randomString();
     createCookie("token", token, 60);
   }
-  
+
   var sessionID = decodeURIComponent(readCookie("sessionID"));
   var password = readCookie("password");
 
@@ -206,108 +255,95 @@ function sendClientReady(isReconnect, messageType)
     "token": token,
     "protocolVersion": 2
   };
-  
+
   //this is a reconnect, lets tell the server our revisionnumber
-  if(isReconnect == true)
-  {
-    msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
-    msg.reconnect=true;
+  if (isReconnect == true) {
+    msg.client_rev = pad.collabClient.getCurrentRevisionNumber();
+    msg.reconnect = true;
   }
-  
+
   socket.json.send(msg);
 }
 
-function handshake()
-{
+function handshake() {
   var loc = document.location;
   //get the correct port
   var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
   //create the url
   var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
   //find out in which subfolder we are
-  var resource =  exports.baseURL.substring(1)  + "socket.io";
+  var resource = exports.baseURL.substring(1) + "socket.io";
   //connect
   socket = pad.socket = io.connect(url, {
     // Allow deployers to host Etherpad on a non-root path
-    'path': exports.baseURL + "socket.io",
+    'path': exports.baseURL + "/socket.io",
     'resource': resource,
     'max reconnection attempts': 3,
-    'sync disconnect on unload' : false
+    'sync disconnect on unload': false
   });
 
   var disconnectTimeout;
 
-  socket.once('connect', function () {
+  socket.once('connect', function() {
     sendClientReady(false);
   });
-  
-  socket.on('reconnect', function () {
+
+  socket.on('reconnect', function() {
     //reconnect is before the timeout, lets stop the timeout
-    if(disconnectTimeout)
-    {
+    if (disconnectTimeout) {
       clearTimeout(disconnectTimeout);
     }
 
     pad.collabClient.setChannelState("CONNECTED");
     pad.sendClientReady(true);
   });
-  
-  socket.on('disconnect', function (reason) {
-    if(reason == "booted"){
+
+  socket.on('disconnect', function(reason) {
+    if (reason == "booted") {
       pad.collabClient.setChannelState("DISCONNECTED");
     } else {
-      function disconnectEvent()
-      {
+      function disconnectEvent() {
         pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
       }
-      
+
       pad.collabClient.setChannelState("RECONNECTING");
-      
+
       disconnectTimeout = setTimeout(disconnectEvent, 20000);
     }
   });
 
   var initalized = false;
 
-  socket.on('message', function(obj)
-  {
+  socket.on('message', function(obj) {
     //the access was not granted, give the user a message
-    if(obj.accessStatus)
-    {
-      if(!receivedClientVars){
+    if (obj.accessStatus) {
+      if (!receivedClientVars) {
         $('.passForm').submit(require(module.id).savePassword);
       }
 
-      if(obj.accessStatus == "deny")
-      {
+      if (obj.accessStatus == "deny") {
         $('#loading').hide();
         $("#permissionDenied").show();
 
-        if(receivedClientVars)
-        {
+        if (receivedClientVars) {
           // got kicked
           $("#editorcontainer").hide();
           $("#editorloadingbox").show();
         }
-      }
-      else if(obj.accessStatus == "needPassword")
-      {
+      } else if (obj.accessStatus == "needPassword") {
         $('#loading').hide();
         $('#passwordRequired').show();
         $("#passwordinput").focus();
-      }
-      else if(obj.accessStatus == "wrongPassword")
-      {
+      } else if (obj.accessStatus == "wrongPassword") {
         $('#loading').hide();
         $('#wrongPassword').show();
         $('#passwordRequired').show();
         $("#passwordinput").focus();
       }
     }
-    
+
     //if we haven't recieved the clientVars yet, then this message should it be
-    else if (!receivedClientVars && obj.type == "CLIENT_VARS")
-    {
+    else if (!receivedClientVars && obj.type == "CLIENT_VARS") {
       //log the message
       if (window.console) console.log(obj);
 
@@ -317,12 +353,12 @@ function handshake()
       clientVars = obj.data;
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
- 
+
       //initalize the pad
       pad._afterHandshake();
       initalized = true;
 
-      if(clientVars.readonly){
+      if (clientVars.readonly) {
         chat.hide();
         $('#myusernameedit').attr("disabled", true);
         $('#chatinput').attr("disabled", true);
@@ -333,41 +369,35 @@ function handshake()
 
       $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
 
-      padeditor.ace.callWithAce(function (ace) {
+      padeditor.ace.callWithAce(function(ace) {
         ace.ace_setEditable(!clientVars.readonly);
       });
 
       // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
-      if (settings.LineNumbersDisabled == true)
-      {
+      if (settings.LineNumbersDisabled == true) {
         pad.changeViewOption('showLineNumbers', false);
       }
 
       // If the noColors value is set to true then we need to hide the background colors on the ace spans
-      if (settings.noColors == true)
-      {
+      if (settings.noColors == true) {
         pad.changeViewOption('noColors', true);
       }
-      
-      if (settings.rtlIsTrue == true)
-      {
+
+      if (settings.rtlIsTrue == true) {
         pad.changeViewOption('rtlIsTrue', true);
       }
 
       // If the Monospacefont value is set to true then change it to monospace.
-      if (settings.useMonospaceFontGlobal == true)
-      {
+      if (settings.useMonospaceFontGlobal == true) {
         pad.changeViewOption('useMonospaceFont', true);
       }
       // if the globalUserName value is set we need to tell the server and the client about the new authorname
-      if (settings.globalUserName !== false)
-      {
+      if (settings.globalUserName !== false) {
         pad.notifyChangeName(settings.globalUserName); // Notifies the server
         pad.myUserInfo.name = settings.globalUserName;
         $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
       }
-      if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor))
-      {
+      if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor)) {
 
         // Add a 'globalUserColor' property to myUserInfo, so collabClient knows we have a query parameter.
         pad.myUserInfo.globalUserColor = settings.globalUserColor;
@@ -376,32 +406,31 @@ function handshake()
       }
     }
     //This handles every Message after the clientVars
-    else
-    {
+    else {
       //this message advices the client to disconnect
-      if (obj.disconnect)
-      {
+      if (obj.disconnect) {
         console.warn("FORCED TO DISCONNECT");
         console.warn(obj);
         padconnectionstatus.disconnected(obj.disconnect);
         socket.disconnect();
         return;
-      }
-      else
-      {
+      } else {
         pad.collabClient.handleMessageFromServer(obj);
       }
     }
   });
   // Bind the colorpicker
-  var fb = $('#colorpicker').farbtastic({ callback: '#mycolorpickerpreview', width: 220});
+  var fb = $('#colorpicker').farbtastic({
+    callback: '#mycolorpickerpreview',
+    width: 220
+  });
   // Bind the read only button  
-  $('#readonlyinput').on('click',function(){
+  $('#readonlyinput').on('click', function() {
     padeditbar.setEmbedLinks();
   });
 }
 
-$.extend($.gritter.options, { 
+$.extend($.gritter.options, {
   position: 'bottom-right', // defaults to 'top-right' but can be 'bottom-left', 'bottom-right', 'top-left', 'top-right' (added in 1.7.1)
   fade: false, // dont fade, too jerky on mobile
   time: 6000 // hang on the screen for...
@@ -418,83 +447,66 @@ var pad = {
   padOptions: {},
 
   // these don't require init; clientVars should all go through here
-  getPadId: function()
-  {
+  getPadId: function() {
     return clientVars.padId;
   },
-  getClientIp: function()
-  {
+  getClientIp: function() {
     return clientVars.clientIp;
   },
-  getColorPalette: function()
-  {
+  getColorPalette: function() {
     return clientVars.colorPalette;
   },
-  getDisplayUserAgent: function()
-  {
+  getDisplayUserAgent: function() {
     return padutils.uaDisplay(clientVars.userAgent);
   },
-  getIsDebugEnabled: function()
-  {
+  getIsDebugEnabled: function() {
     return clientVars.debugEnabled;
   },
-  getPrivilege: function(name)
-  {
+  getPrivilege: function(name) {
     return clientVars.accountPrivs[name];
   },
-  getUserIsGuest: function()
-  {
+  getUserIsGuest: function() {
     return clientVars.userIsGuest;
   },
-  getUserId: function()
-  {
+  getUserId: function() {
     return pad.myUserInfo.userId;
   },
-  getUserName: function()
-  {
+  getUserName: function() {
     return pad.myUserInfo.name;
   },
-  userList: function()
-  {
+  userList: function() {
     return paduserlist.users();
   },
-  sendClientReady: function(isReconnect, messageType)
-  {
+  sendClientReady: function(isReconnect, messageType) {
     messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
     sendClientReady(isReconnect, messageType);
   },
-  switchToPad: function(padId)
-  {
+  switchToPad: function(padId) {
     var newHref = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
-    newHref = newHref[0];    
-    if (options != null){
+    newHref = newHref[0];
+    if (options != null) {
       newHref = newHref + '?' + options;
     }
 
-    if(window.history && window.history.pushState)
-    {
+    if (window.history && window.history.pushState) {
       $('#chattext p').remove(); //clear the chat messages
-      window.history.pushState("", "", newHref);      
+      window.history.pushState("", "", newHref);
       receivedClientVars = false;
       sendClientReady(false, 'SWITCH_TO_PAD');
-    }
-    else // fallback
+    } else // fallback
     {
       window.location.href = newHref;
     }
   },
-  sendClientMessage: function(msg)
-  {
+  sendClientMessage: function(msg) {
     pad.collabClient.sendClientMessage(msg);
   },
   createCookie: createCookie,
 
-  init: function()
-  {
+  init: function() {
     padutils.setupGlobalExceptionHandler();
 
-    $(document).ready(function()
-    {
+    $(document).ready(function() {
       // start the custom js
       if (typeof customStart == "function") customStart();
       handshake();
@@ -503,17 +515,15 @@ var pad = {
       // This will check if the creation of a test-cookie has success.
       // Otherwise it shows up a message to the user.
       createCookie("test", "test");
-      if (!readCookie("test"))
-      {
+      if (!readCookie("test")) {
         $('#loading').hide();
         $('#noCookie').show();
       }
     });
   },
-  _afterHandshake: function()
-  {
+  _afterHandshake: function() {
     pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
-  
+
     //initialize the chat
     chat.init(this);
     getParams();
@@ -522,20 +532,15 @@ var pad = {
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
-    if ((!browser.msie) && (!(browser.firefox && browser.version.indexOf("1.8.") == 0)))
-    {
+    if ((!browser.msie) && (!(browser.firefox && browser.version.indexOf("1.8.") == 0))) {
       document.domain = document.domain; // for comet
     }
 
     // for IE
-    if (browser.msie)
-    {
-      try
-      {
+    if (browser.msie) {
+      try {
         document.execCommand("BackgroundImageCache", false, true);
-      }
-      catch (e)
-      {}
+      } catch (e) {}
     }
 
     // order of inits is important here:
@@ -568,39 +573,39 @@ var pad = {
     pad.collabClient.setOnInternalAction(pad.handleCollabAction);
 
     // load initial chat-messages
-    if(clientVars.chatHead != -1)
-    {
+    if (clientVars.chatHead != -1) {
       var chatHead = clientVars.chatHead;
       var start = Math.max(chatHead - 100, 0);
-      pad.collabClient.sendMessage({"type": "GET_CHAT_MESSAGES", "start": start, "end": chatHead});
-    }
-    else // there are no messages
+      pad.collabClient.sendMessage({
+        "type": "GET_CHAT_MESSAGES",
+        "start": start,
+        "end": chatHead
+      });
+    } else // there are no messages
     {
       $("#chatloadmessagesbutton").css("display", "none");
     }
 
-    function postAceInit()
-    {
+    function postAceInit() {
       padeditbar.init();
-      setTimeout(function()
-      {
+      setTimeout(function() {
         padeditor.ace.focus();
       }, 0);
-      if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
+      if (padcookie.getPref("chatAlwaysVisible")) { // if we have a cookie for always showing chat then show it
         chat.stickToScreen(true); // stick it to the screen
         $('#options-stickychat').prop("checked", true); // set the checkbox to on
       }
-      if(padcookie.getPref("chatAndUsers")){ // if we have a cookie for always showing chat then show it
+      if (padcookie.getPref("chatAndUsers")) { // if we have a cookie for always showing chat then show it
         chat.chatAndUsers(true); // stick it to the screen
         $('#options-chatandusers').prop("checked", true); // set the checkbox to on
       }
-      if(padcookie.getPref("showAuthorshipColors") == false){
+      if (padcookie.getPref("showAuthorshipColors") == false) {
         pad.changeViewOption('showAuthorColors', false);
       }
-      if(padcookie.getPref("showLineNumbers") == false){
+      if (padcookie.getPref("showLineNumbers") == false) {
         pad.changeViewOption('showLineNumbers', false);
       }
-      if(padcookie.getPref("rtlIsTrue") == true){
+      if (padcookie.getPref("rtlIsTrue") == true) {
         pad.changeViewOption('rtlIsTrue', true);
       }
 
@@ -609,200 +614,157 @@ var pad = {
         'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
         'useSerifFont'];
 
-      $.each(fonts, function(i, font){
-        if(padcookie.getPref(font) == true){
+      $.each(fonts, function(i, font) {
+        if (padcookie.getPref(font) == true) {
           pad.changeViewOption(font, true);
         }
       })
 
-      hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
+      hooks.aCallAll("postAceInit", {
+        ace: padeditor.ace,
+        pad: pad
+      });
     }
   },
-  dispose: function()
-  {
+  dispose: function() {
     padeditor.dispose();
   },
-  notifyChangeName: function(newName)
-  {
+  notifyChangeName: function(newName) {
     pad.myUserInfo.name = newName;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
   },
-  notifyChangeColor: function(newColorId)
-  {
+  notifyChangeColor: function(newColorId) {
     pad.myUserInfo.colorId = newColorId;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
   },
-  changePadOption: function(key, value)
-  {
+  changePadOption: function(key, value) {
     var options = {};
     options[key] = value;
     pad.handleOptionsChange(options);
     pad.collabClient.sendClientMessage(
-    {
-      type: 'padoptions',
-      options: options,
-      changedBy: pad.myUserInfo.name || "unnamed"
-    });
+      {
+        type: 'padoptions',
+        options: options,
+        changedBy: pad.myUserInfo.name || "unnamed"
+      });
   },
-  changeViewOption: function(key, value)
-  {
+  changeViewOption: function(key, value) {
     var options = {
       view: {}
     };
     options.view[key] = value;
     pad.handleOptionsChange(options);
   },
-  handleOptionsChange: function(opts)
-  {
+  handleOptionsChange: function(opts) {
     // opts object is a full set of options or just
     // some options to change
-    if (opts.view)
-    {
-      if (!pad.padOptions.view)
-      {
+    if (opts.view) {
+      if (!pad.padOptions.view) {
         pad.padOptions.view = {};
       }
-      for (var k in opts.view)
-      {
+      for (var k in opts.view) {
         pad.padOptions.view[k] = opts.view[k];
         padcookie.setPref(k, opts.view[k]);
       }
       padeditor.setViewOptions(pad.padOptions.view);
     }
-    if (opts.guestPolicy)
-    {
+    if (opts.guestPolicy) {
       // order important here
       pad.padOptions.guestPolicy = opts.guestPolicy;
     }
   },
-  getPadOptions: function()
-  {
+  getPadOptions: function() {
     // caller shouldn't mutate the object
     return pad.padOptions;
   },
-  isPadPublic: function()
-  {
+  isPadPublic: function() {
     return pad.getPadOptions().guestPolicy == 'allow';
   },
-  suggestUserName: function(userId, name)
-  {
+  suggestUserName: function(userId, name) {
     pad.collabClient.sendClientMessage(
-    {
-      type: 'suggestUserName',
-      unnamedId: userId,
-      newName: name
-    });
+      {
+        type: 'suggestUserName',
+        unnamedId: userId,
+        newName: name
+      });
   },
-  handleUserJoin: function(userInfo)
-  {
+  handleUserJoin: function(userInfo) {
     paduserlist.userJoinOrUpdate(userInfo);
   },
-  handleUserUpdate: function(userInfo)
-  {
+  handleUserUpdate: function(userInfo) {
     paduserlist.userJoinOrUpdate(userInfo);
   },
-  handleUserLeave: function(userInfo)
-  {
+  handleUserLeave: function(userInfo) {
     paduserlist.userLeave(userInfo);
   },
-  handleClientMessage: function(msg)
-  {
-    if (msg.type == 'suggestUserName')
-    {
-      if (msg.unnamedId == pad.myUserInfo.userId && msg.newName && !pad.myUserInfo.name)
-      {
+  handleClientMessage: function(msg) {
+    if (msg.type == 'suggestUserName') {
+      if (msg.unnamedId == pad.myUserInfo.userId && msg.newName && !pad.myUserInfo.name) {
         pad.notifyChangeName(msg.newName);
         paduserlist.setMyUserInfo(pad.myUserInfo);
       }
-    }
-    else if (msg.type == 'newRevisionList')
-    {
+    } else if (msg.type == 'newRevisionList') {
       padsavedrevs.newRevisionList(msg.revisionList);
-    }
-    else if (msg.type == 'revisionLabel')
-    {
+    } else if (msg.type == 'revisionLabel') {
       padsavedrevs.newRevisionList(msg.revisionList);
-    }
-    else if (msg.type == 'padoptions')
-    {
+    } else if (msg.type == 'padoptions') {
       var opts = msg.options;
       pad.handleOptionsChange(opts);
-    }
-    else if (msg.type == 'guestanswer')
-    {
+    } else if (msg.type == 'guestanswer') {
       // someone answered a prompt, remove it
       paduserlist.removeGuestPrompt(msg.guestId);
     }
   },
-  dmesg: function(m)
-  {
-    if (pad.getIsDebugEnabled())
-    {
+  dmesg: function(m) {
+    if (pad.getIsDebugEnabled()) {
       var djs = $('#djs').get(0);
       var wasAtBottom = (djs.scrollTop - (djs.scrollHeight - $(djs).height()) >= -20);
       $('#djs').append('<p>' + m + '</p>');
-      if (wasAtBottom)
-      {
+      if (wasAtBottom) {
         djs.scrollTop = djs.scrollHeight;
       }
     }
   },
-  handleServerMessage: function(m)
-  {
-    if (m.type == 'NOTICE')
-    {
-      if (m.text)
-      {
-        alertBar.displayMessage(function(abar)
-        {
+  handleServerMessage: function(m) {
+    if (m.type == 'NOTICE') {
+      if (m.text) {
+        alertBar.displayMessage(function(abar) {
           abar.find("#servermsgdate").text(" (" + padutils.simpleDateTime(new Date) + ")");
           abar.find("#servermsgtext").text(m.text);
         });
       }
-      if (m.js)
-      {
+      if (m.js) {
         window['ev' + 'al'](m.js);
       }
-    }
-    else if (m.type == 'GUEST_PROMPT')
-    {
+    } else if (m.type == 'GUEST_PROMPT') {
       paduserlist.showGuestPrompt(m.userId, m.displayName);
     }
   },
-  handleChannelStateChange: function(newState, message)
-  {
-    var oldFullyConnected = !! padconnectionstatus.isFullyConnected();
+  handleChannelStateChange: function(newState, message) {
+    var oldFullyConnected = !!padconnectionstatus.isFullyConnected();
     var wasConnecting = (padconnectionstatus.getStatus().what == 'connecting');
-    if (newState == "CONNECTED")
-    {
+    if (newState == "CONNECTED") {
       padconnectionstatus.connected();
-    }
-    else if (newState == "RECONNECTING")
-    {
+    } else if (newState == "RECONNECTING") {
       padconnectionstatus.reconnecting();
-    }
-    else if (newState == "DISCONNECTED")
-    {
+    } else if (newState == "DISCONNECTED") {
       pad.diagnosticInfo.disconnectedMessage = message;
       pad.diagnosticInfo.padId = pad.getPadId();
       pad.diagnosticInfo.socket = {};
-      
+
       //we filter non objects from the socket object and put them in the diagnosticInfo 
       //this ensures we have no cyclic data - this allows us to stringify the data
-      for(var i in socket.socket)
-      {
+      for (var i in socket.socket) {
         var value = socket.socket[i];
         var type = typeof value;
-        
-        if(type == "string" || type == "number")
-        {
+
+        if (type == "string" || type == "number") {
           pad.diagnosticInfo.socket[i] = value;
         }
       }
-    
+
       pad.asyncSendDiagnosticInfo();
-      if (typeof window.ajlog == "string")
-      {
+      if (typeof window.ajlog == "string") {
         window.ajlog += ("Disconnected: " + message + '\n');
       }
       padeditor.disable();
@@ -811,86 +773,71 @@ var pad = {
 
       padconnectionstatus.disconnected(message);
     }
-    var newFullyConnected = !! padconnectionstatus.isFullyConnected();
-    if (newFullyConnected != oldFullyConnected)
-    {
+    var newFullyConnected = !!padconnectionstatus.isFullyConnected();
+    if (newFullyConnected != oldFullyConnected) {
       pad.handleIsFullyConnected(newFullyConnected, wasConnecting);
     }
   },
-  handleIsFullyConnected: function(isConnected, isInitialConnect)
-  {
+  handleIsFullyConnected: function(isConnected, isInitialConnect) {
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
-    setTimeout(function(){
+    setTimeout(function() {
       padeditbar.toggleDropDown("none");
     }, 1000);
   },
-  determineChatVisibility: function(asNowConnectedFeedback){
+  determineChatVisibility: function(asNowConnectedFeedback) {
     var chatVisCookie = padcookie.getPref('chatAlwaysVisible');
-    if(chatVisCookie){ // if the cookie is set for chat always visible
+    if (chatVisCookie) { // if the cookie is set for chat always visible
       chat.stickToScreen(true); // stick it to the screen
       $('#options-stickychat').prop("checked", true); // set the checkbox to on
-    }
-    else{
+    } else {
       $('#options-stickychat').prop("checked", false); // set the checkbox for off
     }
   },
-  determineChatAndUsersVisibility: function(asNowConnectedFeedback){
+  determineChatAndUsersVisibility: function(asNowConnectedFeedback) {
     var chatAUVisCookie = padcookie.getPref('chatAndUsersVisible');
-    if(chatAUVisCookie){ // if the cookie is set for chat always visible
+    if (chatAUVisCookie) { // if the cookie is set for chat always visible
       chat.chatAndUsers(true); // stick it to the screen
       $('#options-chatandusers').prop("checked", true); // set the checkbox to on
-    }
-    else{
+    } else {
       $('#options-chatandusers').prop("checked", false); // set the checkbox for off
     }
   },
-  determineAuthorshipColorsVisibility: function(){
+  determineAuthorshipColorsVisibility: function() {
     var authColCookie = padcookie.getPref('showAuthorshipColors');
-    if (authColCookie){
+    if (authColCookie) {
       pad.changeViewOption('showAuthorColors', true);
       $('#options-colorscheck').prop("checked", true);
-    }
-    else {
+    } else {
       $('#options-colorscheck').prop("checked", false);
     }
   },
-  handleCollabAction: function(action)
-  {
-    if (action == "commitPerformed")
-    {
+  handleCollabAction: function(action) {
+    if (action == "commitPerformed") {
       padeditbar.setSyncStatus("syncing");
-    }
-    else if (action == "newlyIdle")
-    {
+    } else if (action == "newlyIdle") {
       padeditbar.setSyncStatus("done");
     }
   },
-  hideServerMessage: function()
-  {
+  hideServerMessage: function() {
     alertBar.hideMessage();
   },
-  asyncSendDiagnosticInfo: function()
-  {
-    window.setTimeout(function()
-    {
+  asyncSendDiagnosticInfo: function() {
+    window.setTimeout(function() {
       $.ajax(
-      {
-        type: 'post',
-        url: '/ep/pad/connection-diagnostic-info',
-        data: {
-          diagnosticInfo: JSON.stringify(pad.diagnosticInfo)
-        },
-        success: function()
-        {},
-        error: function()
-        {}
-      });
+        {
+          type: 'post',
+          url: '/ep/pad/connection-diagnostic-info',
+          data: {
+            diagnosticInfo: JSON.stringify(pad.diagnosticInfo)
+          },
+          success: function() {},
+          error: function() {}
+        });
     }, 0);
   },
-  forceReconnect: function()
-  {
+  forceReconnect: function() {
     $('form#reconnectform input.padId').val(pad.getPadId());
     pad.diagnosticInfo.collabDiagnosticInfo = pad.collabClient.getDiagnosticInfo();
     $('form#reconnectform input.diagnosticInfo').val(JSON.stringify(pad.diagnosticInfo));
@@ -898,75 +845,53 @@ var pad = {
     $('form#reconnectform').submit();
   },
   // this is called from code put into a frame from the server:
-  handleImportExportFrameCall: function(callName, varargs)
-  {
+  handleImportExportFrameCall: function(callName, varargs) {
     padimpexp.handleFrameCall.call(padimpexp, callName, Array.prototype.slice.call(arguments, 1));
   },
-  callWhenNotCommitting: function(f)
-  {
+  callWhenNotCommitting: function(f) {
     pad.collabClient.callWhenNotCommitting(f);
   },
-  getCollabRevisionNumber: function()
-  {
+  getCollabRevisionNumber: function() {
     return pad.collabClient.getCurrentRevisionNumber();
   },
-  isFullyConnected: function()
-  {
+  isFullyConnected: function() {
     return padconnectionstatus.isFullyConnected();
   },
-  addHistoricalAuthors: function(data)
-  {
-    if (!pad.collabClient)
-    {
-      window.setTimeout(function()
-      {
+  addHistoricalAuthors: function(data) {
+    if (!pad.collabClient) {
+      window.setTimeout(function() {
         pad.addHistoricalAuthors(data);
       }, 1000);
-    }
-    else
-    {
+    } else {
       pad.collabClient.addHistoricalAuthors(data);
     }
   }
 };
 
-var alertBar = (function()
-{
+var alertBar = (function() {
 
   var animator = padutils.makeShowHideAnimator(arriveAtAnimationState, false, 25, 400);
 
-  function arriveAtAnimationState(state)
-  {
-    if (state == -1)
-    {
+  function arriveAtAnimationState(state) {
+    if (state == -1) {
       $("#alertbar").css('opacity', 0).css('display', 'block');
-    }
-    else if (state == 0)
-    {
+    } else if (state == 0) {
       $("#alertbar").css('opacity', 1);
-    }
-    else if (state == 1)
-    {
+    } else if (state == 1) {
       $("#alertbar").css('opacity', 0).css('display', 'none');
-    }
-    else if (state < 0)
-    {
+    } else if (state < 0) {
       $("#alertbar").css('opacity', state + 1);
-    }
-    else if (state > 0)
-    {
+    } else if (state > 0) {
       $("#alertbar").css('opacity', 1 - state);
     }
   }
 
   var self = {
-    displayMessage: function(setupFunc)
-    {
+    displayMessage: function(setupFunc) {
       animator.show();
       setupFunc($("#alertbar"));
     },
-    hideMessage: function()
-    {
+    hideMessage: function() {
       animator.hide();
     }
   };
@@ -978,12 +903,12 @@ function init() {
 }
 
 var settings = {
-  LineNumbersDisabled: false
-, noColors: false
-, useMonospaceFontGlobal: false
-, globalUserName: false
-, globalUserColor: false
-, rtlIsTrue: false
+  LineNumbersDisabled: false,
+  noColors: false,
+  useMonospaceFontGlobal: false,
+  globalUserName: false,
+  globalUserColor: false,
+  rtlIsTrue: false
 };
 
 pad.settings = settings;
