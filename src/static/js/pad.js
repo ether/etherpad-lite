@@ -467,7 +467,7 @@ var pad = {
   {
     var newHref = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
     newHref = newHref[0];    
-    if (options != null){
+    if (typeof options != "undefined" && options != null){
       newHref = newHref + '?' + options;
     }
 
