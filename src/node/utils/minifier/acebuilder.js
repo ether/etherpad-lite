@@ -14,7 +14,7 @@ console.log('PACKAGE_ROOT', PACKAGE_ROOT);
 
 
 /******* plugin definitions   ************/
-
+var _s = JSON.stringify;
 function writePluginsFile(plugins) {
 
 
@@ -35,12 +35,24 @@ function writePluginsFile(plugins) {
       delete clientPlugins[name]['package'];
     });
 
-  function processHook(part, fName) {
-    //console.log('\n\n\n\n' + fName, part);
-    return fName;
-  }
+  _.each(clientPlugins, function(conf, name) {
+    console.log('\n\n***' + name);
 
-  var hooks = pluginUtils.extractHooks(clientParts, "client_hooks", processHook, console.log);
+    _.each(conf.parts, function(part) {
+      if (part.client_hooks) {
+        _.each(part.client_hooks, function(fnPath, evName) {
+          var pathAndFn = fnPath.split(':');
+          var includePath = pathAndFn[0];
+          var fnName = pathAndFn.length == 2 ? pathAndFn[1] : evName;
+          console.log(evName, includePath, '@' + evName);
+        });
+      }
+
+    });
+
+  });
+
+  // console.log(JSON.stringify(clientPlugins, 2, 2));
 
   return;
 
@@ -58,6 +70,9 @@ var pluginsDefs = fs.readFileSync(pluginDefsPath, {
 });
 pluginsDefs = JSON.parse(pluginsDefs);
 writePluginsFile(pluginsDefs);
+
+
+
 
 /*** mangle ace to include CSS and JS ***/
 
