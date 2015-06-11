@@ -45,7 +45,7 @@ function writePluginsFile(plugins) {
           var pathAndFn = fnPath.split(':');
           var includePath = pathAndFn[0];
           var absPath = PACKAGE_ROOT + '/../node_modules/' + includePath;
-          var relPath = path.relative(SRC_ROOT, absPath);
+          var relPath = path.relative(SRC_ROOT + '/js', absPath);
 
           if (filePaths.indexOf(relPath) !== -1) {
             debugger;
@@ -70,6 +70,11 @@ function writePluginsFile(plugins) {
   buf += lines.join('\n') + '\n';
 
   console.log(buf);
+
+  var destPath = SRC_ROOT + '/js/__client_hooks.js';
+  fs.writeFileSync(destPath, buf, {
+    encoding: 'utf8'
+  });
 
   return;
 
