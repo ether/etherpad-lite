@@ -47,11 +47,11 @@ function writePluginsFile(plugins) {
           var absPath = PACKAGE_ROOT + '/../node_modules/' + includePath;
           var relPath = path.relative(SRC_ROOT + '/js', absPath);
 
-          if (filePaths.indexOf(relPath) !== -1) {
-            debugger;
+          if (filePaths.indexOf(includePath) !== -1) {
+            // debugger;
             return;
           }
-          filePaths.push(relPath);
+          filePaths.push(includePath);
           // require();
 
           var fnName = pathAndFn.length == 2 ? pathAndFn[1] : evName;
@@ -65,7 +65,7 @@ function writePluginsFile(plugins) {
 
   var buf = '/*** AUTO GENERATED CLIENT SIDE INCLUDES ***/\n\n';
   var lines = _.map(filePaths, function(p) {
-    return "require ('" + p + "');";
+    return "require('" + p + "');";
   });
   buf += lines.join('\n') + '\n';
 

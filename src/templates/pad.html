@@ -369,7 +369,7 @@
         
         <script type="text/javascript">
         // console.log(require);
-        window.require = window.bundleRequire;
+        window.require = window.EPIFY.require;
         </script>
 
 
@@ -403,7 +403,14 @@
         <script type="text/javascript">
             var clientVars = {};
             (function () {
-              
+              var pathComponents = location.pathname.split('/');
+
+              // Strip 'p' and the padname from the pathname and set as baseURL
+              var baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/';
+
+              // require.setRootURI(baseURL + "javascripts/src");
+              // require.setLibraryURI(baseURL + "javascripts/lib");
+              // require.setGlobalKeyPath("require");
 
               $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
               browser = require('ep_etherpad-lite/static/js/browser').browser;
@@ -425,14 +432,14 @@
 
                 var pad = require('ep_etherpad-lite/static/js/pad');
                 pad.baseURL = baseURL;
+                pad.init();
               });
 
               /* TODO: These globals shouldn't exist. */
               pad = require('ep_etherpad-lite/static/js/pad').pad;
-              pad.init();
-               chat = require('ep_etherpad-lite/static/js/chat').chat;
-               padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-               padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+              chat = require('ep_etherpad-lite/static/js/chat').chat;
+              padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+              padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
             }());
         </script>
         <% e.end_block(); %>
