@@ -1,15 +1,7 @@
 var _ = require("underscore");
 
-// @NOTE browserify does not insert globals unless I figure how to expose the module
-//var isBrowser = process.title === 'browser';
-
 function loadFn(pathNorm, hookName) {
   var path = pathNorm;
-  // if (isBrowser) {
-  //   var path = '../../../node_modules/' + pathNorm;
-
-  // }
-  console.log('pluginfw/shared', path, require);
   var functionName,
     parts = path.split(":");
 
@@ -23,13 +15,8 @@ function loadFn(pathNorm, hookName) {
     path = parts[0];
     functionName = parts[1];
   }
-  // var rq=require;
-  // if (window.process && process.browser===true) {
-  //   rq = window.require;
-  // }
-  // var fn = rq(path);
-  
-    var fn = require(path);
+
+  var fn = require(path);
 
   functionName = functionName ? functionName : hookName;
 
@@ -37,11 +24,7 @@ function loadFn(pathNorm, hookName) {
     fn = fn[name];
   });
 
-if (isBrowser) {
-// debugger;
-  }
 
-  
   return fn;
 }
 ;
@@ -72,7 +55,7 @@ function extractHooks(parts, hook_set_name, normalizer) {
           }
         } catch (exc) {
           console.error("Failed to load '" + hook_fn_name + "' for '" + part.full_name + "/" + hook_set_name + "/" + hook_name + "': " + exc.toString())
-          // throw "Not a function";
+        // throw "Not a function";
         }
         if (hook_fn) {
           hooks[hook_name].push({
