@@ -21,21 +21,23 @@
  * limitations under the License.
  */
 
-var log4js = require('log4js')
-  , async = require('async')
-  , stats = require('./stats')
-  ;
+var log4js = require('log4js'),
+  async = require('async'),
+  stats = require('./stats'),
+  path = require('path'),
+  fs = require('fs');
 
 log4js.replaceConsole();
+var PACKAGE_ROOT = path.dirname(require.resolve('ep_etherpad-lite/ep.json'));
 
 stats.gauge('memoryUsage', function() {
   return process.memoryUsage().rss
 })
 
-var settings
-  , db
-  , plugins
-  , hooks;
+var settings,
+  db,
+  plugins,
+  hooks;
 var npm = require("npm/lib/npm.js");
 
 async.waterfall([
@@ -45,7 +47,7 @@ async.waterfall([
       callback(er)
     })
   },
-  
+
   // load everything
   function(callback) {
     settings = require('./utils/Settings');
@@ -55,10 +57,9 @@ async.waterfall([
     hooks.plugins = plugins;
     callback();
   },
-  
+
   //initalize the database
-  function (callback)
-  {
+  function(callback) {
     db.init(callback);
   },
 
@@ -66,40 +67,52 @@ async.waterfall([
     plugins.update(callback)
   },
 
-  function (callback) {
+  function(callback) {
     console.info("Installed plugins: " + plugins.formatPluginsWithVersion());
     console.debug("Installed parts:\n" + plugins.formatParts());
     console.debug("Installed hooks:\n" + plugins.formatHooks());
 
+    var pluginDefPath = path.normalize(PACKAGE_ROOT + '/../var/plugin-definitions.json');
+    fs.writeFile(pluginDefPath, JSON.stringify({
+      plugins: plugins.plugins,
+      parts: plugins.parts,
+      hooks: plugins.hooks,
+    }, 2, 2), {
+      encoding: 'utf8'
+    }, function(err, ok) {
+      console.debug("Wrote " + pluginDefPath);
+    });
+
     // Call loadSettings hook
-    hooks.aCallAll("loadSettings", { settings: settings });
+    hooks.aCallAll("loadSettings", {
+      settings: settings
+    });
 
     callback();
   },
 
   //initalize the http server
-  function (callback)
-  {
+  function(callback) {
     hooks.callAll("createServer", {});
-    callback(null);  
+    callback(null);
   }
 ]);
 
- 
- 
-process.on('SIGTERM', function () {
-    // shutDown();
-    process.exit();
+
+
+process.on('SIGTERM', function() {
+  // shutDown();
+  process.exit();
 });
-process.on('SIGINT', function () {
-    // shutDown();
-    process.exit();
+process.on('SIGINT', function() {
+  // shutDown();
+  process.exit();
 });
 
 
-process.on('exit', function () {
-    // shutDown();
-    console.log( 'ETHERPAD CLOSED SERVER');
+process.on('exit', function() {
+  // shutDown();
+  console.log('ETHERPAD CLOSED SERVER');
 //        socket.server.close(); 
 //        socket.close();
 });
