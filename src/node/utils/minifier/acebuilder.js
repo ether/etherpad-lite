@@ -17,6 +17,7 @@ console.log('PACKAGE_ROOT', PACKAGE_ROOT);
 var _s = JSON.stringify;
 function writePluginsFile(plugins) {
 
+  var filePaths = [];
 
   var clientParts = _(plugins.parts)
     .filter(function(part) {
@@ -36,15 +37,25 @@ function writePluginsFile(plugins) {
     });
 
   _.each(clientPlugins, function(conf, name) {
-    console.log('\n\n***' + name);
+    console.log('\n *** ' + name);
 
     _.each(conf.parts, function(part) {
       if (part.client_hooks) {
         _.each(part.client_hooks, function(fnPath, evName) {
           var pathAndFn = fnPath.split(':');
           var includePath = pathAndFn[0];
+          var absPath = PACKAGE_ROOT + '/../node_modules/' + includePath;
+          var relPath = path.relative(SRC_ROOT, absPath);
+
+          if (filePaths.indexOf(relPath) !== -1) {
+            debugger;
+            return;
+          }
+          filePaths.push(relPath);
+          // require();
+
           var fnName = pathAndFn.length == 2 ? pathAndFn[1] : evName;
-          console.log(evName, includePath, '@' + evName);
+          console.log('hook: ' + evName, relPath, '@fn: ' + fnName);
         });
       }
 
@@ -52,7 +63,13 @@ function writePluginsFile(plugins) {
 
   });
 
-  // console.log(JSON.stringify(clientPlugins, 2, 2));
+  var buf = '/*** AUTO GENERATED CLIENT SIDE INCLUDES ***/\n\n';
+  var lines = _.map(filePaths, function(p) {
+    return "require ('" + p + "');";
+  });
+  buf += lines.join('\n') + '\n';
+
+  console.log(buf);
 
   return;
 
