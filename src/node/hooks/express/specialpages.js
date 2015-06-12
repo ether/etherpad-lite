@@ -2,6 +2,8 @@ var path = require('path');
 var eejs = require('ep_etherpad-lite/node/eejs');
 var toolbar = require("ep_etherpad-lite/node/utils/toolbar");
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+var PACKAGE_ROOT = path.dirname(require.resolve('ep_etherpad-lite/ep.json'));
+var WWW_DIR = PACKAGE_ROOT + '/static';
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   // expose current stats
@@ -62,15 +64,16 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   //serve favicon.ico from all path levels except as a pad name
-  args.app.get( /\/favicon.ico$/, function(req, res)
+  //spares re-requests as browsers auto search for tihis file
+  args.app.get( /.+?\/favicon.ico$/, function(req, res)
   {
-    var filePath = path.normalize(__dirname + "/../../../static/custom/favicon.ico");
+    var filePath = WWW_DIR + "/custom/favicon.ico";
     res.sendFile(filePath, function(err)
     {
       //there is no custom favicon, send the default favicon
       if(err)
       {
-        filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
+        filePath = WWW_DIR + "/favicon.ico";
         res.sendFile(filePath);
       }
     });
