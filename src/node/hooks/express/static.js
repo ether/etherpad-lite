@@ -4,8 +4,13 @@ var CachingMiddleware = require('../../utils/caching_middleware');
 var settings = require("../../utils/Settings");
 var Yajsml = require('etherpad-yajsml');
 var _ = require("underscore");
+var compression = require('compression');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+exports.expressCreateServer = function(hook_name, args, cb) {
+
+  args.app.use(compression({
+    level:9
+  }));
 
   // Cache both minified and static.
   var assetCache = new CachingMiddleware;
@@ -18,16 +23,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
   var jsServer = new (Yajsml.Server)({
-    rootPath: 'javascripts/src/'
-  , rootURI: 'http://localhost:' + settings.port + '/static/js/'
-  , libraryPath: 'javascripts/lib/'
-  , libraryURI: 'http://localhost:' + settings.port + '/static/plugins/'
-  , requestURIs: minify.requestURIs // Loop-back is causing problems, this is a workaround.
+    rootPath: 'javascripts/src/',
+    rootURI: 'http://localhost:' + settings.port + '/static/js/',
+    libraryPath: 'javascripts/lib/',
+    libraryURI: 'http://localhost:' + settings.port + '/static/plugins/',
+    requestURIs: minify.requestURIs // Loop-back is causing problems, this is a workaround.
   });
 
   var StaticAssociator = Yajsml.associators.StaticAssociator;
-  var associations =
-    Yajsml.associators.associationsForSimpleMapping(minify.tar);
+  var associations = Yajsml.associators.associationsForSimpleMapping(minify.tar);
   var associator = new StaticAssociator(associations);
   jsServer.setAssociator(associator);
 
@@ -35,23 +39,30 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // serve plugin definitions
   // not very static, but served here so that client can do require("pluginfw/static/js/plugin-definitions.js");
-  args.app.get('/pluginfw/plugin-definitions.json', function (req, res, next) {
+  args.app.get('/pluginfw/plugin-definitions.json', function(req, res, next) {
 
     var clientParts = _(plugins.parts)
-      .filter(function(part){ return _(part).has('client_hooks') });
-      
+      .filter(function(part) {
+        return _(part).has('client_hooks')
+      });
+
     var clientPlugins = {};
-    
+
     _(clientParts).chain()
-      .map(function(part){ return part.plugin })
+      .map(function(part) {
+        return part.plugin
+      })
       .uniq()
-      .each(function(name){
+      .each(function(name) {
         clientPlugins[name] = _(plugins.plugins[name]).clone();
         delete clientPlugins[name]['package'];
       });
-      
-    res.header("Content-Type","application/json; charset=utf-8");
-    res.write(JSON.stringify({"plugins": clientPlugins, "parts": clientParts}));
+
+    res.header("Content-Type", "application/json; charset=utf-8");
+    res.write(JSON.stringify({
+      "plugins": clientPlugins,
+      "parts": clientParts
+    }));
     res.end();
   });
 }
