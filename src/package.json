@@ -38,6 +38,7 @@
     "etherpad-require-kernel": "1.0.9",
     "etherpad-yajsml": "0.0.2",
     "express": "4.12.3",
+    "express-minify": "^0.1.6",
     "express-session": "1.11.1",
     "formidable": "1.0.17",
     "graceful-fs": "3.0.6",
@@ -67,7 +68,7 @@
   },
   "devDependencies": {
     "aliasify": "^1.7.2",
-    "browserify": "^5.9.3",
+    "browserify": "^7.0.0",
     "gulp": "^3.8.7",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^0.3.1",
