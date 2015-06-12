@@ -4,8 +4,8 @@
       "createServer": "ep_etherpad-lite/node/hooks/express:createServer",
       "restartServer": "ep_etherpad-lite/node/hooks/express:restartServer"
       } },
-    { "name": "static", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static:expressCreateServer" } },
-    { "name": "teambutler", "_hooks":{}, "_hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/_teambutler:expressCreateServer" } },
+    { "name": "static", "_hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static:expressCreateServer" } },
+    { "name": "static-ng", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static-ng:expressCreateServer" } },
     { "name": "i18n", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/i18n:expressCreateServer" } },
     { "name": "specialpages", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/specialpages:expressCreateServer" } },
     { "name": "padurlsanitize", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padurlsanitize:expressCreateServer" } },
