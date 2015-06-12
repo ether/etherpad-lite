@@ -56,12 +56,12 @@ var exp = {
     require: function (p, wot) {
         console.warn(p, arguments);
 
-        if ( p.indexOf('ep_fullscreen') !== -1) {
-            
-            console.warn('fake', arguments);
+        if (p.indexOf('ep_fullscreen') !== -1) {
+            console.warn('PLUGINHOOK', p);
             return exp.pluginHooks[p];
         }
 
+        //debug, if somebody requires require-kernel style
         if (wot)
             throw new Error('MODULE_NOT_FOUND_OR_TOO_MANY_ARGUMENTS');
         var ret = require.call(this, p);
@@ -73,7 +73,7 @@ var exp = {
 
 
 
-// @NOTE relative paths problem
+// @NOTE require() problem, this exposes plugin hooks
 var ch = require('./__client_hooks.js');
 var pluginEntries = ch.entries;
 console.log(pluginEntries);
