@@ -22,6 +22,7 @@ exports.update = function (cb) {
   // of execution on Firefox. This schedules the response in the run-loop,
   // which appears to fix the issue.
   var callback = function () {setTimeout(cb, 0);};
+  // callback = cb;
 
   jQuery.getJSON(exports.baseURL + 'pluginfw/plugin-definitions.json', function(data) {
     exports.plugins = data.plugins;
@@ -52,6 +53,7 @@ function adoptPluginsFromAncestorsOf(frame) {
     while (frame = frame.parent) {
       if (typeof (frame.require) !== "undefined") {
         parentRequire = frame.require;
+        console.log('got parent require');
         break;
       }
     }

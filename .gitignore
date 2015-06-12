@@ -11,11 +11,22 @@ bin/convertSettings.json
 *~
 *.patch
 src/static/js/jquery.js
-npm-debug.log
 *.DS_Store
 .ep_initialized
 *.crt
 *.key
 bin/etherpad-1.deb
+
+/nbproject/private/
+/src/node/utils/minifier-ng/src/
+/src/static/js/__build.js
+/src/static/js/__ace_build.js
+/src/static/js/__client_hooks.js
+
+#debug
+npm-debug.log
+#doc
 out
+#other
+nbproject
 

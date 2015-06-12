@@ -21,7 +21,7 @@
  */
 var _, $, jQuery, plugins, Ace2Common;
 
-var browser = require('./browser').browser;
+var browser = require('ep_etherpad-lite/static/js/browser').browser;
 if(browser.msie){
   // Honestly fuck IE royally.
   // Basically every hack we have since V11 causes a problem
@@ -32,10 +32,10 @@ if(browser.msie){
   }
 }
 
-Ace2Common = require('./ace2_common');
+Ace2Common = require('ep_etherpad-lite/static/js/ace2_common');
 
 plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-$ = jQuery = require('./rjquery').$;
+$ = jQuery = require('ep_etherpad-lite/static/js/rjquery').$;
 _ = require("./underscore");
 
 var isNodeText = Ace2Common.isNodeText,
