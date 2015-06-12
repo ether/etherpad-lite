@@ -6,7 +6,6 @@ SESSIONKEY.txt
 bin/abiword.exe
 bin/node.exe
 etherpad-lite-win.zip
-var/dirty.db
 bin/convertSettings.json
 *~
 *.patch
@@ -23,10 +22,15 @@ bin/etherpad-1.deb
 /src/static/js/__ace_build.js
 /src/static/js/__client_hooks.js
 
+#tmp
+var/*
+
 #debug
 npm-debug.log
+
 #doc
 out
+
 #other
 nbproject
 
