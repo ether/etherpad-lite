@@ -4,7 +4,7 @@
  * @license MIT 
  */
 
-
+var fs = require('fs');
 var log4js = require('log4js');
 var apiLogger = log4js.getLogger("STATIC_ASSETS");
 apiLogger.log = apiLogger.info;
@@ -13,6 +13,8 @@ var urlutil = require('url');
 var path = require('path');
 var express = require('express');
 var minify = require('express-minify');
+var mime = require('mime-types');
+
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 
 var PACKAGE_ROOT = path.dirname(require.resolve('ep_etherpad-lite/ep.json'));
@@ -107,8 +109,14 @@ function handle(req, res, next) {
             break;
         case 'PLUGIN_ASSET':
             var realPath = req.url.replace('/static/plugins/', '');
-            realPath = PACKAGE_ROOT + '/../node_modules/' + realPath;
-            res.sendFile(realPath);
+            realPath = path.normalize(PACKAGE_ROOT + '/../node_modules/' + realPath);
+//            console.warn(realPath);
+//            res.sendFile(realPath);
+//            res._skip = true;
+            var data = fs.readFileSync(realPath, {encoding: 'utf8'});
+            res.end(data);
+
+
             break;
 
         case 'MINIFIED_JS':
