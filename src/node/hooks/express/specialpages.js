@@ -6,78 +6,78 @@ var PACKAGE_ROOT = path.dirname(require.resolve('ep_etherpad-lite/ep.json'));
 var WWW_DIR = PACKAGE_ROOT + '/static';
 
 exports.expressCreateServer = function (hook_name, args, cb) {
-  // expose current stats
-  args.app.get('/stats', function(req, res) {
-    res.json(require('ep_etherpad-lite/node/stats').toJSON())
-  })
+    // expose current stats
+    args.app.get('/stats', function (req, res) {
+        res.json(require('ep_etherpad-lite/node/stats').toJSON())
+    })
 
-  //serve index.html under /
-  args.app.get('/', function(req, res)
-  {
-    res.send(eejs.require("ep_etherpad-lite/templates/index.html"));
-  });
-
-  //serve robots.txt
-  args.app.get('/robots.txt', function(req, res)
-  {
-    var filePath = path.normalize(__dirname + "/../../../static/custom/robots.txt");
-    res.sendFile(filePath, function(err)
+    //serve index.html under /
+    args.app.get('/', function (req, res)
     {
-      //there is no custom favicon, send the default robots.txt which dissallows all
-      if(err)
-      {
-        filePath = path.normalize(__dirname + "/../../../static/robots.txt");
-        res.sendFile(filePath);
-      }
-    });
-  });
-
-  //serve pad.html under /p
-  args.app.get('/p/:pad', function(req, res, next)
-  {
-    // The below might break for pads being rewritten
-    var isReadOnly = req.url.indexOf("/p/r.") === 0;
-
-    hooks.callAll("padInitToolbar", {
-      toolbar: toolbar,
-      isReadOnly: isReadOnly
+        res.send(eejs.require("ep_etherpad-lite/templates/index.html"));
     });
 
-    res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {
-      req: req,
-      toolbar: toolbar,
-      isReadOnly: isReadOnly
-    }));
-  });
-
-  //serve timeslider.html under /p/$padname/timeslider
-  args.app.get('/p/:pad/timeslider', function(req, res, next)
-  {
-    hooks.callAll("padInitToolbar", {
-      toolbar: toolbar
-    });
-    
-    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {
-      req: req,
-      toolbar: toolbar
-    }));
-  });
-
-  //serve favicon.ico from all path levels except as a pad name
-  //spares re-requests as browsers auto search for tihis file
-  args.app.get( /.+?\/favicon.ico$/, function(req, res)
-  {
-    var filePath = WWW_DIR + "/custom/favicon.ico";
-    res.sendFile(filePath, function(err)
+    //serve robots.txt
+    args.app.get('/robots.txt', function (req, res)
     {
-      //there is no custom favicon, send the default favicon
-      if(err)
-      {
-        filePath = WWW_DIR + "/favicon.ico";
-        res.sendFile(filePath);
-      }
+        var filePath = path.normalize(__dirname + "/../../../static/custom/robots.txt");
+        res.sendFile(filePath, function (err)
+        {
+            //there is no custom favicon, send the default robots.txt which dissallows all
+            if (err)
+            {
+                filePath = path.normalize(__dirname + "/../../../static/robots.txt");
+                res.sendFile(filePath);
+            }
+        });
     });
-  });
+
+    //serve pad.html under /p
+    args.app.get('/p/:pad', function (req, res, next)
+    {
+        // The below might break for pads being rewritten
+        var isReadOnly = req.url.indexOf("/p/r.") === 0;
+
+        hooks.callAll("padInitToolbar", {
+            toolbar: toolbar,
+            isReadOnly: isReadOnly
+        });
+
+        res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {
+            req: req,
+            toolbar: toolbar,
+            isReadOnly: isReadOnly
+        }));
+    });
+
+    //serve timeslider.html under /p/$padname/timeslider
+    args.app.get('/p/:pad/timeslider', function (req, res, next)
+    {
+        hooks.callAll("padInitToolbar", {
+            toolbar: toolbar
+        });
+
+        res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {
+            req: req,
+            toolbar: toolbar
+        }));
+    });
+
+    //serve favicon.ico from all path levels except as a pad name
+    //spares re-requests as browsers auto search for tihis file
+    args.app.get(/.+?\/favicon.ico$/, function (req, res)
+    {
+        var filePath = WWW_DIR + "/custom/favicon.ico";
+        res.sendFile(filePath, function (err)
+        {
+            //there is no custom favicon, send the default favicon
+            if (err)
+            {
+                filePath = WWW_DIR + "/favicon.ico";
+                res.sendFile(filePath);
+            }
+        });
+    });
 
 
 }
