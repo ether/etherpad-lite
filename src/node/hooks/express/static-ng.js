@@ -113,6 +113,7 @@ function handle(req, res, next) {
 //            console.warn(realPath);
 //            res.sendFile(realPath);
 //            res._skip = true;
+            res.setHeader('Content-type', mime.lookup(realPath));
             var data = fs.readFileSync(realPath, {encoding: 'utf8'});
             res.end(data);
 
