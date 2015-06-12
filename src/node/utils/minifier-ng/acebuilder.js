@@ -69,12 +69,20 @@ function writePluginsFile(plugins) {
         return "require('" + p + "'); entries.push('" + p + "');";
     });
     buf += lines.join('\n') + '\n';
-    buf += 'exports.entries = entries; \n\n';
+//    buf += 'exports.entries = entries; \n\n';
 
     console.log(buf);
 
-    var destPath = SRC_ROOT + '/js/__client_hooks.js';
-    fs.writeFileSync(destPath, buf, {
+    var bootSrc = SRC_ROOT + '/js/boot.js';
+    var bootDest = SRC_ROOT + '/js/__boot.js';
+
+    var boot = fs.readFileSync(bootSrc, {
+        encoding: 'utf8'
+    });
+    
+    var replacedBoot = boot.replace('//%%PLUGINS', buf);
+    
+    fs.writeFileSync(bootDest, replacedBoot, {
         encoding: 'utf8'
     });
 
@@ -92,6 +100,7 @@ var pluginDefsPath = path.normalize(PACKAGE_ROOT + '/../var/plugin-definitions.j
 var pluginsDefs = fs.readFileSync(pluginDefsPath, {
     encoding: 'utf8'
 });
+
 pluginsDefs = JSON.parse(pluginsDefs);
 writePluginsFile(pluginsDefs);
 

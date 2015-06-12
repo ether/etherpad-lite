@@ -36,7 +36,16 @@ require('ep_etherpad-lite/static/js/ace');
 
 /*** @START_PLUGINS **/
 
-//%%PLUGINS
+var entries = []; 
+
+require('ep_headings2/static/js/index'); entries.push('ep_headings2/static/js/index');
+require('ep_headings2/static/js/shared'); entries.push('ep_headings2/static/js/shared');
+require('ep_fullscreen/static/js/index'); entries.push('ep_fullscreen/static/js/index');
+require('ep_align/static/js/index'); entries.push('ep_align/static/js/index');
+require('ep_align/static/js/shared'); entries.push('ep_align/static/js/shared');
+require('ep_author_hover/static/js/index'); entries.push('ep_author_hover/static/js/index');
+require('ep_adminpads/static/js/admin/pads'); entries.push('ep_adminpads/static/js/admin/pads');
+
 
 /*** @END_PLUGINS **/
 

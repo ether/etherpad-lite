@@ -93,7 +93,7 @@ gulp.task('browserify', function () {
     });
 
     // return gulp.src(['./src/main.js'])
-    return gulp.src([SRC_ROOT + '/js/boot.js'])
+    return gulp.src([SRC_ROOT + '/js/__boot.js'])
         // return gulp.src([SRC_ROOT + '/js/ace2_inner.js'])
         .pipe(browserified)
         //this works, but is handled on server
