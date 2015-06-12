@@ -5,6 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var npm = require("npm/lib/npm.js");
 var  _ = require("underscore");
+var enableDestroy = require('server-destroy');
 
 var server;
 var serverName;
@@ -31,7 +32,7 @@ exports.restartServer = function () {
 
   if (server) {
     console.log("Restarting express server");
-    server.close();
+    server.destroy();
   }
 
   var app = express(); // New syntax for express v3
@@ -84,4 +85,5 @@ exports.restartServer = function () {
   hooks.callAll("expressCreateServer", {"app": app, "server": server});
 
   server.listen(settings.port, settings.ip);
+  enableDestroy(server);
 }
