@@ -31,8 +31,7 @@ require('ep_etherpad-lite/static/js/ace2_inner');
 
 require('ep_etherpad-lite/static/js/ace');
 
-// @NOTE relative paths problem
-require('./__client_hooks.js');
+
 
 /*** MANUAL ***/
 require('ep_fullscreen/static/js/index');
@@ -52,29 +51,35 @@ require('ep_fullscreen/static/js/index');
 // console.dir(window.ETHER_BUNDLE);
 
 
+var exp = {
+    pluginHooks: {},
+    require: function (p, wot) {
+        console.warn(p, arguments);
 
+        if ( p.indexOf('ep_fullscreen') !== -1) {
+            
+            console.warn('fake', arguments);
+            return exp.pluginHooks[p];
+        }
 
-
-
-module.exports = {
-  require: function(p, wot) {
-    console.warn(p, arguments);
-
-    if (p.indexOf('ep_fullscreen') !== -1) {
-      var f = function() {
-        console.warn('fake', arguments);
-      };
-      return{
-        postAceInit:f,
-        documentReady:f
-      };
+        if (wot)
+            throw new Error('MODULE_NOT_FOUND_OR_TOO_MANY_ARGUMENTS');
+        var ret = require.call(this, p);
+        console.warn(ret);
+        // debugger;
+        return ret;
     }
-
-    if (wot)
-      throw new Error('MODULE_NOT_FOUND_OR_TOO_MANY_ARGUMENTS');
-    var ret = require.call(this, p);
-    console.warn(ret);
-    // debugger;
-    return ret;
-  }
 };
+
+
+
+// @NOTE relative paths problem
+var ch = require('./__client_hooks.js');
+var pluginEntries = ch.entries;
+console.log(pluginEntries);
+var _ = require('underscore');
+pluginEntries.forEach(function (entry) {
+    exp.pluginHooks[entry] = require(entry);
+});
+
+module.exports = exp;
