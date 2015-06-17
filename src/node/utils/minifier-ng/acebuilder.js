@@ -55,7 +55,7 @@ function writePluginsFile(plugins) {
                     // require();
 
                     var fnName = pathAndFn.length == 2 ? pathAndFn[1] : evName;
-                    console.log('hook: ' + evName, relPath, '@fn: ' + fnName);
+//                    console.log('hook: ' + evName, relPath, '@fn: ' + fnName);
                 });
             }
 
@@ -71,7 +71,7 @@ function writePluginsFile(plugins) {
     buf += lines.join('\n') + '\n';
 //    buf += 'exports.entries = entries; \n\n';
 
-    console.log(buf);
+//    console.log(buf);
 
     var bootSrc = SRC_ROOT + '/js/boot.js';
     var bootDest = SRC_ROOT + '/js/__boot.js';
@@ -85,7 +85,7 @@ function writePluginsFile(plugins) {
     fs.writeFileSync(bootDest, replacedBoot, {
         encoding: 'utf8'
     });
-
+    console.log('wrote ' + bootDest);
     return;
 
 
