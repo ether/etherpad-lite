@@ -81,6 +81,7 @@ async.waterfall([
       encoding: 'utf8'
     }, function(err, ok) {
       console.debug("Wrote " + pluginDefPath);
+      require(PACKAGE_ROOT + '/node/utils/minifier-ng/run');
     });
 
     // Call loadSettings hook
