@@ -17,7 +17,8 @@
             "name": "static-ng",
             "hooks": {
                 "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static-ng:expressCreateServer",
-                "restartServer": "ep_etherpad-lite/node/hooks/express/static-ng:restartServer"
+                "restartServer": "ep_etherpad-lite/node/hooks/express/static-ng:restartServer",
+                "loadSettings": "ep_etherpad-lite/node/hooks/express/static-ng:loadSettings"
             }
         },
         {

@@ -57,7 +57,7 @@ gulp.task('browserify', function () {
             var relPath = path.relative(PACKAGE_ROOT, file);
 //            console.log(relPath);
             if (!/ep_etherpad/.test(relPath)) {
-                console.log('EXPOSE ' + relPath);
+//                console.log('MINIFIER-NG: EXPOSING ' + relPath);
 //                b.require(file, {expose: 'xxx' + path.basename(file)});
             }
             return through(write, end);

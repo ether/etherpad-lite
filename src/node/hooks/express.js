@@ -32,7 +32,7 @@ exports.restartServer = function () {
 
   if (server) {
     console.log("Restarting express server");
-    server.destroy();
+    server.close();
   }
 
   var app = express(); // New syntax for express v3

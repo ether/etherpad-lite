@@ -67,7 +67,7 @@ function matchURIRegex(url) {
     return found;
 }
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+function expressCreateServer(hook_name, args, cb) {
     var app = args.app;
 
     //heavy assets -> hard compression
@@ -89,7 +89,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
             cache: path.normalize(PACKAGE_ROOT + '/../var')
         }));
     app.use('/static', express.static(WWW_DIR));
-};
+}
+;
 
 
 function handle(req, res, next) {
@@ -168,4 +169,21 @@ function handlePluginDefs(req, res, next) {
     next();
 }
 
+function restartServer() {
+    var pluginDefPath = path.normalize(PACKAGE_ROOT + '/../var/plugin-definitions.json');
+    fs.writeFile(pluginDefPath, JSON.stringify({
+      plugins: plugins.plugins,
+      parts: plugins.parts,
+      hooks: plugins.hooks,
+    }, 2, 2), {
+      encoding: 'utf8'
+    }, function(err, ok) {
+      console.debug("Wrote " + pluginDefPath);
+      require(PACKAGE_ROOT + '/node/utils/minifier-ng/run')();
+    });
+}
 
+exports.expressCreateServer = expressCreateServer;
+exports.restartServer = restartServer;
+//yes, it's correct
+exports.loadSettings = restartServer;
