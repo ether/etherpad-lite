@@ -76,15 +76,16 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     }));
 
     app.use(handle);
+    //NOTE regexps are for content-type, not for URIs
     app.use(minify(
         {
-            js_match: /\.js$/,
-            css_match: /\.css$/,
+            js_match: /\/javascript/,
+            css_match: /\/css/,
             // sass_match: /scss/,
             // less_match: /less/,
             // stylus_match: /stylus/,
             // coffee_match: /coffeescript/,
-            json_match: /\.json/,
+            json_match: /\/json/,
             cache: path.normalize(PACKAGE_ROOT + '/../var')
         }));
     app.use('/static', express.static(WWW_DIR));
