@@ -55,7 +55,7 @@ gulp.task('browserify', function () {
         b.transform(function (file) {
             var data = '';
             var relPath = path.relative(PACKAGE_ROOT, file);
-            console.log(relPath);
+//            console.log(relPath);
             if (!/ep_etherpad/.test(relPath)) {
                 console.log('EXPOSE ' + relPath);
 //                b.require(file, {expose: 'xxx' + path.basename(file)});
