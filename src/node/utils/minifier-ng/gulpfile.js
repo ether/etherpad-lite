@@ -11,7 +11,7 @@ var aliasify = require('aliasify');
 var path = require('path');
 var through = require('through');
 
-var remapify = require('remapify');
+// var remapify = require('remapify');
 
 var PACKAGE_ROOT = path.dirname(require.resolve('ep_etherpad-lite/ep.json'));
 var SRC_ROOT = path.normalize(PACKAGE_ROOT + '/static');
