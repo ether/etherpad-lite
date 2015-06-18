@@ -4,6 +4,7 @@
 
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
+ * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +22,7 @@
 var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
 var exporttxt = require("../utils/ExportTxt");
-var exportdokuwiki = require("../utils/ExportDokuWiki");
-var padManager = require("../db/PadManager");
+var exportEtherpad = require("../utils/ExportEtherpad");
 var async = require("async");
 var fs = require("fs");
 var settings = require('../utils/Settings');
@@ -52,16 +52,22 @@ exports.doExport = function(req, res, padId, type)
   hooks.aCallFirst("exportFileName", padId, 
     function(err, hookFileName){
       // if fileName is set then set it to the padId, note that fileName is returned as an array.
-      if(hookFileName) fileName = hookFileName; 
-
+      if(hookFileName.length) fileName = hookFileName;
 
       //tell the browser that this is a downloadable file
       res.attachment(fileName + "." + type);
     
       //if this is a plain text export, we can do this directly
       // We have to over engineer this because tabs are stored as attributes and not plain text
-    
-      if(type == "txt")
+      if(type == "etherpad"){
+        exportEtherpad.getPadRaw(padId, function(err, pad){
+          if(!err){
+            res.send(pad);
+            // return;
+          }
+        });
+      }
+      else if(type == "txt")
       {
         var txt;
         var randNum;
@@ -97,7 +103,7 @@ exports.doExport = function(req, res, padId, type)
           //send the file
           function(callback)
           {
-            res.sendfile(destFile, null, callback);
+            res.sendFile(destFile, null, callback);
           },
           //clean up temporary files
           function(callback)
@@ -129,26 +135,6 @@ exports.doExport = function(req, res, padId, type)
           if(err && err != "stop") ERR(err);
         })
       }
-      else if(type == 'dokuwiki')
-      {
-        var randNum;
-        var srcFile, destFile;
-    
-        async.series([
-          //render the dokuwiki document
-          function(callback)
-          {
-            exportdokuwiki.getPadDokuWikiDocument(padId, req.params.rev, function(err, dokuwiki)
-            {
-              res.send(dokuwiki);
-              callback("stop");
-            });
-          },
-        ], function(err)
-        {
-          if(err && err != "stop") throw err;
-        });
-      }
       else
       {
         var html;
@@ -172,8 +158,12 @@ exports.doExport = function(req, res, padId, type)
             //if this is a html export, we can send this from here directly
             if(type == "html")
             {
-              res.send(html);
-              callback("stop");  
+              // do any final changes the plugin might want to make cake
+              hooks.aCallFirst("exportHTMLSend", html, function(err, newHTML){
+                if(newHTML.length) html = newHTML;
+                res.send(html);
+                callback("stop");  
+              });
             }
             else //write the html export to a file
             {
@@ -194,7 +184,7 @@ exports.doExport = function(req, res, padId, type)
           //send the file
           function(callback)
           {
-            res.sendfile(destFile, null, callback);
+            res.sendFile(destFile, null, callback);
           },
           //clean up temporary files
           function(callback)

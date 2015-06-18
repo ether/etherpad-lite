@@ -63,6 +63,7 @@ ToolbarItem.prototype.bind = function (callback) {
 
   if (self.isButton()) {
     self.$el.click(function (event) {
+      $(':focus').blur();
       callback(self.getCommand(), self);
       event.preventDefault();
     });
@@ -140,14 +141,28 @@ var padeditbar = (function()
     init: function() {
       var self = this;
       self.dropdowns = [];
-      
+      // Listen for resize events (sucks but needed as iFrame ace_inner has to be position absolute
+      // A CSS fix for this would be nice but I'm not sure how we'd do it.
+      $(window).resize(function(){
+        self.redrawHeight();
+      });
+
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
       $("#editbar [data-key]").each(function () {
+        $(this).unbind("click");
         (new ToolbarItem($(this))).bind(function (command, item) {
           self.triggerCommand(command, item);
         });
       });
+
+      $('body:not(#editorcontainerbox)').on("keydown", function(evt){
+        bodyKeyEvent(evt);
+      });
+
+      $('#editbar').show();
+
+      this.redrawHeight();
 
       registerDefaultCommands(self);
 
@@ -169,6 +184,33 @@ var padeditbar = (function()
     registerCommand: function (cmd, callback) {
       this.commands[cmd] = callback;
       return this;
+    },
+    redrawHeight: function(){
+      var editbarHeight = $('.menu_left').height() + 1 + "px";
+      var containerTop = $('.menu_left').height() + 6 + "px";
+      $('#editbar').css("height", editbarHeight);
+
+      $('#editorcontainer').css("top", containerTop);
+
+      // make sure pop ups are in the right place
+      if($('#editorcontainer').offset()){
+        $('.popup').css("top", $('#editorcontainer').offset().top + "px");
+      }
+
+      // If sticky chat is enabled..
+      if($('#options-stickychat').is(":checked")){
+        if($('#editorcontainer').offset()){
+          $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
+        }
+      };
+
+      // If chat and Users is enabled..
+      if($('#options-chatandusers').is(":checked")){
+        if($('#editorcontainer').offset()){
+          $('#users').css("top", $('#editorcontainer').offset().top + "px");
+        }
+      }
+
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
@@ -206,7 +248,7 @@ var padeditbar = (function()
 
           if(module.css('display') != "none")
           {
-            $("#" + self.dropdowns[i] + "link").removeClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
             module.slideUp("fast", cb);
             returned = true;
           }
@@ -223,12 +265,12 @@ var padeditbar = (function()
 
           if(module.css('display') != "none")
           {
-            $("#" + self.dropdowns[i] + "link").removeClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
             module.slideUp("fast");
           }
           else if(self.dropdowns[i]==moduleName)
           {
-            $("#" + self.dropdowns[i] + "link").addClass("selected");
+            $("li[data-key=" + self.dropdowns[i] + "] > a").addClass("selected");
             module.slideDown("fast", cb);
           }
         }
@@ -263,6 +305,72 @@ var padeditbar = (function()
     }
   };
 
+  var editbarPosition = 0;
+
+  function bodyKeyEvent(evt){
+
+    // If the event is Alt F9 or Escape & we're already in the editbar menu
+    // Send the users focus back to the pad
+    if((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27){
+      if($(':focus').parents(".toolbar").length === 1){
+        // If we're in the editbar already..
+        // Close any dropdowns we have open..
+        padeditbar.toggleDropDown("none");
+        // Check we're on a pad and not on the timeslider
+        // Or some other window I haven't thought about!
+        if(typeof pad === 'undefined'){
+          // Timeslider probably..
+          // Shift focus away from any drop downs
+          $(':focus').blur(); // required to do not try to remove!
+          $('#padmain').focus(); // Focus back onto the pad
+        }else{
+          // Shift focus away from any drop downs
+          $(':focus').blur(); // required to do not try to remove!
+          padeditor.ace.focus(); // Sends focus back to pad
+          // The above focus doesn't always work in FF, you have to hit enter afterwards
+          evt.preventDefault();
+        }
+      }else{
+        // Focus on the editbar :)
+        var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
+        $(this).blur();
+        firstEditbarElement.focus();
+        evt.preventDefault();
+      }
+    }
+    // Are we in the toolbar??
+    if($(':focus').parents(".toolbar").length === 1){
+      // On arrow keys go to next/previous button item in editbar
+      if(evt.keyCode !== 39 && evt.keyCode !== 37) return;
+
+      // Get all the focusable items in the editbar
+      var focusItems = $('#editbar').find('button, select');
+
+      // On left arrow move to next button in editbar
+      if(evt.keyCode === 37){
+        // If a dropdown is visible or we're in an input don't move to the next button
+        if($('.popup').is(":visible") || evt.target.localName === "input") return;
+
+        editbarPosition--;
+        // Allow focus to shift back to end of row and start of row
+        if(editbarPosition === -1) editbarPosition = focusItems.length -1;
+        $(focusItems[editbarPosition]).focus()
+      }
+
+      // On right arrow move to next button in editbar
+      if(evt.keyCode === 39){
+        // If a dropdown is visible or we're in an input don't move to the next button
+        if($('.popup').is(":visible") || evt.target.localName === "input") return;
+
+        editbarPosition++;
+        // Allow focus to shift back to end of row and start of row
+        if(editbarPosition >= focusItems.length) editbarPosition = 0;
+        $(focusItems[editbarPosition]).focus();
+      }
+    }
+
+  }
+
   function aceAttributeCommand(cmd, ace) {
     ace.ace_toggleAttributeOnSelection(cmd);
   }
@@ -271,13 +379,39 @@ var padeditbar = (function()
     toolbar.registerDropdownCommand("showusers", "users");
     toolbar.registerDropdownCommand("settings");
     toolbar.registerDropdownCommand("connectivity");
-    toolbar.registerDropdownCommand("import_export", "importexport");
+    toolbar.registerDropdownCommand("import_export");
     toolbar.registerDropdownCommand("embed");
+
+    toolbar.registerCommand("settings", function () {
+      toolbar.toggleDropDown("settings", function(){
+        $('#options-stickychat').focus();
+      });
+    });
+
+    toolbar.registerCommand("import_export", function () {
+      toolbar.toggleDropDown("import_export", function(){
+        // If Import file input exists then focus on it..
+        if($('#importfileinput').length !== 0){
+          setTimeout(function(){
+            $('#importfileinput').focus();
+          }, 100);
+        }else{
+          $('.exportlink').first().focus();
+        }
+      });
+    });
+
+    toolbar.registerCommand("showusers", function () {
+      toolbar.toggleDropDown("users", function(){
+        $('#myusernameedit').focus();
+      });
+    });
 
     toolbar.registerCommand("embed", function () {
       toolbar.setEmbedLinks();
-      $('#linkinput').focus().select();
-      toolbar.toggleDropDown("embed");
+      toolbar.toggleDropDown("embed", function(){
+        $('#linkinput').focus().select();
+      });
     });
 
     toolbar.registerCommand("savedRevision", function () {

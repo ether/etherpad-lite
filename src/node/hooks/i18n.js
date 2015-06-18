@@ -1,7 +1,6 @@
 var languages = require('languages4translatewiki')
   , fs = require('fs')
   , path = require('path')
-  , express = require('express')
   , _ = require('underscore')
   , npm = require('npm')
   , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
@@ -92,7 +91,7 @@ exports.expressCreateServer = function(n, args) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send('{"'+locale+'":'+JSON.stringify(locales[locale])+'}');
     } else {
-      res.send(404, 'Language not available');
+      res.status(404).send('Language not available');
     }
   })
   

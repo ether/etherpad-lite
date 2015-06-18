@@ -1,6 +1,31 @@
 # Developer Guidelines
 (Please talk to people on the mailing list before you change this page, see our section on [how to get in touch](https://github.com/ether/etherpad-lite#get-in-touch))
 
+## How to write a bug report
+
+* Please be polite, we all are humans and problems can occur.
+* Please add as much information as possible, for example
+  * client os(s) and version(s)
+    * browser(s) and version(s), is the problem reproduceable on different clients
+    * special environments like firewalls or antivirus
+  * host os and version
+    * npm and nodejs version
+    * Logfiles if available
+  * steps to reproduce
+  * what you expected to happen
+  * what actually happened
+* Please format logfiles and code examples with markdown see github Markdown help below the issue textarea for more information.
+
+If you send logfiles, please set the loglevel switch DEBUG in your settings.json file:
+
+```
+/* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
+  "loglevel": "DEBUG",
+```
+
+The logfile location is defined in startup script or the log is directly shown in the commandline after you have started etherpad.
+
+
 ## Important note for pull requests
 **Pull requests should be issued against the develop branch**.  We never pull directly into master.
 

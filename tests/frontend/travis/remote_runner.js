@@ -82,16 +82,18 @@ sauceTestWorker.push({
   , 'version'        : ''
 });
 
+/*
 // IE 8
 sauceTestWorker.push({
     'platform'       : 'Windows 2003'
   , 'browserName'    : 'iexplore'
   , 'version'        : '8'
 });
+*/
 
 // IE 9
 sauceTestWorker.push({
-    'platform'       : 'Windows 2008'
+    'platform'       : 'Windows XP'
   , 'browserName'    : 'iexplore'
   , 'version'        : '9'
 });

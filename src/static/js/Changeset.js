@@ -507,6 +507,11 @@ exports.opAssembler = function () {
  */ 
 exports.stringIterator = function (str) {
   var curIndex = 0;
+  // newLines is the number of \n between curIndex and str.length
+  var newLines = str.split("\n").length - 1
+  function getnewLines(){
+    return newLines
+  }
 
   function assertRemaining(n) {
     exports.assert(n <= remaining(), "!(", n, " <= ", remaining(), ")");
@@ -515,6 +520,7 @@ exports.stringIterator = function (str) {
   function take(n) {
     assertRemaining(n);
     var s = str.substr(curIndex, n);
+    newLines -= s.split("\n").length - 1
     curIndex += n;
     return s;
   }
@@ -537,7 +543,8 @@ exports.stringIterator = function (str) {
     take: take,
     skip: skip,
     remaining: remaining,
-    peek: peek
+    peek: peek,
+    newlines: getnewLines
   };
 };
 
@@ -913,12 +920,27 @@ exports.applyToText = function (cs, str) {
     var op = csIter.next();
     switch (op.opcode) {
     case '+':
+      //op is + and op.lines 0: no newlines must be in op.chars
+      //op is + and op.lines >0: op.chars must include op.lines newlines
+      if(op.lines != bankIter.peek(op.chars).split("\n").length - 1){
+        throw new Error("newline count is wrong in op +; cs:"+cs+" and text:"+str);
+      }
       assem.append(bankIter.take(op.chars));
       break;
     case '-':
+      //op is - and op.lines 0: no newlines must be in the deleted string
+      //op is - and op.lines >0: op.lines newlines must be in the deleted string
+      if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
+        throw new Error("newline count is wrong in op -; cs:"+cs+" and text:"+str);
+      }
       strIter.skip(op.chars);
       break;
     case '=':
+      //op is = and op.lines 0: no newlines must be in the copied string
+      //op is = and op.lines >0: op.lines newlines must be in the copied string
+      if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
+        throw new Error("newline count is wrong in op =; cs:"+cs+" and text:"+str);
+      }
       assem.append(strIter.take(op.chars));
       break;
     }
@@ -1216,7 +1238,7 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
     }
   }
 
-  exports.assert(!lineAssem, "line assembler not finished");
+  exports.assert(!lineAssem, "line assembler not finished:"+cs);
   mut.close();
 
   //dmesg("-> "+lines.toSource());

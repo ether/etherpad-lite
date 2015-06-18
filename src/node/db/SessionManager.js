@@ -351,7 +351,15 @@ function listSessionsWithDBKey (dbkey, callback)
       {
         exports.getSessionInfo(sessionID, function(err, sessionInfo)
         {
-          if(ERR(err, callback)) return;
+          if (err == "apierror: sessionID does not exist")
+          {
+            console.warn("Found bad session " + sessionID + " in " + dbkey + ".");
+          }
+          else if(ERR(err, callback))
+          {
+            return;
+          }
+
           sessions[sessionID] = sessionInfo;
           callback();
         });

@@ -29,6 +29,9 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 {
   var BroadcastSlider;
 
+  // Hack to ensure timeslider i18n values are in
+  $("[data-key='timeslider_returnToPad'] > a > span").html(html10n.get("timeslider.toolbar.returnbutton"));
+
   (function()
   { // wrap this code in its own namespace
     var sliderLength = 1000;
@@ -163,6 +166,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       padmodals.showModal("disconnected");
     }
 
+    // Throttle seems like overkill here...  Not sure why we do it!
     var fixPadHeight = _.throttle(function(){
       var height = $('#timeslider-top').height();
       $('#editorcontainerbox').css({marginTop: height});
@@ -177,23 +181,26 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       var colorsAnonymous = [];
       _.each(authors, function(author)
       {
-        var authorColor =  clientVars.colorPalette[author.colorId] || author.colorId;
-        if (author.name)
+        if(author)
         {
-          if (numNamed !== 0) authorsList.append(', ');
-          
-          $('<span />')
-            .text(author.name || "unnamed")
-            .css('background-color', authorColor)
-            .addClass('author')
-            .appendTo(authorsList);
+          var authorColor = clientVars.colorPalette[author.colorId] || author.colorId;
+          if (author.name)
+          {
+            if (numNamed !== 0) authorsList.append(', ');
+            
+            $('<span />')
+              .text(author.name || "unnamed")
+              .css('background-color', authorColor)
+              .addClass('author')
+              .appendTo(authorsList);
 
-          numNamed++;
-        }
-        else
-        {
-          numAnonymous++;
-          if(authorColor) colorsAnonymous.push(authorColor);
+            numNamed++;
+          }
+          else
+          {
+            numAnonymous++;
+            if(authorColor) colorsAnonymous.push(authorColor);
+          }
         }
       });
       if (numAnonymous > 0)
@@ -284,6 +291,11 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       
       $(document).keyup(function(e)
       {
+        // If focus is on editbar, don't do anything
+        var target = $(':focus');
+        if($(target).parents(".toolbar").length === 1){
+            return;
+        }
         var code = -1;
         if (!e) var e = window.event;
         if (e.keyCode) code = e.keyCode;
@@ -324,7 +336,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           }
         }
         else if (code == 32) playpause();
-
       });
       
       $(window).resize(function()
@@ -334,7 +345,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
       $("#ui-slider-bar").mousedown(function(evt)
       {
-        setSliderPosition(Math.floor((evt.clientX - $("#ui-slider-bar").offset().left) * sliderLength / 742));
         $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
         $("#ui-slider-handle").trigger(evt);
       });
@@ -380,16 +390,16 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       {
         var self = this;
 
-        $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
+        // $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
         $(self).mouseup(function(evt2)
         {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
           $(self).unbind('mouseup');
           BroadcastSlider.playpause();
         });
         $(document).mouseup(function(evt2)
         {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
           $(document).unbind('mouseup');
         });
       });

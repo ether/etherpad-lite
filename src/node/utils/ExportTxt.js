@@ -22,9 +22,6 @@ var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
-var Security = require('ep_etherpad-lite/static/js/security');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var getPadPlainText = require('./ExportHelper').getPadPlainText;
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
@@ -82,7 +79,6 @@ function getTXTFromAtext(pad, atext, authorColors)
   var textLines = atext.text.slice(0, -1).split('\n');
   var attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
 
-  var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
   var anumMap = {};
   var css = "";
@@ -110,7 +106,6 @@ function getTXTFromAtext(pad, atext, authorColors)
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
     var taker = Changeset.stringIterator(text);
     var assem = Changeset.stringAssembler();
-    var openTags = [];
 
     var idx = 0;
 
@@ -250,7 +245,6 @@ function getTXTFromAtext(pad, atext, authorColors)
   // so we want to do something reasonable there.  We also
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
-  var lists = []; // e.g. [[1,'bullet'], [3,'bullet'], ...]
   for (var i = 0; i < textLines.length; i++)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);

@@ -23,12 +23,12 @@ var ERR = require("async-stacktrace");
 var settings = require('./Settings');
 var async = require('async');
 var fs = require('fs');
-var cleanCSS = require('clean-css');
+var CleanCSS = require('clean-css');
 var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-var RequireKernel = require('require-kernel');
+var RequireKernel = require('etherpad-require-kernel');
 var urlutil = require('url');
 
 var ROOT_DIR = path.normalize(__dirname + "/../../static/");
@@ -143,9 +143,11 @@ function minify(req, res, next)
 
   // No relative paths, especially if they may go up the file hierarchy.
   filename = path.normalize(path.join(ROOT_DIR, filename));
+  filename = filename.replace(/\.\./g, '')
+
   if (filename.indexOf(ROOT_DIR) == 0) {
     filename = filename.slice(ROOT_DIR.length);
-    filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
+    filename = filename.replace(/\\/g, '/')
   } else {
     res.writeHead(404, {});
     res.end();
@@ -166,7 +168,7 @@ function minify(req, res, next)
       var plugin = plugins.plugins[library];
       var pluginPath = plugin.package.realPath;
       filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
-      filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
+      filename = filename.replace(/\\/g, '/'); // windows path fix
     } else if (LIBRARY_WHITELIST.indexOf(library) != -1) {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
@@ -261,7 +263,6 @@ function getAceFile(callback) {
     // them into the file.
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
-      var request = require('request');
 
       var baseURI = 'http://localhost:' + settings.port;
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
@@ -411,7 +412,8 @@ function compressJS(values)
 function compressCSS(values)
 {
   var complete = values.join("\n");
-  return cleanCSS.process(complete);
+  var minimized = new CleanCSS().minify(complete).styles;
+  return minimized;
 }
 
 exports.minify = minify;

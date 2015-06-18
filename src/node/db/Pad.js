@@ -54,6 +54,21 @@ Pad.prototype.getHeadRevisionNumber = function getHeadRevisionNumber() {
   return this.head;
 };
 
+Pad.prototype.getSavedRevisionsNumber = function getSavedRevisionsNumber() {
+  return this.savedRevisions.length;
+};
+
+Pad.prototype.getSavedRevisionsList = function getSavedRevisionsList() {
+  var savedRev = new Array();
+  for(var rev in this.savedRevisions){
+    savedRev.push(this.savedRevisions[rev].revNum);
+  }
+  savedRev.sort(function(a, b) {
+    return a - b;
+  });
+  return savedRev;
+};
+
 Pad.prototype.getPublicStatus = function getPublicStatus() {
   return this.publicStatus;
 };
@@ -135,7 +150,7 @@ Pad.prototype.getRevisionDate = function getRevisionDate(revNum, callback) {
 Pad.prototype.getAllAuthors = function getAllAuthors() {
   var authors = [];
 
-  for(key in this.pool.numToAttrib)
+  for(var key in this.pool.numToAttrib)
   {
     if(this.pool.numToAttrib[key][0] == "author" && this.pool.numToAttrib[key][1] != "")
     {
@@ -461,7 +476,6 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     // if the pad exists, we should abort, unless forced.
     function(callback)
     {
-      console.log("destinationID", destinationID, force);
       padManager.doesPadExists(destinationID, function (err, exists)
       {
         if(ERR(err, callback)) return;
@@ -470,9 +484,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         {
           if (!force)
           {
-            console.log("erroring out without force");
+            console.error("erroring out without force");
             callback(new customError("destinationID already exists","apierror"));
-            console.log("erroring out without force - after");
+            console.error("erroring out without force - after");
             return;
           }
           else // exists and forcing
@@ -521,12 +535,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         function(callback)
         {
           var revHead = _this.head;
-          //console.log(revHead);
           for(var i=0;i<=revHead;i++)
           {
             db.get("pad:"+sourceID+":revs:"+i, function (err, rev) {
-              //console.log("HERE");
-
               if (ERR(err, callback)) return;
               db.set("pad:"+destinationID+":revs:"+i, rev);
             });
@@ -538,10 +549,8 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         function(callback)
         {
           var authorIDs = _this.getAllAuthors();
-
           authorIDs.forEach(function (authorID)
           {
-            console.log("authors");
             authorManager.addPad(authorID, destinationID);
           });
 
@@ -555,7 +564,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
       if(destGroupID) db.setSub("group:" + destGroupID, ["pads", destinationID], 1);
 
       // Initialize the new pad (will update the listAllPads cache)
-      padManager.getPad(destinationID, null, callback)
+      setTimeout(function(){
+        padManager.getPad(destinationID, null, callback) // this runs too early.
+      },10);
     }
   // series
   ], function(err)
@@ -690,7 +701,7 @@ Pad.prototype.isPasswordProtected = function isPasswordProtected() {
 Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, label) {
   //if this revision is already saved, return silently
   for(var i in this.savedRevisions){
-    if(this.savedRevisions.revNum === revNum){
+    if(this.savedRevisions[i] && this.savedRevisions[i].revNum === revNum){
       return;
     }
   }

@@ -81,8 +81,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     onServerMessage: function()
     {}
   };
-
-  if ($.browser.mozilla)
+  if (browser.firefox)
   {
     // Prevent "escape" from taking effect and canceling a comet connection;
     // doesn't work if focus is on an iframe.
@@ -152,6 +151,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
     // apply msgQueue changeset.
     if (msgQueue.length != 0) {
+      var msg;
       while (msg = msgQueue.shift()) {
         var newRev = msg.newRev;
         rev=newRev;
@@ -274,7 +274,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       // When inInternationalComposition, msg pushed msgQueue.
       if (msgQueue.length > 0 || editor.getInInternationalComposition()) {
-        if (msgQueue.length > 0) oldRev = msgQueue[msgQueue.length - 1].newRev;
+        if (msgQueue.length > 0) var oldRev = msgQueue[msgQueue.length - 1].newRev;
         else oldRev = rev;
 
         if (newRev != (oldRev + 1))

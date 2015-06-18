@@ -10,7 +10,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   { 
     var html;
     var padId;
-    var pad;
 
     async.series([
       //translate the read only pad to a padId
@@ -56,7 +55,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         ERR(err);
 
       if(err == "notfound")
-        res.send(404, '404 - Not Found');
+        res.status(404).send('404 - Not Found');
       else
         res.send(html);
     });

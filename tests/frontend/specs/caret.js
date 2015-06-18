@@ -1,11 +1,19 @@
 describe("As the caret is moved is the UI properly updated?", function(){
   var padName;
   var numberOfRows = 50;
+/*
 
-  it("creates a pad", function(done) {
+  //create a new pad before each test run
+  beforeEach(function(cb){
+    helper.newPad(cb);
+    this.timeout(60000);
+  });
+
+  xit("creates a pad", function(done) {
     padName = helper.newPad(done);
     this.timeout(60000);
   });
+*/
 
   /* Tests to do
   * Keystroke up (38), down (40), left (37), right (39) with and without special keys IE control / shift
@@ -20,10 +28,12 @@ describe("As the caret is moved is the UI properly updated?", function(){
   * How do we keep the authors focus on a line if the lines above the author are modified?  We should only redraw the user to a location if they are typing and make sure shift and arrow keys aren't redrawing the UI else highlight - copy/paste would get broken
   * How can we simulate an edit event in the test framework?
   */
-
-  // THIS DOESNT WORK AS IT DOESNT MOVE THE CURSOR!
+/*
+  // THIS DOESNT WORK IN CHROME AS IT DOESNT MOVE THE CURSOR!
   it("down arrow", function(done){
     var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
     var $newFirstTextElement = inner$("div").first();
     $newFirstTextElement.focus();
     keyEvent(inner$, 37, false, false); // arrow down
@@ -31,9 +41,10 @@ describe("As the caret is moved is the UI properly updated?", function(){
 
     done();
   });
-/*
+
   it("Creates N lines", function(done){
     var inner$ = helper.padInner$;
+console.log(inner$);
     var chrome$ = helper.padChrome$;
     var $newFirstTextElement = inner$("div").first();
 
@@ -224,7 +235,6 @@ describe("As the caret is moved is the UI properly updated?", function(){
     });
     var i = 0;
     while(i < numberOfRows){ // press down arrow
-console.log("dwn");
       keyEvent(inner$, 40, false, false);
       i++;
     }
@@ -287,7 +297,7 @@ function prepareDocument(n, target){ // generates a random document with random 
 }
 
 function keyEvent(target, charCode, ctrl, shift){ // sends a charCode to the window
-  if(target.browser.mozilla){ // if it's a mozilla browser
+  if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE  
     var evtType = "keypress";
   }else{
     var evtType = "keydown";

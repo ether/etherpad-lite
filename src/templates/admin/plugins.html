@@ -20,7 +20,7 @@
       <% } %>
 
        <div class="menu">
-        <h1><a href="../../">Etherpad</a></h1>
+        <h1><a href="../">Etherpad</a></h1>
         <ul>
           <% e.begin_block("adminMenu"); %>
           <li><a href="plugins">Plugin manager</a> </li>
@@ -49,7 +49,7 @@
               <td>
                 <div class="actions">
                   <input type="button" value="Uninstall" class="do-uninstall">
-                  <div class="progress"><p><img src="../static/img/loading.gif"/></p><p><span class="message"></span></p></div>
+                  <div class="progress"><p class="loadingAnimation"></p><p><span class="message"></span></p></div>
                 </div>
               </td>
             </tr>
@@ -59,7 +59,7 @@
           <tbody class="messages">
               <tr><td></td><td>
                 <p class="nothing-installed">You haven't installed any plugins yet.</p>
-                <p class="fetching"><img src="../static/img/loading.gif"/><br/>Fetching installed plugins...</p>
+                <p class="fetching"><p class="loadingAnimation"></p><br/>Fetching installed plugins...</p>
               </td><td></td></tr>
             </tbody>
         </table>
@@ -78,6 +78,7 @@
                 <th class="sort up"   data-label="name">Name</th>
                 <th class="sort none" data-label="description">Description</th>
                 <th class="sort none" data-label="version">Version</th>
+                <th class="sort none" data-label="time">Last update</th>
                 <td></td>
               </tr>
             </thead>
@@ -86,10 +87,11 @@
                 <td class="name" data-label="Name"></td>
                 <td class="description" data-label="Description"></td>
                 <td class="version" data-label="Version"></td>
+                <td class="time" data-label="Time"></td>
                 <td>
                   <div class="actions">
                     <input type="button" value="Install" class="do-install">
-                    <div class="progress"><p><img src="../static/img/loading.gif"/></p><p><span class="message"></span></p></div>
+                    <div class="progress"><p><p class="loadingAnimation"></p></p><p><span class="message"></span></p></div>
                   </div>
                </td>
               </tr>
@@ -101,7 +103,7 @@
                 <div class="messages">
                   <div id="search-progress" class="progress"><p>&nbsp;</p></div>
                   <p class="nothing-found">No plugins found.</p>
-                  <p class="fetching"><img src="../static/img/loading.gif"/><br/>Fetching...</p>
+                  <p class="fetching"><p class="loadingAnimation"></p><br/>Fetching...</p>
                 </div>
               </td><td></td></tr>
             </tbody>

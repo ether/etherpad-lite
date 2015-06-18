@@ -27,6 +27,7 @@ var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
 var colorutils = require('./colorutils').colorutils;
 var _ = require('./underscore');
+var hooks = require('./pluginfw/hooks');
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
@@ -64,18 +65,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       if (window.console) console.log("error printing: ", e);
     }
   }
-
-  // for IE
-  if ($.browser.msie)
-  {
-    try
-    {
-      document.execCommand("BackgroundImageCache", false, true);
-    }
-    catch (e)
-    {}
-  }
-
 
   //var socket;
   var channelState = "DISCONNECTED";
@@ -384,28 +373,34 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       }
       if (changeset) applyChangeset(changeset, path.rev, true, timeDelta);
 
-
-      if (BroadcastSlider.getSliderLength() > 10000)
-      {
-        var start = (Math.floor((newRevision) / 10000) * 10000); // revision 0 to 10
-        changesetLoader.queueUp(start, 100);
-      }
-
-      if (BroadcastSlider.getSliderLength() > 1000)
-      {
-        var start = (Math.floor((newRevision) / 1000) * 1000); // (start from -1, go to 19) + 1
-        changesetLoader.queueUp(start, 10);
-      }
-
-      start = (Math.floor((newRevision) / 100) * 100);
-
-      changesetLoader.queueUp(start, 1, update);
+      // Loading changeset history for new revision
+      loadChangesetsForRevision(newRevision, update);
+      // Loading changeset history for old revision (to make diff between old and new revision)
+      loadChangesetsForRevision(padContents.currentRevision - 1);
     }
     
     var authors = _.map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
     });
     BroadcastSlider.setAuthors(authors);
+  }
+  
+  function loadChangesetsForRevision(revision, callback) {
+    if (BroadcastSlider.getSliderLength() > 10000)
+    {
+      var start = (Math.floor((revision) / 10000) * 10000); // revision 0 to 10
+      changesetLoader.queueUp(start, 100);
+    }
+
+    if (BroadcastSlider.getSliderLength() > 1000)
+    {
+      var start = (Math.floor((revision) / 1000) * 1000); // (start from -1, go to 19) + 1
+      changesetLoader.queueUp(start, 10);
+    }
+
+    start = (Math.floor((revision) / 100) * 100);
+
+    changesetLoader.queueUp(start, 1, callback);
   }
 
   changesetLoader = {
@@ -482,7 +477,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         var astart = start + i * granularity - 1; // rev -1 is a blank single line
         var aend = start + (i + 1) * granularity - 1; // totalRevs is the most recent revision
         if (aend > data.actualEndNum - 1) aend = data.actualEndNum - 1;
-        debugLog("adding changeset:", astart, aend);
+        //debugLog("adding changeset:", astart, aend);
         var forwardcs = Changeset.moveOpsToNewPool(data.forwardsChangesets[i], pool, padContents.apool);
         var backwardcs = Changeset.moveOpsToNewPool(data.backwardsChangesets[i], pool, padContents.apool);
         revisionInfo.addChangeset(astart, aend, forwardcs, backwardcs, data.timeDeltas[i]);
@@ -528,6 +523,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
           var savedRev = obj.savedRev;
           BroadcastSlider.addSavedRevision(savedRev.revNum, savedRev);
         }
+        hooks.callAll('handleClientTimesliderMessage_' + obj.type, {payload: obj});
       }
       else if(obj.type == "CHANGESET_REQ")
       {
