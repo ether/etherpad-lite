@@ -118,7 +118,7 @@
 	"timeslider.month.october": "octubre",
 	"timeslider.month.november": "noviembre",
 	"timeslider.month.december": "diciembre",
-	"timeslider.unnamedauthors": "{{num}} {[ plural(num) one: autor desconocido, other: autores desconocidos]}",
+	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: autor desconocido, other: autores desconocidos]}",
 	"pad.savedrevs.marked": "Revisión guardada",
 	"pad.savedrevs.timeslider": "Puedes ver revisiones guardadas visitando la línea de tiempo",
 	"pad.userlist.entername": "Escribe tu nombre",
