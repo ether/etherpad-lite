@@ -15,10 +15,6 @@
   "ip": "127.0.0.1",
   "port" : 9001,
 
-  // Session Key, used for reconnecting user sessions
-  // Set this to a secure string at least 10 characters long.  Do not share this value.
-  "sessionKey" : "nmwh8EiZwdqrKldw7bM72Wh5AUnHNqUR",
-
   /*  
   // Node native SSL support
   // this is disabled by default
