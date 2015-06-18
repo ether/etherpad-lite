@@ -40,6 +40,7 @@
   "dbSettings" : {
                     "user"    : "nobody", 
                     "host"    : "@dbserver@", 
+                    "port"    : "@dbport@", 
                     "password": "", 
                     "database": "@dbname@"
                   },
