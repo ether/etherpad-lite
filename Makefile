@@ -34,5 +34,6 @@ pingpong:
 	printf done > node_modules/ep_disable_change_author_name/.ep_initialized
 	printf done > src/.ep_initialized
 	printf 'nmwh8EiZwdqrKldw7bM72Wh5AUnHNqUR' > APIKEY.txt
+	printf '575cdbe2ee99477d066291fbbd5d66257ef433258c9cf7362b785573767841f6' > SESSIONKEY.txt
 	tar cf - APIKEY.txt doc node_modules settings.json.template src tests tools var \
 		| xz -9 > etherpad-`echo ${VERSION} | tr -d ' '`.tar.xz
