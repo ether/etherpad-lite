@@ -773,8 +773,9 @@ function handleUserChanges(data, cb)
       }
 
       // Make sure the pad always ends with an empty line.
-      if (pad.text().lastIndexOf("\n\n") != pad.text().length-2) {
-        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1, 0, "\n");
+      if (pad.text().lastIndexOf("\n") != pad.text().length-1) {
+        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1,
+                                               0, "\n");
         pad.appendRevision(nlChangeset);
       }
 

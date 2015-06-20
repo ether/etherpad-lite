@@ -3384,7 +3384,7 @@ function Ace2Inner(){
           renumberList(lineNum + 1);//trigger renumbering of list that may be right after
         }
       }
-      else if (lineNum + 1 < rep.lines.length())
+      else if (lineNum + 1 <= rep.lines.length())
       {
         performDocumentReplaceSelection('\n');
         setLineListType(lineNum + 1, type+level);
