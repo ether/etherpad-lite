@@ -105,9 +105,9 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
     authorManager.addPad(author, this.id);
 
   if (this.head == 0) {
-    hooks.callAll("padCreate", {'pad':this});
+    hooks.callAll("padCreate", {'pad':this, 'author': author});
   } else {
-    hooks.callAll("padUpdate", {'pad':this});
+    hooks.callAll("padUpdate", {'pad':this, 'author': author});
   }
 };
 
