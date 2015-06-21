@@ -1,4 +1,5 @@
 var path = require('path');
+var async = require('async');
 var eejs = require('ep_etherpad-lite/node/eejs');
 var toolbar = require("ep_etherpad-lite/node/utils/toolbar");
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
@@ -95,6 +96,26 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 *
 */
 function sendPadHeaderFiles(res, callback){
+  var plugins = hooks.plugins.plugins;
+  var pluginPaths = [];
+  // Go through each plugin and get the paths
+  Object.keys(plugins).forEach(function(key) {
+    if(key === "ep_etherpad-lite") return;
+    var plugin = plugins[key];
+    var client_hooks = plugin.parts[0].client_hooks;
+    Object.keys(client_hooks).forEach(function(k){
+      pluginPaths.push(client_hooks[k]);
+    });
+  });
+
+  var uniquePaths = pluginPaths.filter(function(item, pos) {
+    return pluginPaths.indexOf(item) == pos;
+  })
+
+  console.warn("paths", uniquePaths);
+
+  // Now we need to uniquify the array
+
   res.set('Link', '<static/js/require-kernel.js>; rel=prefetch \, \
     <javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define>; rel=prefetch \, \
     <javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define>; rel=prefetch \, \
