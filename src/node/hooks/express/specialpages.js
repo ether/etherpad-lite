@@ -108,27 +108,31 @@ function sendPadHeaderFiles(res, callback){
     });
   });
 
+  // Now we need to uniquify the array so we only have unique paths
   var uniquePaths = pluginPaths.filter(function(item, pos) {
     return pluginPaths.indexOf(item) == pos;
   })
 
-  console.warn("paths", uniquePaths);
+  // Next to join the array into a string so we can add it to the link value
+  var uniquePluginString = "'";
 
-  // Now we need to uniquify the array
+  for (var i = 0; i < uniquePaths.length; i++) {
+    uniquePluginString += "<"+uniquePaths[i]+".js>; rel=prefetch\,";
+  }
 
-  res.set('Link', '<static/js/require-kernel.js>; rel=prefetch \, \
-    <javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define>; rel=prefetch \, \
-    <javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define>; rel=prefetch \, \
-    <javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define>; rel=prefetch \, \
-    <javascripts/lib/unorm/lib/unorm.js?callback=require.define>; rel=prefetch \, \
-    <static/custom/pad.js>; rel=prefetch \, \
-    <static/js/html10n.js>; rel=prefetch \, \
-    <static/js/l10n.js>; rel=prefetch \, \
-    <static/css/pad.css>; rel=prefetch \, \
-    <static/custom/pad.css>; rel=prefetch \, \
-    <static/css/iframe_editor.css>; rel=prefetch \, \
-    <pluginfw/plugin-definitions.json>; rel=prefetch \, \
-    <locales.json>; rel=prefetch \, \
-    <static/font/fontawesome-etherpad.woff>; rel=prefetch');
+  res.set('Link', uniquePluginString + " <static/js/require-kernel.js>; rel=prefetch\, \
+<javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define>; rel=prefetch\, \
+<javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define>; rel=prefetch\, \
+<javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define>; rel=prefetch\, \
+<javascripts/lib/unorm/lib/unorm.js?callback=require.define>; rel=prefetch\, \
+<static/custom/pad.js>; rel=prefetch\, \
+<static/js/html10n.js>; rel=prefetch\, \
+<static/js/l10n.js>; rel=prefetch\, \
+<static/css/pad.css>; rel=prefetch\, \
+<static/custom/pad.css>; rel=prefetch\, \
+<static/css/iframe_editor.css>; rel=prefetch\, \
+<pluginfw/plugin-definitions.json>; rel=prefetch\, \
+<locales.json>; rel=prefetch\, \
+<static/font/fontawesome-etherpad.woff>; rel=prefetch'");
   callback();
 }
