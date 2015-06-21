@@ -103,9 +103,11 @@ function sendPadHeaderFiles(res, callback){
     if(key === "ep_etherpad-lite") return;
     var plugin = plugins[key];
     var client_hooks = plugin.parts[0].client_hooks;
-    Object.keys(client_hooks).forEach(function(k){
-      pluginPaths.push(client_hooks[k]);
-    });
+    if(client_hooks){
+      Object.keys(client_hooks).forEach(function(k){
+        pluginPaths.push(client_hooks[k]);
+      });
+    }
   });
 
   // Now we need to uniquify the array so we only have unique paths
@@ -114,11 +116,13 @@ function sendPadHeaderFiles(res, callback){
   })
 
   // Next to join the array into a string so we can add it to the link value
-  var uniquePluginString = "'";
+  var uniquePluginString = "";
 
   for (var i = 0; i < uniquePaths.length; i++) {
-    uniquePluginString += "<"+uniquePaths[i]+".js>; rel=prefetch\,";
+    uniquePluginString += "<static/plugins/"+uniquePaths[i]+".js>; rel=prefetch\, ";
   }
+
+  // console.log("unique plugin string...", uniquePluginString)
 
   res.set('Link', uniquePluginString + " <static/js/require-kernel.js>; rel=prefetch\, \
 <javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define>; rel=prefetch\, \
@@ -133,6 +137,6 @@ function sendPadHeaderFiles(res, callback){
 <static/css/iframe_editor.css>; rel=prefetch\, \
 <pluginfw/plugin-definitions.json>; rel=prefetch\, \
 <locales.json>; rel=prefetch\, \
-<static/font/fontawesome-etherpad.woff>; rel=prefetch'");
+<static/font/fontawesome-etherpad.woff>; rel=prefetch");
   callback();
 }
