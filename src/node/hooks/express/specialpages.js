@@ -35,32 +35,36 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve pad.html under /p
   args.app.get('/p/:pad', function(req, res, next)
   {
-    // The below might break for pads being rewritten
-    var isReadOnly = req.url.indexOf("/p/r.") === 0;
+    sendPadHeaderFiles(res, function(){
+      // The below might break for pads being rewritten
+      var isReadOnly = req.url.indexOf("/p/r.") === 0;
 
-    hooks.callAll("padInitToolbar", {
-      toolbar: toolbar,
-      isReadOnly: isReadOnly
+      hooks.callAll("padInitToolbar", {
+        toolbar: toolbar,
+        isReadOnly: isReadOnly
+      });
+
+      res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {
+        req: req,
+        toolbar: toolbar,
+        isReadOnly: isReadOnly
+      }));
     });
-
-    res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {
-      req: req,
-      toolbar: toolbar,
-      isReadOnly: isReadOnly
-    }));
   });
 
   //serve timeslider.html under /p/$padname/timeslider
   args.app.get('/p/:pad/timeslider', function(req, res, next)
   {
-    hooks.callAll("padInitToolbar", {
-      toolbar: toolbar
-    });
+    sendPadHeaderFiles(res, function(){
+      hooks.callAll("padInitToolbar", {
+        toolbar: toolbar
+      });
     
-    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {
-      req: req,
-      toolbar: toolbar
-    }));
+      res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {
+        req: req,
+        toolbar: toolbar
+      }));
+    });
   });
 
   //serve favicon.ico from all path levels except as a pad name
@@ -81,6 +85,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
 }
 
+
+/*
+*
+* Here we send the pad Header Files, this is used as "prefetch" which loads the browser up with
+* The files it will need when visiting a pad.  The idea is that this makes the users experience faster
+* STILL TODO: Extend so plugins can patch into this or so the plugin framework can parse plugin files
+* And inject them into this.
+*
+*/
 function sendPadHeaderFiles(res, callback){
   res.set('Link', '<static/js/require-kernel.js>; rel=prefetch \, \
     <javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define>; rel=prefetch \, \
