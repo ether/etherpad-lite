@@ -3,6 +3,7 @@
     "pad.js"
   , "pad_utils.js"
   , "browser.js"
+  , "colorutils.js"
   , "pad_cookie.js"
   , "pad_editor.js"
   , "pad_editbar.js"

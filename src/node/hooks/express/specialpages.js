@@ -130,8 +130,11 @@ function sendPadHeaderFiles(res, callback){
 <javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define>; rel=prefetch\, \
 <javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define>; rel=prefetch\, \
 <javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define>; rel=prefetch\, \
+<javascripts/lib/ep_etherpad-lite/static/js/colorutils.js?callback=require.define>; rel=prefetch\, \
+<javascripts/lib/ep_etherpad-lite/static/js/hooks.js?callback=require.define>; rel=prefetch\, \
 <javascripts/lib/unorm/lib/unorm.js?callback=require.define>; rel=prefetch\, \
 <static/custom/pad.js>; rel=prefetch\, \
+<socket.io/socket.io.js>; rel=prefetch\, \
 <static/js/html10n.js>; rel=prefetch\, \
 <static/js/l10n.js>; rel=prefetch\, \
 <static/css/pad.css>; rel=prefetch\, \
