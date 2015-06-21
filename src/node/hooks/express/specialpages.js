@@ -105,7 +105,9 @@ function sendPadHeaderFiles(res, callback){
     var client_hooks = plugin.parts[0].client_hooks;
     if(client_hooks){
       Object.keys(client_hooks).forEach(function(k){
-        pluginPaths.push(client_hooks[k]);
+        var path = client_hooks[k];
+        path = path.split(":")[0];
+        pluginPaths.push(path);
       });
     }
   });
