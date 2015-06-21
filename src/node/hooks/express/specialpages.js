@@ -119,7 +119,7 @@ function sendPadHeaderFiles(res, callback){
   var uniquePluginString = "";
 
   for (var i = 0; i < uniquePaths.length; i++) {
-    uniquePluginString += "<static/plugins/"+uniquePaths[i]+".js>; rel=prefetch\, ";
+    uniquePluginString += "</javascripts/lib/"+uniquePaths[i]+".js>; rel=prefetch\, ";
   }
 
   // console.log("unique plugin string...", uniquePluginString)
