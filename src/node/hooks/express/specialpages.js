@@ -12,7 +12,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve index.html under /
   args.app.get('/', function(req, res)
   {
-    res.send(eejs.require("ep_etherpad-lite/templates/index.html"));
+    sendPadHeaderFiles(res, function(){
+      res.send(eejs.require("ep_etherpad-lite/templates/index.html"));
+    });
   });
 
   //serve robots.txt
@@ -77,4 +79,22 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
 
+}
+
+function sendPadHeaderFiles(res, callback){
+  res.set('Link', '<static/js/require-kernel.js>; rel=prefetch \, \
+    <javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define>; rel=prefetch \, \
+    <javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define>; rel=prefetch \, \
+    <javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define>; rel=prefetch \, \
+    <javascripts/lib/unorm/lib/unorm.js?callback=require.define>; rel=prefetch \, \
+    <static/custom/pad.js>; rel=prefetch \, \
+    <static/js/html10n.js>; rel=prefetch \, \
+    <static/js/l10n.js>; rel=prefetch \, \
+    <static/css/pad.css>; rel=prefetch \, \
+    <static/custom/pad.css>; rel=prefetch \, \
+    <static/css/iframe_editor.css>; rel=prefetch \, \
+    <pluginfw/plugin-definitions.json>; rel=prefetch \, \
+    <locales.json>; rel=prefetch \, \
+    <static/font/fontawesome-etherpad.woff>; rel=prefetch');
+  callback();
 }
