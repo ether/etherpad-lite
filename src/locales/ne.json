@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"सरोज कुमार ढकाल",
-			"Nirjal stha"
+			"Nirjal stha",
+			"राम प्रसाद जोशी"
 		]
 	},
 	"index.newPad": "नयाँ प्याड",
@@ -23,7 +24,7 @@
 	"pad.toolbar.settings.title": "सेटिङ्गहरू",
 	"pad.toolbar.embed.title": "यस प्याडलाई बाड्ने या इम्बेड गर्ने",
 	"pad.toolbar.showusers.title": "यस प्याडमा रहेका प्रयोगकर्ता देखाउने",
-	"pad.colorpicker.save": "संग्रह गर्ने",
+	"pad.colorpicker.save": "सङ्ग्रह गर्ने",
 	"pad.colorpicker.cancel": "रद्द",
 	"pad.loading": "लोड हुदैछ...",
 	"pad.passwordRequired": "यो प्यड खोल्न पासवर्ड चाहिन्छ",

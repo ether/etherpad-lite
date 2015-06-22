@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"रमेश सिंह बोहरा"
+			"रमेश सिंह बोहरा",
+			"राम प्रसाद जोशी"
 		]
 	},
 	"index.newPad": "नयाँ प्याड",
@@ -22,7 +23,7 @@
 	"pad.toolbar.settings.title": "सेटिङ्गहरू",
 	"pad.toolbar.embed.title": "यै प्याडलाई बाड्न्या यात इम्बेड गद्य्या",
 	"pad.toolbar.showusers.title": "यै प्याडमि रयाका प्रयोगकर्ता देखाउन्या",
-	"pad.colorpicker.save": "संग्रह गद्य्या",
+	"pad.colorpicker.save": "सङ्ग्रह गद्या",
 	"pad.colorpicker.cancel": "खारेजी",
 	"pad.loading": "लोड हुन्नाछ....",
 	"pad.passwordRequired": "यो प्यड खोल्लाकी पासवर्ड चाहिन्छ",
