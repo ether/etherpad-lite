@@ -110,6 +110,7 @@ Called from: src/node/db/Pad.js
 Things in context:
 
 1. pad - the pad instance
+2. author - the id of the author who created the pad
 
 This hook gets called when a new pad was created.
 
@@ -128,6 +129,7 @@ Called from: src/node/db/Pad.js
 Things in context:
 
 1. pad - the pad instance
+2. author - the id of the author who updated the pad
 
 This hook gets called when an existing pad was updated.
 
