@@ -27,6 +27,7 @@ require('ep_etherpad-lite/static/js/pad_editor');
 require('ep_etherpad-lite/static/js/pad_impexp');
 require('ep_etherpad-lite/static/js/chat');
 require('ep_etherpad-lite/static/js/ace2_inner');
+require('ep_etherpad-lite/static/js/timeslider');
 
 
 require('ep_etherpad-lite/static/js/ace');
