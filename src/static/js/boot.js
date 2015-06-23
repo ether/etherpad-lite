@@ -1,16 +1,4 @@
-// var _r = require;
-// var bundleRequire = function(p) {
-//   console.warn(p);
-//   return _r.call(global, p);
-// };
-// global.require = bundleRequire;
-// exports.require = bundleRequire;
-
-// window.bundleRequire = require;
-// console.dir(require);
-// window.require = global.require;
-// window.bundleRequire = _r;
-
+'use strict';
 require('ep_etherpad-lite/static/js/browser');
 require('ep_etherpad-lite/static/js/pad_editbar');
 
@@ -46,7 +34,7 @@ require('ep_etherpad-lite/static/js/ace');
 var exp = {
     pluginHooks: {},
     require: function (p, wot) {
-        console.warn(p, arguments);
+//        console.warn(p, arguments);
 
         if (entries.indexOf(p) !== -1) {
             console.log('PLUGINHOOK', p);
@@ -57,7 +45,7 @@ var exp = {
         if (wot)
             throw new Error('MODULE_NOT_FOUND_OR_TOO_MANY_ARGUMENTS');
         var ret = require.call(this, p);
-        console.warn(ret);
+        console.log(p, ret);
         // debugger;
         return ret;
     }
@@ -67,7 +55,7 @@ var exp = {
 
 // @NOTE require() problem, this exposes plugin hooks
 var pluginEntries = entries; //from the replaced block
-console.log(pluginEntries);
+//console.log(pluginEntries);
 var _ = require('underscore');
 pluginEntries.forEach(function (entry) {
     exp.pluginHooks[entry] = require(entry);
