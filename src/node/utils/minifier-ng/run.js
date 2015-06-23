@@ -1,4 +1,4 @@
-function run() {
+function run(cb) {
 
     var builder = require('./acebuilder');
     builder();
@@ -6,7 +6,10 @@ function run() {
     var gulp = require('gulp');
     require('./gulpfile.js');
 //interaction
-    gulp.start('default');
+    gulp.start('default', function(){
+        console.log('MINIFY-NG DONE');
+        cb && cb();
+    });
 }
 
 module.exports = run;
