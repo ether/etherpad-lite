@@ -257,7 +257,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   function handleMessageFromServer(evt)
   {
-    if (window.console) console.log(evt);
+    //    if (window.console) console.log(evt);
 
     if (!getSocket()) return;
     if (!evt.data) return;
