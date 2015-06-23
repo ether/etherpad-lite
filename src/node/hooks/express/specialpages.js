@@ -65,7 +65,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     //serve favicon.ico from all path levels except as a pad name
     //spares re-requests as browsers auto search for tihis file
-    args.app.get(/.+?\/favicon.ico$/, function (req, res)
+    args.app.get(/\/favicon.ico$/, function (req, res)
     {
         var filePath = WWW_DIR + "/custom/favicon.ico";
         res.sendFile(filePath, function (err)
