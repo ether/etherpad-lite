@@ -834,6 +834,9 @@ table#otheruserstable {
   content: "\e83a";
 }
 
+.buttonicon-print:before {
+  content: "\e801";
+}
 
 #focusprotector {
   z-index: 100;
