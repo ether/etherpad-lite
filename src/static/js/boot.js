@@ -49,7 +49,7 @@ var exp = {
         console.warn(p, arguments);
 
         if (entries.indexOf(p) !== -1) {
-            console.warn('PLUGINHOOK', p);
+            console.log('PLUGINHOOK', p);
             return exp.pluginHooks[p];
         }
 
@@ -72,5 +72,8 @@ var _ = require('underscore');
 pluginEntries.forEach(function (entry) {
     exp.pluginHooks[entry] = require(entry);
 });
+
+//allow postMessage and other inter-frame access
+document.domain = window.location.hostname;
 
 module.exports = exp;
