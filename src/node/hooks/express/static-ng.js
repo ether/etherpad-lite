@@ -105,6 +105,8 @@ function handle(req, res, next) {
     }
 
     apiLogger.info('PROCESS REQ', type, req.url);
+    
+    setMinify(res);
 
     switch (type) {
         case 'PLUGIN_DEFS_JSON':
@@ -125,18 +127,6 @@ function handle(req, res, next) {
             break;
 
         case 'MINIFIED_JS':
-            // @see https://www.npmjs.com/package/express-minify
-            //works well, the 1st request yelds HTTP 200, the 2nd HTTP 304
-            // res._no_minify; //no minify
-            //res._no_cache // no minify cache
-            //res._no_cache = true;
-            //res._skip = true;
-            if (!settings.minify) {
-                res._skip = true;
-                res._no_cache = true;
-                res._no_minify = true;
-            }
-
             return next();
             break;
 
@@ -175,6 +165,21 @@ function handlePluginDefs(req, res, next) {
     }));
     // res.end();
     next();
+}
+
+function setMinify(res) {
+
+// @see https://www.npmjs.com/package/express-minify
+    //works well, the 1st request yelds HTTP 200, the 2nd HTTP 304
+    // res._no_minify; //no minify
+    //res._no_cache // no minify cache
+    //res._no_cache = true;
+    //res._skip = true;
+    if (!settings.minify) {
+        res._skip = true;
+        res._no_cache = true;
+        res._no_minify = true;
+    }
 }
 
 function restartServer() {
