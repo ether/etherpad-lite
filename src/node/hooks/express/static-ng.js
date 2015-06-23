@@ -5,9 +5,6 @@
  */
 
 var fs = require('fs');
-var log4js = require('log4js');
-var apiLogger = log4js.getLogger("STATIC_ASSETS");
-apiLogger.log = apiLogger.info;
 var url = require('url');
 var urlutil = require('url');
 var path = require('path');
@@ -15,6 +12,11 @@ var express = require('express');
 var minify = require('express-minify');
 var mime = require('mime-types');
 
+var log4js = require('log4js');
+var apiLogger = log4js.getLogger("STATIC_ASSETS");
+apiLogger.log = apiLogger.info;
+
+var settings = require("../../utils/Settings");
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 
 var PACKAGE_ROOT = path.dirname(require.resolve('ep_etherpad-lite/ep.json'));
@@ -44,7 +46,7 @@ var regexpTypes = {
 var regexpOrder = [
     // in case you need to log or anything else
 
-    // 'MINIFIED_JS',
+    'MINIFIED_JS',
     // 'JS',
     // 'CSS',
     // 'ASSET',
@@ -127,8 +129,14 @@ function handle(req, res, next) {
             //works well, the 1st request yelds HTTP 200, the 2nd HTTP 304
             // res._no_minify; //no minify
             //res._no_cache // no minify cache
-            res._no_cache = true;
-            res._skip = true;
+            //res._no_cache = true;
+            //res._skip = true;
+            if (!settings.minify) {
+                res._skip = true;
+                res._no_cache = true;
+                res._no_minify = true;
+            }
+
             return next();
             break;
 
@@ -172,14 +180,14 @@ function handlePluginDefs(req, res, next) {
 function restartServer() {
     var pluginDefPath = path.normalize(PACKAGE_ROOT + '/../var/plugin-definitions.json');
     fs.writeFile(pluginDefPath, JSON.stringify({
-      plugins: plugins.plugins,
-      parts: plugins.parts,
-      hooks: plugins.hooks,
+        plugins: plugins.plugins,
+        parts: plugins.parts,
+        hooks: plugins.hooks,
     }, 2, 2), {
-      encoding: 'utf8'
-    }, function(err, ok) {
-      console.debug("Wrote " + pluginDefPath);
-      require(PACKAGE_ROOT + '/node/utils/minifier-ng/run')();
+        encoding: 'utf8'
+    }, function (err, ok) {
+        console.debug("Wrote " + pluginDefPath);
+        require(PACKAGE_ROOT + '/node/utils/minifier-ng/run')();
     });
 }
 
