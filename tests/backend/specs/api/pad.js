@@ -464,7 +464,6 @@ describe('setHTML', function(){
     var html = "<div><b>Hello HTML</title></head></div>";
     api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
     .expect(function(res){
-console.log(res.body.code);
       if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
     })
     .expect('Content-Type', /json/)
