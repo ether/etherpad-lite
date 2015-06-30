@@ -290,7 +290,14 @@ Pad.prototype.setText = function setText(newText) {
   var oldText = this.text();
 
   //create the changeset
-  var changeset = Changeset.makeSplice(oldText, 0, oldText.length, newText);
+  // We want to ensure the pad still ends with a \n, but otherwise keep
+  // getText() and setText() consistent.
+  var changeset;
+  if (newText[newText.length - 1] == '\n') {
+    changeset = Changeset.makeSplice(oldText, 0, oldText.length, newText);
+  } else {
+    changeset = Changeset.makeSplice(oldText, 0, oldText.length-1, newText);
+  }
 
   //append the changeset
   this.appendRevision(changeset);
