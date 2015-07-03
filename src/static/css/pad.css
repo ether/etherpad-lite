@@ -1109,7 +1109,7 @@ input[type=checkbox] {
       vertical-align:top !important;
     }
     #chaticon {
-      position:absolute;
+      position:fixed;
       right:48px;
     }
     .popup {
@@ -1138,7 +1138,7 @@ input[type=checkbox] {
       line-height: 24px
     }
     #chatbox{
-      position:absolute;
+      position:fixed;
       bottom:33px !important;
       margin: 65px 0 0 0;
     }
