@@ -185,9 +185,31 @@ var padeditbar = (function()
       this.commands[cmd] = callback;
       return this;
     },
+    calculateEditbarHeight: function() {
+      // if we're on timeslider, there is nothing on editbar, so we just use zero
+      var onTimeslider = $('.menu_left').length === 0;
+      if (onTimeslider) return 0;
+
+      // if editbar has both menu left and right, its height must be
+      // the max between the height of these two parts
+      var leftMenuPosition = $('.menu_left').offset().top;
+      var rightMenuPosition = $('.menu_right').offset().top;
+      var editbarHasMenuLeftAndRight = (leftMenuPosition === rightMenuPosition);
+
+      var height;
+      if (editbarHasMenuLeftAndRight) {
+        height = Math.max($('.menu_left').height(), $('.menu_right').height());
+      }
+      else {
+        height = $('.menu_left').height();
+      }
+
+      return height;
+    },
     redrawHeight: function(){
-      var editbarHeight = $('.menu_left').height() + 1 + "px";
-      var containerTop = $('.menu_left').height() + 6 + "px";
+      var minimunEditbarHeight = self.calculateEditbarHeight();
+      var editbarHeight = minimunEditbarHeight + 1 + "px";
+      var containerTop = minimunEditbarHeight + 6 + "px";
       $('#editbar').css("height", editbarHeight);
 
       $('#editorcontainer').css("top", containerTop);
