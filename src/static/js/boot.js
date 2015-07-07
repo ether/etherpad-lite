@@ -42,10 +42,11 @@ var exp = {
         }
 
         //debug, if somebody requires require-kernel style
-        if (wot)
-            throw new Error('MODULE_NOT_FOUND_OR_TOO_MANY_ARGUMENTS');
+        if (wot){            
+        console.log(p, wot, ret);
+        throw new Error('REQUIRE_MODULE_NOT_FOUND_OR_TOO_MANY_ARGUMENTS');
+        }
         var ret = require.call(this, p);
-        console.log(p, ret);
         // debugger;
         return ret;
     }
