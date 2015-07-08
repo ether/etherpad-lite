@@ -95,6 +95,7 @@
 	"timeslider.exportCurrent": "Ezporzhiañ an doare bremañ evel :",
 	"timeslider.version": "Stumm {{version}}",
 	"timeslider.saved": "Enrollañ {{day}} {{month}} {{year}}",
+	"timeslider.playPause": "Lenn / Ehan endalc'hoù ar pad",
 	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Genver",
 	"timeslider.month.february": "C'hwevrer",
