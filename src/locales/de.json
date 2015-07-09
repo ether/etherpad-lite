@@ -79,7 +79,7 @@
 	"pad.modals.deleted": "Gelöscht.",
 	"pad.modals.deleted.explanation": "Dieses Pad wurde entfernt.",
 	"pad.modals.disconnected": "Deine Verbindung wurde getrennt.",
-	"pad.modals.disconnected.explanation": "Die Verbindung zum Teambutler-Server wurde unterbrochen.",
+	"pad.modals.disconnected.explanation": "Die Verbindung zum Teambutler-Server wurde unterbrochen. Sind Sie noch an einm anderen Computer oder Browser angemeldet? Bitte melden Sie sich da ab.",
 	"pad.modals.disconnected.cause": "Möglicherweise ist der Teambutler-Server nicht erreichbar. Bitte benachrichtigen Sie den Dienstadministrator, falls dies weiterhin passiert.",
 	"pad.share": "Dieses Pad teilen",
 	"pad.share.readonly": "Eingeschränkter Nur-Lese-Zugriff",
