@@ -241,8 +241,7 @@ function Ace2Editor() {
 \n\
 document.addEventListener("DOMContentLoaded", function(event) {\n\
  var html = document.getElementsByTagName("html")[0];\n\
- console.log("DOM fully loaded and parsed", html, window, window.EPIFY);\n\
-window.require = window.EPIFY.require;\n\
+ window.require = window.EPIFY.require;\n\
 \n\
 try {\n\
     while (frame = frame.parent) {\n\
