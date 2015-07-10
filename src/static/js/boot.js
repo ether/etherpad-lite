@@ -1,4 +1,10 @@
 'use strict';
+
+//these are non-commonjs, but require will bundle them
+require('./html10n.js');
+require('./l10n.js');
+//
+
 require('ep_etherpad-lite/static/js/browser');
 require('ep_etherpad-lite/static/js/pad_editbar');
 
@@ -42,9 +48,9 @@ var exp = {
         }
 
         //debug, if somebody requires require-kernel style
-        if (wot){            
-        console.log(p, wot, ret);
-        throw new Error('REQUIRE_MODULE_NOT_FOUND_OR_TOO_MANY_ARGUMENTS');
+        if (wot) {
+            console.log(p, wot, ret);
+            throw new Error('REQUIRE_MODULE_NOT_FOUND_OR_TOO_MANY_ARGUMENTS');
         }
         var ret = require.call(this, p);
         // debugger;
