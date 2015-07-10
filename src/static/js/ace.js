@@ -224,7 +224,6 @@ function Ace2Editor() {
       Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {}
 
       // patched to stop throwing
-      console.log(Ace2Editor.EMBEDED, KERNEL_SOURCE);
       Ace2Editor.EMBEDED[KERNEL_SOURCE] = ' ';
 
       if (!(Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE])) {
