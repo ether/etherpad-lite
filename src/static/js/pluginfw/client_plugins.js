@@ -53,7 +53,7 @@ function adoptPluginsFromAncestorsOf(frame) {
     while (frame = frame.parent) {
       if (typeof (frame.require) !== "undefined") {
         parentRequire = frame.require;
-        console.log('got parent require');
+        console.log('adoptPluginsFromAncestorsOf: got parent require');
         break;
       }
     }
