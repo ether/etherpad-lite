@@ -339,3 +339,14 @@ Things in context:
 
 This hook is provided to allow author highlight style to be modified.
 Registered hooks should return 1 if the plugin handles highlighting.  If no plugin returns 1, the core will use the default background-based highlighting.
+
+## aceSelectionChanged
+Called from: src/static/js/ace2_inner.js
+
+Things in context:
+
+1. rep - information about where the user's cursor is
+2. documentAttributeManager - information about attributes in the document
+
+This hook allows a plugin to react to a cursor or selection change,
+perhaps to update a UI element based on the style at the cursor location.
