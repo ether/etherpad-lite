@@ -414,7 +414,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       callbacks.onServerMessage(msg.payload);
     }
-    hooks.callAll('handleClientMessage_' + msg.type, {payload: msg.payload});
+//    window.top.console.log('hooks.callAll', msg);
+    hooks.callAll('handleClientMessage_' + msg.type, msg);
   }
 
   function updateUserInfo(userInfo)
