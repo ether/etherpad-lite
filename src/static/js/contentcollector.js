@@ -100,7 +100,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
   function textify(str)
   {
     return sanitizeUnicode(
-    str.replace(/\n/g, '').replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
+    str.replace(/(\n | \n)/g, ' ').replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
   }
 
   function getAssoc(node, name)
