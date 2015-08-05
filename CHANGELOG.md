@@ -1,3 +1,24 @@
+# 1.5.7
+ * NEW: Add support for intermediate CA certificates for ssl
+ * NEW: Provide a script to clean up before running etherpad
+ * NEW: Use ctrl+shift+1 to do a ordered list
+ * NEW: Show versions of plugins on startup
+ * NEW: Add author on padCreate and padUpdate hook
+ * Fix: switchToPad method
+ * Fix: Dead keys
+ * Fix: Preserve new lines in copy-pasted text
+ * Fix: Compatibility mode on IE 
+ * Fix: Content Collector to get the class of the DOM-node
+ * Fix: Timeslider export links
+ * Fix: Double prompt on file upload
+ * Fix: setText() replaces the entire pad text
+ * Fix: Accessibility features on embedded pads
+ * Fix: Tidy HTML before abiword conversion
+ * Fix: Remove edit buttons in read-only view
+ * Fix: Disable user input in read-only view
+ * Fix: Pads end with a single newline, rather than two newlines
+ * Fix: Toolbar and chat for mobile devices
+
 # 1.5.6
  * Fix: Error on windows installations
 
