@@ -190,6 +190,16 @@ exports.handleMessage = function(client, message)
   }
 
   var handleMessageHook = function(callback){
+    // Allow plugins to bypass the readonly message blocker
+    hooks.aCallAll("handleMessageSecurity", { client: client, message: message }, function ( err, messages ) {
+      if(ERR(err, callback)) return;
+      _.each(messages, function(newMessage){
+        if ( newMessage === true ) {
+          thisSession.readonly = false;
+        }
+      });
+    });
+
     var dropMessage = false;
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages
     // handleMessage will be called, even if the client is not authorized
@@ -204,6 +214,7 @@ exports.handleMessage = function(client, message)
       // If no plugins explicitly told us to drop the message, its ok to proceed
       if(!dropMessage){ callback() };
     });
+
   }
 
   var finalHandler = function () {
@@ -533,14 +544,22 @@ function handleUserInfoUpdate(client, message)
     return;
   }
 
+  // Check that we have a valid session and author to update.
+  var session = sessioninfos[client.id];
+  if(!session || !session.author || !session.padId)
+  {
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Session not ready." + message.data);
+    return;
+  }
+
   //Find out the author name of this session
-  var author = sessioninfos[client.id].author;
+  var author = session.author;
 
   //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
 
-  var padId = sessioninfos[client.id].padId;
+  var padId = session.padId;
 
   var infoMsg = {
     type: "COLLABROOM",
@@ -762,8 +781,9 @@ function handleUserChanges(data, cb)
       }
 
       // Make sure the pad always ends with an empty line.
-      if (pad.text().lastIndexOf("\n\n") != pad.text().length-2) {
-        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1, 0, "\n");
+      if (pad.text().lastIndexOf("\n") != pad.text().length-1) {
+        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1,
+                                               0, "\n");
         pad.appendRevision(nlChangeset);
       }
 

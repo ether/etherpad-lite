@@ -1,7 +1,8 @@
 var assert = require('assert')
  supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
         fs = require('fs'),
-       api = supertest('http://localhost:9001');
+  settings = require(__dirname+'/../../loadSettings').loadSettings(),
+       api = supertest('http://'+settings.ip+":"+settings.port),
       path = require('path');
 
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');

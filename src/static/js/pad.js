@@ -115,9 +115,9 @@ var getParameters = [
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
   // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
-  { name: "userName",         checkVal: null,    callback: function(val) { settings.globalUserName = decodeURIComponent(val); } },
+  { name: "userName",         checkVal: null,    callback: function(val) { settings.globalUserName = decodeURIComponent(val); clientVars.userName = decodeURIComponent(val); } },
   // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
-  { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); } },
+  { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); clientVars.userColor = decodeURIComponent(val); } },
   { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
   { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
   { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
@@ -322,6 +322,15 @@ function handshake()
       pad._afterHandshake();
       initalized = true;
 
+      if(clientVars.readonly){
+        chat.hide();
+        $('#myusernameedit').attr("disabled", true);
+        $('#chatinput').attr("disabled", true);
+        $('#chaticon').hide();
+        $('#options-chatandusers').parent().hide();
+        $('#options-stickychat').parent().hide();
+      }
+
       $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
 
       padeditor.ace.callWithAce(function (ace) {
@@ -457,9 +466,10 @@ var pad = {
   switchToPad: function(padId)
   {
     var options = document.location.href.split('?')[1];
-    var newHref = "/p/" + padId;
-    if (options != null)
-      newHref =  newHref + '?' + options;
+    var newHref = padId;
+    if (typeof options != "undefined" && options != null){
+      newHref = newHref + '?' + options;
+    }
 
     if(window.history && window.history.pushState)
     {
@@ -812,6 +822,9 @@ var pad = {
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
+    setTimeout(function(){
+      padeditbar.toggleDropDown("none");
+    }, 1000);
   },
   determineChatVisibility: function(asNowConnectedFeedback){
     var chatVisCookie = padcookie.getPref('chatAlwaysVisible');

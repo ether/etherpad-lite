@@ -83,7 +83,7 @@ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
 /**
  * The default Text of a new pad
  */
-exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad on Github: http:\/\/j.mp/ep-lite\n";
+exports.defaultPadText = "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nEtherpad on Github: https:\/\/github.com\/ether\/etherpad-lite\n";
 
 /**
  * The default Pad Settings for a user (Can be overridden by changing the setting
@@ -153,6 +153,11 @@ exports.minify = true;
 exports.abiword = null;
 
 /**
+ * The path of the tidy executable
+ */
+exports.tidyHtml = null;
+
+/**
  * Should we support none natively supported file types on import?
  */
 exports.allowUnknownFileEnds = true;
@@ -167,7 +172,7 @@ exports.loglevel = "INFO";
  */
 exports.disableIPlogging = false;
 
-/** 
+/**
  * Disable Load Testing
  */
 exports.loadTest = false;
@@ -239,7 +244,7 @@ exports.reloadSettings = function reloadSettings() {
   } else {
     settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
   }
-  
+
   var settingsStr;
   try{
     //read the settings sync

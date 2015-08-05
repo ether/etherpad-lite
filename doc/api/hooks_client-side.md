@@ -198,15 +198,15 @@ Things in context:
 1. cc - the contentcollector object
 2. state - the current state of the change being made
 3. tname - the tag name of this node currently being processed
-4. style - the style applied to the node (probably CSS)
+4. styl - the style applied to the node (probably CSS) -- Note the typo
 5. cls - the HTML class string of the node
 
 This hook is called before the content of a node is collected by the usual methods. The cc object can be used to do a bunch of things that modify the content of the pad. See, for example, the heading1 plugin for etherpad original.
 
-E.g. if you need to apply an attribute to newly inserted characters, 
+E.g. if you need to apply an attribute to newly inserted characters,
 call cc.doAttrib(state, "attributeName") which results in an attribute attributeName=true.
 
-If you want to specify also a value, call cc.doAttrib(state, "attributeName:value")
+If you want to specify also a value, call cc.doAttrib(state, "attributeName::value")
 which results in an attribute attributeName=value.
 
 
@@ -257,7 +257,7 @@ This hook gets called every time the client receives a message of type `name`. T
 
 `collab_client.js` has a pretty extensive list of message types, if you want to take a look.
 
-##aceStartLineAndCharForPoint-aceEndLineAndCharForPoint 
+##aceStartLineAndCharForPoint-aceEndLineAndCharForPoint
 Called from: src/static/js/ace2_inner.js
 
 Things in context:
@@ -272,7 +272,7 @@ Things in context:
 This hook is provided to allow a plugin to turn DOM node selection into [line,char] selection.
 The return value should be an array of [line,char]
 
-##aceKeyEvent 
+##aceKeyEvent
 Called from: src/static/js/ace2_inner.js
 
 Things in context:
@@ -286,7 +286,7 @@ Things in context:
 This hook is provided to allow a plugin to handle key events.
 The return value should be true if you have handled the event.
 
-##collectContentLineText 
+##collectContentLineText
 Called from: src/static/js/contentcollector.js
 
 Things in context:
@@ -299,7 +299,7 @@ Things in context:
 This hook allows you to validate/manipulate the text before it's sent to the server side.
 The return value should be the validated/manipulated text.
 
-##collectContentLineBreak 
+##collectContentLineBreak
 Called from: src/static/js/contentcollector.js
 
 Things in context:
@@ -311,7 +311,7 @@ Things in context:
 This hook is provided to allow whether the br tag should induce a new magic domline or not.
 The return value should be either true(break the line) or false.
 
-##disableAuthorColorsForThisLine 
+##disableAuthorColorsForThisLine
 Called from: src/static/js/linestylefilter.js
 
 Things in context:

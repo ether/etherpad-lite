@@ -110,6 +110,7 @@ Called from: src/node/db/Pad.js
 Things in context:
 
 1. pad - the pad instance
+2. author - the id of the author who created the pad
 
 This hook gets called when a new pad was created.
 
@@ -128,6 +129,7 @@ Called from: src/node/db/Pad.js
 Things in context:
 
 1. pad - the pad instance
+2. author - the id of the author who updated the pad
 
 This hook gets called when an existing pad was updated.
 
@@ -214,6 +216,32 @@ function handleMessage ( hook, context, callback ) {
 };
 ```
 
+## handleMessageSecurity
+Called from: src/node/handler/PadMessageHandler.js
+
+Things in context:
+
+1. message - the message being handled
+2. client - the client object from socket.io
+
+This hook will be called once a message arrives. If a plugin calls `callback(true)` the message will be allowed to be processed. This is especially useful if you want read only pad visitors to update pad contents for whatever reason.
+
+**WARNING**: handleMessageSecurity will be called, even if the client is not authorized to send this message. It's up to the plugin to check permissions.
+
+Example:
+
+```
+function handleMessageSecurity ( hook, context, callback ) {
+  if ( context.message.boomerang == 'hipster' ) {
+    // If the message boomer is hipster, allow the request
+    callback(true);
+  }else{
+    callback();
+  }
+};
+```
+
+
 ## clientVars
 Called from: src/node/handler/PadMessageHandler.js
 
@@ -254,7 +282,7 @@ var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 exports.getLineHTMLForExport = function (hook, context) {
   var header = _analyzeLine(context.attribLine, context.apool);
   if (header) {
-    return "<" + header + ">" + context.lineContents + "</" + header + ">";
+    return "<" + header + ">" + context.lineContent + "</" + header + ">";
   }
 }
 

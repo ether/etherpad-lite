@@ -5,7 +5,8 @@
 			"Tux-tn",
 			"Alami",
 			"Meno25",
-			"Test Create account"
+			"Test Create account",
+			"محمد أحمد عبد الفتاح"
 		]
 	},
 	"index.newPad": "باد جديد",
@@ -37,6 +38,7 @@
 	"pad.settings.padSettings": "إعدادات الباد",
 	"pad.settings.myView": "رؤيتي",
 	"pad.settings.stickychat": "الدردشة دائما على الشاشة",
+	"pad.settings.chatandusers": "أظهر الدردشة والمستخدمين",
 	"pad.settings.colorcheck": "ألوان التأليف",
 	"pad.settings.linenocheck": "أرقام الأسطر",
 	"pad.settings.rtlcheck": "قراءة المحتويات من اليمين إلى اليسار؟",
@@ -110,6 +112,7 @@
 	"timeslider.month.december": "ديسمبر",
 	"timeslider.unnamedauthors": "بدون اسم {{num}} {[plural(num) واحد: كاتب، آخر: مؤلف]}",
 	"pad.savedrevs.marked": "هذا التنقيح محدد الآن كمراجعة محفوظة",
+	"pad.savedrevs.timeslider": "يمكنك عرض المراجعات المحفوظة بزيارة متصفح التاريخ",
 	"pad.userlist.entername": "أدخل اسمك",
 	"pad.userlist.unnamed": "غير مسمى",
 	"pad.userlist.guest": "ضيف",

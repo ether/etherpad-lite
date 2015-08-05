@@ -105,9 +105,9 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
     authorManager.addPad(author, this.id);
 
   if (this.head == 0) {
-    hooks.callAll("padCreate", {'pad':this});
+    hooks.callAll("padCreate", {'pad':this, 'author': author});
   } else {
-    hooks.callAll("padUpdate", {'pad':this});
+    hooks.callAll("padUpdate", {'pad':this, 'author': author});
   }
 };
 
@@ -290,7 +290,14 @@ Pad.prototype.setText = function setText(newText) {
   var oldText = this.text();
 
   //create the changeset
-  var changeset = Changeset.makeSplice(oldText, 0, oldText.length-1, newText);
+  // We want to ensure the pad still ends with a \n, but otherwise keep
+  // getText() and setText() consistent.
+  var changeset;
+  if (newText[newText.length - 1] == '\n') {
+    changeset = Changeset.makeSplice(oldText, 0, oldText.length, newText);
+  } else {
+    changeset = Changeset.makeSplice(oldText, 0, oldText.length-1, newText);
+  }
 
   //append the changeset
   this.appendRevision(changeset);

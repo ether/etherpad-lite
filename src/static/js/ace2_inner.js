@@ -612,7 +612,7 @@ function Ace2Inner(){
     // So this has to be set to pre-wrap ;(
     // We need to file a bug w/ the Chromium team.
     if(browser.chrome){
-      $("#innerdocbody").css({"white-space":"pre-wrap"});
+      $("#innerdocbody").addClass("noprewrap");
     }
 
   }
@@ -1982,7 +1982,11 @@ function Ace2Inner(){
 
   function nodeText(n)
   {
-    return n.innerText || n.textContent || n.nodeValue || '';
+      if (browser.msie) {
+	  return n.innerText;
+      } else {
+	  return n.textContent || n.nodeValue || '';
+      }
   }
 
   function getLineAndCharForPoint(point)
@@ -3380,7 +3384,7 @@ function Ace2Inner(){
           renumberList(lineNum + 1);//trigger renumbering of list that may be right after
         }
       }
-      else if (lineNum + 1 < rep.lines.length())
+      else if (lineNum + 1 <= rep.lines.length())
       {
         performDocumentReplaceSelection('\n');
         setLineListType(lineNum + 1, type+level);
@@ -3640,6 +3644,7 @@ function Ace2Inner(){
     }else{
       var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
     }
+
     var heightOfChatIcon = parent.parent.$('#chaticon').height(); // height of the chat icon button
     lineHeight = (lineHeight *2) + heightOfChatIcon;
     var viewport = getViewPortTopBottom();
@@ -3680,6 +3685,11 @@ function Ace2Inner(){
           stopped = true;
         }
       }
+      else if (evt.key === "Dead"){
+        // If it's a dead key we don't want to do any Etherpad behavior.
+        stopped = true;
+        return true;
+      }
       else if (type == "keydown")
       {
         outsideKeyDown(evt);
@@ -3704,11 +3714,11 @@ function Ace2Inner(){
           firstEditbarElement.focus();
           evt.preventDefault();
         }
-        if ((!specialHandled) && altKey && keyCode == 67){
+        if ((!specialHandled) && altKey && keyCode == 67 && type === "keydown"){
           // Alt c focuses on the Chat window
           $(this).blur(); 
           parent.parent.chat.show();
-          parent.parent.chat.focus();
+          parent.parent.$("#chatinput").focus();
           evt.preventDefault();
         }
         if ((!specialHandled) && evt.ctrlKey && shiftKey && keyCode == 50 && type === "keydown"){
@@ -3884,7 +3894,7 @@ function Ace2Inner(){
           toggleAttributeOnSelection('underline');
           specialHandled = true;
         }
-       if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "5" && (evt.metaKey || evt.ctrlKey))
+        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "5" && (evt.metaKey || evt.ctrlKey) && evt.altKey !== true)
         {
           // cmd-5 (strikethrough)
           fastIncorp(13);
@@ -3900,7 +3910,7 @@ function Ace2Inner(){
           doInsertUnorderedList()
           specialHandled = true;
 	}
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "n" && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
+        if ((!specialHandled) && isTypeForCmdKey && (String.fromCharCode(which).toLowerCase() == "n" || String.fromCharCode(which) == 1) && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
         {
           // cmd-shift-N (orderedlist)
           fastIncorp(9);

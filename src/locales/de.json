@@ -4,7 +4,8 @@
 			"Metalhead64",
 			"Mklehr",
 			"Nipsky",
-			"Wikinaut"
+			"Wikinaut",
+			"Thargon"
 		]
 	},
 	"index.newPad": "Neues Pad",
@@ -77,7 +78,7 @@
 	"pad.modals.corruptPad.cause": "Dies könnte an einer falschen Serverkonfiguration oder eines anderen unerwarteten Verhaltens liegen. Bitte kontaktiere den Diensteadministrator.",
 	"pad.modals.deleted": "Gelöscht.",
 	"pad.modals.deleted.explanation": "Dieses Pad wurde entfernt.",
-	"pad.modals.disconnected": "Verbindung unterbrochen.",
+	"pad.modals.disconnected": "Deine Verbindung wurde getrennt.",
 	"pad.modals.disconnected.explanation": "Die Verbindung zum Pad-Server wurde unterbrochen.",
 	"pad.modals.disconnected.cause": "Möglicherweise ist der Pad-Server nicht erreichbar. Bitte benachrichtigen Sie den Dienstadministrator, falls dies weiterhin passiert.",
 	"pad.share": "Dieses Pad teilen",
@@ -94,7 +95,10 @@
 	"timeslider.toolbar.exportlink.title": "Diese Version exportieren",
 	"timeslider.exportCurrent": "Exportiere diese Version als:",
 	"timeslider.version": "Version {{version}}",
-	"timeslider.saved": "Gespeichert am {{day}}.{{month}}.{{year}}",
+	"timeslider.saved": "gespeichert am {{day}}. {{month}} {{year}}",
+	"timeslider.playPause": "Padinhalte abspielen/pausieren",
+	"timeslider.backRevision": "Eine Version in diesem Pad zurück gehen",
+	"timeslider.forwardRevision": "Eine Version in diesem Pad vorwärts gehen",
 	"timeslider.dateformat": "{{day}}.{{month}}.{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Januar",
 	"timeslider.month.february": "Februar",

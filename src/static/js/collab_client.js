@@ -279,7 +279,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
         if (newRev != (oldRev + 1))
         {
-          parent.parent.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
+          window.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
           // setChannelState("DISCONNECTED", "badmessage_newchanges");
           return;
         }
@@ -289,7 +289,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        parent.parent.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
+        window.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
         // setChannelState("DISCONNECTED", "badmessage_newchanges");
         return;
       }
@@ -303,7 +303,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       {
         if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
         {
-          parent.parent.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+          window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
@@ -313,7 +313,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        parent.parent.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
+        window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
         // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
         return;
       }

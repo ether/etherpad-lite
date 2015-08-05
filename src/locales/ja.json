@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Shirayuki"
+			"Shirayuki",
+			"Torinky"
 		]
 	},
 	"index.newPad": "新規作成",
@@ -16,7 +17,7 @@
 	"pad.toolbar.unindent.title": "インデント解除 (Shift+Tab)",
 	"pad.toolbar.undo.title": "元に戻す (Ctrl+Z)",
 	"pad.toolbar.redo.title": "やり直し (Ctrl+Y)",
-	"pad.toolbar.clearAuthorship.title": "作者の色分けを消去",
+	"pad.toolbar.clearAuthorship.title": "作者の色分けを消去(Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "他の形式のファイルのインポート/エクスポート",
 	"pad.toolbar.timeslider.title": "タイムスライダー",
 	"pad.toolbar.savedRevision.title": "版を保存",
@@ -26,12 +27,14 @@
 	"pad.colorpicker.save": "保存",
 	"pad.colorpicker.cancel": "キャンセル",
 	"pad.loading": "読み込み中...",
+	"pad.noCookie": "クッキーが見つかりません。ブラウザの設定でクッキーの使用を許可してください。",
 	"pad.passwordRequired": "このパッドにアクセスするにはパスワードが必要です",
 	"pad.permissionDenied": "あなたにはこのパッドへのアクセス許可がありません",
 	"pad.wrongPassword": "パスワードが間違っています",
 	"pad.settings.padSettings": "パッドの設定",
 	"pad.settings.myView": "個人設定",
 	"pad.settings.stickychat": "画面にチャットを常に表示",
+	"pad.settings.chatandusers": "チャットとユーザーを表示",
 	"pad.settings.colorcheck": "作者の色分け",
 	"pad.settings.linenocheck": "行番号",
 	"pad.settings.rtlcheck": "右横書きにする",
@@ -44,6 +47,7 @@
 	"pad.importExport.import": "あらゆるテキストファイルや文書をアップロードできます",
 	"pad.importExport.importSuccessful": "完了しました。",
 	"pad.importExport.export": "現在のパッドをエクスポートする形式:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "プレーンテキスト",
 	"pad.importExport.exportword": "Microsoft Word",
@@ -89,6 +93,9 @@
 	"timeslider.exportCurrent": "現在の版をエクスポートする形式:",
 	"timeslider.version": "バージョン {{version}}",
 	"timeslider.saved": "| {{year}}年{{month}}{{day}}日に保存",
+	"timeslider.playPause": "パッドの過去の内容を再生／一時停止",
+	"timeslider.backRevision": "前の版に戻る",
+	"timeslider.forwardRevision": "次の版に進む",
 	"timeslider.dateformat": "{{year}}年{{month}}月{{day}}日 {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "1月",
 	"timeslider.month.february": "2月",
@@ -104,6 +111,7 @@
 	"timeslider.month.december": "12月",
 	"timeslider.unnamedauthors": "{{num}} 人の匿名の{[plural(num) other: 作者 ]}",
 	"pad.savedrevs.marked": "この版を、保存済みの版としてマークしました。",
+	"pad.savedrevs.timeslider": "タイムスライダーで保存された版を確認できます",
 	"pad.userlist.entername": "名前を入力",
 	"pad.userlist.unnamed": "名前なし",
 	"pad.userlist.guest": "ゲスト",
@@ -114,6 +122,7 @@
 	"pad.impexp.importing": "インポート中...",
 	"pad.impexp.confirmimport": "ファイルをインポートすると、パッドの現在のテキストが上書きされます。本当に続行しますか?",
 	"pad.impexp.convertFailed": "このファイルをインポートできませんでした。他の文書形式を使用するか、手作業でコピー & ペーストしてください",
+	"pad.impexp.padHasData": "このパッドは変更されたため、ファイルからインポートできませんでした。新しいパッドにインポートしてください。",
 	"pad.impexp.uploadFailed": "アップロードに失敗しました。もう一度お試しください",
 	"pad.impexp.importfailed": "インポートに失敗しました",
 	"pad.impexp.copypaste": "コピー & ペーストしてください",

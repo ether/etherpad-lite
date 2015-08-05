@@ -147,7 +147,7 @@ function handleClientVars(message)
     // export_links is a jQuery Array, so .each is allowed.
     export_links.each(function()
     {
-      this.setAttribute('href', this.href.replace( /(.+?)\/\w+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
+      this.setAttribute('href', this.href.replace( /(.+?)\/[^\/]+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
     });
   });
 

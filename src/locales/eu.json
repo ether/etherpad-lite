@@ -2,7 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Theklan",
-			"Subi"
+			"Subi",
+			"Xabier Armendaritz",
+			"An13sa"
 		]
 	},
 	"index.newPad": "Pad berria",
@@ -10,14 +12,14 @@
 	"pad.toolbar.bold.title": "Lodia (Ctrl-B)",
 	"pad.toolbar.italic.title": "Etzana (Ctrl-I)",
 	"pad.toolbar.underline.title": "Azpimarratua (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "Ezabatua",
-	"pad.toolbar.ol.title": "Zerrenda ordenatua",
-	"pad.toolbar.ul.title": "Zerrenda ez-ordenatua",
-	"pad.toolbar.indent.title": "Koska",
-	"pad.toolbar.unindent.title": "Koska kendu",
+	"pad.toolbar.strikethrough.title": "Ezabatua (Ctrl+5)",
+	"pad.toolbar.ol.title": "Zerrenda ordenatua (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "Zerrenda ez-ordenatua (Ctrl+Shift+L)",
+	"pad.toolbar.indent.title": "Koska (TAB)",
+	"pad.toolbar.unindent.title": "Koska kendu (Shift+TAB)",
 	"pad.toolbar.undo.title": "Desegin (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Berregin (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "Ezabatu Egiletza Koloreak",
+	"pad.toolbar.clearAuthorship.title": "Ezabatu Egiletza Koloreak (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Inportatu/Esportatu fitxategi formatu ezberdinetara/ezberdinetatik",
 	"pad.toolbar.timeslider.title": "Denbora lerroa",
 	"pad.toolbar.savedRevision.title": "Gorde berrikuspena",
@@ -87,7 +89,7 @@
 	"timeslider.exportCurrent": "Gorde bertsio hau honela:",
 	"timeslider.version": "Bertsioa {{version}}",
 	"timeslider.saved": "{{year}}ko {{month}}ren {{day}}an gordeta",
-	"timeslider.dateformat": "{{year}}/{{month}}/{{day}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.dateformat": "{{year}}-{{month}}-{{day}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Urtarrila",
 	"timeslider.month.february": "Otsaila",
 	"timeslider.month.march": "Martxoa",
