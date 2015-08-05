@@ -465,8 +465,8 @@ var pad = {
   },
   switchToPad: function(padId)
   {
-    var newHref = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
-    newHref = newHref[0];    
+    var options = document.location.href.split('?')[1];
+    var newHref = padId;
     if (typeof options != "undefined" && options != null){
       newHref = newHref + '?' + options;
     }
