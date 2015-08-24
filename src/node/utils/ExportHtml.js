@@ -19,6 +19,7 @@ var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
+var _ = require('underscore');
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
@@ -78,8 +79,15 @@ function getHTMLFromAtext(pad, atext, authorColors)
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
 
   hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
+    // newProps can be simply a string (which means it is stored as attribute in the form of ['tag', 'true'])
+    // or it can be a pair of values in an Array (for the case when it is stored as ['tag', 'value']).
+    // The later scenario will generate HTML with tags like <tag:value>
     newProps.forEach(function (propName, i){
-      tags.push(propName);
+      if (_.isArray(propName)) {
+        tags.push(propName[0] + ":" + propName[1]);
+      } else {
+        tags.push(propName);
+      }
       props.push(propName);
     });
   });
@@ -130,7 +138,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
   // this pad, and if yes puts its attrib id->props value into anumMap
   props.forEach(function (propName, i)
   {
-    var propTrueNum = apool.putAttrib([propName, true], true);
+    var attrib = [propName, true];
+    if (_.isArray(propName)) {
+      // propName can be in the form of ['color', 'red']
+      attrib = propName;
+    }
+    var propTrueNum = apool.putAttrib(attrib, true);
     if (propTrueNum >= 0)
     {
       anumMap[propTrueNum] = i;
@@ -153,6 +166,11 @@ function getHTMLFromAtext(pad, atext, authorColors)
       if (!authorColors) return false;
 
       var property = props[i];
+
+      // we are not insterested on properties in the form of ['color', 'red']
+      if (_.isArray(property)) {
+        return false;
+      }
 
       if(property.substr(0,6) === "author"){
         return stripDotFromAuthorID(property);
