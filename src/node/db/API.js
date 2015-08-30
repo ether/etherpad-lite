@@ -499,7 +499,7 @@ appendChatMessage(padID, text, authorID, time), creates a chat message for the p
 
 Example returns:
 
-{code: 0, message:"ok", data: null
+{code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
 exports.appendChatMessage = function(padID, text, authorID, time, callback)

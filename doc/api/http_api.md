@@ -380,6 +380,16 @@ returns the chatHead (last number of the last chat-message) of the pad
 * `{code: 0, message:"ok", data: {chatHead: 42}}`
 * `{code: 1, message:"padID does not exist", data: null}`
 
+#### appendChatMessage(padID, text, authorID [, time])
+ * API >= 1.2.12
+
+creates a chat message, saves it to the database and sends it to all connected clients of this pad
+
+
+*Example returns:*
+
+* `{code: 0, message:"ok", data: null}`
+* `{code: 1, message:"text is no string", data: null}`
 
 ### Pad
 Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security manager controls access of them and its forbidden for normal pads to include a $ in the name. 
