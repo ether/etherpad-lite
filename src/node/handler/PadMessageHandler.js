@@ -375,6 +375,17 @@ function handleChatMessage(client, message)
   var text = message.data.text;
   var padId = sessioninfos[client.id].padId;
 
+  exports.sendChatMessageToPadClients(time, userId, text, padId);
+}
+
+/**
+ * Sends a chat message to all clients of this pad
+ * @param time the timestamp of the chat message
+ * @param userId the author id of the chat message
+ * @param text the text of the chat message
+ * @param padId the padId to send the chat message to
+ */
+exports.sendChatMessageToPadClients = function (time, userId, text, padId) {
   var pad;
   var userName;
 
