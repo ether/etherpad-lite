@@ -139,7 +139,14 @@ Called from: src/static/js/ace2_inner.js
 
 Things in context: None
 
-The return value of this hook will add elements into the "lineMarkerAttribute" category, making the aceDomLineProcessLineAttributes hook (documented below) call for those elements.
+The return value of this hook will add elements into the "lineMarkerAttribute" category, making the aceDomLineProcessLineAttributes hook (documented below) call for those elements. This hook is usually used with aceRegisterLineAttributes hook (documented below).
+
+## aceRegisterLineAttributes
+Called from: src/static/js/AttributeManager.js
+
+Things in context: None
+
+Similar to `aceRegisterBlockElements`, but here instead of HTML tags the return value of this hook should be an array of attribute names used by the plugin when calling `AttributeManager.setAttributeOnLine` and `AttributeManager.removeAttributeOnLine`.
 
 ## aceInitialized
 Called from: src/static/js/ace2_inner.js
