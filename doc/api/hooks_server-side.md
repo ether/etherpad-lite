@@ -357,7 +357,7 @@ Things in context:
 
 1. Pad object
 
-This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array should be returned. If a value in this array is a string, the exported HTML will contain tags like `<tag_name>` for the content where attributes are `['tag_name', 'true']`; if a value in this array is a pair `['tag_name', 'value']`, the exported HTML will contain tags like `<tag_name:value>` for the content where attributes are `['tag_name', 'value']`.
+This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array should be returned. If a value in this array is a string, the exported HTML will contain tags like `<tag_name>` for the content where attributes are `['tag_name', 'true']`; if a value in this array is a pair `['tag_name', 'value']`, the exported HTML will contain tags like `<span data-tag_name:"value">` for the content where attributes are `['tag_name', 'value']`.
 
 Example:
 ```

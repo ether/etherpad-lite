@@ -81,10 +81,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
   hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
     // newProps can be simply a string (which means it is stored as attribute in the form of ['tag', 'true'])
     // or it can be a pair of values in an Array (for the case when it is stored as ['tag', 'value']).
-    // The later scenario will generate HTML with tags like <tag:value>
+    // The later scenario will generate HTML with tags like <span data-tag="value">
     newProps.forEach(function (propName, i){
       if (_.isArray(propName)) {
-        tags.push(propName[0] + ":" + propName[1]);
+        tags.push('span data-' + propName[0] + '="' + propName[1] + '"');
       } else {
         tags.push(propName);
       }
