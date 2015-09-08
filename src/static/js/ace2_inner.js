@@ -2423,6 +2423,9 @@ function Ace2Inner(){
       var opIter = Changeset.opIterator(rep.alines[n]);
       var indexIntoLine = 0;
       var selectionStartInLine = 0;
+      if (documentAttributeManager.lineHasMarker(n)) {
+        selectionStartInLine = 1; // ignore "*" used as line marker
+      }
       var selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
       if (n == selStartLine)
       {
