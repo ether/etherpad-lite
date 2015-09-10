@@ -75,7 +75,7 @@
 	"pad.modals.looping.cause": "Puede deberse a que te conectes a través de un proxy o un cortafuegos incompatible.",
 	"pad.modals.initsocketfail": "Servidor incalcanzable.",
 	"pad.modals.initsocketfail.explanation": "No se pudo conectar al servidor de sincronización.",
-	"pad.modals.initsocketfail.cause": "Probablemente debido a un problema en tu navegador o en tu conexión a internet.",
+	"pad.modals.initsocketfail.cause": "Probablemente debido a un problema en tu navegador o en tu conexión a Internet.",
 	"pad.modals.slowcommit.explanation": "El servidor no responde.",
 	"pad.modals.slowcommit.cause": "Puede deberse a problemas con tu conexión de red.",
 	"pad.modals.badChangeset.explanation": "Has hecho una edición clasificada como ilegal por el servidor de sincronización.",

@@ -6,7 +6,8 @@
 			"Pitort",
 			"Toniher",
 			"Macofe",
-			"Joan manel"
+			"Joan manel",
+			"Eduardo Martinez"
 		]
 	},
 	"index.newPad": "Nou pad",
@@ -97,6 +98,9 @@
 	"timeslider.exportCurrent": "Exporta la versió actual com a:",
 	"timeslider.version": "Versió {{version}}",
 	"timeslider.saved": "Desat {{month}} {{day}}, {{year}}",
+	"timeslider.playPause": "Reproducció / Pausa els continguts del pad",
+	"timeslider.backRevision": "Tornar una revisió enrera en aquest Pad",
+	"timeslider.forwardRevision": "Anar una revisió endavant en aquest Pad",
 	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Gener",
 	"timeslider.month.february": "Febrer",
