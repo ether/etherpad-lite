@@ -3,7 +3,8 @@
 		"authors": [
 			"Hedwig",
 			"ImGelu",
-			"Minisarm"
+			"Minisarm",
+			"Strainu"
 		]
 	},
 	"index.newPad": "Pad nou",
@@ -15,6 +16,9 @@
 	"pad.toolbar.ol.title": "Listă ordonată (Ctrl+Shift+N)",
 	"pad.toolbar.ul.title": "Listă neordonată (Ctrl+Shift+L)",
 	"pad.toolbar.undo.title": "Anulează (Ctrl+Z)",
+	"pad.toolbar.redo.title": "Refă (Ctrl+Y)",
+	"pad.toolbar.clearAuthorship.title": "Curăță culorile autorilor (Ctrl+Shift+C)",
+	"pad.toolbar.import_export.title": "Importă/Exportă din/în diferite formate",
 	"pad.toolbar.savedRevision.title": "Salvează revizia",
 	"pad.toolbar.settings.title": "Setări",
 	"pad.colorpicker.save": "Salvează",
@@ -26,9 +30,12 @@
 	"pad.settings.padSettings": "Setări pentru Pad",
 	"pad.settings.stickychat": "Chat-ul întotdeauna pe ecran",
 	"pad.settings.chatandusers": "Afișează Chat-ul și Utilizatorii",
+	"pad.settings.colorcheck": "Culorile autorilor",
+	"pad.settings.linenocheck": "Numere de linie",
 	"pad.settings.fontType": "Tipul fontului:",
 	"pad.settings.globalView": "Vedere generală",
 	"pad.settings.language": "Limbă:",
+	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Încarcă orice fișier text sau document",
 	"pad.importExport.importSuccessful": "Succes!",
 	"pad.importExport.export": "Exportă pad-ul curent ca:",
@@ -41,6 +48,7 @@
 	"pad.modals.connected": "Conectat.",
 	"pad.modals.reconnecting": "Se reconectează la pad-ul tău..",
 	"pad.modals.forcereconnect": "Forțează reconectarea",
+	"pad.modals.userdup": "Deschis în altă fereastră",
 	"pad.modals.userdup.advice": "Reconectează pentru a folosi această fereastră în schimb",
 	"pad.modals.unauth": "Nu ești autorizat",
 	"pad.modals.initsocketfail": "Serverul nu este disponibil.",
@@ -78,5 +86,11 @@
 	"timeslider.month.november": "noiembrie",
 	"timeslider.month.december": "decembrie",
 	"pad.userlist.entername": "Introdu numele tău",
-	"pad.userlist.unnamed": "fără nume"
+	"pad.userlist.unnamed": "fără nume",
+	"pad.userlist.guest": "Oaspete",
+	"pad.userlist.deny": "Respinge",
+	"pad.userlist.approve": "Aprobă",
+	"pad.impexp.importbutton": "Importă acum",
+	"pad.impexp.importing": "Importare...",
+	"pad.impexp.importfailed": "Import eșuat"
 }

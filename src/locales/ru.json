@@ -5,7 +5,8 @@
 			"DCamer",
 			"Eleferen",
 			"Okras",
-			"Volkov"
+			"Volkov",
+			"Nzeemin"
 		]
 	},
 	"index.newPad": "Создать",
@@ -96,6 +97,9 @@
 	"timeslider.exportCurrent": "Экспортировать текущую версию как:",
 	"timeslider.version": "Версия {{version}}",
 	"timeslider.saved": "Сохранено {{day}}.{{month}}.{{year}}",
+	"timeslider.playPause": "Воспроизведение / Пауза содержимого документа",
+	"timeslider.backRevision": "Назад на одну версию документа",
+	"timeslider.forwardRevision": "Вперёд на одну версию документа",
 	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "январь",
 	"timeslider.month.february": "февраль",
@@ -111,6 +115,7 @@
 	"timeslider.month.december": "декабрь",
 	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: безымянный автор, few: безымянных автора, many: безымянных авторов, other: безымянных авторов]}",
 	"pad.savedrevs.marked": "Эта версия теперь помечена как сохраненная",
+	"pad.savedrevs.timeslider": "Вы можете увидеть сохранённые версии на шкале времени",
 	"pad.userlist.entername": "Введите ваше имя",
 	"pad.userlist.unnamed": "безымянный",
 	"pad.userlist.guest": "Гость",
@@ -121,8 +126,9 @@
 	"pad.impexp.importing": "Импортирование…",
 	"pad.impexp.confirmimport": "Импорт файла перезапишет текущий текст. Вы уверены, что вы хотите продолжить?",
 	"pad.impexp.convertFailed": "Не удалось импортировать этот файл. Пожалуйста, используйте другой формат или скопируйте вручную",
+	"pad.impexp.padHasData": "Не получилось импортировать этот файл, потому что этот документ уже имеет изменения, пожалуйста, импортируйте в новый документ",
 	"pad.impexp.uploadFailed": "Загрузка не удалась, пожалуйста, попробуйте ещё раз",
-	"pad.impexp.importfailed": "Ошибка при импортировании",
+	"pad.impexp.importfailed": "Ошибка при импорте",
 	"pad.impexp.copypaste": "Пожалуйста, скопируйте",
 	"pad.impexp.exportdisabled": "Экспорт в формате {{type}} отключен. Для подробной информации обратитесь к системному администратору."
 }
