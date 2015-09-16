@@ -5,7 +5,7 @@ var importHandler = require('../../handler/ImportHandler');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/p/:pad/:rev?/export/:type', function(req, res, next) {
-    var types = ["pdf", "doc", "txt", "html", "odt", "etherpad"];
+    var types = ["pdf", "doc", "txt", "html", "odt", "etherpad", "docx"];
     //send a 404 if we don't support this filetype
     if (types.indexOf(req.params.type) == -1) {
       next();
@@ -13,7 +13,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     }
 
     //if abiword is disabled, and this is a format we only support with abiword, output a message
-    if (settings.abiword == null &&
+    if (settings.abiword == null && settings.pandoc == null &&
        ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1) {
       res.send("Abiword is not enabled at this Etherpad instance. Set the path to Abiword in settings.json to enable this feature");
       return;

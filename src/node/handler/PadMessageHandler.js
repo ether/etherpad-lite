@@ -1225,6 +1225,7 @@ function handleClientReady(client, message)
           "serverTimestamp": new Date().getTime(),
           "userId": author,
           "abiwordAvailable": settings.abiwordAvailable(),
+          "pandocAvailable": settings.pandocAvailable(),
           "plugins": {
             "plugins": plugins.plugins,
             "parts": plugins.parts,

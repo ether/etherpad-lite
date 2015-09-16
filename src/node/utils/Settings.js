@@ -153,6 +153,11 @@ exports.minify = true;
 exports.abiword = null;
 
 /**
+ * The path of the abiword executable
+ */
+exports.pandoc = null;
+
+/**
  * The path of the tidy executable
  */
 exports.tidyHtml = null;
@@ -203,6 +208,19 @@ exports.users = {};
 exports.abiwordAvailable = function()
 {
   if(exports.abiword != null)
+  {
+    return os.type().indexOf("Windows") != -1 ? "withoutPDF" : "yes";
+  }
+  else
+  {
+    return "no";
+  }
+};
+
+//checks if pandoc is avaiable
+exports.pandocAvailable = function()
+{
+  if(exports.pandoc != null)
   {
     return os.type().indexOf("Windows") != -1 ? "withoutPDF" : "yes";
   }
@@ -308,6 +326,23 @@ exports.reloadSettings = function reloadSettings() {
           }
           console.error(abiwordError);
           exports.abiword = null;
+        }
+      });
+    }
+  }
+
+  if(exports.pandoc){
+    // Check pandoc actually exists
+    if(exports.pandoc != null)
+    {
+      fs.exists(exports.pandoc, function(exists) {
+        if (!exists) {
+          var pandocError = "Pandoc does not exist at this path, check your settings file";
+          if(!exports.suppressErrorsInPadText){
+            exports.defaultPadText = exports.defaultPadText + "\nError: " + pandocError + suppressDisableMsg;
+          }
+          console.error(pandocError);
+          exports.pandoc = null;
         }
       });
     }

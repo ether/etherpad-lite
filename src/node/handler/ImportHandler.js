@@ -38,6 +38,9 @@ var ERR = require("async-stacktrace")
 if(settings.abiword != null)
   var abiword = require("../utils/Abiword");
 
+if(settings.pandoc != null)
+  var pandoc = require("../utils/Pandoc");
+
 //for node 0.6 compatibily, os.tmpDir() only works from 0.8
 var tmpDirectory = process.env.TEMP || process.env.TMPDIR || process.env.TMP || '/tmp';
   
