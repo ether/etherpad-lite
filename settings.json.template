@@ -90,6 +90,11 @@
      Abiword is needed to advanced import/export features of pads*/
   "abiword" : null,
 
+  /* This is the path to the Pandoc executable. Setting it to null, disables pandoc.
+     Pandoc is needed to advanced import/export features of pads like abiword
+     while it resolves some abiword issues, it is less tested */
+  "pandoc" : null,
+
   /* This is the path to the Tidy executable. Setting it to null, disables Tidy.
      Tidy is used to improve the quality of exported pads*/
   "tidyHtml" : null,

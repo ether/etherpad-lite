@@ -701,6 +701,9 @@ table#otheruserstable {
 #exportworda:before {
   content: "\e804";
 }
+#exportdocxa:before {
+  content: "\e804";
+}
 #exportpdfa:before {
   content: "\e803";
 }
