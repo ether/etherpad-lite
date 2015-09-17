@@ -183,6 +183,11 @@ function getHTMLFromAtext(pad, atext, authorColors)
       return false;
     }
 
+    function isSpanWithData(i){
+      var property = props[i];
+      return _.isArray(property);
+    }
+
     function emitOpenTag(i)
     {
       openTags.unshift(i);
@@ -204,8 +209,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
     {
       openTags.shift();
       var spanClass = getSpanClassFor(i);
+      var spanWithData = isSpanWithData(i);
 
-      if(spanClass){
+      if(spanClass || spanWithData){
         assem.append('</span>');
       } else {
         assem.append('</');
