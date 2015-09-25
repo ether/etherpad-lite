@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Besnik b"
+			"Besnik b",
+			"Kosovastar"
 		]
 	},
 	"index.newPad": "Bllok i Ri",
@@ -39,7 +40,7 @@
 	"pad.settings.fontType.normal": "Normale",
 	"pad.settings.fontType.monospaced": "Monospace",
 	"pad.settings.globalView": "Pamje Globale",
-	"pad.settings.language": "Gjuhë:",
+	"pad.settings.language": "Gjuha:",
 	"pad.importExport.import_export": "Import/Eksport",
 	"pad.importExport.import": "Ngarkoni cilëndo kartelë teksti ose dokument",
 	"pad.importExport.importSuccessful": "Me sukses!",

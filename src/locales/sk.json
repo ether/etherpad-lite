@@ -3,7 +3,8 @@
 		"authors": [
 			"Teslaton",
 			"Kusavica",
-			"Rudko"
+			"Rudko",
+			"Mark"
 		]
 	},
 	"index.newPad": "Nový Pad",
@@ -11,14 +12,14 @@
 	"pad.toolbar.bold.title": "Tučné (Ctrl-B)",
 	"pad.toolbar.italic.title": "Kurzíva (Ctrl-I)",
 	"pad.toolbar.underline.title": "Podčiarknuté (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "Prečiarknuté",
-	"pad.toolbar.ol.title": "Číslovaný zoznam",
-	"pad.toolbar.ul.title": "Odrážkový zoznam",
+	"pad.toolbar.strikethrough.title": "Prečiarknuté (Ctrl+5)",
+	"pad.toolbar.ol.title": "Usporiadaný zoznam (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "Nezoradený zoznam (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Zväčšiť odsadenie (TAB)",
 	"pad.toolbar.unindent.title": "Zmenšiť odsadenie (Shift+TAB)",
 	"pad.toolbar.undo.title": "Späť (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Znova (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "Odstrániť farby autorstva",
+	"pad.toolbar.clearAuthorship.title": "Odstrániť farby autorstva (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Import/export z/do rôznych formátov súborov",
 	"pad.toolbar.timeslider.title": "Časová os",
 	"pad.toolbar.savedRevision.title": "Uložiť revíziu",
@@ -46,6 +47,7 @@
 	"pad.importExport.import": "Nahrať ľubovoľný textový súbor alebo dokument",
 	"pad.importExport.importSuccessful": "Import úspešný!",
 	"pad.importExport.export": "Exportovať aktuálny Pad ako:",
+	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Čistý text",
 	"pad.importExport.exportword": "Microsoft Word",

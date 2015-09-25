@@ -14,7 +14,8 @@
 			"Webysther",
 			"Fasouzafreitas",
 			"Lpagliari",
-			"Walesson"
+			"Walesson",
+			"Cainamarques"
 		]
 	},
 	"index.newPad": "Nova Nota",
@@ -105,9 +106,9 @@
 	"timeslider.exportCurrent": "Exportar a versão atual em formato:",
 	"timeslider.version": "Versão {{version}}",
 	"timeslider.saved": "Salvo em {{day}} de {{month}} de {{year}}",
-	"timeslider.playPause": "Reprodução / Pause Conteúdo Pad",
-	"timeslider.backRevision": "Volte uma revisão neste Pad",
-	"timeslider.forwardRevision": "Vá em frente uma revisão neste Pad",
+	"timeslider.playPause": "Reproduzir / Pausar conteúdo no Pad",
+	"timeslider.backRevision": "Voltar a uma revisão anterior neste Pad",
+	"timeslider.forwardRevision": "Ir a uma revisão posterior neste Pad",
 	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Janeiro",
 	"timeslider.month.february": "Fevereiro",
