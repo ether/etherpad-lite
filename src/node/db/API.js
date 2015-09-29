@@ -473,9 +473,9 @@ exports.getChatHistory = function(padID, start, end, callback)
     end = pad.chatHead;
     }
     
-    if(start >= chatHead && chatHead > 0)
+    if(start > chatHead)
     {
-      callback(new customError("start is higher or equal to the current chatHead","apierror"));
+      callback(new customError("start is higher than the current chatHead","apierror"));
       return;
     }
     if(end > chatHead)
