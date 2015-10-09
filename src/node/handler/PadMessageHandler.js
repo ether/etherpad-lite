@@ -1365,7 +1365,8 @@ function handleChangesetRequest(client, message)
     messageLogger.warn("Dropped message, changeset request has no granularity!");
     return;
   }
-  if(Number(message.data.granularity) !== message.data.granularity || message.data.granularity % 1 !== 0)
+  //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
+  if(Math.floor(message.data.granularity) !== message.data.granularity)
   {
     messageLogger.warn("Dropped message, changeset request granularity is not an integer!");
     return;
