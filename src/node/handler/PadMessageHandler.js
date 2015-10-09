@@ -1365,6 +1365,11 @@ function handleChangesetRequest(client, message)
     messageLogger.warn("Dropped message, changeset request has no granularity!");
     return;
   }
+  if(Number(message.data.granularity) !== message.data.granularity || message.data.granularity % 1 !== 0)
+  {
+    messageLogger.warn("Dropped message, changeset request granularity is not an integer!");
+    return;
+  }
   if(message.data.start == null)
   {
     messageLogger.warn("Dropped message, changeset request has no start!");
