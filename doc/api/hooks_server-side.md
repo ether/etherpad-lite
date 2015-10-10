@@ -384,3 +384,20 @@ exports.userLeave = function(hook, session, callback) {
   console.log('%s left pad %s', session.author, session.padId);
 };
 ```
+
+### clientReady
+Called from src/node/handler/PadMessageHandler.js
+
+This in context:
+
+1. message
+
+This hook gets called when handling a CLIENT_READY which is the first message from the client to the server.
+
+Example:
+
+```
+exports.clientReady = function(hook, message) {
+  console.log('Client has entered the pad' + message.padId);
+};
+```

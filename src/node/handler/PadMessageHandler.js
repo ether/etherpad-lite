@@ -1020,6 +1020,8 @@ function handleClientReady(client, message)
   var currentTime;
   var padIds;
 
+  hooks.callAll("clientReady", message);
+
   async.series([
     //Get ro/rw id:s
     function (callback)
