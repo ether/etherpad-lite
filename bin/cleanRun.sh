@@ -3,6 +3,9 @@
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
 
+#Parse settings.json
+eval $(python parsejson.py)
+
 #Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
   cd "../"
@@ -38,4 +41,4 @@ bin/installDeps.sh $* || exit 1
 echo "Started Etherpad..."
 
 SCRIPTPATH=`pwd -P`
-node $SCRIPTPATH/node_modules/ep_etherpad-lite/node/server.js $*
+$NODEJS $SCRIPTPATH/node_modules/ep_etherpad-lite/node/server.js $*
