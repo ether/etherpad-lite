@@ -630,8 +630,8 @@ function handleUserChanges(data, cb)
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
     return cb();
   }
-  //TODO: this might happen with other messages too => find one place to copy the session 
-  //and always use the copy. atm a message will be ignored if the session is gone even 
+  //TODO: this might happen with other messages too => find one place to copy the session
+  //and always use the copy. atm a message will be ignored if the session is gone even
   //if the session was valid when the message arrived in the first place
   if(!sessioninfos[client.id])
   {
@@ -960,7 +960,7 @@ function handleSwitchToPad(client, message)
       roomClients[i].leave(padId);
     }
   }
-  
+
   // start up the new pad
   createSessionInfo(client, message);
   handleClientReady(client, message);
@@ -1231,6 +1231,7 @@ function handleClientReady(client, message)
             "plugins": plugins.plugins,
             "parts": plugins.parts,
           },
+          "indentationOnNewLine": settings.indentationOnNewLine,
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
 

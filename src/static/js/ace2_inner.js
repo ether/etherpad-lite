@@ -1894,7 +1894,11 @@ function Ace2Inner(){
       var prevLine = rep.lines.prev(thisLine);
       var prevLineText = prevLine.text;
       var theIndent = /^ *(?:)/.exec(prevLineText)[0];
-      if (/[\[\(\:\{]\s*$/.exec(prevLineText)) theIndent += THE_TAB;
+      var shouldIndent = parent.parent.clientVars.indentationOnNewLine;
+      if (shouldIndent && /[\[\(\:\{]\s*$/.exec(prevLineText))
+      {
+        theIndent += THE_TAB;
+      }
       var cs = Changeset.builder(rep.lines.totalWidth()).keep(
       rep.lines.offsetOfIndex(lineNum), lineNum).insert(
       theIndent, [
@@ -2336,7 +2340,7 @@ function Ace2Inner(){
 
   function getAttributeOnSelection(attributeName){
     if (!(rep.selStart && rep.selEnd)) return
-    
+
     var withIt = Changeset.makeAttribsString('+', [
       [attributeName, 'true']
     ], rep.apool);
@@ -2347,14 +2351,14 @@ function Ace2Inner(){
     }
 
     return rangeHasAttrib(rep.selStart, rep.selEnd)
-    
+
     function rangeHasAttrib(selStart, selEnd) {
       // if range is collapsed -> no attribs in range
       if(selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false
-      
+
       if(selStart[0] != selEnd[0]) { // -> More than one line selected
         var hasAttrib = true
-        
+
         // from selStart to the end of the first line
         hasAttrib = hasAttrib && rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length])
 
@@ -2365,22 +2369,22 @@ function Ace2Inner(){
 
         // for the last, potentially partial, line
         hasAttrib = hasAttrib && rangeHasAttrib([selEnd[0], 0], [selEnd[0], selEnd[1]])
-        
+
         return hasAttrib
       }
-      
+
       // Logic tells us we now have a range on a single line
-      
+
       var lineNum = selStart[0]
         , start = selStart[1]
         , end = selEnd[1]
         , hasAttrib = true
-      
+
       // Iterate over attribs on this line
-      
+
       var opIter = Changeset.opIterator(rep.alines[lineNum])
         , indexIntoLine = 0
-      
+
       while (opIter.hasNext()) {
         var op = opIter.next();
         var opStartInLine = indexIntoLine;
@@ -2394,11 +2398,11 @@ function Ace2Inner(){
         }
         indexIntoLine = opEndInLine;
       }
-      
+
       return hasAttrib
     }
   }
-  
+
   editorInfo.ace_getAttributeOnSelection = getAttributeOnSelection;
 
   function toggleAttributeOnSelection(attributeName)
@@ -3641,7 +3645,7 @@ function Ace2Inner(){
     // Is caret potentially hidden by the chat button?
     var myselection = document.getSelection(); // get the current caret selection
     var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
-    
+
     if(myselection.focusNode.wholeText){ // Is there any content?  If not lineHeight will report wrong..
       var lineHeight = myselection.focusNode.parentNode.offsetHeight; // line height of populated links
     }else{
@@ -3713,13 +3717,13 @@ function Ace2Inner(){
           // As ubuntu cannot use Alt F10....
           // Focus on the editbar. -- TODO: Move Focus back to previous state (we know it so we can use it)
           var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
-          $(this).blur(); 
+          $(this).blur();
           firstEditbarElement.focus();
           evt.preventDefault();
         }
         if ((!specialHandled) && altKey && keyCode == 67 && type === "keydown"){
           // Alt c focuses on the Chat window
-          $(this).blur(); 
+          $(this).blur();
           parent.parent.chat.show();
           parent.parent.$("#chatinput").focus();
           evt.preventDefault();
@@ -4961,7 +4965,7 @@ function Ace2Inner(){
 
     // Disabled: https://github.com/ether/etherpad-lite/issues/2546
     // Will break OL re-numbering: https://github.com/ether/etherpad-lite/pull/2533
-    // $(document).on("cut", handleCut); 
+    // $(document).on("cut", handleCut);
 
     $(root).on("blur", handleBlur);
     if (browser.msie)
@@ -4972,7 +4976,7 @@ function Ace2Inner(){
 
     // Don't paste on middle click of links
     $(root).on("paste", function(e){
-      // TODO: this breaks pasting strings into URLS when using 
+      // TODO: this breaks pasting strings into URLS when using
       // Control C and Control V -- the Event is never available
       // here.. :(
       if(e.target.a || e.target.localName === "a"){

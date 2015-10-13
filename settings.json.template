@@ -131,6 +131,11 @@
   // Allow Load Testing tools to hit the Etherpad Instance.  Warning this will disable security on the instance.
   "loadTest": false,
 
+  // Disable indentation on new line when previous line ends with some special chars (':', '[', '(', '{')
+  /*
+  "indentationOnNewLine": false,
+  */
+
   /* The toolbar buttons configuration.
   "toolbar": {
     "left": [
