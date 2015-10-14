@@ -58,7 +58,7 @@
 	"pad.modals.userdup.explanation": "Ky bllok duket se gjendet i hapur në më shumë se një dritare shfletuesi në këtë kompjuter.",
 	"pad.modals.userdup.advice": "Rilidhuni që të përdoret kjo dritare.",
 	"pad.modals.unauth": "I paautorizuar",
-	"pad.modals.unauth.explanation": "Ndërkohë që shihnit këtë dritare, lejet tuaja kanë ndryshuar. Provoni të rilidheni.",
+	"pad.modals.unauth.explanation": "Ndërkohë që sheh këtë dritare, lejet e tua kanë ndryshuar. Provo të rilidhesh.",
 	"pad.modals.looping.explanation": "Ka probleme komunikimi me shërbyesin e njëkohësimit.",
 	"pad.modals.looping.cause": "Ndoshta jeni lidhur përmes një firewall-i ose ndërmjetësi të papërputhshëm.",
 	"pad.modals.initsocketfail": "Nuk kapet dot shërbyesi.",
