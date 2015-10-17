@@ -357,7 +357,7 @@ Things in context:
 
 1. Pad object
 
-This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export.  An Array should be returned.
+This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array should be returned. If a value in this array is a string, the exported HTML will contain tags like `<tag_name>` for the content where attributes are `['tag_name', 'true']`; if a value in this array is a pair `['tag_name', 'value']`, the exported HTML will contain tags like `<span data-tag_name="value">` for the content where attributes are `['tag_name', 'value']`.
 
 Example:
 ```
@@ -365,6 +365,15 @@ Example:
 exports.exportHtmlAdditionalTags = function(hook, pad, cb){
   var padId = pad.id;
   cb(["massive","jugs"]);
+};
+```
+
+Example when attributes are stores as `['color', 'red']` on the attribute pool:
+```
+// Add the props to be supported in export
+exports.exportHtmlAdditionalTags = function(hook, pad, cb){
+  var padId = pad.id;
+  cb([["color", "red"], ["color", "blue"]]);
 };
 ```
 
