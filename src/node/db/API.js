@@ -308,6 +308,38 @@ exports.setText = function(padID, text, callback)
 }
 
 /**
+appendText(padID, text) appends text to a pad
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+{code: 1, message:"text too long", data: null}
+*/
+exports.appendText = function(padID, text, callback)
+{
+  //text is required
+  if(typeof text != "string")
+  {
+    callback(new customError("text is no string","apierror"));
+    return;
+  }
+
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    pad.appendText(text);
+
+    //update the clients on the pad
+    padMessageHandler.updatePadClients(pad, callback);
+  });
+};
+
+
+
+/**
 getHTML(padID, [rev]) returns the html of a pad 
 
 Example returns:
