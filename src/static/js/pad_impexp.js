@@ -168,6 +168,10 @@ var padimpexp = (function()
     {
       type = "Microsoft Word";
     }
+    else if (type.hasClass("exporthrefdocx"))
+    {
+      type = "Microsoft Word docx";
+    }
     else if (type.hasClass("exporthrefodt"))
     {
       type = "OpenDocument";
@@ -208,31 +212,48 @@ var padimpexp = (function()
       $("#importform").attr('action', pad_root_url + "/import");
       
       //hide stuff thats not avaible if abiword is disabled
-      if(clientVars.abiwordAvailable == "no")
+      if(clientVars.abiwordAvailable == "no" && clientVars.pandocAvailable == "no")
       {
         $("#exportworda").remove();
+        $("#exportdocxa").remove();
         $("#exportpdfa").remove();
         $("#exportopena").remove();
 
         $("#importmessageabiword").show();
       }
-      else if(clientVars.abiwordAvailable == "withoutPDF")
+
+      if (clientVars.abiwordAvailable == "yes")
       {
-        $("#exportpdfa").remove();
-        
-        $("#exportworda").attr("href", pad_root_path + "/export/doc");
+	$("#exportpdfa").attr("href", pad_root_path + "/export/pdf");
+      } else
+      {
+        $("#exportpdfa").remove();	  
+      }
+
+      if (!clientVars.abiwordAvailable == "no")
+      {
+	$("#exportworda").attr("href", pad_root_path + "/export/doc");
         $("#exportopena").attr("href", pad_root_path + "/export/odt");
-        
+      }
+
+      if (clientVars.abiwordAvailable == "yes" || clientVars.pandocAvailable == "yes")
+      {
         $("#importexport").css({"height":"142px"});
         $("#importexportline").css({"height":"142px"});
+	$("#exportpdfa").remove();
       }
-      else
+
+      if (clientVars.pandocAvailable == "yes")
       {
-        $("#exportworda").attr("href", pad_root_path + "/export/doc");
-        $("#exportpdfa").attr("href", pad_root_path + "/export/pdf");
+        $("#exportdocxa").attr("href", pad_root_path + "/export/docx");
         $("#exportopena").attr("href", pad_root_path + "/export/odt");
       }
-    
+
+      if (clientVars.pandocAvailable == "yes" && clientVars.abiwordAvailable == "no")
+      {
+	$("#exportworda").remove();
+      }
+
       addImportFrames();
       $("#importfileinput").change(fileInputUpdated);
       $('#importform').unbind("submit").submit(fileInputSubmit);
