@@ -153,6 +153,11 @@ exports.minify = true;
 exports.abiword = null;
 
 /**
+ * The path of the libreoffice executable
+ */
+exports.soffice = null;
+
+/**
  * The path of the tidy executable
  */
 exports.tidyHtml = null;
