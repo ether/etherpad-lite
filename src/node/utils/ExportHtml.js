@@ -488,9 +488,9 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
         (noDocType ? '' : '<!doctype html>\n') +
         '<html lang="en">\n' + (noDocType ? '' : '<head>\n' +
           '<title>' + Security.escapeHTML(padId) + '</title>\n' +
-          '<meta name="generator" content="Etherpad Lite">\n' +
-          '<meta name="author" content="Etherpad Lite">\n' +
-          '<meta name="changedby" content="Etherpad Lite">\n' +
+          '<meta name="generator" content="Etherpad">\n' +
+          '<meta name="author" content="Etherpad">\n' +
+          '<meta name="changedby" content="Etherpad">\n' +
           '<meta charset="utf-8">\n' +
           '<style> * { font-family: arial, sans-serif;\n' +
             'font-size: 13px;\n' +
