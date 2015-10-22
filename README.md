@@ -4,16 +4,16 @@
 # About
 Etherpad is a really-real time collaborative editor maintained by the Etherpad Community.
 
-Etherpad is written in JavaScript(99.9%) on both the server and client so it's easy for developers to maintain and add new features.  Because of this Etherpad has tons of customizations that you can leverage.
+Etherpad is written in JavaScript(99.9%) on both the server and client, so it's easy for developers to maintain and add new features.  Because of this, Etherpad has tons of customizations that you can leverage.
 
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API)
 that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. 
 
 There is also a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
-There's also a full-featured plugin framework, allowing you to easily add your own features.  By default your Etherpad is rather sparse and because Etherpad takes a lot of it's inspiration from Wordpress plugins are really easy to install and update.  Once you have Etherpad installed you should visit the plugin page and take control.
+There's also a full-featured plugin framework, allowing you to easily add your own features.  By default, your Etherpad is rather sparse, and because Etherpad takes a lot of it's inspiration from Wordpress, plugins are really easy to install and update.  Once you have Etherpad installed, you should visit the plugin page and take control.
 
-Finally, Etherpad comes with translations into most languages!  Users are automatically delivered the correct language for their local settings.
+Finally, Etherpad comes with translations into many languages!  Users are automatically delivered the correct language for their local settings.
 
 
 **Visit [beta.etherpad.org](http://beta.etherpad.org) to test it live.**
@@ -76,7 +76,7 @@ You like it? [Next steps](#next-steps).
 # Next Steps
 
 ## Tweak the settings
-You can initially modify the settings in `settings.json`. (If you need to handle multiple settings files, you can pass the path to a settings file to `bin/run.sh` using the `-s|--settings` option. This allows you to run multiple Etherpad instances from the same installation.)  Once you have access to your /admin section settings can be modified through the web browser.
+You can initially modify the settings in `settings.json`. (If you need to handle multiple settings files, you can pass the path to a settings file to `bin/run.sh` using the `-s|--settings` option, allowing you to run multiple Etherpad instances from the same installation.)  Once you have access to your /admin section settings can be modified through the web browser.
 
 You should use a dedicated database such as "mysql", if you are planning on using etherpad-in a production environment, since the "dirtyDB" database driver is only for testing and/or development purposes.
 
@@ -105,7 +105,7 @@ You know all this and just want to know how you can help?
 
 Look at the [TODO list](https://github.com/ether/etherpad-lite/wiki/TODO) and our [Issue tracker](https://github.com/ether/etherpad-lite/issues). (Please consider using [jshint](http://www.jshint.com/about/), if you plan to contribute code.)
 
-Also, and most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md), really!
+And most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md), really!
 
 # Get in touch
 Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and make some noise on our busy freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)!
