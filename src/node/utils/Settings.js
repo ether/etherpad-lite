@@ -182,6 +182,11 @@ exports.disableIPlogging = false;
  */
 exports.loadTest = false;
 
+/**
+ * Enable indentation on new lines
+ */
+exports.indentationOnNewLine = true;
+
 /*
 * log4js appender configuration
 */
