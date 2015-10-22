@@ -123,8 +123,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
 
-        css+=".removed {text-decoration: line-through; " + 
-             "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+ 
+        css+=".removed {text-decoration: line-through; " +
+             "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+
              "filter: alpha(opacity=80); "+
              "opacity: 0.8; "+
              "}\n";
@@ -287,7 +287,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
         var s = taker.take(chars);
 
-        //removes the characters with the code 12. Don't know where they come 
+        //removes the characters with the code 12. Don't know where they come
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
 
@@ -401,7 +401,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           pieces.push('<br><br>');
         }
       }*/
-      else//means we are getting closer to the lowest level of indentation or are at the same level 
+      else//means we are getting closer to the lowest level of indentation or are at the same level
       {
         var toClose = lists.length > 0 ? listLevels[listLevels.length - 2] - line.listLevel : 0
         if( toClose > 0){
@@ -455,7 +455,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
     }
   }
-  
+
   for (var k = lists.length - 1; k >= 0; k--)
   {
     if(lists[k][1] == "number")
@@ -484,14 +484,17 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
         stylesForExportCSS += css;
       });
       // Core inclusion of head etc.
-      var head = 
-        (noDocType ? '' : '<!doctype html>\n') + 
-        '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+      var head =
+        (noDocType ? '' : '<!doctype html>\n') +
+        '<html lang="en">\n' + (noDocType ? '' : '<head>\n' +
           '<title>' + Security.escapeHTML(padId) + '</title>\n' +
-          '<meta charset="utf-8">\n' + 
-          '<style> * { font-family: arial, sans-serif;\n' + 
-            'font-size: 13px;\n' + 
-            'line-height: 17px; }' + 
+          '<meta name="generator" content="Etherpad">\n' +
+          '<meta name="author" content="Etherpad">\n' +
+          '<meta name="changedby" content="Etherpad">\n' +
+          '<meta charset="utf-8">\n' +
+          '<style> * { font-family: arial, sans-serif;\n' +
+            'font-size: 13px;\n' +
+            'line-height: 17px; }' +
             'ul.indent { list-style-type: none; }' +
 
             'ol { list-style-type: none; padding-left:0;}' +
@@ -577,8 +580,8 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 140px; }' +
             'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 150px; }' +
 
-            stylesForExportCSS + 
-            '</style>\n' + '</head>\n') + 
+            stylesForExportCSS +
+            '</style>\n' + '</head>\n') +
         '<body>';
       var foot = '</body>\n</html>\n';
 

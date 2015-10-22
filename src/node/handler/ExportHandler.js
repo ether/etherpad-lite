@@ -30,9 +30,15 @@ var os = require('os');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var TidyHtml = require('../utils/TidyHtml');
 
+var convertor = null;
+
 //load abiword only if its enabled
 if(settings.abiword != null)
-  var abiword = require("../utils/Abiword");
+  convertor = require("../utils/Abiword");
+
+// Use LibreOffice if an executable has been defined in the settings
+if(settings.soffice != null)
+  convertor = require("../utils/LibreOffice");
 
 var tempDirectory = "/tmp";
 
@@ -70,71 +76,11 @@ exports.doExport = function(req, res, padId, type)
       }
       else if(type == "txt")
       {
-        var txt;
-        var randNum;
-        var srcFile, destFile;
-
-        async.series([
-          //render the txt document
-          function(callback)
-          {
-            exporttxt.getPadTXTDocument(padId, req.params.rev, false, function(err, _txt)
-            {
-              if(ERR(err, callback)) return;
-              txt = _txt;
-              callback();
-            });
-          },
-          //decide what to do with the txt export
-          function(callback)
-          {
-            //if this is a txt export, we can send this from here directly
-            res.send(txt);
-            callback("stop");
-          },
-          //send the convert job to abiword
-          function(callback)
-          {
-            //ensure html can be collected by the garbage collector
-            txt = null;
-
-            destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
-            abiword.convertFile(srcFile, destFile, type, callback);
-          },
-          //send the file
-          function(callback)
-          {
-            res.sendFile(destFile, null, callback);
-          },
-          //clean up temporary files
-          function(callback)
-          {
-            async.parallel([
-              function(callback)
-              {
-                fs.unlink(srcFile, callback);
-              },
-              function(callback)
-              {
-                //100ms delay to accomidate for slow windows fs
-                if(os.type().indexOf("Windows") > -1)
-                {
-                  setTimeout(function()
-                  {
-                    fs.unlink(destFile, callback);
-                  }, 100);
-                }
-                else
-                {
-                  fs.unlink(destFile, callback);
-                }
-              }
-            ], callback);
-          }
-        ], function(err)
+        exporttxt.getPadTXTDocument(padId, req.params.rev, false, function(err, txt)
         {
-          if(err && err != "stop") ERR(err);
-        })
+          if(ERR(err)) return;
+          res.send(txt);
+        });
       }
       else
       {
@@ -183,11 +129,11 @@ exports.doExport = function(req, res, padId, type)
             TidyHtml.tidy(srcFile, callback);
           },
 
-          //send the convert job to abiword
+          //send the convert job to the convertor (abiword, libreoffice, ..)
           function(callback)
           {
             destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
-            abiword.convertFile(srcFile, destFile, type, callback);
+            convertor.convertFile(srcFile, destFile, type, callback);
           },
           //send the file
           function(callback)
