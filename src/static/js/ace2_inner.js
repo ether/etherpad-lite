@@ -2901,6 +2901,11 @@ function Ace2Inner(){
       rep.selFocusAtStart = newSelFocusAtStart;
       currentCallStack.repChanged = true;
 
+      hooks.callAll('aceSelectionChanged', {
+        rep: rep,
+        documentAttributeManager: documentAttributeManager,
+      });
+
       return true;
       //console.log("selStart: %o, selEnd: %o, focusAtStart: %s", rep.selStart, rep.selEnd,
       //String(!!rep.selFocusAtStart));
