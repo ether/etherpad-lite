@@ -11,7 +11,7 @@ $(document).ready(function () {
 
   //connect
   var room = url + "pluginfw/installer";
-  socket = io.connect(room, {resource : resource});
+  socket = io.connect(room, {path: baseURL + "socket.io", resource : resource});
 
   function search(searchTerm, limit) {
     if(search.searchTerm != searchTerm) {
