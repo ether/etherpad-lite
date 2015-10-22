@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Denö",
-			"Mashoi7"
+			"Mashoi7",
+			"Ilja.mos"
 		]
 	},
 	"pad.toolbar.underline.title": "Alleviivua (Ctrl+U)",
@@ -36,7 +37,7 @@
 	"timeslider.month.january": "pakkaskuudu",
 	"timeslider.month.february": "tuhukuudu",
 	"timeslider.month.march": "kevätkuudu",
-	"timeslider.month.april": "kevätkuudu",
+	"timeslider.month.april": "sulakuudu",
 	"timeslider.month.may": "oraskuudu",
 	"timeslider.month.june": "kezäkuudu",
 	"timeslider.month.july": "heinykuudu",
