@@ -80,7 +80,9 @@ describe("indentation button", function(){
     $firstTextElement.sendkeys("line with '{{}'{enter}");
 
     helper.waitFor(function(){
-      return inner$("div span").first().text().indexOf("line with '{'") === -1;
+      // wait for Etherpad to split four lines into separated divs
+      var $fourthLine = inner$("div").first().next().next().next();
+      return $fourthLine.text().indexOf("line with '{'") === 0;
     }).done(function(){
       // we validate bottom to top for easier implementation
 
@@ -126,7 +128,9 @@ describe("indentation button", function(){
     $firstTextElement.sendkeys("line 2{enter}");
 
     helper.waitFor(function(){
-      return inner$("div span").first().text().indexOf("line 2") === -1;
+      // wait for Etherpad to split two lines into separated divs
+      var $secondLine = inner$("div").first().next();
+      return $secondLine.text().indexOf("line 2") === 0;
     }).done(function(){
       var $lineWithColon = inner$("div").first();
       $lineWithColon.sendkeys(':');
