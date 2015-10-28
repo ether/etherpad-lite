@@ -62,10 +62,10 @@
   "timeBetweenEmails" : 600, // 10 minutes
 
   //Node.js binary file
-  "nodejs" : "/usr/bin/node",
+  "nodejs" : "node",
 
   //Logfile (if no specified, define it as a parameter at program start)
-  "log" : "/var/log/etherpad-lite.log",
+  "log" : "etherpad-lite.log",
 
   //the default text of a pad
   "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
