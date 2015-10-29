@@ -3641,12 +3641,6 @@ function Ace2Inner(){
     var altKey = evt.altKey;
     var shiftKey = evt.shiftKey;
 
-    // prevent ESC key
-    if (keyCode == 27)
-    {
-      evt.preventDefault();
-      return;
-    }
     // Is caret potentially hidden by the chat button?
     var myselection = document.getSelection(); // get the current caret selection
     var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
@@ -3837,6 +3831,15 @@ function Ace2Inner(){
           {
             outerWin.scrollBy(-100, 0);
           }, 0);
+          specialHandled = true;
+        }
+        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 27)
+        {
+          // prevent esc key;
+          // in mozilla versions 14-19 avoid reconnecting pad.
+
+          fastIncorp(4);
+          evt.preventDefault();
           specialHandled = true;
         }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey) && !evt.altKey) /* Do a saved revision on ctrl S */
