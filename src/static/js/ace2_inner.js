@@ -2903,6 +2903,7 @@ function Ace2Inner(){
 
       hooks.callAll('aceSelectionChanged', {
         rep: rep,
+        callstack: currentCallStack,
         documentAttributeManager: documentAttributeManager,
       });
 
