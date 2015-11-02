@@ -127,7 +127,7 @@ exports.createAuthor = function(name, callback)
   var author = "a." + randomString(16);
         
   //create the globalAuthors db entry
-  var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
+  var authorObj = {"colorId" : Math.floor(Math.random()*(exports.getColorPalette().length)), "name": name, "timestamp": new Date().getTime()};
         
   //set the global author db entry
   db.set("globalAuthor:" + author, authorObj);
