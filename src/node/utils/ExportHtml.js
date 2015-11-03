@@ -78,16 +78,18 @@ function getHTMLFromAtext(pad, atext, authorColors)
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
 
+  // prepare tags stored as ['tag', true] to be exported
   hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
-    // newProps can be simply a string (which means it is stored as attribute in the form of ['tag', 'true'])
-    // or it can be a pair of values in an Array (for the case when it is stored as ['tag', 'value']).
-    // The later scenario will generate HTML with tags like <span data-tag="value">
     newProps.forEach(function (propName, i){
-      if (_.isArray(propName)) {
-        tags.push('span data-' + propName[0] + '="' + propName[1] + '"');
-      } else {
-        tags.push(propName);
-      }
+      tags.push(propName);
+      props.push(propName);
+    });
+  });
+  // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML
+  // with tags like <span data-tag="value">
+  hooks.aCallAll("exportHtmlAdditionalTagsWithData", pad, function(err, newProps){
+    newProps.forEach(function (propName, i){
+      tags.push('span data-' + propName[0] + '="' + propName[1] + '"');
       props.push(propName);
     });
   });
@@ -140,7 +142,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
   {
     var attrib = [propName, true];
     if (_.isArray(propName)) {
-      // propName can be in the form of ['color', 'red']
+      // propName can be in the form of ['color', 'red'],
+      // see hook exportHtmlAdditionalTagsWithData
       attrib = propName;
     }
     var propTrueNum = apool.putAttrib(attrib, true);
@@ -167,7 +170,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       var property = props[i];
 
-      // we are not insterested on properties in the form of ['color', 'red']
+      // we are not insterested on properties in the form of ['color', 'red'],
+      // see hook exportHtmlAdditionalTagsWithData
       if (_.isArray(property)) {
         return false;
       }
@@ -183,6 +187,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
       return false;
     }
 
+    // tags added by exportHtmlAdditionalTagsWithData will be exported as <span> with
+    // data attributes
     function isSpanWithData(i){
       var property = props[i];
       return _.isArray(property);
