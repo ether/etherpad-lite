@@ -81,7 +81,7 @@ Available blocks in `pad.html` are:
  * `modals` - Contains all connectivity messages
  * `embedPopup` - the embed dropdown
  * `scripts` - Add your script tags here, if you really have to (consider use client-side hooks instead)
- 
+
 `timeslider.html` blocks:
 
  * `timesliderStyles`
@@ -90,9 +90,9 @@ Available blocks in `pad.html` are:
  * `timesliderTop`
  * `timesliderEditbarRight`
  * `modals`
- 
+
  `index.html` blocks:
- 
+
  * `indexWrapper` - contains the form for creating new pads
 
 ## padInitToolbar
@@ -334,7 +334,7 @@ exports.aceAttribClasses = function(hook_name, attr, cb){
 ```
 
 ## exportFileName
-Called from src/node/handler/ExportHandler.js 
+Called from src/node/handler/ExportHandler.js
 
 Things in context:
 
@@ -357,7 +357,7 @@ Things in context:
 
 1. Pad object
 
-This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array should be returned. If a value in this array is a string, the exported HTML will contain tags like `<tag_name>` for the content where attributes are `['tag_name', 'true']`; if a value in this array is a pair `['tag_name', 'value']`, the exported HTML will contain tags like `<span data-tag_name="value">` for the content where attributes are `['tag_name', 'value']`.
+This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. If tags are stored as `['color', 'red']` on the attribute pool, use `exportHtmlAdditionalTagsWithData` instead. An Array should be returned.
 
 Example:
 ```
@@ -368,10 +368,19 @@ exports.exportHtmlAdditionalTags = function(hook, pad, cb){
 };
 ```
 
-Example when attributes are stores as `['color', 'red']` on the attribute pool:
+## exportHtmlAdditionalTagsWithData
+Called from src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. Pad object
+
+Identical to `exportHtmlAdditionalTags`, but for tags that are stored with an specific value (not simply `true`) on the attribute pool. For example `['color', 'red']`, instead of `['bold', true]`. This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array of arrays should be returned. The exported HTML will contain tags like `<span data-color="red">` for the content where attributes are `['color', 'red']`.
+
+Example:
 ```
 // Add the props to be supported in export
-exports.exportHtmlAdditionalTags = function(hook, pad, cb){
+exports.exportHtmlAdditionalTagsWithData = function(hook, pad, cb){
   var padId = pad.id;
   cb([["color", "red"], ["color", "blue"]]);
 };
