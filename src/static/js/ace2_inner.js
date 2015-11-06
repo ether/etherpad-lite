@@ -4996,6 +4996,13 @@ function Ace2Inner(){
       if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
       }
+
+      // Call paste hook
+      hooks.callAll('acePaste', {
+        editorInfo: editorInfo,
+        rep: rep,
+        documentAttributeManager: documentAttributeManager
+      });
     })
 
     // CompositionEvent is not implemented below IE version 8
