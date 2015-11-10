@@ -79,6 +79,9 @@ async.series([
     newPad.pool.numToAttrib = oldPad.pool.numToAttrib;
     for(var curRevNum = 0; curRevNum <= newRevHead; curRevNum++) {
       db.db.get("pad:" + padId + ":revs:" + curRevNum, function(err, rev) {
+        if (rev.meta) {
+          throw "The specified revision number could not be found.";
+        }
         var newRevNum = ++newPad.head;
         var newRevId = "pad:" + newPad.id + ":revs:" + newRevNum;
         db.db.set(newRevId, rev);

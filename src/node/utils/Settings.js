@@ -153,6 +153,11 @@ exports.minify = true;
 exports.abiword = null;
 
 /**
+ * The path of the libreoffice executable
+ */
+exports.soffice = null;
+
+/**
  * The path of the tidy executable
  */
 exports.tidyHtml = null;
@@ -176,6 +181,11 @@ exports.disableIPlogging = false;
  * Disable Load Testing
  */
 exports.loadTest = false;
+
+/**
+ * Enable indentation on new lines
+ */
+exports.indentationOnNewLine = true;
 
 /*
 * log4js appender configuration
@@ -218,8 +228,14 @@ exports.getGitCommit = function() {
   try
   {
     var rootPath = path.resolve(npm.dir, '..');
-    var ref = fs.readFileSync(rootPath + "/.git/HEAD", "utf-8");
-    var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
+    if (fs.lstatSync(rootPath + '/.git').isFile()) {
+      rootPath = fs.readFileSync(rootPath + '/.git', "utf8");
+      rootPath = rootPath.split(' ').pop().trim();
+    } else {
+      rootPath += '/.git';
+    }
+    var ref = fs.readFileSync(rootPath + "/HEAD", "utf-8");
+    var refPath = rootPath + "/" + ref.substring(5, ref.indexOf("\n"));
     version = fs.readFileSync(refPath, "utf-8");
     version = version.substring(0, 7);
   }

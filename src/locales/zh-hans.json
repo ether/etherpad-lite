@@ -82,7 +82,7 @@
 	"pad.modals.badChangeset.cause": "这可能是因为服务器配置的错误或者其他未预料到的行为。如果您认为这是错误，请联系服务管理员。要继续编辑，请尝试重新连接。",
 	"pad.modals.corruptPad.explanation": "您试图连接的记事本已损坏。",
 	"pad.modals.corruptPad.cause": "这可能是因为服务器配置的错误或者其他未预料到的行为。请联系服务管理员。",
-	"pad.modals.deleted": "已刪除。",
+	"pad.modals.deleted": "已删除。",
 	"pad.modals.deleted.explanation": "此记事本已被移除。",
 	"pad.modals.disconnected": "您已断开连接。",
 	"pad.modals.disconnected.explanation": "到服务器的连接已丢失",

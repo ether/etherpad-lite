@@ -86,9 +86,13 @@
      may cause problems during deployment. Set to 0 to disable caching */
   "maxAge" : 21600, // 60 * 60 * 6 = 6 hours
 
-  /* This is the path to the Abiword executable. Setting it to null, disables abiword.
+  /* This is the absolute path to the Abiword executable. Setting it to null, disables abiword.
      Abiword is needed to advanced import/export features of pads*/
   "abiword" : null,
+
+  /* This is the absolute path to the soffice executable. Setting it to null, disables LibreOffice exporting.
+     LibreOffice can be used in lieu of Abiword to export pads */
+  "soffice" : null,
 
   /* This is the path to the Tidy executable. Setting it to null, disables Tidy.
      Tidy is used to improve the quality of exported pads*/
@@ -130,6 +134,11 @@
 
   // Allow Load Testing tools to hit the Etherpad Instance.  Warning this will disable security on the instance.
   "loadTest": false,
+
+  // Disable indentation on new line when previous line ends with some special chars (':', '[', '(', '{')
+  /*
+  "indentationOnNewLine": false,
+  */
 
   /* The toolbar buttons configuration.
   "toolbar": {
