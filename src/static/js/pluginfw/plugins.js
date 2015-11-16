@@ -6,6 +6,7 @@ var fs = require("fs");
 var tsort = require("./tsort");
 var util = require("util");
 var _ = require("underscore");
+var settings = require("../../../node/utils/Settings");
 
 var pluginUtils = require('./shared');
 
@@ -59,10 +60,10 @@ exports.callInit = function (cb) {
     Object.keys(exports.plugins),
     function (plugin_name, cb) {
       var plugin = exports.plugins[plugin_name];
-      fs.stat(path.normalize(path.join(plugin.package.path, ".ep_initialized")), function (err, stats) {
+      fs.stat(path.normalize(settings.pluginsInitializedFile), function (err, stats) {
         if (err) {
           async.waterfall([
-            function (cb) { fs.writeFile(path.normalize(path.join(plugin.package.path, ".ep_initialized")), 'done', cb); },
+            function (cb) { fs.writeFile(path.normalize(settings.pluginsInitializedFile), 'done', cb); },
             function (cb) { hooks.aCallAll("init_" + plugin_name, {}, cb); },
             cb,
           ]);

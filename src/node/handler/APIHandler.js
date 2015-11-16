@@ -24,17 +24,18 @@ var fs = require("fs");
 var api = require("../db/API");
 var padManager = require("../db/PadManager");
 var randomString = require("../utils/randomstring");
+var settings = require("../utils/Settings");
 
 //ensure we have an apikey
 var apikey = null;
 try
 {
-  apikey = fs.readFileSync("./APIKEY.txt","utf8");
+  apikey = fs.readFileSync(settings.apiKeyFile,"utf8");
 }
 catch(e)
 {
   apikey = randomString(32);
-  fs.writeFileSync("./APIKEY.txt",apikey,"utf8");
+  fs.writeFileSync(settings.apiKeyFile,apikey,"utf8");
 }
 
 //a list of all functions

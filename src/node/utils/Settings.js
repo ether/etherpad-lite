@@ -80,6 +80,10 @@ exports.dbType = "dirty";
  */
 exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
 
+exports.sessionKeyFile = "./SESSIONKEY.txt";
+exports.apiKeyFile = "./APIKEY.txt";
+exports.pluginsInitializedFile = "./.ep_plugins_initialized";
+
 /**
  * The default Text of a new pad
  */
@@ -331,10 +335,10 @@ exports.reloadSettings = function reloadSettings() {
 
   if (!exports.sessionKey) {
     try {
-      exports.sessionKey = fs.readFileSync("./SESSIONKEY.txt","utf8");
+      exports.sessionKey = fs.readFileSync(exports.sessionKeyFile,"utf8");
     } catch(e) {
       exports.sessionKey = randomString(32);
-      fs.writeFileSync("./SESSIONKEY.txt",exports.sessionKey,"utf8");
+      fs.writeFileSync(exports.sessionKeyFile,exports.sessionKey,"utf8");
     }
   } else {
     console.warn("Declaring the sessionKey in the settings.json is deprecated. This value is auto-generated now. Please remove the setting from the file.");
