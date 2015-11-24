@@ -83,7 +83,6 @@ async.waterfall([
         };
       });
     });
-    console.log(settings);
     callback();
   },
 
