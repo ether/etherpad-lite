@@ -45,7 +45,7 @@ async.waterfall([
       callback(er)
     })
   },
-  
+
   // load everything
   function(callback) {
     settings = require('./utils/Settings');
@@ -55,7 +55,7 @@ async.waterfall([
     hooks.plugins = plugins;
     callback();
   },
-  
+
   //initalize the database
   function (callback)
   {
@@ -74,6 +74,15 @@ async.waterfall([
     // Call loadSettings hook
     hooks.aCallAll("loadSettings", { settings: settings });
 
+    // Call applySettings hook
+    hooks.aCallAll("applySettings", settings, function(err, newSettings){
+      if(!newSettings) return;
+      newSettings.forEach(function (settingsBlob){
+        for (var setting in settingsBlob){
+          settings[setting] = settingsBlob[setting];
+        };
+      });
+    });
     callback();
   },
 
@@ -81,6 +90,6 @@ async.waterfall([
   function (callback)
   {
     hooks.callAll("createServer", {});
-    callback(null);  
+    callback(null);
   }
 ]);
