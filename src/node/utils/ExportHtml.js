@@ -24,6 +24,7 @@ var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
+var markAuthorsReadOnly = require('./Settings').markAuthorsReadOnly;
 
 function getPadHTML(pad, revNum, callback)
 {
@@ -54,7 +55,19 @@ function getPadHTML(pad, revNum, callback)
   function (callback)
   {
     html = getHTMLFromAtext(pad, atext);
-    callback(null);
+
+    if (markAuthorsReadOnly) {
+      pad.getAllAuthorColors(function(err, authorColors){
+        if(err){
+          return callback(err);
+        }
+
+		html = getHTMLFromAtext(pad, atext, authorColors);
+	    callback(null);
+      });
+    } else {
+      callback(null);
+    }
   }],
   // run final callback
 

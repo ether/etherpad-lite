@@ -251,6 +251,12 @@ exports.getEpVersion = function() {
   return require('ep_etherpad-lite/package.json').version;
 }
 
+/**
+ * If set to true, author text will be colored in read only mode
+ * @type {boolean}
+ */
+exports.markAuthorsReadOnly = false;
+
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
