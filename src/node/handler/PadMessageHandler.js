@@ -566,6 +566,13 @@ function handleUserInfoUpdate(client, message)
   //Find out the author name of this session
   var author = session.author;
 
+  // Check colorId is a Hex color
+  var isColor  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(message.data.userInfo.colorId) // for #f00 (Thanks Smamatti)
+  if(!isColor){
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Color is malformed." + message.data);
+    return;
+  }
+
   //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
