@@ -390,7 +390,7 @@
               require.setGlobalKeyPath("require");
 
               $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
-              browser = require('ep_etherpad-lite/static/js/browser').browser;
+              browser = require('ep_etherpad-lite/static/js/browser');
               if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
                 document.domain = document.domain; // for comet
               }

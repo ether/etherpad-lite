@@ -21,7 +21,7 @@
  */
 var _, $, jQuery, plugins, Ace2Common;
 
-var browser = require('./browser').browser;
+var browser = require('./browser');
 if(browser.msie){
   // Honestly fuck IE royally.
   // Basically every hack we have since V11 causes a problem
