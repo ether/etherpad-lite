@@ -105,7 +105,7 @@ exports.doExport = function(req, res, padId, type)
             //if this is a html export, we can send this from here directly
             if(type == "html")
             {
-              // do any final changes the plugin might want to make cake
+              // do any final changes the plugin might want to make
               hooks.aCallFirst("exportHTMLSend", html, function(err, newHTML){
                 if(newHTML.length) html = newHTML;
                 res.send(html);
@@ -133,7 +133,18 @@ exports.doExport = function(req, res, padId, type)
           function(callback)
           {
             destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
-            convertor.convertFile(srcFile, destFile, type, callback);
+
+            // Allow plugins to overwrite the convert in export process
+            hooks.aCallAll("exportConvert", {srcFile: srcFile, destFile: destFile}, function(err, result){
+              if(!err && result.length > 0){
+                // console.log("export handled by plugin", destFile);
+                handledByPlugin = true;
+                callback();
+              }else{
+                convertor.convertFile(srcFile, destFile, type, callback);
+              }
+            });
+
           },
           //send the file
           function(callback)
