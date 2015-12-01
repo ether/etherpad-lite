@@ -3,6 +3,9 @@
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
 
+#Parse settings.json
+eval $(python parsejson.py)
+
 #Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
   cd "../"
@@ -24,7 +27,7 @@ hash curl > /dev/null 2>&1 || {
 
 #Is node installed?
 #not checking io.js, default installation creates a symbolic link to node
-hash node > /dev/null 2>&1 || {
+hash $NODEJS > /dev/null 2>&1 || {
   echo "Please install node.js ( http://nodejs.org )" >&2
   exit 1
 }
@@ -44,7 +47,7 @@ if [ $(echo $NPM_MAIN_VERSION) = "0" ]; then
 fi
 
 #check node version
-NODE_VERSION=$(node --version)
+NODE_VERSION=$($NODEJS --version)
 NODE_V_MINOR=$(echo $NODE_VERSION | cut -d "." -f 1-2)
 NODE_V_MAIN=$(echo $NODE_VERSION | cut -d "." -f 1)
 #iojs version checking added
