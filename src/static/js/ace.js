@@ -229,7 +229,12 @@ function Ace2Editor()
       $$INCLUDE_CSS("../static/css/pad.css");
       $$INCLUDE_CSS("../static/custom/pad.css");
 
-      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
+        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+          return path;
+        }
+        return '../static/plugins/' + path;
+      });
       includedCSS = includedCSS.concat(additionalCSS);
 
       pushStyleTagsFor(iframeHTML, includedCSS);
@@ -308,7 +313,12 @@ window.onload = function () {\n\
       $$INCLUDE_CSS("../static/custom/pad.css");
 
 
-      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
+        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+          return path;
+        }
+        return '../static/plugins/' + path }
+      );
       includedCSS = includedCSS.concat(additionalCSS);
 
       pushStyleTagsFor(outerHTML, includedCSS);
