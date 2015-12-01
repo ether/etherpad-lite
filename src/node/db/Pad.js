@@ -188,7 +188,12 @@ Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targe
           db.getSub("pad:"+_this.id+":revs:"+keyRev, ["meta", "atext"], function(err, _atext)
           {
             if(ERR(err, callback)) return;
-            atext = Changeset.cloneAText(_atext);
+            try {
+              atext = Changeset.cloneAText(_atext);
+            } catch (e) {
+              return callback(e);
+            }
+
             callback();
           });
         },
