@@ -73,7 +73,7 @@ async.waterfall([
 
     // Call loadSettings hook
     hooks.aCallAll("loadSettings", { settings: settings });
-
+    callback();
   },
 
   //initalize the http server
