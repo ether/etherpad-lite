@@ -111,7 +111,7 @@ Called from: src/static/js/ace.js
 
 Things in context: None
 
-This hook is provided to allow custom CSS files to be loaded. The return value should be an array of paths relative to the plugins directory.
+This hook is provided to allow custom CSS files to be loaded. The return value should be an array of resource urls or paths relative to the plugins directory.
 
 ## aceInitInnerdocbodyHead
 Called from: src/static/js/ace.js
