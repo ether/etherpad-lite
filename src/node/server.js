@@ -74,16 +74,6 @@ async.waterfall([
     // Call loadSettings hook
     hooks.aCallAll("loadSettings", { settings: settings });
 
-    // Call applySettings hook
-    hooks.aCallAll("applySettings", settings, function(err, newSettings){
-      if(!newSettings) return;
-      newSettings.forEach(function (settingsBlob){
-        for (var setting in settingsBlob){
-          settings[setting] = settingsBlob[setting];
-        };
-      });
-    });
-    callback();
   },
 
   //initalize the http server

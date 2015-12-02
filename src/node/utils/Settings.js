@@ -255,13 +255,20 @@ exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = argv.settings || "settings.json";
 
+  // Discover if a credential file exists
+  var credentialsFilename = argv.credentials || "credentials.json";
+
   if (path.resolve(settingsFilename)===settingsFilename) {
     settingsFilename = path.resolve(settingsFilename);
   } else {
     settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
   }
 
-  var settingsStr;
+  if (path.resolve(credentialsFilename)===credentialsFilename) {
+    credentialsFilename = path.resolve(credentialsFilename);
+  }
+
+  var settingsStr, credentialsStr;
   try{
     //read the settings sync
     settingsStr = fs.readFileSync(settingsFilename).toString();
@@ -269,8 +276,16 @@ exports.reloadSettings = function reloadSettings() {
     console.warn('No settings file found. Continuing using defaults!');
   }
 
+  try{
+    //read the credentials sync
+    credentialsStr = fs.readFileSync(credentialsFilename).toString();
+  } catch(e){
+    // Doesn't matter if no credentials file found..
+  }
+
   // try to parse the settings
   var settings;
+  var credentials;
   try {
     if(settingsStr) {
       settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
@@ -279,6 +294,11 @@ exports.reloadSettings = function reloadSettings() {
   }catch(e){
     console.error('There was an error processing your settings.json file: '+e.message);
     process.exit(1);
+  }
+
+  if(credentialsStr) {
+    credentialsStr = jsonminify(credentialsStr).replace(",]","]").replace(",}","}");
+    credentials = JSON.parse(credentialsStr);
   }
 
   //loop trough the settings
@@ -298,6 +318,32 @@ exports.reloadSettings = function reloadSettings() {
         exports[i] = _.defaults(settings[i], exports[i]);
       } else {
         exports[i] = settings[i];
+      }
+    }
+    //this setting is unkown, output a warning and throw it away
+    else
+    {
+      console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+    }
+  }
+
+  //loop trough the settings
+  for(var i in credentials)
+  {
+    //test if the setting start with a low character
+    if(i.charAt(0).search("[a-z]") !== 0)
+    {
+      console.warn("Settings should start with a low character: '" + i + "'");
+    }
+
+    //we know this setting, so we overwrite it
+    //or it's a settings hash, specific to a plugin
+    if(exports[i] !== undefined || i.indexOf('ep_')==0)
+    {
+      if (_.isObject(credentials[i]) && !_.isArray(credentials[i])) {
+        exports[i] = _.defaults(credentials[i], exports[i]);
+      } else {
+        exports[i] = credentials[i];
       }
     }
     //this setting is unkown, output a warning and throw it away
