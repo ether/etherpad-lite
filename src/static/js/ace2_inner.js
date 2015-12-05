@@ -5001,7 +5001,8 @@ function Ace2Inner(){
       hooks.callAll('acePaste', {
         editorInfo: editorInfo,
         rep: rep,
-        documentAttributeManager: documentAttributeManager
+        documentAttributeManager: documentAttributeManager,
+        e: e
       });
     })
 
@@ -5011,11 +5012,12 @@ function Ace2Inner(){
         e.preventDefault();
       }
 
-      // Call paste hook
+      // Call drop hook
       hooks.callAll('aceDrop', {
         editorInfo: editorInfo,
         rep: rep,
-        documentAttributeManager: documentAttributeManager
+        documentAttributeManager: documentAttributeManager,
+        e: e
       });
     });
 
