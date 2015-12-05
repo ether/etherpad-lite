@@ -5005,6 +5005,22 @@ function Ace2Inner(){
       });
     })
 
+
+    $(root).on("drop", function(e){
+      top.console.log("DROP");
+      if(e.target.a || e.target.localName === "a"){
+        e.preventDefault();
+      }
+
+      // Call paste hook
+      hooks.callAll('aceDrop', {
+        editorInfo: editorInfo,
+        rep: rep,
+        documentAttributeManager: documentAttributeManager
+      });
+    });
+
+
     // CompositionEvent is not implemented below IE version 8
     if ( !(browser.msie && parseInt(browser.version <= 9)) && document.documentElement)
     {
