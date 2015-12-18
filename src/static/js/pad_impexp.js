@@ -207,8 +207,6 @@ var padimpexp = (function()
       // activate action to import in the form
       $("#importform").attr('action', pad_root_url + "/import");
 
-      console.log(clientVars);
-
       //hide stuff thats not avaible if abiword/soffice is disabled
       if(clientVars.exportAvailable == "no")
       {
