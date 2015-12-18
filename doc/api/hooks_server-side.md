@@ -104,6 +104,10 @@ Things in context:
 
 Here you can add custom toolbar items that will be available in the toolbar config in `settings.json`. For more about the toolbar controller see the API section.
 
+Usage examples: 
+
+* [https://github.com/tiblu/ep_authorship_toggle]()
+
 ## padCreate
 Called from: src/node/db/Pad.js
 
