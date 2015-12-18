@@ -222,6 +222,27 @@ exports.abiwordAvailable = function()
   }
 };
 
+exports.sofficeAvailable = function () {
+  if(exports.soffice != null) {
+    return os.type().indexOf("Windows") != -1 ? "withoutPDF": "yes";
+  } else {
+    return "no";
+  }
+};
+
+exports.exportAvailable = function () {
+  var abiword = exports.abiwordAvailable();
+  var soffice = exports.sofficeAvailable();
+
+  if(abiword == "no" && soffice == "no") {
+    return "no";
+  } else if ((abiword == "withoutPDF" && soffice == "no") || (abiword == "no" && soffice == "withoutPDF")) {
+    return "withoutPDF";
+  } else {
+    return "yes";
+  }
+};
+
 // Provide git version if available
 exports.getGitCommit = function() {
   var version = "";
@@ -373,6 +394,20 @@ exports.reloadSettings = function reloadSettings() {
         }
       });
     }
+  }
+
+  if(exports.soffice) {
+    fs.exists(exports.soffice, function (exists) {
+      if(!exists) {
+        var sofficeError = "SOffice does not exist at this path, check your settings file";
+
+        if(!exports.suppressErrorsInPadText) {
+          exports.defaultPadText = exports.defaultPadText + "\nError: " + sofficeError + suppressDisableMsg;
+        }
+        console.error(sofficeError);
+        exports.soffice = null;
+      }
+    });
   }
 
   if (!exports.sessionKey) {
