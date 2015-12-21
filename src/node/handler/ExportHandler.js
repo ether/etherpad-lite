@@ -135,7 +135,7 @@ exports.doExport = function(req, res, padId, type)
             destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
 
             // Allow plugins to overwrite the convert in export process
-            hooks.aCallAll("exportConvert", {srcFile: srcFile, destFile: destFile}, function(err, result){
+            hooks.aCallAll("exportConvert", {srcFile: srcFile, destFile: destFile, req: req, res: res}, function(err, result){
               if(!err && result.length > 0){
                 // console.log("export handled by plugin", destFile);
                 handledByPlugin = true;
