@@ -13,9 +13,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     }
 
     //if abiword is disabled, and this is a format we only support with abiword, output a message
-    if (settings.abiword == null &&
+    if (settings.exportAvailable() == "no" &&
        ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1) {
-      res.send("Abiword is not enabled at this Etherpad instance. Set the path to Abiword in settings.json to enable this feature");
+      res.send("This export is not enabled at this Etherpad instance. Set the path to Abiword or SOffice in settings.json to enable this feature");
       return;
     }
 
