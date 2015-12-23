@@ -5006,8 +5006,14 @@ function Ace2Inner(){
       });
     })
 
+/*
+    $(root).on("dragend", function(e){
+      top.console.log("dragend");
+    });
+
 
     $(root).on("drop", function(e){
+      top.console.log("DROP");
       if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
       }
@@ -5020,7 +5026,7 @@ function Ace2Inner(){
         e: e
       });
     });
-
+*/
 
     // CompositionEvent is not implemented below IE version 8
     if ( !(browser.msie && parseInt(browser.version <= 9)) && document.documentElement)
@@ -5444,6 +5450,7 @@ function Ace2Inner(){
         lineNumbersShown++;
         var n = lineNumbersShown;
         var div = odoc.createElement("DIV");
+
         //calculate height for new line number
         if(b){
           var h = (b.clientHeight || b.offsetHeight);
