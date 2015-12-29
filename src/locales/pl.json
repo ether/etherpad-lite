@@ -6,7 +6,8 @@
 			"WTM",
 			"Woytecr",
 			"Macofe",
-			"Pan Cube"
+			"Pan Cube",
+			"Mateon1"
 		]
 	},
 	"index.newPad": "Nowy dokument",
@@ -15,8 +16,8 @@
 	"pad.toolbar.italic.title": "Kursywa (Ctrl-I)",
 	"pad.toolbar.underline.title": "Podkreślenie (Ctrl-U)",
 	"pad.toolbar.strikethrough.title": "Przekreślenie",
-	"pad.toolbar.ol.title": "Lista uporządkowana",
-	"pad.toolbar.ul.title": "Lista nieuporządkowana",
+	"pad.toolbar.ol.title": "Lista uporządkowana (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "Lista nieuporządkowana (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Wcięcie (TAB)",
 	"pad.toolbar.unindent.title": "Wcięcie (Shift + TAB)",
 	"pad.toolbar.undo.title": "Cofnij (Ctrl-Z)",
