@@ -508,12 +508,18 @@ var paduserlist = (function()
       });
       //
     },
-    users: function(){
-      // Returns an object of users who have been on this pad
-      // Firstly we have to get live data..
-      var userList = otherUsersInfo;
+    usersOnline: function()
+    {
+      // Returns an object of users who are currently online on this pad
+      var userList = [].concat(otherUsersInfo); // Make a copy of the otherUsersInfo, otherwise every call to users modifies the referenced array
       // Now we need to add ourselves..
       userList.push(myUserInfo);
+      return userList;
+    },
+    users: function(){
+      // Returns an object of users who have been on this pad
+      var userList = self.usersOnline();
+
       // Now we add historical authors
       var historical = clientVars.collab_client_vars.historicalAuthorData;
       for (var key in historical){
@@ -528,7 +534,6 @@ var paduserlist = (function()
         if(exists === false){
           userList.push(historical[key]);
         }
-
       }
       return userList;
     },
