@@ -286,7 +286,6 @@ window.onload = function () {\n\
     iframe.name = "ace_inner";\n\
     iframe.title = "pad";\n\
     iframe.scrolling = "no";\n\
-    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms allow-modals");\n\
     var outerdocbody = document.getElementById("outerdocbody");\n\
     iframe.frameBorder = 0;\n\
     iframe.allowTransparency = true; // for IE\n\
@@ -326,13 +325,10 @@ window.onload = function () {\n\
 
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
-      var testHTML = '<span>WONT WORK in Chrome</span><iframe src="/editable2.html" style="position:fixed;left:200px;right:0;top:250px;bottom:0;width:400px;height:200px;z-index:90999" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>';
-
-      outerHTML.push('<style type="text/css" title="dynamicsyntax"></style>', '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', scriptTag(outerScript), '</head><body id="outerdocbody" class="outerdocbody"><div id="sidediv" class="sidediv"><!-- --></div><div id="linemetricsdiv">x</div>'+testHTML+'</body></html>');
+      outerHTML.push('<style type="text/css" title="dynamicsyntax"></style>', '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', scriptTag(outerScript), '</head><body id="outerdocbody" class="outerdocbody"><div id="sidediv" class="sidediv"><!-- --></div><div id="linemetricsdiv">x</div></body></html>');
 
       var outerFrame = document.createElement("IFRAME");
       outerFrame.name = "ace_outer";
-      outerFrame.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms allow-modals");
       outerFrame.frameBorder = 0; // for IE
       outerFrame.title = "Ether";
       info.frame = outerFrame;
