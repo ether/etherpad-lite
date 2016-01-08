@@ -70,7 +70,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   if (document)
   {
     result.node = document.createElement("div");
-    result.node.setAttribute("contentEditable", true); // Works but doesn't allow drag n drop ;(
   }
   else
   {
