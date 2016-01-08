@@ -524,7 +524,7 @@ var pad = {
 
     if ((!browser.msie) && (!(browser.firefox && browser.version.indexOf("1.8.") == 0)))
     {
-      document.domain = document.domain; // for comet
+//      document.domain = document.domain; // for comet
     }
 
     // for IE
