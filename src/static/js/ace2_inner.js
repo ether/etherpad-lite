@@ -5007,7 +5007,6 @@ function Ace2Inner(){
     })
 
     $(root).on("drop", function(e){
-      top.console.log("DROP");
       if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
       }
