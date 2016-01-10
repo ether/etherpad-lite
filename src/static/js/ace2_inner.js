@@ -5442,7 +5442,6 @@ function Ace2Inner(){
         lineNumbersShown++;
         var n = lineNumbersShown;
         var div = odoc.createElement("DIV");
-
         //calculate height for new line number
         if(b){
           var h = (b.clientHeight || b.offsetHeight);
