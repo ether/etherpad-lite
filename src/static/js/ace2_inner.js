@@ -5006,7 +5006,6 @@ function Ace2Inner(){
       });
     })
 
-
     $(root).on("drop", function(e){
       if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
@@ -5020,7 +5019,6 @@ function Ace2Inner(){
         e: e
       });
     });
-
 
     // CompositionEvent is not implemented below IE version 8
     if ( !(browser.msie && parseInt(browser.version <= 9)) && document.documentElement)

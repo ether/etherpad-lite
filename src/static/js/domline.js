@@ -80,7 +80,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   }
 
   var html = [];
-  var preHtml = '', 
+  var preHtml = '',
   postHtml = '';
   var curHTML = null;
 
