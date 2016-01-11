@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Hosseinblue",
-			"Arash71"
+			"Arash71",
+			"Lakzon"
 		]
 	},
 	"index.newPad": "تازۀpad",
@@ -24,7 +25,7 @@
 	"pad.toolbar.settings.title": "تنظیمۀل",
 	"pad.toolbar.embed.title": "بۀشاکردن ؤ نیائن(اشتراک ونشاندن)ئۀ نؤم سایت",
 	"pad.toolbar.showusers.title": "نیشان دائن کاربر ئۀ نؤم ئئ\npad",
-	"pad.colorpicker.save": "ذخیرۀ",
+	"pad.colorpicker.save": "هیشتن(ذخیره)",
 	"pad.colorpicker.cancel": "ئآهووسانن/لغو",
 	"pad.loading": "...(loading)بارنیائن",
 	"pad.noCookie": "کوکی یافت نشد. لطفاً اجازهٔ اجرای کوکی در مروگرتان را بدهید!",
