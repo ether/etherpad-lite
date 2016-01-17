@@ -4976,7 +4976,6 @@ function Ace2Inner(){
     $(document).on("keypress", handleKeyEvent);
     $(document).on("keyup", handleKeyEvent);
     $(document).on("click", handleClick);
-
     // Disabled: https://github.com/ether/etherpad-lite/issues/2546
     // Will break OL re-numbering: https://github.com/ether/etherpad-lite/pull/2533
     // $(document).on("cut", handleCut);
@@ -5006,11 +5005,13 @@ function Ace2Inner(){
       });
     })
 
-    $(root).on("drop", function(e){
+    // We reference document here, this is because if we don't this will expose a bug
+    // in Google Chrome.  This bug will cause the last character on the last line to
+    // not fire an event when dropped into..
+    $(document).on("drop", function(e){
       if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
       }
-
       // Call drop hook
       hooks.callAll('aceDrop', {
         editorInfo: editorInfo,
