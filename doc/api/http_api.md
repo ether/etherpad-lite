@@ -61,7 +61,7 @@ Portal submits content into new blog post
 ## Usage
 
 ### API version
-The latest version is `1.2.12`
+The latest version is `1.2.13`
 
 The current version can be queried via /api.
 
@@ -279,6 +279,16 @@ returns the text of a pad
  * API >= 1
 
 sets the text of a pad
+
+*Example returns:*
+  * `{code: 0, message:"ok", data: null}`
+  * `{code: 1, message:"padID does not exist", data: null}`
+  * `{code: 1, message:"text too long", data: null}`
+
+#### appendText(padID, text)
+ * API >= 1.2.13
+
+appends text to a pad
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`
