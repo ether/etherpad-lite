@@ -121,7 +121,7 @@ var getParameters = [
   { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
   { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
   { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
-  { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); } }
+  { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); createCookie('language', val); } }
 ];
 
 function getParams()
