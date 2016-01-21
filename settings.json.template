@@ -69,6 +69,30 @@
     "lang": "en-gb"
   },
 
+  /* Pad Shortcut Keys */
+  "padShortcutEnabled" : {
+    "altF9" : true,
+    "altC" : true,
+    "cmdShift2" : true,
+    "delete" : true,
+    "return" : true,
+    "cmdS" : true,
+    "tab" : true,
+    "cmdZ" : true,
+    "cmdY" : true,
+    "cmdI" : true,
+    "cmdB" : true,
+    "cmdU" : true,
+    "cmd5" : true,
+    "cmdShiftL" : true,
+    "cmdShiftN" : true,
+    "cmdShiftC" : true,
+    "cmdH" : true,
+    "ctrlHome" : true,
+    "pageUp" : true,
+    "pageDown" : true,
+  },
+
   /* Should we suppress errors from being visible in the default Pad Text? */
   "suppressErrorsInPadText" : false,
 
