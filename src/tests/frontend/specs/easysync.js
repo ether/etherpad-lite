@@ -178,6 +178,17 @@ describe('easysync', function () {
     ['skip', 1, 1, true],
   ], ['banana\n', 'cabbage\n', 'duffle\n']);
 
+  // #2836 regressions
+  runMutationTest(8, ['\n'], [
+    ['remove', 1, 1, '\n'],
+    ['insert', 'c', 0],
+  ], ['c']);
+  runMutationTest(9, ['\n'], [
+    ['remove', 1, 1, '\n'],
+    ['insert', 'a'],
+    ['insert', 'c\n', 1],
+  ], ['ac\n']);
+
   const poolOrArray = (attribs) => {
     if (attribs.getAttrib) {
       return attribs; // it's already an attrib pool
