@@ -33,7 +33,7 @@ var AttributePool = require("./AttributePool");
 
 /**
  * This method is called whenever there is an error in the sync process
- * @param msg {string} Just some message
+ * @param {String} msg Just some message
  */
 exports.error = function error(msg) {
   var e = new Error(msg);
@@ -44,8 +44,8 @@ exports.error = function error(msg) {
 /**
  * This method is used for assertions with Messages 
  * if assert fails, the error function is called.
- * @param b {boolean} assertion condition
- * @param msgParts {string} error to be passed if it fails
+ * @param {Boolean} b assertion condition
+ * @param {String} msgParts error to be passed if it fails
  */
 exports.assert = function assert(b, msgParts) {
   if (!b) {
@@ -56,8 +56,8 @@ exports.assert = function assert(b, msgParts) {
 
 /**
  * Parses a number from string base 36
- * @param str {string} string of the number in base 36
- * @returns {int} number
+ * @param {String} str string of the number in base 36
+ * @returns {Number} number
  */
 exports.parseNum = function (str) {
   return parseInt(str, 36);
@@ -65,8 +65,8 @@ exports.parseNum = function (str) {
 
 /**
  * Writes a number in base 36 and puts it in a string
- * @param num {int} number
- * @returns {string} string
+ * @param {jsdoc} num number
+ * @returns {String} string
  */
 exports.numToString = function (num) {
   return num.toString(36).toLowerCase();
@@ -75,7 +75,7 @@ exports.numToString = function (num) {
 /**
  * Converts stuff before $ to base 10
  * @obsolete not really used anywhere??
- * @param cs {string} the string
+ * @param {String} cs the string
  * @return integer 
  */
 exports.toBaseTen = function (cs) {
@@ -95,7 +95,7 @@ exports.toBaseTen = function (cs) {
 /**
  * returns the required length of the text before changeset 
  * can be applied
- * @param cs {string} String representation of the Changeset
+ * @param {String} cs String representation of the Changeset
  */ 
 exports.oldLen = function (cs) {
   return exports.unpack(cs).oldLen;
@@ -103,7 +103,7 @@ exports.oldLen = function (cs) {
 
 /**
  * returns the length of the text after changeset is applied
- * @param cs {string} String representation of the Changeset
+ * @param {String} cs String representation of the Changeset
  */ 
 exports.newLen = function (cs) {
   return exports.unpack(cs).newLen;
@@ -234,7 +234,7 @@ exports.stringOp = function (str) {
 };
 
 /**
- * Used to check if a Changeset if valid
+ * Used to check if a Changeset is valid
  * @param cs {Changeset} Changeset to be checked
  */
 exports.checkRep = function (cs) {
