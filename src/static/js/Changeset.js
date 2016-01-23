@@ -550,9 +550,15 @@ exports.textLinesMutator = (lines) => {
   // is not actually a newline, but for the purposes of N and L values,
   // the caller should pretend it is, and for things to work right in that case, the input
   // to insert() should be a single line with no newlines.
+
+  // The splice holds information which lines are to be deleted or changed.
+  // curSplice[0] is an index into the lines array
+  // curSplice[1] is the number of lines that will be removed from lines
+  // the other elements represent mutated (changed by ops) lines or new lines (added by ops)
   const curSplice = [0, 0];
   let inSplice = false;
-  // position in document after curSplice is applied:
+
+  // position in lines after curSplice is applied:
   let curLine = 0;
   let curCol = 0;
   // invariant: if (inSplice) then (curLine is in curSplice[0] + curSplice.length - {2,3}) &&
@@ -560,12 +566,21 @@ exports.textLinesMutator = (lines) => {
   // invariant: if (inSplice && (curLine >= curSplice[0] + curSplice.length - 2)) then
   //            curCol == 0
 
+  /**
+   * Adds and/or removes entries at a specific offset in lines array
+   * It is called when leaving the splice
+   * @param {Array} s curSplice
+   */
   const lines_applySplice = (s) => {
     lines.splice.apply(lines, s);
   };
 
   const lines_toSource = () => lines.toSource();
 
+  /**
+   * Get a line from lines at given index
+   * @param {Number} idx an index
+   */
   const lines_get = (idx) => {
     if (lines.get) {
       return lines.get(idx);
@@ -575,6 +590,11 @@ exports.textLinesMutator = (lines) => {
   };
   // can be unimplemented if removeLines's return value not needed
 
+  /**
+   * Return a slice from lines array
+   * @param {Number} start the start index
+   * @param {Number} end the end index
+   */
   const lines_slice = (start, end) => {
     if (lines.slice) {
       return lines.slice(start, end);
@@ -583,6 +603,9 @@ exports.textLinesMutator = (lines) => {
     }
   };
 
+  /**
+   * Return the length of lines array
+   */
   const lines_length = () => {
     if ((typeof lines.length) === 'number') {
       return lines.length;
@@ -591,15 +614,25 @@ exports.textLinesMutator = (lines) => {
     }
   };
 
+  /**
+   * Starts a new splice.
+   */
   const enterSplice = () => {
     curSplice[0] = curLine;
     curSplice[1] = 0;
+    // TODO(doc) when is this the case?
+    //           check all enterSplice calls and changes to curCol
     if (curCol > 0) {
       putCurLineInSplice();
     }
     inSplice = true;
   };
 
+  /**
+   * Changes the lines array according to the values in curSplice
+   * and resets curSplice.
+   * This is called via close or TODO(doc)
+   */
   const leaveSplice = () => {
     lines_applySplice(curSplice);
     curSplice.length = 2;
@@ -607,26 +640,45 @@ exports.textLinesMutator = (lines) => {
     inSplice = false;
   };
 
+  /**
+   * Indicates if curLine is already in the splice. This is necessary because the last element in
+   * curSplice is curLine when this line is currently worked on (e.g. when skipping are inserting)
+   *
+   * TODO(doc) why aren't removals considered?
+   * @returns {Boolean} true if curLine is in splice
+   */
   const isCurLineInSplice = () => (curLine - curSplice[0] < (curSplice.length - 2));
 
   const debugPrint = (typ) => { /* eslint-disable-line no-unused-vars */
     print(`${typ}: ${curSplice.toSource()} / ${curLine},${curCol} / ${lines_toSource()}`);
   };
 
+  /**
+   * Incorporates current line into the splice
+   * and marks its old position to be deleted.
+   *
+   * @returns {Number} the index of the added line in curSplice
+   */
   const putCurLineInSplice = () => {
     if (!isCurLineInSplice()) {
       curSplice.push(lines_get(curSplice[0] + curSplice[1]));
       curSplice[1]++;
     }
-    return 2 + curLine - curSplice[0];
+    return 2 + curLine - curSplice[0]; // TODO should be the same as curSplice.length - 1
   };
 
+  /**
+   * It will skip some newlines by putting them into the splice.
+   *
+   * @param {Boolean} includeInSplice indicates if attributes are present
+   */
   const skipLines = (L, includeInSplice) => {
     if (L) {
       if (includeInSplice) {
         if (!inSplice) {
           enterSplice();
         }
+        // TODO(doc) should this count the number of characters that are skipped to check?
         for (let i = 0; i < L; i++) {
           curCol = 0;
           putCurLineInSplice();
@@ -635,6 +687,7 @@ exports.textLinesMutator = (lines) => {
       } else {
         if (inSplice) {
           if (L > 1) {
+            // TODO(doc) figure out why single lines are incorporated into splice instead of ignored
             leaveSplice();
           } else {
             putCurLineInSplice();
@@ -647,6 +700,13 @@ exports.textLinesMutator = (lines) => {
     }
   };
 
+  /**
+   * Skip some characters. Can contain newlines.
+   *
+   * @param {Number} N number of characters to skip
+   * @param {Number} L number of newlines to skip
+   * @param {Boolean} includeInSplice indicates if attributes are present
+   */
   const skip = (N, L, includeInSplice) => {
     if (N) {
       if (L) {
@@ -656,6 +716,8 @@ exports.textLinesMutator = (lines) => {
           enterSplice();
         }
         if (inSplice) {
+          // although the line is put into splice curLine is not increased, because
+          // only some chars are skipped, not the whole line
           putCurLineInSplice();
         }
         curCol += N;
@@ -663,6 +725,11 @@ exports.textLinesMutator = (lines) => {
     }
   };
 
+  /**
+   * Remove whole lines from lines array
+   *
+   * @param {Number} L number of lines to be removed
+   */
   const removeLines = (L) => {
     let removed = '';
     if (L) {
@@ -670,6 +737,12 @@ exports.textLinesMutator = (lines) => {
         enterSplice();
       }
 
+      /**
+       * Gets a string of joined lines after the end of the splice
+       *
+       * @param k {Number} number of lines
+       * @returns {String} joined lines
+       */
       const nextKLinesText = (k) => {
         const m = curSplice[0] + curSplice[1];
         return lines_slice(m, m + k).join('');
@@ -697,6 +770,12 @@ exports.textLinesMutator = (lines) => {
     return removed;
   };
 
+  /**
+   * Remove text from lines array
+   *
+   * @param N {Number} characters to delete
+   * @param L {Number} lines to delete
+   */
   const remove = (N, L) => {
     let removed = '';
     if (N) {
@@ -706,6 +785,8 @@ exports.textLinesMutator = (lines) => {
         if (!inSplice) {
           enterSplice();
         }
+        // although the line is put into splice, curLine is not increased, because
+        // only some chars are removed not the whole line
         const sline = putCurLineInSplice();
         removed = curSplice[sline].substring(curCol, curCol + N);
         curSplice[sline] = curSplice[sline].substring(0, curCol) +
@@ -715,6 +796,12 @@ exports.textLinesMutator = (lines) => {
     return removed;
   };
 
+  /**
+   * Inserts text into lines array.
+   *
+   * @param text {String} the text to insert
+   * @param L {Number} number of newlines in text
+   */
   const insert = (text, L) => {
     if (text) {
       if (!inSplice) {
@@ -726,18 +813,25 @@ exports.textLinesMutator = (lines) => {
           const sline = curSplice.length - 1;
           const theLine = curSplice[sline];
           const lineCol = curCol;
+          // insert the first new line
           curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
           curLine++;
           newLines.splice(0, 1);
+          // insert the remaining new lines
           Array.prototype.push.apply(curSplice, newLines);
           curLine += newLines.length;
+          // insert the remaining chars from the "old" line (e.g. the line we were in
+          // when we started to insert new lines)
           curSplice.push(theLine.substring(lineCol));
-          curCol = 0;
+          curCol = 0; // TODO(doc) why is this not set to the length of last line?
         } else {
           Array.prototype.push.apply(curSplice, newLines);
           curLine += newLines.length;
         }
       } else {
+        // there are no additional lines
+        // although the line is put into splice, curLine is not increased, because
+        // there may be more chars in the line (newline is not reached)
         const sline = putCurLineInSplice();
         if (!curSplice[sline]) {
           console.error('curSplice[sline] not populated, actual curSplice contents is ', curSplice, '. Possibly related to https://github.com/ether/etherpad-lite/issues/2802');
@@ -749,6 +843,12 @@ exports.textLinesMutator = (lines) => {
     }
   };
 
+  /**
+   * Checks if curLine (the line we are in when curSplice is applied) is the last line
+   * in lines.
+   *
+   * @return {Boolean} indicates if there are lines left
+   */
   const hasMore = () => {
     let docLines = lines_length();
     if (inSplice) {
@@ -757,6 +857,9 @@ exports.textLinesMutator = (lines) => {
     return curLine < docLines;
   };
 
+  /**
+   * Closes the splice
+   */
   const close = () => {
     if (inSplice) {
       leaveSplice();
