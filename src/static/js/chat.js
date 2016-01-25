@@ -19,9 +19,11 @@ var padcookie = require('./pad_cookie').padcookie;
 var Tinycon = require('tinycon/tinycon');
 var hooks = require('./pluginfw/hooks');
 var padeditor = require('./pad_editor').padeditor;
+var readCookie = require('./pad_utils').readCookie;
 
 var chat = (function()
 {
+  var defaultPadOptions = JSON.parse(decodeURIComponent(readCookie('defaultPadOptions'))) || {}; // settings from settings.json
   var isStuck = false;
   var userAndChat = false;
   var gotInitialMessages = false;
@@ -111,6 +113,7 @@ var chat = (function()
     }, 
     send: function()
     {
+      if (defaultPadOptions.readOnlyCanCommentAndChat) { return; } // do not allow send if read only mode
       var text = $("#chatinput").val();
       if(text.replace(/\s+/,'').length == 0)
         return;

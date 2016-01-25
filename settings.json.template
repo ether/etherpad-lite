@@ -66,7 +66,8 @@
     "rtl": false,
     "alwaysShowChat": false,
     "chatAndUsers": false,
-    "lang": "en-gb"
+    "lang": "en-gb",
+    "readOnlyCanCommentAndChat": false
   },
 
   /* Should we suppress errors from being visible in the default Pad Text? */

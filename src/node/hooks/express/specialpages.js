@@ -34,6 +34,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve pad.html under /p
   args.app.get('/p/:pad', function(req, res, next)
   {
+    // Set the default pad options on the client side
+    // Taken from settings.json
+    if (req.cookies.defaultPadOptions == undefined)
+    {
+      res.cookie('defaultPadOptions', JSON.stringify(settings.padOptions));
+    }
+    
     // Set language for pad editor for the first time
     // Or if language cookie doesn't exist
     if (req.cookies.language === undefined)

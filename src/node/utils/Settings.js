@@ -99,7 +99,8 @@ exports.padOptions = {
   "rtl": false,
   "alwaysShowChat": false,
   "chatAndUsers": false,
-  "lang": "en-gb"
+  "lang": "en-gb",
+  "readOnlyCanCommentAndChat": false
 }
 
 /**

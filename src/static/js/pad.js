@@ -993,3 +993,4 @@ exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
 exports.alertBar = alertBar;
+exports.defaultPadOptions = JSON.parse(decodeURIComponent(readCookie('defaultPadOptions'))) || {}; // settings from settings.json
