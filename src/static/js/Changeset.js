@@ -711,9 +711,14 @@ exports.textLinesMutator = (lines) => {
           curSplice[1] += L - 1;
           const sline = curSplice.length - 1;
           removed = curSplice[sline].substring(curCol) + removed;
-          curSplice[sline] = curSplice[sline].substring(0, curCol) +
-              linesGet(curSplice[0] + curSplice[1]);
-          curSplice[1] += 1;
+          const line = linesGet(curSplice[0] + curSplice[1]);
+          // if no line follows the splice
+          if (!line) {
+            curSplice[sline] = curSplice[sline].substring(0, curCol);
+          } else {
+            curSplice[sline] = curSplice[sline].substring(0, curCol) + line;
+            curSplice[1] += 1;
+          }
         }
       } else {
         removed = nextKLinesText(L);
@@ -775,14 +780,27 @@ exports.textLinesMutator = (lines) => {
           curLine += newLines.length;
           // insert the remaining chars from the "old" line (e.g. the line we were in
           // when we started to insert new lines)
-          curSplice.push(theLine.substring(lineCol));
+          // if nothing is left we don't push an empty string
+          if (theLine.substring(lineCol)) {
+            curSplice.push(theLine.substring(lineCol));
+          }
           curCol = 0; // TODO(doc) why is this not set to the length of last line?
         } else {
           Array.prototype.push.apply(curSplice, newLines);
           curLine += newLines.length;
         }
+      } else if (lines_get(curSplice[0] + curSplice[1]) === undefined) {
+        // find out if there is a line in splice that is not finished processing
+        if (isCurLineInSplice()) { // if yes, we can add our text to it
+          const sline = curSplice.length - 1;
+          curSplice[sline] =
+              curSplice[sline].substring(0, curCol) + text + curSplice[sline].substring(curCol);
+          curCol += text.length;
+        } else { // if no, we need to add the text in a new line
+          Array.prototype.push.apply(curSplice, [text]);
+          curCol += text.length;
+        }
       } else {
-        // there are no additional lines
         // although the line is put into splice, curLine is not increased, because
         // there may be more chars in the line (newline is not reached)
         const sline = putCurLineInSplice();

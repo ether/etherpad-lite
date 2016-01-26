@@ -179,16 +179,28 @@ describe('easysync', function () {
   ], ['banana\n', 'cabbage\n', 'duffle\n']);
 
   // #2836 regressions
-  runMutationTest(8, ['\n'], [
+  runMutationTest(8, ['\n', 'foo\n', '\n'], [
+    ['remove', 1, 1, '\n'],
+    ['skip', 4, 1, false],
+    ['remove', 1, 1, '\n'],
+    ['insert', 'c'],
+  ], ['foo\n', 'c']);
+  runMutationTest(9, ['\n', 'foo\n', '\n'], [
+    ['remove', 1, 1, '\n'],
+    ['skip', 3, 0, false],
+    ['remove', 2, 2, '\n\n'],
+    ['insert', 'c'],
+  ], ['fooc']);
+  runMutationTest(10, ['\n'], [
     ['remove', 1, 1, '\n'],
     ['insert', 'c', 0],
-  ], ['c']);
-  runMutationTest(9, ['\n'], [
+  ], ['c']); // TODO find out if c must have a newline because of unknown constraints
+  runMutationTest(11, ['\n'], [
     ['remove', 1, 1, '\n'],
     ['insert', 'a'],
     ['insert', 'c\n', 1],
   ], ['ac\n']);
-  runMutationTest(10, ['\n'], [
+  runMutationTest(12, ['\n'], [
     ['remove', 1, 1, '\n'],
     ['insert', 'a\n', 1],
     ['insert', 'c'],
