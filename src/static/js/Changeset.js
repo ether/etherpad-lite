@@ -1261,6 +1261,15 @@ exports.joinAttributionLines = function (theAlines) {
   return assem.toString();
 };
 
+/**
+  * Splits attribution operations so that every line in the text has its own attribution string
+  * It needs text to find the position of newlines
+  *
+  * @param attrOps The attribute string
+  * @param text content
+  * @returns lines {Array} one attribution string for every line
+  */
+}
 exports.splitAttributionLines = function (attrOps, text) {
   var iter = exports.opIterator(attrOps);
   var assem = exports.mergingOpAssembler();
