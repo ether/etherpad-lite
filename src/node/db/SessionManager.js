@@ -86,7 +86,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
     //check validUntil and create the session db entry
     function(callback)
     {
-      //check if rev is a number
+      //check if validUntil is a number
       if(typeof validUntil != "number")
       {
         //try to parse the number
