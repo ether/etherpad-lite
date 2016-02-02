@@ -280,6 +280,11 @@ Pad.prototype.getValidRevisionRange = function getValidRevisionRange(startRev, e
   return null;
 };
 
+/*
+* Gets the key revision that is the last revision with units' and tens' zero (ie % 100 == 0)
+* @param {Number} revNum
+* returns {Number}
+*/
 Pad.prototype.getKeyRevisionNumber = function getKeyRevisionNumber(revNum) {
   return Math.floor(revNum / 100) * 100;
 };
