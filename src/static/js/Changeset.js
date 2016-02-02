@@ -503,8 +503,8 @@ exports.opAssembler = function () {
 
 /**
  * A custom made String Iterator
- * @param str {string} String to be iterated over
- */ 
+ * @param {string} str String to be iterated over
+ */
 exports.stringIterator = function (str) {
   var curIndex = 0;
   // newLines is the number of \n between curIndex and str.length
@@ -1747,7 +1747,7 @@ exports.attribsAttributeValue = function (attribs, key, pool) {
 /**
  * Creates a Changeset builder for a string with initial 
  * length oldLen. Allows to add/remove parts of it
- * @param oldLen {int} Old length
+ * @param {number} oldLen Old length
  */
 exports.builder = function (oldLen) {
   var assem = exports.smartOpAssembler();
