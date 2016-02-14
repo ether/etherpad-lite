@@ -23,17 +23,21 @@
  */
 
 /*
-  An AttributePool maintains a mapping from [key,value] Pairs called
-  Attributes to Numbers (unsigened integers) and vice versa. These numbers are
-  used to reference Attributes in Changesets.
+ * An AttributePool maintains a mapping from [key,value] Pairs called
+ * Attributes to Numbers (unsigened integers) and vice versa. These numbers are
+ * used to reference Attributes in Changesets.
 */
-
 var AttributePool = function () {
   this.numToAttrib = {}; // e.g. {0: ['foo','bar']}
   this.attribToNum = {}; // e.g. {'foo,bar': 0}
   this.nextNum = 0;
 };
 
+/*
+ * @param {Array<string,string>} attrib
+ * @param {boolean} dontAddIfAbsent if true a non-existent attribute won't be added
+ * @return {number} id of the attribute
+ */
 AttributePool.prototype.putAttrib = function (attrib, dontAddIfAbsent) {
   var str = String(attrib);
   if (str in this.attribToNum) {
@@ -48,6 +52,10 @@ AttributePool.prototype.putAttrib = function (attrib, dontAddIfAbsent) {
   return num;
 };
 
+/*
+ * @param {number} num the id of the attribute
+ * @return {Array<string,string>|undefined} an attribute
+ */
 AttributePool.prototype.getAttrib = function (num) {
   var pair = this.numToAttrib[num];
   if (!pair) {
@@ -56,18 +64,29 @@ AttributePool.prototype.getAttrib = function (num) {
   return [pair[0], pair[1]]; // return a mutable copy
 };
 
+/*
+ * @param {number} num the id of the attribute
+ * @return {string} the attribute's key name
+ */
 AttributePool.prototype.getAttribKey = function (num) {
   var pair = this.numToAttrib[num];
   if (!pair) return '';
   return pair[0];
 };
 
+/*
+ * @param {number} num the id of the attribute
+ * @return {string} the attribute's value
+ */
 AttributePool.prototype.getAttribValue = function (num) {
   var pair = this.numToAttrib[num];
   if (!pair) return '';
   return pair[1];
 };
 
+/*
+ * @param {function} func a function to be called on every attribute pair
+ */
 AttributePool.prototype.eachAttrib = function (func) {
   for (var n in this.numToAttrib) {
     var pair = this.numToAttrib[n];
