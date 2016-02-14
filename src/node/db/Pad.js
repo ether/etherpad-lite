@@ -161,6 +161,13 @@ Pad.prototype.getAllAuthors = function getAllAuthors() {
   return authors;
 };
 
+/*
+* Returns an atext at a given revision. It selects the last key rev before targetRev and applies all changesets up to
+* the given revision.
+*
+* @param {Number} targetRev the wanted revision
+* @param {Function} callback
+*/
 Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targetRev, callback) {
   var _this = this;
 
