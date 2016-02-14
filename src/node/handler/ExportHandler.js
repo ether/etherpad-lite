@@ -81,7 +81,7 @@ exports.doExport = function(req, res, padId, type)
           if (err) {
             res.status(400);
             res.send();
-            console.log("Could not process export request:",err.message);
+            console.warn("Could not process export request:",err.message);
           } else {
             res.send(txt);
           }
@@ -102,7 +102,7 @@ exports.doExport = function(req, res, padId, type)
               if (err) {
                 res.status(400);
                 res.send();
-                console.log("Could not process export request:",err.message);
+                console.warn("Could not process export request:",err.message);
                 return;
               }
               html = _html;
