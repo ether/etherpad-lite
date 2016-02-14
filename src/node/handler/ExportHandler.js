@@ -78,8 +78,13 @@ exports.doExport = function(req, res, padId, type)
       {
         exporttxt.getPadTXTDocument(padId, req.params.rev, false, function(err, txt)
         {
-          if(ERR(err)) return;
-          res.send(txt);
+          if (err) {
+            res.status(400);
+            res.send();
+            console.log("Could not process export request:",err.message);
+          } else {
+            res.send(txt);
+          }
         });
       }
       else
@@ -94,7 +99,12 @@ exports.doExport = function(req, res, padId, type)
           {
             exporthtml.getPadHTMLDocument(padId, req.params.rev, false, function(err, _html)
             {
-              if(ERR(err, callback)) return;
+              if (err) {
+                res.status(400);
+                res.send();
+                console.log("Could not process export request:",err.message);
+                return;
+              }
               html = _html;
               callback();
             });
