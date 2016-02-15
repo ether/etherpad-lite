@@ -79,8 +79,7 @@ exports.doExport = function(req, res, padId, type)
         exporttxt.getPadTXTDocument(padId, req.params.rev, false, function(err, txt)
         {
           if (err) {
-            res.status(400);
-            res.send();
+            res.status(400).send();
             console.warn("Could not process export request:",err.message);
           } else {
             res.send(txt);
@@ -100,10 +99,9 @@ exports.doExport = function(req, res, padId, type)
             exporthtml.getPadHTMLDocument(padId, req.params.rev, false, function(err, _html)
             {
               if (err) {
-                res.status(400);
-                res.send();
+                res.status(400).send();
                 console.warn("Could not process export request:",err.message);
-                return;
+                return callback("stop");
               }
               html = _html;
               callback();
