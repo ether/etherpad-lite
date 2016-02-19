@@ -831,7 +831,7 @@ var pad = {
       $.ajax(
       {
         type: 'post',
-        url: '/ep/pad/connection-diagnostic-info',
+        url: 'ep/pad/connection-diagnostic-info',
         data: {
           diagnosticInfo: JSON.stringify(pad.diagnosticInfo)
         },
