@@ -1579,6 +1579,12 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
 
 /**
  * Tries to rebuild the getPadLines function of the original Etherpad
+ * Returns an object with lines and alines of a revision
+ *
+ * @param padId {string} the name of the pad
+ * @param revNum {Number} a revision
+ * @return {Object} an object containing lines and alines
+ *
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L263
  */
 function getPadLines(padId, revNum, callback)
@@ -1631,6 +1637,13 @@ function getPadLines(padId, revNum, callback)
 
 /**
  * Tries to rebuild the composePadChangeset function of the original Etherpad
+ * Combines consecutive changesets between startNum and endNum into one cs
+ *
+ * @param padId the pad
+ * @param startNum the revision to start with
+ * @param endNum the revision to end with
+ * @param callback
+ *
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L241
  */
 function composePadChangesets(padId, startNum, endNum, callback)
