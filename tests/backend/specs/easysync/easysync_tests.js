@@ -286,33 +286,45 @@ describe("text line mutations",function(){
 })
 
 
-  function poolOrArray(attribs) {
-    if (attribs.getAttrib) {
-      return attribs; // it's already an attrib pool
-    } else {
-      // assume it's an array of attrib strings to be split and added
-      var p = new AttributePool();
-      attribs.forEach(function (kv) {
-        p.putAttrib(kv.split(','));
-      });
-      return p;
-    }
+function poolOrArray(attribs) {
+  if (attribs.getAttrib) {
+    return attribs; // it's already an attrib pool
+  } else {
+    // assume it's an array of attrib strings to be split and added
+    var p = new AttributePool();
+    attribs.forEach(function (kv) {
+      p.putAttrib(kv.split(','));
+    });
+    return p;
   }
+}
 
-  function runApplyToAttributionTest(testId, attribs, cs, inAttr, outCorrect) {
-    var p = poolOrArray(attribs);
-    var result = Changeset.applyToAttribution(
-    Changeset.checkRep(cs), inAttr, p);
-    assertEqualStrings(outCorrect, result);
-  }
+function runApplyToAttributionTest(attribs, cs, inAttr) {
+  var p = poolOrArray(attribs);
+  var result = Changeset.applyToAttribution(
+  Changeset.checkRep(cs), inAttr, p);
+  return result;
+}
 
-  // turn c<b>a</b>ctus\n into a<b>c</b>tusabcd\n
-  runApplyToAttributionTest(1, ['bold,', 'bold,true'], "Z:7>3-1*0=1*1=1=3+4$abcd", "+1*1+1|1+5", "+1*1+1|1+8");
+describe("applyToAttribution",function(){
+// turn c<b>a</b>ctus\n into a<b>c</b>tusabcd\n
+  it(" #1",function(done){
+    var result = runApplyToAttributionTest(['bold,', 'bold,true'], "Z:7>3-1*0=1*1=1=3+4$abcd", "+1*1+1|1+5");
+    var expected = "+1*1+1|1+8";
+    if(!assertEqualStrings(expected, result)) throw new Error("applyToAttribution is wrong expected:"+expected+" got "+result);
+    done();
+  });
+// turn "david\ngreenspan\n" into "<b>david\ngreen</b>\n"
+  it(" #2",function(done){
+    var result = runApplyToAttributionTest(['bold,', 'bold,true'], "Z:g<4*1|1=6*1=5-4$", "|2+g");
+    var expected = "*1|1+6*1+5|1+1";
+    if(!assertEqualStrings(expected, result)) throw new Error("applyToAttribution is wrong expected:"+expected+" got "+result);
+    done();
+  });
+});
 
-  // turn "david\ngreenspan\n" into "<b>david\ngreen</b>\n"
-  runApplyToAttributionTest(2, ['bold,', 'bold,true'], "Z:g<4*1|1=6*1=5-4$", "|2+g", "*1|1+6*1+5|1+1");
-
-  (function () {
+describe("textLinesMutator",function(){
+  it("hasMore indicates remaining characters",function(done){
     var lines = ["1\n", "2\n", "3\n", "4\n"];
     var mu;
 
@@ -350,8 +362,9 @@ describe("text line mutations",function(){
     assert(mu.hasMore() + ' == false');
     mu.close();
     assert(mu.hasMore() + ' == false');
-
-  })();
+    done();
+  });
+});
 
   function runMutateAttributionTest(testId, attribs, cs, alines, outCorrect) {
     var p = poolOrArray(attribs);
