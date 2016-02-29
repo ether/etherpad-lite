@@ -10,11 +10,11 @@ exports.literal = function (v) {
 }
 
 exports.assertEqualArrays = function (a, b) {
-    exports.assert("JSON.stringify(" + exports.literal(a) + ") == JSON.stringify(" + exports.literal(b) + ")");
+    return JSON.stringify(a) === JSON.stringify(b);
 }
 
 exports.assertEqualStrings = function (a, b) {
-    exports.assert(exports.literal(a) + " == " + exports.literal(b));
+    return a === b
 }
 
 exports.throughIterator = function (opsStr) {
