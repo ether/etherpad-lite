@@ -562,6 +562,29 @@ describe('createPad', function(){
   });
 })
 
+describe('insertText', function(){
+  var textTyped = "Let's type some text into our pad\n";
+
+  it("should insert text on the pad", function(done) {
+    api.get(endPoint('insertText')+"&padID="+testPadId+"&text=" + textTyped + "&lineNum=1")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Failed to insert target text")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+
+  it("pad should contain the text typed", function(done) {
+    api.get(endPoint('getText')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Failed to insert target text")
+      if(!res.body.data.text.startsWith(textTyped)) throw new Error("Failed to insert text")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
 
 /*
                           -> movePadForce Test
