@@ -316,6 +316,17 @@ exports.insertText = function(padID, newText, lineNum, callback)
     return;
   }
 
+  //check if lineNum is a number
+  if(!isNaN(parseInt(lineNum)))
+  {
+    lineNum = parseInt(lineNum);
+  }
+  else
+  {
+    callback(new customError("lineNum not given","apierror"));
+    return;
+  }
+
   //get the pad
   getPadSafe(padID, true, function(err, pad)
   {

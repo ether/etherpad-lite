@@ -565,6 +565,24 @@ describe('createPad', function(){
 describe('insertText', function(){
   var textTyped = "Let's type some text into our pad\n";
 
+  it("should return error if lineNum is not given", function(done) {
+    api.get(endPoint('insertText')+"&padID="+testPadId+"&text=" + textTyped)
+    .expect(function(res) {
+      if(res.body.code !== 1) throw new Error("Failed to raise error")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+
+  it("should return error if no text is given", function(done) {
+    api.get(endPoint('insertText')+"&padID="+testPadId+"&lineNum=1")
+    .expect(function(res) {
+      if(res.body.code !== 1) throw new Error("Failed to raise error")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+
   it("should insert text on the pad", function(done) {
     api.get(endPoint('insertText')+"&padID="+testPadId+"&text=" + textTyped + "&lineNum=1")
     .expect(function(res){
