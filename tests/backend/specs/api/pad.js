@@ -562,11 +562,35 @@ describe('createPad', function(){
   });
 })
 
+var authorName = 'testAPI';
+var authorMapper = 'testMapper';
+describe('createAuthor', function(){
+  it("pad should create an author for testing", function(done) {
+    api.get(endPoint('createAuthor')+"&name="+authorName)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Failed to create Author")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('createAuthorIfNotExistsFor', function(){
+  it("pad should create an author for testing", function(done) {
+    api.get(endPoint('createAuthorIfNotExistsFor')+"&authorMapper="+authorMapper+"&name="+authorName)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Failed to create Author")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
 describe('insertText', function(){
   var textTyped = "Let's type some text into our pad\n";
 
   it("should return error if lineNum is not given", function(done) {
-    api.get(endPoint('insertText')+"&padID="+testPadId+"&text=" + textTyped)
+    api.get(endPoint('insertText')+"&padID="+testPadId)
     .expect(function(res) {
       if(res.body.code !== 1) throw new Error("Failed to raise error")
     })
@@ -583,8 +607,17 @@ describe('insertText', function(){
     .expect(200, done)
   });
 
+  it("should return error if no authorMapper is given", function(done) {
+    api.get(endPoint('insertText')+"&padID="+testPadId+"&lineNum=1&text="+textTyped)
+    .expect(function(res) {
+      if(res.body.code !== 1) throw new Error("Failed to raise error")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+
   it("should insert text on the pad", function(done) {
-    api.get(endPoint('insertText')+"&padID="+testPadId+"&text=" + textTyped + "&lineNum=1")
+    api.get(endPoint('insertText')+"&padID="+testPadId+"&lineNum=1&text="+textTyped+"&authorMapper="+authorMapper)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Failed to insert target text")
     })

@@ -307,7 +307,7 @@ exports.setText = function(padID, text, callback)
   });
 }
 
-exports.insertText = function(padID, newText, lineNum, callback)
+exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
 {
   //text is required
   if(typeof newText != "string")
@@ -327,39 +327,59 @@ exports.insertText = function(padID, newText, lineNum, callback)
     return;
   }
 
-  //get the pad
-  getPadSafe(padID, true, function(err, pad)
+  if(typeof authorMapper != "string")
+  {
+    callback(new customError("text is no authorMapper","apierror"));
+    return;
+  }
+
+  var authorMangager = require("./AuthorManager");
+  // Check author exists
+  authorMangager.createAuthorIfNotExistsFor(authorMapper, false, function(err, authorID)
   {
     if(ERR(err, callback)) return;
-    //set the text
-    var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-    var oldText = pad.text();
-    var author = 'API-bot';
 
-    // Index of insert point
-    var oldLines = oldText.split("\n");
-    var insertPoint = 0;
-    if(lineNum < oldLines.length) {
-      for (var i = 0; i < lineNum-1; i++) {
-        insertPoint += oldLines[i].length + 1;
-      }
-    } else {
-      insertPoint = oldLen;
+    //author does not exist
+    if(authorID == false)
+    {
+      callback(new customError("Author not given or given author does not exits","apierror"));
+      return;
     }
+    else
+    {
+      //get the pad
+      getPadSafe(padID, true, function(err, pad)
+      {
+        if(ERR(err, callback)) return;
+        //set the text
+        var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+        var oldText = pad.text();
+        // Index of insert point
+        var oldLines = oldText.split("\n");
+        var insertPoint = 0;
+        if(lineNum < oldLines.length) {
+          for (var i = 0; i < lineNum-1; i++) {
+            insertPoint += oldLines[i].length + 1;
+          }
+        } else {
+          insertPoint = oldLen;
+        }
 
-    // Text length before and after insert
-    var oldLen = oldText.length;
-    var newLen = oldLen + newText.length;
+        // Text length before and after insert
+        var oldLen = oldText.length;
+        var newLen = oldLen + newText.length;
 
-    var assem = Changeset.smartOpAssembler();
-    assem.appendOpWithText('=', oldText.substring(0, insertPoint));
-    assem.appendOpWithText('+', newText);
-    assem.endDocument();
-    var typedChanges = Changeset.pack(oldLen, newLen, assem.toString(), newText);
-    pad.appendRevision(typedChanges, author);
+        var assem = Changeset.smartOpAssembler();
+        assem.appendOpWithText('=', oldText.substring(0, insertPoint));
+        assem.appendOpWithText('+', newText);
+        assem.endDocument();
+        var typedChanges = Changeset.pack(oldLen, newLen, assem.toString(), newText);
+        pad.appendRevision(typedChanges, authorID);
 
-    //update the clients on the pad
-    padMessageHandler.updatePadClients(pad, callback);
+        //update the clients on the pad
+        padMessageHandler.updatePadClients(pad, callback);
+      });
+    }
   });
 }
 

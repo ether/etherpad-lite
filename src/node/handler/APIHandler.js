@@ -463,7 +463,7 @@ var version =
   , "listSessionsOfAuthor"      : ["authorID"]
   , "getText"                   : ["padID", "rev"]
   , "setText"                   : ["padID", "text"]
-  , "insertText"                : ["padID", "text", "lineNum"]
+  , "insertText"                : ["padID", "text", "lineNum", "authorMapper"]
   , "getHTML"                   : ["padID", "rev"]
   , "setHTML"                   : ["padID", "html"]
   , "getAttributePool"          : ["padID"]
