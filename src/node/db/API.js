@@ -342,7 +342,7 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
     //author does not exist
     if(authorID == false)
     {
-      callback(new customError("Author not given or given author does not exits","apierror"));
+      callback(new customError("Author not given or given author does not exist","apierror"));
       return;
     }
     else
@@ -361,7 +361,9 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
           for (var i = 0; i < lineNum-1; i++) {
             insertPoint += oldLines[i].length + 1;
           }
-        } else {
+        }
+        else
+        {
           insertPoint = oldLen;
         }
 
