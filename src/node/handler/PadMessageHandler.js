@@ -370,12 +370,16 @@ exports.handleCustomMessage = function (padID, msg, cb) {
  */
 function handleChatMessage(client, message)
 {
+  var allowChat = settings.padOptions.readOnlyCanCommentAndChat;
   var time = new Date().getTime();
   var userId = sessioninfos[client.id].author;
   var text = message.data.text;
   var padId = sessioninfos[client.id].padId;
 
-  exports.sendChatMessageToPadClients(time, userId, text, padId);
+  if (allowChat)
+  {
+    exports.sendChatMessageToPadClients(time, userId, text, padId);
+  }
 }
 
 /**
