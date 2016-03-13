@@ -47,7 +47,8 @@
                     "user"    : "root",
                     "host"    : "localhost",
                     "password": "",
-                    "database": "store"
+                    "database": "store",
+                    "charset" : "utf8mb4"
                   },
   */
 

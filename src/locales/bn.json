@@ -21,6 +21,7 @@
 	"pad.toolbar.undo.title": "বাতিল করুন (Ctrl-Z)",
 	"pad.toolbar.redo.title": "পুনরায় করুন (Ctrl-Y)",
 	"pad.toolbar.clearAuthorship.title": "কৃতি রং পরিষ্কার করুন  (Ctrl+Shift+C)",
+	"pad.toolbar.import_export.title": "ভিন্ন ফাইল বিন্যাসে আমদানি/রপ্তানি করুন",
 	"pad.toolbar.timeslider.title": "টাইমস্লাইডার",
 	"pad.toolbar.savedRevision.title": "সংস্করণ সংরক্ষণ করুন",
 	"pad.toolbar.settings.title": "সেটিং",
@@ -97,9 +98,13 @@
 	"pad.userlist.entername": "আপনার নাম লিখুন",
 	"pad.userlist.unnamed": "কোন নাম নির্বাচন করা হয়নি",
 	"pad.userlist.guest": "অতিথি",
+	"pad.userlist.deny": "প্রত্যাখ্যান",
 	"pad.userlist.approve": "অনুমোদিত",
 	"pad.impexp.importbutton": "এখন আমদানি করুন",
 	"pad.impexp.importing": "আমদানি হচ্ছে...",
+	"pad.impexp.padHasData": "আমরা এই ফাইলটি আমদানি করতে সক্ষম হয়নি কারণ এই প্যাড ইতিমধ্যে পরিবর্তিত হয়েছে, দয়া করে একটি নতুন প্যাডে অামদানি করুন।",
+	"pad.impexp.uploadFailed": "আপলোড করতে ব্যর্থ, দয়া করে আবার চেষ্টা করুন",
 	"pad.impexp.importfailed": "আমদানি ব্যর্থ",
-	"pad.impexp.copypaste": "দয়া করে অনুলিপি প্রতিলেপন করুন"
+	"pad.impexp.copypaste": "দয়া করে অনুলিপি প্রতিলেপন করুন",
+	"pad.impexp.exportdisabled": "{{type}} হিসেবে রপ্তানি করা নিষ্ক্রিয় আছে। বিস্তারিত জানার জন্য আপনার সিস্টেম প্রশাসকের সাথে যোগাযোগ করুন।"
 }
