@@ -290,7 +290,7 @@ exports.setText = function(padID, text, callback)
   //text is required
   if(typeof text != "string")
   {
-    callback(new customError("text is no string","apierror"));
+    callback(new customError("text is not string","apierror"));
     return;
   }
 
@@ -317,19 +317,16 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
   }
 
   //check if lineNum is a number
-  if(!isNaN(parseInt(lineNum)))
+  lineNum = parseInt(lineNum);
+  if(isNaN(lineNum))
   {
-    lineNum = parseInt(lineNum);
-  }
-  else
-  {
-    callback(new customError("lineNum not given","apierror"));
+    callback(new customError("Invalid lineNum","apierror"));
     return;
   }
 
   if(typeof authorMapper != "string")
   {
-    callback(new customError("text is no authorMapper","apierror"));
+    callback(new customError("Invalid authorMapper","apierror"));
     return;
   }
 
@@ -339,49 +336,41 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
   {
     if(ERR(err, callback)) return;
 
-    //author does not exist
-    if(authorID == false)
+    //get the pad
+    getPadSafe(padID, true, function(err, pad)
     {
-      callback(new customError("Author not given or given author does not exist","apierror"));
-      return;
-    }
-    else
-    {
-      //get the pad
-      getPadSafe(padID, true, function(err, pad)
+      if(ERR(err, callback)) return;
+      //set the text
+      var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+      var oldText = pad.text();
+
+      // Text length before and after insert
+      var oldLen = oldText.length;
+      var newLen = oldLen + newText.length;
+
+      // Index of insert point
+      var oldLines = oldText.split("\n");
+      var insertPoint = 0;
+      if(lineNum < oldLines.length) {
+        for (var i = 0; i < lineNum-1; i++) {
+          insertPoint += oldLines[i].length + 1;
+        }
+      }
+      else
       {
-        if(ERR(err, callback)) return;
-        //set the text
-        var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-        var oldText = pad.text();
-        // Index of insert point
-        var oldLines = oldText.split("\n");
-        var insertPoint = 0;
-        if(lineNum < oldLines.length) {
-          for (var i = 0; i < lineNum-1; i++) {
-            insertPoint += oldLines[i].length + 1;
-          }
-        }
-        else
-        {
-          insertPoint = oldLen;
-        }
+        insertPoint = oldLen-1;
+      }
 
-        // Text length before and after insert
-        var oldLen = oldText.length;
-        var newLen = oldLen + newText.length;
+      var assem = Changeset.smartOpAssembler();
+      assem.appendOpWithText('=', oldText.substring(0, insertPoint));
+      assem.appendOpWithText('+', newText);
+      assem.endDocument();
+      var typedChanges = Changeset.pack(oldLen, newLen, assem.toString(), newText);
+      pad.appendRevision(typedChanges, authorID);
 
-        var assem = Changeset.smartOpAssembler();
-        assem.appendOpWithText('=', oldText.substring(0, insertPoint));
-        assem.appendOpWithText('+', newText);
-        assem.endDocument();
-        var typedChanges = Changeset.pack(oldLen, newLen, assem.toString(), newText);
-        pad.appendRevision(typedChanges, authorID);
-
-        //update the clients on the pad
-        padMessageHandler.updatePadClients(pad, callback);
-      });
-    }
+      //update the clients on the pad
+      padMessageHandler.updatePadClients(pad, callback);
+    });
   });
 }
 
