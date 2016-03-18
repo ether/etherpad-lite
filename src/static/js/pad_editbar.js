@@ -242,9 +242,9 @@ var padeditbar = (function()
       });
     },
     registerAceCommand: function (cmd, callback) {
-      this.registerCommand(cmd, function (cmd, ace) {
+      this.registerCommand(cmd, function (cmd, ace, item) {
         ace.callWithAce(function (ace) {
-          callback(cmd, ace);
+          callback(cmd, ace, item);
         }, cmd, true);
       });
     },
