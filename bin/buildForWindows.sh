@@ -60,8 +60,8 @@ rm -rf $TMP_FOLDER/src/node_modules/wd/node_modules/request/node_modules/form-da
 rm -rf $TMP_FOLDER/src/node_modules/nodemailer/node_modules/mailcomposer/node_modules/mimelib/node_modules/encoding/node_modules/iconv-lite/encodings/tables
 
 echo "create the zip..."
-cd /tmp
-zip -9 -r $START_FOLDER/etherpad-lite-win.zip $TMP_FOLDER
+cd $TMP_FOLDER
+zip -9 -r $START_FOLDER/etherpad-lite-win.zip ./*
 
 echo "clean up..."
 rm -rf $TMP_FOLDER
