@@ -10,6 +10,9 @@ var db, settings, keys, values;
 var npm = require("../src/node_modules/npm");
 var async = require("../src/node_modules/async");
 
+// Setup a removal count
+var removalCount = 0;
+
 async.series([
   //load npm
   function(callback) {
@@ -36,12 +39,17 @@ async.series([
   {
     values = {};
     async.eachSeries(keys, function(key, cb){
-      db.db.get(key, function(err, value){
-        // console.log("err", err);
-        // console.log("value", key, value);
-        values[key] = value;
+      // only get main pad data not any revisions
+      if(key.indexOf(":revs") === -1){
+        db.db.get(key, function(err, value){
+          // console.log("get value", key, value);
+          values[key] = value;
+          cb();
+        });
+      }else{
         cb();
-      });
+      }
+
     }, function(){
       callback();
     });
@@ -49,11 +57,16 @@ async.series([
   // Removing all old pad data record
   function (callback){
     async.each(keys, function(key, cb){
-      console.log("Removing", key);
+      if(key.indexOf(":revs") !== -1){
+        console.log("Removing", key);
         db.db.remove(key, function(err){
-        if(err) console.log("err", err);
+          removalCount++;
+          if(err) console.log("err", err);
+          cb();
+        });
+      }else{
         cb();
-      });
+      }
     }, function(){
       callback();
     });
@@ -61,8 +74,11 @@ async.series([
   // Add latest data back in for a pad
   function (callback){
     async.eachSeries(keys, function(key, cb){
-      console.log("Adding data back in for", key);
-      db.db.set(key, values[key]);
+      var sauce = values[key];
+      if(key.indexOf(":revs") === -1){
+        // console.log("Adding data back in for", key, sauce);
+        db.db.set(key, values[key]);
+      }
       cb();
     }, function(){
       callback();
@@ -72,7 +88,7 @@ async.series([
 {
   if(err) throw err;
   else{
-    console.log("finished");
+    console.log("finished, total database records removed "+removalCount);
     process.exit(0);
   }
 });
