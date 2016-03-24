@@ -1,5 +1,6 @@
 /*
-  This is a debug tool. It removes old pad data from a couch database
+  This is a debug tool. It removes old pad data from a non-dirty database
+  It also removes previous pad history so use it carefully.
 */
 
 //get the padID
