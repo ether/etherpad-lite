@@ -2337,9 +2337,19 @@ function Ace2Inner(){
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
 
-
-  function getAttributeOnSelection(attributeName){
+  // Get the the attribute on selection
+  // prevChar tells the function if it needs to look at the previous character
+  function getAttributeOnSelection(attributeName, prevChar){
     if (!(rep.selStart && rep.selEnd)) return
+    var isNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
+    if(isNotSelection){
+      if(prevChar){
+        // If it's not the start of the line
+        if(rep.selStart[1] !== 0){
+          rep.selStart[1]--;
+        }
+      }
+    }
 
     var withIt = Changeset.makeAttribsString('+', [
       [attributeName, 'true']
