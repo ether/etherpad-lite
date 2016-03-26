@@ -449,6 +449,8 @@ function Ace2Inner(){
       return oldEvent;
     }
 
+    if(!evt) var evt = null;
+
     currentCallStack = {
       type: type,
       docTextChanged: false,
@@ -2337,9 +2339,21 @@ function Ace2Inner(){
   }
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
 
-
-  function getAttributeOnSelection(attributeName){
+  // Get the the attribute on selection
+  // prevChar tells the function if it needs to look at the previous character
+  function getAttributeOnSelection(attributeName, prevChar){
     if (!(rep.selStart && rep.selEnd)) return
+
+    // If we're looking for the caret attribute not the selection
+    if(prevChar){
+      // If it's not the start of the line
+      if(rep.selStart[1] !== 0){
+        rep.selStart[1]--;
+      }else{
+        // It's the start of the line so look at the first character
+        rep.selEnd[1]++;
+      }
+    }
 
     var withIt = Changeset.makeAttribsString('+', [
       [attributeName, 'true']
