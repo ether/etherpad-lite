@@ -278,6 +278,9 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
      if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)){
        found = true;
        return [attributeName, ''];
+     }else if (attrib[0] === 'author'){
+       // update last author to make changes to line attributes on this line
+       return [attributeName, this.author];
      }
      return attrib;
    });
