@@ -2341,15 +2341,13 @@ function Ace2Inner(){
   // prevChar tells the function if it needs to look at the previous character
   function getAttributeOnSelection(attributeName, prevChar){
     if (!(rep.selStart && rep.selEnd)) return
-
-    // If we're looking for the caret attribute not the selection
-    if(prevChar){
-      // If it's not the start of the line
-      if(rep.selStart[1] !== 0){
-        rep.selStart[1]--;
-      }else{
-        // It's the start of the line so look at the first character
-        rep.selEnd[1]++;
+    var isNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
+    if(isNotSelection){
+      if(prevChar){
+        // If it's not the start of the line
+        if(rep.selStart[1] !== 0){
+          rep.selStart[1]--;
+        }
       }
     }
 

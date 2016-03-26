@@ -187,6 +187,17 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   getAttributeOnSelection: function(attributeName, prevChar){
     var rep = this.rep;
     if (!(rep.selStart && rep.selEnd)) return
+    // If we're looking for the caret attribute not the selection
+    // has the user already got a selection or is this purely a caret location?
+    var isNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
+    if(isNotSelection){
+      if(prevChar){
+        // If it's not the start of the line
+        if(rep.selStart[1] !== 0){
+          rep.selStart[1]--;
+        }
+      }
+    }
 
     var withIt = Changeset.makeAttribsString('+', [
       [attributeName, 'true']
