@@ -47,15 +47,10 @@ fi
 NODE_VERSION=$(node --version)
 NODE_V_MINOR=$(echo $NODE_VERSION | cut -d "." -f 1-2)
 NODE_V_MAIN=$(echo $NODE_VERSION | cut -d "." -f 1)
-#iojs version checking added
-if hash iojs 2>/dev/null; then
-  IOJS_VERSION=$(iojs --version)
-fi
-if [ ! $NODE_V_MINOR = "v0.10" ] && [ ! $NODE_V_MINOR = "v0.11" ] && [ ! $NODE_V_MINOR = "v0.12" ] && [ ! $NODE_V_MAIN = "v4" ] && [ ! $NODE_V_MAIN = "v5" ]; then
-  if [ ! $IOJS_VERSION ]; then
-    echo "You're running a wrong version of node, or io.js is not installed. You're using $NODE_VERSION, we need node v0.10.x or higher" >&2
-    exit 1
-  fi
+NODE_V_MAIN=${NODE_V_MAIN#"v"}
+if [ ! $NODE_V_MINOR = "v0.10" ] && [ ! $NODE_V_MINOR = "v0.11" ] && [ ! $NODE_V_MINOR = "v0.12" ] && [ ! $NODE_V_MAIN -gt 4 ]; then
+  echo "You're running a wrong version of node. You're using $NODE_VERSION, we need node v0.10.x or higher" >&2
+  exit 1
 fi
 
 #Get the name of the settings file
