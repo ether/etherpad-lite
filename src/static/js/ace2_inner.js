@@ -449,8 +449,6 @@ function Ace2Inner(){
       return oldEvent;
     }
 
-    if(!evt) var evt = null;
-
     currentCallStack = {
       type: type,
       docTextChanged: false,
