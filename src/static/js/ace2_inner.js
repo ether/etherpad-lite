@@ -369,6 +369,19 @@ function Ace2Inner(){
     return thisAuthor;
   }
 
+  var _nonScrollableEditEvents = {
+    "applyChangesToBase": 1
+  };
+
+  _.each(hooks.callAll('aceRegisterNonScrollableEditEvents'), function(eventType) {
+      _nonScrollableEditEvents[eventType] = 1;
+  });
+
+  function isScrollableEditEvent(eventType)
+  {
+    return !_nonScrollableEditEvents[eventType];
+  }
+
   var currentCallStack = null;
 
   function inCallStack(type, action)
@@ -506,7 +519,7 @@ function Ace2Inner(){
           {
             updateBrowserSelectionFromRep();
           }
-          if ((cs.docTextChanged || cs.userChangedSelection) && cs.type != "applyChangesToBase")
+          if ((cs.docTextChanged || cs.userChangedSelection) && isScrollableEditEvent(cs.type))
           {
             scrollSelectionIntoView();
           }
