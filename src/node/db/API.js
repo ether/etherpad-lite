@@ -332,7 +332,7 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
 
   var authorMangager = require("./AuthorManager");
   // Check author exists
-  authorMangager.createAuthorIfNotExistsFor(authorMapper, false, function(err, authorID)
+  authorMangager.createAuthorIfNotExistsFor(authorMapper, null, function(err, author)
   {
     if(ERR(err, callback)) return;
 
@@ -366,7 +366,7 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
       assem.appendOpWithText('+', newText);
       assem.endDocument();
       var typedChanges = Changeset.pack(oldLen, newLen, assem.toString(), newText);
-      pad.appendRevision(typedChanges, authorID);
+      pad.appendRevision(typedChanges, author.authorID);
 
       //update the clients on the pad
       padMessageHandler.updatePadClients(pad, callback);
