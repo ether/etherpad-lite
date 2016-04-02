@@ -307,7 +307,7 @@ exports.setText = function(padID, text, callback)
   });
 }
 
-exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
+exports.insertText = function(padID, newText, lineNum, authorID, callback)
 {
   //text is required
   if(typeof newText != "string")
@@ -324,18 +324,23 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
     return;
   }
 
-  if(typeof authorMapper != "string")
+  if(typeof authorID != "string")
   {
-    callback(new customError("Invalid authorMapper","apierror"));
+    callback(new customError("Invalid authorID","apierror"));
     return;
   }
 
   var authorMangager = require("./AuthorManager");
   // Check author exists
-  authorMangager.createAuthorIfNotExistsFor(authorMapper, null, function(err, author)
+  authorMangager.doesAuthorExists(authorID, function(err, exists)
   {
     if(ERR(err, callback)) return;
-
+    //author does not exist
+    if(exists == false)
+    {
+      callback(new customError("authorID does not exist","apierror"));
+      return
+    }
     //get the pad
     getPadSafe(padID, true, function(err, pad)
     {
@@ -351,8 +356,10 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
       // Index of insert point
       var oldLines = oldText.split("\n");
       var insertPoint = 0;
-      if(lineNum < oldLines.length) {
-        for (var i = 0; i < lineNum-1; i++) {
+      if(lineNum < oldLines.length)
+      {
+        for (var i = 0; i < lineNum-1; i++)
+        {
           insertPoint += oldLines[i].length + 1;
         }
       }
@@ -366,7 +373,7 @@ exports.insertText = function(padID, newText, lineNum, authorMapper, callback)
       assem.appendOpWithText('+', newText);
       assem.endDocument();
       var typedChanges = Changeset.pack(oldLen, newLen, assem.toString(), newText);
-      pad.appendRevision(typedChanges, author.authorID);
+      pad.appendRevision(typedChanges, authorID);
 
       //update the clients on the pad
       padMessageHandler.updatePadClients(pad, callback);

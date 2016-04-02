@@ -192,7 +192,7 @@ describe('getText', function(){
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.data.text !== "testText\n") throw new Error("Pad Creation with text")
-    }) 
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -549,7 +549,7 @@ describe('createPad', function(){
   it('errors if pad can be created', function(done) {
     var badUrlChars = ["/", "%23", "%3F", "%26"];
     async.map(
-      badUrlChars, 
+      badUrlChars,
       function (badUrlChar, cb) {
         api.get(endPoint('createPad')+"&padID="+badUrlChar)
         .expect(function(res){
@@ -588,6 +588,15 @@ describe('createAuthorIfNotExistsFor', function(){
 
 describe('insertText', function(){
   var textTyped = "Let's type some text into our pad\n";
+  var authorID = null;
+
+  before(function(done) {
+    api.get(endPoint('createAuthor')+"&name="+authorName)
+      .expect(function(res) {
+        authorID = res.body.data.authorID;
+      })
+      .expect(200, done);
+  });
 
   it("should return error if lineNum is not given", function(done) {
     api.get(endPoint('insertText')+"&padID="+testPadId)
@@ -607,7 +616,7 @@ describe('insertText', function(){
     .expect(200, done)
   });
 
-  it("should return error if no authorMapper is given", function(done) {
+  it("should return error if no authorID is given", function(done) {
     api.get(endPoint('insertText')+"&padID="+testPadId+"&lineNum=1&text="+textTyped)
     .expect(function(res) {
       if(res.body.code !== 1) throw new Error("Failed to raise error")
@@ -616,8 +625,17 @@ describe('insertText', function(){
     .expect(200, done)
   });
 
+  it("should return error if authorID does not exist", function(done) {
+    api.get(endPoint('insertText')+"&padID="+testPadId+"&lineNum=1&text="+textTyped+"&authorID=iDoNotExist")
+    .expect(function(res){
+      if(res.body.code !== 1) throw new Error("Failed to return error")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+
   it("should insert text on the pad", function(done) {
-    api.get(endPoint('insertText')+"&padID="+testPadId+"&lineNum=1&text="+textTyped+"&authorMapper="+authorMapper)
+    api.get(endPoint('insertText')+"&padID="+testPadId+"&lineNum=1&text="+textTyped+"&authorID="+authorID)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Failed to insert target text")
     })
