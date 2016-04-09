@@ -446,7 +446,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
         lineContent: lineContent,
         apool: apool,
         attribLine: attribLines[i],
-        text: textLines[i]
+        text: textLines[i],
+        padId: pad.id
       }
 
       var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", context, " ", " ", "");
