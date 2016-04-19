@@ -501,7 +501,7 @@ describe('getText', function(){
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Get Text failed");
-      if(res.body.data.text !== text+"\nhello") throw new Error("Pad Text not set properly");
+      if(res.body.data.text !== text+"hello\n") throw new Error("Pad Text not set properly");
     })
     .expect('Content-Type', /json/)
     .expect(200, done);

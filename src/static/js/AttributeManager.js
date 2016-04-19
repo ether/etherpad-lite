@@ -179,6 +179,89 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     return [];
   },
 
+ /*
+    Gets a given attribute on a selection
+    @param attributeName
+    @param prevChar
+    returns true or false if an attribute is visible in range
+  */
+  getAttributeOnSelection: function(attributeName, prevChar){
+    var rep = this.rep;
+    if (!(rep.selStart && rep.selEnd)) return
+    // If we're looking for the caret attribute not the selection
+    // has the user already got a selection or is this purely a caret location?
+    var isNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
+    if(isNotSelection){
+      if(prevChar){
+        // If it's not the start of the line
+        if(rep.selStart[1] !== 0){
+          rep.selStart[1]--;
+        }
+      }
+    }
+
+    var withIt = Changeset.makeAttribsString('+', [
+      [attributeName, 'true']
+    ], rep.apool);
+    var withItRegex = new RegExp(withIt.replace(/\*/g, '\\*') + "(\\*|$)");
+    function hasIt(attribs)
+    {
+      return withItRegex.test(attribs);
+    }
+
+    return rangeHasAttrib(rep.selStart, rep.selEnd)
+
+    function rangeHasAttrib(selStart, selEnd) {
+      // if range is collapsed -> no attribs in range
+      if(selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false
+
+      if(selStart[0] != selEnd[0]) { // -> More than one line selected
+        var hasAttrib = true
+
+        // from selStart to the end of the first line
+        hasAttrib = hasAttrib && rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length])
+
+        // for all lines in between
+        for(var n=selStart[0]+1; n < selEnd[0]; n++) {
+          hasAttrib = hasAttrib && rangeHasAttrib([n, 0], [n, rep.lines.atIndex(n).text.length])
+        }
+
+        // for the last, potentially partial, line
+        hasAttrib = hasAttrib && rangeHasAttrib([selEnd[0], 0], [selEnd[0], selEnd[1]])
+
+        return hasAttrib
+      }
+
+      // Logic tells us we now have a range on a single line
+
+      var lineNum = selStart[0]
+        , start = selStart[1]
+        , end = selEnd[1]
+        , hasAttrib = true
+
+      // Iterate over attribs on this line
+
+      var opIter = Changeset.opIterator(rep.alines[lineNum])
+        , indexIntoLine = 0
+
+      while (opIter.hasNext()) {
+        var op = opIter.next();
+        var opStartInLine = indexIntoLine;
+        var opEndInLine = opStartInLine + op.chars;
+        if (!hasIt(op.attribs)) {
+          // does op overlap selection?
+          if (!(opEndInLine <= start || opStartInLine >= end)) {
+            hasAttrib = false; // since it's overlapping but hasn't got the attrib -> range hasn't got it
+            break;
+          }
+        }
+        indexIntoLine = opEndInLine;
+      }
+
+      return hasAttrib
+    }
+  },
+
   /*
     Gets all attributes at a position containing line number and column
     @param lineNumber starting with zero
@@ -278,6 +361,9 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
      if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)){
        found = true;
        return [attributeName, ''];
+     }else if (attrib[0] === 'author'){
+       // update last author to make changes to line attributes on this line
+       return [attributeName, this.author];
      }
      return attrib;
    });
