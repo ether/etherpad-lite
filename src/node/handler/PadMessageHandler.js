@@ -863,13 +863,33 @@ exports.updatePadClients = function(pad, callback)
 
             var author = revision.meta.author,
                 revChangeset = revision.changeset,
-                currentTime = revision.meta.timestamp;
+                currentTime = revision.meta.timestamp,
+                origin = revision.meta.origin;
 
             // next if session has not been deleted
             if(sessioninfos[sid] == null)
               return callback(null);
 
-            if(author == sessioninfos[sid].author)
+            if(origin == 'API' && author == sessioninfos[sid].author)
+            {
+              // The API was used to append text on the author's behalf
+              // Sends a message to the author to inform him/her of the changes and to ask to commit changes to the database
+              var forWire = Changeset.prepareForWire(revChangeset, pad.pool);
+              var wireMsg = {
+                              "type": "COLLABROOM",
+                              "data": {
+                                type: "API_APPEND",
+                                newRev: r,
+                                changeset: forWire.translated,
+                                apool: forWire.pool,
+                                author: author,
+                                currentTime: currentTime,
+                                timeDelta: currentTime - sessioninfos[sid].time
+                              }
+              };
+              client.json.send(wireMsg);
+            }
+            else if(author == sessioninfos[sid].author)
             {
               client.json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
             }

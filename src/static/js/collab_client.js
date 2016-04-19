@@ -265,7 +265,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     if (wrapper.type != "COLLABROOM" && wrapper.type != "CUSTOM") return;
     var msg = wrapper.data;
 
-    if (msg.type == "NEW_CHANGES")
+    if (msg.type == "NEW_CHANGES" || msg.type == "API_APPEND")
     {
       var newRev = msg.newRev;
       var changeset = msg.changeset;

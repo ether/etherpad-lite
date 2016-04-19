@@ -73,7 +73,7 @@ Pad.prototype.getPublicStatus = function getPublicStatus() {
   return this.publicStatus;
 };
 
-Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
+Pad.prototype.appendRevision = function appendRevision(aChangeset, author, origin) {
   if(!author)
     author = '';
 
@@ -86,6 +86,7 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
   newRevData.changeset = aChangeset;
   newRevData.meta = {};
   newRevData.meta.author = author;
+  newRevData.meta.origin = origin;
   newRevData.meta.timestamp = new Date().getTime();
 
   //ex. getNumForAuthor

@@ -373,7 +373,7 @@ exports.insertText = function(padID, newText, lineNum, authorID, callback)
       assem.appendOpWithText('+', newText);
       assem.endDocument();
       var typedChanges = Changeset.pack(oldLen, newLen, assem.toString(), newText);
-      pad.appendRevision(typedChanges, authorID);
+      pad.appendRevision(typedChanges, authorID, 'API');
 
       //update the clients on the pad
       padMessageHandler.updatePadClients(pad, callback);
