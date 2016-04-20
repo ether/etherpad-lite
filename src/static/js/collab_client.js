@@ -169,7 +169,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
           });
           handleUserChanges();
         }
-        else if (msg.type == "NEW_CHANGES")
+        else if (msg.type == "NEW_CHANGES" || msg.type == "API_APPEND")
         {
           var changeset = msg.changeset;
           var author = (msg.author || '');
