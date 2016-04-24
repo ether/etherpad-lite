@@ -68,7 +68,7 @@
             <button class="stepper" id="rightstep"></button>
           </div>
         </div>
-        
+
         <div id="overlay">
           <div id="overlay-inner">
             <!-- -->
@@ -231,30 +231,26 @@
 <!-- Bootstrap -->
 <script type="text/javascript" >
   var clientVars = {};
-  var BroadcastSlider;  
+  var BroadcastSlider;
   (function () {
     var pathComponents = location.pathname.split('/');
-    
+
     // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
     var baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/';
-    
-    
+
+
     require.setRootURI(baseURL + "javascripts/src");
     require.setLibraryURI(baseURL + "javascripts/lib");
     require.setGlobalKeyPath("require");
 
     $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
-    browser = require('ep_etherpad-lite/static/js/browser').browser;
-
-    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
-      document.domain = document.domain; // for comet
-    }
+    browser = require('ep_etherpad-lite/static/js/browser');
 
     var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
     var socket = require('ep_etherpad-lite/static/js/timeslider').socket;
     BroadcastSlider = require('ep_etherpad-lite/static/js/timeslider').BroadcastSlider;
     plugins.baseURL = baseURL;
-    
+
     plugins.update(function () {
       var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
       hooks.plugins = plugins;

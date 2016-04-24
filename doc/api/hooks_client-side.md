@@ -111,7 +111,7 @@ Called from: src/static/js/ace.js
 
 Things in context: None
 
-This hook is provided to allow custom CSS files to be loaded. The return value should be an array of paths relative to the plugins directory.
+This hook is provided to allow custom CSS files to be loaded. The return value should be an array of resource urls or paths relative to the plugins directory.
 
 ## aceInitInnerdocbodyHead
 Called from: src/static/js/ace.js
@@ -160,7 +160,19 @@ Things in context:
 1. ace - the ace object that is applied to this editor.
 2. pad - the pad object of the current pad.
 
-There doesn't appear to be any example available of this particular hook being used, but it gets fired after the editor is all set up.
+## postToolbarInit
+Called from: src/static/js/pad_editbar.js
+
+Things in context:
+
+1. ace - the ace object that is applied to this editor.
+2. toolbar - Editbar instance. See below for the Editbar documentation.  
+
+Can be used to register custom actions to the toolbar.
+
+Usage examples: 
+
+* [https://github.com/tiblu/ep_authorship_toggle]()
 
 ## postTimesliderInit
 Called from: src/static/js/timeslider.js
@@ -339,3 +351,14 @@ Things in context:
 
 This hook is provided to allow author highlight style to be modified.
 Registered hooks should return 1 if the plugin handles highlighting.  If no plugin returns 1, the core will use the default background-based highlighting.
+
+## aceSelectionChanged
+Called from: src/static/js/ace2_inner.js
+
+Things in context:
+
+1. rep - information about where the user's cursor is
+2. documentAttributeManager - information about attributes in the document
+
+This hook allows a plugin to react to a cursor or selection change,
+perhaps to update a UI element based on the style at the cursor location.

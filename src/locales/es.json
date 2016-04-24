@@ -75,7 +75,7 @@
 	"pad.modals.looping.cause": "Puede deberse a que te conectes a través de un proxy o un cortafuegos incompatible.",
 	"pad.modals.initsocketfail": "Servidor incalcanzable.",
 	"pad.modals.initsocketfail.explanation": "No se pudo conectar al servidor de sincronización.",
-	"pad.modals.initsocketfail.cause": "Probablemente debido a un problema en tu navegador o en tu conexión a internet.",
+	"pad.modals.initsocketfail.cause": "Probablemente debido a un problema en tu navegador o en tu conexión a Internet.",
 	"pad.modals.slowcommit.explanation": "El servidor no responde.",
 	"pad.modals.slowcommit.cause": "Puede deberse a problemas con tu conexión de red.",
 	"pad.modals.badChangeset.explanation": "Has hecho una edición clasificada como ilegal por el servidor de sincronización.",
@@ -132,7 +132,7 @@
 	"pad.impexp.confirmimport": "Al importar un archivo se borrará el contenido actual del pad. ¿Estás seguro de que quieres continuar?",
 	"pad.impexp.convertFailed": "No pudimos importar este archivo. Inténtalo con un formato diferente o copia y pega manualmente.",
 	"pad.impexp.padHasData": "No hemos podido importar este archivo porque este pad ya ha tenido cambios. Importa a un nuevo pad.",
-	"pad.impexp.uploadFailed": "El envío falló. Intentalo de nuevo.",
+	"pad.impexp.uploadFailed": "El envío falló. Inténtalo de nuevo.",
 	"pad.impexp.importfailed": "Fallo al importar",
 	"pad.impexp.copypaste": "Intenta copiar y pegar",
 	"pad.impexp.exportdisabled": "La exportación al formato {{type}} está desactivada. Contacta a tu administrador de sistemas."

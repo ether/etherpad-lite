@@ -6,7 +6,9 @@
 			"Pitort",
 			"Toniher",
 			"Macofe",
-			"Joan manel"
+			"Joan manel",
+			"Eduardo Martinez",
+			"Jaumeortola"
 		]
 	},
 	"index.newPad": "Nou pad",
@@ -74,7 +76,7 @@
 	"pad.modals.slowcommit.explanation": "El servidor no respon.",
 	"pad.modals.slowcommit.cause": "Això podria ser a causa de problemes amb la connectivitat de la xarxa.",
 	"pad.modals.badChangeset.explanation": "El servidor de sincronització ha classificat com a il·legat una edició que heu fet.",
-	"pad.modals.badChangeset.cause": "Això pot ser degut a una configuració errònia del servidor o a algun altre comportament inesperat. Si us plau, si considereu que això és un error, contacteu amb l'administrador del servei. Intenteu reconnectar-vos per tal de continuar editant.",
+	"pad.modals.badChangeset.cause": "Això pot ser degut a una configuració errònia del servidor o a algun altre comportament inesperat. Si considereu que és un error, contacteu amb l'administrador del servei. Intenteu reconnectar-vos per a continuar editant.",
 	"pad.modals.corruptPad.explanation": "El pad al qual esteu intentant accedir està corrupte.",
 	"pad.modals.corruptPad.cause": "Això pot ser degut a una configuració errònia del servidor o a algun altre comportament inesperat. Si us plau, contacteu amb l'administrador del servei.",
 	"pad.modals.deleted": "Suprimit.",
@@ -97,6 +99,9 @@
 	"timeslider.exportCurrent": "Exporta la versió actual com a:",
 	"timeslider.version": "Versió {{version}}",
 	"timeslider.saved": "Desat {{month}} {{day}}, {{year}}",
+	"timeslider.playPause": "Reproducció / Pausa els continguts del pad",
+	"timeslider.backRevision": "Tornar una revisió enrere en aquest Pad",
+	"timeslider.forwardRevision": "Anar una revisió endavant en aquest Pad",
 	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Gener",
 	"timeslider.month.february": "Febrer",

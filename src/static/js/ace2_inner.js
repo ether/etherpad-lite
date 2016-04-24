@@ -21,7 +21,7 @@
  */
 var _, $, jQuery, plugins, Ace2Common;
 
-var browser = require('./browser').browser;
+var browser = require('./browser');
 if(browser.msie){
   // Honestly fuck IE royally.
   // Basically every hack we have since V11 causes a problem
@@ -1894,7 +1894,11 @@ function Ace2Inner(){
       var prevLine = rep.lines.prev(thisLine);
       var prevLineText = prevLine.text;
       var theIndent = /^ *(?:)/.exec(prevLineText)[0];
-      if (/[\[\(\:\{]\s*$/.exec(prevLineText)) theIndent += THE_TAB;
+      var shouldIndent = parent.parent.clientVars.indentationOnNewLine;
+      if (shouldIndent && /[\[\(\:\{]\s*$/.exec(prevLineText))
+      {
+        theIndent += THE_TAB;
+      }
       var cs = Changeset.builder(rep.lines.totalWidth()).keep(
       rep.lines.offsetOfIndex(lineNum), lineNum).insert(
       theIndent, [
@@ -2334,9 +2338,18 @@ function Ace2Inner(){
   editorInfo.ace_setAttributeOnSelection = setAttributeOnSelection;
 
 
-  function getAttributeOnSelection(attributeName){
+  function getAttributeOnSelection(attributeName, prevChar){
     if (!(rep.selStart && rep.selEnd)) return
-    
+    var isNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
+    if(isNotSelection){
+      if(prevChar){
+        // If it's not the start of the line
+        if(rep.selStart[1] !== 0){
+          rep.selStart[1]--;
+        }
+      }
+    }
+
     var withIt = Changeset.makeAttribsString('+', [
       [attributeName, 'true']
     ], rep.apool);
@@ -2347,14 +2360,14 @@ function Ace2Inner(){
     }
 
     return rangeHasAttrib(rep.selStart, rep.selEnd)
-    
+
     function rangeHasAttrib(selStart, selEnd) {
       // if range is collapsed -> no attribs in range
       if(selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false
-      
+
       if(selStart[0] != selEnd[0]) { // -> More than one line selected
         var hasAttrib = true
-        
+
         // from selStart to the end of the first line
         hasAttrib = hasAttrib && rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length])
 
@@ -2365,22 +2378,22 @@ function Ace2Inner(){
 
         // for the last, potentially partial, line
         hasAttrib = hasAttrib && rangeHasAttrib([selEnd[0], 0], [selEnd[0], selEnd[1]])
-        
+
         return hasAttrib
       }
-      
+
       // Logic tells us we now have a range on a single line
-      
+
       var lineNum = selStart[0]
         , start = selStart[1]
         , end = selEnd[1]
         , hasAttrib = true
-      
+
       // Iterate over attribs on this line
-      
+
       var opIter = Changeset.opIterator(rep.alines[lineNum])
         , indexIntoLine = 0
-      
+
       while (opIter.hasNext()) {
         var op = opIter.next();
         var opStartInLine = indexIntoLine;
@@ -2394,11 +2407,11 @@ function Ace2Inner(){
         }
         indexIntoLine = opEndInLine;
       }
-      
+
       return hasAttrib
     }
   }
-  
+
   editorInfo.ace_getAttributeOnSelection = getAttributeOnSelection;
 
   function toggleAttributeOnSelection(attributeName)
@@ -2423,6 +2436,9 @@ function Ace2Inner(){
       var opIter = Changeset.opIterator(rep.alines[n]);
       var indexIntoLine = 0;
       var selectionStartInLine = 0;
+      if (documentAttributeManager.lineHasMarker(n)) {
+        selectionStartInLine = 1; // ignore "*" used as line marker
+      }
       var selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
       if (n == selStartLine)
       {
@@ -2893,6 +2909,12 @@ function Ace2Inner(){
       rep.selEnd = selectEnd;
       rep.selFocusAtStart = newSelFocusAtStart;
       currentCallStack.repChanged = true;
+
+      hooks.callAll('aceSelectionChanged', {
+        rep: rep,
+        callstack: currentCallStack,
+        documentAttributeManager: documentAttributeManager,
+      });
 
       return true;
       //console.log("selStart: %o, selEnd: %o, focusAtStart: %s", rep.selStart, rep.selEnd,
@@ -3629,16 +3651,10 @@ function Ace2Inner(){
     var altKey = evt.altKey;
     var shiftKey = evt.shiftKey;
 
-    // prevent ESC key
-    if (keyCode == 27)
-    {
-      evt.preventDefault();
-      return;
-    }
     // Is caret potentially hidden by the chat button?
     var myselection = document.getSelection(); // get the current caret selection
     var caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
-    
+
     if(myselection.focusNode.wholeText){ // Is there any content?  If not lineHeight will report wrong..
       var lineHeight = myselection.focusNode.parentNode.offsetHeight; // line height of populated links
     }else{
@@ -3703,20 +3719,25 @@ function Ace2Inner(){
           documentAttributeManager: documentAttributeManager,
           evt:evt
         });
-        specialHandled = (specialHandledInHook&&specialHandledInHook.length>0)?specialHandledInHook[0]:specialHandled;
+
+        // if any hook returned true, set specialHandled with true
+        if (specialHandledInHook) {
+          specialHandled = _.contains(specialHandledInHook, true);
+        }
+
         if ((!specialHandled) && altKey && isTypeForSpecialKey && keyCode == 120){
           // Alt F9 focuses on the File Menu and/or editbar.
           // Note that while most editors use Alt F10 this is not desirable
           // As ubuntu cannot use Alt F10....
           // Focus on the editbar. -- TODO: Move Focus back to previous state (we know it so we can use it)
           var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
-          $(this).blur(); 
+          $(this).blur();
           firstEditbarElement.focus();
           evt.preventDefault();
         }
         if ((!specialHandled) && altKey && keyCode == 67 && type === "keydown"){
           // Alt c focuses on the Chat window
-          $(this).blur(); 
+          $(this).blur();
           parent.parent.chat.show();
           parent.parent.$("#chatinput").focus();
           evt.preventDefault();
@@ -3825,6 +3846,15 @@ function Ace2Inner(){
           {
             outerWin.scrollBy(-100, 0);
           }, 0);
+          specialHandled = true;
+        }
+        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 27)
+        {
+          // prevent esc key;
+          // in mozilla versions 14-19 avoid reconnecting pad.
+
+          fastIncorp(4);
+          evt.preventDefault();
           specialHandled = true;
         }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey) && !evt.altKey) /* Do a saved revision on ctrl S */
@@ -4955,10 +4985,9 @@ function Ace2Inner(){
     $(document).on("keypress", handleKeyEvent);
     $(document).on("keyup", handleKeyEvent);
     $(document).on("click", handleClick);
-
     // Disabled: https://github.com/ether/etherpad-lite/issues/2546
     // Will break OL re-numbering: https://github.com/ether/etherpad-lite/pull/2533
-    // $(document).on("cut", handleCut); 
+    // $(document).on("cut", handleCut);
 
     $(root).on("blur", handleBlur);
     if (browser.msie)
@@ -4969,13 +4998,37 @@ function Ace2Inner(){
 
     // Don't paste on middle click of links
     $(root).on("paste", function(e){
-      // TODO: this breaks pasting strings into URLS when using 
+      // TODO: this breaks pasting strings into URLS when using
       // Control C and Control V -- the Event is never available
       // here.. :(
       if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
       }
+
+      // Call paste hook
+      hooks.callAll('acePaste', {
+        editorInfo: editorInfo,
+        rep: rep,
+        documentAttributeManager: documentAttributeManager,
+        e: e
+      });
     })
+
+    // We reference document here, this is because if we don't this will expose a bug
+    // in Google Chrome.  This bug will cause the last character on the last line to
+    // not fire an event when dropped into..
+    $(document).on("drop", function(e){
+      if(e.target.a || e.target.localName === "a"){
+        e.preventDefault();
+      }
+      // Call drop hook
+      hooks.callAll('aceDrop', {
+        editorInfo: editorInfo,
+        rep: rep,
+        documentAttributeManager: documentAttributeManager,
+        e: e
+      });
+    });
 
     // CompositionEvent is not implemented below IE version 8
     if ( !(browser.msie && parseInt(browser.version <= 9)) && document.documentElement)
@@ -5321,6 +5374,12 @@ function Ace2Inner(){
         level = Number(listType[2]);
       }
       var t = getLineListType(n);
+
+      // if already a list, deindent
+      if (allLinesAreList && level != 1) { level = level - 1;  }
+      // if already indented, then add a level of indentation to the list
+      else if (t && !allLinesAreList) { level = level + 1; }
+
       mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
 
@@ -5344,8 +5403,9 @@ function Ace2Inner(){
   function initLineNumbers()
   {
     lineNumbersShown = 1;
-    sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner"><div>1</div></td></tr></table>';
+    sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner" class="sidedivinner"><div>1</div></td></tr></table>';
     sideDivInner = outerWin.document.getElementById("sidedivinner");
+    $(sideDiv).addClass("sidediv");
   }
 
   function updateLineNumbers()

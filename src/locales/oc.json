@@ -57,7 +57,7 @@
 	"pad.modals.reconnecting": "Reconnexion cap a vòstre Pad...",
 	"pad.modals.forcereconnect": "Forçar la reconnexion.",
 	"pad.modals.userdup": "Dobèrt dins una autra fenèstra",
-	"pad.modals.userdup.explanation": "Sembla qu'aqueste Pad es dobèrt dins mai d'una fenèstra de vòstre navigador sus aqueste ordenador.",
+	"pad.modals.userdup.explanation": "Sembla qu'aqueste Pad es dobèrt dins mai d'una fenèstra de vòstre navigador sus aqueste ordinator.",
 	"pad.modals.userdup.advice": "Se reconnectar en utilizant aquesta fenèstra.",
 	"pad.modals.unauth": "Pas autorizat",
 	"pad.modals.unauth.explanation": "Vòstras permissions son estadas cambiadas al moment de l'afichatge d'aquesta pagina. Ensajatz de vos reconnectar.",

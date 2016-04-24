@@ -6,7 +6,8 @@
 			"Olvin",
 			"Steve.rusyn",
 			"SteveR",
-			"Lxlalexlxl"
+			"Lxlalexlxl",
+			"Григорій Пугач"
 		]
 	},
 	"index.newPad": "Створити",
@@ -97,6 +98,9 @@
 	"timeslider.exportCurrent": "Експортувати поточну версію як:",
 	"timeslider.version": "Версія {{version}}",
 	"timeslider.saved": "Збережено {{month}} {{day}}, {{year}}",
+	"timeslider.playPause": "Відтворення / Пауза Панель Зміст",
+	"timeslider.backRevision": "Переглянути попередню ревізію цієї панелі",
+	"timeslider.forwardRevision": "Переглянути наступну ревізію цієї панелі",
 	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Січень",
 	"timeslider.month.february": "Лютий",
@@ -112,6 +116,7 @@
 	"timeslider.month.december": "Грудень",
 	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: безіменний автор, few: безіменні автори, many: безіменних авторів, other: безіменних авторів]}",
 	"pad.savedrevs.marked": "Цю версію помічено збереженою версією",
+	"pad.savedrevs.timeslider": "Ви можете побачити збережені ревізії, відвідавши \"Слайдер Змін Ревізій\"",
 	"pad.userlist.entername": "Введіть Ваше ім'я",
 	"pad.userlist.unnamed": "безіменний",
 	"pad.userlist.guest": "Гість",
@@ -122,6 +127,7 @@
 	"pad.impexp.importing": "Імпорт...",
 	"pad.impexp.confirmimport": "Імпортування файлу перезапише поточний текст документу. Ви дійсно хочете продовжити?",
 	"pad.impexp.convertFailed": "Ми не можемо імпортувати цей файл. Будь ласка, використайте інший формат документу, або прямо скопіюйте та вставте",
+	"pad.impexp.padHasData": "Ми були не в стані імпортувати цей файл, тому що ця панель, вже відредактована, будь ласка, імпортуйте на нову панель",
 	"pad.impexp.uploadFailed": "Завантаження не вдалось, будь ласка, спробуйте знову",
 	"pad.impexp.importfailed": "Помилка при імпортуванні",
 	"pad.impexp.copypaste": "Будь ласка, скопіюйте та вставте",

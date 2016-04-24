@@ -17,3 +17,4 @@ npm-debug.log
 *.crt
 *.key
 bin/etherpad-1.deb
+credentials.json

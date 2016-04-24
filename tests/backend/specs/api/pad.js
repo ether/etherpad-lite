@@ -79,6 +79,8 @@ describe('Permission', function(){
                             -> movePad(newPadID, originalPadId) -- Should provide consistant pad data
                              -> getText(originalPadId) -- Should be "hello world"
                               -> getLastEdited(padID) -- Should not be 0
+                              -> appendText(padID, "hello")
+                              -> getText(padID) -- Should be "hello worldhello"
                                -> setHTML(padID) -- Should fail on invalid HTML
                                 -> setHTML(padID) *3 -- Should fail on invalid HTML
                                  -> getHTML(padID) -- Should return HTML close to posted HTML
@@ -483,6 +485,30 @@ describe('getLastEdited', function(){
   });
 })
 
+describe('appendText', function(){
+  it('Append text to a pad Id', function(done) {
+    api.get(endPoint('appendText', '1.2.13')+"&padID="+testPadId+"&text=hello")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Append Text failed");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done);
+  });
+});
+
+describe('getText', function(){
+  it('Gets text on a pad Id', function(done) {
+    api.get(endPoint('getText')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Get Text failed");
+      if(res.body.data.text !== text+"hello\n") throw new Error("Pad Text not set properly");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done);
+  });
+});
+
+
 describe('setHTML', function(){
   it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
     var html = "<div><b>Hello HTML</title></head></div>";
@@ -542,8 +568,9 @@ describe('createPad', function(){
 
 */
 
-var endPoint = function(point){
-  return '/api/'+apiVersion+'/'+point+'?apikey='+apiKey;
+var endPoint = function(point, version){
+  version = version || apiVersion;
+  return '/api/'+version+'/'+point+'?apikey='+apiKey;
 }
 
 function makeid()

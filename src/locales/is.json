@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sveinn í Felli"
+			"Sveinn í Felli",
+			"Sveinki"
 		]
 	},
 	"index.newPad": "Ný skrifblokk",
@@ -92,6 +93,9 @@
 	"timeslider.exportCurrent": "Flytja út núverandi útgáfu sem:",
 	"timeslider.version": "Útgáfa {{version}}",
 	"timeslider.saved": "Vistað {{day}}. {{month}}, {{year}}",
+	"timeslider.playPause": "Afspilun / Hlé á efni skrifblokkar",
+	"timeslider.backRevision": "Fara til baka um eina útgáfu í þessari skrifblokk",
+	"timeslider.forwardRevision": "Fara áfram um eina útgáfu í þessari skrifblokk",
 	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Janúar",
 	"timeslider.month.february": "febrúar",

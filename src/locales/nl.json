@@ -3,11 +3,12 @@
 		"authors": [
 			"Siebrand",
 			"Macofe",
-			"Robin0van0der0vliet"
+			"Robin0van0der0vliet",
+			"Robin van der Vliet"
 		]
 	},
 	"index.newPad": "Nieuw pad",
-	"index.createOpenPad": "Maak of open pad met de naam:",
+	"index.createOpenPad": "Pad maken op openen met de naam:",
 	"pad.toolbar.bold.title": "Vet (Ctrl-B)",
 	"pad.toolbar.italic.title": "Cursief (Ctrl-I)",
 	"pad.toolbar.underline.title": "Onderstrepen (Ctrl-U)",
@@ -45,7 +46,7 @@
 	"pad.settings.globalView": "Globaal overzicht",
 	"pad.settings.language": "Taal:",
 	"pad.importExport.import_export": "Importeren/exporteren",
-	"pad.importExport.import": "Upload een tekstbestand of document",
+	"pad.importExport.import": "Tekstbestand of document uploaden",
 	"pad.importExport.importSuccessful": "Afgerond",
 	"pad.importExport.export": "Huidige pad exporteren als",
 	"pad.importExport.exportetherpad": "Etherpad",
@@ -54,7 +55,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "Pdf",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "U kunt alleen importeren vanuit platte tekst of een HTML-opmaak. <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">Installeer abiword</a> om meer geavanceerde importmogelijkheden te krijgen.",
+	"pad.importExport.abiword.innerHTML": "U kunt alleen importeren vanuit Tekst zonder opmaak of een HTML-opmaak. <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">Installeer abiword</a> om meer geavanceerde importmogelijkheden te krijgen.",
 	"pad.modals.connected": "Verbonden.",
 	"pad.modals.reconnecting": "Opnieuw verbinding maken met uw pad...",
 	"pad.modals.forcereconnect": "Opnieuw verbinden",
@@ -65,7 +66,7 @@
 	"pad.modals.unauth.explanation": "Uw rechten zijn gewijzigd terwijl u de pagina aan het bekijken was. Probeer opnieuw te verbinden.",
 	"pad.modals.looping.explanation": "Er is een probleem opgetreden tijdens de communicatie met de synchronisatieserver.",
 	"pad.modals.looping.cause": "Mogelijk gebruikt de server een niet compatibele firewall of proxy server.",
-	"pad.modals.initsocketfail": "Server is niet bereikbaar.",
+	"pad.modals.initsocketfail": "De server is niet bereikbaar.",
 	"pad.modals.initsocketfail.explanation": "Het was niet mogelijk te verbinden met de synchronisatieserver.",
 	"pad.modals.initsocketfail.cause": "Mogelijk komt dit door uw browser of internetverbinding.",
 	"pad.modals.slowcommit.explanation": "De server reageert niet.",

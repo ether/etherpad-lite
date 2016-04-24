@@ -217,8 +217,7 @@ li[data-key=showusers] > a #online_count {
   bottom: 0px;
   z-index: 1;
 
-  /* Required to fix toolbar on top/bottom of the screen on iOS: */
-  overflow: scroll;
+  /* Required to be able to scroll on iOS: */
   -webkit-overflow-scrolling: touch;
 }
 #editorcontainer iframe {

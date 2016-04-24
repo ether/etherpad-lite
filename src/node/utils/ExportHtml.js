@@ -19,6 +19,7 @@ var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
+var _ = require('underscore');
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
@@ -77,9 +78,18 @@ function getHTMLFromAtext(pad, atext, authorColors)
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
 
+  // prepare tags stored as ['tag', true] to be exported
   hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
     newProps.forEach(function (propName, i){
       tags.push(propName);
+      props.push(propName);
+    });
+  });
+  // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML
+  // with tags like <span data-tag="value">
+  hooks.aCallAll("exportHtmlAdditionalTagsWithData", pad, function(err, newProps){
+    newProps.forEach(function (propName, i){
+      tags.push('span data-' + propName[0] + '="' + propName[1] + '"');
       props.push(propName);
     });
   });
@@ -115,8 +125,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
 
-        css+=".removed {text-decoration: line-through; " + 
-             "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+ 
+        css+=".removed {text-decoration: line-through; " +
+             "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+
              "filter: alpha(opacity=80); "+
              "opacity: 0.8; "+
              "}\n";
@@ -130,7 +140,13 @@ function getHTMLFromAtext(pad, atext, authorColors)
   // this pad, and if yes puts its attrib id->props value into anumMap
   props.forEach(function (propName, i)
   {
-    var propTrueNum = apool.putAttrib([propName, true], true);
+    var attrib = [propName, true];
+    if (_.isArray(propName)) {
+      // propName can be in the form of ['color', 'red'],
+      // see hook exportHtmlAdditionalTagsWithData
+      attrib = propName;
+    }
+    var propTrueNum = apool.putAttrib(attrib, true);
     if (propTrueNum >= 0)
     {
       anumMap[propTrueNum] = i;
@@ -154,6 +170,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       var property = props[i];
 
+      // we are not insterested on properties in the form of ['color', 'red'],
+      // see hook exportHtmlAdditionalTagsWithData
+      if (_.isArray(property)) {
+        return false;
+      }
+
       if(property.substr(0,6) === "author"){
         return stripDotFromAuthorID(property);
       }
@@ -163,6 +185,13 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
 
       return false;
+    }
+
+    // tags added by exportHtmlAdditionalTagsWithData will be exported as <span> with
+    // data attributes
+    function isSpanWithData(i){
+      var property = props[i];
+      return _.isArray(property);
     }
 
     function emitOpenTag(i)
@@ -186,8 +215,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
     {
       openTags.shift();
       var spanClass = getSpanClassFor(i);
+      var spanWithData = isSpanWithData(i);
 
-      if(spanClass){
+      if(spanClass || spanWithData){
         assem.append('</span>');
       } else {
         assem.append('</');
@@ -263,7 +293,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
         var s = taker.take(chars);
 
-        //removes the characters with the code 12. Don't know where they come 
+        //removes the characters with the code 12. Don't know where they come
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
 
@@ -377,7 +407,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           pieces.push('<br><br>');
         }
       }*/
-      else//means we are getting closer to the lowest level of indentation or are at the same level 
+      else//means we are getting closer to the lowest level of indentation or are at the same level
       {
         var toClose = lists.length > 0 ? listLevels[listLevels.length - 2] - line.listLevel : 0
         if( toClose > 0){
@@ -416,7 +446,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
         lineContent: lineContent,
         apool: apool,
         attribLine: attribLines[i],
-        text: textLines[i]
+        text: textLines[i],
+        padId: pad.id
       }
 
       var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", context, " ", " ", "");
@@ -431,7 +462,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
     }
   }
-  
+
   for (var k = lists.length - 1; k >= 0; k--)
   {
     if(lists[k][1] == "number")
@@ -460,14 +491,17 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
         stylesForExportCSS += css;
       });
       // Core inclusion of head etc.
-      var head = 
-        (noDocType ? '' : '<!doctype html>\n') + 
-        '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
+      var head =
+        (noDocType ? '' : '<!doctype html>\n') +
+        '<html lang="en">\n' + (noDocType ? '' : '<head>\n' +
           '<title>' + Security.escapeHTML(padId) + '</title>\n' +
-          '<meta charset="utf-8">\n' + 
-          '<style> * { font-family: arial, sans-serif;\n' + 
-            'font-size: 13px;\n' + 
-            'line-height: 17px; }' + 
+          '<meta name="generator" content="Etherpad">\n' +
+          '<meta name="author" content="Etherpad">\n' +
+          '<meta name="changedby" content="Etherpad">\n' +
+          '<meta charset="utf-8">\n' +
+          '<style> * { font-family: arial, sans-serif;\n' +
+            'font-size: 13px;\n' +
+            'line-height: 17px; }' +
             'ul.indent { list-style-type: none; }' +
 
             'ol { list-style-type: none; padding-left:0;}' +
@@ -553,8 +587,8 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 140px; }' +
             'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 150px; }' +
 
-            stylesForExportCSS + 
-            '</style>\n' + '</head>\n') + 
+            stylesForExportCSS +
+            '</style>\n' + '</head>\n') +
         '<body>';
       var foot = '</body>\n</html>\n';
 

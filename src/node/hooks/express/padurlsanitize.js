@@ -16,6 +16,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         if(sanitizedPadId != padId)
         {
           var real_url = sanitizedPadId;
+          real_url = encodeURIComponent(real_url);
           var query = url.parse(req.url).query;
           if ( query ) real_url += '?' + query;
           res.header('Location', real_url);

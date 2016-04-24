@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NODE_VERSION="0.12.2"
+NODE_VERSION="4.4.3"
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
@@ -29,11 +29,11 @@ hash unzip > /dev/null 2>&1 || {
 }
 
 START_FOLDER=$(pwd);
+TMP_FOLDER=$(mktemp -d)
 
-echo "create a clean environment in /tmp/etherpad-lite-win..." 
-rm -rf /tmp/etherpad-lite-win
-cp -ar . /tmp/etherpad-lite-win
-cd /tmp/etherpad-lite-win
+echo "create a clean environment in $TMP_FOLDER..."
+cp -ar . $TMP_FOLDER
+cd $TMP_FOLDER
 rm -rf node_modules
 rm -f etherpad-lite-win.zip
 
@@ -50,21 +50,20 @@ mv node_modules_resolved node_modules
 
 echo "download windows node..."
 cd bin
-wget "http://nodejs.org/dist/v$NODE_VERSION/node.exe" -O ../node.exe
+wget "https://nodejs.org/dist/v$NODE_VERSION/win-x86/node.exe" -O ../node.exe
 
 echo "remove git history to reduce folder size"
 rm -rf .git/objects
 
 echo "remove windows jsdom-nocontextify/test folder"
-rm -rf /tmp/etherpad-lite-win/src/node_modules/wd/node_modules/request/node_modules/form-data/node_modules/combined-stream/test
-rm -rf /tmp/etherpad-lite-win/src/node_modules/nodemailer/node_modules/mailcomposer/node_modules/mimelib/node_modules/encoding/node_modules/iconv-lite/encodings/tables
+rm -rf $TMP_FOLDER/src/node_modules/wd/node_modules/request/node_modules/form-data/node_modules/combined-stream/test
+rm -rf $TMP_FOLDER/src/node_modules/nodemailer/node_modules/mailcomposer/node_modules/mimelib/node_modules/encoding/node_modules/iconv-lite/encodings/tables
 
 echo "create the zip..."
-cd /tmp
-zip -9 -r etherpad-lite-win.zip etherpad-lite-win
-mv etherpad-lite-win.zip $START_FOLDER
+cd $TMP_FOLDER
+zip -9 -r $START_FOLDER/etherpad-lite-win.zip ./*
 
 echo "clean up..."
-rm -rf /tmp/etherpad-lite-win
+rm -rf $TMP_FOLDER
 
 echo "Finished. You can find the zip in the Etherpad root folder, it's called etherpad-lite-win.zip"

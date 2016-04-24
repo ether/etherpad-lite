@@ -6,7 +6,8 @@
 			"Juandev",
 			"Leanes",
 			"Quinn",
-			"Aktron"
+			"Aktron",
+			"Mormegil"
 		]
 	},
 	"index.newPad": "Založ nový Pad",
@@ -113,7 +114,7 @@
 	"timeslider.month.october": "říjen",
 	"timeslider.month.november": "listopad",
 	"timeslider.month.december": "prosinec",
-	"timeslider.unnamedauthors": "{{num}} {[ plural(num) one: nejmenovaný Autor, few: nejmenovaní Autoři, other: nejmenovaných Autorů ]}",
+	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: nejmenovaný autor, few: nejmenovaní autoři, other: nejmenovaných autorů ]}",
 	"pad.savedrevs.marked": "Tato revize je nyní označena jako uložená",
 	"pad.savedrevs.timeslider": "Návštěvou časové osy zobrazíte uložené revize",
 	"pad.userlist.entername": "Zadejte své jméno",

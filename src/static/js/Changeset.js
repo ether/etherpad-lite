@@ -1628,10 +1628,12 @@ exports.applyToAText = function (cs, atext, pool) {
  * @param atext {AText} 
  */
 exports.cloneAText = function (atext) {
-  return {
-    text: atext.text,
-    attribs: atext.attribs
-  };
+  if (atext) {
+    return {
+      text: atext.text,
+      attribs: atext.attribs
+    }
+  } else exports.error("atext is null");
 };
 
 /**

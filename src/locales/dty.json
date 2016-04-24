@@ -50,5 +50,15 @@
 	"pad.importExport.exportpdf": "पिडिएफ",
 	"pad.importExport.exportopen": "ओडिएफ(खुल्ला कागजात ढाँचा)",
 	"pad.modals.connected": "जोडीयाको",
-	"pad.modals.reconnecting": "तमरो प्याडमि आजि: जडान हुन्नाछ"
+	"pad.modals.reconnecting": "तमरो प्याडमि आजि: जडान हुन्नाछ",
+	"pad.modals.initsocketfail": "सर्भरमा पहुँच पुर्‍याउन नाइसकियो  ।",
+	"pad.modals.deleted": "मेटियाको",
+	"pad.modals.deleted.explanation": "यो प्याड हटाइसक्याको छ ।",
+	"pad.modals.disconnected": "तमरो जडान अवरुद्ध भयो ।",
+	"pad.modals.disconnected.explanation": "तमरो सर्भरसितको जडान अवरुद्ध भयो",
+	"pad.share": "यस प्यडलाई बाड्न्या",
+	"pad.share.readonly": "पड्या मात्तरै",
+	"pad.share.link": "लिङ्क",
+	"pad.share.emebdcode": "URL थप्प्या",
+	"pad.chat": "कुरणिकानी"
 }

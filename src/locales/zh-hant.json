@@ -21,7 +21,7 @@
 	"pad.toolbar.indent.title": "縮排（TAB）",
 	"pad.toolbar.unindent.title": "凸排（Shift+TAB）",
 	"pad.toolbar.undo.title": "撤銷（Ctrl-Z）",
-	"pad.toolbar.redo.title": "重做（Ctrl-Y）",
+	"pad.toolbar.redo.title": "重做 (Ctrl+Y)",
 	"pad.toolbar.clearAuthorship.title": "清除協作者顏色區別 (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "以其他檔案格式匯入／匯出",
 	"pad.toolbar.timeslider.title": "時間軸",

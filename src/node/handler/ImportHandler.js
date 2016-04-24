@@ -291,9 +291,6 @@ exports.doImport = function(req, res, padId)
       </head> \
       <script> \
         $(window).load(function(){ \
-          if(navigator.userAgent.indexOf('MSIE') === -1){ \
-            document.domain = document.domain; \
-          } \
           var impexp = window.parent.padimpexp.handleFrameCall('" + directDatabaseAccess +"', '" + status + "'); \
         }) \
       </script>"
