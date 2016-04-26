@@ -98,14 +98,7 @@ exports.kickSessionsFromPad = function(padID)
    return;
 
   //skip if there is nobody on this pad
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
-
-  if(roomClients.length == 0)
+  if(_getRoomClients(padID).length == 0)
     return;
 
   //disconnect everyone from this pad
@@ -519,21 +512,16 @@ function handleSuggestUserName(client, message)
   }
 
   var padId = sessioninfos[client.id].padId;
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padId];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
+  var roomClients = _getRoomClients(padId);
 
   //search the author and send him this message
-  for(var i = 0; i < roomClients.length; i++) {
-    var session = sessioninfos[roomClients[i].id];
+  roomClients.forEach(function(client) {
+    var session = sessioninfos[client.id];
     if(session && session.author == message.data.payload.unnamedId) {
-      roomClients[i].json.send(message);
-      break;
+      client.json.send(message);
+      return;
     }
-  }
+  });
 }
 
 /**
@@ -821,12 +809,7 @@ function handleUserChanges(data, cb)
 exports.updatePadClients = function(pad, callback)
 {
   //skip this step if noone is on this pad
-  var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
+  var roomClients = _getRoomClients(pad.id);
 
   if(roomClients.length==0)
     return callback();
@@ -952,21 +935,16 @@ function handleSwitchToPad(client, message)
   // clear the session and leave the room
   var currentSession = sessioninfos[client.id];
   var padId = currentSession.padId;
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padId];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
-
-  for(var i = 0; i < roomClients.length; i++) {
-    var sinfo = sessioninfos[roomClients[i].id];
+  var roomClients = _getRoomClients(padId);
+  
+  async.forEach(roomClients, function(client, callback) {
+    var sinfo = sessioninfos[client.id];
     if(sinfo && sinfo.author == currentSession.author) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-      sessioninfos[roomClients[i].id] = {};
-      roomClients[i].leave(padId);
+      sessioninfos[client.id] = {};
+      client.leave(padId);
     }
-  }
+  });
 
   // start up the new pad
   createSessionInfo(client, message);
@@ -1136,22 +1114,17 @@ function handleClientReady(client, message)
         return callback();
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
-      var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
-      if (room) {
-        for (var id in room) {
-          roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-        }
-      }
-
-      for(var i = 0; i < roomClients.length; i++) {
-        var sinfo = sessioninfos[roomClients[i].id];
+      var roomClients = _getRoomClients(pad.id);
+      
+      async.forEach(roomClients, function(client, callback) {
+        var sinfo = sessioninfos[client.id];
         if(sinfo && sinfo.author == author) {
           // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-          sessioninfos[roomClients[i].id] = {};
-          roomClients[i].leave(padIds.padId);
-          roomClients[i].json.send({disconnect:"userdup"});
+          sessioninfos[client.id] = {};
+          client.leave(padIds.padId);
+          client.json.send({disconnect:"userdup"});
         }
-      }
+      });
 
       //Save in sessioninfos that this session belonges to this pad
       sessioninfos[client.id].padId = padIds.padId;
@@ -1295,13 +1268,8 @@ function handleClientReady(client, message)
       // notify all existing users about new user
       client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
 
-      //Run trough all sessions of this pad
-      var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
-      if (room) {
-        for (var id in room) {
-          roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-        }
-      }
+      //Get sessions for this pad
+      var roomClients = _getRoomClients(pad.id);
 
       async.forEach(roomClients, function(roomClient, callback)
       {
@@ -1706,20 +1674,24 @@ function composePadChangesets(padId, startNum, endNum, callback)
   });
 }
 
+function _getRoomClients(padID) {
+  var roomClients = []; var room = socketio.sockets.adapter.rooms[padID];
+  
+  if (room) {
+    for (var id in room.sockets) {
+      roomClients.push(socketio.sockets.sockets[id]);
+    }
+  }
+  
+  return roomClients;
+}
+
 /**
  * Get the number of users in a pad
  */
 exports.padUsersCount = function (padID, callback) {
-
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
-
   callback(null, {
-    padUsersCount: roomClients.length
+    padUsersCount: _getRoomClients(padID).length
   });
 }
 
@@ -1729,12 +1701,7 @@ exports.padUsersCount = function (padID, callback) {
 exports.padUsers = function (padID, callback) {
   var result = [];
 
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
+  var roomClients = _getRoomClients(padID);
 
   async.forEach(roomClients, function(roomClient, callback) {
     var s = sessioninfos[roomClient.id];
