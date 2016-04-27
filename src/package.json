@@ -56,5 +56,8 @@
                        "url" : "http://github.com/ether/etherpad-lite.git"
                      },
   "version"        : "1.5.7",
-  "license"        : "Apache-2.0"
+  "license"        : "Apache-2.0",
+  "config"         : {
+                     "start" : "node server.js"
+                   }
 }
