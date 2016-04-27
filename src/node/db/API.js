@@ -367,13 +367,16 @@ exports.insertText = function(padID, newText, lineNum, authorID, callback)
       {
         insertPoint = oldLen-1;
       }
+      // Get attributes for this author
+      var attribNum = pad.pool.attribToNum[[ 'author', authorID ]];
 
       var assem = Changeset.smartOpAssembler();
       assem.appendOpWithText('=', oldText.substring(0, insertPoint));
-      assem.appendOpWithText('+', newText);
+      assem.appendOpWithText('+', newText, '*' + attribNum);
       assem.endDocument();
       var typedChanges = Changeset.pack(oldLen, newLen, assem.toString(), newText);
       pad.appendRevision(typedChanges, authorID);
+
 
       //update the clients on the pad
       padMessageHandler.updatePadClients(pad, callback);
