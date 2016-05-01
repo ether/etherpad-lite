@@ -369,6 +369,10 @@ exports.insertText = function(padID, newText, lineNum, authorID, callback)
       }
       // Get attributes for this author
       var attribNum = pad.pool.attribToNum[[ 'author', authorID ]];
+      if (attribNum===undefined)  // No attributes yet for this author
+      {
+        attribNum = pad.pool.putAttrib([ 'author', authorID ]);
+      }
 
       var assem = Changeset.smartOpAssembler();
       assem.appendOpWithText('=', oldText.substring(0, insertPoint));
