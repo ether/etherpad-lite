@@ -19,7 +19,7 @@
 	"pad.toolbar.unindent.title": "Giảm lề (Shift+TAB)",
 	"pad.toolbar.undo.title": "Hoàn tác (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Làm lại (Ctrl-Y)",
-	"pad.toolbar.clearAuthorship.title": "Xóa Màu chỉ Tác giả",
+	"pad.toolbar.clearAuthorship.title": "Xóa Màu chỉ Tác giả (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Xuất/Nhập từ/đến các định dạng file khác nhau",
 	"pad.toolbar.timeslider.title": "Thanh thời gian",
 	"pad.toolbar.savedRevision.title": "Lưu Phiên bản",
