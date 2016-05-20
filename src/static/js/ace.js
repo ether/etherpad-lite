@@ -229,7 +229,6 @@ function Ace2Editor()
 
       // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
       if(!clientVars.disableCustomScriptsAndStyles){
-        console.log("loading custom shit"); // cake remove me
         $$INCLUDE_CSS("../static/css/pad.css");
         $$INCLUDE_CSS("../static/custom/pad.css");
       }
