@@ -18,6 +18,9 @@
   "ip": "0.0.0.0",
   "port" : 9001,
 
+  // Option to hide/show the settings.json in admin page, default option is set to true
+  "showSettingsInAdminPage" : true,
+
   /*
   // Node native SSL support
   // this is disabled by default
