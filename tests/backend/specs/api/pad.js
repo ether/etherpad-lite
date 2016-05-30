@@ -202,7 +202,6 @@ describe('getText', function(){
 describe('setText', function(){
   it('creates a new Pad with text', function(done) {
     var textString = "testText\tTwo"; // note the \t to emualte a tab
-    console.warn("Set text as ", textString);
     api.get(endPoint('setText')+"&padID="+testPadId+"&text="+textString)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad setting text failed");
@@ -553,8 +552,8 @@ describe('getHTML', function(){
   it('Gets the HTML of a Pad and include author info', function(done) {
     api.get(endPoint('getHTML')+"&padID="+testPadId+"&authorColor=true")
     .expect(function(res){
-      var html = res.body.data.html;
-      console.warn("html", html);
+      var html = res.body.data.html;	
+      console.warn("WARN html", html);
       if(html !== html) throw new Error("Imported HTML does not match served HTML")
     })
     .expect('Content-Type', /json/)
@@ -587,6 +586,7 @@ describe('createPad', function(){
 
 var endPoint = function(point, version){
   version = version || apiVersion;
+  var ep = '/api/'+version+'/'+point+'?apikey='+apiKey;
   return '/api/'+version+'/'+point+'?apikey='+apiKey;
 }
 
