@@ -351,8 +351,6 @@ Example returns:
 */
 exports.getHTML = function(padID, rev, authorColor, callback)
 {
-console.log("tits");
-console.log("authorColor", authorColor);
   if(typeof authorColor == "function"){
     callback = authorColor;
     authorColor = undefined;
