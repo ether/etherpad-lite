@@ -69,6 +69,7 @@
   "pad.importExport.exportword": "Microsoft Word",
   "pad.importExport.exportpdf": "PDF",
   "pad.importExport.exportopen": "ODF (Open Document Format)",
+  "pad.importExport.authorColors": "Include Author Colors in HTML Export",
   "pad.importExport.abiword.innerHTML": "You only can import from plain text or HTML formats. For more advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
 
   "pad.modals.connected": "Connected.",

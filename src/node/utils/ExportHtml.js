@@ -478,7 +478,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
   return pieces.join('');
 }
 
-exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
+exports.getPadHTMLDocument = function (padId, revNum, noDocType, authorColor, callback)
 {
   padManager.getPad(padId, function (err, pad)
   {
@@ -591,8 +591,7 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
             '</style>\n' + '</head>\n') +
         '<body>';
       var foot = '</body>\n</html>\n';
-
-      getPadHTML(pad, revNum, function (err, html)
+      getPadHTML(pad, revNum, authorColor, function (err, html)
       {
         if(ERR(err, callback)) return;
         callback(null, head + html + foot);

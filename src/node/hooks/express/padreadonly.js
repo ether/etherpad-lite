@@ -40,7 +40,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         hasPadAccess(req, res, function()
         {
           //render the html document
-          exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
+          exporthtml.getPadHTMLDocument(padId, null, false, false, function(err, _html)
           {
             if(ERR(err, callback)) return;
             html = _html;

@@ -193,6 +193,14 @@ var padimpexp = (function()
       //get http://example.com/p/padname without Params
       var pad_root_url = document.location.protocol + '//' + document.location.host + document.location.pathname;
 
+      $('#exportauthorcolors').click(function(){
+        if($('#exportauthorcolors').is(":checked")){
+          $("#exporthtmla").attr("href", pad_root_path + "/export/html?authorColors=true");
+        }else{
+          $("#exporthtmla").attr("href", pad_root_path + "/export/html");
+        }
+      });
+
       //i10l buttom import
       $('#importsubmitinput').val(html10n.get("pad.impexp.importbutton"));
       html10n.bind('localized', function() {
