@@ -18,6 +18,7 @@
 var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
+var authorManager = require("../db/AuthorManager");
 var ERR = require("async-stacktrace");
 var _ = require('underscore');
 var Security = require('ep_etherpad-lite/static/js/security');
@@ -117,8 +118,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
         var propName = "author" + stripDotFromAuthorID(attr[1]);
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
-
-        css+="." + propName + " {background-color: " + authorColors[attr[1]]+ "}\n";
+        authorManager.getAuthorColorId(attr[1], function(k,v){
+          css+="." + propName + " {background-color: " + v + "}\n";
+        });
       } else if(attr[0] === "removed") {
         var propName = "removed";
 
