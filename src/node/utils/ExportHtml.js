@@ -118,8 +118,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
         var propName = "author" + stripDotFromAuthorID(attr[1]);
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
-        authorManager.getAuthorColorId(attr[1], function(k,v){
-          css+="." + propName + " {background-color: " + v + "}\n";
+        var palette = authorManager.getColorPalette();
+        authorManager.getAuthorColorId(attr[1], function(k,colorId){
+          css+="." + propName + " {background-color: " + palette[colorId] + "}\n";
         });
       } else if(attr[0] === "removed") {
         var propName = "removed";
