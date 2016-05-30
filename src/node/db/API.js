@@ -342,19 +342,25 @@ exports.appendText = function(padID, text, callback)
 
 
 /**
-getHTML(padID, [rev]) returns the html of a pad 
+getHTML(padID, [rev], [authorColor]) returns the html of a pad 
 
 Example returns:
 
 {code: 0, message:"ok", data: {text:"Welcome <strong>Text</strong>"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getHTML = function(padID, rev, callback)
+exports.getHTML = function(padID, rev, authorColor, callback)
 {
+console.log("tits");
+console.log("authorColor", authorColor);
+  if(typeof authorColor == "function"){
+    callback = authorColor;
+    authorColor = undefined;
+  }
   if(typeof rev == "function")
   {
     callback = rev;
-    rev = undefined; 
+    rev = undefined;
   }
 
   if (rev !== undefined && typeof rev != "number")
@@ -397,7 +403,7 @@ exports.getHTML = function(padID, rev, callback)
       }
      
       //get the html of this revision 
-      exportHtml.getPadHTML(pad, rev, function(err, html)
+      exportHtml.getPadHTML(pad, rev, authorColor, function(err, html)
       {
           if(ERR(err, callback)) return;
           html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
@@ -409,7 +415,7 @@ exports.getHTML = function(padID, rev, callback)
     //the client wants the latest text, lets return it to him
     else
     {
-      exportHtml.getPadHTML(pad, undefined, function (err, html)
+      exportHtml.getPadHTML(pad, undefined, authorColor, function (err, html)
       {
         if(ERR(err, callback)) return;
         html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head

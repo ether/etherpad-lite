@@ -120,7 +120,7 @@ var padIdTransforms = [
  * @param {Function} callback 
  */
 exports.getPad = function(id, text, callback)
-{    
+{
   //check if this is a valid padId
   if(!exports.isValidPadId(id))
   {
@@ -144,7 +144,7 @@ exports.getPad = function(id, text, callback)
       callback(new customError("text is not a string","apierror"));
       return;
     }
-    
+
     //check if text is less than 100k chars
     if(text.length > 100000)
     {

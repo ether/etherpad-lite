@@ -10,7 +10,7 @@ var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 apiKey = apiKey.replace(/\n$/, "");
-var apiVersion = 1;
+var apiVersion = "1.2.14";
 var testPadId = makeid();
 var lastEdited = "";
 var text = generateLongText();
@@ -84,7 +84,8 @@ describe('Permission', function(){
                                -> setHTML(padID) -- Should fail on invalid HTML
                                 -> setHTML(padID) *3 -- Should fail on invalid HTML
                                  -> getHTML(padID) -- Should return HTML close to posted HTML
-                                  -> createPad -- Tries to create pads with bad url characters
+                                  -> getHTML(padID, authorColor) -- Should return HTML close to posted HTML with some Author markup
+                                   -> createPad -- Tries to create pads with bad url characters
 
 */
 
@@ -200,7 +201,9 @@ describe('getText', function(){
 
 describe('setText', function(){
   it('creates a new Pad with text', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text=testTextTwo")
+    var textString = "testText\tTwo"; // note the \t to emualte a tab
+    console.warn("Set text as ", textString);
+    api.get(endPoint('setText')+"&padID="+testPadId+"&text="+textString)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad setting text failed");
     })
@@ -213,7 +216,8 @@ describe('getText', function(){
   it('gets the Pad text', function(done) {
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
-      if(res.body.data.text !== "testTextTwo\n") throw new Error("Setting Text")
+      var expectedString = "testText        Two\n";
+      if(res.body.data.text !== expectedString) throw new Error("Getting Text error")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -539,6 +543,19 @@ describe('getHTML', function(){
       var ehtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
       var uhtml = ULhtml.toLowerCase();
       if(ehtml !== uhtml) throw new Error("Imported HTML does not match served HTML")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getHTML', function(){
+  it('Gets the HTML of a Pad and include author info', function(done) {
+    api.get(endPoint('getHTML')+"&padID="+testPadId+"&authorColor=true")
+    .expect(function(res){
+      var html = res.body.data.html;
+      console.warn("html", html);
+      if(html !== html) throw new Error("Imported HTML does not match served HTML")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
