@@ -21,7 +21,8 @@
 			"Macofe",
 			"Framafan",
 			"Fylip22",
-			"C13m3n7"
+			"C13m3n7",
+			"Wladek92"
 		]
 	},
 	"index.newPad": "Nouveau pad",
@@ -141,8 +142,8 @@
 	"pad.impexp.importing": "Import en cours...",
 	"pad.impexp.confirmimport": "Importer un fichier écrasera le contenu actuel du pad. Êtes-vous sûr de vouloir le faire ?",
 	"pad.impexp.convertFailed": "Nous ne pouvons pas importer ce fichier. Veuillez utiliser un autre format de document ou faire manuellement un copier/coller du texte brut",
-	"pad.impexp.padHasData": "Nous n’avons pas pu importer ce fichier parce que ce pad a déjà eu des modifications ; veuillez donc en créer un nouveau",
-	"pad.impexp.uploadFailed": "Le téléchargement a échoué, veuillez réessayer",
+	"pad.impexp.padHasData": "Nous n’avons pas pu importer ce fichier parce que ce pad a déjà eu des modifications ; veuillez donc créer un nouveau pad",
+	"pad.impexp.uploadFailed": "Le téléversement a échoué, veuillez réessayer",
 	"pad.impexp.importfailed": "Échec de l'importation",
 	"pad.impexp.copypaste": "Veuillez copier/coller",
 	"pad.impexp.exportdisabled": "L'option d'export au format {{type}} est désactivée. Veuillez contacter votre administrateur système pour plus de détails."
