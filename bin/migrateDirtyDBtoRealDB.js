@@ -7,8 +7,8 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
   // file before using this script, just to be safe.
 
   var settings = require("ep_etherpad-lite/node/utils/Settings");
-  var dirty = require("dirty")('var/dirty.db');
-  var ueberDB = require("../src/node_modules/ueberDB");
+  var dirty = require("../src/node_modules/dirty")('var/dirty.db');
+  var ueberDB = require("../src/node_modules/ueberdb2");
   var log4js = require("../src/node_modules/log4js");
   var dbWrapperSettings = {
       "cache": "0",         // The cache slows things down when you're mostly writing.
