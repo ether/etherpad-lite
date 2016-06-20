@@ -141,6 +141,13 @@ Things in context: None
 
 When aceEditEvent (documented above) finishes processing the event, it scrolls the viewport to make caret visible to the user, but if you don't want that behavior to happen you can use this hook to register which edit events should not scroll viewport. The return value of this hook should be a list of event names.
 
+Example:
+```
+exports.aceRegisterNonScrollableEditEvents = function(){
+  return [ 'repaginate', 'updatePageCount' ];
+}
+```
+
 ## aceRegisterBlockElements
 Called from: src/static/js/ace2_inner.js
 
