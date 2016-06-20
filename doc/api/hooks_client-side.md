@@ -134,6 +134,20 @@ Things in context:
 
 This hook is made available to edit the edit events that might occur when changes are made. Currently you can change the editor information, some of the meanings of the edit, and so on. You can also make internal changes (internal to your plugin) that use the information provided by the edit event.
 
+## aceRegisterNonScrollableEditEvents
+Called from: src/static/js/ace2_inner.js
+
+Things in context: None
+
+When aceEditEvent (documented above) finishes processing the event, it scrolls the viewport to make caret visible to the user, but if you don't want that behavior to happen you can use this hook to register which edit events should not scroll viewport. The return value of this hook should be a list of event names.
+
+Example:
+```
+exports.aceRegisterNonScrollableEditEvents = function(){
+  return [ 'repaginate', 'updatePageCount' ];
+}
+```
+
 ## aceRegisterBlockElements
 Called from: src/static/js/ace2_inner.js
 
@@ -166,11 +180,11 @@ Called from: src/static/js/pad_editbar.js
 Things in context:
 
 1. ace - the ace object that is applied to this editor.
-2. toolbar - Editbar instance. See below for the Editbar documentation.  
+2. toolbar - Editbar instance. See below for the Editbar documentation.
 
 Can be used to register custom actions to the toolbar.
 
-Usage examples: 
+Usage examples:
 
 * [https://github.com/tiblu/ep_authorship_toggle]()
 
