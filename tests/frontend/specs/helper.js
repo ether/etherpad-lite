@@ -158,6 +158,24 @@ describe("the test helper", function(){
       done();
     });
 
+    it("ends selection at beginning of $endLine when its offset is zero", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 0;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.slice(1,2);
+      var $endLine   = $lines.slice(3,4);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort \nlines \n");
+
+      done();
+    });
+
     it("selects full line when offset is longer than line content", function(done){
       var inner$ = helper.padInner$;
 

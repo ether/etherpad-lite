@@ -145,7 +145,7 @@ var helper = {};
   helper.selectLines = function($startLine, $endLine, startOffset, endOffset){
     // if no offset is provided, use beginning of start line and end of end line
     startOffset = startOffset || 0;
-    endOffset   = endOffset   || $endLine.text().length;
+    endOffset   = endOffset === undefined ? $endLine.text().length : endOffset;
 
     var inner$    = helper.padInner$;
     var selection = inner$.document.getSelection();
