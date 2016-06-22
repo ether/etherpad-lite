@@ -3,7 +3,8 @@
 		"authors": [
 			"Erdemaslancan",
 			"Gorizon",
-			"Mirzali"
+			"Mirzali",
+			"Kumkumuk"
 		]
 	},
 	"index.newPad": "Pedo newe",
@@ -73,7 +74,7 @@
 	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Çele",
 	"timeslider.month.february": "Zemherı",
-	"timeslider.month.march": "Mert",
+	"timeslider.month.march": "Adar",
 	"timeslider.month.april": "Nisane",
 	"timeslider.month.may": "Gúlan",
 	"timeslider.month.june": "Heziran",
