@@ -15,7 +15,7 @@ describe("indentation button", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE  
+    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE
       var evtType = "keypress";
     }else{
       var evtType = "keydown";
@@ -31,7 +31,7 @@ describe("indentation button", function(){
   });
 
   it("indent text with button", function(done){
-    var inner$ = helper.padInner$; 
+    var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
     var $indentButton = chrome$(".buttonicon-indent");
@@ -43,7 +43,7 @@ describe("indentation button", function(){
   });
 
   it("keeps the indent on enter for the new line", function(done){
-    var inner$ = helper.padInner$; 
+    var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
     var $indentButton = chrome$(".buttonicon-indent");
@@ -51,9 +51,9 @@ describe("indentation button", function(){
 
     //type a bit, make a line break and type again
     var $firstTextElement = inner$("div span").first();
-    $firstTextElement.sendkeys('line 1'); 
-    $firstTextElement.sendkeys('{enter}');    
-    $firstTextElement.sendkeys('line 2'); 
+    $firstTextElement.sendkeys('line 1');
+    $firstTextElement.sendkeys('{enter}');
+    $firstTextElement.sendkeys('line 2');
     $firstTextElement.sendkeys('{enter}');
 
     helper.waitFor(function(){
@@ -68,13 +68,87 @@ describe("indentation button", function(){
     });
   });
 
+  it("indents text with spaces on enter if previous line ends with ':', '[', '(', or '{'", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //type a bit, make a line break and type again
+    var $firstTextElement = inner$("div").first();
+    $firstTextElement.sendkeys("line with ':'{enter}");
+    $firstTextElement.sendkeys("line with '['{enter}");
+    $firstTextElement.sendkeys("line with '('{enter}");
+    $firstTextElement.sendkeys("line with '{{}'{enter}");
+
+    helper.waitFor(function(){
+      // wait for Etherpad to split four lines into separated divs
+      var $fourthLine = inner$("div").first().next().next().next();
+      return $fourthLine.text().indexOf("line with '{'") === 0;
+    }).done(function(){
+      // we validate bottom to top for easier implementation
+
+      // curly braces
+      var $lineWithCurlyBraces = inner$("div").first().next().next().next();
+      $lineWithCurlyBraces.sendkeys('{{}');
+      pressEnter(); // cannot use sendkeys('{enter}') here, browser does not read the command properly
+      var $lineAfterCurlyBraces = inner$("div").first().next().next().next().next();
+      expect($lineAfterCurlyBraces.text()).to.match(/\s{4}/); // tab === 4 spaces
+
+      // parenthesis
+      var $lineWithParenthesis = inner$("div").first().next().next();
+      $lineWithParenthesis.sendkeys('(');
+      pressEnter();
+      var $lineAfterParenthesis = inner$("div").first().next().next().next();
+      expect($lineAfterParenthesis.text()).to.match(/\s{4}/);
+
+      // bracket
+      var $lineWithBracket = inner$("div").first().next();
+      $lineWithBracket.sendkeys('[');
+      pressEnter();
+      var $lineAfterBracket = inner$("div").first().next().next();
+      expect($lineAfterBracket.text()).to.match(/\s{4}/);
+
+      // colon
+      var $lineWithColon = inner$("div").first();
+      $lineWithColon.sendkeys(':');
+      pressEnter();
+      var $lineAfterColon = inner$("div").first().next();
+      expect($lineAfterColon.text()).to.match(/\s{4}/);
+
+      done();
+    });
+  });
+
+  it("appends indentation to the indent of previous line if previous line ends with ':', '[', '(', or '{'", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //type a bit, make a line break and type again
+    var $firstTextElement = inner$("div").first();
+    $firstTextElement.sendkeys("  line with some indentation and ':'{enter}");
+    $firstTextElement.sendkeys("line 2{enter}");
+
+    helper.waitFor(function(){
+      // wait for Etherpad to split two lines into separated divs
+      var $secondLine = inner$("div").first().next();
+      return $secondLine.text().indexOf("line 2") === 0;
+    }).done(function(){
+      var $lineWithColon = inner$("div").first();
+      $lineWithColon.sendkeys(':');
+      pressEnter();
+      var $lineAfterColon = inner$("div").first().next();
+      expect($lineAfterColon.text()).to.match(/\s{6}/); // previous line indentation + regular tab (4 spaces)
+
+      done();
+    });
+  });
+
   /*
 
   it("makes text indented and outdented", function() {
 
     //get the inner iframe
     var $inner = testHelper.$getPadInner();
-    
+
     //get the first text element out of the inner iframe
     var firstTextElement = $inner.find("div").first();
 
@@ -87,7 +161,7 @@ describe("indentation button", function(){
 
     //ace creates a new dom element when you press a button, so just get the first text element again
     var newFirstTextElement = $inner.find("div").first();
-    
+
     // is there a list-indent class element now?
     var firstChild = newFirstTextElement.children(":first");
     var isUL = firstChild.is('ul');
@@ -160,12 +234,12 @@ describe("indentation button", function(){
     /* this test creates the below content, both should have double indentation
     line1
     line2
-    
+
 
     firstTextElement.sendkeys('{rightarrow}'); // simulate a keypress of enter
     firstTextElement.sendkeys('{enter}'); // simulate a keypress of enter
     firstTextElement.sendkeys('line 1'); // simulate writing the first line
-    firstTextElement.sendkeys('{enter}'); // simulate a keypress of enter   
+    firstTextElement.sendkeys('{enter}'); // simulate a keypress of enter
     firstTextElement.sendkeys('line 2'); // simulate writing the second line
 
     //get the second text element out of the inner iframe
@@ -203,3 +277,15 @@ describe("indentation button", function(){
   });*/
 
 });
+
+function pressEnter(){
+  var inner$ = helper.padInner$;
+  if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE
+    var evtType = "keypress";
+  }else{
+    var evtType = "keydown";
+  }
+  var e = inner$.Event(evtType);
+  e.keyCode = 13; // enter :|
+  inner$("#innerdocbody").trigger(e);
+}

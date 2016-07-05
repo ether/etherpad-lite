@@ -851,6 +851,7 @@ window.html10n = (function(window, document, undefined) {
        , "innerHTML": 1
        , "alt": 1
        , "textContent": 1
+       , "value": 1
        }
     if (index > 0 && str.id.substr(index + 1) in attrList) { // an attribute has been specified
       prop = str.id.substr(index + 1)
@@ -861,6 +862,9 @@ window.html10n = (function(window, document, undefined) {
     // Apply translation
     if (node.children.length === 0 || prop != 'textContent') {
       node[prop] = str.str
+      node.setAttribute("aria-label", str.str); // Sets the aria-label
+      // The idea of the above is that we always have an aria value
+      // This might be a bit of an abrupt solution but let's see how it goes
     } else {
       var children = node.childNodes,
           found = false

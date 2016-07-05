@@ -189,7 +189,7 @@ a img {
   left:0px;
   right:250px;
 }
-  
+
 .toolbar ul.menu_right {
   right:0px;
 }
@@ -216,6 +216,9 @@ li[data-key=showusers] > a #online_count {
   right: 0px;
   bottom: 0px;
   z-index: 1;
+
+  /* Required to be able to scroll on iOS: */
+  -webkit-overflow-scrolling: touch;
 }
 #editorcontainer iframe {
   height: 100%;
@@ -860,6 +863,7 @@ input[type=checkbox] {
   padding: 10px;
   border-radius: 0 0 6px 6px;
   border: 1px solid #ccc;
+  border-top: none;
   background: #f7f7f7;
   background: -webkit-linear-gradient(#F7F7F7, #EEE);
   background: -moz-linear-gradient(#F7F7F7, #EEE);
@@ -1028,7 +1032,7 @@ input[type=checkbox] {
     left:0px;
     right:100px;
   }
-  
+
   .toolbar ul.menu_right {
     right:0px;
   }
@@ -1058,10 +1062,11 @@ input[type=checkbox] {
     #editorcontainer {
       margin-bottom: 33px
     }
-    .toolbar ul.menu_left {
-      right:0px;
+    /* cancel non-mobile border (will be defined on ".toolbar ul.menu_left" bellow) */
+    .toolbar {
+      border-bottom: 0;
     }
-    .toolbar ul.menu_right {
+    .toolbar ul {
       background: #f7f7f7;
       background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
       background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
@@ -1069,8 +1074,18 @@ input[type=checkbox] {
       background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
       background: linear-gradient(#f7f7f7, #f1f1f1 80%);
       width: 100%;
-      right:0px !important;
       overflow: hidden;
+    }
+    .toolbar ul.menu_left {
+      right:0px;
+      position: fixed;
+      top: 0;
+      padding-top: 4px;
+      border-bottom: 1px solid #ccc;
+      z-index: 10;
+    }
+    .toolbar ul.menu_right {
+      right:0px !important;
       height: 32px;
       position: fixed;
       bottom: 0;
@@ -1090,14 +1105,14 @@ input[type=checkbox] {
       background: none !important
     }
     li[data-key="showusers"] > a {
-      
+
       margin-top:-10px;
       padding-top:2px !important;
       line-height:20px;
       vertical-align:top !important;
     }
     #chaticon {
-      position:absolute;
+      position:fixed;
       right:48px;
     }
     .popup {
@@ -1126,7 +1141,7 @@ input[type=checkbox] {
       line-height: 24px
     }
     #chatbox{
-      position:absolute;
+      position:fixed;
       bottom:33px !important;
       margin: 65px 0 0 0;
     }
@@ -1247,11 +1262,11 @@ input[type=checkbox] {
 
 @font-face {
   font-family: "fontawesome-etherpad";
-  src:url("../font/fontawesome-etherpad.eot");
-  src:url("../font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
-    url("../font/fontawesome-etherpad.woff") format("woff"),
-    url("../font/fontawesome-etherpad.ttf") format("truetype"),
-    url("../font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
+  src:url("../../static/font/fontawesome-etherpad.eot");
+  src:url("../../static/font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
+    url("../../static/font/fontawesome-etherpad.woff") format("woff"),
+    url("../../static/font/fontawesome-etherpad.ttf") format("truetype"),
+    url("../../static/font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
   font-weight: normal;
   font-style: normal;
 

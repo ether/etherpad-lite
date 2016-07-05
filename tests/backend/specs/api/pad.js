@@ -1,7 +1,8 @@
 var assert = require('assert')
  supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
         fs = require('fs'),
-       api = supertest('http://localhost:9001');
+  settings = require(__dirname+'/../../loadSettings').loadSettings(),
+       api = supertest('http://'+settings.ip+":"+settings.port),
       path = require('path'),
      async = require(__dirname+'/../../../../src/node_modules/async');
 
@@ -78,6 +79,8 @@ describe('Permission', function(){
                             -> movePad(newPadID, originalPadId) -- Should provide consistant pad data
                              -> getText(originalPadId) -- Should be "hello world"
                               -> getLastEdited(padID) -- Should not be 0
+                              -> appendText(padID, "hello")
+                              -> getText(padID) -- Should be "hello worldhello"
                                -> setHTML(padID) -- Should fail on invalid HTML
                                 -> setHTML(padID) *3 -- Should fail on invalid HTML
                                  -> getHTML(padID) -- Should return HTML close to posted HTML
@@ -393,6 +396,29 @@ describe('getText', function(){
   });
 })
 
+describe('setText', function(){
+  it('Sets text on a pad Id including an explicit newline', function(done) {
+    api.get(endPoint('setText')+"&padID="+testPadId+"&text="+text+'%0A')
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Set Text failed")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getText', function(){
+  it("Gets text on a pad Id and doesn't have an excess newline", function(done) {
+    api.get(endPoint('getText')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Get Text failed")
+      if(res.body.data.text !== text+"\n") throw new Error("Pad Text not set properly");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
 describe('getLastEdited', function(){
   it('Gets when pad was last edited', function(done) {
     api.get(endPoint('getLastEdited')+"&padID="+testPadId)
@@ -459,12 +485,35 @@ describe('getLastEdited', function(){
   });
 })
 
+describe('appendText', function(){
+  it('Append text to a pad Id', function(done) {
+    api.get(endPoint('appendText', '1.2.13')+"&padID="+testPadId+"&text=hello")
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Append Text failed");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done);
+  });
+});
+
+describe('getText', function(){
+  it('Gets text on a pad Id', function(done) {
+    api.get(endPoint('getText')+"&padID="+testPadId)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("Pad Get Text failed");
+      if(res.body.data.text !== text+"hello\n") throw new Error("Pad Text not set properly");
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done);
+  });
+});
+
+
 describe('setHTML', function(){
   it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
     var html = "<div><b>Hello HTML</title></head></div>";
     api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
     .expect(function(res){
-console.log(res.body.code);
       if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
     })
     .expect('Content-Type', /json/)
@@ -519,8 +568,9 @@ describe('createPad', function(){
 
 */
 
-var endPoint = function(point){
-  return '/api/'+apiVersion+'/'+point+'?apikey='+apiKey;
+var endPoint = function(point, version){
+  version = version || apiVersion;
+  return '/api/'+version+'/'+point+'?apikey='+apiKey;
 }
 
 function makeid()

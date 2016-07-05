@@ -1,3 +1,56 @@
+# 1.6.0
+ * SECURITY: Fix a possible xss attack in iframe link
+ * NEW: Add a aceSelectionChanged hook to allow plugins to react when the cursor location changes.
+ * NEW: Accepting Arrays on 'exportHtmlAdditionalTags' to handle attributes stored as ['key', 'value']
+ * NEW: Allow admin to run on a sub-directory
+ * NEW: Support version 5 of node.js
+ * NEW: Update windows build to node version 4.4.3
+ * NEW: Create setting to control if a new line will be indented or not
+ * NEW: Add an appendText API
+ * NEW: Allow LibreOffice to be used when exporting a pad
+ * NEW: Create hook exportHtmlAdditionalTagsWithData
+ * NEW: Improve DB migration performance
+ * NEW: allow settings to be applied from the filesystem 
+ * NEW: remove applySettings hook and allow credentials.json to be part of core
+ * NEW: Use exec to switch to node process
+ * NEW: Validate incoming color codes
+ * Fix: Avoid space removal when pasting text from word processor.
+ * Fix: Removing style that makes editor scroll to the top on iOS without any action from the user
+ * Fix: Fix API call appendChatMessage to send new message to all connected clients
+ * Fix: Timeslider "Return to pad" button
+ * Fix: Generating pad HTML with tags like <span data-TAG="VALUE"> instead of <TAG:VALUE>
+ * Fix: Get git commit hash even if the repo only points to a bare repo.
+ * Fix: Fix decode error if pad name contains special characters and is sanitized
+ * Fix: Fix handleClientMessage_USER_* payloads not containing user info
+ * Fix: Set language cookie on initial load
+ * Fix: Timeslider Not Translated
+ * Other: set charset for mysql connection in settings.json
+ * Other: Dropped support for io.js
+ * Other: Add support to store credentials in credentials.json
+ * Other: Support node version 4 or higher
+ * Other: Update uberDB to version 0.3.0
+
+# 1.5.7
+ * NEW: Add support for intermediate CA certificates for ssl
+ * NEW: Provide a script to clean up before running etherpad
+ * NEW: Use ctrl+shift+1 to do a ordered list
+ * NEW: Show versions of plugins on startup
+ * NEW: Add author on padCreate and padUpdate hook
+ * Fix: switchToPad method
+ * Fix: Dead keys
+ * Fix: Preserve new lines in copy-pasted text
+ * Fix: Compatibility mode on IE 
+ * Fix: Content Collector to get the class of the DOM-node
+ * Fix: Timeslider export links
+ * Fix: Double prompt on file upload
+ * Fix: setText() replaces the entire pad text
+ * Fix: Accessibility features on embedded pads
+ * Fix: Tidy HTML before abiword conversion
+ * Fix: Remove edit buttons in read-only view
+ * Fix: Disable user input in read-only view
+ * Fix: Pads end with a single newline, rather than two newlines
+ * Fix: Toolbar and chat for mobile devices
+
 # 1.5.6
  * Fix: Error on windows installations
 

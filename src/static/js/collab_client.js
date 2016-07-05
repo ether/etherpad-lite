@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -279,7 +279,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
         if (newRev != (oldRev + 1))
         {
-          parent.parent.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
+          window.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
           // setChannelState("DISCONNECTED", "badmessage_newchanges");
           return;
         }
@@ -289,7 +289,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        parent.parent.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
+        window.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
         // setChannelState("DISCONNECTED", "badmessage_newchanges");
         return;
       }
@@ -303,7 +303,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       {
         if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
         {
-          parent.parent.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+          window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
@@ -313,7 +313,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        parent.parent.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
+        window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
         // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
         return;
       }
@@ -351,7 +351,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         msg.userInfo.colorId = initialUserInfo.globalUserColor;
       }
 
-      
+
       if (userSet[id])
       {
         userSet[id] = userInfo;
@@ -405,7 +405,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       $("#chatloadmessagesball").css("display", "none");
 
       // there are less than 100 messages or we reached the top
-      if(chat.historyPointer <= 0) 
+      if(chat.historyPointer <= 0)
         $("#chatloadmessagesbutton").css("display", "none");
       else // there are still more messages, re-show the load-button
         $("#chatloadmessagesbutton").css("display", "block");
@@ -413,6 +413,12 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     else if (msg.type == "SERVER_MESSAGE")
     {
       callbacks.onServerMessage(msg.payload);
+    }
+
+    //HACKISH: User messages do not have "payload" but "userInfo", so that all "handleClientMessage_USER_" hooks would work, populate payload
+    //FIXME: USER_* messages to have "payload" property instead of "userInfo", seems like a quite a big work
+    if(msg.type.indexOf("USER_") > -1) {
+      msg.payload = msg.userInfo;
     }
     hooks.callAll('handleClientMessage_' + msg.type, {payload: msg.payload});
   }
@@ -441,7 +447,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     {
       colorId = clientVars.colorPalette[colorId];
     }
-    
+
     var cssColor = colorId;
     if (inactive)
     {

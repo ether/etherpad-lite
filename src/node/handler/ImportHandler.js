@@ -228,7 +228,7 @@ exports.doImport = function(req, res, padId)
     function(callback) {
       if(!directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
-        if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
+        if (importHandledByPlugin || abiword || fileEnding == ".htm" || fileEnding == ".html") {
           importHtml.setPadHTML(pad, text, function(e){
             if(e) apiLogger.warn("Error importing, possibly caused by malformed HTML");
           });
@@ -291,9 +291,6 @@ exports.doImport = function(req, res, padId)
       </head> \
       <script> \
         $(window).load(function(){ \
-          if(navigator.userAgent.indexOf('MSIE') === -1){ \
-            document.domain = document.domain; \
-          } \
           var impexp = window.parent.padimpexp.handleFrameCall('" + directDatabaseAccess +"', '" + status + "'); \
         }) \
       </script>"

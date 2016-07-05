@@ -95,6 +95,8 @@ body.grayedout { background-color: #eee !important }
   font-size: 12px; /* overridden by body.style */
   font-family:Arial, sans-serif; /* overridden by body.style */
   line-height: 16px; /* overridden by body.style */
+  background-color: white;
+  color: black;
 }
 
 body.doesWrap {
@@ -113,7 +115,11 @@ body.doesWrap {
   word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
 }
 
-body.doesWrap > div{
+.noprewrap{
+  white-space: normal;
+}
+
+body.doesWrap:not(.noprewrap) > div{
   /* Related to #1766 */
   white-space: pre-wrap;
 }

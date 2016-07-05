@@ -37,13 +37,19 @@ Returns the `rep` object.
 ## editorInfo.ace_isCaret(?)
 ## editorInfo.ace_getLineAndCharForPoint(?)
 ## editorInfo.ace_performDocumentApplyAttributesToCharRange(?)
-## editorInfo.ace_setAttributeOnSelection(?)
+## editorInfo.ace_setAttributeOnSelection(attribute, enabled)
+Sets an attribute on current range.
+Example: `call.editorInfo.ace_setAttributeOnSelection("turkey::balls", true); // turkey is the attribute here, balls is the value
+Notes: to remove the attribute pass enabled as false
 ## editorInfo.ace_toggleAttributeOnSelection(?)
-## editorInfo.ace_getAttributeOnSelection(attribute)
+## editorInfo.ace_getAttributeOnSelection(attribute, prevChar)
 Returns a boolean if an attribute exists on a selected range.
+prevChar value should be true if you want to get the previous Character attribute instead of the current selection for example
+if the caret is at position 0,1 (after first character) it's probable you want the attributes on the character at 0,0
 The attribute should be the string name of the attribute applied to the selection IE subscript
 Example usage: Apply the activeButton Class to a button if an attribute is on a highlighted/selected caret position or range.
-Example: `call.editorInfo.ace_getAttributeOnSelection("subscript");` // call here is the callstack from aceEditEvent.
+Example `var isItThere = documentAttributeManager.getAttributeOnSelection("turkey::balls", true);`
+
 See the ep_subscript plugin for an example of this function in action.
 Notes: Does not work on first or last character of a line.  Suffers from a race condition if called with aceEditEvent.
 ## editorInfo.ace_performSelectionChange(?)

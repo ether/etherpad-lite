@@ -190,6 +190,16 @@ exports.handleMessage = function(client, message)
   }
 
   var handleMessageHook = function(callback){
+    // Allow plugins to bypass the readonly message blocker
+    hooks.aCallAll("handleMessageSecurity", { client: client, message: message }, function ( err, messages ) {
+      if(ERR(err, callback)) return;
+      _.each(messages, function(newMessage){
+        if ( newMessage === true ) {
+          thisSession.readonly = false;
+        }
+      });
+    });
+
     var dropMessage = false;
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages
     // handleMessage will be called, even if the client is not authorized
@@ -204,6 +214,7 @@ exports.handleMessage = function(client, message)
       // If no plugins explicitly told us to drop the message, its ok to proceed
       if(!dropMessage){ callback() };
     });
+
   }
 
   var finalHandler = function () {
@@ -364,6 +375,17 @@ function handleChatMessage(client, message)
   var text = message.data.text;
   var padId = sessioninfos[client.id].padId;
 
+  exports.sendChatMessageToPadClients(time, userId, text, padId);
+}
+
+/**
+ * Sends a chat message to all clients of this pad
+ * @param time the timestamp of the chat message
+ * @param userId the author id of the chat message
+ * @param text the text of the chat message
+ * @param padId the padId to send the chat message to
+ */
+exports.sendChatMessageToPadClients = function (time, userId, text, padId) {
   var pad;
   var userName;
 
@@ -533,14 +555,29 @@ function handleUserInfoUpdate(client, message)
     return;
   }
 
+  // Check that we have a valid session and author to update.
+  var session = sessioninfos[client.id];
+  if(!session || !session.author || !session.padId)
+  {
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Session not ready." + message.data);
+    return;
+  }
+
   //Find out the author name of this session
-  var author = sessioninfos[client.id].author;
+  var author = session.author;
+
+  // Check colorId is a Hex color
+  var isColor  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(message.data.userInfo.colorId) // for #f00 (Thanks Smamatti)
+  if(!isColor){
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Color is malformed." + message.data);
+    return;
+  }
 
   //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
 
-  var padId = sessioninfos[client.id].padId;
+  var padId = session.padId;
 
   var infoMsg = {
     type: "COLLABROOM",
@@ -600,8 +637,8 @@ function handleUserChanges(data, cb)
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
     return cb();
   }
-  //TODO: this might happen with other messages too => find one place to copy the session 
-  //and always use the copy. atm a message will be ignored if the session is gone even 
+  //TODO: this might happen with other messages too => find one place to copy the session
+  //and always use the copy. atm a message will be ignored if the session is gone even
   //if the session was valid when the message arrived in the first place
   if(!sessioninfos[client.id])
   {
@@ -762,8 +799,9 @@ function handleUserChanges(data, cb)
       }
 
       // Make sure the pad always ends with an empty line.
-      if (pad.text().lastIndexOf("\n\n") != pad.text().length-2) {
-        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1, 0, "\n");
+      if (pad.text().lastIndexOf("\n") != pad.text().length-1) {
+        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1,
+                                               0, "\n");
         pad.appendRevision(nlChangeset);
       }
 
@@ -929,7 +967,7 @@ function handleSwitchToPad(client, message)
       roomClients[i].leave(padId);
     }
   }
-  
+
   // start up the new pad
   createSessionInfo(client, message);
   handleClientReady(client, message);
@@ -988,6 +1026,8 @@ function handleClientReady(client, message)
   var historicalAuthorData = {};
   var currentTime;
   var padIds;
+
+  hooks.callAll("clientReady", message);
 
   async.series([
     //Get ro/rw id:s
@@ -1194,10 +1234,13 @@ function handleClientReady(client, message)
           "serverTimestamp": new Date().getTime(),
           "userId": author,
           "abiwordAvailable": settings.abiwordAvailable(),
+          "sofficeAvailable": settings.sofficeAvailable(),
+          "exportAvailable": settings.exportAvailable(),
           "plugins": {
             "plugins": plugins.plugins,
             "parts": plugins.parts,
           },
+          "indentationOnNewLine": settings.indentationOnNewLine,
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
 
@@ -1332,6 +1375,12 @@ function handleChangesetRequest(client, message)
   if(message.data.granularity == null)
   {
     messageLogger.warn("Dropped message, changeset request has no granularity!");
+    return;
+  }
+  //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
+  if(Math.floor(message.data.granularity) !== message.data.granularity)
+  {
+    messageLogger.warn("Dropped message, changeset request granularity is not an integer!");
     return;
   }
   if(message.data.start == null)

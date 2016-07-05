@@ -260,13 +260,13 @@ exports.checkRep = function (cs) {
       break;
     case '-':
       oldPos += o.chars;
-      exports.assert(oldPos < oldLen, oldPos, " >= ", oldLen, " in ", cs);
+      exports.assert(oldPos <= oldLen, oldPos, " > ", oldLen, " in ", cs);
       break;
     case '+':
       {
         calcNewLen += o.chars;
         numInserted += o.chars;
-        exports.assert(calcNewLen < newLen, calcNewLen, " >= ", newLen, " in ", cs);
+        exports.assert(calcNewLen <= newLen, calcNewLen, " > ", newLen, " in ", cs);
         break;
       }
     }
@@ -1408,8 +1408,8 @@ exports.makeSplice = function (oldFullText, spliceStart, numRemoved, newText, op
   if (spliceStart >= oldLen) {
     spliceStart = oldLen - 1;
   }
-  if (numRemoved > oldFullText.length - spliceStart - 1) {
-    numRemoved = oldFullText.length - spliceStart - 1;
+  if (numRemoved > oldFullText.length - spliceStart) {
+    numRemoved = oldFullText.length - spliceStart;
   }
   var oldText = oldFullText.substring(spliceStart, spliceStart + numRemoved);
   var newLen = oldLen + newText.length - oldText.length;
@@ -1628,10 +1628,12 @@ exports.applyToAText = function (cs, atext, pool) {
  * @param atext {AText} 
  */
 exports.cloneAText = function (atext) {
-  return {
-    text: atext.text,
-    attribs: atext.attribs
-  };
+  if (atext) {
+    return {
+      text: atext.text,
+      attribs: atext.attribs
+    }
+  } else exports.error("atext is null");
 };
 
 /**
