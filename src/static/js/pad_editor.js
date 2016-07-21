@@ -198,6 +198,13 @@ var padeditor = (function()
         self.ace = null;
       }
     },
+    enable: function()
+    {
+      if (self.ace)
+      {
+        self.ace.setEditable(true);
+      }
+    },
     disable: function()
     {
       if (self.ace)
