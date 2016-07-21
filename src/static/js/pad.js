@@ -769,6 +769,7 @@ var pad = {
     var wasConnecting = (padconnectionstatus.getStatus().what == 'connecting');
     if (newState == "CONNECTED")
     {
+      padeditor.enable();
       padconnectionstatus.connected();
     }
     else if (newState == "RECONNECTING")
