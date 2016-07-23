@@ -95,7 +95,7 @@ if [ -f "src/static/js/jquery.js" ]; then
 fi
 
 if [ $DOWNLOAD_JQUERY = "true" ]; then
-  curl -lo src/static/js/jquery.js http://code.jquery.com/jquery-$NEEDED_VERSION.js || exit 1
+  curl -lo src/static/js/jquery.js https://code.jquery.com/jquery-$NEEDED_VERSION.js || exit 1
 fi
 
 #Remove all minified data to force node creating it new
