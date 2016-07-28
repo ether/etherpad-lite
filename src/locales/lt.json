@@ -3,9 +3,11 @@
 		"authors": [
 			"Eitvys200",
 			"Mantak111",
-			"I-svetaines"
+			"I-svetaines",
+			"Zygimantus"
 		]
 	},
+	"index.newPad": "Naujas bloknotas",
 	"pad.toolbar.bold.title": "Paryškintasis (Ctrl-B)",
 	"pad.toolbar.italic.title": "Pasvirasis (Ctrl-I)",
 	"pad.toolbar.underline.title": "Pabraukimas (Ctrl-U)",
@@ -62,11 +64,13 @@
 	"pad.modals.slowcommit.explanation": "Serveris neatsako.",
 	"pad.modals.deleted": "Ištrintas.",
 	"pad.modals.disconnected": "Jūs atsijungėte.",
+	"pad.share": "Dalintis šiuo bloknotu",
 	"pad.share.readonly": "Tik skaityti",
 	"pad.share.link": "Nuoroda",
 	"pad.share.emebdcode": "Įterptasis URL",
 	"pad.chat": "Pokalbiai",
 	"pad.chat.loadmessages": "Įkrauti daugiau pranešimų",
+	"timeslider.toolbar.returnbutton": "Grįžti į bloknotą",
 	"timeslider.toolbar.authors": "Autoriai:",
 	"timeslider.toolbar.authorsList": "Nėra autorių",
 	"timeslider.toolbar.exportlink.title": "Eksportuoti",
