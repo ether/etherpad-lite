@@ -11,7 +11,7 @@
 	},
 	"index.newPad": "새 패드",
 	"index.createOpenPad": "또는 다음 이름으로 패드 만들기/열기:",
-	"pad.toolbar.bold.title": "굵은꼴 (Ctrl+B)",
+	"pad.toolbar.bold.title": "굵게 (Ctrl+B)",
 	"pad.toolbar.italic.title": "기울임꼴 (Ctrl+I)",
 	"pad.toolbar.underline.title": "밑줄 (Ctrl+U)",
 	"pad.toolbar.strikethrough.title": "취소선 (Ctrl+5)",
