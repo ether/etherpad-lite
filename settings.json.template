@@ -3,7 +3,7 @@
 
   Please edit settings.json, not settings.json.template
 
-  To still commit settings without credentials you can 
+  To still commit settings without credentials you can
   store any credential settings in credentials.json
 */
 {
@@ -197,7 +197,7 @@
           { "type": "smtp"
           , "subject": "An error occured in your EPL instance!"
           , "recipients": "bar@blurdybloop.com, baz@blurdybloop.com"
-          , "sendInterval": 60*5 // in secs -- will buffer log messages; set to 0 to send a mail for every message
+          , "sendInterval": 300 // 60 * 5 = 5 minutes -- will buffer log messages; set to 0 to send a mail for every message
           , "transport": "SMTP", "SMTP": { // see https://github.com/andris9/Nodemailer#possible-transport-methods
               "host": "smtp.example.com", "port": 465,
               "secureConnection": true,
