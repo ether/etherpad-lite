@@ -105,7 +105,7 @@
 	"timeslider.playPause": "回放 / 暂停Pad内容",
 	"timeslider.backRevision": "返回此Pad的一次修订",
 	"timeslider.forwardRevision": "前往此Pad的一次修订",
-	"timeslider.dateformat": "{{year}}年{{month}}月{{day}}日 {{hours}}{{minutes}}{{seconds}}",
+	"timeslider.dateformat": "{{year}}年{{month}}月{{day}}日 {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "1月",
 	"timeslider.month.february": "2月",
 	"timeslider.month.march": "3月",
