@@ -1455,16 +1455,6 @@ function Ace2Inner(){
     var selection = getSelection();
     p.end();
 
-    function topLevel(n)
-    {
-      if ((!n) || n == root) return null;
-      while (n.parentNode != root)
-      {
-        n = n.parentNode;
-      }
-      return n;
-    }
-
     if (selection)
     {
       var node1 = topLevel(selection.startPoint.node);
@@ -1486,12 +1476,8 @@ function Ace2Inner(){
       var nds = root.getElementsByTagName("style");
       for (var i = 0; i < nds.length; i++)
       {
-        var n = nds[i];
-        while (n.parentNode && n.parentNode != root)
-        {
-          n = n.parentNode;
-        }
-        if (n.parentNode == root)
+        var n = topLevel(nds[i]);
+        if (n && n.parentNode == root)
         {
           observeChangesAroundNode(n);
         }
@@ -5034,6 +5020,23 @@ function Ace2Inner(){
       if(e.target.a || e.target.localName === "a"){
         e.preventDefault();
       }
+
+      // Bug fix: when user drags some content and drop it far from its origin, we
+      // need to merge the changes into a single changeset. So mark origin with <style>,
+      // in order to make content be observed by incorporateUserChanges() (see
+      // observeSuspiciousNodes() for more info)
+      var selection = getSelection();
+      if (selection){
+        var firstLineSelected = topLevel(selection.startPoint.node);
+        var lastLineSelected  = topLevel(selection.endPoint.node);
+
+        var lineBeforeSelection = firstLineSelected.previousSibling;
+        var lineAfterSelection  = lastLineSelected.nextSibling;
+
+        var neighbor = lineBeforeSelection || lineAfterSelection;
+        neighbor.appendChild(document.createElement('style'));
+      }
+
       // Call drop hook
       hooks.callAll('aceDrop', {
         editorInfo: editorInfo,
@@ -5049,6 +5052,16 @@ function Ace2Inner(){
       $(document.documentElement).on("compositionstart", handleCompositionEvent);
       $(document.documentElement).on("compositionend", handleCompositionEvent);
     }
+  }
+
+  function topLevel(n)
+  {
+    if ((!n) || n == root) return null;
+    while (n.parentNode != root)
+    {
+      n = n.parentNode;
+    }
+    return n;
   }
 
   function handleIEOuterClick(evt)
