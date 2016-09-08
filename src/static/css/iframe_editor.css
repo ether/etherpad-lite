@@ -252,7 +252,7 @@ ol.list-number16{ text-indent: 150px; }
 .list-start-number9 { counter-reset: ninth; }
 .list-start-number10 { counter-reset: tenth; }
 .list-start-number11 { counter-reset: eleventh; }
-.list-start-number12 { counter-reset: twelth; }
+.list-start-number12 { counter-reset: twelfth; }
 .list-start-number13 { counter-reset: thirteenth; }
 .list-start-number14 { counter-reset: fourteenth; }
 .list-start-number15 { counter-reset: fifteenth; }
@@ -315,27 +315,27 @@ ol.list-number16{ text-indent: 150px; }
 }
 
 .list-number12 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) ". ";
-  counter-increment: twelth 1;
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) ". ";
+  counter-increment: twelfth 1;
 }
 
 .list-number13 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) ". ";
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) ". ";
   counter-increment: thirteenth 1;
 }
 
 .list-number14 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) "." counter(fourteenth) ". ";
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) ". ";
   counter-increment: fourteenth 1;
 }
 
 .list-number15 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) ". ";
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) ". ";
   counter-increment: fifteenth 1;
 }
 
 .list-number16 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) "." counter(sixteenth) ". ";
-  counter-increment: fixteenth 1;
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) "." counter(sixteenth) ". ";
+  counter-increment: sixteenth 1;
 }
 
