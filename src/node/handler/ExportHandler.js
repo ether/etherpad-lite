@@ -92,7 +92,7 @@ exports.doExport = function(req, res, padId, type)
           //render the html document
           function(callback)
           {
-            exporthtml.getPadHTMLDocument(padId, req.params.rev, false, function(err, _html)
+            exporthtml.getPadHTMLDocument(padId, req.params.rev, function(err, _html)
             {
               if(ERR(err, callback)) return;
               html = _html;

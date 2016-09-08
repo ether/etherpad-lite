@@ -479,7 +479,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
   return pieces.join('');
 }
 
-exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
+exports.getPadHTMLDocument = function (padId, revNum, callback)
 {
   padManager.getPad(padId, function (err, pad)
   {
@@ -497,7 +497,6 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
         if(ERR(err, callback)) return;
         var exportedDoc = eejs.require("ep_etherpad-lite/templates/export_html.html", {
           body: html,
-          doctype: noDocType ? '' : '<!doctype html>',
           padId: Security.escapeHTML(padId),
           extraCSS: stylesForExportCSS
         });
