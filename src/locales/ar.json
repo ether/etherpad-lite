@@ -80,7 +80,7 @@
 	"pad.modals.corruptPad.cause": "قد يكون هذا بسبب تكوين ملقم خاطئ أو بسبب سلوك آخر غير متوقع. يرجى الاتصال بمسؤول الخدمة.",
 	"pad.modals.deleted": "محذوف.",
 	"pad.modals.deleted.explanation": "تمت إزالة هذا الباد",
-	"pad.modals.disconnected": "لم تعد متّصل.",
+	"pad.modals.disconnected": "لم تعد متصلا.",
 	"pad.modals.disconnected.explanation": "تم فقدان الإتصال بالخادم",
 	"pad.modals.disconnected.cause": "قد يكون الخادم غير متوفر. يرجى إعلام مسؤول الخدمة إذا كان هذا لا يزال يحدث.",
 	"pad.share": "شارك هذه الباد",
