@@ -5459,7 +5459,16 @@ function Ace2Inner(){
           // and the line-numbers don't line up unless we pay
           // attention to where the divs are actually placed...
           // (also: padding on TTs/SPANs in IE...)
-          h = b.nextSibling.offsetTop - b.offsetTop;
+          if (b === doc.body.firstChild) {
+            // It's the first line. For line number alignment purposes, its
+            // height is taken to be the top offset of the next line. If we
+            // didn't do this special case, we would miss out on any top margin
+            // included on the first line. The default stylesheet doesn't add
+            // extra margins, but plugins might.
+            h = b.nextSibling.offsetTop;
+          } else {
+            h = b.nextSibling.offsetTop - b.offsetTop;
+          }
         }
         if (h)
         {
