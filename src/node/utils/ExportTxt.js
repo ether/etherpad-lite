@@ -192,7 +192,7 @@ function getTXTFromAtext(pad, atext, authorColors)
               tags2close.push(i);
             }
           }
-          
+
           for (var i = 0; i < propVals.length; i++)
           {
             if (propVals[i] === ENTER || propVals[i] === STAY)
@@ -208,10 +208,10 @@ function getTXTFromAtext(pad, atext, authorColors)
         {
           chars--; // exclude newline at end of line, if present
         }
-        
+
         var s = taker.take(chars);
 
-        // removes the characters with the code 12. Don't know where they come 
+        // removes the characters with the code 12. Don't know where they come
         // from but they break the abiword parser and are completly useless
         // s = s.replace(String.fromCharCode(12), "");
 
@@ -221,7 +221,7 @@ function getTXTFromAtext(pad, atext, authorColors)
 
         assem.append(s);
       } // end iteration over spans in line
-      
+
       var tags2close = [];
       for (var i = propVals.length - 1; i >= 0; i--)
       {
@@ -231,7 +231,7 @@ function getTXTFromAtext(pad, atext, authorColors)
           propVals[i] = false;
         }
       }
-      
+
     } // end processNextChars
     processNextChars(text.length - idx);
     return(assem.toString());
@@ -271,7 +271,7 @@ function getTXTFromAtext(pad, atext, authorColors)
 }
 exports.getTXTFromAtext = getTXTFromAtext;
 
-exports.getPadTXTDocument = function (padId, revNum, noDocType, callback)
+exports.getPadTXTDocument = function (padId, revNum, callback)
 {
   padManager.getPad(padId, function (err, pad)
   {

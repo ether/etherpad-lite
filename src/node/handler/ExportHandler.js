@@ -76,7 +76,7 @@ exports.doExport = function(req, res, padId, type)
       }
       else if(type == "txt")
       {
-        exporttxt.getPadTXTDocument(padId, req.params.rev, false, function(err, txt)
+        exporttxt.getPadTXTDocument(padId, req.params.rev, function(err, txt)
         {
           if(ERR(err)) return;
           res.send(txt);
