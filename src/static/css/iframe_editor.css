@@ -2,7 +2,7 @@
    Also see inner.css, included only in the inner one.
 */
 
-@import url('css/lists_and_indents.css');
+@import url('./lists_and_indents.css');
 
 html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
 span { cursor: auto; }
