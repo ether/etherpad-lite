@@ -7,7 +7,7 @@ var exporthtml = require("../../utils/ExportHtml");
 exports.expressCreateServer = function (hook_name, args, cb) {
   //serve read only pad
   args.app.get('/ro/:id', function(req, res)
-  { 
+  {
     var html;
     var padId;
 
@@ -40,7 +40,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         hasPadAccess(req, res, function()
         {
           //render the html document
-          exporthtml.getPadHTMLDocument(padId, null, false, function(err, _html)
+          exporthtml.getPadHTMLDocument(padId, null, function(err, _html)
           {
             if(ERR(err, callback)) return;
             html = _html;
