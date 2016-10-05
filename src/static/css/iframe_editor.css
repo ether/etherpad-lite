@@ -11,8 +11,8 @@ span { cursor: auto; }
   background: #acf;
 }
 
-a { 
-  cursor: pointer !important; 
+a {
+  cursor: pointer !important;
   white-space:pre-wrap;
 }
 
@@ -75,9 +75,9 @@ ul.list-indent14 { margin-left: 21em; }
 ul.list-indent15 { margin-left: 22.5em; }
 ul.list-indent16 { margin-left: 24em; }
 
-ul.list-indent1, ul.list-indent2, ul.list-indent3, ul.list-indent4, ul.list-indent5, 
-ul.list-indent6, ul.list-indent7, ul.list-indent8, ul.list-indent9, ul.list-indent10, 
-ul.list-indent11, ul.list-indent12, ul.list-indent13, 
+ul.list-indent1, ul.list-indent2, ul.list-indent3, ul.list-indent4, ul.list-indent5,
+ul.list-indent6, ul.list-indent7, ul.list-indent8, ul.list-indent9, ul.list-indent10,
+ul.list-indent11, ul.list-indent12, ul.list-indent13,
 ul.list-indent14, ul.list-indent15, ul.list-indent16 { list-style-type: none; }
 
 body {
@@ -92,9 +92,9 @@ body {
 body.grayedout { background-color: #eee !important }
 
 #innerdocbody {
-  font-size: 12px; /* overridden by body.style */
+  font-size: 14px; /* overridden by body.style */
   font-family:Arial, sans-serif; /* overridden by body.style */
-  line-height: 16px; /* overridden by body.style */
+  line-height: 22px; /* overridden by body.style */
   background-color: white;
   color: black;
 }
@@ -102,11 +102,11 @@ body.grayedout { background-color: #eee !important }
 body.doesWrap {
   /* white-space: pre-wrap; */
 
-  /* 
-    Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret, 
+  /*
+    Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret,
     walking around your screen (see #1766).
     WARNING: Enabling this causes Paste as plain text in Chrome to remove line breaks
-    this is probably undesirable 
+    this is probably undesirable
     WARNING: This causes copy & paste events to lose bold etc. attributes
     NOTE: The walking-zombie caret issue seems to have been fixed in FF upstream
     so let's try diabling pre-wrap and see how we get on now.
@@ -137,7 +137,7 @@ body.doesWrap:not(.noprewrap) > div{
 #sidediv {
   font-size: 11px;
   font-family: monospace;
-  line-height: 16px; /* overridden by sideDiv.style */
+  line-height: 22px; /* overridden by sideDiv.style */
   padding-top: 8px; /* EDIT_BODY_PADDING_TOP */
   padding-right: 3px; /* LINE_NUMBER_PADDING_RIGHT - 1 */
   position: absolute;
@@ -208,11 +208,11 @@ p {
    Commented out because it stops IE from being able to render the document, crazy IE bug is crazy. */
 /*
 .ace-line{
-  overflow:hidden; 
+  overflow:hidden;
 }
 */
 
-ol { 
+ol {
   list-style-type: decimal;
 }
 
