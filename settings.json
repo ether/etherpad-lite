@@ -1,0 +1,48 @@
+{
+  "title": "Open Companies",
+  "favicon": "favicon.ico",
+  "ip": "0.0.0.0",
+  "port": 9001,
+  "defaultPadText": "Welcome to Open Companies!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n",
+  "padOptions": {
+    "noColors": false,
+    "showControls": true,
+    "showChat": true,
+    "showLineNumbers": true,
+    "useMonospaceFont": false,
+    "userName": false,
+    "userColor": false,
+    "rtl": false,
+    "alwaysShowChat": false,
+    "chatAndUsers": false,
+    "lang": "en-gb"
+  },
+  "suppressErrorsInPadText": false,
+  "requireSession": false,
+  "editOnly": false,
+  "sessionNoPassword": false,
+  "minify": true,
+  "maxAge": 21600,
+  "abiword": null,
+  "soffice": null,
+  "tidyHtml": null,
+  "allowUnknownFileEnds": true,
+  "requireAuthentication": false,
+  "requireAuthorization": false,
+  "trustProxy": true,
+  "disableIPlogging": false,
+  "socketTransportProtocols": [
+    "xhr-polling",
+    "jsonp-polling",
+    "htmlfile"
+  ],
+  "loadTest": false,
+  "loglevel": "INFO",
+  "logconfig": {
+    "appenders": [
+      {
+        "type": "console"
+      }
+    ]
+  }
+}
