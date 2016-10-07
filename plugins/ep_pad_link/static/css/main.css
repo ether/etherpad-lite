@@ -1,0 +1,71 @@
+#pad_link_modal {
+	position: absolute;
+	top: 55px;
+	right: 20px;
+	display: none;
+	z-index: 999999;
+}
+
+#pad_link_modal h1 {
+	margin-bottom: 10px;
+}
+
+#pad_link_modal input {
+	width: calc(100% - 50px);
+	float: left;
+}
+
+#pad_link_modal button[type=submit] {
+	width: 40px;
+	margin: 10px 0 0 10px;
+}
+
+#pad_link_insert_btn {
+	font-family: font-awesome;
+}
+
+.buttonicon-link:before{
+	content: "\e839";
+	top: 2px!important;
+}
+
+.pad_window {
+	position: absolute;
+	top: 0;
+	left: 80px;
+	right: 0;
+	bottom: 0;
+	z-index: 9999;
+}
+
+.pad_window__screen {
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 200%;
+	height: 100%;
+	background: rgba(0, 0, 0, .5);
+	z-index: 1;
+	cursor: pointer;
+}
+
+.pad_window iframe {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	border: 0;
+	background: #fff;
+}
+
+.pad_window--active {
+	z-index: 99999;
+}
+
+.pad_window--active .pad_window__screen {
+	display: block;
+}
+
+.pad_window--hidden {
+	display: none;
+}

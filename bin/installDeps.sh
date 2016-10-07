@@ -72,6 +72,7 @@ echo "Ensure that all dependencies are up to date...  If this is the first time 
   mkdir -p node_modules
   cd node_modules
   [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
+  find ../plugins -maxdepth 1 -mindepth 1 -type d -exec ln -s '{}' ./ \;
   cd ep_etherpad-lite
   npm install --loglevel warn
 ) || {
