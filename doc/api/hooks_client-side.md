@@ -223,6 +223,7 @@ Things in context:
 4. sticky (boolean) - if you want the gritter notification bubble to fade out on its own or just sit there
 5. timestamp - the timestamp of the chat message
 6. timeStr - the timestamp as a formatted string
+7. duration - for how long in milliseconds should the gritter notification appear (0 to disable)
 
 This hook is called on the client side whenever a chat message is received from the server. It can be used to create different notifications for chat messages.
 
