@@ -28,7 +28,7 @@
 	"pad.colorpicker.cancel": "रद्द",
 	"pad.loading": "लोड हुदैछ...",
 	"pad.passwordRequired": "यो प्यड खोल्न पासवर्ड चाहिन्छ",
-	"pad.permissionDenied": "तपाईँलाई यस प्याड खोल्न अनुमति छैन",
+	"pad.permissionDenied": "तपाईंलाई यो प्याड खोल्न अनुमति छैन",
 	"pad.wrongPassword": "तपाईँको पासवर्ड गलत थियो",
 	"pad.settings.padSettings": "प्याड सेटिङ्गहरू",
 	"pad.settings.myView": "मेरो दृष्य",
