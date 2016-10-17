@@ -34,7 +34,6 @@ $(document).ready(function () {
 		var padeditor = require('ep_etherpad-lite/static/js/pad_editor').padeditor;
 
 		padeditor.ace.callWithAce(function(ace) {
-			debugger
 			rep = ace.ace_getRep();
 
 			// If there is no selection, insert pad name

@@ -9,8 +9,7 @@ exports.postAceInit = function(hookName, context) {
 		$inner.on('click', '.padLink', function() {
 			var padName = this.getAttribute('data-pad');
 
-			//alert(padName);
-			window.top.openPad(padName);//location = '/p/' + ;
+			window.top.openPad(padName);
 		});
 	});
 };
