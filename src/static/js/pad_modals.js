@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 var padeditbar = require('./pad_editbar').padeditbar;
 
 var padmodals = (function()
@@ -32,7 +32,7 @@ var padmodals = (function()
     },
     showModal: function(messageId)
     {
-      padeditbar.toggleDropDown("none", function() {
+      padeditbar.toggleDropDown("none", true, function() {
         $("#connectivity .visible").removeClass('visible');
         $("#connectivity ."+messageId).addClass('visible');
         padeditbar.toggleDropDown("connectivity");
