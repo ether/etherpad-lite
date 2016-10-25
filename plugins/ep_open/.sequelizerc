@@ -1,0 +1,24 @@
+'use strict';
+
+const _ = require('lodash');
+const path = require('path');
+const config = require('../../credentials.json');
+const envConfig = {
+    'username': config.dbSettings.user,
+    'password': config.dbSettings.password,
+    'database': config.dbSettings.database,
+    'host': config.dbSettings.host,
+    'port': '5432',
+    "dialect": config.dbType
+};
+
+module.exports = _.extend({
+    test: envConfig,
+    development: envConfig,
+    production: envConfig
+}, {
+    'config': __filename,
+    'migrations-path': path.resolve('./api', 'migrations'),
+    'models-path': path.resolve('./api', 'models'),
+    'seeders-path': path.resolve('./api', 'seeders')
+});

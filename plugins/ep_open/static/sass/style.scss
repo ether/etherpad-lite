@@ -1,0 +1,30 @@
+@import "normilize";
+@import "mixins";
+
+$activeColor: #1b58bb;
+$darkColor: #1e2326;
+$textColor: #555;
+$greyColor: #e5e5e5;
+$lightGreyColor: #f2f2f2;
+$redColor: #f94747;
+$contentMaxWidth: 600px;
+
+$mainFont: arial, sans-serif;
+$hoverDuration: .2s;
+$animationDuration: .3s;
+
+@import "vendors/font-awesome/font-awesome";
+@import "vendors/react-select";
+
+@import "components/general";
+@import "components/layout";
+@import "components/ui";
+@import "components/form";
+@import "components/modal";
+@import "components/header";
+@import "components/content";
+@import "components/section";
+@import "components/pagination";
+@import "components/pad";
+@import "components/notifications";
+@import "components/avatar";

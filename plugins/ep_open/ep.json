@@ -1,0 +1,9 @@
+{
+    "parts": [{
+        "name": "Open Comanies extension",
+        "priority": 10,
+        "hooks": {
+            "expressCreateServer": "ep_open/hooks.js"
+        }
+    }]
+}

@@ -1,0 +1,117 @@
+.pad {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-top: 1px solid #ccc;
+}
+
+.pad__tabs {
+    position: absolute;
+    top: -42px;
+    left: 42px;
+    right: 150px;
+    height: 42px;
+    overflow: hidden;
+
+    &:after,
+    &:before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 1px;
+        width: 10px;
+        background: linear-gradient(to right, rgba(238, 238, 238, 0), rgba(238, 238, 238, 100%));
+    }
+
+    &:before {
+        transform: rotate(180deg);
+        right: auto;
+        left: 0;
+    }
+}
+
+.pad__tabs_scrollbox {
+    padding: 0 10px 50px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.pad__tab {
+    display: inline-block;
+    padding: 8px 16px;
+    font: 18px/25px $mainFont;
+    border-radius: 4px 4px 0 0;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    background: #eee;
+    height: 41px;
+    cursor: pointer;
+
+    &:not(:first-child) {
+        margin-left: 10px;
+    }
+}
+
+.pad__tab--active {
+    background: #f7f7f7;
+    height: 42px;
+}
+
+.pad__iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+
+    > iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        margin: 0;
+        background: #f7f7f7;
+    }
+}
+
+.pad__info {
+    display: none;
+    float: right;
+    width: 200px;
+    margin-left: 24px;
+
+    .tags {
+        display: block;
+    }
+
+    .tag {
+        display: block;
+        margin: 0 0 10px;
+        font-size: 14px;
+        height: 24px;
+        line-height: 24px;
+    }
+}
+
+.pad__info__item {
+    margin-bottom: 8px;
+    font: 16px/18px $mainFont;
+}
+
+.pad__info__item__title {
+    margin-right: 8px;
+    color: $textColor;
+}
+
+.pad__info__tag {
+    height: 32px;
+    font: bold 14px/32px $mainFont;
+    padding: 0 6px;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, .2);
+    margin: 16px 0 0;
+    vertical-align: top;
+}

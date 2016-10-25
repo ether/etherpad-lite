@@ -1,0 +1,163 @@
+.form {
+	display: block;
+	overflow: hidden;
+}
+
+.form--entrance {
+	width: 100%;
+	max-width: 320px;
+	margin: 0 auto;
+}
+
+.form--pad {
+	position: relative;
+	width: 100%;
+	max-width: 360px;
+	margin: 0 auto;
+	top: 40%;
+	transform: translateY(-50%);
+	overflow: visible;
+	min-height: 110px;
+
+	.form__title {
+		text-align: center;
+		margin-bottom: 36px;
+		display: inline-block;
+		width: 100%;
+	}
+
+	.Select-input {
+		&,
+		& > input {
+			max-width: 300px;
+		}
+	}
+}
+
+.form__row {
+	display: block;
+	margin-bottom: 16px;
+
+	&:first-child {
+		margin-top: 0;
+	}
+}
+
+.form__image {
+	display: block;
+	max-width: 200px;
+}
+
+.form__row--checkbox {
+	margin-top: 20px;
+}
+
+.form__row--btn {
+	margin-top: 30px;
+}
+
+.form__row__title {
+	font: 14px/16px $mainFont;
+	margin-bottom: 8px;
+}
+
+.form__text {
+	font: 16px/18px $mainFont;
+	margin-bottom: 30px;
+}
+
+.form__btn {
+	margin-top: 24px;
+	//width: 100%;
+	margin-left: 50%;
+	transform: translateX(-50%);
+	height: 21px;
+}
+
+.form__error {
+	color: red;
+	overflow: hidden;
+	margin-top: 30px;
+}
+
+.form__error--active {
+	display: block;
+}
+
+.form__divider {
+	position: relative;
+	width: 40px;
+	height: 16px;
+	font: 14px/16px $mainFont;
+	margin: 32px auto;
+	text-transform: uppercase;
+	text-align: center;
+
+	&:after,
+	&:before {
+		content: '';
+		position: absolute;
+		top: 7px;
+		border-top: 1px solid;
+		width: 140px;
+	}
+
+	&:before {
+		left: -140px;
+	}
+
+	&:after {
+		right: -140px;
+	}
+}
+
+.form__social_btns {
+	overflow: hidden;
+	padding: 16px 0 8px;
+}
+
+.form__social_btn {
+	width: 128px;
+	height: 128px;
+	padding: 16px;
+	border-radius: 100%;
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.5);
+	background: #fff;
+	float: left;
+	margin: 0 16px;
+	cursor: pointer;
+
+	&:after {
+		content: '';
+		display: block;
+	}
+}
+
+.form__social_btn--github:after {
+	@include icon('github', true);
+}
+
+.form__social_btn--google:after {
+	@include icon('google', true);
+}
+
+.form__row__field--tag {
+	&.form__row__field--hidden {
+		.btn {
+			display: none;
+		}
+	}
+
+	&:not(.form__row__field--hidden) {
+		.Select {
+			width: auto;
+			margin-right: 112px;
+		}
+	}
+
+	.btn {
+		float: right;
+		height: 36px;
+		width: 112px;
+	}
+}

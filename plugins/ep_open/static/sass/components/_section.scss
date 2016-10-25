@@ -1,0 +1,99 @@
+.section {
+    position: relative;
+    padding: 0 10px 16px;
+    margin-bottom: 16px;
+
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: rgba(0, 0, 0, .1);
+    }
+
+    > textarea {
+        width: 100%;
+    }
+}
+
+.section__title {
+    background: #e7e9fe;
+//    border-top: 2px solid $activeColor;
+    padding: 6px 10px;
+    margin: 0 -10px;
+    font: bold 12px/16px $mainFont;
+    margin-bottom: 10px;
+
+    .section:nth-child(1n) & {
+        background: #fdf5c3;
+    }
+
+    .section:nth-child(2n) & {
+        background: #ddf8cc;
+    }
+
+    .section:nth-child(3n) & {
+        background: #e5ecf9;
+    }
+
+    .section:first-child:last-child & {
+        background: #e7e9fe;
+    }
+
+    .btn {
+        float: right;
+        height: 18px;
+        line-height: 18px;
+        padding: 0 6px;
+        font-size: 11px;
+        letter-spacing: 0;
+        margin-left: 6px;
+    }
+
+    input {
+        width: 118px;
+    }
+}
+
+.section__link {
+    margin-bottom: 4px;
+    //font: 16px/18px $mainFont;
+    overflow: hidden;
+
+    input {
+        width: 50%;
+    }
+
+    textarea {
+        width: 100%;
+    }
+
+    .btn {
+    	width: 100%;
+        height: 21px;
+        margin-bottom: 15px;
+        padding: 0;
+    	text-align: center;
+    }
+}
+
+.section__link__el {
+    float: left;
+    margin-right: 5px;
+}
+
+.section__spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, .5);
+
+    .spinner {
+    	left: 50%!important;
+    	top: 50%!important;
+    }
+}

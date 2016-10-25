@@ -1,0 +1,6 @@
+.idea
+.sass-cache
+node_modules
+static/css
+static/js/bundle.js
+static/js/config/index.js

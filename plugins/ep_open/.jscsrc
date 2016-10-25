@@ -1,0 +1,27 @@
+{
+	"preset": "google",
+	"validateIndentation": "\t",
+	"requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
+	"maximumLineLength": 200,
+	"requireLineFeedAtFileEnd": null,
+	"disallowMultipleVarDecl": null,
+	"disallowSpacesInsideBrackets": {
+		"allExcept": ["{", "}"]
+	},
+	"disallowSpacesInsideObjectBrackets": null,
+	"disallowSpaceAfterObjectKeys": true,
+	"requireSpaceBeforeObjectValues": true,
+	"requirePaddingNewlinesBeforeKeywords": ["return"],
+	"jsDoc": {
+		"checkAnnotations": true,
+		"checkParamNames": true,
+		"requireParamTypes": true,
+		"checkRedundantParams": true,
+		"requireReturnTypes": true,
+		"checkTypes": true,
+		"leadingUnderscoreAccess": true,
+		"requireHyphenBeforeDescription": true,
+		"disallowNewlineAfterDescription": true,
+		"requireParamDescription": true
+	}
+}

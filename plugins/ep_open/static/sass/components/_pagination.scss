@@ -1,0 +1,31 @@
+.pagination {
+    margin: 16px 0 16px;
+    overflow: hidden;
+}
+
+.pagination__inner {
+    position: relative;
+    float: right;
+    right: 50%;
+}
+
+.pagination__item {
+    position: relative;
+    float: left;
+    left: 50%;
+    //background: $lightGreyColor;
+    padding: 12px 4px;
+    margin: 0 4px;
+    border-radius: 2px;
+    text-decoration: none;
+    color: $activeColor;
+    text-decoration: underline;
+}
+
+.pagination__item--active,
+.pagination__item--divider {
+    //background: $activeColor;
+    //color: #fff;
+    color: $textColor;
+    text-decoration: none;
+}
