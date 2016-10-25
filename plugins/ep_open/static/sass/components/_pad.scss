@@ -77,6 +77,58 @@
     }
 }
 
+.pad__modal {
+    position: absolute;
+    top: 37px;
+    right: 20px;
+	width: 80%;
+	max-width: 500px;
+    height: 0;
+    transition: height .3s;
+    overflow: hidden;
+
+    .pad__modal__inner > * {
+        opacity: 0;
+        transition: opacity .3s;
+    }
+
+    .btn {
+        float: right;
+        height: 36px;
+    	width: 70px;
+    }
+
+    .Select {
+        width: calc(100% - 80px);
+    }
+}
+
+.pad__modal--active {
+    overflow: visible;
+
+    .pad__modal__inner > * {
+        opacity: 1;
+    }
+
+    &.pad__modal--link {
+        height: 85px;
+    }
+}
+
+.pad__modal__inner {
+    padding: 10px;
+	border-radius: 0 0 6px 6px;
+    border: 1px solid #ccc;
+    background: linear-gradient(#F7F7F7, #EEE);
+    font-size: 14px;
+    height: 100%;
+}
+
+.pad__modal__title {
+    font-size: 18px;
+    margin: 0 0 10px;
+}
+
 .pad__info {
     display: none;
     float: right;

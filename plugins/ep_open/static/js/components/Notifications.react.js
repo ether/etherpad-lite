@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-const Notifications = React.createClass({
+export default class Notifications extends Component {
     handleClick(id) {
         this.props.close(id);
     }
@@ -24,6 +24,4 @@ const Notifications = React.createClass({
 			</div>
 		);
 	}
-});
-
-export default Notifications;
+}

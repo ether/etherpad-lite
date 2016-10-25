@@ -5,7 +5,9 @@ import { branch } from 'baobab-react/decorators';
 import { Link } from 'react-router';
 import DocumentTitle from 'react-document-title';
 import { niceDate } from '../../utils/helpers';
+import messages from '../../utils/messages';
 import Base from '../Base.react';
+import PadsSearchBox from './PadsSearchBox.react';
 import * as actions from '../../actions/pads';
 
 @branch({
@@ -25,10 +27,25 @@ export default class Pad extends Base {
 
         const currentTab = props.params.padId;
 
+        this.state = {
+            isLinkModalActive: false
+        };
         this.tabs = (props.location.query.tabs || currentTab).split(',');
         props.actions.fetchPadsByIds(this.tabs);
 
 		props.actions.setCurrentPad(currentTab);
+
+        this.cancelModalLinkSubscription = messages.subscribe('toggleLinkModal', this.toggleLinkModal.bind(this));
+        this.cancelOpenPadSubscription = messages.subscribe('openPad', padId => {
+            const currentTabIndex = this.tabs.indexOf(this.props.currentPad.id);
+
+            if (this.tabs[currentTabIndex + 1] !== padId) {
+                this.tabs = this.tabs.slice(0, currentTabIndex + 1);
+                this.tabs.push(padId);
+            }
+
+            this.goToTab(padId);
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -46,6 +63,35 @@ export default class Pad extends Base {
         const query = this.tabs.length > 1 ? `?tabs=${this.tabs.join(',')}` : '';
 
         this.context.router.push(`/pads/${id}${query}`);
+        this.setState({ isLinkModalActive: false });
+    }
+
+    toggleLinkModal() {
+        const nextState = !this.state.isLinkModalActive;
+
+        if (nextState === false) {
+            this.searchBox && this.searchBox.setState({ selectedPad: null });
+        }
+
+        this.setState({
+            isLinkModalActive: nextState
+        });
+    }
+
+    insertLink() {
+        if (this.padLinkId) {
+            messages.send('newPadLink', {
+                id: this.padLinkId,
+                etherpadId: this.currentIframeId,
+                title: this.padLinkTitle
+            });
+            this.toggleLinkModal();
+        }
+    }
+
+    onSearchBoxChange(pad) {
+        this.padLinkId = pad.id;
+        this.padLinkTitle = pad.title
     }
 
     buildTabs() {
@@ -54,21 +100,19 @@ export default class Pad extends Base {
         this.props.pads.forEach(pad => padsObject[pad.id] = pad);
 
         return this.tabs.map(tab => padsObject[tab]).map(pad => (
-            <div
-                key={pad.id}
-                className={classNames('pad__tab', {
-                    'pad__tab--active': pad.id === this.props.currentPad.id
-                })}
-                onClick={this.goToTab.bind(this, pad.id)}>{pad.title}</div>
+            pad ? (
+                <div
+                    key={pad.id}
+                    className={classNames('pad__tab', {
+                        'pad__tab--active': pad.id === this.props.currentPad.id
+                    })}
+                    onClick={this.goToTab.bind(this, pad.id)}>{pad.title}</div>
+            ) : null
         ));
     }
 
 	render() {
         const { currentPad } = this.props;
-
-        if (!currentPad.id) {
-            return null;
-        }
 
 		return (
             <DocumentTitle title={currentPad.title + ' | Open Companies'}>
@@ -78,7 +122,17 @@ export default class Pad extends Base {
                             {this.buildTabs()}
                         </div>
                     </div>
-                    <div className="pad__iframe" ref="iframe"></div>
+                    <div className='pad__iframe' ref='iframe'></div>
+                    <div className={classNames('pad__modal pad__modal--link', { 'pad__modal--active': this.state.isLinkModalActive })}>
+                        <div className='pad__modal__inner'>
+                            <h1 className='pad__modal__title'>Add link to another pad</h1>
+                            <button className='btn' onClick={this.insertLink.bind(this)}>Add</button>
+                            <PadsSearchBox
+                                ref='{searchBox => this.searchBox = searchBox}'
+                                onChange={this.onSearchBoxChange.bind(this)}
+                                filter={pads => pads.filter(pad => pad.value !== currentPad.id)} />
+                        </div>
+                    </div>
                 </div>
             </DocumentTitle>
 		);
@@ -106,5 +160,10 @@ export default class Pad extends Base {
 
             this.currentIframeId = etherpadId;
         }
+    }
+
+    componentWillUnmount() {
+        this.cancelModalLinkSubscription && this.cancelModalLinkSubscription();
+        this.cancelOpenPadSubscription && this.cancelOpenPadSubscription();
     }
 }

@@ -7,9 +7,9 @@ exports.postAceInit = function(hookName, context) {
 		var $inner = $(ace.ace_getDocument()).find('#innerdocbody');
 
 		$inner.on('click', '.padLink', function() {
-			var padName = this.getAttribute('data-pad');
+			var padId = this.getAttribute('data-pad');
 
-			window.top.openPad(padName);
+			window.top.pm.send('openPad', padId);
 		});
 	});
 };
