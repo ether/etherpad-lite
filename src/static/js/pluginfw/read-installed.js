@@ -203,7 +203,8 @@ function readInstalled_ (folder, parent, name, reqver, depth, maxDepth, cb) {
     obj.path = obj.path || folder
     obj.realPath = real
     obj.link = link
-    if (parent && !obj.link) obj.parent = parent
+    // Adding of link to parent object causes infinite loops in dependencies handler
+    //if (parent && !obj.link) obj.parent = parent
     rpSeen[real] = obj
     obj.depth = depth
     if (depth >= maxDepth) return cb(null, obj)
