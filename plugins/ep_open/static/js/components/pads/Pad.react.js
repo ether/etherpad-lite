@@ -94,12 +94,26 @@ export default class Pad extends Base {
         this.padLinkTitle = pad.title
     }
 
-    buildTabs() {
+    onIframeClick(event) {
+        if (event.target.className === 'pad__iframe__screen') {
+            const currentTabIndex = this.tabs.indexOf(this.props.currentPad.id);
+
+            if (currentTabIndex > 0) {
+                this.goToTab(this.tabs[currentTabIndex - 1]);
+            }
+        }
+    }
+
+    getPads() {
         const padsObject = {};
 
         this.props.pads.forEach(pad => padsObject[pad.id] = pad);
 
-        return this.tabs.map(tab => padsObject[tab]).map(pad => (
+        return this.tabs.map(tab => padsObject[tab]);
+    }
+
+    buildTabs() {
+        return this.getPads().map(pad => (
             pad ? (
                 <div
                     key={pad.id}
@@ -122,7 +136,7 @@ export default class Pad extends Base {
                             {this.buildTabs()}
                         </div>
                     </div>
-                    <div className='pad__iframe' ref='iframe'></div>
+                    <div className='pad__iframes' ref='iframes' onClick={this.onIframeClick.bind(this)}></div>
                     <div className={classNames('pad__modal pad__modal--link', { 'pad__modal--active': this.state.isLinkModalActive })}>
                         <div className='pad__modal__inner'>
                             <h1 className='pad__modal__title'>Add link to another pad</h1>
@@ -141,24 +155,31 @@ export default class Pad extends Base {
     componentDidUpdate() {
         const etherpadId = this.props.currentPad && this.props.currentPad.etherpadId;
 
-        if (etherpadId && etherpadId !== this.currentIframeId && this.refs.iframe) {
-            const currentIframe = this.currentIframeId && document.getElementById(this.currentIframeId);
-            let iframe = document.getElementById(etherpadId);
+        if (etherpadId) {
+            Array.prototype.forEach.call(this.refs.iframes.querySelectorAll('.pad__iframe'), el => el.className = 'pad__iframe');
 
-            if (iframe) {
-                iframe.className = '';
-            } else {
-                iframe = document.createElement('iframe');
-                iframe.id = etherpadId;
-                iframe.src = `/p/${etherpadId}?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false`;
-                this.refs.iframe.appendChild(iframe);
-            }
+            this.getPads().some((pad, index) => {
+                if (!pad) return true;
 
-            if (currentIframe) {
-                currentIframe.className = 'hidden';
-            }
+                let iframe = document.getElementById(pad.etherpadId);
 
-            this.currentIframeId = etherpadId;
+                if (!iframe) {
+                    iframe = document.createElement('div');
+                    iframe.id = pad.etherpadId;
+                    iframe.className = 'pad__iframe';
+                    iframe.innerHTML = `
+                        <div class="pad__iframe__screen"></div>
+                        <iframe class="pad__iframe__el" src="/p/${pad.etherpadId}?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" />
+                    `;
+                    this.refs.iframes.appendChild(iframe);
+                }
+
+                iframe.className = 'pad__iframe pad__iframe--active';
+                iframe.style.zIndex = index + 1;
+                iframe.style.left = 80 * index + 'px';
+
+                return pad.etherpadId === etherpadId;
+            });
         }
     }
 
