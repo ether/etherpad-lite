@@ -73,8 +73,13 @@ echo "Ensure that all dependencies are up to date...  If this is the first time 
   cd node_modules
   [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
   [ -e ep_pad_link ] || ln -s ../plugins/ep_pad_link ep_pad_link
-  [ -e ep_open ] || ln -s ../plugins/ep_open ep_open
-  [ -e ep_open ] || npm i ep_open
+  if [ ! -e ep_open ]; then
+    ln -s ../plugins/ep_open ep_open;
+    cd ep_open;
+    npm install;
+    npm run build;
+    cd ../
+  fi
   cd ep_etherpad-lite
   npm install --loglevel warn
 ) || {

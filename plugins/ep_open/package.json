@@ -4,7 +4,8 @@
   "description": "Open Projects extension",
   "main": "hooks.js",
   "scripts": {
-    "migrate": "sequelize db:migrate"
+    "migrate": "sequelize db:migrate",
+    "build": "gulp build --production"
   },
   "enginse": {
     "node": ">=4.2.1"

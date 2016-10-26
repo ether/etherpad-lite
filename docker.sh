@@ -32,7 +32,7 @@ case "$1" in
 ;;
 
 "migrate")
-    docker exec etherpad-server npm run migrate
+    docker exec -i etherpad-server bash -c "cd /opt/etherpad/plugins/ep_open && npm run migrate"
 ;;
 
 "backup")
