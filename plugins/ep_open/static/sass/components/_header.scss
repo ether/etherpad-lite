@@ -6,20 +6,20 @@ $borderColor: #e5e5e5;
 	z-index: 1;
 	overflow: hidden;
 	background: #eee;
-	height: 32px;
+	height: 20px;
 	box-sizing: content-box;
 }
 
 .header__logo {
 	@include icon('logo-single', true, false);
 	float: left;
-	transform: scale(0.75);
+	transform: scale(0.6);
 	transform-origin: 0 0;
-	margin-right: 8px;
+	margin: -3px -8px 0 -2px;
 }
 
 .header__link {
-	line-height: 32px;
+	line-height: 20px;
 	font-size: 14px;
 	text-decoration: underline;
 }

@@ -7,10 +7,10 @@
 
 .pad__tabs {
     position: absolute;
-    top: -42px;
-    left: 42px;
+    top: -32px;
+    left: 32px;
     right: 150px;
-    height: 42px;
+    height: 32px;
     overflow: hidden;
 
     &:after,
@@ -39,13 +39,13 @@
 
 .pad__tab {
     display: inline-block;
-    padding: 8px 16px;
-    font: 18px/25px $mainFont;
+    padding: 4px 12px;
+    font: 14px/23px $mainFont;
     border-radius: 4px 4px 0 0;
     border: 1px solid #ccc;
     border-bottom: none;
     background: #eee;
-    height: 41px;
+    height: 31px;
     cursor: pointer;
 
     &:not(:first-child) {
@@ -55,7 +55,7 @@
 
 .pad__tab--active {
     background: #f7f7f7;
-    height: 42px;
+    height: 32px;
 }
 
 .pad__iframes,
