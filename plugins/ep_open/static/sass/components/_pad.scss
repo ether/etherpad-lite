@@ -101,6 +101,24 @@
     .Select {
         width: calc(100% - 80px);
     }
+
+    @media(max-width: 950px) {
+        top: 69px;
+    }
+
+    @media(max-width: 346px) {
+        top: 101px;
+        width: auto;
+        left: 10px;
+        right: 10px;
+    }
+
+    @media only screen and (max-device-width: 720px) and (min-device-width: 320px) and (max-width: 600px) {
+        top: 36px;
+    }
+    @media only screen and (max-device-width: 720px) and (min-device-width: 320px) and (max-width: 489px) {
+        top: 68px;
+    }
 }
 
 .pad__modal--active {

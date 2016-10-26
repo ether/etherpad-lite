@@ -12,7 +12,8 @@
 			"aceCreateDomLine": "ep_pad_link/static/js/hooks",
 			"postToolbarInit": "ep_pad_link/static/js/hooks",
 			"aceEditorCSS": "ep_pad_link/static/js/hooks",
-			"postAceInit": "ep_pad_link/static/js/hooks"
+			"postAceInit": "ep_pad_link/static/js/hooks",
+			"aceEditEvent": "ep_pad_link/static/js/hooks"
 		}
 	}]
 }

@@ -2,6 +2,12 @@ exports.aceEditorCSS = function(hookName, context, cb) {
 	return cb(['ep_pad_link/static/css/ace.css']);
 };
 
+exports.aceEditEvent = function(hookName, context) {
+	if (context.callstack.type === 'handleClick') {
+		window.top.pm.send('toggleLinkModal', false);
+	}
+};
+
 exports.postAceInit = function(hookName, context) {
 	context.ace.callWithAce(function(ace) {
 		var $inner = $(ace.ace_getDocument()).find('#innerdocbody');

@@ -66,8 +66,8 @@ export default class Pad extends Base {
         this.setState({ isLinkModalActive: false });
     }
 
-    toggleLinkModal() {
-        const nextState = !this.state.isLinkModalActive;
+    toggleLinkModal(state) {
+        const nextState = typeof state === 'boolean' ? state : !this.state.isLinkModalActive;
 
         if (nextState === false) {
             this.searchBox && this.searchBox.setState({ selectedPad: null });
