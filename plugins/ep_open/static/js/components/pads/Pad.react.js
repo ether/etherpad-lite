@@ -79,10 +79,10 @@ export default class Pad extends Base {
     }
 
     insertLink() {
-        if (this.padLinkId) {
+        if (this.padLinkId && this.props.currentPad) {
             messages.send('newPadLink', {
                 id: this.padLinkId,
-                etherpadId: this.currentIframeId,
+                etherpadId: this.props.currentPad.etherpadId,
                 title: this.padLinkTitle
             });
             this.toggleLinkModal();
