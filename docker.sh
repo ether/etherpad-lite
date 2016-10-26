@@ -35,6 +35,10 @@ case "$1" in
     docker exec -i etherpad-server bash -c "cd /opt/etherpad/plugins/ep_open && npm run migrate"
 ;;
 
+"psql")
+    docker run -it --rm --link etherpad-db-server:postgres postgres psql -h postgres -U postgres
+;;
+
 "backup")
     docker run --rm --volumes-from etherpad-db-data -v $(pwd)/backups:/backups busybox tar cvf /backups/backup_$(date +"%Y-%m-%dT%H-%M-%S").tar /var/lib/postgresql/data
 ;;
