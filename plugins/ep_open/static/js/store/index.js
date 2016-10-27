@@ -2,6 +2,7 @@ import _ from 'lodash';
 import Baobab from 'baobab';
 
 const tree = new Baobab({
+    layoutModes: [],
     errors: [],
     currentUser: null,
     token: null,
@@ -17,7 +18,8 @@ const tree = new Baobab({
     padsTotal: 0,
     currentPadId: null,
     currentPad: selectedItem('pads', 'currentPadId'),
-    newPad: null
+    newPad: null,
+    padsHierarchy: null
 });
 
 // Wrapper for creation of monkey for some selected item in list of items

@@ -8,14 +8,16 @@ import { niceDate } from '../../utils/helpers';
 import messages from '../../utils/messages';
 import Base from '../Base.react';
 import PadsSearchBox from './PadsSearchBox.react';
-import * as actions from '../../actions/pads';
+import PadsHierarchy from './PadsHierarchy.react';
+import * as padsActions from '../../actions/pads';
+import * as commonActions from '../../actions/common';
 
 @branch({
     cursors: {
         currentPad: ['currentPad'],
         pads: ['pads']
     },
-	actions
+	actions: Object.assign({}, padsActions, commonActions)
 })
 export default class Pad extends Base {
     static contextTypes = {
@@ -25,14 +27,16 @@ export default class Pad extends Base {
 	constructor(props) {
 		super(props);
 
-        const currentTab = props.params.padId;
+        const currentTab = props.params.padId || 'root';
 
         this.state = {
-            isLinkModalActive: false
+            isLinkModalActive: false,
+            isHierarchyActive: window.sessionStorage.isHierarchyActive === 'true'
         };
         this.tabs = (props.location.query.tabs || currentTab).split(',');
-        props.actions.fetchPadsByIds(this.tabs);
 
+        this.state.isHierarchyActive && props.actions.addLayoutMode('pad_hierarchy');
+        props.actions.fetchPadsByIds(this.tabs);
 		props.actions.setCurrentPad(currentTab);
 
         this.cancelModalLinkSubscription = messages.subscribe('toggleLinkModal', this.toggleLinkModal.bind(this));
@@ -64,6 +68,14 @@ export default class Pad extends Base {
 
         this.context.router.push(`/pads/${id}${query}`);
         this.setState({ isLinkModalActive: false });
+    }
+
+    toggleHierarchyState() {
+        const isHierarchyActive = !this.state.isHierarchyActive;
+
+        window.sessionStorage.setItem('isHierarchyActive', isHierarchyActive);
+        this.setState({ isHierarchyActive });
+        this.props.actions[isHierarchyActive ? 'addLayoutMode' : 'removeLayoutMode']('pad_hierarchy');
     }
 
     toggleLinkModal(state) {
@@ -127,9 +139,10 @@ export default class Pad extends Base {
 
 	render() {
         const { currentPad } = this.props;
+        const title = `${currentPad.title && currentPad.id !== 'root' ? (currentPad.title + ' | ') : ''}Open Companies`;
 
 		return (
-            <DocumentTitle title={currentPad.title + ' | Open Companies'}>
+            <DocumentTitle title={title}>
                 <div className='pad'>
                     <div className='pad__tabs'>
                         <div className='pad__tabs_scrollbox'>
@@ -147,6 +160,8 @@ export default class Pad extends Base {
                                 filter={pads => pads.filter(pad => pad.value !== currentPad.id)} />
                         </div>
                     </div>
+                    <PadsHierarchy isActive={this.state.isHierarchyActive} />
+                    <div className='pad__hierarchy_toggler' onClick={this.toggleHierarchyState.bind(this)}></div>
                 </div>
             </DocumentTitle>
 		);
@@ -186,5 +201,6 @@ export default class Pad extends Base {
     componentWillUnmount() {
         this.cancelModalLinkSubscription && this.cancelModalLinkSubscription();
         this.cancelOpenPadSubscription && this.cancelOpenPadSubscription();
+        this.props.actions.removeLayoutMode('pad_hierarchy');
     }
 }

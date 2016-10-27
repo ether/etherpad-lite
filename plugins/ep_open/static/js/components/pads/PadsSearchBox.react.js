@@ -27,16 +27,26 @@ export default class PadsSearchBox extends Base {
             isLoading: false,
             selectedPad: null
         };
-        this.loadPads = debounce(query => {
+        this.loadPads = query => {
             return request('/pads', {
                 data: { query }
             }).then(data => ({
                 options: data.rows.map(pad => ({
                     value: pad.id,
                     label: pad.title
-                }))
+                })).concat({
+                    value: query,
+                    label: `Create new pad with name "${query}"`,
+                    isNew: true,
+                    type: 'child'
+                }, {
+                    value: query,
+                    label: `Create new company pad with name "${query}"`,
+                    isNew: true,
+                    type: 'company'
+                })
             }));
-        }, 300, { leading: true });
+        };
 
         this.clearValue = this.clearValue.bind(this);
     }
@@ -76,7 +86,8 @@ export default class PadsSearchBox extends Base {
                 }
             });
 			this.props.actions.createPad({
-                title: selectedPad.value
+                title: selectedPad.value,
+                type: selectedPad.type
             });
 		} else {
             this.setState({ selectedPad });
@@ -99,12 +110,8 @@ export default class PadsSearchBox extends Base {
             filteredOptions = this.props.filter(filteredOptions);
         }
 
-        if (filterValue.length > 0) {
-			filteredOptions = filteredOptions.concat({
-				value: filterValue,
-				label: `Create new pad with name "${filterValue}"`,
-				isNew: true
-			});
+        if (!filterValue) {
+            filteredOptions = filteredOptions.filter(option => !option.isNew);
         }
 
         return filteredOptions;

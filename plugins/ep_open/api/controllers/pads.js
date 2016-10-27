@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const co = require('co');
 const md5 = require('md5');
 const padManager = require('ep_etherpad-lite/node/db/PadManager');
 const sequelize = require('../models/sequelize');
@@ -18,60 +19,36 @@ module.exports = api => {
 	api.get('/pads', async(function*(request, response) {
 		const page = (parseInt(request.query.page, 10) || 1) - 1;
 		const perPage = parseInt(request.query.perPage, 10) || 50;
-		let whereConds = [];
-		let join = '';
-		let total;
+		const where = {};
 
 		if (request.query.query) {
-			whereConds.push(`LOWER("pad"."title") LIKE '%${request.query.query.toLowerCase()}%'`);
+			where.title = { $iLike: `%${request.query.query}%` };
 		} else if (request.query.ids) {
-			whereConds.push(`"pad"."id" similar to '%(${request.query.ids.split(',').join('|')})%'`);
+			where.id = { $in: request.query.ids.split(',') };
 		}
 
-		const where = whereConds.length ? (`WHERE ${whereConds.join(' AND ')}`) : '';
-
-		// Sequelize has a pads with filtering by associated model bound through junction table, therefore we
-		// use plain query for getting of total count and ids for current page.
-		return yield Promise.all([
-			sequelize.query(`
-				SELECT COUNT(DISTINCT("pad"."id")) AS "count"
-				FROM   "pads" AS "pad"
-				${join}
-				${where}
-			`).then(result => result[0][0].count),
-			sequelize.query(`
-				SELECT DISTINCT ON ("id") "pad"."id" as "id"
-				FROM   "pads" AS "pad"
-				${join}
-				${where}
-				ORDER  BY "pad"."id", "pad"."created_at" DESC
-				LIMIT  ${perPage}
-				OFFSET ${page * perPage};
-			`).then(result => result[0].map(row => row.id))
-		])
-		.then(results => {
-			total = results[0];
-
-			return Pad.findAll({
-				where: {
-					id: {
-						$in: results[1]
-					}
-				},
-				order: '"createdAt" DESC'
-			});
-		})
-		.then(pads => ({
-			count: total,
-			rows: pads.map(row => row.toJSON())
-		}));
+		return yield Pad.findAndCountAll({
+			limit: perPage,
+			offset: page * perPage,
+			where: where,
+			order: [['created_at']]
+		});
 	}));
 
 	api.get('/pads/:id', async(function*(request, response) {
-		const pad = yield Pad.scope('full').findById(request.params.id);
+		let pad = yield Pad.scope('full').findById(request.params.id);;
 
 		if (!pad) {
-			return responseError(response, 'Pad is not found');
+			if (request.params.id === 'root') {
+				pad = yield Pad.scope('full').create({
+					id: 'root',
+					type: 'root',
+					etherpadId: 'root',
+					title: 'Open companies'
+				});
+			} else {
+				return responseError(response, 'Pad is not found');
+			}
 		}
 
 		const views = (pad.views || 0) + 1;
@@ -136,4 +113,75 @@ module.exports = api => {
 
 		return yield pad.destroy();
 	}));
+
+	api.get('/pads/:id/hierarchy', async(function*(request, response) {
+		const id = request.params.id;
+
+		if (id === 'root') {
+			const rootPad = yield co.wrap(buildHierarchy)(id, {}, 1);
+
+			if (!_.isEmpty(rootPad)) {
+				const children = rootPad.children;
+
+				rootPad.children = [];
+
+				if (children) {}
+				for (var i = 0; i < children.length; i++) {
+					const child = children[i];
+
+					if (child.type === 'company') {
+						rootPad.children.push(yield co.wrap(buildHierarchy)(child.id, {}));
+					}
+				}
+			}
+
+			return rootPad;
+		} else {
+			return yield co.wrap(buildHierarchy)(id, {});
+		}
+	}));
+
+	function* buildHierarchy(id, store, depth) {
+		if (store[id]) {
+			return store[id];
+		};
+
+		const pad = yield Pad.scope('full').findById(id);
+
+		if (!pad) {
+			return {};
+		}
+
+		const padData = yield promiseWrapper(padManager.getPad, [pad.etherpadId]);
+		const result = {
+			id: pad.id,
+			title: pad.title,
+			type: pad.type,
+		};
+		const children = [];
+
+		store[id] = Object.assign({}, result);
+
+		if (depth === undefined || (typeof depth === 'number' && --depth >= 0)) {
+			Object.keys(padData.pool.attribToNum).forEach(attribute => {
+				if (/^padLink,.+/.test(attribute)) {
+					const linkId = attribute.replace(/^padLink,([^,]*)?(.*)/g, '$1');
+
+					if (linkId) {
+						children.push(linkId);
+					}
+				}
+			});
+
+			if (children.length) {
+				result.children = [];
+
+				for (var i = 0; i < children.length; i++) {
+					result.children[i] = yield co.wrap(buildHierarchy)(children[i], store, depth);
+				}
+			}
+		}
+
+		return result;
+	}
 };

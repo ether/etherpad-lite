@@ -10,7 +10,8 @@ import * as errorsActions from '../actions/errors';
 @branch({
 	cursors: {
 		user: ['currentUser'],
-		errors: ['errors']
+		errors: ['errors'],
+		layoutModes: ['layoutModes']
 	},
 	actions: {
 		removeError: errorsActions.removeError
@@ -40,17 +41,22 @@ class App extends Component {
 	}
 
 	render() {
-		const isAuthorized = this.props.user && this.props.user.id;
-		const { location } = this.props;
+		const { location, user, layoutModes } = this.props;
+		const isAuthorized = user && user.id;
 	    const isModal = (
 			location.state &&
 			location.state.modal
 		);
 		const isPad = (isModal && this.previousRoutes ? this.previousRoutes : this.props.routes).map(r => r.name).indexOf('pad') !== -1;
+		let layoutClassNames = 'layout';
+
+		if (layoutModes.length) {
+			layoutClassNames += ' ' +  layoutModes.map(mode => `layout--${mode}`).join(' ');
+		}
 
 		return (
 			<DocumentTitle title="Open Companies">
-				<div className={classNames('layout', {
+				<div className={classNames(layoutClassNames, {
 						'layout--modal': isModal,
 						'layout--authorized': isAuthorized,
 						'layout--pad': isPad

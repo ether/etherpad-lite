@@ -22,7 +22,7 @@ function init() {
 			<Router history={browserHistory}>
 				<Route name='app' path='/' component={App}>
 					<IndexRedirect to='/pads' />
-					<Route name='pad' path='/pads' component={PadsSearch} />
+					<Route name='pad' path='/pads' component={Pad} />
 					<Route name='pad' path='/pads/new' component={PadForm} />
 					<Route name='pad' path='/pads/:padId' component={Pad} />
 					<Route name='pad' path='/pads/:padId/edit' component={PadForm} />

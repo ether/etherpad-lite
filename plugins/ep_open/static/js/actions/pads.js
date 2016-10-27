@@ -28,13 +28,21 @@ export function fetchPads(tree, query) {
 }
 
 export function fetchPadsByIds(tree, ids) {
-    return request(`/pads`, {
-        data: { ids }
-    })
-    .then(response => {
-        tree.set('pads', response.rows);
-    })
-    .catch(errorHandler(tree));
+    if (ids.length === 1) {
+        return request(`/pads/${ids[0]}`)
+        .then(pad => {
+            tree.set('pads', [pad]);
+        })
+        .catch(errorHandler(tree));
+    } else {
+        return request(`/pads`, {
+            data: { ids }
+        })
+        .then(response => {
+            tree.set('pads', response.rows);
+        })
+        .catch(errorHandler(tree));
+    }
 }
 
 export function setCurrentPad(tree, id = '') {
@@ -91,4 +99,10 @@ export function deletePad(tree, id) {
 
 export function clearNewPad(tree) {
     tree.set('newPad', null);
+}
+
+export function fetchHierarchy(tree) {
+    request('/pads/root/hierarchy')
+        .then(hierarchy => tree.set('padsHierarchy', hierarchy))
+        .catch(errorHandler(tree));
 }

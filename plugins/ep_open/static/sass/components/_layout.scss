@@ -31,6 +31,13 @@
     }
 }
 
+.layout--pad_hierarchy {
+    .header,
+    .content {
+        margin-left: 320px;
+    }
+}
+
 .limit {
     position: relative;
     max-width: 1100px;
