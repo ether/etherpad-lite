@@ -54,7 +54,7 @@ export default class Pad extends Base {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.location.query.tabs !== this.props.location.query.tabs) {
-            this.tabs = (nextProps.location.query.tabs || nextProps.params.padId).split(',');
+            this.tabs = (nextProps.location.query.tabs || nextProps.params.padId || 'root').split(',');
             this.props.actions.fetchPadsByIds(this.tabs);
         }
 

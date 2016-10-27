@@ -125,12 +125,13 @@ module.exports = api => {
 
 				rootPad.children = [];
 
-				if (children) {}
-				for (var i = 0; i < children.length; i++) {
-					const child = children[i];
+				if (children) {
+					for (var i = 0; i < children.length; i++) {
+						const child = children[i];
 
-					if (child.type === 'company') {
-						rootPad.children.push(yield co.wrap(buildHierarchy)(child.id, {}));
+						if (child.type === 'company') {
+							rootPad.children.push(yield co.wrap(buildHierarchy)(child.id, {}));
+						}
 					}
 				}
 			}
@@ -177,7 +178,11 @@ module.exports = api => {
 				result.children = [];
 
 				for (var i = 0; i < children.length; i++) {
-					result.children[i] = yield co.wrap(buildHierarchy)(children[i], store, depth);
+					const child = yield co.wrap(buildHierarchy)(children[i], store, depth);
+
+					if (!_.isEmpty(child)) {
+						result.children[i] = child;
+					}
 				}
 			}
 		}
