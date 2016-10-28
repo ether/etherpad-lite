@@ -226,8 +226,13 @@
     right: 8px;
     bottom: 0;
     left: 0;
-    padding: 10px;
     overflow: auto;
+}
+
+.pad__hierarchy__inner {
+    padding: 10px;
+    display: inline-block;
+    min-width: 100%;
 }
 
 .pad__hierarchy_toggler,
@@ -330,7 +335,7 @@
         }
 
         &:last-child:after {
-            height: 10px;
+            height: 22px;
         }
     }
 }
@@ -380,6 +385,7 @@
     position: relative;
     font: 16px/20px Arial;
     cursor: pointer;
+    white-space: nowrap;
 
     .pad__hierarchy__node--active > &:before {
         content: '';

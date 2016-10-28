@@ -16,7 +16,7 @@ function request(url, params = {}) {
     const isExternal = url.indexOf('http') !== -1;
     const token = tree.select('token').get();
 
-    url = (isExternal ? '' : config.apiHost) + url;
+    url = (isExternal ? '' : '/api') + url;
     params.headers = {};
 
     if (token && token.id) {
