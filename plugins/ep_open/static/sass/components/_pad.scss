@@ -38,6 +38,7 @@
 }
 
 .pad__tab {
+    position: relative;
     display: inline-block;
     padding: 4px 12px;
     font: 14px/23px $mainFont;
@@ -49,7 +50,29 @@
     cursor: pointer;
 
     &:not(:first-child) {
-        margin-left: 10px;
+        margin-left: 16px;
+
+        &:after {
+            content: '';
+            position: absolute;
+            left: -17px;
+            width: 16px;
+            height: 1px;
+            background: #ccc;
+            top: 15px;
+        }
+
+        &:before {
+            content: '';
+        	position: absolute;
+        	left: -7px;
+        	width: 4px;
+        	height: 4px;
+        	border-right: 1px solid #ccc;
+        	border-top: 1px solid #ccc;
+        	transform: rotate(45deg);
+        	top: 13px;
+        }
     }
 }
 
@@ -182,17 +205,33 @@
     top: -37px;
     left: 0;
     bottom: 0;
-    width: 320px;
+    width: 240px;
     background: #eee;
-    border-right: 1px solid #ccc;
-    padding: 10px;
     transform: translateX(-100%);
-    transition: transform .3s;
     z-index: 101;
+}
+
+.pad__hierarchy--resizing:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 400px;
+    height: 100%;
+}
+
+.pad__hierarchy__scrollbox {
+    position: absolute;
+    top: 0;
+    right: 8px;
+    bottom: 0;
+    left: 0;
+    padding: 10px;
     overflow: auto;
 }
 
-.pad__hierarchy_toggler {
+.pad__hierarchy_toggler,
+.pad__fullscreen_toggler {
     position: absolute;
     left: 10px;
     bottom: 10px;
@@ -204,14 +243,23 @@
     border-radius: 3px;
     z-index: 101;
     cursor: pointer;
-    transition: left .3s;
+}
 
-    &:before {
-        content: 'Navigation';
+.pad__fullscreen_toggler {
+    left: 50px;
+}
+
+.layout--pad_fullscreen {
+    .pad__tabs {
+        display: none;
     }
 
-    .layout--pad_hierarchy &:before {
-        content: 'Close';
+    .pad__fullscreen_toggler {
+        left: 10px;
+    }
+
+    .pad__hierarchy_toggler {
+        display: none;
     }
 }
 
@@ -226,40 +274,58 @@
     }
 }
 
+.pad__hierarchy__resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 100%;
+    background: #ccc;
+	cursor: ew-resize;
+}
+
 .pad__hierarchy__search {
     margin-bottom: 20px;
 }
 
 .pad__hierarchy__node {
     position: relative;
-    padding: 0 0 10px 10px;
+    padding: 0 0 10px 12px;
 
     &:not(.pad__hierarchy__node--main):last-child {
         padding-bottom: 0;
     }
 
     > .pad__hierarchy__list {
-        margin: 10px 0 10px 15px;
+        margin: 8px 0 8px 10px;
+    }
+
+    &:not(.pad__hierarchy__node--expanded) > .pad__hierarchy__list {
+        display: none;
     }
 
     &:not(.pad__hierarchy__node--root) {
         &:before {
         	content: '';
         	position: absolute;
-        	left: -10px;
-        	width: 10px;
+        	left: -24px;
+        	width: 20px;
         	height: 1px;
         	background: #ccc;
         	top: 9px;
         }
 
+        &.pad__hierarchy__node--parent:before {
+            width: 18px;
+        }
+
         &:after {
         	content: '';
         	position: absolute;
-            top: 0;
-        	left: -10px;
-        	width: 1px;
-            height: 100%;
+            width: 1px;
+        	left: -24px;
+        	top: -13px;
+            bottom: -10px;
         	background: #ccc;
         }
 
@@ -271,13 +337,43 @@
 
 .pad__hierarchy__node--root {
     margin-bottom: 16px;
-    padding: 0 0 0 4px;
+    padding: 0 0 0 19px;
 }
 
 .pad__hierarchy__node--main {
 	border-bottom: 1px solid #ccc;
 	margin: -1px 0 16px;
-    padding-bottom: 7px;
+    padding: 0 0 7px;
+}
+
+.pad__hierarchy__node__toggler {
+    width: 11px;
+    height: 11px;
+    float: left;
+    margin: 4px 8px 0 -19px;
+    position: relative;
+    z-index: 2;
+    border: 1px solid $textColor;
+    padding: 1px;
+    cursor: pointer;
+
+    &:before,
+    &:after {
+        content: '';
+        display: block;
+        height: 1px;
+        background: $textColor;
+        margin-top: 3px;
+    }
+
+    &:after {
+        transform: rotate(90deg);
+        margin-top: -1px;
+    }
+
+    .pad__hierarchy__node--expanded > &:after {
+        display: none;
+    }
 }
 
 .pad__hierarchy__node__title {

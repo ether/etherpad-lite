@@ -181,7 +181,7 @@ module.exports = api => {
 					const child = yield co.wrap(buildHierarchy)(children[i], store, depth);
 
 					if (!_.isEmpty(child)) {
-						result.children[i] = child;
+						result.children.push(child);
 					}
 				}
 			}

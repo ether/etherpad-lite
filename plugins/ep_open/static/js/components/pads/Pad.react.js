@@ -31,11 +31,13 @@ export default class Pad extends Base {
 
         this.state = {
             isLinkModalActive: false,
+            isFullscreenActive: window.sessionStorage.isFullscreenActive === 'true',
             isHierarchyActive: window.sessionStorage.isHierarchyActive === 'true'
         };
         this.tabs = (props.location.query.tabs || currentTab).split(',');
 
         this.state.isHierarchyActive && props.actions.addLayoutMode('pad_hierarchy');
+        this.state.isFullscreenActive && props.actions.addLayoutMode('pad_fullscreen');
         props.actions.fetchPadsByIds(this.tabs);
 		props.actions.setCurrentPad(currentTab);
 
@@ -70,12 +72,12 @@ export default class Pad extends Base {
         this.setState({ isLinkModalActive: false });
     }
 
-    toggleHierarchyState() {
-        const isHierarchyActive = !this.state.isHierarchyActive;
+    toggleMode(paramName, modeName) {
+        const newValue = !this.state[paramName];
 
-        window.sessionStorage.setItem('isHierarchyActive', isHierarchyActive);
-        this.setState({ isHierarchyActive });
-        this.props.actions[isHierarchyActive ? 'addLayoutMode' : 'removeLayoutMode']('pad_hierarchy');
+        window.sessionStorage.setItem(paramName, newValue);
+        this.setState({ [paramName]: newValue });
+        this.props.actions[newValue ? 'addLayoutMode' : 'removeLayoutMode'](modeName);
     }
 
     toggleLinkModal(state) {
@@ -161,7 +163,16 @@ export default class Pad extends Base {
                         </div>
                     </div>
                     <PadsHierarchy isActive={this.state.isHierarchyActive} />
-                    <div className='pad__hierarchy_toggler' onClick={this.toggleHierarchyState.bind(this)}></div>
+                    <div
+                        className='pad__hierarchy_toggler'
+                        onClick={this.toggleMode.bind(this, 'isHierarchyActive', 'pad_hierarchy')}>
+                        <i className='fa fa-sitemap'></i>
+                    </div>
+                    <div
+                        className='pad__fullscreen_toggler'
+                        onClick={this.toggleMode.bind(this, 'isFullscreenActive', 'pad_fullscreen')}>
+                        <i className='fa fa-arrows-alt'></i>
+                    </div>
                 </div>
             </DocumentTitle>
 		);

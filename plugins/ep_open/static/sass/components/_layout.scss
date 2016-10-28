@@ -34,7 +34,14 @@
 .layout--pad_hierarchy {
     .header,
     .content {
-        margin-left: 320px;
+        margin-left: 240px;
+    }
+}
+
+.layout--pad_fullscreen {
+    .content {
+        top: 0;
+        margin-left: 0!important;
     }
 }
 

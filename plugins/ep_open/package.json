@@ -35,6 +35,7 @@
     "react-avatar-editor": "^3.2.0",
     "react-document-title": "^2.0.2",
     "react-dom": "^0.14.0",
+    "react-draggable": "^2.2.2",
     "react-dropzone": "^3.3.2",
     "react-router": "^2.0.0-rc5",
     "react-select": "^1.0.0-beta12",
