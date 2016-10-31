@@ -32,6 +32,7 @@
   "trustProxy": true,
   "disableIPlogging": false,
   "socketTransportProtocols": [
+    "websocket",
     "xhr-polling",
     "jsonp-polling",
     "htmlfile"
