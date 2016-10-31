@@ -48,6 +48,8 @@
     background: #eee;
     height: 31px;
     cursor: pointer;
+    color: $activeColor;
+    text-decoration: underline;
 
     &:not(:first-child) {
         margin-left: 16px;
@@ -57,21 +59,21 @@
             position: absolute;
             left: -17px;
             width: 16px;
-            height: 1px;
-            background: #ccc;
+            height: 2px;
+            background: #999;
             top: 15px;
         }
 
         &:before {
             content: '';
         	position: absolute;
-        	left: -7px;
-        	width: 4px;
-        	height: 4px;
-        	border-right: 1px solid #ccc;
-        	border-top: 1px solid #ccc;
+        	left: -10px;
+        	width: 6px;
+        	height: 6px;
+        	border-right: 2px solid #999;
+        	border-top: 2px solid #999;
         	transform: rotate(45deg);
-        	top: 13px;
+        	top: 12px;
         }
     }
 }
@@ -79,6 +81,8 @@
 .pad__tab--active {
     background: #f7f7f7;
     height: 32px;
+    color: $textColor;
+    text-decoration: none;
 }
 
 .pad__iframes,
@@ -108,7 +112,7 @@
 	left: -1000%;
 	width: 1000%;
 	height: 100%;
-	background: rgba(0, 0, 0, .5);
+	background: rgba(0, 0, 0, .3);
 	z-index: 1;
 	cursor: pointer;
 }
@@ -206,8 +210,9 @@
     left: 0;
     bottom: 0;
     width: 240px;
-    background: #eee;
+    background: #fff;
     transform: translateX(-100%);
+    color: #000;
     z-index: 101;
 }
 
@@ -315,7 +320,7 @@
         	position: absolute;
         	left: -24px;
         	width: 20px;
-        	height: 1px;
+        	height: 2px;
         	background: #ccc;
         	top: 9px;
         }
@@ -327,7 +332,7 @@
         &:after {
         	content: '';
         	position: absolute;
-            width: 1px;
+            width: 2px;
         	left: -24px;
         	top: -13px;
             bottom: -10px;
@@ -394,7 +399,7 @@
         bottom: -5px;
         left: -1000%;
         right: -10px;
-        background: #ddd;
+        background: #eee;
         z-index: -1;
     }
 }

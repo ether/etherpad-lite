@@ -202,7 +202,7 @@ export default class Pad extends Base {
 
                 iframe.className = 'pad__iframe pad__iframe--active';
                 iframe.style.zIndex = index + 1;
-                iframe.style.left = 80 * index + 'px';
+                iframe.style.left = 120 * index + 'px';
 
                 return pad.etherpadId === etherpadId;
             });
