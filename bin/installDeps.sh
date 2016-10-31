@@ -110,6 +110,9 @@ fi
 echo "Clearing minified cache..."
 rm -f var/minified*
 
+echo "Build single file for all plugins"
+node bin/buildPluginsHooks.js
+
 echo "Ensure custom css/js files are created..."
 
 for f in "index" "pad" "timeslider"
