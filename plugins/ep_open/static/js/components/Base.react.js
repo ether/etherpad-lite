@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { cloneDeep } from 'lodash';
 
 export default class Base extends Component {

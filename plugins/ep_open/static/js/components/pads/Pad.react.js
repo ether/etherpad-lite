@@ -5,8 +5,8 @@ import { branch } from 'baobab-react/decorators';
 import DocumentTitle from 'react-document-title';
 import messages from '../../utils/messages';
 import Base from '../Base.react';
-import PadsSearchBox from './PadsSearchBox.react';
 import PadsHierarchy from './PadsHierarchy.react';
+import PadLinkModal from './PadLinkModal.react';
 import * as padsActions from '../../actions/pads';
 import * as commonActions from '../../actions/common';
 
@@ -28,7 +28,6 @@ export default class Pad extends Base {
         const currentTab = props.params.padId || 'root';
 
         this.state = {
-            isLinkModalActive: false,
             isFullscreenActive: window.sessionStorage.isFullscreenActive === 'true',
             isHierarchyActive: window.sessionStorage.isHierarchyActive === 'true'
         };
@@ -39,7 +38,6 @@ export default class Pad extends Base {
         props.actions.fetchPadsByIds(this.tabs);
 		props.actions.setCurrentPad(currentTab);
 
-        this.cancelModalLinkSubscription = messages.subscribe('toggleLinkModal', this.toggleLinkModal.bind(this));
         this.cancelOpenPadSubscription = messages.subscribe('openPad', padId => {
             const currentTabIndex = this.tabs.indexOf(this.props.currentPad.id);
 
@@ -67,7 +65,6 @@ export default class Pad extends Base {
         const query = this.tabs.length > 1 ? `?tabs=${this.tabs.join(',')}` : '';
 
         this.context.router.push(`/pads/${id}${query}`);
-        this.setState({ isLinkModalActive: false });
     }
 
     toggleMode(paramName, modeName) {
@@ -76,34 +73,6 @@ export default class Pad extends Base {
         window.sessionStorage.setItem(paramName, newValue);
         this.setState({ [paramName]: newValue });
         this.props.actions[newValue ? 'addLayoutMode' : 'removeLayoutMode'](modeName);
-    }
-
-    toggleLinkModal(state) {
-        const nextState = typeof state === 'boolean' ? state : !this.state.isLinkModalActive;
-
-        if (nextState === false) {
-            this.searchBox && this.searchBox.setState({ selectedPad: null });
-        }
-
-        this.setState({
-            isLinkModalActive: nextState
-        });
-    }
-
-    insertLink() {
-        if (this.padLinkId && this.props.currentPad) {
-            messages.send('newPadLink', {
-                id: this.padLinkId,
-                etherpadId: this.props.currentPad.etherpadId,
-                title: this.padLinkTitle
-            });
-            this.toggleLinkModal();
-        }
-    }
-
-    onSearchBoxChange(pad) {
-        this.padLinkId = pad.id;
-        this.padLinkTitle = pad.title
     }
 
     onIframeClick(event) {
@@ -150,16 +119,7 @@ export default class Pad extends Base {
                         </div>
                     </div>
                     <div className='pad__iframes' ref='iframes' onClick={this.onIframeClick.bind(this)} />
-                    <div className={classNames('pad__modal pad__modal--link', { 'pad__modal--active': this.state.isLinkModalActive })}>
-                        <div className='pad__modal__inner'>
-                            <h1 className='pad__modal__title'>Add link to another pad</h1>
-                            <button className='btn' onClick={this.insertLink.bind(this)}>Add</button>
-                            <PadsSearchBox
-                                ref='{searchBox => this.searchBox = searchBox}'
-                                onChange={this.onSearchBoxChange.bind(this)}
-                                filter={pads => pads.filter(pad => pad.value !== currentPad.id)} />
-                        </div>
-                    </div>
+                    <PadLinkModal pad={currentPad} createPad={this.props.actions.createPad} />
                     <PadsHierarchy isActive={this.state.isHierarchyActive} />
                     <div
                         className='pad__hierarchy_toggler'
@@ -230,7 +190,6 @@ export default class Pad extends Base {
     }
 
     componentWillUnmount() {
-        this.cancelModalLinkSubscription && this.cancelModalLinkSubscription();
         this.cancelOpenPadSubscription && this.cancelOpenPadSubscription();
         this.props.actions.removeLayoutMode('pad_hierarchy');
     }

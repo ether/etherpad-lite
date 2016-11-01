@@ -137,7 +137,7 @@
     overflow: hidden;
     z-index: 100;
 
-    .pad__modal__inner > * {
+    .pad__modal__content {
         opacity: 0;
         transition: opacity .3s;
     }
@@ -145,11 +145,12 @@
     .btn {
         float: right;
         height: 36px;
-    	width: 70px;
+    	width: 100px;
+        padding: 0 10px;
     }
 
     .Select {
-        width: calc(100% - 80px);
+        width: calc(100% - 110px);
     }
 
     .Select-input {
@@ -158,6 +159,14 @@
 			max-width: 340px;
 		}
 	}
+
+    .checkbox__label {
+        margin: 12px 0;
+    }
+
+    .checkbox {
+        background: #fff;
+    }
 
     @media(max-width: 950px) {
         top: 69px;
@@ -181,12 +190,12 @@
 .pad__modal--active {
     overflow: visible;
 
-    .pad__modal__inner > * {
+    .pad__modal__content {
         opacity: 1;
     }
 
     &.pad__modal--link {
-        height: 85px;
+        height: 112px;
     }
 }
 
