@@ -15,8 +15,8 @@ $(document).ready(function () {
 
 				// If there is no selection, insert pad name
 				if (rep.selEnd[1] - rep.selStart[1] <= 1) {
-					ace.ace_replaceRange(rep.selStart, rep.selEnd, data.title);
-					ace.ace_performSelectionChange([rep.selStart[0], rep.selStart[1] - data.title.length], rep.selStart, false);
+					ace.ace_replaceRange(rep.selEnd, rep.selEnd, data.title);
+					ace.ace_performSelectionChange([rep.selEnd[0], rep.selEnd[1] - data.title.length], rep.selEnd, false);
 				}
 
 				ace.ace_performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [['padLink', data.id]]);
