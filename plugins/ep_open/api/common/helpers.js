@@ -115,9 +115,9 @@ exports.randomString = length => {
 	return string;
 }
 
-exports.promiseWrapper = (fn, args) => {
+exports.promiseWrapper = (object, method, args = []) => {
 	return new Promise((resolve, reject) => {
-		fn.apply(null, args.concat((error, data) => error ? reject(error) : resolve(data)));
+		object[method].apply(object, args.concat((error, data) => error ? reject(error) : resolve(data)));
 	});
 }
 

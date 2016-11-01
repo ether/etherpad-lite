@@ -98,7 +98,7 @@ export default class PadsHierarchy extends Base {
             <div className='pad__hierarchy__list'>
                 {list.map(node => (
                     <div
-                        key={node.id}
+                        key={path.concat(node.id).join('_')}
                         className={classNames('pad__hierarchy__node', {
                             'pad__hierarchy__node--root': path.length === 1,
                             'pad__hierarchy__node--active': this.props.currentPad.id === node.id,

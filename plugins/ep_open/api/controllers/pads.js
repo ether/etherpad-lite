@@ -4,6 +4,7 @@ const _ = require('lodash');
 const co = require('co');
 const md5 = require('md5');
 const padManager = require('ep_etherpad-lite/node/db/PadManager');
+const Changeset = require("ep_etherpad-lite/static/js/Changeset");
 const sequelize = require('../models/sequelize');
 const helpers = require('../common/helpers');
 const async = helpers.async;
@@ -76,7 +77,7 @@ module.exports = api => {
 		data.id = id;
 		data.etherpadId = md5(id);
 
-		const padData = yield promiseWrapper(padManager.getPad, [data.etherpadId]);
+		const padData = yield promiseWrapper(padManager, 'getPad', [data.etherpadId]);
 		const pad = yield Pad.scope('full').create(data);
 
 		return yield pad.reload({
@@ -156,20 +157,22 @@ module.exports = api => {
 			return {};
 		}
 
-		const padData = yield promiseWrapper(padManager.getPad, [pad.etherpadId]);
+		const padData = yield promiseWrapper(padManager, 'getPad', [pad.etherpadId]);
 		const result = {
 			id: pad.id,
 			title: pad.title,
 			type: pad.type,
 		};
-		const children = [];
+		let children = [];
 
 		store[id] = Object.assign({}, result);
 
 		if (depth === undefined || (typeof depth === 'number' && --depth >= 0)) {
-			Object.keys(padData.pool.attribToNum).forEach(attribute => {
-				if (/^padLink,.+/.test(attribute)) {
-					const linkId = attribute.replace(/^padLink,([^,]*)?(.*)/g, '$1');
+			Changeset.eachAttribNumber(padData.atext.attribs, attributeNumber => {
+				const attribute = padData.pool.numToAttrib[attributeNumber];
+
+				if (typeof attribute === 'object' && attribute[0] === 'padLink') {
+					const linkId = attribute[1];
 
 					if (linkId) {
 						children.push(linkId);
@@ -178,6 +181,7 @@ module.exports = api => {
 			});
 
 			if (children.length) {
+				children = _.uniq(children);
 				result.children = [];
 
 				for (var i = 0; i < children.length; i++) {
