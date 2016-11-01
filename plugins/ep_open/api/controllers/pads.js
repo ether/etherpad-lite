@@ -60,6 +60,9 @@ module.exports = api => {
 	}));
 
 	api.post('/pads', async(function*(request, response) {
+		request.checkBody('title', 'Title is required').notEmpty();
+		request.checkErrors();
+
 		const id = randomString(10);
 		const data = collectData(request, {
 			owner: true,
