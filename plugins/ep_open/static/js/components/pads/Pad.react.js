@@ -1,10 +1,8 @@
 import window from 'global';
-import React, { Component } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { branch } from 'baobab-react/decorators';
-import { Link } from 'react-router';
 import DocumentTitle from 'react-document-title';
-import { niceDate } from '../../utils/helpers';
 import messages from '../../utils/messages';
 import Base from '../Base.react';
 import PadsSearchBox from './PadsSearchBox.react';
@@ -129,7 +127,7 @@ export default class Pad extends Base {
     buildTabs() {
         return this.getPads().map(pad => (
             pad ? (
-                <div
+				<div
                     key={pad.id}
                     className={classNames('pad__tab', {
                         'pad__tab--active': pad.id === this.props.currentPad.id
@@ -151,7 +149,7 @@ export default class Pad extends Base {
                             {this.buildTabs()}
                         </div>
                     </div>
-                    <div className='pad__iframes' ref='iframes' onClick={this.onIframeClick.bind(this)}></div>
+                    <div className='pad__iframes' ref='iframes' onClick={this.onIframeClick.bind(this)} />
                     <div className={classNames('pad__modal pad__modal--link', { 'pad__modal--active': this.state.isLinkModalActive })}>
                         <div className='pad__modal__inner'>
                             <h1 className='pad__modal__title'>Add link to another pad</h1>
@@ -166,12 +164,12 @@ export default class Pad extends Base {
                     <div
                         className='pad__hierarchy_toggler'
                         onClick={this.toggleMode.bind(this, 'isHierarchyActive', 'pad_hierarchy')}>
-                        <i className='fa fa-sitemap'></i>
+                        <i className='fa fa-sitemap' />
                     </div>
                     <div
                         className='pad__fullscreen_toggler'
                         onClick={this.toggleMode.bind(this, 'isFullscreenActive', 'pad_fullscreen')}>
-                        <i className='fa fa-arrows-alt'></i>
+                        <i className='fa fa-arrows-alt' />
                     </div>
                 </div>
             </DocumentTitle>
@@ -182,11 +180,14 @@ export default class Pad extends Base {
         const etherpadId = this.props.currentPad && this.props.currentPad.etherpadId;
 
         if (etherpadId) {
+            const unloadedIframes = [];
+
             Array.prototype.forEach.call(this.refs.iframes.querySelectorAll('.pad__iframe'), el => el.className = 'pad__iframe');
 
             this.getPads().some((pad, index) => {
                 if (!pad) return true;
 
+                const isCurrent = pad.etherpadId === etherpadId;
                 let iframe = document.getElementById(pad.etherpadId);
 
                 if (!iframe) {
@@ -195,16 +196,35 @@ export default class Pad extends Base {
                     iframe.className = 'pad__iframe';
                     iframe.innerHTML = `
                         <div class="pad__iframe__screen"></div>
-                        <iframe class="pad__iframe__el" src="/p/${pad.etherpadId}?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" />
+                        <iframe class="pad__iframe__el" />
                     `;
                     this.refs.iframes.appendChild(iframe);
+                }
+
+                const iframeEl = iframe.querySelector('.pad__iframe__el');
+
+                if (!iframeEl.src) {
+                    const source = `/p/${pad.etherpadId}?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false`;
+
+                    if (isCurrent) {
+                        iframeEl.src = source;
+                        iframeEl.onload = function() {
+                            // Load background pads in 2 seconds after current iframe loading
+                            setTimeout(() => unloadedIframes.forEach(data => data.element.src = data.source), 2000);
+                        };
+                    } else {
+                        unloadedIframes.push({
+                            element: iframeEl,
+                            source
+                        });
+                    }
                 }
 
                 iframe.className = 'pad__iframe pad__iframe--active';
                 iframe.style.zIndex = index + 1;
                 iframe.style.left = 120 * index + 'px';
 
-                return pad.etherpadId === etherpadId;
+                return isCurrent;
             });
         }
     }
