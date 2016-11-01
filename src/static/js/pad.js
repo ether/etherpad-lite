@@ -578,7 +578,8 @@ var pad = {
       padeditbar.init();
       setTimeout(function()
       {
-        padeditor.ace.focus();
+        // Turn off autofocus of editor because of mupltiple editor instances on the same page
+        //padeditor.ace.focus();
       }, 0);
       if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
         chat.stickToScreen(true); // stick it to the screen
