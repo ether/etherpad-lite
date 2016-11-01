@@ -10,9 +10,6 @@ COPY ./ /opt/etherpad
 
 WORKDIR /opt/etherpad
 
-# Install node dependencies
-RUN /opt/etherpad/bin/installDeps.sh
-
 # Install plugins
 RUN npm install \
     ep_align \
@@ -23,6 +20,9 @@ RUN npm install \
     ep_headings2 \
     ep_spellcheck \
     ep_sticky_attributes
+
+# Install node dependencies
+RUN /opt/etherpad/bin/installDeps.sh
 
 # Add conf files
 ADD supervisor.conf /etc/supervisor/supervisor.conf

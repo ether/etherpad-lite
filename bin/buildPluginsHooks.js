@@ -10,17 +10,27 @@ if (!settings.minify) {
     return;
 }
 
-const files = [];
-
 npm.load(function() {
-    plugins.update(function() {
-        plugins.parts.forEach(part => {
-            if (part.client_hooks) {
-                files.push.apply(files, _.values(part.client_hooks).map(path => path.split(':')[0] + '.js'));
-            }
+    plugins.getPackages(function(error, packages) {
+        const files = [];
+        let content = '';
+
+        Object.keys(packages).forEach(name => {
+            const definitionPath = path.resolve(packages[name].path, 'ep.json');
+            const definition = fs.readFileSync(definitionPath, 'utf-8', error => console.error("Unable to load plugin definition file " + plugin_path));
+            let definitionData;
+
+            try {
+                definitionData = JSON.parse(definition);
+            } catch(e) {}
+
+            definitionData && definitionData.parts.forEach(part => {
+                if (part.client_hooks) {
+                    files.push.apply(files, _.values(part.client_hooks).map(path => path.split(':')[0] + '.js'));
+                }
+            });
         });
 
-        let content = '';
         _.uniq(files).forEach(file => {
             const fileContent = fs.readFileSync(path.resolve(__dirname, `../node_modules/${file}`), 'utf-8');
 
