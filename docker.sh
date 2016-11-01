@@ -25,6 +25,10 @@ case "$1" in
     docker exec -i -t etherpad-server /bin/bash
 ;;
 
+"logs")
+	docker exec -i etherpad-server bash -c "cat /opt/etherpad/etherpad.out.log"
+;;
+
 "db")
     docker stop etherpad-db-server
     docker rm etherpad-db-server
