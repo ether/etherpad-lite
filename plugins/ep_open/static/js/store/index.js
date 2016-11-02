@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import Baobab from 'baobab';
+import socket from '../utils/socket';
 
 const tree = new Baobab({
     layoutModes: [],
@@ -21,6 +22,9 @@ const tree = new Baobab({
     newPad: null,
     padsHierarchy: null
 });
+const socketSyncMap = {
+    rootPadsHierarchy: 'padsHierarchy'
+};
 
 // Wrapper for creation of monkey for some selected item in list of items
 function selectedItem(itemsKey, selectedItemKey, idKey = 'id') {
@@ -46,5 +50,7 @@ tree.selectedItem = (itemPath) => {
         return false;
     }
 }
+
+Object.keys(socketSyncMap).forEach(key => socket.on(key, data => tree.set(socketSyncMap[key], data)));
 
 export default tree;

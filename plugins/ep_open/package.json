@@ -42,6 +42,7 @@
     "request-promise": "^2.0.0",
     "sequelize": "^3.24.4",
     "sequelize-cli": "^2.4.0",
+    "socket.io-client": "^1.5.1",
     "spin": "0.0.1",
     "yargs": "^3.31.0"
   },

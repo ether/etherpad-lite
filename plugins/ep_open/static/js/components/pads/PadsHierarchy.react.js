@@ -1,9 +1,8 @@
 import window, { document } from 'global';
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import { branch } from 'baobab-react/decorators';
-import { Link } from 'react-router';
 import Draggable from 'react-draggable';
 import Base from '../Base.react';
 import Spinner from '../common/Spinner.react';
@@ -108,7 +107,7 @@ export default class PadsHierarchy extends Base {
                         {node.children ? (
                             <div
                                 className='pad__hierarchy__node__toggler'
-                                onClick={this.toggleNode.bind(this, node.id)}></div>
+                                onClick={this.toggleNode.bind(this, node.id)} />
                         ) : null}
                         <div
                             className='pad__hierarchy__node__title'
@@ -153,7 +152,7 @@ export default class PadsHierarchy extends Base {
                     onStart={this.onDragStart.bind(this)}
                     onDrag={this.onDrag.bind(this)}
                     onStop={this.onDragStop.bind(this)}>
-                    <div className='pad__hierarchy__resizer'></div>
+                    <div className='pad__hierarchy__resizer' />
                 </Draggable>
                 <div className='pad__hierarchy__scrollbox'>
                     <div className='pad__hierarchy__inner'>

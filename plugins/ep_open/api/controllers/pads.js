@@ -5,8 +5,9 @@ const co = require('co');
 const md5 = require('md5');
 const padManager = require('ep_etherpad-lite/node/db/PadManager');
 const Changeset = require("ep_etherpad-lite/static/js/Changeset");
-const sequelize = require('../models/sequelize');
+const logger = require('ep_etherpad-lite/node_modules/log4js').getLogger('Pads API');
 const helpers = require('../common/helpers');
+const socketio = require('../common/socketio');
 const async = helpers.async;
 const responseError = helpers.responseError;
 const checkAuth = helpers.checkAuth;
@@ -15,8 +16,15 @@ const randomString = helpers.randomString;
 const promiseWrapper = helpers.promiseWrapper;
 const User = require('../models/user');
 const Pad = require('../models/pad');
+const rootHierarchy = {
+	object: {},
+	store: {}
+};
 
-module.exports = api => {
+// Build root hierarchy on application launch
+co.wrap(buildRootHierarchy)();
+
+module.exports = api  => {
 	api.get('/pads', async(function*(request, response) {
 		const page = (parseInt(request.query.page, 10) || 1) - 1;
 		const perPage = parseInt(request.query.perPage, 10) || 50;
@@ -122,78 +130,123 @@ module.exports = api => {
 		const id = request.params.id;
 
 		if (id === 'root') {
-			const rootPad = yield co.wrap(buildHierarchy)(id, {}, 1);
-
-			if (!_.isEmpty(rootPad)) {
-				const children = rootPad.children;
-
-				rootPad.children = [];
-
-				if (children) {
-					for (var i = 0; i < children.length; i++) {
-						const child = children[i];
-
-						if (child.type === 'company') {
-							rootPad.children.push(yield co.wrap(buildHierarchy)(child.id, {}));
-						}
-					}
-				}
-			}
-
-			return rootPad;
+			return rootHierarchy.object;
 		} else {
 			return yield co.wrap(buildHierarchy)(id, {});
 		}
 	}));
+};
 
-	function* buildHierarchy(id, store, depth) {
-		if (store[id]) {
-			return store[id];
-		};
+module.exports.padUpdate = function(hookName, args) {
+	const { pad } = args;
+	const storedPad = rootHierarchy.store[pad.id];
 
-		const pad = yield Pad.scope('full').findById(id);
+	if (storedPad) {
+		const children = getPadChildren(pad);
 
-		if (!pad) {
-			return {};
+		if (!_.isEqual(storedPad.children, children)) {
+			logger.debug('PAD LINKS CHANGE', storedPad.children, '=>', children);
+			co.wrap(buildRootHierarchy)();
 		}
+	}
+}
 
-		const padData = yield promiseWrapper(padManager, 'getPad', [pad.etherpadId]);
-		const result = {
-			id: pad.id,
-			title: pad.title,
-			type: pad.type,
-		};
-		let children = [];
+/**
+ * Return list of pad's children
+ * @param {Object} pad - Etherpad's pad instance
+ * @return {Array} - List of children ids
+ */
+function getPadChildren(pad) {
+	const children = [];
 
-		store[id] = Object.assign({}, result);
+	Changeset.eachAttribNumber(pad.atext.attribs, attributeNumber => {
+		const attribute = pad.pool.numToAttrib[attributeNumber];
 
-		if (depth === undefined || (typeof depth === 'number' && --depth >= 0)) {
-			Changeset.eachAttribNumber(padData.atext.attribs, attributeNumber => {
-				const attribute = padData.pool.numToAttrib[attributeNumber];
+		if (typeof attribute === 'object' && attribute[0] === 'padLink') {
+			const linkId = attribute[1];
 
-				if (typeof attribute === 'object' && attribute[0] === 'padLink') {
-					const linkId = attribute[1];
+			if (linkId) {
+				children.push(linkId);
+			}
+		}
+	});
 
-					if (linkId) {
-						children.push(linkId);
-					}
-				}
-			});
+	return _.uniq(children);
+}
 
-			if (children.length) {
-				children = _.uniq(children);
-				result.children = [];
+/**
+ * Build hierarchy for passed pad
+ * @param {String} id - Pad id
+ * @param {Object} store - Store object, needed to prevent pad repeats
+ * @param {Number} [depth=Infinity] - Depth of hierarchy
+ * @return {Object} - Pad hierarchy
+ */
+function* buildHierarchy(id, store, depth) {
+	if (store[id]) {
+		return store[id];
+	};
 
-				for (var i = 0; i < children.length; i++) {
-					const child = yield co.wrap(buildHierarchy)(children[i], store, depth);
+	const pad = yield Pad.scope('full').findById(id);
 
-					if (!_.isEmpty(child)) {
-						result.children.push(child);
-					}
+	if (!pad) {
+		return {};
+	}
+
+	const padData = yield promiseWrapper(padManager, 'getPad', [pad.etherpadId]);
+	const result = {
+		id: pad.id,
+		title: pad.title,
+		type: pad.type,
+	};
+	let children = [];
+
+	store[id] = Object.assign({}, result);
+
+	if (depth === undefined || (typeof depth === 'number' && --depth >= 0)) {
+		children = getPadChildren(padData);
+
+		if (children.length) {
+			result.children = [];
+
+			for (var i = 0; i < children.length; i++) {
+				const child = yield co.wrap(buildHierarchy)(children[i], store, depth);
+
+				if (!_.isEmpty(child)) {
+					result.children.push(child);
 				}
 			}
 		}
-
-		return result;
 	}
-};
+
+	rootHierarchy.store[pad.etherpadId] = { id, children };
+
+	return result;
+}
+
+/**
+ * Build and store root hierarchy
+ */
+function* buildRootHierarchy() {
+	const rootPad = yield co.wrap(buildHierarchy)('root', {}, 1);
+
+	logger.debug('ROOT HIERARCHY BUILD');
+
+	if (!_.isEmpty(rootPad)) {
+		const children = rootPad.children;
+
+		rootPad.children = [];
+
+		if (children) {
+			for (var i = 0; i < children.length; i++) {
+				const child = children[i];
+
+				if (child.type === 'company') {
+					rootPad.children.push(yield co.wrap(buildHierarchy)(child.id, {}));
+				}
+			}
+		}
+	}
+
+	rootHierarchy.object = rootPad;
+	socketio.emit('rootPadsHierarchy', rootPad);
+}

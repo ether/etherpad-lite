@@ -3,7 +3,8 @@
         "name": "Open Comanies extension",
         "priority": 10,
         "hooks": {
-            "expressCreateServer": "ep_open/hooks.js"
+            "expressCreateServer": "ep_open/hooks.js",
+            "padUpdate": "ep_open/api/controllers/pads.js"
         }
     }]
 }

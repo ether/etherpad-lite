@@ -6,10 +6,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const validator = require('express-validator');
-const config = require('./config');
 const api = require('./api');
+const socketio = require('./api/common/socketio');
 
-exports.expressCreateServer = function(hook_name, args, cb) {
+exports.expressCreateServer = function(hookName, args) {
     const { app } = args;
 
     app.use(helmet());
@@ -21,11 +21,13 @@ exports.expressCreateServer = function(hook_name, args, cb) {
     app.use('/api', api);
     app.get('/', indexPageHandler);
 
+    socketio.init(args.server);
+
     // Add handler for all other client-side pages with timeout, to be sure that etherpad middlewares are applied and
     // none of them will be overridden
     setTimeout(() => app.use(indexPageHandler));
 
-    function indexPageHandler(request, response, next) {
+    function indexPageHandler(request, response) {
         response.send(fs.readFileSync(path.resolve(__dirname, './index.html'), 'utf-8'));
     }
 };
