@@ -18,6 +18,7 @@ function request(url, params = {}) {
 
     url = (isExternal ? '' : '/api') + url;
     params.headers = {};
+    params.credentials = 'same-origin';
 
     if (token && token.id) {
         params.headers['X-AUTH-TOKEN'] = token.id;

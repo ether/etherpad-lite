@@ -45,7 +45,7 @@ module.exports = api  => {
 	}));
 
 	api.get('/pads/:id', async(function*(request, response) {
-		let pad = yield Pad.scope('full').findById(request.params.id);;
+		let pad = yield Pad.scope('full').findById(request.params.id);
 
 		if (!pad) {
 			if (request.params.id === 'root') {
@@ -85,7 +85,7 @@ module.exports = api  => {
 		data.id = id;
 		data.etherpadId = md5(id);
 
-		const padData = yield promiseWrapper(padManager, 'getPad', [data.etherpadId]);
+		yield promiseWrapper(padManager, 'getPad', [data.etherpadId]);
 		const pad = yield Pad.scope('full').create(data);
 
 		return yield pad.reload({

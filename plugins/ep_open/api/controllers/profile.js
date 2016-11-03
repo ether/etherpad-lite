@@ -12,6 +12,7 @@ const async = helpers.async;
 const checkAuth = helpers.checkAuth;
 const responseError = helpers.responseError;
 const checkUserUniq = require('./users').checkUserUniq;
+const updateAuthorName = require('./users').updateAuthorName;
 const User = require('../models/user');
 
 module.exports = api => {
@@ -25,6 +26,8 @@ module.exports = api => {
 		if (!user) {
 			return responseError(response, 'User is not found');
 		}
+
+		request.cookies.token && updateAuthorName(request.cookies.token, user);
 
         yield checkUserUniq(request.body);
 

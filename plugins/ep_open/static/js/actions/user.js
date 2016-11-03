@@ -1,6 +1,7 @@
 import window from 'global';
 import config from '../config';
 import request from '../utils/request';
+import messages from '../utils/messages';
 import { errorHandler } from './errors';
 
 export function setCurrentUser(tree, user = null) {
@@ -45,6 +46,10 @@ export function setToken(tree, token, remember = !!window.localStorage.token) {
 
     tree.set('currentUser', user);
     tree.set('token', token);
+    messages.send('currentUserUpdate', {
+        isAuthorized: !!token,
+        name: user && user.nickname
+    });
 }
 
 export function getProfile(tree) {
@@ -58,7 +63,13 @@ export function updateProfile(tree, data) {
         method: 'PUT',
         data
     })
-    .then(user => tree.set('currentUser', user))
+    .then(user => {
+        tree.set('currentUser', user)
+        messages.send('currentUserUpdate', {
+            isAuthorized: true,
+            name: user && user.nickname
+        });
+    })
     .catch(errorHandler(tree));
 }
 

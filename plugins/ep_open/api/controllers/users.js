@@ -1,5 +1,6 @@
 'use strict';
 
+const authorManager = require('ep_etherpad-lite/node/db/AuthorManager');
 const helpers = require('../common/helpers');
 const async = helpers.async;
 const responseError = helpers.responseError;
@@ -22,6 +23,10 @@ function checkUniq(data) {
 			return new Error(`${user.email === data.email ? 'Email' : 'Nickname'} is already taken`)
 		}
 	})
+}
+
+function updateAuthorName(token, user) {
+	authorManager.getAuthor4Token(token, (error, author) => authorManager.setAuthorName(author, user.nickname));
 }
 
 module.exports = api => {
@@ -78,6 +83,8 @@ module.exports = api => {
 			return responseError(response, 'User is not found');
 		}
 
+		request.cookies.token && updateAuthorName(request.cookies.token, user);
+
 		const data = collectData(request, {
 			body: ['email', 'nickname', 'password']
 		});
@@ -119,3 +126,4 @@ module.exports = api => {
 
 
 module.exports.checkUserUniq = checkUniq;
+module.exports.updateAuthorName = updateAuthorName;

@@ -8,6 +8,8 @@ const helmet = require('helmet');
 const validator = require('express-validator');
 const api = require('./api');
 const socketio = require('./api/common/socketio');
+const cookieParser = require('ep_etherpad-lite/node_modules/cookie-parser');
+const settings = require('ep_etherpad-lite/node/utils/Settings');
 
 exports.expressCreateServer = function(hookName, args) {
     const { app } = args;
@@ -16,6 +18,7 @@ exports.expressCreateServer = function(hookName, args) {
     app.use(bodyParser.json({ limit: '50mb' }));
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(validator());
+    app.use(cookieParser(settings.sessionKey, {}));
     app.use(express.static(__dirname + '/static'));
 
     app.use('/api', api);

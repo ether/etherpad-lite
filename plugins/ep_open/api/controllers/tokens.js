@@ -5,6 +5,7 @@ const moment = require('moment');
 const helpers = require('../common/helpers');
 const async = helpers.async;
 const responseError = helpers.responseError;
+const updateAuthorName = require('./users').updateAuthorName;
 const User = require('../models/user');
 const Token = require('../models/token');
 
@@ -24,7 +25,7 @@ module.exports = api => {
 			return responseError(response, 'Authentication fails');
 		}
 
-		const token = yield createToken(user.id);
+		const token = yield createToken(user, request.cookies.token);
 
 		return Object.assign(token.toJSON(), { user });
 	}));
@@ -53,13 +54,16 @@ module.exports = api => {
 	}));
 };
 
-function createToken(userId) {
+function createToken(user, etherpadToken) {
+	// Set name of authorized user to etherpad author entity
+	etherpadToken && updateAuthorName(etherpadToken, user);
+
 	return Token
-		.destroy({ where: { userId: userId }})
+		.destroy({ where: { userId: user.id }})
 		.then(() =>
 			Token.create({
 				expires: moment().add(1, 'months'),
-				userId: userId
+				userId: user.id
 			})
 	);
 }

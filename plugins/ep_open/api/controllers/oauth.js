@@ -78,7 +78,7 @@ module.exports = api => {
 			user = yield User.create(userData);
 		}
 
-		const token = yield createToken(user.id);
+		const token = yield createToken(user, request.cookies.token);
 		const tokenJSON = {
 			type: 'oauth_callback',
 			data: Object.assign(token.toJSON(), { user: user.toJSON() })
