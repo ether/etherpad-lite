@@ -19,8 +19,8 @@ $(document).ready(function () {
 					ace.ace_performSelectionChange([rep.selEnd[0], rep.selEnd[1] - data.title.length], rep.selEnd, false);
 				}
 
-				ace.ace_performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [['padLink', data.id]]);
-			}, 'padLink');
+				ace.ace_performDocumentApplyAttributesToRange(rep.selStart, rep.selEnd, [['link', data.id]]);
+			}, 'link');
 		}
 	});
 });

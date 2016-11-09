@@ -1,5 +1,5 @@
 exports.aceEditorCSS = function(hookName, context, cb) {
-	return cb(['ep_pad_link/static/css/ace.css']);
+	return cb(['ep_links/static/css/ace.css']);
 };
 
 exports.aceEditEvent = function(hookName, context) {
@@ -12,8 +12,8 @@ exports.postAceInit = function(hookName, context) {
 	context.ace.callWithAce(function(ace) {
 		var $inner = $(ace.ace_getDocument()).find('#innerdocbody');
 
-		$inner.on('click', '.padLink', function() {
-			var padId = this.getAttribute('data-pad');
+		$inner.on('click', '.link', function() {
+			var padId = this.getAttribute('data-link-path');
 
 			window.top.pm.send('openPad', padId);
 		});
@@ -26,13 +26,13 @@ exports.postToolbarInit = function(hookName, context, cb) {
 };
 
 exports.aceAttribsToClasses = function(hookName, context, cb) {
-	if (context.key == 'padLink' && context.value != '') {
-		return cb(['padLink:' + context.value]);
+	if (context.key == 'link' && context.value != '') {
+		return cb(['link:' + context.value]);
 	}
 };
 
 exports.aceCreateDomLine = function(hookName, context, cb) {
-	if (context.cls.indexOf('padLink:') >= 0) {
+	if (context.cls.indexOf('link:') >= 0) {
 		var clss = [];
 		var argClss = context.cls.split(' ');
 		var value;
@@ -41,7 +41,7 @@ exports.aceCreateDomLine = function(hookName, context, cb) {
 		for (var i = 0; i < argClss.length; i++) {
 			var cls = argClss[i];
 
-			if (cls.indexOf('padLink:') !== -1) {
+			if (cls.indexOf('link:') !== -1) {
 				value = cls.substr(cls.indexOf(':') + 1);
 			} else {
 				clss.push(cls);
@@ -50,7 +50,7 @@ exports.aceCreateDomLine = function(hookName, context, cb) {
 
 		return cb([{
 			cls: clss.join(' '),
-			extraOpenTags: '<span class="padLink" data-pad="' + value + '" alt="' + title + '">',
+			extraOpenTags: '<span class="link" data-link-path="' + value + '" alt="' + title + '">',
 			extraCloseTags: '</span>'
 		}]);
 	}
