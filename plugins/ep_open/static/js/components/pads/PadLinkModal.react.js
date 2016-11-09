@@ -97,7 +97,7 @@ export default class PadLinkModal extends Base {
 
     onExternalLinkChange(event) {
         this.linkHref = this.addhttp(event.target.value);
-        this.setState({ hasExternalLink: !!this.linkHref });
+        this.setState({ hasExternalLink: !!event.target.value });
     }
 
     addhttp(url) {
