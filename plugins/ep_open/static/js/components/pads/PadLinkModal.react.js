@@ -84,12 +84,42 @@ export default class PadLinkModal extends Base {
         this.linkTitle = linkTitle;
     }
 
+    insertExternalLink() {
+      if (this.linkHref) {
+        messages.send('newPadLink', {
+            id: this.linkHref,
+            etherpadId: this.props.pad.etherpadId,
+            title: this.linkTitle
+        });
+        this.toggleLinkModal();
+      }
+    }
+
+    onExternalLinkChange(event) {
+        this.linkHref = this.addhttp(event.target.value);
+        this.setState({ hasExternalLink: !!this.linkHref });
+    }
+
+    addhttp(url) {
+       if (!/^(f|ht)tps?:\/\//i.test(url)) {
+          url = "http://" + url;
+       }
+
+       return url;
+    }
+
 	render() {
 		return (
             <div className={classNames('pad__modal pad__modal--link', { 'pad__modal--active': this.state.isActive })}>
                 <div className='pad__modal__inner'>
                     <div className='pad__modal__content'>
-                        <h1 className='pad__modal__title'>Add link to another pad</h1>
+                        <h1 className='pad__modal__title'>Add link</h1>
+                        <input className='pad__just-link-input' type="text" placeholder="http://example.com" onChange={this.onExternalLinkChange.bind(this)} />
+                        <button className='btn' onClick={this.insertExternalLink.bind(this)}>
+                            {this.state.hasExternalLink ? 'Link to This' : 'Add'}
+                        </button>
+                        <div className='pad__modal__separator'></div>
+                        <h1 className='pad__modal__title'>Add link to pad</h1>
                         <button className='btn' onClick={this.insertLink.bind(this)}>
                             {this.state.isSelected ? 'Link to This' : 'Add'}
                         </button>

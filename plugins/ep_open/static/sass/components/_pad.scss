@@ -130,8 +130,8 @@
     position: absolute;
     top: 37px;
     right: 20px;
-	width: 80%;
-	max-width: 500px;
+	  width: 80%;
+	  max-width: 500px;
     height: 0;
     transition: height .3s;
     overflow: hidden;
@@ -145,7 +145,7 @@
     .btn {
         float: right;
         height: 36px;
-    	width: 100px;
+    	  width: 100px;
         padding: 0 10px;
     }
 
@@ -195,17 +195,24 @@
     }
 
     &.pad__modal--link {
-        height: 112px;
+        &:after,
+        &:before {
+          content: '';
+          display: table;
+        }
+
+        &:after {
+          clear: both;
+        }
     }
 }
 
 .pad__modal__inner {
     padding: 10px;
-	border-radius: 0 0 6px 6px;
+	  border-radius: 0 0 6px 6px;
     border: 1px solid #ccc;
     background: linear-gradient(#F7F7F7, #EEE);
     font-size: 14px;
-    height: 100%;
 }
 
 .pad__modal__title {
@@ -411,4 +418,17 @@
         background: #eee;
         z-index: -1;
     }
+}
+
+.pad__modal__separator {
+  width: 100%;
+  height: 20px;
+}
+
+.pad__just-link-input {
+  width: calc(100% - 110px);
+  height: 36px;
+  line-height: 34px;
+  padding: 0 12px;
+  border: 1px solid #ccc;
 }
