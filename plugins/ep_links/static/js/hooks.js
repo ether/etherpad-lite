@@ -13,9 +13,13 @@ exports.postAceInit = function(hookName, context) {
 		var $inner = $(ace.ace_getDocument()).find('#innerdocbody');
 
 		$inner.on('click', '.link', function() {
-			var padId = this.getAttribute('data-link-path');
+			var linkPath = this.getAttribute('data-link-path');
 
-			window.top.pm.send('openPad', padId);
+			if (linkPath.search(/(http|s):/) >= 0) {
+				window.open(linkPath, '_blank');
+			} else {
+				window.top.pm.send('openPad', linkPath);
+			}
 		});
 	});
 };
