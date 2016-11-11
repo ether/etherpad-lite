@@ -228,7 +228,7 @@ $(document).ready(function () {
       if(data.code === "EPEERINVALID"){
         alert("This plugin requires that you update Etherpad so it can operate in it's true glory");
       }
-      alert('An error occured while installing '+data.plugin+' \n'+data.error)
+      alert('An error occurred while installing '+data.plugin+' \n'+data.error)
       $('#installed-plugins .'+data.plugin).remove()
     }
 
@@ -241,7 +241,7 @@ $(document).ready(function () {
   })
 
   socket.on('finished:uninstall', function(data) {
-    if(data.error) alert('An error occured while uninstalling the '+data.plugin+' \n'+data.error)
+    if(data.error) alert('An error occurred while uninstalling the '+data.plugin+' \n'+data.error)
 
     // remove plugin from installed list
     $('#installed-plugins .'+data.plugin).remove()
