@@ -363,6 +363,15 @@ returns an object of diffs from 2 points in a pad
   * `{"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}`
   * `{"code":4,"message":"no or wrong API Key","data":null}`
 
+#### restoreRevision(padId, rev)
+ * API >= 1.2.11
+
+Restores revision from past as new changeset
+
+*Example returns:*
+  * {code:0, message:"ok", data:null}
+  * {code: 1, message:"padID does not exist", data: null}
+
 ### Chat
 #### getChatHistory(padID, [start, end])
  * API >= 1.2.7
