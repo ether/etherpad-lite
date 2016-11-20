@@ -231,40 +231,27 @@ function handshake()
     // Allow deployers to host Etherpad on a non-root path
     'path': exports.baseURL + "socket.io",
     'resource': resource,
-    'max reconnection attempts': 3,
-    'sync disconnect on unload' : false
+    'reconnectionAttempts': 5,
+    'reconnection' : true,
+    'reconnectionDelay' : 1000,
+    'reconnectionDelayMax' : 5000
   });
-
-  var disconnectTimeout;
 
   socket.once('connect', function () {
     sendClientReady(false);
   });
   
   socket.on('reconnect', function () {
-    //reconnect is before the timeout, lets stop the timeout
-    if(disconnectTimeout)
-    {
-      clearTimeout(disconnectTimeout);
-    }
-
     pad.collabClient.setChannelState("CONNECTED");
     pad.sendClientReady(true);
   });
   
-  socket.on('disconnect', function (reason) {
-    if(reason == "booted"){
-      pad.collabClient.setChannelState("DISCONNECTED");
-    } else {
-      function disconnectEvent()
-      {
-        pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
-      }
-      
-      pad.collabClient.setChannelState("RECONNECTING");
-      
-      disconnectTimeout = setTimeout(disconnectEvent, 20000);
-    }
+  socket.on('reconnecting', function() {
+    pad.collabClient.setChannelState("RECONNECTING");
+  });
+
+  socket.on('reconnect_failed', function(error) {
+    pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
   });
 
   var initalized = false;
