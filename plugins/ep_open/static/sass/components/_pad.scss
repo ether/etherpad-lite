@@ -1,0 +1,434 @@
+.pad {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-top: 1px solid #ccc;
+}
+
+.pad__tabs {
+    position: absolute;
+    top: -32px;
+    left: 32px;
+    right: 150px;
+    height: 32px;
+    overflow: hidden;
+
+    &:after,
+    &:before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 1px;
+        width: 10px;
+        background: linear-gradient(to right, rgba(238, 238, 238, 0), rgba(238, 238, 238, 100%));
+    }
+
+    &:before {
+        transform: rotate(180deg);
+        right: auto;
+        left: 0;
+    }
+}
+
+.pad__tabs_scrollbox {
+    padding: 0 10px 50px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.pad__tab {
+    position: relative;
+    display: inline-block;
+    padding: 4px 12px;
+    font: 14px/23px $mainFont;
+    border-radius: 4px 4px 0 0;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    background: #eee;
+    height: 31px;
+    cursor: pointer;
+    color: $activeColor;
+    text-decoration: underline;
+
+    &:not(:first-child) {
+        margin-left: 16px;
+
+        &:after {
+            content: '';
+            position: absolute;
+            left: -17px;
+            width: 16px;
+            height: 2px;
+            background: #999;
+            top: 15px;
+        }
+
+        &:before {
+            content: '';
+        	position: absolute;
+        	left: -10px;
+        	width: 6px;
+        	height: 6px;
+        	border-right: 2px solid #999;
+        	border-top: 2px solid #999;
+        	transform: rotate(45deg);
+        	top: 12px;
+        }
+    }
+}
+
+.pad__tab--active {
+    background: #f7f7f7;
+    height: 32px;
+    color: $textColor;
+    text-decoration: none;
+}
+
+.pad__iframes,
+.pad__iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.pad__iframes {
+    overflow: hidden;
+}
+
+.pad__iframe {
+    display: none;
+}
+
+.pad__iframe--active {
+    display: block;
+}
+
+.pad__iframe__screen {
+	position: absolute;
+	top: 0;
+	left: -1000%;
+	width: 1000%;
+	height: 100%;
+	background: rgba(0, 0, 0, .3);
+	z-index: 1;
+	cursor: pointer;
+}
+
+.pad__iframe__el {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	border: 0;
+	background: #f7f7f7;
+}
+
+.pad__modal {
+    position: absolute;
+    top: 37px;
+    right: 20px;
+	  width: 80%;
+	  max-width: 500px;
+    height: 0;
+    transition: height .3s;
+    overflow: hidden;
+    z-index: 100;
+
+    .pad__modal__content {
+        opacity: 0;
+        transition: opacity .3s;
+    }
+
+    .btn {
+        float: right;
+        height: 36px;
+    	  width: 100px;
+        padding: 0 10px;
+    }
+
+    .Select {
+        width: calc(100% - 110px);
+    }
+
+    .Select-input {
+		&,
+		& > input {
+			max-width: 340px;
+		}
+	}
+
+    .checkbox__label {
+        margin: 12px 0;
+    }
+
+    .checkbox {
+        background: #fff;
+    }
+
+    @media(max-width: 950px) {
+        top: 69px;
+    }
+
+    @media(max-width: 346px) {
+        top: 101px;
+        width: auto;
+        left: 10px;
+        right: 10px;
+    }
+
+    @media only screen and (max-device-width: 720px) and (min-device-width: 320px) and (max-width: 600px) {
+        top: 36px;
+    }
+    @media only screen and (max-device-width: 720px) and (min-device-width: 320px) and (max-width: 489px) {
+        top: 68px;
+    }
+}
+
+.pad__modal--active {
+    overflow: visible;
+
+    .pad__modal__content {
+        opacity: 1;
+    }
+
+    &.pad__modal--link {
+        &:after,
+        &:before {
+          content: '';
+          display: table;
+        }
+
+        &:after {
+          clear: both;
+        }
+    }
+}
+
+.pad__modal__inner {
+    padding: 10px;
+	  border-radius: 0 0 6px 6px;
+    border: 1px solid #ccc;
+    background: linear-gradient(#F7F7F7, #EEE);
+    font-size: 14px;
+}
+
+.pad__modal__title {
+    font-size: 18px;
+    margin: 0 0 10px;
+}
+
+.pad__hierarchy {
+    position: absolute;
+    top: -37px;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    background: #fff;
+    transform: translateX(-100%);
+    color: #000;
+    z-index: 101;
+}
+
+.pad__hierarchy--resizing:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 400px;
+    height: 100%;
+}
+
+.pad__hierarchy__scrollbox {
+    position: absolute;
+    top: 0;
+    right: 8px;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+}
+
+.pad__hierarchy__inner {
+    padding: 10px;
+    display: inline-block;
+    min-width: 100%;
+}
+
+.pad__hierarchy_toggler,
+.pad__fullscreen_toggler {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    background: linear-gradient(#fff,#f0f0f0);
+    height: 28px;
+    padding: 4px 6px;
+    font: 14px/20px Arial;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    z-index: 101;
+    cursor: pointer;
+}
+
+.pad__fullscreen_toggler {
+    left: 50px;
+}
+
+.layout--pad_fullscreen {
+    .pad__tabs {
+        display: none;
+    }
+
+    .pad__fullscreen_toggler {
+        left: 10px;
+    }
+
+    .pad__hierarchy_toggler {
+        display: none;
+    }
+}
+
+.pad__hierarchy__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: none;
+
+    .pad__hierarchy--loading & {
+        display: block;
+    }
+}
+
+.pad__hierarchy__resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 100%;
+    background: #ccc;
+	cursor: ew-resize;
+}
+
+.pad__hierarchy__search {
+    margin-bottom: 20px;
+}
+
+.pad__hierarchy__node {
+    position: relative;
+    padding: 0 0 10px 12px;
+
+    &:not(.pad__hierarchy__node--main):last-child {
+        padding-bottom: 0;
+    }
+
+    > .pad__hierarchy__list {
+        margin: 8px 0 8px 10px;
+    }
+
+    &:not(.pad__hierarchy__node--expanded) > .pad__hierarchy__list {
+        display: none;
+    }
+
+    &:not(.pad__hierarchy__node--root) {
+        &:before {
+        	content: '';
+        	position: absolute;
+        	left: -24px;
+        	width: 20px;
+        	height: 2px;
+        	background: #ccc;
+        	top: 9px;
+        }
+
+        &.pad__hierarchy__node--parent:before {
+            width: 18px;
+        }
+
+        &:after {
+        	content: '';
+        	position: absolute;
+            width: 2px;
+        	left: -24px;
+        	top: -13px;
+            bottom: -10px;
+        	background: #ccc;
+        }
+
+        &:last-child:after {
+            height: 22px;
+        }
+    }
+}
+
+.pad__hierarchy__node--root {
+    margin-bottom: 16px;
+    padding: 0 0 0 19px;
+}
+
+.pad__hierarchy__node--main {
+	border-bottom: 1px solid #ccc;
+	margin: -1px 0 16px;
+    padding: 0 0 7px;
+}
+
+.pad__hierarchy__node__toggler {
+    width: 11px;
+    height: 11px;
+    float: left;
+    margin: 4px 8px 0 -19px;
+    position: relative;
+    z-index: 2;
+    border: 1px solid $textColor;
+    padding: 1px;
+    cursor: pointer;
+
+    &:before,
+    &:after {
+        content: '';
+        display: block;
+        height: 1px;
+        background: $textColor;
+        margin-top: 3px;
+    }
+
+    &:after {
+        transform: rotate(90deg);
+        margin-top: -1px;
+    }
+
+    .pad__hierarchy__node--expanded > &:after {
+        display: none;
+    }
+}
+
+.pad__hierarchy__node__title {
+    position: relative;
+    font: 16px/20px Arial;
+    cursor: pointer;
+    white-space: nowrap;
+
+    .pad__hierarchy__node--active > &:before {
+        content: '';
+        position: absolute;
+        top: -5px;
+        bottom: -5px;
+        left: -1000%;
+        right: -10px;
+        background: #eee;
+        z-index: -1;
+    }
+}
+
+.pad__modal__separator {
+  width: 100%;
+  height: 20px;
+}
+
+.pad__just-link-input {
+  width: calc(100% - 110px);
+  height: 36px;
+  line-height: 34px;
+  padding: 0 12px;
+  border: 1px solid #ccc;
+}

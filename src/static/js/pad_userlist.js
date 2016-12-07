@@ -466,7 +466,17 @@ var paduserlist = (function()
     {
       pad = _pad;
 
-      self.setMyUserInfo(myInitialUserInfo);
+      self.setMyUserInfo(Object.assign({
+        isAuthorized: !!(localStorage.token || sessionStorage.token)
+      }, myInitialUserInfo));
+
+      top.pm && top.pm.subscribe('currentUserUpdate', function(data) {
+        self.setMyUserInfo({
+          isAuthorized: data.isAuthorized,
+          name: data.name || myUserInfo.name
+        });
+        data.name && pad.notifyChangeName(data.name);
+      });
 
       if($('#online_count').length === 0) $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
 
@@ -489,6 +499,7 @@ var paduserlist = (function()
             self.renderMyUserInfo();
           }, 0);
         });
+        self.renderMyUserInfo();
       }
 
       // color picker
@@ -740,6 +751,11 @@ var paduserlist = (function()
     },
     renderMyUserInfo: function()
     {
+      // Disable username fields if user authorized, name is taken from user profile in this case
+      var isDisabled = myUserInfo.name && myUserInfo.isAuthorized;
+
+      $("#myusernameedit").attr('disabled', isDisabled)[isDisabled ? 'removeClass' : 'addClass']('myusernameedithoverable');
+
       if (myUserInfo.name)
       {
         $("#myusernameedit").removeClass("editempty").val(myUserInfo.name);

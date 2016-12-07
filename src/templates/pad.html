@@ -375,6 +375,10 @@
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
 
+        <%if (settings.minify === true) { %>
+        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/plugins.min.js"></script>
+        <% } %>
+
         <% e.begin_block("customScripts"); %>
         <script type="text/javascript" src="../static/custom/pad.js"></script>
         <% e.end_block(); %>

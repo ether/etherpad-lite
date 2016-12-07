@@ -1,0 +1,45 @@
+.Select {
+    width: 100%;
+}
+
+.Select-control {
+	border-radius: 0;
+    border-color: #ccc!important;
+    box-shadow: none!important;
+    padding-left: 2px;
+}
+
+.Select-placeholder {
+    padding-left: 12px;
+    color: $textColor;
+}
+
+.Select--multi {
+    .Select-value {
+        color: #fff;
+        border-color: #1b58bb;
+        background-color: #1b58bb;
+        padding-left: 1px;
+    }
+
+    .Select-value-label {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 128px;
+        overflow: hidden;
+    }
+
+    .Select-value-icon {
+        padding: 2px 5px 0px;
+        border-color: #fff;
+
+        &:hover {
+            background-color: #fff;
+            color: $darkColor;
+        }
+    }
+}
+
+.Select-clear-zone:hover {
+    color: $redColor;
+}

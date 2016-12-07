@@ -1,0 +1,13 @@
+<div id="pad_link_modal" class="popup">
+    <% e.begin_block("padLinkPopup"); %>
+        <h1>Add link to another pad</h1>
+        <div id="inner">
+            <button id="pad_link_modal_new" data-l10n-id="index.newPad"></button>
+            <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
+            <form id="pad_link_modal_form" action="#">
+                <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
+                <button type="submit">OK</button>
+            </form>
+        </div>
+    <% e.end_block(); %>
+</div>

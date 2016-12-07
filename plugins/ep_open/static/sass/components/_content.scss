@@ -1,0 +1,35 @@
+.content {
+    padding: 32px 16px;
+}
+
+.title {
+    font: bold 42px/48px $mainFont;
+    display: block;
+    color: $textColor;
+    text-decoration: none;
+    margin: 12px 0 32px;
+    display: inline-block;
+
+    .fa-pencil {
+        margin-left: 10px;
+        cursor: pointer;
+    }
+}
+
+.summary {
+    margin-bottom: 32px;
+}
+
+.content__blocks {
+    overflow: hidden;
+}
+
+.content__block {
+    overflow: hidden;
+}
+
+.content__block--left {
+    float: left;
+    width: 240px;
+    margin-right: 16px;
+}

@@ -72,6 +72,14 @@ echo "Ensure that all dependencies are up to date...  If this is the first time 
   mkdir -p node_modules
   cd node_modules
   [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
+  [ -e ep_links ] || ln -s ../plugins/ep_links ep_links
+  if [ ! -e ep_open ]; then
+    ln -s ../plugins/ep_open ep_open;
+    cd ep_open;
+    npm install;
+    npm run build;
+    cd ../
+  fi
   cd ep_etherpad-lite
   npm install --loglevel warn
 ) || {
@@ -101,6 +109,9 @@ fi
 #Remove all minified data to force node creating it new
 echo "Clearing minified cache..."
 rm -f var/minified*
+
+echo "Build single file for all plugins"
+node bin/buildPluginsHooks.js
 
 echo "Ensure custom css/js files are created..."
 

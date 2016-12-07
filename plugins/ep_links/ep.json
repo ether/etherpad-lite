@@ -1,0 +1,19 @@
+{
+	"parts": [{
+		"name": "Links",
+		"hooks": {
+			"eejsBlock_editbarMenuLeft": "ep_links/hooks",
+			"eejsBlock_scripts": "ep_links/hooks",
+			"eejsBlock_styles": "ep_links/hooks",
+			"eejsBlock_body": "ep_links/hooks"
+		},
+		"client_hooks": {
+			"aceAttribsToClasses": "ep_links/static/js/hooks",
+			"aceCreateDomLine": "ep_links/static/js/hooks",
+			"postToolbarInit": "ep_links/static/js/hooks",
+			"aceEditorCSS": "ep_links/static/js/hooks",
+			"postAceInit": "ep_links/static/js/hooks",
+			"aceEditEvent": "ep_links/static/js/hooks"
+		}
+	}]
+}

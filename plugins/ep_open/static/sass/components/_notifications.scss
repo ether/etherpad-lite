@@ -1,0 +1,116 @@
+.notifications {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10001;
+	max-height: 100%;
+	overflow: hidden;
+	transition: height .3s;
+}
+
+.notifications__viewport {
+	overflow-y: auto;
+	padding-right: 50px;
+	margin-right: -50px;
+	max-height: 100%;
+}
+
+.notifications__inner {
+	display: table;
+	padding: 10px 0;
+}
+
+@keyframes notificationLeave {
+	50% {
+		margin-left: -100%;
+	}
+	100% {
+		height: 0;
+		margin-left: -100%;
+	}
+}
+
+@keyframes notificationEnter {
+	0% {
+		height: 0;
+		margin-left: -100%;
+	}
+	50% {
+		height: 100px;
+	}
+	100% {
+		height: 100px;
+		margin-left: 0;
+	}
+}
+
+.notifications__item {
+	//height: 100px;
+	cursor: pointer;
+
+	&.ng-leave {
+		animation: notificationLeave .6s;
+	}
+
+	&.ng-enter {
+		animation: notificationEnter .6s;
+	}
+}
+
+.notifications__item-inner {
+	border-radius: 4px;
+	//box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .3);
+	background: $redColor;
+	padding: 10px;
+	margin: 10px 20px;
+	position: relative;
+	//height: 80px;
+	overflow: hidden;
+	display: inline-block;
+	color: #fff;
+}
+
+.notifications__item-title {
+	font: bold 18px/20px $mainFont;
+	margin: 2px 0 5px;
+}
+
+.notifications__item-text {
+	font: 16px/16px $mainFont;
+	margin: 10px;
+	overflow: hidden;
+}
+
+.notifications__item-btns {
+	float: right;
+	width: 32px;
+	margin-left: 20px;
+}
+
+.notifications__item-btn {
+	position: relative;
+	width: 28px;
+	height: 28px;
+	border-radius: 100%;
+	color: #fff;
+	text-align: center;
+	cursor: pointer;
+	margin-top: 6px;
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	&:after {
+		content: '';
+		transform: scale(0.6);
+	}
+}
+
+.notifications__item-btn--apply {
+	background: #7ed321;
+}
+
+.notifications__item-btn--cancel {
+	background: #9b9b9b;
+}

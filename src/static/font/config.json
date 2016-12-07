@@ -347,6 +347,12 @@
       "css": "slideshare",
       "code": 59441,
       "src": "fontawesome"
+    },
+    {
+      "uid": "0ddd3e8201ccc7d41f7b7c9d27eca6c1",
+      "css": "link",
+      "code": 59449,
+      "src": "fontawesome"
     }
   ]
 }

@@ -1,0 +1,44 @@
+@mixin font-face($fontName, $fontList, $isItalic: false, $isBold: false) {
+    $fonts: '';
+
+    @each $fontFile in $fontList {
+        $fontFormat: 'truetype';
+
+        @if (str_index($fontFile, '.eot') != null) {
+            $fontFormat: 'embedded-opentype';
+        }
+
+        @if (str_index($fontFile, '.woff') != null) {
+            $fontFormat: 'woff';
+        }
+
+        $fonts: $fonts + if(str_length($fonts) == 0, '', ', ') + "url('../fonts/#{$fontFile}') format('#{$fontFormat}')";
+    }
+
+    @font-face {
+        font-family: $fontName;
+        src: unquote($fonts);
+        font-style: if($isItalic, italic, normal);
+        font-weight: if($isBold, bold, normal);
+    }
+}
+
+@mixin icon($name, $setSizes: false, $isRetina: true) {
+    background-image: url('../images/#{$name}.png');
+
+    @if ($isRetina) {
+        @media (min--moz-device-pixel-ratio: 1.3),
+        (-o-min-device-pixel-ratio: 2.6/2),
+        (-webkit-min-device-pixel-ratio: 1.3),
+        (min-device-pixel-ratio: 1.3),
+        (min-resolution: 1.3dppx) {
+            background-image: url('../images/#{$name}@2x.png');
+            background-size: image-width('#{$name}.png') image-height('#{$name}.png');
+        }
+    }
+
+    @if ($setSizes) {
+        width: image-width('#{$name}.png');
+        height: image-height('#{$name}.png');
+    }
+}

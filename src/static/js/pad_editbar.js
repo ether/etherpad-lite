@@ -176,6 +176,10 @@ var padeditbar = (function()
 //      return !$("#editbar").hasClass('disabledtoolbar');
       return true;
     },
+    enable: function()
+    {
+      $("#editbar").removeClass('disabledtoolbar').addClass("enabledtoolbar");
+    },
     disable: function()
     {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
@@ -254,16 +258,20 @@ var padeditbar = (function()
       }
       if(padeditor.ace) padeditor.ace.focus();
     },
-    toggleDropDown: function(moduleName, cb)
+    toggleDropDown: function(moduleName, force, cb)
     {
+      if (typeof force === 'function' && !cb) {
+        cb = force;
+        force = false;
+      }
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
         var returned = false
         for(var i=0;i<self.dropdowns.length;i++)
         {
-          //skip the userlist
-          if(self.dropdowns[i] == "users")
+          // skip the userlist and connectivity if it's not the force mode
+          if(!force && (self.dropdowns[i] == 'users' || self.dropdowns[i] == 'connectivity'))
             continue;
 
           var module = $("#" + self.dropdowns[i]);

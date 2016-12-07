@@ -1,0 +1,61 @@
+.avatar,
+.avatar__form {
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+.avatar__el {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.avatar__upload,
+.avatar__editor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.avatar__upload {
+    cursor: pointer;
+}
+
+.avatar__editor {
+    background: #fff;
+
+    .btn {
+        padding: 0 10px;
+    	height: 20px;
+    	position: absolute;
+    	top: 5px;
+    	right: 5px;
+    }
+
+    canvas {
+        cursor: move!important;
+    }
+}
+
+.avatar__editor__scale {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    width: 190px;
+}
+
+.avatar__spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    .spinner {
+    	left: 50%!important;
+    	top: 50%!important;
+    }
+}

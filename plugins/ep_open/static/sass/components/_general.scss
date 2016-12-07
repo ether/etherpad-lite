@@ -1,0 +1,37 @@
+html {
+	color: $textColor;
+    font: 14px/16px $mainFont;
+}
+
+html, body, #app-root {
+	height: 100%;
+}
+
+* {
+	box-sizing: border-box;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-tap-highlight-color: transparent; /* For some Androids */
+
+	&,
+	&:focus,
+	&:active {
+		outline: none;
+	}
+}
+
+a {
+	color: $activeColor;
+	cursor: pointer;
+}
+
+.hidden {
+	display: none;
+}
+
+.for_authorized {
+    visibility: hidden;
+
+    .layout--authorized & {
+        visibility: visible;
+    }
+}

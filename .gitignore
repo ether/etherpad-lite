@@ -1,5 +1,5 @@
 node_modules
-settings.json
+backups
 !settings.json.template
 APIKEY.txt
 SESSIONKEY.txt
@@ -11,6 +11,7 @@ bin/convertSettings.json
 *~
 *.patch
 src/static/js/jquery.js
+src/static/js/plugins.min.js
 npm-debug.log
 *.DS_Store
 .ep_initialized
