@@ -105,6 +105,7 @@
 	"pad.userlist.approve": "اوْنایلا",
 	"pad.impexp.importbutton": "ایندی ایچری گتیر",
 	"pad.impexp.importing": "ایچری گتیریلیر...",
+	"pad.impexp.uploadFailed": "آپلود اولونمادی، یئنه چالیشین",
 	"pad.impexp.importfailed": "ایچری گتیرمه اولونمادی",
 	"pad.impexp.copypaste": "لوطفن کوپی ائدیب، یاپیشدیرین"
 }
