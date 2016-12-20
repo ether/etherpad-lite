@@ -452,6 +452,7 @@ var pad = {
       // To use etherpad you have to allow cookies.
       // This will check if the prefs-cookie is set.
       // Otherwise it shows up a message to the user.
+      padcookie.init();
       if (!readCookie("prefs"))
       {
         $('#loading').hide();
