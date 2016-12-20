@@ -117,13 +117,14 @@ exports.getPackages = function (cb) {
           delete packages[name].parent;
         }
       
-        if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
+        // I don't think we need recursion
+        //if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
       });
     }
   
     var tmp = {};
     tmp[data.name] = data;
-    flatten(tmp);
+    flatten(tmp[undefined].dependencies);
     cb(null, packages);
   });
 };

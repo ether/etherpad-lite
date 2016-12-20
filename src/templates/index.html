@@ -29,7 +29,8 @@
       */
     </script>
 
-        <meta charset="utf-8"> 
+        <meta charset="utf-8">
+        <meta name="referrer" content="no-referrer">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
         <link rel="shortcut icon" href="<%=settings.favicon%>">
 
@@ -121,7 +122,7 @@
             input[type="text"] {
               border-radius: 3px;
               box-sizing: border-box;
-              -moz-box-sizing: border-box;   
+              -moz-box-sizing: border-box;
               line-height:36px; /* IE8 hack */
               padding: 0px 45px 0 10px;
               *padding: 0; /* IE7 hack */
@@ -148,22 +149,22 @@
                 margin-top: 0;
               }
               #inner {
-                width: 95%;        
+                width: 95%;
               }
               #label {
                 text-align: center;
               }
             }
         </style>
-        <link href="static/custom/index.css" rel="stylesheet"> 
+        <link href="static/custom/index.css" rel="stylesheet">
 
         <div id="wrapper">
         <% e.begin_block("indexWrapper"); %>
             <div id="inner">
                 <buttOn id="button" onclick="go2Random()" data-l10n-id="index.newPad"></button>
-                <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label> 
-                <form action="#" onsubmit="go2Name();return false;"> 
-                    <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech> 
+                <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
+                <form action="#" onsubmit="go2Name();return false;">
+                    <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
                     <button type="submit">OK</button>
                 </form>
             </div>
@@ -171,33 +172,35 @@
         </div>
 
         <script src="static/custom/index.js"></script>
-        <script> 
-      
-            function go2Name() 
+        <script>
+            // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
+            function go2Name()
             {
                 var padname = document.getElementById("padname").value;
                 padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
             }
- 
-            function go2Random() 
+
+            function go2Random()
             {
                 window.location = "p/" + randomPadName();
             }
- 
-            function randomPadName() 
+
+            function randomPadName()
             {
                 var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
                 var string_length = 10;
                 var randomstring = '';
-                for (var i = 0; i < string_length; i++) 
+                for (var i = 0; i < string_length; i++)
                 {
                     var rnum = Math.floor(Math.random() * chars.length);
                     randomstring += chars.substring(rnum, rnum + 1);
                 }
                 return randomstring;
             }
-            
+
             // start the custom js
             if (typeof customStart == "function") customStart();
+            // @license-end
         </script>
+        <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
 </html>

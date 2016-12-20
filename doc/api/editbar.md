@@ -12,7 +12,7 @@ Shows the dropdown `div.popup` whose `id` equals `dropdown`.
 Register a handler for a specific command. Commands are fired if the corresponding button is clicked or the corresponding select is changed.
 
 ## registerAceCommand(cmd, callback)
-Creates an ace callstack and calls the callback with an ace instance: `callback(cmd, ace)`.
+Creates an ace callstack and calls the callback with an ace instance (and a toolbar item, if applicable): `callback(cmd, ace, item)`.
 
 Example:
 ```

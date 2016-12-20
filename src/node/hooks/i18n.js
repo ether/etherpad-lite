@@ -5,7 +5,7 @@ var languages = require('languages4translatewiki')
   , npm = require('npm')
   , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
   , semver = require('semver')
-  , existsSync = fs.statSync || fs.existsSync || path.existsSync
+  , existsSync = require('../utils/path_exists')
 ;
 
 

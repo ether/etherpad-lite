@@ -22,7 +22,7 @@ Also, check out the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**, 
 
 # Installation
 
-Etherpad works with node v0.10+ and io.js.
+Etherpad works with node v0.10+ (except 6.0 and 6.1).
 
 ## Windows
 

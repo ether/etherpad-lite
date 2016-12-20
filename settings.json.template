@@ -3,7 +3,7 @@
 
   Please edit settings.json, not settings.json.template
 
-  To still commit settings without credentials you can 
+  To still commit settings without credentials you can
   store any credential settings in credentials.json
 */
 {
@@ -17,6 +17,9 @@
   //IP and port which etherpad should bind at
   "ip": "0.0.0.0",
   "port" : 9001,
+
+  // Option to hide/show the settings.json in admin page, default option is set to true
+  "showSettingsInAdminPage" : true,
 
   /*
   // Node native SSL support
@@ -192,9 +195,9 @@
         , "level": "error" // filters out all log messages that have a lower level than "error"
         , "appender":
           { "type": "smtp"
-          , "subject": "An error occured in your EPL instance!"
+          , "subject": "An error occurred in your EPL instance!"
           , "recipients": "bar@blurdybloop.com, baz@blurdybloop.com"
-          , "sendInterval": 60*5 // in secs -- will buffer log messages; set to 0 to send a mail for every message
+          , "sendInterval": 300 // 60 * 5 = 5 minutes -- will buffer log messages; set to 0 to send a mail for every message
           , "transport": "SMTP", "SMTP": { // see https://github.com/andris9/Nodemailer#possible-transport-methods
               "host": "smtp.example.com", "port": 465,
               "secureConnection": true,
