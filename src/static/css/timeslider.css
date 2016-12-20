@@ -1,3 +1,9 @@
+@import url('./lists_and_indents.css');
+
+p.pblort {
+  height: 100px;
+}
+
 #editorcontainerbox {
   overflow: auto;
   top: 40px;
@@ -90,7 +96,7 @@
   cursor:hand;
 }
 #playpause_button_icon:before {
-  line-height:44px;  
+  line-height:44px;
   padding-left:2px;
   font-family: fontawesome-etherpad;
   content: "\e82c";
@@ -105,7 +111,7 @@
   border: solid 1px #666;
 }
 .pause:before {
-  line-height:44px;  
+  line-height:44px;
   padding-left:2px;
   font-family: fontawesome-etherpad;
   content: "\e82e" !important;
@@ -256,83 +262,6 @@ stepper:active{
 #padeditor {
   position: static
 }
-/* lists */
-.list-bullet2,
-.list-indent2,
-.list-number2 {
-  margin-left: 3em
-}
-.list-bullet3,
-.list-indent3,
-.list-number3 {
-  margin-left: 4.5em
-}
-.list-bullet4,
-.list-indent4,
-.list-number4 {
-  margin-left: 6em
-}
-.list-bullet5,
-.list-indent5,
-.list-number5 {
-  margin-left: 7.5em
-}
-.list-bullet6,
-.list-indent6,
-.list-number6 {
-  margin-left: 9em
-}
-.list-bullet7,
-.list-indent7,
-.list-number7 {
-  margin-left: 10.5em
-}
-.list-bullet8,
-.list-indent8,
-.list-number8 {
-  margin-left: 12em
-}
-/* unordered lists */
-UL {
-  list-style-type: disc;
-  margin-left: 1.5em;
-}
-UL UL {
-  margin-left: 0 !important
-}
-.list-bullet2,
-.list-bullet5,
-.list-bullet8 {
-  list-style-type: circle
-}
-.list-bullet3,
-.list-bullet6 {
-  list-style-type: square
-}
-.list-indent1,
-.list-indent2,
-.list-indent3,
-.list-indent5,
-.list-indent5,
-.list-indent6,
-.list-indent7,
-.list-indent8 {
-  list-style-type: none
-}
-/* ordered lists */
-OL {
-  list-style-type: decimal;
-  margin-left: 1.5em;
-}
-.list-number2,
-.list-number5,
-.list-number8 {
-  list-style-type: lower-latin
-}
-.list-number3,
-.list-number6 {
-  list-style-type: lower-roman
-}
 
 button{
   margin:0;
@@ -348,4 +277,3 @@ button::-moz-focus-inner {
 button:focus{
   border: 1px solid #666;
 }
-
