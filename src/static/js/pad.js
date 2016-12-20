@@ -52,43 +52,6 @@ var hooks = require('./pluginfw/hooks');
 
 var receivedClientVars = false;
 
-function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
-  if (days)
-  {
-    var date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    var expires = "; expires=" + date.toGMTString();
-  }
-  else{
-    var expires = "";
-  }
-  
-  if(!path){ // If the path isn't set then just whack the cookie on the root path
-    path = "/";
-  }
-  
-  //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
-    document.cookie = name + "=" + value + expires + "; path="+document.location;
-  }
-  else{
-    document.cookie = name + "=" + value + expires + "; path=" + path;
-  }
-}
-
-function readCookie(name)
-{
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++)
-  {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
-
 function randomString()
 {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -487,10 +450,10 @@ var pad = {
       handshake();
 
       // To use etherpad you have to allow cookies.
-      // This will check if the creation of a test-cookie has success.
+      // This will check if the prefs-cookie is set.
       // Otherwise it shows up a message to the user.
-      createCookie("test", "test");
-      if (!readCookie("test"))
+      padcookie.init();
+      if (!readCookie("prefs"))
       {
         $('#loading').hide();
         $('#noCookie').show();
