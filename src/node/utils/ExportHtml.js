@@ -22,6 +22,7 @@ var ERR = require("async-stacktrace");
 var _ = require('underscore');
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+var eejs = require('ep_etherpad-lite/node/eejs');
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
@@ -478,7 +479,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
   return pieces.join('');
 }
 
-exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
+exports.getPadHTMLDocument = function (padId, revNum, callback)
 {
   padManager.getPad(padId, function (err, pad)
   {
@@ -490,112 +491,16 @@ exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
       stylesForExport.forEach(function(css){
         stylesForExportCSS += css;
       });
-      // Core inclusion of head etc.
-      var head =
-        (noDocType ? '' : '<!doctype html>\n') +
-        '<html lang="en">\n' + (noDocType ? '' : '<head>\n' +
-          '<title>' + Security.escapeHTML(padId) + '</title>\n' +
-          '<meta name="generator" content="Etherpad">\n' +
-          '<meta name="author" content="Etherpad">\n' +
-          '<meta name="changedby" content="Etherpad">\n' +
-          '<meta charset="utf-8">\n' +
-          '<style> * { font-family: arial, sans-serif;\n' +
-            'font-size: 13px;\n' +
-            'line-height: 17px; }' +
-            'ul.indent { list-style-type: none; }' +
-
-            'ol { list-style-type: none; padding-left:0;}' +
-            'body > ol { counter-reset: first second third fourth fifth sixth seventh eigth ninth tenth eleventh twelth thirteenth fourteenth fifteenth sixteenth; }' +
-            'ol > li:before {' +
-            'content: counter(first) ". " ;'+
-            'counter-increment: first;}' +
-
-            'ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) ". " ;'+
-            'counter-increment: second;}' +
-
-            'ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) ". ";'+
-            'counter-increment: third;}' +
-
-            'ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";'+
-            'counter-increment: fourth;}' +
-
-            'ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";'+
-            'counter-increment: fifth;}' +
-
-            'ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";'+
-            'counter-increment: sixth;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";'+
-            'counter-increment: seventh;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) ". ";'+
-            'counter-increment: eigth;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) ". ";'+
-            'counter-increment: ninth;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) ". ";'+
-            'counter-increment: tenth;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";'+
-            'counter-increment: eleventh;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) ". ";'+
-            'counter-increment: twelth;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) ". ";'+
-            'counter-increment: thirteenth;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eigth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelth) "." counter(thirteenth) "." counter(fourteenth) ". ";'+
-            'counter-increment: fourteenth;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "."  counter(eigth) "."  counter(ninth) "."  counter(tenth) "."  counter(eleventh) "."  counter(twelth) "."  counter(thirteenth) "."  counter(fourteenth) "." counter(fifteenth) ". ";'+
-            'counter-increment: fifteenth;}' +
-
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {' +
-            'content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "."  counter(eigth) "."  counter(ninth) "."  counter(tenth) "."  counter(eleventh) "."  counter(twelth) "."  counter(thirteenth) "."  counter(fourteenth) "."  counter(fifteenth) "."  counter(sixthteenth) ". ";'+
-            'counter-increment: sixthteenth;}' +
-
-            'ol{ text-indent: 0px; }' +
-            'ol > ol{ text-indent: 10px; }' +
-            'ol > ol > ol{ text-indent: 20px; }' +
-            'ol > ol > ol > ol{ text-indent: 30px; }' +
-            'ol > ol > ol > ol > ol{ text-indent: 40px; }' +
-            'ol > ol > ol > ol > ol > ol{ text-indent: 50px; }' +
-            'ol > ol > ol > ol > ol > ol > ol{ text-indent: 60px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 70px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 80px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 90px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 100px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 110px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol { text-indent: 120px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 130px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 140px; }' +
-            'ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol{ text-indent: 150px; }' +
-
-            stylesForExportCSS +
-            '</style>\n' + '</head>\n') +
-        '<body>';
-      var foot = '</body>\n</html>\n';
 
       getPadHTML(pad, revNum, function (err, html)
       {
         if(ERR(err, callback)) return;
-        callback(null, head + html + foot);
+        var exportedDoc = eejs.require("ep_etherpad-lite/templates/export_html.html", {
+          body: html,
+          padId: Security.escapeHTML(padId),
+          extraCSS: stylesForExportCSS
+        });
+        callback(null, exportedDoc);
       });
     });
   });

@@ -97,6 +97,8 @@
 	"timeslider.version": "Versiya {{version}}",
 	"timeslider.saved": "Saxlanıldı {{day}} {{month}}, {{year}}",
 	"timeslider.playPause": "Geri oxutma / Lövhə Məzmunlarını Dayandır",
+	"timeslider.backRevision": "Sənədin bundan əvvəlki bir versiyasına qayıtmaq",
+	"timeslider.forwardRevision": "Sənədin bundan sonrakı bir versiyasına qayıtmaq",
 	"timeslider.dateformat": "{{day}} {{month}}, {{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Yanvar",
 	"timeslider.month.february": "Fevral",

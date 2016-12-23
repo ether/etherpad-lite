@@ -98,6 +98,7 @@
 	"timeslider.exportCurrent": "Eksportuj bieżącą wersję jako:",
 	"timeslider.version": "Wersja {{version}}",
 	"timeslider.saved": "Zapisano {{day}} {{month}} {{year}}",
+	"timeslider.playPause": "Odtwarzaj / pauzuj zawartość dokumentu",
 	"timeslider.backRevision": "Przejdź do poprzedniej wersji dokumentu",
 	"timeslider.forwardRevision": "Przejdź do następnej wersji dokumentu",
 	"timeslider.dateformat": "{{year}}-{{month}}-{{day}} {{hours}}:{{minutes}}:{{seconds}}",

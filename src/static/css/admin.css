@@ -38,6 +38,12 @@ div.innerwrapper {
   padding-left: 265px;
 }
 
+div.innerwrapper-err {
+  padding: 15px;
+  padding-left: 265px;
+  display: none;
+}
+
 #wrapper {
   background: none repeat scroll 0px 0px #FFFFFF;
   box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);

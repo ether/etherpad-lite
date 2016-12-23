@@ -156,7 +156,7 @@ describe('getAuthorName', function(){
   it('Gets the author name', function(done) {
     api.get(endPoint('getAuthorName')+"&authorID="+authorID)
     .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data === "john") throw new Error("Unable to get Author Name from Author ID");
+      if(res.body.code !== 0 || res.body.data !== "john") throw new Error("Unable to get Author Name from Author ID");
     })
     .expect('Content-Type', /json/)
     .expect(200, done)

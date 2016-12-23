@@ -53,13 +53,16 @@ function createCookie(name, value, days, path){ /* Used by IE */
   if(!path){ // IF the Path of the cookie isn't set then just create it on root
     path = "/";
   }
+  
+  //Check if we accessed the pad over https
+  var secure = window.location.protocol == "https:" ? ";secure" : "";
 
   //Check if the browser is IE and if so make sure the full path is set in the cookie
   if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
-    document.cookie = name + "=" + value + expires + "; path=/"; /* Note this bodge fix for IE is temporary until auth is rewritten */
+    document.cookie = name + "=" + value + expires + "; path=/" + secure; /* Note this bodge fix for IE is temporary until auth is rewritten */
   }
   else{
-    document.cookie = name + "=" + value + expires + "; path=" + path;
+    document.cookie = name + "=" + value + expires + "; path=" + path + secure;
   }
 
 }
@@ -520,7 +523,7 @@ function setupGlobalExceptionHandler() {
         //show javascript errors to the user
         $("#editorloadingbox").css("padding", "10px");
         $("#editorloadingbox").css("padding-top", "45px");
-        $("#editorloadingbox").html("<div style='text-align:left;color:red;font-size:16px;'><b>An error occured</b><br>The error was reported with the following id: '" + errorId + "'<br><br><span style='color:black;font-weight:bold;font-size:16px'>Please press and hold Ctrl and press F5 to reload this page, if the problem persists please send this error message to your webmaster: </span><div style='color:black;font-size:14px'>'"
+        $("#editorloadingbox").html("<div style='text-align:left;color:red;font-size:16px;'><b>An error occurred</b><br>The error was reported with the following id: '" + errorId + "'<br><br><span style='color:black;font-weight:bold;font-size:16px'>Please press and hold Ctrl and press F5 to reload this page, if the problem persists please send this error message to your webmaster: </span><div style='color:black;font-size:14px'>'"
           + "ErrorId: " + errorId + "<br>URL: " + window.location.href + "<br>UserAgent: " + userAgent + "<br>" + msg + " in " + url + " at line " + linenumber + "'</div></div>");
       }
 

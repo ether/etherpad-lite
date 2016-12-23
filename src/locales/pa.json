@@ -3,7 +3,8 @@
 		"authors": [
 			"Aalam",
 			"Babanwalia",
-			"ਪ੍ਰਚਾਰਕ"
+			"ਪ੍ਰਚਾਰਕ",
+			"Tow"
 		]
 	},
 	"index.newPad": "ਨਵਾਂ ਪੈਡ",
@@ -112,6 +113,7 @@
 	"timeslider.month.december": "ਦਸੰਬਰ",
 	"timeslider.unnamedauthors": "{{num}} ਬੇਨਾਮ {[plural(num) one: ਲੇਖਕ, other: ਲੇਖਕ ]}",
 	"pad.savedrevs.marked": "ਇਹ ਰੀਵਿਜ਼ਨ ਨੂੰ ਹੁਣ ਸੰਭਾਲੇ ਹੋਏ ਰੀਵਿਜ਼ਨ ਵਜੋਂ ਮੰਨਿਆ ਗਿਆ ਹੈ",
+	"pad.savedrevs.timeslider": "ਤੁਸੀੰ ਸਾੰਭੀਆੰ ਹੋਈਆੰ ਵਰਜਨਾੰ ਸਮਾੰਸਲਾਈਡਰ ਤੇ ਜਾ ਕੇ ਵੇਖ ਸਕਦੇ ਹੋ",
 	"pad.userlist.entername": "ਆਪਣਾ ਨਾਂ ਦਿਉ",
 	"pad.userlist.unnamed": "ਬੇਨਾਮ",
 	"pad.userlist.guest": "ਮਹਿਮਾਨ",
@@ -122,6 +124,7 @@
 	"pad.impexp.importing": "...ਇੰਪੋਰਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ",
 	"pad.impexp.confirmimport": "ਕੋਈ ਫ਼ਾਈਲ ਦਰਾਮਦ ਕਾਰਨ ਨਾਲ਼ ਪੈਡ ਦੀ ਮੌਜੂਦਾ ਲਿਖਤ ਉੱਤੇ ਲਿਖਿਆ ਜਾਵੇਗਾ। ਕੀ ਤੁਸੀਂ ਸੱਚੀਂ ਇਹ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
 	"pad.impexp.convertFailed": "ਅਸੀਂ ਇਸ ਫ਼ਾਈਲ ਦੀ ਦਰਾਮਦ ਨਹੀਂ ਕਰ ਸਕੇ। ਮਿਹਰਬਾਨੀ ਕਰਕੇ ਕੋਈ ਵੱਖਰੀ ਦਸਤਾਵੇਜ਼ੀ ਰੂਪ-ਰੇਖਾ ਵਰਤੋ ਜਾਂ ਹੱਥੀਂ ਨਕਲ-ਚੇਪੀ ਕਰੋ।",
+	"pad.impexp.padHasData": "ਅਸੀ ਇਸ ਫਾਈਲ ਨੂੰ ਆਯਾਤ ਨਹੀੰ ਕਰ ਸਕੇ ਕਿਉੰਕਿ ਇਸ ਪੈਡ ਉੱਤੇ ਪਹਿਲਾੰ ਹੀ ਤਬਦੀਲੀਆੰ ਕੀਤੀਆੰ ਜਾ ਚੁਕੀਆੰ ਹਨ, ਕਿਰਪਾ ਕਰਕੇ ਨਵੇੰ ਪੈਡ ਵਿਚ ਆਯਾਤ ਕਰੋ",
 	"pad.impexp.uploadFailed": "ਅੱਪਲੋਡ ਲਈ ਫੇਲ੍ਹ ਹੈ, ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜੀ।",
 	"pad.impexp.importfailed": "ਇੰਪੋਰਟ ਫੇਲ੍ਹ ਹੈ",
 	"pad.impexp.copypaste": "ਕਾਪੀ ਕਰੋ ਚੇਪੋ ਜੀ",

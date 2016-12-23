@@ -6,11 +6,12 @@
 			"Nipsky",
 			"Wikinaut",
 			"Thargon",
-			"Predatorix"
+			"Predatorix",
+			"Sebastian Wallroth"
 		]
 	},
 	"index.newPad": "Neues Pad",
-	"index.createOpenPad": "oder Pad mit folgendem Namen öffnen:",
+	"index.createOpenPad": "oder ein Pad mit folgendem Namen erstellen/öffnen:",
 	"pad.toolbar.bold.title": "Fett (Strg-B)",
 	"pad.toolbar.italic.title": "Kursiv (Strg-I)",
 	"pad.toolbar.underline.title": "Unterstrichen (Strg-U)",

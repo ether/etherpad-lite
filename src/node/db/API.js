@@ -28,6 +28,7 @@ var authorManager = require("./AuthorManager");
 var sessionManager = require("./SessionManager");
 var async = require("async");
 var exportHtml = require("../utils/ExportHtml");
+var exportTxt = require("../utils/ExportTxt");
 var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
@@ -271,7 +272,8 @@ exports.getText = function(padID, rev, callback)
     //the client wants the latest text, lets return it to him
     else
     {
-      callback(null, {"text": pad.text()});
+      var padText = exportTxt.getTXTFromAtext(pad, pad.atext);
+      callback(null, {"text": padText});
     }
   });
 }

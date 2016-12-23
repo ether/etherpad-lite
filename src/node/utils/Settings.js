@@ -209,6 +209,11 @@ exports.requireAuthentication = false;
 exports.requireAuthorization = false;
 exports.users = {};
 
+/*
+* Show settings in admin page, by default it is true
+*/
+exports.showSettingsInAdminPage = true;
+
 //checks if abiword is avaiable
 exports.abiwordAvailable = function()
 {

@@ -36,6 +36,7 @@
 
         <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
+        <meta name="referrer" content="no-referrer">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
         <link rel="shortcut icon" href="<%=settings.faviconPad%>">
 
@@ -350,19 +351,21 @@
 
         <% e.begin_block("scripts"); %>
         <script type="text/javascript">
+            // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             (function() {
               // Display errors on page load to the user
               // (Gets overridden by padutils.setupGlobalExceptionHandler)
               var originalHandler = window.onerror;
               window.onerror = function(msg, url, line) {
                 var box   = document.getElementById('editorloadingbox');
-                box.innerHTML = '<p><b>An error occured while loading the pad</b></p>'
+                box.innerHTML = '<p><b>An error occurred while loading the pad</b></p>'
                               + '<p><b>'+msg+'</b> '
                               + '<small>in '+ url +' (line '+ line +')</small></p>';
                 // call original error handler
                 if(typeof(originalHandler) == 'function') originalHandler.call(null, arguments);
               };
             })();
+            // @license-end
         </script>
 
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
@@ -378,6 +381,7 @@
 
         <!-- Bootstrap page -->
         <script type="text/javascript">
+            // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             var clientVars = {};
             (function () {
               var pathComponents = location.pathname.split('/');
@@ -415,6 +419,8 @@
               padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
               padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
             }());
+            // @license-end
         </script>
+        <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
         <% e.end_block(); %>
 </html>

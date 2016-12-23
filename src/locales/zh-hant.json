@@ -7,7 +7,8 @@
 			"Shirayuki",
 			"Simon Shek",
 			"LNDDYL",
-			"Wehwei"
+			"Wehwei",
+			"Kly"
 		]
 	},
 	"index.newPad": "新Pad",
@@ -98,6 +99,9 @@
 	"timeslider.exportCurrent": "匯出當前版本為：",
 	"timeslider.version": "版本{{version}}",
 	"timeslider.saved": "{{year}}年{{month}}{{day}}日儲存",
+	"timeslider.playPause": "放送 / 暫停Pad內容",
+	"timeslider.backRevision": "返回此Pad的前一次修訂",
+	"timeslider.forwardRevision": "前往此Pad的前一次修訂",
 	"timeslider.dateformat": "{{year}}年{{month}}月{{day}}日 {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "1月",
 	"timeslider.month.february": "二月",
@@ -113,6 +117,7 @@
 	"timeslider.month.december": "12月",
 	"timeslider.unnamedauthors": "{{num}}匿名{[plural(num) 作者]}",
 	"pad.savedrevs.marked": "標記此修訂版本為已儲存修訂版本。",
+	"pad.savedrevs.timeslider": "您可使用時段滑標來查看先前保存的版本內容",
 	"pad.userlist.entername": "輸入您的姓名",
 	"pad.userlist.unnamed": "未命名",
 	"pad.userlist.guest": "訪客",
@@ -123,6 +128,7 @@
 	"pad.impexp.importing": "匯入中...",
 	"pad.impexp.confirmimport": "匯入的檔案將會覆蓋pad內目前的文字。您確定要繼續嗎？",
 	"pad.impexp.convertFailed": "未能匯入此檔案。請以其他檔案格式或手動複製貼上匯入。",
+	"pad.impexp.padHasData": "此Pad已異動過所以無法匯入該檔案，請匯入至另一個Pad試試。",
 	"pad.impexp.uploadFailed": "上載失敗，請重試",
 	"pad.impexp.importfailed": "匯入失敗",
 	"pad.impexp.copypaste": "請複製貼上",

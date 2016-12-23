@@ -76,10 +76,11 @@ exports.doExport = function(req, res, padId, type)
       }
       else if(type == "txt")
       {
-        exporttxt.getPadTXTDocument(padId, req.params.rev, false, function(err, txt)
+        exporttxt.getPadTXTDocument(padId, req.params.rev, function(err, txt)
         {
-          if(ERR(err)) return;
-          res.send(txt);
+          if(!err) {
+            res.send(txt);
+          }
         });
       }
       else
@@ -92,7 +93,7 @@ exports.doExport = function(req, res, padId, type)
           //render the html document
           function(callback)
           {
-            exporthtml.getPadHTMLDocument(padId, req.params.rev, false, function(err, _html)
+            exporthtml.getPadHTMLDocument(padId, req.params.rev, function(err, _html)
             {
               if(ERR(err, callback)) return;
               html = _html;
