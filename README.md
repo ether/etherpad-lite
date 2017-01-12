@@ -58,7 +58,7 @@ If cloning to a subdirectory within another project, you may need to do the foll
 You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
 - *For Debian/Ubuntu*: `apt-get install gzip git curl python libssl-dev pkg-config build-essential`  
 - *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
-- *For FreeBSD*: `portinstall node, npm, git (optional)`
+- *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
 
 Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
 
