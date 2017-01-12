@@ -4,6 +4,7 @@ node_js:
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+  - "npm install ep_test_line_attrib"
 before_script:
   - "tests/frontend/travis/sauce_tunnel.sh"
 script:
