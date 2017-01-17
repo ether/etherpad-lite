@@ -36,7 +36,7 @@ Things in context: None
 This function is called after a specific plugin is initialized. This would probably be more useful than the previous two functions if you only wanted to add in features to one specific plugin.
 
 ## expressConfigure
-Called from: src/node/server.js
+Called from: src/node/hooks/express.js
 
 Things in context:
 
@@ -45,7 +45,7 @@ Things in context:
 This is a helpful hook for changing the behavior and configuration of the application. It's called right after the application gets configured.
 
 ## expressCreateServer
-Called from: src/node/server.js
+Called from: src/node/hooks/express.js
 
 Things in context:
 
