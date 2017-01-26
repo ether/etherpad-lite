@@ -116,7 +116,7 @@ exports.expressConfigure = function (hook_name, args, cb) {
 
   if (!exports.sessionStore) {
     exports.sessionStore = new ueberStore();
-    exports.secret = settings.sessionKey; // Isn't this being reset each time the server spawns?
+    exports.secret = settings.sessionKey;
   }
 
   args.app.sessionStore = exports.sessionStore;
