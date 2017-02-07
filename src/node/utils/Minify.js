@@ -375,9 +375,7 @@ function getFileCompressed(filename, contentType, callback) {
       callback(error, content);
     } else if (contentType == 'text/javascript') {
       try {
-        var decoder = new StringDecoder('utf8');
-        var code = decoder.write(content); // convert from buffer to string
-        content = uglifyJS.minify(code, {fromString: true}).code;
+        content = compressJS(content);
       } catch (error) {
         // silence
       }
@@ -398,6 +396,14 @@ function getFile(filename, callback) {
   } else {
     fs.readFile(ROOT_DIR + filename, callback);
   }
+}
+
+function compressJS(content)
+{
+  var decoder = new StringDecoder('utf8');
+  var code = decoder.write(content); // convert from buffer to string
+  var codeMinified = uglifyJS.minify(code, {fromString: true}).code;
+  return codeMinified;
 }
 
 function compressCSS(filename, content, callback)
