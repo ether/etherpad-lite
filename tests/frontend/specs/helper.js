@@ -115,7 +115,7 @@ describe("the test helper", function(){
 
         // wait for lines to be split
         helper.waitFor(function(){
-          var $fourthLine = helper.padInner$("div").slice(3,4);
+          var $fourthLine = helper.padInner$("div").eq(3);
           return $fourthLine.text() === "to test";
         }).done(done);
       });
@@ -130,8 +130,8 @@ describe("the test helper", function(){
       var endOffset   = 4;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(3,4);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
 
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
@@ -148,8 +148,8 @@ describe("the test helper", function(){
       var endOffset   = 1;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(4,5);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(4);
 
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
@@ -166,8 +166,8 @@ describe("the test helper", function(){
       var endOffset   = 0;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(3,4);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
 
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
@@ -184,8 +184,8 @@ describe("the test helper", function(){
       var endOffset   = 50;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(3,4);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
 
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
@@ -199,8 +199,8 @@ describe("the test helper", function(){
       var inner$ = helper.padInner$;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(3,4);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
 
       helper.selectLines($startLine, $endLine);
 
