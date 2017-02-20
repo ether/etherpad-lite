@@ -103,7 +103,7 @@ describe("the test helper", function(){
       return text
       // IE replaces line breaks with a whitespace, so we need to unify its behavior
       // for other browsers, to have all tests running for all browsers
-      .replace(/\n/gi, " ")
+      .replace(/\n/gi, "")
       .replace(/\s/gi, " ");
     }
 
