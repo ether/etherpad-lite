@@ -1,5 +1,5 @@
 # Editbar
-srf/static/js/pad_editbar.js
+src/static/js/pad_editbar.js
 
 ## isEnabled()
 
