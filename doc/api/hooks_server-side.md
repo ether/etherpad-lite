@@ -72,7 +72,7 @@ Available blocks in `pad.html` are:
  * `editbarMenuRight` - right tool bar
  * `afterEditbar` - allows you to add stuff immediately after the toolbar
  * `userlist` - the contents of the userlist dropdown
- * `loading` - the intial loading message
+ * `loading` - the initial loading message
  * `mySettings` - the left column of the settings dropdown ("My view"); intended for adding checkboxes only
  * `mySettings.dropdowns` - add your dropdown settings here
  * `globalSettings` - the right column of the settings dropdown ("Global view")
@@ -104,7 +104,7 @@ Things in context:
 
 Here you can add custom toolbar items that will be available in the toolbar config in `settings.json`. For more about the toolbar controller see the API section.
 
-Usage examples: 
+Usage examples:
 
 * [https://github.com/tiblu/ep_authorship_toggle]()
 
