@@ -1,5 +1,5 @@
 # Localization
-Etherpad provides a  multi-language user interface, that's apart from your users' content, so users from different countries can collaborate on a single document, while still having the user interface displayed in their mother tongue.
+Etherpad provides a multi-language user interface, that's apart from your users' content, so users from different countries can collaborate on a single document, while still having the user interface displayed in their mother tongue.
 
 
 ## Translating
