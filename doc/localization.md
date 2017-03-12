@@ -31,7 +31,7 @@ Translations will be send back to us regularly and will eventually appear in the
 Each translation consists of a key (the id of the string that is to be translated) and the translated string. Terms in curly braces must not be touched but left as they are, since they represent a dynamically changing part of the string like a variable. Imagine a message welcoming a user: `Welcome, {{userName}}!` would be translated as `Ahoy, {{userName}}!` in pirate.
 
 ### Client-side
-We use a `language` cookie to save your language settings if you change them. If you don't, we autodetect your locale using information from your browser. Now, that we know your preferred language this information is feeded into a very nice library called [html10n.js](https://github.com/marcelklehr/html10n.js), which loads the appropriate translations and applies them to our templates, providing translation params, pluralization, include rules and even a nice javascript API along the way.
+We use a `language` cookie to save your language settings if you change them. If you don't, we autodetect your locale using information from your browser. Now, that we know your preferred language this information is fed into a very nice library called [html10n.js](https://github.com/marcelklehr/html10n.js), which loads the appropriate translations and applies them to our templates, providing translation params, pluralization, include rules and even a nice javascript API along the way.
 
 
 
