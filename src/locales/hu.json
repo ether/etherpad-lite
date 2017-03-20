@@ -5,14 +5,15 @@
 			"Misibacsi",
 			"R-Joe",
 			"Tgr",
-			"Csega"
+			"Csega",
+			"BanKris"
 		]
 	},
 	"index.newPad": "Új notesz",
 	"index.createOpenPad": "vagy notesz létrehozása/megnyitása ezzel a névvel:",
-	"pad.toolbar.bold.title": "Félkövér (Ctrl-B)",
-	"pad.toolbar.italic.title": "Dőlt (Ctrl-I)",
-	"pad.toolbar.underline.title": "Aláhúzás (Ctrl-U)",
+	"pad.toolbar.bold.title": "Félkövér (Ctrl+B)",
+	"pad.toolbar.italic.title": "Dőlt (Ctrl+I)",
+	"pad.toolbar.underline.title": "Aláhúzás (Ctrl+U)",
 	"pad.toolbar.strikethrough.title": "Áthúzás (Ctrl+5)",
 	"pad.toolbar.ol.title": "Számozott lista (Ctrl+Shift+N)",
 	"pad.toolbar.ul.title": "Számozatlan lista (Ctrl+Shift+L)",
@@ -112,7 +113,7 @@
 	"timeslider.month.october": "október",
 	"timeslider.month.november": "november",
 	"timeslider.month.december": "december",
-	"timeslider.unnamedauthors": "{{num}} névtelen {[plural(num), one: szerző, other: szerzők]}",
+	"timeslider.unnamedauthors": "{{num}} névtelen {[plural(num), one: szerző, other: szerző]}",
 	"pad.savedrevs.marked": "Ez a revízió mostantól mentettként jelölve",
 	"pad.savedrevs.timeslider": "A mentett revíziókat az időcsúszkán tudod megnézni",
 	"pad.userlist.entername": "Add meg a nevedet",
