@@ -22,15 +22,22 @@ var createCountDownElementsIfNecessary = function($modal) {
 
     // create extra DOM elements, if they don't exist
     var $reconnectTimerMessage = $('<p class="reconnecttimer"> \
-                                      <span data-l10n-id="pad.modals.reconnecttimer">This window will automatically reconnect in </span> \
+                                      <span data-l10n-id="pad.modals.reconnecttimer">This pad will be automatically reconnected in </span> \
                                       <span class="timetoexpire"></span> \
                                     </p>');
     var $cancelReconnect = $('<button id="cancelreconnect" data-l10n-id="pad.modals.cancel">Cancel</button>');
+
+    localize($reconnectTimerMessage);
+    localize($cancelReconnect);
 
     $reconnectTimerMessage.insertAfter($defaultMessage);
     $cancelReconnect.insertAfter($reconnectButton);
   }
 }
+
+var localize = function($element) {
+  html10n.translateElement(html10n.translations, $element.get(0));
+};
 
 var createTimerForModal = function($modal) {
   var timer = new CountDownTimer(clientVars.automaticReconnectionTimeout);
