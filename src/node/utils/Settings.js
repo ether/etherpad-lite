@@ -178,6 +178,11 @@ exports.loglevel = "INFO";
 exports.disableIPlogging = false;
 
 /**
+ * Number of seconds to automatically reconnect pad
+ */
+exports.automaticReconnectionTimeout = 0;
+
+/**
  * Disable Load Testing
  */
 exports.loadTest = false;

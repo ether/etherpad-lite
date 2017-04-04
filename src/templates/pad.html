@@ -249,12 +249,12 @@
                 <div class="userdup">
                   <h1 data-l10n-id="pad.modals.userdup"></h1>
                   <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
-                  <p data-l10n-id="pad.modals.userdup.advice"></p>
+                  <p id="defaulttext" data-l10n-id="pad.modals.userdup.advice"></p>
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <div class="unauth">
                   <h1 data-l10n-id="pad.modals.unauth"></h1>
-                  <p data-l10n-id="pad.modals.unauth.explanation"></p>
+                  <p id="defaulttext" data-l10n-id="pad.modals.unauth.explanation"></p>
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <div class="looping">
@@ -267,16 +267,16 @@
                   <h2 data-l10n-id="pad.modals.initsocketfail.explanation"></h2>
                   <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
                 </div>
-                <div class="slowcommit">
+                <div class="slowcommit with_reconnect_timer">
                   <h1 data-l10n-id="pad.modals.disconnected"></h1>
                   <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
-                  <p data-l10n-id="pad.modals.slowcommit.cause"></p>
+                  <p id="defaulttext" data-l10n-id="pad.modals.slowcommit.cause"></p>
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
-                <div class="badChangeset">
+                <div class="badChangeset with_reconnect_timer">
                   <h1 data-l10n-id="pad.modals.disconnected"></h1>
                   <h2 data-l10n-id="pad.modals.badChangeset.explanation"></h2>
-                  <p data-l10n-id="pad.modals.badChangeset.cause"></p>
+                  <p id="defaulttext" data-l10n-id="pad.modals.badChangeset.cause"></p>
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                 </div>
                 <div class="corruptPad">
@@ -288,11 +288,11 @@
                   <h1 data-l10n-id="pad.modals.deleted"></h1>
                   <p data-l10n-id="pad.modals.deleted.explanation"></p>
                 </div>
-                <div class="disconnected">
+                <div class="disconnected with_reconnect_timer">
                   <% e.begin_block("disconnected"); %>
                   <h1 data-l10n-id="pad.modals.disconnected"></h1>
                   <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
-                  <p data-l10n-id="pad.modals.disconnected.cause"></p>
+                  <p id="defaulttext" data-l10n-id="pad.modals.disconnected.cause"></p>
                   <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
                   <% e.end_block(); %>
                 </div>
