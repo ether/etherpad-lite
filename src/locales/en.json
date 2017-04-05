@@ -74,7 +74,7 @@
   "pad.modals.connected": "Connected.",
   "pad.modals.reconnecting": "Reconnecting to your pad..",
   "pad.modals.forcereconnect": "Force reconnect",
-  "pad.modals.reconnecttimer": "This pad will be automatically reconnected in ",
+  "pad.modals.reconnecttimer": "Trying to reconnect in ",
   "pad.modals.cancel": "Cancel",
 
   "pad.modals.userdup": "Opened in another window",

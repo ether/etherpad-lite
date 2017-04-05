@@ -37,7 +37,8 @@ var padmodals = (function()
         $("#connectivity .visible").removeClass('visible');
         $("#connectivity ."+messageId).addClass('visible');
 
-        automaticReconnect.showCountDownTimerToReconnectOnModal($('#connectivity .' + messageId));
+        var $modal = $('#connectivity .' + messageId);
+        automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
 
         padeditbar.toggleDropDown("connectivity");
       });
