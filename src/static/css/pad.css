@@ -252,12 +252,12 @@ li[data-key=showusers] > a #online_count {
 }
 
 .loadingAnimation{
-  -webkit-animation: loadingAnimation 2s infinite linear;
-  animation: loadingAnimation 2s infinite linear;
+  -webkit-animation: loadingAnimation 2s infinite linear reverse;
+  animation: loadingAnimation 2s infinite linear reverse;
   font-family: "fontawesome-etherpad";
   font-size:24px;
   z-index:150;
-  width:25px;
+  width:20px;
   height:25px;
 }
 
