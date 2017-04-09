@@ -70,7 +70,8 @@
     "rtl": false,
     "alwaysShowChat": false,
     "chatAndUsers": false,
-    "lang": "en-gb"
+    "lang": "en-gb",
+    "useLoginForName": false
   },
 
   /* Should we suppress errors from being visible in the default Pad Text? */
@@ -109,7 +110,8 @@
   "allowUnknownFileEnds" : true,
 
   /* This setting is used if you require authentication of all users.
-     Note: /admin always requires authentication. */
+     Note: /admin always requires authentication. 
+     Note: requireAuthentication should be set to true if useLoginForName=true in padOptions*/
   "requireAuthentication" : false,
 
   /* Require authorization by a module, or a user with is_admin set, see below. */

@@ -280,6 +280,12 @@ function handshake()
         $('#options-chatandusers').parent().hide();
         $('#options-stickychat').parent().hide();
       }
+      
+      
+      if(clientVars.padOptions['useLoginForName'] && clientVars.userName!= null){
+        $('#myusernameedit').attr("disabled", true);//if we are using login name as author name, then user should not be able to change it
+        pad.notifyChangeName(clientVars.userName);//let the rest of the system know what the login users name is
+      }
 
       $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
 
@@ -303,6 +309,7 @@ function handshake()
       {
         pad.changeViewOption('rtlIsTrue', true);
       }
+      
 
       // If the Monospacefont value is set to true then change it to monospace.
       if (settings.useMonospaceFontGlobal == true)

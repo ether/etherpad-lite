@@ -1004,7 +1004,14 @@ function handleClientReady(client, message)
   var historicalAuthorData = {};
   var currentTime;
   var padIds;
-
+  var loginUsr = null;
+  
+  if(settings.requireAuthentication){
+    var authStr = client.conn.request.headers.authorization;
+    loginUsr = new Buffer(authStr.split(' ')[1], 'base64').toString('ascii').split(':')[0];
+  }
+  
+  
   hooks.callAll("clientReady", message);
 
   async.series([
@@ -1216,9 +1223,13 @@ function handleClientReady(client, message)
           "indentationOnNewLine": settings.indentationOnNewLine,
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
-
-        //Add a username to the clientVars if one avaiable
-        if(authorName != null)
+        
+        //Use the login user name as the author name for all pads for this user
+        if(settings.padOptions['useLoginForName'] && loginUsr!= null){
+          clientVars.userName = loginUsr;
+          authorName = loginUsr;
+        }
+        else if(authorName != null)//Add a username to the clientVars if one avaiable if login name is not used
         {
           clientVars.userName = authorName;
         }
