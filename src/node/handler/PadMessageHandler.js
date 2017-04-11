@@ -1380,6 +1380,54 @@ function handleChangesetRequest(client, message)
       getChangesetInfo(padIds.padId, start, end, granularity, function(err, changesetInfo)
       {
         if(err) return console.error('Error while handling a changeset request for '+padIds.padId, err, message.data);
+        
+        // Assert that the paths are correct
+        var assert = require('assert')
+        padManager.getPad(message.padId, function(err, pad) {// <-- so we get the pad
+          if(err) return
+          start -= 1
+          var headRev = pad.getHeadRevisionNumber()
+            , end = start+(granularity*changesetInfo.forwardsChangesets.length)// (-1) ?? let's test that later
+          if(start < 0) start = 0
+
+          console.log(changesetInfo)
+          if(start > headRev || end > headRev) return console.log('Cannot vet from ', start, 'to', end) // <-- some sanity checks
+          pad.getInternalRevisionAText(start, function(err, startRev) { // <-- ok, so here we get revsion `start`. so, this should be (by above definition) correct. ok
+            console.log(start)
+            ERR(err)
+            pad.getInternalRevisionAText(end, function(err, endRev) { // <-- here we get the supposed end revision
+              console.log(end)
+              ERR(err)
+                // check forward
+                console.log('Vetting revision path from ', start, 'to', end)
+                var atext = startRev
+                console.log("startRev atext:", atext)
+                if(start == 0) changesetInfo.forwardsChangesets.shift() // remove the first changeset, as we already have the first revision (rev0 == changeset0.applyOn('\n')
+                
+                changesetInfo.forwardsChangesets.forEach(function(cs) {
+                  atext = Changeset.applyToAText(cs, atext)
+                })
+                console.log("computed atext:", atext)
+                console.log("expected endRev atext:", endRev)
+                assert(atext.text == endRev.text)
+                console.log('OK')
+
+                // check backward /*/
+                console.log('Vetting revision path from ', end, 'back to', start)
+                atext = endRev
+                console.log(atext)
+                if(start == 0) changesetInfo.backwardsChangesets.shift() // remove the first changeset, as we already have the first revision.
+                changesetInfo.backwardsChangesets.reverse().forEach(function(cs) {
+                  atext = Changeset.applyToAText(cs, atext)
+                })
+                console.log(atext)
+                console.log(startRev)
+                assert(atext.text == startRev.text)
+                console.log('OK')
+                
+            })
+          })
+        })
 
         var data = changesetInfo;
         data.requestID = message.data.requestID;
