@@ -1216,6 +1216,10 @@ function handleClientReady(client, message)
             "parts": plugins.parts,
           },
           "indentationOnNewLine": settings.indentationOnNewLine,
+          "scrollWhenFocusLineIsOutOfViewport": {
+            "percentage": settings.scrollWhenFocusLineIsOutOfViewport.percentage,
+            "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
+          },
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
 

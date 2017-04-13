@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 var _, $, jQuery, plugins, Ace2Common;
-
 var browser = require('./browser');
 if(browser.msie){
   // Honestly fuck IE royally.
@@ -81,6 +80,8 @@ function Ace2Inner(){
 
   var disposed = false;
   var editorInfo = parent.editorInfo;
+
+  var keyEmulatedByEtherpad = false;
 
   var iframe = window.frameElement;
   var outerWin = iframe.ace_outerWin;
@@ -2914,6 +2915,36 @@ function Ace2Inner(){
         documentAttributeManager: documentAttributeManager,
       });
 
+      // when the caret is placed at the last line visible of the viewport, it scrolls
+      // a percentage of viewport height defined by scrollWhenFocusLineIsOutOfViewport.percentage.
+      // When scrollWhenFocusLineIsOutOfViewport.percentage is 0, it keeps the default behavior
+      // that does not scroll at all.
+      // However, it scrolls only if the last line visible is in the bottom of the viewport.
+      // E.g., when there is only one line in the pad, this line(div) is the last line of
+      // the viewport, but it is not in the bottom of the viewport, so it should not scroll.
+      // This case only happens when it has a plugin of pagination, like ep_page_view
+      var edgeLinesVisibleOnViewport = getVisibleLineRange();
+      var lastLineCompletelyVisibleOfViewport = edgeLinesVisibleOnViewport[1];
+
+      // it is possible a line is partially visible and user places the caret in this line
+      var caretIsInThelastLineVisibleOfViewport = rep.selEnd[0] === lastLineCompletelyVisibleOfViewport;
+      var caretIsInThelastLinePartiallyVisibleOfViewport = rep.selEnd[0] === lastLineCompletelyVisibleOfViewport + 1;
+      var caretIsInTheLastLineOfViewport = caretIsInThelastLineVisibleOfViewport || caretIsInThelastLinePartiallyVisibleOfViewport;
+      var linesOfPad = rep.lines.length();
+      var lastLineVisibleIsInTheBottomOfViewport = linesOfPad > lastLineCompletelyVisibleOfViewport + 1;
+
+      // avoid scrolling to the end of pad, when user press shortcut to select all (Cmd + A)
+      var hasSelection =  rep.selStart[0] !== rep.selEnd[0];
+      if(caretIsInTheLastLineOfViewport && lastLineVisibleIsInTheBottomOfViewport && !hasSelection)
+      {
+
+        var win = outerWin;
+
+        // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
+        var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
+        scrollYPage(win, pixelsToScroll);
+      }
+
       return true;
       //console.log("selStart: %o, selEnd: %o, focusAtStart: %s", rep.selStart, rep.selEnd,
       //String(!!rep.selFocusAtStart));
@@ -3292,11 +3323,32 @@ function Ace2Inner(){
   {
     var theTop = getScrollY();
     var doc = outerWin.document;
-    var height = doc.documentElement.clientHeight;
+    var height = doc.documentElement.clientHeight; // includes padding
+
+    // we have to get the exactly height of the viewport. So it has to subtract all the values which changes
+    // the viewport height (E.g. padding, position top)
+    var viewportExtraSpacesAndPosition = getEditorContainerPositionTop() + getPaddingTopAddedWhenPageViewIsEnable();
     return {
       top: theTop,
-      bottom: (theTop + height)
+      bottom: (theTop + height - viewportExtraSpacesAndPosition)
     };
+  }
+
+  function getEditorContainerPositionTop()
+  {
+    var rootDocument = parent.parent.document;
+    var editorContainer = rootDocument.getElementById("editorcontainer");
+    var editorContainerPositionTop = parseInt($(editorContainer).css("top"));
+    return editorContainerPositionTop;
+  }
+
+  // ep_page_view adds padding-top, which makes the viewport smaller
+  function getPaddingTopAddedWhenPageViewIsEnable()
+  {
+    var rootDocument = parent.parent.document;
+    var aceOuter = rootDocument.getElementsByName("ace_outer");
+    var aceOuterPaddingTop = parseInt($(aceOuter).css("padding-top"));
+    return aceOuterPaddingTop;
   }
 
   function getVisibleLineRange()
@@ -3310,10 +3362,10 @@ function Ace2Inner(){
     });
     var end = rep.lines.search(function(e)
     {
-      return getLineEntryTopBottom(e, obj).top >= viewport.bottom;
+      return getLineEntryTopBottom(e, obj).top > viewport.bottom;
     });
     if (end < start) end = start; // unlikely
-    //console.log(start+","+end);
+    // top.console.log(start+","+end);
     return [start, end];
   }
 
@@ -3835,6 +3887,7 @@ function Ace2Inner(){
           //  - probably eliminates a few minor quirks
           fastIncorp(3);
           evt.preventDefault();
+          keyEmulatedByEtherpad = true;
           doDeleteKey(evt);
           specialHandled = true;
         }
@@ -3844,6 +3897,7 @@ function Ace2Inner(){
           // note that in mozilla we need to do an incorporation for proper return behavior anyway.
           fastIncorp(4);
           evt.preventDefault();
+          keyEmulatedByEtherpad = true;
           doReturnKey();
           //scrollSelectionIntoView();
           scheduler.setTimeout(function()
@@ -3877,6 +3931,7 @@ function Ace2Inner(){
           // tab
           fastIncorp(5);
           evt.preventDefault();
+          keyEmulatedByEtherpad = true;
           doTabKey(evt.shiftKey);
           //scrollSelectionIntoView();
           specialHandled = true;
@@ -3963,6 +4018,7 @@ function Ace2Inner(){
           // cmd-H (backspace)
           fastIncorp(20);
           evt.preventDefault();
+          keyEmulatedByEtherpad = true;
           doDeleteKey();
           specialHandled = true;
         }
@@ -4018,52 +4074,22 @@ function Ace2Inner(){
 
           }, 200);
         }
-        /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
-           We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
-           presses and holds the arrow key ..  Sorry if this is ugly, blame Chrome's weird handling of viewports after new content is added*/
-        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && browser.chrome){
-          var viewport = getViewPortTopBottom();
-          var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-          var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
-          var lineHeight = $(myselection.focusNode.parentNode).parent("div").height(); // get the line height of the caret line
-          // top.console.log("offsetTop", myselection.focusNode.parentNode.parentNode.offsetTop);
-          try {
-            lineHeight = $(myselection.focusNode).height() // needed for how chrome handles line heights of null objects
-            // console.log("lineHeight now", lineHeight);
-          }catch(e){}
-          var caretOffsetTopBottom = caretOffsetTop + lineHeight;
-          var visibleLineRange = getVisibleLineRange(); // the visible lines IE 1,10
 
-          if(caretOffsetTop){ // sometimes caretOffsetTop bugs out and returns 0, not sure why, possible Chrome bug?  Either way if it does we don't wanna mess with it
-            // top.console.log(caretOffsetTop, viewport.top, caretOffsetTopBottom, viewport.bottom);
-            var caretIsNotVisible = (caretOffsetTop < viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
-            // Expect some weird behavior caretOffsetTopBottom is greater than viewport.bottom on a keypress down
-            var offsetTopSamePlace = caretOffsetTop == viewport.top; // sometimes moving key left & up leaves the caret at the same point as the viewport.top, technically the caret is visible but it's not fully visible so we should move to it
-            if(offsetTopSamePlace && (evt.which == 37 || evt.which == 38)){
-                var newY = caretOffsetTop;
-                setScrollY(newY);
-            }
+        // scroll to viewport when user presses arrow keys and caret is out of the viewport
+        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40)){
+          // we use arrowKeyWasReleased to avoid triggering the animation when a key is continuously pressed
+          // this makes the scroll smooth
+          if(!continuouslyPressingArrowKey(type)){
+            // We use getSelection() instead of rep to get the caret position. This avoids errors like when
+            // the caret position is not synchronized with the rep. For example, when an user presses arrow
+            // down to scroll the pad without releasing the key. When the key is released the rep is not
+            // synchronized, so we don't get the right node where caret is.
+            var selection = getSelection();
 
-            if(caretIsNotVisible){ // is the cursor no longer visible to the user?
-              // top.console.log("Caret is NOT visible to the user");
-              // top.console.log(caretOffsetTop,viewport.top,caretOffsetTopBottom,viewport.bottom);
-              // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
-              if(evt.which == 37 || evt.which == 38){ // If left or up arrow
-                var newY = caretOffsetTop; // That was easy!
-              }
-              if(evt.which == 39 || evt.which == 40){ // if down or right arrow
-                // only move the viewport if we're at the bottom of the viewport, if we hit down any other time the viewport shouldn't change
-                // NOTE: This behavior only fires if Chrome decides to break the page layout after a paste, it's annoying but nothing I can do
-                var selection = getSelection();
-                // top.console.log("line #", rep.selStart[0]); // the line our caret is on
-                // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
-                // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
-                // top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
-                var newY = viewport.top + lineHeight;
-              }
-              if(newY){
-                setScrollY(newY); // set the scrollY offset of the viewport on the document
-              }
+            if(selection){
+              var endOfSelection = (selection.focusAtStart ? selection.startPoint : selection.endPoint);
+              var endOfSelectionNode = topLevel(endOfSelection.node);
+              scrollNodeVerticallyIntoView(endOfSelectionNode);
             }
           }
         }
@@ -4120,6 +4146,19 @@ function Ace2Inner(){
   }
 
   var thisKeyDoesntTriggerNormalize = false;
+
+  var arrowKeyWasReleased = true;
+  function continuouslyPressingArrowKey(type) {
+    var firstTimeKeyIsContinuouslyPressed = false;
+
+    if (type == 'keyup') arrowKeyWasReleased = true;
+    else if (type == 'keydown' && arrowKeyWasReleased) {
+      firstTimeKeyIsContinuouslyPressed = true;
+      arrowKeyWasReleased = false;
+    }
+
+    return !firstTimeKeyIsContinuouslyPressed;
+  }
 
   function doUndoRedo(which)
   {
@@ -5218,20 +5257,106 @@ function Ace2Inner(){
   {
     // requires element (non-text) node;
     // if node extends above top of viewport or below bottom of viewport (or top of scrollbar),
-    // scroll it the minimum distance needed to be completely in view.
+    // and scrollAmountWhenFocusLineIsOutOfViewport is set to 0 (default), scroll it the minimum distance
+    // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
+    // besides of scrolling the minimum needed to be visible, it scrolls additionally
+    // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
     var win = outerWin;
     var odoc = outerWin.document;
     var distBelowTop = node.offsetTop + iframePadTop - win.scrollY;
     var distAboveBottom = win.scrollY + getInnerHeight() - (node.offsetTop + iframePadTop + node.offsetHeight);
 
-    if (distBelowTop < 0)
-    {
-      win.scrollBy(0, distBelowTop);
+    // when the selection changes outside of the viewport the browser automatically scrolls the line
+    // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
+    // So, when the line scrolled gets outside of the viewport we let the browser handle it.
+    // when a key is prevented and handled by Etherpad we lost some browser features as the automatic
+    // scroll mentioned above. So, when the key is emulated by the Etherpad we force to scroll anyway
+    if(hasSpaceToApplyExtraScrollAndKeepLineCompletelyOnViewport(node) || keyEmulatedByEtherpad){
+      if (distBelowTop < 0)
+      {
+        var pixelsToScroll = distBelowTop - getPixelsRelativeToPercentageOfViewport();
+        scrollYPage(win, pixelsToScroll);
+      }
+      else if (distAboveBottom < 0)
+      {
+        var pixelsToScroll = -distAboveBottom + getPixelsRelativeToPercentageOfViewport();
+        scrollYPage(win, pixelsToScroll);
+      }
+      keyEmulatedByEtherpad = false;
     }
-    else if (distAboveBottom < 0)
-    {
-      win.scrollBy(0, -distAboveBottom);
+  }
+
+  function hasSpaceToApplyExtraScrollAndKeepLineCompletelyOnViewport(node)
+  {
+    var viewportSize = getInnerHeight();
+    var lineHeight = node.offsetHeight;
+    var scrollPercentage = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport.percentage;
+
+    // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, the extra scroll is not applied
+    if(scrollPercentage === 0){
+      return true;
     }
+
+    // if the line height is bigger than 'scrollPercentage * viewportSize' when we make an extra scroll
+    // part line will stay out of the viewport
+    var hasSpaceToScrollAndKeepLineCompletelyOnViewport = (scrollPercentage * viewportSize) > lineHeight;
+
+    return hasSpaceToScrollAndKeepLineCompletelyOnViewport;
+  }
+
+  function scrollYPage(win, pixelsToScroll)
+  {
+    var durationOfAnimationToShowFocusline = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport.duration;
+    if(durationOfAnimationToShowFocusline){
+      scrollYPageWithAnimation(win, pixelsToScroll, durationOfAnimationToShowFocusline);
+    }else{
+      scrollYPageWithoutAnimation(win, pixelsToScroll);
+    }
+  }
+
+  function scrollYPageWithoutAnimation(win, pixelsToScroll)
+  {
+    win.scrollBy(0, pixelsToScroll);
+  }
+
+  function scrollYPageWithAnimation(win, pixelsToScroll, durationOfAnimationToShowFocusline)
+  {
+    var outerDocBody = win.document.getElementById("outerdocbody");
+
+    // it works on chrome
+    var $outerDocBody = $(outerDocBody);
+    triggerScrollWithAnimation($outerDocBody, pixelsToScroll, durationOfAnimationToShowFocusline);
+
+    // it works on firefox
+    var $outerDocBodyParent = $outerDocBody.parent();
+    triggerScrollWithAnimation($outerDocBodyParent, pixelsToScroll, durationOfAnimationToShowFocusline);
+  }
+
+  // using a custom queue and clearing it, we avoid creating a queue of scroll animations. So if this function
+  // is called twice quickly, only the last one runs.
+  function triggerScrollWithAnimation($elem, pixelsToScroll, durationOfAnimationToShowFocusline)
+  {
+    // clear the queue of animation
+    $elem.stop("scrollanimation");
+    $elem.animate({
+      scrollTop: '+=' + pixelsToScroll
+    }, {
+      duration: durationOfAnimationToShowFocusline,
+      queue: "scrollanimation"
+    }).dequeue("scrollanimation");
+  }
+
+  // By default, when user makes an edition in a line out of viewport, this line goes
+  // to the edge of viewport. This function gets the extra pixels necessary to get the
+  // caret line in a position X relative to Y% viewport.
+  function getPixelsRelativeToPercentageOfViewport()
+  {
+    var pixels = 0;
+    var scrollPercentageRelativeToViewport = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport.percentage;
+    if(scrollPercentageRelativeToViewport > 0 && scrollPercentageRelativeToViewport <= 1){
+      pixels = parseInt(getInnerHeight() * scrollPercentageRelativeToViewport);
+    }
+    return pixels;
   }
 
   function scrollXHorizontallyIntoView(pixelX)
