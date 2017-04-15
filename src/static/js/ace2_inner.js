@@ -193,7 +193,17 @@ function Ace2Inner(){
         {
           setDocumentAttributedText: function(atext)
           {
-            setDocAText(atext);
+            try{
+              setDocAText(atext);
+            }catch(err){
+              var padId = top.pad.getPadId();
+              var errMsg = "Pad data wont load for pad: " +padId;
+              top.console.error(errMsg);
+              var error = {
+                errorInfo: errMsg
+              }
+              $.post('/jserror', error);
+            }
           },
           applyChangesetToDocument: function(changeset, preferInsertionAfterCaret)
           {
