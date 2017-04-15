@@ -14,4 +14,4 @@ module.exports = function (req, res, callback) {
       res.status(403).send("403 - Can't touch this");
     }
   });
-}
+};
