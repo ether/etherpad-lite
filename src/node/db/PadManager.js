@@ -39,6 +39,7 @@ var globalPads = {
     set: function (name, value) 
     {
       this[':'+name] = value;
+      padList.addPad(name);
     },
     remove: function (name) {
       delete this[':'+name];
