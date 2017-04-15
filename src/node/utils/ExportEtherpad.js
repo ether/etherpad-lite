@@ -20,6 +20,8 @@ var db = require("../db/DB").db;
 var ERR = require("async-stacktrace");
 
 exports.getPadRaw = function(padId, callback){
+
+  padId=padId.replace('*','')
   async.waterfall([
   function(cb){
 
