@@ -21,7 +21,7 @@ var ERR = require("async-stacktrace");
 
 exports.getPadRaw = function(padId, callback){
 
-  padId=padId.replace('*','')
+  padId=padId.replace(/[\*%]/g,'')
   async.waterfall([
   function(cb){
 
