@@ -936,7 +936,7 @@ function handleSwitchToPad(client, message)
   var currentSession = sessioninfos[client.id];
   var padId = currentSession.padId;
   var roomClients = _getRoomClients(padId);
-  
+
   async.forEach(roomClients, function(client, callback) {
     var sinfo = sessioninfos[client.id];
     if(sinfo && sinfo.author == currentSession.author) {
@@ -1115,7 +1115,7 @@ function handleClientReady(client, message)
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
       var roomClients = _getRoomClients(pad.id);
-      
+
       async.forEach(roomClients, function(client, callback) {
         var sinfo = sessioninfos[client.id];
         if(sinfo && sinfo.author == author) {
@@ -1214,6 +1214,10 @@ function handleClientReady(client, message)
             "parts": plugins.parts,
           },
           "indentationOnNewLine": settings.indentationOnNewLine,
+          "scrollWhenFocusLineIsOutOfViewport": {
+            "percentage": settings.scrollWhenFocusLineIsOutOfViewport.percentage,
+            "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
+          },
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
 
@@ -1676,13 +1680,13 @@ function composePadChangesets(padId, startNum, endNum, callback)
 
 function _getRoomClients(padID) {
   var roomClients = []; var room = socketio.sockets.adapter.rooms[padID];
-  
+
   if (room) {
     for (var id in room.sockets) {
       roomClients.push(socketio.sockets.sockets[id]);
     }
   }
-  
+
   return roomClients;
 }
 

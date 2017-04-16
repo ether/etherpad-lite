@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 var _, $, jQuery, plugins, Ace2Common;
-
 var browser = require('./browser');
 if(browser.msie){
   // Honestly fuck IE royally.
@@ -5210,7 +5209,10 @@ function Ace2Inner(){
   {
     // requires element (non-text) node;
     // if node extends above top of viewport or below bottom of viewport (or top of scrollbar),
-    // scroll it the minimum distance needed to be completely in view.
+    // and scrollAmountWhenFocusLineIsOutOfViewport is set to 0 (default), scroll it the minimum distance
+    // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
+    // besides of scrolling the minimum needed to be visible, it scrolls additionally
+    // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
     var win = outerWin;
     var odoc = outerWin.document;
     var distBelowTop = node.offsetTop + iframePadTop - win.scrollY;
@@ -5218,12 +5220,50 @@ function Ace2Inner(){
 
     if (distBelowTop < 0)
     {
-      win.scrollBy(0, distBelowTop);
+      var pixelsToScroll   = distBelowTop - getPixelsRelativeToPercentageOfViewport(node);
+      scrollYPage(win, pixelsToScroll);
     }
     else if (distAboveBottom < 0)
     {
-      win.scrollBy(0, -distAboveBottom);
+      var pixelsToScroll = -distAboveBottom + getPixelsRelativeToPercentageOfViewport(node);
+      scrollYPage(win, pixelsToScroll);
     }
+  }
+
+  function scrollYPage(win, pixelsToScroll)
+  {
+    var durationOfAnimationToShowFocusline = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport.duration;
+    if(durationOfAnimationToShowFocusline){
+      scrollYPageWithAnimation(win, pixelsToScroll, durationOfAnimationToShowFocusline);
+    }else{
+      scrollYPageWithoutAnimation(win, pixelsToScroll);
+    }
+  }
+
+  function scrollYPageWithoutAnimation(win, pixelsToScroll)
+  {
+    win.scrollBy(0, pixelsToScroll);
+  }
+
+  function scrollYPageWithAnimation(win, pixelsToScroll, durationOfAnimationToShowFocusline)
+  {
+    var outerDocBody = win.document.getElementById("outerdocbody");
+    $(outerDocBody).animate({
+      scrollTop: '+=' + pixelsToScroll
+    }, durationOfAnimationToShowFocusline);
+  }
+
+  // By default, when user makes an edition in a line out of viewport, this line goes
+  // to the edge of viewport. This function gets the extra pixels necessary to get the
+  // caret line in a position X relative to Y% viewport.
+  function getPixelsRelativeToPercentageOfViewport(node)
+  {
+    var pixels = 0;
+    var scrollPercentageRelativeToViewport = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport.percentage;
+    if(scrollPercentageRelativeToViewport > 0 && scrollPercentageRelativeToViewport <= 1){
+      pixels = ( getInnerHeight() * scrollPercentageRelativeToViewport ) - node.offsetHeight;
+    }
+    return pixels;
   }
 
   function scrollXHorizontallyIntoView(pixelX)
