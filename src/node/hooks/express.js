@@ -54,6 +54,23 @@ exports.restartServer = function () {
       }
     }
     
+    if (settings.ssl.ca) {
+      var ca = [];
+      var chain = fs.readFileSync(settings.ssl.ca, 'utf8');
+      chain = chain.split("\n");
+      var cert = [];
+      for (_i = 0, _len = chain.length; _i < _len; _i++) {
+        line = chain[_i];
+        if (!(line.length !== 0)) continue;
+        cert.push(line);
+        if (line.match(/-END CERTIFICATE-/)) {
+          ca.push(cert.join("\n"));
+          cert = [];
+        }
+      }
+      options.ca = ca;
+    }
+    
     var https = require('https');
     server = https.createServer(options, app);
 
