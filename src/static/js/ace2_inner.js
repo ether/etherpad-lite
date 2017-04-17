@@ -2924,18 +2924,22 @@ function Ace2Inner(){
       // the viewport, but it is not in the bottom of the viewport, so it should not scroll.
       // This case only happens when it has a plugin of pagination, like ep_page_view
       var edgeLinesVisibleOnViewport = getVisibleLineRange();
-      var lastLineCompletelyVisibleOfViewport = edgeLinesVisibleOnViewport[1];
+      var lastLineVisibleOfViewport = edgeLinesVisibleOnViewport[1];
 
-      // it is possible a line is partially visible and user places the caret in this line
-      var caretIsInThelastLineVisibleOfViewport = rep.selEnd[0] === lastLineCompletelyVisibleOfViewport;
-      var caretIsInThelastLinePartiallyVisibleOfViewport = rep.selEnd[0] === lastLineCompletelyVisibleOfViewport + 1;
-      var caretIsInTheLastLineOfViewport = caretIsInThelastLineVisibleOfViewport || caretIsInThelastLinePartiallyVisibleOfViewport;
-      var linesOfPad = rep.lines.length();
-      var lastLineVisibleIsInTheBottomOfViewport = linesOfPad > lastLineCompletelyVisibleOfViewport + 1;
+      // it is possible that the last line visible is partially visible and user places
+      // the caret at the line before of this line
+      var caretIsInThelastLineVisibleOfViewport = rep.selEnd[0] === lastLineVisibleOfViewport;
+      var caretIsInThelastButOneLineVisibleOfViewport = rep.selEnd[0] === lastLineVisibleOfViewport - 1;
+      var caretIsInTheLastLineOfViewport = caretIsInThelastLineVisibleOfViewport || caretIsInThelastButOneLineVisibleOfViewport;
+
+      // avoid scrolling when caret is at the last line of the pad but this line is not in the bottom
+      // of the pad. E.g. when pad has only one line and caret is on that line.
+      var lastLineIsBelowOfTheBottomOfViewport = lastLineOfPadIsBelowOfViewportBottom(rep);
 
       // avoid scrolling to the end of pad, when user press shortcut to select all (Cmd + A)
-      var hasSelection =  rep.selStart[0] !== rep.selEnd[0];
-      if(caretIsInTheLastLineOfViewport && lastLineVisibleIsInTheBottomOfViewport && !hasSelection)
+      var hasSelection = rep.selStart[0] !== rep.selEnd[0];
+
+      if(caretIsInTheLastLineOfViewport && lastLineIsBelowOfTheBottomOfViewport && !hasSelection)
       {
 
         var win = outerWin;
@@ -2951,6 +2955,16 @@ function Ace2Inner(){
     }
     return false;
     //console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
+  }
+
+  function lastLineOfPadIsBelowOfViewportBottom(rep){
+    var lastLineNumber = rep.lines.length() - 1;
+    var lastLine = rep.lines.atIndex(lastLineNumber);
+    var lastLinePosition = getLineEntryTopBottom(lastLine);
+    var viewportHeight = getInnerHeight() - getEditorPositionTop();
+    var lastLineIsBelowOfTheBottomOfViewport = lastLinePosition.bottom > viewportHeight;
+
+    return lastLineIsBelowOfTheBottomOfViewport;
   }
 
   function doCreateDomLine(nonEmpty)
@@ -3327,19 +3341,19 @@ function Ace2Inner(){
 
     // we have to get the exactly height of the viewport. So it has to subtract all the values which changes
     // the viewport height (E.g. padding, position top)
-    var viewportExtraSpacesAndPosition = getEditorContainerPositionTop() + getPaddingTopAddedWhenPageViewIsEnable();
+    var viewportExtraSpacesAndPosition = getEditorPositionTop() + getPaddingTopAddedWhenPageViewIsEnable();
     return {
       top: theTop,
       bottom: (theTop + height - viewportExtraSpacesAndPosition)
     };
   }
 
-  function getEditorContainerPositionTop()
+
+  function getEditorPositionTop()
   {
-    var rootDocument = parent.parent.document;
-    var editorContainer = rootDocument.getElementById("editorcontainer");
-    var editorContainerPositionTop = parseInt($(editorContainer).css("top"));
-    return editorContainerPositionTop;
+    var editor = parent.document.getElementsByTagName('iframe');
+    var editorPositionTop = editor[0].offsetTop;
+    return editorPositionTop;
   }
 
   // ep_page_view adds padding-top, which makes the viewport smaller
@@ -3362,11 +3376,14 @@ function Ace2Inner(){
     });
     var end = rep.lines.search(function(e)
     {
-      return getLineEntryTopBottom(e, obj).top > viewport.bottom;
+      // return the first line that the top position is greater or equal than
+      // the viewport. That is the first line that is below the viewport bottom.
+      // So the line that is in the bottom of the viewport is the very previous one.
+      return getLineEntryTopBottom(e, obj).top >= viewport.bottom;
     });
     if (end < start) end = start; // unlikely
-    // top.console.log(start+","+end);
-    return [start, end];
+    // top.console.log(start+","+(end -1));
+    return [start, end - 1];
   }
 
   function getVisibleCharRange()
