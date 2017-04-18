@@ -74,6 +74,8 @@
   "pad.modals.connected": "Connected.",
   "pad.modals.reconnecting": "Reconnecting to your pad..",
   "pad.modals.forcereconnect": "Force reconnect",
+  "pad.modals.reconnecttimer": "Trying to reconnect in ",
+  "pad.modals.cancel": "Cancel",
 
   "pad.modals.userdup": "Opened in another window",
   "pad.modals.userdup.explanation": "This pad seems to be opened in more than one browser window on this computer.",
