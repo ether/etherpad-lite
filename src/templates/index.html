@@ -177,6 +177,7 @@
             function go2Name()
             {
                 var padname = document.getElementById("padname").value;
+                padname = encodeURIComponent(padname);
                 padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
             }
 
