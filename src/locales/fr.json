@@ -138,7 +138,7 @@
 	"pad.userlist.guest": "Invité",
 	"pad.userlist.deny": "Refuser",
 	"pad.userlist.approve": "Approuver",
-	"pad.editbar.clearcolors": "Effacer les couleurs de paternité des auteurs dans tout le document ?",
+	"pad.editbar.clearcolors": "Effacer les couleurs de paternité des auteurs dans tout le document ?\n\nVoulez-vous *vraiment* effacer les couleurs de paternité des auteurs dans tout le document ?\nCette action est irréversible et affectera **tous** les utilisateurs du pad.\nAutrement, vous pouvez simplement cacher les couleurs en décochant « Couleurs d'identification » dans vos préférences (le bouton engrenage en haut à droite).",
 	"pad.impexp.importbutton": "Importer maintenant",
 	"pad.impexp.importing": "Import en cours...",
 	"pad.impexp.confirmimport": "Importer un fichier écrasera le contenu actuel du pad. Êtes-vous sûr de vouloir le faire ?",
