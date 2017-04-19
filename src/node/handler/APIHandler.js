@@ -495,10 +495,62 @@ var version =
   , "restoreRevision"           : ["padID", "rev"]
   , "appendText"                : ["padID", "text"]
   }
+  ,"1.2.14":
+{ "createGroup"               : []
+  , "createGroupIfNotExistsFor" : ["groupMapper"]
+  , "deleteGroup"               : ["groupID"]
+  , "listPads"                  : ["groupID"]
+  , "listAllPads"               : []
+  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
+  , "createPad"                 : ["padID", "text"]
+  , "createGroupPad"            : ["groupID", "padName", "text"]
+  , "createAuthor"              : ["name"]
+  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
+  , "listPadsOfAuthor"          : ["authorID"]
+  , "createSession"             : ["groupID", "authorID", "validUntil"]
+  , "deleteSession"             : ["sessionID"]
+  , "getSessionInfo"            : ["sessionID"]
+  , "listSessionsOfGroup"       : ["groupID"]
+  , "listSessionsOfAuthor"      : ["authorID"]
+  , "getText"                   : ["padID", "rev"]
+  , "setText"                   : ["padID", "text"]
+  , "getHTML"                   : ["padID", "rev"]
+  , "setHTML"                   : ["padID", "html"]
+  , "getAttributePool"          : ["padID"]
+  , "getRevisionsCount"         : ["padID"]
+  , "getSavedRevisionsCount"    : ["padID"]
+  , "listSavedRevisions"        : ["padID"]
+  , "saveRevision"              : ["padID", "rev"]
+  , "getRevisionChangeset"      : ["padID", "rev"]
+  , "getLastEdited"             : ["padID"]
+  , "deletePad"                 : ["padID"]
+  , "copyPad"                   : ["sourceID", "destinationID", "force"]
+  , "movePad"                   : ["sourceID", "destinationID", "force"]
+  , "getReadOnlyID"             : ["padID"]
+  , "getPadID"                  : ["roID"]
+  , "setPublicStatus"           : ["padID", "publicStatus"]
+  , "getPublicStatus"           : ["padID"]
+  , "setPassword"               : ["padID", "password"]
+  , "isPasswordProtected"       : ["padID"]
+  , "listAuthorsOfPad"          : ["padID"]
+  , "padUsersCount"             : ["padID"]
+  , "getAuthorName"             : ["authorID"]
+  , "padUsers"                  : ["padID"]
+  , "sendClientsMessage"        : ["padID", "msg"]
+  , "listAllGroups"             : []
+  , "checkToken"                : []
+  , "appendChatMessage"         : ["padID", "text", "authorID", "time"]
+  , "getChatHistory"            : ["padID"]
+  , "getChatHistory"            : ["padID", "start", "end"]
+  , "getChatHead"               : ["padID"]
+  , "restoreRevision"           : ["padID", "rev"]
+  , "appendText"                : ["padID", "text"]
+    , "getPadComments"          : ["padID"]
+}
 };
 
 // set the latest available API version here
-exports.latestApiVersion = '1.2.13';
+exports.latestApiVersion = '1.2.14';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
@@ -542,7 +594,7 @@ exports.handle = function(apiVersion, functionName, fields, req, res)
     }
   }
 
-  //say goodbye if this is a unkown function
+  //say goodbye if this is a unknown function
   if(!isKnownFunctionname)
   {
     res.send({code: 3, message: "no such function", data: null});
@@ -605,6 +657,11 @@ function callAPI(apiVersion, functionName, fields, req, res)
     else if(err.name == "apierror")
     {
       res.send({code: 1, message: err.message, data: null});
+    }
+    // user trying to make an api call that requires a plugin
+    else if(err.name == "pluginerror")
+    {
+      res.send({code: 3, message: err.message, data: null});
     }
     //an unkown error happend
     else
