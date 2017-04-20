@@ -6,7 +6,8 @@
 			"R-Joe",
 			"Tgr",
 			"Csega",
-			"BanKris"
+			"BanKris",
+			"Notramo"
 		]
 	},
 	"index.newPad": "Új notesz",
@@ -61,6 +62,8 @@
 	"pad.modals.connected": "Kapcsolódva.",
 	"pad.modals.reconnecting": "Újrakapcsolódás a noteszhez...",
 	"pad.modals.forcereconnect": "Újrakapcsolódás kényszerítése",
+	"pad.modals.reconnecttimer": "Megpróbálok újracsatlakozni ennyi múlva:",
+	"pad.modals.cancel": "Mégse",
 	"pad.modals.userdup": "Új ablakban megnyitva",
 	"pad.modals.userdup.explanation": "Úgy tűnik, ez a notesz több különböző böngészőablakban is meg van nyitva a számítógépeden.",
 	"pad.modals.userdup.advice": "Kapcsolódj újra, ha ezt az ablakot akarod használni.",

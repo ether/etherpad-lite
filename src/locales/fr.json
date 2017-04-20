@@ -78,6 +78,8 @@
 	"pad.modals.connected": "Connecté.",
 	"pad.modals.reconnecting": "Reconnexion vers votre pad...",
 	"pad.modals.forcereconnect": "Forcer la reconnexion",
+	"pad.modals.reconnecttimer": "Essai de reconnexion",
+	"pad.modals.cancel": "Annuler",
 	"pad.modals.userdup": "Ouvert dans une autre fenêtre",
 	"pad.modals.userdup.explanation": "Ce pad semble être ouvert dans plusieurs fenêtres sur cet ordinateur.",
 	"pad.modals.userdup.advice": "Se reconnecter en utilisant cette fenêtre.",

@@ -61,6 +61,8 @@
 	"pad.modals.connected": "연결했습니다.",
 	"pad.modals.reconnecting": "패드에 다시 연결 중..",
 	"pad.modals.forcereconnect": "강제로 다시 연결",
+	"pad.modals.reconnecttimer": "다시 접속 시도 중",
+	"pad.modals.cancel": "취소",
 	"pad.modals.userdup": "다른 창에서 열리고 있습니다",
 	"pad.modals.userdup.explanation": "이 패드는 이 컴퓨터에 하나보다 많이 브라우저 창에서 열린 것 같습니다.",
 	"pad.modals.userdup.advice": "대신 이 창을 사용해 다시 연결합니다.",
