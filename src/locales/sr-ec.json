@@ -4,7 +4,8 @@
 			"Aktron",
 			"Milicevic01",
 			"Милан Јелисавчић",
-			"Srdjan m"
+			"Srdjan m",
+			"Obsuser"
 		]
 	},
 	"index.newPad": "Нови Пад",
@@ -59,6 +60,8 @@
 	"pad.modals.connected": "Повезано.",
 	"pad.modals.reconnecting": "Поново се повезујем на ваш пад..",
 	"pad.modals.forcereconnect": "Присилно се поново повежи",
+	"pad.modals.reconnecttimer": "Покушавам се поново повезати",
+	"pad.modals.cancel": "Откажи",
 	"pad.modals.userdup": "Отворено у другом прозору",
 	"pad.modals.userdup.explanation": "Изгледа да је овај пад отворен у два или више прозора на овом рачунару.",
 	"pad.modals.userdup.advice": "Поново се повежите на овој прозор.",

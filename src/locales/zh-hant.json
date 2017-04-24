@@ -63,6 +63,8 @@
 	"pad.modals.connected": "已連線。",
 	"pad.modals.reconnecting": "重新連接到您的pad...",
 	"pad.modals.forcereconnect": "強制重新連線",
+	"pad.modals.reconnecttimer": "嘗試重新連接在",
+	"pad.modals.cancel": "取消",
 	"pad.modals.userdup": "在另一個視窗中開啟",
 	"pad.modals.userdup.explanation": "此pad似乎在此電腦上的多個瀏覽器視窗中開啟。",
 	"pad.modals.userdup.advice": "重新連接到此視窗。",
