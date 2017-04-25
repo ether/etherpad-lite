@@ -2928,18 +2928,21 @@ function Ace2Inner(){
 
       // it is possible that the last line visible is partially visible and user places
       // the caret at the line before of this line
-      var caretIsInThelastLineVisibleOfViewport = rep.selEnd[0] === lastLineVisibleOfViewport;
+      var caretIsInThelastLineVisibleOfViewport = rep.selEnd[0] >= lastLineVisibleOfViewport;
       var caretIsInThelastButOneLineVisibleOfViewport = rep.selEnd[0] === lastLineVisibleOfViewport - 1;
       var caretIsInTheLastLineOfViewport = caretIsInThelastLineVisibleOfViewport || caretIsInThelastButOneLineVisibleOfViewport;
 
       // avoid scrolling when caret is at the last line of the pad but this line is not in the bottom
-      // of the pad. E.g. when pad has only one line and caret is on that line.
-      var lastLineIsBelowOfTheBottomOfViewport = lastLineOfPadIsBelowOfViewportBottom(rep);
+      // of the pad. E.g. when a pad has only one line and the caret is on that line. Other scenario is when
+      // a pad has a min-height applied and the last line is above of the viewport and in a position above the
+      // min-height. In this case, it has space to scroll but it should not scroll because it scrolls only
+      // when a line is in the bottom of the viewport
+      var caretLineIsInTheBottomOfTheViewport = isCaretLineInTheBottomOfTheViewport(rep);
 
       // avoid scrolling to the end of pad, when user press shortcut to select all (Cmd + A)
       var hasSelection = rep.selStart[0] !== rep.selEnd[0];
 
-      if(caretIsInTheLastLineOfViewport && lastLineIsBelowOfTheBottomOfViewport && !hasSelection)
+      if(caretIsInTheLastLineOfViewport && caretLineIsInTheBottomOfTheViewport && !hasSelection)
       {
 
         var win = outerWin;
@@ -2957,14 +2960,29 @@ function Ace2Inner(){
     //console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
   }
 
-  function lastLineOfPadIsBelowOfViewportBottom(rep){
+  function isCaretLineInTheBottomOfTheViewport (rep) {
+    var caretlineIsInTheBottomOfViewport = false;
     var lastLineNumber = rep.lines.length() - 1;
-    var lastLine = rep.lines.atIndex(lastLineNumber);
-    var lastLinePosition = getLineEntryTopBottom(lastLine);
-    var viewportHeight = getInnerHeight() - getEditorPositionTop();
-    var lastLineIsBelowOfTheBottomOfViewport = lastLinePosition.bottom > viewportHeight;
+    var caretLine = rep.selStart[0];
+    var lineAfterCaretLine = caretLine + 1;
+    if(lineAfterCaretLine < lastLineNumber) { // caret line is before the last line of the pad
+      var lineAfterCaretLineIsBelowOfViewport =  distanceToBottomOfViewport(rep, lineAfterCaretLine) < 0;
+      caretlineIsInTheBottomOfViewport = lineAfterCaretLineIsBelowOfViewport;
+    }else{ // caret line is the last line of the pad
+      var lastLineNodeHeight = rep.lines.atIndex(caretLine).lineNode.offsetHeight;
+      var distanceOfCaretLineToBottom = distanceToBottomOfViewport(rep, caretLine);
+      caretlineIsInTheBottomOfViewport = lastLineNodeHeight > distanceOfCaretLineToBottom;
+    }
 
-    return lastLineIsBelowOfTheBottomOfViewport;
+    return caretlineIsInTheBottomOfViewport;
+  }
+
+  // negative values means the line is below of the viewport bottom
+  function distanceToBottomOfViewport (rep, line) {
+    var node = rep.lines.atIndex(line).lineNode;
+    var win = outerWin;
+    var distanceToBottomOfViewport = getViewPortTopBottom().bottom - (node.offsetTop + iframePadTop + node.offsetHeight);
+    return distanceToBottomOfViewport;
   }
 
   function doCreateDomLine(nonEmpty)
