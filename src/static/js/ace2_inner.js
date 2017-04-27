@@ -2942,7 +2942,10 @@ function Ace2Inner(){
       // avoid scrolling to the end of pad, when user press shortcut to select all (Cmd + A)
       var hasSelection = rep.selStart[0] !== rep.selEnd[0];
 
-      if(caretIsInTheLastLineOfViewport && caretLineIsInTheBottomOfTheViewport && !hasSelection)
+      // avoid scrolling when pad loads
+      var isPadLoading = currentCallStack.type === "setBaseText";
+
+      if(caretIsInTheLastLineOfViewport && caretLineIsInTheBottomOfTheViewport && !hasSelection && !isPadLoading)
       {
 
         var win = outerWin;
