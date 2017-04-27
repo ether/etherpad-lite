@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Shirayuki",
-			"Torinky"
+			"Torinky",
+			"Omotecho"
 		]
 	},
 	"index.newPad": "新規作成",
@@ -57,6 +58,8 @@
 	"pad.modals.connected": "接続されました。",
 	"pad.modals.reconnecting": "パッドに再接続中...",
 	"pad.modals.forcereconnect": "強制的に再接続",
+	"pad.modals.reconnecttimer": "再接続を試行中",
+	"pad.modals.cancel": "中止",
 	"pad.modals.userdup": "別のウィンドウで開かれています",
 	"pad.modals.userdup.explanation": "このコンピューターの複数のブラウザーウィンドウで、このパッドを開いているようです。",
 	"pad.modals.userdup.advice": "代わりにこのウィンドウを再接続します。",

@@ -12,7 +12,8 @@
 			"Xuacu",
 			"Macofe",
 			"Fitoschido",
-			"Dgstranz"
+			"Dgstranz",
+			"Luzcaru"
 		]
 	},
 	"index.newPad": "Nuevo pad",
@@ -67,7 +68,7 @@
 	"pad.modals.connected": "Conectado.",
 	"pad.modals.reconnecting": "Reconectando a tu pad..",
 	"pad.modals.forcereconnect": "Forzar reconexión",
-	"pad.modals.reconnecttimer": "Se intentará reconectar en",
+	"pad.modals.reconnecttimer": "Tratando de reconectar en",
 	"pad.modals.cancel": "Cancelar",
 	"pad.modals.userdup": "Abierto en otra ventana",
 	"pad.modals.userdup.explanation": "Este pad parece estar abierto en más de una ventana de tu navegador.",
