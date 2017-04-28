@@ -1279,11 +1279,11 @@ input[type=checkbox] {
 
 @font-face {
   font-family: "fontawesome-etherpad";
-  src:url("../../static/font/fontawesome-etherpad.eot");
-  src:url("../../static/font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
-    url("../../static/font/fontawesome-etherpad.woff") format("woff"),
-    url("../../static/font/fontawesome-etherpad.ttf") format("truetype"),
-    url("../../static/font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
+  src:url("../../../static/font/fontawesome-etherpad.eot");
+  src:url("../../../static/font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
+    url("../../../static/font/fontawesome-etherpad.woff") format("woff"),
+    url("../../../static/font/fontawesome-etherpad.ttf") format("truetype"),
+    url("../../../static/font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
   font-weight: normal;
   font-style: normal;
 
