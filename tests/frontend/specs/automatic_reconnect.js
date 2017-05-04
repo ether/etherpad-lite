@@ -33,19 +33,6 @@ describe('Automatic pad reload on Force Reconnect message', function() {
     done();
   });
 
-  it('disables editor', function(done) {
-    var editorDocument = helper.padOuter$("iframe[name='ace_inner']").get(0).contentDocument;
-    var editorBody     = editorDocument.getElementById('innerdocbody');
-
-    var editorIsEditable = editorBody.contentEditable === 'false' // IE/Safari
-                        || editorDocument.designMode === 'off'; // other browsers
-
-    expect(editorIsEditable).to.be(true);
-
-    done();
-  });
-
-
   context('and user clicks on Cancel', function() {
     beforeEach(function() {
       var $errorMessageModal = helper.padChrome$('#connectivity .userdup');
