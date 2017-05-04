@@ -1,64 +1,135 @@
 describe('Pad modal', function() {
-  var padId, $originalPadFrame;
+  context('when modal is a "force reconnect" message', function() {
+    var MODAL_SELECTOR = '#connectivity .userdup';
 
-  beforeEach(function(done) {
-    padId = helper.newPad(function() {
-      // open same pad on another iframe, to force userdup error
-      var $otherIframeWithSamePad = $('<iframe src="/p/' + padId + '" style="height: 1px;"></iframe>');
-      $originalPadFrame = $('#iframe-container iframe');
-      $otherIframeWithSamePad.insertAfter($originalPadFrame);
+    var padId, $originalPadFrame;
 
-      // wait for modal to be displayed
-      var $errorMessageModal = helper.padChrome$('#connectivity .userdup');
-      helper.waitFor(function() {
-        return $errorMessageModal.is(':visible');
-      }, 50000).done(done);
+    beforeEach(function(done) {
+      padId = helper.newPad(function() {
+        // open same pad on another iframe, to force userdup error
+        var $otherIframeWithSamePad = $('<iframe src="/p/' + padId + '" style="height: 1px;"></iframe>');
+        $originalPadFrame = $('#iframe-container iframe');
+        $otherIframeWithSamePad.insertAfter($originalPadFrame);
+
+        // wait for modal to be displayed
+        var $modal = helper.padChrome$(MODAL_SELECTOR);
+        helper.waitFor(function() {
+          return $modal.is(':visible');
+        }, 50000).done(done);
+      });
+
+      this.timeout(60000);
     });
 
-    this.timeout(60000);
+    it('disables editor', function(done) {
+      expect(isEditorDisabled()).to.be(true);
+
+      done();
+    });
+
+    context('and user clicks on editor', function() {
+      beforeEach(function() {
+        clickOnPadInner();
+      });
+
+      it('does not close the modal', function(done) {
+        var $modal = helper.padChrome$(MODAL_SELECTOR);
+        var modalIsVisible = $modal.is(':visible');
+
+        expect(modalIsVisible).to.be(true);
+
+        done();
+      });
+    });
+
+    context('and user clicks on pad outer', function() {
+      beforeEach(function() {
+        clickOnPadOuter();
+      });
+
+      it('does not close the modal', function(done) {
+        var $modal = helper.padChrome$(MODAL_SELECTOR);
+        var modalIsVisible = $modal.is(':visible');
+
+        expect(modalIsVisible).to.be(true);
+
+        done();
+      });
+    });
   });
 
-  it('disables editor', function(done) {
+  // we use "settings" here, but other modals have the same behaviour
+  context('when modal is not an error message', function() {
+    var MODAL_SELECTOR = '#settings';
+
+    beforeEach(function(done) {
+      helper.newPad(function() {
+        openSettingsAndWaitForModalToBeVisible(done);
+      });
+
+      this.timeout(60000);
+    });
+
+    it('does not disable editor', function(done) {
+      expect(isEditorDisabled()).to.be(false);
+      done();
+    });
+
+    context('and user clicks on editor', function() {
+      beforeEach(function() {
+        clickOnPadInner();
+      });
+
+      it('closes the modal', function(done) {
+        expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
+        done();
+      });
+    });
+
+    context('and user clicks on pad outer', function() {
+      beforeEach(function() {
+        clickOnPadOuter();
+      });
+
+      it('closes the modal', function(done) {
+        expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
+        done();
+      });
+    });
+  });
+
+  var clickOnPadInner = function() {
+    var $editor = helper.padInner$('#innerdocbody');
+    $editor.click();
+  }
+
+  var clickOnPadOuter = function() {
+    var $lineNumbersColumn = helper.padOuter$('#sidedivinner');
+    $lineNumbersColumn.click();
+  }
+
+  var openSettingsAndWaitForModalToBeVisible = function(done) {
+    helper.padChrome$('.buttonicon-settings').click();
+
+    // wait for modal to be displayed
+    var modalSelector = '#settings';
+    helper.waitFor(function() {
+      return isModalOpened(modalSelector);
+    }, 10000).done(done);
+  }
+
+  var isEditorDisabled = function() {
     var editorDocument = helper.padOuter$("iframe[name='ace_inner']").get(0).contentDocument;
     var editorBody     = editorDocument.getElementById('innerdocbody');
 
-    var editorIsEditable = editorBody.contentEditable === 'false' // IE/Safari
+    var editorIsDisabled = editorBody.contentEditable === 'false' // IE/Safari
                         || editorDocument.designMode === 'off'; // other browsers
 
-    expect(editorIsEditable).to.be(true);
+    return editorIsDisabled;
+  }
 
-    done();
-  });
-
-  context('and user clicks on editor', function() {
-    beforeEach(function() {
-      var $editor = helper.padInner$('#innerdocbody');
-      $editor.click();
-    });
-
-    it('closes the modal', function(done) {
-      var $errorMessageModal = helper.padChrome$('#connectivity .userdup');
-      var modalIsVisible = $errorMessageModal.is(':visible');
-
-      expect(modalIsVisible).to.be(false);
-
-      done();
-    });
-  });
-
-  context('and user clicks on pad outer', function() {
-    beforeEach(function() {
-      var $lineNumbersColumn = helper.padOuter$('#sidedivinner');
-      $lineNumbersColumn.click();
-    });
-
-    it('closes the modal', function(done) {
-      var $errorMessageModal = helper.padChrome$('#connectivity .userdup');
-      var modalIsVisible = $errorMessageModal.is(':visible');
-
-      expect(modalIsVisible).to.be(false);
-
-      done();
-    });
-  });
+  var isModalOpened = function(modalSelector) {
+    var $modal = helper.padChrome$(modalSelector);
+    return $modal.is(':visible');
+  }
 });
