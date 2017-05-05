@@ -124,6 +124,9 @@ var padcookie = (function()
     {
       return wasNoCookie;
     },
+    isCookiesEnabled: function() {
+      return !!getRawCookie();
+    },
     getPref: function(prefName)
     {
       return cookieData[prefName];
