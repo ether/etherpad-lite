@@ -464,10 +464,6 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
   }
   else force = true;
 
-  //kick everyone from this pad
-  // TODO: this presents a message on the client saying that the pad was 'deleted'. Fix this?
-  padMessageHandler.kickSessionsFromPad(sourceID);
-
   // flush the source pad:
   _this.saveToDatabase();
 
