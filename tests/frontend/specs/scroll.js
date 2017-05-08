@@ -93,7 +93,7 @@ describe('scroll when focus line is out of viewport', function () {
         // make sure the last line on viewport is the 10th one
         scrollEditorToTopOfPad();
         placeCaretAtTheEndOfLine(lastLineOfViewportBeforeEnter);
-        pressEnter();
+        pressBackspace();
       });
 
       it('scrolls 30% of viewport up', function (done) {
@@ -217,7 +217,7 @@ describe('scroll when focus line is out of viewport', function () {
 
   // This is a special case. When user is selecting a text with arrow down or arrow left we have
   // to keep the last line selected on focus
-  context('when the first line selected is out of the viewport and user presses shift + arrow down', function(){
+  context('when the first line selected is out of the viewport and user presses shift arrow down', function(){
     var lastLineOfPad = 99;
     before(function (done) {
       scrollEditorToTopOfPad();
@@ -335,7 +335,7 @@ describe('scroll when focus line is out of viewport', function () {
   var BOTTOM_OF_PAGE = 5000; // we use a big value to force the page to be scrolled all the way down
   var LINES_OF_PAD = 100;
   var ENTER = 13;
-  var BACKSPACE = 9;
+  var BACKSPACE = 8;
   var LEFT_ARROW = 37;
   var RIGHT_ARROW = 39;
   var LINES_ON_VIEWPORT = 10;

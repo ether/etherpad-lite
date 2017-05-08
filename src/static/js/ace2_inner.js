@@ -60,6 +60,7 @@ function Ace2Inner(){
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
+  var caretPosition = require('/caretPosition');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
@@ -2928,6 +2929,8 @@ function Ace2Inner(){
 
       // it is possible that the last line visible is partially visible and user places
       // the caret at the line before of this line
+
+
       var caretIsInThelastLineVisibleOfViewport = rep.selEnd[0] >= lastLineVisibleOfViewport;
       var caretIsInThelastButOneLineVisibleOfViewport = rep.selEnd[0] === lastLineVisibleOfViewport - 1;
       var caretIsInTheLastLineOfViewport = caretIsInThelastLineVisibleOfViewport || caretIsInThelastButOneLineVisibleOfViewport;
@@ -2943,11 +2946,10 @@ function Ace2Inner(){
       var hasSelection = rep.selStart[0] !== rep.selEnd[0];
 
       // avoid scrolling when pad loads
-      var isPadLoading = currentCallStack.type === "setBaseText";
+      var isPadLoading = (currentCallStack.type === "setBaseText") || (currentCallStack.type === "importText");
 
-      if(caretIsInTheLastLineOfViewport && caretLineIsInTheBottomOfTheViewport && !hasSelection && !isPadLoading)
+      if(!isPadLoading && !hasSelection && isCaretInTheLastLineOfViewport())
       {
-
         var win = outerWin;
 
         // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
@@ -2961,6 +2963,17 @@ function Ace2Inner(){
     }
     return false;
     //console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
+  }
+
+  function isCaretInTheLastLineOfViewport()
+  {
+    var linePosition = caretPosition.getCaretLinePosition();
+    var viewportBottom = getViewPortTopBottom().bottom;
+
+    // TODO make it better. Maybe this is Achiles heel. We use the current line height
+    // this can go wrong if the next line has a lower height
+    var nextLineBottom = linePosition.bottom + linePosition.height;
+    return nextLineBottom > viewportBottom;
   }
 
   function isCaretLineInTheBottomOfTheViewport (rep) {
@@ -4125,9 +4138,7 @@ function Ace2Inner(){
             var selection = getSelection();
 
             if(selection){
-              var endOfSelection = (selection.focusAtStart ? selection.startPoint : selection.endPoint);
-              var endOfSelectionNode = topLevel(endOfSelection.node);
-              scrollNodeVerticallyIntoView(endOfSelectionNode);
+              scrollNodeVerticallyIntoView();
             }
           }
         }
@@ -5291,55 +5302,31 @@ function Ace2Inner(){
     return odoc.documentElement.clientWidth;
   }
 
-  function scrollNodeVerticallyIntoView(node)
+  // scrollAmountWhenFocusLineIsOutOfViewport is set to 0 (default), scroll it the minimum distance
+  // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
+  // besides of scrolling the minimum needed to be visible, it scrolls additionally
+  // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
+  function scrollNodeVerticallyIntoView()
   {
-    // requires element (non-text) node;
-    // if node extends above top of viewport or below bottom of viewport (or top of scrollbar),
-    // and scrollAmountWhenFocusLineIsOutOfViewport is set to 0 (default), scroll it the minimum distance
-    // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
-    // besides of scrolling the minimum needed to be visible, it scrolls additionally
-    // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
-    var win = outerWin;
-    var odoc = outerWin.document;
-    var distBelowTop = node.offsetTop + iframePadTop - win.scrollY;
-    var distAboveBottom = win.scrollY + getInnerHeight() - (node.offsetTop + iframePadTop + node.offsetHeight);
-
     // when the selection changes outside of the viewport the browser automatically scrolls the line
     // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
     // So, when the line scrolled gets outside of the viewport we let the browser handle it.
-    // when a key is prevented and handled by Etherpad we lost some browser features as the automatic
-    // scroll mentioned above. So, when the key is emulated by the Etherpad we force to scroll anyway
-    if(hasSpaceToApplyExtraScrollAndKeepLineCompletelyOnViewport(node) || keyEmulatedByEtherpad){
-      if (distBelowTop < 0)
-      {
-        var pixelsToScroll = distBelowTop - getPixelsRelativeToPercentageOfViewport();
+    var linePosition = caretPosition.getCaretLinePosition();
+    var win = outerWin;
+    if(linePosition){ // only scroll when pad is already loaded TODO BETTER COMMENTS
+      var viewport = getViewPortTopBottom();
+      var distanceOfTopOfViewport = linePosition.top - viewport.top;
+      var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
+      var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
+      var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
+      if(caretIsAboveOfViewport){
+        var pixelsToScroll = distanceOfTopOfViewport - getPixelsRelativeToPercentageOfViewport();
+        scrollYPage(win, pixelsToScroll);
+      }else if(caretIsBelowOfViewport){
+        var pixelsToScroll = -distanceOfBottomOfViewport + getPixelsRelativeToPercentageOfViewport();
         scrollYPage(win, pixelsToScroll);
       }
-      else if (distAboveBottom < 0)
-      {
-        var pixelsToScroll = -distAboveBottom + getPixelsRelativeToPercentageOfViewport();
-        scrollYPage(win, pixelsToScroll);
-      }
-      keyEmulatedByEtherpad = false;
     }
-  }
-
-  function hasSpaceToApplyExtraScrollAndKeepLineCompletelyOnViewport(node)
-  {
-    var viewportSize = getInnerHeight();
-    var lineHeight = node.offsetHeight;
-    var scrollPercentage = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport.percentage;
-
-    // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, the extra scroll is not applied
-    if(scrollPercentage === 0){
-      return true;
-    }
-
-    // if the line height is bigger than 'scrollPercentage * viewportSize' when we make an extra scroll
-    // part line will stay out of the viewport
-    var hasSpaceToScrollAndKeepLineCompletelyOnViewport = (scrollPercentage * viewportSize) > lineHeight;
-
-    return hasSpaceToScrollAndKeepLineCompletelyOnViewport;
   }
 
   function scrollYPage(win, pixelsToScroll)
