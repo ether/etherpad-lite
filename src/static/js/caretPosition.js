@@ -1,39 +1,50 @@
-// TODO make it like etherpad default. No named functions, fix curly brackets
-exports.getCaretLinePosition = function () {
+// One rep.line(div) can be broken in more than one line in the browser.
+// This function is useful to get the caret position of the line as
+// is represented by the browser
+exports.getPosition = function ()
+{
+  var rect, line;
   var editor = $('#innerdocbody')[0];
   var range = getSelectionRange();
-  var rect, line;
-  if(range){
-    if (range.endOffset > 0 && (range.endContainer !== editor)) { // explain this first condition
+  var isSelectionInsideTheEditor = $(range.endContainer).closest('body')[0].id === 'innerdocbody';
+
+  if(range && isSelectionInsideTheEditor){
+    // when we have the caret in an empty line, e.g. a line with only a <br>,
+    // getBoundingClientRect() returns all dimensions value as 0
+    var selectionIsInTheBeginningOfLine = range.endOffset > 0;
+    if (selectionIsInTheBeginningOfLine) {
       clonedRange = range.cloneRange();
+
+      // we set the selection start and end to avoid error when user selects a text bigger than
+      // the viewport height and uses the arrow keys to expand the selection. In this particular
+      // case is necessary to know where the selections ends because both edges of the selection
+      // is out of the viewport but we only use the end of it to calculate if it needs to scroll
       clonedRange.setStart(range.endContainer, range.endOffset);
       clonedRange.setEnd(range.endContainer, range.endOffset);
+
       rect = clonedRange.getBoundingClientRect();
       line = {
-        bottom: rect.top + rect.height,
+        bottom: rect.bottom,
         height: rect.height,
         top: rect.top
       }
       clonedRange.detach();
     }
-    // rect.height === 0, the element has no height so we have to create a element to
-    // measure the height
-    if(!rect || rect.height === 0){ // probably a <br> or one line char
+    // in this case, we can't get the dimension of the element where the caret is
+    if(!rect || rect.height === 0){
       clonedRange = range.cloneRange();
-
-      // avoid error with multiple lines selected and user presses shift
-      // why? Explain it!
       clonedRange.setStart(range.endContainer, range.endOffset);
       clonedRange.setEnd(range.endContainer, range.endOffset);
 
-      shadowCaret = $(document.createTextNode("|")); // create an element to have height
-
+      // as we can't get the element height, we create a text node to get the dimensions
+      // on the position
+      shadowCaret = $(document.createTextNode("|"));
       clonedRange.insertNode(shadowCaret[0]);
       clonedRange.selectNode(shadowCaret[0]);
 
       rect = clonedRange.getBoundingClientRect();
       line = {
-        bottom: rect.top + rect.height,
+        bottom: rect.bottom,
         height: rect.height,
         top: rect.top
       }
@@ -44,7 +55,8 @@ exports.getCaretLinePosition = function () {
   return line;
 }
 
-var getSelectionRange = function(){
+function getSelectionRange()
+{
   var selection;
   if (!window.getSelection) {
    return;

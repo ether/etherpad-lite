@@ -2924,25 +2924,6 @@ function Ace2Inner(){
       // E.g., when there is only one line in the pad, this line(div) is the last line of
       // the viewport, but it is not in the bottom of the viewport, so it should not scroll.
       // This case only happens when it has a plugin of pagination, like ep_page_view
-      var edgeLinesVisibleOnViewport = getVisibleLineRange();
-      var lastLineVisibleOfViewport = edgeLinesVisibleOnViewport[1];
-
-      // it is possible that the last line visible is partially visible and user places
-      // the caret at the line before of this line
-
-
-      var caretIsInThelastLineVisibleOfViewport = rep.selEnd[0] >= lastLineVisibleOfViewport;
-      var caretIsInThelastButOneLineVisibleOfViewport = rep.selEnd[0] === lastLineVisibleOfViewport - 1;
-      var caretIsInTheLastLineOfViewport = caretIsInThelastLineVisibleOfViewport || caretIsInThelastButOneLineVisibleOfViewport;
-
-      // avoid scrolling when caret is at the last line of the pad but this line is not in the bottom
-      // of the pad. E.g. when a pad has only one line and the caret is on that line. Other scenario is when
-      // a pad has a min-height applied and the last line is above of the viewport and in a position above the
-      // min-height. In this case, it has space to scroll but it should not scroll because it scrolls only
-      // when a line is in the bottom of the viewport
-      var caretLineIsInTheBottomOfTheViewport = isCaretLineInTheBottomOfTheViewport(rep);
-
-      // avoid scrolling to the end of pad, when user press shortcut to select all (Cmd + A)
       var hasSelection = rep.selStart[0] !== rep.selEnd[0];
 
       // avoid scrolling when pad loads
@@ -2967,30 +2948,12 @@ function Ace2Inner(){
 
   function isCaretInTheLastLineOfViewport()
   {
-    var linePosition = caretPosition.getCaretLinePosition();
+    var linePosition = caretPosition.getPosition();
     var viewportBottom = getViewPortTopBottom().bottom;
 
-    // TODO make it better. Maybe this is Achiles heel. We use the current line height
-    // this can go wrong if the next line has a lower height
+    // here we assume that the next line has the same height of the caret line
     var nextLineBottom = linePosition.bottom + linePosition.height;
     return nextLineBottom > viewportBottom;
-  }
-
-  function isCaretLineInTheBottomOfTheViewport (rep) {
-    var caretlineIsInTheBottomOfViewport = false;
-    var lastLineNumber = rep.lines.length() - 1;
-    var caretLine = rep.selStart[0];
-    var lineAfterCaretLine = caretLine + 1;
-    if(lineAfterCaretLine < lastLineNumber) { // caret line is before the last line of the pad
-      var lineAfterCaretLineIsBelowOfViewport =  distanceToBottomOfViewport(rep, lineAfterCaretLine) < 0;
-      caretlineIsInTheBottomOfViewport = lineAfterCaretLineIsBelowOfViewport;
-    }else{ // caret line is the last line of the pad
-      var lastLineNodeHeight = rep.lines.atIndex(caretLine).lineNode.offsetHeight;
-      var distanceOfCaretLineToBottom = distanceToBottomOfViewport(rep, caretLine);
-      caretlineIsInTheBottomOfViewport = lastLineNodeHeight > distanceOfCaretLineToBottom;
-    }
-
-    return caretlineIsInTheBottomOfViewport;
   }
 
   // negative values means the line is below of the viewport bottom
@@ -5311,9 +5274,9 @@ function Ace2Inner(){
     // when the selection changes outside of the viewport the browser automatically scrolls the line
     // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
     // So, when the line scrolled gets outside of the viewport we let the browser handle it.
-    var linePosition = caretPosition.getCaretLinePosition();
+    var linePosition = caretPosition.getPosition();
     var win = outerWin;
-    if(linePosition){ // only scroll when pad is already loaded TODO BETTER COMMENTS
+    if(linePosition){
       var viewport = getViewPortTopBottom();
       var distanceOfTopOfViewport = linePosition.top - viewport.top;
       var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
