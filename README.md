@@ -117,9 +117,9 @@ Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and mak
 * [async-stacktrace](https://github.com/Pita/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
 
 # Donate!
-* [Flattr] (http://flattr.com/thing/71378/Etherpad-Foundation)
+* [Flattr](http://flattr.com/thing/71378/Etherpad-Foundation)
 * Paypal - Press the donate button on [etherpad.org](http://etherpad.org)
-* [Bitcoin] (https://coinbase.com/checkouts/1e572bf8a82e4663499f7f1f66c2d15a)
+* [Bitcoin](https://coinbase.com/checkouts/1e572bf8a82e4663499f7f1f66c2d15a)
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
