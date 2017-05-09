@@ -3,6 +3,7 @@ describe('scroll when focus line is out of viewport', function () {
     helper.newPad(function(){
       cleanPad(function(){
         forceUseMonospacedFont();
+        scrollWhenPlaceCaretInTheLastLineOfViewport();
         createPadWithSeveralLines(function(){
           resizeEditorHeight();
           done();
@@ -580,6 +581,11 @@ describe('scroll when focus line is out of viewport', function () {
 
   var setScrollPercentageWhenFocusLineIsOutOfViewport = function(value) {
     helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport.percentage = value;
+  };
+
+  var scrollWhenPlaceCaretInTheLastLineOfViewport = function() {
+    var scrollSettings = helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport;
+    scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport = true;
   };
 
   var getLinePositionOnViewport = function(lineNumber) {

@@ -259,7 +259,11 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
   /*
   * Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation
   */
-  "duration": 0
+  "duration": 0,
+  /*
+  * Flag to control if it should scroll when user places the caret in the last line of the viewport
+  */
+  "scrollWhenCaretIsInTheLastLineOfViewport": false
 };
 
 //checks if abiword is avaiable

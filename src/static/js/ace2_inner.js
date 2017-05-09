@@ -2916,26 +2916,29 @@ function Ace2Inner(){
         documentAttributeManager: documentAttributeManager,
       });
 
-      // when the caret is placed at the last line visible of the viewport, it scrolls
-      // a percentage of viewport height defined by scrollWhenFocusLineIsOutOfViewport.percentage.
-      // When scrollWhenFocusLineIsOutOfViewport.percentage is 0, it keeps the default behavior
-      // that does not scroll at all.
-      // However, it scrolls only if the last line visible is in the bottom of the viewport.
-      // E.g., when there is only one line in the pad, this line(div) is the last line of
-      // the viewport, but it is not in the bottom of the viewport, so it should not scroll.
-      // This case only happens when it has a plugin of pagination, like ep_page_view
-      var hasSelection = rep.selStart[0] !== rep.selEnd[0];
+      var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
+      var scrollWhenCaretInInTheLastLineOfViewport =  scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport;
+      if (scrollWhenCaretInInTheLastLineOfViewport) {
+        // when the caret is placed at the last line visible of the viewport, it scrolls
+        // a percentage of viewport height defined by scrollWhenFocusLineIsOutOfViewport.percentage.
+        // When scrollWhenFocusLineIsOutOfViewport.percentage is 0, it keeps the default behavior
+        // that does not scroll at all.
+        // However, it scrolls only if the last line visible is in the bottom of the viewport.
+        // E.g., when there is only one line in the pad, this line(div) is the last line of
+        // the viewport, but it is not in the bottom of the viewport, so it should not scroll.
+        // This case only happens when it has a plugin of pagination, like ep_page_view
+        var hasSelection = rep.selStart[0] !== rep.selEnd[0];
 
-      // avoid scrolling when pad loads
-      var isPadLoading = (currentCallStack.type === "setBaseText") || (currentCallStack.type === "importText");
+        // avoid scrolling when pad loads
+        var isPadLoading = (currentCallStack.type === "setBaseText") || (currentCallStack.type === "importText");
+        if(!isPadLoading && !hasSelection && isCaretInTheLastLineOfViewport())
+        {
+          var win = outerWin;
 
-      if(!isPadLoading && !hasSelection && isCaretInTheLastLineOfViewport())
-      {
-        var win = outerWin;
-
-        // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
-        var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
-        scrollYPage(win, pixelsToScroll);
+          // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
+          var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
+          scrollYPage(win, pixelsToScroll);
+        }
       }
 
       return true;
