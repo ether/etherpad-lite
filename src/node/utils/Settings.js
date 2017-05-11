@@ -100,7 +100,33 @@ exports.padOptions = {
   "alwaysShowChat": false,
   "chatAndUsers": false,
   "lang": "en-gb"
-}
+},
+
+/**
+ * Whether certain shortcut keys are enabled for a user in the pad
+ */
+exports.padShortcutEnabled = {
+  "altF9" : true,
+  "altC" : true,
+  "delete" : true,
+  "cmdShift2" : true,
+  "return" : true,
+  "cmdS" : true,
+  "tab" : true,
+  "cmdZ" : true,
+  "cmdY" : true,
+  "cmdB" : true,
+  "cmdI" : true,
+  "cmdU" : true,
+  "cmd5" : true,
+  "cmdShiftL" : true,
+  "cmdShiftN" : true,
+  "cmdShiftC" : true,
+  "cmdH" : true,
+  "ctrlHome" : true,
+  "pageUp" : true,
+  "pageDown" : true,
+},
 
 /**
  * The toolbar buttons and order.
