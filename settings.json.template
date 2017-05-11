@@ -80,6 +80,7 @@
     "cmdShift2" : true, /* shows a gritter popup showing a line author */
     "delete"    : true,
     "return"    : true,
+    "esc"       : true, /* in mozilla versions 14-19 avoid reconnecting pad */
     "cmdS"      : true, /* save a revision */
     "tab"       : true, /* indent */
     "cmdZ"      : true, /* undo/redo */

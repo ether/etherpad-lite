@@ -3847,7 +3847,7 @@ function Ace2Inner(){
           }, 0);
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 27 && padShortcutEnabled.cmdS)
+        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 27 && padShortcutEnabled.esc)
         {
           // prevent esc key;
           // in mozilla versions 14-19 avoid reconnecting pad.

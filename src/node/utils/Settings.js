@@ -111,6 +111,7 @@ exports.padShortcutEnabled = {
   "delete" : true,
   "cmdShift2" : true,
   "return" : true,
+  "esc" : true,
   "cmdS" : true,
   "tab" : true,
   "cmdZ" : true,
