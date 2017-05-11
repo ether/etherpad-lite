@@ -48,12 +48,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       res.cookie('language', settings.padOptions.lang);
     }
 
-    // Enable the pad shortcut keys from settings.json
-    if (settings.padShortcutEnabled !== undefined)
-    {
-      res.cookie('padShortcutEnabled', JSON.stringify(settings.padShortcutEnabled));      
-    }
-
     // The below might break for pads being rewritten
     var isReadOnly = req.url.indexOf("/p/r.") === 0;
 

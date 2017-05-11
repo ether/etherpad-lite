@@ -61,7 +61,6 @@ function Ace2Inner(){
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
-  var readCookie = require('./pad_utils').readCookie;
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
@@ -3641,37 +3640,6 @@ function Ace2Inner(){
 
   function handleKeyEvent(evt)
   {
-    // Get the enabled shortcut keys
-    // If it can't find the cookie, use default values
-    // Cookie should normally be set
-    // See settings.json
-    var padShortcutEnabled = JSON.parse(decodeURIComponent(readCookie('padShortcutEnabled')));
-    if (!padShortcutEnabled)
-    {
-      padShortcutEnabled = {
-        "altF9" : true,
-        "altC" : true,
-        "cmdShift2" : true,
-        "delete" : true,
-        "return" : true,
-        "cmdS" : true,
-        "tab" : true,
-        "cmdZ" : true,
-        "cmdY" : true,
-        "cmdI" : true,
-        "cmdB" : true,
-        "cmdU" : true,
-        "cmd5" : true,
-        "cmdShiftL" : true,
-        "cmdShiftN" : true,
-        "cmdShiftC" : true,
-        "cmdH" : true,
-        "ctrlHome" : true,
-        "pageUp" : true,
-        "pageDown" : true,
-      }
-    }
-    
     // if (DEBUG && window.DONT_INCORP) return;
     if (!isEditable) return;
     var type = evt.type;
@@ -3755,6 +3723,7 @@ function Ace2Inner(){
           specialHandled = _.contains(specialHandledInHook, true);
         }
 
+        var padShortcutEnabled = parent.parent.clientVars.padShortcutEnabled;
         if ((!specialHandled) && altKey && isTypeForSpecialKey && keyCode == 120 && padShortcutEnabled.altF9){
           // Alt F9 focuses on the File Menu and/or editbar.
           // Note that while most editors use Alt F10 this is not desirable
@@ -3878,7 +3847,7 @@ function Ace2Inner(){
           }, 0);
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 27 && padShortcutEnabled.cmdS)
+        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 27 && padShortcutEnabled.esc)
         {
           // prevent esc key;
           // in mozilla versions 14-19 avoid reconnecting pad.
@@ -3970,9 +3939,9 @@ function Ace2Inner(){
           doInsertUnorderedList()
           specialHandled = true;
 	}
-        if ((!specialHandled) && isTypeForCmdKey && (String.fromCharCode(which).toLowerCase() == "n" || String.fromCharCode(which) == 1) && (evt.metaKey || evt.ctrlKey) && evt.shiftKey && padShortcutEnabled.cmdShiftN)
+        if ((!specialHandled) && isTypeForCmdKey && ((String.fromCharCode(which).toLowerCase() == "n" && padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) == 1 && padShortcutEnabled.cmdShift1)) && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
         {
-          // cmd-shift-N (orderedlist)
+          // cmd-shift-N and cmd-shift-1 (orderedlist)
           fastIncorp(9);
           evt.preventDefault();
           doInsertOrderedList()
