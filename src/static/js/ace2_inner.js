@@ -3939,9 +3939,9 @@ function Ace2Inner(){
           doInsertUnorderedList()
           specialHandled = true;
 	}
-        if ((!specialHandled) && isTypeForCmdKey && (String.fromCharCode(which).toLowerCase() == "n" || String.fromCharCode(which) == 1) && (evt.metaKey || evt.ctrlKey) && evt.shiftKey && padShortcutEnabled.cmdShiftN)
+        if ((!specialHandled) && isTypeForCmdKey && ((String.fromCharCode(which).toLowerCase() == "n" && padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) == 1 && padShortcutEnabled.cmdShift1)) && (evt.metaKey || evt.ctrlKey) && evt.shiftKey)
         {
-          // cmd-shift-N (orderedlist)
+          // cmd-shift-N and cmd-shift-1 (orderedlist)
           fastIncorp(9);
           evt.preventDefault();
           doInsertOrderedList()

@@ -122,6 +122,7 @@ exports.padShortcutEnabled = {
   "cmd5" : true,
   "cmdShiftL" : true,
   "cmdShiftN" : true,
+  "cmdShift1" : true,
   "cmdShiftC" : true,
   "cmdH" : true,
   "ctrlHome" : true,

@@ -91,6 +91,7 @@
     "cmd5"      : true, /* strike through */
     "cmdShiftL" : true, /* unordered list */
     "cmdShiftN" : true, /* ordered list */
+    "cmdShift1" : true, /* ordered list */
     "cmdShiftC" : true, /* clear authorship */
     "cmdH"      : true, /* backspace */
     "ctrlHome"  : true, /* scroll to top of pad */
