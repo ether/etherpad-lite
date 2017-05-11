@@ -1197,6 +1197,7 @@ function handleClientReady(client, message)
           "userColor": authorColorId,
           "padId": message.padId,
           "padOptions": settings.padOptions,
+          "padShortcutEnabled": settings.padShortcutEnabled,
           "initialTitle": "Pad: " + message.padId,
           "opts": {},
           // tell the client the number of the latest chat-message, which will be
