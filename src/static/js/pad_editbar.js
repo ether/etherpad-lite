@@ -271,7 +271,7 @@ var padeditbar = (function()
           var module = $("#" + thisModuleName);
 
           //skip any "force reconnect" message
-          var isAForceReconnectMessage = module.find('#forcereconnect').is(':visible');
+          var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
           if(isAForceReconnectMessage)
             continue;
 

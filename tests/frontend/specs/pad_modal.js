@@ -1,15 +1,11 @@
 describe('Pad modal', function() {
   context('when modal is a "force reconnect" message', function() {
-    var MODAL_SELECTOR = '#connectivity .userdup';
-
-    var padId, $originalPadFrame;
+    var MODAL_SELECTOR = '#connectivity .slowcommit';
 
     beforeEach(function(done) {
-      padId = helper.newPad(function() {
-        // open same pad on another iframe, to force userdup error
-        var $otherIframeWithSamePad = $('<iframe src="/p/' + padId + '" style="height: 1px;"></iframe>');
-        $originalPadFrame = $('#iframe-container iframe');
-        $otherIframeWithSamePad.insertAfter($originalPadFrame);
+      helper.newPad(function() {
+        // force a "slowcommit" error
+        helper.padChrome$.window.pad.handleChannelStateChange('DISCONNECTED', 'slowcommit');
 
         // wait for modal to be displayed
         var $modal = helper.padChrome$(MODAL_SELECTOR);
