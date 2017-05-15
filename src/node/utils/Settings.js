@@ -99,8 +99,7 @@ exports.padOptions = {
   "rtl": false,
   "alwaysShowChat": false,
   "chatAndUsers": false,
-  "lang": "en-gb",
-  "useLoginForName" : false
+  "lang": "en-gb"
 }
 
 /**
@@ -207,6 +206,7 @@ exports.trustProxy = false;
  * authorization. Note: /admin always requires authentication, and
  * either authorization by a module, or a user with is_admin set */
 exports.requireAuthentication = false;
+exports.useLoginForName = false;
 exports.requireAuthorization = false;
 exports.users = {};
 
@@ -438,5 +438,3 @@ exports.reloadSettings = function reloadSettings() {
 
 // initially load settings
 exports.reloadSettings();
-
-

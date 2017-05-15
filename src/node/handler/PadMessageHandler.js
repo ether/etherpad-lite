@@ -936,7 +936,7 @@ function handleSwitchToPad(client, message)
   var currentSession = sessioninfos[client.id];
   var padId = currentSession.padId;
   var roomClients = _getRoomClients(padId);
-  
+
   async.forEach(roomClients, function(client, callback) {
     var sinfo = sessioninfos[client.id];
     if(sinfo && sinfo.author == currentSession.author) {
@@ -1005,13 +1005,19 @@ function handleClientReady(client, message)
   var currentTime;
   var padIds;
   var loginUsr = null;
-  
-  if(settings.requireAuthentication){
+
+  if(settings.requireAuthentication &&
+    client.conn.request.headers.authorization!== null &&
+    client.conn.request.headers.authorization!== ""){
+
+    // header = Basic key:secret   key:secret is in base64  key = user login name
     var authStr = client.conn.request.headers.authorization;
-    loginUsr = new Buffer(authStr.split(' ')[1], 'base64').toString('ascii').split(':')[0];
+    var authTokens= authStr.split(' ');
+    if(authTokens[0] === 'Basic'){
+      loginUsr = new Buffer(authTokens[1], 'base64').toString('ascii').split(':')[0];//get user
+    }//TODO handle other authenication techniques later when appropriate js auth library is found
   }
-  
-  
+
   hooks.callAll("clientReady", message);
 
   async.series([
@@ -1122,7 +1128,7 @@ function handleClientReady(client, message)
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
       var roomClients = _getRoomClients(pad.id);
-      
+
       async.forEach(roomClients, function(client, callback) {
         var sinfo = sessioninfos[client.id];
         if(sinfo && sinfo.author == author) {
@@ -1203,6 +1209,7 @@ function handleClientReady(client, message)
           "userColor": authorColorId,
           "padId": message.padId,
           "padOptions": settings.padOptions,
+          "useLoginForName": settings.useLoginForName,
           "initialTitle": "Pad: " + message.padId,
           "opts": {},
           // tell the client the number of the latest chat-message, which will be
@@ -1223,9 +1230,9 @@ function handleClientReady(client, message)
           "indentationOnNewLine": settings.indentationOnNewLine,
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
-        
+
         //Use the login user name as the author name for all pads for this user
-        if(settings.padOptions['useLoginForName'] && loginUsr!= null){
+        if(settings.useLoginForName && loginUsr!= null){
           clientVars.userName = loginUsr;
           authorName = loginUsr;
         }
@@ -1687,13 +1694,13 @@ function composePadChangesets(padId, startNum, endNum, callback)
 
 function _getRoomClients(padID) {
   var roomClients = []; var room = socketio.sockets.adapter.rooms[padID];
-  
+
   if (room) {
     for (var id in room.sockets) {
       roomClients.push(socketio.sockets.sockets[id]);
     }
   }
-  
+
   return roomClients;
 }
 

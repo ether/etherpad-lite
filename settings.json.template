@@ -70,8 +70,7 @@
     "rtl": false,
     "alwaysShowChat": false,
     "chatAndUsers": false,
-    "lang": "en-gb",
-    "useLoginForName": false
+    "lang": "en-gb"
   },
 
   /* Should we suppress errors from being visible in the default Pad Text? */
@@ -110,9 +109,13 @@
   "allowUnknownFileEnds" : true,
 
   /* This setting is used if you require authentication of all users.
-     Note: /admin always requires authentication. 
+     Note: /admin always requires authentication.
      Note: requireAuthentication should be set to true if useLoginForName=true in padOptions*/
   "requireAuthentication" : false,
+
+  /* Configures the system to use the user's login as the author name when editing pads.  The
+     user is also not allowed to altered his/her author name*/
+  "useLoginForName" : false,
 
   /* Require authorization by a module, or a user with is_admin set, see below. */
   "requireAuthorization" : false,
