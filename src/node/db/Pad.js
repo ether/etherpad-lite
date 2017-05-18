@@ -592,6 +592,11 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
       setTimeout(function(){
         padManager.getPad(destinationID, null, callback) // this runs too early.
       },10);
+    },
+    // let the plugins know the pad was copied
+    function(callback) {
+      hooks.callAll('padCopy', { 'originalPad': _this, 'destinationID': destinationID });
+      callback();
     }
   // series
   ], function(err)

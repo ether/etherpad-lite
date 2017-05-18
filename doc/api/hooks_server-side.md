@@ -106,7 +106,7 @@ Here you can add custom toolbar items that will be available in the toolbar conf
 
 Usage examples:
 
-* [https://github.com/tiblu/ep_authorship_toggle]()
+* https://github.com/tiblu/ep_authorship_toggle
 
 ## padCreate
 Called from: src/node/db/Pad.js
@@ -137,6 +137,20 @@ Things in context:
 
 This hook gets called when an existing pad was updated.
 
+## padCopy
+Called from: src/node/db/Pad.js
+
+Things in context:
+
+1. originalPad - the source pad instance
+2. destinationID - the id of the pad copied from originalPad
+
+This hook gets called when an existing pad was copied.
+
+Usage examples:
+
+* https://github.com/ether/ep_comments
+
 ## padRemove
 Called from: src/node/db/Pad.js
 
@@ -145,6 +159,10 @@ Things in context:
 1. padID
 
 This hook gets called when an existing pad was removed/deleted.
+
+Usage examples:
+
+* https://github.com/ether/ep_comments
 
 ## socketio
 Called from: src/node/hooks/express/socketio.js
