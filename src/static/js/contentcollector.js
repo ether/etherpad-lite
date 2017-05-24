@@ -85,7 +85,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     "div": 1,
     "p": 1,
     "pre": 1,
-    "li": 1
+    "li": 1,
+    "h1": 1,
+    "h2": 1,
+    "h3": 1,
+    "h4": 1,
+    "h5": 1,
+    "h6": 1,
+    "code": 1
   };
 
   _.each(hooks.callAll('ccRegisterBlockElements'), function(element){
