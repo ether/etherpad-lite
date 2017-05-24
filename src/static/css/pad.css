@@ -1322,4 +1322,10 @@ input[type=checkbox] {
   display:none !important;
 }
 
-
+.toolbar ul li.syncstatus {
+  display: none;
+  line-height: 32px;
+  margin-left: 10px;
+  font-size: 14pt;
+  color: #666;
+}

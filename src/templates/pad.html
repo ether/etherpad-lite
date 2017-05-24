@@ -66,6 +66,8 @@
                 <% e.begin_block("editbarMenuLeft"); %>
                 <%- toolbar.menu(settings.toolbar.left, isReadOnly) %>
                 <% e.end_block(); %>
+                <li class="syncstatus" id="syncstatussyncing">Saving...</li>
+                <li class="syncstatus" id="syncstatusdone">Saved.</li>
             </ul>
             <ul class="menu_right" role="toolbar">
                 <% e.begin_block("editbarMenuRight"); %>
