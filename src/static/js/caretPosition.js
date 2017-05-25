@@ -6,9 +6,9 @@ exports.getPosition = function ()
   var rect, line;
   var editor = $('#innerdocbody')[0];
   var range = getSelectionRange();
-  var isSelectionInsideTheEditor = $(range.endContainer).closest('body')[0].id === 'innerdocbody';
+  var isSelectionInsideTheEditor = range && $(range.endContainer).closest('body')[0].id === 'innerdocbody';
 
-  if(range && isSelectionInsideTheEditor){
+  if(isSelectionInsideTheEditor){
     // when we have the caret in an empty line, e.g. a line with only a <br>,
     // getBoundingClientRect() returns all dimensions value as 0
     var selectionIsInTheBeginningOfLine = range.endOffset > 0;

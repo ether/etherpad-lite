@@ -426,7 +426,7 @@ function Ace2Inner(){
         var undoWorked = false;
         try
         {
-          if (evt.eventType == "setup" || evt.eventType == "importText" || evt.eventType == "setBaseText")
+          if (isPadLoading(evt.eventType))
           {
             undoModule.clearHistory();
           }
@@ -2916,29 +2916,23 @@ function Ace2Inner(){
         documentAttributeManager: documentAttributeManager,
       });
 
+      // are we placing the caret on the line at the bottom of viewport?
+      // And if so, do we need to scroll the editor, as defined on the settings.json?
       var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
-      var scrollWhenCaretInInTheLastLineOfViewport =  scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport;
-      if (scrollWhenCaretInInTheLastLineOfViewport) {
-        // when the caret is placed at the last line visible of the viewport, it scrolls
-        // a percentage of viewport height defined by scrollWhenFocusLineIsOutOfViewport.percentage.
-        // When scrollWhenFocusLineIsOutOfViewport.percentage is 0, it keeps the default behavior
-        // that does not scroll at all.
-        // However, it scrolls only if the last line visible is in the bottom of the viewport.
-        // E.g., when there is only one line in the pad, this line(div) is the last line of
-        // the viewport, but it is not in the bottom of the viewport, so it should not scroll.
-        // This case only happens when it has a plugin of pagination, like ep_page_view
-        var hasSelection = rep.selStart[0] !== rep.selEnd[0];
-
+      var shouldScrollWhenCaretIsAtBottomOfViewport =  scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport;
+      if (shouldScrollWhenCaretIsAtBottomOfViewport) {
         // avoid scrolling when pad loads
-        var isPadLoading = (currentCallStack.type === "setBaseText") || (currentCallStack.type === "importText");
-        if(!isPadLoading && !hasSelection && isCaretInTheLastLineOfViewport())
-        {
-          var win = outerWin;
+        var isScrollableEvent = !isPadLoading(currentCallStack.type);
+        // avoid scrolling when selection includes multiple lines -- user can potentially be selecting more lines
+        // than it fits on viewport
+        var multipleLinesSelected = rep.selStart[0] !== rep.selEnd[0];
 
+        if (isScrollableEvent && !multipleLinesSelected && isCaretAtTheBottomOfViewport()) {
           // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
           var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
-          scrollYPage(win, pixelsToScroll);
+          scrollYPage(outerWin, pixelsToScroll);
         }
+
       }
 
       return true;
@@ -2949,22 +2943,23 @@ function Ace2Inner(){
     //console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
   }
 
-  function isCaretInTheLastLineOfViewport()
+  function isPadLoading(eventType)
+  {
+    return (eventType === 'setup') || (eventType === 'setBaseText') || (eventType === 'importText');
+  }
+
+  // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
+  // if (caretLine() === rep.lines.length() - 1) is not enough. We need to check if there are
+  // other lines after caretLine(), and all of them are out of viewport.
+  function isCaretAtTheBottomOfViewport()
   {
     var linePosition = caretPosition.getPosition();
     var viewportBottom = getViewPortTopBottom().bottom;
 
+    // TODO review this comment. What is "line" here? Looks like it is not the same as rep.lines
     // here we assume that the next line has the same height of the caret line
     var nextLineBottom = linePosition.bottom + linePosition.height;
     return nextLineBottom > viewportBottom;
-  }
-
-  // negative values means the line is below of the viewport bottom
-  function distanceToBottomOfViewport (rep, line) {
-    var node = rep.lines.atIndex(line).lineNode;
-    var win = outerWin;
-    var distanceToBottomOfViewport = getViewPortTopBottom().bottom - (node.offsetTop + iframePadTop + node.offsetHeight);
-    return distanceToBottomOfViewport;
   }
 
   function doCreateDomLine(nonEmpty)
