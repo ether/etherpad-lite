@@ -2922,7 +2922,7 @@ function Ace2Inner(){
       var shouldScrollWhenCaretIsAtBottomOfViewport =  scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport;
       if (shouldScrollWhenCaretIsAtBottomOfViewport) {
         // avoid scrolling when pad loads
-        var isScrollableEvent = !isPadLoading(currentCallStack.type);
+        var isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
         // avoid scrolling when selection includes multiple lines -- user can potentially be selecting more lines
         // than it fits on viewport
         var multipleLinesSelected = rep.selStart[0] !== rep.selEnd[0];
