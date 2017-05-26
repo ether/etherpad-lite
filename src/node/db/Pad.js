@@ -96,9 +96,14 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
   {
     newRevData.meta.atext = this.atext;
   }
-
-  db.set("pad:"+this.id+":revs:"+newRev, newRevData);
-  this.saveToDatabase();
+  
+  // Either save on first revision or save on second revision
+  var savePadAtStart = settings.padOptions.savePadAtStart;
+  if (savePadAtStart || this.head >= 1)
+  {
+    db.set("pad:"+this.id+":revs:"+newRev, newRevData);
+    this.saveToDatabase();
+  }
 
   // set the author to pad
   if(author)
