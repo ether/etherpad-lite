@@ -7,7 +7,8 @@
 			"Steve.rusyn",
 			"SteveR",
 			"Lxlalexlxl",
-			"Григорій Пугач"
+			"Григорій Пугач",
+			"Bunyk"
 		]
 	},
 	"index.newPad": "Створити",
@@ -62,6 +63,7 @@
 	"pad.modals.connected": "З'єднано.",
 	"pad.modals.reconnecting": "Перепідлючення до Вашого документу..",
 	"pad.modals.forcereconnect": "Примусове перепідключення",
+	"pad.modals.cancel": "Скасувати",
 	"pad.modals.userdup": "Відкрито в іншому вікні",
 	"pad.modals.userdup.explanation": "Документ, можливо, відкрито більш ніж в одному вікні браузера на цьому комп'ютері.",
 	"pad.modals.userdup.advice": "Перепідключитись використовуючи це вікно.",
