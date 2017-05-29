@@ -3367,7 +3367,12 @@ function Ace2Inner(){
         evt.preventDefault();
       }
     }
-    //hide the dropdownso
+
+    hideEditBarDropdowns();
+  }
+
+  function hideEditBarDropdowns()
+  {
     if(window.parent.parent.padeditbar){ // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/ether/etherpad-lite/issues/327
       window.parent.parent.padeditbar.toggleDropDown("none");
     }
@@ -4984,6 +4989,8 @@ function Ace2Inner(){
     $(document).on("keypress", handleKeyEvent);
     $(document).on("keyup", handleKeyEvent);
     $(document).on("click", handleClick);
+    // dropdowns on edit bar need to be closed on clicks on both pad inner and pad outer
+    $(outerWin.document).on("click", hideEditBarDropdowns);
     // Disabled: https://github.com/ether/etherpad-lite/issues/2546
     // Will break OL re-numbering: https://github.com/ether/etherpad-lite/pull/2533
     // $(document).on("cut", handleCut);
