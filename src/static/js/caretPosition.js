@@ -66,5 +66,5 @@ function getSelectionRange()
    return selection.getRangeAt(0);
   } else {
    return null;
-   }
+  }
 }

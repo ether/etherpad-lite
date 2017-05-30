@@ -2927,7 +2927,7 @@ function Ace2Inner(){
         // than it fits on viewport
         var multipleLinesSelected = rep.selStart[0] !== rep.selEnd[0];
 
-        if (isScrollableEvent && !multipleLinesSelected && isCaretAtTheBottomOfViewport()) {
+        if (isScrollableEvent && !multipleLinesSelected && isCaretAtTheBottomOfViewport(rep)) {
           // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
           var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
           scrollYPage(outerWin, pixelsToScroll);
@@ -2951,15 +2951,40 @@ function Ace2Inner(){
   // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
   // if (caretLine() === rep.lines.length() - 1) is not enough. We need to check if there are
   // other lines after caretLine(), and all of them are out of viewport.
-  function isCaretAtTheBottomOfViewport()
+  function isCaretAtTheBottomOfViewport(rep)
   {
-    var linePosition = caretPosition.getPosition();
+    // computing a line position using getBoundingClientRect() is expensive.
+    // To avoid that, we only call this function when it is possible that the
+    // caret is in the bottom of viewport
+    if (isPossibleCaretIsInTheBottomOfViewport(rep)) {
+      var caretLinePosition = caretPosition.getPosition();
+      var viewportBottom = getViewPortTopBottom().bottom;
+
+      // Here we consider a line as the lines are showed in the browser to the user.
+      // That means, one rep.line can have more than one line.
+      // We assume that the next line has the same height of the caret line
+      var nextLineBottom = caretLinePosition.bottom + caretLinePosition.height;
+      return nextLineBottom > viewportBottom;
+    }
+    return false;
+  }
+
+  function isPossibleCaretIsInTheBottomOfViewport(rep)
+  {
+    var caretLineNumber = rep.selStart[0];
+    var caretLineNode = rep.lines.atIndex(caretLineNumber);
+    var caretLinePosition = getLineEntryTopBottom(caretLineNode, {});
+    var caretLineTop = caretLinePosition.top;
+    var caretLineBottom = caretLinePosition.bottom;
     var viewportBottom = getViewPortTopBottom().bottom;
 
-    // TODO review this comment. What is "line" here? Looks like it is not the same as rep.lines
-    // here we assume that the next line has the same height of the caret line
-    var nextLineBottom = linePosition.bottom + linePosition.height;
-    return nextLineBottom > viewportBottom;
+    // here we calculate if the rep.line where the caret is, it includes the
+    // line (browser.line),  which is at the bottom of the viewport
+    // we consider as browser.line, how the lines are showed in the browser to the user
+    var topOfLineIsAboveOfViewportBottom = caretLineTop < viewportBottom;
+    var bottomOfLineIsOnOrBelowOfViewportBottom = caretLineBottom >= viewportBottom;
+
+    return topOfLineIsAboveOfViewportBottom && bottomOfLineIsOnOrBelowOfViewportBottom;
   }
 
   function doCreateDomLine(nonEmpty)
