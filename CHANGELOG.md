@@ -1,4 +1,4 @@
-#1.6.1
+# 1.6.1
  * NEW: Hook aceRegisterNonScrollableEditEvents to register events that shouldn't scroll
  * NEW: Added 'item' parameter to registerAceCommand Hook
  * NEW: Added LibreJS support
