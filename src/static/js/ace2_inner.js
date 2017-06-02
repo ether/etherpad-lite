@@ -5288,30 +5288,49 @@ function Ace2Inner(){
     return odoc.documentElement.clientWidth;
   }
 
+  function partOfRepLineIsOutOfViewport(viewportPosition)
+  {
+    var focusLine = (rep.selFocusAtStart ? rep.selStart[0] : rep.selEnd[0]);
+    var line = rep.lines.atIndex(focusLine);
+    var linePosition = getLineEntryTopBottom(line);
+    var lineIsAboveOfViewport = linePosition.top < viewportPosition.top;
+    var lineIsBelowOfViewport = linePosition.bottom > viewportPosition.bottom;
+
+    return lineIsBelowOfViewport || lineIsAboveOfViewport;
+  }
+
   // scrollAmountWhenFocusLineIsOutOfViewport is set to 0 (default), scroll it the minimum distance
   // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
   // besides of scrolling the minimum needed to be visible, it scrolls additionally
   // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
   function scrollNodeVerticallyIntoView()
   {
-    // when the selection changes outside of the viewport the browser automatically scrolls the line
-    // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
-    // So, when the line scrolled gets outside of the viewport we let the browser handle it.
-    var linePosition = caretPosition.getPosition();
-    var win = outerWin;
-    if(linePosition){
-      var viewport = getViewPortTopBottom();
-      var distanceOfTopOfViewport = linePosition.top - viewport.top;
-      var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
-      var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
-      var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
-      if(caretIsAboveOfViewport){
-        var pixelsToScroll = distanceOfTopOfViewport - getPixelsRelativeToPercentageOfViewport();
-        scrollYPage(win, pixelsToScroll);
-      }else if(caretIsBelowOfViewport){
-        var pixelsToScroll = -distanceOfBottomOfViewport + getPixelsRelativeToPercentageOfViewport();
-        scrollYPage(win, pixelsToScroll);
+    var viewport = getViewPortTopBottom();
+    var isPartOfRepLineOutOfViewport = partOfRepLineIsOutOfViewport(viewport);
+
+    // first we test if part of rep line is out of viewport. If so, as a rep line can break in more lines
+    // on the browser (browser lines), we test if the browser line where the caret is it out of viewport.
+    // With it, we avoid doing expensive operation to calculate the line position every time a key is pressed
+    if (isPartOfRepLineOutOfViewport) {
+      // when the selection changes outside of the viewport the browser automatically scrolls the line
+      // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
+      // So, when the line scrolled gets outside of the viewport we let the browser handle it.
+      var linePosition = caretPosition.getPosition();
+      var win = outerWin;
+      if(linePosition){
+        var distanceOfTopOfViewport = linePosition.top - viewport.top;
+        var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
+        var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
+        var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
+        if(caretIsAboveOfViewport){
+          var pixelsToScroll = distanceOfTopOfViewport - getPixelsRelativeToPercentageOfViewport();
+          scrollYPage(win, pixelsToScroll);
+        }else if(caretIsBelowOfViewport){
+          var pixelsToScroll = -distanceOfBottomOfViewport + getPixelsRelativeToPercentageOfViewport();
+          scrollYPage(win, pixelsToScroll);
+        }
       }
+
     }
   }
 
@@ -5392,7 +5411,7 @@ function Ace2Inner(){
     if (!rep.selStart) return;
     fixView();
     var focusLine = (rep.selFocusAtStart ? rep.selStart[0] : rep.selEnd[0]);
-    scrollNodeVerticallyIntoView(rep.lines.atIndex(focusLine).lineNode);
+    scrollNodeVerticallyIntoView();
     if (!doesWrap)
     {
       var browserSelection = getSelection();
