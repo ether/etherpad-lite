@@ -1381,8 +1381,10 @@ function handleChangesetRequest(client, message)
       //build the requested rough changesets and send them back
       getChangesetInfo(padIds.padId, start, end, granularity, function(err, changesetInfo)
       {
-        if(err) return console.error('Error while handling a changeset request for '+padIds.padId, err, message.data);
-
+	if(err) {
+		stats.meter('failedChangesets').mark();
+		return console.error('Error while handling a changeset request for '+padIds.padId, err, message.data);
+	}
         var data = changesetInfo;
         data.requestID = message.data.requestID;
 
@@ -1504,6 +1506,9 @@ function getChangesetInfo(padId, startNum, endNum, granularity, callback)
         }
 
         var forwards = composedChangesets[compositeStart + "/" + compositeEnd];
+	if (forwards == null) {
+		return callback(new Error("Unable to retrieve composed changesets"));
+	}
         var backwards = Changeset.inverse(forwards, lines.textlines, lines.alines, pad.apool());
 
         Changeset.mutateAttributionLines(forwards, lines.alines, pad.apool());
