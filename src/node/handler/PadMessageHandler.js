@@ -1220,6 +1220,7 @@ function handleClientReady(client, message)
             "percentage": settings.scrollWhenFocusLineIsOutOfViewport.percentage,
             "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
             "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
+            "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
           },
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }

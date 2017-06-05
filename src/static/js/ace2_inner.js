@@ -2948,6 +2948,13 @@ function Ace2Inner(){
     return (eventType === 'setup') || (eventType === 'setBaseText') || (eventType === 'importText');
   }
 
+  function isCaretAtTheTopOfViewport(){
+    var caretLinePosition = caretPosition.getPosition();
+    var viewportTop = getViewPortTopBottom().top;
+    var previousLineTop = caretLinePosition.top - caretLinePosition.height;
+    return previousLineTop <= viewportTop;
+  }
+
   // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
   // if (caretLine() === rep.lines.length() - 1) is not enough. We need to check if there are
   // other lines after caretLine(), and all of them are out of viewport.
@@ -4124,7 +4131,20 @@ function Ace2Inner(){
             var selection = getSelection();
 
             if(selection){
-              scrollNodeVerticallyIntoView();
+              var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
+              var percentageScrollArrowUp = scrollSettings.percentageToScrollWhenUserPressesArrowUp;
+              var arrowUp = evt.which === 38;
+
+              // if percentageScrollArrowUp is 0, let the scroll to be handled as default, put the previous
+              // rep line on the top of the viewport
+              var arrowUpWasPressedInTheFirstLineOfTheViewport = percentageScrollArrowUp && arrowUp && isCaretAtTheTopOfViewport();
+              if(arrowUpWasPressedInTheFirstLineOfTheViewport){
+                var win = outerWin;
+                var pixelsToScroll = getPixelsToScrollWhenUserPressesArrowUp();
+                scrollYPage(win, -pixelsToScroll);
+              }else{
+                scrollNodeVerticallyIntoView();
+              }
             }
           }
         }
@@ -4193,6 +4213,17 @@ function Ace2Inner(){
     }
 
     return !firstTimeKeyIsContinuouslyPressed;
+  }
+
+  function getPixelsToScrollWhenUserPressesArrowUp()
+  {
+    var pixels = 0;
+    var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
+    var percentageToScrollUp = scrollSettings.percentageToScrollWhenUserPressesArrowUp;
+    if(percentageToScrollUp > 0 && percentageToScrollUp <= 1){
+      pixels = parseInt(getInnerHeight() * percentageToScrollUp);
+    }
+    return pixels;
   }
 
   function doUndoRedo(which)

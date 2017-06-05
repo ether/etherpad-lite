@@ -66,6 +66,34 @@ describe('scroll when focus line is out of viewport', function () {
     });
   });
 
+  context('when user presses arrow up on the first line of the viewport', function(){
+    context('and percentageToScrollWhenUserPressesArrowUp is set to 0.3', function () {
+      var lineOnTopOfViewportWhenThePadIsScrolledDown;
+      before(function (done) {
+        setPercentageToScrollWhenUserPressesArrowUp(0.3);
+
+        // we need some room to make the scroll up
+        scrollEditorToBottomOfPad();
+        lineOnTopOfViewportWhenThePadIsScrolledDown = 93;
+        placeCaretAtTheEndOfLine(lineOnTopOfViewportWhenThePadIsScrolledDown);
+        setTimeout(function() {
+          // warning: even pressing up arrow, the caret does not change of position
+          pressAndReleaseUpArrow();
+          done();
+        }, 1000);
+      });
+
+      it('keeps the focus line scrolled 30% of the top of the viewport', function (done) {
+        // default behavior is to put the line in the top of viewport, but as
+        // PercentageToScrollWhenUserPressesArrowUp is set to 0.3, we have an extra 30% of lines scrolled
+        // (3 lines, which are the 30% of the 10 that are visible on viewport)
+        var firstLineOfViewport = getFirstLineVisibileOfViewport();
+        expect(firstLineOfViewport).to.be(lineOnTopOfViewportWhenThePadIsScrolledDown - 3);
+        done();
+      })
+    });
+  });
+
   context('when user edits the last line of viewport', function(){
     context('and scroll percentage config is set to 0 on settings.json', function(){
       var lastLineOfViewportBeforeEnter = 10;
@@ -338,6 +366,7 @@ describe('scroll when focus line is out of viewport', function () {
   var ENTER = 13;
   var BACKSPACE = 8;
   var LEFT_ARROW = 37;
+  var UP_ARROW = 38;
   var RIGHT_ARROW = 39;
   var LINES_ON_VIEWPORT = 10;
   var WIDTH_OF_EDITOR_RESIZED = 100;
@@ -513,6 +542,11 @@ describe('scroll when focus line is out of viewport', function () {
     pressKey(BACKSPACE);
   };
 
+  var pressAndReleaseUpArrow = function() {
+    pressKey(UP_ARROW);
+    releaseKey(UP_ARROW);
+  };
+
   var pressAndReleaseRightArrow = function() {
     pressKey(RIGHT_ARROW);
     releaseKey(RIGHT_ARROW);
@@ -581,6 +615,10 @@ describe('scroll when focus line is out of viewport', function () {
 
   var setScrollPercentageWhenFocusLineIsOutOfViewport = function(value) {
     helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport.percentage = value;
+  };
+
+  var setPercentageToScrollWhenUserPressesArrowUp = function (value) {
+    helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp = value;
   };
 
   var scrollWhenPlaceCaretInTheLastLineOfViewport = function() {

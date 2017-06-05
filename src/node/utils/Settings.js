@@ -263,6 +263,11 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
   /*
   * Flag to control if it should scroll when user places the caret in the last line of the viewport
   */
+  /*
+  * Percentage of viewport height to be additionally scrolled when user presses arrow up
+  * in the line of the top of the viewport.
+   */
+  "percentageToScrollWhenUserPressesArrowUp": 0,
   "scrollWhenCaretIsInTheLastLineOfViewport": false
 };
 

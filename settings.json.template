@@ -166,7 +166,13 @@
     /*
     * Flag to control if it should scroll when user places the caret in the last line of the viewport
     */
-    "scrollWhenCaretIsInTheLastLineOfViewport": false
+    "scrollWhenCaretIsInTheLastLineOfViewport": false,
+    /*
+    * Percentage of viewport height to be additionally scrolled when user presses arrow up
+    * in the line of the top of the viewport.
+    * Set to 0 to let the scroll to be handled as default by the browser
+   */
+    "percentageToScrollWhenUserPressesArrowUp": 0
   },
 
   /* Users for basic authentication. is_admin = true gives access to /admin.
