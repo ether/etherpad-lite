@@ -86,7 +86,7 @@
 	"pad.modals.unauth": "Non autorisé",
 	"pad.modals.unauth.explanation": "Vos permissions ont été changées lors de l'affichage de cette page. Essayez de vous reconnecter.",
 	"pad.modals.looping.explanation": "Nous éprouvons un problème de communication au serveur de synchronisation.",
-	"pad.modals.looping.cause": "Il est possible que vous soyez connecté avec un pare-feu ou un proxy incompatible.",
+	"pad.modals.looping.cause": "Il est possible que vous soyez connecté avec un pare-feu ou un mandataire incompatible.",
 	"pad.modals.initsocketfail": "Le serveur est introuvable.",
 	"pad.modals.initsocketfail.explanation": "Impossible de se connecter au serveur de synchronisation.",
 	"pad.modals.initsocketfail.cause": "Ceci est probablement dû à un problème avec votre navigateur ou votre connexion internet.",
