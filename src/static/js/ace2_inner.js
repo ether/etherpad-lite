@@ -2927,7 +2927,7 @@ function Ace2Inner(){
         // than it fits on viewport
         var multipleLinesSelected = rep.selStart[0] !== rep.selEnd[0];
 
-        if (isScrollableEvent && !multipleLinesSelected && isCaretAtTheBottomOfViewport(rep)) {
+        if (isScrollableEvent && !multipleLinesSelected && isCaretAtTheBottomOfViewport()) {
           // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
           var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
           scrollYPage(outerWin, pixelsToScroll);
@@ -2958,12 +2958,15 @@ function Ace2Inner(){
   // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
   // if (caretLine() === rep.lines.length() - 1) is not enough. We need to check if there are
   // other lines after caretLine(), and all of them are out of viewport.
-  function isCaretAtTheBottomOfViewport(rep)
+  function isCaretAtTheBottomOfViewport()
   {
     // computing a line position using getBoundingClientRect() is expensive.
+    // (obs: getBoundingClientRect() is called on caretPosition.getPosition())
     // To avoid that, we only call this function when it is possible that the
     // caret is in the bottom of viewport
-    if (isPossibleCaretIsInTheBottomOfViewport(rep)) {
+    if (caretIsOnALinePartiallyVisibleOnViewport()) {
+      // as the rep line is partially visible. We need to call caretPosition.getPosition()
+      // to know if the browser line where the caret is, it is in the bottom of the viewport
       var caretLinePosition = caretPosition.getPosition();
       var viewportBottom = getViewPortTopBottom().bottom;
 
@@ -2976,18 +2979,14 @@ function Ace2Inner(){
     return false;
   }
 
-  function isPossibleCaretIsInTheBottomOfViewport(rep)
+  function caretIsOnALinePartiallyVisibleOnViewport()
   {
     var caretLineNumber = rep.selStart[0];
     var caretLineNode = rep.lines.atIndex(caretLineNumber);
-    var caretLinePosition = getLineEntryTopBottom(caretLineNode, {});
+    var caretLinePosition = getLineEntryTopBottom(caretLineNode);
     var caretLineTop = caretLinePosition.top;
     var caretLineBottom = caretLinePosition.bottom;
     var viewportBottom = getViewPortTopBottom().bottom;
-
-    // here we calculate if the rep.line where the caret is, it includes the
-    // line (browser.line),  which is at the bottom of the viewport
-    // we consider as browser.line, how the lines are showed in the browser to the user
     var topOfLineIsAboveOfViewportBottom = caretLineTop < viewportBottom;
     var bottomOfLineIsOnOrBelowOfViewportBottom = caretLineBottom >= viewportBottom;
 
