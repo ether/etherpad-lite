@@ -17,7 +17,7 @@ describe('scroll when focus line is out of viewport', function () {
     context('and scroll percentage config is set to 0.2 on settings.json', function(){
       var lineCloseOfTopOfPad = 10;
       before(function (done) {
-        setScrollPercentageWhenFocusLineIsOutOfViewport(0.2);
+        setScrollPercentageWhenFocusLineIsOutOfViewport(0.2, true);
         scrollEditorToBottomOfPad();
 
         placeCaretInTheBeginningOfLine(lineCloseOfTopOfPad, function(){ // place caret in the 10th line
@@ -99,7 +99,7 @@ describe('scroll when focus line is out of viewport', function () {
       var lastLineOfViewportBeforeEnter = 10;
       before(function () {
         // the default value
-        setScrollPercentageWhenFocusLineIsOutOfViewport(0);
+        resetScrollPercentageWhenFocusLineIsOutOfViewport();
 
         // make sure the last line on viewport is the 10th one
         scrollEditorToTopOfPad();
@@ -178,7 +178,7 @@ describe('scroll when focus line is out of viewport', function () {
       var lineCloseToBottomOfPad = 50;
       before(function () {
         // we force the line edited to be above the top of the viewport
-        setScrollPercentageWhenFocusLineIsOutOfViewport(0.2); // set scroll jump to 20%
+        setScrollPercentageWhenFocusLineIsOutOfViewport(0.2, true); // set scroll jump to 20%
         scrollEditorToTopOfPad();
         placeCaretAtTheEndOfLine(lineCloseToBottomOfPad);
         scrollEditorToBottomOfPad();
@@ -201,7 +201,7 @@ describe('scroll when focus line is out of viewport', function () {
     context('and scroll percentage config is set to 0 on settings.json', function(){
       before(function (done) {
         // reset to the default value
-        setScrollPercentageWhenFocusLineIsOutOfViewport(0);
+        resetScrollPercentageWhenFocusLineIsOutOfViewport();
 
         placeCaretInTheBeginningOfLine(0, function(){ // reset caret position
           scrollEditorToTopOfPad();
@@ -613,12 +613,24 @@ describe('scroll when focus line is out of viewport', function () {
     helper.padChrome$.window.clientVars.padOptions.useMonospaceFont = true;
   };
 
-  var setScrollPercentageWhenFocusLineIsOutOfViewport = function(value) {
-    helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport.percentage = value;
+  var setScrollPercentageWhenFocusLineIsOutOfViewport = function(value, editionAboveViewport) {
+    var scrollSettings = helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport;
+    if (editionAboveViewport) {
+      scrollSettings.percentage.editionAboveViewport = value;
+    }else{
+      scrollSettings.percentage.editionBelowViewport = value;
+    }
+  };
+
+  var resetScrollPercentageWhenFocusLineIsOutOfViewport = function() {
+    var scrollSettings = helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport;
+    scrollSettings.percentage.editionAboveViewport = 0;
+    scrollSettings.percentage.editionBelowViewport = 0;
   };
 
   var setPercentageToScrollWhenUserPressesArrowUp = function (value) {
-    helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp = value;
+    var scrollSettings = helper.padChrome$.window.clientVars.scrollWhenFocusLineIsOutOfViewport;
+    scrollSettings.percentageToScrollWhenUserPressesArrowUp = value;
   };
 
   var scrollWhenPlaceCaretInTheLastLineOfViewport = function() {

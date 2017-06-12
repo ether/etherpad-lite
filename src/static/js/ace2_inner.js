@@ -5353,7 +5353,7 @@ function Ace2Inner(){
         var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
         var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
         if(caretIsAboveOfViewport){
-          var pixelsToScroll = distanceOfTopOfViewport - getPixelsRelativeToPercentageOfViewport();
+          var pixelsToScroll = distanceOfTopOfViewport - getPixelsRelativeToPercentageOfViewport(true);
           scrollYPage(win, pixelsToScroll);
         }else if(caretIsBelowOfViewport){
           var pixelsToScroll = -distanceOfBottomOfViewport + getPixelsRelativeToPercentageOfViewport();
@@ -5409,14 +5409,26 @@ function Ace2Inner(){
   // By default, when user makes an edition in a line out of viewport, this line goes
   // to the edge of viewport. This function gets the extra pixels necessary to get the
   // caret line in a position X relative to Y% viewport.
-  function getPixelsRelativeToPercentageOfViewport()
+  function getPixelsRelativeToPercentageOfViewport(editionIsAboveOfViewport)
   {
     var pixels = 0;
-    var scrollPercentageRelativeToViewport = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport.percentage;
+    var scrollPercentageRelativeToViewport = getPercentageToScroll(editionIsAboveOfViewport);
     if(scrollPercentageRelativeToViewport > 0 && scrollPercentageRelativeToViewport <= 1){
       pixels = parseInt(getInnerHeight() * scrollPercentageRelativeToViewport);
     }
     return pixels;
+  }
+
+  // we use different percentages when change selection. It depends on if it is
+  // either above the top or below the bottom of the page
+  function getPercentageToScroll(editionIsAboveOfViewport)
+  {
+    var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
+    var percentageToScroll = scrollSettings.percentage.editionBelowViewport;
+    if(editionIsAboveOfViewport){
+      percentageToScroll = scrollSettings.percentage.editionAboveViewport;
+    }
+    return percentageToScroll;
   }
 
   function scrollXHorizontallyIntoView(pixelX)

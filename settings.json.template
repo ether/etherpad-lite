@@ -157,10 +157,14 @@
   "scrollWhenFocusLineIsOutOfViewport": {
     /*
     * Percentage of viewport height to be additionally scrolled.
-    * E.g use "percentage": 0.5, to place caret line in the middle of viewport.
+    * E.g use "percentage.editionAboveViewport": 0.5, to place caret line in the
+    * middle of viewport, when user edits a line above of the viewport
     * Set to 0 to disable extra scrolling
    */
-    "percentage": 0,
+    "percentage": {
+      "editionAboveViewport": 0,
+      "editionBelowViewport": 0
+    },
     /* Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation */
     "duration": 0,
     /*
@@ -170,7 +174,7 @@
     /*
     * Percentage of viewport height to be additionally scrolled when user presses arrow up
     * in the line of the top of the viewport.
-    * Set to 0 to let the scroll to be handled as default by the browser
+    * Set to 0 to let the scroll to be handled as default by the Etherpad
    */
     "percentageToScrollWhenUserPressesArrowUp": 0
   },

@@ -255,7 +255,10 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
   /*
   * Percentage of viewport height to be additionally scrolled.
   */
-  "percentage": 0,
+  "percentage": {
+    "editionAboveViewport": 0,
+    "editionBelowViewport": 0
+  },
   /*
   * Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation
   */

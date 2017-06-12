@@ -1217,7 +1217,10 @@ function handleClientReady(client, message)
           },
           "indentationOnNewLine": settings.indentationOnNewLine,
           "scrollWhenFocusLineIsOutOfViewport": {
-            "percentage": settings.scrollWhenFocusLineIsOutOfViewport.percentage,
+            "percentage" : {
+              "editionAboveViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
+              "editionBelowViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
+            },
             "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
             "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
             "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
