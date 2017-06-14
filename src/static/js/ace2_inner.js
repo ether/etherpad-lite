@@ -2952,7 +2952,9 @@ function Ace2Inner(){
     var caretLinePosition = caretPosition.getPosition();
     var viewportTop = getViewPortTopBottom().top;
     var previousLineTop = caretLinePosition.top - caretLinePosition.height;
-    return previousLineTop <= viewportTop;
+    var previousLineIsAboveViewportTop = previousLineTop <= viewportTop;
+    var caretLineInBelowViewportTop = caretLinePosition.top >= viewportTop;
+    return previousLineIsAboveViewportTop && caretLineInBelowViewportTop;
   }
 
   // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
