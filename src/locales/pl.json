@@ -7,7 +7,8 @@
 			"Woytecr",
 			"Macofe",
 			"Pan Cube",
-			"Mateon1"
+			"Mateon1",
+			"Teeed"
 		]
 	},
 	"index.newPad": "Nowy dokument",
@@ -75,9 +76,9 @@
 	"pad.modals.initsocketfail.explanation": "Nie udało się połączyć z serwerem synchronizacji.",
 	"pad.modals.initsocketfail.cause": "Prawdopodobnie jest to spowodowane problemami z przeglądarką lub połączeniem internetowym.",
 	"pad.modals.slowcommit.explanation": "Serwer nie odpowiada.",
-	"pad.modals.slowcommit.cause": "Może być to spowodowane problemami z Twoim połączeniem z siecią.",
-	"pad.modals.badChangeset.explanation": "Edycja, którą wykonałeś, została niewłaściwie zakwalifikowana przez serwer synchronizacji.",
-	"pad.modals.badChangeset.cause": "Może być to spowodowane złą konfiguracją serwera lub innym nieoczekiwanym zachowaniem. Skontaktuj się z administratorem serwisu, jeżeli wydaje Ci się, że to jest błąd. Spróbuj ponownie połączyć się aby kontynuować edycję.",
+	"pad.modals.slowcommit.cause": "Może być to spowodowane problemami z Twoim połączeniem sieciowym.",
+	"pad.modals.badChangeset.explanation": "Edycja, którą wykonałeś, została uznana przez serwer synchronizacji jako niepoprawna.",
+	"pad.modals.badChangeset.cause": "Może być to spowodowane złą konfiguracją serwera lub innym nieoczekiwanym zachowaniem. Skontaktuj się z administratorem serwisu, jeżeli wydaje Ci się, że to jest błąd. Spróbuj połączyć się ponownie aby kontynuować edycję.",
 	"pad.modals.corruptPad.explanation": "Dokument, do którego próbujesz uzyskać dostęp, jest uszkodzony.",
 	"pad.modals.corruptPad.cause": "Może być to spowodowane złą konfiguracją serwera lub innym nieoczekiwanym zachowaniem. Skontaktuj się z administratorem serwisu.",
 	"pad.modals.deleted": "Usunięto.",
@@ -100,7 +101,7 @@
 	"timeslider.exportCurrent": "Eksportuj bieżącą wersję jako:",
 	"timeslider.version": "Wersja {{version}}",
 	"timeslider.saved": "Zapisano {{day}} {{month}} {{year}}",
-	"timeslider.playPause": "Odtwarzaj / pauzuj zawartość dokumentu",
+	"timeslider.playPause": "Odtwarzaj / zatrzymaj przewijanie historii dokumentu",
 	"timeslider.backRevision": "Przejdź do poprzedniej wersji dokumentu",
 	"timeslider.forwardRevision": "Przejdź do następnej wersji dokumentu",
 	"timeslider.dateformat": "{{year}}-{{month}}-{{day}} {{hours}}:{{minutes}}:{{seconds}}",
