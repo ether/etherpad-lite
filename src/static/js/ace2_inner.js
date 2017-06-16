@@ -2948,13 +2948,21 @@ function Ace2Inner(){
     return (eventType === 'setup') || (eventType === 'setBaseText') || (eventType === 'importText');
   }
 
-  function isCaretAtTheTopOfViewport(){
-    var caretLinePosition = caretPosition.getPosition();
-    var viewportTop = getViewPortTopBottom().top;
-    var previousLineTop = caretLinePosition.top - caretLinePosition.height;
-    var previousLineIsAboveViewportTop = previousLineTop <= viewportTop;
-    var caretLineInBelowViewportTop = caretLinePosition.top >= viewportTop;
-    return previousLineIsAboveViewportTop && caretLineInBelowViewportTop;
+  function isCaretAtTheTopOfViewport()
+  {
+    var caretLinePosition = caretPosition.getPosition(); // get the position of the browser line
+    var viewportPosition = getViewPortTopBottom();
+    var viewportTop = viewportPosition.top;
+    var viewportBottom = viewportPosition.bottom;
+    var caretLineIsBelowViewportTop = caretLinePosition.bottom >= viewportTop;
+    var caretLineIsAboveViewportBottom = caretLinePosition.top < viewportBottom;
+    var caretLineIsInsideOfViewport = caretLineIsBelowViewportTop && caretLineIsAboveViewportBottom;
+    if (caretLineIsInsideOfViewport) {
+      var prevLineTop = caretPosition.getPositionTopOfPreviousBrowserLine(caretLinePosition, rep);
+      var previousLineIsAboveViewportTop = prevLineTop < viewportTop;
+      return previousLineIsAboveViewportTop;
+    }
+    return false;
   }
 
   // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
@@ -2966,17 +2974,19 @@ function Ace2Inner(){
     // (obs: getBoundingClientRect() is called on caretPosition.getPosition())
     // To avoid that, we only call this function when it is possible that the
     // caret is in the bottom of viewport
-    if (caretIsOnALinePartiallyVisibleOnViewport()) {
+    var caretLine = rep.selStart[0];
+    var lineAfterCaretLine = caretLine + 1;
+    var firstLineVisibleAfterCaretLine = caretPosition.getNextVisibleLine(lineAfterCaretLine, rep);
+    var caretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(caretLine);
+    var lineAfterCaretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(firstLineVisibleAfterCaretLine);
+    if (caretLineIsPartiallyVisibleOnViewport || lineAfterCaretLineIsPartiallyVisibleOnViewport) {
       // as the rep line is partially visible. We need to call caretPosition.getPosition()
       // to know if the browser line where the caret is, it is in the bottom of the viewport
       var caretLinePosition = caretPosition.getPosition();
       var viewportBottom = getViewPortTopBottom().bottom;
-
-      // Here we consider a line as the lines are showed in the browser to the user.
-      // That means, one rep.line can have more than one line.
-      // We assume that the next line has the same height of the caret line
-      var nextLineBottom = caretLinePosition.bottom + caretLinePosition.height;
-      return nextLineBottom > viewportBottom;
+      var nextLineBottom = caretPosition.getBottomOfNextBrowserLine(caretLinePosition, rep);
+      var nextLineIsBelowViewportBottom = nextLineBottom > viewportBottom;
+      return nextLineIsBelowViewportBottom;
     }
     return false;
   }
@@ -2991,7 +3001,18 @@ function Ace2Inner(){
     var viewportBottom = getViewPortTopBottom().bottom;
     var topOfLineIsAboveOfViewportBottom = caretLineTop < viewportBottom;
     var bottomOfLineIsOnOrBelowOfViewportBottom = caretLineBottom >= viewportBottom;
+    return topOfLineIsAboveOfViewportBottom && bottomOfLineIsOnOrBelowOfViewportBottom;
+  }
 
+  function isLinePartiallyVisibleOnViewport(lineNumber)
+  {
+    var lineNode = rep.lines.atIndex(lineNumber);
+    var linePosition = getLineEntryTopBottom(lineNode);
+    var lineTop = linePosition.top;
+    var lineBottom = linePosition.bottom;
+    var viewportBottom = getViewPortTopBottom().bottom;
+    var topOfLineIsAboveOfViewportBottom = lineTop < viewportBottom;
+    var bottomOfLineIsOnOrBelowOfViewportBottom = lineBottom >= viewportBottom;
     return topOfLineIsAboveOfViewportBottom && bottomOfLineIsOnOrBelowOfViewportBottom;
   }
 
