@@ -4163,7 +4163,9 @@ function Ace2Inner(){
               if(arrowUpWasPressedInTheFirstLineOfTheViewport){
                 var win = outerWin;
                 var pixelsToScroll = getPixelsToScrollWhenUserPressesArrowUp();
-                scrollYPage(win, -pixelsToScroll);
+                // by default, the browser scrolls to the middle of the pad. To avoid the twist made
+                // when we apply a second scroll, we made it immediately (without animation)
+                scrollYPageWithoutAnimation(win, -pixelsToScroll);
               }else{
                 scrollNodeVerticallyIntoView();
               }
