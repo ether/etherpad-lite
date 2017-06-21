@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -30,7 +30,7 @@ var padeditor = (function()
   var settings = undefined;
 
   // Array of available fonts
-  var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
+  var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
     'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
     'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
     'useSerifFont'];
@@ -102,7 +102,7 @@ var padeditor = (function()
           pad.changeViewOption(font, $("#viewfontmenu").val() == sfont);
         });
       });
-      
+
       // Language
       html10n.bind('localized', function() {
         $("#languagemenu").val(html10n.getLanguage());
@@ -161,6 +161,7 @@ var padeditor = (function()
           font = font.replace("Font","");
           font = font.toLowerCase();
           if(font === "monospace") self.ace.setProperty("textface", "monospace");
+          if(font === "montserrat") self.ace.setProperty("textface", "Montserrat");
           if(font === "opendyslexic") self.ace.setProperty("textface", "OpenDyslexic");
           if(font === "comicsans") self.ace.setProperty("textface", "'Comic Sans MS','Comic Sans',cursive");
           if(font === "georgia") self.ace.setProperty("textface", "Georgia,'Bitstream Charter',serif");

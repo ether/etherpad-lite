@@ -1255,6 +1255,21 @@ input[type=checkbox] {
 }
 /* End of gritter stuff */
 
+/* Montserrat Font */
+@font-face {
+  font-family: "Montserrat";
+  src: url("../../static/font/Montserrat-Light.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+    font-family: "Montserrat";
+    src: url("../../static/font/Montserrat-Regular.otf") format("opentype");
+    font-weight: bold;
+    font-style: normal;
+}
+/* End of Monterrat Font */
+
 @font-face {
   font-family: opendyslexic;
   src: url("../../static/font/opendyslexic.otf") format("opentype");
@@ -1304,5 +1319,3 @@ input[type=checkbox] {
 .hideControlsEditbar{
   display:none !important;
 }
-
-
