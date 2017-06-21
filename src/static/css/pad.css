@@ -1260,6 +1260,21 @@ input[type=checkbox] {
   src: url("../../static/font/opendyslexic.otf") format("opentype");
 }
 
+/* Roboto Mono */
+@font-face {
+    font-family: "RobotoMono";
+    src: url("../../static/font/RobotoMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "RobotoMono";
+    src: url("../../static/font/RobotoMono-Bold.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+/* End of Roboto Mono */
+
 @font-face {
   font-family: "fontawesome-etherpad";
   src:url("../../static/font/fontawesome-etherpad.eot");
@@ -1304,5 +1319,3 @@ input[type=checkbox] {
 .hideControlsEditbar{
   display:none !important;
 }
-
-
