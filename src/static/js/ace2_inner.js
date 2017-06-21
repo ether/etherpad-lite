@@ -2916,23 +2916,11 @@ function Ace2Inner(){
         documentAttributeManager: documentAttributeManager,
       });
 
-      // are we placing the caret on the line at the bottom of viewport?
-      // And if so, do we need to scroll the editor, as defined on the settings.json?
-      var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
-      var shouldScrollWhenCaretIsAtBottomOfViewport =  scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport;
-      if (shouldScrollWhenCaretIsAtBottomOfViewport) {
-        // avoid scrolling when pad loads
-        var isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
-        // avoid scrolling when selection includes multiple lines -- user can potentially be selecting more lines
-        // than it fits on viewport
-        var multipleLinesSelected = rep.selStart[0] !== rep.selEnd[0];
-
-        if (isScrollableEvent && !multipleLinesSelected && isCaretAtTheBottomOfViewport()) {
-          // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
-          var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
-          scrollYPage(outerWin, pixelsToScroll);
-        }
-
+      // we scroll when user places the caret at the last line of the pad
+      // when this settings is enabled
+      var docTextChanged = currentCallStack.docTextChanged;
+      if(!docTextChanged){
+       scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary();
       }
 
       return true;
@@ -2989,19 +2977,6 @@ function Ace2Inner(){
       return nextLineIsBelowViewportBottom;
     }
     return false;
-  }
-
-  function caretIsOnALinePartiallyVisibleOnViewport()
-  {
-    var caretLineNumber = rep.selStart[0];
-    var caretLineNode = rep.lines.atIndex(caretLineNumber);
-    var caretLinePosition = getLineEntryTopBottom(caretLineNode);
-    var caretLineTop = caretLinePosition.top;
-    var caretLineBottom = caretLinePosition.bottom;
-    var viewportBottom = getViewPortTopBottom().bottom;
-    var topOfLineIsAboveOfViewportBottom = caretLineTop < viewportBottom;
-    var bottomOfLineIsOnOrBelowOfViewportBottom = caretLineBottom >= viewportBottom;
-    return topOfLineIsAboveOfViewportBottom && bottomOfLineIsOnOrBelowOfViewportBottom;
   }
 
   function isLinePartiallyVisibleOnViewport(lineNumber)
@@ -5363,29 +5338,45 @@ function Ace2Inner(){
     var viewport = getViewPortTopBottom();
     var isPartOfRepLineOutOfViewport = partOfRepLineIsOutOfViewport(viewport);
 
-    // first we test if part of rep line is out of viewport. If so, as a rep line can break in more lines
-    // on the browser (browser lines), we test if the browser line where the caret is it out of viewport.
-    // With it, we avoid doing expensive operation to calculate the line position every time a key is pressed
-    if (isPartOfRepLineOutOfViewport) {
-      // when the selection changes outside of the viewport the browser automatically scrolls the line
-      // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
-      // So, when the line scrolled gets outside of the viewport we let the browser handle it.
-      var linePosition = caretPosition.getPosition();
-      var win = outerWin;
-      if(linePosition){
-        var distanceOfTopOfViewport = linePosition.top - viewport.top;
-        var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
-        var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
-        var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
-        if(caretIsAboveOfViewport){
-          var pixelsToScroll = distanceOfTopOfViewport - getPixelsRelativeToPercentageOfViewport(true);
-          scrollYPage(win, pixelsToScroll);
-        }else if(caretIsBelowOfViewport){
-          var pixelsToScroll = -distanceOfBottomOfViewport + getPixelsRelativeToPercentageOfViewport();
-          scrollYPage(win, pixelsToScroll);
-        }
+    // when the selection changes outside of the viewport the browser automatically scrolls the line
+    // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
+    // So, when the line scrolled gets outside of the viewport we let the browser handle it.
+    var linePosition = caretPosition.getPosition();
+    var win = outerWin;
+    if(linePosition){
+      var distanceOfTopOfViewport = linePosition.top - viewport.top;
+      var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
+      var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
+      var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
+      if(caretIsAboveOfViewport){
+        var pixelsToScroll = distanceOfTopOfViewport - getPixelsRelativeToPercentageOfViewport(true);
+        scrollYPage(win, pixelsToScroll);
+      }else if(caretIsBelowOfViewport){
+        var pixelsToScroll = -distanceOfBottomOfViewport + getPixelsRelativeToPercentageOfViewport();
+        scrollYPage(win, pixelsToScroll);
+      }else{
+        scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary();
       }
+    }
+  }
 
+  function scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary()
+  {
+    // are we placing the caret on the line at the bottom of viewport?
+    // And if so, do we need to scroll the editor, as defined on the settings.json?
+    var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
+    var shouldScrollWhenCaretIsAtBottomOfViewport =  scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport;
+    if (shouldScrollWhenCaretIsAtBottomOfViewport) {
+      // avoid scrolling when pad loads
+      var isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
+      // avoid scrolling when selection includes multiple lines -- user can potentially be selecting more lines
+      // than it fits on viewport
+      var multipleLinesSelected = rep.selStart[0] !== rep.selEnd[0];
+      if (isScrollableEvent && !multipleLinesSelected && isCaretAtTheBottomOfViewport()) {
+        // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
+        var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
+        scrollYPage(outerWin, pixelsToScroll);
+      }
     }
   }
 
