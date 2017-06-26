@@ -4,7 +4,8 @@
 			"Theklan",
 			"Subi",
 			"Xabier Armendaritz",
-			"An13sa"
+			"An13sa",
+			"Mikel Ibaiba"
 		]
 	},
 	"index.newPad": "Pad berria",
@@ -59,6 +60,7 @@
 	"pad.modals.connected": "Konektatuta.",
 	"pad.modals.reconnecting": "Zure pad-era birkonektatu...",
 	"pad.modals.forcereconnect": "Berkonexioa fortzatu",
+	"pad.modals.cancel": "Deuseztatu",
 	"pad.modals.userdup": "Beste leiho batean ireki da",
 	"pad.modals.userdup.explanation": "Pad hau zure nabigatzailearen beste leiho batean irekita dagoela ematen du.",
 	"pad.modals.userdup.advice": "Berriro konektatu beste leiho hau erabiltzeko.",
