@@ -8,7 +8,8 @@
 			"Macofe",
 			"Joan manel",
 			"Eduardo Martinez",
-			"Jaumeortola"
+			"Jaumeortola",
+			"Ssola"
 		]
 	},
 	"index.newPad": "Nou pad",
@@ -63,6 +64,8 @@
 	"pad.modals.connected": "Connectat.",
 	"pad.modals.reconnecting": "S'està tornant a connectar al vostre pad…",
 	"pad.modals.forcereconnect": "Força tornar a connectar",
+	"pad.modals.reconnecttimer": "Intentant reconnectar en",
+	"pad.modals.cancel": "Cancel·la",
 	"pad.modals.userdup": "Obert en una altra finestra",
 	"pad.modals.userdup.explanation": "Aquest pad sembla que està obert en més d'una finestra de navegador de l'ordinador.",
 	"pad.modals.userdup.advice": "Torneu a connectar-vos per a utilitzar aquesta finestra.",

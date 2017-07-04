@@ -9,7 +9,8 @@
 			"محمد أحمد عبد الفتاح",
 			"Haytham morsy",
 			"ديفيد",
-			"Mido"
+			"Mido",
+			"Shbib Al-Subaie"
 		]
 	},
 	"index.newPad": "باد جديد",
@@ -64,6 +65,7 @@
 	"pad.modals.connected": "متصل.",
 	"pad.modals.reconnecting": "إعادة الاتصال ببادك",
 	"pad.modals.forcereconnect": "فرض إعادة الاتصال",
+	"pad.modals.reconnecttimer": "حاول إعادة الاتصال",
 	"pad.modals.cancel": "إلغاء",
 	"pad.modals.userdup": "مفتوح في نافذة أخرى",
 	"pad.modals.userdup.explanation": "يبدو أن هذا الباد تم فتحه في أكثر من نافذة متصفح في هذا الحاسوب.",
