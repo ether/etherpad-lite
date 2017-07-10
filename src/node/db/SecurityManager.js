@@ -22,6 +22,7 @@
 var ERR = require("async-stacktrace");
 var async = require("async");
 var authorManager = require("./AuthorManager");
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings");
@@ -41,6 +42,14 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
   var statusObject;
   
   if(!padID) {
+    callback(null, {accessStatus: "deny"});
+    return;
+  }
+
+  // allow plugins to deny access
+  var deniedByHook = hooks.callAll("onAccessCheck", {'padID': padID, 'password': password, 'token': token, 'sessionCookie': sessionCookie}).indexOf(false) > -1;
+  if(deniedByHook)
+  {
     callback(null, {accessStatus: "deny"});
     return;
   }
