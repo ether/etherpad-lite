@@ -554,10 +554,12 @@ var pad = {
         pad.changeViewOption('rtlIsTrue', true);
       }
 
-      var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
-        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont', 'useTahomaFont', 'useTimesNewRomanFont',
-        'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
-        'useSerifFont'];
+
+      var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont',
+        'useGeorgiaFont', 'useImpactFont', 'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont',
+        'useTahomaFont', 'useTimesNewRomanFont', 'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont',
+        'useWingDingsFont', 'useSansSerifFont', 'useSerifFont'];
+
 
       $.each(fonts, function(i, font){
         if(padcookie.getPref(font) == true){
