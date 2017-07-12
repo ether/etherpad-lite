@@ -31,7 +31,7 @@ var authLogger = log4js.getLogger("auth");
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
  * @param padID the pad the user wants to access
- * @param sesssionID the session the user has (set via api)
+ * @param sessionCookie the session the user has (set via api)
  * @param token the token of the author (randomly generated at client side, used for public pads)
  * @param password the password the user has given to access this pad, can be null 
  * @param callback will be called with (err, {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx})

@@ -58,6 +58,8 @@
 	"pad.modals.connected": "Ansluten.",
 	"pad.modals.reconnecting": "Återansluter till ditt block...",
 	"pad.modals.forcereconnect": "Tvinga återanslutning",
+	"pad.modals.reconnecttimer": "Försöker ansluta igen",
+	"pad.modals.cancel": "Avbryt",
 	"pad.modals.userdup": "Öppnades i ett nytt fönster",
 	"pad.modals.userdup.explanation": "Detta block verkar vara öppet i mer än ett fönster på denna dator.",
 	"pad.modals.userdup.advice": "Återanslut för att använda detta fönster istället.",

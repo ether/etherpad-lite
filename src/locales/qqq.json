@@ -58,6 +58,7 @@
 	"pad.modals.connected": "Used as HTML <code><nowiki><h2></nowiki></code> heading to indicate the status.\n\nSee also:\n* {{msg-etherpadlite|Pad.modals.reconnecting}}\n{{Identical|Connected}}",
 	"pad.modals.reconnecting": "Used as HTML <code><nowiki><h2></nowiki></code> heading to indicate the status.\n\nSee also:\n* {{msg-etherpadlite|Pad.modals.connected}}",
 	"pad.modals.forcereconnect": "Label of a button that will make the browser reconnect to the synchronization server.",
+	"pad.modals.cancel": "{{Identical|Cancel}}",
 	"pad.modals.userdup": "Used as HTML <code><nowiki><h1></nowiki></code> heading to indicate that the pad is opened in another window on this computer.\n\nFollowed by the following messages:\n* {{msg-etherpadlite|Pad.modals.userdup.explanation}} - <code><nowiki><h2></nowiki></code> heading\n* {{msg-etherpadlite|Pad.modals.userdup.advice}}",
 	"pad.modals.userdup.explanation": "Used as HTML <code><nowiki><h2></nowiki></code> heading.\n\nPreceded by the parent heading {{msg-etherpadlite|Pad.modals.userdup}}.\n\nFollowed by the message {{msg-etherpadlite|Pad.modals.userdup.advice}}.",
 	"pad.modals.userdup.advice": "Preceded by the following headings:\n* {{msg-etherpadlite|Pad.modals.userdup}}\n* {{msg-etherpadlite|Pad.modals.userdup.explanation}}",

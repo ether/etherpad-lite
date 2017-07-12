@@ -58,6 +58,8 @@
 	"pad.modals.connected": "Падлучыліся.",
 	"pad.modals.reconnecting": "Перападлучэньне да вашага дакумэнта...",
 	"pad.modals.forcereconnect": "Прымусовае перападлучэньне",
+	"pad.modals.reconnecttimer": "Спрабуем перападключыцца праз",
+	"pad.modals.cancel": "Адмяніць",
 	"pad.modals.userdup": "Адкрыта ў іншым акне",
 	"pad.modals.userdup.explanation": "Падобна, дакумэнт адкрыты больш чым у адным акне браўзэра на гэтым кампутары.",
 	"pad.modals.userdup.advice": "Паўторна падключыць з выкарыстаньнем гэтага акна.",

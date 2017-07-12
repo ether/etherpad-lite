@@ -29,6 +29,7 @@
 	"pad.importExport.exportpdf": "PDF",
 	"pad.modals.connected": "Կապված է",
 	"pad.modals.forcereconnect": "Հարկադիր վերամիավորել",
+	"pad.modals.cancel": "Չեղարկել",
 	"pad.modals.userdup": "Բաց է մյուս պատուհանում",
 	"pad.modals.initsocketfail": "Սերվերը անհասանելի է ։",
 	"pad.modals.slowcommit.explanation": "Սերվերը չի պատասխանում։",

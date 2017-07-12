@@ -62,6 +62,8 @@
 	"pad.modals.connected": "Verbunden.",
 	"pad.modals.reconnecting": "Wiederherstellen der Verbindung …",
 	"pad.modals.forcereconnect": "Erneutes Verbinden erzwingen",
+	"pad.modals.reconnecttimer": "Versuche Neuverbindung in",
+	"pad.modals.cancel": "Abbrechen",
 	"pad.modals.userdup": "In einem anderen Fenster geöffnet",
 	"pad.modals.userdup.explanation": "Dieses Pad scheint in mehr als einem Browser-Fenster auf diesem Rechner geöffnet zu sein.",
 	"pad.modals.userdup.advice": "Um stattdessen dieses Fenster zu verwenden, verbinden Sie sich bitte erneut.",

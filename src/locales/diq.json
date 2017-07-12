@@ -4,7 +4,9 @@
 			"Erdemaslancan",
 			"Gorizon",
 			"Mirzali",
-			"Kumkumuk"
+			"Kumkumuk",
+			"1917 Ekim Devrimi",
+			"Gırd"
 		]
 	},
 	"index.newPad": "Pedo newe",
@@ -25,7 +27,7 @@
 	"pad.toolbar.savedRevision.title": "Çımraviyarnayışi qeyd ke",
 	"pad.toolbar.settings.title": "Sazkerdışi",
 	"pad.toolbar.embed.title": "Na bloknot  degusn u bıhesrne",
-	"pad.toolbar.showusers.title": "Na bloknot de karbera bıasne",
+	"pad.toolbar.showusers.title": "Karbera ena bloknot dı bımotné",
 	"pad.colorpicker.save": "Qeyd ke",
 	"pad.colorpicker.cancel": "Bıtexelne",
 	"pad.loading": "Bar beno...",
@@ -114,7 +116,7 @@
 	"timeslider.unnamedauthors": "{{num}} unnamed {[plural(num) zu: nuştoğ, zewbi: nustoği ]}",
 	"pad.savedrevs.marked": "Eno vurriyayış henda qeyd bıyaye yew vurriyayış deyne nışan bıyo",
 	"pad.savedrevs.timeslider": "Xızberê zemani ziyer kerdış ra şıma şenê revizyonanê qeyd bıyayan bıvinê",
-	"pad.userlist.entername": "Nameyê xo cıkewe",
+	"pad.userlist.entername": "Namey xo cıkewe",
 	"pad.userlist.unnamed": "Name nébıyo",
 	"pad.userlist.guest": "Meyman",
 	"pad.userlist.deny": "Red ke",

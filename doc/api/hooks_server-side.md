@@ -36,7 +36,7 @@ Things in context: None
 This function is called after a specific plugin is initialized. This would probably be more useful than the previous two functions if you only wanted to add in features to one specific plugin.
 
 ## expressConfigure
-Called from: src/node/server.js
+Called from: src/node/hooks/express.js
 
 Things in context:
 
@@ -45,7 +45,7 @@ Things in context:
 This is a helpful hook for changing the behavior and configuration of the application. It's called right after the application gets configured.
 
 ## expressCreateServer
-Called from: src/node/server.js
+Called from: src/node/hooks/express.js
 
 Things in context:
 
@@ -72,7 +72,7 @@ Available blocks in `pad.html` are:
  * `editbarMenuRight` - right tool bar
  * `afterEditbar` - allows you to add stuff immediately after the toolbar
  * `userlist` - the contents of the userlist dropdown
- * `loading` - the intial loading message
+ * `loading` - the initial loading message
  * `mySettings` - the left column of the settings dropdown ("My view"); intended for adding checkboxes only
  * `mySettings.dropdowns` - add your dropdown settings here
  * `globalSettings` - the right column of the settings dropdown ("Global view")
@@ -104,9 +104,9 @@ Things in context:
 
 Here you can add custom toolbar items that will be available in the toolbar config in `settings.json`. For more about the toolbar controller see the API section.
 
-Usage examples: 
+Usage examples:
 
-* [https://github.com/tiblu/ep_authorship_toggle]()
+* https://github.com/tiblu/ep_authorship_toggle
 
 ## padCreate
 Called from: src/node/db/Pad.js
@@ -137,6 +137,20 @@ Things in context:
 
 This hook gets called when an existing pad was updated.
 
+## padCopy
+Called from: src/node/db/Pad.js
+
+Things in context:
+
+1. originalPad - the source pad instance
+2. destinationID - the id of the pad copied from originalPad
+
+This hook gets called when an existing pad was copied.
+
+Usage examples:
+
+* https://github.com/ether/ep_comments
+
 ## padRemove
 Called from: src/node/db/Pad.js
 
@@ -145,6 +159,10 @@ Things in context:
 1. padID
 
 This hook gets called when an existing pad was removed/deleted.
+
+Usage examples:
+
+* https://github.com/ether/ep_comments
 
 ## socketio
 Called from: src/node/hooks/express/socketio.js

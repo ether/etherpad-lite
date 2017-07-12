@@ -335,6 +335,12 @@ function handshake()
         console.warn(obj);
         padconnectionstatus.disconnected(obj.disconnect);
         socket.disconnect();
+
+        // block user from making any change to the pad
+        padeditor.disable();
+        padeditbar.disable();
+        padimpexp.disable();
+
         return;
       }
       else
@@ -548,10 +554,10 @@ var pad = {
         pad.changeViewOption('rtlIsTrue', true);
       }
 
+
       var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
-        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
-        'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
-        'useSerifFont'];
+        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont', 'useTahomaFont', 'useTimesNewRomanFont',
+
 
       $.each(fonts, function(i, font){
         if(padcookie.getPref(font) == true){

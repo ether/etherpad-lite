@@ -936,7 +936,7 @@ function handleSwitchToPad(client, message)
   var currentSession = sessioninfos[client.id];
   var padId = currentSession.padId;
   var roomClients = _getRoomClients(padId);
-  
+
   async.forEach(roomClients, function(client, callback) {
     var sinfo = sessioninfos[client.id];
     if(sinfo && sinfo.author == currentSession.author) {
@@ -1115,7 +1115,7 @@ function handleClientReady(client, message)
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
       var roomClients = _getRoomClients(pad.id);
-      
+
       async.forEach(roomClients, function(client, callback) {
         var sinfo = sessioninfos[client.id];
         if(sinfo && sinfo.author == author) {
@@ -1176,6 +1176,7 @@ function handleClientReady(client, message)
           "accountPrivs": {
               "maxRevisions": 100
           },
+          "automaticReconnectionTimeout": settings.automaticReconnectionTimeout,
           "initialRevisionList": [],
           "initialOptions": {
               "guestPolicy": "deny"
@@ -1196,6 +1197,7 @@ function handleClientReady(client, message)
           "userColor": authorColorId,
           "padId": message.padId,
           "padOptions": settings.padOptions,
+          "padShortcutEnabled": settings.padShortcutEnabled,
           "initialTitle": "Pad: " + message.padId,
           "opts": {},
           // tell the client the number of the latest chat-message, which will be
@@ -1676,13 +1678,13 @@ function composePadChangesets(padId, startNum, endNum, callback)
 
 function _getRoomClients(padID) {
   var roomClients = []; var room = socketio.sockets.adapter.rooms[padID];
-  
+
   if (room) {
     for (var id in room.sockets) {
       roomClients.push(socketio.sockets.sockets[id]);
     }
   }
-  
+
   return roomClients;
 }
 

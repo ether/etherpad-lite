@@ -59,6 +59,8 @@
 	"pad.modals.connected": "Kevreet.",
 	"pad.modals.reconnecting": "Adkevreañ war-zu ho pad...",
 	"pad.modals.forcereconnect": "Adkevreañ dre heg",
+	"pad.modals.reconnecttimer": "O klask adkevreañ",
+	"pad.modals.cancel": "Nullañ",
 	"pad.modals.userdup": "Digor en ur prenestr all",
 	"pad.modals.userdup.explanation": "Digor eo ho pad, war a seblant, e meur a brenestr eus ho merdeer en urzhiataer-mañ.",
 	"pad.modals.userdup.advice": "Kevreañ en ur implijout ar prenestr-mañ.",

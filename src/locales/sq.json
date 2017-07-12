@@ -5,7 +5,7 @@
 			"Kosovastar"
 		]
 	},
-	"index.newPad": "Bllok i Ri",
+	"index.newPad": "Bllok i ri",
 	"index.createOpenPad": "ose krijoni/hapni një Bllok me emrin:",
 	"pad.toolbar.bold.title": "Të trasha (Ctrl-B)",
 	"pad.toolbar.italic.title": "Të pjerrëta (Ctrl-I)",
@@ -20,7 +20,7 @@
 	"pad.toolbar.clearAuthorship.title": "Hiqu Ngjyra Autorësish (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Importoni/Eksportoni nga/në formate të tjera kartelash",
 	"pad.toolbar.timeslider.title": "Rrjedha kohore",
-	"pad.toolbar.savedRevision.title": "Ruaje Rishikimin",
+	"pad.toolbar.savedRevision.title": "Ruaje rishikimin",
 	"pad.toolbar.settings.title": "Rregullime",
 	"pad.toolbar.embed.title": "Ndajeni me të tjerët dhe Trupëzojeni këtë bllok",
 	"pad.toolbar.showusers.title": "Shfaq përdoruesit në këtë bllok",
@@ -88,7 +88,7 @@
 	"timeslider.pageTitle": "Rrjedhë kohore e {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Rikthehuni te blloku",
 	"timeslider.toolbar.authors": "Autorë:",
-	"timeslider.toolbar.authorsList": "S’ka Autorë",
+	"timeslider.toolbar.authorsList": "S’ka autorë",
 	"timeslider.toolbar.exportlink.title": "Eksportoje",
 	"timeslider.exportCurrent": "Eksportojeni versionin e tanishëm si:",
 	"timeslider.version": "Versioni {{version}}",

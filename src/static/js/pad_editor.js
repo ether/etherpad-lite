@@ -30,10 +30,10 @@ var padeditor = (function()
   var settings = undefined;
 
   // Array of available fonts
+
   var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
-    'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
-    'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
-    'useSerifFont'];
+    'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont', 'useTahomaFont', 'useTimesNewRomanFont',
+
 
   var self = {
     ace: null,
@@ -169,6 +169,7 @@ var padeditor = (function()
           if(font === "lucida") self.ace.setProperty("textface", "Lucida,'Lucida Serif','Lucida Bright',serif");
           if(font === "lucidasans") self.ace.setProperty("textface", "'Lucida Sans','Lucida Grande','Lucida Sans Unicode','Luxi Sans',sans-serif");
           if(font === "palatino") self.ace.setProperty("textface", "Palatino,'Palatino Linotype','URW Palladio L',Georgia,serif");
+          if(font === "robotomono") self.ace.setProperty("textface", "RobotoMono");
           if(font === "tahoma") self.ace.setProperty("textface", "Tahoma,sans-serif");
           if(font === "timesnewroman") self.ace.setProperty("textface", "'Times New Roman',Times,serif");
           if(font === "trebuchet") self.ace.setProperty("textface", "'Trebuchet MS',sans-serif");
