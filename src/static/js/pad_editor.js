@@ -31,8 +31,10 @@ var padeditor = (function()
 
   // Array of available fonts
 
-  var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
-    'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont', 'useTahomaFont', 'useTimesNewRomanFont',
+  var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont',
+    'useGeorgiaFont', 'useImpactFont', 'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont',
+    'useTahomaFont', 'useTimesNewRomanFont', 'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont',
+    'useWingDingsFont', 'useSansSerifFont', 'useSerifFont'];
 
 
   var self = {
