@@ -555,7 +555,7 @@ var pad = {
       }
 
       var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
-        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
+        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont', 'useTahomaFont', 'useTimesNewRomanFont',
         'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
         'useSerifFont'];
 
