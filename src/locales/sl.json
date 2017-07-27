@@ -3,7 +3,8 @@
 		"authors": [
 			"Dbc334",
 			"Mateju",
-			"Skalcaa"
+			"Skalcaa",
+			"HairyFotr"
 		]
 	},
 	"index.newPad": "Nov dokument",
@@ -58,6 +59,8 @@
 	"pad.modals.connected": "Povezano.",
 	"pad.modals.reconnecting": "Poteka povezovanje z dokumentom ...",
 	"pad.modals.forcereconnect": "Vsili ponovno povezavo.",
+	"pad.modals.reconnecttimer": "Poskus ponovne vzpostavitve povezave čez",
+	"pad.modals.cancel": "Prekliči",
 	"pad.modals.userdup": "Dokument je že odprt v v drugem oknu.",
 	"pad.modals.userdup.explanation": "Videti je, da je ta dokument odprt v več kot enem oknu brskalnika na tem računalniku.",
 	"pad.modals.userdup.advice": "Ponovno vzpostavite povezavo in uporabljajte to okno.",
