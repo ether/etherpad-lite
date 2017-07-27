@@ -1,4 +1,5 @@
 doc_sources = $(wildcard doc/*/*.md) $(wildcard doc/*.md)
+
 outdoc_files = $(addprefix out/,$(doc_sources:.md=.html))
 
 docassets = $(addprefix out/,$(wildcard doc/assets/*))
