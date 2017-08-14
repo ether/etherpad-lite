@@ -57,7 +57,7 @@ exports.getPosition = function ()
 
 exports.getPositionOfRepLineAtOffset = function (node, offset) {
   // it is not a text node, so we cannot make a selection
-  if (node.tagName === 'BR') {
+  if (node.tagName === 'BR' || node.tagName === 'EMPTY') {
     return getPositionOfElementOrSelection(node);
   }
 
