@@ -21,7 +21,7 @@
  * IN THE SOFTWARE.
  */
 window.html10n = (function(window, document, undefined) {
-  
+
   // fix console
   (function() {
     var noop = function() {};
@@ -80,7 +80,7 @@ window.html10n = (function(window, document, undefined) {
       return -1;
     }
   }
-    
+
   /**
    * MicroEvent - to make any js object an event emitter (server or browser)
    */
@@ -116,7 +116,7 @@ window.html10n = (function(window, document, undefined) {
       destObject[props[i]] = MicroEvent.prototype[props[i]];
     }
   }
-  
+
   /**
    * Loader
    * The loader is responsible for loading
@@ -127,7 +127,7 @@ window.html10n = (function(window, document, undefined) {
     this.cache = {} // file => contents
     this.langs = {} // lang => strings
   }
-  
+
   Loader.prototype.load = function(lang, cb) {
     if(this.langs[lang]) return cb()
 
@@ -137,22 +137,22 @@ window.html10n = (function(window, document, undefined) {
         this.fetch(this.resources[i], lang, function(e) {
           reqs++;
           if(e) console.warn(e)
-          
+
           if (reqs < n) return;// Call back once all reqs are completed
           cb && cb()
         })
       }
     }
   }
-  
+
   Loader.prototype.fetch = function(href, lang, cb) {
     var that = this
-    
+
     if (this.cache[href]) {
       this.parse(lang, href, this.cache[href], cb)
       return;
     }
-    
+
     var xhr = new XMLHttpRequest()
     xhr.open('GET', href, /*async: */true)
     if (xhr.overrideMimeType) {
@@ -172,7 +172,7 @@ window.html10n = (function(window, document, undefined) {
     };
     xhr.send(null);
   }
-  
+
   Loader.prototype.parse = function(lang, currHref, data, cb) {
     if ('object' != typeof data) {
       cb(new Error('A file couldn\'t be parsed as json.'))
@@ -180,7 +180,7 @@ window.html10n = (function(window, document, undefined) {
     }
 
     // dat alng ain't here, man!
-    if (!data[lang]) {
+    if (!data) {
       var msg = 'Couldn\'t find translations for '+lang
         , l
       if(~lang.indexOf('-')) lang = lang.split('-')[0] // then let's try related langs
@@ -192,7 +192,7 @@ window.html10n = (function(window, document, undefined) {
       }
       if(lang != l) return cb(new Error(msg))
     }
-    
+
     if ('string' == typeof data[lang]) {
       // Import rule
 
@@ -200,7 +200,7 @@ window.html10n = (function(window, document, undefined) {
       var importUrl = data[lang]
 
       // relative path
-      if(data[lang].indexOf("http") != 0 && data[lang].indexOf("/") != 0) {  
+      if(data[lang].indexOf("http") != 0 && data[lang].indexOf("/") != 0) {
         importUrl = currHref+"/../"+data[lang]
       }
 
@@ -208,29 +208,40 @@ window.html10n = (function(window, document, undefined) {
       return
     }
 
-    if ('object' != typeof data[lang]) {
+    if ('object' != typeof data) {
       cb(new Error('Translations should be specified as JSON objects!'))
       return
     }
 
-    this.langs[lang] = data[lang]
+    this.langs[lang] = data
     // TODO: Also store accompanying langs
     cb()
   }
-  
-  
+
+
   /**
    * The html10n object
    */
-  var html10n = 
+  var html10n =
   { language : null
   }
   MicroEvent.mixin(html10n)
-  
+
   html10n.macros = {}
 
   html10n.rtl = ["ar","dv","fa","ha","he","ks","ku","ps","ur","yi"]
-  
+
+  /**
+   * Language-Script fallbacks for Language-Region language tags, for languages that
+   * varies heavily on writing form and two-part locale expansion is not feasible.
+   * See also: https://tools.ietf.org/html/rfc4646 (RFC 4646)
+   */
+  html10n.scripts = {
+      'zh-tw': 'zh-hant',
+      'zh-hk': 'zh-hant',
+      'zh-cn': 'zh-hans'
+  }
+
   /**
    * Get rules for plural forms (shared with JetPack), see:
    * http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html
@@ -668,25 +679,44 @@ window.html10n = (function(window, document, undefined) {
 
     return str;
   };
-  
-  /**
-   * Localize a document
-   * @param langs An array of lang codes defining fallbacks
+
+  /** Prepare localization context:
+   *
+   * - Populate translations with strings for the indicated languages
+   *   - adding in non-qualified versions of language codes immediately
+   *     after any qualified (e.g., "en" for "en-GB")
+   * - Trigger "localized" event.
+   *
+   * @param {array} langs: diminishing-precedence lang codes, or one string.
    */
   html10n.localize = function(langs) {
-    var that = this
-    // if only one string => create an array
-    if ('string' == typeof langs) langs = [langs]
+    var that = this,
+        candidates = [];
+    // if a single string, bundle it as an array:
+    if ('string' == typeof langs) {
+      langs = [langs];
+    }
 
-    // Expand two-part locale specs
-    var i=0
+    // Determine candidates from langs:
+    // - Omitting empty strings
+    // - Adding in non-qualified versions of country-qualified codes.
     langs.forEach(function(lang) {
-      if(!lang) return;
-      langs[i++] = lang;
-      if(~lang.indexOf('-')) langs[i++] = lang.substr(0, lang.indexOf('-'));
-    })
+      var splat;
+      if(!lang) { return; }
+      (candidates.indexOf(lang) == -1) && candidates.push(lang);
+      splat = lang.split('-');
+      if (splat[1]) {
+        (candidates.indexOf(splat[0]) == -1) && candidates.push(splat[0]);
+      }
+    });
 
-    this.build(langs, function(er, translations) {
+    // Append script fallbacks for region-specific locales if applicable
+    for (var lang in html10n.scripts) {
+      i = candidates.indexOf(lang);
+      if (~i) candidates.splice(i, 0, html10n.scripts[lang])
+    }
+
+    this.build(candidates, function(er, translations) {
       html10n.translations = translations
       html10n.translateElement(translations)
       that.trigger('localized')
@@ -710,18 +740,18 @@ window.html10n = (function(window, document, undefined) {
     // translate element itself if necessary
     this.translateNode(translations, element)
   }
-  
+
   function asyncForEach(list, iterator, cb) {
     var i = 0
       , n = list.length
     iterator(list[i], i, function each(err) {
-      if(err) console.error(err)
+      if(err) console.log(err)
       i++
       if (i < n) return iterator(list[i],i, each);
       cb()
     })
   }
-  
+
   function getTranslatableChildren(element) {
     if(!document.querySelectorAll) {
       if (!element) return []
@@ -735,55 +765,62 @@ window.html10n = (function(window, document, undefined) {
     }
     return element.querySelectorAll('*[data-l10n-id]')
   }
-  
+
   html10n.get = function(id, args) {
     var translations = html10n.translations
-    if(!translations) return console.warn('No translations available (yet)')
+    if(!translations) {
+      if (! html10n.quiet) {
+        console.warn('No translations available (yet)');
+      }
+      return;
+    }
     if(!translations[id]) return console.warn('Could not find string '+id)
-    
+
     // apply macros
     var str = translations[id]
-    
+
     str = substMacros(id, str, args)
-    
+
     // apply args
     str = substArguments(str, args)
-    
+
     return str
   }
-  
+
   // replace {{arguments}} with their values or the
   // associated translation string (based on its key)
   function substArguments(str, args) {
-    var reArgs = /\{\{\s*([a-zA-Z\.]+)\s*\}\}/
-      , match
-    
+    var reArgs = /\{\{\s*([a-zA-Z_\-\.]+)\s*\}\}/,
+        translations = html10n.translations,
+        match;
+
     while (match = reArgs.exec(str)) {
       if (!match || match.length < 2)
         return str // argument key not found
 
       var arg = match[1]
         , sub = ''
-      if (arg in args) {
+      if (args && (arg in args)) {
         sub = args[arg]
       } else if (arg in translations) {
         sub = translations[arg]
       } else {
-        console.warn('Could not find argument {{' + arg + '}}')
+        console.warn('Could not satisfy argument {{' + arg + '}}' +
+                    ' for string "' + str + '"');
         return str
       }
 
       str = str.substring(0, match.index) + sub + str.substr(match.index + match[0].length)
     }
-    
+
     return str
   }
-  
+
   // replace {[macros]} with their values
   function substMacros(key, str, args) {
-    var regex = /\{\[\s*([a-zA-Z]+)\(([a-zA-Z]+)\)((\s*([a-zA-Z]+)\: ?([ a-zA-Z{}]+),?)+)*\s*\]\}/ //.exec('{[ plural(n) other: are {{n}}, one: is ]}')
+    var regex = /\{\[\s*([a-zA-Z]+)\(([a-zA-Z]+)\)((\s*([a-zA-Z]+)\: ?([^,]+?),?)+)*\s*\]\}/ //.exec('{{n}} {[plural(n) one: Bomba, other: Bombe]} ]}')
       , match
-    
+
     while(match = regex.exec(str)) {
       // a macro has been found
       // Note: at the moment, only one parameter is supported
@@ -791,18 +828,18 @@ window.html10n = (function(window, document, undefined) {
         , paramName = match[2]
         , optv = match[3]
         , opts = {}
-      
+
       if (!(macroName in html10n.macros)) continue
-      
+
       if(optv) {
-        optv.match(/(?=\s*)([a-zA-Z]+)\: ?([ a-zA-Z{}]+)(?=,?)/g).forEach(function(arg) {
+        optv.match(/(?=\s*)([a-zA-Z]+)\: ?([^,\]]+)(?=,?)/g).forEach(function(arg) {
           var parts = arg.split(':')
             , name = parts[0]
             , value = parts[1].trim()
           opts[name] = value
         })
       }
-      
+
       var param
       if (args && paramName in args) {
         param = args[paramName]
@@ -814,10 +851,10 @@ window.html10n = (function(window, document, undefined) {
       var macro = html10n.macros[macroName]
       str = str.substr(0, match.index) + macro(key, param, opts) + str.substr(match.index+match[0].length)
     }
-    
+
     return str
   }
-  
+
   /**
    * Applies translations to a DOM node (recursive)
    */
@@ -832,7 +869,7 @@ window.html10n = (function(window, document, undefined) {
 
     // get args
     if(window.JSON) {
-      str.args = JSON.parse(node.getAttribute('data-l10n-args'))
+      str.args = node.getAttribute('data-l10n-args') ? JSON.parse(node.getAttribute('data-l10n-args')) : [];
     }else{
       try{
         str.args = eval(node.getAttribute('data-l10n-args'))
@@ -840,9 +877,9 @@ window.html10n = (function(window, document, undefined) {
         console.warn('Couldn\'t parse args for '+str.id)
       }
     }
-    
+
     str.str = html10n.get(str.id, str.args)
-    
+
     // get attribute name to apply str to
     var prop
       , index = str.id.lastIndexOf('.')
@@ -851,6 +888,7 @@ window.html10n = (function(window, document, undefined) {
        , "innerHTML": 1
        , "alt": 1
        , "textContent": 1
+       , "placeholder": 1
        , "value": 1
        }
     if (index > 0 && str.id.substr(index + 1) in attrList) { // an attribute has been specified
@@ -861,7 +899,7 @@ window.html10n = (function(window, document, undefined) {
 
     // Apply translation
     if (node.children.length === 0 || prop != 'textContent') {
-      node[prop] = str.str
+      node[prop] = str.str;
       node.setAttribute("aria-label", str.str); // Sets the aria-label
       // The idea of the above is that we always have an aria value
       // This might be a bit of an abrupt solution but let's see how it goes
@@ -883,7 +921,7 @@ window.html10n = (function(window, document, undefined) {
       }
     }
   }
-  
+
   /**
    * Builds a translation object from a list of langs (loads the necessary translations)
    * @param langs Array - a list of langs sorted by priority (default langs should go last)
@@ -898,11 +936,11 @@ window.html10n = (function(window, document, undefined) {
     }, function() {
       var lang
       langs.reverse()
-      
+
       // loop through the priority array...
       for (var i=0, n=langs.length; i < n; i++) {
         lang = langs[i]
-        
+
         if(!lang) continue;
         if(!(lang in that.loader.langs)) {// uh, we don't have this lang availbable..
           // then check for related langs
@@ -915,13 +953,13 @@ window.html10n = (function(window, document, undefined) {
           }
           if(lang != l) continue;
         }
-        
+
         // ... and apply all strings of the current lang in the list
         // to our build object
         for (var string in that.loader.langs[lang]) {
           build[string] = that.loader.langs[lang][string]
         }
-        
+
         // the last applied lang will be exposed as the
         // lang the page was translated to
         that.language = lang
@@ -929,7 +967,7 @@ window.html10n = (function(window, document, undefined) {
       cb(null, build)
     })
   }
-  
+
   /**
    * Returns the language that was last applied to the translations hash
    * thus overriding most of the formerly applied langs
@@ -962,7 +1000,7 @@ window.html10n = (function(window, document, undefined) {
     this.loader = new Loader(resources)
     this.trigger('indexed')
   }
-  
+
   if (document.addEventListener) // modern browsers and IE9+
    document.addEventListener('DOMContentLoaded', function() {
      html10n.index()
