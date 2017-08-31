@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Vodnokon4e"
+			"Vodnokon4e",
+			"StanProg"
 		]
 	},
 	"index.newPad": "Нов пад",
@@ -28,8 +29,14 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
+	"pad.modals.cancel": "Отказване",
 	"pad.modals.userdup": "Отворен в друг прозорец",
+	"pad.modals.userdup.explanation": "Изглежда, че този пад е отворен на повече от един раздел в браузъра на компютъра.",
+	"pad.modals.looping.explanation": "Има проблеми с комуникацията със сървъра за синхронизация.",
+	"pad.modals.looping.cause": "Може би сте свързани чрез несъвместима защитна стена или прокси.",
 	"pad.modals.initsocketfail": "Сървърът е недостъпен.",
+	"pad.modals.initsocketfail.explanation": "Свързването със сървъра за синхронизация е неуспешно.",
+	"pad.modals.initsocketfail.cause": "Това вероятно се дължи на проблем с браузъра Ви или връзката Ви с Интернет.",
 	"pad.modals.slowcommit.explanation": "Сървърът не отговаря.",
 	"pad.modals.slowcommit.cause": "Това може да се дължи на проблеми с мрежовите връзки.",
 	"pad.modals.deleted": "Изтрито.",

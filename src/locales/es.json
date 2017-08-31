@@ -92,7 +92,7 @@
 	"pad.modals.disconnected.explanation": "Se perdió la conexión con el servidor",
 	"pad.modals.disconnected.cause": "El servidor podría no estar disponible. Contacta al administrador del servicio si esto continúa sucediendo.",
 	"pad.share": "Compatir este pad",
-	"pad.share.readonly": "Sólo lectura",
+	"pad.share.readonly": "Solo lectura",
 	"pad.share.link": "Enlace",
 	"pad.share.emebdcode": "Incrustar URL",
 	"pad.chat": "Chat",
