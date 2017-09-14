@@ -125,7 +125,7 @@ Things in context:
 
 1. pad - the pad instance
 
-This hook gets called when an pad was loaded. If a new pad was created and loaded this event will be emitted too.
+This hook gets called when a pad was loaded. If a new pad was created and loaded this event will be emitted too.
 
 ## padUpdate
 Called from: src/node/db/Pad.js
@@ -219,7 +219,7 @@ Things in context:
 1. message - the message being handled
 2. client - the client object from socket.io
 
-This hook will be called once a message arrive. If a plugin calls `callback(null)` the message will be dropped. However it is not possible to modify the message.
+This hook will be called once a message arrive. If a plugin calls `callback(null)` the message will be dropped. However, it is not possible to modify the message.
 
 Plugins may also decide to implement custom behavior once a message arrives.
 
@@ -272,7 +272,7 @@ Things in context:
 1. clientVars - the basic `clientVars` built by the core
 2. pad - the pad this session is about
 
-This hook will be called once a client connects and the `clientVars` are being sent. Plugins can use this hook to give the client a initial configuriation, like the tracking-id of an external analytics-tool that is used on the client-side. You can also overwrite values from the original `clientVars`.
+This hook will be called once a client connects and the `clientVars` are being sent. Plugins can use this hook to give the client an initial configuration, like the tracking-id of an external analytics-tool that is used on the client-side. You can also overwrite values from the original `clientVars`.
 
 Example:
 
@@ -397,7 +397,7 @@ Things in context:
 
 1. Pad object
 
-Identical to `exportHtmlAdditionalTags`, but for tags that are stored with an specific value (not simply `true`) on the attribute pool. For example `['color', 'red']`, instead of `['bold', true]`. This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array of arrays should be returned. The exported HTML will contain tags like `<span data-color="red">` for the content where attributes are `['color', 'red']`.
+Identical to `exportHtmlAdditionalTags`, but for tags that are stored with a specific value (not simply `true`) on the attribute pool. For example `['color', 'red']`, instead of `['bold', true]`. This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array of arrays should be returned. The exported HTML will contain tags like `<span data-color="red">` for the content where attributes are `['color', 'red']`.
 
 Example:
 ```

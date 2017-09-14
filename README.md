@@ -11,7 +11,7 @@ that allows your web application to manage pads, users and groups. It is recomme
 
 There is also a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
-There's also a full-featured plugin framework, allowing you to easily add your own features.  By default your Etherpad is rather sparse and because Etherpad takes a lot of it's inspiration from Wordpress plugins are really easy to install and update.  Once you have Etherpad installed you should visit the plugin page and take control.
+There's also a full-featured plugin framework, allowing you to easily add your own features.  By default your Etherpad is rather sparse and because Etherpad takes a lot of its inspiration from WordPress, plugins are really easy to install and update.  Once you have Etherpad installed you should visit the plugin page and take control.
 
 Finally, Etherpad comes with translations into most languages!  Users are automatically delivered the correct language for their local settings.
 
@@ -35,7 +35,7 @@ This package works out of the box on any windows machine, but it's not very usef
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
 
 ### Fancy install
-You'll need [node.js](http://nodejs.org) and (optionally, though recommended) git.
+You'll need [node.js](https://nodejs.org) and (optionally, though recommended) git.
 
 1. Grab the source, either
   - download <https://github.com/ether/etherpad-lite/zipball/master>
@@ -60,7 +60,7 @@ You'll need gzip, git, curl, libssl develop libraries, python and gcc.
 - *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
 - *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
 
-Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
+Additionally, you'll need [node.js](https://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
@@ -92,9 +92,9 @@ Documentation can be found in `docs/`.
 # Development
 
 ## Things you should know
-Understand [git](https://training.github.com/) and watch this [video on getting started with Etherpad Development](http://youtu.be/67-Q26YH97E).
+Understand [git](https://training.github.com/) and watch this [video on getting started with Etherpad Development](https://youtu.be/67-Q26YH97E).
 
-If you're new to node.js, start with Ryan Dahl's [Introduction to Node.js](http://youtu.be/jo_B4LTHi3I).
+If you're new to node.js, start with Ryan Dahl's [Introduction to Node.js](https://youtu.be/jo_B4LTHi3I).
 
 You can debug Etherpad using `bin/debugRun.sh`.
 
@@ -108,7 +108,7 @@ Look at the [TODO list](https://github.com/ether/etherpad-lite/wiki/TODO) and ou
 Also, and most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md), really!
 
 # Get in touch
-Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and make some noise on our busy freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)!
+Join the [mailinglist](https://groups.google.com/group/etherpad-lite-dev) and make some noise on our busy freenode irc channel [#etherpad-lite-dev](https://webchat.freenode.net?channels=#etherpad-lite-dev)!
 
 # Modules created for this project
 
@@ -117,7 +117,7 @@ Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and mak
 * [async-stacktrace](https://github.com/Pita/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
 
 # Donate!
-* [Flattr](http://flattr.com/thing/71378/Etherpad-Foundation)
+* [Flattr](https://flattr.com/thing/71378/Etherpad-Foundation)
 * Paypal - Press the donate button on [etherpad.org](http://etherpad.org)
 * [Bitcoin](https://coinbase.com/checkouts/1e572bf8a82e4663499f7f1f66c2d15a)
 

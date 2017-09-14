@@ -6,10 +6,10 @@
 # 0 silent
 # 1 email
 ERROR_HANDLING=0
-# Your email address which should recieve the error messages
+# Your email address which should receive the error messages
 EMAIL_ADDRESS="no-reply@example.com"
-# Sets the minimun amount of time betweens the sending of error emails. 
-# This ensures you not get spamed while a endless reboot loop 
+# Sets the minimum amount of time between the sending of error emails. 
+# This ensures you do not get spammed during an endless reboot loop 
 # It's the time in seconds
 TIME_BETWEEN_EMAILS=600 # 10 minutes
 
@@ -26,7 +26,7 @@ if [ -d "../bin" ]; then
   cd "../"
 fi
 
-#check if a logfile parameter is set
+#Check if a logfile parameter is set
 if [ -z "${LOG}" ]; then
   echo "Set a logfile as the first parameter"
   exit 1
@@ -35,18 +35,18 @@ fi
 shift
 while [ 1 ]
 do
-  #try to touch the file if it doesn't exist
+  #Try to touch the file if it doesn't exist
   if [ ! -f ${LOG} ]; then
     touch ${LOG} || ( echo "Logfile '${LOG}' is not writeable" && exit 1 )
   fi
   
-  #check if the file is writeable
+  #Check if the file is writeable
   if [ ! -w ${LOG} ]; then
     echo "Logfile '${LOG}' is not writeable"
     exit 1
   fi
 
-  #start the application
+  #Start the application
   bin/run.sh $@ >>${LOG} 2>>${LOG}
   
   #Send email
