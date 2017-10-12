@@ -96,7 +96,7 @@ function doJSON(input, filename, cb) {
     // a list: starting with list_start, ending with list_end,
     // maybe containing other nested lists in each item.
     //
-    // If one of these isnt' found, then anything that comes between
+    // If one of these isn't found, then anything that comes between
     // here and the next heading should be parsed as the desc.
     var stability
     if (state === 'AFTERHEADING') {
@@ -198,7 +198,7 @@ function processList(section) {
   var current;
   var stack = [];
 
-  // for now, *just* build the heirarchical list
+  // for now, *just* build the hierarchical list
   list.forEach(function(tok) {
     var type = tok.type;
     if (type === 'space') return;

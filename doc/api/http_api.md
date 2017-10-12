@@ -86,19 +86,19 @@ Responses are valid JSON in the following format:
   * **2** internal error
   * **3** no such function
   * **4** no or wrong API Key
-* **message** a status message. Its ok if everything is fine, else it contains an error message
+* **message** a status message. It's ok if everything is fine, else it contains an error message
 * **data** the payload
 
 ### Overview
 
-![API Overview](http://i.imgur.com/d0nWp.png)
+![API Overview](https://i.imgur.com/d0nWp.png)
 
 ## Data Types
 
 * **groupID**  a string, the unique id of a group. Format is g.16RANDOMCHARS, for example g.s8oes9dhwrvt0zif
 * **sessionID** a string, the unique id of a session. Format is s.16RANDOMCHARS, for example s.s8oes9dhwrvt0zif
 * **authorID** a string, the unique id of an author. Format is a.16RANDOMCHARS, for example a.s8oes9dhwrvt0zif
-* **readOnlyID** a string, the unique id of an readonly relation to a pad. Format is r.16RANDOMCHARS, for example r.s8oes9dhwrvt0zif
+* **readOnlyID** a string, the unique id of a readonly relation to a pad. Format is r.16RANDOMCHARS, for example r.s8oes9dhwrvt0zif
 * **padID** a string, format is GROUPID$PADNAME, for example the pad test of group g.s8oes9dhwrvt0zif has padID g.s8oes9dhwrvt0zif$test
 
 ### Authentication
@@ -107,14 +107,14 @@ Authentication works via a token that is sent with each request as a post parame
 
 ### Node Interoperability
 
-All functions will also be available through a node module accessable from other node.js applications.
+All functions will also be available through a node module accessible from other node.js applications.
 
 ### JSONP
 
 The API provides _JSONP_ support to allow requests from a server in a different domain.
 Simply add `&jsonp=?` to the API call.
 
-Example usage: http://api.jquery.com/jQuery.getJSON/
+Example usage: https://api.jquery.com/jQuery.getJSON/
 
 ## API Methods
 
@@ -213,7 +213,7 @@ Returns the Author Name of the author
 -> can't be deleted cause this would involve scanning all the pads where this author was
 
 ### Session
-Sessions can be created between a group and an author. This allows an author to access more than one group. The sessionID will be set as a cookie to the client and is valid until a certain date. The session cookie can also contain multiple comma-seperated sessionIDs, allowing a user to edit pads in different groups at the same time. Only users with a valid session for this group, can access group pads. You can create a session after you authenticated the user at your web application, to give them access to the pads. You should save the sessionID of this session and delete it after the user logged out.
+Sessions can be created between a group and an author. This allows an author to access more than one group. The sessionID will be set as a cookie to the client and is valid until a certain date. The session cookie can also contain multiple comma-separated sessionIDs, allowing a user to edit pads in different groups at the same time. Only users with a valid session for this group, can access group pads. You can create a session after you authenticated the user at your web application, to give them access to the pads. You should save the sessionID of this session and delete it after the user logged out.
 
 #### createSession(groupID, authorID, validUntil)
  * API >= 1
@@ -307,7 +307,7 @@ returns the text of a pad formatted as HTML
 #### setHTML(padID, html)
  * API >= 1
 
-sets the text of a pad based on HTML, HTML must be well formed. Malformed HTML will send a warning to the API log.
+sets the text of a pad based on HTML, HTML must be well-formed. Malformed HTML will send a warning to the API log.
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`
@@ -411,7 +411,7 @@ creates a chat message, saves it to the database and sends it to all connected c
 * `{code: 1, message:"text is no string", data: null}`
 
 ### Pad
-Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security manager controls access of them and its forbidden for normal pads to include a $ in the name.
+Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security manager controls access of them and it's forbidden for normal pads to include a $ in the name.
 
 #### createPad(padID [, text])
  * API >= 1
@@ -543,7 +543,7 @@ return true of false
 #### setPassword(padID, password)
  * API >= 1
 
-returns ok or a error message
+returns ok or an error message
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`

@@ -6,7 +6,7 @@
 * Please be polite, we all are humans and problems can occur.
 * Please add as much information as possible, for example
   * client os(s) and version(s)
-    * browser(s) and version(s), is the problem reproduceable on different clients
+    * browser(s) and version(s), is the problem reproducible on different clients
     * special environments like firewalls or antivirus
   * host os and version
     * npm and nodejs version
@@ -49,7 +49,7 @@ Also, keep it maintainable. We don't wanna end up as the monster Etherpad was!
 * Make small pull requests that are easy to review but make sure they do add value by themselves / individually
 
 ## Coding style
-* Do write comments. (You don't have to comment every line, but if you come up with something thats a bit complex/weird, just leave a comment. Bear in mind that you will probably leave the project at some point and that other people will read your code. Undocumented huge amounts of code are worthless!)
+* Do write comments. (You don't have to comment every line, but if you come up with something that's a bit complex/weird, just leave a comment. Bear in mind that you will probably leave the project at some point and that other people will read your code. Undocumented huge amounts of code are worthless!)
 * Never ever use tabs
 * Indentation: JS/CSS: 2 spaces; HTML: 4 spaces
 * Don't overengineer. Don't try to solve any possible problem in one step, but try to solve problems as easy as possible and improve the solution over time!
@@ -79,7 +79,7 @@ see git flow http://nvie.com/posts/a-successful-git-branching-model/
 
 ### feature branches (in your own repos)
 * these are the branches where you develop your features in
-* If its ready to go out, it will be merged into develop
+* If it's ready to go out, it will be merged into develop
 
 Over the time we pull features from feature branches into the develop branch. Every month we pull from develop into master. Bugs in master get fixed in hotfix branches. These branches will get merged into master AND develop. There should never be commits in master that aren't in develop
 

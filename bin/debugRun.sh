@@ -8,7 +8,7 @@ if [ -d "../bin" ]; then
   cd "../"
 fi
 
-#prepare the enviroment
+#Prepare the environment
 bin/installDeps.sh || exit 1
 
 hash node-inspector > /dev/null 2>&1 || { 
@@ -20,9 +20,9 @@ hash node-inspector > /dev/null 2>&1 || {
 
 node-inspector &
 
-echo "If you are new to node-inspector, take a look at this video: http://youtu.be/AOnK3NVnxL8"
+echo "If you are new to node-inspector, take a look at this video: https://youtu.be/AOnK3NVnxL8"
 
 node --debug node_modules/ep_etherpad-lite/node/server.js $*
 
-#kill node-inspector before ending 
+#Kill node-inspector before ending 
 kill $!

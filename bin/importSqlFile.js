@@ -30,7 +30,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
     //there was an error while initializing the database, output it and stop
     if(err)
     {
-      console.error("ERROR: Problem while initalizing the database");
+      console.error("ERROR: Problem while initializing the database");
       console.error(err.stack ? err.stack : err);
       process.exit(1);
     }
