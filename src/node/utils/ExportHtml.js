@@ -455,7 +455,11 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       if (lineContentFromHook)
       {
-        pieces.push(lineContentFromHook, '');
+        if (context.lineContent === lineContent && lineContentFromHook !== true) {
+          pieces.push(lineContentFromHook, '');   // Just to be compatible with plugins that are not updated to this solution
+        } else {
+          pieces.push(context.lineContent, ''); // should be used instead of lineContentFromHook because context is passed through each hook with all it's updated from each plugin
+        } 
       }
       else
       {
