@@ -356,7 +356,15 @@ function getHTMLFromAtext(pad, atext, authorColors)
           }
         }
       }
-
+      var context = {
+          line: line,
+          lineContent: lineContent,
+          apool: apool,
+          attribLine: attribLines[i],
+          text: textLines[i],
+          padId: pad.id
+        }
+      var lineContentFromHook = hooks.callAll("getLineHTMLForExport", context);
       if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
       {
         if(lists.length > 0){
@@ -373,14 +381,14 @@ function getHTMLFromAtext(pad, atext, authorColors)
           if(toOpen > 0){
             pieces.push(new Array(toOpen + 1).join('<ol>'))
           }
-          pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
+          pieces.push('<ol class="'+line.listTypeName+'"><li>', context.lineContent || '<br>');
         }
         else
         {
           if(toOpen > 0){
             pieces.push(new Array(toOpen + 1).join('<ul>'))
           }
-          pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
+          pieces.push('<ul class="'+line.listTypeName+'"><li>', context.lineContent || '<br>');
         }
       }
       //the following code *seems* dead after my patch.
@@ -416,16 +424,16 @@ function getHTMLFromAtext(pad, atext, authorColors)
           if(lists[lists.length - 1][1] == "number")
           {
             pieces.push(new Array(toClose+1).join('</ol>'))
-            pieces.push('<li>', lineContent || '<br>');
+            pieces.push('<li>', context.lineContent || '<br>');
           }
           else
           {
             pieces.push(new Array(toClose+1).join('</ul>'))
-            pieces.push('<li>', lineContent || '<br>');
+            pieces.push('<li>', context.lineContent || '<br>');
           }
           lists = lists.slice(0,whichList+1)
         } else {
-          pieces.push('</li><li>', lineContent || '<br>');
+          pieces.push('</li><li>', context.lineContent || '<br>');
         }
       }
     }
@@ -451,22 +459,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
         padId: pad.id
       }
 
-      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", context, " ", " ", "");
+      hooks.callAll("getLineHTMLForExport", context);
 
-      if (lineContentFromHook)
-      {
-        var lcToTestTrue = lineContentFromHook;
-        lcToTestTrue = lcToTestTrue.replace(/true/g, '').replace(/ /g, '');
-        if (context.lineContent === lineContent && lcToTestTrue.length) {  // Just to be compatible with plugins that are not updated to this solution
-          pieces.push(lineContentFromHook, '');
-        } else {
-          pieces.push(context.lineContent, ''); // should be used instead of lineContentFromHook because context is passed through each hook with all it's updated from each plugin
-        } 
-      }
-      else
-      {
-        pieces.push(lineContent, '<br>');
-      }
+      pieces.push(context.lineContent, '<br>');
     }
   }
 
