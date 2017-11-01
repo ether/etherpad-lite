@@ -364,7 +364,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           text: textLines[i],
           padId: pad.id
         }
-      var lineContentFromHook = hooks.callAll("getLineHTMLForExport", context);
+      hooks.callAll("getLineHTMLForExport", context);
       if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
       {
         if(lists.length > 0){
