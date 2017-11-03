@@ -453,7 +453,7 @@ var pad = {
       // This will check if the prefs-cookie is set.
       // Otherwise it shows up a message to the user.
       padcookie.init();
-      if (!readCookie("prefs"))
+      if (!padcookie.isCookiesEnabled())
       {
         $('#loading').hide();
         $('#noCookie').show();
