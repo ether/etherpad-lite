@@ -1,3 +1,12 @@
+# 1.6.2
+ * NEW: Added pad shortcut disabling feature
+ * NEW: Create option to automatically reconnect after a few seconds
+ * Update: socket.io to 1.7.3
+ * Update: l10n lib
+ * Update: request to 2.83.0
+ * Update: Node for windows to 8.9.0
+ * Fix: minification of code
+
 # 1.6.1
  * NEW: Hook aceRegisterNonScrollableEditEvents to register events that shouldn't scroll
  * NEW: Added 'item' parameter to registerAceCommand Hook
