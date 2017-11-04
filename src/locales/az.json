@@ -5,7 +5,8 @@
 			"Khan27",
 			"Mushviq Abdulla",
 			"Wertuose",
-			"Mastizada"
+			"Mastizada",
+			"Archaeodontosaurus"
 		]
 	},
 	"index.newPad": "Yeni lövhə",
@@ -114,6 +115,7 @@
 	"timeslider.month.december": "Dekabr",
 	"timeslider.unnamedauthors": "{{num}} adsız {[plural(num) one: müəllif, other: müəllif]}",
 	"pad.savedrevs.marked": "Bu versiya indi yaddaşa saxlanmış kimi nişanlandı",
+	"pad.savedrevs.timeslider": "Siz görə bilərsiniz saxlanılan versiyası miqyasında vaxt",
 	"pad.userlist.entername": "Adınızı daxil edin",
 	"pad.userlist.unnamed": "adsız",
 	"pad.userlist.guest": "Qonaq",

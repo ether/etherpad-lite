@@ -73,6 +73,32 @@
     "lang": "en-gb"
   },
 
+  /* Pad Shortcut Keys */
+  "padShortcutEnabled" : {
+    "altF9"     : true, /* focus on the File Menu and/or editbar */
+    "altC"      : true, /* focus on the Chat window */
+    "cmdShift2" : true, /* shows a gritter popup showing a line author */
+    "delete"    : true,
+    "return"    : true,
+    "esc"       : true, /* in mozilla versions 14-19 avoid reconnecting pad */
+    "cmdS"      : true, /* save a revision */
+    "tab"       : true, /* indent */
+    "cmdZ"      : true, /* undo/redo */
+    "cmdY"      : true, /* redo */
+    "cmdI"      : true, /* italic */
+    "cmdB"      : true, /* bold */
+    "cmdU"      : true, /* underline */
+    "cmd5"      : true, /* strike through */
+    "cmdShiftL" : true, /* unordered list */
+    "cmdShiftN" : true, /* ordered list */
+    "cmdShift1" : true, /* ordered list */
+    "cmdShiftC" : true, /* clear authorship */
+    "cmdH"      : true, /* backspace */
+    "ctrlHome"  : true, /* scroll to top of pad */
+    "pageUp"    : true,
+    "pageDown"  : true
+  },
+
   /* Should we suppress errors from being visible in the default Pad Text? */
   "suppressErrorsInPadText" : false,
 
@@ -120,6 +146,10 @@
 
   /* Privacy: disable IP logging */
   "disableIPlogging" : false,
+
+  /* Time (in seconds) to automatically reconnect pad when a "Force reconnect"
+     message is shown to user. Set to 0 to disable automatic reconnection */
+  "automaticReconnectionTimeout" : 0,
 
   /* Users for basic authentication. is_admin = true gives access to /admin.
      If you do not uncomment this, /admin will not be available! */

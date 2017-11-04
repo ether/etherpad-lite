@@ -14,7 +14,7 @@
 	"pad.toolbar.bold.title": "మందం",
 	"pad.toolbar.italic.title": "వాలు అక్షరాలు",
 	"pad.toolbar.underline.title": "క్రిందగీత",
-	"pad.toolbar.strikethrough.title": "కొట్టివేత",
+	"pad.toolbar.strikethrough.title": "కొట్టివేత (Ctrl+5)",
 	"pad.toolbar.ol.title": "నిర్ధేశింపబడిన జాబితా",
 	"pad.toolbar.ul.title": "అనిర్దేశిత జాబితా, ( క్రమపద్ధతి లేని జాబితా )",
 	"pad.toolbar.undo.title": "చేయవద్దు",

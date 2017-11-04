@@ -6,7 +6,8 @@
 			"Eleferen",
 			"Okras",
 			"Volkov",
-			"Nzeemin"
+			"Nzeemin",
+			"Facenapalm"
 		]
 	},
 	"index.newPad": "Создать",
@@ -61,6 +62,8 @@
 	"pad.modals.connected": "Подключен.",
 	"pad.modals.reconnecting": "Повторное подключение к вашему документу",
 	"pad.modals.forcereconnect": "Принудительное переподключение",
+	"pad.modals.reconnecttimer": "Попытка переподключения",
+	"pad.modals.cancel": "Отмена",
 	"pad.modals.userdup": "Открыто в другом окне",
 	"pad.modals.userdup.explanation": "Документ, возможно, открыт более чем в одном окне браузера на этом компьютере.",
 	"pad.modals.userdup.advice": "Повторно подключить с использованием этого окна.",

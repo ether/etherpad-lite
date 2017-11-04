@@ -22,25 +22,25 @@ TMP_DIR="/tmp/"
 
 echo "WARNING: You can only run this script if your github api token is allowed to create and merge branches on $ETHER_REPO and $ETHER_WEB_REPO."
 echo "This script automatically changes the version number in package.json and adds a text to CHANGELOG.md."
-echo "When you use this script you should be in the branch that you want to release (develop probably) on latest version. Any changes that are currently not commited will be commited."
+echo "When you use this script you should be in the branch that you want to release (develop probably) on latest version. Any changes that are currently not committed will be committed."
 echo "-----"
 
-# get the latest version
+# Get the latest version
 LATEST_GIT_TAG=$(git tag | tail -n 1)
 
-# current environment
+# Current environment
 echo "Current environment: "
 echo "- branch: $(git branch | grep '* ')"
 echo "- last commit date: $(git show --quiet --pretty=format:%ad)"
 echo "- current version: $LATEST_GIT_TAG"
 echo "- temp dir: $TMP_DIR"
 
-# get new version number
+# Get new version number
 # format: x.x.x
 echo -n "Enter new version (x.x.x): "
 read VERSION
 
-# get the message for the changelogs
+# Get the message for the changelogs
 read -p "Enter new changelog entries (press enter): "
 tmp=$(mktemp)
 "${EDITOR:-vi}" $tmp
@@ -49,7 +49,7 @@ echo "$changelogText"
 rm $tmp
 
 if [ "$changelogText" != "" ]; then
-	changelogText="# $VERSION\n$changelogText"
+  changelogText="# $VERSION\n$changelogText"
 fi
 
 # get the token for the github api
@@ -57,114 +57,114 @@ echo -n "Enter your github api token: "
 read API_TOKEN
 
 function check_api_token {
-	echo "Checking if github api token is valid..."
-	CURL_RESPONSE=$(curl --silent -i https://api.github.com/user?access_token=$API_TOKEN | iconv -f utf8)
-	HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
-	[[ $HTTP_STATUS != "200" ]] && echo "Aborting: Invalid github api token" && exit 1
+  echo "Checking if github api token is valid..."
+  CURL_RESPONSE=$(curl --silent -i https://api.github.com/user?access_token=$API_TOKEN | iconv -f utf8)
+  HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
+  [[ $HTTP_STATUS != "200" ]] && echo "Aborting: Invalid github api token" && exit 1
 }
 
 function modify_files {
-	# Add changelog text to first line of CHANGELOG.md
-	sed -i "1s/^/${changelogText}\n/" CHANGELOG.md
-	# Replace version number of etherpad in package.json
-	sed -i -r "s/(\"version\"[ ]*: \").*(\")/\1$VERSION\2/" src/package.json
+  # Add changelog text to first line of CHANGELOG.md
+  sed -i "1s/^/${changelogText}\n/" CHANGELOG.md
+  # Replace version number of etherpad in package.json
+  sed -i -r "s/(\"version\"[ ]*: \").*(\")/\1$VERSION\2/" src/package.json
 }
 
 function create_release_branch {
-	echo "Creating new release branch..."
-	git rev-parse --verify release/$VERSION 2>/dev/null
-	if [ $? == 0 ]; then
-		echo "Aborting: Release branch already present"
-		exit 1
-	fi
-	git checkout -b release/$VERSION
-	[[ $? != 0 ]] && echo "Aborting: Error creating relase branch" && exit 1
+  echo "Creating new release branch..."
+  git rev-parse --verify release/$VERSION 2>/dev/null
+  if [ $? == 0 ]; then
+    echo "Aborting: Release branch already present"
+    exit 1
+  fi
+  git checkout -b release/$VERSION
+  [[ $? != 0 ]] && echo "Aborting: Error creating release branch" && exit 1
 
-	echo "Commiting CHANGELOG.md and package.json"
-	git add CHANGELOG.md
-	git add src/package.json
-	git commit -m "Release version $VERSION"
+  echo "Committing CHANGELOG.md and package.json"
+  git add CHANGELOG.md
+  git add src/package.json
+  git commit -m "Release version $VERSION"
 
-	echo "Pushing release branch to github..."
-	git push -u $ETHER_REPO release/$VERSION
-	[[ $? != 0 ]] && echo "Aborting: Error pushing release branch to github" && exit 1
+  echo "Pushing release branch to github..."
+  git push -u $ETHER_REPO release/$VERSION
+  [[ $? != 0 ]] && echo "Aborting: Error pushing release branch to github" && exit 1
 }
 
 function merge_release_branch {
-	echo "Merging release to master branch on github..."
-	API_JSON=$(printf '{"base": "master","head": "release/%s","commit_message": "Merge new release into master branch!"}' $VERSION)
-	CURL_RESPONSE=$(curl --silent -i -N --data "$API_JSON" https://api.github.com/repos/ether/etherpad-lite/merges?access_token=$API_TOKEN  | iconv -f utf8)
-	echo $CURL_RESPONSE
-	HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
-	[[ $HTTP_STATUS != "200" ]] && echo "Aborting: Error merging release branch on github" && exit 1
+  echo "Merging release to master branch on github..."
+  API_JSON=$(printf '{"base": "master","head": "release/%s","commit_message": "Merge new release into master branch!"}' $VERSION)
+  CURL_RESPONSE=$(curl --silent -i -N --data "$API_JSON" https://api.github.com/repos/ether/etherpad-lite/merges?access_token=$API_TOKEN  | iconv -f utf8)
+  echo $CURL_RESPONSE
+  HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
+  [[ $HTTP_STATUS != "200" ]] && echo "Aborting: Error merging release branch on github" && exit 1
 }
 
 function create_builds {
-	echo "Cloning etherpad-lite repo and ether.github.com repo..."
-	cd $TMP_DIR
-	rm -rf etherpad-lite ether.github.com
-	git clone $ETHER_REPO --branch master
-	git clone $ETHER_WEB_REPO
-	echo "Creating windows build..."
-	cd etherpad-lite
-	bin/buildForWindows.sh
-	[[ $? != 0 ]] && echo "Aborting: Error creating build for windows" && exit 1
-	echo "Creating docs..."
-	make docs
-	[[ $? != 0 ]] && echo "Aborting: Error generating docs" && exit 1
+  echo "Cloning etherpad-lite repo and ether.github.com repo..."
+  cd $TMP_DIR
+  rm -rf etherpad-lite ether.github.com
+  git clone $ETHER_REPO --branch master
+  git clone $ETHER_WEB_REPO
+  echo "Creating windows build..."
+  cd etherpad-lite
+  bin/buildForWindows.sh
+  [[ $? != 0 ]] && echo "Aborting: Error creating build for windows" && exit 1
+  echo "Creating docs..."
+  make docs
+  [[ $? != 0 ]] && echo "Aborting: Error generating docs" && exit 1
 }
 
 function push_builds {
-	cd $TMP_DIR/etherpad-lite/
-	echo "Copying windows build and docs to website repo..."
-	GIT_SHA=$(git rev-parse HEAD | cut -c1-10)
-	mv etherpad-lite-win.zip $TMP_DIR/ether.github.com/downloads/etherpad-lite-win-$VERSION-$GIT_SHA.zip
+  cd $TMP_DIR/etherpad-lite/
+  echo "Copying windows build and docs to website repo..."
+  GIT_SHA=$(git rev-parse HEAD | cut -c1-10)
+  mv etherpad-lite-win.zip $TMP_DIR/ether.github.com/downloads/etherpad-lite-win-$VERSION-$GIT_SHA.zip
 
-	mv out/doc $TMP_DIR/ether.github.com/doc/v$VERSION
+  mv out/doc $TMP_DIR/ether.github.com/doc/v$VERSION
 
-	cd $TMP_DIR/ether.github.com/
-	sed -i "s/etherpad-lite-win.*\.zip/etherpad-lite-win-$VERSION-$GIT_SHA.zip/" index.html
-	sed -i "s/$LATEST_GIT_TAG/$VERSION/g" index.html
-	git checkout -b release_$VERSION
-	[[ $? != 0 ]] && echo "Aborting: Error creating new release branch" && exit 1
-	git add doc/
-	git add downloads/
-	git commit -a -m "Release version $VERSION"
-	git push -u $ETHER_WEB_REPO release_$VERSION
-	[[ $? != 0 ]] && echo "Aborting: Error pushing release branch to github" && exit 1
+  cd $TMP_DIR/ether.github.com/
+  sed -i "s/etherpad-lite-win.*\.zip/etherpad-lite-win-$VERSION-$GIT_SHA.zip/" index.html
+  sed -i "s/$LATEST_GIT_TAG/$VERSION/g" index.html
+  git checkout -b release_$VERSION
+  [[ $? != 0 ]] && echo "Aborting: Error creating new release branch" && exit 1
+  git add doc/
+  git add downloads/
+  git commit -a -m "Release version $VERSION"
+  git push -u $ETHER_WEB_REPO release_$VERSION
+  [[ $? != 0 ]] && echo "Aborting: Error pushing release branch to github" && exit 1
 }
 
 function merge_web_branch {
         echo "Merging release to master branch on github..."
         API_JSON=$(printf '{"base": "master","head": "release_%s","commit_message": "Release version %s"}' $VERSION $VERSION)
-       	CURL_RESPONSE=$(curl --silent -i -N --data "$API_JSON" https://api.github.com/repos/ether/ether.github.com/merges?access_token=$API_TOKEN | iconv -f utf8)
-	echo $CURL_RESPONSE
-	HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
-	[[ $HTTP_STATUS != "200" ]] && echo "Aborting: Error merging release branch" && exit 1
+         CURL_RESPONSE=$(curl --silent -i -N --data "$API_JSON" https://api.github.com/repos/ether/ether.github.com/merges?access_token=$API_TOKEN | iconv -f utf8)
+  echo $CURL_RESPONSE
+  HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
+  [[ $HTTP_STATUS != "200" ]] && echo "Aborting: Error merging release branch" && exit 1
 }
 
 function publish_release {
-	echo -n "Do you want to publish a new release on github (y/n)? "
-	read PUBLISH_RELEASE
-	if [ $PUBLISH_RELEASE = "y" ]; then
-		# create a new release on github
-		API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "Release %s","body": "%s","draft": false,"prerelease": false}' $VERSION $VERSION $changelogText)
-		CURL_RESPONSE=$(curl --silent -i -N --data "$API_JSON" https://api.github.com/repos/ether/etherpad-lite/releases?access_token=$API_TOKEN | iconv -f utf8)
-		HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
-		[[ $HTTP_STATUS != "201" ]] && echo "Aborting: Error publishing release on github" && exit 1
-	else
-		echo "No release published on github!"
-	fi
+  echo -n "Do you want to publish a new release on github (y/n)? "
+  read PUBLISH_RELEASE
+  if [ $PUBLISH_RELEASE = "y" ]; then
+    # create a new release on github
+    API_JSON=$(printf '{"tag_name": "%s","target_commitish": "master","name": "Release %s","body": "%s","draft": false,"prerelease": false}' $VERSION $VERSION $changelogText)
+    CURL_RESPONSE=$(curl --silent -i -N --data "$API_JSON" https://api.github.com/repos/ether/etherpad-lite/releases?access_token=$API_TOKEN | iconv -f utf8)
+    HTTP_STATUS=$(echo $CURL_RESPONSE | head -1 | sed -r 's/.* ([0-9]{3}) .*/\1/')
+    [[ $HTTP_STATUS != "201" ]] && echo "Aborting: Error publishing release on github" && exit 1
+  else
+    echo "No release published on github!"
+  fi
 }
 
 function todo_notification {
-	echo "Release procedure was successful, but you have to do some steps manually:"
-	echo "- Update the wiki at https://github.com/ether/etherpad-lite/wiki"
-	echo "- Create a pull request on github to merge the master branch back to develop"
-	echo "- Announce the new release on the mailing list, blog.etherpad.org and Twitter"
+  echo "Release procedure was successful, but you have to do some steps manually:"
+  echo "- Update the wiki at https://github.com/ether/etherpad-lite/wiki"
+  echo "- Create a pull request on github to merge the master branch back to develop"
+  echo "- Announce the new release on the mailing list, blog.etherpad.org and Twitter"
 }
 
-# call functions
+# Call functions
 check_api_token
 modify_files
 create_release_branch

@@ -5,8 +5,8 @@ describe("assign ordered list", function(){
     this.timeout(60000);
   });
 
-  it("insert ordered list text", function(done){
-    var inner$ = helper.padInner$; 
+  it("inserts ordered list text", function(done){
+    var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
     var $insertorderedlistButton = chrome$(".buttonicon-insertorderedlist");
@@ -17,8 +17,72 @@ describe("assign ordered list", function(){
     }).done(done);
   });
 
+  context('when user presses Ctrl+Shift+N', function() {
+    context('and pad shortcut is enabled', function() {
+      beforeEach(function() {
+        makeSureShortcutIsEnabled('cmdShiftN');
+        triggerCtrlShiftShortcut('N');
+      });
+
+      it('inserts unordered list', function(done) {
+        helper.waitFor(function() {
+          return helper.padInner$('div').first().find('ol li').length === 1;
+        }).done(done);
+      });
+    });
+
+    context('and pad shortcut is disabled', function() {
+      beforeEach(function() {
+        makeSureShortcutIsDisabled('cmdShiftN');
+        triggerCtrlShiftShortcut('N');
+      });
+
+      it('does not insert unordered list', function(done) {
+        helper.waitFor(function() {
+          return helper.padInner$('div').first().find('ol li').length === 1;
+        }).done(function() {
+          expect().fail(function() { return 'Unordered list inserted, should ignore shortcut' });
+        }).fail(function() {
+          done();
+        });
+      });
+    });
+  });
+
+  context('when user presses Ctrl+Shift+1', function() {
+    context('and pad shortcut is enabled', function() {
+      beforeEach(function() {
+        makeSureShortcutIsEnabled('cmdShift1');
+        triggerCtrlShiftShortcut('1');
+      });
+
+      it('inserts unordered list', function(done) {
+        helper.waitFor(function() {
+          return helper.padInner$('div').first().find('ol li').length === 1;
+        }).done(done);
+      });
+    });
+
+    context('and pad shortcut is disabled', function() {
+      beforeEach(function() {
+        makeSureShortcutIsDisabled('cmdShift1');
+        triggerCtrlShiftShortcut('1');
+      });
+
+      it('does not insert unordered list', function(done) {
+        helper.waitFor(function() {
+          return helper.padInner$('div').first().find('ol li').length === 1;
+        }).done(function() {
+          expect().fail(function() { return 'Unordered list inserted, should ignore shortcut' });
+        }).fail(function() {
+          done();
+        });
+      });
+    });
+  });
+
   xit("issue #1125 keeps the numbered list on enter for the new line - EMULATES PASTING INTO A PAD", function(done){
-    var inner$ = helper.padInner$; 
+    var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
     var $insertorderedlistButton = chrome$(".buttonicon-insertorderedlist");
@@ -26,9 +90,9 @@ describe("assign ordered list", function(){
 
     //type a bit, make a line break and type again
     var $firstTextElement = inner$("div span").first();
-    $firstTextElement.sendkeys('line 1'); 
-    $firstTextElement.sendkeys('{enter}');    
-    $firstTextElement.sendkeys('line 2'); 
+    $firstTextElement.sendkeys('line 1');
+    $firstTextElement.sendkeys('{enter}');
+    $firstTextElement.sendkeys('line 2');
     $firstTextElement.sendkeys('{enter}');
 
     helper.waitFor(function(){
@@ -44,4 +108,26 @@ describe("assign ordered list", function(){
       done();
     });
   });
+
+  var triggerCtrlShiftShortcut = function(shortcutChar) {
+    var inner$ = helper.padInner$;
+    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE) { // if it's a mozilla or IE
+      var evtType = "keypress";
+    }else{
+      var evtType = "keydown";
+    }
+    var e = inner$.Event(evtType);
+    e.ctrlKey = true;
+    e.shiftKey = true;
+    e.which = shortcutChar.toString().charCodeAt(0);
+    inner$("#innerdocbody").trigger(e);
+  }
+
+  var makeSureShortcutIsDisabled = function(shortcut) {
+    helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = false;
+  }
+  var makeSureShortcutIsEnabled = function(shortcut) {
+    helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = true;
+  }
+
 });

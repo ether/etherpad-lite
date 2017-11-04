@@ -37,12 +37,12 @@ async.series([
     db = require('../src/node/db/DB');
     callback();
   },
-  // intallize the database
+  // initialize the database
   function (callback)
   {
     db.init(callback);
   },
-  // delete the pad and it's links
+  // delete the pad and its links
   function (callback)
   {
     padManager = require('../src/node/db/PadManager');

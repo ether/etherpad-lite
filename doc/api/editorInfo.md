@@ -69,9 +69,9 @@ This function replaces a range (from y1 to y2) with `newText`.
 ## editorInfo.ace_renumberList(lineNum)
 If you delete a line, calling this method will fix the line numbering.
 ## editorInfo.ace_doReturnKey()
-Forces a return key at the current carret position.
+Forces a return key at the current caret position.
 ## editorInfo.ace_isBlockElement(element)
-Returns true if your passed elment is registered as a block element
+Returns true if your passed element is registered as a block element
 ## editorInfo.ace_getLineListType(lineNum)
 Returns the line's html list type.
 ## editorInfo.ace_caretLine()

@@ -101,20 +101,21 @@ describe("the test helper", function(){
     // function to support tests, use a single way to represent whitespaces
     var cleanText = function(text){
       return text
-      .replace(/\n/gi, "\\\\n")  // avoid \n to be replaced by \s on next line
-      .replace(/\s/gi, " ")
-      .replace(/\\\\n/gi, "\n"); // move back \n to its original state
+      // IE replaces line breaks with a whitespace, so we need to unify its behavior
+      // for other browsers, to have all tests running for all browsers
+      .replace(/\n/gi, "")
+      .replace(/\s/gi, " ");
     }
 
     before(function(done){
       helper.newPad(function() {
         // create some lines to be used on the tests
         var $firstLine = helper.padInner$("div").first();
-        $firstLine.sendkeys("{selectall}some{enter}short{enter}lines{enter}to test{enter}");
+        $firstLine.sendkeys("{selectall}some{enter}short{enter}lines{enter}to test{enter}{enter}");
 
         // wait for lines to be split
         helper.waitFor(function(){
-          var $fourthLine = helper.padInner$("div").slice(3,4);
+          var $fourthLine = helper.padInner$("div").eq(3);
           return $fourthLine.text() === "to test";
         }).done(done);
       });
@@ -129,13 +130,13 @@ describe("the test helper", function(){
       var endOffset   = 4;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(3,4);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
 
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort \nlines \nto t");
+      expect(cleanText(selection.toString())).to.be("ort lines to t");
 
       done();
     });
@@ -147,13 +148,13 @@ describe("the test helper", function(){
       var endOffset   = 1;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(4,5);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(4);
 
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort \nlines \nto test\n");
+      expect(cleanText(selection.toString())).to.be("ort lines to test");
 
       done();
     });
@@ -165,13 +166,13 @@ describe("the test helper", function(){
       var endOffset   = 0;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(3,4);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
 
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort \nlines \n");
+      expect(cleanText(selection.toString())).to.be("ort lines ");
 
       done();
     });
@@ -183,13 +184,13 @@ describe("the test helper", function(){
       var endOffset   = 50;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(3,4);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
 
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort \nlines \nto test");
+      expect(cleanText(selection.toString())).to.be("ort lines to test");
 
       done();
     });
@@ -198,13 +199,13 @@ describe("the test helper", function(){
       var inner$ = helper.padInner$;
 
       var $lines     = inner$("div");
-      var $startLine = $lines.slice(1,2);
-      var $endLine   = $lines.slice(3,4);
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
 
       helper.selectLines($startLine, $endLine);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("short \nlines \nto test");
+      expect(cleanText(selection.toString())).to.be("short lines to test");
 
       done();
     });

@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -30,10 +30,12 @@ var padeditor = (function()
   var settings = undefined;
 
   // Array of available fonts
-  var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
-    'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
-    'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
-    'useSerifFont'];
+
+  var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont',
+    'useGeorgiaFont', 'useImpactFont', 'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont',
+    'useTahomaFont', 'useTimesNewRomanFont', 'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont',
+    'useWingDingsFont', 'useSansSerifFont', 'useSerifFont'];
+
 
   var self = {
     ace: null,
@@ -102,7 +104,7 @@ var padeditor = (function()
           pad.changeViewOption(font, $("#viewfontmenu").val() == sfont);
         });
       });
-      
+
       // Language
       html10n.bind('localized', function() {
         $("#languagemenu").val(html10n.getLanguage());
@@ -161,6 +163,7 @@ var padeditor = (function()
           font = font.replace("Font","");
           font = font.toLowerCase();
           if(font === "monospace") self.ace.setProperty("textface", "monospace");
+          if(font === "montserrat") self.ace.setProperty("textface", "Montserrat");
           if(font === "opendyslexic") self.ace.setProperty("textface", "OpenDyslexic");
           if(font === "comicsans") self.ace.setProperty("textface", "'Comic Sans MS','Comic Sans',cursive");
           if(font === "georgia") self.ace.setProperty("textface", "Georgia,'Bitstream Charter',serif");
@@ -168,6 +171,7 @@ var padeditor = (function()
           if(font === "lucida") self.ace.setProperty("textface", "Lucida,'Lucida Serif','Lucida Bright',serif");
           if(font === "lucidasans") self.ace.setProperty("textface", "'Lucida Sans','Lucida Grande','Lucida Sans Unicode','Luxi Sans',sans-serif");
           if(font === "palatino") self.ace.setProperty("textface", "Palatino,'Palatino Linotype','URW Palladio L',Georgia,serif");
+          if(font === "robotomono") self.ace.setProperty("textface", "RobotoMono");
           if(font === "tahoma") self.ace.setProperty("textface", "Tahoma,sans-serif");
           if(font === "timesnewroman") self.ace.setProperty("textface", "'Times New Roman',Times,serif");
           if(font === "trebuchet") self.ace.setProperty("textface", "'Trebuchet MS',sans-serif");

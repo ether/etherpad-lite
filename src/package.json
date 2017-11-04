@@ -13,10 +13,10 @@
                      ],
   "dependencies"   : {
                       "etherpad-yajsml"         : "0.0.2",
-                      "request"                 : "2.55.0",
+                      "request"                 : "2.83.0",
                       "etherpad-require-kernel" : "1.0.9",
                       "resolve"                 : "1.1.7",
-                      "socket.io"               : "1.6.0",
+                      "socket.io"               : "1.7.3",
                       "ueberdb2"                : "0.3.0",
                       "express"                 : "4.13.4",
                       "express-session"         : "1.13.0",
@@ -55,6 +55,6 @@
   "repository"     : { "type" : "git",
                        "url" : "http://github.com/ether/etherpad-lite.git"
                      },
-  "version"        : "1.6.1",
+  "version"        : "1.6.2",
   "license"        : "Apache-2.0"
 }
