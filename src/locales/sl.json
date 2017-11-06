@@ -8,7 +8,7 @@
 		]
 	},
 	"index.newPad": "Nov dokument",
-	"index.createOpenPad": "ali pa odpri dokument z imenom:",
+	"index.createOpenPad": "ali pa ustvari/odpri dokument z imenom:",
 	"pad.toolbar.bold.title": "Krepko (Ctrl-B)",
 	"pad.toolbar.italic.title": "Ležeče (Ctrl-I)",
 	"pad.toolbar.underline.title": "Podčrtano (Ctrl-U)",
@@ -20,7 +20,7 @@
 	"pad.toolbar.undo.title": "Razveljavi (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Ponovno uveljavi (Ctrl-Y)",
 	"pad.toolbar.clearAuthorship.title": "Počisti barve avtorstva (Ctrl+Shift+C)",
-	"pad.toolbar.import_export.title": "Izvozi/Uvozi različne oblike zapisov",
+	"pad.toolbar.import_export.title": "Uvozi/Izvozi različne oblike zapisov",
 	"pad.toolbar.timeslider.title": "Časovni trak",
 	"pad.toolbar.savedRevision.title": "Shrani redakcijo",
 	"pad.toolbar.settings.title": "Nastavitve",
