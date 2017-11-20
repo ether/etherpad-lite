@@ -7,7 +7,7 @@
     "node": ">=0.6.10"
   },
   "dependencies": {
-    "marked": "~0.1.9"
+    "marked": ">=0.3.6"
   },
   "devDependencies": {},
   "optionalDependencies": {},
