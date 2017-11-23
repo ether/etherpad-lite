@@ -38,6 +38,10 @@ body.grayedout { background-color: #eee !important }
   color: black;
 }
 
+.innerdocbody>div{
+  padding: 1px;
+}
+
 body.doesWrap {
   /* white-space: pre-wrap; */
 
