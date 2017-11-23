@@ -113,6 +113,17 @@
 	"pad.savedrevs.timeslider": "คุณสามารถดูรุ่นแก้ไขที่บันทึกแล้วโดยเยี่ยมชมตัวเลื่อนเวลา",
 	"pad.userlist.entername": "กรอกชื่อของคุณ",
 	"pad.userlist.unnamed": "ไม่มีชื่อ",
+	"pad.userlist.guest": "ผู้เยี่ยมชม",
 	"pad.userlist.deny": "ปฏิเสธ",
-	"pad.userlist.approve": "อนุมัติ"
+	"pad.userlist.approve": "อนุมัติ",
+	"pad.editbar.clearcolors": "ล้างสีผู้เขียนบนทั้งเอกสารหรือไม่?",
+	"pad.impexp.importbutton": "นำเข้าเดี๋ยวนี้",
+	"pad.impexp.importing": "กำลังนำเข้า...",
+	"pad.impexp.confirmimport": "การนำเข้าไฟล์จะเป็นการเขียนทับข้อความปัจจุบันบนแผ่นจดบันทึก คุณแน่ใจหรือว่าคุณต้องการดำเนินการต่อ?",
+	"pad.impexp.convertFailed": "เราไม่สามารถนำเข้าไฟล์นี้ได้ โปรดใช้รูปแบบเอกสารอื่นหรือคัดลอกแล้ววางด้วยตนเอง",
+	"pad.impexp.padHasData": "เราไม่สามารถนำเข้าไฟล์นี้ได้เนื่องจากแผ่นจดบันทึกนี้มีการเปลี่ยนแปลงอยู่แล้ว โปรดนำเข้าไปแผ่นจดบันทึกใหม่แทน",
+	"pad.impexp.uploadFailed": "การอัปโหลดล้มเหลว โปรดลองอีกครั้ง",
+	"pad.impexp.importfailed": "การนำเข้าล้มเหลว",
+	"pad.impexp.copypaste": "โปรดคัดลอกแล้ววาง",
+	"pad.impexp.exportdisabled": "การส่งออกเป็นรูปแบบ {{type}} ถูกปิดใช้งาน โปรดติดต่อผู้ดูแลระบบของคุณสำหรับรายละเอียดเพิ่มเติม"
 }
