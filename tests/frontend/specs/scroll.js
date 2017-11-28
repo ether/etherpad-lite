@@ -74,7 +74,7 @@ describe('scroll when focus line is out of viewport', function () {
 
         // we need some room to make the scroll up
         scrollEditorToBottomOfPad();
-        lineOnTopOfViewportWhenThePadIsScrolledDown = 93;
+        lineOnTopOfViewportWhenThePadIsScrolledDown = 91;
         placeCaretAtTheEndOfLine(lineOnTopOfViewportWhenThePadIsScrolledDown);
         setTimeout(function() {
           // warning: even pressing up arrow, the caret does not change of position
