@@ -1,4 +1,4 @@
-describe("activate style buttons when selection has style applied", function(){
+describe("select formatting buttons when selection has style applied", function(){
   var STYLES = ['italic', 'bold', 'underline', 'strikethrough'];
   var FIRST_LINE = 0;
 
@@ -10,14 +10,14 @@ describe("activate style buttons when selection has style applied", function(){
   var applyStyleOnLine = function(style, line) {
     var chrome$ = helper.padChrome$;
     selectLine(line);
-    var $styleButton = chrome$('.buttonicon-' + style);
-    $styleButton.click();
+    var $formattingButton = chrome$('.buttonicon-' + style);
+    $formattingButton.click();
   }
 
   var isButtonSelected = function(style) {
     var chrome$ = helper.padChrome$;
-    var $styleButton = chrome$('.buttonicon-' + style);
-   return $styleButton.parent().hasClass('selected');
+    var $formattingButton = chrome$('.buttonicon-' + style);
+   return $formattingButton.parent().hasClass('selected');
   }
 
   var selectLine = function(lineNumber, offsetStart, offsetEnd) {
@@ -96,7 +96,16 @@ describe("activate style buttons when selection has style applied", function(){
       testIfFormattingButtonIsSelected(style)
     });
   });
+
+  context('when user applies a style and the selection does not change', function() {
+    var style = STYLES[0]; // italic
+    before(function () {
+      applyStyleOnLine(style, FIRST_LINE);
+    });
+
+    it('selects the style button', function (done) {
+      expect(isButtonSelected(style)).to.be(true);
+      done();
+    });
+  })
 });
-
-
-
