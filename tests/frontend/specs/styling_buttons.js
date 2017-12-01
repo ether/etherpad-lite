@@ -1,4 +1,4 @@
-describe("our stuff", function(){
+describe("activate style buttons when selection has style applied", function(){
   var STYLES = ['italic', 'bold', 'underline', 'strikethrough'];
   var FIRST_LINE = 0;
 
