@@ -2966,9 +2966,11 @@ function Ace2Inner(){
   }
 
   function hasAttributeOnSelectionOrCaretPosition(rep, attributeName) {
-    var hasNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
-    var hasAttrib = getAttributeOnSelection(attributeName);
-    if (hasNotSelection) {
+    var hasSelection = ((rep.selStart[0] !== rep.selEnd[0]) || (rep.selEnd[1] !== rep.selStart[1]));
+    var hasAttrib;
+    if (hasSelection) {
+      hasAttrib = documentAttributeManager.getAttributeOnSelection(attributeName);
+    }else {
       var attributesOnCaretPosition = documentAttributeManager.getAttributesOnCaret();
       hasAttrib = _.contains(_.flatten(attributesOnCaretPosition), attributeName);
     }
