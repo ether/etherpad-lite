@@ -1,5 +1,6 @@
 describe("select formatting buttons when selection has style applied", function(){
   var STYLES = ['italic', 'bold', 'underline', 'strikethrough'];
+  var SHORTCUT_KEYS = ['I', 'B', 'U', '5']; // italic, bold, underline, strikethrough
   var FIRST_LINE = 0;
 
   before(function(cb){
@@ -37,6 +38,14 @@ describe("select formatting buttons when selection has style applied", function(
     $undoButton.click();
   }
 
+  var testIfFormattingButtonIsDeselected = function(style) {
+    it('deselects the ' + style + ' button', function(done) {
+      helper.waitFor(function(){
+        return isButtonSelected(style) === false;
+      }).done(done)
+    });
+  }
+
   var testIfFormattingButtonIsSelected = function(style) {
     it('selects the ' + style + ' button', function(done) {
       helper.waitFor(function(){
@@ -67,6 +76,28 @@ describe("select formatting buttons when selection has style applied", function(
         cb();
       }, 1000);
     }, 1000);
+  }
+
+  var pressFormattingShortcutOnSelection = function(key) {
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //get the first text element out of the inner iframe
+    var $firstTextElement = inner$("div").first();
+
+    //select this text element
+    $firstTextElement.sendkeys('{selectall}');
+
+    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE
+      var evtType = "keypress";
+    }else{
+      var evtType = "keydown";
+    }
+
+    var e = inner$.Event(evtType);
+    e.ctrlKey = true; // Control key
+    e.which = key.charCodeAt(0); // I, U, B, 5
+    inner$("#innerdocbody").trigger(e);
   }
 
   STYLES.forEach(function(style){
@@ -103,9 +134,33 @@ describe("select formatting buttons when selection has style applied", function(
       applyStyleOnLine(style, FIRST_LINE);
     });
 
+    // clean the style applied
+    after(function () {
+      applyStyleOnLine(style, FIRST_LINE);
+    });
+
     it('selects the style button', function (done) {
       expect(isButtonSelected(style)).to.be(true);
       done();
     });
-  })
+  });
+
+  SHORTCUT_KEYS.forEach(function(key, index){
+    var styleOfTheShortcut = STYLES[index]; // italic, bold, ...
+    context('when user presses CMD + ' + key, function() {
+      before(function () {
+        pressFormattingShortcutOnSelection(key);
+      });
+
+      testIfFormattingButtonIsSelected(styleOfTheShortcut);
+
+      context('and user presses CMD + ' + key + ' again', function() {
+        before(function () {
+          pressFormattingShortcutOnSelection(key);
+        });
+
+        testIfFormattingButtonIsDeselected(styleOfTheShortcut);
+      });
+    });
+  });
 });
