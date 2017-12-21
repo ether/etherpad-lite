@@ -161,6 +161,13 @@ Pad.prototype.getAllAuthors = function getAllAuthors() {
   return authors;
 };
 
+/*
+ * Calculates the atext of a given revision using the last key revision, consecutively applying
+ * the revisions in between.
+ *
+ * @param {Number} targetRev the wanted revision
+ * @param {Function} callback
+ */
 Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targetRev, callback) {
   var _this = this;
 
@@ -280,6 +287,12 @@ Pad.prototype.getValidRevisionRange = function getValidRevisionRange(startRev, e
   return null;
 };
 
+/*
+ * Calculates the key revision preceding revNum
+ *
+ * @param {Number} revNum
+ * returns {Number}
+ */
 Pad.prototype.getKeyRevisionNumber = function getKeyRevisionNumber(revNum) {
   return Math.floor(revNum / 100) * 100;
 };
