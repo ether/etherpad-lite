@@ -2937,17 +2937,24 @@ function Ace2Inner(){
 
   function isCaretAtTheTopOfViewport()
   {
-    var caretLinePosition = caretPosition.getPosition(); // get the position of the browser line
-    var viewportPosition = getViewPortTopBottom();
-    var viewportTop = viewportPosition.top;
-    var viewportBottom = viewportPosition.bottom;
-    var caretLineIsBelowViewportTop = caretLinePosition.bottom >= viewportTop;
-    var caretLineIsAboveViewportBottom = caretLinePosition.top < viewportBottom;
-    var caretLineIsInsideOfViewport = caretLineIsBelowViewportTop && caretLineIsAboveViewportBottom;
-    if (caretLineIsInsideOfViewport) {
-      var prevLineTop = caretPosition.getPositionTopOfPreviousBrowserLine(caretLinePosition, rep);
-      var previousLineIsAboveViewportTop = prevLineTop < viewportTop;
-      return previousLineIsAboveViewportTop;
+    var caretLine = rep.selStart[0];
+    var linePrevCaretLine = caretLine - 1;
+    var firstLineVisibleBeforeCaretLine = caretPosition.getPreviousVisibleLine(linePrevCaretLine, rep);
+    var caretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(caretLine);
+    var lineBeforeCaretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(firstLineVisibleBeforeCaretLine);
+    if (caretLineIsPartiallyVisibleOnViewport || lineBeforeCaretLineIsPartiallyVisibleOnViewport) {
+      var caretLinePosition = caretPosition.getPosition(); // get the position of the browser line
+      var viewportPosition = getViewPortTopBottom();
+      var viewportTop = viewportPosition.top;
+      var viewportBottom = viewportPosition.bottom;
+      var caretLineIsBelowViewportTop = caretLinePosition.bottom >= viewportTop;
+      var caretLineIsAboveViewportBottom = caretLinePosition.top < viewportBottom;
+      var caretLineIsInsideOfViewport = caretLineIsBelowViewportTop && caretLineIsAboveViewportBottom;
+      if (caretLineIsInsideOfViewport) {
+        var prevLineTop = caretPosition.getPositionTopOfPreviousBrowserLine(caretLinePosition, rep);
+        var previousLineIsAboveViewportTop = prevLineTop < viewportTop;
+        return previousLineIsAboveViewportTop;
+      }
     }
     return false;
   }
@@ -2984,10 +2991,13 @@ function Ace2Inner(){
     var linePosition = getLineEntryTopBottom(lineNode);
     var lineTop = linePosition.top;
     var lineBottom = linePosition.bottom;
-    var viewportBottom = getViewPortTopBottom().bottom;
-    var topOfLineIsAboveOfViewportBottom = lineTop < viewportBottom;
-    var bottomOfLineIsOnOrBelowOfViewportBottom = lineBottom >= viewportBottom;
-    return topOfLineIsAboveOfViewportBottom && bottomOfLineIsOnOrBelowOfViewportBottom;
+    var viewport = getViewPortTopBottom();
+    var viewportBottom = viewport.bottom;
+    var viewportTop = viewport.top;
+
+    return (topOfLineIsAboveOfViewportBottom && bottomOfLineIsOnOrBelowOfViewportBottom) ||
+      (topOfLineIsBelowViewportTop && topOfLineIsAboveViewportBottom) ||
+      (bottomOfLineIsAboveViewportBottom && bottomOfLineIsBelowViewportTop);
   }
 
   function doCreateDomLine(nonEmpty)

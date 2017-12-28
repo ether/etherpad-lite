@@ -193,6 +193,19 @@ function caretLineIsLastBrowserLineOfRepLine(caretLineTop, rep)
   return lastRootChildNodePosition.top === caretLineTop;
 }
 
+function getPreviousVisibleLine(line, rep)
+{
+  var firstLineOfPad = 0;
+  if (line <= firstLineOfPad) {
+    return firstLineOfPad;
+  }else if (isLineVisible(line,rep)) {
+    return line;
+  }else{
+    return getPreviousVisibleLine(line - 1, rep);
+  }
+}
+exports.getPreviousVisibleLine = getPreviousVisibleLine;
+
 function getNextVisibleLine(line, rep)
 {
   var lastLineOfThePad = rep.lines.length() - 1;
