@@ -82,7 +82,6 @@ function Ace2Inner(){
   var disposed = false;
   var editorInfo = parent.editorInfo;
 
-  var keyEmulatedByEtherpad = false;
 
   var iframe = window.frameElement;
   var outerWin = iframe.ace_outerWin;
@@ -3928,7 +3927,6 @@ function Ace2Inner(){
           //  - probably eliminates a few minor quirks
           fastIncorp(3);
           evt.preventDefault();
-          keyEmulatedByEtherpad = true;
           doDeleteKey(evt);
           specialHandled = true;
         }
@@ -3938,7 +3936,6 @@ function Ace2Inner(){
           // note that in mozilla we need to do an incorporation for proper return behavior anyway.
           fastIncorp(4);
           evt.preventDefault();
-          keyEmulatedByEtherpad = true;
           doReturnKey();
           //scrollSelectionIntoView();
           scheduler.setTimeout(function()
@@ -3972,7 +3969,6 @@ function Ace2Inner(){
           // tab
           fastIncorp(5);
           evt.preventDefault();
-          keyEmulatedByEtherpad = true;
           doTabKey(evt.shiftKey);
           //scrollSelectionIntoView();
           specialHandled = true;
@@ -4059,7 +4055,6 @@ function Ace2Inner(){
           // cmd-H (backspace)
           fastIncorp(20);
           evt.preventDefault();
-          keyEmulatedByEtherpad = true;
           doDeleteKey();
           specialHandled = true;
         }
