@@ -2974,8 +2974,7 @@ function Ace2Inner(){
     var caretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(caretLine);
     var lineAfterCaretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(firstLineVisibleAfterCaretLine);
     if (caretLineIsPartiallyVisibleOnViewport || lineAfterCaretLineIsPartiallyVisibleOnViewport) {
-      // as the rep line is partially visible. We need to call caretPosition.getPosition()
-      // to know if the browser line where the caret is, it is in the bottom of the viewport
+      // check if the caret is in the bottom of the viewport
       var caretLinePosition = caretPosition.getPosition();
       var viewportBottom = getViewPortTopBottom().bottom;
       var nextLineBottom = caretPosition.getBottomOfNextBrowserLine(caretLinePosition, rep);
