@@ -13,28 +13,15 @@ exports.getPosition = function ()
     // getBoundingClientRect() returns all dimensions value as 0
     var selectionIsInTheBeginningOfLine = range.endOffset > 0;
     if (selectionIsInTheBeginningOfLine) {
-      var clonedRange = range.cloneRange();
-
-      // we set the selection start and end to avoid error when user selects a text bigger than
-      // the viewport height and uses the arrow keys to expand the selection. In this particular
-      // case is necessary to know where the selections ends because both edges of the selection
-      // is out of the viewport but we only use the end of it to calculate if it needs to scroll
-      clonedRange.setStart(range.endContainer, range.endOffset);
-      clonedRange.setEnd(range.endContainer, range.endOffset);
-
-      rect = clonedRange.getBoundingClientRect();
-      line = {
-        bottom: rect.bottom,
-        height: rect.height,
-        top: rect.top
-      }
-      clonedRange.detach();
+      var clonedRange = createSelectionRange(range);
+      line = getPositionOfElementOrSelection(clonedRange);
+      clonedRange.detach()
     }
-    // in this case, we can't get the dimension of the element where the caret is
+
+    // when there's a <br> or any element that has no height, we can't get
+    // the dimension of the element where the caret is
     if(!rect || rect.height === 0){
-      clonedRange = range.cloneRange();
-      clonedRange.setStart(range.endContainer, range.endOffset);
-      clonedRange.setEnd(range.endContainer, range.endOffset);
+      var clonedRange = createSelectionRange(range);
 
       // as we can't get the element height, we create a text node to get the dimensions
       // on the position
@@ -42,29 +29,34 @@ exports.getPosition = function ()
       clonedRange.insertNode(shadowCaret[0]);
       clonedRange.selectNode(shadowCaret[0]);
 
-      rect = clonedRange.getBoundingClientRect();
-      line = {
-        bottom: rect.bottom,
-        height: rect.height,
-        top: rect.top
-      }
+      line = getPositionOfElementOrSelection(clonedRange);
+      clonedRange.detach()
       shadowCaret.remove();
-      clonedRange.detach();
     }
   }
   return line;
 }
 
-exports.getPositionOfRepLineAtOffset = function (node, offset) {
+var createSelectionRange = function (range) {
+  clonedRange = range.cloneRange();
+
+  // we set the selection start and end to avoid error when user selects a text bigger than
+  // the viewport height and uses the arrow keys to expand the selection. In this particular
+  // case is necessary to know where the selections ends because both edges of the selection
+  // is out of the viewport but we only use the end of it to calculate if it needs to scroll
+  clonedRange.setStart(range.endContainer, range.endOffset);
+  clonedRange.setEnd(range.endContainer, range.endOffset);
+  return clonedRange;
+}
+
+var getPositionOfRepLineAtOffset = function (node, offset) {
   // it is not a text node, so we cannot make a selection
   if (node.tagName === 'BR' || node.tagName === 'EMPTY') {
     return getPositionOfElementOrSelection(node);
   }
 
-  if (node.length === 0){
-    while (node.length === 0 && node.nextSibling) {
-      node = node.nextSibling;
-    }
+  while (node.length === 0 && node.nextSibling) {
+    node = node.nextSibling;
   }
 
   var newRange = new Range();
@@ -113,7 +105,7 @@ function caretLineIsFirstBrowserLine(caretLineTop, rep)
   var firstRootNode = getFirstRootChildNode(lineNode);
 
   // to get the position of the node we the position of the first char
-  var positionOfFirstRootNode = exports.getPositionOfRepLineAtOffset(firstRootNode, 1);
+  var positionOfFirstRootNode = getPositionOfRepLineAtOffset(firstRootNode, 1);
   return positionOfFirstRootNode.top === caretLineTop;
 }
 
@@ -145,7 +137,7 @@ function getDimensionOfLastBrowserLineOfRepLine(line, rep)
   var lastRootChildNode = getLastRootChildNode(lineNode);
 
   // we get the position of the line in the last char of it
-  var lastRootChildNodePosition = exports.getPositionOfRepLineAtOffset(lastRootChildNode.node, lastRootChildNode.length);
+  var lastRootChildNodePosition = getPositionOfRepLineAtOffset(lastRootChildNode.node, lastRootChildNode.length);
   return lastRootChildNodePosition;
 }
 
@@ -189,7 +181,7 @@ function caretLineIsLastBrowserLineOfRepLine(caretLineTop, rep)
   var lastRootChildNode = getLastRootChildNode(lineNode);
 
   // we take a rep line and get the position of the last char of it
-  var lastRootChildNodePosition = exports.getPositionOfRepLineAtOffset(lastRootChildNode.node, lastRootChildNode.length);
+  var lastRootChildNodePosition = getPositionOfRepLineAtOffset(lastRootChildNode.node, lastRootChildNode.length);
   return lastRootChildNodePosition.top === caretLineTop;
 }
 
@@ -230,7 +222,7 @@ function getDimensionOfFirstBrowserLineOfRepLine(line, rep)
   var firstRootChildNode = getFirstRootChildNode(lineNode);
 
   // we can get the position of the line, getting the position of the first char of the rep line
-  var firstRootChildNodePosition = exports.getPositionOfRepLineAtOffset(firstRootChildNode, 1);
+  var firstRootChildNodePosition = getPositionOfRepLineAtOffset(firstRootChildNode, 1);
   return firstRootChildNodePosition;
 }
 

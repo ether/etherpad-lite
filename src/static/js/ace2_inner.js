@@ -2995,6 +2995,13 @@ function Ace2Inner(){
     var viewportBottom = viewport.bottom;
     var viewportTop = viewport.top;
 
+    var topOfLineIsAboveOfViewportBottom = lineTop < viewportBottom;
+    var bottomOfLineIsOnOrBelowOfViewportBottom = lineBottom >= viewportBottom;
+    var topOfLineIsBelowViewportTop = lineTop >= viewportTop;
+    var topOfLineIsAboveViewportBottom = lineTop <= viewportBottom;
+    var bottomOfLineIsAboveViewportBottom = lineBottom <= viewportBottom;
+    var bottomOfLineIsBelowViewportTop = lineBottom >= viewportTop;
+
     return (topOfLineIsAboveOfViewportBottom && bottomOfLineIsOnOrBelowOfViewportBottom) ||
       (topOfLineIsBelowViewportTop && topOfLineIsAboveViewportBottom) ||
       (bottomOfLineIsAboveViewportBottom && bottomOfLineIsBelowViewportTop);
@@ -4143,7 +4150,7 @@ function Ace2Inner(){
               if(arrowUpWasPressedInTheFirstLineOfTheViewport){
                 var win = outerWin;
                 var pixelsToScroll = getPixelsToScrollWhenUserPressesArrowUp();
-                // by default, the browser scrolls to the middle of the pad. To avoid the twist made
+                // by default, the browser scrolls to the middle of the viewport. To avoid the twist made
                 // when we apply a second scroll, we made it immediately (without animation)
                 scrollYPageWithoutAnimation(win, -pixelsToScroll);
               }else{
@@ -5430,10 +5437,10 @@ function Ace2Inner(){
   // By default, when user makes an edition in a line out of viewport, this line goes
   // to the edge of viewport. This function gets the extra pixels necessary to get the
   // caret line in a position X relative to Y% viewport.
-  function getPixelsRelativeToPercentageOfViewport(editionIsAboveOfViewport)
+  function getPixelsRelativeToPercentageOfViewport(aboveOfViewport)
   {
     var pixels = 0;
-    var scrollPercentageRelativeToViewport = getPercentageToScroll(editionIsAboveOfViewport);
+    var scrollPercentageRelativeToViewport = getPercentageToScroll(aboveOfViewport);
     if(scrollPercentageRelativeToViewport > 0 && scrollPercentageRelativeToViewport <= 1){
       pixels = parseInt(getInnerHeight() * scrollPercentageRelativeToViewport);
     }
@@ -5442,11 +5449,11 @@ function Ace2Inner(){
 
   // we use different percentages when change selection. It depends on if it is
   // either above the top or below the bottom of the page
-  function getPercentageToScroll(editionIsAboveOfViewport)
+  function getPercentageToScroll(aboveOfViewport)
   {
     var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
     var percentageToScroll = scrollSettings.percentage.editionBelowViewport;
-    if(editionIsAboveOfViewport){
+    if(aboveOfViewport){
       percentageToScroll = scrollSettings.percentage.editionAboveViewport;
     }
     return percentageToScroll;
@@ -5473,7 +5480,6 @@ function Ace2Inner(){
   {
     if (!rep.selStart) return;
     fixView();
-    var focusLine = (rep.selFocusAtStart ? rep.selStart[0] : rep.selEnd[0]);
     scrollNodeVerticallyIntoView();
     if (!doesWrap)
     {
