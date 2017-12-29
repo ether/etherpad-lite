@@ -104,7 +104,7 @@ function caretLineIsFirstBrowserLine(caretLineTop, rep)
   var lineNode = rep.lines.atIndex(caretRepLine).lineNode;
   var firstRootNode = getFirstRootChildNode(lineNode);
 
-  // to get the position of the node we the position of the first char
+  // to get the position of the node we get the position of the first char
   var positionOfFirstRootNode = getPositionOfRepLineAtOffset(firstRootNode, 1);
   return positionOfFirstRootNode.top === caretLineTop;
 }
