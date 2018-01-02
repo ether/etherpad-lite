@@ -60,7 +60,7 @@ function Ace2Inner(){
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
-  var caretPosition = require('/caretPosition');
+  var Scroll = require('./Scroll');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
@@ -89,6 +89,8 @@ function Ace2Inner(){
   var sideDiv = iframe.nextSibling;
   var lineMetricsDiv = sideDiv.nextSibling;
   initLineNumbers();
+
+  var scroll = Scroll.init(outerWin);
 
   var outsideKeyDown = noop;
 
@@ -1209,7 +1211,7 @@ function Ace2Inner(){
         updateLineNumbers(); // update line numbers if any time left
         if (isTimeUp()) return;
 
-        var visibleRange = getVisibleCharRange();
+        var visibleRange = scroll.getVisibleCharRange(rep);
         var docRange = [0, rep.lines.totalWidth()];
         //console.log("%o %o", docRange, visibleRange);
         finishedImportantWork = true;
@@ -1671,7 +1673,7 @@ function Ace2Inner(){
     });
 
     //p.mark("relex");
-    //rep.lexer.lexCharRange(getVisibleCharRange(), function() { return false; });
+    //rep.lexer.lexCharRange(scroll.getVisibleCharRange(rep), function() { return false; });
     //var isTimeUp = newTimeLimit(100);
     // do DOM inserts
     p.mark("insert");
@@ -2919,7 +2921,9 @@ function Ace2Inner(){
       // when this settings is enabled
       var docTextChanged = currentCallStack.docTextChanged;
       if(!docTextChanged){
-       scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary();
+       var isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
+       var innerHeight = getInnerHeight();
+       scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, isScrollableEvent, innerHeight);
       }
 
       return true;
@@ -2933,77 +2937,6 @@ function Ace2Inner(){
   function isPadLoading(eventType)
   {
     return (eventType === 'setup') || (eventType === 'setBaseText') || (eventType === 'importText');
-  }
-
-  function isCaretAtTheTopOfViewport()
-  {
-    var caretLine = rep.selStart[0];
-    var linePrevCaretLine = caretLine - 1;
-    var firstLineVisibleBeforeCaretLine = caretPosition.getPreviousVisibleLine(linePrevCaretLine, rep);
-    var caretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(caretLine);
-    var lineBeforeCaretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(firstLineVisibleBeforeCaretLine);
-    if (caretLineIsPartiallyVisibleOnViewport || lineBeforeCaretLineIsPartiallyVisibleOnViewport) {
-      var caretLinePosition = caretPosition.getPosition(); // get the position of the browser line
-      var viewportPosition = getViewPortTopBottom();
-      var viewportTop = viewportPosition.top;
-      var viewportBottom = viewportPosition.bottom;
-      var caretLineIsBelowViewportTop = caretLinePosition.bottom >= viewportTop;
-      var caretLineIsAboveViewportBottom = caretLinePosition.top < viewportBottom;
-      var caretLineIsInsideOfViewport = caretLineIsBelowViewportTop && caretLineIsAboveViewportBottom;
-      if (caretLineIsInsideOfViewport) {
-        var prevLineTop = caretPosition.getPositionTopOfPreviousBrowserLine(caretLinePosition, rep);
-        var previousLineIsAboveViewportTop = prevLineTop < viewportTop;
-        return previousLineIsAboveViewportTop;
-      }
-    }
-    return false;
-  }
-
-  // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
-  // if (caretLine() === rep.lines.length() - 1) is not enough. We need to check if there are
-  // other lines after caretLine(), and all of them are out of viewport.
-  function isCaretAtTheBottomOfViewport()
-  {
-    // computing a line position using getBoundingClientRect() is expensive.
-    // (obs: getBoundingClientRect() is called on caretPosition.getPosition())
-    // To avoid that, we only call this function when it is possible that the
-    // caret is in the bottom of viewport
-    var caretLine = rep.selStart[0];
-    var lineAfterCaretLine = caretLine + 1;
-    var firstLineVisibleAfterCaretLine = caretPosition.getNextVisibleLine(lineAfterCaretLine, rep);
-    var caretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(caretLine);
-    var lineAfterCaretLineIsPartiallyVisibleOnViewport = isLinePartiallyVisibleOnViewport(firstLineVisibleAfterCaretLine);
-    if (caretLineIsPartiallyVisibleOnViewport || lineAfterCaretLineIsPartiallyVisibleOnViewport) {
-      // check if the caret is in the bottom of the viewport
-      var caretLinePosition = caretPosition.getPosition();
-      var viewportBottom = getViewPortTopBottom().bottom;
-      var nextLineBottom = caretPosition.getBottomOfNextBrowserLine(caretLinePosition, rep);
-      var nextLineIsBelowViewportBottom = nextLineBottom > viewportBottom;
-      return nextLineIsBelowViewportBottom;
-    }
-    return false;
-  }
-
-  function isLinePartiallyVisibleOnViewport(lineNumber)
-  {
-    var lineNode = rep.lines.atIndex(lineNumber);
-    var linePosition = getLineEntryTopBottom(lineNode);
-    var lineTop = linePosition.top;
-    var lineBottom = linePosition.bottom;
-    var viewport = getViewPortTopBottom();
-    var viewportBottom = viewport.bottom;
-    var viewportTop = viewport.top;
-
-    var topOfLineIsAboveOfViewportBottom = lineTop < viewportBottom;
-    var bottomOfLineIsOnOrBelowOfViewportBottom = lineBottom >= viewportBottom;
-    var topOfLineIsBelowViewportTop = lineTop >= viewportTop;
-    var topOfLineIsAboveViewportBottom = lineTop <= viewportBottom;
-    var bottomOfLineIsAboveViewportBottom = lineBottom <= viewportBottom;
-    var bottomOfLineIsBelowViewportTop = lineBottom >= viewportTop;
-
-    return (topOfLineIsAboveOfViewportBottom && bottomOfLineIsOnOrBelowOfViewportBottom) ||
-      (topOfLineIsBelowViewportTop && topOfLineIsAboveViewportBottom) ||
-      (bottomOfLineIsAboveViewportBottom && bottomOfLineIsBelowViewportTop);
   }
 
   function doCreateDomLine(nonEmpty)
@@ -3361,20 +3294,9 @@ function Ace2Inner(){
     return false;
   }
 
-  function getLineEntryTopBottom(entry, destObj)
-  {
-    var dom = entry.lineNode;
-    var top = dom.offsetTop;
-    var height = dom.offsetHeight;
-    var obj = (destObj || {});
-    obj.top = top;
-    obj.bottom = (top + height);
-    return obj;
-  }
-
   function getViewPortTopBottom()
   {
-    var theTop = getScrollY();
+    var theTop = scroll.getScrollY();
     var doc = outerWin.document;
     var height = doc.documentElement.clientHeight; // includes padding
 
@@ -3402,33 +3324,6 @@ function Ace2Inner(){
     var aceOuter = rootDocument.getElementsByName("ace_outer");
     var aceOuterPaddingTop = parseInt($(aceOuter).css("padding-top"));
     return aceOuterPaddingTop;
-  }
-
-  function getVisibleLineRange()
-  {
-    var viewport = getViewPortTopBottom();
-    //console.log("viewport top/bottom: %o", viewport);
-    var obj = {};
-    var start = rep.lines.search(function(e)
-    {
-      return getLineEntryTopBottom(e, obj).bottom > viewport.top;
-    });
-    var end = rep.lines.search(function(e)
-    {
-      // return the first line that the top position is greater or equal than
-      // the viewport. That is the first line that is below the viewport bottom.
-      // So the line that is in the bottom of the viewport is the very previous one.
-      return getLineEntryTopBottom(e, obj).top >= viewport.bottom;
-    });
-    if (end < start) end = start; // unlikely
-    // top.console.log(start+","+(end -1));
-    return [start, end - 1];
-  }
-
-  function getVisibleCharRange()
-  {
-    var lineRange = getVisibleLineRange();
-    return [rep.lines.offsetOfIndex(lineRange[0]), rep.lines.offsetOfIndex(lineRange[1])];
   }
 
   function handleCut(evt)
@@ -4074,12 +3969,12 @@ function Ace2Inner(){
           doDeleteKey();
           specialHandled = true;
         }
-        if((evt.which == 36 && evt.ctrlKey == true) && padShortcutEnabled.ctrlHome){ setScrollY(0); } // Control Home send to Y = 0
+        if((evt.which == 36 && evt.ctrlKey == true) && padShortcutEnabled.ctrlHome){ scroll.setScrollY(0); } // Control Home send to Y = 0
         if((evt.which == 33 || evt.which == 34) && type == 'keydown' && !evt.ctrlKey){
 
           evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
 
-          var oldVisibleLineRange = getVisibleLineRange();
+          var oldVisibleLineRange = scroll.getVisibleLineRange(rep);
           var topOffset = rep.selStart[0] - oldVisibleLineRange[0];
           if(topOffset < 0 ){
             topOffset = 0;
@@ -4089,7 +3984,7 @@ function Ace2Inner(){
           var isPageUp = evt.which === 33;
 
           scheduler.setTimeout(function(){
-            var newVisibleLineRange = getVisibleLineRange(); // the visible lines IE 1,10
+            var newVisibleLineRange = scroll.getVisibleLineRange(rep); // the visible lines IE 1,10
             var linesCount = rep.lines.length(); // total count of lines in pad IE 10
             var numberOfLinesInViewport = newVisibleLineRange[1] - newVisibleLineRange[0]; // How many lines are in the viewport right now?
 
@@ -4122,7 +4017,7 @@ function Ace2Inner(){
             // sometimes the first selection is -1 which causes problems (Especially with ep_page_view)
             // so use focusNode.offsetTop value.
             if(caretOffsetTop === -1) caretOffsetTop = myselection.focusNode.offsetTop;
-            setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
+            scroll.setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
 
           }, 200);
         }
@@ -4139,21 +4034,19 @@ function Ace2Inner(){
             var selection = getSelection();
 
             if(selection){
-              var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
-              var percentageScrollArrowUp = scrollSettings.percentageToScrollWhenUserPressesArrowUp;
               var arrowUp = evt.which === 38;
 
               // if percentageScrollArrowUp is 0, let the scroll to be handled as default, put the previous
               // rep line on the top of the viewport
-              var arrowUpWasPressedInTheFirstLineOfTheViewport = percentageScrollArrowUp && arrowUp && isCaretAtTheTopOfViewport();
-              if(arrowUpWasPressedInTheFirstLineOfTheViewport){
-                var win = outerWin;
-                var pixelsToScroll = getPixelsToScrollWhenUserPressesArrowUp();
+              var innerHeight = getInnerHeight();
+              if(scroll.arrowUpWasPressedInTheFirstLineOfTheViewport(arrowUp, rep)){
+                var pixelsToScroll = scroll.getPixelsToScrollWhenUserPressesArrowUp(innerHeight);
+
                 // by default, the browser scrolls to the middle of the viewport. To avoid the twist made
                 // when we apply a second scroll, we made it immediately (without animation)
-                scrollYPageWithoutAnimation(win, -pixelsToScroll);
+                scroll.scrollYPageWithoutAnimation(-pixelsToScroll);
               }else{
-                scrollNodeVerticallyIntoView();
+                scroll.scrollNodeVerticallyIntoView(rep, innerHeight);
               }
             }
           }
@@ -4223,17 +4116,6 @@ function Ace2Inner(){
     }
 
     return !firstTimeKeyIsContinuouslyPressed;
-  }
-
-  function getPixelsToScrollWhenUserPressesArrowUp()
-  {
-    var pixels = 0;
-    var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
-    var percentageToScrollUp = scrollSettings.percentageToScrollWhenUserPressesArrowUp;
-    if(percentageToScrollUp > 0 && percentageToScrollUp <= 1){
-      pixels = parseInt(getInnerHeight() * percentageToScrollUp);
-    }
-    return pixels;
   }
 
   function doUndoRedo(which)
@@ -4953,60 +4835,14 @@ function Ace2Inner(){
       }
     }
     // if near edge, scroll to edge
-    var scrollX = getScrollX();
-    var scrollY = getScrollY();
+    var scrollX = scroll.getScrollX();
+    var scrollY = scroll.getScrollY();
     var win = outerWin;
     var r = 20;
 
     enforceEditability();
 
     $(sideDiv).addClass('sidedivdelayed');
-  }
-
-  function getScrollXY()
-  {
-    var win = outerWin;
-    var odoc = outerWin.document;
-    if (typeof(win.pageYOffset) == "number")
-    {
-      return {
-        x: win.pageXOffset,
-        y: win.pageYOffset
-      };
-    }
-    var docel = odoc.documentElement;
-    if (docel && typeof(docel.scrollTop) == "number")
-    {
-      return {
-        x: docel.scrollLeft,
-        y: docel.scrollTop
-      };
-    }
-  }
-
-  function getScrollX()
-  {
-    return getScrollXY().x;
-  }
-
-  function getScrollY()
-  {
-    return getScrollXY().y;
-  }
-
-  function setScrollX(x)
-  {
-    outerWin.scrollTo(x, getScrollY());
-  }
-
-  function setScrollY(y)
-  {
-    outerWin.scrollTo(getScrollX(), y);
-  }
-
-  function setScrollXY(x, y)
-  {
-    outerWin.scrollTo(x, y);
   }
 
   var _teardownActions = [];
@@ -5329,135 +5165,6 @@ function Ace2Inner(){
     return odoc.documentElement.clientWidth;
   }
 
-  function partOfRepLineIsOutOfViewport(viewportPosition)
-  {
-    var focusLine = (rep.selFocusAtStart ? rep.selStart[0] : rep.selEnd[0]);
-    var line = rep.lines.atIndex(focusLine);
-    var linePosition = getLineEntryTopBottom(line);
-    var lineIsAboveOfViewport = linePosition.top < viewportPosition.top;
-    var lineIsBelowOfViewport = linePosition.bottom > viewportPosition.bottom;
-
-    return lineIsBelowOfViewport || lineIsAboveOfViewport;
-  }
-
-  // scrollAmountWhenFocusLineIsOutOfViewport is set to 0 (default), scroll it the minimum distance
-  // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
-  // besides of scrolling the minimum needed to be visible, it scrolls additionally
-  // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
-  function scrollNodeVerticallyIntoView()
-  {
-    var viewport = getViewPortTopBottom();
-    var isPartOfRepLineOutOfViewport = partOfRepLineIsOutOfViewport(viewport);
-
-    // when the selection changes outside of the viewport the browser automatically scrolls the line
-    // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
-    // So, when the line scrolled gets outside of the viewport we let the browser handle it.
-    var linePosition = caretPosition.getPosition();
-    var win = outerWin;
-    if(linePosition){
-      var distanceOfTopOfViewport = linePosition.top - viewport.top;
-      var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
-      var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
-      var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
-      if(caretIsAboveOfViewport){
-        var pixelsToScroll = distanceOfTopOfViewport - getPixelsRelativeToPercentageOfViewport(true);
-        scrollYPage(win, pixelsToScroll);
-      }else if(caretIsBelowOfViewport){
-        var pixelsToScroll = -distanceOfBottomOfViewport + getPixelsRelativeToPercentageOfViewport();
-        scrollYPage(win, pixelsToScroll);
-      }else{
-        scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary();
-      }
-    }
-  }
-
-  function scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary()
-  {
-    // are we placing the caret on the line at the bottom of viewport?
-    // And if so, do we need to scroll the editor, as defined on the settings.json?
-    var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
-    var shouldScrollWhenCaretIsAtBottomOfViewport =  scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport;
-    if (shouldScrollWhenCaretIsAtBottomOfViewport) {
-      // avoid scrolling when pad loads
-      var isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
-      // avoid scrolling when selection includes multiple lines -- user can potentially be selecting more lines
-      // than it fits on viewport
-      var multipleLinesSelected = rep.selStart[0] !== rep.selEnd[0];
-      if (isScrollableEvent && !multipleLinesSelected && isCaretAtTheBottomOfViewport()) {
-        // when scrollWhenFocusLineIsOutOfViewport.percentage is 0, pixelsToScroll is 0
-        var pixelsToScroll = getPixelsRelativeToPercentageOfViewport();
-        scrollYPage(outerWin, pixelsToScroll);
-      }
-    }
-  }
-
-  function scrollYPage(win, pixelsToScroll)
-  {
-    var durationOfAnimationToShowFocusline = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport.duration;
-    if(durationOfAnimationToShowFocusline){
-      scrollYPageWithAnimation(win, pixelsToScroll, durationOfAnimationToShowFocusline);
-    }else{
-      scrollYPageWithoutAnimation(win, pixelsToScroll);
-    }
-  }
-
-  function scrollYPageWithoutAnimation(win, pixelsToScroll)
-  {
-    win.scrollBy(0, pixelsToScroll);
-  }
-
-  function scrollYPageWithAnimation(win, pixelsToScroll, durationOfAnimationToShowFocusline)
-  {
-    var outerDocBody = win.document.getElementById("outerdocbody");
-
-    // it works on chrome
-    var $outerDocBody = $(outerDocBody);
-    triggerScrollWithAnimation($outerDocBody, pixelsToScroll, durationOfAnimationToShowFocusline);
-
-    // it works on firefox
-    var $outerDocBodyParent = $outerDocBody.parent();
-    triggerScrollWithAnimation($outerDocBodyParent, pixelsToScroll, durationOfAnimationToShowFocusline);
-  }
-
-  // using a custom queue and clearing it, we avoid creating a queue of scroll animations. So if this function
-  // is called twice quickly, only the last one runs.
-  function triggerScrollWithAnimation($elem, pixelsToScroll, durationOfAnimationToShowFocusline)
-  {
-    // clear the queue of animation
-    $elem.stop("scrollanimation");
-    $elem.animate({
-      scrollTop: '+=' + pixelsToScroll
-    }, {
-      duration: durationOfAnimationToShowFocusline,
-      queue: "scrollanimation"
-    }).dequeue("scrollanimation");
-  }
-
-  // By default, when user makes an edition in a line out of viewport, this line goes
-  // to the edge of viewport. This function gets the extra pixels necessary to get the
-  // caret line in a position X relative to Y% viewport.
-  function getPixelsRelativeToPercentageOfViewport(aboveOfViewport)
-  {
-    var pixels = 0;
-    var scrollPercentageRelativeToViewport = getPercentageToScroll(aboveOfViewport);
-    if(scrollPercentageRelativeToViewport > 0 && scrollPercentageRelativeToViewport <= 1){
-      pixels = parseInt(getInnerHeight() * scrollPercentageRelativeToViewport);
-    }
-    return pixels;
-  }
-
-  // we use different percentages when change selection. It depends on if it is
-  // either above the top or below the bottom of the page
-  function getPercentageToScroll(aboveOfViewport)
-  {
-    var scrollSettings = parent.parent.clientVars.scrollWhenFocusLineIsOutOfViewport;
-    var percentageToScroll = scrollSettings.percentage.editionBelowViewport;
-    if(aboveOfViewport){
-      percentageToScroll = scrollSettings.percentage.editionAboveViewport;
-    }
-    return percentageToScroll;
-  }
-
   function scrollXHorizontallyIntoView(pixelX)
   {
     var win = outerWin;
@@ -5479,7 +5186,8 @@ function Ace2Inner(){
   {
     if (!rep.selStart) return;
     fixView();
-    scrollNodeVerticallyIntoView();
+    var innerHeight = getInnerHeight();
+    scroll.scrollNodeVerticallyIntoView(rep, innerHeight);
     if (!doesWrap)
     {
       var browserSelection = getSelection();
