@@ -60,7 +60,7 @@ function Ace2Inner(){
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
-  var Scroll = require('./Scroll');
+  var Scroll = require('./scroll');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
@@ -4035,19 +4035,8 @@ function Ace2Inner(){
 
             if(selection){
               var arrowUp = evt.which === 38;
-
-              // if percentageScrollArrowUp is 0, let the scroll to be handled as default, put the previous
-              // rep line on the top of the viewport
               var innerHeight = getInnerHeight();
-              if(scroll.arrowUpWasPressedInTheFirstLineOfTheViewport(arrowUp, rep)){
-                var pixelsToScroll = scroll.getPixelsToScrollWhenUserPressesArrowUp(innerHeight);
-
-                // by default, the browser scrolls to the middle of the viewport. To avoid the twist made
-                // when we apply a second scroll, we made it immediately (without animation)
-                scroll.scrollYPageWithoutAnimation(-pixelsToScroll);
-              }else{
-                scroll.scrollNodeVerticallyIntoView(rep, innerHeight);
-              }
+              scroll.scrollWhenPressArrowKeys(arrowUp, rep, innerHeight);
             }
           }
         }
@@ -4834,9 +4823,6 @@ function Ace2Inner(){
         setIfNecessary(root.style, "height", "");
       }
     }
-    // if near edge, scroll to edge
-    var scrollX = scroll.getScrollX();
-    var scrollY = scroll.getScrollY();
     var win = outerWin;
     var r = 20;
 

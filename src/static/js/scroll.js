@@ -36,6 +36,21 @@ Scroll.prototype.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary = functio
   }
 }
 
+Scroll.prototype.scrollWhenPressArrowKeys = function(arrowUp, rep, innerHeight)
+{
+  // if percentageScrollArrowUp is 0, let the scroll to be handled as default, put the previous
+  // rep line on the top of the viewport
+  if(this._arrowUpWasPressedInTheFirstLineOfTheViewport(arrowUp, rep)){
+    var pixelsToScroll = this._getPixelsToScrollWhenUserPressesArrowUp(innerHeight);
+
+    // by default, the browser scrolls to the middle of the viewport. To avoid the twist made
+    // when we apply a second scroll, we made it immediately (without animation)
+    this._scrollYPageWithoutAnimation(-pixelsToScroll);
+  }else{
+    this.scrollNodeVerticallyIntoView(rep, innerHeight);
+  }
+}
+
 // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
 // if (caretLine() === rep.lines.length() - 1) is not enough. We need to check if there are
 // other lines after caretLine(), and all of them are out of viewport.
@@ -207,7 +222,7 @@ Scroll.prototype._getPercentageToScroll = function(aboveOfViewport)
   return percentageToScroll;
 }
 
-Scroll.prototype.getPixelsToScrollWhenUserPressesArrowUp = function(innerHeight)
+Scroll.prototype._getPixelsToScrollWhenUserPressesArrowUp = function(innerHeight)
 {
   var pixels = 0;
   var percentageToScrollUp = this.scrollSettings.percentageToScrollWhenUserPressesArrowUp;
@@ -223,11 +238,11 @@ Scroll.prototype._scrollYPage = function(pixelsToScroll)
   if(durationOfAnimationToShowFocusline){
     this._scrollYPageWithAnimation(pixelsToScroll, durationOfAnimationToShowFocusline);
   }else{
-    this.scrollYPageWithoutAnimation(pixelsToScroll);
+    this._scrollYPageWithoutAnimation(pixelsToScroll);
   }
 }
 
-Scroll.prototype.scrollYPageWithoutAnimation = function(pixelsToScroll)
+Scroll.prototype._scrollYPageWithoutAnimation = function(pixelsToScroll)
 {
   this.outerWin.scrollBy(0, pixelsToScroll);
 }
@@ -311,7 +326,7 @@ Scroll.prototype._getLineEntryTopBottom = function(entry, destObj)
   return obj;
 }
 
-Scroll.prototype.arrowUpWasPressedInTheFirstLineOfTheViewport = function(arrowUp, rep)
+Scroll.prototype._arrowUpWasPressedInTheFirstLineOfTheViewport = function(arrowUp, rep)
 {
   var percentageScrollArrowUp = this.scrollSettings.percentageToScrollWhenUserPressesArrowUp;
   return percentageScrollArrowUp && arrowUp && this._isCaretAtTheTopOfViewport(rep);
