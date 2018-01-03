@@ -150,6 +150,34 @@
   /* Time (in seconds) to automatically reconnect pad when a "Force reconnect"
      message is shown to user. Set to 0 to disable automatic reconnection */
   "automaticReconnectionTimeout" : 0,
+  /*
+  * By default, when caret is moved out of viewport, it scrolls the minimum height needed to make this
+  * line visible.
+  */
+  "scrollWhenFocusLineIsOutOfViewport": {
+    /*
+    * Percentage of viewport height to be additionally scrolled.
+    * E.g use "percentage.editionAboveViewport": 0.5, to place caret line in the
+    * middle of viewport, when user edits a line above of the viewport
+    * Set to 0 to disable extra scrolling
+   */
+    "percentage": {
+      "editionAboveViewport": 0,
+      "editionBelowViewport": 0
+    },
+    /* Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation */
+    "duration": 0,
+    /*
+    * Flag to control if it should scroll when user places the caret in the last line of the viewport
+    */
+    "scrollWhenCaretIsInTheLastLineOfViewport": false,
+    /*
+    * Percentage of viewport height to be additionally scrolled when user presses arrow up
+    * in the line of the top of the viewport.
+    * Set to 0 to let the scroll to be handled as default by the Etherpad
+   */
+    "percentageToScrollWhenUserPressesArrowUp": 0
+  },
 
   /* Users for basic authentication. is_admin = true gives access to /admin.
      If you do not uncomment this, /admin will not be available! */
