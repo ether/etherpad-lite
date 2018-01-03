@@ -2955,21 +2955,9 @@ function Ace2Inner(){
 
   function selectFormattingButtonIfLineHasStyleApplied (rep) {
     _.each(FORMATTING_STYLES, function (style) {
-      var hasStyleOnRepSelection = hasAttributeOnSelectionOrCaretPosition(rep, style);
+      var hasStyleOnRepSelection = documentAttributeManager.hasAttributeOnSelectionOrCaretPosition(style);
       updateStyleButtonStateWhenAttribIsFormatting(style, hasStyleOnRepSelection);
     })
-  }
-
-  function hasAttributeOnSelectionOrCaretPosition(rep, attributeName) {
-    var hasSelection = ((rep.selStart[0] !== rep.selEnd[0]) || (rep.selEnd[1] !== rep.selStart[1]));
-    var hasAttrib;
-    if (hasSelection) {
-      hasAttrib = documentAttributeManager.getAttributeOnSelection(attributeName);
-    }else {
-      var attributesOnCaretPosition = documentAttributeManager.getAttributesOnCaret();
-      hasAttrib = _.contains(_.flatten(attributesOnCaretPosition), attributeName);
-    }
-    return hasAttrib;
   }
 
   function doCreateDomLine(nonEmpty)
