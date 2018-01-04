@@ -2478,7 +2478,9 @@ function Ace2Inner(){
 
     var attributeValue = selectionAllHasIt ? '' : 'true';
     documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [[attributeName, attributeValue]]);
-    if (attribIsFormattingStyle(attributeName)) updateStyleButtonStateWhenAttribIsFormatting(attributeName, !selectionAllHasIt); // italic, bold, ...
+    if (attribIsFormattingStyle(attributeName)) {
+      updateStyleButtonState(attributeName, !selectionAllHasIt); // italic, bold, ...
+    }
   }
   editorInfo.ace_toggleAttributeOnSelection = toggleAttributeOnSelection;
 
@@ -2937,14 +2939,7 @@ function Ace2Inner(){
     return (eventType === 'setup') || (eventType === 'setBaseText') || (eventType === 'importText');
   }
 
-  function ifAttribIsFormattingUpdateStyleButtonState(attribName, hasStyleOnRepSelection) {
-    if (attributeIsFormattingStyle(attribName)) {
-      var $formattingButton = parent.parent.$('[data-key="' + attribName + '"]').find('a');
-      $formattingButton.toggleClass(SELECT_BUTTON_CLASS, hasStyleOnRepSelection);
-    }
-  }
-
-  function updateStyleButtonStateWhenAttribIsFormatting(attribName, hasStyleOnRepSelection) {
+  function updateStyleButtonState(attribName, hasStyleOnRepSelection) {
     var $formattingButton = parent.parent.$('[data-key="' + attribName + '"]').find('a');
     $formattingButton.toggleClass(SELECT_BUTTON_CLASS, hasStyleOnRepSelection);
   }
@@ -2956,7 +2951,7 @@ function Ace2Inner(){
   function selectFormattingButtonIfLineHasStyleApplied (rep) {
     _.each(FORMATTING_STYLES, function (style) {
       var hasStyleOnRepSelection = documentAttributeManager.hasAttributeOnSelectionOrCaretPosition(style);
-      updateStyleButtonStateWhenAttribIsFormatting(style, hasStyleOnRepSelection);
+      updateStyleButtonState(style, hasStyleOnRepSelection);
     })
   }
 
