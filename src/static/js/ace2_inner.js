@@ -75,6 +75,9 @@ function Ace2Inner(){
   var EDIT_BODY_PADDING_TOP = 8;
   var EDIT_BODY_PADDING_LEFT = 8;
 
+  var FORMATTING_STYLES = ['bold', 'italic', 'underline', 'strikethrough'];
+  var SELECT_BUTTON_CLASS = 'selected';
+
   var caughtErrors = [];
 
   var thisAuthor = '';
@@ -2472,17 +2475,11 @@ function Ace2Inner(){
       }
     }
 
-    if (selectionAllHasIt)
-    {
-      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
-        [attributeName, '']
-      ]);
-    }
-    else
-    {
-      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
-        [attributeName, 'true']
-      ]);
+
+    var attributeValue = selectionAllHasIt ? '' : 'true';
+    documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [[attributeName, attributeValue]]);
+    if (attribIsFormattingStyle(attributeName)) {
+      updateStyleButtonState(attributeName, !selectionAllHasIt); // italic, bold, ...
     }
   }
   editorInfo.ace_toggleAttributeOnSelection = toggleAttributeOnSelection;
@@ -2911,6 +2908,9 @@ function Ace2Inner(){
       rep.selFocusAtStart = newSelFocusAtStart;
       currentCallStack.repChanged = true;
 
+      // select the formatting buttons when there is the style applied on selection
+      selectFormattingButtonIfLineHasStyleApplied(rep);
+
       hooks.callAll('aceSelectionChanged', {
         rep: rep,
         callstack: currentCallStack,
@@ -2937,6 +2937,22 @@ function Ace2Inner(){
   function isPadLoading(eventType)
   {
     return (eventType === 'setup') || (eventType === 'setBaseText') || (eventType === 'importText');
+  }
+
+  function updateStyleButtonState(attribName, hasStyleOnRepSelection) {
+    var $formattingButton = parent.parent.$('[data-key="' + attribName + '"]').find('a');
+    $formattingButton.toggleClass(SELECT_BUTTON_CLASS, hasStyleOnRepSelection);
+  }
+
+  function attribIsFormattingStyle(attributeName) {
+    return _.contains(FORMATTING_STYLES, attributeName);
+  }
+
+  function selectFormattingButtonIfLineHasStyleApplied (rep) {
+    _.each(FORMATTING_STYLES, function (style) {
+      var hasStyleOnRepSelection = documentAttributeManager.hasAttributeOnSelectionOrCaretPosition(style);
+      updateStyleButtonState(style, hasStyleOnRepSelection);
+    })
   }
 
   function doCreateDomLine(nonEmpty)

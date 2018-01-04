@@ -400,7 +400,19 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       this.removeAttributeOnLine(lineNum, attributeName) :
       this.setAttributeOnLine(lineNum, attributeName, attributeValue);
 
-  }
+  },
+
+  hasAttributeOnSelectionOrCaretPosition: function(attributeName) {
+    var hasSelection = ((this.rep.selStart[0] !== this.rep.selEnd[0]) || (this.rep.selEnd[1] !== this.rep.selStart[1]));
+    var hasAttrib;
+    if (hasSelection) {
+      hasAttrib = this.getAttributeOnSelection(attributeName);
+    }else {
+      var attributesOnCaretPosition = this.getAttributesOnCaret();
+      hasAttrib = _.contains(_.flatten(attributesOnCaretPosition), attributeName);
+    }
+    return hasAttrib;
+  },
 });
 
 module.exports = AttributeManager;
