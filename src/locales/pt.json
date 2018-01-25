@@ -131,7 +131,7 @@
 	"pad.impexp.importing": "Importando...",
 	"pad.impexp.confirmimport": "A importação de um ficheiro irá substituir o texto atual do pad. Tem certeza que deseja continuar?",
 	"pad.impexp.convertFailed": "Não foi possível importar este ficheiro. Utilize outro formato ou copie e insira manualmente",
-	"pad.impexp.padHasData": "Não fomos capazes de importar este arquivo porque este Pad já tinha alterações, por favor importe para um novo pad",
+	"pad.impexp.padHasData": "Não fomos capazes de importar este ficheiro porque este Pad já tinha alterações, por favor importe para um novo pad",
 	"pad.impexp.uploadFailed": "O upload falhou. Por favor, tente novamente",
 	"pad.impexp.importfailed": "A importação falhou",
 	"pad.impexp.copypaste": "Por favor, copie e cole",
