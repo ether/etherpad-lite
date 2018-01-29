@@ -56,6 +56,11 @@ exports.ip = "0.0.0.0";
 exports.port = process.env.PORT || 9001;
 
 /**
+ * Enable or disable UNIX domain socket support.
+ */
+exports.unixSocketActivation = false;
+
+/**
  * Should we suppress Error messages from being in Pad Contents
  */
 exports.suppressErrorsInPadText = false;
@@ -497,5 +502,3 @@ exports.reloadSettings = function reloadSettings() {
 
 // initially load settings
 exports.reloadSettings();
-
-

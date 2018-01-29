@@ -5,9 +5,17 @@ var fs = require('fs');
 var path = require('path');
 var npm = require("npm/lib/npm.js");
 var  _ = require("underscore");
+var errorHandling = require("./express/errorhandling");
+require('autoquit');
 
 var server;
 var serverName;
+
+/*
+ * Check here,
+ * https://cgit.freedesktop.org/systemd/systemd/tree/src/systemd/sd-daemon.h
+ */
+var systemdListenFDStart = 3;
 
 exports.createServer = function () {
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
@@ -16,14 +24,45 @@ exports.createServer = function () {
   
   console.log("Your Etherpad version is " + settings.getEpVersion() + " (" + settings.getGitCommit() + ")");
 
+  if(settings.unixSocketActivation) {
+    if(!parseInt(process.env.LISTEN_FDS, 10)) {
+      console.error('No listen file descriptors provided by Systemd. It seems like Etherpad was not invoked by Systemd.');
+      errorHandling.gracefulShutdown();
+    }
+
+    if (parseInt(process.env.LISTEN_FDS, 10) < 1) {
+      console.error('No listen file descriptors provided by Systemd.');
+      errorHandling.gracefulShutdown();
+    } else if (parseInt(process.env.LISTEN_FDS, 10) > 1) {
+      console.error('Too many file descriptors provided by Systemd. Only one file descriptor expected.');
+      errorHandling.gracefulShutdown();
+    }
+  }
+
   exports.restartServer();
 
-  console.log("You can access your Etherpad instance at http://" + settings.ip + ":" + settings.port + "/");
-  if(!_.isEmpty(settings.users)){
-    console.log("The plugin admin page is at http://" + settings.ip + ":" + settings.port + "/admin/plugins");
+  if (!settings.unixSocketActivation) {
+    console.log("You can access your Etherpad instance at http://" + settings.ip + ":" + settings.port + "/");
   }
-  else{
-    console.warn("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
+  else {
+    console.log("You can access your Etherpad instance via the UNIX socket as specified by Systemd configuration");
+  }
+
+  if(!settings.unixSocketActivation) {
+    if(!_.isEmpty(settings.users)){
+      console.log("The plugin admin page is at http://" + settings.ip + ":" + settings.port + "/admin/plugins");
+    }
+    else{
+      console.warn("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
+    }
+  }
+  else {
+    if(!_.isEmpty(settings.users)) {
+      console.warn("Admin access is enabled");
+    }
+    else {
+      console.warn("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
+    }
   }
 }
 
@@ -83,5 +122,17 @@ exports.restartServer = function () {
   hooks.callAll("expressConfigure", {"app": app});
   hooks.callAll("expressCreateServer", {"app": app, "server": server});
 
-  server.listen(settings.port, settings.ip);
+  if (!settings.unixSocketActivation) {
+    server.listen(settings.port, settings.ip);
+  }
+  else {
+    /*
+     * This applies the default inactive timeout of 10 minutes.
+     * To change it, provide this function with an argument like:
+     *
+     * { timeOut: <TIMEOUT_IN_SECONDS> }
+     */
+    server.autoQuit();
+    server.listen({fd: systemdListenFDStart});
+  }
 }
