@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -46,7 +46,7 @@ var padimpexp = (function()
     $('#importmessagefail').fadeOut("fast");
     var ret = window.confirm(html10n.get("pad.impexp.confirmimport"));
     if (ret)
-    {        
+    {
       currentImportTimer = window.setTimeout(function()
       {
         if (!currentImportTimer)
@@ -61,7 +61,7 @@ var padimpexp = (function()
       {
         disabled: true
       }).val(html10n.get("pad.impexp.importing"));
-      
+
       window.setTimeout(function()
       {
         $('#importfileinput').attr(
@@ -104,7 +104,7 @@ var padimpexp = (function()
   function importErrorMessage(status)
   {
     var msg="";
-  
+
     if(status === "convertFailed"){
       msg = html10n.get("pad.impexp.convertFailed");
     } else if(status === "uploadFailed"){
@@ -112,7 +112,7 @@ var padimpexp = (function()
     } else if(status === "padHasData"){
       msg = html10n.get("pad.impexp.padHasData");
     }
-  
+
     function showError(fade)
     {
       $('#importmessagefail').html('<strong style="color: red">'+html10n.get('pad.impexp.importfailed')+':</strong> ' + (msg || html10n.get('pad.impexp.copypaste','')))[(fade ? "fadeIn" : "show")]();
@@ -188,7 +188,8 @@ var padimpexp = (function()
       pad = _pad;
 
       //get /p/padname
-      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname);
+      // if /p/ isn't available due to a rewrite we use the clientVars padId
+      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
       //get http://example.com/p/padname without Params
       var pad_root_url = document.location.protocol + '//' + document.location.host + document.location.pathname;
 
@@ -205,9 +206,9 @@ var padimpexp = (function()
 
       // activate action to import in the form
       $("#importform").attr('action', pad_root_url + "/import");
-      
-      //hide stuff thats not avaible if abiword is disabled
-      if(clientVars.abiwordAvailable == "no")
+
+      //hide stuff thats not avaible if abiword/soffice is disabled
+      if(clientVars.exportAvailable == "no")
       {
         $("#exportworda").remove();
         $("#exportpdfa").remove();
@@ -215,13 +216,13 @@ var padimpexp = (function()
 
         $("#importmessageabiword").show();
       }
-      else if(clientVars.abiwordAvailable == "withoutPDF")
+      else if(clientVars.exportAvailable == "withoutPDF")
       {
         $("#exportpdfa").remove();
-        
+
         $("#exportworda").attr("href", pad_root_path + "/export/doc");
         $("#exportopena").attr("href", pad_root_path + "/export/odt");
-        
+
         $("#importexport").css({"height":"142px"});
         $("#importexportline").css({"height":"142px"});
       }
@@ -231,10 +232,10 @@ var padimpexp = (function()
         $("#exportpdfa").attr("href", pad_root_path + "/export/pdf");
         $("#exportopena").attr("href", pad_root_path + "/export/odt");
       }
-    
+
       addImportFrames();
       $("#importfileinput").change(fileInputUpdated);
-      $('#importform').submit(fileInputSubmit);
+      $('#importform').unbind("submit").submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
     handleFrameCall: function(directDatabaseAccess, status)

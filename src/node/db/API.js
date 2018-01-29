@@ -28,6 +28,7 @@ var authorManager = require("./AuthorManager");
 var sessionManager = require("./SessionManager");
 var async = require("async");
 var exportHtml = require("../utils/ExportHtml");
+var exportTxt = require("../utils/ExportTxt");
 var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
@@ -271,7 +272,8 @@ exports.getText = function(padID, rev, callback)
     //the client wants the latest text, lets return it to him
     else
     {
-      callback(null, {"text": pad.text()});
+      var padText = exportTxt.getTXTFromAtext(pad, pad.atext);
+      callback(null, {"text": padText});
     }
   });
 }
@@ -306,6 +308,38 @@ exports.setText = function(padID, text, callback)
     padMessageHandler.updatePadClients(pad, callback);
   });
 }
+
+/**
+appendText(padID, text) appends text to a pad
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+{code: 1, message:"text too long", data: null}
+*/
+exports.appendText = function(padID, text, callback)
+{
+  //text is required
+  if(typeof text != "string")
+  {
+    callback(new customError("text is no string","apierror"));
+    return;
+  }
+
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    pad.appendText(text);
+
+    //update the clients on the pad
+    padMessageHandler.updatePadClients(pad, callback);
+  });
+};
+
+
 
 /**
 getHTML(padID, [rev]) returns the html of a pad 
@@ -410,11 +444,16 @@ exports.setHTML = function(padID, html, callback)
     if(ERR(err, callback)) return;
 
     // add a new changeset with the new html to the pad
-    importHtml.setPadHTML(pad, cleanText(html), callback);
-
-    //update the clients on the pad
-    padMessageHandler.updatePadClients(pad, callback);
-
+    importHtml.setPadHTML(pad, cleanText(html), function(e){
+      if(e){
+        callback(new customError("HTML is malformed","apierror"));
+        return;
+      }else{
+        //update the clients on the pad
+        padMessageHandler.updatePadClients(pad, callback);
+        return;
+      }
+    });
   });
 }
 
@@ -427,8 +466,8 @@ getChatHistory(padId, start, end), returns a part of or the whole chat-history o
 
 Example returns:
 
-{"code":0,"message":"ok","data":{"messages":[{"text":"foo","userId":"a.foo","time":1359199533759,"userName":"test"},
-                                             {"text":"bar","userId":"a.foo","time":1359199534622,"userName":"test"}]}}
+{"code":0,"message":"ok","data":{"messages":[{"text":"foo","authorID":"a.foo","time":1359199533759,"userName":"test"},
+                                             {"text":"bar","authorID":"a.foo","time":1359199534622,"userName":"test"}]}}
 
 {code: 1, message:"start is higher or equal to the current chatHead", data: null}
 
@@ -468,9 +507,9 @@ exports.getChatHistory = function(padID, start, end, callback)
     end = pad.chatHead;
     }
     
-    if(start >= chatHead && chatHead > 0)
+    if(start > chatHead)
     {
-      callback(new customError("start is higher or equal to the current chatHead","apierror"));
+      callback(new customError("start is higher than the current chatHead","apierror"));
       return;
     }
     if(end > chatHead)
@@ -487,6 +526,37 @@ exports.getChatHistory = function(padID, start, end, callback)
         callback(null, {messages: msgs});
       });
   });
+}
+
+/**
+appendChatMessage(padID, text, authorID, time), creates a chat message for the pad id, time is a timestamp
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.appendChatMessage = function(padID, text, authorID, time, callback)
+{
+  //text is required
+  if(typeof text != "string")
+  {
+    callback(new customError("text is no string","apierror"));
+    return;
+  }
+  
+  // if time is not an integer value
+  if(time === undefined || !is_int(time))
+  {
+    // set time to current timestamp
+    time = new Date().getTime();
+  }
+
+  var padMessage = require("ep_etherpad-lite/node/handler/PadMessageHandler.js");
+  // save chat message to database and send message to all connected clients
+  padMessage.sendChatMessageToPadClients(parseInt(time), authorID, text, padID);
+
+  callback();
 }
 
 /*****************/
@@ -509,6 +579,117 @@ exports.getRevisionsCount = function(padID, callback)
     if(ERR(err, callback)) return;
     
     callback(null, {revisions: pad.getHeadRevisionNumber()});
+  });
+}
+
+/**
+getSavedRevisionsCount(padID) returns the number of saved revisions of this pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {savedRevisions: 42}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.getSavedRevisionsCount = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    callback(null, {savedRevisions: pad.getSavedRevisionsNumber()});
+  });
+}
+
+/**
+listSavedRevisions(padID) returns the list of saved revisions of this pad
+
+Example returns:
+
+{code: 0, message:"ok", data: {savedRevisions: [2, 42, 1337]}}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.listSavedRevisions = function(padID, callback)
+{
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    callback(null, {savedRevisions: pad.getSavedRevisionsList()});
+  });
+}
+
+/**
+saveRevision(padID) returns the list of saved revisions of this pad
+
+Example returns:
+
+{code: 0, message:"ok", data: null}
+{code: 1, message:"padID does not exist", data: null}
+*/
+exports.saveRevision = function(padID, rev, callback)
+{
+  //check if rev is set
+  if(typeof rev == "function")
+  {
+    callback = rev;
+    rev = undefined;
+  }
+
+  //check if rev is a number
+  if(rev !== undefined && typeof rev != "number")
+  {
+    //try to parse the number
+    if(!isNaN(parseInt(rev)))
+    {
+      rev = parseInt(rev);
+    }
+    else
+    {
+      callback(new customError("rev is not a number", "apierror"));
+      return;
+    }
+  }
+
+  //ensure this is not a negativ number
+  if(rev !== undefined && rev < 0)
+  {
+    callback(new customError("rev is a negativ number","apierror"));
+    return;
+  }
+
+  //ensure this is not a float value
+  if(rev !== undefined && !is_int(rev))
+  {
+    callback(new customError("rev is a float value","apierror"));
+    return;
+  }
+
+  //get the pad
+  getPadSafe(padID, true, function(err, pad)
+  {
+    if(ERR(err, callback)) return;
+
+    //the client asked for a special revision
+    if(rev !== undefined)
+    {
+      //check if this is a valid revision
+      if(rev > pad.getHeadRevisionNumber())
+      {
+        callback(new customError("rev is higher than the head revision of the pad","apierror"));
+        return;
+      }
+    } else {
+      rev = pad.getHeadRevisionNumber();
+    }
+
+    authorManager.createAuthor('API', function(err, author) {
+      if(ERR(err, callback)) return;
+
+      pad.addSavedRevision(rev, author.authorID, 'Saved through API call');
+      callback();
+    });
   });
 }
 
@@ -544,12 +725,21 @@ Example returns:
 exports.createPad = function(padID, text, callback)
 {  
   //ensure there is no $ in the padID
-  if(padID && padID.indexOf("$") != -1)
+  if(padID)
   {
-    callback(new customError("createPad can't create group pads","apierror"));
-    return;
+    if(padID.indexOf("$") != -1)
+    {
+      callback(new customError("createPad can't create group pads","apierror"));
+      return;
+    }
+    //check for url special characters
+    else if(padID.match(/(\/|\?|&|#)/))
+    {
+      callback(new customError("malformed padID: Remove special characters","apierror"));
+      return;
+    }
   }
-  
+
   //create pad
   getPadSafe(padID, false, text, function(err)
   {

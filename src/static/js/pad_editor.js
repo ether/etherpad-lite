@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -28,6 +28,15 @@ var padeditor = (function()
   var Ace2Editor = undefined;
   var pad = undefined;
   var settings = undefined;
+
+  // Array of available fonts
+
+  var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont',
+    'useGeorgiaFont', 'useImpactFont', 'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont',
+    'useTahomaFont', 'useTimesNewRomanFont', 'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont',
+    'useWingDingsFont', 'useSansSerifFont', 'useSerifFont'];
+
+
   var self = {
     ace: null,
     // this is accessed directly from other files
@@ -85,12 +94,17 @@ var padeditor = (function()
         padutils.setCheckbox($("#options-rtlcheck"), ('rtl' == html10n.getDirection()));
       })
 
-      // font face
+      // font family change
       $("#viewfontmenu").change(function()
       {
-        pad.changeViewOption('useMonospaceFont', $("#viewfontmenu").val() == 'monospace');
+        $.each(fonts, function(i, font){
+          var sfont = font.replace("use","");
+          sfont = sfont.replace("Font","");
+          sfont = sfont.toLowerCase();
+          pad.changeViewOption(font, $("#viewfontmenu").val() == sfont);
+        });
       });
-      
+
       // Language
       html10n.bind('localized', function() {
         $("#languagemenu").val(html10n.getLanguage());
@@ -98,12 +112,12 @@ var padeditor = (function()
         // this does not interfere with html10n's normal value-setting because html10n just ingores <input>s
         // also, a value which has been set by the user will be not overwritten since a user-edited <input>
         // does *not* have the editempty-class
-        $('input[data-l10n-id]').each(function(key, input)
-          {
-            input = $(input);
-            if(input.hasClass("editempty"))
-              input.val(html10n.get(input.attr("data-l10n-id")));
-          });
+        $('input[data-l10n-id]').each(function(key, input){
+          input = $(input);
+          if(input.hasClass("editempty")){
+            input.val(html10n.get(input.attr("data-l10n-id")));
+          }
+        });
       })
       $("#languagemenu").val(html10n.getLanguage());
       $("#languagemenu").change(function() {
@@ -124,8 +138,6 @@ var padeditor = (function()
       var v;
 
       v = getOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
-      // Override from parameters if true
-      if(settings.rtlIsTrue === true) v = true;
       self.ace.setProperty("rtlIsTrue", v);
       padutils.setCheckbox($("#options-rtlcheck"), v);
 
@@ -136,13 +148,51 @@ var padeditor = (function()
       v = getOption('showAuthorColors', true);
       self.ace.setProperty("showsauthorcolors", v);
       padutils.setCheckbox($("#options-colorscheck"), v);
-      // Override from parameters if true
-      if (settings.noColors !== false)
-        self.ace.setProperty("showsauthorcolors", !settings.noColors);
 
-      v = getOption('useMonospaceFont', false);
-      self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
-      $("#viewfontmenu").val(v ? "monospace" : "normal");
+      // Override from parameters if true
+      if (settings.noColors !== false){
+        self.ace.setProperty("showsauthorcolors", !settings.noColors);
+      }
+
+      var normalFont = true;
+      // Go through each font and see if the option is set..
+      $.each(fonts, function(i, font){
+        var isEnabled = getOption(font, false);
+        if(isEnabled){
+          font = font.replace("use","");
+          font = font.replace("Font","");
+          font = font.toLowerCase();
+          if(font === "monospace") self.ace.setProperty("textface", "monospace");
+          if(font === "montserrat") self.ace.setProperty("textface", "Montserrat");
+          if(font === "opendyslexic") self.ace.setProperty("textface", "OpenDyslexic");
+          if(font === "comicsans") self.ace.setProperty("textface", "'Comic Sans MS','Comic Sans',cursive");
+          if(font === "georgia") self.ace.setProperty("textface", "Georgia,'Bitstream Charter',serif");
+          if(font === "impact") self.ace.setProperty("textface", "Impact,Haettenschweiler,'Arial Black',sans-serif");
+          if(font === "lucida") self.ace.setProperty("textface", "Lucida,'Lucida Serif','Lucida Bright',serif");
+          if(font === "lucidasans") self.ace.setProperty("textface", "'Lucida Sans','Lucida Grande','Lucida Sans Unicode','Luxi Sans',sans-serif");
+          if(font === "palatino") self.ace.setProperty("textface", "Palatino,'Palatino Linotype','URW Palladio L',Georgia,serif");
+          if(font === "robotomono") self.ace.setProperty("textface", "RobotoMono");
+          if(font === "tahoma") self.ace.setProperty("textface", "Tahoma,sans-serif");
+          if(font === "timesnewroman") self.ace.setProperty("textface", "'Times New Roman',Times,serif");
+          if(font === "trebuchet") self.ace.setProperty("textface", "'Trebuchet MS',sans-serif");
+          if(font === "verdana") self.ace.setProperty("textface", "Verdana,'DejaVu Sans',sans-serif");
+          if(font === "symbol") self.ace.setProperty("textface", "Symbol");
+          if(font === "webdings") self.ace.setProperty("textface", "Webdings");
+          if(font === "wingdings") self.ace.setProperty("textface", "Wingdings");
+          if(font === "sansserif") self.ace.setProperty("textface", "sans-serif");
+          if(font === "serif") self.ace.setProperty("textface", "serif");
+
+          // $("#viewfontmenu").val(font);
+          normalFont = false;
+        }
+      });
+
+      // No font has been previously selected so use the Normal font
+      if(normalFont){
+        self.ace.setProperty("textface", "'Helvetica Neue',Arial, sans-serif");
+        // $("#viewfontmenu").val("normal");
+      }
+
     },
     dispose: function()
     {
@@ -150,6 +200,13 @@ var padeditor = (function()
       {
         self.ace.destroy();
         self.ace = null;
+      }
+    },
+    enable: function()
+    {
+      if (self.ace)
+      {
+        self.ace.setEditable(true);
       }
     },
     disable: function()

@@ -26,6 +26,17 @@ exports.formatPlugins = function () {
   return _.keys(exports.plugins).join(", ");
 };
 
+exports.formatPluginsWithVersion = function () {
+  var plugins = [];
+  _.forEach(exports.plugins, function(plugin){
+    if(plugin.package.name !== "ep_etherpad-lite"){
+      var pluginStr = plugin.package.name + "@" + plugin.package.version;
+      plugins.push(pluginStr);
+    }
+  });
+  return plugins.join(", ");
+};
+
 exports.formatParts = function () {
   return _.map(exports.parts, function (part) { return part.full_name; }).join("\n");
 };
@@ -106,13 +117,14 @@ exports.getPackages = function (cb) {
           delete packages[name].parent;
         }
       
-        if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
+        // I don't think we need recursion
+        //if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
       });
     }
   
     var tmp = {};
     tmp[data.name] = data;
-    flatten(tmp);
+    flatten(tmp[undefined].dependencies);
     cb(null, packages);
   });
 };

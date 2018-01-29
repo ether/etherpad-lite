@@ -24,7 +24,8 @@ describe("font select", function(){
 
     //check if font changed to monospace
     var fontFamily = inner$("body").css("font-family").toLowerCase();
-    expect(fontFamily).to.be("monospace");
+    var containsStr = fontFamily.indexOf("monospace");
+    expect(containsStr).to.not.be(-1);
 
     done();
   });

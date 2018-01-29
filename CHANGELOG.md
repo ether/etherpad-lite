@@ -1,3 +1,191 @@
+# 1.6.2
+ * NEW: Added pad shortcut disabling feature
+ * NEW: Create option to automatically reconnect after a few seconds
+ * Update: socket.io to 1.7.3
+ * Update: l10n lib
+ * Update: request to 2.83.0
+ * Update: Node for windows to 8.9.0
+ * Fix: minification of code
+
+# 1.6.1
+ * NEW: Hook aceRegisterNonScrollableEditEvents to register events that shouldn't scroll
+ * NEW: Added 'item' parameter to registerAceCommand Hook
+ * NEW: Added LibreJS support
+ * Fix: Crash on malformed export url
+ * Fix: Re-enable editor after user is reconnected to server
+ * Fix: minification
+ * Other: Added 'no-referrer' for all pads
+ * Other: Improved cookie security
+ * Other: Fixed compatibility with nodejs 7
+ * Other: Updates
+  - socket.io to 1.6.0
+  - express to 4.13.4
+  - express-session to 1.13.0
+  - clean-css to 3.4.12
+  - uglify-js to 2.6.2
+  - log4js to 0.6.35
+  - cheerio to 0.20.0
+  - ejs to 2.4.1
+  - graceful-fs to 4.1.3
+  - semver to 5.1.0
+  - unorm to 1.4.1
+  - jsonminify to 0.4.1
+  - measured to 1.1.0
+  - mocha to 2.4.5
+  - supertest to 1.2.0
+  - npm to 4.0.2
+  - Node.js for Windows to 6.9.2
+
+# 1.6.0
+ * SECURITY: Fix a possible xss attack in iframe link
+ * NEW: Add a aceSelectionChanged hook to allow plugins to react when the cursor location changes.
+ * NEW: Accepting Arrays on 'exportHtmlAdditionalTags' to handle attributes stored as ['key', 'value']
+ * NEW: Allow admin to run on a sub-directory
+ * NEW: Support version 5 of node.js
+ * NEW: Update windows build to node version 4.4.3
+ * NEW: Create setting to control if a new line will be indented or not
+ * NEW: Add an appendText API
+ * NEW: Allow LibreOffice to be used when exporting a pad
+ * NEW: Create hook exportHtmlAdditionalTagsWithData
+ * NEW: Improve DB migration performance
+ * NEW: allow settings to be applied from the filesystem 
+ * NEW: remove applySettings hook and allow credentials.json to be part of core
+ * NEW: Use exec to switch to node process
+ * NEW: Validate incoming color codes
+ * Fix: Avoid space removal when pasting text from word processor.
+ * Fix: Removing style that makes editor scroll to the top on iOS without any action from the user
+ * Fix: Fix API call appendChatMessage to send new message to all connected clients
+ * Fix: Timeslider "Return to pad" button
+ * Fix: Generating pad HTML with tags like <span data-TAG="VALUE"> instead of <TAG:VALUE>
+ * Fix: Get git commit hash even if the repo only points to a bare repo.
+ * Fix: Fix decode error if pad name contains special characters and is sanitized
+ * Fix: Fix handleClientMessage_USER_* payloads not containing user info
+ * Fix: Set language cookie on initial load
+ * Fix: Timeslider Not Translated
+ * Other: set charset for mysql connection in settings.json
+ * Other: Dropped support for io.js
+ * Other: Add support to store credentials in credentials.json
+ * Other: Support node version 4 or higher
+ * Other: Update uberDB to version 0.3.0
+
+# 1.5.7
+ * NEW: Add support for intermediate CA certificates for ssl
+ * NEW: Provide a script to clean up before running etherpad
+ * NEW: Use ctrl+shift+1 to do a ordered list
+ * NEW: Show versions of plugins on startup
+ * NEW: Add author on padCreate and padUpdate hook
+ * Fix: switchToPad method
+ * Fix: Dead keys
+ * Fix: Preserve new lines in copy-pasted text
+ * Fix: Compatibility mode on IE 
+ * Fix: Content Collector to get the class of the DOM-node
+ * Fix: Timeslider export links
+ * Fix: Double prompt on file upload
+ * Fix: setText() replaces the entire pad text
+ * Fix: Accessibility features on embedded pads
+ * Fix: Tidy HTML before abiword conversion
+ * Fix: Remove edit buttons in read-only view
+ * Fix: Disable user input in read-only view
+ * Fix: Pads end with a single newline, rather than two newlines
+ * Fix: Toolbar and chat for mobile devices
+
+# 1.5.6
+ * Fix: Error on windows installations
+
+# 1.5.5
+ * SECURITY: Also don't allow read files on directory traversal on minify paths
+ * NEW: padOptions can be set in settings.json now
+ * Fix: Add check for special characters in createPad API function
+ * Fix: Middle click on a link in firefox don't paste text anymore
+ * Fix: Made setPadRaw async to import larger etherpad files
+ * Fix: rtl
+ * Fix: Problem in older IEs
+ * Other: Update to express 4.x
+ * Other: Dropped support for node 0.8
+ * Other: Update ejs to version 2.x
+ * Other: Moved sessionKey from settings.json to a new auto-generated SESSIONKEY.txt file
+
+# 1.5.4
+ * SECURITY: Also don't allow read files on directory traversal on frontend tests path
+
+# 1.5.3
+ * NEW: Accessibility support for Screen readers, includes new fonts and keyboard shortcuts
+ * NEW: API endpoint for Append Chat Message and Chat Backend Tests
+ * NEW: Error messages displayed on load are included in Default Pad Text (can be supressed)
+ * NEW: Content Collector can handle key values
+ * NEW: getAttributesOnPosition Method
+ * FIX: Firefox keeps attributes (bold etc) on cut/copy -> paste
+ * Fix: showControls=false now works
+ * Fix: Cut and Paste works...
+ * SECURITY: Don't allow read files on directory traversal
+
+# 1.5.2
+ * NEW: Support for node version 0.12.x
+ * NEW: API endpoint saveRevision, getSavedRevisionCount and listSavedRevisions
+ * NEW: setting to allow load testing
+ * Fix: Rare scroll issue
+ * Fix: Handling of custom pad path
+ * Fix: Better error handling of imports and exports of type "etherpad"
+ * Fix: Walking caret in chrome
+ * Fix: Better handling for changeset problems
+ * SECURITY Fix: Information leak for etherpad exports (CVE-2015-2298)
+
+# 1.5.1
+ * NEW: High resolution Icon
+ * NEW: Use HTTPS for plugins.json download
+ * NEW: Add 'last update' column
+ * NEW: Show users and chat at the same time
+ * NEW: Support io.js
+ * Fix: removeAttributeOnLine now works properly
+ * Fix: Plugin search and list
+ * Fix: Issue where unauthed request could cause error
+ * Fix: Privacy issue with .etherpad export
+ * Fix: Freeze deps to improve bisectability
+ * Fix: IE, everything. IE is so broken.
+ * Fix: Timeslider proxy
+ * Fix: All backend tests pass
+ * Fix: Better support for Export into HTML
+ * Fix: Timeslider stars
+ * Fix: Translation update
+ * Fix: Check filesystem if Abiword exists
+ * Fix: Docs formatting
+ * Fix: Move Save Revision notification to a gritter message
+ * Fix: UeberDB MySQL Timeout issue
+ * Fix: Indented +9 list items
+ * Fix: Don't paste on middle click of link
+ * SECURITY Fix: Issue where a malformed URL could cause EP to disclose installation location
+
+# 1.5.0
+ * NEW: Lots of performance improvements for page load times
+ * NEW: Hook for adding CSS to Exports
+ * NEW: Allow shardable socket io
+ * NEW: Allow UI to show when attr/prop is applied (CSS)
+ * NEW: Various scripts
+ * NEW: Export full fidelity pads (including authors etc.)
+ * NEW: Various front end tests
+ * NEW: Backend tests
+ * NEW: switchPad hook to instantly switch between pads
+ * NEW: Various translations
+ * NEW: Icon sets instead of images to provide quality high DPI experience
+ * Fix: HTML Import blocking / hanging server
+ * Fix: Export Bullet / Numbered lists HTML
+ * Fix: Swagger deprecated warning
+ * Fix: Bad session from crashing server
+ * Fix: Allow relative settings path
+ * Fix: Stop attributes being improperly assigned between 2 lines
+ * Fix: Copy / Move Pad API race condition
+ * Fix: Save all user preferences
+ * Fix: Upgrade majority of dependency inc upgrade to SocketIO1+
+ * Fix: Provide UI button to restore maximized chat window
+ * Fix: Timeslider UI Fix
+ * Fix: Remove Dokuwiki
+ * Fix: Remove long paths from windows build (stops error during extract)
+ * Fix: Various globals remvoed
+ * Fix: Move all scripts into bin/
+ * Fix: Various CSS bugfixes for Mobile devices
+ * Fix: Overflow Toolbar
+ * Fix: Line Attribute management
+
 # 1.4.1
  * NEW: Translations
  * NEW: userLeave Hook

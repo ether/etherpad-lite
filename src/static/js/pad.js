@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -52,43 +52,6 @@ var hooks = require('./pluginfw/hooks');
 
 var receivedClientVars = false;
 
-function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
-  if (days)
-  {
-    var date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    var expires = "; expires=" + date.toGMTString();
-  }
-  else{
-    var expires = "";
-  }
-  
-  if(!path){ // If the path isn't set then just whack the cookie on the root path
-    path = "/";
-  }
-  
-  //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
-    document.cookie = name + "=" + value + expires + "; path="+document.location;
-  }
-  else{
-    document.cookie = name + "=" + value + expires + "; path=" + path;
-  }
-}
-
-function readCookie(name)
-{
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++)
-  {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
-
 function randomString()
 {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -110,28 +73,41 @@ function randomString()
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
-  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').hide(); $('#editorcontainer').css({"top":"0px"}); } },
+  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
   { name: "showChat",         checkVal: "false", callback: function(val) { $('#chaticon').hide(); } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
   // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
-  { name: "userName",         checkVal: null,    callback: function(val) { settings.globalUserName = decodeURIComponent(val); } },
+  { name: "userName",         checkVal: null,    callback: function(val) { settings.globalUserName = decodeURIComponent(val); clientVars.userName = decodeURIComponent(val); } },
   // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
-  { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); } },
+  { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); clientVars.userColor = decodeURIComponent(val); } },
   { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
   { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
-  { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); } }
+  { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
+  { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); createCookie('language', val); } }
 ];
 
 function getParams()
 {
+  // Tries server enforced options first..
+  for(var i = 0; i < getParameters.length; i++)
+  {
+   var setting = getParameters[i];
+    var value = clientVars.padOptions[setting.name];
+    if(value.toString() === setting.checkVal)
+    {
+      setting.callback(value);
+    }
+  }
+
+  // Then URL applied stuff
   var params = getUrlVars()
-  
+
   for(var i = 0; i < getParameters.length; i++)
   {
     var setting = getParameters[i];
     var value = params[setting.name];
-    
+
     if(value && (value == setting.checkVal || setting.checkVal == null))
     {
       setting.callback(value);
@@ -180,7 +156,7 @@ function sendClientReady(isReconnect, messageType)
     token = "t." + randomString();
     createCookie("token", token, 60);
   }
-  
+
   var sessionID = decodeURIComponent(readCookie("sessionID"));
   var password = readCookie("password");
 
@@ -193,14 +169,14 @@ function sendClientReady(isReconnect, messageType)
     "token": token,
     "protocolVersion": 2
   };
-  
+
   //this is a reconnect, lets tell the server our revisionnumber
   if(isReconnect == true)
   {
     msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
     msg.reconnect=true;
   }
-  
+
   socket.json.send(msg);
 }
 
@@ -218,40 +194,27 @@ function handshake()
     // Allow deployers to host Etherpad on a non-root path
     'path': exports.baseURL + "socket.io",
     'resource': resource,
-    'max reconnection attempts': 3,
-    'sync disconnect on unload' : false
+    'reconnectionAttempts': 5,
+    'reconnection' : true,
+    'reconnectionDelay' : 1000,
+    'reconnectionDelayMax' : 5000
   });
-
-  var disconnectTimeout;
 
   socket.once('connect', function () {
     sendClientReady(false);
   });
-  
-  socket.on('reconnect', function () {
-    //reconnect is before the timeout, lets stop the timeout
-    if(disconnectTimeout)
-    {
-      clearTimeout(disconnectTimeout);
-    }
 
+  socket.on('reconnect', function () {
     pad.collabClient.setChannelState("CONNECTED");
     pad.sendClientReady(true);
   });
-  
-  socket.on('disconnect', function (reason) {
-    if(reason == "booted"){
-      pad.collabClient.setChannelState("DISCONNECTED");
-    } else {
-      function disconnectEvent()
-      {
-        pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
-      }
-      
-      pad.collabClient.setChannelState("RECONNECTING");
-      
-      disconnectTimeout = setTimeout(disconnectEvent, 20000);
-    }
+
+  socket.on('reconnecting', function() {
+    pad.collabClient.setChannelState("RECONNECTING");
+  });
+
+  socket.on('reconnect_failed', function(error) {
+    pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
   });
 
   var initalized = false;
@@ -291,7 +254,7 @@ function handshake()
         $("#passwordinput").focus();
       }
     }
-    
+
     //if we haven't recieved the clientVars yet, then this message should it be
     else if (!receivedClientVars && obj.type == "CLIENT_VARS")
     {
@@ -304,10 +267,19 @@ function handshake()
       clientVars = obj.data;
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
- 
+
       //initalize the pad
       pad._afterHandshake();
       initalized = true;
+
+      if(clientVars.readonly){
+        chat.hide();
+        $('#myusernameedit').attr("disabled", true);
+        $('#chatinput').attr("disabled", true);
+        $('#chaticon').hide();
+        $('#options-chatandusers').parent().hide();
+        $('#options-stickychat').parent().hide();
+      }
 
       $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
 
@@ -326,7 +298,7 @@ function handshake()
       {
         pad.changeViewOption('noColors', true);
       }
-      
+
       if (settings.rtlIsTrue == true)
       {
         pad.changeViewOption('rtlIsTrue', true);
@@ -363,6 +335,12 @@ function handshake()
         console.warn(obj);
         padconnectionstatus.disconnected(obj.disconnect);
         socket.disconnect();
+
+        // block user from making any change to the pad
+        padeditor.disable();
+        padeditbar.disable();
+        padimpexp.disable();
+
         return;
       }
       else
@@ -373,13 +351,13 @@ function handshake()
   });
   // Bind the colorpicker
   var fb = $('#colorpicker').farbtastic({ callback: '#mycolorpickerpreview', width: 220});
-  // Bind the read only button  
+  // Bind the read only button
   $('#readonlyinput').on('click',function(){
     padeditbar.setEmbedLinks();
   });
 }
 
-$.extend($.gritter.options, { 
+$.extend($.gritter.options, {
   position: 'bottom-right', // defaults to 'top-right' but can be 'bottom-left', 'bottom-right', 'top-left', 'top-right' (added in 1.7.1)
   fade: false, // dont fade, too jerky on mobile
   time: 6000 // hang on the screen for...
@@ -432,6 +410,10 @@ var pad = {
   {
     return pad.myUserInfo.name;
   },
+  userList: function()
+  {
+    return paduserlist.users();
+  },
   sendClientReady: function(isReconnect, messageType)
   {
     messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
@@ -440,14 +422,15 @@ var pad = {
   switchToPad: function(padId)
   {
     var options = document.location.href.split('?')[1];
-    var newHref = "/p/" + padId;
-    if (options != null)
-      newHref =  newHref + '?' + options;
+    var newHref = padId;
+    if (typeof options != "undefined" && options != null){
+      newHref = newHref + '?' + options;
+    }
 
     if(window.history && window.history.pushState)
     {
       $('#chattext p').remove(); //clear the chat messages
-      window.history.pushState("", "", newHref);      
+      window.history.pushState("", "", newHref);
       receivedClientVars = false;
       sendClientReady(false, 'SWITCH_TO_PAD');
     }
@@ -470,24 +453,29 @@ var pad = {
     {
       // start the custom js
       if (typeof customStart == "function") customStart();
-      getParams();
       handshake();
+
+      // To use etherpad you have to allow cookies.
+      // This will check if the prefs-cookie is set.
+      // Otherwise it shows up a message to the user.
+      padcookie.init();
+      if (!padcookie.isCookiesEnabled())
+      {
+        $('#loading').hide();
+        $('#noCookie').show();
+      }
     });
   },
   _afterHandshake: function()
   {
     pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
-  
     //initialize the chat
     chat.init(this);
+    getParams();
+
     padcookie.init(); // initialize the cookies
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
-
-    if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0)))
-    {
-      document.domain = document.domain; // for comet
-    }
 
     // for IE
     if (browser.msie)
@@ -552,6 +540,10 @@ var pad = {
         chat.stickToScreen(true); // stick it to the screen
         $('#options-stickychat').prop("checked", true); // set the checkbox to on
       }
+      if(padcookie.getPref("chatAndUsers")){ // if we have a cookie for always showing chat then show it
+        chat.chatAndUsers(true); // stick it to the screen
+        $('#options-chatandusers').prop("checked", true); // set the checkbox to on
+      }
       if(padcookie.getPref("showAuthorshipColors") == false){
         pad.changeViewOption('showAuthorColors', false);
       }
@@ -561,9 +553,20 @@ var pad = {
       if(padcookie.getPref("rtlIsTrue") == true){
         pad.changeViewOption('rtlIsTrue', true);
       }
-      if(padcookie.getPref("useMonospaceFont") == true){
-        pad.changeViewOption('useMonospaceFont', true);
-      }
+
+
+      var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont',
+        'useGeorgiaFont', 'useImpactFont', 'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont',
+        'useTahomaFont', 'useTimesNewRomanFont', 'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont',
+        'useWingDingsFont', 'useSansSerifFont', 'useSerifFont'];
+
+
+      $.each(fonts, function(i, font){
+        if(padcookie.getPref(font) == true){
+          pad.changeViewOption(font, true);
+        }
+      })
+
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },
@@ -724,6 +727,7 @@ var pad = {
     var wasConnecting = (padconnectionstatus.getStatus().what == 'connecting');
     if (newState == "CONNECTED")
     {
+      padeditor.enable();
       padconnectionstatus.connected();
     }
     else if (newState == "RECONNECTING")
@@ -735,20 +739,20 @@ var pad = {
       pad.diagnosticInfo.disconnectedMessage = message;
       pad.diagnosticInfo.padId = pad.getPadId();
       pad.diagnosticInfo.socket = {};
-      
-      //we filter non objects from the socket object and put them in the diagnosticInfo 
+
+      //we filter non objects from the socket object and put them in the diagnosticInfo
       //this ensures we have no cyclic data - this allows us to stringify the data
       for(var i in socket.socket)
       {
         var value = socket.socket[i];
         var type = typeof value;
-        
+
         if(type == "string" || type == "number")
         {
           pad.diagnosticInfo.socket[i] = value;
         }
       }
-    
+
       pad.asyncSendDiagnosticInfo();
       if (typeof window.ajlog == "string")
       {
@@ -769,7 +773,11 @@ var pad = {
   handleIsFullyConnected: function(isConnected, isInitialConnect)
   {
     pad.determineChatVisibility(isConnected && !isInitialConnect);
+    pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
+    setTimeout(function(){
+      padeditbar.toggleDropDown("none");
+    }, 1000);
   },
   determineChatVisibility: function(asNowConnectedFeedback){
     var chatVisCookie = padcookie.getPref('chatAlwaysVisible');
@@ -779,6 +787,16 @@ var pad = {
     }
     else{
       $('#options-stickychat').prop("checked", false); // set the checkbox for off
+    }
+  },
+  determineChatAndUsersVisibility: function(asNowConnectedFeedback){
+    var chatAUVisCookie = padcookie.getPref('chatAndUsersVisible');
+    if(chatAUVisCookie){ // if the cookie is set for chat always visible
+      chat.chatAndUsers(true); // stick it to the screen
+      $('#options-chatandusers').prop("checked", true); // set the checkbox to on
+    }
+    else{
+      $('#options-chatandusers').prop("checked", false); // set the checkbox for off
     }
   },
   determineAuthorshipColorsVisibility: function(){

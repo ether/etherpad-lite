@@ -10,24 +10,11 @@ var server;
 var serverName;
 
 exports.createServer = function () {
-  //try to get the git version
-  var version = "";
-  try
-  {
-    var rootPath = path.resolve(npm.dir, '..');
-    var ref = fs.readFileSync(rootPath + "/.git/HEAD", "utf-8");
-    var refPath = rootPath + "/.git/" + ref.substring(5, ref.indexOf("\n"));
-    version = fs.readFileSync(refPath, "utf-8");
-    version = version.substring(0, 7);
-    console.log("Your Etherpad git version is " + version);
-  }
-  catch(e) 
-  {
-    console.warn("Can't get git version for server header\n" + e.message)
-  }
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
-  serverName = "Etherpad " + version + " (http://etherpad.org)";
+  serverName = "Etherpad " + settings.getGitCommit() + " (http://etherpad.org)";
+  
+  console.log("Your Etherpad version is " + settings.getEpVersion() + " (" + settings.getGitCommit() + ")");
 
   exports.restartServer();
 
@@ -38,7 +25,6 @@ exports.createServer = function () {
   else{
     console.warn("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
   }
-
 }
 
 exports.restartServer = function () {
@@ -60,6 +46,13 @@ exports.restartServer = function () {
       key: fs.readFileSync( settings.ssl.key ),
       cert: fs.readFileSync( settings.ssl.cert )
     };
+    if (settings.ssl.ca) {
+      options.ca = [];
+      for(var i = 0; i < settings.ssl.ca.length; i++) {
+        var caFileName = settings.ssl.ca[i];
+        options.ca.push(fs.readFileSync(caFileName));
+      }
+    }
     
     var https = require('https');
     server = https.createServer(options, app);
@@ -76,6 +69,9 @@ exports.restartServer = function () {
       res.header("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     }
 
+    // Stop IE going into compatability mode
+    // https://github.com/ether/etherpad-lite/issues/2547
+    res.header("X-UA-Compatible", "IE=Edge,chrome=1");
     res.header("Server", serverName);
     next();
   });
@@ -83,10 +79,8 @@ exports.restartServer = function () {
   if(settings.trustProxy){
     app.enable('trust proxy');
   }
-  
-  app.configure(function() {
-    hooks.callAll("expressConfigure", {"app": app});
-  });
+
+  hooks.callAll("expressConfigure", {"app": app});
   hooks.callAll("expressCreateServer", {"app": app, "server": server});
 
   server.listen(settings.port, settings.ip);

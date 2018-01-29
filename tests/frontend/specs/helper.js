@@ -55,7 +55,7 @@ describe("the test helper", function(){
     it("takes an interval and checks on every interval", function(done){
       this.timeout(4000);
       var checks = 0;
- 
+
       helper.waitFor(function(){
         checks++;
         return false;
@@ -94,6 +94,120 @@ describe("the test helper", function(){
           return false;
         },100);
       });
+    });
+  });
+
+  describe("the selectLines method", function(){
+    // function to support tests, use a single way to represent whitespaces
+    var cleanText = function(text){
+      return text
+      // IE replaces line breaks with a whitespace, so we need to unify its behavior
+      // for other browsers, to have all tests running for all browsers
+      .replace(/\n/gi, "")
+      .replace(/\s/gi, " ");
+    }
+
+    before(function(done){
+      helper.newPad(function() {
+        // create some lines to be used on the tests
+        var $firstLine = helper.padInner$("div").first();
+        $firstLine.sendkeys("{selectall}some{enter}short{enter}lines{enter}to test{enter}{enter}");
+
+        // wait for lines to be split
+        helper.waitFor(function(){
+          var $fourthLine = helper.padInner$("div").eq(3);
+          return $fourthLine.text() === "to test";
+        }).done(done);
+      });
+
+      this.timeout(60000);
+    });
+
+    it("changes editor selection to be between startOffset of $startLine and endOffset of $endLine", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 4;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort lines to t");
+
+      done();
+    });
+
+    it("ends selection at beginning of $endLine when it is an empty line", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 1;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(4);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort lines to test");
+
+      done();
+    });
+
+    it("ends selection at beginning of $endLine when its offset is zero", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 0;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort lines ");
+
+      done();
+    });
+
+    it("selects full line when offset is longer than line content", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 50;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort lines to test");
+
+      done();
+    });
+
+    it("selects all text between beginning of $startLine and end of $endLine when no offset is provided", function(done){
+      var inner$ = helper.padInner$;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
+
+      helper.selectLines($startLine, $endLine);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("short lines to test");
+
+      done();
     });
   });
 });

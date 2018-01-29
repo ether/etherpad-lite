@@ -63,6 +63,7 @@ ToolbarItem.prototype.bind = function (callback) {
 
   if (self.isButton()) {
     self.$el.click(function (event) {
+      $(':focus').blur();
       callback(self.getCommand(), self);
       event.preventDefault();
     });
@@ -155,6 +156,10 @@ var padeditbar = (function()
         });
       });
 
+      $('body:not(#editorcontainerbox)').on("keydown", function(evt){
+        bodyKeyEvent(evt);
+      });
+
       $('#editbar').show();
 
       this.redrawHeight();
@@ -180,15 +185,54 @@ var padeditbar = (function()
       this.commands[cmd] = callback;
       return this;
     },
+    calculateEditbarHeight: function() {
+      // if we're on timeslider, there is nothing on editbar, so we just use zero
+      var onTimeslider = $('.menu_left').length === 0;
+      if (onTimeslider) return 0;
+
+      // if editbar has both menu left and right, its height must be
+      // the max between the height of these two parts
+      var leftMenuPosition = $('.menu_left').offset().top;
+      var rightMenuPosition = $('.menu_right').offset().top;
+      var editbarHasMenuLeftAndRight = (leftMenuPosition === rightMenuPosition);
+
+      var height;
+      if (editbarHasMenuLeftAndRight) {
+        height = Math.max($('.menu_left').height(), $('.menu_right').height());
+      }
+      else {
+        height = $('.menu_left').height();
+      }
+
+      return height;
+    },
     redrawHeight: function(){
-      var editbarHeight = $('.menu_left').height() + 1 + "px";
-      var containerTop = $('.menu_left').height() + 6 + "px";
+      var minimunEditbarHeight = self.calculateEditbarHeight();
+      var editbarHeight = minimunEditbarHeight + 1 + "px";
+      var containerTop = minimunEditbarHeight + 6 + "px";
       $('#editbar').css("height", editbarHeight);
 
       $('#editorcontainer').css("top", containerTop);
+
+      // make sure pop ups are in the right place
+      if($('#editorcontainer').offset()){
+        $('.popup').css("top", $('#editorcontainer').offset().top + "px");
+      }
+
+      // If sticky chat is enabled..
       if($('#options-stickychat').is(":checked")){
-        $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
+        if($('#editorcontainer').offset()){
+          $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
+        }
       };
+
+      // If chat and Users is enabled..
+      if($('#options-chatandusers').is(":checked")){
+        if($('#editorcontainer').offset()){
+          $('#users').css("top", $('#editorcontainer').offset().top + "px");
+        }
+      }
+
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
@@ -198,9 +242,9 @@ var padeditbar = (function()
       });
     },
     registerAceCommand: function (cmd, callback) {
-      this.registerCommand(cmd, function (cmd, ace) {
+      this.registerCommand(cmd, function (cmd, ace, item) {
         ace.callWithAce(function (ace) {
-          callback(cmd, ace);
+          callback(cmd, ace, item);
         }, cmd, true);
       });
     },
@@ -215,18 +259,25 @@ var padeditbar = (function()
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
-        var returned = false
+        var returned = false;
         for(var i=0;i<self.dropdowns.length;i++)
         {
+          var thisModuleName = self.dropdowns[i];
+
           //skip the userlist
-          if(self.dropdowns[i] == "users")
+          if(thisModuleName == "users")
             continue;
 
-          var module = $("#" + self.dropdowns[i]);
+          var module = $("#" + thisModuleName);
+
+          //skip any "force reconnect" message
+          var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
+          if(isAForceReconnectMessage)
+            continue;
 
           if(module.css('display') != "none")
           {
-            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
+            $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
             module.slideUp("fast", cb);
             returned = true;
           }
@@ -239,16 +290,17 @@ var padeditbar = (function()
         // respectively add highlighting to the corresponding button
         for(var i=0;i<self.dropdowns.length;i++)
         {
-          var module = $("#" + self.dropdowns[i]);
+          var thisModuleName = self.dropdowns[i];
+          var module = $("#" + thisModuleName);
 
           if(module.css('display') != "none")
           {
-            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
+            $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
             module.slideUp("fast");
           }
-          else if(self.dropdowns[i]==moduleName)
+          else if(thisModuleName==moduleName)
           {
-            $("li[data-key=" + self.dropdowns[i] + "] > a").addClass("selected");
+            $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
             module.slideDown("fast", cb);
           }
         }
@@ -271,17 +323,83 @@ var padeditbar = (function()
       {
         var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
         var readonlyLink = basePath + "/p/" + clientVars.readOnlyId;
-        $('#embedinput').val("<iframe name='embed_readonly' src='" + readonlyLink + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400></iframe>");
+        $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
         $('#linkinput').val(readonlyLink);
       }
       else
       {
         var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val("<iframe name='embed_readwrite' src='" + padurl + "?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false' width=600 height=400></iframe>");
+        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
         $('#linkinput').val(padurl);
       }
     }
   };
+
+  var editbarPosition = 0;
+
+  function bodyKeyEvent(evt){
+
+    // If the event is Alt F9 or Escape & we're already in the editbar menu
+    // Send the users focus back to the pad
+    if((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27){
+      if($(':focus').parents(".toolbar").length === 1){
+        // If we're in the editbar already..
+        // Close any dropdowns we have open..
+        padeditbar.toggleDropDown("none");
+        // Check we're on a pad and not on the timeslider
+        // Or some other window I haven't thought about!
+        if(typeof pad === 'undefined'){
+          // Timeslider probably..
+          // Shift focus away from any drop downs
+          $(':focus').blur(); // required to do not try to remove!
+          $('#padmain').focus(); // Focus back onto the pad
+        }else{
+          // Shift focus away from any drop downs
+          $(':focus').blur(); // required to do not try to remove!
+          padeditor.ace.focus(); // Sends focus back to pad
+          // The above focus doesn't always work in FF, you have to hit enter afterwards
+          evt.preventDefault();
+        }
+      }else{
+        // Focus on the editbar :)
+        var firstEditbarElement = parent.parent.$('#editbar').children("ul").first().children().first().children().first().children().first();
+        $(this).blur();
+        firstEditbarElement.focus();
+        evt.preventDefault();
+      }
+    }
+    // Are we in the toolbar??
+    if($(':focus').parents(".toolbar").length === 1){
+      // On arrow keys go to next/previous button item in editbar
+      if(evt.keyCode !== 39 && evt.keyCode !== 37) return;
+
+      // Get all the focusable items in the editbar
+      var focusItems = $('#editbar').find('button, select');
+
+      // On left arrow move to next button in editbar
+      if(evt.keyCode === 37){
+        // If a dropdown is visible or we're in an input don't move to the next button
+        if($('.popup').is(":visible") || evt.target.localName === "input") return;
+
+        editbarPosition--;
+        // Allow focus to shift back to end of row and start of row
+        if(editbarPosition === -1) editbarPosition = focusItems.length -1;
+        $(focusItems[editbarPosition]).focus()
+      }
+
+      // On right arrow move to next button in editbar
+      if(evt.keyCode === 39){
+        // If a dropdown is visible or we're in an input don't move to the next button
+        if($('.popup').is(":visible") || evt.target.localName === "input") return;
+
+        editbarPosition++;
+        // Allow focus to shift back to end of row and start of row
+        if(editbarPosition >= focusItems.length) editbarPosition = 0;
+        $(focusItems[editbarPosition]).focus();
+      }
+    }
+
+  }
 
   function aceAttributeCommand(cmd, ace) {
     ace.ace_toggleAttributeOnSelection(cmd);
@@ -294,10 +412,36 @@ var padeditbar = (function()
     toolbar.registerDropdownCommand("import_export");
     toolbar.registerDropdownCommand("embed");
 
+    toolbar.registerCommand("settings", function () {
+      toolbar.toggleDropDown("settings", function(){
+        $('#options-stickychat').focus();
+      });
+    });
+
+    toolbar.registerCommand("import_export", function () {
+      toolbar.toggleDropDown("import_export", function(){
+        // If Import file input exists then focus on it..
+        if($('#importfileinput').length !== 0){
+          setTimeout(function(){
+            $('#importfileinput').focus();
+          }, 100);
+        }else{
+          $('.exportlink').first().focus();
+        }
+      });
+    });
+
+    toolbar.registerCommand("showusers", function () {
+      toolbar.toggleDropDown("users", function(){
+        $('#myusernameedit').focus();
+      });
+    });
+
     toolbar.registerCommand("embed", function () {
       toolbar.setEmbedLinks();
-      $('#linkinput').focus().select();
-      toolbar.toggleDropDown("embed");
+      toolbar.toggleDropDown("embed", function(){
+        $('#linkinput').focus().select();
+      });
     });
 
     toolbar.registerCommand("savedRevision", function () {

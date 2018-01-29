@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ernác"
+		]
+	},
+	"pad.toolbar.settings.title": "Джарашдырыула",
+	"pad.colorpicker.save": "Сакъла",
+	"pad.loading": "Джюклениу...",
+	"pad.settings.fontType.normal": "Нормал",
+	"pad.settings.fontType.monospaced": "Монокенгликли",
+	"pad.settings.globalView": "Глобал кёрюнюу",
+	"pad.settings.language": "Тил:",
+	"pad.importExport.import_export": "Импорт/экспорт",
+	"pad.importExport.importSuccessful": "Тыйыншлы!",
+	"pad.importExport.exporthtml": "HTML",
+	"pad.importExport.exportplain": "Тюз текст",
+	"pad.importExport.exportword": "Microsoft Word",
+	"pad.importExport.exportpdf": "PDF",
+	"pad.importExport.exportopen": "ODF (OpenOffice'ни документи)",
+	"pad.chat": "Чат",
+	"timeslider.toolbar.returnbutton": "Документге",
+	"timeslider.toolbar.authors": "Авторла:",
+	"timeslider.toolbar.exportlink.title": "Эспорт эт",
+	"timeslider.version": "{{version}} версия",
+	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{hours}}.{{minutes}}.{{seconds}}",
+	"timeslider.month.january": "январь",
+	"timeslider.month.february": "февраль",
+	"timeslider.month.march": "март",
+	"timeslider.month.april": "апрель",
+	"timeslider.month.may": "май",
+	"timeslider.month.june": "июнь",
+	"timeslider.month.july": "июль",
+	"timeslider.month.august": "август",
+	"timeslider.month.september": "сентябрь",
+	"timeslider.month.october": "октябрь",
+	"timeslider.month.november": "ноябрь",
+	"timeslider.month.december": "декабрь",
+	"pad.userlist.guest": "Къонакъ",
+	"pad.impexp.importing": "Импорт этиу…"
+}

@@ -36,7 +36,7 @@ Things in context: None
 This function is called after a specific plugin is initialized. This would probably be more useful than the previous two functions if you only wanted to add in features to one specific plugin.
 
 ## expressConfigure
-Called from: src/node/server.js
+Called from: src/node/hooks/express.js
 
 Things in context:
 
@@ -45,7 +45,7 @@ Things in context:
 This is a helpful hook for changing the behavior and configuration of the application. It's called right after the application gets configured.
 
 ## expressCreateServer
-Called from: src/node/server.js
+Called from: src/node/hooks/express.js
 
 Things in context:
 
@@ -72,7 +72,7 @@ Available blocks in `pad.html` are:
  * `editbarMenuRight` - right tool bar
  * `afterEditbar` - allows you to add stuff immediately after the toolbar
  * `userlist` - the contents of the userlist dropdown
- * `loading` - the intial loading message
+ * `loading` - the initial loading message
  * `mySettings` - the left column of the settings dropdown ("My view"); intended for adding checkboxes only
  * `mySettings.dropdowns` - add your dropdown settings here
  * `globalSettings` - the right column of the settings dropdown ("Global view")
@@ -81,7 +81,7 @@ Available blocks in `pad.html` are:
  * `modals` - Contains all connectivity messages
  * `embedPopup` - the embed dropdown
  * `scripts` - Add your script tags here, if you really have to (consider use client-side hooks instead)
- 
+
 `timeslider.html` blocks:
 
  * `timesliderStyles`
@@ -90,9 +90,9 @@ Available blocks in `pad.html` are:
  * `timesliderTop`
  * `timesliderEditbarRight`
  * `modals`
- 
+
  `index.html` blocks:
- 
+
  * `indexWrapper` - contains the form for creating new pads
 
 ## padInitToolbar
@@ -104,12 +104,17 @@ Things in context:
 
 Here you can add custom toolbar items that will be available in the toolbar config in `settings.json`. For more about the toolbar controller see the API section.
 
+Usage examples:
+
+* https://github.com/tiblu/ep_authorship_toggle
+
 ## padCreate
 Called from: src/node/db/Pad.js
 
 Things in context:
 
 1. pad - the pad instance
+2. author - the id of the author who created the pad
 
 This hook gets called when a new pad was created.
 
@@ -120,7 +125,7 @@ Things in context:
 
 1. pad - the pad instance
 
-This hook gets called when an pad was loaded. If a new pad was created and loaded this event will be emitted too.
+This hook gets called when a pad was loaded. If a new pad was created and loaded this event will be emitted too.
 
 ## padUpdate
 Called from: src/node/db/Pad.js
@@ -128,8 +133,23 @@ Called from: src/node/db/Pad.js
 Things in context:
 
 1. pad - the pad instance
+2. author - the id of the author who updated the pad
 
 This hook gets called when an existing pad was updated.
+
+## padCopy
+Called from: src/node/db/Pad.js
+
+Things in context:
+
+1. originalPad - the source pad instance
+2. destinationID - the id of the pad copied from originalPad
+
+This hook gets called when an existing pad was copied.
+
+Usage examples:
+
+* https://github.com/ether/ep_comments
 
 ## padRemove
 Called from: src/node/db/Pad.js
@@ -139,6 +159,10 @@ Things in context:
 1. padID
 
 This hook gets called when an existing pad was removed/deleted.
+
+Usage examples:
+
+* https://github.com/ether/ep_comments
 
 ## socketio
 Called from: src/node/hooks/express/socketio.js
@@ -195,7 +219,7 @@ Things in context:
 1. message - the message being handled
 2. client - the client object from socket.io
 
-This hook will be called once a message arrive. If a plugin calls `callback(null)` the message will be dropped. However it is not possible to modify the message.
+This hook will be called once a message arrive. If a plugin calls `callback(null)` the message will be dropped. However, it is not possible to modify the message.
 
 Plugins may also decide to implement custom behavior once a message arrives.
 
@@ -214,6 +238,32 @@ function handleMessage ( hook, context, callback ) {
 };
 ```
 
+## handleMessageSecurity
+Called from: src/node/handler/PadMessageHandler.js
+
+Things in context:
+
+1. message - the message being handled
+2. client - the client object from socket.io
+
+This hook will be called once a message arrives. If a plugin calls `callback(true)` the message will be allowed to be processed. This is especially useful if you want read only pad visitors to update pad contents for whatever reason.
+
+**WARNING**: handleMessageSecurity will be called, even if the client is not authorized to send this message. It's up to the plugin to check permissions.
+
+Example:
+
+```
+function handleMessageSecurity ( hook, context, callback ) {
+  if ( context.message.boomerang == 'hipster' ) {
+    // If the message boomer is hipster, allow the request
+    callback(true);
+  }else{
+    callback();
+  }
+};
+```
+
+
 ## clientVars
 Called from: src/node/handler/PadMessageHandler.js
 
@@ -222,7 +272,7 @@ Things in context:
 1. clientVars - the basic `clientVars` built by the core
 2. pad - the pad this session is about
 
-This hook will be called once a client connects and the `clientVars` are being sent. Plugins can use this hook to give the client a initial configuriation, like the tracking-id of an external analytics-tool that is used on the client-side. You can also overwrite values from the original `clientVars`.
+This hook will be called once a client connects and the `clientVars` are being sent. Plugins can use this hook to give the client an initial configuration, like the tracking-id of an external analytics-tool that is used on the client-side. You can also overwrite values from the original `clientVars`.
 
 Example:
 
@@ -246,6 +296,30 @@ Things in context:
 3. text - line text
 
 This hook will allow a plug-in developer to re-write each line when exporting to HTML.
+
+Example:
+```
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+
+exports.getLineHTMLForExport = function (hook, context) {
+  var header = _analyzeLine(context.attribLine, context.apool);
+  if (header) {
+    return "<" + header + ">" + context.lineContent + "</" + header + ">";
+  }
+}
+
+function _analyzeLine(alineAttrs, apool) {
+  var header = null;
+  if (alineAttrs) {
+    var opIter = Changeset.opIterator(alineAttrs);
+    if (opIter.hasNext()) {
+      var op = opIter.next();
+      header = Changeset.opAttributeValue(op, 'heading', apool);
+    }
+  }
+  return header;
+}
+```
 
 ## stylesForExport
 Called from: src/node/utils/ExportHtml.js
@@ -282,7 +356,7 @@ exports.aceAttribClasses = function(hook_name, attr, cb){
 ```
 
 ## exportFileName
-Called from src/node/handler/ExportHandler.js 
+Called from src/node/handler/ExportHandler.js
 
 Things in context:
 
@@ -305,7 +379,7 @@ Things in context:
 
 1. Pad object
 
-This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export.  An Array should be returned.
+This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. If tags are stored as `['color', 'red']` on the attribute pool, use `exportHtmlAdditionalTagsWithData` instead. An Array should be returned.
 
 Example:
 ```
@@ -314,7 +388,25 @@ exports.exportHtmlAdditionalTags = function(hook, pad, cb){
   var padId = pad.id;
   cb(["massive","jugs"]);
 };
+```
 
+## exportHtmlAdditionalTagsWithData
+Called from src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. Pad object
+
+Identical to `exportHtmlAdditionalTags`, but for tags that are stored with a specific value (not simply `true`) on the attribute pool. For example `['color', 'red']`, instead of `['bold', true]`. This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array of arrays should be returned. The exported HTML will contain tags like `<span data-color="red">` for the content where attributes are `['color', 'red']`.
+
+Example:
+```
+// Add the props to be supported in export
+exports.exportHtmlAdditionalTagsWithData = function(hook, pad, cb){
+  var padId = pad.id;
+  cb([["color", "red"], ["color", "blue"]]);
+};
+```
 
 ## userLeave
 Called from src/node/handler/PadMessageHandler.js
@@ -330,5 +422,22 @@ Example:
 ```
 exports.userLeave = function(hook, session, callback) {
   console.log('%s left pad %s', session.author, session.padId);
+};
+```
+
+### clientReady
+Called from src/node/handler/PadMessageHandler.js
+
+This in context:
+
+1. message
+
+This hook gets called when handling a CLIENT_READY which is the first message from the client to the server.
+
+Example:
+
+```
+exports.clientReady = function(hook, message) {
+  console.log('Client has entered the pad' + message.padId);
 };
 ```

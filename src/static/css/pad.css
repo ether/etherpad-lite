@@ -70,10 +70,6 @@ a img {
 .toolbar ul li {
   float: left;
   margin-left: 2px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   height:32px;
 }
 .toolbar ul li.separator {
@@ -141,9 +137,24 @@ a img {
   top: 1px;
 }
 .toolbar ul li a .buttontext {
-  color: #222;
+  color: #666;
   font-size: 14px;
+  border:none;
+  background:none;
+  margin-top:1px;
+  color:#666;
 }
+
+.buttontext::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+.buttontext:focus{
+  /* Not sure why important is required here but it is */
+  border: 1px solid #666 !important;
+}
+
 .toolbar ul li a.grouped-left {
   border-radius: 3px 0 0 3px;
 }
@@ -178,7 +189,7 @@ a img {
   left:0px;
   right:250px;
 }
-  
+
 .toolbar ul.menu_right {
   right:0px;
 }
@@ -197,6 +208,7 @@ li[data-key=showusers] > a #online_count {
 #editbar{
   display:none;
 }
+
 #editorcontainer {
   position: absolute;
   top: 37px; /* + 1px border */
@@ -204,6 +216,9 @@ li[data-key=showusers] > a #online_count {
   right: 0px;
   bottom: 0px;
   z-index: 1;
+
+  /* Required to be able to scroll on iOS: */
+  -webkit-overflow-scrolling: touch;
 }
 #editorcontainer iframe {
   height: 100%;
@@ -373,7 +388,7 @@ li[data-key=showusers] > a #online_count {
   border-radius: 5px;
 }
 #myusernameform {
-  margin-left: 35px
+  margin-left: 30px
 }
 #myusernameedit {
   font-size: 1.3em;
@@ -382,7 +397,7 @@ li[data-key=showusers] > a #online_count {
   height: 18px;
   margin: 0;
   border: 0;
-  width: 117px;
+  width: 122px;
   background: transparent;
 }
 #myusernameform input.editable {
@@ -501,6 +516,23 @@ table#otheruserstable {
 #connectivity .visible * {
   display: block;
 }
+
+/* styles for the automatic reconnection timer: */
+#connectivity .visible.with_reconnect_timer button,
+#connectivity .visible.with_reconnect_timer .reconnecttimer * {
+  display: inline-block;
+}
+
+#connectivity .with_reconnect_timer .hidden,
+#connectivity .with_reconnect_timer #defaulttext.hidden,
+#connectivity .with_reconnect_timer button.hidden {
+  display: none;
+}
+
+#connectivity .with_reconnect_timer #cancelreconnect {
+  margin-left: 10px;
+}
+/* end of styles for the automatic reconnection timer */
 
 #reconnect_form button {
   font-size: 12pt;
@@ -742,12 +774,24 @@ table#otheruserstable {
   height: 16px;
   display: inline-block;
   vertical-align: middle;
-
+  border: none;
+  padding: 0;
+  background: none;
   font-family: "fontawesome-etherpad";
   font-size: 15px;
   font-style: normal;
   font-weight: normal;
   color: #666;
+  cursor: pointer;
+}
+
+.buttonicon::-moz-focus-inner {
+  padding: 0;
+  border: 0
+}
+
+.buttonicon:focus{
+  border: 1px solid #666;
 }
 .buttonicon-bold:before {
   content: "\e81c";
@@ -836,6 +880,7 @@ input[type=checkbox] {
   padding: 10px;
   border-radius: 0 0 6px 6px;
   border: 1px solid #ccc;
+  border-top: none;
   background: #f7f7f7;
   background: -webkit-linear-gradient(#F7F7F7, #EEE);
   background: -moz-linear-gradient(#F7F7F7, #EEE);
@@ -897,7 +942,7 @@ input[type=checkbox] {
 #connectivity,
 #users {
   position: absolute;
-  top: 36px;
+  top: 38px;
   right: 20px;
   display: none;
   z-index: 500;
@@ -914,6 +959,36 @@ input[type=checkbox] {
   border-left: 1px solid #ccc !important;
   width: 185px !important;
 }
+.chatAndUsers{
+  display:block !important;
+  right:0px !important;
+  border-radius:0px !important;
+  width:182px !important;
+/* Below makes UI look weird when X makes editbar flow onto two lines */
+/*  margin:2px 0 0 0 !important;*/
+  border: none !important;
+  border-bottom: 1px solid #ccc !important;
+  height:155px !important;
+  border-left: 1px solid #ccc !important;
+}
+.chatAndUsers > #otherusers{
+  max-height: 100px;
+  overflow-y: auto;
+}
+.chatAndUsersChat > div > #titlecross{
+  display:none;
+}
+.chatAndUsersChat{
+  bottom:0px !important;
+  padding:0 !important;
+  margin: 165px 0px 0px 0px;
+  right:0 !important;
+  width:182px !important;
+  border: none !important;
+  padding:5px !important;
+  border-left: 1px solid #ccc !important;
+}
+
 @media screen and (max-width: 600px) {
   .toolbar ul li.separator {
     display: none;
@@ -974,7 +1049,7 @@ input[type=checkbox] {
     left:0px;
     right:100px;
   }
-  
+
   .toolbar ul.menu_right {
     right:0px;
   }
@@ -984,12 +1059,16 @@ input[type=checkbox] {
     top: 72px !important;
   }
 }
+
+/* Mobile devices */
 @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
     #users {
       top: auto;
       right:0px !important;
       bottom: 33px;
       border-radius: 0px !important;
+      height: 55px !important;
+      overflow: auto;
     }
     #mycolorpicker {
       left: -73px;
@@ -1000,10 +1079,11 @@ input[type=checkbox] {
     #editorcontainer {
       margin-bottom: 33px
     }
-    .toolbar ul.menu_left {
-      right:0px;
+    /* cancel non-mobile border (will be defined on ".toolbar ul.menu_left" bellow) */
+    .toolbar {
+      border-bottom: 0;
     }
-    .toolbar ul.menu_right {
+    .toolbar ul {
       background: #f7f7f7;
       background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
       background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
@@ -1011,8 +1091,18 @@ input[type=checkbox] {
       background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
       background: linear-gradient(#f7f7f7, #f1f1f1 80%);
       width: 100%;
-      right:0px !important;
       overflow: hidden;
+    }
+    .toolbar ul.menu_left {
+      right:0px;
+      position: fixed;
+      top: 0;
+      padding-top: 4px;
+      border-bottom: 1px solid #ccc;
+      z-index: 10;
+    }
+    .toolbar ul.menu_right {
+      right:0px !important;
       height: 32px;
       position: fixed;
       bottom: 0;
@@ -1032,14 +1122,14 @@ input[type=checkbox] {
       background: none !important
     }
     li[data-key="showusers"] > a {
-      
+
       margin-top:-10px;
       padding-top:2px !important;
       line-height:20px;
       vertical-align:top !important;
     }
     #chaticon {
-      position:absolute;
+      position:fixed;
       right:48px;
     }
     .popup {
@@ -1068,8 +1158,9 @@ input[type=checkbox] {
       line-height: 24px
     }
     #chatbox{
-      position:absolute;
-      bottom:33px;
+      position:fixed;
+      bottom:33px !important;
+      margin: 65px 0 0 0;
     }
     #gritter-notice-wrapper{
       bottom:43px !important;
@@ -1086,6 +1177,10 @@ input[type=checkbox] {
 }
 
 #wrongPassword{
+  display:none;
+}
+
+#noCookie{
   display:none;
 }
 
@@ -1177,13 +1272,48 @@ input[type=checkbox] {
 }
 /* End of gritter stuff */
 
+/* Montserrat Font */
+@font-face {
+  font-family: "Montserrat";
+  src: url("../../static/font/Montserrat-Light.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+    font-family: "Montserrat";
+    src: url("../../static/font/Montserrat-Regular.otf") format("opentype");
+    font-weight: bold;
+    font-style: normal;
+}
+/* End of Monterrat Font */
+
+@font-face {
+  font-family: opendyslexic;
+  src: url("../../static/font/opendyslexic.otf") format("opentype");
+}
+
+/* Roboto Mono */
+@font-face {
+    font-family: "RobotoMono";
+    src: url("../../static/font/RobotoMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "RobotoMono";
+    src: url("../../static/font/RobotoMono-Bold.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+/* End of Roboto Mono */
+
 @font-face {
   font-family: "fontawesome-etherpad";
-  src:url("../font/fontawesome-etherpad.eot");
-  src:url("../font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
-    url("../font/fontawesome-etherpad.woff") format("woff"),
-    url("../font/fontawesome-etherpad.ttf") format("truetype"),
-    url("../font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
+  src:url("../../static/font/fontawesome-etherpad.eot");
+  src:url("../../static/font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
+    url("../../static/font/fontawesome-etherpad.woff") format("woff"),
+    url("../../static/font/fontawesome-etherpad.ttf") format("truetype"),
+    url("../../static/font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
   font-weight: normal;
   font-style: normal;
 
@@ -1215,3 +1345,9 @@ input[type=checkbox] {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.hideControlsEditor{
+  top:0px !important;
+}
+.hideControlsEditbar{
+  display:none !important;
+}

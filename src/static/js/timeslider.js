@@ -62,8 +62,8 @@ function init() {
     var resource = exports.baseURL.substring(1) + 'socket.io';
     
     //build up the socket io connection
-    socket = io.connect(url, {resource: resource});
-
+    socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
+    
     //send the ready message once we're connected
     socket.on('connect', function()
     {
@@ -147,7 +147,7 @@ function handleClientVars(message)
     // export_links is a jQuery Array, so .each is allowed.
     export_links.each(function()
     {
-      this.setAttribute('href', this.href.replace( /(.+?)\/\w+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
+      this.setAttribute('href', this.href.replace( /(.+?)\/[^\/]+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
     });
   });
 
@@ -157,6 +157,38 @@ function handleClientVars(message)
     fireWhenAllScriptsAreLoaded[i]();
   }
   $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
+
+  // Translate some strings where we only want to set the title not the actual values
+  $('#playpause_button_icon').attr("title", html10n.get("timeslider.playPause"));
+  $('#leftstep').attr("title", html10n.get("timeslider.backRevision"));
+  $('#rightstep').attr("title", html10n.get("timeslider.forwardRevision"));
+
+  // font family change
+  $("#viewfontmenu").change(function(){
+    var font = $("#viewfontmenu").val();
+    if(font === "monospace") setFont("Courier new");
+    if(font === "opendyslexic") setFont("OpenDyslexic");
+    if(font === "comicsans") setFont("Comic Sans MS");
+    if(font === "georgia") setFont("Georgia");
+    if(font === "impact") setFont("Impact");
+    if(font === "lucida") setFont("Lucida");
+    if(font === "lucidasans") setFont("Lucida Sans Unicode");
+    if(font === "palatino") setFont("Palatino Linotype");
+    if(font === "tahoma") setFont("Tahoma");
+    if(font === "timesnewroman") setFont("Times New Roman");
+    if(font === "trebuchet") setFont("Trebuchet MS");
+    if(font === "verdana") setFont("Verdana");
+    if(font === "symbol") setFont("Symbol");
+    if(font === "webdings") setFont("Webdings");
+    if(font === "wingdings") setFont("Wingdings");
+    if(font === "sansserif") setFont("MS Sans Serif");
+    if(font === "serif") setFont("MS Serif");
+  });
+
+}
+
+function setFont(font){
+  $('#padcontent').css("font-family", font);
 }
 
 exports.baseURL = '';

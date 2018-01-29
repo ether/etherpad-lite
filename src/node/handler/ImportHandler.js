@@ -56,10 +56,14 @@ exports.doImport = function(req, res, padId)
     , pad
     , text
     , importHandledByPlugin
-    , directDatabaseAccess;
+    , directDatabaseAccess
+    , useAbiword;
 
   var randNum = Math.floor(Math.random()*0xFFFFFFFF);
   
+  // setting flag for whether to use abiword or not
+  useAbiword = (abiword != null);
+
   async.series([
     //save the uploaded file to /tmp
     function(callback) {
@@ -113,10 +117,8 @@ exports.doImport = function(req, res, padId)
         if(ERR(err, callback)) return callback();
         if(result.length > 0){ // This feels hacky and wrong..
           importHandledByPlugin = true;
-          callback();
-        }else{
-          callback();
         }
+        callback();
       });
     },
     function(callback) {
@@ -145,10 +147,13 @@ exports.doImport = function(req, res, padId)
     },
     //convert file to html
     function(callback) {
-      if(!importHandledByPlugin || !directDatabaseAccess){
+      if(!importHandledByPlugin && !directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
         var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
-        if (abiword && !fileIsHTML) {
+        var fileIsTXT = (fileEnding === ".txt");
+        if (fileIsTXT) useAbiword = false; // Don't use abiword for text files
+        // See https://github.com/ether/etherpad-lite/issues/2572
+        if (useAbiword && !fileIsHTML) {
           abiword.convertFile(srcFile, destFile, "htm", function(err) {
             //catch convert errors
             if(err) {
@@ -168,28 +173,24 @@ exports.doImport = function(req, res, padId)
     },
     
     function(callback) {
-      if (!abiword){
-        if(!directDatabaseAccess) {
-          // Read the file with no encoding for raw buffer access.
-          fs.readFile(destFile, function(err, buf) {
-            if (err) throw err;
-            var isAscii = true;
-            // Check if there are only ascii chars in the uploaded file
-            for (var i=0, len=buf.length; i<len; i++) {
-              if (buf[i] > 240) {
-                isAscii=false;
-                break;
-              }
+      if (!useAbiword && !directDatabaseAccess){
+        // Read the file with no encoding for raw buffer access.
+        fs.readFile(destFile, function(err, buf) {
+          if (err) throw err;
+          var isAscii = true;
+          // Check if there are only ascii chars in the uploaded file
+          for (var i=0, len=buf.length; i<len; i++) {
+            if (buf[i] > 240) {
+              isAscii=false;
+              break;
             }
-            if (isAscii) {
-              callback();
-            } else {
-              callback("uploadFailed");
-            }
-          });
-        }else{
-          callback();
-        }
+          }
+          if (isAscii) {
+            callback();
+          } else {
+            callback("uploadFailed");
+          }
+        });
       } else {
         callback();
       }
@@ -213,7 +214,7 @@ exports.doImport = function(req, res, padId)
           // Title needs to be stripped out else it appends it to the pad..
           text = text.replace("<title>", "<!-- <title>");
           text = text.replace("</title>","</title>-->");
-  
+
           //node on windows has a delay on releasing of the file lock.  
           //We add a 100ms delay to work around this
           if(os.type().indexOf("Windows") > -1){
@@ -231,12 +232,10 @@ exports.doImport = function(req, res, padId)
     function(callback) {
       if(!directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
-        if (abiword || fileEnding == ".htm" || fileEnding == ".html") {
-          try{
-            importHtml.setPadHTML(pad, text);
-          }catch(e){
-            apiLogger.warn("Error importing, possibly caused by malformed HTML");
-          }
+        if (importHandledByPlugin || useAbiword || fileEnding == ".htm" || fileEnding == ".html") {
+          importHtml.setPadHTML(pad, text, function(e){
+            if(e) apiLogger.warn("Error importing, possibly caused by malformed HTML");
+          });
         } else {
           pad.setText(text);
         }
@@ -247,7 +246,6 @@ exports.doImport = function(req, res, padId)
       padManager.getPad(padId, function(err, _pad){
         var pad = _pad;
         padManager.unloadPad(padId);
-
         // direct Database Access means a pad user should perform a switchToPad
         // and not attempt to recieve updated pad data..
         if(!directDatabaseAccess){
@@ -297,13 +295,10 @@ exports.doImport = function(req, res, padId)
       </head> \
       <script> \
         $(window).load(function(){ \
-          if(navigator.userAgent.indexOf('MSIE') === -1){ \
-            document.domain = document.domain; \
-          } \
           var impexp = window.parent.padimpexp.handleFrameCall('" + directDatabaseAccess +"', '" + status + "'); \
         }) \
       </script>"
-    , 200);
+    );
   });
 }
 

@@ -1,17 +1,17 @@
 # A really-real time collaborative word processor for the web
-![alt text](http://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
+![alt text](https://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
 
 # About
 Etherpad is a really-real time collaborative editor maintained by the Etherpad Community.
 
-Etherpad is written in Javascript(99.9%) on both the server and client so it's easy for developers to maintain and add new features.  Because of this Etherpad has tons of customizations that you can leverage.
+Etherpad is written in JavaScript (99.9%) on both the server and client so it's easy for developers to maintain and add new features.  Because of this Etherpad has tons of customizations that you can leverage.
 
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API)
 that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. 
 
 There is also a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
-There's also a full-featured plugin framework, allowing you to easily add your own features.  By default your Etherpad is rather sparse and because Etherpad takes a lot of it's inspiration from Wordpress plugins are really easy to install and update.  Once you have Etherpad installed you should visit the plugin page and take control.
+There's also a full-featured plugin framework, allowing you to easily add your own features.  By default your Etherpad is rather sparse and because Etherpad takes a lot of its inspiration from WordPress, plugins are really easy to install and update.  Once you have Etherpad installed you should visit the plugin page and take control.
 
 Finally, Etherpad comes with translations into most languages!  Users are automatically delivered the correct language for their local settings.
 
@@ -22,7 +22,7 @@ Also, check out the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**, 
 
 # Installation
 
-Etherpad works with node v0.8, v0.10 and v0.11, only. (We don't support v0.6)
+Etherpad works with node v0.10+ (except 6.0 and 6.1).
 
 ## Windows
 
@@ -35,7 +35,7 @@ This package works out of the box on any windows machine, but it's not very usef
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
 
 ### Fancy install
-You'll need [node.js](http://nodejs.org) and (optionally, though recommended) git.
+You'll need [node.js](https://nodejs.org) and (optionally, though recommended) git.
 
 1. Grab the source, either
   - download <https://github.com/ether/etherpad-lite/zipball/master>
@@ -46,15 +46,21 @@ Now, run `start.bat` and open <http://localhost:9001> in your browser.
 
 Update to the latest version with `git pull origin`, then run `bin\installOnWindows.bat`, again.
 
+If cloning to a subdirectory within another project, you may need to do the following:
+
+1. Start the server manually (e.g. `node/node_modules/ep_etherpad-lite/node/server.js]`)
+2. Edit the db `filename` in `settings.json` to the relative directory with the file (e.g. `application/lib/etherpad-lite/var/dirty.db`)
+3. Add auto-generated files to the main project `.gitignore`
+
 [Next steps](#next-steps).
 
 ## GNU/Linux and other UNIX-like systems
 You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
-- *For Debian/Ubuntu*: `apt-get install gzip git-core curl python libssl-dev pkg-config build-essential`  
-- *For Fedora/CentOS*: `yum install gzip git-core curl python openssl-devel && yum groupinstall "Development Tools"`
-- *For FreeBSD*: `portinstall node, npm, git (optional)`
+- *For Debian/Ubuntu*: `apt-get install gzip git curl python libssl-dev pkg-config build-essential`  
+- *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
+- *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
 
-Additionally, you'll need [node.js](http://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
+Additionally, you'll need [node.js](https://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
@@ -86,9 +92,9 @@ Documentation can be found in `docs/`.
 # Development
 
 ## Things you should know
-Read this [git guide](http://learn.github.com/p/index.html) and watch this [video on getting started with Etherpad Development](http://youtu.be/67-Q26YH97E).
+Understand [git](https://training.github.com/) and watch this [video on getting started with Etherpad Development](https://youtu.be/67-Q26YH97E).
 
-If you're new to node.js, start with Ryan Dahl's [Introduction to Node.js](http://youtu.be/jo_B4LTHi3I).
+If you're new to node.js, start with Ryan Dahl's [Introduction to Node.js](https://youtu.be/jo_B4LTHi3I).
 
 You can debug Etherpad using `bin/debugRun.sh`.
 
@@ -102,7 +108,7 @@ Look at the [TODO list](https://github.com/ether/etherpad-lite/wiki/TODO) and ou
 Also, and most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md), really!
 
 # Get in touch
-Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and make some noise on our busy freenode irc channel [#etherpad-lite-dev](http://webchat.freenode.net?channels=#etherpad-lite-dev)!
+Join the [mailinglist](https://groups.google.com/group/etherpad-lite-dev) and make some noise on our busy freenode irc channel [#etherpad-lite-dev](https://webchat.freenode.net?channels=#etherpad-lite-dev)!
 
 # Modules created for this project
 
@@ -111,9 +117,9 @@ Join the [mailinglist](http://groups.google.com/group/etherpad-lite-dev) and mak
 * [async-stacktrace](https://github.com/Pita/async-stacktrace) "Improves node.js stacktraces and makes it easier to handle errors"
 
 # Donate!
-* [Flattr] (http://flattr.com/thing/71378/Etherpad-Foundation)
+* [Flattr](https://flattr.com/thing/71378/Etherpad-Foundation)
 * Paypal - Press the donate button on [etherpad.org](http://etherpad.org)
-* [Bitcoin] (https://coinbase.com/checkouts/1e572bf8a82e4663499f7f1f66c2d15a)
+* [Bitcoin](https://coinbase.com/checkouts/1e572bf8a82e4663499f7f1f66c2d15a)
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)

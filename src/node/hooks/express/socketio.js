@@ -6,7 +6,8 @@ var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
 
-var connect = require('connect');
+var cookieParser = require('cookie-parser');
+var sessionModule = require('express-session');
  
 exports.expressCreateServer = function (hook_name, args, cb) {
   //init socket.io and redirect all requests to the MessageHandler
@@ -20,13 +21,17 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   /* Require an express session cookie to be present, and load the
    * session. See http://www.danielbaulig.de/socket-ioexpress for more
    * info */
+  var cookieParserFn = cookieParser(webaccess.secret, {});
 
   io.use(function(socket, accept) {
     var data = socket.request;
-    if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
-
-    // Use connect's cookie parser, because it knows how to parse signed cookies
-    connect.cookieParser(webaccess.secret)(data, {}, function(err){
+    // Use a setting if we want to allow load Testing
+    if(!data.headers.cookie && settings.loadTest){
+      accept(null, true);
+    }else{
+      if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
+    }
+    cookieParserFn(data, {}, function(err){
       if(err) {
         console.error(err);
         accept("Couldn't parse request cookies. ", false);
@@ -36,7 +41,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       data.sessionID = data.signedCookies.express_sid;
       args.app.sessionStore.get(data.sessionID, function (err, session) {
         if (err || !session) return accept('Bad session / session has expired', false);
-        data.session = new connect.middleware.session.Session(data, session);
+        data.session = new sessionModule.Session(data, session);
         accept(null, true);
       });
     });

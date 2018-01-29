@@ -61,7 +61,7 @@ exports.availablePlugins = null;
 var cacheTimestamp = 0;
 
 exports.getAvailablePlugins = function(maxCacheAge, cb) {
-  request("http://etherpad.org/plugins.json", function(er, response, plugins){
+  request("https://static.etherpad.org/plugins.json", function(er, response, plugins){
     if (er) return cb && cb(er);
     if(exports.availablePlugins && maxCacheAge && Math.round(+new Date/1000)-cacheTimestamp <= maxCacheAge) {
       return cb && cb(null, exports.availablePlugins)

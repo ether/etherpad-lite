@@ -1,15 +1,10 @@
 @echo off
 
-:: change directory to etherpad-lite root
+:: Change directory to etherpad-lite root
 cd /D "%~dp0\.."
 
 :: Is node installed?
-cmd /C node -e "" || ( echo "Please install node.js ( http://nodejs.org )" && exit /B 1 )
-
-echo _
-echo Checking node version...
-set check_version="if(['8','10'].indexOf(process.version.split('.')[1].toString()) === -1) { console.log('You are running a wrong version of Node. Etherpad requires v0.8.x or v0.10.x'); process.exit(1) }"
-cmd /C node -e %check_version% || exit /B 1
+cmd /C node -e "" || ( echo "Please install node.js ( https://nodejs.org )" && exit /B 1 )
 
 echo _
 echo Ensure that all dependencies are up to date...  If this is the first time you have run Etherpad please be patient.

@@ -98,14 +98,7 @@ exports.kickSessionsFromPad = function(padID)
    return;
 
   //skip if there is nobody on this pad
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
-
-  if(roomClients.length == 0)
+  if(_getRoomClients(padID).length == 0)
     return;
 
   //disconnect everyone from this pad
@@ -190,6 +183,16 @@ exports.handleMessage = function(client, message)
   }
 
   var handleMessageHook = function(callback){
+    // Allow plugins to bypass the readonly message blocker
+    hooks.aCallAll("handleMessageSecurity", { client: client, message: message }, function ( err, messages ) {
+      if(ERR(err, callback)) return;
+      _.each(messages, function(newMessage){
+        if ( newMessage === true ) {
+          thisSession.readonly = false;
+        }
+      });
+    });
+
     var dropMessage = false;
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages
     // handleMessage will be called, even if the client is not authorized
@@ -204,6 +207,7 @@ exports.handleMessage = function(client, message)
       // If no plugins explicitly told us to drop the message, its ok to proceed
       if(!dropMessage){ callback() };
     });
+
   }
 
   var finalHandler = function () {
@@ -257,11 +261,10 @@ exports.handleMessage = function(client, message)
         // FIXME: Use a hook instead
         // FIXME: Allow to override readwrite access with readonly
 
-        // FIXME: A message might arrive but wont have an auth object, this is obviously bad so we should deny it
         // Simulate using the load testing tool
         if(!sessioninfos[client.id].auth){
           console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
-          callback();
+          return;
         }else{
           var auth = sessioninfos[client.id].auth;
           var checkAccessCallback = function(err, statusObject)
@@ -365,6 +368,17 @@ function handleChatMessage(client, message)
   var text = message.data.text;
   var padId = sessioninfos[client.id].padId;
 
+  exports.sendChatMessageToPadClients(time, userId, text, padId);
+}
+
+/**
+ * Sends a chat message to all clients of this pad
+ * @param time the timestamp of the chat message
+ * @param userId the author id of the chat message
+ * @param text the text of the chat message
+ * @param padId the padId to send the chat message to
+ */
+exports.sendChatMessageToPadClients = function (time, userId, text, padId) {
   var pad;
   var userName;
 
@@ -498,21 +512,16 @@ function handleSuggestUserName(client, message)
   }
 
   var padId = sessioninfos[client.id].padId;
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padId];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
+  var roomClients = _getRoomClients(padId);
 
   //search the author and send him this message
-  for(var i = 0; i < roomClients.length; i++) {
-    var session = sessioninfos[roomClients[i].id];
+  roomClients.forEach(function(client) {
+    var session = sessioninfos[client.id];
     if(session && session.author == message.data.payload.unnamedId) {
-      roomClients[i].json.send(message);
-      break;
+      client.json.send(message);
+      return;
     }
-  }
+  });
 }
 
 /**
@@ -534,14 +543,29 @@ function handleUserInfoUpdate(client, message)
     return;
   }
 
+  // Check that we have a valid session and author to update.
+  var session = sessioninfos[client.id];
+  if(!session || !session.author || !session.padId)
+  {
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Session not ready." + message.data);
+    return;
+  }
+
   //Find out the author name of this session
-  var author = sessioninfos[client.id].author;
+  var author = session.author;
+
+  // Check colorId is a Hex color
+  var isColor  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(message.data.userInfo.colorId) // for #f00 (Thanks Smamatti)
+  if(!isColor){
+    messageLogger.warn("Dropped message, USERINFO_UPDATE Color is malformed." + message.data);
+    return;
+  }
 
   //Tell the authorManager about the new attributes
   authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
   authorManager.setAuthorName(author, message.data.userInfo.name);
 
-  var padId = sessioninfos[client.id].padId;
+  var padId = session.padId;
 
   var infoMsg = {
     type: "COLLABROOM",
@@ -601,8 +625,8 @@ function handleUserChanges(data, cb)
     messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
     return cb();
   }
-  //TODO: this might happen with other messages too => find one place to copy the session 
-  //and always use the copy. atm a message will be ignored if the session is gone even 
+  //TODO: this might happen with other messages too => find one place to copy the session
+  //and always use the copy. atm a message will be ignored if the session is gone even
   //if the session was valid when the message arrived in the first place
   if(!sessioninfos[client.id])
   {
@@ -657,12 +681,17 @@ function handleUserChanges(data, cb)
           , op
         while(iterator.hasNext()) {
           op = iterator.next()
-          if(op.opcode != '+') continue;
+
+          //+ can add text with attribs
+          //= can change or add attribs
+          //- can have attribs, but they are discarded and don't show up in the attribs - but do show up in the  pool
+
           op.attribs.split('*').forEach(function(attr) {
             if(!attr) return
             attr = wireApool.getAttrib(attr)
             if(!attr) return
-            if('author' == attr[0] && attr[1] != thisSession.author) throw new Error("Trying to submit changes as another author in changeset "+changeset);
+            //the empty author is used in the clearAuthorship functionality so this should be the only exception
+            if('author' == attr[0] && (attr[1] != thisSession.author && attr[1] != '')) throw new Error("Trying to submit changes as another author in changeset "+changeset);
           })
         }
 
@@ -758,8 +787,9 @@ function handleUserChanges(data, cb)
       }
 
       // Make sure the pad always ends with an empty line.
-      if (pad.text().lastIndexOf("\n\n") != pad.text().length-2) {
-        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1, 0, "\n");
+      if (pad.text().lastIndexOf("\n") != pad.text().length-1) {
+        var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length-1,
+                                               0, "\n");
         pad.appendRevision(nlChangeset);
       }
 
@@ -779,12 +809,7 @@ function handleUserChanges(data, cb)
 exports.updatePadClients = function(pad, callback)
 {
   //skip this step if noone is on this pad
-  var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
+  var roomClients = _getRoomClients(pad.id);
 
   if(roomClients.length==0)
     return callback();
@@ -910,22 +935,17 @@ function handleSwitchToPad(client, message)
   // clear the session and leave the room
   var currentSession = sessioninfos[client.id];
   var padId = currentSession.padId;
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padId];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
+  var roomClients = _getRoomClients(padId);
 
-  for(var i = 0; i < roomClients.length; i++) {
-    var sinfo = sessioninfos[roomClients[i].id];
+  async.forEach(roomClients, function(client, callback) {
+    var sinfo = sessioninfos[client.id];
     if(sinfo && sinfo.author == currentSession.author) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-      sessioninfos[roomClients[i].id] = {};
-      roomClients[i].leave(padId);
+      sessioninfos[client.id] = {};
+      client.leave(padId);
     }
-  }
-  
+  });
+
   // start up the new pad
   createSessionInfo(client, message);
   handleClientReady(client, message);
@@ -984,6 +1004,8 @@ function handleClientReady(client, message)
   var historicalAuthorData = {};
   var currentTime;
   var padIds;
+
+  hooks.callAll("clientReady", message);
 
   async.series([
     //Get ro/rw id:s
@@ -1070,7 +1092,12 @@ function handleClientReady(client, message)
           {
             authorManager.getAuthor(authorId, function(err, author)
             {
-              if(ERR(err, callback) || !author) return;
+              if(!author && !err)
+              {
+                messageLogger.error("There is no author for authorId:", authorId);
+                return callback();
+              }
+              if(ERR(err, callback)) return;
               historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId}; // Filter author attribs (e.g. don't send author's pads to all clients)
               callback();
             });
@@ -1087,22 +1114,17 @@ function handleClientReady(client, message)
         return callback();
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
-      var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
-      if (room) {
-        for (var id in room) {
-          roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-        }
-      }
+      var roomClients = _getRoomClients(pad.id);
 
-      for(var i = 0; i < roomClients.length; i++) {
-        var sinfo = sessioninfos[roomClients[i].id];
+      async.forEach(roomClients, function(client, callback) {
+        var sinfo = sessioninfos[client.id];
         if(sinfo && sinfo.author == author) {
           // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-          sessioninfos[roomClients[i].id] = {};
-          roomClients[i].leave(padIds.padId);
-          roomClients[i].json.send({disconnect:"userdup"});
+          sessioninfos[client.id] = {};
+          client.leave(padIds.padId);
+          client.json.send({disconnect:"userdup"});
         }
-      }
+      });
 
       //Save in sessioninfos that this session belonges to this pad
       sessioninfos[client.id].padId = padIds.padId;
@@ -1154,6 +1176,7 @@ function handleClientReady(client, message)
           "accountPrivs": {
               "maxRevisions": 100
           },
+          "automaticReconnectionTimeout": settings.automaticReconnectionTimeout,
           "initialRevisionList": [],
           "initialOptions": {
               "guestPolicy": "deny"
@@ -1173,6 +1196,8 @@ function handleClientReady(client, message)
           "userIsGuest": true,
           "userColor": authorColorId,
           "padId": message.padId,
+          "padOptions": settings.padOptions,
+          "padShortcutEnabled": settings.padShortcutEnabled,
           "initialTitle": "Pad: " + message.padId,
           "opts": {},
           // tell the client the number of the latest chat-message, which will be
@@ -1184,9 +1209,21 @@ function handleClientReady(client, message)
           "serverTimestamp": new Date().getTime(),
           "userId": author,
           "abiwordAvailable": settings.abiwordAvailable(),
+          "sofficeAvailable": settings.sofficeAvailable(),
+          "exportAvailable": settings.exportAvailable(),
           "plugins": {
             "plugins": plugins.plugins,
             "parts": plugins.parts,
+          },
+          "indentationOnNewLine": settings.indentationOnNewLine,
+          "scrollWhenFocusLineIsOutOfViewport": {
+            "percentage" : {
+              "editionAboveViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
+              "editionBelowViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
+            },
+            "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
+            "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
+            "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
           },
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
@@ -1242,13 +1279,8 @@ function handleClientReady(client, message)
       // notify all existing users about new user
       client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
 
-      //Run trough all sessions of this pad
-      var roomClients = [], room = socketio.sockets.adapter.rooms[pad.id];
-      if (room) {
-        for (var id in room) {
-          roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-        }
-      }
+      //Get sessions for this pad
+      var roomClients = _getRoomClients(pad.id);
 
       async.forEach(roomClients, function(roomClient, callback)
       {
@@ -1322,6 +1354,12 @@ function handleChangesetRequest(client, message)
   if(message.data.granularity == null)
   {
     messageLogger.warn("Dropped message, changeset request has no granularity!");
+    return;
+  }
+  //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
+  if(Math.floor(message.data.granularity) !== message.data.granularity)
+  {
+    messageLogger.warn("Dropped message, changeset request granularity is not an integer!");
     return;
   }
   if(message.data.start == null)
@@ -1625,10 +1663,15 @@ function composePadChangesets(padId, startNum, endNum, callback)
       changeset = changesets[startNum];
       var pool = pad.apool();
 
-      for(var r=startNum+1;r<endNum;r++)
-      {
-        var cs = changesets[r];
-        changeset = Changeset.compose(changeset, cs, pool);
+      try {
+        for(var r=startNum+1;r<endNum;r++) {
+          var cs = changesets[r];
+          changeset = Changeset.compose(changeset, cs, pool);
+        }
+      } catch(e){
+        // r-1 indicates the rev that was build starting with startNum, applying startNum+1, +2, +3
+        console.warn("failed to compose cs in pad:",padId," startrev:",startNum," current rev:",r);
+        return callback(e);
       }
 
       callback(null);
@@ -1642,20 +1685,24 @@ function composePadChangesets(padId, startNum, endNum, callback)
   });
 }
 
+function _getRoomClients(padID) {
+  var roomClients = []; var room = socketio.sockets.adapter.rooms[padID];
+
+  if (room) {
+    for (var id in room.sockets) {
+      roomClients.push(socketio.sockets.sockets[id]);
+    }
+  }
+
+  return roomClients;
+}
+
 /**
  * Get the number of users in a pad
  */
 exports.padUsersCount = function (padID, callback) {
-
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
-
   callback(null, {
-    padUsersCount: roomClients.length
+    padUsersCount: _getRoomClients(padID).length
   });
 }
 
@@ -1665,12 +1712,7 @@ exports.padUsersCount = function (padID, callback) {
 exports.padUsers = function (padID, callback) {
   var result = [];
 
-  var roomClients = [], room = socketio.sockets.adapter.rooms[padID];
-  if (room) {
-    for (var id in room) {
-      roomClients.push(socketio.sockets.adapter.nsp.connected[id]);
-    }
-  }
+  var roomClients = _getRoomClients(padID);
 
   async.forEach(roomClients, function(roomClient, callback) {
     var s = sessioninfos[roomClient.id];

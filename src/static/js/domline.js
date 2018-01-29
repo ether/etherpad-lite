@@ -65,7 +65,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     lineMarker: 0
   };
 
-  var browser = (optBrowser || {});
   var document = optDocument;
 
   if (document)
@@ -81,7 +80,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   }
 
   var html = [];
-  var preHtml = '', 
+  var preHtml = '',
   postHtml = '';
   var curHTML = null;
 
@@ -93,8 +92,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   var perTextNodeProcess = (doesWrap ? _.identity : processSpaces);
   var perHtmlLineProcess = (doesWrap ? processSpaces : _.identity);
   var lineClass = 'ace-line';
+
   result.appendSpan = function(txt, cls)
   {
+
     var processedMarker = false;
     // Handle lineAttributeMarker, if present
     if (cls.indexOf(lineAttributeMarker) >= 0)
@@ -192,7 +193,8 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     {
       if (href)
       {
-        if(!~href.indexOf("://") && !~href.indexOf("mailto:")) // if the url doesn't include a protocol prefix, assume http
+        urn_schemes = new RegExp("^(about|geo|mailto|tel):");
+        if(!~href.indexOf("://") && !urn_schemes.test(href)) // if the url doesn't include a protocol prefix, assume http
         {
           href = "http://"+href;
         }
@@ -225,7 +227,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       {
         newHTML += '&nbsp;';
       }
-      else if (!browser.msie)
+      else if (!optBrowser.msie)
       {
         newHTML += '<br/>';
       }

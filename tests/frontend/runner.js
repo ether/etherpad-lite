@@ -161,12 +161,6 @@ $(function(){
     }
   }
 
-  //allow cross iframe access
-  var browser = bowser;
-  if ((!browser.msie) && (!(browser.mozilla && browser.version.indexOf("1.8.") == 0))) {
-    document.domain = document.domain; // for comet
-  }
-
   //http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
   var getURLParameter = function (name) {
     return decodeURI(
