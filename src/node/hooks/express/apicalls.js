@@ -18,7 +18,7 @@ var apiCaller = function(req, res, fields) {
     apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
 
     //is this a jsonp call, if yes, add the function call
-    if(req.query.jsonp)
+    if(req.query.jsonp && isVarName(response))
       response = req.query.jsonp + "(" + response + ")";
 
     res._____send(response);
