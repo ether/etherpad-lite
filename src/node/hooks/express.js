@@ -5,17 +5,11 @@ var fs = require('fs');
 var path = require('path');
 var npm = require("npm/lib/npm.js");
 var  _ = require("underscore");
-var errorHandling = require("./express/errorhandling");
+require('systemd');
 require('autoquit');
 
 var server;
 var serverName;
-
-/*
- * Check here,
- * https://cgit.freedesktop.org/systemd/systemd/tree/src/systemd/sd-daemon.h
- */
-var systemdListenFDStart = 3;
 
 exports.createServer = function () {
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
@@ -23,21 +17,6 @@ exports.createServer = function () {
   serverName = "Etherpad " + settings.getGitCommit() + " (http://etherpad.org)";
   
   console.log("Your Etherpad version is " + settings.getEpVersion() + " (" + settings.getGitCommit() + ")");
-
-  if(settings.unixSocketActivation) {
-    if(!parseInt(process.env.LISTEN_FDS, 10)) {
-      console.error('No listen file descriptors provided by Systemd. It seems like Etherpad was not invoked by Systemd.');
-      errorHandling.gracefulShutdown();
-    }
-
-    if (parseInt(process.env.LISTEN_FDS, 10) < 1) {
-      console.error('No listen file descriptors provided by Systemd.');
-      errorHandling.gracefulShutdown();
-    } else if (parseInt(process.env.LISTEN_FDS, 10) > 1) {
-      console.error('Too many file descriptors provided by Systemd. Only one file descriptor expected.');
-      errorHandling.gracefulShutdown();
-    }
-  }
 
   exports.restartServer();
 
@@ -133,6 +112,6 @@ exports.restartServer = function () {
      * { timeOut: <TIMEOUT_IN_SECONDS> }
      */
     server.autoQuit();
-    server.listen({fd: systemdListenFDStart});
+    server.listen('systemd');
   }
 }
