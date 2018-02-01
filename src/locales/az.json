@@ -6,7 +6,8 @@
 			"Mushviq Abdulla",
 			"Wertuose",
 			"Mastizada",
-			"Archaeodontosaurus"
+			"Archaeodontosaurus",
+			"Neriman2003"
 		]
 	},
 	"index.newPad": "Yeni lövhə",
@@ -61,6 +62,8 @@
 	"pad.modals.connected": "Bağlandı.",
 	"pad.modals.reconnecting": "Sizin lövhə yenidən qoşulur..",
 	"pad.modals.forcereconnect": "Məcbur təkrarən bağlan",
+	"pad.modals.reconnecttimer": "Yenidən qoşulur",
+	"pad.modals.cancel": "Ləğv et",
 	"pad.modals.userdup": "Başqa pəncərədə artıq açıqdır",
 	"pad.modals.userdup.explanation": "Bu lövhə, ola bilsin ki, bu kompüterdəki brauzerin bir neçə pəncərəsində açılmışdır.",
 	"pad.modals.userdup.advice": "Bu pəncərəni istifadə etmək üçün yenidən qoşul.",

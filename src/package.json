@@ -44,6 +44,7 @@
                       "measured"                : "1.1.0",
                       "mocha"                   : "2.4.5",
                       "supertest"               : "1.2.0",
+                      "is-var-name"             : "1.0.0",
                       "systemd"                 : "0.3.1",
                       "autoquit"                : "0.1.6"
                      },
