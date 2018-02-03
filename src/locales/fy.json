@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robin van der Vliet"
+		]
+	},
+	"pad.toolbar.bold.title": "Fet (Ctrl+B)",
+	"pad.toolbar.italic.title": "Kursyf (Ctrl+I)",
+	"pad.toolbar.underline.title": "Understreekje (Ctrl+U)",
+	"pad.toolbar.settings.title": "Ynstellingen",
+	"pad.colorpicker.save": "Bewarje",
+	"pad.colorpicker.cancel": "Annulearje",
+	"pad.settings.fontType.normal": "Normaal",
+	"pad.settings.fontType.monospaced": "Monospace",
+	"pad.settings.language": "Taal:",
+	"pad.importExport.exporthtml": "HTML",
+	"pad.importExport.exportword": "Microsoft Word",
+	"pad.importExport.exportpdf": "PDF",
+	"pad.modals.connected": "Ferbûn.",
+	"pad.modals.deleted": "Fuortsmiten.",
+	"pad.share.link": "Keppeling",
+	"timeslider.toolbar.authors": "Auteurs:",
+	"timeslider.toolbar.authorsList": "Gjin auteurs",
+	"timeslider.toolbar.exportlink.title": "Eksportearje",
+	"timeslider.version": "Ferzje {{version}}",
+	"timeslider.dateformat": "{{day}}-{{month}}-{{year}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.month.january": "jannewaris",
+	"timeslider.month.february": "febrewaris",
+	"timeslider.month.march": "maart",
+	"timeslider.month.april": "april",
+	"timeslider.month.may": "maaie",
+	"timeslider.month.june": "juny",
+	"timeslider.month.july": "july",
+	"timeslider.month.august": "augustus",
+	"timeslider.month.september": "septimber",
+	"timeslider.month.october": "oktober",
+	"timeslider.month.november": "novimber",
+	"timeslider.month.december": "desimber",
+	"pad.userlist.unnamed": "sûnder namme",
+	"pad.userlist.guest": "Gast",
+	"pad.userlist.deny": "Wegerje",
+	"pad.userlist.approve": "Goedkarre"
+}

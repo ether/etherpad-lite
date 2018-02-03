@@ -13,7 +13,8 @@
 			"Macofe",
 			"MrTapsa",
 			"Silvonen",
-			"Espeox"
+			"Espeox",
+			"Pyscowicz"
 		]
 	},
 	"index.newPad": "Uusi muistio",
@@ -68,6 +69,8 @@
 	"pad.modals.connected": "Yhdistetty.",
 	"pad.modals.reconnecting": "Muodostetaan yhteyttä muistioon uudelleen...",
 	"pad.modals.forcereconnect": "Pakota yhdistämään uudelleen",
+	"pad.modals.reconnecttimer": "Yritetään yhdistää uudelleen",
+	"pad.modals.cancel": "Peruuta",
 	"pad.modals.userdup": "Avattu toisessa ikkunassa",
 	"pad.modals.userdup.explanation": "Tämä muistio vaikuttaa olevan avoinna useammassa eri selainikkunassa tällä koneella.",
 	"pad.modals.userdup.advice": "Yhdistä uudelleen, jos haluat käyttää tätä ikkunaa.",

@@ -247,6 +247,33 @@ exports.users = {};
 */
 exports.showSettingsInAdminPage = true;
 
+/*
+* By default, when caret is moved out of viewport, it scrolls the minimum height needed to make this
+* line visible.
+*/
+exports.scrollWhenFocusLineIsOutOfViewport = {
+  /*
+  * Percentage of viewport height to be additionally scrolled.
+  */
+  "percentage": {
+    "editionAboveViewport": 0,
+    "editionBelowViewport": 0
+  },
+  /*
+  * Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation
+  */
+  "duration": 0,
+  /*
+  * Flag to control if it should scroll when user places the caret in the last line of the viewport
+  */
+  /*
+  * Percentage of viewport height to be additionally scrolled when user presses arrow up
+  * in the line of the top of the viewport.
+   */
+  "percentageToScrollWhenUserPressesArrowUp": 0,
+  "scrollWhenCaretIsInTheLastLineOfViewport": false
+};
+
 //checks if abiword is avaiable
 exports.abiwordAvailable = function()
 {
