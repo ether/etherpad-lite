@@ -1,3 +1,11 @@
+# 1.6.3
+ * SECURITY: Update ejs
+ * SECURITY: xss vulnerability when reading window.location.href
+ * SECURITY: sanitize jsonp
+ * NEW: Catch SIGTERM for graceful shutdown
+ * NEW: Show actual applied text formatting for caret position
+ * NEW: Add settings to improve scrolling of viewport on line changes
+
 # 1.6.2
  * NEW: Added pad shortcut disabling feature
  * NEW: Create option to automatically reconnect after a few seconds
