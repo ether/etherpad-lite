@@ -181,20 +181,26 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
 
     var sentMessage = false;
-    var userChangesData = editor.prepareUserChangeset();
-    if (userChangesData.changeset)
-    {
-      lastCommitTime = t;
-      state = "COMMITTING";
-      stateMessage = {
-        type: "USER_CHANGES",
-        baseRev: rev,
-        changeset: userChangesData.changeset,
-        apool: userChangesData.apool
-      };
-      sendMessage(stateMessage);
-      sentMessage = true;
-      callbacks.onInternalAction("commitPerformed");
+    if (getSocket().realConnected) {
+        var userChangesData = editor.prepareUserChangeset();
+        if (userChangesData.changeset)
+        {
+          lastCommitTime = t;
+          state = "COMMITTING";
+          stateMessage = {
+            type: "USER_CHANGES",
+            baseRev: rev,
+            changeset: userChangesData.changeset,
+            apool: userChangesData.apool
+          };
+          sendMessage(stateMessage);
+          sentMessage = true;
+          callbacks.onInternalAction("commitPerformed");
+        }
+    }
+    else {
+        // run again in a few seconds, to check if there was a reconnection attempt
+        setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 1000);
     }
 
     if (sentMessage)

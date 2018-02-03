@@ -201,15 +201,19 @@ function handshake()
   });
 
   socket.once('connect', function () {
+    // Setup our own connected flag since socketio one doesn't work accurately
+    socket.realConnected = true;
     sendClientReady(false);
   });
 
   socket.on('reconnect', function () {
+    socket.realConnected = true;
     pad.collabClient.setChannelState("CONNECTED");
     pad.sendClientReady(true);
   });
 
   socket.on('reconnecting', function() {
+    socket.realConnected = false;
     pad.collabClient.setChannelState("RECONNECTING");
   });
 
