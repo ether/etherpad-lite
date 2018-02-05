@@ -221,6 +221,11 @@ function handshake()
     pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
   });
 
+  socket.on('error', function(error) {
+    socket.realConnected = false;
+    pad.collabClient.setStateIdle();
+  });
+
   var initalized = false;
 
   socket.on('message', function(obj)
