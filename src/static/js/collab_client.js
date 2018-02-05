@@ -662,7 +662,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     getMissedChanges: getMissedChanges,
     callWhenNotCommitting: callWhenNotCommitting,
     addHistoricalAuthors: tellAceAboutHistoricalAuthors,
-    setChannelState: setChannelState
+    setChannelState: setChannelState,
+    setStateIdle: setStateIdle
   };
 
   $(document).ready(setUpSocket);
