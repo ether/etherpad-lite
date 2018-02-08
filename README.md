@@ -87,7 +87,7 @@ Etherpad is very customizable through plugins. Instructions for installing theme
 ## Helpful resources
 The [wiki](https://github.com/ether/etherpad-lite/wiki) is your one-stop resource for Tutorials and How-to's, really check it out! Also, feel free to improve these wiki pages.
 
-Documentation can be found in `docs/`.
+Documentation can be found in `doc/`.
 
 # Development
 
