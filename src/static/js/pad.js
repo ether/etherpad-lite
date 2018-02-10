@@ -209,11 +209,12 @@ function handshake()
   socket.on('reconnect', function () {
     socket.realConnected = true;
     pad.collabClient.setChannelState("CONNECTED");
-    pad.sendClientReady(true);
+    pad.sendClientReady(receivedClientVars);
   });
 
   socket.on('reconnecting', function() {
     socket.realConnected = false;
+    pad.collabClient.setStateIdle();
     pad.collabClient.setChannelState("RECONNECTING");
   });
 
@@ -224,6 +225,7 @@ function handshake()
   socket.on('error', function(error) {
     socket.realConnected = false;
     pad.collabClient.setStateIdle();
+    pad.collabClient.setSocketIOError(true);
   });
 
   var initalized = false;

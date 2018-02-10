@@ -1153,6 +1153,82 @@ function handleClientReady(client, message)
         client.join(padIds.padId);
         //Save the revision in sessioninfos, we take the revision from the info the client send to us
         sessioninfos[client.id].rev = message.client_rev;
+
+        var changesetsNeeded = [];
+        var changesets = {};
+        var changesetsAuthor = {};
+        var changesetsTimestamp = {};
+
+        var startNum = message.client_rev + 1;
+        var endNum = pad.getHeadRevisionNumber() + 1;
+
+        async.series([
+          //fetch all changesets we need
+          function(callback)
+          {
+            var headNum = pad.getHeadRevisionNumber();
+            if (endNum > headNum+1)
+              endNum = headNum+1;
+            if (startNum < 0)
+              startNum = 0;
+            //create a array for all changesets, we will
+            //replace the values with the changeset later
+            for(var r=startNum;r<endNum;r++)
+            {
+              changesetsNeeded.push(r);
+            }
+            //get all changesets
+            async.forEach(changesetsNeeded, function(revNum)
+            {
+              pad.getRevisionChangeset(revNum, function(err, value)
+              {
+                if(ERR(err)) return;
+                changesets[revNum] = value;
+              });
+              pad.getRevisionAuthor(revNum, function(err, value)
+              {
+                if(ERR(err)) return;
+                changesetsAuthor[revNum] = value;
+              });
+              pad.getRevisionDate(revNum, function(err, value)
+              {
+                if(ERR(err)) return;
+                changesetsTimestamp[revNum] = value;
+              });
+            });
+            callback(null);
+          }
+        ],
+        //return err and changeset
+        function(err)
+        {
+          if(ERR(err, callback)) return;
+          async.eachSeries(changesetsNeeded, function(r)
+          {
+            var forWire = Changeset.prepareForWire(changesets[r], pad.pool);
+            var wireMsg = {"type":"COLLABROOM",
+                           "data":{type:"CLIENT_RECONNECT",
+                                   currRev: r,
+                                   newRev:pad.getHeadRevisionNumber(),
+                                   changeset:forWire.translated,
+                                   apool: forWire.pool,
+                                   author: changesetsAuthor[r],
+                                   currentTime: changesetsTimestamp[r]
+                           }};
+            client.json.send(wireMsg);
+           });
+          if (startNum == endNum)
+          {
+            var Msg = {"type":"COLLABROOM",
+                       "data":{type:"CLIENT_RECONNECT",
+                               noChanges: true,
+                               newRev:pad.getHeadRevisionNumber()
+                       }};
+
+            console.log("About to send client reconnect event");
+            client.json.send(Msg);
+          }
+        });
       }
       //This is a normal first connect
       else
