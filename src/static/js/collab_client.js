@@ -60,6 +60,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   var debugMessages = [];
   var msgQueue = [];
 
+  var socketIOError = false;
+
   tellAceAboutHistoricalAuthors(serverVars.historicalAuthorData);
   tellAceActiveAuthorInfo(initialUserInfo);
 
@@ -181,7 +183,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
 
     var sentMessage = false;
-    if (getSocket().realConnected) {
+    if (getSocket().realConnected && !socketIOError)
+    {
         var userChangesData = editor.prepareUserChangeset();
         if (userChangesData.changeset)
         {
@@ -198,9 +201,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
           callbacks.onInternalAction("commitPerformed");
         }
     }
-    else {
-        // run again in a few seconds, to check if there was a reconnection attempt
-        setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 1000);
+    else
+    {
+        // run again in a few seconds, to detect a reconnect
+        setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 3000);
     }
 
     if (sentMessage)
@@ -335,6 +339,44 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         callbacks.onConnectionTrouble("OK");
       });
       handleUserChanges();
+    }
+    else if (msg.type == 'CLIENT_RECONNECT')
+    {
+      if (msg.noChanges)
+      {
+        socketIOError = false;
+        return;
+      }
+
+      var currRev = msg.currRev;
+      var newRev = msg.newRev;
+      var changeset = msg.changeset;
+      var author = (msg.author || '');
+      var apool = msg.apool;
+
+
+      if (rev + 1 == currRev)
+      {
+        if (author == pad.getUserId())
+        {
+          editor.applyPreparedChangesetToBase();
+          setStateIdle();
+        }
+        else
+        {
+          editor.applyChangesToBase(changeset, author, apool);
+        }
+
+      }
+      if (rev + 1 < currRev)
+      {
+        editor.applyChangesToBase(changeset, author, apool);
+      }
+      if (currRev == newRev)
+      {
+        socketIOError = false;
+        rev = newRev;
+      }
     }
     else if (msg.type == "NO_COMMIT_PENDING")
     {
@@ -597,6 +639,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     schedulePerhapsCallIdleFuncs();
   }
 
+  function setSocketIOError(value)
+  {
+    socketIOError = value;
+  }
   function callWhenNotCommitting(func)
   {
     idleFuncs.push(func);
@@ -663,7 +709,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     callWhenNotCommitting: callWhenNotCommitting,
     addHistoricalAuthors: tellAceAboutHistoricalAuthors,
     setChannelState: setChannelState,
-    setStateIdle: setStateIdle
+    setStateIdle: setStateIdle,
+    setSocketIOError: setSocketIOError
   };
 
   $(document).ready(setUpSocket);
