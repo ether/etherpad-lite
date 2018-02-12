@@ -56,10 +56,14 @@ exports.doImport = function(req, res, padId)
     , pad
     , text
     , importHandledByPlugin
-    , directDatabaseAccess;
+    , directDatabaseAccess
+    , useAbiword;
 
   var randNum = Math.floor(Math.random()*0xFFFFFFFF);
   
+  // setting flag for whether to use abiword or not
+  useAbiword = (abiword != null);
+
   async.series([
     //save the uploaded file to /tmp
     function(callback) {
@@ -147,9 +151,9 @@ exports.doImport = function(req, res, padId)
         var fileEnding = path.extname(srcFile).toLowerCase();
         var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
         var fileIsTXT = (fileEnding === ".txt");
-        if (fileIsTXT) abiword = false; // Don't use abiword for text files
+        if (fileIsTXT) useAbiword = false; // Don't use abiword for text files
         // See https://github.com/ether/etherpad-lite/issues/2572
-        if (abiword && !fileIsHTML) {
+        if (useAbiword && !fileIsHTML) {
           abiword.convertFile(srcFile, destFile, "htm", function(err) {
             //catch convert errors
             if(err) {
@@ -169,7 +173,7 @@ exports.doImport = function(req, res, padId)
     },
     
     function(callback) {
-      if (!abiword && !directDatabaseAccess){
+      if (!useAbiword && !directDatabaseAccess){
         // Read the file with no encoding for raw buffer access.
         fs.readFile(destFile, function(err, buf) {
           if (err) throw err;
@@ -228,7 +232,7 @@ exports.doImport = function(req, res, padId)
     function(callback) {
       if(!directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
-        if (importHandledByPlugin || abiword || fileEnding == ".htm" || fileEnding == ".html") {
+        if (importHandledByPlugin || useAbiword || fileEnding == ".htm" || fileEnding == ".html") {
           importHtml.setPadHTML(pad, text, function(e){
             if(e) apiLogger.warn("Error importing, possibly caused by malformed HTML");
           });

@@ -3,7 +3,7 @@ outdoc_files = $(addprefix out/,$(doc_sources:.md=.html))
 
 docassets = $(addprefix out/,$(wildcard doc/assets/*))
 
-VERSION = $(shell node -e "console.log( require('./src/package.json').version )") 
+VERSION = $(shell node -e "console.log( require('./src/package.json').version )")
 UNAME := $(shell uname -s)
 
 docs: $(outdoc_files) $(docassets)

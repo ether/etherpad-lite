@@ -1,5 +1,5 @@
 /*
-  This is a debug tool. It helps to extract all datas of a pad and move it from an productive enviroment and to a develop enviroment to reproduce bugs there. It outputs a dirtydb file
+  This is a debug tool. It helps to extract all datas of a pad and move it from an productive environment and to a develop environment to reproduce bugs there. It outputs a dirtydb file
 */
 
 if(process.argv.length != 3)
@@ -38,7 +38,7 @@ async.series([
     dirty = require("../node_modules/ep_etherpad-lite/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
     callback();
   },
-  //intallize the database
+  //initialize the database
   function (callback)
   {
     db.init(callback);
@@ -85,7 +85,7 @@ async.series([
         if(err) { callback(err); return}
 
         if(dbvalue && typeof dbvalue != 'object'){
-          dbvalue=JSON.parse(dbvalue); // if its not json then parse it as json
+          dbvalue=JSON.parse(dbvalue); // if it's not json then parse it as json
         }
         
         dirty.set(dbkey, dbvalue, callback);
@@ -105,5 +105,5 @@ async.series([
 //get the pad object
 //get all revisions of this pad
 //get all authors related to this pad
-//get the readonly link releated to this pad
-//get the chat entrys releated to this pad
+//get the readonly link related to this pad
+//get the chat entries related to this pad

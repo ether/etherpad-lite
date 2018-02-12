@@ -85,7 +85,7 @@ For any two changesets $A$, $B$ such that
 \item[] $A=(n_1\rightarrow n_2)[\cdots]$
 \item[] $B=(n_2\rightarrow n_3)[\cdots]$
 \end{itemize}
-it is clear that there is a third changeset $C=(n_1\rightarrow n_3)[\cdots]$ such that applying $C$ to a document $X$ yeilds the same resulting document as does applying $A$ and then $B$.  In this case, we write $AB=C$.
+it is clear that there is a third changeset $C=(n_1\rightarrow n_3)[\cdots]$ such that applying $C$ to a document $X$ yields the same resulting document as does applying $A$ and then $B$.  In this case, we write $AB=C$.
 
 Given the representation from Section \ref{representation}, it is straightforward to compute the composition of two changesets.
 
@@ -93,9 +93,9 @@ Given the representation from Section \ref{representation}, it is straightforwar
 
 Now we come to realtime document editing.  Suppose two different users make two different changes to the same document at the same time.  It is impossible to compose these changes.    For example, if we have the document $X$ of length $n$, we may have $A=(n\rightarrow n_a)[\ldots n_a \mathrm{characters}]$,  $B=(n\rightarrow n_b)[\ldots n_b \mathrm{characters}]$ where $n\neq n_a\neq n_b$.
 
-It is impossible to compute $(XA)B$ because $B$ can only be applied to a document of length $n$, and $(XA)$ has length $n_a$.  Similarly, $A$ cannot be appliet to $(XB)$ because $(XB)$ has length $n_b$.
+It is impossible to compute $(XA)B$ because $B$ can only be applied to a document of length $n$, and $(XA)$ has length $n_a$.  Similarly, $A$ cannot be applied to $(XB)$ because $(XB)$ has length $n_b$.
 
-This is where \emph{merging} comes in.  Merging takes two changesets that apply to the same initial document (and that cannot be composed), and computes a single new changeset that presevers the intent of both changes.  The merge of $A$ and $B$ is written as $m(A,B)$.  For the Etherpad system to work, we require that $m(A,B)=m(B,A)$.
+This is where \emph{merging} comes in.  Merging takes two changesets that apply to the same initial document (and that cannot be composed), and computes a single new changeset that preserves the intent of both changes.  The merge of $A$ and $B$ is written as $m(A,B)$.  For the Etherpad system to work, we require that $m(A,B)=m(B,A)$.
 
 Aside from what we have said so far about merging, there are many different implementations that will lead to a workable system.  We have created one implementation for text that has the following constraints.
 
@@ -156,7 +156,7 @@ server always.  (This may distinguish from prior art?)
 The other critical design feature of the system is that
 \emph{A client must always be able to edit their local
   copy of the document, so the user is never blocked from
-  typing because of waiting to to send or receive data.}
+  typing because of waiting to send or receive data.}
 
 \section{Client State}
 
@@ -329,7 +329,7 @@ with:
 \end{enumerate}
 
 \subsection{Respond to client connect}
-When a server recieves a connection request from a client,
+When a server receives a connection request from a client,
 it receives the client's unique ID and stores that in the
 server's set of connected clients.  It then sends the
 client the contents of HEADTEXT, and the corresponding

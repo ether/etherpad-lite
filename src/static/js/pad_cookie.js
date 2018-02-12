@@ -23,6 +23,8 @@
 
 var padcookie = (function()
 {
+  var cookieName = isHttpsScheme() ? "prefs" : "prefsHttp";
+
   function getRawCookie()
   {
     // returns null if can't get cookie text
@@ -31,7 +33,7 @@ var padcookie = (function()
       return null;
     }
     // look for (start of string OR semicolon) followed by whitespace followed by prefs=(something);
-    var regexResult = document.cookie.match(/(?:^|;)\s*prefs=([^;]*)(?:;|$)/);
+    var regexResult = document.cookie.match(new RegExp("(?:^|;)\\s*" + cookieName + "=([^;]*)(?:;|$)"));
     if ((!regexResult) || (!regexResult[1]))
     {
       return null;
@@ -43,7 +45,8 @@ var padcookie = (function()
   {
     var expiresDate = new Date();
     expiresDate.setFullYear(3000);
-    document.cookie = ('prefs=' + safeText + ';expires=' + expiresDate.toGMTString());
+    var secure = isHttpsScheme() ? ";secure" : "";
+    document.cookie = (cookieName + "=" + safeText + ";expires=" + expiresDate.toGMTString() + secure);
   }
 
   function parseCookie(text)
@@ -78,6 +81,10 @@ var padcookie = (function()
       alert("Warning: it appears that your browser does not have cookies enabled." + " EtherPad uses cookies to keep track of unique users for the purpose" + " of putting a quota on the number of active users.  Using EtherPad without " + " cookies may fill up your server's user quota faster than expected.");
       alreadyWarnedAboutNoCookies = true;
     }
+  }
+  
+  function isHttpsScheme() {
+    return window.location.protocol == "https:";
   }
 
   var wasNoCookie = true;
@@ -116,6 +123,9 @@ var padcookie = (function()
     wasNoCookie: function()
     {
       return wasNoCookie;
+    },
+    isCookiesEnabled: function() {
+      return !!getRawCookie();
     },
     getPref: function(prefName)
     {

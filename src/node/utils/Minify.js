@@ -1,7 +1,7 @@
 /**
- * This Module manages all /minified/* requests. It controls the 
- * minification && compression of Javascript and CSS. 
- */ 
+ * This Module manages all /minified/* requests. It controls the
+ * minification && compression of Javascript and CSS.
+ */
 
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
@@ -23,9 +23,9 @@ var ERR = require("async-stacktrace");
 var settings = require('./Settings');
 var async = require('async');
 var fs = require('fs');
+var StringDecoder = require('string_decoder').StringDecoder;
 var CleanCSS = require('clean-css');
-var jsp = require("uglify-js").parser;
-var pro = require("uglify-js").uglify;
+var uglifyJS = require("uglify-js");
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var RequireKernel = require('etherpad-require-kernel');
@@ -151,7 +151,7 @@ function minify(req, res, next)
   } else {
     res.writeHead(404, {});
     res.end();
-    return; 
+    return;
   }
 
   /* Handle static files for plugins/libraries:
@@ -371,20 +371,18 @@ function requireDefinition() {
 
 function getFileCompressed(filename, contentType, callback) {
   getFile(filename, function (error, content) {
-    if (error || !content) {
+    if (error || !content || !settings.minify) {
       callback(error, content);
-    } else {
-      if (settings.minify) {
-        if (contentType == 'text/javascript') {
-          try {
-            content = compressJS([content]);
-          } catch (error) {
-            // silence
-          }
-        } else if (contentType == 'text/css') {
-          content = compressCSS([content]);
-        }
+    } else if (contentType == 'text/javascript') {
+      try {
+        content = compressJS(content);
+      } catch (error) {
+        // silence
       }
+      callback(null, content);
+    } else if (contentType == 'text/css') {
+      compressCSS(filename, content, callback);
+    } else {
       callback(null, content);
     }
   });
@@ -400,20 +398,30 @@ function getFile(filename, callback) {
   }
 }
 
-function compressJS(values)
+function compressJS(content)
 {
-  var complete = values.join("\n");
-  var ast = jsp.parse(complete); // parse code and get the initial AST
-  ast = pro.ast_mangle(ast); // get a new AST with mangled names
-  ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
-  return pro.gen_code(ast); // compressed code here
+  var decoder = new StringDecoder('utf8');
+  var code = decoder.write(content); // convert from buffer to string
+  var codeMinified = uglifyJS.minify(code, {fromString: true}).code;
+  return codeMinified;
 }
 
-function compressCSS(values)
+function compressCSS(filename, content, callback)
 {
-  var complete = values.join("\n");
-  var minimized = new CleanCSS().minify(complete).styles;
-  return minimized;
+  try {
+    var base = path.join(ROOT_DIR, path.dirname(filename));
+    new CleanCSS({relativeTo: base}).minify(content, function (errors, minified) {
+      if (errors) {
+        // On error, just yield the un-minified original.
+        callback(null, content);
+      } else {
+        callback(null, minified.styles);
+      }
+    });
+  } catch (error) {
+    // On error, just yield the un-minified original.
+    callback(null, content);
+  }
 }
 
 exports.minify = minify;

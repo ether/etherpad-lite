@@ -100,7 +100,35 @@ exports.padOptions = {
   "alwaysShowChat": false,
   "chatAndUsers": false,
   "lang": "en-gb"
-}
+},
+
+/**
+ * Whether certain shortcut keys are enabled for a user in the pad
+ */
+exports.padShortcutEnabled = {
+  "altF9" : true,
+  "altC" : true,
+  "delete" : true,
+  "cmdShift2" : true,
+  "return" : true,
+  "esc" : true,
+  "cmdS" : true,
+  "tab" : true,
+  "cmdZ" : true,
+  "cmdY" : true,
+  "cmdB" : true,
+  "cmdI" : true,
+  "cmdU" : true,
+  "cmd5" : true,
+  "cmdShiftL" : true,
+  "cmdShiftN" : true,
+  "cmdShift1" : true,
+  "cmdShiftC" : true,
+  "cmdH" : true,
+  "ctrlHome" : true,
+  "pageUp" : true,
+  "pageDown" : true,
+},
 
 /**
  * The toolbar buttons and order.
@@ -178,6 +206,11 @@ exports.loglevel = "INFO";
 exports.disableIPlogging = false;
 
 /**
+ * Number of seconds to automatically reconnect pad
+ */
+exports.automaticReconnectionTimeout = 0;
+
+/**
  * Disable Load Testing
  */
 exports.loadTest = false;
@@ -213,6 +246,33 @@ exports.users = {};
 * Show settings in admin page, by default it is true
 */
 exports.showSettingsInAdminPage = true;
+
+/*
+* By default, when caret is moved out of viewport, it scrolls the minimum height needed to make this
+* line visible.
+*/
+exports.scrollWhenFocusLineIsOutOfViewport = {
+  /*
+  * Percentage of viewport height to be additionally scrolled.
+  */
+  "percentage": {
+    "editionAboveViewport": 0,
+    "editionBelowViewport": 0
+  },
+  /*
+  * Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation
+  */
+  "duration": 0,
+  /*
+  * Flag to control if it should scroll when user places the caret in the last line of the viewport
+  */
+  /*
+  * Percentage of viewport height to be additionally scrolled when user presses arrow up
+  * in the line of the top of the viewport.
+   */
+  "percentageToScrollWhenUserPressesArrowUp": 0,
+  "scrollWhenCaretIsInTheLastLineOfViewport": false
+};
 
 //checks if abiword is avaiable
 exports.abiwordAvailable = function()

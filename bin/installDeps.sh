@@ -23,19 +23,19 @@ hash curl > /dev/null 2>&1 || {
 }
 
 #Is node installed?
-#not checking io.js, default installation creates a symbolic link to node
+#Not checking io.js, default installation creates a symbolic link to node
 hash node > /dev/null 2>&1 || {
-  echo "Please install node.js ( http://nodejs.org )" >&2
+  echo "Please install node.js ( https://nodejs.org )" >&2
   exit 1
 }
 
 #Is npm installed?
 hash npm > /dev/null 2>&1 || {
-  echo "Please install npm ( http://npmjs.org )" >&2
+  echo "Please install npm ( https://npmjs.org )" >&2
   exit 1
 }
 
-#check npm version
+#Check npm version
 NPM_VERSION=$(npm --version)
 NPM_MAIN_VERSION=$(echo $NPM_VERSION | cut -d "." -f 1)
 if [ $(echo $NPM_MAIN_VERSION) = "0" ]; then
@@ -43,7 +43,7 @@ if [ $(echo $NPM_MAIN_VERSION) = "0" ]; then
   exit 1
 fi
 
-#check node version
+#Check node version
 NODE_VERSION=$(node --version)
 NODE_V_MINOR=$(echo $NODE_VERSION | cut -d "." -f 1-2)
 NODE_V_MAIN=$(echo $NODE_VERSION | cut -d "." -f 1)
@@ -61,7 +61,7 @@ for arg in $*; do
   a=$arg
 done
 
-#Does a $settings exist? if no copy the template
+#Does a $settings exist? if not copy the template
 if [ ! -f $settings ]; then
   echo "Copy the settings template to $settings..."
   cp settings.json.template $settings || exit 1
@@ -95,7 +95,7 @@ if [ -f "src/static/js/jquery.js" ]; then
 fi
 
 if [ $DOWNLOAD_JQUERY = "true" ]; then
-  curl -lo src/static/js/jquery.js http://code.jquery.com/jquery-$NEEDED_VERSION.js || exit 1
+  curl -lo src/static/js/jquery.js https://code.jquery.com/jquery-$NEEDED_VERSION.js || exit 1
 fi
 
 #Remove all minified data to force node creating it new

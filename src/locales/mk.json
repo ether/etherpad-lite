@@ -57,6 +57,8 @@
 	"pad.modals.connected": "Поврзано.",
 	"pad.modals.reconnecting": "Ве преповрзувам со тетратката...",
 	"pad.modals.forcereconnect": "Наметни преповрзување",
+	"pad.modals.reconnecttimer": "Се преповрзувам за",
+	"pad.modals.cancel": "Откажи",
 	"pad.modals.userdup": "Отворено во друг прозорец",
 	"pad.modals.userdup.explanation": "Оваа тетратка е отворена на повеќе од еден прозорец (во прелистувач) на сметачот.",
 	"pad.modals.userdup.advice": "Преповрзете се за да го користите овој прозорец.",

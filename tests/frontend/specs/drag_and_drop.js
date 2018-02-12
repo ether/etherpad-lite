@@ -154,7 +154,15 @@ describe('drag and drop', function() {
     var $target = getLine(targetLineNumber);
     $target.sendkeys('{selectall}{rightarrow}{leftarrow}');
 
-    // insert content
-    innerDocument.execCommand('insertHTML', false, draggedHtml);
+    // Insert content.
+    // Based on http://stackoverflow.com/a/6691294, to be IE-compatible
+    var range = innerDocument.getSelection().getRangeAt(0);
+    var frag  = innerDocument.createDocumentFragment();
+    var el    = innerDocument.createElement('div');
+    el.innerHTML = draggedHtml;
+    while (el.firstChild) {
+      frag.appendChild(el.firstChild);
+    }
+    range.insertNode(frag);
   }
 });

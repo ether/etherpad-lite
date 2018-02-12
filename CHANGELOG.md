@@ -1,3 +1,49 @@
+# 1.6.3
+ * SECURITY: Update ejs
+ * SECURITY: xss vulnerability when reading window.location.href
+ * SECURITY: sanitize jsonp
+ * NEW: Catch SIGTERM for graceful shutdown
+ * NEW: Show actual applied text formatting for caret position
+ * NEW: Add settings to improve scrolling of viewport on line changes
+
+# 1.6.2
+ * NEW: Added pad shortcut disabling feature
+ * NEW: Create option to automatically reconnect after a few seconds
+ * Update: socket.io to 1.7.3
+ * Update: l10n lib
+ * Update: request to 2.83.0
+ * Update: Node for windows to 8.9.0
+ * Fix: minification of code
+
+# 1.6.1
+ * NEW: Hook aceRegisterNonScrollableEditEvents to register events that shouldn't scroll
+ * NEW: Added 'item' parameter to registerAceCommand Hook
+ * NEW: Added LibreJS support
+ * Fix: Crash on malformed export url
+ * Fix: Re-enable editor after user is reconnected to server
+ * Fix: minification
+ * Other: Added 'no-referrer' for all pads
+ * Other: Improved cookie security
+ * Other: Fixed compatibility with nodejs 7
+ * Other: Updates
+  - socket.io to 1.6.0
+  - express to 4.13.4
+  - express-session to 1.13.0
+  - clean-css to 3.4.12
+  - uglify-js to 2.6.2
+  - log4js to 0.6.35
+  - cheerio to 0.20.0
+  - ejs to 2.4.1
+  - graceful-fs to 4.1.3
+  - semver to 5.1.0
+  - unorm to 1.4.1
+  - jsonminify to 0.4.1
+  - measured to 1.1.0
+  - mocha to 2.4.5
+  - supertest to 1.2.0
+  - npm to 4.0.2
+  - Node.js for Windows to 6.9.2
+
 # 1.6.0
  * SECURITY: Fix a possible xss attack in iframe link
  * NEW: Add a aceSelectionChanged hook to allow plugins to react when the cursor location changes.

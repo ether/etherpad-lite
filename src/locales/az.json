@@ -5,7 +5,9 @@
 			"Khan27",
 			"Mushviq Abdulla",
 			"Wertuose",
-			"Mastizada"
+			"Mastizada",
+			"Archaeodontosaurus",
+			"Neriman2003"
 		]
 	},
 	"index.newPad": "Yeni lövhə",
@@ -60,6 +62,8 @@
 	"pad.modals.connected": "Bağlandı.",
 	"pad.modals.reconnecting": "Sizin lövhə yenidən qoşulur..",
 	"pad.modals.forcereconnect": "Məcbur təkrarən bağlan",
+	"pad.modals.reconnecttimer": "Yenidən qoşulur",
+	"pad.modals.cancel": "Ləğv et",
 	"pad.modals.userdup": "Başqa pəncərədə artıq açıqdır",
 	"pad.modals.userdup.explanation": "Bu lövhə, ola bilsin ki, bu kompüterdəki brauzerin bir neçə pəncərəsində açılmışdır.",
 	"pad.modals.userdup.advice": "Bu pəncərəni istifadə etmək üçün yenidən qoşul.",
@@ -97,6 +101,8 @@
 	"timeslider.version": "Versiya {{version}}",
 	"timeslider.saved": "Saxlanıldı {{day}} {{month}}, {{year}}",
 	"timeslider.playPause": "Geri oxutma / Lövhə Məzmunlarını Dayandır",
+	"timeslider.backRevision": "Sənədin bundan əvvəlki bir versiyasına qayıtmaq",
+	"timeslider.forwardRevision": "Sənədin bundan sonrakı bir versiyasına qayıtmaq",
 	"timeslider.dateformat": "{{day}} {{month}}, {{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Yanvar",
 	"timeslider.month.february": "Fevral",
@@ -112,6 +118,7 @@
 	"timeslider.month.december": "Dekabr",
 	"timeslider.unnamedauthors": "{{num}} adsız {[plural(num) one: müəllif, other: müəllif]}",
 	"pad.savedrevs.marked": "Bu versiya indi yaddaşa saxlanmış kimi nişanlandı",
+	"pad.savedrevs.timeslider": "Siz görə bilərsiniz saxlanılan versiyası miqyasında vaxt",
 	"pad.userlist.entername": "Adınızı daxil edin",
 	"pad.userlist.unnamed": "adsız",
 	"pad.userlist.guest": "Qonaq",

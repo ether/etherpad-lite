@@ -242,9 +242,9 @@ var padeditbar = (function()
       });
     },
     registerAceCommand: function (cmd, callback) {
-      this.registerCommand(cmd, function (cmd, ace) {
+      this.registerCommand(cmd, function (cmd, ace, item) {
         ace.callWithAce(function (ace) {
-          callback(cmd, ace);
+          callback(cmd, ace, item);
         }, cmd, true);
       });
     },
@@ -259,18 +259,25 @@ var padeditbar = (function()
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
-        var returned = false
+        var returned = false;
         for(var i=0;i<self.dropdowns.length;i++)
         {
+          var thisModuleName = self.dropdowns[i];
+
           //skip the userlist
-          if(self.dropdowns[i] == "users")
+          if(thisModuleName == "users")
             continue;
 
-          var module = $("#" + self.dropdowns[i]);
+          var module = $("#" + thisModuleName);
+
+          //skip any "force reconnect" message
+          var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
+          if(isAForceReconnectMessage)
+            continue;
 
           if(module.css('display') != "none")
           {
-            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
+            $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
             module.slideUp("fast", cb);
             returned = true;
           }
@@ -283,16 +290,17 @@ var padeditbar = (function()
         // respectively add highlighting to the corresponding button
         for(var i=0;i<self.dropdowns.length;i++)
         {
-          var module = $("#" + self.dropdowns[i]);
+          var thisModuleName = self.dropdowns[i];
+          var module = $("#" + thisModuleName);
 
           if(module.css('display') != "none")
           {
-            $("li[data-key=" + self.dropdowns[i] + "] > a").removeClass("selected");
+            $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
             module.slideUp("fast");
           }
-          else if(self.dropdowns[i]==moduleName)
+          else if(thisModuleName==moduleName)
           {
-            $("li[data-key=" + self.dropdowns[i] + "] > a").addClass("selected");
+            $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
             module.slideDown("fast", cb);
           }
         }
