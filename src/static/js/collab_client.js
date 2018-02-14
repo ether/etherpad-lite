@@ -342,6 +342,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
     else if (msg.type == 'CLIENT_RECONNECT')
     {
+      // When client has reconnected but there are no pending changes from other clients
       if (msg.noChanges)
       {
         socketIOError = false;
@@ -354,19 +355,26 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       var author = (msg.author || '');
       var apool = msg.apool;
 
-
       if (rev + 1 == currRev)
       {
         if (author == pad.getUserId())
         {
           editor.applyPreparedChangesetToBase();
           setStateIdle();
+          callCatchingErrors("onInternalAction", function()
+          {
+            callbacks.onInternalAction("commitAcceptedByServer");
+          });
+          callCatchingErrors("onConnectionTrouble", function()
+          {
+            callbacks.onConnectionTrouble("OK");
+          });
+          handleUserChanges();
         }
         else
         {
           editor.applyChangesToBase(changeset, author, apool);
         }
-
       }
       if (rev + 1 < currRev)
       {
@@ -374,8 +382,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       }
       if (currRev == newRev)
       {
-        socketIOError = false;
         rev = newRev;
+        socketIOError = false;
       }
     }
     else if (msg.type == "NO_COMMIT_PENDING")

@@ -1177,33 +1177,51 @@ function handleClientReady(client, message)
             {
               changesetsNeeded.push(r);
             }
-            //get all changesets
-            async.forEach(changesetsNeeded, function(revNum)
+            callback();
+          },
+          //get all changesets
+          function(callback)
+          {
+            async.eachSeries(changesetsNeeded, function(revNum, callback)
             {
               pad.getRevisionChangeset(revNum, function(err, value)
               {
                 if(ERR(err)) return;
                 changesets[revNum] = value;
+                callback();
               });
+            }, callback);
+          },
+          function(callback)
+          {
+            async.eachSeries(changesetsNeeded, function(revNum, callback)
+            {
               pad.getRevisionAuthor(revNum, function(err, value)
               {
                 if(ERR(err)) return;
                 changesetsAuthor[revNum] = value;
+                callback();
               });
+            }, callback);
+          },
+          function(callback)
+          {
+            async.eachSeries(changesetsNeeded, function(revNum, callback)
+            {
               pad.getRevisionDate(revNum, function(err, value)
               {
                 if(ERR(err)) return;
                 changesetsTimestamp[revNum] = value;
+                callback();
               });
-            });
-            callback(null);
+            }, callback);
           }
         ],
         //return err and changeset
         function(err)
         {
           if(ERR(err, callback)) return;
-          async.eachSeries(changesetsNeeded, function(r)
+          async.eachSeries(changesetsNeeded, function(r, callback)
           {
             var forWire = Changeset.prepareForWire(changesets[r], pad.pool);
             var wireMsg = {"type":"COLLABROOM",
@@ -1216,7 +1234,8 @@ function handleClientReady(client, message)
                                    currentTime: changesetsTimestamp[r]
                            }};
             client.json.send(wireMsg);
-           });
+            callback();
+          });
           if (startNum == endNum)
           {
             var Msg = {"type":"COLLABROOM",
