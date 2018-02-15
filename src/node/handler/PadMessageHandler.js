@@ -1226,8 +1226,8 @@ function handleClientReady(client, message)
             var forWire = Changeset.prepareForWire(changesets[r], pad.pool);
             var wireMsg = {"type":"COLLABROOM",
                            "data":{type:"CLIENT_RECONNECT",
-                                   currRev: r,
-                                   newRev:pad.getHeadRevisionNumber(),
+                                   headRev:pad.getHeadRevisionNumber(),
+                                   newRev:r,
                                    changeset:forWire.translated,
                                    apool: forWire.pool,
                                    author: changesetsAuthor[r],
@@ -1243,8 +1243,6 @@ function handleClientReady(client, message)
                                noChanges: true,
                                newRev:pad.getHeadRevisionNumber()
                        }};
-
-            console.log("About to send client reconnect event");
             client.json.send(Msg);
           }
         });

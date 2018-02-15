@@ -349,38 +349,53 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         return;
       }
 
-      var currRev = msg.currRev;
+      var headRev = msg.headRev;
       var newRev = msg.newRev;
       var changeset = msg.changeset;
       var author = (msg.author || '');
       var apool = msg.apool;
 
-      if (rev + 1 == currRev)
+      if (msgQueue.length > 0)
       {
-        if (author == pad.getUserId())
+        if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
         {
-          editor.applyPreparedChangesetToBase();
-          setStateIdle();
-          callCatchingErrors("onInternalAction", function()
-          {
-            callbacks.onInternalAction("commitAcceptedByServer");
-          });
-          callCatchingErrors("onConnectionTrouble", function()
-          {
-            callbacks.onConnectionTrouble("OK");
-          });
-          handleUserChanges();
+          window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+          // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
+          return;
         }
-        else
-        {
-          editor.applyChangesToBase(changeset, author, apool);
-        }
+        msg.type = "NEW_CHANGES";
+        msgQueue.push(msg);
+        return;
       }
-      if (rev + 1 < currRev)
+
+      if (newRev != (rev + 1))
+      {
+        window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
+        // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
+        return;
+      }
+
+      rev = newRev;
+      if (author == pad.getUserId())
+      {
+        editor.applyPreparedChangesetToBase();
+        setStateIdle();
+        callCatchingErrors("onInternalAction", function()
+        {
+          callbacks.onInternalAction("commitAcceptedByServer");
+        });
+        callCatchingErrors("onConnectionTrouble", function()
+        {
+          callbacks.onConnectionTrouble("OK");
+        });
+        handleUserChanges();
+      }
+      else
       {
         editor.applyChangesToBase(changeset, author, apool);
       }
-      if (currRev == newRev)
+
+      if (newRev == headRev)
       {
         rev = newRev;
         socketIOError = false;
