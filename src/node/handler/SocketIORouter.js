@@ -35,6 +35,7 @@ var settings = require('../utils/Settings');
 var components = {};
 
 var socket;
+var socket_emitter;
  
 /**
  * adds a component
@@ -45,15 +46,16 @@ exports.addComponent = function(moduleName, module)
   components[moduleName] = module;
   
   //give the module the socket
-  module.setSocketIO(socket);
+  module.setSocketIO(socket, socket_emitter);
 }
 
 /**
  * sets the socket.io and adds event functions for routing
  */
-exports.setSocketIO = function(_socket) {
+exports.setSocketIO = function(_socket, _socket_emitter) {
   //save this socket internaly
   socket = _socket;
+  socket_emitter = _socket_emitter;
   
   socket.sockets.on('connection', function(client)
   {

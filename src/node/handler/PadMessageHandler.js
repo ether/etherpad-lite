@@ -66,14 +66,16 @@ var padChannels = new channels.channels(handleUserChanges);
  * Saves the Socket class we need to send and recieve data from the client
  */
 var socketio;
+var socketioemitter;
 
 /**
  * This Method is called by server.js to tell the message handler on which socket it should send
  * @param socket_io The Socket
  */
-exports.setSocketIO = function(socket_io)
+exports.setSocketIO = function(socket_io, socket_io_emitter)
 {
   socketio=socket_io;
+  socketioemitter=socket_io_emitter;
 }
 
 /**

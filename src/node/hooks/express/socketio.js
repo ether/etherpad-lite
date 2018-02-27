@@ -8,6 +8,9 @@ var padMessageHandler = require("../../handler/PadMessageHandler");
 
 var cookieParser = require('cookie-parser');
 var sessionModule = require('express-session');
+
+var socketio_redis = require('socket.io-redis');
+var socketio_emitter = require('socket.io-emitter');
  
 exports.expressCreateServer = function (hook_name, args, cb) {
   //init socket.io and redirect all requests to the MessageHandler
@@ -17,6 +20,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   var io = socketio({
     transports: settings.socketTransportProtocols
   }).listen(args.server);
+
+  /* Load socket.io-redis and socket.io-emitter for cross instance communication
+   */
+  io.adapter(socketio_redis(settings.redis));
+  var socket_emitter = socketio_emitter(settings.redis);
 
   /* Require an express session cookie to be present, and load the
    * session. See http://www.danielbaulig.de/socket-ioexpress for more
@@ -59,7 +67,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // if(settings.minify) io.enable('browser client minification');
   
   //Initalize the Socket.IO Router
-  socketIORouter.setSocketIO(io);
+  socketIORouter.setSocketIO(io, socket_emitter);
   socketIORouter.addComponent("pad", padMessageHandler);
 
   hooks.callAll("socketio", {"app": args.app, "io": io, "server": args.server});

@@ -18,6 +18,12 @@
   "ip": "0.0.0.0",
   "port" : 9001,
 
+  //Redis Host and port which etherpad should connect to
+  "redis" : {
+              "host"  : "localhost",
+              "port"  : 6379
+            },
+
   // Option to hide/show the settings.json in admin page, default option is set to true
   "showSettingsInAdminPage" : true,
 
