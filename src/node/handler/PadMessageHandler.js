@@ -76,6 +76,8 @@ exports.setSocketIO = function(socket_io, socket_io_emitter)
 {
   socketio=socket_io;
   socketioemitter=socket_io_emitter;
+  //Initalize the below function so as to receive sessioninfo updates from other instances
+  sessioninfos_update_from_other_instances();
 }
 
 /**
@@ -1697,6 +1699,16 @@ function _getRoomClients(padID) {
   }
 
   return roomClients;
+}
+
+/**
+ * Updates sessioninfo of client which are not present on this instance. This function receives
+ * sessioninfo updates from all etherpad instances whenever there is an update in sessioninfo
+ */
+function sessioninfos_update_from_other_instances() {
+  socketio.sockets.adapter.customHook = function(data, callback){
+    sessioninfos[data.sid] = data.sessioninfo;
+  };
 }
 
 /**
