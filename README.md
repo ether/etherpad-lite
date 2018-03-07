@@ -56,7 +56,7 @@ If cloning to a subdirectory within another project, you may need to do the foll
 
 ## GNU/Linux and other UNIX-like systems
 You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
-- *For Debian/Ubuntu*: `apt-get install gzip git curl python libssl-dev pkg-config build-essential`  
+- *For Debian/Ubuntu*: `apt install gzip git curl python libssl-dev pkg-config build-essential`  
 - *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
 - *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
 
@@ -87,7 +87,7 @@ Etherpad is very customizable through plugins. Instructions for installing theme
 ## Helpful resources
 The [wiki](https://github.com/ether/etherpad-lite/wiki) is your one-stop resource for Tutorials and How-to's, really check it out! Also, feel free to improve these wiki pages.
 
-Documentation can be found in `docs/`.
+Documentation can be found in `doc/`.
 
 # Development
 
