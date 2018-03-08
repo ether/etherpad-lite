@@ -34,9 +34,18 @@ var ERR = require("async-stacktrace")
   , log4js = require("log4js")
   , hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 
-//load abiword only if its enabled
-if(settings.abiword != null)
-  var abiword = require("../utils/Abiword");
+var convertor = null;
+var exportExtension = "htm";
+
+//load abiword only if its enabled and if soffice is disabled
+if(settings.abiword != null && settings.soffice === null)
+  convertor = require("../utils/Abiword");
+
+//load soffice only if its enabled
+if(settings.soffice != null) {
+  convertor = require("../utils/LibreOffice");
+  exportExtension = "html";
+}
 
 //for node 0.6 compatibily, os.tmpDir() only works from 0.8
 var tmpDirectory = process.env.TEMP || process.env.TMPDIR || process.env.TMP || '/tmp';
@@ -49,7 +58,7 @@ exports.doImport = function(req, res, padId)
   var apiLogger = log4js.getLogger("ImportHandler");
 
   //pipe to a file
-  //convert file to html via abiword
+  //convert file to html via abiword or soffice
   //set html in the pad
   
   var srcFile, destFile
@@ -57,12 +66,12 @@ exports.doImport = function(req, res, padId)
     , text
     , importHandledByPlugin
     , directDatabaseAccess
-    , useAbiword;
+    , useConvertor;
 
   var randNum = Math.floor(Math.random()*0xFFFFFFFF);
   
-  // setting flag for whether to use abiword or not
-  useAbiword = (abiword != null);
+  // setting flag for whether to use convertor or not
+  useConvertor = (convertor != null);
 
   async.series([
     //save the uploaded file to /tmp
@@ -110,7 +119,7 @@ exports.doImport = function(req, res, padId)
       }
     },
     function(callback){
-      destFile = path.join(tmpDirectory, "etherpad_import_" + randNum + ".htm");
+      destFile = path.join(tmpDirectory, "etherpad_import_" + randNum + "." + exportExtension);
 
       // Logic for allowing external Import Plugins
       hooks.aCallAll("import", {srcFile: srcFile, destFile: destFile}, function(err, result){
@@ -151,10 +160,10 @@ exports.doImport = function(req, res, padId)
         var fileEnding = path.extname(srcFile).toLowerCase();
         var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
         var fileIsTXT = (fileEnding === ".txt");
-        if (fileIsTXT) useAbiword = false; // Don't use abiword for text files
+        if (fileIsTXT) useConvertor = false; // Don't use convertor for text files
         // See https://github.com/ether/etherpad-lite/issues/2572
-        if (useAbiword && !fileIsHTML) {
-          abiword.convertFile(srcFile, destFile, "htm", function(err) {
+        if (useConvertor && !fileIsHTML) {
+          convertor.convertFile(srcFile, destFile, exportExtension, function(err) {
             //catch convert errors
             if(err) {
               console.warn("Converting Error:", err);
@@ -164,7 +173,7 @@ exports.doImport = function(req, res, padId)
             }
           });
         } else {
-          // if no abiword only rename
+          // if no convertor only rename
           fs.rename(srcFile, destFile, callback);
         }
       }else{
@@ -173,7 +182,7 @@ exports.doImport = function(req, res, padId)
     },
     
     function(callback) {
-      if (!useAbiword && !directDatabaseAccess){
+      if (!useConvertor && !directDatabaseAccess){
         // Read the file with no encoding for raw buffer access.
         fs.readFile(destFile, function(err, buf) {
           if (err) throw err;
@@ -232,7 +241,7 @@ exports.doImport = function(req, res, padId)
     function(callback) {
       if(!directDatabaseAccess){
         var fileEnding = path.extname(srcFile).toLowerCase();
-        if (importHandledByPlugin || useAbiword || fileEnding == ".htm" || fileEnding == ".html") {
+        if (importHandledByPlugin || useConvertor || fileEnding == ".htm" || fileEnding == ".html") {
           importHtml.setPadHTML(pad, text, function(e){
             if(e) apiLogger.warn("Error importing, possibly caused by malformed HTML");
           });
