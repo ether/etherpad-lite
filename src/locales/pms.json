@@ -36,5 +36,13 @@
 	"pad.settings.chatandusers": "Smon-e le ciaciarade e j'utent",
 	"pad.settings.colorcheck": "Color d'identificassion",
 	"pad.settings.linenocheck": "Nùmer ëd linia",
-	"pad.settings.rtlcheck": "Ël contnù, dev-lo esse lesù da drita a snistra?"
+	"pad.settings.rtlcheck": "Ël contnù, dev-lo esse lesù da drita a snistra?",
+	"pad.settings.fontType": "Sòrt ëd caràter:",
+	"pad.settings.globalView": "Vista d'ansem",
+	"pad.settings.language": "Lenga:",
+	"pad.importExport.import_export": "Amporté/Esporté",
+	"pad.importExport.import": "Carié n'archivi o document ëd test",
+	"pad.importExport.importSuccessful": "Bele fàit!",
+	"pad.importExport.export": "Esporté ël feuj atual coma:",
+	"pad.importExport.exportetherpad": "Etherpad"
 }
