@@ -37,7 +37,7 @@ exports.basicAuth = function (req, res, next) {
       var username = userpass.shift();
       var password = userpass.join(':');
 
-      if (settings.users[username] != undefined && settings.users[username].password == password) {
+      if (settings.users[username] != undefined && settings.users[username].password === password) {
         settings.users[username].username = username;
         req.session.user = settings.users[username];
         return cb(true);
