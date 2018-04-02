@@ -4,7 +4,8 @@
 			"Laaknor",
 			"Cocu",
 			"Chameleon222",
-			"SuperPotato"
+			"SuperPotato",
+			"Jon Harald Søby"
 		]
 	},
 	"index.newPad": "Ny Pad",
@@ -55,10 +56,12 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Du kan bare importere fra ren tekst eller HTML-formater. For mer avanserte importfunksjoner, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">installer abiword</a>.",
+	"pad.importExport.abiword.innerHTML": "Du kan bare importere fra ren tekst eller HTML-formater. For mer avanserte importfunksjoner, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installer AbiWord</a>.",
 	"pad.modals.connected": "Tilkoblet.",
 	"pad.modals.reconnecting": "Kobler til din blokk på nytt...",
 	"pad.modals.forcereconnect": "Tving gjenoppkobling",
+	"pad.modals.reconnecttimer": "Prøver å koble til igjen",
+	"pad.modals.cancel": "Avbryt",
 	"pad.modals.userdup": "Åpnet i nytt vindu",
 	"pad.modals.userdup.explanation": "Denne blokken ser ut til å være åpnet i mer enn et nettleservindu på denne maskinen.",
 	"pad.modals.userdup.advice": "Koble til igjen for å bruke dette vinduet i stedenfor.",

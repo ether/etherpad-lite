@@ -49,5 +49,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     //sigint is so far not working on windows
     //https://github.com/joyent/node/issues/1553
     process.on('SIGINT', exports.gracefulShutdown);
+    // when running as PID1 (e.g. in docker container)
+    // allow graceful shutdown on SIGTERM c.f. #3265
+    process.on('SIGTERM', exports.gracefulShutdown);
   }
 }

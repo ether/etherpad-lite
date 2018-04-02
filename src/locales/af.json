@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Naudefj"
+			"Naudefj",
+			"Fwolff"
 		]
 	},
 	"index.newPad": "Nuwe pad",
@@ -9,13 +10,15 @@
 	"pad.toolbar.bold.title": "Vet (Ctrl-B)",
 	"pad.toolbar.italic.title": "Kursief (Ctrl-I)",
 	"pad.toolbar.underline.title": "Onderstreep (Ctrl-U)",
-	"pad.toolbar.strikethrough.title": "Deurgehaal",
-	"pad.toolbar.ol.title": "Geordende lys",
-	"pad.toolbar.ul.title": "Ongeordende lys",
-	"pad.toolbar.indent.title": "Indenteer",
-	"pad.toolbar.unindent.title": "Verklein indentering",
+	"pad.toolbar.strikethrough.title": "Deurgehaal (Ctrl+5)",
+	"pad.toolbar.ol.title": "Geordende lys (Ctrl+Shift+N)",
+	"pad.toolbar.ul.title": "Ongeordende lys (Ctrl+Shift+L)",
+	"pad.toolbar.indent.title": "Indenteer (TAB)",
+	"pad.toolbar.unindent.title": "Verklein indentering (Shift+TAB)",
 	"pad.toolbar.undo.title": "Ongedaan maak (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Herdoen (Ctrl-Y)",
+	"pad.toolbar.clearAuthorship.title": "Verwyder skrywers se kleure (Ctrl+Shift+C)",
+	"pad.toolbar.import_export.title": "Voer in/uit van/na verskillende lêerformate",
 	"pad.toolbar.settings.title": "Voorkeure",
 	"pad.colorpicker.save": "Stoor",
 	"pad.colorpicker.cancel": "Kanselleer",
@@ -23,8 +26,16 @@
 	"pad.settings.myView": "My oorsig",
 	"pad.settings.fontType.normal": "Normaal",
 	"pad.settings.fontType.monospaced": "Monospasie",
+	"pad.settings.language": "Taal:",
+	"pad.importExport.import_export": "Voer in/uit",
+	"pad.importExport.import": "Laai enige tekslêer of dokument op",
+	"pad.importExport.importSuccessful": "Sukses!",
 	"pad.importExport.exporthtml": "HTML",
+	"pad.importExport.exportplain": "Skoon teks",
+	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
+	"pad.importExport.exportopen": "ODF (Open Document-formaat)",
+	"pad.modals.cancel": "Kanselleer",
 	"pad.modals.userdup.advice": "Maak weer 'n verbinding as u die venster wil gebruik.",
 	"pad.modals.unauth": "Nie toegestaan",
 	"pad.modals.deleted": "Geskrap.",

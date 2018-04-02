@@ -8,7 +8,9 @@
 			"Test Create account",
 			"محمد أحمد عبد الفتاح",
 			"Haytham morsy",
-			"ديفيد"
+			"ديفيد",
+			"Mido",
+			"Shbib Al-Subaie"
 		]
 	},
 	"index.newPad": "باد جديد",
@@ -63,6 +65,8 @@
 	"pad.modals.connected": "متصل.",
 	"pad.modals.reconnecting": "إعادة الاتصال ببادك",
 	"pad.modals.forcereconnect": "فرض إعادة الاتصال",
+	"pad.modals.reconnecttimer": "حاول إعادة الاتصال",
+	"pad.modals.cancel": "إلغاء",
 	"pad.modals.userdup": "مفتوح في نافذة أخرى",
 	"pad.modals.userdup.explanation": "يبدو أن هذا الباد تم فتحه في أكثر من نافذة متصفح في هذا الحاسوب.",
 	"pad.modals.userdup.advice": "إعادة الاتصال لاستعمال هذه النافذة بدلاً  من الأخرى.",

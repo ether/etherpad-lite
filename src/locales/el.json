@@ -60,6 +60,8 @@
 	"pad.modals.connected": "Συνδεμένοι.",
 	"pad.modals.reconnecting": "Επανασύνδεση στο pad σας...",
 	"pad.modals.forcereconnect": "Επιβολή επανασύνδεσης",
+	"pad.modals.reconnecttimer": "Επαναπροσπάθεια σε",
+	"pad.modals.cancel": "Ακύρωση",
 	"pad.modals.userdup": "Ανοιγμένο σε άλλο παράθυρο",
 	"pad.modals.userdup.explanation": "Αυτό το pad φαίνεται να είναι ανοιχτό σε περισσότερα από ένα παράθυρο του προγράμματος περιήγησης σε αυτόν τον υπολογιστή.",
 	"pad.modals.userdup.advice": "Επανασυνδεθείτε για να χρησιμοποιήσετε αυτό το παράθυρο.",

@@ -39,7 +39,7 @@ async.series([
     db = require('../src/node/db/DB');
     callback();
   },
-  //intallize the database
+  //initialize the database
   function (callback)
   {
     db.init(callback);
@@ -101,6 +101,6 @@ async.series([
 //get the pad object
 //get all revisions of this pad
 //get all authors related to this pad
-//get the readonly link releated to this pad
-//get the chat entrys releated to this pad
+//get the readonly link related to this pad
+//get the chat entries related to this pad
 //remove all keys from database and insert them again
