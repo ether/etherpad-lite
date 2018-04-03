@@ -3,8 +3,9 @@ html,
 body,
 p {
   margin: 0;
-  padding: 0;
+  padding: 0px;
 }
+
 .clear {
   clear: both
 }
