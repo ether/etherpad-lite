@@ -207,14 +207,13 @@ function handshake()
   });
 
   socket.on('reconnect', function () {
-    socket.realConnected = true;
     pad.collabClient.setChannelState("CONNECTED");
     pad.sendClientReady(receivedClientVars);
   });
 
   socket.on('reconnecting', function() {
-    socket.realConnected = false;
     pad.collabClient.setStateIdle();
+    pad.collabClient.setIsPendingRevision(true);
     pad.collabClient.setChannelState("RECONNECTING");
   });
 
@@ -223,9 +222,8 @@ function handshake()
   });
 
   socket.on('error', function(error) {
-    socket.realConnected = false;
     pad.collabClient.setStateIdle();
-    pad.collabClient.setSocketIOError(true);
+    pad.collabClient.setIsPendingRevision(true);
   });
 
   var initalized = false;
