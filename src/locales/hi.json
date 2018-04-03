@@ -1,0 +1,39 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sfic"
+		]
+	},
+	"pad.toolbar.bold.title": "गहरा (Ctrl+B)",
+	"pad.toolbar.italic.title": "तिरछा (Ctrl+I)",
+	"pad.toolbar.strikethrough.title": "काटें (Ctrl+5)",
+	"pad.colorpicker.save": "सहेजें",
+	"pad.colorpicker.cancel": "रद्द करें",
+	"pad.loading": "लोड हो रहा है...",
+	"pad.settings.language": "भाषा:",
+	"pad.importExport.import_export": "आयात/निर्यात",
+	"pad.importExport.exportpdf": "पीडीएफ़",
+	"pad.modals.cancel": "रद्द करें",
+	"timeslider.toolbar.authors": "लेखक:",
+	"timeslider.toolbar.exportlink.title": "निर्यात",
+	"timeslider.version": "संस्करण {{version}}",
+	"timeslider.saved": "{{day}} {{month}} {{year}} सहेजा गया",
+	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
+	"timeslider.month.january": "जनवरी",
+	"timeslider.month.february": "फ़रवरी",
+	"timeslider.month.march": "मार्च",
+	"timeslider.month.april": "अप्रैल",
+	"timeslider.month.may": "मई",
+	"timeslider.month.june": "जून",
+	"timeslider.month.july": "जुलाई",
+	"timeslider.month.august": "अगस्त",
+	"timeslider.month.september": "सितम्बर",
+	"timeslider.month.october": "अक्टूबर",
+	"timeslider.month.november": "नवम्बर",
+	"timeslider.month.december": "दिसम्बर",
+	"pad.userlist.guest": "अतिथि",
+	"pad.impexp.importbutton": "अभी आयात करें",
+	"pad.impexp.importing": "आयात कर रहा...",
+	"pad.impexp.importfailed": "आयात विफल हुआ",
+	"pad.impexp.copypaste": "कृपया कॉपी पेस्ट करें"
+}

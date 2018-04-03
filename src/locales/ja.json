@@ -2,7 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Shirayuki",
-			"Torinky"
+			"Torinky",
+			"Omotecho",
+			"Aefgh39622"
 		]
 	},
 	"index.newPad": "新規作成",
@@ -53,10 +55,12 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "プレーンテキストまたは HTML ファイルからのみインポートできます。より高度なインポート機能を使用するには、<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">abiword をインストール</a>してください。",
+	"pad.importExport.abiword.innerHTML": "プレーンテキストまたは HTML ファイルからのみインポートできます。より高度なインポート機能を使用するには、<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">AbiWord をインストール</a>してください。",
 	"pad.modals.connected": "接続されました。",
 	"pad.modals.reconnecting": "パッドに再接続中...",
 	"pad.modals.forcereconnect": "強制的に再接続",
+	"pad.modals.reconnecttimer": "再接続を試行中",
+	"pad.modals.cancel": "中止",
 	"pad.modals.userdup": "別のウィンドウで開かれています",
 	"pad.modals.userdup.explanation": "このコンピューターの複数のブラウザーウィンドウで、このパッドを開いているようです。",
 	"pad.modals.userdup.advice": "代わりにこのウィンドウを再接続します。",

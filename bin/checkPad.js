@@ -10,7 +10,7 @@ if(process.argv.length != 3)
 //get the padID
 var padId = process.argv[2];
 
-//initalize the variables
+//initialize the variables
 var db, settings, padManager;
 var npm = require("../src/node_modules/npm");
 var async = require("../src/node_modules/async");
@@ -29,7 +29,7 @@ async.series([
     settings = require('../src/node/utils/Settings');
     db = require('../src/node/db/DB');
 
-    //intallize the database
+    //initialize the database
     db.init(callback);
   },
   //get the pad 
@@ -54,7 +54,7 @@ async.series([
   },
   function (callback)
   {    
-    //create an array with key kevisions
+    //create an array with key revisions
     //key revisions always save the full pad atext
     var head = pad.getHeadRevisionNumber();
     var keyRevisions = [];
@@ -99,7 +99,7 @@ async.series([
           process.exit(1);
         }
         
-        //check if there is a atext in the keyRevisions
+        //check if there is an atext in the keyRevisions
         if(revisions[keyRev] === undefined || revisions[keyRev].meta === undefined || revisions[keyRev].meta.atext === undefined)
         {
           console.error("No atext in key revision " + keyRev);

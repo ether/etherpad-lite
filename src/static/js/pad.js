@@ -342,6 +342,12 @@ function handshake()
         console.warn(obj);
         padconnectionstatus.disconnected(obj.disconnect);
         socket.disconnect();
+
+        // block user from making any change to the pad
+        padeditor.disable();
+        padeditbar.disable();
+        padimpexp.disable();
+
         return;
       }
       else
@@ -460,7 +466,7 @@ var pad = {
       // This will check if the prefs-cookie is set.
       // Otherwise it shows up a message to the user.
       padcookie.init();
-      if (!readCookie("prefs"))
+      if (!padcookie.isCookiesEnabled())
       {
         $('#loading').hide();
         $('#noCookie').show();
@@ -555,10 +561,12 @@ var pad = {
         pad.changeViewOption('rtlIsTrue', true);
       }
 
-      var fonts = ['useMonospaceFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont', 'useGeorgiaFont', 'useImpactFont',
-        'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useTahomaFont', 'useTimesNewRomanFont',
-        'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont', 'useWingDingsFont', 'useSansSerifFont',
-        'useSerifFont'];
+
+      var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont',
+        'useGeorgiaFont', 'useImpactFont', 'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont',
+        'useTahomaFont', 'useTimesNewRomanFont', 'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont',
+        'useWingDingsFont', 'useSansSerifFont', 'useSerifFont'];
+
 
       $.each(fonts, function(i, font){
         if(padcookie.getPref(font) == true){

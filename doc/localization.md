@@ -3,9 +3,9 @@ Etherpad provides a multi-language user interface, that's apart from your users'
 
 
 ## Translating
-We rely on http://translatewiki.net to handle the translation process for us, so if you'd like to help...
+We rely on https://translatewiki.net to handle the translation process for us, so if you'd like to help...
 
-1. sign up at http://translatewiki.net
+1. Sign up at https://translatewiki.net
 2. Visit our [TWN project page](https://translatewiki.net/wiki/Translating:Etherpad_lite)
 3. Click on `Translate Etherpad lite interface`
 4. Choose a target language, you'd like to translate our interface to, and hit `Fetch`
@@ -62,7 +62,7 @@ alert(window._('pad.chat'));
 ```
 ### 2. Create translate files in the locales directory of your plugin
 
-* The name of the file must be the language code of the language it contains translations for (see [supported lang codes](http://joker-x.github.com/languages4translatewiki/test/); e.g. en ? English, es ? Spanish...)
+* The name of the file must be the language code of the language it contains translations for (see [supported lang codes](https://joker-x.github.com/languages4translatewiki/test/); e.g. en ? English, es ? Spanish...)
 * The extension of the file must be `.json`
 * The default language is English, so your plugin should always provide `en.json`
 * In order to avoid naming conflicts, your message keys should start with the name of your plugin followed by a dot (see below)

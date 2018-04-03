@@ -59,6 +59,8 @@
 	"pad.modals.connected": "Verbonden.",
 	"pad.modals.reconnecting": "Opnieuw verbinding maken met uw pad...",
 	"pad.modals.forcereconnect": "Opnieuw verbinden",
+	"pad.modals.reconnecttimer": "Proberen te verbinden over",
+	"pad.modals.cancel": "Annuleren",
 	"pad.modals.userdup": "In een ander venster geopend",
 	"pad.modals.userdup.explanation": "Dit pad is meer dan één keer geopend in een browservenster op deze computer.",
 	"pad.modals.userdup.advice": "Maak opnieuw verbinding als u dit venster wilt gebruiken.",

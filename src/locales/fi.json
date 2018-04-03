@@ -13,7 +13,8 @@
 			"Macofe",
 			"MrTapsa",
 			"Silvonen",
-			"Espeox"
+			"Espeox",
+			"Pyscowicz"
 		]
 	},
 	"index.newPad": "Uusi muistio",
@@ -64,10 +65,12 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Tuonti on tuettu vain HTML- ja raakatekstitiedostoista. Lisätietoja tuonnin lisäasetuksista on sivulla <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
+	"pad.importExport.abiword.innerHTML": "Tuonti on tuettu vain HTML- ja raakatekstitiedostoista. Monipuoliset tuontiominaisuudet ovat käytettävissä <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">asentamalla AbiWord</a>.",
 	"pad.modals.connected": "Yhdistetty.",
 	"pad.modals.reconnecting": "Muodostetaan yhteyttä muistioon uudelleen...",
 	"pad.modals.forcereconnect": "Pakota yhdistämään uudelleen",
+	"pad.modals.reconnecttimer": "Yritetään yhdistää uudelleen",
+	"pad.modals.cancel": "Peruuta",
 	"pad.modals.userdup": "Avattu toisessa ikkunassa",
 	"pad.modals.userdup.explanation": "Tämä muistio vaikuttaa olevan avoinna useammassa eri selainikkunassa tällä koneella.",
 	"pad.modals.userdup.advice": "Yhdistä uudelleen, jos haluat käyttää tätä ikkunaa.",

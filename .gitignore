@@ -18,3 +18,4 @@ npm-debug.log
 *.key
 bin/etherpad-1.deb
 credentials.json
+out/

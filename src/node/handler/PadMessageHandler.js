@@ -1189,6 +1189,7 @@ function handleClientReady(client, message)
           "accountPrivs": {
               "maxRevisions": 100
           },
+          "automaticReconnectionTimeout": settings.automaticReconnectionTimeout,
           "initialRevisionList": [],
           "initialOptions": {
               "guestPolicy": "deny"
@@ -1210,6 +1211,7 @@ function handleClientReady(client, message)
           "padId": message.padId,
           "padOptions": settings.padOptions,
           "useLoginForName": settings.useLoginForName,
+          "padShortcutEnabled": settings.padShortcutEnabled,
           "initialTitle": "Pad: " + message.padId,
           "opts": {},
           // tell the client the number of the latest chat-message, which will be
@@ -1228,6 +1230,15 @@ function handleClientReady(client, message)
             "parts": plugins.parts,
           },
           "indentationOnNewLine": settings.indentationOnNewLine,
+          "scrollWhenFocusLineIsOutOfViewport": {
+            "percentage" : {
+              "editionAboveViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
+              "editionBelowViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
+            },
+            "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
+            "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
+            "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
+          },
           "initialChangesets": [] // FIXME: REMOVE THIS SHIT
         }
 

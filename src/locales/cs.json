@@ -7,7 +7,9 @@
 			"Leanes",
 			"Quinn",
 			"Aktron",
-			"Mormegil"
+			"Mormegil",
+			"Dvorapa",
+			"Clon"
 		]
 	},
 	"index.newPad": "Založ nový Pad",
@@ -58,10 +60,12 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Importovat můžeš pouze prostý text nebo HTML formátování. Pro pokročilejší funkce importu, prosím, nainstaluj „<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">abiword</a>“.",
+	"pad.importExport.abiword.innerHTML": "Importovat můžeš pouze prostý text nebo HTML formátování. Pro pokročilejší funkce importu, prosím, nainstaluj „<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">AbiWord</a>“.",
 	"pad.modals.connected": "Připojeno.",
 	"pad.modals.reconnecting": "Znovupřipojování k Padu…",
 	"pad.modals.forcereconnect": "Vynutit znovupřipojení",
+	"pad.modals.reconnecttimer": "Zkouším to znovu připojit",
+	"pad.modals.cancel": "Zrušit",
 	"pad.modals.userdup": "Otevřeno v jiném okně",
 	"pad.modals.userdup.explanation": "Zdá se, že tento Pad je na tomto počítači otevřen ve více než jednom okně.",
 	"pad.modals.userdup.advice": "Pro použití tohoto okna je třeba se znovu připojit.",

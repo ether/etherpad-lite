@@ -57,6 +57,8 @@
 	"pad.modals.connected": "Tengt.",
 	"pad.modals.reconnecting": "Endurtengist skrifblokkinni þinni...",
 	"pad.modals.forcereconnect": "Þvinga endurtengingu",
+	"pad.modals.reconnecttimer": "Reyni aftur að tengjast eftir",
+	"pad.modals.cancel": "Hætta við",
 	"pad.modals.userdup": "Opnað í öðrum glugga",
 	"pad.modals.userdup.explanation": "Þessi skrifblokk virðist vera opin í fleiri en einum vafraglugga á þessari tölvu.",
 	"pad.modals.userdup.advice": "Endurtengdu til að nota þennan glugga í staðinn.",

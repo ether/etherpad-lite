@@ -5,7 +5,8 @@
 			"Dilyaramude",
 			"George Animal",
 			"Gomada",
-			"Mehk63"
+			"Mehk63",
+			"Ghybu"
 		]
 	},
 	"index.newPad": "Bloknota nû",
@@ -40,6 +41,7 @@
 	"pad.importExport.exportpdf": "PDF",
 	"pad.modals.connected": "Hate girêdan.",
 	"pad.modals.reconnecting": "Ji bloknota te re dîsa tê girêdan...",
+	"pad.modals.cancel": "Betal bike",
 	"pad.modals.userdup": "Di pencereyek din de vebû",
 	"pad.modals.userdup.advice": "Ji bo di vê pencereye de bikarbînîy dîsa giredanek çeke.",
 	"pad.modals.unauth": "Desthilatdar nîne",

@@ -22,6 +22,7 @@
 var ERR = require("async-stacktrace");
 var async = require("async");
 var authorManager = require("./AuthorManager");
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings");
@@ -31,7 +32,7 @@ var authLogger = log4js.getLogger("auth");
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
  * @param padID the pad the user wants to access
- * @param sesssionID the session the user has (set via api)
+ * @param sessionCookie the session the user has (set via api)
  * @param token the token of the author (randomly generated at client side, used for public pads)
  * @param password the password the user has given to access this pad, can be null 
  * @param callback will be called with (err, {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx})
@@ -41,6 +42,14 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
   var statusObject;
   
   if(!padID) {
+    callback(null, {accessStatus: "deny"});
+    return;
+  }
+
+  // allow plugins to deny access
+  var deniedByHook = hooks.callAll("onAccessCheck", {'padID': padID, 'password': password, 'token': token, 'sessionCookie': sessionCookie}).indexOf(false) > -1;
+  if(deniedByHook)
+  {
     callback(null, {accessStatus: "deny"});
     return;
   }

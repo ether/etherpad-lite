@@ -57,6 +57,8 @@
 	"pad.modals.connected": "Conectado.",
 	"pad.modals.reconnecting": "Reconectando co seu documento...",
 	"pad.modals.forcereconnect": "Forzar a reconexión",
+	"pad.modals.reconnecttimer": "Intentarase reconectar en",
+	"pad.modals.cancel": "Cancelar",
 	"pad.modals.userdup": "Aberto noutra ventá",
 	"pad.modals.userdup.explanation": "Semella que este documento está aberto en varias ventás do navegador neste ordenador.",
 	"pad.modals.userdup.advice": "Reconectar para usar esta ventá.",

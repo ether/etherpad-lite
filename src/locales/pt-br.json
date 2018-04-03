@@ -15,7 +15,8 @@
 			"Fasouzafreitas",
 			"Lpagliari",
 			"Walesson",
-			"Cainamarques"
+			"Cainamarques",
+			"Eduardo Addad de Oliveira"
 		]
 	},
 	"index.newPad": "Nova Nota",
@@ -70,6 +71,8 @@
 	"pad.modals.connected": "Conectado.",
 	"pad.modals.reconnecting": "Reconectando à sua nota...",
 	"pad.modals.forcereconnect": "Forçar reconexão",
+	"pad.modals.reconnecttimer": "Tentando se reconectar",
+	"pad.modals.cancel": "Cancelar",
 	"pad.modals.userdup": "Aberto em outra janela",
 	"pad.modals.userdup.explanation": "Esta nota parece estar aberta em mais de uma janela de navegador deste computador.",
 	"pad.modals.userdup.advice": "Reconectar para usar esta janela.",

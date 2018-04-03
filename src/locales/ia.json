@@ -56,6 +56,8 @@
 	"pad.modals.connected": "Connectite.",
 	"pad.modals.reconnecting": "Reconnecte a tu pad…",
 	"pad.modals.forcereconnect": "Fortiar reconnexion",
+	"pad.modals.reconnecttimer": "Tentativa de reconnexion in",
+	"pad.modals.cancel": "Cancellar",
 	"pad.modals.userdup": "Aperte in un altere fenestra",
 	"pad.modals.userdup.explanation": "Iste pad pare esser aperte in plus de un fenestra de navigator in iste computator.",
 	"pad.modals.userdup.advice": "Reconnecte pro usar iste fenestra.",

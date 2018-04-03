@@ -23,6 +23,8 @@
 
 var padcookie = (function()
 {
+  var cookieName = isHttpsScheme() ? "prefs" : "prefsHttp";
+
   function getRawCookie()
   {
     // returns null if can't get cookie text
@@ -31,7 +33,7 @@ var padcookie = (function()
       return null;
     }
     // look for (start of string OR semicolon) followed by whitespace followed by prefs=(something);
-    var regexResult = document.cookie.match(/(?:^|;)\s*prefs=([^;]*)(?:;|$)/);
+    var regexResult = document.cookie.match(new RegExp("(?:^|;)\\s*" + cookieName + "=([^;]*)(?:;|$)"));
     if ((!regexResult) || (!regexResult[1]))
     {
       return null;
@@ -44,7 +46,7 @@ var padcookie = (function()
     var expiresDate = new Date();
     expiresDate.setFullYear(3000);
     var secure = isHttpsScheme() ? ";secure" : "";
-    document.cookie = ('prefs=' + safeText + ';expires=' + expiresDate.toGMTString() + secure);
+    document.cookie = (cookieName + "=" + safeText + ";expires=" + expiresDate.toGMTString() + secure);
   }
 
   function parseCookie(text)
@@ -121,6 +123,9 @@ var padcookie = (function()
     wasNoCookie: function()
     {
       return wasNoCookie;
+    },
+    isCookiesEnabled: function() {
+      return !!getRawCookie();
     },
     getPref: function(prefName)
     {

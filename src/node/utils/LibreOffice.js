@@ -35,7 +35,21 @@ var queue = async.queue(doConvertTask, 1);
  * @param  {Function}   callback    Standard callback function
  */
 exports.convertFile = function(srcFile, destFile, type, callback) {
-  queue.push({"srcFile": srcFile, "destFile": destFile, "type": type, "callback": callback});
+  // soffice can't convert from html to doc directly (verified with LO 5 and 6)
+  // we need to convert to odt first, then to doc
+  // to avoid `Error: no export filter for /tmp/xxxx.doc` error
+  if (type === 'doc') {
+    queue.push({
+      "srcFile": srcFile,
+      "destFile": destFile.replace(/\.doc$/, '.odt'),
+      "type": 'odt',
+      "callback": function () {
+        queue.push({"srcFile": srcFile.replace(/\.html$/, '.odt'), "destFile": destFile, "type": type, "callback": callback});
+      }
+    });
+  } else {
+    queue.push({"srcFile": srcFile, "destFile": destFile, "type": type, "callback": callback});
+  }
 };
 
 function doConvertTask(task, callback) {

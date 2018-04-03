@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Anakmalaysia"
+			"Anakmalaysia",
+			"Jeluang Terluang"
 		]
 	},
 	"index.newPad": "Pad baru",
@@ -69,7 +70,7 @@
 	"pad.modals.slowcommit.explanation": "Pelayan tidak membalas.",
 	"pad.modals.slowcommit.cause": "Ini mungkin disebabkan oleh masalah dengan kesambungan rangkaian anda.",
 	"pad.modals.badChangeset.explanation": "Suntingan yang telah anda lakukan telah dikira sebagai terlarang oleh pelayan penyegerakan.",
-	"pad.modals.badChangeset.cause": "Ini mungkin disebabkan oleh konfigurasi pelayan salah atau sesuatu kelakuan yang tidak dijangka. Sila hubungi penyelia servis anda jika anda merasakan ini adalah satu kesilapan. Cuba sambungkan semula talian untuk terus menyuntung.",
+	"pad.modals.badChangeset.cause": "Hal ini mungkin disebabkan oleh konfigurasi pelayan salah atau sesuatu kelakuan yang tidak dijangka. Sila hubungi penyelia servis anda jika anda merasakan ini ialah satu kesilapan. Cuba sambungkan semula talian untuk terus menyunting.",
 	"pad.modals.corruptPad.explanation": "Pad yang anda cuba akses itu telah tercemar.",
 	"pad.modals.corruptPad.cause": "Ini mungkin disebabkan oleh konfigurasi pelayan salah atau sesuatu kelakuan yang tidak dijangka. Sila hubungi penyelia servis anda.",
 	"pad.modals.deleted": "Dihapuskan.",

@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/env PYTHONUNBUFFERED=1 python2
 #
 # Created by Bjarni R. Einarsson, placed in the public domain. Go wild!
 #
