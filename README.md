@@ -1,5 +1,8 @@
 ### This project is looking for a new project lead.  If you wish to help steer Etherpad forward please email contact@etherpad.org
 
+[![Deps](https://david-dm.org/ether/etherpad-lite.svg?branch=develop)](https://david-dm.org/ether/etherpad-lite)
+[![NSP Status](https://nodesecurity.io/orgs/etherpad/projects/635f6185-35c6-4ed7-931a-0bc62758ece7/badge)](https://nodesecurity.io/orgs/etherpad/projects/635f6185-35c6-4ed7-931a-0bc62758ece7)
+
 # A really-real time collaborative word processor for the web
 ![Demo Etherpad Animated Jif](https://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
 
