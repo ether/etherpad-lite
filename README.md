@@ -90,11 +90,7 @@ You can debug Etherpad using `bin/debugRun.sh`.
 If you want to find out how Etherpad's `Easysync` works (the library that makes it really realtime), start with this [PDF](https://github.com/ether/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading).
 
 ## Contributing
-You know all this and just want to know how you can help?
-
-Look at the [TODO list](https://github.com/ether/etherpad-lite/wiki/TODO) and our [Issue tracker](https://github.com/ether/etherpad-lite/issues). (Please consider using [jshint](http://www.jshint.com/about/), if you plan to contribute code.)
-
-Also, and most importantly, read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md), really!
+Read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md)
 
 # Get in touch
 [mailinglist](https://groups.google.com/group/etherpad-lite-dev)
@@ -108,7 +104,7 @@ Etherpad is designed to be easily embeddable and provides a [HTTP API](https://g
 that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. 
 
 # jQuery plugin 
-There is also a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
+There is a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
 # Plugin Framework
 Etherpad offers a plugin framework, allowing you to easily add your own features.  By default your Etherpad is extremely light-weight and it's up to you to customize your experience.  Once you have Etherpad installed you should visit the plugin page and take control.
