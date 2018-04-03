@@ -60,7 +60,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   var debugMessages = [];
   var msgQueue = [];
 
-  var socketIOError = false;
+  var isPendingRevision = false;
 
   tellAceAboutHistoricalAuthors(serverVars.historicalAuthorData);
   tellAceActiveAuthorInfo(initialUserInfo);
@@ -180,10 +180,15 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
           editor.applyChangesToBase(changeset, author, apool);
         }
       }
+      if (isPendingRevision) {
+        setIsPendingRevision(false);
+      }
     }
 
     var sentMessage = false;
-    if (getSocket().realConnected && !socketIOError)
+    // Check if there are any pending revisions to be received from server.
+    // Allow only if there are no pending revisions to be received from server
+    if (!isPendingRevision)
     {
         var userChangesData = editor.prepareUserChangeset();
         if (userChangesData.changeset)
@@ -203,7 +208,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
     else
     {
-        // run again in a few seconds, to detect a reconnect
+        // run again in a few seconds, to check if there was a reconnection attempt
         setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 3000);
     }
 
@@ -342,10 +347,12 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
     else if (msg.type == 'CLIENT_RECONNECT')
     {
-      // When client has reconnected but there are no pending changes from other clients
+      // Server sends a CLIENT_RECONNECT message when there is a client reconnect. Server also returns
+      // all pending revisions along with this CLIENT_RECONNECT message
       if (msg.noChanges)
       {
-        socketIOError = false;
+        // If no revisions are pending, just make everything normal
+        setIsPendingRevision(false);
         return;
       }
 
@@ -359,7 +366,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       {
         if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
         {
-          window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+          window.console.warn("bad message revision on CLIENT_RECONNECT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
@@ -370,7 +377,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev != (rev + 1))
       {
-        window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
+        window.console.warn("bad message revision on CLIENT_RECONNECT: " + newRev + " not " + (rev + 1));
         // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
         return;
       }
@@ -397,8 +404,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (newRev == headRev)
       {
-        rev = newRev;
-        socketIOError = false;
+        // Once we have applied all pending revisions, make everything normal
+        setIsPendingRevision(false);
       }
     }
     else if (msg.type == "NO_COMMIT_PENDING")
@@ -662,10 +669,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     schedulePerhapsCallIdleFuncs();
   }
 
-  function setSocketIOError(value)
+  function setIsPendingRevision(value)
   {
-    socketIOError = value;
+    isPendingRevision = value;
   }
+
   function callWhenNotCommitting(func)
   {
     idleFuncs.push(func);
@@ -733,7 +741,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     addHistoricalAuthors: tellAceAboutHistoricalAuthors,
     setChannelState: setChannelState,
     setStateIdle: setStateIdle,
-    setSocketIOError: setSocketIOError
+    setIsPendingRevision: setIsPendingRevision
   };
 
   $(document).ready(setUpSocket);

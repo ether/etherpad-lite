@@ -1154,16 +1154,16 @@ function handleClientReady(client, message)
         //Save the revision in sessioninfos, we take the revision from the info the client send to us
         sessioninfos[client.id].rev = message.client_rev;
 
-        var changesetsNeeded = [];
+        //During the client reconnect, client might miss some revisions from other clients. By using client revision,
+        //this below code sends all the revisions missed during the client reconnect
+        var revisionsNeeded = [];
         var changesets = {};
-        var changesetsAuthor = {};
-        var changesetsTimestamp = {};
 
         var startNum = message.client_rev + 1;
         var endNum = pad.getHeadRevisionNumber() + 1;
 
         async.series([
-          //fetch all changesets we need
+          //push all the revision numbers needed into revisionsNeeded array
           function(callback)
           {
             var headNum = pad.getHeadRevisionNumber();
@@ -1171,67 +1171,69 @@ function handleClientReady(client, message)
               endNum = headNum+1;
             if (startNum < 0)
               startNum = 0;
-            //create a array for all changesets, we will
-            //replace the values with the changeset later
+
             for(var r=startNum;r<endNum;r++)
             {
-              changesetsNeeded.push(r);
+              revisionsNeeded.push(r);
+              changesets[r] = {};
             }
             callback();
           },
-          //get all changesets
+          //get changesets needed for pending revisions
           function(callback)
           {
-            async.eachSeries(changesetsNeeded, function(revNum, callback)
+            async.eachSeries(revisionsNeeded, function(revNum, callback)
             {
               pad.getRevisionChangeset(revNum, function(err, value)
               {
                 if(ERR(err)) return;
-                changesets[revNum] = value;
+                changesets[revNum]['changeset'] = value;
                 callback();
               });
             }, callback);
           },
+          //get author for each changeset
           function(callback)
           {
-            async.eachSeries(changesetsNeeded, function(revNum, callback)
+            async.eachSeries(revisionsNeeded, function(revNum, callback)
             {
               pad.getRevisionAuthor(revNum, function(err, value)
               {
                 if(ERR(err)) return;
-                changesetsAuthor[revNum] = value;
+                changesets[revNum]['author'] = value;
                 callback();
               });
             }, callback);
           },
+          //get timestamp for each changeset
           function(callback)
           {
-            async.eachSeries(changesetsNeeded, function(revNum, callback)
+            async.eachSeries(revisionsNeeded, function(revNum, callback)
             {
               pad.getRevisionDate(revNum, function(err, value)
               {
                 if(ERR(err)) return;
-                changesetsTimestamp[revNum] = value;
+                changesets[revNum]['timestamp'] = value;
                 callback();
               });
             }, callback);
           }
         ],
-        //return err and changeset
+        //return error and pending changesets
         function(err)
         {
           if(ERR(err, callback)) return;
-          async.eachSeries(changesetsNeeded, function(r, callback)
+          async.eachSeries(revisionsNeeded, function(r, callback)
           {
-            var forWire = Changeset.prepareForWire(changesets[r], pad.pool);
+            var forWire = Changeset.prepareForWire(changesets[r]['changeset'], pad.pool);
             var wireMsg = {"type":"COLLABROOM",
                            "data":{type:"CLIENT_RECONNECT",
                                    headRev:pad.getHeadRevisionNumber(),
                                    newRev:r,
                                    changeset:forWire.translated,
                                    apool: forWire.pool,
-                                   author: changesetsAuthor[r],
-                                   currentTime: changesetsTimestamp[r]
+                                   author: changesets[r]['author'],
+                                   currentTime: changesets[r]['timestamp']
                            }};
             client.json.send(wireMsg);
             callback();
