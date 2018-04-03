@@ -152,28 +152,17 @@ exports.getPad = function(id, text, callback)
       return;
     }
   }
-  
-  var pad = globalPads.get(id);
-  
-  //return pad if its already loaded
-  if(pad != null)
-  {
-    callback(null, pad);
-  }
-  //try to load pad
-  else
-  {
-    pad = new Pad(id);
 
-    //initalize the pad
-    pad.init(text, function(err)
-    {
-      if(ERR(err, callback)) return;
-      globalPads.set(id, pad);
-      padList.addPad(id);
-      callback(null, pad);
-    });
-  }
+  var pad = new Pad(id);
+
+  //initalize the pad
+  pad.init(text, function(err)
+  {
+    if(ERR(err, callback)) return;
+    globalPads.set(id, pad);
+    padList.addPad(id);
+    callback(null, pad);
+  });
 }
 
 exports.listAllPads = function(cb)

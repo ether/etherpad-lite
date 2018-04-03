@@ -56,6 +56,11 @@ exports.ip = "0.0.0.0";
 exports.port = process.env.PORT || 9001;
 
 /**
+ * The Redis server ep-lite should connect to
+ */
+exports.redis ={ "host" : "localhost", "port" : 6379 };
+
+/**
  * Should we suppress Error messages from being in Pad Contents
  */
 exports.suppressErrorsInPadText = false;

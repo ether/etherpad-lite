@@ -66,14 +66,19 @@ var padChannels = new channels.channels(handleUserChanges);
  * Saves the Socket class we need to send and recieve data from the client
  */
 var socketio;
+var socketioemitter;
 
 /**
  * This Method is called by server.js to tell the message handler on which socket it should send
  * @param socket_io The Socket
  */
-exports.setSocketIO = function(socket_io)
+exports.setSocketIO = function(socket_io, socket_io_emitter)
 {
   socketio=socket_io;
+  socketioemitter=socket_io_emitter;
+  //Initalize sessioninfos_update_from_other_instances() so as to receive sessioninfo updates
+  //from other instances in the cluster
+  sessioninfos_update_from_other_instances();
 }
 
 /**
@@ -97,12 +102,8 @@ exports.kickSessionsFromPad = function(padID)
   if(typeof socketio.sockets['clients'] !== 'function')
    return;
 
-  //skip if there is nobody on this pad
-  if(_getRoomClients(padID).length == 0)
-    return;
-
   //disconnect everyone from this pad
-  socketio.sockets.in(padID).json.send({disconnect:"deleted"});
+  socketio_broadcast(padID, null, {disconnect:"deleted"});
 }
 
 /**
@@ -149,8 +150,8 @@ exports.handleDisconnect = function(client)
         }
       };
 
-      //Go trough all user that are still on the pad, and send them the USER_LEAVE message
-      client.broadcast.to(session.padId).json.send(messageToTheOtherUsers);
+      //Go through all users that are still on the pad, and send them the USER_LEAVE message
+      socketio_broadcast(session.padId, client.id, messageToTheOtherUsers);
 
       // Allow plugins to hook into users leaving the pad
       hooks.callAll("userLeave", session);
@@ -329,7 +330,7 @@ exports.handleCustomObjectMessage = function (msg, sessionID, cb) {
     if(sessionID){ // If a sessionID is targeted then send directly to this sessionID
       socketio.sockets.socket(sessionID).json.send(msg); // send a targeted message
     }else{
-      socketio.sockets.in(msg.data.payload.padId).json.send(msg); // broadcast to all clients on this pad
+      socketio_broadcast(msg.data.payload.padId, null, msg); // broadcast to all clients on this pad
     }
   }
   cb(null, {});
@@ -351,7 +352,7 @@ exports.handleCustomMessage = function (padID, msg, cb) {
       time: time
     }
   };
-  socketio.sockets.in(padID).json.send(msg);
+  socketio_broadcast(padID, null, msg);
 
   cb(null, {});
 }
@@ -420,7 +421,7 @@ exports.sendChatMessageToPadClients = function (time, userId, text, padId) {
       };
 
       //broadcast the chat message to everyone on the pad
-      socketio.sockets.in(padId).json.send(msg);
+      socketio_broadcast(padId, null, msg);
 
       callback();
     }
@@ -512,16 +513,27 @@ function handleSuggestUserName(client, message)
   }
 
   var padId = sessioninfos[client.id].padId;
-  var roomClients = _getRoomClients(padId);
+  var roomClients = [];
 
-  //search the author and send him this message
-  roomClients.forEach(function(client) {
-    var session = sessioninfos[client.id];
-    if(session && session.author == message.data.payload.unnamedId) {
-      client.json.send(message);
-      return;
+  async.series([
+    function(callback){
+      socketio.sockets.in(padId).clients( function(err, clients){
+      // an array containing all connected socket ids in room 'padId' in whole cluster
+      roomClientIds = clients.slice();
+      callback(null);
+      });
+    },
+    function(callback){
+      //search the author and send him this message
+      roomClientIds.forEach(function(roomClientId) {
+        var session = sessioninfos[roomClientId];
+        if(session && session.author == message.data.payload.unnamedId) {
+          client.json.send(message);
+          return;
+        }
+      });
     }
-  });
+  ]);
 }
 
 /**
@@ -584,7 +596,7 @@ function handleUserInfoUpdate(client, message)
   };
 
   //Send the other clients on the pad the update message
-  client.broadcast.to(padId).json.send(infoMsg);
+  socketio_broadcast(padId, client.id, infoMsg);
 }
 
 /**
@@ -808,81 +820,99 @@ function handleUserChanges(data, cb)
 
 exports.updatePadClients = function(pad, callback)
 {
-  //skip this step if noone is on this pad
-  var roomClients = _getRoomClients(pad.id);
+  //skip this step if no one is on this pad
+  var roomClients = [];
 
-  if(roomClients.length==0)
-    return callback();
+  async.series([
+    function(callback){
+      socketio.sockets.in(pad.id).clients( function(err, clients){
+        // an array containing all connected socket ids in room 'pad.id'
+        roomClientIds = clients.slice();
+        callback(null);
+      });
+    },
+    function(callback){
+      if(roomClientIds.length==0)
+        return callback();
 
-  // since all clients usually get the same set of changesets, store them in local cache
-  // to remove unnecessary roundtrip to the datalayer
-  // TODO: in REAL world, if we're working without datalayer cache, all requests to revisions will be fired
-  // BEFORE first result will be landed to our cache object. The solution is to replace parallel processing
-  // via async.forEach with sequential for() loop. There is no real benefits of running this in parallel,
-  // but benefit of reusing cached revision object is HUGE
-  var revCache = {};
+      // since all clients usually get the same set of changesets, store them in local cache
+      // to remove unnecessary roundtrip to the datalayer
+      // TODO: in REAL world, if we're working without datalayer cache, all requests to revisions will be fired
+      // BEFORE first result will be landed to our cache object. The solution is to replace parallel processing
+      // via async.forEach with sequential for() loop. There is no real benefits of running this in parallel,
+      // but benefit of reusing cached revision object is HUGE
+      var revCache = {};
 
-  //go trough all sessions on this pad
-  async.forEach(roomClients, function(client, callback){
-    var sid = client.id;
-    //https://github.com/caolan/async#whilst
-    //send them all new changesets
-    async.whilst(
-      function (){ return sessioninfos[sid] && sessioninfos[sid].rev < pad.getHeadRevisionNumber()},
-      function(callback)
-      {
-        var r = sessioninfos[sid].rev + 1;
-
-        async.waterfall([
-          function(callback) {
-            if(revCache[r])
-              callback(null, revCache[r]);
-            else
-              pad.getRevision(r, callback);
-          },
-          function(revision, callback)
+      //go trough all sessions on this pad
+      async.forEach(roomClientIds, function(roomClientId, callback){
+        var sid = roomClientId;
+        //https://github.com/caolan/async#whilst
+        //send them all new changesets
+        async.whilst(
+          function (){ return sessioninfos[sid] && sessioninfos[sid].rev < pad.getHeadRevisionNumber()},
+          function(callback)
           {
-            revCache[r] = revision;
+            var r = sessioninfos[sid].rev + 1;
 
-            var author = revision.meta.author,
-                revChangeset = revision.changeset,
-                currentTime = revision.meta.timestamp;
+            async.waterfall([
+              function(callback) {
+                if(revCache[r])
+                  callback(null, revCache[r]);
+                else
+                  pad.getRevision(r, callback);
+              },
+              function(revision, callback)
+              {
+                revCache[r] = revision;
 
-            // next if session has not been deleted
-            if(sessioninfos[sid] == null)
-              return callback(null);
+                var author = revision.meta.author,
+                    revChangeset = revision.changeset,
+                    currentTime = revision.meta.timestamp;
 
-            if(author == sessioninfos[sid].author)
-            {
-              client.json.send({"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
-            }
-            else
-            {
-              var forWire = Changeset.prepareForWire(revChangeset, pad.pool);
-              var wireMsg = {"type":"COLLABROOM",
-                             "data":{type:"NEW_CHANGES",
-                                     newRev:r,
-                                     changeset: forWire.translated,
-                                     apool: forWire.pool,
-                                     author: author,
-                                     currentTime: currentTime,
-                                     timeDelta: currentTime - sessioninfos[sid].time
-                                    }};
+                // next if session has not been deleted
+                if(sessioninfos[sid] == null)
+                  return callback(null);
 
-              client.json.send(wireMsg);
-            }
-            if(sessioninfos[sid]){
-              sessioninfos[sid].time = currentTime;
-              sessioninfos[sid].rev = r;
-            }
-            callback(null);
-          }
-        ], callback);
-      },
-      callback
-    );
-  },callback);
+                if(author == sessioninfos[sid].author)
+                {
+                  socketioemitter.to(roomClientId).emit('message', {"type":"COLLABROOM","data":{type:"ACCEPT_COMMIT", newRev:r}});
+                }
+                else
+                {
+                  var forWire = Changeset.prepareForWire(revChangeset, pad.pool);
+                  var wireMsg = {"type":"COLLABROOM",
+                                 "data":{type:"NEW_CHANGES",
+                                         newRev:r,
+                                         changeset: forWire.translated,
+                                         apool: forWire.pool,
+                                         author: author,
+                                         currentTime: currentTime,
+                                         timeDelta: currentTime - sessioninfos[sid].time
+                                        }};
+                  socketioemitter.to(roomClientId).emit('message', wireMsg);
+                }
+                if(sessioninfos[sid]){
+                  sessioninfos[sid].time = currentTime;
+                  sessioninfos[sid].rev = r;
+
+                  // Update sessioninfos on other instances in cluster
+                  update_sessioninfos_on_other_instances(sessioninfos[sid], sid);
+                }
+                callback(null);
+              }
+            ], callback);
+          },
+          callback
+        );
+      },callback);
+    }
+  ],function(err)
+  {
+    if(ERR(err, callback)) return;
+    callback(null);
+  });
 }
+
 
 /**
  * Copied from the Etherpad Source Code. Don't know what this method does excatly...
@@ -935,16 +965,29 @@ function handleSwitchToPad(client, message)
   // clear the session and leave the room
   var currentSession = sessioninfos[client.id];
   var padId = currentSession.padId;
-  var roomClients = _getRoomClients(padId);
+  var roomClients = [];
 
-  async.forEach(roomClients, function(client, callback) {
-    var sinfo = sessioninfos[client.id];
-    if(sinfo && sinfo.author == currentSession.author) {
-      // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-      sessioninfos[client.id] = {};
-      client.leave(padId);
+  async.series([
+    function(callback){
+      socketio.sockets.in(padId).clients( function(err, clients){
+        // an array containing all connected socket ids
+        roomClientIds = clients.slice();
+        callback(null);
+      });
+    },
+    function(callback){
+      async.forEach(roomClientIds, function(roomClientId, callback) {
+        var sinfo = sessioninfos[roomClientId];
+        if(sinfo && sinfo.author == currentSession.author) {
+          // fix user's counter, works on page refresh or if user closes browser window and then rejoins
+          sessioninfos[roomClientId] = {};
+          update_sessioninfos_on_other_instances(sessioninfos[roomClientId], roomClientId);
+          client.leave(padId);
+          socketio.sockets.adapter.remoteLeave(roomClientId, padId);
+        }
+      });
     }
-  });
+  ]);
 
   // start up the new pad
   createSessionInfo(client, message);
@@ -965,6 +1008,7 @@ function createSessionInfo(client, message)
     token : message.token,
     password: message.password
   };
+  update_sessioninfos_on_other_instances(sessioninfos[client.id], client.id);
 }
 
 /**
@@ -1004,6 +1048,7 @@ function handleClientReady(client, message)
   var historicalAuthorData = {};
   var currentTime;
   var padIds;
+  var roomClientIds = [];
 
   hooks.callAll("clientReady", message);
 
@@ -1106,6 +1151,14 @@ function handleClientReady(client, message)
       ], callback);
 
     },
+    function(callback)
+    {
+      socketio.sockets.in(pad.id).clients( function(err, clients){
+        // an array containing all connected socket ids in room 'pad.id'
+        roomClientIds = clients.slice();
+        callback();
+      });
+    },
     //glue the clientVars together, send them and tell the other clients that a new one is there
     function(callback)
     {
@@ -1114,14 +1167,14 @@ function handleClientReady(client, message)
         return callback();
 
       //Check if this author is already on the pad, if yes, kick the other sessions!
-      var roomClients = _getRoomClients(pad.id);
-
-      async.forEach(roomClients, function(client, callback) {
-        var sinfo = sessioninfos[client.id];
+      async.forEach(roomClientIds, function(roomClientId, callback) {
+        var sinfo = sessioninfos[roomClientId];
         if(sinfo && sinfo.author == author) {
           // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-          sessioninfos[client.id] = {};
+          sessioninfos[roomClientId] = {};
+          update_sessioninfos_on_other_instances(sessioninfos[roomClientId], roomClientId);
           client.leave(padIds.padId);
+          socketio.sockets.adapter.remoteLeave(roomClientId, padIds.padId);
           client.json.send({disconnect:"userdup"});
         }
       });
@@ -1151,6 +1204,7 @@ function handleClientReady(client, message)
       {
         //Join the pad and start receiving updates
         client.join(padIds.padId);
+        socketio.sockets.adapter.remoteJoin(client.id, padIds.padId);
         //Save the revision in sessioninfos, we take the revision from the info the client send to us
         sessioninfos[client.id].rev = message.client_rev;
       }
@@ -1203,7 +1257,7 @@ function handleClientReady(client, message)
           // tell the client the number of the latest chat-message, which will be
           // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
           "chatHead": pad.chatHead,
-          "numConnectedUsers": roomClients.length,
+          "numConnectedUsers": roomClientIds.length,
           "readOnlyId": padIds.readOnlyPadId,
           "readonly": padIds.readonly,
           "serverTimestamp": new Date().getTime(),
@@ -1247,6 +1301,7 @@ function handleClientReady(client, message)
 
           //Join the pad and start receiving updates
           client.join(padIds.padId);
+          socketio.sockets.adapter.remoteJoin(client.id, padIds.padId);
           //Send the clientVars to the Client
           client.json.send({type: "CLIENT_VARS", data: clientVars});
           //Save the current revision in sessioninfos, should be the same as in clientVars
@@ -1255,6 +1310,9 @@ function handleClientReady(client, message)
       }
 
       sessioninfos[client.id].author = author;
+
+      // Update sessioninfo on other instances in the cluster
+      update_sessioninfos_on_other_instances(sessioninfos[client.id], client.id);
 
       //prepare the notification for the other users on the pad, that this user joined
       var messageToTheOtherUsers = {
@@ -1277,64 +1335,78 @@ function handleClientReady(client, message)
       }
 
       // notify all existing users about new user
-      client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
+      socketio_broadcast(padIds.padId, client.id, messageToTheOtherUsers);
 
-      //Get sessions for this pad
-      var roomClients = _getRoomClients(pad.id);
+      async.series([
+        function(callback)
+        {
+          socketio.sockets.in(pad.id).clients( function(err, clients){
+          // an array containing all connected socket ids
+          roomClientIds = clients.slice();
+          callback();
+          });
+        },
+        function(callback)
+        {
+          //Get sessions for this pad
 
-      async.forEach(roomClients, function(roomClient, callback)
-      {
-        var author;
-
-        //Jump over, if this session is the connection session
-        if(roomClient.id == client.id)
-          return callback();
-
-
-        //Since sessioninfos might change while being enumerated, check if the
-        //sessionID is still assigned to a valid session
-        if(sessioninfos[roomClient.id] !== undefined)
-          author = sessioninfos[roomClient.id].author;
-        else // If the client id is not valid, callback();
-          return callback();
-
-        async.waterfall([
-          //get the authorname & colorId
-          function(callback)
+          async.forEach(roomClientIds, function(roomClientId, callback)
           {
-            // reuse previously created cache of author's data
-            if(historicalAuthorData[author])
-              callback(null, historicalAuthorData[author]);
-            else
-              authorManager.getAuthor(author, callback);
-          },
-          function (authorInfo, callback)
-          {
-            //Send the new User a Notification about this other user
-            var msg = {
-              "type": "COLLABROOM",
-              "data": {
-                type: "USER_NEWINFO",
-                userInfo: {
-                  "ip": "127.0.0.1",
-                  "colorId": authorInfo.colorId,
-                  "name": authorInfo.name,
-                  "userAgent": "Anonymous",
-                  "userId": author
-                }
+            var author;
+            //Jump over, if this session is the connection session
+            if(roomClientId == client.id)
+              return callback();
+
+
+            //Since sessioninfos might change while being enumerated, check if the
+            //sessionID is still assigned to a valid session
+            if(sessioninfos[roomClientId] !== undefined)
+              author = sessioninfos[roomClientId].author;
+            else // If the client id is not valid, callback();
+              return callback();
+
+            async.waterfall([
+              //get the authorname & colorId
+              function(callback)
+              {
+                // reuse previously created cache of author's data
+                if(historicalAuthorData[author])
+                  callback(null, historicalAuthorData[author]);
+                else
+                  authorManager.getAuthor(author, callback);
+              },
+              function (authorInfo, callback)
+              {
+                //Send the new User a Notification about this other user
+                var msg = {
+                  "type": "COLLABROOM",
+                  "data": {
+                    type: "USER_NEWINFO",
+                    userInfo: {
+                      "ip": "127.0.0.1",
+                      "colorId": authorInfo.colorId,
+                      "name": authorInfo.name,
+                      "userAgent": "Anonymous",
+                      "userId": author
+                    }
+                  }
+                };
+                client.json.send(msg);
               }
-            };
-            client.json.send(msg);
-          }
-        ], callback);
-      }, callback);
+            ], callback);
+          }, callback);
+        }
+      ], function(err)
+      {
+        if(ERR(err, callback)) return;
+        callback(null);
+      });
     }
   ],function(err)
   {
     ERR(err);
   });
 }
-
 /**
  * Handles a request for a rough changeset, the timeslider client needs it
  */
@@ -1698,12 +1770,78 @@ function _getRoomClients(padID) {
 }
 
 /**
+ * Updates sessioninfo of client which are not present on this instance. This function receives
+ * sessioninfo updates from all etherpad instances whenever there is an update in sessioninfo
+ */
+function sessioninfos_update_from_other_instances() {
+  socketio.sockets.adapter.customHook = function(data, callback){
+    sessioninfos[data.sid] = data.sessioninfo;
+  };
+}
+
+/**
+ * Updates sessioninfo of client on other instances. This function sends sessioninfo updates to all
+ * etherpad instances whenever there is an update in sessioninfo
+ */
+function update_sessioninfos_on_other_instances(sessioninfo, sid) {
+  socketio.sockets.adapter.customRequest({'sessioninfo': sessioninfo, 'sid': sid});
+}
+
+/**
+ * This function mimics client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers). It
+ * uses socket.io-redis for sending events to clients connected on other instances. It basically
+ * broadcasts events to socket.io clients in whole cluster
+ */
+function socketio_broadcast(roomId, client, message) {
+  /**
+   * roomId: broadcast to all clients connected in room 'roomId'
+   * client: broadcast to all clients except this 'client'
+   * message: message to be broadcasted across cluster
+   */
+  var roomClientIds = [];
+  async.series([
+    function(callback)
+    {
+      socketio.sockets.in(roomId).clients( function(err, clients){
+        // an array containing all connected socket ids across all instances in room 'roomId'
+        roomClientIds = clients.slice();
+        callback(null);
+      });
+    },
+    function(callback)
+    {
+      async.eachSeries(roomClientIds, function(roomClientId)
+      {
+        if(client.id != roomClientId) {
+          socketioemitter.to(roomClientId).emit('message', message);
+        }
+      });
+    }
+  ]);
+}
+
+
+/**
  * Get the number of users in a pad
  */
 exports.padUsersCount = function (padID, callback) {
-  callback(null, {
-    padUsersCount: _getRoomClients(padID).length
-  });
+  var roomClientIds = [];
+  async.series([
+    function(callback)
+    {
+      socketio.sockets.in(roomId).clients( function(err, clients){
+        // an array containing all connected socket ids
+        roomClientIds = clients.slice();
+        callback(null);
+      });
+    }
+  ],function()
+    {
+      callback(null, {
+        padUsersCount: roomClientIds.length
+      });
+    }
+  );
 }
 
 /**
@@ -1712,26 +1850,39 @@ exports.padUsersCount = function (padID, callback) {
 exports.padUsers = function (padID, callback) {
   var result = [];
 
-  var roomClients = _getRoomClients(padID);
+  var roomClientIds = [];
 
-  async.forEach(roomClients, function(roomClient, callback) {
-    var s = sessioninfos[roomClient.id];
-    if(s) {
-      authorManager.getAuthor(s.author, function(err, author) {
+  async.series([
+    function(callback)
+    {
+      socketio.sockets.in(roomId).clients( function(err, clients){
+        // an array containing all connected socket ids
+        roomClientIds = clients.slice();
+        callback(null);
+      });
+    },
+    function(callback)
+    {
+      async.forEach(roomClientIds, function(roomClientId, callback) {
+        var s = sessioninfos[roomClientId];
+        if(s) {
+          authorManager.getAuthor(s.author, function(err, author) {
+            if(ERR(err, callback)) return;
+
+            author.id = s.author;
+            result.push(author);
+            callback();
+          });
+        } else {
+          callback();
+        }
+      }, function(err) {
         if(ERR(err, callback)) return;
 
-        author.id = s.author;
-        result.push(author);
-        callback();
+        callback(null, {padUsers: result});
       });
-    } else {
-      callback();
     }
-  }, function(err) {
-    if(ERR(err, callback)) return;
-
-    callback(null, {padUsers: result});
-  });
+  ]);
 }
 
 exports.sessioninfos = sessioninfos;
