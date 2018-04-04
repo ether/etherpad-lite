@@ -38,7 +38,7 @@
 	"pad.colorpicker.save": "Guardar",
 	"pad.colorpicker.cancel": "Cancelar",
 	"pad.loading": "Cargando...",
-	"pad.noCookie": "La cookie no se pudo encontrar. ¡Habilita las cookies en tu navegador!",
+	"pad.noCookie": "No se pudo encontrar la «cookie». Permite la utilización de «cookies» en el navegador.",
 	"pad.passwordRequired": "Necesitas una contraseña para acceder a este pad",
 	"pad.permissionDenied": "No tienes permiso para acceder a este pad",
 	"pad.wrongPassword": "La contraseña era incorrecta",

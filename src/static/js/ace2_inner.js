@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 var _, $, jQuery, plugins, Ace2Common;
-
 var browser = require('./browser');
 if(browser.msie){
   // Honestly fuck IE royally.
@@ -61,6 +60,7 @@ function Ace2Inner(){
   var SkipList = require('./skiplist');
   var undoModule = require('./undomodule').undoModule;
   var AttributeManager = require('./AttributeManager');
+  var Scroll = require('./scroll');
 
   var DEBUG = false; //$$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
@@ -75,6 +75,9 @@ function Ace2Inner(){
   var EDIT_BODY_PADDING_TOP = 8;
   var EDIT_BODY_PADDING_LEFT = 8;
 
+  var FORMATTING_STYLES = ['bold', 'italic', 'underline', 'strikethrough'];
+  var SELECT_BUTTON_CLASS = 'selected';
+
   var caughtErrors = [];
 
   var thisAuthor = '';
@@ -82,12 +85,15 @@ function Ace2Inner(){
   var disposed = false;
   var editorInfo = parent.editorInfo;
 
+
   var iframe = window.frameElement;
   var outerWin = iframe.ace_outerWin;
   iframe.ace_outerWin = null; // prevent IE 6 memory leak
   var sideDiv = iframe.nextSibling;
   var lineMetricsDiv = sideDiv.nextSibling;
   initLineNumbers();
+
+  var scroll = Scroll.init(outerWin);
 
   var outsideKeyDown = noop;
 
@@ -424,7 +430,7 @@ function Ace2Inner(){
         var undoWorked = false;
         try
         {
-          if (evt.eventType == "setup" || evt.eventType == "importText" || evt.eventType == "setBaseText")
+          if (isPadLoading(evt.eventType))
           {
             undoModule.clearHistory();
           }
@@ -1208,7 +1214,7 @@ function Ace2Inner(){
         updateLineNumbers(); // update line numbers if any time left
         if (isTimeUp()) return;
 
-        var visibleRange = getVisibleCharRange();
+        var visibleRange = scroll.getVisibleCharRange(rep);
         var docRange = [0, rep.lines.totalWidth()];
         //console.log("%o %o", docRange, visibleRange);
         finishedImportantWork = true;
@@ -1670,7 +1676,7 @@ function Ace2Inner(){
     });
 
     //p.mark("relex");
-    //rep.lexer.lexCharRange(getVisibleCharRange(), function() { return false; });
+    //rep.lexer.lexCharRange(scroll.getVisibleCharRange(rep), function() { return false; });
     //var isTimeUp = newTimeLimit(100);
     // do DOM inserts
     p.mark("insert");
@@ -2469,17 +2475,11 @@ function Ace2Inner(){
       }
     }
 
-    if (selectionAllHasIt)
-    {
-      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
-        [attributeName, '']
-      ]);
-    }
-    else
-    {
-      documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
-        [attributeName, 'true']
-      ]);
+
+    var attributeValue = selectionAllHasIt ? '' : 'true';
+    documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [[attributeName, attributeValue]]);
+    if (attribIsFormattingStyle(attributeName)) {
+      updateStyleButtonState(attributeName, !selectionAllHasIt); // italic, bold, ...
     }
   }
   editorInfo.ace_toggleAttributeOnSelection = toggleAttributeOnSelection;
@@ -2908,11 +2908,23 @@ function Ace2Inner(){
       rep.selFocusAtStart = newSelFocusAtStart;
       currentCallStack.repChanged = true;
 
+      // select the formatting buttons when there is the style applied on selection
+      selectFormattingButtonIfLineHasStyleApplied(rep);
+
       hooks.callAll('aceSelectionChanged', {
         rep: rep,
         callstack: currentCallStack,
         documentAttributeManager: documentAttributeManager,
       });
+
+      // we scroll when user places the caret at the last line of the pad
+      // when this settings is enabled
+      var docTextChanged = currentCallStack.docTextChanged;
+      if(!docTextChanged){
+       var isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
+       var innerHeight = getInnerHeight();
+       scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, isScrollableEvent, innerHeight);
+      }
 
       return true;
       //console.log("selStart: %o, selEnd: %o, focusAtStart: %s", rep.selStart, rep.selEnd,
@@ -2920,6 +2932,27 @@ function Ace2Inner(){
     }
     return false;
     //console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
+  }
+
+  function isPadLoading(eventType)
+  {
+    return (eventType === 'setup') || (eventType === 'setBaseText') || (eventType === 'importText');
+  }
+
+  function updateStyleButtonState(attribName, hasStyleOnRepSelection) {
+    var $formattingButton = parent.parent.$('[data-key="' + attribName + '"]').find('a');
+    $formattingButton.toggleClass(SELECT_BUTTON_CLASS, hasStyleOnRepSelection);
+  }
+
+  function attribIsFormattingStyle(attributeName) {
+    return _.contains(FORMATTING_STYLES, attributeName);
+  }
+
+  function selectFormattingButtonIfLineHasStyleApplied (rep) {
+    _.each(FORMATTING_STYLES, function (style) {
+      var hasStyleOnRepSelection = documentAttributeManager.hasAttributeOnSelectionOrCaretPosition(style);
+      updateStyleButtonState(style, hasStyleOnRepSelection);
+    })
   }
 
   function doCreateDomLine(nonEmpty)
@@ -3277,50 +3310,36 @@ function Ace2Inner(){
     return false;
   }
 
-  function getLineEntryTopBottom(entry, destObj)
-  {
-    var dom = entry.lineNode;
-    var top = dom.offsetTop;
-    var height = dom.offsetHeight;
-    var obj = (destObj || {});
-    obj.top = top;
-    obj.bottom = (top + height);
-    return obj;
-  }
-
   function getViewPortTopBottom()
   {
-    var theTop = getScrollY();
+    var theTop = scroll.getScrollY();
     var doc = outerWin.document;
-    var height = doc.documentElement.clientHeight;
+    var height = doc.documentElement.clientHeight; // includes padding
+
+    // we have to get the exactly height of the viewport. So it has to subtract all the values which changes
+    // the viewport height (E.g. padding, position top)
+    var viewportExtraSpacesAndPosition = getEditorPositionTop() + getPaddingTopAddedWhenPageViewIsEnable();
     return {
       top: theTop,
-      bottom: (theTop + height)
+      bottom: (theTop + height - viewportExtraSpacesAndPosition)
     };
   }
 
-  function getVisibleLineRange()
+
+  function getEditorPositionTop()
   {
-    var viewport = getViewPortTopBottom();
-    //console.log("viewport top/bottom: %o", viewport);
-    var obj = {};
-    var start = rep.lines.search(function(e)
-    {
-      return getLineEntryTopBottom(e, obj).bottom > viewport.top;
-    });
-    var end = rep.lines.search(function(e)
-    {
-      return getLineEntryTopBottom(e, obj).top >= viewport.bottom;
-    });
-    if (end < start) end = start; // unlikely
-    //console.log(start+","+end);
-    return [start, end];
+    var editor = parent.document.getElementsByTagName('iframe');
+    var editorPositionTop = editor[0].offsetTop;
+    return editorPositionTop;
   }
 
-  function getVisibleCharRange()
+  // ep_page_view adds padding-top, which makes the viewport smaller
+  function getPaddingTopAddedWhenPageViewIsEnable()
   {
-    var lineRange = getVisibleLineRange();
-    return [rep.lines.offsetOfIndex(lineRange[0]), rep.lines.offsetOfIndex(lineRange[1])];
+    var rootDocument = parent.parent.document;
+    var aceOuter = rootDocument.getElementsByName("ace_outer");
+    var aceOuterPaddingTop = parseInt($(aceOuter).css("padding-top"));
+    return aceOuterPaddingTop;
   }
 
   function handleCut(evt)
@@ -3966,12 +3985,12 @@ function Ace2Inner(){
           doDeleteKey();
           specialHandled = true;
         }
-        if((evt.which == 36 && evt.ctrlKey == true) && padShortcutEnabled.ctrlHome){ setScrollY(0); } // Control Home send to Y = 0
+        if((evt.which == 36 && evt.ctrlKey == true) && padShortcutEnabled.ctrlHome){ scroll.setScrollY(0); } // Control Home send to Y = 0
         if((evt.which == 33 || evt.which == 34) && type == 'keydown' && !evt.ctrlKey){
 
           evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
 
-          var oldVisibleLineRange = getVisibleLineRange();
+          var oldVisibleLineRange = scroll.getVisibleLineRange(rep);
           var topOffset = rep.selStart[0] - oldVisibleLineRange[0];
           if(topOffset < 0 ){
             topOffset = 0;
@@ -3981,7 +4000,7 @@ function Ace2Inner(){
           var isPageUp = evt.which === 33;
 
           scheduler.setTimeout(function(){
-            var newVisibleLineRange = getVisibleLineRange(); // the visible lines IE 1,10
+            var newVisibleLineRange = scroll.getVisibleLineRange(rep); // the visible lines IE 1,10
             var linesCount = rep.lines.length(); // total count of lines in pad IE 10
             var numberOfLinesInViewport = newVisibleLineRange[1] - newVisibleLineRange[0]; // How many lines are in the viewport right now?
 
@@ -4014,56 +4033,26 @@ function Ace2Inner(){
             // sometimes the first selection is -1 which causes problems (Especially with ep_page_view)
             // so use focusNode.offsetTop value.
             if(caretOffsetTop === -1) caretOffsetTop = myselection.focusNode.offsetTop;
-            setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
+            scroll.setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
 
           }, 200);
         }
-        /* Attempt to apply some sanity to cursor handling in Chrome after a copy / paste event
-           We have to do this the way we do because rep. doesn't hold the value for keyheld events IE if the user
-           presses and holds the arrow key ..  Sorry if this is ugly, blame Chrome's weird handling of viewports after new content is added*/
-        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40) && browser.chrome){
-          var viewport = getViewPortTopBottom();
-          var myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-          var caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
-          var lineHeight = $(myselection.focusNode.parentNode).parent("div").height(); // get the line height of the caret line
-          // top.console.log("offsetTop", myselection.focusNode.parentNode.parentNode.offsetTop);
-          try {
-            lineHeight = $(myselection.focusNode).height() // needed for how chrome handles line heights of null objects
-            // console.log("lineHeight now", lineHeight);
-          }catch(e){}
-          var caretOffsetTopBottom = caretOffsetTop + lineHeight;
-          var visibleLineRange = getVisibleLineRange(); // the visible lines IE 1,10
 
-          if(caretOffsetTop){ // sometimes caretOffsetTop bugs out and returns 0, not sure why, possible Chrome bug?  Either way if it does we don't wanna mess with it
-            // top.console.log(caretOffsetTop, viewport.top, caretOffsetTopBottom, viewport.bottom);
-            var caretIsNotVisible = (caretOffsetTop < viewport.top || caretOffsetTopBottom >= viewport.bottom); // Is the Caret Visible to the user?
-            // Expect some weird behavior caretOffsetTopBottom is greater than viewport.bottom on a keypress down
-            var offsetTopSamePlace = caretOffsetTop == viewport.top; // sometimes moving key left & up leaves the caret at the same point as the viewport.top, technically the caret is visible but it's not fully visible so we should move to it
-            if(offsetTopSamePlace && (evt.which == 37 || evt.which == 38)){
-                var newY = caretOffsetTop;
-                setScrollY(newY);
-            }
+        // scroll to viewport when user presses arrow keys and caret is out of the viewport
+        if((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40)){
+          // we use arrowKeyWasReleased to avoid triggering the animation when a key is continuously pressed
+          // this makes the scroll smooth
+          if(!continuouslyPressingArrowKey(type)){
+            // We use getSelection() instead of rep to get the caret position. This avoids errors like when
+            // the caret position is not synchronized with the rep. For example, when an user presses arrow
+            // down to scroll the pad without releasing the key. When the key is released the rep is not
+            // synchronized, so we don't get the right node where caret is.
+            var selection = getSelection();
 
-            if(caretIsNotVisible){ // is the cursor no longer visible to the user?
-              // top.console.log("Caret is NOT visible to the user");
-              // top.console.log(caretOffsetTop,viewport.top,caretOffsetTopBottom,viewport.bottom);
-              // Oh boy the caret is out of the visible area, I need to scroll the browser window to lineNum.
-              if(evt.which == 37 || evt.which == 38){ // If left or up arrow
-                var newY = caretOffsetTop; // That was easy!
-              }
-              if(evt.which == 39 || evt.which == 40){ // if down or right arrow
-                // only move the viewport if we're at the bottom of the viewport, if we hit down any other time the viewport shouldn't change
-                // NOTE: This behavior only fires if Chrome decides to break the page layout after a paste, it's annoying but nothing I can do
-                var selection = getSelection();
-                // top.console.log("line #", rep.selStart[0]); // the line our caret is on
-                // top.console.log("firstvisible", visibleLineRange[0]); // the first visiblel ine
-                // top.console.log("lastVisible", visibleLineRange[1]); // the last visible line
-                // top.console.log(rep.selStart[0], visibleLineRange[1], rep.selStart[0], visibleLineRange[0]);
-                var newY = viewport.top + lineHeight;
-              }
-              if(newY){
-                setScrollY(newY); // set the scrollY offset of the viewport on the document
-              }
+            if(selection){
+              var arrowUp = evt.which === 38;
+              var innerHeight = getInnerHeight();
+              scroll.scrollWhenPressArrowKeys(arrowUp, rep, innerHeight);
             }
           }
         }
@@ -4120,6 +4109,19 @@ function Ace2Inner(){
   }
 
   var thisKeyDoesntTriggerNormalize = false;
+
+  var arrowKeyWasReleased = true;
+  function continuouslyPressingArrowKey(type) {
+    var firstTimeKeyIsContinuouslyPressed = false;
+
+    if (type == 'keyup') arrowKeyWasReleased = true;
+    else if (type == 'keydown' && arrowKeyWasReleased) {
+      firstTimeKeyIsContinuouslyPressed = true;
+      arrowKeyWasReleased = false;
+    }
+
+    return !firstTimeKeyIsContinuouslyPressed;
+  }
 
   function doUndoRedo(which)
   {
@@ -4837,61 +4839,12 @@ function Ace2Inner(){
         setIfNecessary(root.style, "height", "");
       }
     }
-    // if near edge, scroll to edge
-    var scrollX = getScrollX();
-    var scrollY = getScrollY();
     var win = outerWin;
     var r = 20;
 
     enforceEditability();
 
     $(sideDiv).addClass('sidedivdelayed');
-  }
-
-  function getScrollXY()
-  {
-    var win = outerWin;
-    var odoc = outerWin.document;
-    if (typeof(win.pageYOffset) == "number")
-    {
-      return {
-        x: win.pageXOffset,
-        y: win.pageYOffset
-      };
-    }
-    var docel = odoc.documentElement;
-    if (docel && typeof(docel.scrollTop) == "number")
-    {
-      return {
-        x: docel.scrollLeft,
-        y: docel.scrollTop
-      };
-    }
-  }
-
-  function getScrollX()
-  {
-    return getScrollXY().x;
-  }
-
-  function getScrollY()
-  {
-    return getScrollXY().y;
-  }
-
-  function setScrollX(x)
-  {
-    outerWin.scrollTo(x, getScrollY());
-  }
-
-  function setScrollY(y)
-  {
-    outerWin.scrollTo(getScrollX(), y);
-  }
-
-  function setScrollXY(x, y)
-  {
-    outerWin.scrollTo(x, y);
   }
 
   var _teardownActions = [];
@@ -5214,26 +5167,6 @@ function Ace2Inner(){
     return odoc.documentElement.clientWidth;
   }
 
-  function scrollNodeVerticallyIntoView(node)
-  {
-    // requires element (non-text) node;
-    // if node extends above top of viewport or below bottom of viewport (or top of scrollbar),
-    // scroll it the minimum distance needed to be completely in view.
-    var win = outerWin;
-    var odoc = outerWin.document;
-    var distBelowTop = node.offsetTop + iframePadTop - win.scrollY;
-    var distAboveBottom = win.scrollY + getInnerHeight() - (node.offsetTop + iframePadTop + node.offsetHeight);
-
-    if (distBelowTop < 0)
-    {
-      win.scrollBy(0, distBelowTop);
-    }
-    else if (distAboveBottom < 0)
-    {
-      win.scrollBy(0, -distAboveBottom);
-    }
-  }
-
   function scrollXHorizontallyIntoView(pixelX)
   {
     var win = outerWin;
@@ -5255,8 +5188,8 @@ function Ace2Inner(){
   {
     if (!rep.selStart) return;
     fixView();
-    var focusLine = (rep.selFocusAtStart ? rep.selStart[0] : rep.selEnd[0]);
-    scrollNodeVerticallyIntoView(rep.lines.atIndex(focusLine).lineNode);
+    var innerHeight = getInnerHeight();
+    scroll.scrollNodeVerticallyIntoView(rep, innerHeight);
     if (!doesWrap)
     {
       var browserSelection = getSelection();
