@@ -40,12 +40,12 @@ for ( var i = 0; i < argv.length; i++ ) {
   }
 
   // Override location of settings.json file
-  if ( prevArg == '--sessionkey' || prevArg == '-k' ) {
+  if ( prevArg == '--sessionkey' ) {
     exports.argv.sessionkey = arg;
   }
 
   // Override location of settings.json file
-  if ( prevArg == '--apikey' || prevArg == '-k' ) {
+  if ( prevArg == '--apikey' ) {
     exports.argv.apikey = arg;
   }
 
