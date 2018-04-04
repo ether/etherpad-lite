@@ -2,6 +2,7 @@ var hasPadAccess = require("../../padaccess");
 var settings = require('../../utils/Settings');
 var exportHandler = require('../../handler/ExportHandler');
 var importHandler = require('../../handler/ImportHandler');
+var padManager = require("../../db/PadManager");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/p/:pad/:rev?/export/:type', function(req, res, next) {
@@ -22,14 +23,29 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     res.header("Access-Control-Allow-Origin", "*");
 
     hasPadAccess(req, res, function() {
-      exportHandler.doExport(req, res, req.params.pad, req.params.type);
+      console.log('req.params.pad', req.params.pad);
+      padManager.doesPadExists(req.params.pad, function(err, exists)
+      {
+        if(!exists) {
+          return next();
+        }
+
+        exportHandler.doExport(req, res, req.params.pad, req.params.type);
+      });
     });
   });
 
   //handle import requests
   args.app.post('/p/:pad/import', function(req, res, next) {
     hasPadAccess(req, res, function() {
-      importHandler.doImport(req, res, req.params.pad);
+      padManager.doesPadExists(req.params.pad, function(err, exists)
+      {
+        if(!exists) {
+          return next();
+        }
+
+        importHandler.doImport(req, res, req.params.pad);
+      });
     });
   });
 }
