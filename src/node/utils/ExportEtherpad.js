@@ -22,25 +22,18 @@ var ERR = require("async-stacktrace");
 exports.getPadRaw = function(padId, callback){
   async.waterfall([
   function(cb){
-
-    // Get the Pad
-    db.findKeys("pad:"+padId, null, function(err,padcontent){
-      if(!err){
-        cb(err, padcontent);
-      }
-    })
+    db.get("pad:"+padId, cb);
   },
   function(padcontent,cb){
+    var records = ["pad:"+padId];
+    for (var i = 0; i <= padcontent.head; i++) {
+      records.push("pad:"+padId+":revs:" + i);
+    }
 
-    // Get the Pad available content keys
-    db.findKeys("pad:"+padId+":*", null, function(err,records){
-      if(!err){
-        for (var key in padcontent) { records.push(padcontent[key]);}
-        cb(err, records);
-      }
-    })
-  },
-  function(records, cb){
+    for (var i = 0; i <= padcontent.chatHead; i++) {
+      records.push("pad:"+padId+":chat:" + i);
+    }
+
     var data = {};
 
     async.forEachSeries(Object.keys(records), function(key, r){
@@ -69,7 +62,7 @@ exports.getPadRaw = function(padId, callback){
         }
         r(null); // callback;
       });
-    }, function(err){ 
+    }, function(err){
       cb(err, data);
     })
   }
