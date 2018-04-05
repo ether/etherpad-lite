@@ -43,7 +43,7 @@ body.grayedout { background-color: #eee !important }
 }
 
 body.doesWrap {
-  /* white-space: pre-wrap; */
+  white-space: pre-wrap;
 
   /*
     Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret,
