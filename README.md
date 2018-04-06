@@ -17,7 +17,7 @@ Etherpad is a really-real time collaborative editor scalable to thousands of sim
 ```
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
 sudo apt-get install -y nodejs
-git clone git://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
+git clone https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
 ```
 
 ## GNU/Linux and other UNIX-like systems
