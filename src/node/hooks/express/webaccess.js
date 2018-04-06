@@ -20,7 +20,7 @@ exports.basicAuth = function (req, res, next) {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
 
-    if (req.path.indexOf('/admin') != 0) {
+    if (req.path.toLowerCase().indexOf('/admin') != 0) {
       if (!settings.requireAuthentication) return cb(true);
       if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
     }
