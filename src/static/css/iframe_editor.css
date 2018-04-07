@@ -62,11 +62,9 @@ body.doesWrap {
   white-space: normal;
 }
 
-@-moz-document url-prefix() {
-  body.doesWrap:not(.noprewrap) > div{
-    /* Related to #1766 */
-    white-space: pre-wrap;
-  }
+body.doesWrap:not(.noprewrap) > div{
+  /* Related to #1766 */
+  white-space: pre-wrap;
 }
 
 #innerdocbody {
