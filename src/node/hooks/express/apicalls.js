@@ -3,7 +3,7 @@ var apiLogger = log4js.getLogger("API");
 var clientLogger = log4js.getLogger("client");
 var formidable = require('formidable');
 var apiHandler = require('../../handler/APIHandler');
-var isValidJSONPName = require('./isValidJsonPName');
+var isValidJSONPName = require('./isValidJSONPName');
 
 //This is for making an api call, collecting all post information and passing it to the apiHandler
 var apiCaller = function(req, res, fields) {
