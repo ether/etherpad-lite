@@ -90,7 +90,7 @@ exports.doImport = function(req, res, padId)
     //this allows us to accept source code files like .c or .java
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase()
-        , knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm", ".etherpad"]
+        , knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm", ".etherpad", ".rtf"]
         , fileEndingKnown = (knownFileEndings.indexOf(fileEnding) > -1);
       
       //if the file ending is known, continue as normal

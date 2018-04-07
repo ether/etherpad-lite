@@ -17,18 +17,18 @@
                       "etherpad-require-kernel" : "1.0.9",
                       "resolve"                 : "1.1.7",
                       "socket.io"               : "1.7.3",
-                      "ueberdb2"                : "0.3.0",
+                      "ueberdb2"                : "0.3.8",
                       "express"                 : "4.13.4",
                       "express-session"         : "1.13.0",
                       "cookie-parser"           : "1.3.4",
                       "async"                   : "0.9.0",
                       "clean-css"               : "3.4.19",
                       "uglify-js"               : "2.6.2",
-                      "formidable"              : "1.0.17",
+                      "formidable"              : "1.2.1",
                       "log4js"                  : "0.6.35",
                       "cheerio"                 : "0.20.0",
                       "async-stacktrace"        : "0.0.2",
-                      "npm"                     : "4.0.2",
+                      "npm"                     : ">=4.0.2",
                       "ejs"                     : "2.5.7",
                       "graceful-fs"             : "4.1.3",
                       "slide"                   : "1.1.6",
@@ -42,13 +42,12 @@
                       "channels"                : "0.0.4",
                       "jsonminify"              : "0.4.1",
                       "measured"                : "1.1.0",
-                      "mocha"                   : "2.4.5",
-                      "supertest"               : "1.2.0",
-                      "is-var-name"             : "1.0.0"
-                     },
+                      "mocha"                   : "5.0.5",
+                      "supertest"               : "3.0.0"
+  },
   "bin":             { "etherpad-lite": "./node/server.js" },
   "devDependencies": {
-                      "wd"      : "0.3.11"
+                      "wd"      : "1.6.1"
                      },
   "engines"        : { "node" : ">=0.10.0",
                        "npm"  : ">=1.0"
@@ -56,6 +55,6 @@
   "repository"     : { "type" : "git",
                        "url" : "http://github.com/ether/etherpad-lite.git"
                      },
-  "version"        : "1.6.3",
+  "version"        : "1.6.4",
   "license"        : "Apache-2.0"
 }

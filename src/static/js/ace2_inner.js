@@ -5404,8 +5404,8 @@ function Ace2Inner(){
             // height is taken to be the top offset of the next line. If we
             // didn't do this special case, we would miss out on any top margin
             // included on the first line. The default stylesheet doesn't add
-            // extra margins, but plugins might.
-            h = b.nextSibling.offsetTop;
+            // extra margins/padding, but plugins might.
+            h = b.nextSibling.offsetTop - window.getComputedStyle(doc.body).getPropertyValue("padding-top");
           } else {
             h = b.nextSibling.offsetTop - b.offsetTop;
           }
