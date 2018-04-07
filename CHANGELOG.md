@@ -1,8 +1,8 @@
 # 1.6.4
- * SECURITY: exploitable /admin access
- * SECURITY: DoS with pad exports
- * SECURITY: Remote Code Execution
- * SECURITY: Pad data leak
+ * SECURITY: exploitable /admin access - CVE-2018-9845
+ * SECURITY: DoS with pad exports - CVE-2018-9327
+ * SECURITY: Remote Code Execution - CVE-2018-9326
+ * SECURITY: Pad data leak - CVE-2018-9325
  * Fix: Admin redirect URL
  * Fix: Various script Fixes
  * Fix: Various CSS/Style/Layout fixes
@@ -10,7 +10,7 @@
  * NEW: Hook: onAccessCheck
  * NEW: SESSIONKEY and APIKey customizable path
  * NEW: checkPads script
- * NEW: Support "cluster mode" 
+ * NEW: Support "cluster mode"
 
 # 1.6.3
  * SECURITY: Update ejs
