@@ -124,7 +124,7 @@ exports.getPackages = function (cb) {
   
     var tmp = {};
     tmp[data.name] = data;
-    flatten(tmp[undefined].dependencies);
+    flatten(tmp[data.name].dependencies);
     cb(null, packages);
   });
 };
