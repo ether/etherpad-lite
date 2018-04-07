@@ -1,3 +1,17 @@
+# 1.6.4
+ * SECURITY: exploitable /admin access - CVE-2018-9845
+ * SECURITY: DoS with pad exports - CVE-2018-9327
+ * SECURITY: Remote Code Execution - CVE-2018-9326
+ * SECURITY: Pad data leak - CVE-2018-9325
+ * Fix: Admin redirect URL
+ * Fix: Various script Fixes
+ * Fix: Various CSS/Style/Layout fixes
+ * NEW: Improved Pad contents readability
+ * NEW: Hook: onAccessCheck
+ * NEW: SESSIONKEY and APIKey customizable path
+ * NEW: checkPads script
+ * NEW: Support "cluster mode"
+
 # 1.6.3
  * SECURITY: Update ejs
  * SECURITY: xss vulnerability when reading window.location.href
@@ -56,7 +70,7 @@
  * NEW: Allow LibreOffice to be used when exporting a pad
  * NEW: Create hook exportHtmlAdditionalTagsWithData
  * NEW: Improve DB migration performance
- * NEW: allow settings to be applied from the filesystem 
+ * NEW: allow settings to be applied from the filesystem
  * NEW: remove applySettings hook and allow credentials.json to be part of core
  * NEW: Use exec to switch to node process
  * NEW: Validate incoming color codes
@@ -85,7 +99,7 @@
  * Fix: switchToPad method
  * Fix: Dead keys
  * Fix: Preserve new lines in copy-pasted text
- * Fix: Compatibility mode on IE 
+ * Fix: Compatibility mode on IE
  * Fix: Content Collector to get the class of the DOM-node
  * Fix: Timeslider export links
  * Fix: Double prompt on file upload
@@ -212,7 +226,7 @@
  * Fix: Session Deletion error
  * Fix: Allow browser tabs to be cycled when focus is in editor
  * Fix: Various Editor issues with Easysync potentially entering forever loop on bad changeset
- 
+
 # 1.4
  * NEW: Disable toolbar items through settings.json
  * NEW: Internal stats/metrics engine
@@ -244,7 +258,7 @@
 # 1.3
  * NEW: We now follow the semantic versioning scheme!
  * NEW: Option to disable IP logging
- * NEW: Localisation updates from http://translatewiki.net. 
+ * NEW: Localisation updates from http://translatewiki.net.
  * Fix: Fix readOnly group pads
  * Fix: don't fetch padList on every request
 
@@ -337,7 +351,7 @@
  * NEW: Add authorId to chat and userlist as a data attribute
  * NEW: Refactor and fix our frontend tests
  * NEW: Localisation updates
- 
+
 
 # 1.2.81
  * Fix: CtrlZ-Y for Undo Redo
@@ -377,7 +391,7 @@
  * Other: Change loading message asking user to please wait on first build
  * Other: Allow etherpad to use global npm installation (Safe since node 6.3)
  * Other: Better documentation for log rotation and log message handling
- 
+
 
 
 # 1.2.7

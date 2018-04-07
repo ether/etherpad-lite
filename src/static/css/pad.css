@@ -3,8 +3,9 @@ html,
 body,
 p {
   margin: 0;
-  padding: 0;
+  padding: 0px;
 }
+
 .clear {
   clear: both
 }
@@ -1071,9 +1072,9 @@ input[type=checkbox] {
       overflow: auto;
     }
     #mycolorpicker {
-      left: -73px;
-      top:auto !important;
-      bottom:33px !important;
+      left: 0px;
+      top:37px !important;
+      position:fixed;
       /* #mycolorpicker: width -#users: width */;
     }
     #editorcontainer {
