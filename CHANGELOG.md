@@ -1,3 +1,10 @@
+# 1.6.5
+ * SECURITY: Escape data when listing available plugins
+ * FIX: Fix typo in apicalls.js which prevented importing isValidJSONPName
+ * FIX: fixed plugin dependency issue
+ * FIX: Update iframe_editor.css
+ * FIX: unbreak Safari iOS line wrapping
+
 # 1.6.4
  * SECURITY: exploitable /admin access - CVE-2018-9845
  * SECURITY: DoS with pad exports - CVE-2018-9327
