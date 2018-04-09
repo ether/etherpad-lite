@@ -483,8 +483,6 @@ function getPadHTML (pad, revNum, callback) {
             },
 
             // convert atext to html
-
-
             function (callback) {
                 html = getHTMLFromAtext(pad, atext);
                 callback(null);
