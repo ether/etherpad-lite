@@ -33,7 +33,7 @@ body.grayedout { background-color: #eee !important }
 #innerdocbody {
   font-size: 16px; /* overridden by body.style */
   font-family:Arial, sans-serif; /* overridden by body.style */
-  line-height: 16px; /* overridden by body.style */
+  line-height: 22px; /* overridden by body.style */
   background-color: white;
   color: black;
 }
@@ -62,11 +62,9 @@ body.doesWrap {
   white-space: normal;
 }
 
-@-moz-document url-prefix() {
-  body.doesWrap:not(.noprewrap) > div{
-    /* Related to #1766 */
-    white-space: pre-wrap;
-  }
+body.doesWrap:not(.noprewrap) > div{
+  /* Related to #1766 */
+  white-space: pre-wrap;
 }
 
 #innerdocbody {
