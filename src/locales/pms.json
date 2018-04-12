@@ -56,5 +56,9 @@
 	"pad.modals.forcereconnect": "Forsé la neuva conession",
 	"pad.modals.reconnecttimer": "Tentativ ëd neuva conession",
 	"pad.modals.cancel": "Anulé",
-	"pad.modals.userdup": "Duvertà an n'àutra fnestra"
+	"pad.modals.userdup": "Duvertà an n'àutra fnestra",
+	"pad.modals.userdup.explanation": "Ës feuj a smija esse duvert an vàire fnestre ansima a st'ordinator.",
+	"pad.modals.userdup.advice": "Coleghesse torna për dovré costa fnestra.",
+	"pad.modals.unauth": "Nen autorisà",
+	"pad.modals.unauth.explanation": "Ij sò përmess a son cangià antramentre ch'a vëdìa costa pàgina. Ch'a sërca ëd coleghesse torna."
 }
