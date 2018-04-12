@@ -44,5 +44,17 @@
 	"pad.importExport.import": "Carié n'archivi o document ëd test",
 	"pad.importExport.importSuccessful": "Bele fàit!",
 	"pad.importExport.export": "Esporté ël feuj atual coma:",
-	"pad.importExport.exportetherpad": "Etherpad"
+	"pad.importExport.exportetherpad": "Etherpad",
+	"pad.importExport.exporthtml": "HTML",
+	"pad.importExport.exportplain": "Mach test",
+	"pad.importExport.exportword": "Microsoft Word",
+	"pad.importExport.exportpdf": "PDF",
+	"pad.importExport.exportopen": "ODF (Open Document Format)",
+	"pad.importExport.abiword.innerHTML": "A peul mach amporté dij formà ëd test sempi o HTML. Për dle fonsionalità d'amportassion pi avansà, ch'a <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">anstala AbiWord</a>.",
+	"pad.modals.connected": "Colegà.",
+	"pad.modals.reconnecting": "Neuva conession a sò feuj...",
+	"pad.modals.forcereconnect": "Forsé la neuva conession",
+	"pad.modals.reconnecttimer": "Tentativ ëd neuva conession",
+	"pad.modals.cancel": "Anulé",
+	"pad.modals.userdup": "Duvertà an n'àutra fnestra"
 }
