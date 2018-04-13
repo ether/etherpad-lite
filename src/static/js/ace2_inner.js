@@ -5369,7 +5369,7 @@ function Ace2Inner(){
   function initLineNumbers()
   {
     lineNumbersShown = 1;
-    sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner" class="sidedivinner"><div>1</div></td></tr></table>';
+    sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner" class="sidedivinner"><div><a href="#line1">1</a></div></td></tr></table>';
     sideDivInner = outerWin.document.getElementById("sidedivinner");
     $(sideDiv).addClass("sidediv");
   }
@@ -5446,7 +5446,13 @@ function Ace2Inner(){
           div.style.height = h +"px";
         }
 
-        div.appendChild(odoc.createTextNode(String(n)));
+        var link = odoc.createElement('a');
+        link.href = "#line" + String(n);
+        link.style = "text-decoration: none"
+        link.appendChild(odoc.createTextNode(String(n)));
+ //       odoc.a.href="#line" + String(n);
+//        fragment.appendChild(odoc.createTextNode(String(n)));
+        div.appendChild(link);
         fragment.appendChild(div);
         if(b){
           b = b.nextSibling;
