@@ -1243,7 +1243,7 @@ function handleClientReady(client, message)
             var Msg = {"type":"COLLABROOM",
                        "data":{type:"CLIENT_RECONNECT",
                                noChanges: true,
-                               newRev:pad.getHeadRevisionNumber()
+                               newRev: pad.getHeadRevisionNumber()
                        }};
             client.json.send(Msg);
           }

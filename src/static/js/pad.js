@@ -201,8 +201,6 @@ function handshake()
   });
 
   socket.once('connect', function () {
-    // Setup our own connected flag since socketio one doesn't work accurately
-    socket.realConnected = true;
     sendClientReady(false);
   });
 
