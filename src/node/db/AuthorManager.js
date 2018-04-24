@@ -25,7 +25,7 @@ var customError = require("../utils/customError");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 
 exports.getColorPalette = function(){
-  return ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ff8f8f", "#ffe38f", "#c7ff8f", "#8fffab", "#8fffff", "#8fabff", "#c78fff", "#ff8fe3", "#d97979", "#d9c179", "#a9d979", "#79d991", "#79d9d9", "#7991d9", "#a979d9", "#d979c1", "#d9a9a9", "#d9cda9", "#c1d9a9", "#a9d9b5", "#a9d9d9", "#a9b5d9", "#c1a9d9", "#d9a9cd", "#4c9c82", "#12d1ad", "#2d8e80", "#7485c3", "#a091c7", "#3185ab", "#6818b4", "#e6e76d", "#a42c64", "#f386e5", "#4ecc0c", "#c0c236", "#693224", "#b5de6a", "#9b88fd", "#358f9b", "#496d2f", "#e267fe", "#d23056", "#1a1a64", "#5aa335", "#d722bb", "#86dc6c", "#b5a714", "#955b6a", "#9f2985", "#4b81c8", "#3d6a5b", "#434e16", "#d16084", "#af6a0e", "#8c8bd8"];
+  return ["#ffc7c7", "#fff1c7", "#e3ffc7", "#c7ffd5", "#c7ffff", "#c7d5ff", "#e3c7ff", "#ffc7f1", "#ffa8a8", "#ffe699", "#cfff9e", "#99ffb3", "#a3ffff", "#99b3ff", "#cc99ff", "#ff99e5", "#e7b1b1", "#e9dcAf", "#cde9af", "#bfedcc", "#b1e7e7", "#c3cdee", "#d2b8ea", "#eec3e6", "#e9cece", "#e7e0ca", "#d3e5c7", "#bce1c5", "#c1e2e2", "#c1c9e2", "#cfc1e2", "#e0bdd9", "#baded3", "#a0f8eb", "#b1e7e0", "#c3c8e4", "#cec5e2", "#b1d5e7", "#cda8f0", "#f0f0a8", "#f2f2a6", "#f5a8eb", "#c5f9a9", "#ececbb", "#e7c4bc", "#daf0b2", "#b0a0fd", "#bce2e7", "#cce2bb", "#ec9afe", "#edabbd", "#aeaeea", "#c4e7b1", "#d722bb", "#f3a5e7", "#ffa8a8", "#d8c0c5", "#eaaedd", "#adc6eb", "#bedad1", "#dee9af", "#e9afc2", "#f8d2a0", "#b3b3e6"];
 };
 
 /**
@@ -42,9 +42,9 @@ exports.doesAuthorExists = function (authorID, callback)
 }
 
 /**
- * Returns the AuthorID for a token. 
- * @param {String} token The token 
- * @param {Function} callback callback (err, author) 
+ * Returns the AuthorID for a token.
+ * @param {String} token The token
+ * @param {Function} callback callback (err, author)
  */
 exports.getAuthor4Token = function (token, callback)
 {
@@ -57,21 +57,21 @@ exports.getAuthor4Token = function (token, callback)
 }
 
 /**
- * Returns the AuthorID for a mapper. 
+ * Returns the AuthorID for a mapper.
  * @param {String} token The mapper
  * @param {String} name The name of the author (optional)
- * @param {Function} callback callback (err, author) 
+ * @param {Function} callback callback (err, author)
  */
 exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
 {
   mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
   {
     if(ERR(err, callback)) return;
-    
+
     //set the name of this author
     if(name)
       exports.setAuthorName(author.authorID, name);
-      
+
     //return the authorID
     callback(null, author);
   });
@@ -80,27 +80,27 @@ exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
 /**
  * Returns the AuthorID for a mapper. We can map using a mapperkey,
  * so far this is token2author and mapper2author
- * @param {String} mapperkey The database key name for this mapper 
+ * @param {String} mapperkey The database key name for this mapper
  * @param {String} mapper The mapper
- * @param {Function} callback callback (err, author) 
+ * @param {Function} callback callback (err, author)
  */
 function mapAuthorWithDBKey (mapperkey, mapper, callback)
-{  
+{
   //try to map to an author
   db.get(mapperkey + ":" + mapper, function (err, author)
   {
     if(ERR(err, callback)) return;
-  
+
     //there is no author with this mapper, so create one
     if(author == null)
     {
       exports.createAuthor(null, function(err, author)
       {
         if(ERR(err, callback)) return;
-        
+
         //create the token2author relation
         db.set(mapperkey + ":" + mapper, author.authorID);
-        
+
         //return the author
         callback(null, author);
       });
@@ -110,7 +110,7 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
     {
       //update the timestamp of this author
       db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
-      
+
       //return the author
       callback(null, {authorID: author});
     }
@@ -118,20 +118,20 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
 }
 
 /**
- * Internal function that creates the database entry for an author 
- * @param {String} name The name of the author 
+ * Internal function that creates the database entry for an author
+ * @param {String} name The name of the author
  */
 exports.createAuthor = function(name, callback)
 {
   //create the new author name
   var author = "a." + randomString(16);
-        
+
   //create the globalAuthors db entry
   var authorObj = {"colorId" : Math.floor(Math.random()*(exports.getColorPalette().length)), "name": name, "timestamp": new Date().getTime()};
-        
+
   //set the global author db entry
   db.set("globalAuthor:" + author, authorObj);
-  
+
   callback(null, {authorID: author});
 }
 
@@ -212,7 +212,7 @@ exports.listPadsOfAuthor = function (authorID, callback)
     }
     //everything is fine, return the pad IDs
     else
-    {     
+    {
       var pads = [];
       if(author.padIDs != null)
       {
@@ -238,16 +238,16 @@ exports.addPad = function (authorID, padID)
   {
     if(ERR(err)) return;
     if(author == null) return;
-    
+
     //the entry doesn't exist so far, let's create it
     if(author.padIDs == null)
     {
       author.padIDs = {};
     }
-      
+
     //add the entry for this pad
     author.padIDs[padID] = 1;// anything, because value is not used
-      
+
     //save the new element back
     db.set("globalAuthor:" + authorID, author);
   });
@@ -264,11 +264,11 @@ exports.removePad = function (authorID, padID)
   {
     if(ERR(err)) return;
     if(author == null) return;
-    
+
     if(author.padIDs != null)
     {
       //remove pad from author
-      delete author.padIDs[padID];   
+      delete author.padIDs[padID];
       db.set("globalAuthor:" + authorID, author);
     }
   });

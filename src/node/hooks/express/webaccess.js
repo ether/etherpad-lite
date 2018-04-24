@@ -20,7 +20,7 @@ exports.basicAuth = function (req, res, next) {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
 
-    if (req.path.indexOf('/admin') != 0) {
+    if (req.path.toLowerCase().indexOf('/admin') != 0) {
       if (!settings.requireAuthentication) return cb(true);
       if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
     }
@@ -36,13 +36,16 @@ exports.basicAuth = function (req, res, next) {
       var userpass = new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
       var username = userpass.shift();
       var password = userpass.join(':');
-
-      if (settings.users[username] != undefined && settings.users[username].password == password) {
-        settings.users[username].username = username;
-        req.session.user = settings.users[username];
-        return cb(true);
-      }
-      return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(cb));
+      var fallback = function(success) {
+        if (success) return cb(true);
+        if (settings.users[username] != undefined && settings.users[username].password === password) {
+          settings.users[username].username = username;
+          req.session.user = settings.users[username];
+          return cb(true);
+        }
+        return cb(false);
+      };
+      return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(fallback));
     }
     hooks.aCallFirst("authenticate", {req: req, res:res, next:next}, hookResultMangle(cb));
   }
@@ -126,4 +129,3 @@ exports.expressConfigure = function (hook_name, args, cb) {
 
   args.app.use(exports.basicAuth);
 }
-

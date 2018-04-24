@@ -1,4 +1,4 @@
-# Developer Guidelines
+# Contributor Guidelines
 (Please talk to people on the mailing list before you change this page, see our section on [how to get in touch](https://github.com/ether/etherpad-lite#get-in-touch))
 
 ## How to write a bug report
@@ -35,7 +35,7 @@ The logfile location is defined in startup script or the log is directly shown i
 To make sure everybody is going in the same direction:
 * easy to install for admins and easy to use for people
 * easy to integrate into other apps, but also usable as standalone
-* using less resources on server side
+* lightweight and scalable
 * extensible, as much functionality should be extendable with plugins so changes don't have to be done in core.
 Also, keep it maintainable. We don't wanna end up as the monster Etherpad was!
 
@@ -92,3 +92,19 @@ You can build the docs e.g. produce html, using `make docs`. At some point in th
 
 ## Testing
 Front-end tests are found in the `tests/frontend/` folder in the repository. Run them by pointing your browser to `<yourdomainhere>/tests/frontend`.
+
+## Things you can help with
+Etherpad is much more than software.  So if you aren't a developer then worry not, there is still a LOT you can do!  A big part of what we do is community engagement.  You can help in the following ways
+ * Triage bugs (applying labels) and confirming their existance
+ * Testing fixes (simply applying them and seeing if it fixes your issue or not) - Some git experience required
+ * Notifying large site admins of new releases
+ * Writing Changelogs for releases
+ * Creating Windows packages
+ * Creating releases
+ * Bumping dependencies periodically and checking they don't break anything
+ * Write proposals for grants
+ * Co-Author and Publish CVEs
+ * Work with SFC to maintain legal side of project
+ * Maintain TODO page - https://github.com/ether/etherpad-lite/wiki/TODO#IMPORTANT_TODOS
+ * Replying to messages on IRC / The Mailing list / Emails
+  

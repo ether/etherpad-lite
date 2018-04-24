@@ -33,7 +33,7 @@ var padcookie = (function()
       return null;
     }
     // look for (start of string OR semicolon) followed by whitespace followed by prefs=(something);
-    var regexResult = document.cookie.match(new RegExp("(?:^|;)\s*" + cookieName + "=([^;]*)(?:;|$)"));
+    var regexResult = document.cookie.match(new RegExp("(?:^|;)\\s*" + cookieName + "=([^;]*)(?:;|$)"));
     if ((!regexResult) || (!regexResult[1]))
     {
       return null;

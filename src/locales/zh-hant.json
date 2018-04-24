@@ -117,7 +117,7 @@
 	"timeslider.month.october": "10月",
 	"timeslider.month.november": "11月",
 	"timeslider.month.december": "12月",
-	"timeslider.unnamedauthors": "{{num}}匿名{[plural(num) 作者]}",
+	"timeslider.unnamedauthors": "{{num}} 個匿名{[plural(num) one:作者, other:作者]}",
 	"pad.savedrevs.marked": "標記此修訂版本為已儲存修訂版本。",
 	"pad.savedrevs.timeslider": "您可使用時段滑標來查看先前保存的版本內容",
 	"pad.userlist.entername": "輸入您的姓名",

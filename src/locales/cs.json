@@ -8,7 +8,8 @@
 			"Quinn",
 			"Aktron",
 			"Mormegil",
-			"Dvorapa"
+			"Dvorapa",
+			"Clon"
 		]
 	},
 	"index.newPad": "Založ nový Pad",
@@ -63,6 +64,8 @@
 	"pad.modals.connected": "Připojeno.",
 	"pad.modals.reconnecting": "Znovupřipojování k Padu…",
 	"pad.modals.forcereconnect": "Vynutit znovupřipojení",
+	"pad.modals.reconnecttimer": "Zkouším to znovu připojit",
+	"pad.modals.cancel": "Zrušit",
 	"pad.modals.userdup": "Otevřeno v jiném okně",
 	"pad.modals.userdup.explanation": "Zdá se, že tento Pad je na tomto počítači otevřen ve více než jednom okně.",
 	"pad.modals.userdup.advice": "Pro použití tohoto okna je třeba se znovu připojit.",

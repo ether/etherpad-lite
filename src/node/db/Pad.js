@@ -464,9 +464,10 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
   }
   else force = true;
 
-  //kick everyone from this pad
-  // TODO: this presents a message on the client saying that the pad was 'deleted'. Fix this?
-  padMessageHandler.kickSessionsFromPad(sourceID);
+  // Kick everyone from this pad.
+  // This was commented due to https://github.com/ether/etherpad-lite/issues/3183.
+  // Do we really need to kick everyone out?
+  // padMessageHandler.kickSessionsFromPad(sourceID);
 
   // flush the source pad:
   _this.saveToDatabase();

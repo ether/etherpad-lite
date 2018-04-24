@@ -110,31 +110,27 @@ function getHTMLFromAtext(pad, atext, authorColors)
     css+="<style>\n";
 
     for (var a in apool.numToAttrib) {
-      if (apool.numToAttrib.hasOwnProperty.call(a)) {
-        var attr = apool.numToAttrib[a];
+      var attr = apool.numToAttrib[a];
 
-        var newLength = null;
-        var propName = null;
-        //skip non author attributes
-        if (attr[0] === "author" && attr[1] !== ""){
-          //add to props array
-          propName = "author" + stripDotFromAuthorID(attr[1]);
-          newLength = props.push(propName);
-          anumMap[a] = newLength - 1;
+      //skip non author attributes
+      if(attr[0] === "author" && attr[1] !== ""){
+        //add to props array
+        var propName = "author" + stripDotFromAuthorID(attr[1]);
+        var newLength = props.push(propName);
+        anumMap[a] = newLength -1;
 
-          css+="." + propName + " {background-color: " + authorColors[attr[1]]+ "}\n";
-        } else if(attr[0] === "removed") {
-          propName = "removed";
+        css+="." + propName + " {background-color: " + authorColors[attr[1]]+ "}\n";
+      } else if(attr[0] === "removed") {
+        var propName = "removed";
 
-          newLength = props.push(propName);
-          anumMap[a] = newLength -1;
+        var newLength = props.push(propName);
+        anumMap[a] = newLength -1;
 
-          css+=".removed {text-decoration: line-through; " +
-              "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+
-              "filter: alpha(opacity=80); "+
-              "opacity: 0.8; "+
-              "}\n";
-                }
+        css+=".removed {text-decoration: line-through; " +
+             "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+
+             "filter: alpha(opacity=80); "+
+             "opacity: 0.8; "+
+             "}\n";
       }
     }
 

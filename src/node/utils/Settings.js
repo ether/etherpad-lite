@@ -476,11 +476,12 @@ exports.reloadSettings = function reloadSettings() {
   }
 
   if (!exports.sessionKey) {
+    var sessionkeyFilename = argv.sessionkey || "./SESSIONKEY.txt";
     try {
-      exports.sessionKey = fs.readFileSync("./SESSIONKEY.txt","utf8");
+      exports.sessionKey = fs.readFileSync(sessionkeyFilename,"utf8");
     } catch(e) {
       exports.sessionKey = randomString(32);
-      fs.writeFileSync("./SESSIONKEY.txt",exports.sessionKey,"utf8");
+      fs.writeFileSync(sessionkeyFilename,exports.sessionKey,"utf8");
     }
   } else {
     console.warn("Declaring the sessionKey in the settings.json is deprecated. This value is auto-generated now. Please remove the setting from the file.");

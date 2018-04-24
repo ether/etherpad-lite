@@ -23,7 +23,8 @@
 			"Fylip22",
 			"C13m3n7",
 			"Wladek92",
-			"Urhixidur"
+			"Urhixidur",
+			"Envlh"
 		]
 	},
 	"index.newPad": "Nouveau pad",
@@ -48,7 +49,7 @@
 	"pad.colorpicker.save": "Enregistrer",
 	"pad.colorpicker.cancel": "Annuler",
 	"pad.loading": "Chargement…",
-	"pad.noCookie": "Le témoin (cookie) n’a pas pu être trouvé. Veuillez autoriser les témoins dans votre navigateur !",
+	"pad.noCookie": "Le cookie n’a pas pu être trouvé. Veuillez autoriser les cookies dans votre navigateur !",
 	"pad.passwordRequired": "Vous avez besoin d'un mot de passe pour accéder à ce pad",
 	"pad.permissionDenied": "Vous n'avez pas la permission d’accéder à ce pad",
 	"pad.wrongPassword": "Votre mot de passe est incorrect",
