@@ -79,12 +79,17 @@ $(document).ready(function () {
       
       for (attr in plugin) {
         if(attr == "name"){ // Hack to rewrite URLS into name
-          row.find(".name").html("<a target='_blank' title='Plugin details' href='https://npmjs.org/package/"+plugin['name']+"'>"+plugin['name'].substr(3)+"</a>"); // remove 'ep_'
-        }else{
+          var link = $('<a>');
+          link.attr('href', 'https://npmjs.org/package/'+plugin['name']);
+          link.attr('plugin', 'Plugin details');
+          link.attr('target', '_blank');
+          link.text(plugin['name'].substr(3));
+          row.find('.name').append(link);
+        } else {
           row.find("." + attr).text(plugin[attr]);
         }
       }
-      row.find(".version").html( plugin.version );
+      row.find(".version").text(plugin.version);
       row.addClass(plugin.name)
       row.data('plugin', plugin.name)
       container.append(row);

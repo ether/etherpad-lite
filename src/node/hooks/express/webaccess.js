@@ -20,7 +20,7 @@ exports.basicAuth = function (req, res, next) {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
 
-    if (req.path.indexOf('/admin') != 0) {
+    if (req.path.toLowerCase().indexOf('/admin') != 0) {
       if (!settings.requireAuthentication) return cb(true);
       if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
     }
@@ -38,7 +38,7 @@ exports.basicAuth = function (req, res, next) {
       var password = userpass.join(':');
       var fallback = function(success) {
         if (success) return cb(true);
-        if (settings.users[username] != undefined && settings.users[username].password == password) {
+        if (settings.users[username] != undefined && settings.users[username].password === password) {
           settings.users[username].username = username;
           req.session.user = settings.users[username];
           return cb(true);
@@ -129,4 +129,3 @@ exports.expressConfigure = function (hook_name, args, cb) {
 
   args.app.use(exports.basicAuth);
 }
-

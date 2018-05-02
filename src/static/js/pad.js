@@ -206,15 +206,22 @@ function handshake()
 
   socket.on('reconnect', function () {
     pad.collabClient.setChannelState("CONNECTED");
-    pad.sendClientReady(true);
+    pad.sendClientReady(receivedClientVars);
   });
 
   socket.on('reconnecting', function() {
+    pad.collabClient.setStateIdle();
+    pad.collabClient.setIsPendingRevision(true);
     pad.collabClient.setChannelState("RECONNECTING");
   });
 
   socket.on('reconnect_failed', function(error) {
     pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
+  });
+
+  socket.on('error', function(error) {
+    pad.collabClient.setStateIdle();
+    pad.collabClient.setIsPendingRevision(true);
   });
 
   var initalized = false;
@@ -831,7 +838,7 @@ var pad = {
       $.ajax(
       {
         type: 'post',
-        url: '/ep/pad/connection-diagnostic-info',
+        url: 'ep/pad/connection-diagnostic-info',
         data: {
           diagnosticInfo: JSON.stringify(pad.diagnosticInfo)
         },
