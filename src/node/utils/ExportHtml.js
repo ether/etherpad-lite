@@ -360,7 +360,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       {
         nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
       }
-      hooks.callAll('getLineHTMLForExport', context);
+      hooks.aCallAll('getLineHTMLForExport', context);
       //To create list parent elements 
       if ((!prevLine || prevLine.listLevel !== line.listLevel) || (prevLine && line.listTypeName !== prevLine.listTypeName))
       {
@@ -445,7 +445,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
         padId: pad.id
       };
 
-      hooks.callAll("getLineHTMLForExport", context);
+      hooks.aCallAll("getLineHTMLForExport", context);
         pieces.push(context.lineContent, "<br>");
       }
     }
