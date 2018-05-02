@@ -369,7 +369,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
           return (item.level === line.listLevel && item.type === line.listTypeName); 
         });
         if (!exists) {
-          var prevLevel = prevLine.listLevel || 0;
+          var prevLevel = 0;
+          if (prevLine && prevLine.listLevel) {
+            prevlevel = prevLine.listLevel;
+          }
           if (prevLine && line.listTypeName !== prevLine.listTypeName)
           {
             prevLevel = 0;
@@ -405,7 +408,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
       if ((!nextLine || !nextLine.listLevel || nextLine.listLevel < line.listLevel) || (nextLine && line.listTypeName !== nextLine.listTypeName))
       {
-        var nextLevel = nextLine.listLevel || 0;
+        var nextLevel = 0;
+        if (nextLine && nextLine.listLevel) {
+          nextLevel = nextLine.listLevel;
+        }
         if (nextLine && line.listTypeName !== nextLine.listTypeName)
         {
           nextLevel = 0;
