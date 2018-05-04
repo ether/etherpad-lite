@@ -1153,6 +1153,101 @@ function handleClientReady(client, message)
         client.join(padIds.padId);
         //Save the revision in sessioninfos, we take the revision from the info the client send to us
         sessioninfos[client.id].rev = message.client_rev;
+
+        //During the client reconnect, client might miss some revisions from other clients. By using client revision,
+        //this below code sends all the revisions missed during the client reconnect
+        var revisionsNeeded = [];
+        var changesets = {};
+
+        var startNum = message.client_rev + 1;
+        var endNum = pad.getHeadRevisionNumber() + 1;
+
+        async.series([
+          //push all the revision numbers needed into revisionsNeeded array
+          function(callback)
+          {
+            var headNum = pad.getHeadRevisionNumber();
+            if (endNum > headNum+1)
+              endNum = headNum+1;
+            if (startNum < 0)
+              startNum = 0;
+
+            for(var r=startNum;r<endNum;r++)
+            {
+              revisionsNeeded.push(r);
+              changesets[r] = {};
+            }
+            callback();
+          },
+          //get changesets needed for pending revisions
+          function(callback)
+          {
+            async.eachSeries(revisionsNeeded, function(revNum, callback)
+            {
+              pad.getRevisionChangeset(revNum, function(err, value)
+              {
+                if(ERR(err)) return;
+                changesets[revNum]['changeset'] = value;
+                callback();
+              });
+            }, callback);
+          },
+          //get author for each changeset
+          function(callback)
+          {
+            async.eachSeries(revisionsNeeded, function(revNum, callback)
+            {
+              pad.getRevisionAuthor(revNum, function(err, value)
+              {
+                if(ERR(err)) return;
+                changesets[revNum]['author'] = value;
+                callback();
+              });
+            }, callback);
+          },
+          //get timestamp for each changeset
+          function(callback)
+          {
+            async.eachSeries(revisionsNeeded, function(revNum, callback)
+            {
+              pad.getRevisionDate(revNum, function(err, value)
+              {
+                if(ERR(err)) return;
+                changesets[revNum]['timestamp'] = value;
+                callback();
+              });
+            }, callback);
+          }
+        ],
+        //return error and pending changesets
+        function(err)
+        {
+          if(ERR(err, callback)) return;
+          async.eachSeries(revisionsNeeded, function(r, callback)
+          {
+            var forWire = Changeset.prepareForWire(changesets[r]['changeset'], pad.pool);
+            var wireMsg = {"type":"COLLABROOM",
+                           "data":{type:"CLIENT_RECONNECT",
+                                   headRev:pad.getHeadRevisionNumber(),
+                                   newRev:r,
+                                   changeset:forWire.translated,
+                                   apool: forWire.pool,
+                                   author: changesets[r]['author'],
+                                   currentTime: changesets[r]['timestamp']
+                           }};
+            client.json.send(wireMsg);
+            callback();
+          });
+          if (startNum == endNum)
+          {
+            var Msg = {"type":"COLLABROOM",
+                       "data":{type:"CLIENT_RECONNECT",
+                               noChanges: true,
+                               newRev: pad.getHeadRevisionNumber()
+                       }};
+            client.json.send(Msg);
+          }
+        });
       }
       //This is a normal first connect
       else

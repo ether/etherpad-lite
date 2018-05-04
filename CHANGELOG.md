@@ -1,3 +1,8 @@
+# 1.6.6
+ * FIX: line numbers are aligned with text again (broken in 1.6.4)
+ * FIX: text entered between connection loss and reconnection was not saved
+ * FIX: diagnostic call failed when etherpad was exposed in a subdirectory
+
 # 1.6.5
  * SECURITY: Escape data when listing available plugins
  * FIX: Fix typo in apicalls.js which prevented importing isValidJSONPName
@@ -6,9 +11,9 @@
  * FIX: unbreak Safari iOS line wrapping
 
 # 1.6.4
- * SECURITY: exploitable /admin access - CVE-2018-9845
- * SECURITY: DoS with pad exports - CVE-2018-9327
- * SECURITY: Remote Code Execution - CVE-2018-9326
+ * SECURITY: Access Control bypass on /admin - CVE-2018-9845
+ * SECURITY: Remote Code Execution through pad export - CVE-2018-9327
+ * SECURITY: Remote Code Execution through JSONP handling - CVE-2018-9326
  * SECURITY: Pad data leak - CVE-2018-9325
  * Fix: Admin redirect URL
  * Fix: Various script Fixes
