@@ -7,7 +7,7 @@
 
 # 1.6.4
  * SECURITY: exploitable /admin access - CVE-2018-9845
- * SECURITY: DoS with pad exports - CVE-2018-9327
+ * SECURITY: DoS with pad exports and arbitrary code execution - CVE-2018-9327
  * SECURITY: Remote Code Execution - CVE-2018-9326
  * SECURITY: Pad data leak - CVE-2018-9325
  * Fix: Admin redirect URL
