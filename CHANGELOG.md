@@ -1,3 +1,8 @@
+# 1.6.6
+ * FIX: line numbers are aligned with text again (broken in 1.6.4)
+ * FIX: text entered between connection loss and reconnection was not saved
+ * FIX: diagnostic call failed when etherpad was exposed in a subdirectory
+
 # 1.6.5
  * SECURITY: Escape data when listing available plugins
  * FIX: Fix typo in apicalls.js which prevented importing isValidJSONPName
