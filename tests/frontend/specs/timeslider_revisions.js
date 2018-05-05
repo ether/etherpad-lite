@@ -4,7 +4,8 @@ describe("timeslider", function(){
     helper.newPad(cb);
     this.timeout(6000);
   });
-  it("loads adds a hundred revisions", function(done) {
+
+  it("loads adds a hundred revisions", function(done) { // passes
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     
@@ -18,6 +19,7 @@ describe("timeslider", function(){
         inner$("div").first().sendkeys('a');
       }, timePerRev*i);
     }
+    chrome$('.buttonicon-savedRevision').click();
     
     setTimeout(function() {
       // go to timeslider
@@ -50,13 +52,18 @@ describe("timeslider", function(){
         setTimeout(function() {
           //make sure the text has changed
           expect( timeslider$('#padcontent').text() ).not.to.eql( latestContents );
+          var starIsVisible = timeslider$('.star').is(":visible");
+          expect( starIsVisible ).to.eql( true );
           done();
         }, 1000);
         
       }, 6000);
     }, revs*timePerRev);
   });
-  it("changes the url when clicking on the timeslider", function(done) {
+
+
+  // Disabled as jquery trigger no longer works properly
+  xit("changes the url when clicking on the timeslider", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 
     
@@ -80,7 +87,6 @@ describe("timeslider", function(){
         var $sliderBar = timeslider$('#ui-slider-bar');
         
         var latestContents = timeslider$('#padcontent').text();
-        
         var oldUrl = $('#iframe-container iframe')[0].contentWindow.location.hash;
         
         // Click somewhere on the timeslider
@@ -111,6 +117,7 @@ describe("timeslider", function(){
       var oldLength = inner$('body').text().length + newLines / 2;
       expect( oldLength ).to.not.eql( 0 );
       inner$("div").first().sendkeys('a');
+      var timeslider$;
       
       // wait for our additional revision to be added
       helper.waitFor(function(){
@@ -140,6 +147,7 @@ describe("timeslider", function(){
       });
     });
   });
+
   it("checks the export url", function(done) {
     var inner$ = helper.padInner$; 
     var chrome$ = helper.padChrome$; 

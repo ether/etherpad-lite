@@ -2,10 +2,11 @@ var express = require('express');
 var log4js = require('log4js');
 var httpLogger = log4js.getLogger("http");
 var settings = require('../../utils/Settings');
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var ueberStore = require('../../db/SessionStore');
-var stats = require('ep_etherpad-lite/node/stats')
+var stats = require('ep_etherpad-lite/node/stats');
+var sessionModule = require('express-session');
+var cookieParser = require('cookie-parser');
 
 //checks for basic http auth
 exports.basicAuth = function (req, res, next) {
@@ -19,7 +20,7 @@ exports.basicAuth = function (req, res, next) {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
 
-    if (req.path.indexOf('/admin') != 0) {
+    if (req.path.toLowerCase().indexOf('/admin') != 0) {
       if (!settings.requireAuthentication) return cb(true);
       if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
     }
@@ -35,13 +36,16 @@ exports.basicAuth = function (req, res, next) {
       var userpass = new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
       var username = userpass.shift();
       var password = userpass.join(':');
-
-      if (settings.users[username] != undefined && settings.users[username].password == password) {
-        settings.users[username].username = username;
-        req.session.user = settings.users[username];
-        return cb(true);
-      }
-      return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(cb));
+      var fallback = function(success) {
+        if (success) return cb(true);
+        if (settings.users[username] != undefined && settings.users[username].password === password) {
+          settings.users[username].username = username;
+          req.session.user = settings.users[username];
+          return cb(true);
+        }
+        return cb(false);
+      };
+      return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(fallback));
     }
     hooks.aCallFirst("authenticate", {req: req, res:res, next:next}, hookResultMangle(cb));
   }
@@ -57,10 +61,10 @@ exports.basicAuth = function (req, res, next) {
       res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
       if (req.headers.authorization) {
         setTimeout(function () {
-          res.send(401, 'Authentication required');
+          res.status(401).send('Authentication required');
         }, 1000);
       } else {
-        res.send(401, 'Authentication required');
+        res.status(401).send('Authentication required');
       }
     }));
   }
@@ -76,7 +80,7 @@ exports.basicAuth = function (req, res, next) {
      Note that the process could stop already in step 3 with a redirect to login page.
 
   */
- 
+
   authorize(function (ok) {
     if (ok) return next();
     authenticate(function (ok) {
@@ -115,13 +119,13 @@ exports.expressConfigure = function (hook_name, args, cb) {
 
   if (!exports.sessionStore) {
     exports.sessionStore = new ueberStore();
-    exports.secret = settings.sessionKey; // Isn't this being reset each time the server spawns?
+    exports.secret = settings.sessionKey;
   }
 
-  args.app.use(express.cookieParser(exports.secret));
   args.app.sessionStore = exports.sessionStore;
-  args.app.use(express.session({secret: exports.secret, store: args.app.sessionStore, key: 'express_sid' }));
+  args.app.use(sessionModule({secret: exports.secret, store: args.app.sessionStore, resave: true, saveUninitialized: true, name: 'express_sid', proxy: true, cookie: { secure: !!settings.ssl }}));
+
+  args.app.use(cookieParser(settings.sessionKey, {}));
 
   args.app.use(exports.basicAuth);
 }
-

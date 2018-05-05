@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"StefanusRA"
+			"StefanusRA",
+			"Empu"
 		]
 	},
 	"index.newPad": "Pad Anyar",
@@ -30,7 +31,7 @@
 	"pad.permissionDenied": "Rika ora duwe idin kanggo ngakses pad kiye",
 	"pad.wrongPassword": "Tembung sandhine Rika salah",
 	"pad.settings.padSettings": "Pangaturan Pad",
-	"pad.settings.myView": "Delengane Inyong",
+	"pad.settings.myView": "Delengané Inyong",
 	"pad.settings.stickychat": "Dopokan mesti nang layar",
 	"pad.settings.colorcheck": "Authorship colors",
 	"pad.settings.linenocheck": "Nomer baris",
@@ -49,7 +50,6 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.exportdokuwiki": "DokuWiki",
 	"pad.importExport.abiword.innerHTML": "Rika mung teyeng impor sekang format plain text utawa HTML. Kanggo fitur impor sing lewih maju monggo <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">masang abiword</a>.",
 	"pad.modals.connected": "Nyambung.",
 	"pad.modals.reconnecting": "Mbaleli nyambung ming pad Rika...",

@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-var jsdom = require('jsdom-nocontextifiy').jsdom;
 var log4js = require('log4js');
-
-
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
+var cheerio = require("cheerio");
 
 function setPadHTML(pad, html, callback)
 {
   var apiLogger = log4js.getLogger("ImportHtml");
 
-  // Parse the incoming HTML with jsdom
-  try{
-    var doc = jsdom(html.replace(/>\n+</g, '><'));
-  }catch(e){
-    apiLogger.warn("Error importing, possibly caused by malformed HTML");
-    var doc = jsdom("<html><body><div>Error during import, possibly malformed HTML</div></body></html>");
-  }
+  var $ = cheerio.load(html);
 
+  // Appends a line break, used by Etherpad to ensure a caret is available
+  // below the last line of an import
+  $('body').append("<p></p>");
+
+  var doc = $('html')[0];
   apiLogger.debug('html:');
   apiLogger.debug(html);
 
@@ -40,10 +37,10 @@ function setPadHTML(pad, html, callback)
   // using the content collector object
   var cc = contentcollector.makeContentCollector(true, null, pad.pool);
   try{ // we use a try here because if the HTML is bad it will blow up
-    cc.collectContent(doc.childNodes[0]);
+    cc.collectContent(doc);
   }catch(e){
     apiLogger.warn("HTML was not properly formed", e);
-    return; // We don't process the HTML because it was bad..
+    return callback(e); // We don't process the HTML because it was bad..
   }
 
   var result = cc.finish();
@@ -92,8 +89,9 @@ function setPadHTML(pad, html, callback)
   // the changeset is ready!
   var theChangeset = builder.toString();
   apiLogger.debug('The changeset: ' + theChangeset);
-  pad.setText("");
+  pad.setText("\n");
   pad.appendRevision(theChangeset);
+  callback(null);
 }
 
 exports.setPadHTML = setPadHTML;

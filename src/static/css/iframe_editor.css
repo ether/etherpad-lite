@@ -1,6 +1,9 @@
 /* These CSS rules are included in both the outer and inner ACE iframe.
    Also see inner.css, included only in the inner one.
 */
+
+@import url('./lists_and_indents.css');
+
 html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
 span { cursor: auto; }
 
@@ -11,51 +14,10 @@ span { cursor: auto; }
   background: #acf;
 }
 
-a { cursor: pointer !important; }
-
-ul, ol, li {
-  padding: 0;
-  margin: 0;
+a {
+  cursor: pointer !important;
+  white-space:pre-wrap;
 }
-
-ul { margin-left: 1.5em; }
-ul ul { margin-left: 0 !important; }
-ul.list-bullet1 { margin-left: 1.5em; }
-ul.list-bullet2 { margin-left: 3em; }
-ul.list-bullet3 { margin-left: 4.5em; }
-ul.list-bullet4 { margin-left: 6em; }
-ul.list-bullet5 { margin-left: 7.5em; }
-ul.list-bullet6 { margin-left: 9em; }
-ul.list-bullet7 { margin-left: 10.5em; }
-ul.list-bullet8 { margin-left: 12em; }
-
-ul { list-style-type: disc; }
-ul.list-bullet1 { list-style-type: disc; }
-ul.list-bullet2 { list-style-type: circle; }
-ul.list-bullet3 { list-style-type: square; }
-ul.list-bullet4 { list-style-type: disc; }
-ul.list-bullet5 { list-style-type: circle; }
-ul.list-bullet6 { list-style-type: square; }
-ul.list-bullet7 { list-style-type: disc; }
-ul.list-bullet8 { list-style-type: circle; }
-
-ul.list-indent1 { margin-left: 1.5em; }
-ul.list-indent2 { margin-left: 3em; }
-ul.list-indent3 { margin-left: 4.5em; }
-ul.list-indent4 { margin-left: 6em; }
-ul.list-indent5 { margin-left: 7.5em; }
-ul.list-indent6 { margin-left: 9em; }
-ul.list-indent7 { margin-left: 10.5em; }
-ul.list-indent8 { margin-left: 12em; }
-
-ul.list-indent1 { list-style-type: none; }
-ul.list-indent2 { list-style-type: none; }
-ul.list-indent3 { list-style-type: none; }
-ul.list-indent4 { list-style-type: none; }
-ul.list-indent5 { list-style-type: none; }
-ul.list-indent6 { list-style-type: none; }
-ul.list-indent7 { list-style-type: none; }
-ul.list-indent8 { list-style-type: none; }
 
 body {
   margin: 0;
@@ -72,11 +34,33 @@ body.grayedout { background-color: #eee !important }
   font-size: 12px; /* overridden by body.style */
   font-family:Arial, sans-serif; /* overridden by body.style */
   line-height: 16px; /* overridden by body.style */
+  background-color: white;
+  color: black;
 }
 
 body.doesWrap {
-  white-space: pre-wrap; /*Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret, walking around your screen (see #1766), WARNING: Enabling this causes Paste as plain text in Chrome to remove line breaks, this is probably undesirable */
+  /* white-space: pre-wrap; */
+
+  /*
+    Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret,
+    walking around your screen (see #1766).
+    WARNING: Enabling this causes Paste as plain text in Chrome to remove line breaks
+    this is probably undesirable
+    WARNING: This causes copy & paste events to lose bold etc. attributes
+    NOTE: The walking-zombie caret issue seems to have been fixed in FF upstream
+    so let's try diabling pre-wrap and see how we get on now.
+    For more details see: https://github.com/ether/etherpad-lite/issues/2574
+  */
   word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
+}
+
+.noprewrap{
+  white-space: normal;
+}
+
+body.doesWrap:not(.noprewrap) > div{
+  /* Related to #1766 */
+  white-space: pre-wrap;
 }
 
 #innerdocbody {
@@ -163,76 +147,6 @@ p {
    Commented out because it stops IE from being able to render the document, crazy IE bug is crazy. */
 /*
 .ace-line{
-  overflow:hidden; 
+  overflow:hidden;
 }
 */
-
-ol { 
-  list-style-type: decimal;
-}
-
-ol > li {
-  display:inline;   
-}
-
-/* Set the indentation */
-ol.list-number1{ text-indent: 0px; }
-ol.list-number2{ text-indent: 10px; }
-ol.list-number3{ text-indent: 20px; }
-ol.list-number4{ text-indent: 30px; }
-ol.list-number5{ text-indent: 40px; }
-ol.list-number6{ text-indent: 50px; }
-ol.list-number7{ text-indent: 60px; }
-ol.list-number8{ text-indent: 70px; }
-
-/* Add styling to the first item in a list */
-
-.list-start-number1 { counter-reset: first second; }
-.list-start-number2 { counter-reset: second; }
-.list-start-number3 { counter-reset: third; }
-.list-start-number4 { counter-reset: fourth; }
-.list-start-number5 { counter-reset: fifth; }
-.list-start-number6 { counter-reset: sixth; }
-.list-start-number7 { counter-reset: seventh; }
-.list-start-number8 { counter-reset: eighth; }
-
-/* The behavior for incrementing and the prefix */
-.list-number1 li:before {
-  content: counter(first) ". " ;
-  counter-increment: first;
-}
-
-.list-number2 li:before {
-  content: counter(first) "." counter(second) ". ";
-  counter-increment: second;
-}
-
-.list-number3 li:before {
-  content: counter(first) "." counter(second) "." counter(third) ". ";
-  counter-increment: third 1;
-}
-
-.list-number4 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";
-  counter-increment: fourth 1;
-}
-
-.list-number5 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";
-  counter-increment: fifth 1;
-}
-
-.list-number6 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";
-  counter-increment: sixth 1;
-}
-
-.list-number7 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";
-  counter-increment: seventh 1;
-}
-
-.list-number8 li:before {
-  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) ". " ;
-  counter-increment: eighth 1;
-}

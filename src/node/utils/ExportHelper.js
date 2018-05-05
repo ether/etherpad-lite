@@ -18,12 +18,7 @@
  * limitations under the License.
  */
 
-var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var padManager = require("../db/PadManager");
-var ERR = require("async-stacktrace");
-var Security = require('ep_etherpad-lite/static/js/security');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 exports.getPadPlainText = function(pad, revNum){
   var atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext());
@@ -60,7 +55,7 @@ exports._analyzeLine = function(text, aline, apool){
       var listType = Changeset.opAttributeValue(opIter.next(), 'list', apool);
       if (listType){
         lineMarker = 1;
-        listType = /([a-z]+)([12345678])/.exec(listType);
+        listType = /([a-z]+)([0-9]+)/.exec(listType);
         if (listType){
           line.listTypeName = listType[1];
           line.listLevel = Number(listType[2]);

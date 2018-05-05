@@ -19,11 +19,9 @@ var Buffer = require('buffer').Buffer;
 var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
-var util = require('util');
 var settings = require('./Settings');
 var semver = require('semver');
-
-var existsSync = (semver.satisfies(process.version, '>=0.8.0')) ? fs.existsSync : path.existsSync;
+var existsSync = require('./path_exists');
 
 var CACHE_DIR = path.normalize(path.join(settings.root, 'var/'));
 CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;

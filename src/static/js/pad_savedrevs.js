@@ -18,7 +18,16 @@ var pad;
 
 exports.saveNow = function(){
   pad.collabClient.sendMessage({"type": "SAVE_REVISION"});
-  alert(_("pad.savedrevs.marked"));
+  $.gritter.add({
+    // (string | mandatory) the heading of the notification
+    title: _("pad.savedrevs.marked"),
+    // (string | mandatory) the text inside the notification
+    text: _("pad.savedrevs.timeslider") || "You can view saved revisions in the timeslider",
+    // (bool | optional) if you want it to fade out on its own or just sit there
+    sticky: false,
+    // (int | optional) the time you want it to be alive for before fading out
+    time: '2000'
+  });
 }
 
 exports.init = function(_pad){

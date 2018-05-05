@@ -19,8 +19,10 @@ var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
 var ERR = require("async-stacktrace");
+var _ = require('underscore');
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+var eejs = require('ep_etherpad-lite/node/eejs');
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
@@ -30,8 +32,6 @@ function getPadHTML(pad, revNum, callback)
   var html;
   async.waterfall([
   // fetch revision atext
-
-
   function (callback)
   {
     if (revNum != undefined)
@@ -78,6 +78,23 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
+
+  // prepare tags stored as ['tag', true] to be exported
+  hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
+    newProps.forEach(function (propName, i){
+      tags.push(propName);
+      props.push(propName);
+    });
+  });
+  // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML
+  // with tags like <span data-tag="value">
+  hooks.aCallAll("exportHtmlAdditionalTagsWithData", pad, function(err, newProps){
+    newProps.forEach(function (propName, i){
+      tags.push('span data-' + propName[0] + '="' + propName[1] + '"');
+      props.push(propName);
+    });
+  });
+
   // holds a map of used styling attributes (*1, *2, etc) in the apool
   // and maps them to an index in props
   // *3:2 -> the attribute *3 means strong
@@ -109,8 +126,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
         var newLength = props.push(propName);
         anumMap[a] = newLength -1;
 
-        css+=".removed {text-decoration: line-through; " + 
-             "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+ 
+        css+=".removed {text-decoration: line-through; " +
+             "-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; "+
              "filter: alpha(opacity=80); "+
              "opacity: 0.8; "+
              "}\n";
@@ -124,7 +141,13 @@ function getHTMLFromAtext(pad, atext, authorColors)
   // this pad, and if yes puts its attrib id->props value into anumMap
   props.forEach(function (propName, i)
   {
-    var propTrueNum = apool.putAttrib([propName, true], true);
+    var attrib = [propName, true];
+    if (_.isArray(propName)) {
+      // propName can be in the form of ['color', 'red'],
+      // see hook exportHtmlAdditionalTagsWithData
+      attrib = propName;
+    }
+    var propTrueNum = apool.putAttrib(attrib, true);
     if (propTrueNum >= 0)
     {
       anumMap[propTrueNum] = i;
@@ -148,6 +171,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       var property = props[i];
 
+      // we are not insterested on properties in the form of ['color', 'red'],
+      // see hook exportHtmlAdditionalTagsWithData
+      if (_.isArray(property)) {
+        return false;
+      }
+
       if(property.substr(0,6) === "author"){
         return stripDotFromAuthorID(property);
       }
@@ -157,6 +186,13 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
 
       return false;
+    }
+
+    // tags added by exportHtmlAdditionalTagsWithData will be exported as <span> with
+    // data attributes
+    function isSpanWithData(i){
+      var property = props[i];
+      return _.isArray(property);
     }
 
     function emitOpenTag(i)
@@ -180,8 +216,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
     {
       openTags.shift();
       var spanClass = getSpanClassFor(i);
+      var spanWithData = isSpanWithData(i);
 
-      if(spanClass){
+      if(spanClass || spanWithData){
         assem.append('</span>');
       } else {
         assem.append('</');
@@ -257,7 +294,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
         var s = taker.take(chars);
 
-        //removes the characters with the code 12. Don't know where they come 
+        //removes the characters with the code 12. Don't know where they come
         //from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), "");
 
@@ -297,10 +334,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
   var lists = []; // e.g. [[1,'bullet'], [3,'bullet'], ...]
+  var listLevels = []
   for (var i = 0; i < textLines.length; i++)
   {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
+    listLevels.push(line.listLevel)
 
     if (line.listLevel)//If we are inside a list
     {
@@ -320,13 +359,27 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
       {
+        if(lists.length > 0){
+          pieces.push('</li>')
+        }
         lists.push([line.listLevel, line.listTypeName]);
+
+        // if there is a previous list we need to open x tags, where x is the difference of the levels
+        // if there is no previous list we need to open x tags, where x is the wanted level
+        var toOpen = lists.length > 1 ? line.listLevel - lists[lists.length - 2][0] - 1 : line.listLevel - 1
+
         if(line.listTypeName == "number")
         {
+          if(toOpen > 0){
+            pieces.push(new Array(toOpen + 1).join('<ol>'))
+          }
           pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
         else
         {
+          if(toOpen > 0){
+            pieces.push(new Array(toOpen + 1).join('<ul>'))
+          }
           pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
         }
       }
@@ -355,44 +408,51 @@ function getHTMLFromAtext(pad, atext, authorColors)
           pieces.push('<br><br>');
         }
       }*/
-      else//means we are getting closer to the lowest level of indentation
+      else//means we are getting closer to the lowest level of indentation or are at the same level
       {
-        while (whichList < lists.length - 1)
-        {
+        var toClose = lists.length > 0 ? listLevels[listLevels.length - 2] - line.listLevel : 0
+        if( toClose > 0){
+          pieces.push('</li>')
           if(lists[lists.length - 1][1] == "number")
           {
-            pieces.push('</li></ol>');
+            pieces.push(new Array(toClose+1).join('</ol>'))
+            pieces.push('<li>', lineContent || '<br>');
           }
           else
           {
-            pieces.push('</li></ul>');
+            pieces.push(new Array(toClose+1).join('</ul>'))
+            pieces.push('<li>', lineContent || '<br>');
           }
-          lists.length--;
+          lists = lists.slice(0,whichList+1)
+        } else {
+          pieces.push('</li><li>', lineContent || '<br>');
         }
-        pieces.push('</li><li>', lineContent || '<br>');
       }
     }
-    else//outside any list
+    else//outside any list, need to close line.listLevel of lists
     {
-      while (lists.length > 0)//if was in a list: close it before
-      {
-        if(lists[lists.length - 1][1] == "number")
-        {
+      if(lists.length > 0){
+        if(lists[lists.length - 1][1] == "number"){
           pieces.push('</li></ol>');
-        }
-        else
-        {
+          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ol>'))
+        } else {
           pieces.push('</li></ul>');
+          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ul>'))
         }
-        lists.length--;
       }
-      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", 
-      {
+      lists = []
+
+      var context = {
         line: line,
+        lineContent: lineContent,
         apool: apool,
         attribLine: attribLines[i],
-        text: textLines[i]
-      }, " ", " ", "");
+        text: textLines[i],
+        padId: pad.id
+      }
+
+      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", context, " ", " ", "");
+
       if (lineContentFromHook)
       {
         pieces.push(lineContentFromHook, '');
@@ -403,7 +463,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
     }
   }
-  
+
   for (var k = lists.length - 1; k >= 0; k--)
   {
     if(lists[k][1] == "number")
@@ -419,42 +479,32 @@ function getHTMLFromAtext(pad, atext, authorColors)
   return pieces.join('');
 }
 
-exports.getPadHTMLDocument = function (padId, revNum, noDocType, callback)
+exports.getPadHTMLDocument = function (padId, revNum, callback)
 {
   padManager.getPad(padId, function (err, pad)
   {
     if(ERR(err, callback)) return;
 
-    var head = 
-      (noDocType ? '' : '<!doctype html>\n') + 
-      '<html lang="en">\n' + (noDocType ? '' : '<head>\n' + 
-        '<title>' + Security.escapeHTML(padId) + '</title>\n' +
-        '<meta charset="utf-8">\n' + 
-        '<style> * { font-family: arial, sans-serif;\n' + 
-          'font-size: 13px;\n' + 
-          'line-height: 17px; }' + 
-          'ul.indent { list-style-type: none; }' +
-          'ol { list-style-type: decimal; }' +
-          'ol ol { list-style-type: lower-latin; }' +
-          'ol ol ol { list-style-type: lower-roman; }' +
-          'ol ol ol ol { list-style-type: decimal; }' +
-          'ol ol ol ol ol { list-style-type: lower-latin; }' +
-          'ol ol ol ol ol ol{ list-style-type: lower-roman; }' +
-          'ol ol ol ol ol ol ol { list-style-type: decimal; }' +
-          'ol  ol ol ol ol ol ol ol{ list-style-type: lower-latin; }' +
-          '</style>\n' + '</head>\n') + 
-      '<body>';
+    var stylesForExportCSS = "";
+    // Include some Styles into the Head for Export
+    hooks.aCallAll("stylesForExport", padId, function(err, stylesForExport){
+      stylesForExport.forEach(function(css){
+        stylesForExportCSS += css;
+      });
 
-    var foot = '</body>\n</html>\n';
-
-    getPadHTML(pad, revNum, function (err, html)
-    {
-      if(ERR(err, callback)) return;
-      callback(null, head + html + foot);
+      getPadHTML(pad, revNum, function (err, html)
+      {
+        if(ERR(err, callback)) return;
+        var exportedDoc = eejs.require("ep_etherpad-lite/templates/export_html.html", {
+          body: html,
+          padId: Security.escapeHTML(padId),
+          extraCSS: stylesForExportCSS
+        });
+        callback(null, exportedDoc);
+      });
     });
   });
 };
-
 
 // copied from ACE
 var _REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;

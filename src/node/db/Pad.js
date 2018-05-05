@@ -54,6 +54,21 @@ Pad.prototype.getHeadRevisionNumber = function getHeadRevisionNumber() {
   return this.head;
 };
 
+Pad.prototype.getSavedRevisionsNumber = function getSavedRevisionsNumber() {
+  return this.savedRevisions.length;
+};
+
+Pad.prototype.getSavedRevisionsList = function getSavedRevisionsList() {
+  var savedRev = new Array();
+  for(var rev in this.savedRevisions){
+    savedRev.push(this.savedRevisions[rev].revNum);
+  }
+  savedRev.sort(function(a, b) {
+    return a - b;
+  });
+  return savedRev;
+};
+
 Pad.prototype.getPublicStatus = function getPublicStatus() {
   return this.publicStatus;
 };
@@ -90,9 +105,9 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
     authorManager.addPad(author, this.id);
 
   if (this.head == 0) {
-    hooks.callAll("padCreate", {'pad':this});
+    hooks.callAll("padCreate", {'pad':this, 'author': author});
   } else {
-    hooks.callAll("padUpdate", {'pad':this});
+    hooks.callAll("padUpdate", {'pad':this, 'author': author});
   }
 };
 
@@ -135,7 +150,7 @@ Pad.prototype.getRevisionDate = function getRevisionDate(revNum, callback) {
 Pad.prototype.getAllAuthors = function getAllAuthors() {
   var authors = [];
 
-  for(key in this.pool.numToAttrib)
+  for(var key in this.pool.numToAttrib)
   {
     if(this.pool.numToAttrib[key][0] == "author" && this.pool.numToAttrib[key][1] != "")
     {
@@ -173,7 +188,12 @@ Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targe
           db.getSub("pad:"+_this.id+":revs:"+keyRev, ["meta", "atext"], function(err, _atext)
           {
             if(ERR(err, callback)) return;
-            atext = Changeset.cloneAText(_atext);
+            try {
+              atext = Changeset.cloneAText(_atext);
+            } catch (e) {
+              return callback(e);
+            }
+
             callback();
           });
         },
@@ -275,7 +295,27 @@ Pad.prototype.setText = function setText(newText) {
   var oldText = this.text();
 
   //create the changeset
-  var changeset = Changeset.makeSplice(oldText, 0, oldText.length-1, newText);
+  // We want to ensure the pad still ends with a \n, but otherwise keep
+  // getText() and setText() consistent.
+  var changeset;
+  if (newText[newText.length - 1] == '\n') {
+    changeset = Changeset.makeSplice(oldText, 0, oldText.length, newText);
+  } else {
+    changeset = Changeset.makeSplice(oldText, 0, oldText.length-1, newText);
+  }
+
+  //append the changeset
+  this.appendRevision(changeset);
+};
+
+Pad.prototype.appendText = function appendText(newText) {
+  //clean the new text
+  newText = exports.cleanText(newText);
+
+  var oldText = this.text();
+
+  //create the changeset
+  var changeset = Changeset.makeSplice(oldText, oldText.length, 0, newText);
 
   //append the changeset
   this.appendRevision(changeset);
@@ -424,9 +464,10 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
   }
   else force = true;
 
-  //kick everyone from this pad
-  // TODO: this presents a message on the client saying that the pad was 'deleted'. Fix this?
-  padMessageHandler.kickSessionsFromPad(sourceID);
+  // Kick everyone from this pad.
+  // This was commented due to https://github.com/ether/etherpad-lite/issues/3183.
+  // Do we really need to kick everyone out?
+  // padMessageHandler.kickSessionsFromPad(sourceID);
 
   // flush the source pad:
   _this.saveToDatabase();
@@ -461,7 +502,6 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     // if the pad exists, we should abort, unless forced.
     function(callback)
     {
-      console.log("destinationID", destinationID, force);
       padManager.doesPadExists(destinationID, function (err, exists)
       {
         if(ERR(err, callback)) return;
@@ -470,9 +510,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         {
           if (!force)
           {
-            console.log("erroring out without force");
+            console.error("erroring out without force");
             callback(new customError("destinationID already exists","apierror"));
-            console.log("erroring out without force - after");
+            console.error("erroring out without force - after");
             return;
           }
           else // exists and forcing
@@ -521,12 +561,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         function(callback)
         {
           var revHead = _this.head;
-          //console.log(revHead);
           for(var i=0;i<=revHead;i++)
           {
             db.get("pad:"+sourceID+":revs:"+i, function (err, rev) {
-              //console.log("HERE");
-
               if (ERR(err, callback)) return;
               db.set("pad:"+destinationID+":revs:"+i, rev);
             });
@@ -538,10 +575,8 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
         function(callback)
         {
           var authorIDs = _this.getAllAuthors();
-
           authorIDs.forEach(function (authorID)
           {
-            console.log("authors");
             authorManager.addPad(authorID, destinationID);
           });
 
@@ -555,7 +590,14 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
       if(destGroupID) db.setSub("group:" + destGroupID, ["pads", destinationID], 1);
 
       // Initialize the new pad (will update the listAllPads cache)
-      padManager.getPad(destinationID, null, callback)
+      setTimeout(function(){
+        padManager.getPad(destinationID, null, callback) // this runs too early.
+      },10);
+    },
+    // let the plugins know the pad was copied
+    function(callback) {
+      hooks.callAll('padCopy', { 'originalPad': _this, 'destinationID': destinationID });
+      callback();
     }
   // series
   ], function(err)
@@ -690,7 +732,7 @@ Pad.prototype.isPasswordProtected = function isPasswordProtected() {
 Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, label) {
   //if this revision is already saved, return silently
   for(var i in this.savedRevisions){
-    if(this.savedRevisions.revNum === revNum){
+    if(this.savedRevisions[i] && this.savedRevisions[i].revNum === revNum){
       return;
     }
   }

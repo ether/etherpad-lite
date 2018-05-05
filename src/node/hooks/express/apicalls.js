@@ -3,6 +3,7 @@ var apiLogger = log4js.getLogger("API");
 var clientLogger = log4js.getLogger("client");
 var formidable = require('formidable');
 var apiHandler = require('../../handler/APIHandler');
+var isValidJSONPName = require('./isValidJSONPName');
 
 //This is for making an api call, collecting all post information and passing it to the apiHandler
 var apiCaller = function(req, res, fields) {
@@ -18,7 +19,7 @@ var apiCaller = function(req, res, fields) {
     apiLogger.info("RESPONSE, " + req.params.func + ", " + response);
 
     //is this a jsonp call, if yes, add the function call
-    if(req.query.jsonp)
+    if(req.query.jsonp && isValidJSONPName.check(req.query.jsonp))
       response = req.query.jsonp + "(" + response + ")";
 
     res._____send(response);
@@ -45,7 +46,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   //The Etherpad client side sends information about how a disconnect happened
   args.app.post('/ep/pad/connection-diagnostic-info', function(req, res) {
-    new formidable.IncomingForm().parse(req, function(err, fields, files) { 
+    new formidable.IncomingForm().parse(req, function(err, fields, files) {
       clientLogger.info("DIAGNOSTIC-INFO: " + fields.diagnosticInfo);
       res.end("OK");
     });
@@ -53,7 +54,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   //The Etherpad client side sends information about client side javscript errors
   args.app.post('/jserror', function(req, res) {
-    new formidable.IncomingForm().parse(req, function(err, fields, files) { 
+    new formidable.IncomingForm().parse(req, function(err, fields, files) {
       try {
         var data = JSON.parse(fields.errorInfo)
       }catch(e){
@@ -63,7 +64,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       res.end("OK");
     });
   });
-  
+
   //Provide a possibility to query the latest available API version
   args.app.get('/api', function (req, res) {
      res.json({"currentVersion" : apiHandler.latestApiVersion});

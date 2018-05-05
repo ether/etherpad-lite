@@ -1,12 +1,11 @@
 var languages = require('languages4translatewiki')
   , fs = require('fs')
   , path = require('path')
-  , express = require('express')
   , _ = require('underscore')
   , npm = require('npm')
   , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
   , semver = require('semver')
-  , existsSync = semver.gt(process.version, '0.7.0') ? fs.existsSync : path.existsSync
+  , existsSync = require('../utils/path_exists')
 ;
 
 
@@ -92,7 +91,7 @@ exports.expressCreateServer = function(n, args) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send('{"'+locale+'":'+JSON.stringify(locales[locale])+'}');
     } else {
-      res.send(404, 'Language not available');
+      res.status(404).send('Language not available');
     }
   })
   

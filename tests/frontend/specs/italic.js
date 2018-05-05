@@ -44,7 +44,7 @@ describe("italic some text", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(inner$.browser.mozilla){ // if it's a mozilla browser
+    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE  
       var evtType = "keypress";
     }else{
       var evtType = "keydown";

@@ -9,16 +9,25 @@ $(document).ready(function () {
     resource = baseURL.substring(1) + "socket.io";
 
   //connect
-  socket = io.connect(url, {resource : resource}).of("/settings");
+  var room = url + "settings";
+  socket = io.connect(room, {path: baseURL + "socket.io", resource : resource});
 
   socket.on('settings', function (settings) {
+
+    /* Check whether the settings.json is authorized to be viewed */
+    if(settings.results === 'NOT_ALLOWED') {
+      $('.innerwrapper').hide();
+      $('.innerwrapper-err').show();
+      $('.err-message').html("Settings json is not authorized to be viewed in Admin page!!");
+      return;
+    }
 
     /* Check to make sure the JSON is clean before proceeding */
     if(isJSONClean(settings.results))
     {
       $('.settings').append(settings.results);
       $('.settings').focus();
-      $('.settings').autosize();  
+      $('.settings').autosize();
     }
     else{
       alert("YOUR JSON IS BAD AND YOU SHOULD FEEL BAD");

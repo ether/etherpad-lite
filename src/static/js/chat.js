@@ -18,10 +18,12 @@ var padutils = require('./pad_utils').padutils;
 var padcookie = require('./pad_cookie').padcookie;
 var Tinycon = require('tinycon/tinycon');
 var hooks = require('./pluginfw/hooks');
+var padeditor = require('./pad_editor').padeditor;
 
 var chat = (function()
 {
   var isStuck = false;
+  var userAndChat = false;
   var gotInitialMessages = false;
   var historyPointer = 0;
   var chatMentions = 0;
@@ -35,13 +37,19 @@ var chat = (function()
       chatMentions = 0;
       Tinycon.setBubble(0);
     },
+    focus: function () 
+    {
+      setTimeout(function(){
+        $("#chatinput").focus();
+      },100);
+    },
     stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
       chat.show();
       if(!isStuck || fromInitialCall) { // Stick it to
         padcookie.setPref("chatAlwaysVisible", true);
         $('#chatbox').addClass("stickyChat");
-        $('#chattext').css({"top":"0px"});
+        $('#titlesticky').hide();
         $('#editorcontainer').css({"right":"192px"});
         $('.stickyChat').css("top",$('#editorcontainer').offset().top+"px");
         isStuck = true;
@@ -49,24 +57,54 @@ var chat = (function()
         padcookie.setPref("chatAlwaysVisible", false);
         $('.stickyChat').css("top", "auto");
         $('#chatbox').removeClass("stickyChat");
-        $('#chattext').css({"top":"25px"});
+        $('#titlesticky').show();
         $('#editorcontainer').css({"right":"0px"});
         isStuck = false;
       }
     },
+    chatAndUsers: function(fromInitialCall)
+    {
+      var toEnable = $('#options-chatandusers').is(":checked");
+      if(toEnable || !userAndChat || fromInitialCall){
+        padcookie.setPref("chatAndUsers", true);
+        chat.stickToScreen(true);
+        $('#options-stickychat').prop('checked', true)
+        $('#options-chatandusers').prop('checked', true)
+        $('#options-stickychat').prop("disabled", "disabled");
+        $('#users').addClass("chatAndUsers");
+        $("#chatbox").addClass("chatAndUsersChat");
+        // redraw
+        userAndChat = true;
+        padeditbar.redrawHeight()
+      }else{
+        padcookie.setPref("chatAndUsers", false);
+        $('#options-stickychat').prop("disabled", false);
+        $('#users').removeClass("chatAndUsers");
+        $("#chatbox").removeClass("chatAndUsersChat");
+      }
+    },
     hide: function () 
     {
-      $("#chatcounter").text("0");
-      $("#chaticon").show();
-      $("#chatbox").hide();
-      $.gritter.removeAll();
-      $("#gritter-notice-wrapper").show();
+      // decide on hide logic based on chat window being maximized or not 
+      if ($('#options-stickychat').prop('checked')) {
+        chat.stickToScreen();
+        $('#options-stickychat').prop('checked', false);
+      }
+      else {  
+        $("#chatcounter").text("0");
+        $("#chaticon").show();
+        $("#chatbox").hide();
+        $.gritter.removeAll();
+        $("#gritter-notice-wrapper").show();
+      }
     },
     scrollDown: function()
     {
       if($('#chatbox').css("display") != "none"){
         if(!self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < $('#chattext').height()) {
-          $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, "slow");
+          // if we use a slow animate here we can have a race condition when a users focus can not be moved away
+          // from the last message recieved.
+          $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, { duration: 400, queue: false });
           self.lastMessage = $('#chattext > p').eq(-1);
         }
       }
@@ -174,8 +212,29 @@ var chat = (function()
     init: function(pad)
     {
       this._pad = pad;
-      $("#chatinput").keypress(function(evt)
-      {
+      $("#chatinput").on("keydown", function(evt){
+        // If the event is Alt C or Escape & we're already in the chat menu
+        // Send the users focus back to the pad
+        if((evt.altKey == true && evt.which === 67) || evt.which === 27){
+          // If we're in chat already..
+          $(':focus').blur(); // required to do not try to remove!
+          padeditor.ace.focus(); // Sends focus back to pad
+          evt.preventDefault();
+          return false;
+        }
+      });
+
+      $('body:not(#chatinput)').on("keypress", function(evt){
+        if (evt.altKey && evt.which == 67){
+          // Alt c focuses on the Chat window
+          $(this).blur();
+          chat.show();
+          $("#chatinput").focus();
+          evt.preventDefault();
+        }
+      });
+
+      $("#chatinput").keypress(function(evt){
         //if the user typed enter, fire the send
         if(evt.which == 13 || evt.which == 10)
         {

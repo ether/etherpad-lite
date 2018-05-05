@@ -1,5 +1,5 @@
 # Embed parameters
-You can easily embed your etherpad-lite into any webpage by using iframes. You can configure the embedded pad using embed paramters.
+You can easily embed your etherpad-lite into any webpage by using iframes. You can configure the embedded pad using embed parameters.
 
 Example:
 
