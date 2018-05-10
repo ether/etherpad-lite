@@ -49,9 +49,9 @@
    
    "dbType" : "mysql",
    "dbSettings" : {
-                    "user"    : "root",
+                    "user"    : "etherpaduser",
                     "host"    : "localhost",
-                    "password": "",
+                    "password": "PASSWORD",
                     "database": "etherpad_lite_db",
                     "charset" : "utf8mb4"
                   },
