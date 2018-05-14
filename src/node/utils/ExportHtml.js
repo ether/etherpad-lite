@@ -360,7 +360,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       {
         nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
       }
-      hooks.callAll('getLineHTMLForExport', context);
+      hooks.aCallAll('getLineHTMLForExport', context);
       //To create list parent elements 
       if ((!prevLine || prevLine.listLevel !== line.listLevel) || (prevLine && line.listTypeName !== prevLine.listTypeName))
       {
@@ -369,7 +369,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
           return (item.level === line.listLevel && item.type === line.listTypeName); 
         });
         if (!exists) {
-          var prevLevel = prevLine.listLevel || 0;
+          var prevLevel = 0;
+          if (prevLine && prevLine.listLevel) {
+            prevlevel = prevLine.listLevel;
+          }
           if (prevLine && line.listTypeName !== prevLine.listTypeName)
           {
             prevLevel = 0;
@@ -405,7 +408,10 @@ function getHTMLFromAtext(pad, atext, authorColors)
       }
       if ((!nextLine || !nextLine.listLevel || nextLine.listLevel < line.listLevel) || (nextLine && line.listTypeName !== nextLine.listTypeName))
       {
-        var nextLevel = nextLine.listLevel || 0;
+        var nextLevel = 0;
+        if (nextLine && nextLine.listLevel) {
+          nextLevel = nextLine.listLevel;
+        }
         if (nextLine && line.listTypeName !== nextLine.listTypeName)
         {
           nextLevel = 0;
@@ -445,7 +451,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
         padId: pad.id
       };
 
-      hooks.callAll("getLineHTMLForExport", context);
+      hooks.aCallAll("getLineHTMLForExport", context);
         pieces.push(context.lineContent, "<br>");
       }
     }
