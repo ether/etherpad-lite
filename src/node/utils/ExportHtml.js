@@ -268,7 +268,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
         }
 
         // close all tags upto the outer most
-        if (outermostTag != -1)
+        if (outermostTag !== -1)
         {
           while ( outermostTag >= 0 )
           {
@@ -282,7 +282,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
         {
           if (openTags.indexOf(usedAttribs[i]) === -1)
           {
-            emitOpenTag(usedAttribs[i])
+            emitOpenTag(usedAttribs[i]);
           }
         }
 
@@ -304,7 +304,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       // close all the tags that are open after the last op
       while (openTags.length > 0)
       {
-        emitCloseTag(openTags[0])
+        emitCloseTag(openTags[0]);
       }
     } // end processNextChars
     if (urls)
@@ -333,148 +333,128 @@ function getHTMLFromAtext(pad, atext, authorColors)
   // so we want to do something reasonable there.  We also
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
-  var lists = []; // e.g. [[1,'bullet'], [3,'bullet'], ...]
-  var listLevels = []
+  var openLists = [];
   for (var i = 0; i < textLines.length; i++)
   {
+    var context;
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
-    listLevels.push(line.listLevel)
 
     if (line.listLevel)//If we are inside a list
     {
-      // do list stuff
-      var whichList = -1; // index into lists or -1
-      if (line.listLevel)
-      {
-        whichList = lists.length;
-        for (var j = lists.length - 1; j >= 0; j--)
-        {
-          if (line.listLevel <= lists[j][0])
-          {
-            whichList = j;
-          }
-        }
-      }
-
-      if (whichList >= lists.length)//means we are on a deeper level of indentation than the previous line
-      {
-        if(lists.length > 0){
-          pieces.push('</li>')
-        }
-        lists.push([line.listLevel, line.listTypeName]);
-
-        // if there is a previous list we need to open x tags, where x is the difference of the levels
-        // if there is no previous list we need to open x tags, where x is the wanted level
-        var toOpen = lists.length > 1 ? line.listLevel - lists[lists.length - 2][0] - 1 : line.listLevel - 1
-
-        if(line.listTypeName == "number")
-        {
-          if(toOpen > 0){
-            pieces.push(new Array(toOpen + 1).join('<ol>'))
-          }
-          pieces.push('<ol class="'+line.listTypeName+'"><li>', lineContent || '<br>');
-        }
-        else
-        {
-          if(toOpen > 0){
-            pieces.push(new Array(toOpen + 1).join('<ul>'))
-          }
-          pieces.push('<ul class="'+line.listTypeName+'"><li>', lineContent || '<br>');
-        }
-      }
-      //the following code *seems* dead after my patch.
-      //I keep it just in case I'm wrong...
-      /*else if (whichList == -1)//means we are not inside a list
-      {
-        if (line.text)
-        {
-          console.log('trace 1');
-          // non-blank line, end all lists
-          if(line.listTypeName == "number")
-          {
-            pieces.push(new Array(lists.length + 1).join('</li></ol>'));
-          }
-          else
-          {
-            pieces.push(new Array(lists.length + 1).join('</li></ul>'));
-          }
-          lists.length = 0;
-          pieces.push(lineContent, '<br>');
-        }
-        else
-        {
-          console.log('trace 2');
-          pieces.push('<br><br>');
-        }
-      }*/
-      else//means we are getting closer to the lowest level of indentation or are at the same level
-      {
-        var toClose = lists.length > 0 ? listLevels[listLevels.length - 2] - line.listLevel : 0
-        if( toClose > 0){
-          pieces.push('</li>')
-          if(lists[lists.length - 1][1] == "number")
-          {
-            pieces.push(new Array(toClose+1).join('</ol>'))
-            pieces.push('<li>', lineContent || '<br>');
-          }
-          else
-          {
-            pieces.push(new Array(toClose+1).join('</ul>'))
-            pieces.push('<li>', lineContent || '<br>');
-          }
-          lists = lists.slice(0,whichList+1)
-        } else {
-          pieces.push('</li><li>', lineContent || '<br>');
-        }
-      }
-    }
-    else//outside any list, need to close line.listLevel of lists
-    {
-      if(lists.length > 0){
-        if(lists[lists.length - 1][1] == "number"){
-          pieces.push('</li></ol>');
-          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ol>'))
-        } else {
-          pieces.push('</li></ul>');
-          pieces.push(new Array(listLevels[listLevels.length - 2]).join('</ul>'))
-        }
-      }
-      lists = []
-
-      var context = {
+      context = {
         line: line,
         lineContent: lineContent,
         apool: apool,
         attribLine: attribLines[i],
         text: textLines[i],
         padId: pad.id
-      }
-
-      var lineContentFromHook = hooks.callAllStr("getLineHTMLForExport", context, " ", " ", "");
-
-      if (lineContentFromHook)
+      };
+      var prevLine = null;
+      var nextLine = null;
+      if (i > 0)
       {
-        pieces.push(lineContentFromHook, '');
+        prevLine = _analyzeLine(textLines[i -1], attribLines[i -1], apool);
       }
-      else
+      if (i < textLines.length)
       {
-        pieces.push(lineContent, '<br>');
+        nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
+      }
+      hooks.aCallAll('getLineHTMLForExport', context);
+      //To create list parent elements 
+      if ((!prevLine || prevLine.listLevel !== line.listLevel) || (prevLine && line.listTypeName !== prevLine.listTypeName))
+      {
+        var exists = _.find(openLists, function (item)
+        {
+          return (item.level === line.listLevel && item.type === line.listTypeName); 
+        });
+        if (!exists) {
+          var prevLevel = 0;
+          if (prevLine && prevLine.listLevel) {
+            prevLevel = prevLine.listLevel;
+          }
+          if (prevLine && line.listTypeName !== prevLine.listTypeName)
+          {
+            prevLevel = 0;
+          }
+
+          for (var diff = prevLevel; diff < line.listLevel; diff++) {
+            openLists.push({level: diff, type: line.listTypeName});
+            var prevPiece = pieces[pieces.length - 1];
+
+            if (prevPiece.indexOf("<ul") === 0 || prevPiece.indexOf("<ol") === 0 || prevPiece.indexOf("</li>") === 0)
+            {
+              pieces.push("<li>");
+            }
+
+            if (line.listTypeName === "number")
+            {
+              pieces.push("<ol class=\"" + line.listTypeName + "\">");
+            }
+            else
+            {
+              pieces.push("<ul class=\"" + line.listTypeName + "\">");
+            }
+          } 
+        }
+      }
+
+      pieces.push("<li>", context.lineContent);
+
+      // To close list elements
+      if (nextLine && nextLine.listLevel === line.listLevel && line.listTypeName === nextLine.listTypeName)
+      {
+        pieces.push("</li>");
+      }
+      if ((!nextLine || !nextLine.listLevel || nextLine.listLevel < line.listLevel) || (nextLine && line.listTypeName !== nextLine.listTypeName))
+      {
+        var nextLevel = 0;
+        if (nextLine && nextLine.listLevel) {
+          nextLevel = nextLine.listLevel;
+        }
+        if (nextLine && line.listTypeName !== nextLine.listTypeName)
+        {
+          nextLevel = 0;
+        }
+
+        for (var diff = nextLevel; diff < line.listLevel; diff++)
+        {
+          openLists = openLists.filter(function(el)
+          {
+            return el.level !== diff && el.type !== line.listTypeName;
+          });
+
+          if (pieces[pieces.length - 1].indexOf("</ul") === 0 || pieces[pieces.length - 1].indexOf("</ol") === 0)
+          {
+            pieces.push("</li>");
+          }
+                  
+          if (line.listTypeName === "number")
+          {
+            pieces.push("</ol>");
+          }
+          else
+          {
+            pieces.push("</ul>");
+          }
+        } 
       }
     }
-  }
+    else//outside any list, need to close line.listLevel of lists
+    {
+      context = {
+        line: line,
+        lineContent: lineContent,
+        apool: apool,
+        attribLine: attribLines[i],
+        text: textLines[i],
+        padId: pad.id
+      };
 
-  for (var k = lists.length - 1; k >= 0; k--)
-  {
-    if(lists[k][1] == "number")
-    {
-      pieces.push('</li></ol>');
+      hooks.aCallAll("getLineHTMLForExport", context);
+        pieces.push(context.lineContent, "<br>");
+      }
     }
-    else
-    {
-      pieces.push('</li></ul>');
-    }
-  }
 
   return pieces.join('');
 }
