@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kristian.kankainen"
+			"Kristian.kankainen",
+			"Tiblu"
 		]
 	},
 	"index.newPad": "Uus klade",
@@ -88,7 +89,7 @@
 	"timeslider.toolbar.exportlink.title": "Eksport",
 	"timeslider.exportCurrent": "Ekspordi käesolev versioon kuiː",
 	"timeslider.version": "Versioon {{version}}",
-	"timeslider.saved": "Salvestatud {{day}}. {{month}}il {{year}}. aastal",
+	"timeslider.saved": "Salvestatud {{day}} {{month}} {{year}}",
 	"timeslider.dateformat": "{{day}}.{{month}}.{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Jaanuar",
 	"timeslider.month.february": "Veebruar",
