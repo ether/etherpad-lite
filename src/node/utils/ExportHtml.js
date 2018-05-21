@@ -371,7 +371,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
         if (!exists) {
           var prevLevel = 0;
           if (prevLine && prevLine.listLevel) {
-            prevlevel = prevLine.listLevel;
+            prevLevel = prevLine.listLevel;
           }
           if (prevLine && line.listTypeName !== prevLine.listTypeName)
           {
