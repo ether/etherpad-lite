@@ -65,9 +65,21 @@ function check_api_token {
 
 function modify_files {
   # Add changelog text to first line of CHANGELOG.md
-  sed -i "1s/^/${changelogText}\n/" CHANGELOG.md
+
+  msg=""
+  # source: https://unix.stackexchange.com/questions/9784/how-can-i-read-line-by-line-from-a-variable-in-bash#9789
+  while IFS= read -r line
+  do
+    # replace newlines with literal "\n" for using with sed
+    msg+="$line\n"
+  done < <(printf '%s\n' "${changelogText}")
+
+  sed -i "1s/^/${msg}\n/" CHANGELOG.md
+  [[ $? != 0 ]] && echo "Aborting: Error modifying CHANGELOG.md" && exit 1
+
   # Replace version number of etherpad in package.json
   sed -i -r "s/(\"version\"[ ]*: \").*(\")/\1$VERSION\2/" src/package.json
+  [[ $? != 0 ]] && echo "Aborting: Error modifying package.json" && exit 1
 }
 
 function create_release_branch {
