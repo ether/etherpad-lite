@@ -27,7 +27,7 @@
         <p>Git sha: <a href='https://github.com/ether/etherpad-lite/commit/<%= gitCommit %>'><%= gitCommit %></a></p>
 
         <h2>Installed plugins</h2>
-        <pre><%- plugins.formatPlugins().replace(", ","\n") %></pre>
+        <pre><%- plugins.formatPlugins().replace(/, /g,"\n") %></pre>
 
         <h2>Installed parts</h2>
         <pre><%= plugins.formatParts() %></pre>
