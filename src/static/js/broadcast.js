@@ -336,6 +336,11 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     var self = this;
     var path = revisionInfo.getPath(padContents.currentRevision, newRevision);
     debugLog('newRev: ', padContents.currentRevision, path);
+
+    hooks.aCallAll('goToRevisionEvent', {
+        rev: newRevision
+    });
+
     if (path.status == 'complete')
     {
       var cs = path.changesets;
