@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Chelin",
-			"C.R."
+			"C.R.",
+			"Ruthven"
 		]
 	},
 	"index.newPad": "Nuovo Pad",
@@ -67,7 +68,7 @@
 	"pad.modals.initsocketfail.explanation": "Nun se può cunnettà 'o server e sincronizzaziona.",
 	"pad.modals.initsocketfail.cause": "Stu fatto è succiesso, probabbilmente pe' bbìa 'e nu probblema c' 'o navigatóre 'o ll'internet.",
 	"pad.modals.slowcommit.explanation": "'O server nun risponne.",
-	"pad.modals.slowcommit.cause": "Stu fatto può darse ca è causato pe' bbìa 'e prubbleme 'e connettività 'e rezza.",
+	"pad.modals.slowcommit.cause": "'Sto fatto putiss' essere causato 'a prubblemi 'e connettività 'e rezza.",
 	"pad.modals.badChangeset.explanation": "Nu cagnamento ca stavate facenno è stato classeficato comme illegale p' 'o server 'e sincronizzaziona.",
 	"pad.modals.badChangeset.cause": "Chistu fatto può darse ca è causato pe' bbìa 'e na mpustazione errata d' 'o server o cocch'atu comportamento nun preveduto. Pe' piacere cuntattate l'ammenistratore d' 'o servizio, si se pienza ca chist'è n'errore. Tentate a ve riconnettà pe' cuntinuà 'a edità.",
 	"pad.modals.corruptPad.explanation": "'O pad addò vulevate trasì è scassato.",
