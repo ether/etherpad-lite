@@ -155,14 +155,81 @@ function loadPlugin(packages, plugin_name, plugins, parts, cb) {
   );
 }
 
+var matcher = function (name, list) {
+  var matches = [];
+  try {
+    var nameRegExp = RegExp(name);    
+
+    list.forEach(function (item) {
+      if (nameRegExp.test(item)) {
+        matches.push(item);
+      }
+    });
+  } catch(e) {
+    console.log('ERROR', e);
+  }
+  
+  
+  return matches;
+}
+
 function partsToParentChildList(parts) {
   var res = [];
+  var names = _.chain(parts).keys().value();
+  
   _.chain(parts).keys().forEach(function (name) {
+    var conflictsPre = [];
+    var conflictsPost = [];
+    if (parts[name].post && parts[name].pre) {
+      _.each(parts[name].post, function (child_name) {
+        var conflictMatches = matcher(child_name, parts[name].pre);
+        if (conflictMatches) {
+          var matchObj = {};
+          matchObj[child_name] = conflictMatches;
+          conflictsPost.push(matchObj);
+        }
+      });
+
+      _.each(parts[name].pre, function (parent_name) {
+        var conflictMatches = matcher(parent_name, parts[name].post);
+        if (conflictMatches) {
+          var matchObj = {};
+          matchObj[parent_name] = conflictMatches;
+          conflictsPre.push(matchObj)
+        }
+      });
+    }
     _.each(parts[name].post || [], function (child_name)  {
-      res.push([name, child_name]);
+      var matchedNames = matcher(child_name, names);
+      _.each(matchedNames, function (matchName) {
+        if (name !== matchName) {
+          if (conflictsPost[child_name] && conflictsPost[child_name].indexOf(matchName) > -1) {}
+          else {
+            res.push([name, matchName]);
+          }               
+        }
+      })
+      
     });
     _.each(parts[name].pre || [], function (parent_name)  {
-      res.push([parent_name, name]);
+      var matchedNames = matcher(parent_name, names);
+      _.each(matchedNames, function (matchName) {
+        if (name !== matchName) {
+          var noConflict = true;
+          
+          if (conflictsPre) {
+            _.each(conflictsPre, function (conflictObject) {
+              if (conflictObject[parent_name] && conflictObject[parent_name].indexOf(matchName) > -1) {
+                noConflict = false;
+              }
+            })
+          }
+
+          if (noConflict) {
+            res.push([matchName, name]);
+          }
+        }
+      });
     });
     if (!parts[name].pre && !parts[name].post) {
       res.push([name, ":" + name]); // Include apps with no dependency info
