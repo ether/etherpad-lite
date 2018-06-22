@@ -173,64 +173,120 @@ var matcher = function (name, list) {
   return matches;
 }
 
+function conflictMatcher (parts, name, type) {
+  var type;
+  var opposite = 'pre';
+  var results = [];
+  if (type === 'pre') {
+    opposite = 'post';
+  }
+  _.each(parts[name][type] || [], function (item_name) {
+    var conflictMatches = matcher(item_name, parts[name][opposite] || []);
+    if(conflictMatches.length) {
+      var matchObj = {};
+      matchObj[item_name] = conflictMatches;
+      results.push(matchObj);
+    }
+  });
+
+  return results;
+}
+
+function checkPluginConflicts(parts) {
+  var conflicts = [];
+
+  _.chain(parts).keys().forEach(function (name) {
+    var conflictObj = {};
+    var conflictsPre = conflictMatcher(parts, name, 'pre');
+    var conflictsPost = conflictMatcher(parts, name, 'post');
+
+    conflictObj[name] = {pre: conflictsPre, post: conflictsPost};
+    conflicts.push(conflictObj);
+  });
+
+  return conflicts;
+}
+function closedChainChecker (parts, name, match, matchCount, res) {
+  var noChain = true;
+  for (var i = 0; i < res.length; i++ ) {
+      var item = res[i];
+
+      if (item[0] === name || item[1] === name) {
+        if (item[0] === match || item[1] === match) {
+          //value allready exists
+          noChain = false;
+            // check which plugins has stricter pre/post definition
+          _.each(parts[match].pre || [], function (item_name) {
+            var matches = matcher(item_name, _.chain(parts).keys().value());
+            if (matches.length > matchCount) {
+              res.splice(i, 1);
+              noChain = true;
+            }
+          });
+          _.each(parts[match].post || [], function (item_name) {
+            var matches = matcher(item_name, _.chain(parts).keys().value());
+            if (matches.length > matchCount) {
+              res.splice(i, 1);
+              noChain = true;
+            }
+          });
+
+          i = res.length;
+          break;
+        }
+      }
+  }
+
+  return noChain;
+}
+
+function matchHooks (parts, name, res, conflicts, type) {
+  var names = _.chain(parts).keys().value();
+  _.each(parts[name][type], function (item_name)  {
+    var matchedNames = matcher(item_name, names);
+    _.each(matchedNames, function (matchName) {
+      if (name !== matchName) {
+        var noConflict = true;
+
+        if (conflicts) {
+          _.each(conflicts, function (conflictObject) {
+            if (conflictObject[item_name] && (conflictObject[item_name].matches && conflictObject[item_name].matches.indexOf(matchName) > -1)) {
+              noConflict = false;
+            }
+          })
+        } 
+        if (noConflict) {
+          noConflict = closedChainChecker(parts, name, matchName, matchedNames.length, res);
+        }
+
+        if (noConflict && type === 'post') {
+          res.push([name, matchName]);
+        } else if (noConflict){
+          res.push([matchName, name]);
+        }
+      }
+    });
+  });
+}
+
 function partsToParentChildList(parts) {
   var res = [];
-  var names = _.chain(parts).keys().value();
   
+  var conflicts = checkPluginConflicts(parts);
   _.chain(parts).keys().forEach(function (name) {
     var conflictsPre = [];
     var conflictsPost = [];
-    if (parts[name].post && parts[name].pre) {
-      _.each(parts[name].post, function (child_name) {
-        var conflictMatches = matcher(child_name, parts[name].pre);
-        if (conflictMatches) {
-          var matchObj = {};
-          matchObj[child_name] = conflictMatches;
-          conflictsPost.push(matchObj);
-        }
-      });
-
-      _.each(parts[name].pre, function (parent_name) {
-        var conflictMatches = matcher(parent_name, parts[name].post);
-        if (conflictMatches) {
-          var matchObj = {};
-          matchObj[parent_name] = conflictMatches;
-          conflictsPre.push(matchObj)
-        }
-      });
+    for (var i=0; i < conflicts.length; i++) {
+      if (conflicts[i][name]) {
+        conflictsPre = conflicts[i][name].pre;
+        conflictsPost = conflicts[i][name].post;
+        i = conflicts.length;
+        break;
+      }
     }
-    _.each(parts[name].post || [], function (child_name)  {
-      var matchedNames = matcher(child_name, names);
-      _.each(matchedNames, function (matchName) {
-        if (name !== matchName) {
-          if (conflictsPost[child_name] && conflictsPost[child_name].indexOf(matchName) > -1) {}
-          else {
-            res.push([name, matchName]);
-          }               
-        }
-      })
-      
-    });
-    _.each(parts[name].pre || [], function (parent_name)  {
-      var matchedNames = matcher(parent_name, names);
-      _.each(matchedNames, function (matchName) {
-        if (name !== matchName) {
-          var noConflict = true;
-          
-          if (conflictsPre) {
-            _.each(conflictsPre, function (conflictObject) {
-              if (conflictObject[parent_name] && conflictObject[parent_name].indexOf(matchName) > -1) {
-                noConflict = false;
-              }
-            })
-          }
-
-          if (noConflict) {
-            res.push([matchName, name]);
-          }
-        }
-      });
-    });
+    matchHooks(parts, name, res, conflictsPost, 'post');
+    matchHooks(parts, name, res, conflictsPre, 'pre');
+ 
     if (!parts[name].pre && !parts[name].post) {
       res.push([name, ":" + name]); // Include apps with no dependency info
     }
