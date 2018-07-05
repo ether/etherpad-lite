@@ -6,7 +6,8 @@
 			"Hrishikesh.kb",
 			"Praveenp",
 			"Santhosh.thottingal",
-			"Nesi"
+			"Nesi",
+			"Jinoytommanjaly"
 		]
 	},
 	"index.newPad": "പുതിയ പാഡ്",
@@ -61,6 +62,7 @@
 	"pad.modals.connected": "ബന്ധിപ്പിച്ചിരിക്കുന്നു.",
 	"pad.modals.reconnecting": "താങ്കളുടെ പാഡിലേയ്ക്ക് വീണ്ടും ബന്ധിപ്പിക്കുന്നു...",
 	"pad.modals.forcereconnect": "എന്തായാലും ബന്ധിപ്പിക്കുക",
+	"pad.modals.cancel": "റദ്ദാക്കുക",
 	"pad.modals.userdup": "മറ്റൊരു ജാലകത്തിൽ തുറന്നിരിക്കുന്നു",
 	"pad.modals.userdup.explanation": "ഈ കമ്പ്യൂട്ടറിൽ ഈ പാഡ് ഒന്നിലധികം ബ്രൗസർ ജാലകങ്ങളിൽ തുറന്നതായി കാണുന്നു.",
 	"pad.modals.userdup.advice": "ഈ ജാലകം തന്നെ ഉപയോഗിക്കാനായി ബന്ധിപ്പിക്കുക",
