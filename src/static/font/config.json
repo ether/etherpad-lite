@@ -347,6 +347,18 @@
       "css": "slideshare",
       "code": 59441,
       "src": "fontawesome"
+    },
+    {
+      "uid": "e4dde1992f787163e2e2b534b8c8067d",
+      "css": "angle-down",
+      "code": 61703,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "ccddff8e8670dcd130e3cb55fdfc2fd0",
+      "css": "down-open",
+      "code": 59449,
+      "src": "fontawesome"
     }
   ]
 }
