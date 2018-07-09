@@ -12,14 +12,13 @@ var config = {
 var allTestsPassed = true;
 
 var sauceTestWorker = async.queue(function (testSettings, callback) {
-  var browser = wd.remote(config.host, config.port, config.username, config.accessKey);
-  var browserChain = browser.chain();
+  var browser = wd.promiseChainRemote(config.host, config.port, config.username, config.accessKey);
   var name = process.env.GIT_HASH + " - " + testSettings.browserName + " " + testSettings.version + ", " + testSettings.platform;
   testSettings.name = name;
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
 
-  browserChain.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
+  browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
     var url = "https://saucelabs.com/jobs/" + browser.sessionID;
     console.log("Remote sauce test '" + name + "' started! " + url);
 
@@ -28,7 +27,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       getStatusInterval && clearInterval(getStatusInterval);
       clearTimeout(timeout);
 
-      browserChain.quit();
+      browser.quit();
 
       if(!success){
         allTestsPassed = false;
@@ -39,7 +38,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       testResult = testResult.split("\\n").map(function(line){
         return "[" + testSettings.browserName + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
       }).join("\n");
-      
+
       console.log(testResult);
       console.log("Remote sauce test '" + name + "' finished! " + url);
 
@@ -53,7 +52,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
-      browserChain.eval("$('#console').text()", function(err, consoleText){
+      browser.eval("$('#console').text()", function(err, consoleText){
         if(!consoleText || err){
           return;
         }
@@ -68,7 +67,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   });
 }, 5); //run 5 tests in parrallel
 
-// Firefox 
+// Firefox
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
