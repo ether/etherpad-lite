@@ -2,14 +2,29 @@
   "name": "ep_etherpad-lite",
   "description": "A Etherpad based on node.js",
   "homepage": "http://etherpad.org",
-  "keywords": ["etherpad", "realtime", "collaborative", "editor"],
+  "keywords": [
+    "etherpad",
+    "realtime",
+    "collaborative",
+    "editor"
+  ],
   "author": "Etherpad Foundation",
   "contributors": [
-    { "name": "John McLear" },
-    { "name": "Hans Pinckaers" },
-    { "name": "Robin Buse" },
-    { "name": "Marcel Klehr" },
-    { "name": "Peter Martischka" }
+    {
+      "name": "John McLear"
+    },
+    {
+      "name": "Hans Pinckaers"
+    },
+    {
+      "name": "Robin Buse"
+    },
+    {
+      "name": "Marcel Klehr"
+    },
+    {
+      "name": "Peter Martischka"
+    }
   ],
   "dependencies": {
     "async": "0.9.0",
@@ -45,14 +60,18 @@
     "underscore": "1.8.3",
     "unorm": "1.4.1"
   },
-  "bin": { "etherpad-lite": "./node/server.js" },
+  "bin": {
+    "etherpad-lite": "./node/server.js"
+  },
   "devDependencies": {
     "wd": "1.6.1"
   },
-  "engines": { "node": ">=0.10.0",
+  "engines": {
+    "node": ">=0.10.0",
     "npm": ">=1.0"
   },
-  "repository": { "type": "git",
+  "repository": {
+    "type": "git",
     "url": "http://github.com/ether/etherpad-lite.git"
   },
   "version": "1.6.6",
