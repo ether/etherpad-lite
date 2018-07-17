@@ -1778,19 +1778,15 @@ function Ace2Inner(){
     strikethrough: true,
     list: true
   };
-  var OTHER_INCORPED_ATTRIBS = {
-    insertorder: true,
-    author: true
-  };
 
   function isStyleAttribute(aname)
   {
     return !!STYLE_ATTRIBS[aname];
   }
 
-  function isOtherIncorpedAttribute(aname)
+  function isDefaultLineAttribute(aname)
   {
-    return !!OTHER_INCORPED_ATTRIBS[aname];
+    return AttributeManager.DEFAULT_LINE_ATTRIBUTES.indexOf(aname) !== -1;
   }
 
   function insertDomLines(nodeToAddAfter, infoStructs, isTimeUp)
@@ -2757,9 +2753,12 @@ function Ace2Inner(){
 
   function analyzeChange(oldText, newText, oldAttribs, newAttribs, optSelStartHint, optSelEndHint)
   {
+    // we need to take into account both the styles attributes & attributes defined by
+    // the plugins, so basically we can ignore only the default line attribs used by
+    // Etherpad
     function incorpedAttribFilter(anum)
     {
-      return !isOtherIncorpedAttribute(rep.apool.getAttribKey(anum));
+      return !isDefaultLineAttribute(rep.apool.getAttribKey(anum));
     }
 
     function attribRuns(attribs)

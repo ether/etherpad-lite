@@ -538,8 +538,8 @@ describe('getHTML', function(){
     api.get(endPoint('getHTML')+"&padID="+testPadId)
     .expect(function(res){
       var ehtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
-      var uhtml = resultUlhtml.toLowerCase();
-      if(ehtml !== uhtml) throw new Error("Imported HTML does not match served HTML")
+      var uhtml = ULhtml.toLowerCase();
+      if(ehtml !== uhtml) throw new Error("Expected HTML does not match served HTML.\nExpected:\n" + uhtml + "\n\nReceived:\n" + ehtml)
     })
     .expect('Content-Type', /json/)
     .expect(200, done)

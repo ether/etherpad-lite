@@ -16,7 +16,7 @@
 	"pad.toolbar.ul.title": "Ennece puntato (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Rientro (TAB)",
 	"pad.toolbar.unindent.title": "Riduce rientro (Shift+TAB)",
-	"pad.toolbar.undo.title": "Annulla (Ctrl-Z)",
+	"pad.toolbar.undo.title": "Sfàjere (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Ripete (Ctrl-Y)",
 	"pad.toolbar.clearAuthorship.title": "Elimina 'e culure ca 'ndicanno 'e auture (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "'Mporta/esporta 'e/a diverse furmate 'e file",
