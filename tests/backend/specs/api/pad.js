@@ -14,8 +14,9 @@ var apiVersion = 1;
 var testPadId = makeid();
 var lastEdited = "";
 var text = generateLongText();
-var ULhtml = '<!DOCTYPE html><html><body><ul class="bullet"><li>one</li><li>2</li></ul><br><ul><ul class="bullet"><li>UL2</li></ul></ul></body></html>';
-
+var ULhtml = '<!DOCTYPE html<!DOCTYPE html><html><body><ul class="bullet"><li>one</li><li>2</li></ul><br><ul><ul class="bullet"><li>UL2</li></ul></ul></body></html>';
+//Different result because export is done by standard while input might not
+var resultUlhtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>2</ul><br><ul class="bullet"><li><ul class="bullet"><li>ul2</ul></li></ul></body></html>';
 describe('Connectivity', function(){
   it('errors if can not connect', function(done) {
     api.get('/api/')
@@ -537,7 +538,7 @@ describe('getHTML', function(){
     api.get(endPoint('getHTML')+"&padID="+testPadId)
     .expect(function(res){
       var ehtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
-      var uhtml = ULhtml.toLowerCase();
+      var uhtml = resultUlhtml.toLowerCase();
       if(ehtml !== uhtml) throw new Error("Imported HTML does not match served HTML")
     })
     .expect('Content-Type', /json/)
