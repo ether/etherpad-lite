@@ -513,7 +513,7 @@ describe('scroll when focus line is out of viewport', function () {
   var pressKey = function(keyCode, shiftIsPressed){
     var inner$ = helper.padInner$;
     var evtType;
-    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE
+    if(inner$(window)[0].bowser.modernIE){ // if it's IE
       evtType = 'keypress';
     }else{
       evtType = 'keydown';
