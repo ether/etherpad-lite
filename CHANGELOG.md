@@ -490,7 +490,7 @@
  * Plugin-specific settings in settings.json (finally allowing for things like a google analytics plugin)
  * Serve admin dashboard at /admin (still very limited, though)
  * Modify your settings.json through the newly created UI at /admin/settings
- * Fix: Import <ol>'s  as <ol>'s and not as <ul>'s!
+ * Fix: Import `<ol>` as `<ol>` and not as `<ul>`!
  * Added solaris compatibility (bin/installDeps.sh was broken on solaris)
  * Fix a bug with IE9 and Password Protected Pads using HTTPS
 
