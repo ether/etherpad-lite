@@ -15,7 +15,7 @@ describe("indentation button", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE
+    if(inner$(window)[0].bowser.modernIE){ // if it's IE
       var evtType = "keypress";
     }else{
       var evtType = "keydown";
@@ -325,7 +325,7 @@ describe("indentation button", function(){
 
 function pressEnter(){
   var inner$ = helper.padInner$;
-  if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE
+  if(inner$(window)[0].bowser.modernIE){ // if it's IE
     var evtType = "keypress";
   }else{
     var evtType = "keydown";
