@@ -8,6 +8,9 @@ Etherpad is a really-real time collaborative editor scalable to thousands of sim
 
 # Installation
 
+## Requirements
+- `nodejs` >= **6.9.0**
+
 ## Uber-Quick Ubuntu
 ```
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
@@ -21,7 +24,7 @@ You'll need gzip, git, curl, libssl develop libraries, python and gcc.
 - *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
 - *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
 
-Additionally, you'll need [node.js](https://nodejs.org) installed.
+Additionally, you'll need [node.js](https://nodejs.org) installed (minimum required Node version: **6.9.0**).
 Ideally, the latest stable version is preferred. Please note that the packages offered on some operating systems are outdated. In those cases, we recommend installing nodejs from official archives or compiling it from source (avoiding yum/apt).
 
 **As any user (we recommend creating a separate user called etherpad):**
