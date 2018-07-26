@@ -45,6 +45,11 @@ async.waterfall([
     NodeVersion.enforceMinNodeVersion('6.9.0', callback);
   },
 
+  function(callback)
+  {
+    NodeVersion.checkDeprecationStatus('8.9.0', '1.8.0', callback);
+  },
+
   // load npm
   function(callback) {
     npm.load({}, function(er) {

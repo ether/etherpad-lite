@@ -35,3 +35,20 @@ exports.enforceMinNodeVersion = function(minNodeVersion, callback) {
     callback();
   }
 };
+
+/**
+ * Prints a warning if running on a supported but deprecated Node version
+ *
+ * @param  {String}    lowestNonDeprecatedNodeVersion   all Node version less than this one are deprecated
+ * @param  {Function}  epRemovalVersion                 Etherpad version that will remove support for deprecated Node releases
+ */
+exports.checkDeprecationStatus = function(lowestNonDeprecatedNodeVersion, epRemovalVersion, callback) {
+  const semver = require('semver');
+  const currentNodeVersion = process.version;
+
+  if (semver.lt(currentNodeVersion, lowestNonDeprecatedNodeVersion)) {
+    console.warn(`Support for Node ${currentNodeVersion} will be removed in Etherpad ${epRemovalVersion}. Please consider updating at least to Node ${lowestNonDeprecatedNodeVersion}`);
+  }
+
+  callback();
+};
