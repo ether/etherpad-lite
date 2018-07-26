@@ -21,25 +21,26 @@ You'll need gzip, git, curl, libssl develop libraries, python and gcc.
 - *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
 - *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
 
-Additionally, you'll need [node.js](https://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
+Additionally, you'll need [node.js](https://nodejs.org) installed.
+Ideally, the latest stable version is preferred. Please note that the packages offered on some operating systems are outdated. In those cases, we recommend installing nodejs from official archives or compiling it from source (avoiding yum/apt).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
-1. Move to a folder where you want to install Etherpad. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
-2. Change into the new directory containing the cloned source code `cd etherpad-lite`
+1. Move to a folder where you want to install Etherpad. Clone the git repository: `git clone git://github.com/ether/etherpad-lite.git`
+2. Change into the new directory containing the cloned source code: `cd etherpad-lite`
 
-Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser. 
+Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
 
-Update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies.
+Update to the latest version with `git pull origin`. The next start with `bin/run.sh` will update the dependencies.
 
 [Next steps](#next-steps).
 
 ## Windows
 
-### Prebuilt windows package
+### Prebuilt Windows package
 This package works out of the box on any windows machine, but it's not very useful for developing purposes...
 
-1. [Download the latest windows package](http://etherpad.org/#download)
+1. [Download the latest Windows package](http://etherpad.org/#download)
 2. Extract the folder
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
@@ -58,7 +59,7 @@ Update to the latest version with `git pull origin`, then run `bin\installOnWind
 
 If cloning to a subdirectory within another project, you may need to do the following:
 
-1. Start the server manually (e.g. `node/node_modules/ep_etherpad-lite/node/server.js]`)
+1. Start the server manually (e.g. `node/node_modules/ep_etherpad-lite/node/server.js`)
 2. Edit the db `filename` in `settings.json` to the relative directory with the file (e.g. `application/lib/etherpad-lite/var/dirty.db`)
 3. Add auto-generated files to the main project `.gitignore`
 
