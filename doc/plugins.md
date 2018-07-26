@@ -99,7 +99,7 @@ Your plugin must also contain a [package definition file](https://docs.npmjs.com
   "author": "USERNAME (REAL NAME) <MAIL@EXAMPLE.COM>",
   "contributors": [],
   "dependencies": {"MODULE": "0.3.20"},
-  "engines": { "node": ">= 0.6.0"}
+  "engines": { "node": ">= 6.9.0"}
 }
 ```
 
