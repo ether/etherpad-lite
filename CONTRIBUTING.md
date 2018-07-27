@@ -93,6 +93,8 @@ You can build the docs e.g. produce html, using `make docs`. At some point in th
 ## Testing
 Front-end tests are found in the `tests/frontend/` folder in the repository. Run them by pointing your browser to `<yourdomainhere>/tests/frontend`.
 
+Back-end tests can be run from the `src` directory, via `npm test`.
+
 ## Things you can help with
 Etherpad is much more than software.  So if you aren't a developer then worry not, there is still a LOT you can do!  A big part of what we do is community engagement.  You can help in the following ways
  * Triage bugs (applying labels) and confirming their existance
