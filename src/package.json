@@ -75,7 +75,7 @@
     "url": "http://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "test": "mocha --timeout 5000 --reporter nyan ../tests/backend/specs/api"
+    "test": "mocha --timeout 5000 ../tests/backend/specs/api"
   },
   "version": "1.6.6",
   "license": "Apache-2.0"
