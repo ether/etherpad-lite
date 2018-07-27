@@ -8,4 +8,4 @@ To run the frontend tests, point your browser to `<yourdomainhere>/tests/fronten
 
 ## Backend
 
-To run the backend tests, run `bin/backendTests.sh`
+To run the backend tests, run `cd src` and then `npm test`
