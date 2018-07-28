@@ -264,7 +264,8 @@ function getAceFile(callback) {
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
 
-      var baseURI = 'http://localhost:' + settings.port;
+      // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
+      var baseURI = 'http://invalid.invalid';
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
