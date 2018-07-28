@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "mocha": "5.2.0",
+    "nyc": "^12.0.2",
     "supertest": "3.0.0",
     "wd": "1.6.1"
   },
@@ -75,7 +76,7 @@
     "url": "http://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "test": "mocha --timeout 5000 ../tests/backend/specs/api"
+    "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api"
   },
   "version": "1.6.6",
   "license": "Apache-2.0"
