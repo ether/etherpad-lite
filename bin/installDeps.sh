@@ -14,8 +14,10 @@ require_minimal_version() {
   REQUIRED_MAJOR="$3"
   REQUIRED_MINOR="$4"
 
-  DETECTED_MAJOR=$(echo $VERSION_STRING | cut --only-delimited --delimiter "." --fields 1)
-  DETECTED_MINOR=$(echo $VERSION_STRING | cut --only-delimited --delimiter "." --fields 2)
+  # Flag -s (--only-delimited on GNU cut) ensures no string is returned
+  # when there is no match
+  DETECTED_MAJOR=$(echo $VERSION_STRING | cut -s -d "." -f 1)
+  DETECTED_MINOR=$(echo $VERSION_STRING | cut -s -d "." -f 2)
 
   if [ -z "$DETECTED_MAJOR" ]; then
     printf 'Cannot extract %s major version from version string "%s"\n' "$PROGRAM_LABEL" "$VERSION_STRING" >&2
