@@ -14,9 +14,9 @@ var apiVersion = 1;
 var testPadId = makeid();
 var lastEdited = "";
 var text = generateLongText();
-var ULhtml = '<!DOCTYPE html<!DOCTYPE html><html><body><ul class="bullet"><li>one</li><li>2</li></ul><br><ul><ul class="bullet"><li>UL2</li></ul></ul></body></html>';
+var ULhtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</li></ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</li></ol></li></ol></body></html>';
+var resLHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</ol></li></ol></body></html>';
 //Different result because export is done by standard while input might not
-var resultUlhtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>2</ul><br><ul class="bullet"><li><ul class="bullet"><li>ul2</ul></li></ul></body></html>';
 describe('Connectivity', function(){
   it('errors if can not connect', function(done) {
     api.get('/api/')
@@ -538,7 +538,7 @@ describe('getHTML', function(){
     api.get(endPoint('getHTML')+"&padID="+testPadId)
     .expect(function(res){
       var ehtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
-      var uhtml = ULhtml.toLowerCase();
+      var uhtml = resLHtml.toLowerCase();
       if(ehtml !== uhtml) throw new Error("Expected HTML does not match served HTML.\nExpected:\n" + uhtml + "\n\nReceived:\n" + ehtml)
     })
     .expect('Content-Type', /json/)
