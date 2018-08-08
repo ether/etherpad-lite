@@ -289,15 +289,21 @@
    *
    * is_admin = true gives access to /admin.
    * If you do not uncomment this, /admin will not be available!
+   *
+   * WARNING: passwords should not be stored in plaintext in this file.
+   *          If you want to mitigate this, please install ep_hash_auth and
+   *          follow the section "secure your installation" in README.md
    */
 
   /*
   "users": {
     "admin": {
+      // "password" can be replaced with "hash" if you install ep_hash_auth
       "password": "changeme1",
       "is_admin": true
     },
     "user": {
+      // "password" can be replaced with "hash" if you install ep_hash_auth
       "password": "changeme1",
       "is_admin": false
     }

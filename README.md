@@ -73,6 +73,12 @@ You can initially modify the settings in `settings.json`. (If you need to handle
 
 You should use a dedicated database such as "mysql", if you are planning on using etherpad-in a production environment, since the "dirtyDB" database driver is only for testing and/or development purposes.
 
+## Secure your installation
+If you have enabled authentication in `users` section in `settings.json`, it is a good security practice to **store hashes instead of plain text passwords** in that file. This is _especially_ advised if you are running a production installation.
+
+Please install [ep_hash_auth plugin](https://www.npmjs.com/package/ep_hash_auth) and configure it.
+If you prefer, `ep_hash_auth` also gives you the option of storing the users in a custom directory in the file system, without having to edit `settings.json` and restart Etherpad each time.
+
 ## Plugins and themes
 
 Etherpad is very customizable through plugins. Instructions for installing themes and plugins can be found in [the plugin wiki article](https://github.com/ether/etherpad-lite/wiki/Available-Plugins).
