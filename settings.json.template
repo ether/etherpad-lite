@@ -83,6 +83,7 @@
   "dbSettings" : {
                    "user"    : "etherpaduser",
                    "host"    : "localhost",
+                   "port"    : 3306,
                    "password": "PASSWORD",
                    "database": "etherpad_lite_db",
                    "charset" : "utf8mb4"
