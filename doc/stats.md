@@ -15,4 +15,4 @@ We currently measure:
 
 Under the hood, we are happy to rely on [measured](https://github.com/felixge/node-measured) for all our metrics needs.
 
-To modify or simply access our stats in your plugin, simply `require('ep_etherpad-lite/stats')` which is a `measured.Collection`.
+To modify or simply access our stats in your plugin, simply `require('ep_etherpad-lite/stats')` which is a [`measured.Collection`](https://yaorg.github.io/node-measured/packages/measured-core/Collection.html).
