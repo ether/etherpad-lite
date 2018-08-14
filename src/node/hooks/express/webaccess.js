@@ -33,7 +33,7 @@ exports.basicAuth = function (req, res, next) {
   var authenticate = function (cb) {
     // If auth headers are present use them to authenticate...
     if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-      var userpass = new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
+      var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
       var username = userpass.shift();
       var password = userpass.join(':');
       var fallback = function(success) {
