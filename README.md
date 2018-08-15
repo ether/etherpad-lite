@@ -9,7 +9,7 @@ Etherpad is a really-real time collaborative editor scalable to thousands of sim
 # Installation
 
 ## Requirements
-- `nodejs` >= **6.9.0**
+- `nodejs` >= **6.9.0** (preferred: `nodejs` >= **8.9**)
 
 ## Uber-Quick Ubuntu
 ```
