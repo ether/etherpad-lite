@@ -45,6 +45,7 @@
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
     "npm": ">=4.0.2",
+    "object.values": "^1.0.4",
     "request": "2.83.0",
     "resolve": "1.1.7",
     "security": "1.0.0",
