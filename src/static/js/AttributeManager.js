@@ -4,6 +4,10 @@ var _ = require('./underscore');
 
 var lineMarkerAttribute = 'lmkr';
 
+// Some of these attributes are kept for compatibility purposes.
+// Not sure if we need all of them
+var DEFAULT_LINE_ATTRIBUTES = ['author', 'lmkr', 'insertorder', 'start'];
+
 // If one of these attributes are set to the first character of a
 // line it is considered as a line attribute marker i.e. attributes
 // set on this marker are applied to the whole line.
@@ -35,6 +39,7 @@ var AttributeManager = function(rep, applyChangesetCallback)
   // it will be considered as a line marker
 };
 
+AttributeManager.DEFAULT_LINE_ATTRIBUTES = DEFAULT_LINE_ATTRIBUTES;
 AttributeManager.lineAttributes = lineAttributes;
 
 AttributeManager.prototype = _(AttributeManager.prototype).extend({
@@ -375,7 +380,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
    ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
 
    var countAttribsWithMarker = _.chain(attribs).filter(function(a){return !!a[1];})
-     .map(function(a){return a[0];}).difference(['author', 'lmkr', 'insertorder', 'start']).size().value();
+     .map(function(a){return a[0];}).difference(DEFAULT_LINE_ATTRIBUTES).size().value();
 
    //if we have marker and any of attributes don't need to have marker. we need delete it
    if(hasMarker && !countAttribsWithMarker){

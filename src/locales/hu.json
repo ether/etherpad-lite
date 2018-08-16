@@ -7,7 +7,8 @@
 			"Tgr",
 			"Csega",
 			"BanKris",
-			"Notramo"
+			"Notramo",
+			"Bencemac"
 		]
 	},
 	"index.newPad": "Új notesz",
@@ -58,7 +59,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document formátum)",
-	"pad.importExport.abiword.innerHTML": "Csak szöveges, vagy HTML formátumokból importálhatsz. A speciális importálási funkciókért kérjük <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">telepítsd az abiword-öt</a>.",
+	"pad.importExport.abiword.innerHTML": "Csak szöveges, vagy HTML formátumokból importálhatsz. A speciális importálási funkciókért kérjük <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">telepítsd az AbiWord-öt</a>.",
 	"pad.modals.connected": "Kapcsolódva.",
 	"pad.modals.reconnecting": "Újrakapcsolódás a noteszhez...",
 	"pad.modals.forcereconnect": "Újrakapcsolódás kényszerítése",

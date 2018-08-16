@@ -21,10 +21,11 @@
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 
 exports.getPadPlainText = function(pad, revNum){
-  var atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext());
+  var _analyzeLine = exports._analyzeLine;
+  var atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext);
   var textLines = atext.text.slice(0, -1).split('\n');
   var attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
-  var apool = pad.pool();
+  var apool = pad.pool;
 
   var pieces = [];
   for (var i = 0; i < textLines.length; i++){

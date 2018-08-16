@@ -49,7 +49,7 @@ CachingMiddleware.prototype = new function () {
         (req.get('Accept-Encoding') || '').indexOf('gzip') != -1;
 
     var path = require('url').parse(req.url).path;
-    var cacheKey = (new Buffer(path)).toString('base64').replace(/[\/\+=]/g, '');
+    var cacheKey = Buffer.from(path).toString('base64').replace(/[/+=]/g, '');
 
     fs.stat(CACHE_DIR + 'minified_' + cacheKey, function (error, stats) {
       var modifiedSince = (req.headers['if-modified-since']

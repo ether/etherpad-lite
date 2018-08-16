@@ -120,7 +120,7 @@
 	"timeslider.playPause": "Lecture / Pause des contenus du pad",
 	"timeslider.backRevision": "Reculer d’une révision dans ce pad",
 	"timeslider.forwardRevision": "Avancer d’une révision dans ce pad",
-	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{seconds}}:{{minutes}}:{{hours}}",
+	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "janvier",
 	"timeslider.month.february": "février",
 	"timeslider.month.march": "mars",

@@ -1,6 +1,34 @@
 # Contributor Guidelines
 (Please talk to people on the mailing list before you change this page, see our section on [how to get in touch](https://github.com/ether/etherpad-lite#get-in-touch))
 
+## Pull requests
+
+* the commit series in the PR should be _linear_ (it **should not contain merge commits**). This is necessary because we want to be able to [bisect](https://en.wikipedia.org/wiki/Bisection_(software_engineering)) bugs easily. Rewrite history/perform a rebase if necessary
+* PRs should be issued against the **develop** branch: we never pull directly into **master**
+* PRs **should not have conflicts** with develop. If there are, please resolve them rebasing and force-pushing
+* when preparing your PR, please make sure that you have included the relevant **changes to the documentation** (preferably with usage examples)
+* contain meaningful and detailed **commit messages** in the form:
+  ```
+  submodule: description
+  
+  longer description of the change you have made, eventually mentioning the
+  number of the issue that is being fixed, in the form: Fixes #someIssueNumber
+  ```
+* if the PR is a **bug fix**:
+  * the first commit in the series must be a test that shows the failure
+  * subsequent commits will fix the bug and make the test pass
+  * the final commit message should include the text `Fixes: #xxx` to link it to its bug report
+* think about stability: code has to be backwards compatible as much as possible. Always **assume your code will be run with an older version of the DB/config file**
+* if you want to remove a feature, **deprecate it instead**:
+  * write an issue with your deprecation plan
+  * output a `WARN` in the log informing that the feature is going to be removed
+  * remove the feature in the next version
+* if you want to add a new feature, put it under a **feature flag**:
+  * once the new feature has reached a minimal level of stability, do a PR for it, so it can be integrated early
+  * expose a mechanism for enabling/disabling the feature
+  * the new feature should be **disabled** by default. With the feature disabled, the code path should be exactly the same as before your contribution. This is a __necessary condition__ for early integration
+* think of the PR not as something that __you wrote__, but as something that __someone else is going to read__. The commit series in the PR should tell a novice developer the story of your thoughts when developing it
+
 ## How to write a bug report
 
 * Please be polite, we all are humans and problems can occur.
@@ -24,12 +52,6 @@ If you send logfiles, please set the loglevel switch DEBUG in your settings.json
 ```
 
 The logfile location is defined in startup script or the log is directly shown in the commandline after you have started etherpad.
-
-
-## Important note for pull requests
-**Pull requests should be issued against the develop branch**.  We never pull directly into master.
-
-**Our goal is to iterate in small steps. Release often, release early. Evolution instead of a revolution**
 
 ## General goals of Etherpad
 To make sure everybody is going in the same direction:
@@ -92,6 +114,8 @@ You can build the docs e.g. produce html, using `make docs`. At some point in th
 
 ## Testing
 Front-end tests are found in the `tests/frontend/` folder in the repository. Run them by pointing your browser to `<yourdomainhere>/tests/frontend`.
+
+Back-end tests can be run from the `src` directory, via `npm test`.
 
 ## Things you can help with
 Etherpad is much more than software.  So if you aren't a developer then worry not, there is still a LOT you can do!  A big part of what we do is community engagement.  You can help in the following ways

@@ -1,8 +1,3 @@
-### This project is looking for a new project lead.  If you wish to help steer Etherpad forward please email contact@etherpad.org
-
-[![Deps](https://david-dm.org/ether/etherpad-lite.svg?branch=develop)](https://david-dm.org/ether/etherpad-lite)
-[![NSP Status](https://nodesecurity.io/orgs/etherpad/projects/635f6185-35c6-4ed7-931a-0bc62758ece7/badge)](https://nodesecurity.io/orgs/etherpad/projects/635f6185-35c6-4ed7-931a-0bc62758ece7)
-
 # A really-real time collaborative word processor for the web
 ![Demo Etherpad Animated Jif](https://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
 
@@ -12,6 +7,9 @@ Etherpad is a really-real time collaborative editor scalable to thousands of sim
 **[Try it out](http://beta.etherpad.org)**
 
 # Installation
+
+## Requirements
+- `nodejs` >= **6.9.0** (preferred: `nodejs` >= **8.9**)
 
 ## Uber-Quick Ubuntu
 ```
@@ -26,25 +24,26 @@ You'll need gzip, git, curl, libssl develop libraries, python and gcc.
 - *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
 - *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
 
-Additionally, you'll need [node.js](https://nodejs.org) installed, Ideally the latest stable version, we recommend installing/compiling nodejs from source (avoiding apt).
+Additionally, you'll need [node.js](https://nodejs.org) installed (minimum required Node version: **6.9.0**).
+Ideally, the latest stable version is preferred. Please note that the packages offered on some operating systems are outdated. In those cases, we recommend installing nodejs from official archives or compiling it from source (avoiding yum/apt).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
-1. Move to a folder where you want to install Etherpad. Clone the git repository `git clone git://github.com/ether/etherpad-lite.git`
-2. Change into the new directory containing the cloned source code `cd etherpad-lite`
+1. Move to a folder where you want to install Etherpad. Clone the git repository: `git clone git://github.com/ether/etherpad-lite.git`
+2. Change into the new directory containing the cloned source code: `cd etherpad-lite`
 
-Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser. 
+Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
 
-Update to the latest version with `git pull origin`. The next start with bin/run.sh will update the dependencies.
+Update to the latest version with `git pull origin`. The next start with `bin/run.sh` will update the dependencies.
 
 [Next steps](#next-steps).
 
 ## Windows
 
-### Prebuilt windows package
+### Prebuilt Windows package
 This package works out of the box on any windows machine, but it's not very useful for developing purposes...
 
-1. [Download the latest windows package](http://etherpad.org/#download)
+1. [Download the latest Windows package](http://etherpad.org/#download)
 2. Extract the folder
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
@@ -63,16 +62,25 @@ Update to the latest version with `git pull origin`, then run `bin\installOnWind
 
 If cloning to a subdirectory within another project, you may need to do the following:
 
-1. Start the server manually (e.g. `node/node_modules/ep_etherpad-lite/node/server.js]`)
+1. Start the server manually (e.g. `node/node_modules/ep_etherpad-lite/node/server.js`)
 2. Edit the db `filename` in `settings.json` to the relative directory with the file (e.g. `application/lib/etherpad-lite/var/dirty.db`)
 3. Add auto-generated files to the main project `.gitignore`
 
 # Next Steps
 
 ## Tweak the settings
-You can initially modify the settings in `settings.json`. (If you need to handle multiple settings files, you can pass the path to a settings file to `bin/run.sh` using the `-s|--settings` option. This allows you to run multiple Etherpad instances from the same installation.)  Once you have access to your /admin section settings can be modified through the web browser.
+You can modify the settings in `settings.json`.
+If you need to handle multiple settings files, you can pass the path to a settings file to `bin/run.sh` using the `-s|--settings` option: this allows you to run multiple Etherpad instances from the same installation.
+Similarly, `--credentials` can be used to give a settings override file, `--apikey` to give a different APIKEY.txt file and `--sessionkey` to give a non-default SESSIONKEY.txt.
+Once you have access to your /admin section settings can be modified through the web browser.
 
 You should use a dedicated database such as "mysql", if you are planning on using etherpad-in a production environment, since the "dirtyDB" database driver is only for testing and/or development purposes.
+
+## Secure your installation
+If you have enabled authentication in `users` section in `settings.json`, it is a good security practice to **store hashes instead of plain text passwords** in that file. This is _especially_ advised if you are running a production installation.
+
+Please install [ep_hash_auth plugin](https://www.npmjs.com/package/ep_hash_auth) and configure it.
+If you prefer, `ep_hash_auth` also gives you the option of storing the users in a custom directory in the file system, without having to edit `settings.json` and restart Etherpad each time.
 
 ## Plugins and themes
 

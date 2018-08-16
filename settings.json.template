@@ -1,64 +1,105 @@
 /*
-  This file must be valid JSON. But comments are allowed
-
-  Please edit settings.json, not settings.json.template
-
-  To still commit settings without credentials you can
-  store any credential settings in credentials.json
-*/
+ * This file must be valid JSON. But comments are allowed
+ *
+ * Please edit settings.json, not settings.json.template
+ *
+ * Please note that since Etherpad 1.6.0 you can store DB credentials in a
+ * separate file (credentials.json).
+ */
 {
-  // Name your instance!
+  /*
+   * Name your instance!
+   */
   "title": "Etherpad",
 
-  // favicon default name
-  // alternatively, set up a fully specified Url to your own favicon
+  /*
+   * favicon default name
+   * alternatively, set up a fully specified Url to your own favicon
+   */
   "favicon": "favicon.ico",
 
-  //IP and port which etherpad should bind at
+  /*
+   * IP and port which etherpad should bind at
+   */
   "ip": "0.0.0.0",
   "port" : 9001,
 
-  // Option to hide/show the settings.json in admin page, default option is set to true
+  /*
+   * Option to hide/show the settings.json in admin page.
+   *
+   * Default option is set to true
+   */
   "showSettingsInAdminPage" : true,
 
   /*
-  // Node native SSL support
-  // this is disabled by default
-  //
-  // make sure to have the minimum and correct file access permissions set
-  // so that the Etherpad server can access them
+   * Node native SSL support
+   *
+   * This is disabled by default.
+   * Make sure to have the minimum and correct file access permissions set so
+   * that the Etherpad server can access them
+   */
 
+  /*
   "ssl" : {
             "key"  : "/path-to-your/epl-server.key",
             "cert" : "/path-to-your/epl-server.crt",
             "ca": ["/path-to-your/epl-intermediate-cert1.crt", "/path-to-your/epl-intermediate-cert2.crt"]
           },
-
   */
 
-  //The Type of the database. You can choose between dirty, postgres, sqlite and mysql
-  //You shouldn't use "dirty" for for anything else than testing or development
+  /*
+   * The type of the database.
+   *
+   * You can choose between many DB drivers, for example: dirty, postgres,
+   * sqlite, mysql.
+   *
+   * You shouldn't use "dirty" for for anything else than testing or
+   * development.
+   *
+   * For a complete list of the supported drivers, please consult:
+   * https://www.npmjs.com/package/ueberdb2
+   */
+
   "dbType" : "dirty",
-  //the database specific settings
+
+  /*
+   * Database specific settings (dependent on dbType).
+   *
+   * Remember that since Etherpad 1.6.0 you can also store these informations in
+   * credentials.json.
+   */
   "dbSettings" : {
                    "filename" : "var/dirty.db"
                  },
 
-  /* An Example of MySQL Configuration
-   "dbType" : "mysql",
-   "dbSettings" : {
-                    "user"    : "root",
-                    "host"    : "localhost",
-                    "password": "",
-                    "database": "store",
-                    "charset" : "utf8mb4"
-                  },
+  /*
+   * An Example of MySQL Configuration (commented out).
+   *
+   * See: https://github.com/ether/etherpad-lite/wiki/How-to-use-Etherpad-Lite-with-MySQL
+   */
+
+  /*
+  "dbType" : "mysql",
+  "dbSettings" : {
+                   "user"    : "etherpaduser",
+                   "host"    : "localhost",
+                   "port"    : 3306,
+                   "password": "PASSWORD",
+                   "database": "etherpad_lite_db",
+                   "charset" : "utf8mb4"
+                 },
   */
 
-  //the default text of a pad
+  /*
+   * The default text of a pad
+   */
   "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
 
-  /* Default Pad behavior, users can override by changing */
+  /*
+   * Default Pad behavior.
+   *
+   * Change them if you want to override.
+   */
   "padOptions": {
     "noColors": false,
     "showControls": true,
@@ -73,7 +114,9 @@
     "lang": "en-gb"
   },
 
-  /* Pad Shortcut Keys */
+  /*
+   * Pad Shortcut Keys
+   */
   "padShortcutEnabled" : {
     "altF9"     : true, /* focus on the File Menu and/or editbar */
     "altC"      : true, /* focus on the Chat window */
@@ -99,113 +142,203 @@
     "pageDown"  : true
   },
 
-  /* Should we suppress errors from being visible in the default Pad Text? */
+  /*
+   * Should we suppress errors from being visible in the default Pad Text?
+   */
   "suppressErrorsInPadText" : false,
 
-  /* Users must have a session to access pads. This effectively allows only group pads to be accessed. */
+  /*
+   * If this option is enabled, a user must have a session to access pads.
+   * This effectively allows only group pads to be accessed.
+   */
   "requireSession" : false,
 
-  /* Users may edit pads but not create new ones. Pad creation is only via the API. This applies both to group pads and regular pads. */
+  /*
+   * Users may edit pads but not create new ones.
+   *
+   * Pad creation is only via the API.
+   * This applies both to group pads and regular pads.
+   */
   "editOnly" : false,
 
-  /* Users, who have a valid session, automatically get granted access to password protected pads */
+  /*
+   * If set to true, those users who have a valid session will automatically be
+   * granted access to password protected pads.
+   */
   "sessionNoPassword" : false,
 
-  /* if true, all css & js will be minified before sending to the client. This will improve the loading performance massivly,
-     but makes it impossible to debug the javascript/css */
+  /*
+   * If true, all css & js will be minified before sending to the client.
+   *
+   * This will improve the loading performance massively, but makes it difficult
+   * to debug the javascript/css
+   */
   "minify" : true,
 
-  /* How long may clients use served javascript code (in seconds)? Without versioning this
-     may cause problems during deployment. Set to 0 to disable caching */
+  /*
+   * How long may clients use served javascript code (in seconds)?
+   *
+   * Not setting this may cause problems during deployment.
+   * Set to 0 to disable caching.
+   */
   "maxAge" : 21600, // 60 * 60 * 6 = 6 hours
 
-  /* This is the absolute path to the Abiword executable. Setting it to null, disables abiword.
-     Abiword is needed to advanced import/export features of pads*/
+  /*
+   * Absolute path to the Abiword executable.
+   *
+   * Abiword is needed to get advanced import/export features of pads. Setting
+   * it to null disables Abiword and will only allow plain text and HTML
+   * import/exports.
+   */
   "abiword" : null,
 
-  /* This is the absolute path to the soffice executable. Setting it to null, disables LibreOffice exporting.
-     LibreOffice can be used in lieu of Abiword to export pads */
+  /*
+   * This is the absolute path to the soffice executable.
+   *
+   * LibreOffice can be used in lieu of Abiword to export pads.
+   * Setting it to null disables LibreOffice exporting.
+   */
   "soffice" : null,
 
-  /* This is the path to the Tidy executable. Setting it to null, disables Tidy.
-     Tidy is used to improve the quality of exported pads*/
+  /*
+   * Path to the Tidy executable.
+   *
+   * Tidy is used to improve the quality of exported pads.
+   * Setting it to null disables Tidy.
+   */
   "tidyHtml" : null,
 
-  /* Allow import of file types other than the supported types: txt, doc, docx, rtf, odt, html & htm */
+  /*
+   * Allow import of file types other than the supported ones:
+   * txt, doc, docx, rtf, odt, html & htm
+   */
   "allowUnknownFileEnds" : true,
 
-  /* This setting is used if you require authentication of all users.
-     Note: /admin always requires authentication. */
+  /*
+   * This setting is used if you require authentication of all users.
+   *
+   * Note: "/admin" always requires authentication.
+   */
   "requireAuthentication" : false,
 
-  /* Require authorization by a module, or a user with is_admin set, see below. */
+  /*
+   * Require authorization by a module, or a user with is_admin set, see below.
+   */
   "requireAuthorization" : false,
 
-  /*when you use NginX or another proxy/ load-balancer set this to true*/
+  /*
+   * When you use NGINX or another proxy/load-balancer set this to true.
+   */
   "trustProxy" : false,
 
-  /* Privacy: disable IP logging */
+  /*
+   * Privacy: disable IP logging
+   */
   "disableIPlogging" : false,
 
-  /* Time (in seconds) to automatically reconnect pad when a "Force reconnect"
-     message is shown to user. Set to 0 to disable automatic reconnection */
-  "automaticReconnectionTimeout" : 0,
   /*
-  * By default, when caret is moved out of viewport, it scrolls the minimum height needed to make this
-  * line visible.
-  */
-  "scrollWhenFocusLineIsOutOfViewport": {
-    /*
-    * Percentage of viewport height to be additionally scrolled.
-    * E.g use "percentage.editionAboveViewport": 0.5, to place caret line in the
-    * middle of viewport, when user edits a line above of the viewport
-    * Set to 0 to disable extra scrolling
+   * Time (in seconds) to automatically reconnect pad when a "Force reconnect"
+   * message is shown to user.
+   *
+   * Set to 0 to disable automatic reconnection.
    */
+  "automaticReconnectionTimeout" : 0,
+
+  /*
+   * By default, when caret is moved out of viewport, it scrolls the minimum
+   * height needed to make this line visible.
+   */
+  "scrollWhenFocusLineIsOutOfViewport": {
+
+    /*
+     * Percentage of viewport height to be additionally scrolled.
+     *
+     * E.g.: use "percentage.editionAboveViewport": 0.5, to place caret line in
+     *       the middle of viewport, when user edits a line above of the
+     *       viewport
+     *
+     * Set to 0 to disable extra scrolling
+     */
     "percentage": {
       "editionAboveViewport": 0,
       "editionBelowViewport": 0
     },
-    /* Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation */
+
+    /*
+     * Time (in milliseconds) used to animate the scroll transition.
+     * Set to 0 to disable animation
+     */
     "duration": 0,
+
     /*
-    * Flag to control if it should scroll when user places the caret in the last line of the viewport
-    */
+     * Flag to control if it should scroll when user places the caret in the
+     * last line of the viewport
+     */
     "scrollWhenCaretIsInTheLastLineOfViewport": false,
+
     /*
-    * Percentage of viewport height to be additionally scrolled when user presses arrow up
-    * in the line of the top of the viewport.
-    * Set to 0 to let the scroll to be handled as default by the Etherpad
-   */
+     * Percentage of viewport height to be additionally scrolled when user
+     * presses arrow up in the line of the top of the viewport.
+     *
+     * Set to 0 to let the scroll to be handled as default by Etherpad
+     */
     "percentageToScrollWhenUserPressesArrowUp": 0
   },
 
-  /* Users for basic authentication. is_admin = true gives access to /admin.
-     If you do not uncomment this, /admin will not be available! */
+  /*
+   * Users for basic authentication.
+   *
+   * is_admin = true gives access to /admin.
+   * If you do not uncomment this, /admin will not be available!
+   *
+   * WARNING: passwords should not be stored in plaintext in this file.
+   *          If you want to mitigate this, please install ep_hash_auth and
+   *          follow the section "secure your installation" in README.md
+   */
+
   /*
   "users": {
     "admin": {
+      // "password" can be replaced with "hash" if you install ep_hash_auth
       "password": "changeme1",
       "is_admin": true
     },
     "user": {
+      // "password" can be replaced with "hash" if you install ep_hash_auth
       "password": "changeme1",
       "is_admin": false
     }
   },
   */
 
-  // restrict socket.io transport methods
+  /*
+   * Restrict socket.io transport methods
+   */
   "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
 
-  // Allow Load Testing tools to hit the Etherpad Instance.  Warning this will disable security on the instance.
+  /*
+   * Allow Load Testing tools to hit the Etherpad Instance.
+   *
+   * WARNING: this will disable security on the instance.
+   */
   "loadTest": false,
 
-  // Disable indentation on new line when previous line ends with some special chars (':', '[', '(', '{')
+  /*
+   * Disable indentation on new line when previous line ends with some special
+   * chars (':', '[', '(', '{')
+   */
+
   /*
   "indentationOnNewLine": false,
   */
 
-  /* The toolbar buttons configuration.
+  /*
+   * Toolbar buttons configuration.
+   *
+   * Uncomment to customize.
+   */
+
+  /*
   "toolbar": {
     "left": [
       ["bold", "italic", "underline", "strikethrough"],
@@ -224,31 +357,43 @@
   },
   */
 
-  /* The log level we are using, can be: DEBUG, INFO, WARN, ERROR */
+  /*
+   * The log level we are using.
+   *
+   * Valid values: DEBUG, INFO, WARN, ERROR
+   */
   "loglevel": "INFO",
 
-  //Logging configuration. See log4js documentation for further information
-  // https://github.com/nomiddlename/log4js-node
-  // You can add as many appenders as you want here:
+  /*
+   * Logging configuration. See log4js documentation for further information:
+   * https://github.com/nomiddlename/log4js-node
+   *
+   * You can add as many appenders as you want here.
+   */
   "logconfig" :
     { "appenders": [
         { "type": "console"
         //, "category": "access"// only logs pad access
         }
-    /*
+
+      /*
       , { "type": "file"
       , "filename": "your-log-file-here.log"
       , "maxLogSize": 1024
       , "backups": 3 // how many log files there're gonna be at max
       //, "category": "test" // only log a specific category
-        }*/
-    /*
+        }
+      */
+
+      /*
       , { "type": "logLevelFilter"
         , "level": "warn" // filters out all log messages that have a lower level than "error"
         , "appender":
           {  Use whatever appender you want here  }
-        }*/
-    /*
+        }
+      */
+
+      /*
       , { "type": "logLevelFilter"
         , "level": "error" // filters out all log messages that have a lower level than "error"
         , "appender":
@@ -265,7 +410,9 @@
               }
             }
           }
-        }*/
+        }
+      */
+
       ]
-    }
+    } // logconfig
 }

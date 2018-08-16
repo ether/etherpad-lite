@@ -72,7 +72,7 @@ The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION
 ### Response Format
 Responses are valid JSON in the following format:
 
-```js
+```json
 {
   "code": number,
   "message": string,

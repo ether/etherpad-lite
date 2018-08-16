@@ -50,7 +50,7 @@ There are server hooks, which will be executed on the server (e.g. `expressCreat
 ### Parts
 As your plugins become more and more complex, you will find yourself in the need to manage dependencies between plugins. E.g. you want the hooks of a certain plugin to be executed before (or after) yours. You can also manage these dependencies in your plugin definition file `ep.json`:
 
-```javascript
+```json
 {
   "parts": [
     {
@@ -99,7 +99,7 @@ Your plugin must also contain a [package definition file](https://docs.npmjs.com
   "author": "USERNAME (REAL NAME) <MAIL@EXAMPLE.COM>",
   "contributors": [],
   "dependencies": {"MODULE": "0.3.20"},
-  "engines": { "node": ">= 0.6.0"}
+  "engines": { "node": ">= 6.9.0"}
 }
 ```
 

@@ -214,7 +214,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   result.clearSpans = function()
   {
     html = [];
-    lineClass = ''; // non-null to cause update
+    lineClass = 'ace-line';
     result.lineMarker = 0;
   };
 

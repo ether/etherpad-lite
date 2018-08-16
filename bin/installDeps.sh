@@ -1,5 +1,53 @@
 #!/bin/sh
 
+# minimum required node version
+REQUIRED_NODE_MAJOR=6
+REQUIRED_NODE_MINOR=9
+
+# minimum required npm version
+REQUIRED_NPM_MAJOR=3
+REQUIRED_NPM_MINOR=10
+
+require_minimal_version() {
+  PROGRAM_LABEL="$1"
+  VERSION_STRING="$2"
+  REQUIRED_MAJOR="$3"
+  REQUIRED_MINOR="$4"
+
+  # Flag -s (--only-delimited on GNU cut) ensures no string is returned
+  # when there is no match
+  DETECTED_MAJOR=$(echo $VERSION_STRING | cut -s -d "." -f 1)
+  DETECTED_MINOR=$(echo $VERSION_STRING | cut -s -d "." -f 2)
+
+  if [ -z "$DETECTED_MAJOR" ]; then
+    printf 'Cannot extract %s major version from version string "%s"\n' "$PROGRAM_LABEL" "$VERSION_STRING" >&2
+    exit 1
+  fi
+
+  if [ -z "$DETECTED_MINOR" ]; then
+    printf 'Cannot extract %s minor version from version string "%s"\n' "$PROGRAM_LABEL" "$VERSION_STRING" >&2
+    exit 1
+  fi
+
+  case "$DETECTED_MAJOR" in
+      ''|*[!0-9]*)
+        printf '%s major version from "%s" is not a number. Detected: "%s"\n' "$PROGRAM_LABEL" "$VERSION_STRING" "$DETECTED_MAJOR" >&2
+        exit 1
+        ;;
+  esac
+
+  case "$DETECTED_MINOR" in
+      ''|*[!0-9]*)
+        printf '%s minor version from "%s" is not a number. Detected: "%s"\n' "$PROGRAM_LABEL" "$VERSION_STRING" "$DETECTED_MINOR" >&2
+        exit 1
+  esac
+
+  if [ "$DETECTED_MAJOR" -lt "$REQUIRED_MAJOR" ] || ([ "$DETECTED_MAJOR" -eq "$REQUIRED_MAJOR" ] && [ "$DETECTED_MINOR" -lt "$REQUIRED_MINOR" ]); then
+    printf 'Your %s version "%s" is too old. %s %d.%d.x or higher is required.\n' "$PROGRAM_LABEL" "$VERSION_STRING" "$PROGRAM_LABEL" "$REQUIRED_MAJOR" "$REQUIRED_MINOR" >&2
+    exit 1
+  fi
+}
+
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
 
@@ -36,22 +84,15 @@ hash npm > /dev/null 2>&1 || {
 }
 
 #Check npm version
-NPM_VERSION=$(npm --version)
-NPM_MAIN_VERSION=$(echo $NPM_VERSION | cut -d "." -f 1)
-if [ $(echo $NPM_MAIN_VERSION) = "0" ]; then
-  echo "You're running a wrong version of npm, you're using $NPM_VERSION, we need 1.x or higher" >&2
-  exit 1
-fi
+NPM_VERSION_STRING=$(npm --version)
+
+require_minimal_version "npm" "$NPM_VERSION_STRING" "$REQUIRED_NPM_MAJOR" "$REQUIRED_NPM_MINOR"
 
 #Check node version
-NODE_VERSION=$(node --version)
-NODE_V_MINOR=$(echo $NODE_VERSION | cut -d "." -f 1-2)
-NODE_V_MAIN=$(echo $NODE_VERSION | cut -d "." -f 1)
-NODE_V_MAIN=${NODE_V_MAIN#"v"}
-if [ ! $NODE_V_MINOR = "v0.10" ] && [ ! $NODE_V_MINOR = "v0.11" ] && [ ! $NODE_V_MINOR = "v0.12" ] && [ ! $NODE_V_MAIN -ge 4 ]; then
-  echo "You're running a wrong version of node. You're using $NODE_VERSION, we need node v0.10.x or higher" >&2
-  exit 1
-fi
+NODE_VERSION_STRING=$(node --version)
+NODE_VERSION_STRING=${NODE_VERSION_STRING#"v"}
+
+require_minimal_version "nodejs" "$NODE_VERSION_STRING" "$REQUIRED_NODE_MAJOR" "$REQUIRED_NODE_MINOR"
 
 #Get the name of the settings file
 settings="settings.json"
@@ -73,7 +114,7 @@ echo "Ensure that all dependencies are up to date...  If this is the first time 
   cd node_modules
   [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
   cd ep_etherpad-lite
-  npm install --loglevel warn
+  npm install --no-save --loglevel warn
 ) || {
   rm -rf node_modules
   exit 1

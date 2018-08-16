@@ -17,11 +17,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
+  // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
   var jsServer = new (Yajsml.Server)({
     rootPath: 'javascripts/src/'
-  , rootURI: 'http://localhost:' + settings.port + '/static/js/'
+  , rootURI: 'http://invalid.invalid/static/js/'
   , libraryPath: 'javascripts/lib/'
-  , libraryURI: 'http://localhost:' + settings.port + '/static/plugins/'
+  , libraryURI: 'http://invalid.invalid/static/plugins/'
   , requestURIs: minify.requestURIs // Loop-back is causing problems, this is a workaround.
   });
 

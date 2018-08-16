@@ -111,7 +111,7 @@ describe("assign ordered list", function(){
 
   var triggerCtrlShiftShortcut = function(shortcutChar) {
     var inner$ = helper.padInner$;
-    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE) { // if it's a mozilla or IE
+    if(inner$(window)[0].bowser.modernIE) { // if it's IE
       var evtType = "keypress";
     }else{
       var evtType = "keydown";

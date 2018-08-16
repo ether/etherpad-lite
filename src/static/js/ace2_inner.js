@@ -1778,19 +1778,15 @@ function Ace2Inner(){
     strikethrough: true,
     list: true
   };
-  var OTHER_INCORPED_ATTRIBS = {
-    insertorder: true,
-    author: true
-  };
 
   function isStyleAttribute(aname)
   {
     return !!STYLE_ATTRIBS[aname];
   }
 
-  function isOtherIncorpedAttribute(aname)
+  function isDefaultLineAttribute(aname)
   {
-    return !!OTHER_INCORPED_ATTRIBS[aname];
+    return AttributeManager.DEFAULT_LINE_ATTRIBUTES.indexOf(aname) !== -1;
   }
 
   function insertDomLines(nodeToAddAfter, infoStructs, isTimeUp)
@@ -2757,9 +2753,12 @@ function Ace2Inner(){
 
   function analyzeChange(oldText, newText, oldAttribs, newAttribs, optSelStartHint, optSelEndHint)
   {
+    // we need to take into account both the styles attributes & attributes defined by
+    // the plugins, so basically we can ignore only the default line attribs used by
+    // Etherpad
     function incorpedAttribFilter(anum)
     {
-      return !isOtherIncorpedAttribute(rep.apool.getAttribKey(anum));
+      return !isDefaultLineAttribute(rep.apool.getAttribKey(anum));
     }
 
     function attribRuns(attribs)
@@ -3708,8 +3707,8 @@ function Ace2Inner(){
       return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
     }
     var specialHandled = false;
-    var isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
-    var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome) ? (type == "keydown") : (type == "keypress"));
+    var isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome || browser.firefox) ? (type == "keydown") : (type == "keypress"));
+    var isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome || browser.firefox) ? (type == "keydown") : (type == "keypress"));
     var stopped = false;
 
     inCallStackIfNecessary("handleKeyEvent", function()
