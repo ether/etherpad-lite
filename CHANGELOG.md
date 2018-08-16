@@ -1,3 +1,13 @@
+# 1.7.0
+* FIX: `getLineHTMLForExport()` no longer produces multiple copies of a line. **WARNING**: this could potentially break some plugins
+* FIX: authorship of bullet points no longer changes when a second author edits them
+* FIX: improved Firefox compatibility (non printable keys)
+* FIX: `getPadPlainText()` was not working
+* REQUIREMENTS: minimum required Node version is 6.9.0 LTS. The next release will require at least Node 8.9.0 LTS
+* SECURITY: updated MySQL, Elasticsearch and PostgreSQL drivers
+* SECURITY: started updating deprecated code and packages
+* DOCS: documented --credentials, --apikey, --sessionkey. Better detailed contributors guidelines. Added a section on securing the installation
+
 # 1.6.6
  * FIX: line numbers are aligned with text again (broken in 1.6.4)
  * FIX: text entered between connection loss and reconnection was not saved
