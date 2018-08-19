@@ -1268,6 +1268,7 @@ function handleClientReady(client, message)
         // client is read only you would open a security hole 1 swedish
         // mile wide...
         var clientVars = {
+          "skinName": settings.skinName,
           "accountPrivs": {
               "maxRevisions": 100
           },

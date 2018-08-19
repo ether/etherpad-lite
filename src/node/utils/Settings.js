@@ -47,6 +47,14 @@ exports.favicon = "favicon.ico";
 exports.faviconPad = "../" + exports.favicon;
 exports.faviconTimeslider = "../../" + exports.favicon;
 
+/*
+ * Skin name.
+ *
+ * Initialized to null, so we can spot an old configuration file and invite the
+ * user to update it before falling back to the default.
+ */
+exports.skinName = null;
+
 /**
  * The IP ep-lite should listen to
  */
@@ -438,6 +446,42 @@ exports.reloadSettings = function reloadSettings() {
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   process.env['DEBUG'] = 'socket.io:' + exports.loglevel; // Used by SocketIO for Debug
   log4js.replaceConsole();
+
+  if (!exports.skinName) {
+    console.warn(`No "skinName" parameter found. Please consult settings.json.template and update your settings.json. Falling back to the default "no-skin".`);
+    exports.skinName = "no-skin";
+  }
+
+  // checks if skinName has an acceptable value, otherwise falls back to "no-skin"
+  if (exports.skinName) {
+    const skinBasePath = path.join(exports.root, "src", "static", "skins");
+    const countPieces = exports.skinName.split(path.sep).length;
+
+    if (countPieces != 1) {
+      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "no-skin".`);
+
+      exports.skinName = "no-skin";
+    }
+
+    // informative variable, just for the log messages
+    var skinPath = path.normalize(path.join(skinBasePath, exports.skinName));
+
+    // what if someone sets skinName == ".." or "."? We catch him!
+    if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
+      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. Falling back to the default "no-skin".`);
+
+      exports.skinName = "no-skin";
+      skinPath = path.join(skinBasePath, exports.skinName);
+    }
+
+    if (fs.existsSync(skinPath) === false) {
+      console.error(`Skin path ${skinPath} does not exist. Falling back to the default "no-skin".`);
+      exports.skinName = "no-skin";
+      skinPath = path.join(skinBasePath, exports.skinName);
+    }
+
+    console.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
+  }
 
   if(exports.abiword){
     // Check abiword actually exists
