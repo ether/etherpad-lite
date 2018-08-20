@@ -358,15 +358,18 @@ exports.reloadSettings = function reloadSettings() {
   try{
     //read the settings sync
     settingsStr = fs.readFileSync(settingsFilename).toString();
+    console.info(`Settings loaded from: ${settingsFilename}`);
   } catch(e){
-    console.warn('No settings file found. Continuing using defaults!');
+    console.warn(`No settings file found in ${settingsFilename}. Continuing using defaults!`);
   }
 
   try{
     //read the credentials sync
     credentialsStr = fs.readFileSync(credentialsFilename).toString();
+    console.info(`Credentials file read from: ${credentialsFilename}`);
   } catch(e){
     // Doesn't matter if no credentials file found..
+    console.info(`No credentials file found in ${credentialsFilename}. Ignoring.`);
   }
 
   // try to parse the settings
@@ -378,7 +381,7 @@ exports.reloadSettings = function reloadSettings() {
       settings = JSON.parse(settingsStr);
     }
   }catch(e){
-    console.error('There was an error processing your settings.json file: '+e.message);
+    console.error(`There was an error processing your settings file from ${settingsFilename}:` + e.message);
     process.exit(1);
   }
 
@@ -479,7 +482,9 @@ exports.reloadSettings = function reloadSettings() {
     var sessionkeyFilename = argv.sessionkey || "./SESSIONKEY.txt";
     try {
       exports.sessionKey = fs.readFileSync(sessionkeyFilename,"utf8");
+      console.info(`Session key loaded from: ${sessionkeyFilename}`);
     } catch(e) {
+      console.info(`Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
       exports.sessionKey = randomString(32);
       fs.writeFileSync(sessionkeyFilename,exports.sessionKey,"utf8");
     }
