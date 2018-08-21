@@ -19,6 +19,7 @@
  * limitations under the License.
  */
 
+var absolutePaths = require('./AbsolutePaths');
 var fs = require("fs");
 var os = require("os");
 var path = require('path');
@@ -31,7 +32,8 @@ var suppressDisableMsg = " -- To suppress these warning messages change suppress
 var _ = require("underscore");
 
 /* Root path of the installation */
-exports.root = path.normalize(path.join(npm.dir, ".."));
+exports.root = absolutePaths.findEtherpadRoot();
+console.log(`All relative paths will be interpreted relative to the identified Etherpad base dir: ${exports.root}`);
 
 /**
  * The app title, visible e.g. in the browser window
