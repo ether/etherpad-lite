@@ -114,3 +114,24 @@ exports.findEtherpadRoot = function() {
   absPathLogger.error(`To run, Etherpad has to identify an absolute base path. This is not: "${etherpadRoot}"`);
   process.exit(1);
 };
+
+/**
+ * Receives a filesystem path in input. If the path is absolute, returns it
+ * unchanged. If the path is relative, an absolute version of it is returned,
+ * built prepending exports.findEtherpadRoot() to it.
+ *
+ * @param  {string} somePath - an absolute or relative path
+ * @return {string} An absolute path. If the input path was already absolute,
+ *                  it is returned unchanged. Otherwise it is interpreted
+ *                  relative to exports.root.
+ */
+exports.makeAbsolute = function(somePath) {
+  if (path.isAbsolute(somePath)) {
+    return somePath;
+  }
+
+  const rewrittenPath = path.normalize(path.join(exports.findEtherpadRoot(), somePath));
+
+  absPathLogger.debug(`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`);
+  return rewrittenPath;
+};
