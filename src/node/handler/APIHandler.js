@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-
+var absolutePaths = require('../utils/AbsolutePaths');
 var ERR = require("async-stacktrace");
 var fs = require("fs");
 var api = require("../db/API");
@@ -31,7 +31,7 @@ var apiHandlerLogger = log4js.getLogger('APIHandler');
 
 //ensure we have an apikey
 var apikey = null;
-var apikeyFilename = argv.apikey || "./APIKEY.txt";
+var apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || "./APIKEY.txt");
 try
 {
   apikey = fs.readFileSync(apikeyFilename,"utf8");
