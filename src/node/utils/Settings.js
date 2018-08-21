@@ -471,7 +471,7 @@ exports.reloadSettings = function reloadSettings() {
   }
 
   if (!exports.sessionKey) {
-    var sessionkeyFilename = argv.sessionkey || "./SESSIONKEY.txt";
+    var sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || "./SESSIONKEY.txt");
     try {
       exports.sessionKey = fs.readFileSync(sessionkeyFilename,"utf8");
       console.info(`Session key loaded from: ${sessionkeyFilename}`);
