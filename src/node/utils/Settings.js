@@ -499,7 +499,9 @@ exports.reloadSettings = function reloadSettings() {
     if(!exports.suppressErrorsInPadText){
       exports.defaultPadText = exports.defaultPadText + "\nWarning: " + dirtyWarning + suppressDisableMsg;
     }
-    console.warn(dirtyWarning);
+
+    exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
+    console.warn(dirtyWarning + ` File location: ${exports.dbSettings.filename}`);
   }
 };
 
