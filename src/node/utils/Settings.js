@@ -341,20 +341,10 @@ exports.getEpVersion = function() {
 
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
-  var settingsFilename = argv.settings || "settings.json";
-
+  var settingsFilename = absolutePaths.makeAbsolute(argv.settings || "settings.json");
+  
   // Discover if a credential file exists
-  var credentialsFilename = argv.credentials || "credentials.json";
-
-  if (path.resolve(settingsFilename)===settingsFilename) {
-    settingsFilename = path.resolve(settingsFilename);
-  } else {
-    settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
-  }
-
-  if (path.resolve(credentialsFilename)===credentialsFilename) {
-    credentialsFilename = path.resolve(credentialsFilename);
-  }
+  var credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || "credentials.json");
 
   var settingsStr, credentialsStr;
   try{
