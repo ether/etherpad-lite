@@ -56,18 +56,16 @@
    * You shouldn't use "dirty" for for anything else than testing or
    * development.
    *
-   * For a complete list of the supported drivers, please consult:
+   *
+   * Database specific settings are dependent on dbType, and go in dbSettings.
+   * Remember that since Etherpad 1.6.0 you can also store these informations in
+   * credentials.json.
+   *
+   * For a complete list of the supported drivers, please refer to:
    * https://www.npmjs.com/package/ueberdb2
    */
 
   "dbType" : "dirty",
-
-  /*
-   * Database specific settings (dependent on dbType).
-   *
-   * Remember that since Etherpad 1.6.0 you can also store these informations in
-   * credentials.json.
-   */
   "dbSettings" : {
                    "filename" : "var/dirty.db"
                  },
