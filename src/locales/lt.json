@@ -4,7 +4,8 @@
 			"Eitvys200",
 			"Mantak111",
 			"I-svetaines",
-			"Zygimantus"
+			"Zygimantus",
+			"Vogone"
 		]
 	},
 	"index.newPad": "Naujas bloknotas",
@@ -54,7 +55,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Atvirasis dokumento formatas)",
-	"pad.importExport.abiword.innerHTML": "Galite importuoti tik iš paprasto teksto ar HTML formato. Dėl išplėstinių importavimo funkcijų prašome <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">įdiegti abiword</a>.",
+	"pad.importExport.abiword.innerHTML": "Galite importuoti tik iš paprasto teksto ar HTML formato. Dėl išplėstinių importavimo funkcijų prašome <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">įdiegti AbiWord</a>.",
 	"pad.modals.connected": "Prisijungta.",
 	"pad.modals.reconnecting": "Iš naujo prisijungiama prie Jūsų bloknoto",
 	"pad.modals.forcereconnect": "Priversti prisijungti iš naujo",
