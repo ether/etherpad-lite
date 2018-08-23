@@ -135,3 +135,19 @@ exports.makeAbsolute = function(somePath) {
   absPathLogger.debug(`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`);
   return rewrittenPath;
 };
+
+/**
+ * Returns whether arbitraryDir is a subdirectory of parent.
+ *
+ * @param  {string} parent       - a path to check arbitraryDir against
+ * @param  {string} arbitraryDir - the function will check if this directory is
+ *                                 a subdirectory of the base one
+ * @return {boolean}
+ */
+exports.isSubdir = function(parent, arbitraryDir) {
+  // modified from: https://stackoverflow.com/questions/37521893/determine-if-a-path-is-subdirectory-of-another-in-node-js#45242825
+  const relative = path.relative(parent, arbitraryDir);
+  const isSubdir = !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+
+  return isSubdir;
+};
