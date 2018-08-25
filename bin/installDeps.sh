@@ -143,17 +143,4 @@ fi
 echo "Clearing minified cache..."
 rm -f var/minified*
 
-echo "Ensure custom css/js files are created..."
-
-for f in "index" "pad" "timeslider"
-do
-  if [ ! -f "src/static/custom/$f.js" ]; then
-    cp "src/static/custom/js.template" "src/static/custom/$f.js" || exit 1
-  fi
-
-  if [ ! -f "src/static/custom/$f.css" ]; then
-    cp "src/static/custom/css.template" "src/static/custom/$f.css" || exit 1
-  fi
-done
-
 exit 0
