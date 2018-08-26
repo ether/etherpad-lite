@@ -393,10 +393,10 @@ exports.reloadSettings = function reloadSettings() {
   //loop trough the settings
   for(var i in settings)
   {
-    //test if the setting start with a low character
+    //test if the setting start with a lowercase character
     if(i.charAt(0).search("[a-z]") !== 0)
     {
-      console.warn("Settings should start with a low character: '" + i + "'");
+      console.warn("Settings should start with a lowercase character: '" + i + "'");
     }
 
     //we know this setting, so we overwrite it
@@ -419,10 +419,10 @@ exports.reloadSettings = function reloadSettings() {
   //loop trough the settings
   for(var i in credentials)
   {
-    //test if the setting start with a low character
+    //test if the setting start with a lowercase character
     if(i.charAt(0).search("[a-z]") !== 0)
     {
-      console.warn("Settings should start with a low character: '" + i + "'");
+      console.warn("Settings should start with a lowercase character: '" + i + "'");
     }
 
     //we know this setting, so we overwrite it
@@ -448,7 +448,7 @@ exports.reloadSettings = function reloadSettings() {
   log4js.replaceConsole();
 
   if (!exports.skinName) {
-    console.warn(`No "skinName" parameter found. Please consult settings.json.template and update your settings.json. Falling back to the default "no-skin".`);
+    console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "no-skin".`);
     exports.skinName = "no-skin";
   }
 
