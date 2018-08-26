@@ -1,7 +1,7 @@
 @include documentation
 @include stats
 @include localization
-@include custom_static
+@include skins
 @include api/api
 @include plugins
 @include database
