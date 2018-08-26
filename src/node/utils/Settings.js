@@ -396,7 +396,7 @@ exports.reloadSettings = function reloadSettings() {
     //test if the setting start with a lowercase character
     if(i.charAt(0).search("[a-z]") !== 0)
     {
-      console.warn("Settings should start with a lowercase character: '" + i + "'");
+      console.warn(`Settings should start with a lowercase character: '${i}'`);
     }
 
     //we know this setting, so we overwrite it
@@ -412,7 +412,7 @@ exports.reloadSettings = function reloadSettings() {
     //this setting is unkown, output a warning and throw it away
     else
     {
-      console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
     }
   }
 
@@ -422,7 +422,7 @@ exports.reloadSettings = function reloadSettings() {
     //test if the setting start with a lowercase character
     if(i.charAt(0).search("[a-z]") !== 0)
     {
-      console.warn("Settings should start with a lowercase character: '" + i + "'");
+      console.warn(`Settings should start with a lowercase character: '${i}'`);
     }
 
     //we know this setting, so we overwrite it
@@ -438,7 +438,7 @@ exports.reloadSettings = function reloadSettings() {
     //this setting is unkown, output a warning and throw it away
     else
     {
-      console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
     }
   }
 

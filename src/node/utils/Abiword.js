@@ -52,7 +52,7 @@ if(os.type().indexOf("Windows") > -1)
     abiword.on('exit', function (code)
     {
       if(code != 0) {
-        return callback("Abiword died with exit code " + code);
+        return callback(`Abiword died with exit code ${code}`);
       }
 
       if(stdoutBuffer != "")
@@ -91,7 +91,7 @@ else
     abiword.on('exit', function (code) 
     {
       spawnAbiword();
-      stdoutCallback("Abiword died with exit code " + code);
+      stdoutCallback(`Abiword died with exit code ${code}`);
     });
 
     //delegate the processing of stdout to a other function

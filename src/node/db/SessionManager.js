@@ -353,7 +353,7 @@ function listSessionsWithDBKey (dbkey, callback)
         {
           if (err == "apierror: sessionID does not exist")
           {
-            console.warn("Found bad session " + sessionID + " in " + dbkey + ".");
+            console.warn(`Found bad session ${sessionID} in ${dbkey}`);
           }
           else if(ERR(err, callback))
           {

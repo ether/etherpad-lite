@@ -84,7 +84,7 @@ function doConvertTask(task, callback) {
       // Throw an exception if libreoffice failed
       soffice.on('exit', function(code) {
         if (code != 0) {
-          return callback("LibreOffice died with exit code " + code + " and message: " + stdoutBuffer);
+          return callback(`LibreOffice died with exit code ${code} and message: ${stdoutBuffer}`);
         }
 
         callback();
