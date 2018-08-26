@@ -44,7 +44,7 @@
         <link href="../static/css/pad.css" rel="stylesheet">
 
         <% e.begin_block("customStyles"); %>
-        <link href="../static/custom/pad.css" rel="stylesheet">
+        <link href="../static/skins/<%=encodeURI(settings.skinName)%>/pad.css" rel="stylesheet">
         <% e.end_block(); %>
 
         <style title="dynamicsyntax"></style>
@@ -378,7 +378,7 @@
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
 
         <% e.begin_block("customScripts"); %>
-        <script type="text/javascript" src="../static/custom/pad.js"></script>
+        <script type="text/javascript" src="../static/skins/<%=encodeURI(settings.skinName)%>/pad.js"></script>
         <% e.end_block(); %>
 
         <!-- Bootstrap page -->

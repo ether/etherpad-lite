@@ -156,7 +156,7 @@
               }
             }
         </style>
-        <link href="static/custom/index.css" rel="stylesheet">
+        <link href="static/skins/<%=encodeURI(settings.skinName)%>/index.css" rel="stylesheet">
 
         <div id="wrapper">
         <% e.begin_block("indexWrapper"); %>
@@ -171,7 +171,7 @@
         <% e.end_block(); %>
         </div>
 
-        <script src="static/custom/index.js"></script>
+        <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js"></script>
         <script>
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             function go2Name()
