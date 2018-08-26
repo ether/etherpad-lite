@@ -186,7 +186,7 @@ function Ace2Editor()
     }
     for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
       var file = remoteFiles[i];
-      buffer.push('<link rel="stylesheet" type="text/css" href="' + file + '"\/>');
+      buffer.push('<link rel="stylesheet" type="text/css" href="' + encodeURI(file) + '"\/>');
     }
   }
 
