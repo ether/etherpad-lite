@@ -177,7 +177,7 @@
             function go2Name()
             {
                 var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
+                padname.length > 0 ? window.location = "p/" + encodeURIComponent(padname.trim()) : alert("Please enter a name")
             }
 
             function go2Random()
