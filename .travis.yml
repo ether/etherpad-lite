@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "lts/*"
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
