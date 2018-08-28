@@ -214,19 +214,18 @@ exports.sanitizePadId = function(padId, callback) {
     if(exists)
     {
       callback(padId);
+      return;
     }
-    else
+
+    //get the next transformation *that's different*
+    var transformedPadId = padId;
+    while(transformedPadId == padId && transform_index < padIdTransforms.length)
     {
-      //get the next transformation *that's different*
-      var transformedPadId = padId;
-      while(transformedPadId == padId && transform_index < padIdTransforms.length)
-      {
-        transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
-        transform_index += 1;
-      }
-      //check the next transform
-      exports.sanitizePadId(transformedPadId, callback, transform_index);
+      transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
+      transform_index += 1;
     }
+    //check the next transform
+    exports.sanitizePadId(transformedPadId, callback, transform_index);
   });
 }
 
