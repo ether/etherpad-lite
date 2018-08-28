@@ -268,13 +268,13 @@ exports.getText = function(padID, rev, callback)
         
         callback(null, data);
       })
+
+      return;
     }
+
     //the client wants the latest text, lets return it to him
-    else
-    {
-      var padText = exportTxt.getTXTFromAtext(pad, pad.atext);
-      callback(null, {"text": padText});
-    }
+    var padText = exportTxt.getTXTFromAtext(pad, pad.atext);
+    callback(null, {"text": padText});
   });
 }
 
