@@ -159,21 +159,20 @@ exports.getPad = function(id, text, callback)
   if(pad != null)
   {
     callback(null, pad);
+    return;
   }
-  //try to load pad
-  else
-  {
-    pad = new Pad(id);
 
-    //initalize the pad
-    pad.init(text, function(err)
-    {
-      if(ERR(err, callback)) return;
-      globalPads.set(id, pad);
-      padList.addPad(id);
-      callback(null, pad);
-    });
-  }
+  //try to load pad
+  pad = new Pad(id);
+
+  //initalize the pad
+  pad.init(text, function(err)
+  {
+    if(ERR(err, callback)) return;
+    globalPads.set(id, pad);
+    padList.addPad(id);
+    callback(null, pad);
+  });
 }
 
 exports.listAllPads = function(cb)
