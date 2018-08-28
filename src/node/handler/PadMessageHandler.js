@@ -265,33 +265,34 @@ exports.handleMessage = function(client, message)
         if(!sessioninfos[client.id].auth){
           console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
           return;
-        }else{
-          var auth = sessioninfos[client.id].auth;
-          var checkAccessCallback = function(err, statusObject)
-          {
-            if(ERR(err, callback)) return;
+        }
 
-            //access was granted
-            if(statusObject.accessStatus == "grant")
-            {
-              callback();
-            }
-            //no access, send the client a message that tell him why
-            else
-            {
-              client.json.send({accessStatus: statusObject.accessStatus})
-            }
-          };
-          //check if pad is requested via readOnly
-          if (auth.padID.indexOf("r.") === 0) {
-            //Pad is readOnly, first get the real Pad ID
-            readOnlyManager.getPadId(auth.padID, function(err, value) {
-              ERR(err);
-              securityManager.checkAccess(value, auth.sessionID, auth.token, auth.password, checkAccessCallback);
-            });
-          } else {
-            securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, checkAccessCallback);
+        var auth = sessioninfos[client.id].auth;
+        var checkAccessCallback = function(err, statusObject)
+        {
+          if(ERR(err, callback)) return;
+
+          //access was granted
+          if(statusObject.accessStatus == "grant")
+          {
+            callback();
           }
+          //no access, send the client a message that tell him why
+          else
+          {
+            client.json.send({accessStatus: statusObject.accessStatus})
+          }
+        };
+
+        //check if pad is requested via readOnly
+        if (auth.padID.indexOf("r.") === 0) {
+          //Pad is readOnly, first get the real Pad ID
+          readOnlyManager.getPadId(auth.padID, function(err, value) {
+            ERR(err);
+            securityManager.checkAccess(value, auth.sessionID, auth.token, auth.password, checkAccessCallback);
+          });
+        } else {
+          securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, checkAccessCallback);
         }
       },
       finalHandler
