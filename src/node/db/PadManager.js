@@ -205,30 +205,29 @@ exports.sanitizePadId = function(padId, callback) {
   if(transform_index >= padIdTransforms.length)
   {
     callback(padId);
+    return;
   }
+
   //check if padId exists
-  else
+  exports.doesPadExists(padId, function(junk, exists)
   {
-    exports.doesPadExists(padId, function(junk, exists)
+    if(exists)
     {
-      if(exists)
+      callback(padId);
+    }
+    else
+    {
+      //get the next transformation *that's different*
+      var transformedPadId = padId;
+      while(transformedPadId == padId && transform_index < padIdTransforms.length)
       {
-        callback(padId);
+        transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
+        transform_index += 1;
       }
-      else
-      {
-        //get the next transformation *that's different*
-        var transformedPadId = padId;
-        while(transformedPadId == padId && transform_index < padIdTransforms.length)
-        {
-          transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
-          transform_index += 1;
-        }
-        //check the next transform
-        exports.sanitizePadId(transformedPadId, callback, transform_index);
-      }
-    });
-  }
+      //check the next transform
+      exports.sanitizePadId(transformedPadId, callback, transform_index);
+    }
+  });
 }
 
 exports.isValidPadId = function(padId)
