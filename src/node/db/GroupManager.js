@@ -236,11 +236,12 @@ exports.createGroupIfNotExistsFor = function(groupMapper, callback)
         // hah, the returned group doesn't exist, let's create one
         createGroupForMapper(callback)
       })
+
+      return;
     }
+
     //there is no group for this mapper, let's create a group
-    else {
-      createGroupForMapper(callback)
-    }
+    createGroupForMapper(callback)
   });
 }
 
