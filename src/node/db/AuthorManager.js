@@ -104,16 +104,16 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
         //return the author
         callback(null, author);
       });
-    }
-    //there is a author with this mapper
-    else
-    {
-      //update the timestamp of this author
-      db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
 
-      //return the author
-      callback(null, {authorID: author});
+      return;
     }
+
+    //there is a author with this mapper
+    //update the timestamp of this author
+    db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
+
+    //return the author
+    callback(null, {authorID: author});
   });
 }
 
