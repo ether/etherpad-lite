@@ -116,7 +116,7 @@ echo "Ensure that all dependencies are up to date...  If this is the first time 
   cd ep_etherpad-lite
   npm install --no-save --loglevel warn
 ) || {
-  rm -rf node_modules
+  rm -rf src/node_modules
   exit 1
 }
 
