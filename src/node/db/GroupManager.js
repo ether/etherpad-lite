@@ -62,13 +62,12 @@ exports.deleteGroup = function(groupID, callback)
         if(_group == null)
         {
           callback(new customError("groupID does not exist","apierror"));
+          return;
         }
+
         //group exists, everything is fine
-        else
-        {
-          group = _group;
-          callback();
-        }
+        group = _group;
+        callback();
       });
     },
     //iterate trough all pads of this groups and delete them
