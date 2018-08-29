@@ -209,20 +209,19 @@ exports.listPadsOfAuthor = function (authorID, callback)
     if(author == null)
     {
       callback(new customError("authorID does not exist","apierror"))
+      return;
     }
+
     //everything is fine, return the pad IDs
-    else
+    var pads = [];
+    if(author.padIDs != null)
     {
-      var pads = [];
-      if(author.padIDs != null)
+      for (var padId in author.padIDs)
       {
-        for (var padId in author.padIDs)
-        {
-          pads.push(padId);
-        }
+        pads.push(padId);
       }
-      callback(null, {padIDs: pads});
     }
+    callback(null, {padIDs: pads});
   });
 }
 
