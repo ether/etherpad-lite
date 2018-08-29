@@ -399,19 +399,19 @@ exports.getHTML = function(padID, rev, callback)
           var data = {html: html};
           callback(null, data);
       });
+
+      return;
     }
+
     //the client wants the latest text, lets return it to him
-    else
+    exportHtml.getPadHTML(pad, undefined, function (err, html)
     {
-      exportHtml.getPadHTML(pad, undefined, function (err, html)
-      {
-        if(ERR(err, callback)) return;
-        html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
-        html += "</body></html>";
-        var data = {html: html};
-        callback(null, data);
-      });
-    }
+      if(ERR(err, callback)) return;
+      html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
+      html += "</body></html>";
+      var data = {html: html};
+      callback(null, data);
+    });
   });
 }
 
