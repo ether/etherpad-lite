@@ -90,13 +90,13 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
             // grant or deny access, with author of token
             callback(null, statusObject);
           });
+
+          return;
         }
+
         // user may create new pads - no need to check anything
-        else
-        {
-          // grant access, with author of token
-          callback(null, statusObject);
-        }
+        // grant access, with author of token
+        callback(null, statusObject);
       });
       
       //don't continue
