@@ -476,26 +476,27 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     // if it's a group pad, let's make sure the group exists.
     function(callback)
     {
-      if (destinationID.indexOf("$") != -1)
+      if (destinationID.indexOf("$") === -1)
       {
-        destGroupID = destinationID.split("$")[0]
-        groupManager.doesGroupExist(destGroupID, function (err, exists)
-        {
-          if(ERR(err, callback)) return;
-
-          //group does not exist
-          if(exists == false)
-          {
-            callback(new customError("groupID does not exist for destinationID","apierror"));
-            return;
-          }
-
-          //everything is fine, continue
-          callback();
-        });
-      }
-      else
         callback();
+        return;
+      }
+
+      destGroupID = destinationID.split("$")[0]
+      groupManager.doesGroupExist(destGroupID, function (err, exists)
+      {
+        if(ERR(err, callback)) return;
+
+        //group does not exist
+        if(exists == false)
+        {
+          callback(new customError("groupID does not exist for destinationID","apierror"));
+          return;
+        }
+
+        //everything is fine, continue
+        callback();
+      });
     },
     // if the pad exists, we should abort, unless forced.
     function(callback)
