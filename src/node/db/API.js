@@ -137,15 +137,13 @@ exports.getRevisionChangeset = function(padID, rev, callback)
   if (rev !== undefined && typeof rev !== "number")
   {
     // try to parse the number
-    if (!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if (isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number", "apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
 
   // ensure this is not a negative number
@@ -184,17 +182,17 @@ exports.getRevisionChangeset = function(padID, rev, callback)
         
         callback(null, changeset);
       })
-    }
-    //the client wants the latest changeset, lets return it to him
-    else
-    {
-      pad.getRevisionChangeset(pad.getHeadRevisionNumber(), function(err, changeset)
-      {
-        if(ERR(err, callback)) return;
 
-        callback(null, changeset);
-      })
+      return;
     }
+
+    //the client wants the latest changeset, lets return it to him
+    pad.getRevisionChangeset(pad.getHeadRevisionNumber(), function(err, changeset)
+    {
+      if(ERR(err, callback)) return;
+
+      callback(null, changeset);
+    })
   });
 }
 
@@ -219,15 +217,13 @@ exports.getText = function(padID, rev, callback)
   if(rev !== undefined && typeof rev != "number")
   {
     //try to parse the number
-    if(!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if(isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number", "apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
   
   //ensure this is not a negativ number
@@ -268,13 +264,13 @@ exports.getText = function(padID, rev, callback)
         
         callback(null, data);
       })
+
+      return;
     }
+
     //the client wants the latest text, lets return it to him
-    else
-    {
-      var padText = exportTxt.getTXTFromAtext(pad, pad.atext);
-      callback(null, {"text": padText});
-    }
+    var padText = exportTxt.getTXTFromAtext(pad, pad.atext);
+    callback(null, {"text": padText});
   });
 }
 
@@ -359,15 +355,13 @@ exports.getHTML = function(padID, rev, callback)
 
   if (rev !== undefined && typeof rev != "number")
   {
-    if (!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if (isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number","apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
 
   if(rev !== undefined && rev < 0)
@@ -405,19 +399,19 @@ exports.getHTML = function(padID, rev, callback)
           var data = {html: html};
           callback(null, data);
       });
+
+      return;
     }
+
     //the client wants the latest text, lets return it to him
-    else
+    exportHtml.getPadHTML(pad, undefined, function (err, html)
     {
-      exportHtml.getPadHTML(pad, undefined, function (err, html)
-      {
-        if(ERR(err, callback)) return;
-        html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
-        html += "</body></html>";
-        var data = {html: html};
-        callback(null, data);
-      });
-    }
+      if(ERR(err, callback)) return;
+      html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
+      html += "</body></html>";
+      var data = {html: html};
+      callback(null, data);
+    });
   });
 }
 
@@ -448,11 +442,10 @@ exports.setHTML = function(padID, html, callback)
       if(e){
         callback(new customError("HTML is malformed","apierror"));
         return;
-      }else{
-        //update the clients on the pad
-        padMessageHandler.updatePadClients(pad, callback);
-        return;
       }
+
+      //update the clients on the pad
+      padMessageHandler.updatePadClients(pad, callback);
     });
   });
 }
@@ -641,15 +634,13 @@ exports.saveRevision = function(padID, rev, callback)
   if(rev !== undefined && typeof rev != "number")
   {
     //try to parse the number
-    if(!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if(isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number", "apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
 
   //ensure this is not a negativ number
@@ -732,8 +723,9 @@ exports.createPad = function(padID, text, callback)
       callback(new customError("createPad can't create group pads","apierror"));
       return;
     }
+
     //check for url special characters
-    else if(padID.match(/(\/|\?|&|#)/))
+    if(padID.match(/(\/|\?|&|#)/))
     {
       callback(new customError("malformed padID: Remove special characters","apierror"));
       return;
@@ -782,15 +774,13 @@ exports.restoreRevision = function (padID, rev, callback)
   if (rev !== undefined && typeof rev != "number")
   {
     //try to parse the number
-    if (!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if (isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number", "apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
 
   //ensure this is not a negativ number
@@ -959,11 +949,10 @@ exports.getPadID = function(roID, callback)
     if(retrievedPadID == null)
     {
       callback(new customError("padID does not exist","apierror"));
+      return;
     }
-    else
-    {
-      callback(null, {padID: retrievedPadID});
-    }
+
+    callback(null, {padID: retrievedPadID});
   });
 }
 
@@ -1127,9 +1116,9 @@ exports.sendClientsMessage = function (padID, msg, callback) {
   getPadSafe(padID, true, function (err, pad) {
     if (ERR(err, callback)) {
       return;
-    } else {
-      padMessageHandler.handleCustomMessage(padID, msg, callback);
     }
+
+    padMessageHandler.handleCustomMessage(padID, msg, callback);
   } );
 }
 
@@ -1177,30 +1166,26 @@ exports.createDiffHTML = function(padID, startRev, endRev, callback){
   if(startRev !== undefined && typeof startRev != "number")
   {
     //try to parse the number
-    if(!isNaN(parseInt(startRev)))
-    {
-      startRev = parseInt(startRev, 10);
-    }
-    else
+    if(isNaN(parseInt(startRev)))
     {
       callback({stop: "startRev is not a number"});
       return;
     }
+
+    startRev = parseInt(startRev, 10);
   }
  
   //check if rev is a number
   if(endRev !== undefined && typeof endRev != "number")
   {
     //try to parse the number
-    if(!isNaN(parseInt(endRev)))
-    {
-      endRev = parseInt(endRev, 10);
-    }
-    else
+    if(isNaN(parseInt(endRev)))
     {
       callback({stop: "endRev is not a number"});
       return;
     }
+
+    endRev = parseInt(endRev, 10);
   }
  
   //get the pad

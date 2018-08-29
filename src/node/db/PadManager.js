@@ -159,21 +159,20 @@ exports.getPad = function(id, text, callback)
   if(pad != null)
   {
     callback(null, pad);
+    return;
   }
-  //try to load pad
-  else
-  {
-    pad = new Pad(id);
 
-    //initalize the pad
-    pad.init(text, function(err)
-    {
-      if(ERR(err, callback)) return;
-      globalPads.set(id, pad);
-      padList.addPad(id);
-      callback(null, pad);
-    });
-  }
+  //try to load pad
+  pad = new Pad(id);
+
+  //initalize the pad
+  pad.init(text, function(err)
+  {
+    if(ERR(err, callback)) return;
+    globalPads.set(id, pad);
+    padList.addPad(id);
+    callback(null, pad);
+  });
 }
 
 exports.listAllPads = function(cb)
@@ -206,30 +205,28 @@ exports.sanitizePadId = function(padId, callback) {
   if(transform_index >= padIdTransforms.length)
   {
     callback(padId);
+    return;
   }
+
   //check if padId exists
-  else
+  exports.doesPadExists(padId, function(junk, exists)
   {
-    exports.doesPadExists(padId, function(junk, exists)
+    if(exists)
     {
-      if(exists)
-      {
-        callback(padId);
-      }
-      else
-      {
-        //get the next transformation *that's different*
-        var transformedPadId = padId;
-        while(transformedPadId == padId && transform_index < padIdTransforms.length)
-        {
-          transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
-          transform_index += 1;
-        }
-        //check the next transform
-        exports.sanitizePadId(transformedPadId, callback, transform_index);
-      }
-    });
-  }
+      callback(padId);
+      return;
+    }
+
+    //get the next transformation *that's different*
+    var transformedPadId = padId;
+    while(transformedPadId == padId && transform_index < padIdTransforms.length)
+    {
+      transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
+      transform_index += 1;
+    }
+    //check the next transform
+    exports.sanitizePadId(transformedPadId, callback, transform_index);
+  });
 }
 
 exports.isValidPadId = function(padId)
