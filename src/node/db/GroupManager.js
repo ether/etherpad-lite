@@ -279,12 +279,11 @@ exports.createGroupPad = function(groupID, padName, text, callback)
         if(exists == true)
         {
           callback(new customError("padName does already exist","apierror"));
+          return;
         }
+
         //pad does not exist, everything is fine
-        else
-        {
-          callback();
-        }
+        callback();
       });
     },
     //create the pad
