@@ -723,8 +723,9 @@ exports.createPad = function(padID, text, callback)
       callback(new customError("createPad can't create group pads","apierror"));
       return;
     }
+
     //check for url special characters
-    else if(padID.match(/(\/|\?|&|#)/))
+    if(padID.match(/(\/|\?|&|#)/))
     {
       callback(new customError("malformed padID: Remove special characters","apierror"));
       return;
