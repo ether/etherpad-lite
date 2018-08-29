@@ -513,13 +513,12 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
             console.error("erroring out without force - after");
             return;
           }
-          else // exists and forcing
-          {
-            padManager.getPad(destinationID, function(err, pad) {
-              if (ERR(err, callback)) return;
-              pad.remove(callback);
-            });
-          }
+
+          // exists and forcing
+          padManager.getPad(destinationID, function(err, pad) {
+            if (ERR(err, callback)) return;
+            pad.remove(callback);
+          });
         }
         else
         {
