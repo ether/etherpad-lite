@@ -442,11 +442,10 @@ exports.setHTML = function(padID, html, callback)
       if(e){
         callback(new customError("HTML is malformed","apierror"));
         return;
-      }else{
-        //update the clients on the pad
-        padMessageHandler.updatePadClients(pad, callback);
-        return;
       }
+
+      //update the clients on the pad
+      padMessageHandler.updatePadClients(pad, callback);
     });
   });
 }
