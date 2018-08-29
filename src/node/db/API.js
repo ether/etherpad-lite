@@ -949,11 +949,10 @@ exports.getPadID = function(roID, callback)
     if(retrievedPadID == null)
     {
       callback(new customError("padID does not exist","apierror"));
+      return;
     }
-    else
-    {
-      callback(null, {padID: retrievedPadID});
-    }
+
+    callback(null, {padID: retrievedPadID});
   });
 }
 
