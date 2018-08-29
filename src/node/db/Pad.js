@@ -505,26 +505,29 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
       {
         if(ERR(err, callback)) return;
 
-        if(exists == true)
-        {
-          if (!force)
-          {
-            console.error("erroring out without force");
-            callback(new customError("destinationID already exists","apierror"));
-            console.error("erroring out without force - after");
-            return;
-          }
-
-          // exists and forcing
-          padManager.getPad(destinationID, function(err, pad) {
-            if (ERR(err, callback)) return;
-            pad.remove(callback);
-          });
-        }
-        else
+        /*
+         * this is the negation of a truthy comparison. Has been left in this
+         * wonky state to keep the old (possibly buggy) behaviour
+         */
+        if (!(exists == true))
         {
           callback();
+          return;
         }
+
+        if (!force)
+        {
+          console.error("erroring out without force");
+          callback(new customError("destinationID already exists","apierror"));
+          console.error("erroring out without force - after");
+          return;
+        }
+
+        // exists and forcing
+        padManager.getPad(destinationID, function(err, pad) {
+          if (ERR(err, callback)) return;
+          pad.remove(callback);
+        });
       });
     },
     // copy the 'pad' entry
