@@ -90,15 +90,13 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
       if(typeof validUntil != "number")
       {
         //try to parse the number
-        if(!isNaN(parseInt(validUntil)))
-        {
-          validUntil = parseInt(validUntil);
-        }
-        else
+        if(isNaN(parseInt(validUntil)))
         {
           callback(new customError("validUntil is not a number","apierror"));
           return;
         }
+
+        validUntil = parseInt(validUntil);
       }
       
       //ensure this is not a negativ number

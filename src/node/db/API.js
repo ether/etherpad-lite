@@ -137,15 +137,13 @@ exports.getRevisionChangeset = function(padID, rev, callback)
   if (rev !== undefined && typeof rev !== "number")
   {
     // try to parse the number
-    if (!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if (isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number", "apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
 
   // ensure this is not a negative number
@@ -219,15 +217,13 @@ exports.getText = function(padID, rev, callback)
   if(rev !== undefined && typeof rev != "number")
   {
     //try to parse the number
-    if(!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if(isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number", "apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
   
   //ensure this is not a negativ number
@@ -359,15 +355,13 @@ exports.getHTML = function(padID, rev, callback)
 
   if (rev !== undefined && typeof rev != "number")
   {
-    if (!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if (isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number","apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
 
   if(rev !== undefined && rev < 0)
@@ -641,15 +635,13 @@ exports.saveRevision = function(padID, rev, callback)
   if(rev !== undefined && typeof rev != "number")
   {
     //try to parse the number
-    if(!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if(isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number", "apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
 
   //ensure this is not a negativ number
@@ -782,15 +774,13 @@ exports.restoreRevision = function (padID, rev, callback)
   if (rev !== undefined && typeof rev != "number")
   {
     //try to parse the number
-    if (!isNaN(parseInt(rev)))
-    {
-      rev = parseInt(rev);
-    }
-    else
+    if (isNaN(parseInt(rev)))
     {
       callback(new customError("rev is not a number", "apierror"));
       return;
     }
+
+    rev = parseInt(rev);
   }
 
   //ensure this is not a negativ number
@@ -1177,30 +1167,26 @@ exports.createDiffHTML = function(padID, startRev, endRev, callback){
   if(startRev !== undefined && typeof startRev != "number")
   {
     //try to parse the number
-    if(!isNaN(parseInt(startRev)))
-    {
-      startRev = parseInt(startRev, 10);
-    }
-    else
+    if(isNaN(parseInt(startRev)))
     {
       callback({stop: "startRev is not a number"});
       return;
     }
+
+    startRev = parseInt(startRev, 10);
   }
  
   //check if rev is a number
   if(endRev !== undefined && typeof endRev != "number")
   {
     //try to parse the number
-    if(!isNaN(parseInt(endRev)))
-    {
-      endRev = parseInt(endRev, 10);
-    }
-    else
+    if(isNaN(parseInt(endRev)))
     {
       callback({stop: "endRev is not a number"});
       return;
     }
+
+    endRev = parseInt(endRev, 10);
   }
  
   //get the pad
