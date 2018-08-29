@@ -489,11 +489,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
             callback(new customError("groupID does not exist for destinationID","apierror"));
             return;
           }
+
           //everything is fine, continue
-          else
-          {
-            callback();
-          }
+          callback();
         });
       }
       else
