@@ -620,29 +620,28 @@ Pad.prototype.remove = function remove(callback) {
         //is it a group pad? -> delete the entry of this pad in the group
         function(callback)
         {
-          //is it a group pad?
-          if(padID.indexOf("$")!=-1)
+          if(padID.indexOf("$") === -1)
           {
-            var groupID = padID.substring(0,padID.indexOf("$"));
-
-            db.get("group:" + groupID, function (err, group)
-            {
-              if(ERR(err, callback)) return;
-
-              //remove the pad entry
-              delete group.pads[padID];
-
-              //set the new value
-              db.set("group:" + groupID, group);
-
-              callback();
-            });
-          }
-          //its no group pad, nothing to do here
-          else
-          {
+            // it isn't a group pad, nothing to do here
             callback();
+            return;
           }
+
+          // it is a group pad
+          var groupID = padID.substring(0,padID.indexOf("$"));
+
+          db.get("group:" + groupID, function (err, group)
+          {
+            if(ERR(err, callback)) return;
+
+            //remove the pad entry
+            delete group.pads[padID];
+
+            //set the new value
+            db.set("group:" + groupID, group);
+
+            callback();
+          });
         },
         //remove the readonly entries
         function(callback)
