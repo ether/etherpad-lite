@@ -1116,9 +1116,9 @@ exports.sendClientsMessage = function (padID, msg, callback) {
   getPadSafe(padID, true, function (err, pad) {
     if (ERR(err, callback)) {
       return;
-    } else {
-      padMessageHandler.handleCustomMessage(padID, msg, callback);
     }
+
+    padMessageHandler.handleCustomMessage(padID, msg, callback);
   } );
 }
 
