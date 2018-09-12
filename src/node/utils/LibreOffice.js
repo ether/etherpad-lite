@@ -63,6 +63,7 @@ function doConvertTask(task, callback) {
         '--invisible',
         '--nologo',
         '--nolockcheck',
+        '-env:UserInstallation=file:///tmp/LibreOffice_Conversion_${USER}',
         '--writer',
         '--convert-to', task.type,
         task.srcFile,
