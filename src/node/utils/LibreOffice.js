@@ -60,10 +60,10 @@ function doConvertTask(task, callback) {
     function(callback) {
       var soffice = spawn(settings.soffice, [
         '--headless',
-        '--invisible',
-        '--nologo',
-        '--nolockcheck',
-        '-env:UserInstallation=file:///tmp/LibreOffice_Conversion_${USER}',
+       //'--invisible',
+        //'--nologo',
+        //'--nolockcheck',
+        '-env:UserInstallation=file://'+tmpDir+'/LibreOffice_Conversion_${USER}',
         '--writer',
         '--convert-to', task.type,
         task.srcFile,
