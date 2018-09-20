@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aue Nai"
+		]
+	},
+	"index.newPad": "တၞးတၟိ",
+	"pad.toolbar.bold.title": "လ္စံက် (Ctrl+B)",
+	"pad.toolbar.italic.title": "ဒစေၚ် (Ctrl+I)",
+	"pad.toolbar.underline.title": "သက်ပၞောန်သၟဝ် (Ctrl+U)",
+	"pad.toolbar.strikethrough.title": "ခရက်ပၞောန်လဒေါဝ် (Ctrl+5)",
+	"pad.colorpicker.save": "ဂိုင်သိပ်",
+	"pad.colorpicker.cancel": "တးပဲါ",
+	"pad.loading": "ပတိုန်ဒၟံၚ်",
+	"pad.wrongPassword": "ကောန်ဍေၚ်မၞးဂှ် ဗၠေတ်မံၚ်",
+	"pad.settings.language": "အရေဝ်ဘာသာ",
+	"pad.importExport.import_export": "ပလုပ်/ပတိတ်",
+	"pad.importExport.importSuccessful": "ဍိုက်ပေၚ်စိုပ်ဒတုဲ",
+	"pad.importExport.exporthtml": "HTML",
+	"pad.importExport.exportplain": "လိက်ပလး",
+	"pad.importExport.exportword": "Microsoft Word",
+	"pad.importExport.exportpdf": "PDF",
+	"pad.importExport.exportopen": "ODF (Open Document Format)",
+	"pad.modals.reconnecttimer": "ဂစာန်မံၚ်သွက်ကလေၚ်ဆက်လုပ်",
+	"pad.modals.cancel": "တးပဲါ",
+	"pad.modals.unauth": "အခေါၚ်အဝဵုဟွံမွဲ",
+	"pad.modals.deleted": "ပလီု",
+	"pad.modals.deleted.explanation": "တၞးဏအ်ဒးဒုၚ်တးပဲါထောံယျ။",
+	"pad.modals.disconnected": "မၞးဆက်စၠောံဟွံမွဲမံၚ်ယျ",
+	"pad.share": "ပါ်ပရအ်တၞးဏအ်ညိ",
+	"pad.share.readonly": "ဆ အယာံမာတ်ဗှ်ဟေၚ်",
+	"pad.share.link": "လေန်",
+	"pad.share.emebdcode": "Embed URL",
+	"timeslider.pageTitle": "{{appTitle}} Timeslider",
+	"timeslider.toolbar.returnbutton": "ကလၚ်တၞးတေံ",
+	"timeslider.toolbar.authors": "ကဝိ",
+	"timeslider.toolbar.authorsList": "ကဝိ ဟွံမွဲ",
+	"timeslider.toolbar.exportlink.title": "ပတိတ်",
+	"timeslider.version": "ဗာရှောန်{{version}}",
+	"timeslider.saved": "သီဂိုၚ်လဝ် {{ဂိတု}} {{တ္ၚဲ}}, {{သၞာံ}}"
+}
