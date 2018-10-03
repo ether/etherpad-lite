@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Mehtab ahmed"
+			"Mehtab ahmed",
+			"Tweety"
 		]
 	},
 	"index.newPad": "نئين پٽي",
@@ -37,7 +38,7 @@
 	"pad.importExport.importSuccessful": "ڪامياب!",
 	"pad.importExport.export": "هاڻوڪي پٽي برآمد ڪريو جي طور:",
 	"pad.importExport.exporthtml": "HTML",
-	"pad.importExport.exportplain": "سادو متن",
+	"pad.importExport.exportplain": "سدا اکر",
 	"pad.importExport.exportword": "مائيڪرسافٽ ورڊ",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (کليل دستاويز فارميٽ)",
