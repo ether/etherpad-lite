@@ -19,10 +19,10 @@ git clone https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/
 ```
 
 ## GNU/Linux and other UNIX-like systems
-You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
-- *For Debian/Ubuntu*: `apt install gzip git curl python libssl-dev pkg-config build-essential`  
-- *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
-- *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
+You'll need gzip, git, libssl develop libraries, python and gcc.
+- *For Debian/Ubuntu*: `apt install gzip git python libssl-dev pkg-config build-essential`
+- *For Fedora/CentOS*: `yum install gzip git python openssl-devel && yum groupinstall "Development Tools"`
+- *For FreeBSD*: `portinstall node, npm, git (optional)`
 
 Additionally, you'll need [node.js](https://nodejs.org) installed (minimum required Node version: **6.9.0**).
 Ideally, the latest stable version is preferred. Please note that the packages offered on some operating systems are outdated. In those cases, we recommend installing nodejs from official archives or compiling it from source (avoiding yum/apt).
