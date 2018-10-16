@@ -47,7 +47,7 @@
     "measured-core": "1.11.2",
     "npm": "6.4.1",
     "object.values": "^1.0.4",
-    "request": "2.83.0",
+    "request": "2.88.0",
     "resolve": "1.1.7",
     "security": "1.0.0",
     "semver": "5.1.0",
