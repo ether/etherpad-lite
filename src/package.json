@@ -36,7 +36,7 @@
     "ejs": "2.5.7",
     "etherpad-require-kernel": "1.0.9",
     "etherpad-yajsml": "0.0.2",
-    "express": "4.16.3",
+    "express": "4.16.4",
     "express-session": "1.15.6",
     "find-root": "1.1.0",
     "formidable": "1.2.1",
