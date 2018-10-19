@@ -367,7 +367,7 @@ exports.exportAvailable = function() {
 exports.getGitCommit = function() {
   var version = "";
   try {
-    var rootPath = path.resolve(npm.dir, '..');
+    var rootPath = exports.root;
     if (fs.lstatSync(rootPath + '/.git').isFile()) {
       rootPath = fs.readFileSync(rootPath + '/.git', "utf8");
       rootPath = rootPath.split(' ').pop().trim();
