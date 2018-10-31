@@ -105,17 +105,18 @@ exports.doImport = function(req, res, padId)
       //if the file ending is known, continue as normal
       if(fileEndingKnown) {
         callback();
+        
+        return;
       }
+
       //we need to rename this file with a .txt ending
-      else {
-        if(settings.allowUnknownFileEnds === true){
-          var oldSrcFile = srcFile;
-          srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
-          fs.rename(oldSrcFile, srcFile, callback);
-        }else{
-          console.warn("Not allowing unknown file type to be imported", fileEnding);
-          callback("uploadFailed");
-        }
+      if(settings.allowUnknownFileEnds === true){
+        var oldSrcFile = srcFile;
+        srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
+        fs.rename(oldSrcFile, srcFile, callback);
+      }else{
+        console.warn("Not allowing unknown file type to be imported", fileEnding);
+        callback("uploadFailed");
       }
     },
     function(callback){
