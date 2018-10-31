@@ -158,28 +158,30 @@ exports.doImport = function(req, res, padId)
     },
     //convert file to html
     function(callback) {
-      if(!importHandledByPlugin && !directDatabaseAccess){
-        var fileEnding = path.extname(srcFile).toLowerCase();
-        var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
-        var fileIsTXT = (fileEnding === ".txt");
-        if (fileIsTXT) useConvertor = false; // Don't use convertor for text files
-        // See https://github.com/ether/etherpad-lite/issues/2572
-        if (useConvertor && !fileIsHTML) {
-          convertor.convertFile(srcFile, destFile, exportExtension, function(err) {
-            //catch convert errors
-            if(err) {
-              console.warn("Converting Error:", err);
-              return callback("convertFailed");
-            } else {
-              callback();
-            }
-          });
-        } else {
-          // if no convertor only rename
-          fs.rename(srcFile, destFile, callback);
-        }
-      }else{
+      if (importHandledByPlugin || directDatabaseAccess) {
         callback();
+
+        return;
+      }
+
+      var fileEnding = path.extname(srcFile).toLowerCase();
+      var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
+      var fileIsTXT = (fileEnding === ".txt");
+      if (fileIsTXT) useConvertor = false; // Don't use convertor for text files
+      // See https://github.com/ether/etherpad-lite/issues/2572
+      if (useConvertor && !fileIsHTML) {
+        convertor.convertFile(srcFile, destFile, exportExtension, function(err) {
+          //catch convert errors
+          if(err) {
+            console.warn("Converting Error:", err);
+            return callback("convertFailed");
+          } else {
+            callback();
+          }
+        });
+      } else {
+        // if no convertor only rename
+        fs.rename(srcFile, destFile, callback);
       }
     },
     
