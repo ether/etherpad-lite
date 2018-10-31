@@ -56,7 +56,10 @@ function doConvertTask(task, callback) {
   var tmpDir = os.tmpdir();
 
   async.series([
-    // Generate a PDF file with LibreOffice
+    /*
+     * use LibreOffice to convert task.srcFile to another format, given in
+     * task.type
+     */
     function(callback) {
       var soffice = spawn(settings.soffice, [
         '--headless',
@@ -81,17 +84,18 @@ function doConvertTask(task, callback) {
         stdoutBuffer += data.toString();
       });
 
-      // Throw an exception if libreoffice failed
       soffice.on('exit', function(code) {
         if (code != 0) {
+          // Throw an exception if libreoffice failed
           return callback(`LibreOffice died with exit code ${code} and message: ${stdoutBuffer}`);
         }
 
+        // if LibreOffice exited succesfully, go on with processing
         callback();
       })
     },
 
-    // Move the PDF file to the correct place
+    // Move the converted file to the correct place
     function(callback) {
       var filename = path.basename(task.srcFile);
       var pdfFilename = filename.substr(0, filename.lastIndexOf('.')) + '.' + task.type;
