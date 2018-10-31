@@ -85,13 +85,14 @@ exports.doImport = function(req, res, padId)
         if(err || files.file === undefined) {
           if(err) console.warn("Uploading Error: " + err.stack);
           callback("uploadFailed");
+
+          return;
         }
+
         //everything ok, continue
-        else {
-          //save the path of the uploaded file
-          srcFile = files.file.path;
-          callback();
-        }
+        //save the path of the uploaded file
+        srcFile = files.file.path;
+        callback();
       });
     },
     
