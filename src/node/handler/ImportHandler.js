@@ -181,9 +181,9 @@ exports.doImport = function(req, res, padId)
         if(err) {
           console.warn("Converting Error:", err);
           return callback("convertFailed");
-        } else {
-          callback();
         }
+
+        callback();
       });
     },
     
