@@ -227,25 +227,27 @@ exports.doImport = function(req, res, padId)
     
     //read the text
     function(callback) {
-      if(!directDatabaseAccess){
-        fs.readFile(destFile, "utf8", function(err, _text){
-          if(ERR(err, callback)) return;
-          text = _text;
-          // Title needs to be stripped out else it appends it to the pad..
-          text = text.replace("<title>", "<!-- <title>");
-          text = text.replace("</title>","</title>-->");
-
-          //node on windows has a delay on releasing of the file lock.  
-          //We add a 100ms delay to work around this
-          if(os.type().indexOf("Windows") > -1){
-             setTimeout(function() {callback();}, 100);
-          } else {
-            callback();
-          }
-        });
-      }else{
+      if (directDatabaseAccess) {
         callback();
+
+        return;
       }
+
+      fs.readFile(destFile, "utf8", function(err, _text){
+        if(ERR(err, callback)) return;
+        text = _text;
+        // Title needs to be stripped out else it appends it to the pad..
+        text = text.replace("<title>", "<!-- <title>");
+        text = text.replace("</title>","</title>-->");
+
+        //node on windows has a delay on releasing of the file lock.  
+        //We add a 100ms delay to work around this
+        if(os.type().indexOf("Windows") > -1){
+           setTimeout(function() {callback();}, 100);
+        } else {
+          callback();
+        }
+      });
     },
     
     //change text of the pad and broadcast the changeset
