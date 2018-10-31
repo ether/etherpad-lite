@@ -188,27 +188,29 @@ exports.doImport = function(req, res, padId)
     },
     
     function(callback) {
-      if (!useConvertor && !directDatabaseAccess){
-        // Read the file with no encoding for raw buffer access.
-        fs.readFile(destFile, function(err, buf) {
-          if (err) throw err;
-          var isAscii = true;
-          // Check if there are only ascii chars in the uploaded file
-          for (var i=0, len=buf.length; i<len; i++) {
-            if (buf[i] > 240) {
-              isAscii=false;
-              break;
-            }
-          }
-          if (isAscii) {
-            callback();
-          } else {
-            callback("uploadFailed");
-          }
-        });
-      } else {
+      if (useConvertor || directDatabaseAccess) {
         callback();
+
+        return;
       }
+
+      // Read the file with no encoding for raw buffer access.
+      fs.readFile(destFile, function(err, buf) {
+        if (err) throw err;
+        var isAscii = true;
+        // Check if there are only ascii chars in the uploaded file
+        for (var i=0, len=buf.length; i<len; i++) {
+          if (buf[i] > 240) {
+            isAscii=false;
+            break;
+          }
+        }
+        if (isAscii) {
+          callback();
+        } else {
+          callback("uploadFailed");
+        }
+      });
     },
         
     //get the pad object
