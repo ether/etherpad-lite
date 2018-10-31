@@ -18,6 +18,7 @@
 
 var async = require("async");
 var fs = require("fs");
+var log4js = require('log4js');
 var os = require("os");
 var path = require("path");
 var settings = require("./Settings");
@@ -25,6 +26,8 @@ var spawn = require("child_process").spawn;
 
 // Conversion tasks will be queued up, so we don't overload the system
 var queue = async.queue(doConvertTask, 1);
+
+var libreOfficeLogger = log4js.getLogger('LibreOffice');
 
 /**
  * Convert a file from one type to another
@@ -61,6 +64,7 @@ function doConvertTask(task, callback) {
      * task.type
      */
     function(callback) {
+      libreOfficeLogger.debug(`Converting ${task.srcFile} to format ${task.type}. The result will be put in ${tmpDir}`);
       var soffice = spawn(settings.soffice, [
         '--headless',
         '--invisible',
@@ -100,6 +104,7 @@ function doConvertTask(task, callback) {
       var filename = path.basename(task.srcFile);
       var sourceFilename = filename.substr(0, filename.lastIndexOf('.')) + '.' + task.type;
       var sourcePath = path.join(tmpDir, sourceFilename);
+      libreOfficeLogger.debug(`Renaming ${sourcePath} to ${task.destFile}`);
       fs.rename(sourcePath, task.destFile, callback);
     }
   ], function(err) {
