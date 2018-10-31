@@ -285,20 +285,22 @@ exports.doImport = function(req, res, padId)
     
     //clean up temporary files
     function(callback) {
-      if(!directDatabaseAccess){
-        //for node < 0.7 compatible
-        var fileExists = fs.exists || path.exists;
-        async.parallel([
-          function(callback){
-            fileExists (srcFile, function(exist) { (exist)? fs.unlink(srcFile, callback): callback(); });
-          },
-          function(callback){
-            fileExists (destFile, function(exist) { (exist)? fs.unlink(destFile, callback): callback(); });
-          }
-        ], callback);
-      }else{
+      if (directDatabaseAccess) {
         callback();
+
+        return;
       }
+
+      //for node < 0.7 compatible
+      var fileExists = fs.exists || path.exists;
+      async.parallel([
+        function(callback){
+          fileExists (srcFile, function(exist) { (exist)? fs.unlink(srcFile, callback): callback(); });
+        },
+        function(callback){
+          fileExists (destFile, function(exist) { (exist)? fs.unlink(destFile, callback): callback(); });
+        }
+      ], callback);
     }
   ], function(err) {
     var status = "ok";
