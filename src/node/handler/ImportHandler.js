@@ -270,13 +270,15 @@ exports.doImport = function(req, res, padId)
         padManager.unloadPad(padId);
         // direct Database Access means a pad user should perform a switchToPad
         // and not attempt to recieve updated pad data..
-        if(!directDatabaseAccess){
-          padMessageHandler.updatePadClients(pad, function(){
-            callback();
-          });
-        }else{
+        if (directDatabaseAccess) {
           callback();
+
+          return;
         }
+
+        padMessageHandler.updatePadClients(pad, function(){
+          callback();
+        });
       });
 
     },
