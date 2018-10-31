@@ -141,14 +141,14 @@ exports.doImport = function(req, res, padId)
           if(headCount >= 10){
             apiLogger.warn("Direct database Import attempt of a pad that already has content, we wont be doing this")
             return callback("padHasData");
-          }else{
-            fs.readFile(srcFile, "utf8", function(err, _text){
-              directDatabaseAccess = true;
-              importEtherpad.setPadRaw(padId, _text, function(err){
-                callback();
-              });
+          }
+
+          fs.readFile(srcFile, "utf8", function(err, _text){
+            directDatabaseAccess = true;
+            importEtherpad.setPadRaw(padId, _text, function(err){
+              callback();
             });
-          }  
+          });
         });
       }else{
         callback();
