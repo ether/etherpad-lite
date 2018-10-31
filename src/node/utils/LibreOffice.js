@@ -98,9 +98,9 @@ function doConvertTask(task, callback) {
     // Move the converted file to the correct place
     function(callback) {
       var filename = path.basename(task.srcFile);
-      var pdfFilename = filename.substr(0, filename.lastIndexOf('.')) + '.' + task.type;
-      var pdfPath = path.join(tmpDir, pdfFilename);
-      fs.rename(pdfPath, task.destFile, callback);
+      var sourceFilename = filename.substr(0, filename.lastIndexOf('.')) + '.' + task.type;
+      var sourcePath = path.join(tmpDir, sourceFilename);
+      fs.rename(sourcePath, task.destFile, callback);
     }
   ], function(err) {
     // Invoke the callback for the local queue
