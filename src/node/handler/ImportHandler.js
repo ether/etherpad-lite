@@ -132,27 +132,29 @@ exports.doImport = function(req, res, padId)
     },
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase()
-      var fileIsEtherpad = (fileEnding === ".etherpad");
+      var fileIsNotEtherpad = (fileEnding !== ".etherpad");
 
-      if(fileIsEtherpad){
-        // we do this here so we can see if the pad has quit ea few edits
-        padManager.getPad(padId, function(err, _pad){
-          var headCount = _pad.head;
-          if(headCount >= 10){
-            apiLogger.warn("Direct database Import attempt of a pad that already has content, we wont be doing this")
-            return callback("padHasData");
-          }
+      if (fileIsNotEtherpad) {
+        callback();
 
-          fs.readFile(srcFile, "utf8", function(err, _text){
-            directDatabaseAccess = true;
-            importEtherpad.setPadRaw(padId, _text, function(err){
-              callback();
-            });
+        return;
+      }
+
+      // we do this here so we can see if the pad has quit ea few edits
+      padManager.getPad(padId, function(err, _pad){
+        var headCount = _pad.head;
+        if(headCount >= 10){
+          apiLogger.warn("Direct database Import attempt of a pad that already has content, we wont be doing this")
+          return callback("padHasData");
+        }
+
+        fs.readFile(srcFile, "utf8", function(err, _text){
+          directDatabaseAccess = true;
+          importEtherpad.setPadRaw(padId, _text, function(err){
+            callback();
           });
         });
-      }else{
-        callback();
-      }
+      });
     },
     //convert file to html
     function(callback) {
