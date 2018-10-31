@@ -169,20 +169,22 @@ exports.doImport = function(req, res, padId)
       var fileIsTXT = (fileEnding === ".txt");
       if (fileIsTXT) useConvertor = false; // Don't use convertor for text files
       // See https://github.com/ether/etherpad-lite/issues/2572
-      if (useConvertor && !fileIsHTML) {
-        convertor.convertFile(srcFile, destFile, exportExtension, function(err) {
-          //catch convert errors
-          if(err) {
-            console.warn("Converting Error:", err);
-            return callback("convertFailed");
-          } else {
-            callback();
-          }
-        });
-      } else {
+      if (fileIsHTML || (useConvertor === false)) {
         // if no convertor only rename
         fs.rename(srcFile, destFile, callback);
+        
+        return;
       }
+
+      convertor.convertFile(srcFile, destFile, exportExtension, function(err) {
+        //catch convert errors
+        if(err) {
+          console.warn("Converting Error:", err);
+          return callback("convertFailed");
+        } else {
+          callback();
+        }
+      });
     },
     
     function(callback) {
