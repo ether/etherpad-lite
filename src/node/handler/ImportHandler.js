@@ -205,11 +205,14 @@ exports.doImport = function(req, res, padId)
             break;
           }
         }
-        if (isAscii) {
-          callback();
-        } else {
+
+        if (!isAscii) {
           callback("uploadFailed");
+
+          return;
         }
+
+        callback();
       });
     },
         
