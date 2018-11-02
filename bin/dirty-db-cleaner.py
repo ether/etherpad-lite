@@ -31,8 +31,11 @@ with open(dirtydb_input, 'r') as fd:
     print 'Reading %s' % dirtydb_input
     for line in fd:
         lines += 1
-        data = json.loads(line)
-        dirtydb[data['key']] = line
+        try:
+            data = json.loads(line)
+            dirtydb[data['key']] = line
+        except:
+            print("Skipping invalid JSON!")
         if lines % 10000 == 0:
             sys.stderr.write('.')
 print
