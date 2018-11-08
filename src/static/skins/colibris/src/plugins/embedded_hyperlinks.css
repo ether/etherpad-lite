@@ -1,32 +1,6 @@
-.hyperlink-icon > a > .buttonicon:before{
-  content:"\E83A";
-  top: 0px !important;
-  position: relative;
-}
-.hyperlink-dialog {
-  position: absolute;
-  top: 0;
-  z-index: 20;
-  list-style: none;
-
-}
-
 .hyperlink-dialog>.hyperlink-save{
   height: 34px;
   margin-top: 1px;
   margin-right: 0;
   margin-left: 2px;
-  color: transparent !important;
-  width: 50px;
-  overflow: hidden;
-}
-
-.hyperlink-dialog>.hyperlink-save:after{
-  content: "Ok";
-  color: white;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 8px 0;
-  width: 50px;
 }
