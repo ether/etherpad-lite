@@ -94,6 +94,7 @@
     background-color: transparent;
     border: none !important;
     padding: 0 !important;
+    overflow-x: visible;
   }
   .toolbar ul.menu_left {
     padding-top: 2px !important;

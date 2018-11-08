@@ -1,6 +1,7 @@
 #users,
 #mycolorpicker,
-.popup {
+.popup,
+.hyperlink-dialog {
   border-radius: 3px;
   padding: 20px 20px;
   background: none;

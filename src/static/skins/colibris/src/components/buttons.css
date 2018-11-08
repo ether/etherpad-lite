@@ -1,4 +1,5 @@
-.btn, #mycolorpickercancel, #mycolorpickersave, #save_title button, #yui-picker-panel .button-group .yui-button button{
+.btn, #mycolorpickercancel, #mycolorpickersave, #save_title button, #yui-picker-panel .button-group .yui-button button, .hyperlink-dialog>.hyperlink-save
+{
   margin-right: 10px;
   padding: 5px 20px;
   border-radius: 4px;
@@ -14,6 +15,6 @@
   left: 0;
 }
 
-.btn:hover, #mycolorpickercancel:hover, #mycolorpickersave:hover, #save_title button:hover {
+.btn:hover, #mycolorpickercancel:hover, #mycolorpickersave:hover, #save_title button:hover, .hyperlink-dialog>.hyperlink-save:hover {
   cursor: pointer;
 }
