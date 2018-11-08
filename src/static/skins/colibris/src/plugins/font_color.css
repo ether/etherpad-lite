@@ -6,13 +6,6 @@ li.acl-write.font-color-icon.ep_font_color {
   display: list-item !important;
 }
 
-
-
-h3 .color\:black,
-[data-color=black] {
-    color: #656f71;
-}
-
 .color\:red,
 [data-color=red] {
     color: #F44336;

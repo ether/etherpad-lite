@@ -60,12 +60,8 @@
 }
 
 #chatinput {
-  border: 1px solid #d2d2d2;
   width: calc(100% - 20px);
-  float: right;
-  height: 18px;
-  border-radius: 3px;
-  padding: 8px 10px;
+  float: right;  
 }
 
 #chatbox.stickyChat {

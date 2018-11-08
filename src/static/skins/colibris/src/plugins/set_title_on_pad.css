@@ -10,8 +10,8 @@
 #edit_title:before {
   font-family: fontawesome-etherpad;
   position: absolute;
-  top: 19px;
-  font-size: 16px;
+  top: 20px;
+  font-size: 14px;
   content: "\E839";
   margin-left: 10px;
 }
