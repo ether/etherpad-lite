@@ -5404,7 +5404,7 @@ function Ace2Inner(){
             // didn't do this special case, we would miss out on any top margin
             // included on the first line. The default stylesheet doesn't add
             // extra margins/padding, but plugins might.
-            h = b.nextSibling.offsetTop - window.getComputedStyle(doc.body).getPropertyValue("padding-top");
+            h = b.nextSibling.offsetTop - parseInt(window.getComputedStyle(doc.body).getPropertyValue("padding-top").split('px')[0]);
           } else {
             h = b.nextSibling.offsetTop - b.offsetTop;
           }
