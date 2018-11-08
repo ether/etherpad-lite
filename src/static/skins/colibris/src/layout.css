@@ -58,6 +58,19 @@
   right: calc(100% - 113px); 
 }
 
+/* Fixs comments_page & author_hover does not take in account the document padding */
+.comment-modal { margin-top: 75px !important; margin-left: 45px; }
+.authortooltip { margin-top: 65px !important; margin-left: 60px; }
+.caretindicator { margin-top: 61px!important; margin-left: 52px; }
+
+#outerdocbody.ep_author_neat .authortooltip{ margin-left: 145px; }
+#outerdocbody.ep_author_neat .caretindicator{ margin-left: 52px; margin-top: 65px!important;}
+@media (max-width:1000px) { 
+  #outerdocbody.ep_author_neat .authortooltip{ margin-left: 115px; } 
+  .caretindicator{ margin-left: 13px; } 
+  #outerdocbody.ep_author_neat .caretindicator{ margin-left: 17px; } 
+}
+
 @media (min-width: 1381px) { 
   #outerdocbody.ep_comments_page  { padding-right: 150px; } }
   #outerdocbody.ep_comments_page #comments { left: calc(100% - 150px) }
@@ -81,8 +94,12 @@
     width: calc(100% - 40px) !important; /* 100% - padding */
   }
   #sidediv { 
-    top: 30px !important; 
+    top: 20px !important; /* = #outerdocbody iframe padding-top */
   }  
+
+  .comment-modal, .authortooltip { margin-top: 20px !important; }
+  .caretindicator { margin-top: 0px !important; }
+  #outerdocbody.ep_author_neat  .caretindicator { margin-top: 10px !important; }
 
   #outerdocbody.ep_author_neat #sidedivinner>div:before { padding-right: 10px !important; }
   #outerdocbody.ep_author_neat #sidedivinner.authorColors>div, 
@@ -102,6 +119,7 @@
   }
   #sidediv { 
     display: block;
+    top: 15px !important; /* = #outerdocbody iframe padding-top */
   }
 }
 

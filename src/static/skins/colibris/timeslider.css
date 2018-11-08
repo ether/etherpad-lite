@@ -6,8 +6,15 @@
   }
 }
 
-.timeslider #import_export, #settings{
-  top: 115px !important;
+.timeslider #import_export, .timeslider #settings{
+  top: 108px !important;
+  right: 55px;
+}
+
+.timeslider #export > p {
+  font-size: 15px;
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 
 .timeslider #padpage {
@@ -21,7 +28,7 @@
 }
 
 .timeslider-bar { background: none; }
-.timeslider-bar p { margin: 8px; }
+.timeslider-bar p { margin: 8px; font-size: 12px;}
 
 .timeslider-bar #editbar {
   border: none;

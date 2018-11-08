@@ -11,6 +11,7 @@
 @import url("src/components/toolbar.css");
 @import url("src/components/users.css");
 @import url("src/components/form.css");
+@import url("src/components/import-export.css");
 
 @import url("src/plugins/brightcolorpicker.css");
 @import url("src/plugins/comments_page.css");
@@ -18,6 +19,7 @@
 @import url("src/plugins/set_title_on_pad.css");
 @import url("src/plugins/tables2.css");
 @import url("src/plugins/embedded_hyperlinks.css");
+@import url("src/plugins/author_hover.css");
 
 /* NEUTRAL COLOR */
 body,
@@ -50,7 +52,8 @@ body,
 .reply-suggestion .reply-comment-suggest-from,
 .suggestion .comment-suggest-from,
 .hyperlink-dialog>.hyperlink-url,
-.timeslider #padcontent span 
+.timeslider #padcontent span ,
+.exporttype, .timeslider #export > p 
 { color: #495057 !important; }
 
 /* MENUS ICONS */
@@ -69,7 +72,8 @@ body,
 #yui-picker-panel .button-group .yui-button:last-child button,
 #newComment.sidebar-comment input[type=submit],
 .comment-changeTo-approve input[type=submit],
-.hyperlink-dialog>.hyperlink-save
+.hyperlink-dialog>.hyperlink-save,
+#importsubmitinput, #forcereconnect
 { 
   background-color: #64d29b; 
   color: white;
@@ -81,7 +85,7 @@ h1,
 .yui-skin-sam .yui-panel .hd,
 p[data-l10n-id="ep_comments_page.comment"],
 .comment-reply-input-label span,
-.stepper
+.stepper, #importmessageabiword, #importmessageabiword > a
 { color: #64d29b; }
 #ui-slider-handle, #playpause_button_icon {
   background-color: #64d29b; 
@@ -106,7 +110,7 @@ td[name=tData],
 #comments, #newComments,
 #sidediv,
 #comments .sidebar-comment,
-#timeslider #timer
+#timeslider #timer, .exporttype
 { font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }
 
 /* PRIMARY FONT */

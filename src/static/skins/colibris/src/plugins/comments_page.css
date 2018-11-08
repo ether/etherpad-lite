@@ -282,3 +282,9 @@ textarea.comment-suggest-to {
   margin-top: 0;
   padding-top: 10px;
 }
+
+.comment-modal-comment>.comment-author-name {
+  padding-left: 14px;
+}
+
+
