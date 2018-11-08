@@ -85,7 +85,9 @@ body,
 .toolbar ul li select,
 button, input, select, textarea,
 td[name=tData],
-#comments, #newComments
+#comments, #newComments,
+#sidediv,
+#comments .sidebar-comment
 { font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }
 
 /* PRIMARY FONT */

@@ -18,8 +18,17 @@
   visibility: visible;
   width: 1px;
   margin: 0 10px;
+  margin-right: 6px;
   height: 39px;
   background-color: rgba(78, 85, 92, 0.22);
+}
+
+.toolbar.condensed ul li {
+  margin-left: 0;
+}
+
+.toolbar.condensed ul li.separator {
+  margin: 0 5px;
 }
 
 .toolbar ul li a {

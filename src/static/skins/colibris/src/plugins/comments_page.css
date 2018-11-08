@@ -80,7 +80,7 @@ p[data-l10n-id="ep_comments_page.comment"] {
   border: 2px solid rgba(33, 150, 243, 0.51);
 }
 
-.comment-changeTo-approve input[type=submit] { width: 100%; }
+.comment-changeTo-approve input[type=submit] { width: 100%; font-size: 12px;}
 
 .reply-comment-suggest-from-p,
 .comment-changeFrom-value,
@@ -116,7 +116,6 @@ textarea.comment-suggest-to {
 #comments .sidebar-comment {
   background-color: transparent;
   font-size: 13px;
-  font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;
   border: none;
   box-shadow: none;
 }
