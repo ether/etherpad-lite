@@ -230,7 +230,6 @@ function Ace2Editor()
       // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
       if(!clientVars.disableCustomScriptsAndStyles){
         $$INCLUDE_CSS("../static/css/pad.css");
-        $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
       }
 
       var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
@@ -240,6 +239,7 @@ function Ace2Editor()
         return '../static/plugins/' + path;
       });
       includedCSS = includedCSS.concat(additionalCSS);
+      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
 
       pushStyleTagsFor(iframeHTML, includedCSS);
 
@@ -314,7 +314,6 @@ window.onload = function () {\n\
       var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
       $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
 
 
       var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
@@ -324,6 +323,7 @@ window.onload = function () {\n\
         return '../static/plugins/' + path }
       );
       includedCSS = includedCSS.concat(additionalCSS);
+      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
 
       pushStyleTagsFor(outerHTML, includedCSS);
 
