@@ -1,6 +1,15 @@
 #innerdocbody {
   font-size: 15px;
-  line-height: 20px; /* increase this line-height to 25px when no background color for text */
+  line-height: 25px; 
+  padding: 0;
+}
+
+#innerdocbody span {
+  padding: 4px 0 !important;
+}
+
+#innerdocbody h1 span {
+  padding: 0;
 }
 
 body {
@@ -12,13 +21,16 @@ option {
 }
 
 h1 {
-  font-size: 2.5em;
-  padding: 9px 0; /* need when coloring background text because it overlap previous and next line */
+  font-size: 2.5em !important;
 }
 
 h3 {
   font-size: 1.15em;
   letter-spacing: 1px;
+}
+
+a {
+  color: #3f51b5;
 }
 
 

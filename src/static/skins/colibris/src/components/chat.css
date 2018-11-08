@@ -88,3 +88,17 @@
   padding: 10px 20px;
   right: 30px;
 }
+
+@media (max-width: 720px) {
+  #chaticon {
+    right: 0;
+    bottom: 44px;
+  }
+
+  #chatbox {
+    width: 100%;
+    right: 0;
+  }
+
+  #titlesticky { display: none; }
+}

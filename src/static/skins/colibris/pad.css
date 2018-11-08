@@ -5,7 +5,7 @@
 @import url("src/components/popup.css");
 
 @import url("src/components/chat.css");
-@import url("src/components/editor-sidediv.css");
+@import url("src/components/sidediv.css");
 @import url("src/components/gritter.css");
 @import url("src/components/table-of-content.css");
 @import url("src/components/toolbar.css");
@@ -52,4 +52,4 @@ h1,
 #titlelabel,
 #chatlabel,
 .btn
-{ font-family: opendyslexic !important; }
+{ font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;  }

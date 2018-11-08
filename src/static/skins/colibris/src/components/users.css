@@ -64,3 +64,20 @@ table#otheruserstable {
   height: 20px;
   width: 20px;
 }
+
+@media (max-width: 720px) {
+  #users {
+    bottom: 42px;
+    top: initial !important;
+    height: auto !important;
+  }
+
+  #mycolorpicker {
+    width: auto;
+    height: auto;
+    right: 0;
+    bottom: 42px;
+    left: initial;
+    top: initial !important;
+  } 
+}

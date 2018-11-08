@@ -30,7 +30,7 @@
   left: 0 !important;
   top: 0;
   width: calc(100% - 110px) !important; /* 100% - padding */
-  padding: 45px 55px;
+  padding: 55px;
   box-shadow: 0 0 0 0.5px rgba(209, 209, 209, 0.32), 0 0 7pt 0pt rgba(204, 204, 204, 0.52);  
   border: 0;
   border-radius: 5px;
@@ -41,7 +41,7 @@
   position: absolute;
   right: calc(100% - 35px);
   left: initial;
-  top: 64px !important;
+  top: 74px !important;
   padding: 0;
 }
 
@@ -60,59 +60,16 @@
   }
 }
 
-/*
-@media (min-width:800px) and (max-width:1200px) {
+@media (max-width:600px) {
+  html { overflow: scroll; }
+  #outerdocbody {
+    width: 100%;
+  }
   #outerdocbody iframe {
-    width: calc(100% - 60px) !important;
-    padding: 30px !important;
-    top: 0 !important;
-    border-radius: 0 !important;
+    padding: 15px !important;
+    width: calc(100% - 30px) !important; /* 100% - padding */
   }
-  #outerdocbody {
-    position: relative !important;
-    padding-left: 120px !important;
-    right: 0 !important;
-    left: 0 !important;
-    width: calc(100% - 320px) !important;
-    margin: 0;
-    max-width: none;
-    padding-top: 0 !important;
-  }
-  #outerdocbody #sidediv {
-    padding: 33px 0 0 !important;
-    right: calc(100% - 105px);
-  }
-  #comments {
-    right: 0px;
-    left: auto !important;
+  #sidediv { 
+    display: block;
   }
 }
-
-@media (min-width: 800px) and (max-width:955px) {
-  #outerdocbody {
-    padding-right: 0 !important;
-    width: calc(100% - 110px) !important;
-  }
-}
-
-@media (max-width: 800px) {
-  #outerdocbody iframe {
-    width: calc(100% - 12px) !important;
-    padding: 10px !important;
-    top: 0 !important;
-    border-radius: 0 !important;
-  }
-  #outerdocbody #sidediv,
-  #chaticon,
-  li.superscript,
-  li.subscript,
-  li[data-key="undo"],
-  li[data-key="redo"] {
-    display: none;
-  }
-  #outerdocbody {
-    padding-top: 0 !important;
-  }
-  
-}
-*/
