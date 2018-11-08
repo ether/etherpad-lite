@@ -314,7 +314,7 @@ function handshake()
       // If the Monospacefont value is set to true then change it to monospace.
       if (settings.useMonospaceFontGlobal == true)
       {
-        pad.changeViewOption('useMonospaceFont', true);
+        pad.changeViewOption('padFontFamily', 'monospace');
       }
       // if the globalUserName value is set we need to tell the server and the client about the new authorname
       if (settings.globalUserName !== false)
@@ -560,19 +560,7 @@ var pad = {
       if(padcookie.getPref("rtlIsTrue") == true){
         pad.changeViewOption('rtlIsTrue', true);
       }
-
-
-      var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont',
-        'useGeorgiaFont', 'useImpactFont', 'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont',
-        'useTahomaFont', 'useTimesNewRomanFont', 'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont',
-        'useWingDingsFont', 'useSansSerifFont', 'useSerifFont'];
-
-
-      $.each(fonts, function(i, font){
-        if(padcookie.getPref(font) == true){
-          pad.changeViewOption(font, true);
-        }
-      })
+      pad.changeViewOption('padFontFamily', padcookie.getPref("padFontFamily"));
 
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
