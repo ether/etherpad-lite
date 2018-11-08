@@ -10,10 +10,12 @@
 @import url("src/components/table-of-content.css");
 @import url("src/components/toolbar.css");
 @import url("src/components/users.css");
+@import url("src/components/form.css");
 
 @import url("src/plugins/brightcolorpicker.css");
 @import url("src/plugins/comments_page.css");
 @import url("src/plugins/font_color.css");
+@import url("src/plugins/set_title_on_pad.css");
 
 /* NEUTRAL COLOR */
 body,
@@ -32,11 +34,13 @@ body,
 [data-color=black],
 #chattext.authorColors p, #chattext.authorColors span,
 #chattext .time
+#edit_title:before,
 { color: #495057 !important; }
 
 /* PRIMARY COLOR */
 #mycolorpickersave,
 .btn-primary
+#save_title button
 { background-color: #64d29b; }
 
 h1, 

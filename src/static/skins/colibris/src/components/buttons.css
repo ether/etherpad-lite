@@ -1,4 +1,4 @@
-.btn, #mycolorpickercancel, #mycolorpickersave {
+.btn, #mycolorpickercancel, #mycolorpickersave, #save_title button {
   margin-right: 10px;
   padding: 5px 20px;
   border-radius: 4px;
@@ -12,4 +12,13 @@
   background: none;
   top: 0;
   left: 0;
+}
+
+.btn:hover, #mycolorpickercancel:hover, #mycolorpickersave:hover, #save_title button:hover {
+  cursor: pointer;
+}
+
+/* Primary button */
+#save_title button {
+  color: white;
 }
