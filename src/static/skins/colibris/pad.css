@@ -23,12 +23,15 @@ body,
 #chatinput,
 #chatlabel,
 #toc,
+#tocItems a,
 .toolbar ul li a:hover .buttonicon,
 .toolbar ul li select,
 #mycolorpickercancel,
 .btn-default,
 .color\:black,
-[data-color=black]
+[data-color=black],
+#chattext.authorColors p, #chattext.authorColors span,
+#chattext .time
 { color: #495057 !important; }
 
 /* PRIMARY COLOR */
