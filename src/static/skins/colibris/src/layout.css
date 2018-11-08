@@ -9,17 +9,18 @@
 
 #editorcontainer {
   top: 41px !important;
-  background-color: #e9e9e9;
-  padding-top: 0 !important;
-  background-color: #f9f9f9 !important;
+  padding-top: 0 !important;  
+}
+
+#outerdocbody, .timeslider #editorcontainerbox {  
+  max-width: 900px;
+  margin: 0 auto;  
+  padding-top: 20px;  
 }
 
 #outerdocbody {
   overflow-y: auto;
-  max-width: 900px;
-  margin: 0 auto;
   position: relative;
-  padding-top: 20px;
   background-color: transparent;  
   padding-left: 40px; /* space for side div */
 }
@@ -33,12 +34,16 @@
   position: relative;
   left: 0 !important;
   top: 0;
-  width: calc(100% - 110px) !important; /* 100% - padding */
+  
+}
+
+#outerdocbody iframe, .timeslider #editorcontainerbox {
   padding: 55px;
   box-shadow: 0 0 0 0.5px rgba(209, 209, 209, 0.32), 0 0 7pt 0pt rgba(204, 204, 204, 0.52);  
   border: 0;
   border-radius: 5px;
   background-color: white;
+  width: calc(100% - 110px) !important; /* 100% - padding */  
 }
 
 #sidediv {
@@ -70,10 +75,10 @@
     max-width: none;
     padding-top: 0;
   }
-  #outerdocbody iframe {
-    padding: 30px !important;
+  #outerdocbody iframe, .timeslider #editorcontainerbox {
+    padding: 20px !important;
     border-radius: 0;
-    width: calc(100% - 60px) !important; /* 100% - padding */
+    width: calc(100% - 40px) !important; /* 100% - padding */
   }
   #sidediv { 
     top: 30px !important; 
@@ -91,7 +96,7 @@
   #outerdocbody {
     width: 100%;
   }
-  #outerdocbody iframe {
+  #outerdocbody iframe, .timeslider #editorcontainerbox {
     padding: 15px !important;
     width: calc(100% - 30px) !important; /* 100% - padding */
   }
