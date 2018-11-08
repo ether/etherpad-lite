@@ -109,8 +109,7 @@ textarea.comment-suggest-to {
 }
 
 #comments {
-  top: 65px;
-  left: calc(100% - 100px);
+  top: 82px;
 }
 
 #comments .sidebar-comment {

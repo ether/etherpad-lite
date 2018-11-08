@@ -3,7 +3,7 @@
 #import_export,
 #settings,
 #users {
-  top: 38px !important;
+  top: 38px;
   right: 30px;
 }
 
@@ -22,6 +22,10 @@
   padding-top: 20px;
   background-color: transparent;  
   padding-left: 40px; /* space for side div */
+}
+
+#outerdocbody.ep_author_neat {
+  padding-left: 120px;
 }
 
 #outerdocbody iframe {
@@ -45,6 +49,22 @@
   padding: 0;
 }
 
+#outerdocbody.ep_author_neat #sidediv { 
+  right: calc(100% - 113px); 
+}
+
+@media (min-width: 1381px) { 
+  #outerdocbody.ep_comments_page  { padding-right: 150px; } }
+  #outerdocbody.ep_comments_page #comments { left: calc(100% - 150px) }
+@media (max-width: 1380px) { 
+  #outerdocbody.ep_comments_page #comments { left: calc(100% - 220px) }
+  #outerdocbody.ep_comments_page  { padding-right: 220px; } 
+}
+@media (max-width: 1278px) { 
+  #outerdocbody.ep_comments_page #comments { display: none; }
+  #outerdocbody.ep_comments_page  { padding-right: 0px; } 
+}
+
 @media (max-width:1000px) {
   #outerdocbody {
     max-width: none;
@@ -57,7 +77,13 @@
   }
   #sidediv { 
     top: 30px !important; 
-  }
+  }  
+
+  #outerdocbody.ep_author_neat #sidedivinner>div:before { padding-right: 10px !important; }
+  #outerdocbody.ep_author_neat #sidedivinner.authorColors>div, 
+  #outerdocbody.ep_author_neat #sidedivinner.authorColors>div.primary-none, 
+  #outerdocbody.ep_author_neat #sidedivinner>div { padding-right: 6px!important; }
+  #outerdocbody.ep_author_neat #sidediv { padding-right: 0 !important; }
 }
 
 @media (max-width:600px) {
@@ -73,3 +99,4 @@
     display: block;
   }
 }
+

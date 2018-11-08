@@ -1,7 +1,11 @@
 #pad_title {
-  margin-bottom: 15px !important;
+  margin-bottom: 8px !important;
   margin-top: 5px !important;
-  display: none; /* display only when page is loaded */
+  display: none; /* display only when page is loaded via javascript */
+}
+
+@media (max-width:720px) {
+  #pad_title { display: none !important; }  
 }
 
 #edit_title {
@@ -10,7 +14,7 @@
 #edit_title:before {
   font-family: fontawesome-etherpad;
   position: absolute;
-  top: 20px;
+  top: 15px;
   font-size: 14px;
   content: "\E839";
   margin-left: 10px;
