@@ -1,0 +1,28 @@
+#sidediv {
+  background-color: transparent;
+  border: none;
+  font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+#sidedivinner>div:before {
+  font-size: 13px;
+  padding-right: 18px !important;
+  color: #6a6a6b;
+  font-family: Montserrat;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+#sidedivinner>div,
+#sidedivinner.authorColors>div,
+#sidedivinner.authorColors>div.primary-none {
+  padding-right: 5px !important;
+  border-right: 5px solid transparent;
+}
+
+#sidedivinner>div {
+  padding-right: 5px;
+  line-height: 24px;
+  font-size: 10px;
+  color: #a0a0a0;
+}

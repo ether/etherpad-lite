@@ -1,0 +1,25 @@
+#innerdocbody {
+  font-size: 15px;
+  line-height: 20px; /* increase this line-height to 25px when no background color for text */
+}
+
+body {
+  overflow: hidden;
+}
+
+option {
+  text-transform: capitalize;
+}
+
+h1 {
+  font-size: 2.5em;
+  padding: 9px 0; /* need when coloring background text because it overlap previous and next line */
+}
+
+h3 {
+  font-size: 1.15em;
+  letter-spacing: 1px;
+}
+
+
+

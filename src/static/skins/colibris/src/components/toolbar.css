@@ -1,0 +1,103 @@
+.toolbar {
+  height: 39px !important;
+  padding-top: 0;
+  margin: 0;
+  background-color: white !important;
+  background: none;
+  border: 1px solid #d2d2d2
+}
+
+.toolbar .buttonicon {
+  background-color: transparent;
+  font-size: 14px;
+  color: #767676;
+}
+
+.toolbar ul li.separator {
+  padding: 0;
+  visibility: visible;
+  width: 1px;
+  margin: 0 10px;
+  height: 39px;
+  background-color: rgba(78, 85, 92, 0.22);
+}
+
+.toolbar ul li a {
+  background-color: transparent;
+  background: none;
+  border: none;
+  margin-top: 6px;
+}
+
+.toolbar ul li a:hover,
+.toolbar ul li a.selected,
+.toolbar ul li a:focus {
+  background: none !important; 
+  border-radius: 0;
+}
+
+.toolbar ul li a:hover {
+  background:#f7f7f7!important
+}
+
+.toolbar ul li a.selected,
+.toolbar ul li a:focus {
+   background: #eaeaea!important;
+}
+
+.toolbar ul li select {
+  border: none;
+  border-bottom: 1px solid #d7d8da;
+  border-radius: 0;
+  width: 90px;
+  margin-top: 5px;
+}
+
+.toolbar ul {
+  height: 39px;
+}
+
+.toolbar ul.menu_left {
+  left: 8px;
+}
+
+.toolbar ul.menu_right {
+  right: 0;
+  padding: 0;
+}
+
+.toolbar ul li a[data-l10n-id="pad.toolbar.showusers.title"] {
+  margin: 0;
+  height: 59px;
+  line-height: 25px;
+  width: 45px;
+  margin-left: -12px;
+  border-radius: 0;
+}
+
+@media (max-width: 800px) {
+.toolbar ul {
+    height: 39px;
+    background: none;
+    background-color: transparent;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .toolbar ul.menu_right {
+    border-top: 1px solid #d2d2d2 !important;
+  }
+  .toolbar ul li a {
+    padding: 4px 5px !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  .toolbar ul li.separator {
+    margin: 0 2px;
+    background: none;
+  }
+
+  .toolbar ul li a[data-l10n-id="pad.toolbar.showusers.title"] {
+    margin-left: 0 !important;
+  }
+}

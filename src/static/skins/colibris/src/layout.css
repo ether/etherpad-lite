@@ -1,0 +1,118 @@
+#connectivity,
+#embed,
+#import_export,
+#settings,
+#users {
+  top: 38px !important;
+  right: 30px;
+}
+
+#editorcontainer {
+  top: 41px !important;
+  background-color: #e9e9e9;
+  padding-top: 0 !important;
+  background-color: #f9f9f9 !important;
+}
+
+#outerdocbody {
+  overflow-y: auto;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  padding-top: 20px;
+  background-color: transparent;  
+  padding-left: 40px; /* space for side div */
+}
+
+#outerdocbody iframe {
+  display: block;
+  position: relative;
+  left: 0 !important;
+  top: 0;
+  width: calc(100% - 110px) !important; /* 100% - padding */
+  padding: 45px 55px;
+  box-shadow: 0 0 0 0.5px rgba(209, 209, 209, 0.32), 0 0 7pt 0pt rgba(204, 204, 204, 0.52);  
+  border: 0;
+  border-radius: 5px;
+  background-color: white;
+}
+
+#sidediv {
+  position: absolute;
+  right: calc(100% - 35px);
+  left: initial;
+  top: 64px !important;
+  padding: 0;
+}
+
+@media (max-width:1000px) {
+  #outerdocbody {
+    max-width: none;
+    padding-top: 0;
+  }
+  #outerdocbody iframe {
+    padding: 30px !important;
+    border-radius: 0;
+    width: calc(100% - 60px) !important; /* 100% - padding */
+  }
+  #sidediv { 
+    top: 30px !important; 
+  }
+}
+
+/*
+@media (min-width:800px) and (max-width:1200px) {
+  #outerdocbody iframe {
+    width: calc(100% - 60px) !important;
+    padding: 30px !important;
+    top: 0 !important;
+    border-radius: 0 !important;
+  }
+  #outerdocbody {
+    position: relative !important;
+    padding-left: 120px !important;
+    right: 0 !important;
+    left: 0 !important;
+    width: calc(100% - 320px) !important;
+    margin: 0;
+    max-width: none;
+    padding-top: 0 !important;
+  }
+  #outerdocbody #sidediv {
+    padding: 33px 0 0 !important;
+    right: calc(100% - 105px);
+  }
+  #comments {
+    right: 0px;
+    left: auto !important;
+  }
+}
+
+@media (min-width: 800px) and (max-width:955px) {
+  #outerdocbody {
+    padding-right: 0 !important;
+    width: calc(100% - 110px) !important;
+  }
+}
+
+@media (max-width: 800px) {
+  #outerdocbody iframe {
+    width: calc(100% - 12px) !important;
+    padding: 10px !important;
+    top: 0 !important;
+    border-radius: 0 !important;
+  }
+  #outerdocbody #sidediv,
+  #chaticon,
+  li.superscript,
+  li.subscript,
+  li[data-key="undo"],
+  li[data-key="redo"] {
+    display: none;
+  }
+  #outerdocbody {
+    padding-top: 0 !important;
+  }
+  
+}
+*/

@@ -1,0 +1,55 @@
+@import url("src/layout.css");
+@import url("src/pad-editor.css");
+
+@import url("src/components/buttons.css");
+@import url("src/components/popup.css");
+
+@import url("src/components/chat.css");
+@import url("src/components/editor-sidediv.css");
+@import url("src/components/gritter.css");
+@import url("src/components/table-of-content.css");
+@import url("src/components/toolbar.css");
+@import url("src/components/users.css");
+
+@import url("src/plugins/brightcolorpicker.css");
+@import url("src/plugins/comments_page.css");
+@import url("src/plugins/font_color.css");
+
+/* NEUTRAL COLOR */
+body,
+#innerdocbody
+#users,
+#chattext,
+#chatinput,
+#chatlabel,
+#toc,
+.toolbar ul li a:hover .buttonicon,
+.toolbar ul li select,
+#mycolorpickercancel,
+.btn-default,
+.color\:black,
+[data-color=black]
+{ color: #495057 !important; }
+
+/* PRIMARY COLOR */
+#mycolorpickersave,
+.btn-primary
+{ background-color: #64d29b; }
+
+h1, 
+#titlelabel 
+{ color: #64d29b; }
+
+/* NEUTRAL FONT */
+body,
+#innerdocbody,
+#chatinput,
+.toolbar ul li select
+{ font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }
+
+/* PRIMARY FONT */
+h1,
+#titlelabel,
+#chatlabel,
+.btn
+{ font-family: opendyslexic !important; }
