@@ -791,6 +791,10 @@ table#otheruserstable {
   border: 0
 }
 
+.buttonicon:before  {
+  font-family: "fontawesome-etherpad";
+}
+
 .buttonicon:focus{
   border: 1px solid #666;
 }
