@@ -54,7 +54,7 @@ body,
 .hyperlink-dialog>.hyperlink-url,
 .timeslider #padcontent span ,
 .exporttype, .timeslider #export > p 
-{ color: #495057 !important; }
+{ color: #2E3338 !important; }
 
 /* MENUS ICONS */
 #edit_title:before,
@@ -124,4 +124,4 @@ p[data-l10n-id="ep_comments_page.comment"],
 #newComment.sidebar-comment input[type=submit],
 .comment-changeTo-approve input[type=submit],
 .hyperlink-dialog>.hyperlink-save
-{ font-family: OpenDyslexic, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;  }
+{ font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;  }
