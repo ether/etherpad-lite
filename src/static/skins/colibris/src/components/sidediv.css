@@ -1,7 +1,6 @@
 #sidediv {
   background-color: transparent;
   border: none;
-  display: block;
 }
 
 #sidedivinner>div:before {

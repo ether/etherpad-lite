@@ -26,15 +26,18 @@
 }
 
 #outerdocbody.ep_author_neat {
-  padding-left: 120px;
+  padding-left: 120px; /* more space for sidediv */
+}
+
+#outerdocbody.sidediv-hidden {
+  padding-left: 0; /* sidediv hidden */
 }
 
 #outerdocbody iframe {
   display: block;
   position: relative;
   left: 0 !important;
-  top: 0;
-  
+  top: 0;  
 }
 
 #outerdocbody iframe, .timeslider #editorcontainerbox {
@@ -117,7 +120,7 @@
     padding: 15px !important;
     width: calc(100% - 30px) !important; /* 100% - padding */
   }
-  #sidediv { 
+  #sidediv:not(.sidedivhidden) { 
     display: block;
     top: 15px !important; /* = #outerdocbody iframe padding-top */
   }
