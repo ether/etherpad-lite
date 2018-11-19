@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Saosukham"
+			"Saosukham",
+			"Ninjastrikers"
 		]
 	},
 	"index.newPad": "ၽႅတ်ႉမႂ်ႇ",
@@ -103,7 +104,7 @@
 	"timeslider.month.august": "ဢေႃးၵၢတ်ႉ",
 	"timeslider.month.september": "သႅပ်ႉထိမ်ႇပႃႇ",
 	"timeslider.month.october": "ဢွၵ်ႇထူဝ်ႇပႃႇ",
-	"timeslider.month.november": "ၼူဝ်ႇ​ဝႅမ်ႇ​ပႃႇ",
+	"timeslider.month.november": "ၼူဝ်ႇဝႅမ်ႇပႃႇ",
 	"timeslider.month.december": "တီႇသႅမ်ႇပႃႇ",
 	"timeslider.unnamedauthors": "{{num}} ဢမ်ႇသႂ်ႇၸိုဝ်ႈ {[plural(num) ၼိုင်ႈ: ၽူႈတႅမ်ႈလိၵ်ႈ, တၢင်ႇၸိူဝ်း: ၽူႈတႅမ်ႈလိၵ်ႈၶဝ် ]}",
 	"pad.savedrevs.marked": "ဢၼ်မႄးဝႆႉၼႆႉ ယၢမ်းလဵဝ် ၶိုၼ်းမႄး ၵဵပ်းသိမ်းဝႆႉ ၸိူင်ႉၼင်ႇဢၼ်ၼိုင်ႈ",
