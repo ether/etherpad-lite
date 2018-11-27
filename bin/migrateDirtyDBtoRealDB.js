@@ -6,6 +6,10 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
   // to work with a real database.  Please make a backup of your dirty.db
   // file before using this script, just to be safe.
 
+  // It might be necessary to run the script using more memory:
+  // `node --max-old-space-size=4096 bin/migrateDirtyDBtoRealDB.js`
+
+
   var settings = require("ep_etherpad-lite/node/utils/Settings");
   var dirty = require("../src/node_modules/dirty")('var/dirty.db');
   var ueberDB = require("../src/node_modules/ueberdb2");
