@@ -16,6 +16,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
   var log4js = require("../src/node_modules/log4js");
   var dbWrapperSettings = {
       "cache": "0",         // The cache slows things down when you're mostly writing.
+      "writeInterval": 0    // Write directly to the database, don't buffer
   };
   var db = new ueberDB.database(settings.dbType, settings.dbSettings, dbWrapperSettings, log4js.getLogger("ueberDB"));
 
