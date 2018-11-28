@@ -1,0 +1,30 @@
+#users,
+#mycolorpicker,
+.popup,
+.hyperlink-dialog {
+  border-radius: 3px;
+  padding: 20px 20px;
+  background: none;
+  background-color: white;
+  border: none;
+  box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
+}
+
+#users input[type=text],
+.popup input[type=text] {
+  border: none !important;
+  border-bottom: 1px solid #d7d8da !important;
+}
+
+.popup h1 {
+  margin-bottom: 15px;
+}
+
+.popup h2 {
+  margin-bottom: 15px;
+}
+
+.popup p {
+  margin: 10px 0;
+}
+

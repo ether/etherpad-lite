@@ -1,0 +1,21 @@
+.btn, #mycolorpickercancel, #mycolorpickersave, #save_title button, #yui-picker-panel .button-group .yui-button button, .hyperlink-dialog>.hyperlink-save, .timeslider #editbar .buttontext,
+#importsubmitinput, #forcereconnect
+{
+  margin-right: 10px;
+  padding: 5px 20px;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  width: auto;
+  border: none !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  position: relative;
+  background: none;
+  top: 0;
+  left: 0;
+}
+
+.btn:hover, #mycolorpickercancel:hover, #mycolorpickersave:hover, #save_title button:hover, .hyperlink-dialog>.hyperlink-save:hover, #importsubmitinput:hover, #forcereconnect:hover {
+  cursor: pointer;
+}
