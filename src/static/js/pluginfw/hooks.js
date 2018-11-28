@@ -143,11 +143,11 @@ exports.clientPluginNames = function() {
     return [];
   }
 
-  var client_plugin_names = [...new Set(
+  var client_plugin_names = _.uniq(
     exports.plugins.parts
-      .filter(part => part.hasOwnProperty('client_hooks'))
-      .map(part => part['plugin'])
-  )];
+      .filter(function(part) { return part.hasOwnProperty('client_hooks'); })
+      .map(function(part) { return part['plugin']; })
+  );
 
   return client_plugin_names;
 }
