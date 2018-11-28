@@ -28,6 +28,11 @@
 #outerdocbody.ep_author_neat {
   padding-left: 120px; /* more space for sidediv */
 }
+@media (max-width:600px) { 
+  #outerdocbody.ep_author_neat { padding-left: 0; }
+  #options-linenoscheck { display:none; }
+  #options-linenoscheck ~ label { display:none; }
+}
 
 #outerdocbody.sidediv-hidden {
   padding-left: 0; /* sidediv hidden */
@@ -120,8 +125,8 @@
     padding: 15px !important;
     width: calc(100% - 30px) !important; /* 100% - padding */
   }
-  #sidediv:not(.sidedivhidden) { 
-    display: block;
+  #sidediv { 
+    display: none;
     top: 15px !important; /* = #outerdocbody iframe padding-top */
   }
 }
