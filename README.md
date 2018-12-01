@@ -31,10 +31,9 @@ Ideally, the latest stable version is preferred. Please note that the packages o
 
 1. Move to a folder where you want to install Etherpad. Clone the git repository: `git clone git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code: `cd etherpad-lite`
+3. run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
 
-Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
-
-Update to the latest version with `git pull origin`. The next start with `bin/run.sh` will update the dependencies.
+To update to the latest released version, execute `git pull origin`. The next start with `bin/run.sh` will update the dependencies.
 
 [Next steps](#next-steps).
 
@@ -48,7 +47,7 @@ This package works out of the box on any windows machine, but it's not very usef
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
 
-### Fancy install
+### Manually install on Windows
 You'll need [node.js](https://nodejs.org) and (optionally, though recommended) git.
 
 1. Grab the source, either
