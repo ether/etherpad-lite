@@ -2,7 +2,7 @@
 ![Demo Etherpad Animated Jif](https://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
 
 # About
-Etherpad is a really-real time collaborative editor scalable to thousands of simultanious real time users.  Unlike all other collaborative tools Etherpad provides full fidelity data export and portability making it fully GDPR compliant.  
+Etherpad is a really-real time collaborative editor scalable to thousands of simultanious real time users.  Unlike all other collaborative tools Etherpad provides full fidelity data export and portability making it fully GDPR compliant.
 
 **[Try it out](http://beta.etherpad.org)**
 
@@ -114,9 +114,9 @@ Etherpad is written in JavaScript on both the server and client so it's easy for
 
 # HTTP API
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API)
-that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. 
+that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API.
 
-# jQuery plugin 
+# jQuery plugin
 There is a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
 # Plugin Framework
