@@ -11,18 +11,10 @@ fi
 #Prepare the environment
 bin/installDeps.sh || exit 1
 
-hash node-inspector > /dev/null 2>&1 || { 
-  echo "You need to install node-inspector to run the tests!" >&2
-  echo "You can install it with npm" >&2
-  echo "Run: npm install -g node-inspector" >&2
-  exit 1 
-}
+echo "If you are new to debugging Node.js with Chrome DevTools, take a look at this page:"
+echo "https://medium.com/@paul_irish/debugging-node-js-nightlies-with-chrome-devtools-7c4a1b95ae27"
+echo "Open 'chrome://inspect' on Chrome to start debugging."
 
-node-inspector &
-
-echo "If you are new to node-inspector, take a look at this video: https://youtu.be/AOnK3NVnxL8"
-
-node --debug node_modules/ep_etherpad-lite/node/server.js $*
-
-#Kill node-inspector before ending 
-kill $!
+#Use 0.0.0.0 to allow external connections to the debugger
+#(ex: running Etherpad on a docker container). Use default port # (9229)
+node --inspect=0.0.0.0:9229 node_modules/ep_etherpad-lite/node/server.js $*
