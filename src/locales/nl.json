@@ -9,7 +9,7 @@
 		]
 	},
 	"index.newPad": "Nieuw pad",
-	"index.createOpenPad": "Pad maken op openen met de naam:",
+	"index.createOpenPad": "Pad maken of openen met de naam:",
 	"pad.toolbar.bold.title": "Vet (Ctrl-B)",
 	"pad.toolbar.italic.title": "Cursief (Ctrl-I)",
 	"pad.toolbar.underline.title": "Onderstrepen (Ctrl-U)",
