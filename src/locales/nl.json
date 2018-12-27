@@ -5,11 +5,13 @@
 			"Macofe",
 			"Robin0van0der0vliet",
 			"Robin van der Vliet",
-			"Mainframe98"
+			"Mainframe98",
+			"KlaasZ4usV",
+			"Rickvl"
 		]
 	},
 	"index.newPad": "Nieuw pad",
-	"index.createOpenPad": "Pad maken op openen met de naam:",
+	"index.createOpenPad": "of maak/open een pad met de naam:",
 	"pad.toolbar.bold.title": "Vet (Ctrl-B)",
 	"pad.toolbar.italic.title": "Cursief (Ctrl-I)",
 	"pad.toolbar.underline.title": "Onderstrepen (Ctrl-U)",
