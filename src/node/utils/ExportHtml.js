@@ -29,6 +29,7 @@ var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 function getPadHTML(pad, revNum, callback)
 {
   var atext = pad.atext;
+  var authorColors;
   var html;
   async.waterfall([
   // fetch revision atext
@@ -49,12 +50,24 @@ function getPadHTML(pad, revNum, callback)
     }
   },
 
+    //get the authorColor table
+  function(callback){
+    pad.getAllAuthorColors(function(err, _authorColors){
+      if(err){
+        return callback(err);
+      }
+
+      authorColors = _authorColors;
+      callback();
+    });
+  },
+
   // convert atext to html
 
 
   function (callback)
   {
-    html = getHTMLFromAtext(pad, atext);
+    html = getHTMLFromAtext(pad, atext, authorColors);
     callback(null);
   }],
   // run final callback
