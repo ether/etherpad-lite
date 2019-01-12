@@ -379,7 +379,7 @@ Restores revision from past as new changeset
 returns
 
 * a part of the chat history, when `start` and `end` are given
-* the whole chat histroy, when no extra parameters are given
+* the whole chat history, when no extra parameters are given
 
 
 *Example returns:*
