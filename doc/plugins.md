@@ -49,7 +49,7 @@ There are server hooks, which will be executed on the server (e.g. `expressCreat
 
 ### Styling
 When you install a client-side plugin (e.g. one that implements at least one client-side hook), the plugin name is added to the `class` attribute of the div `#editorcontainerbox` in the main window.
-This gives you the opportunity of tuning the appearence of the main UI in your plugin.
+This gives you the opportunity of tuning the appearance of the main UI in your plugin.
 
 For example, this is the markup with no plugins installed:
 ```html

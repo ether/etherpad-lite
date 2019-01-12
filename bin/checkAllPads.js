@@ -8,7 +8,7 @@ if(process.argv.length != 2)
   process.exit(1);
 }
 
-//initalize the variables
+//initialize the variables
 var db, settings, padManager;
 var npm = require("../src/node_modules/npm");
 var async = require("../src/node_modules/async");
@@ -25,7 +25,7 @@ async.series([
     settings = require('../src/node/utils/Settings');
     db = require('../src/node/db/DB');
 
-    //initalize the database
+    //initialize the database
     db.init(callback);
   },
   //load pads

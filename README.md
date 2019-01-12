@@ -2,9 +2,9 @@
 ![Demo Etherpad Animated Jif](https://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
 
 # About
-Etherpad is a really-real time collaborative editor scalable to thousands of simultanious real time users.  Unlike all other collaborative tools Etherpad provides full fidelity data export and portability making it fully GDPR compliant.
+Etherpad is a really-real time collaborative editor scalable to thousands of simultaneous real time users.  Unlike all other collaborative tools Etherpad provides full fidelity data export and portability making it fully GDPR compliant.
 
-**[Try it out](http://beta.etherpad.org)**
+**[Try it out](https://beta.etherpad.org)**
 
 # Installation
 
