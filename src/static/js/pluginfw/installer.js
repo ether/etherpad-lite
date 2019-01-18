@@ -34,6 +34,10 @@ function onAllTasksFinished() {
   hooks.aCallAll("restartServer", {}, function() {});
 }
 
+/*
+ * We cannot use arrow functions in this file, because code in /src/static
+ * can end up being loaded in browsers, and we still support IE11.
+ */
 exports.uninstall = function(plugin_name, cb) {
   cb = wrapTaskCb(cb);
 
@@ -42,16 +46,18 @@ exports.uninstall = function(plugin_name, cb) {
 
     npm.commands.uninstall([plugin_name], function(er) {
       if (er) return cb && cb(er);
-
-      hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name}, function(er, data) {
-        if (er) return cb(er);
-
-        plugins.update(cb);
-      });
+      hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name})
+        .then(plugins.update)
+        .then(function() { cb(null) })
+        .catch(function(er) { cb(er) });
     });
   });
 };
 
+/*
+ * We cannot use arrow functions in this file, because code in /src/static
+ * can end up being loaded in browsers, and we still support IE11.
+ */
 exports.install = function(plugin_name, cb) {
   cb = wrapTaskCb(cb);
 
@@ -60,12 +66,10 @@ exports.install = function(plugin_name, cb) {
 
     npm.commands.install([plugin_name], function(er) {
       if (er) return cb && cb(er);
-
-      hooks.aCallAll("pluginInstall", {plugin_name: plugin_name}, function(er, data) {
-        if (er) return cb(er);
-
-        plugins.update(cb);
-      });
+      hooks.aCallAll("pluginInstall", {plugin_name: plugin_name})
+        .then(plugins.update)
+        .then(function() { cb(null) })
+        .catch(function(er) { cb(er) });
     });
   });
 };
