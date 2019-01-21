@@ -25,8 +25,9 @@ var db = require("./DB").db;
 var async = require("async");
 var groupManager = require("./GroupManager");
 var authorManager = require("./AuthorManager");
+const thenify = require("thenify").withCallback;
 
-exports.doesSessionExist = function(sessionID, callback)
+exports.doesSessionExist = thenify(function(sessionID, callback)
 {
   //check if the database entry of this session exists
   db.get("session:" + sessionID, function (err, session)
@@ -34,12 +35,12 @@ exports.doesSessionExist = function(sessionID, callback)
     if(ERR(err, callback)) return;
     callback(null, session != null);
   });
-}
+});
 
 /**
  * Creates a new session between an author and a group
  */
-exports.createSession = function(groupID, authorID, validUntil, callback)
+exports.createSession = thenify(function(groupID, authorID, validUntil, callback)
 {
   var sessionID;
 
@@ -172,9 +173,9 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
     // return error and sessionID
     callback(null, {sessionID: sessionID});
   })
-}
+});
 
-exports.getSessionInfo = function(sessionID, callback)
+exports.getSessionInfo = thenify(function(sessionID, callback)
 {
   // check if the database entry of this session exists
   db.get("session:" + sessionID, function (err, session)
@@ -189,12 +190,12 @@ exports.getSessionInfo = function(sessionID, callback)
       callback(null, session);
     }
   });
-}
+});
 
 /**
  * Deletes a session
  */
-exports.deleteSession = function(sessionID, callback)
+exports.deleteSession = thenify(function(sessionID, callback)
 {
   var authorID, groupID;
   var group2sessions, author2sessions;
@@ -267,9 +268,9 @@ exports.deleteSession = function(sessionID, callback)
     if(ERR(err, callback)) return;
     callback();
   })
-}
+});
 
-exports.listSessionsOfGroup = function(groupID, callback)
+exports.listSessionsOfGroup = thenify(function(groupID, callback)
 {
   groupManager.doesGroupExist(groupID, function(err, exists)
   {
@@ -283,9 +284,9 @@ exports.listSessionsOfGroup = function(groupID, callback)
       listSessionsWithDBKey("group2sessions:" + groupID, callback);
     }
   });
-}
+});
 
-exports.listSessionsOfAuthor = function(authorID, callback)
+exports.listSessionsOfAuthor = thenify(function(authorID, callback)
 {
   authorManager.doesAuthorExists(authorID, function(err, exists)
   {
@@ -299,7 +300,7 @@ exports.listSessionsOfAuthor = function(authorID, callback)
       listSessionsWithDBKey("author2sessions:" + authorID, callback);
     }
   });
-}
+});
 
 // this function is basically the code listSessionsOfAuthor and listSessionsOfGroup has in common
 function listSessionsWithDBKey (dbkey, callback)

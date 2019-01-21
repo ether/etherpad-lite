@@ -18,6 +18,7 @@ var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
 var randomString = require("../utils/randomstring");
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const thenify = require("thenify").withCallback;
 
 // serialization/deserialization attributes
 var attributeBlackList = ["id"];
@@ -131,22 +132,22 @@ Pad.prototype.saveToDatabase = function saveToDatabase() {
 }
 
 // get time of last edit (changeset application)
-Pad.prototype.getLastEdit = function getLastEdit(callback) {
+Pad.prototype.getLastEdit = thenify(function getLastEdit(callback) {
   var revNum = this.getHeadRevisionNumber();
   db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "timestamp"], callback);
-}
+});
 
-Pad.prototype.getRevisionChangeset = function getRevisionChangeset(revNum, callback) {
+Pad.prototype.getRevisionChangeset = thenify(function getRevisionChangeset(revNum, callback) {
   db.getSub("pad:" + this.id + ":revs:" + revNum, ["changeset"], callback);
-};
+});
 
-Pad.prototype.getRevisionAuthor = function getRevisionAuthor(revNum, callback) {
+Pad.prototype.getRevisionAuthor = thenify(function getRevisionAuthor(revNum, callback) {
   db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "author"], callback);
-};
+});
 
-Pad.prototype.getRevisionDate = function getRevisionDate(revNum, callback) {
+Pad.prototype.getRevisionDate = thenify(function getRevisionDate(revNum, callback) {
   db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "timestamp"], callback);
-};
+});
 
 Pad.prototype.getAllAuthors = function getAllAuthors() {
   var authors = [];
@@ -160,7 +161,7 @@ Pad.prototype.getAllAuthors = function getAllAuthors() {
   return authors;
 };
 
-Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targetRev, callback) {
+Pad.prototype.getInternalRevisionAText = thenify(function getInternalRevisionAText(targetRev, callback) {
   var _this = this;
 
   var keyRev = this.getKeyRevisionNumber(targetRev);
@@ -228,13 +229,13 @@ Pad.prototype.getInternalRevisionAText = function getInternalRevisionAText(targe
     if (ERR(err, callback)) return;
     callback(null, atext);
   });
-};
+});
 
-Pad.prototype.getRevision = function getRevisionChangeset(revNum, callback) {
+Pad.prototype.getRevision = thenify(function getRevisionChangeset(revNum, callback) {
   db.get("pad:" + this.id + ":revs:" + revNum, callback);
-};
+});
 
-Pad.prototype.getAllAuthorColors = function getAllAuthorColors(callback) {
+Pad.prototype.getAllAuthorColors = thenify(function getAllAuthorColors(callback) {
   var authors = this.getAllAuthors();
   var returnTable = {};
   var colorPalette = authorManager.getColorPalette();
@@ -254,7 +255,7 @@ Pad.prototype.getAllAuthorColors = function getAllAuthorColors(callback) {
   function(err) {
     callback(err, returnTable);
   });
-};
+});
 
 Pad.prototype.getValidRevisionRange = function getValidRevisionRange(startRev, endRev) {
   startRev = parseInt(startRev, 10);
@@ -325,7 +326,7 @@ Pad.prototype.appendChatMessage = function appendChatMessage(text, userId, time)
   this.saveToDatabase();
 };
 
-Pad.prototype.getChatMessage = function getChatMessage(entryNum, callback) {
+Pad.prototype.getChatMessage = thenify(function getChatMessage(entryNum, callback) {
   var _this = this;
   var entry;
 
@@ -359,9 +360,9 @@ Pad.prototype.getChatMessage = function getChatMessage(entryNum, callback) {
     if (ERR(err, callback)) return;
     callback(null, entry);
   });
-};
+});
 
-Pad.prototype.getChatMessages = function getChatMessages(start, end, callback) {
+Pad.prototype.getChatMessages = thenify(function getChatMessages(start, end, callback) {
   // collect the numbers of chat entries and in which order we need them
   var neededEntries = [];
   var order = 0;
@@ -398,9 +399,9 @@ Pad.prototype.getChatMessages = function getChatMessages(start, end, callback) {
 
     callback(null, cleanedEntries);
   });
-};
+});
 
-Pad.prototype.init = function init(text, callback) {
+Pad.prototype.init = thenify(function init(text, callback) {
   var _this = this;
 
   // replace text with default text if text isn't set
@@ -432,9 +433,9 @@ Pad.prototype.init = function init(text, callback) {
     hooks.callAll("padLoad", { 'pad': _this });
     callback(null);
   });
-};
+});
 
-Pad.prototype.copy = function copy(destinationID, force, callback) {
+Pad.prototype.copy = thenify(function copy(destinationID, force, callback) {
   var sourceID = this.id;
   var _this = this;
   var destGroupID;
@@ -581,9 +582,9 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     if (ERR(err, callback)) return;
     callback(null, { padID: destinationID });
   });
-};
+});
 
-Pad.prototype.remove = function remove(callback) {
+Pad.prototype.remove = thenify(function remove(callback) {
   var padID = this.id;
   var _this = this;
 
@@ -676,7 +677,7 @@ Pad.prototype.remove = function remove(callback) {
     if (ERR(err, callback)) return;
     callback();
   });
-};
+});
 
 // set in db
 Pad.prototype.setPublicStatus = function setPublicStatus(publicStatus) {

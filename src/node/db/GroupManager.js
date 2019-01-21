@@ -25,8 +25,9 @@ var db = require("./DB").db;
 var async = require("async");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
+const thenify = require("thenify").withCallback;
 
-exports.listAllGroups = function(callback) {
+exports.listAllGroups = thenify(function(callback) {
   db.get("groups", function (err, groups) {
     if (ERR(err, callback)) return;
 
@@ -43,9 +44,9 @@ exports.listAllGroups = function(callback) {
     }
     callback(null, {groupIDs: groupIDs});
   });
-}
+});
 
-exports.deleteGroup = function(groupID, callback)
+exports.deleteGroup = thenify(function(groupID, callback)
 {
   var group;
 
@@ -158,18 +159,18 @@ exports.deleteGroup = function(groupID, callback)
     if (ERR(err, callback)) return;
     callback();
   });
-}
+});
 
-exports.doesGroupExist = function(groupID, callback)
+exports.doesGroupExist = thenify(function(groupID, callback)
 {
   // try to get the group entry
   db.get("group:" + groupID, function (err, group) {
     if (ERR(err, callback)) return;
     callback(null, group != null);
   });
-}
+});
 
-exports.createGroup = function(callback)
+exports.createGroup = thenify(function(callback)
 {
   // search for non existing groupID
   var groupID = "g." + randomString(16);
@@ -195,9 +196,9 @@ exports.createGroup = function(callback)
       callback(null, {groupID: groupID});
     });
   });
-}
+});
 
-exports.createGroupIfNotExistsFor = function(groupMapper, callback)
+exports.createGroupIfNotExistsFor = thenify(function(groupMapper, callback)
 {
   // ensure mapper is optional
   if (typeof groupMapper !== "string") {
@@ -237,9 +238,9 @@ exports.createGroupIfNotExistsFor = function(groupMapper, callback)
     // there is no group for this mapper, let's create a group
     createGroupForMapper(callback)
   });
-}
+});
 
-exports.createGroupPad = function(groupID, padName, text, callback)
+exports.createGroupPad = thenify(function(groupID, padName, text, callback)
 {
   // create the padID
   var padID = groupID + "$" + padName;
@@ -297,9 +298,9 @@ exports.createGroupPad = function(groupID, padName, text, callback)
 
     callback(null, {padID: padID});
   });
-}
+});
 
-exports.listPads = function(groupID, callback)
+exports.listPads = thenify(function(groupID, callback)
 {
   exports.doesGroupExist(groupID, function(err, exists) {
     if (ERR(err, callback)) return;
@@ -321,4 +322,4 @@ exports.listPads = function(groupID, callback)
       callback(null, {padIDs: pads});
     });
   });
-}
+});

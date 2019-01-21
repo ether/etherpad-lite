@@ -23,12 +23,13 @@ var ERR = require("async-stacktrace");
 var db = require("./DB").db;
 var async = require("async");
 var randomString = require("../utils/randomstring");
+const thenify = require("thenify").withCallback;
 
 /**
  * returns a read only id for a pad
  * @param {String} padId the id of the pad
  */
-exports.getReadOnlyId = function (padId, callback)
+exports.getReadOnlyId = thenify(function (padId, callback)
 {
   var readOnlyId;
 
@@ -59,22 +60,22 @@ exports.getReadOnlyId = function (padId, callback)
     // return the results
     callback(null, readOnlyId);
   })
-}
+});
 
 /**
  * returns the padId for a read only id
  * @param {String} readOnlyId read only id
  */
-exports.getPadId = function(readOnlyId, callback)
+exports.getPadId = thenify(function(readOnlyId, callback)
 {
   db.get("readonly2pad:" + readOnlyId, callback);
-}
+});
 
 /**
  * returns the padId and readonlyPadId in an object for any id
  * @param {String} padIdOrReadonlyPadId read only id or real pad id
  */
-exports.getIds = function(id, callback) {
+exports.getIds = thenify(function(id, callback) {
   if (id.indexOf("r.") == 0) {
     exports.getPadId(id, function (err, value) {
       if (ERR(err, callback)) return;
@@ -94,4 +95,4 @@ exports.getIds = function(id, callback) {
       });
     });
   }
-}
+});

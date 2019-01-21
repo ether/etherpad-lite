@@ -22,6 +22,7 @@
 var ueberDB = require("ueberdb2");
 var settings = require("../utils/Settings");
 var log4js = require('log4js');
+const thenify = require("thenify").withCallback;
 
 // set database settings
 var db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
@@ -35,7 +36,7 @@ exports.db = null;
  * Initalizes the database with the settings provided by the settings module
  * @param {Function} callback
  */
-function init(callback) {
+exports.init = thenify(function (callback) {
   // initalize the database async
   db.init(function(err) {
     if (err) {
@@ -49,20 +50,4 @@ function init(callback) {
       callback(null);
     }
   });
-}
-
-/**
- * Initalizes the database with the settings provided by the settings module
- * If the callback is not supplied a Promise is returned instead.
- * @param {Function} callback
- */
-exports.init = function(callback)
-{
-  if (callback === undefined) {
-    return new Promise(resolve => init(resolve));
-  } else if (typeof callback === "function") {
-    init(callback);
-  } else {
-    throw new TypeError("DB.init callback parameter");
-  }
-}
+});
