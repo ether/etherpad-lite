@@ -18,6 +18,7 @@ var log4js = require('log4js');
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
 var cheerio = require("cheerio");
+const thenify = require("thenify").withCallback;
 
 function setPadHTML(pad, html, callback)
 {
@@ -94,4 +95,4 @@ function setPadHTML(pad, html, callback)
   callback(null);
 }
 
-exports.setPadHTML = setPadHTML;
+exports.setPadHTML = thenify(setPadHTML);
