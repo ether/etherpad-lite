@@ -61,7 +61,7 @@ stats.gauge('totalUsers', function() {
 /**
  * A changeset queue per pad that is processed by handleUserChanges()
  */
-var padChannels = new channels.channels(handleUserChanges);
+var padChannels = new channels.channels(thenify(handleUserChanges));
 
 /**
  * Saves the Socket class we need to send and receive data from the client
@@ -330,7 +330,7 @@ function handleSaveRevisionMessage(client, message){
  * @param msg {Object} the message we're sending
  * @param sessionID {string} the socketIO session to which we're sending this message
  */
-exports.handleCustomObjectMessage = function(msg, sessionID, cb) {
+exports.handleCustomObjectMessage = thenify(function(msg, sessionID, cb) {
   if (msg.data.type === "CUSTOM") {
     if (sessionID){
       // a sessionID is targeted: directly to this sessionID
@@ -341,7 +341,8 @@ exports.handleCustomObjectMessage = function(msg, sessionID, cb) {
     }
   }
   cb(null, {});
-}
+});
+
 
 /**
  * Handles a custom message (sent via HTTP API request)
@@ -349,7 +350,7 @@ exports.handleCustomObjectMessage = function(msg, sessionID, cb) {
  * @param padID {Pad} the pad to which we're sending this message
  * @param msgString {String} the message we're sending
  */
-exports.handleCustomMessage = function(padID, msgString, cb) {
+exports.handleCustomMessage = thenify(function(padID, msgString, cb) {
   var time = Date.now();
   var msg = {
     type: 'COLLABROOM',
@@ -361,7 +362,7 @@ exports.handleCustomMessage = function(padID, msgString, cb) {
   socketio.sockets.in(padID).json.send(msg);
 
   cb(null, {});
-}
+});
 
 /**
  * Handles a Chat Message
