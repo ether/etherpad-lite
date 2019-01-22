@@ -38,6 +38,7 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var channels = require("channels");
 var stats = require('../stats');
 var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
+const thenify = require("thenify").withCallback;
 
 /**
  * A associative array that saves informations about a session
@@ -1788,16 +1789,16 @@ function _getRoomClients(padID) {
 /**
  * Get the number of users in a pad
  */
-exports.padUsersCount = function(padID, callback) {
+exports.padUsersCount = thenify(function(padID, callback) {
   callback(null, {
     padUsersCount: _getRoomClients(padID).length
   });
-}
+});
 
 /**
  * Get the list of users in a pad
  */
-exports.padUsers = function(padID, callback) {
+exports.padUsers = thenify(function(padID, callback) {
   var result = [];
 
   var roomClients = _getRoomClients(padID);
@@ -1821,6 +1822,6 @@ exports.padUsers = function(padID, callback) {
 
     callback(null, {padUsers: result});
   });
-}
+});
 
 exports.sessioninfos = sessioninfos;
