@@ -17,8 +17,9 @@
 var log4js = require('log4js');
 var async = require("async");
 var db = require("../db/DB").db;
+const thenify = require("thenify").withCallback;
 
-exports.setPadRaw = function(padId, records, callback)
+exports.setPadRaw = thenify(function(padId, records, callback)
 {
   records = JSON.parse(records);
 
@@ -70,4 +71,4 @@ exports.setPadRaw = function(padId, records, callback)
   function() {
     callback(null, true);
   });
-}
+});

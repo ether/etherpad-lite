@@ -25,6 +25,7 @@ var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var eejs = require('ep_etherpad-lite/node/eejs');
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
+const thenify = require("thenify").withCallback;
 
 function getPadHTML(pad, revNum, callback)
 {
@@ -67,7 +68,7 @@ function getPadHTML(pad, revNum, callback)
   });
 }
 
-exports.getPadHTML = getPadHTML;
+exports.getPadHTML = thenify(getPadHTML);
 exports.getHTMLFromAtext = getHTMLFromAtext;
 
 function getHTMLFromAtext(pad, atext, authorColors)
@@ -459,7 +460,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
   return pieces.join('');
 }
 
-exports.getPadHTMLDocument = function (padId, revNum, callback)
+exports.getPadHTMLDocument = thenify(function (padId, revNum, callback)
 {
   padManager.getPad(padId, function (err, pad)
   {
@@ -484,7 +485,7 @@ exports.getPadHTMLDocument = function (padId, revNum, callback)
       });
     });
   });
-};
+});
 
 // copied from ACE
 var _REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;

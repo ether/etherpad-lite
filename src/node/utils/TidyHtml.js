@@ -5,8 +5,9 @@
 var log4js = require('log4js');
 var settings = require('./Settings');
 var spawn = require('child_process').spawn;
+const thenify = require("thenify").withCallback;
 
-exports.tidy = function(srcFile, callback) {
+exports.tidy = thenify(function(srcFile, callback) {
   var logger = log4js.getLogger('TidyHtml');
 
   // Don't do anything if Tidy hasn't been enabled
@@ -38,4 +39,4 @@ exports.tidy = function(srcFile, callback) {
       return callback('Tidy died with exit code ' + code);
     }
   });
-};
+});

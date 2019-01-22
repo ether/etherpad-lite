@@ -18,8 +18,9 @@
 var async = require("async");
 var db = require("../db/DB").db;
 var ERR = require("async-stacktrace");
+const thenify = require("thenify").withCallback;
 
-exports.getPadRaw = function(padId, callback){
+exports.getPadRaw = thenify(function(padId, callback){
   async.waterfall([
   function(cb){
     db.get("pad:"+padId, cb);
@@ -69,4 +70,4 @@ exports.getPadRaw = function(padId, callback){
   ], function(err, data){
     callback(null, data);
   });
-}
+});
