@@ -2,6 +2,9 @@
  * Stores session data in the database
  * Source; https://github.com/edy-b/SciFlowWriter/blob/develop/available_plugins/ep_sciflowwriter/db/DirtyStore.js
  * This is not used for authors that are created via the API at current
+ *
+ * RPB: this module was not migrated to Promises, because it is only used via
+ *      express-session, which can't actually use promises anyway.
  */
 
 var Store = require('ep_etherpad-lite/node_modules/express-session').Store,
@@ -50,39 +53,46 @@ SessionStore.prototype.destroy = function(sid, fn) {
   }
 };
 
-SessionStore.prototype.all = function(fn) {
-  messageLogger.debug('ALL');
+/*
+ * RPB: the following methods are optional requirements for a compatible session
+ *      store for express-session, but in any case appear to depend on a
+ *      non-existent feature of ueberdb2
+ */
+if (db.forEach) {
+  SessionStore.prototype.all = function(fn) {
+    messageLogger.debug('ALL');
 
-  var sessions = [];
+    var sessions = [];
 
-  db.forEach(function(key, value) {
-    if (key.substr(0,15) === "sessionstorage:") {
-      sessions.push(value);
-    }
-  });
-  fn(null, sessions);
-};
+    db.forEach(function(key, value) {
+      if (key.substr(0,15) === "sessionstorage:") {
+        sessions.push(value);
+      }
+    });
+    fn(null, sessions);
+  };
 
-SessionStore.prototype.clear = function(fn) {
-  messageLogger.debug('CLEAR');
+  SessionStore.prototype.clear = function(fn) {
+    messageLogger.debug('CLEAR');
 
-  db.forEach(function(key, value) {
-    if (key.substr(0,15) === "sessionstorage:") {
-      db.db.remove("session:" + key);
-    }
-  });
-  if (fn) fn();
-};
+    db.forEach(function(key, value) {
+      if (key.substr(0,15) === "sessionstorage:") {
+        db.remove("session:" + key);
+      }
+    });
+    if (fn) fn();
+  };
 
-SessionStore.prototype.length = function(fn) {
-  messageLogger.debug('LENGTH');
+  SessionStore.prototype.length = function(fn) {
+    messageLogger.debug('LENGTH');
 
-  var i = 0;
+    var i = 0;
 
-  db.forEach(function(key, value) {
-    if (key.substr(0,15) === "sessionstorage:") {
-      i++;
-    }
-  });
-  fn(null, i);
+    db.forEach(function(key, value) {
+      if (key.substr(0,15) === "sessionstorage:") {
+        i++;
+      }
+    });
+    fn(null, i);
+  }
 };
