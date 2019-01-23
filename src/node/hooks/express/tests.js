@@ -1,24 +1,19 @@
 var path = require("path")
   , npm = require("npm")
   , fs = require("fs")
-  , async = require("async");
+  , util = require("util");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
-  args.app.get('/tests/frontend/specs_list.js', function(req, res) {
-    async.parallel({
-      coreSpecs: function(callback) {
-        exports.getCoreTests(callback);
-      },
-      pluginSpecs: function(callback) {
-        exports.getPluginTests(callback);
-      }
-    },
-    function(err, results) {
-      var files = results.coreSpecs; // push the core specs to a file object
-      files = files.concat(results.pluginSpecs); // add the plugin Specs to the core specs
-      console.debug("Sent browser the following test specs:", files.sort());
-      res.send("var specs_list = " + JSON.stringify(files.sort()) + ";\n");
-    });
+  args.app.get('/tests/frontend/specs_list.js', async function(req, res) {
+    let [coreTests, pluginTests] = await Promise.all([
+      exports.getCoreTests(),
+      exports.getPluginTests()
+    ]);
+
+    // merge the two sets of results
+    let files = [].concat(coreTests, pluginTests).sort();
+    console.debug("Sent browser the following test specs:", files);
+    res.send("var specs_list = " + JSON.stringify(files) + ";\n");
   });
 
   // path.join seems to normalize by default, but we'll just be explicit
@@ -63,30 +58,30 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 }
 
-exports.getPluginTests = function(callback) {
-  var pluginSpecs = [];
-  var plugins = fs.readdirSync('node_modules');
-  plugins.forEach(function(plugin) {
-    if (fs.existsSync("node_modules/" + plugin + "/static/tests/frontend/specs")) {
-      // if plugins exists
-      var specFiles = fs.readdirSync("node_modules/" + plugin + "/static/tests/frontend/specs/");
-      async.forEach(specFiles, function(spec) {
-         // for each specFile push it to pluginSpecs
-         pluginSpecs.push("/static/plugins/" + plugin + "/static/tests/frontend/specs/" + spec);
-      },
-      function(err) {
-         // blow up if something bad happens!
-      });
-    }
-  });
-  callback(null, pluginSpecs);
+const readdir = util.promisify(fs.readdir);
+
+exports.getPluginTests = async function(callback) {
+  const moduleDir = "node_modules/";
+  const specPath = "/static/tests/frontend/specs/";
+  const staticDir = "/static/plugins/";
+
+  let pluginSpecs = [];
+
+  let plugins = await readdir(moduleDir);
+  let promises = plugins
+    .map(plugin => [ plugin, moduleDir + plugin + specPath] )
+    .filter(([plugin, specDir]) => fs.existsSync(specDir)) // check plugin exists
+    .map(([plugin, specDir]) => {
+      return readdir(specDir)
+        .then(specFiles => specFiles.map(spec => {
+          pluginSpecs.push(staticDir + plugin + specPath + spec);
+        }));
+    });
+
+  return Promise.all(promises).then(() => pluginSpecs);
 }
 
-exports.getCoreTests = function(callback) {
+exports.getCoreTests = function() {
   // get the core test specs
-  fs.readdir('tests/frontend/specs', function(err, coreSpecs) {
-    if (err) { return res.send(500); }
-
-    callback(null, coreSpecs);
-  });
+  return readdir('tests/frontend/specs');
 }
