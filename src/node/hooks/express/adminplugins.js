@@ -42,14 +42,10 @@ exports.socketio = function(hook_name, args, cb) {
       socket.emit("results:installed", {installed: installed});
     });
 
-    socket.on("checkUpdates", function() {
+    socket.on("checkUpdates", async function() {
       // Check plugins for updates
-      installer.getAvailablePlugins(/*maxCacheAge:*/ 60 * 10, function(er, results) {
-        if (er) {
-          console.warn(er);
-          socket.emit("results:updatable", {updatable: {}});
-          return;
-        }
+      try {
+        let results = await installer.getAvailablePlugins(/*maxCacheAge:*/ 60 * 10);
 
         var updatable = _(plugins.plugins).keys().filter(function(plugin) {
           if (!results[plugin]) return false;
@@ -61,27 +57,26 @@ exports.socketio = function(hook_name, args, cb) {
         });
 
         socket.emit("results:updatable", {updatable: updatable});
-      });
+      } catch (er) {
+        console.warn(er);
+
+        socket.emit("results:updatable", {updatable: {}});
+      }
     });
 
-    socket.on("getAvailable", function(query) {
-        installer.getAvailablePlugins(/*maxCacheAge:*/ false, function(er, results) {
-          if (er) {
-            console.error(er);
-            results = {};
-          }
-
-          socket.emit("results:available", results);
-      });
+    socket.on("getAvailable", async function(query) {
+      try {
+        let results = await installer.getAvailablePlugins(/*maxCacheAge:*/ false);
+        socket.emit("results:available", results);
+      } catch (er) {
+        console.error(er);
+        socket.emit("results:available", {});
+      }
     });
 
-    socket.on("search", function(query) {
-      installer.search(query.searchTerm, /*maxCacheAge:*/ 60 * 10, function(er, results) {
-        if (er) {
-          console.error(er);
-          results = {};
-        }
-
+    socket.on("search", async function(query) {
+      try {
+        let results = await installer.search(query.searchTerm, /*maxCacheAge:*/ 60 * 10);
         var res = Object.keys(results)
           .map(function(pluginName) {
             return results[pluginName];
@@ -92,7 +87,11 @@ exports.socketio = function(hook_name, args, cb) {
         res = sortPluginList(res, query.sortBy, query.sortDir)
           .slice(query.offset, query.offset+query.limit);
         socket.emit("results:search", {results: res, query: query});
-      });
+      } catch (er) {
+        console.error(er);
+
+        socket.emit("results:search", {results: {}, query: query});
+      }
     });
 
     socket.on("install", function(plugin_name) {

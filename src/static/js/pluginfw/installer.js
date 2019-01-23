@@ -77,33 +77,35 @@ exports.install = function(plugin_name, cb) {
 exports.availablePlugins = null;
 var cacheTimestamp = 0;
 
-exports.getAvailablePlugins = function(maxCacheAge, cb) {
-  request("https://static.etherpad.org/plugins.json", function(er, response, plugins){
-    if (er) return cb && cb(er);
+exports.getAvailablePlugins = function(maxCacheAge) {
+  var nowTimestamp = Math.round(Date.now() / 1000);
 
-    if (exports.availablePlugins && maxCacheAge && Math.round(+ new Date / 1000) - cacheTimestamp <= maxCacheAge) {
-      return cb && cb(null, exports.availablePlugins);
+  return new Promise(function(resolve, reject) {
+    // check cache age before making any request
+    if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
+      return resolve(exports.availablePlugins);
     }
 
-    try {
-      plugins = JSON.parse(plugins);
-    } catch (err) {
-      console.error('error parsing plugins.json:', err);
-      plugins = [];
-    }
+    request("https://static.etherpad.org/plugins.json", function(er, response, plugins) {
+      if (er) return reject(er);
 
-    exports.availablePlugins = plugins;
-    cacheTimestamp = Math.round(+ new Date / 1000);
+      try {
+        plugins = JSON.parse(plugins);
+      } catch (err) {
+        console.error('error parsing plugins.json:', err);
+        plugins = [];
+      }
 
-    cb && cb(null, plugins);
+      exports.availablePlugins = plugins;
+      cacheTimestamp = nowTimestamp;
+      resolve(plugins);
+    });
   });
 };
 
 
-exports.search = function(searchTerm, maxCacheAge, cb) {
-  exports.getAvailablePlugins(maxCacheAge, function(er, results) {
-    if (er) return cb && cb(er);
-
+exports.search = function(searchTerm, maxCacheAge) {
+  return exports.getAvailablePlugins(maxCacheAge).then(function(results) {
     var res = {};
 
     if (searchTerm) {
@@ -127,6 +129,6 @@ exports.search = function(searchTerm, maxCacheAge, cb) {
       res[pluginName] = results[pluginName];
     }
 
-    cb && cb(null, res);
+    return res;
   });
 };
