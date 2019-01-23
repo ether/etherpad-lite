@@ -23,6 +23,7 @@ var ueberDB = require("ueberdb2");
 var settings = require("../utils/Settings");
 var log4js = require('log4js');
 const thenify = require("thenify").withCallback;
+const util = require("util");
 
 // set database settings
 var db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
@@ -47,6 +48,12 @@ exports.init = thenify(function (callback) {
     } else {
       // everything ok
       exports.db = db;
+
+      // set up Promise-based methods
+      ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove', 'doShutdown'].forEach(fn => {
+        exports[fn] = util.promisify(db[fn].bind(db));
+      });
+
       callback(null);
     }
   });
