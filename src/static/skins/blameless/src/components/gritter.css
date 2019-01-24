@@ -1,0 +1,28 @@
+/* Popups at the bottom of the page to indicate when the pad expires, and others stuff */
+
+.gritter-title {
+  text-shadow: none;
+}
+
+#gritter-notice-wrapper {
+  background-color: #fff;
+  box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
+  border-radius: 3px;
+  padding: 15px 20px 5px 30px;
+  bottom: 50px !important;
+  right: 30px !important;
+}
+
+@media (max-width: 1100px) {
+  #gritter-notice-wrapper {
+    display: none;
+  }
+}
+
+.gritter-item {
+  font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;
+  color: #4e545b;
+  font-size: 12px;
+  line-height: 20px;
+  padding: 0;
+}
