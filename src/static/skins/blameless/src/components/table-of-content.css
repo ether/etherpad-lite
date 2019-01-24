@@ -1,0 +1,11 @@
+#toc {
+  background: none !important;
+  background-color: rgb(249, 249, 249) !important;
+  padding: 20px !important;
+  width: 146px !important;
+  padding-left: 15px !important;
+}
+
+#tocItems {
+  line-height: 40px !important;
+}
