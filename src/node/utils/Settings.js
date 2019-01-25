@@ -19,6 +19,7 @@
  * limitations under the License.
  */
 
+var absolutePaths = require('./AbsolutePaths');
 var fs = require("fs");
 var os = require("os");
 var path = require('path');
@@ -31,7 +32,8 @@ var suppressDisableMsg = " -- To suppress these warning messages change suppress
 var _ = require("underscore");
 
 /* Root path of the installation */
-exports.root = path.normalize(path.join(npm.dir, ".."));
+exports.root = absolutePaths.findEtherpadRoot();
+console.log(`All relative paths will be interpreted relative to the identified Etherpad base dir: ${exports.root}`);
 
 /**
  * The app title, visible e.g. in the browser window
@@ -44,6 +46,14 @@ exports.title = "Etherpad";
 exports.favicon = "favicon.ico";
 exports.faviconPad = "../" + exports.favicon;
 exports.faviconTimeslider = "../../" + exports.favicon;
+
+/*
+ * Skin name.
+ *
+ * Initialized to null, so we can spot an old configuration file and invite the
+ * user to update it before falling back to the default.
+ */
+exports.skinName = null;
 
 /**
  * The IP ep-lite should listen to
@@ -78,7 +88,7 @@ exports.dbType = "dirty";
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
+exports.dbSettings = { "filename" : path.join(exports.root, "var/dirty.db") };
 
 /**
  * The default Text of a new pad
@@ -339,34 +349,27 @@ exports.getEpVersion = function() {
 
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
-  var settingsFilename = argv.settings || "settings.json";
-
+  var settingsFilename = absolutePaths.makeAbsolute(argv.settings || "settings.json");
+  
   // Discover if a credential file exists
-  var credentialsFilename = argv.credentials || "credentials.json";
-
-  if (path.resolve(settingsFilename)===settingsFilename) {
-    settingsFilename = path.resolve(settingsFilename);
-  } else {
-    settingsFilename = path.resolve(path.join(exports.root, settingsFilename));
-  }
-
-  if (path.resolve(credentialsFilename)===credentialsFilename) {
-    credentialsFilename = path.resolve(credentialsFilename);
-  }
+  var credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || "credentials.json");
 
   var settingsStr, credentialsStr;
   try{
     //read the settings sync
     settingsStr = fs.readFileSync(settingsFilename).toString();
+    console.info(`Settings loaded from: ${settingsFilename}`);
   } catch(e){
-    console.warn('No settings file found. Continuing using defaults!');
+    console.warn(`No settings file found in ${settingsFilename}. Continuing using defaults!`);
   }
 
   try{
     //read the credentials sync
     credentialsStr = fs.readFileSync(credentialsFilename).toString();
+    console.info(`Credentials file read from: ${credentialsFilename}`);
   } catch(e){
     // Doesn't matter if no credentials file found..
+    console.info(`No credentials file found in ${credentialsFilename}. Ignoring.`);
   }
 
   // try to parse the settings
@@ -378,7 +381,7 @@ exports.reloadSettings = function reloadSettings() {
       settings = JSON.parse(settingsStr);
     }
   }catch(e){
-    console.error('There was an error processing your settings.json file: '+e.message);
+    console.error(`There was an error processing your settings file from ${settingsFilename}:` + e.message);
     process.exit(1);
   }
 
@@ -390,10 +393,10 @@ exports.reloadSettings = function reloadSettings() {
   //loop trough the settings
   for(var i in settings)
   {
-    //test if the setting start with a low character
+    //test if the setting start with a lowercase character
     if(i.charAt(0).search("[a-z]") !== 0)
     {
-      console.warn("Settings should start with a low character: '" + i + "'");
+      console.warn(`Settings should start with a lowercase character: '${i}'`);
     }
 
     //we know this setting, so we overwrite it
@@ -409,17 +412,17 @@ exports.reloadSettings = function reloadSettings() {
     //this setting is unkown, output a warning and throw it away
     else
     {
-      console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
     }
   }
 
   //loop trough the settings
   for(var i in credentials)
   {
-    //test if the setting start with a low character
+    //test if the setting start with a lowercase character
     if(i.charAt(0).search("[a-z]") !== 0)
     {
-      console.warn("Settings should start with a low character: '" + i + "'");
+      console.warn(`Settings should start with a lowercase character: '${i}'`);
     }
 
     //we know this setting, so we overwrite it
@@ -435,7 +438,7 @@ exports.reloadSettings = function reloadSettings() {
     //this setting is unkown, output a warning and throw it away
     else
     {
-      console.warn("Unknown Setting: '" + i + "'. This setting doesn't exist or it was removed");
+      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
     }
   }
 
@@ -443,6 +446,42 @@ exports.reloadSettings = function reloadSettings() {
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   process.env['DEBUG'] = 'socket.io:' + exports.loglevel; // Used by SocketIO for Debug
   log4js.replaceConsole();
+
+  if (!exports.skinName) {
+    console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "no-skin".`);
+    exports.skinName = "no-skin";
+  }
+
+  // checks if skinName has an acceptable value, otherwise falls back to "no-skin"
+  if (exports.skinName) {
+    const skinBasePath = path.join(exports.root, "src", "static", "skins");
+    const countPieces = exports.skinName.split(path.sep).length;
+
+    if (countPieces != 1) {
+      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "no-skin".`);
+
+      exports.skinName = "no-skin";
+    }
+
+    // informative variable, just for the log messages
+    var skinPath = path.normalize(path.join(skinBasePath, exports.skinName));
+
+    // what if someone sets skinName == ".." or "."? We catch him!
+    if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
+      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. Falling back to the default "no-skin".`);
+
+      exports.skinName = "no-skin";
+      skinPath = path.join(skinBasePath, exports.skinName);
+    }
+
+    if (fs.existsSync(skinPath) === false) {
+      console.error(`Skin path ${skinPath} does not exist. Falling back to the default "no-skin".`);
+      exports.skinName = "no-skin";
+      skinPath = path.join(skinBasePath, exports.skinName);
+    }
+
+    console.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
+  }
 
   if(exports.abiword){
     // Check abiword actually exists
@@ -476,10 +515,12 @@ exports.reloadSettings = function reloadSettings() {
   }
 
   if (!exports.sessionKey) {
-    var sessionkeyFilename = argv.sessionkey || "./SESSIONKEY.txt";
+    var sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || "./SESSIONKEY.txt");
     try {
       exports.sessionKey = fs.readFileSync(sessionkeyFilename,"utf8");
+      console.info(`Session key loaded from: ${sessionkeyFilename}`);
     } catch(e) {
+      console.info(`Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
       exports.sessionKey = randomString(32);
       fs.writeFileSync(sessionkeyFilename,exports.sessionKey,"utf8");
     }
@@ -492,7 +533,9 @@ exports.reloadSettings = function reloadSettings() {
     if(!exports.suppressErrorsInPadText){
       exports.defaultPadText = exports.defaultPadText + "\nWarning: " + dirtyWarning + suppressDisableMsg;
     }
-    console.warn(dirtyWarning);
+
+    exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
+    console.warn(dirtyWarning + ` File location: ${exports.dbSettings.filename}`);
   }
 };
 

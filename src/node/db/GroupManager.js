@@ -62,13 +62,12 @@ exports.deleteGroup = function(groupID, callback)
         if(_group == null)
         {
           callback(new customError("groupID does not exist","apierror"));
+          return;
         }
+
         //group exists, everything is fine
-        else
-        {
-          group = _group;
-          callback();
-        }
+        group = _group;
+        callback();
       });
     },
     //iterate trough all pads of this groups and delete them
@@ -213,34 +212,35 @@ exports.createGroupIfNotExistsFor = function(groupMapper, callback)
   //try to get a group for this mapper
   db.get("mapper2group:"+groupMapper, function(err, groupID)
   {
-     if(ERR(err, callback)) return;
+    function createGroupForMapper(cb) {
+      exports.createGroup(function(err, responseObj)
+      {
+        if(ERR(err, cb)) return;
+        
+        //create the mapper entry for this group
+        db.set("mapper2group:"+groupMapper, responseObj.groupID);
+        
+        cb(null, responseObj);
+      });
+    }
+
+    if(ERR(err, callback)) return;
      
-     // there is a group for this mapper
-     if(groupID) {
-       exports.doesGroupExist(groupID, function(err, exists) {
-         if(ERR(err, callback)) return;
-         if(exists) return callback(null, {groupID: groupID});
-         
-         // hah, the returned group doesn't exist, let's create one
-         createGroupForMapper(callback)
-       })
-     }
-     //there is no group for this mapper, let's create a group
-     else {
-       createGroupForMapper(callback)
-     }
-     
-     function createGroupForMapper(cb) {
-       exports.createGroup(function(err, responseObj)
-       {
-         if(ERR(err, cb)) return;
-         
-         //create the mapper entry for this group
-         db.set("mapper2group:"+groupMapper, responseObj.groupID);
-         
-         cb(null, responseObj);
-       });
-     }
+    // there is a group for this mapper
+    if(groupID) {
+      exports.doesGroupExist(groupID, function(err, exists) {
+        if(ERR(err, callback)) return;
+        if(exists) return callback(null, {groupID: groupID});
+
+        // hah, the returned group doesn't exist, let's create one
+        createGroupForMapper(callback)
+      })
+
+      return;
+    }
+
+    //there is no group for this mapper, let's create a group
+    createGroupForMapper(callback)
   });
 }
 
@@ -261,12 +261,11 @@ exports.createGroupPad = function(groupID, padName, text, callback)
         if(exists == false)
         {
           callback(new customError("groupID does not exist","apierror"));
+          return;
         }
+
         //group exists, everything is fine
-        else
-        {
-          callback();
-        }
+        callback();
       });
     },
     //ensure pad does not exists
@@ -280,12 +279,11 @@ exports.createGroupPad = function(groupID, padName, text, callback)
         if(exists == true)
         {
           callback(new customError("padName does already exist","apierror"));
+          return;
         }
+
         //pad does not exist, everything is fine
-        else
-        {
-          callback();
-        }
+        callback();
       });
     },
     //create the pad
@@ -320,19 +318,18 @@ exports.listPads = function(groupID, callback)
     if(exists == false)
     {
       callback(new customError("groupID does not exist","apierror"));
+      return;
     }
+
     //group exists, let's get the pads
-    else
+    db.getSub("group:" + groupID, ["pads"], function(err, result)
     {
-      db.getSub("group:" + groupID, ["pads"], function(err, result)
-      {
-        if(ERR(err, callback)) return;
-        var pads = [];
-        for ( var padId in result ) {
-          pads.push(padId);
-        }
-        callback(null, {padIDs: pads});
-      });
-    }
+      if(ERR(err, callback)) return;
+      var pads = [];
+      for ( var padId in result ) {
+        pads.push(padId);
+      }
+      callback(null, {padIDs: pads});
+    });
   });
 }

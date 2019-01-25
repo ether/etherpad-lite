@@ -26,13 +26,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve robots.txt
   args.app.get('/robots.txt', function(req, res)
   {
-    var filePath = path.normalize(__dirname + "/../../../static/custom/robots.txt");
+    var filePath = path.join(settings.root, "src", "static", "skins", settings.skinName, "robots.txt");
     res.sendFile(filePath, function(err)
     {
       //there is no custom favicon, send the default robots.txt which dissallows all
       if(err)
       {
-        filePath = path.normalize(__dirname + "/../../../static/robots.txt");
+        filePath = path.join(settings.root, "src", "static", "robots.txt");
         res.sendFile(filePath);
       }
     });
@@ -79,13 +79,14 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve favicon.ico from all path levels except as a pad name
   args.app.get( /\/favicon.ico$/, function(req, res)
   {
-    var filePath = path.normalize(__dirname + "/../../../static/custom/favicon.ico");
+    var filePath = path.join(settings.root, "src", "static", "skins", settings.skinName, "favicon.ico");
+
     res.sendFile(filePath, function(err)
     {
       //there is no custom favicon, send the default favicon
       if(err)
       {
-        filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
+        filePath = path.join(settings.root, "src", "static", "favicon.ico");
         res.sendFile(filePath);
       }
     });

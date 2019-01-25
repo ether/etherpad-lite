@@ -4,7 +4,8 @@
 			"Christian List",
 			"Peter Alberti",
 			"Steenth",
-			"Joedalton"
+			"Joedalton",
+			"Saederup92"
 		]
 	},
 	"index.newPad": "Ny Pad",
@@ -43,6 +44,7 @@
 	"pad.settings.fontType": "Skrifttype:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.fontType.monospaced": "Fastbredde",
+	"pad.settings.fontType.trebuchet": "Blide",
 	"pad.settings.globalView": "Global visning",
 	"pad.settings.language": "Sprog:",
 	"pad.importExport.import_export": "Import/Eksport",

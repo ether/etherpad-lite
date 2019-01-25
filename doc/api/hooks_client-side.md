@@ -356,7 +356,7 @@ Called from: src/static/js/ace2_inner.js
 
 Things in context:
 
-1. dynamicCSS - css manger for inner ace
+1. dynamicCSS - css manager for inner ace
 2. outerDynamicCSS - css manager for outer ace
 3. parentDynamicCSS - css manager for parent document
 4. info - author style info

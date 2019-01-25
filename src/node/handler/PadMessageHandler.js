@@ -244,59 +244,71 @@ exports.handleMessage = function(client, message)
     }
   };
 
-  if (message) {
-    async.series([
-      handleMessageHook,
-      //check permissions
-      function(callback)
-      {
-        // client tried to auth for the first time (first msg from the client)
-        if(message.type == "CLIENT_READY") {
-          createSessionInfo(client, message);
-        }
-
-        // Note: message.sessionID is an entirely different kind of
-        // session from the sessions we use here! Beware!
-        // FIXME: Call our "sessions" "connections".
-        // FIXME: Use a hook instead
-        // FIXME: Allow to override readwrite access with readonly
-
-        // Simulate using the load testing tool
-        if(!sessioninfos[client.id].auth){
-          console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
-          return;
-        }else{
-          var auth = sessioninfos[client.id].auth;
-          var checkAccessCallback = function(err, statusObject)
-          {
-            if(ERR(err, callback)) return;
-
-            //access was granted
-            if(statusObject.accessStatus == "grant")
-            {
-              callback();
-            }
-            //no access, send the client a message that tell him why
-            else
-            {
-              client.json.send({accessStatus: statusObject.accessStatus})
-            }
-          };
-          //check if pad is requested via readOnly
-          if (auth.padID.indexOf("r.") === 0) {
-            //Pad is readOnly, first get the real Pad ID
-            readOnlyManager.getPadId(auth.padID, function(err, value) {
-              ERR(err);
-              securityManager.checkAccess(value, auth.sessionID, auth.token, auth.password, checkAccessCallback);
-            });
-          } else {
-            securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, checkAccessCallback);
-          }
-        }
-      },
-      finalHandler
-    ]);
+  /*
+   * In a previous version of this code, an "if (message)" wrapped the
+   * following async.series().
+   * This ugly "!Boolean(message)" is a lame way to exactly negate the truthy
+   * condition and replace it with an early return, while being sure to leave
+   * the original behaviour unchanged.
+   *
+   * A shallower code could maybe make more evident latent logic errors.
+   */
+  if (!Boolean(message)) {
+    return;
   }
+
+  async.series([
+    handleMessageHook,
+    //check permissions
+    function(callback)
+    {
+      // client tried to auth for the first time (first msg from the client)
+      if(message.type == "CLIENT_READY") {
+        createSessionInfo(client, message);
+      }
+
+      // Note: message.sessionID is an entirely different kind of
+      // session from the sessions we use here! Beware!
+      // FIXME: Call our "sessions" "connections".
+      // FIXME: Use a hook instead
+      // FIXME: Allow to override readwrite access with readonly
+
+      // Simulate using the load testing tool
+      if(!sessioninfos[client.id].auth){
+        console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
+        return;
+      }
+
+      var auth = sessioninfos[client.id].auth;
+      var checkAccessCallback = function(err, statusObject)
+      {
+        if(ERR(err, callback)) return;
+
+        //access was granted
+        if(statusObject.accessStatus == "grant")
+        {
+          callback();
+        }
+        //no access, send the client a message that tell him why
+        else
+        {
+          client.json.send({accessStatus: statusObject.accessStatus})
+        }
+      };
+
+      //check if pad is requested via readOnly
+      if (auth.padID.indexOf("r.") === 0) {
+        //Pad is readOnly, first get the real Pad ID
+        readOnlyManager.getPadId(auth.padID, function(err, value) {
+          ERR(err);
+          securityManager.checkAccess(value, auth.sessionID, auth.token, auth.password, checkAccessCallback);
+        });
+      } else {
+        securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, checkAccessCallback);
+      }
+    },
+    finalHandler
+  ]);
 }
 
 
@@ -1268,6 +1280,7 @@ function handleClientReady(client, message)
         // client is read only you would open a security hole 1 swedish
         // mile wide...
         var clientVars = {
+          "skinName": settings.skinName,
           "accountPrivs": {
               "maxRevisions": 100
           },

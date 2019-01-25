@@ -56,20 +56,6 @@ if [ -d "../bin" ]; then
   cd "../"
 fi
 
-#Is gnu-grep (ggrep) installed on SunOS (Solaris)
-if [ $(uname) = "SunOS" ]; then
-  hash ggrep > /dev/null 2>&1 || {
-    echo "Please install ggrep (pkg install gnu-grep)" >&2
-    exit 1
-  }
-fi
-
-#Is curl installed?
-hash curl > /dev/null 2>&1 || {
-  echo "Please install curl" >&2
-  exit 1
-}
-
 #Is node installed?
 #Not checking io.js, default installation creates a symbolic link to node
 hash node > /dev/null 2>&1 || {
@@ -116,44 +102,12 @@ echo "Ensure that all dependencies are up to date...  If this is the first time 
   cd ep_etherpad-lite
   npm install --no-save --loglevel warn
 ) || {
-  rm -rf node_modules
+  rm -rf src/node_modules
   exit 1
 }
-
-echo "Ensure jQuery is downloaded and up to date..."
-DOWNLOAD_JQUERY="true"
-NEEDED_VERSION="1.9.1"
-if [ -f "src/static/js/jquery.js" ]; then
-  if [ $(uname) = "SunOS" ]; then
-    VERSION=$(head -n 3 src/static/js/jquery.js | ggrep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?")
-  else
-    VERSION=$(head -n 3 src/static/js/jquery.js | grep -o "v[0-9]\.[0-9]\(\.[0-9]\)\?")
-  fi
-
-  if [ ${VERSION#v} = $NEEDED_VERSION ]; then
-    DOWNLOAD_JQUERY="false"
-  fi
-fi
-
-if [ $DOWNLOAD_JQUERY = "true" ]; then
-  curl -lo src/static/js/jquery.js https://code.jquery.com/jquery-$NEEDED_VERSION.js || exit 1
-fi
 
 #Remove all minified data to force node creating it new
 echo "Clearing minified cache..."
 rm -f var/minified*
-
-echo "Ensure custom css/js files are created..."
-
-for f in "index" "pad" "timeslider"
-do
-  if [ ! -f "src/static/custom/$f.js" ]; then
-    cp "src/static/custom/js.template" "src/static/custom/$f.js" || exit 1
-  fi
-
-  if [ ! -f "src/static/custom/$f.css" ]; then
-    cp "src/static/custom/css.template" "src/static/custom/$f.css" || exit 1
-  fi
-done
 
 exit 0

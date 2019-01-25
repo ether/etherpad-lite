@@ -116,7 +116,7 @@ _.extend(Button.prototype, {
 
 
 
-SelectButton = function (attributes) {
+var SelectButton = function (attributes) {
   this.attributes = attributes;
   this.options = [];
 };

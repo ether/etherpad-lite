@@ -47,6 +47,22 @@ You can omit the `FUNCTIONNAME` part, if the exported function has got the same 
 ### Client hooks and server hooks
 There are server hooks, which will be executed on the server (e.g. `expressCreateServer`), and there are client hooks, which are executed on the client (e.g. `acePopulateDomLine`). Be sure to not make assumptions about the environment your code is running in, e.g. don't try to access `process`, if you know your code will be run on the client, and likewise, don't try to access `window` on the server...
 
+### Styling
+When you install a client-side plugin (e.g. one that implements at least one client-side hook), the plugin name is added to the `class` attribute of the div `#editorcontainerbox` in the main window.
+This gives you the opportunity of tuning the appearance of the main UI in your plugin.
+
+For example, this is the markup with no plugins installed:
+```html
+<div id="editorcontainerbox" class="">
+```
+
+and this is the contents after installing `someplugin`:
+```html
+<div id="editorcontainerbox" class="ep_someplugin">
+```
+
+This feature was introduced in Etherpad **1.8**.
+
 ### Parts
 As your plugins become more and more complex, you will find yourself in the need to manage dependencies between plugins. E.g. you want the hooks of a certain plugin to be executed before (or after) yours. You can also manage these dependencies in your plugin definition file `ep.json`:
 

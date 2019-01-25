@@ -2,9 +2,9 @@
 ![Demo Etherpad Animated Jif](https://i.imgur.com/zYrGkg3.gif "Etherpad in action on PrimaryPad")
 
 # About
-Etherpad is a really-real time collaborative editor scalable to thousands of simultanious real time users.  Unlike all other collaborative tools Etherpad provides full fidelity data export and portability making it fully GDPR compliant.  
+Etherpad is a really-real time collaborative editor scalable to thousands of simultaneous real time users.  Unlike all other collaborative tools Etherpad provides full fidelity data export and portability making it fully GDPR compliant.
 
-**[Try it out](http://beta.etherpad.org)**
+**[Try it out](https://beta.etherpad.org)**
 
 # Installation
 
@@ -15,26 +15,19 @@ Etherpad is a really-real time collaborative editor scalable to thousands of sim
 ```
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
 sudo apt-get install -y nodejs
-git clone https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
+git clone --branch master https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
 ```
 
 ## GNU/Linux and other UNIX-like systems
-You'll need gzip, git, curl, libssl develop libraries, python and gcc.  
-- *For Debian/Ubuntu*: `apt install gzip git curl python libssl-dev pkg-config build-essential`  
-- *For Fedora/CentOS*: `yum install gzip git curl python openssl-devel && yum groupinstall "Development Tools"`
-- *For FreeBSD*: `portinstall node, npm, curl, git (optional)`
-
-Additionally, you'll need [node.js](https://nodejs.org) installed (minimum required Node version: **6.9.0**).
-Ideally, the latest stable version is preferred. Please note that the packages offered on some operating systems are outdated. In those cases, we recommend installing nodejs from official archives or compiling it from source (avoiding yum/apt).
+You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **6.9.0**, preferred: >= **8.9**).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
-1. Move to a folder where you want to install Etherpad. Clone the git repository: `git clone git://github.com/ether/etherpad-lite.git`
+1. Move to a folder where you want to install Etherpad. Clone the git repository: `git clone --branch master git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code: `cd etherpad-lite`
+3. run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
 
-Now, run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
-
-Update to the latest version with `git pull origin`. The next start with `bin/run.sh` will update the dependencies.
+To update to the latest released version, execute `git pull origin`. The next start with `bin/run.sh` will update the dependencies.
 
 [Next steps](#next-steps).
 
@@ -48,12 +41,12 @@ This package works out of the box on any windows machine, but it's not very usef
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
 
-### Fancy install
+### Manually install on Windows
 You'll need [node.js](https://nodejs.org) and (optionally, though recommended) git.
 
 1. Grab the source, either
   - download <https://github.com/ether/etherpad-lite/zipball/master>
-  - or `git clone https://github.com/ether/etherpad-lite.git` (for this you need git, obviously)
+  - or `git clone --branch master https://github.com/ether/etherpad-lite.git` (for this you need git, obviously)
 2. start `bin\installOnWindows.bat`
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser.
@@ -114,9 +107,9 @@ Etherpad is written in JavaScript on both the server and client so it's easy for
 
 # HTTP API
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API)
-that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API. 
+that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API.
 
-# jQuery plugin 
+# jQuery plugin
 There is a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
 # Plugin Framework

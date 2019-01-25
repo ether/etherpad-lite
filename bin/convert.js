@@ -422,7 +422,7 @@ function convertPad(padId, callback)
 
 /**
  * This parses a Page like Etherpad uses them in the databases
- * The offsets descripes the length of a unit in the page, the data are
+ * The offsets describes the length of a unit in the page, the data are
  * all values behind each other
  */
 function parsePage(array, pageStart, offsets, data, json)

@@ -29,14 +29,6 @@ var padeditor = (function()
   var pad = undefined;
   var settings = undefined;
 
-  // Array of available fonts
-
-  var fonts = ['useMonospaceFont', 'useMontserratFont', 'useOpenDyslexicFont', 'useComicSansFont', 'useCourierNewFont',
-    'useGeorgiaFont', 'useImpactFont', 'useLucidaFont', 'useLucidaSansFont', 'usePalatinoFont', 'useRobotoMonoFont',
-    'useTahomaFont', 'useTimesNewRomanFont', 'useTrebuchetFont', 'useVerdanaFont', 'useSymbolFont', 'useWebdingsFont',
-    'useWingDingsFont', 'useSansSerifFont', 'useSerifFont'];
-
-
   var self = {
     ace: null,
     // this is accessed directly from other files
@@ -97,12 +89,7 @@ var padeditor = (function()
       // font family change
       $("#viewfontmenu").change(function()
       {
-        $.each(fonts, function(i, font){
-          var sfont = font.replace("use","");
-          sfont = sfont.replace("Font","");
-          sfont = sfont.toLowerCase();
-          pad.changeViewOption(font, $("#viewfontmenu").val() == sfont);
-        });
+        pad.changeViewOption('padFontFamily', $("#viewfontmenu").val());
       });
 
       // Language
@@ -154,45 +141,29 @@ var padeditor = (function()
         self.ace.setProperty("showsauthorcolors", !settings.noColors);
       }
 
-      var normalFont = true;
-      // Go through each font and see if the option is set..
-      $.each(fonts, function(i, font){
-        var isEnabled = getOption(font, false);
-        if(isEnabled){
-          font = font.replace("use","");
-          font = font.replace("Font","");
-          font = font.toLowerCase();
-          if(font === "monospace") self.ace.setProperty("textface", "monospace");
-          if(font === "montserrat") self.ace.setProperty("textface", "Montserrat");
-          if(font === "opendyslexic") self.ace.setProperty("textface", "OpenDyslexic");
-          if(font === "comicsans") self.ace.setProperty("textface", "'Comic Sans MS','Comic Sans',cursive");
-          if(font === "georgia") self.ace.setProperty("textface", "Georgia,'Bitstream Charter',serif");
-          if(font === "impact") self.ace.setProperty("textface", "Impact,Haettenschweiler,'Arial Black',sans-serif");
-          if(font === "lucida") self.ace.setProperty("textface", "Lucida,'Lucida Serif','Lucida Bright',serif");
-          if(font === "lucidasans") self.ace.setProperty("textface", "'Lucida Sans','Lucida Grande','Lucida Sans Unicode','Luxi Sans',sans-serif");
-          if(font === "palatino") self.ace.setProperty("textface", "Palatino,'Palatino Linotype','URW Palladio L',Georgia,serif");
-          if(font === "robotomono") self.ace.setProperty("textface", "RobotoMono");
-          if(font === "tahoma") self.ace.setProperty("textface", "Tahoma,sans-serif");
-          if(font === "timesnewroman") self.ace.setProperty("textface", "'Times New Roman',Times,serif");
-          if(font === "trebuchet") self.ace.setProperty("textface", "'Trebuchet MS',sans-serif");
-          if(font === "verdana") self.ace.setProperty("textface", "Verdana,'DejaVu Sans',sans-serif");
-          if(font === "symbol") self.ace.setProperty("textface", "Symbol");
-          if(font === "webdings") self.ace.setProperty("textface", "Webdings");
-          if(font === "wingdings") self.ace.setProperty("textface", "Wingdings");
-          if(font === "sansserif") self.ace.setProperty("textface", "sans-serif");
-          if(font === "serif") self.ace.setProperty("textface", "serif");
-
-          // $("#viewfontmenu").val(font);
-          normalFont = false;
-        }
-      });
-
-      // No font has been previously selected so use the Normal font
-      if(normalFont){
-        self.ace.setProperty("textface", "'Helvetica Neue',Arial, sans-serif");
-        // $("#viewfontmenu").val("normal");
+      var fontFamily = newOptions['padFontFamily'];
+      switch (fontFamily) { 
+        case "monospace": self.ace.setProperty("textface", "monospace"); break;
+        case "montserrat": self.ace.setProperty("textface", "Montserrat"); break;
+        case "opendyslexic": self.ace.setProperty("textface", "OpenDyslexic"); break;
+        case "comicsans": self.ace.setProperty("textface", "'Comic Sans MS','Comic Sans',cursive"); break;
+        case "georgia": self.ace.setProperty("textface", "Georgia,'Bitstream Charter',serif"); break;
+        case "impact": self.ace.setProperty("textface", "Impact,Haettenschweiler,'Arial Black',sans-serif"); break;
+        case "lucida": self.ace.setProperty("textface", "Lucida,'Lucida Serif','Lucida Bright',serif"); break;
+        case "lucidasans": self.ace.setProperty("textface", "'Lucida Sans','Lucida Grande','Lucida Sans Unicode','Luxi Sans',sans-serif"); break;
+        case "palatino": self.ace.setProperty("textface", "Palatino,'Palatino Linotype','URW Palladio L',Georgia,serif"); break;
+        case "robotomono": self.ace.setProperty("textface", "RobotoMono"); break;
+        case "tahoma": self.ace.setProperty("textface", "Tahoma,sans-serif"); break;
+        case "timesnewroman": self.ace.setProperty("textface", "'Times New Roman',Times,serif"); break;
+        case "trebuchet": self.ace.setProperty("textface", "'Trebuchet MS',sans-serif"); break;
+        case "verdana": self.ace.setProperty("textface", "Verdana,'DejaVu Sans',sans-serif"); break;
+        case "symbol": self.ace.setProperty("textface", "Symbol"); break;
+        case "webdings": self.ace.setProperty("textface", "Webdings"); break;
+        case "wingdings": self.ace.setProperty("textface", "Wingdings"); break;
+        case "sansserif": self.ace.setProperty("textface", "sans-serif"); break;
+        case "serif": self.ace.setProperty("textface", "serif"); break;
+        default: self.ace.setProperty("textface", "");   break; 
       }
-
     },
     dispose: function()
     {

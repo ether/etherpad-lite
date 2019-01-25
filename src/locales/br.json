@@ -55,7 +55,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Ne c'hallit ket emporzjiañ furmadoù testennoù kriz pe html. Evit arc'hwelioù enporzhiañ emdroetoc'h, staliit <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">abiword</a>  mar plij.",
+	"pad.importExport.abiword.innerHTML": "Ne c'hallit ket enporzhiañ furmadoù testennoù kriz pe HTML hepken. Evit arc'hwelioù enporzhiañ emdroetoc'h, staliit <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">staliañ Abiword</a> mar plij.",
 	"pad.modals.connected": "Kevreet.",
 	"pad.modals.reconnecting": "Adkevreañ war-zu ho pad...",
 	"pad.modals.forcereconnect": "Adkevreañ dre heg",

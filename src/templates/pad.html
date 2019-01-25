@@ -44,7 +44,7 @@
         <link href="../static/css/pad.css" rel="stylesheet">
 
         <% e.begin_block("customStyles"); %>
-        <link href="../static/custom/pad.css" rel="stylesheet">
+        <link href="../static/skins/<%=encodeURI(settings.skinName)%>/pad.css" rel="stylesheet">
         <% e.end_block(); %>
 
         <style title="dynamicsyntax"></style>
@@ -81,8 +81,8 @@
             <div id="myuser">
                 <div id="mycolorpicker">
                     <div id="colorpicker"></div>
-                    <button id="mycolorpickersave" data-l10n-id="pad.colorpicker.save"></button>
-                    <button id="mycolorpickercancel" data-l10n-id="pad.colorpicker.cancel"></button>
+                    <button id="mycolorpickersave" data-l10n-id="pad.colorpicker.save" class="btn btn-primary"></button>
+                    <button id="mycolorpickercancel" data-l10n-id="pad.colorpicker.cancel" class="btn btn-default"></button>
                     <span id="mycolorpickerpreview" class="myswatchboxhoverable"></span>
                 </div>
                 <div id="myswatchbox"><div id="myswatch"></div></div>
@@ -100,7 +100,7 @@
             <% e.end_block(); %>
         </div>
 
-        <div id="editorcontainerbox">
+        <div id="editorcontainerbox" class="<%=hooks.clientPluginNames().join(' '); %>">
             <div id="editorcontainer" class="editorcontainer"></div>
             <div id="editorloadingbox">
               <div id="passwordRequired">
@@ -378,7 +378,7 @@
         <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
 
         <% e.begin_block("customScripts"); %>
-        <script type="text/javascript" src="../static/custom/pad.js"></script>
+        <script type="text/javascript" src="../static/skins/<%=encodeURI(settings.skinName)%>/pad.js"></script>
         <% e.end_block(); %>
 
         <!-- Bootstrap page -->

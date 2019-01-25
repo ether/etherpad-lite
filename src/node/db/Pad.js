@@ -476,28 +476,27 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
     // if it's a group pad, let's make sure the group exists.
     function(callback)
     {
-      if (destinationID.indexOf("$") != -1)
+      if (destinationID.indexOf("$") === -1)
       {
-        destGroupID = destinationID.split("$")[0]
-        groupManager.doesGroupExist(destGroupID, function (err, exists)
-        {
-          if(ERR(err, callback)) return;
-
-          //group does not exist
-          if(exists == false)
-          {
-            callback(new customError("groupID does not exist for destinationID","apierror"));
-            return;
-          }
-          //everything is fine, continue
-          else
-          {
-            callback();
-          }
-        });
-      }
-      else
         callback();
+        return;
+      }
+
+      destGroupID = destinationID.split("$")[0]
+      groupManager.doesGroupExist(destGroupID, function (err, exists)
+      {
+        if(ERR(err, callback)) return;
+
+        //group does not exist
+        if(exists == false)
+        {
+          callback(new customError("groupID does not exist for destinationID","apierror"));
+          return;
+        }
+
+        //everything is fine, continue
+        callback();
+      });
     },
     // if the pad exists, we should abort, unless forced.
     function(callback)
@@ -506,27 +505,29 @@ Pad.prototype.copy = function copy(destinationID, force, callback) {
       {
         if(ERR(err, callback)) return;
 
-        if(exists == true)
-        {
-          if (!force)
-          {
-            console.error("erroring out without force");
-            callback(new customError("destinationID already exists","apierror"));
-            console.error("erroring out without force - after");
-            return;
-          }
-          else // exists and forcing
-          {
-            padManager.getPad(destinationID, function(err, pad) {
-              if (ERR(err, callback)) return;
-              pad.remove(callback);
-            });
-          }
-        }
-        else
+        /*
+         * this is the negation of a truthy comparison. Has been left in this
+         * wonky state to keep the old (possibly buggy) behaviour
+         */
+        if (!(exists == true))
         {
           callback();
+          return;
         }
+
+        if (!force)
+        {
+          console.error("erroring out without force");
+          callback(new customError("destinationID already exists","apierror"));
+          console.error("erroring out without force - after");
+          return;
+        }
+
+        // exists and forcing
+        padManager.getPad(destinationID, function(err, pad) {
+          if (ERR(err, callback)) return;
+          pad.remove(callback);
+        });
       });
     },
     // copy the 'pad' entry
@@ -622,29 +623,28 @@ Pad.prototype.remove = function remove(callback) {
         //is it a group pad? -> delete the entry of this pad in the group
         function(callback)
         {
-          //is it a group pad?
-          if(padID.indexOf("$")!=-1)
+          if(padID.indexOf("$") === -1)
           {
-            var groupID = padID.substring(0,padID.indexOf("$"));
-
-            db.get("group:" + groupID, function (err, group)
-            {
-              if(ERR(err, callback)) return;
-
-              //remove the pad entry
-              delete group.pads[padID];
-
-              //set the new value
-              db.set("group:" + groupID, group);
-
-              callback();
-            });
-          }
-          //its no group pad, nothing to do here
-          else
-          {
+            // it isn't a group pad, nothing to do here
             callback();
+            return;
           }
+
+          // it is a group pad
+          var groupID = padID.substring(0,padID.indexOf("$"));
+
+          db.get("group:" + groupID, function (err, group)
+          {
+            if(ERR(err, callback)) return;
+
+            //remove the pad entry
+            delete group.pads[padID];
+
+            //set the new value
+            db.set("group:" + groupID, group);
+
+            callback();
+          });
         },
         //remove the readonly entries
         function(callback)

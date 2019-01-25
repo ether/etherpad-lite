@@ -36,7 +36,8 @@
   <% e.begin_block("timesliderStyles"); %>
   <link rel="stylesheet" href="../../static/css/pad.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
-  <link rel="stylesheet" href="../../static/custom/timeslider.css">
+  <link rel="stylesheet" href="../../static/skins/<%=encodeURI(settings.skinName)%>/pad.css">
+  <link rel="stylesheet" href="../../static/skins/<%=encodeURI(settings.skinName)%>/timeslider.css">
   <style type="text/css" title="dynamicsyntax"></style>
   <% e.end_block(); %>
 
@@ -227,7 +228,7 @@
 <script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
 <script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
 
-<script type="text/javascript" src="../../static/custom/timeslider.js"></script>
+<script type="text/javascript" src="../../static/skins/<%=encodeURI(settings.skinName)%>/timeslider.js"></script>
 
 <!-- Bootstrap -->
 <script type="text/javascript" >

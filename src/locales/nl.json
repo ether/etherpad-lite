@@ -4,11 +4,14 @@
 			"Siebrand",
 			"Macofe",
 			"Robin0van0der0vliet",
-			"Robin van der Vliet"
+			"Robin van der Vliet",
+			"Mainframe98",
+			"KlaasZ4usV",
+			"Rickvl"
 		]
 	},
 	"index.newPad": "Nieuw pad",
-	"index.createOpenPad": "Pad maken op openen met de naam:",
+	"index.createOpenPad": "of maak/open een pad met de naam:",
 	"pad.toolbar.bold.title": "Vet (Ctrl-B)",
 	"pad.toolbar.italic.title": "Cursief (Ctrl-I)",
 	"pad.toolbar.underline.title": "Onderstrepen (Ctrl-U)",
@@ -55,7 +58,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "Pdf",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "U kunt alleen importeren vanuit Tekst zonder opmaak of een HTML-opmaak. <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">Installeer abiword</a> om meer geavanceerde importmogelijkheden te krijgen.",
+	"pad.importExport.abiword.innerHTML": "U kunt alleen importeren vanuit Tekst zonder opmaak of een HTML-opmaak. <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">Installeer AbiWord</a> om meer geavanceerde importmogelijkheden te krijgen.",
 	"pad.modals.connected": "Verbonden.",
 	"pad.modals.reconnecting": "Opnieuw verbinding maken met uw pad...",
 	"pad.modals.forcereconnect": "Opnieuw verbinden",

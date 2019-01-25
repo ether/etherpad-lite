@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Mehtab ahmed"
+			"Mehtab ahmed",
+			"Tweety"
 		]
 	},
 	"index.newPad": "نئين پٽي",
@@ -32,18 +33,19 @@
 	"pad.settings.fontType": "اکرن جو قسم:",
 	"pad.settings.globalView": "عالمي نظارو",
 	"pad.settings.language": "ٻولي:",
-	"pad.importExport.import_export": "درآمد ڪريو\\برآمد ڪريو",
+	"pad.importExport.import_export": "برآمد/درآمد",
 	"pad.importExport.import": "ڪو به متن وارو فائيل يا دستاويز چاڙهيو",
 	"pad.importExport.importSuccessful": "ڪامياب!",
 	"pad.importExport.export": "هاڻوڪي پٽي برآمد ڪريو جي طور:",
 	"pad.importExport.exporthtml": "HTML",
-	"pad.importExport.exportplain": "سادو متن",
+	"pad.importExport.exportplain": "سدا اکر",
 	"pad.importExport.exportword": "مائيڪرسافٽ ورڊ",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (کليل دستاويز فارميٽ)",
 	"pad.modals.connected": "ڳنڍيل.",
 	"pad.modals.reconnecting": "توهان جي پٽي سان ٻيهر ڳنڍي رهيو آهي...",
 	"pad.modals.forcereconnect": "جبري طور ٻيهر ڳنڍيو",
+	"pad.modals.cancel": "رد",
 	"pad.modals.userdup": "هڪ ٻي دري ۾ کليل",
 	"pad.modals.unauth": "اختيار نه آهي",
 	"pad.modals.initsocketfail": "سَروَرَ کي پڄي نٿو سگھجي.",
