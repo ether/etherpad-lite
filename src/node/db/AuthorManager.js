@@ -40,7 +40,7 @@ exports.getColorPalette = function() {
 /**
  * Checks if the author exists
  */
-exports.doesAuthorExists = thenify(function(authorID, callback)
+exports.doesAuthorExist = thenify(function(authorID, callback)
 {
   // check if the database entry of this author exists
   db.get("globalAuthor:" + authorID, function(err, author) {
@@ -49,6 +49,9 @@ exports.doesAuthorExists = thenify(function(authorID, callback)
     callback(null, author !== null);
   });
 });
+
+/* exported for backwards compatibility */
+exports.doesAuthorExists = exports.doesAuthorExist;
 
 /**
  * Returns the AuthorID for a token.
