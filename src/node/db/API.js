@@ -18,7 +18,6 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var customError = require("../utils/customError");
 var padManager = require("./PadManager");
@@ -27,13 +26,11 @@ var readOnlyManager = require("./ReadOnlyManager");
 var groupManager = require("./GroupManager");
 var authorManager = require("./AuthorManager");
 var sessionManager = require("./SessionManager");
-var async = require("async");
 var exportHtml = require("../utils/ExportHtml");
 var exportTxt = require("../utils/ExportTxt");
 var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
-const thenify = require("thenify").withCallback;
 
 /**********************/
 /**GROUP FUNCTIONS*****/
@@ -104,14 +101,11 @@ Example returns:
 }
 
 */
-exports.getAttributePool = thenify(function(padID, callback)
+exports.getAttributePool = async function(padID)
 {
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {pool: pad.pool});
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  return { pool: pad.pool };
+}
 
 /**
 getRevisionChangeset (padID, [rev])
@@ -126,61 +120,32 @@ Example returns:
 }
 
 */
-exports.getRevisionChangeset = thenify(function(padID, rev, callback)
+exports.getRevisionChangeset = async function(padID, rev)
 {
-  // check if rev is a number
-  if (rev !== undefined && typeof rev !== "number") {
-    // try to parse the number
-    if (isNaN(parseInt(rev))) {
-      callback(new customError("rev is not a number", "apierror"));
-      return;
-    }
-
-    rev = parseInt(rev);
-  }
-
-  // ensure this is not a negative number
-  if (rev !== undefined && rev < 0) {
-    callback(new customError("rev is not a negative number", "apierror"));
-    return;
-  }
-
-  // ensure this is not a float value
-  if (rev !== undefined && !is_int(rev)) {
-    callback(new customError("rev is a float value", "apierror"));
-    return;
+  // try to parse the revision number
+  if (rev !== undefined) {
+    rev = checkValidRev(rev);
   }
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
+  let head = pad.getHeadRevisionNumber();
 
-    // the client asked for a special revision
-    if (rev !== undefined) {
-      // check if this is a valid revision
-      if (rev > pad.getHeadRevisionNumber()) {
-        callback(new customError("rev is higher than the head revision of the pad", "apierror"));
-        return;
-      }
+  // the client asked for a special revision
+  if (rev !== undefined) {
 
-      // get the changeset for this revision
-      pad.getRevisionChangeset(rev, function(err, changeset) {
-        if (ERR(err, callback)) return;
-
-        callback(null, changeset);
-      })
-
-      return;
+    // check if this is a valid revision
+    if (rev > head) {
+      throw new customError("rev is higher than the head revision of the pad", "apierror");
     }
 
-    // the client wants the latest changeset, lets return it to him
-    pad.getRevisionChangeset(pad.getHeadRevisionNumber(), function(err, changeset) {
-      if (ERR(err, callback)) return;
+    // get the changeset for this revision
+    return pad.getRevisionChangeset(rev);
+  }
 
-      callback(null, changeset);
-    })
-  });
-});
+  // the client wants the latest changeset, lets return it to him
+  return pad.getRevisionChangeset(head);
+}
 
 /**
 getText(padID, [rev]) returns the text of a pad
@@ -190,60 +155,34 @@ Example returns:
 {code: 0, message:"ok", data: {text:"Welcome Text"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getText = thenify(function(padID, rev, callback)
+exports.getText = async function(padID, rev)
 {
-  // check if rev is a number
-  if (rev !== undefined && typeof rev !== "number") {
-    // try to parse the number
-    if (isNaN(parseInt(rev))) {
-      callback(new customError("rev is not a number", "apierror"));
-      return;
-    }
-
-    rev = parseInt(rev);
-  }
-
-  // ensure this is not a negative number
-  if (rev !== undefined && rev < 0) {
-    callback(new customError("rev is a negative number", "apierror"));
-    return;
-  }
-
-  // ensure this is not a float value
-  if (rev !== undefined && !is_int(rev)) {
-    callback(new customError("rev is a float value", "apierror"));
-    return;
+  // try to parse the revision number
+  if (rev !== undefined) {
+    rev = checkValidRev(rev);
   }
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
+  let head = pad.getHeadRevisionNumber();
 
-    // the client asked for a special revision
-    if (rev !== undefined) {
-      // check if this is a valid revision
-      if (rev > pad.getHeadRevisionNumber()) {
-        callback(new customError("rev is higher than the head revision of the pad", "apierror"));
-        return;
-      }
+  // the client asked for a special revision
+  if (rev !== undefined) {
 
-      // get the text of this revision
-      pad.getInternalRevisionAText(rev, function(err, atext) {
-        if (ERR(err, callback)) return;
-
-        var data = {text: atext.text};
-
-        callback(null, data);
-      })
-
-      return;
+    // check if this is a valid revision
+    if (rev > head) {
+      throw new customError("rev is higher than the head revision of the pad", "apierror");
     }
 
-    // the client wants the latest text, lets return it to him
-    var padText = exportTxt.getTXTFromAtext(pad, pad.atext);
-    callback(null, {"text": padText});
-  });
-});
+    // get the text of this revision
+    let text = await pad.getInternalRevisionAText(rev);
+    return { text };
+  }
+
+  // the client wants the latest text, lets return it to him
+  let text = exportTxt.getTXTFromAtext(pad, pad.atext);
+  return { text };
+}
 
 /**
 setText(padID, text) sets the text of a pad
@@ -254,25 +193,22 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
 {code: 1, message:"text too long", data: null}
 */
-exports.setText = thenify(function(padID, text, callback)
+exports.setText = async function(padID, text)
 {
   // text is required
   if (typeof text !== "string") {
-    callback(new customError("text is not a string", "apierror"));
-    return;
+    throw new customError("text is not a string", "apierror");
   }
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
 
-    // set the text
-    pad.setText(text);
+  // set the text
+  pad.setText(text);
 
-    // update the clients on the pad
-    padMessageHandler.updatePadClients(pad, callback);
-  });
-});
+  // update the clients on the pad
+  padMessageHandler.updatePadClients(pad);
+}
 
 /**
 appendText(padID, text) appends text to a pad
@@ -283,24 +219,20 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
 {code: 1, message:"text too long", data: null}
 */
-exports.appendText = thenify(function(padID, text, callback)
+exports.appendText = async function(padID, text)
 {
   // text is required
   if (typeof text !== "string") {
-    callback(new customError("text is not a string", "apierror"));
-    return;
+    throw new customError("text is not a string", "apierror");
   }
 
-  // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  // get and update the pad
+  let pad = await getPadSafe(padID, true);
+  pad.appendText(text);
 
-    pad.appendText(text);
-
-    // update the clients on the pad
-    padMessageHandler.updatePadClients(pad, callback);
-  });
-});
+  // update the clients on the pad
+  padMessageHandler.updatePadClients(pad);
+}
 
 /**
 getHTML(padID, [rev]) returns the html of a pad
@@ -310,60 +242,30 @@ Example returns:
 {code: 0, message:"ok", data: {text:"Welcome <strong>Text</strong>"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getHTML = thenify(function(padID, rev, callback)
+exports.getHTML = async function(padID, rev)
 {
-  if (rev !== undefined && typeof rev !== "number") {
-    if (isNaN(parseInt(rev))) {
-      callback(new customError("rev is not a number", "apierror"));
-      return;
+  if (rev !== undefined) {
+    rev = checkValidRev(rev);
+  }
+
+  let pad = await getPadSafe(padID, true);
+
+  // the client asked for a special revision
+  if (rev !== undefined) {
+    // check if this is a valid revision
+    let head = pad.getHeadRevisionNumber();
+    if (rev > head) {
+      throw new customError("rev is higher than the head revision of the pad", "apierror");
     }
-
-    rev = parseInt(rev);
   }
 
-  if (rev !== undefined && rev < 0) {
-     callback(new customError("rev is a negative number", "apierror"));
-     return;
-  }
+  // get the html of this revision
+  html = await exportHtml.getPadHTML(pad, rev);
 
-  if (rev !== undefined && !is_int(rev)) {
-    callback(new customError("rev is a float value", "apierror"));
-    return;
-  }
-
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    // the client asked for a special revision
-    if (rev !== undefined) {
-      // check if this is a valid revision
-      if (rev > pad.getHeadRevisionNumber()) {
-        callback(new customError("rev is higher than the head revision of the pad", "apierror"));
-        return;
-      }
-
-      // get the html of this revision
-      exportHtml.getPadHTML(pad, rev, function(err, html) {
-          if (ERR(err, callback)) return;
-          html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
-          html += "</body></html>";
-          var data = {html: html};
-          callback(null, data);
-      });
-
-      return;
-    }
-
-    // the client wants the latest text, lets return it to him
-    exportHtml.getPadHTML(pad, undefined, function(err, html) {
-      if (ERR(err, callback)) return;
-      html = "<!DOCTYPE HTML><html><body>" +html; // adds HTML head
-      html += "</body></html>";
-      var data = {html: html};
-      callback(null, data);
-    });
-  });
-});
+  // wrap the HTML
+  html = "<!DOCTYPE HTML><html><body>" + html + "</body></html>";
+  return { html };
+}
 
 /**
 setHTML(padID, html) sets the text of a pad based on HTML
@@ -373,30 +275,26 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.setHTML = thenify(function(padID, html, callback)
+exports.setHTML = async function(padID, html)
 {
-  // html is required
+  // html string is required
   if (typeof html !== "string") {
-    callback(new customError("html is not a string", "apierror"));
-    return;
+    throw new customError("html is not a string", "apierror");
   }
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
 
-    // add a new changeset with the new html to the pad
-    importHtml.setPadHTML(pad, cleanText(html), function(e) {
-      if (e) {
-        callback(new customError("HTML is malformed", "apierror"));
-        return;
-      }
+  // add a new changeset with the new html to the pad
+  try {
+    await importHtml.setPadHTML(pad, cleanText(html));
+  } catch (e) {
+    throw new customError("HTML is malformed", "apierror");
+  }
 
-      // update the clients on the pad
-      padMessageHandler.updatePadClients(pad, callback);
-    });
-  });
-});
+  // update the clients on the pad
+  padMessageHandler.updatePadClients(pad);
+};
 
 /******************/
 /**CHAT FUNCTIONS */
@@ -414,52 +312,43 @@ Example returns:
 
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getChatHistory = thenify(function(padID, start, end, callback)
+exports.getChatHistory = async function(padID, start, end)
 {
   if (start && end) {
     if (start < 0) {
-      callback(new customError("start is below zero", "apierror"));
-      return;
+      throw new customError("start is below zero", "apierror");
     }
     if (end < 0) {
-      callback(new customError("end is below zero", "apierror"));
-      return;
+      throw new customError("end is below zero", "apierror");
     }
     if (start > end) {
-      callback(new customError("start is higher than end", "apierror"));
-      return;
+      throw new customError("start is higher than end", "apierror");
     }
   }
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
 
-    var chatHead = pad.chatHead;
+  var chatHead = pad.chatHead;
 
-    // fall back to getting the whole chat-history if a parameter is missing
-    if (!start || !end) {
+  // fall back to getting the whole chat-history if a parameter is missing
+  if (!start || !end) {
     start = 0;
     end = pad.chatHead;
-    }
+  }
 
-    if (start > chatHead) {
-      callback(new customError("start is higher than the current chatHead", "apierror"));
-      return;
-    }
-    if (end > chatHead) {
-      callback(new customError("end is higher than the current chatHead", "apierror"));
-      return;
-    }
+  if (start > chatHead) {
+    throw new customError("start is higher than the current chatHead", "apierror");
+  }
+  if (end > chatHead) {
+    throw new customError("end is higher than the current chatHead", "apierror");
+  }
 
-    // the the whole message-log and return it to the client
-    pad.getChatMessages(start, end,
-      function(err, msgs) {
-        if (ERR(err, callback)) return;
-        callback(null, {messages: msgs});
-      });
-  });
-});
+  // the the whole message-log and return it to the client
+  let messages = await pad.getChatMessages(start, end);
+
+  return { messages };
+}
 
 /**
 appendChatMessage(padID, text, authorID, time), creates a chat message for the pad id, time is a timestamp
@@ -469,25 +358,23 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.appendChatMessage = thenify(function(padID, text, authorID, time, callback)
+exports.appendChatMessage = async function(padID, text, authorID, time)
 {
   // text is required
   if (typeof text !== "string") {
-    callback(new customError("text is not a string", "apierror"));
-    return;
+    throw new customError("text is not a string", "apierror");
   }
 
-  // if time is not an integer value
+  // if time is not an integer value set time to current timestamp
   if (time === undefined || !is_int(time)) {
-    // set time to current timestamp
     time = Date.now();
   }
 
+  // @TODO - missing getPadSafe() call ?
+
   // save chat message to database and send message to all connected clients
   padMessageHandler.sendChatMessageToPadClients(time, authorID, text, padID);
-
-  callback();
-});
+}
 
 /*****************/
 /**PAD FUNCTIONS */
@@ -501,15 +388,12 @@ Example returns:
 {code: 0, message:"ok", data: {revisions: 56}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getRevisionsCount = thenify(function(padID, callback)
+exports.getRevisionsCount = async function(padID)
 {
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {revisions: pad.getHeadRevisionNumber()});
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  return { revisions: pad.getHeadRevisionNumber() };
+}
 
 /**
 getSavedRevisionsCount(padID) returns the number of saved revisions of this pad
@@ -519,15 +403,12 @@ Example returns:
 {code: 0, message:"ok", data: {savedRevisions: 42}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getSavedRevisionsCount = thenify(function(padID, callback)
+exports.getSavedRevisionsCount = async function(padID)
 {
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {savedRevisions: pad.getSavedRevisionsNumber()});
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  return { savedRevisions: pad.getSavedRevisionsNumber() };
+}
 
 /**
 listSavedRevisions(padID) returns the list of saved revisions of this pad
@@ -537,15 +418,12 @@ Example returns:
 {code: 0, message:"ok", data: {savedRevisions: [2, 42, 1337]}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.listSavedRevisions = thenify(function(padID, callback)
+exports.listSavedRevisions = async function(padID)
 {
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {savedRevisions: pad.getSavedRevisionsList()});
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  return { savedRevisions: pad.getSavedRevisionsList() };
+}
 
 /**
 saveRevision(padID) returns the list of saved revisions of this pad
@@ -555,54 +433,29 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.saveRevision = thenify(function(padID, rev, callback)
+exports.saveRevision = async function(padID, rev)
 {
   // check if rev is a number
-  if (rev !== undefined && typeof rev !== "number") {
-    // try to parse the number
-    if (isNaN(parseInt(rev))) {
-      callback(new customError("rev is not a number", "apierror"));
-      return;
-    }
-
-    rev = parseInt(rev);
-  }
-
-  // ensure this is not a negative number
-  if (rev !== undefined && rev < 0) {
-    callback(new customError("rev is a negative number", "apierror"));
-    return;
-  }
-
-  // ensure this is not a float value
-  if (rev !== undefined && !is_int(rev)) {
-    callback(new customError("rev is a float value", "apierror"));
-    return;
+  if (rev !== undefined) {
+    rev = checkValidRev(rev);
   }
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
+  let head = pad.getHeadRevisionNumber();
 
-    // the client asked for a special revision
-    if (rev !== undefined) {
-      // check if this is a valid revision
-      if (rev > pad.getHeadRevisionNumber()) {
-        callback(new customError("rev is higher than the head revision of the pad", "apierror"));
-        return;
-      }
-    } else {
-      rev = pad.getHeadRevisionNumber();
+  // the client asked for a special revision
+  if (rev !== undefined) {
+    if (rev > head) {
+      throw new customError("rev is higher than the head revision of the pad", "apierror");
     }
+  } else {
+    rev = pad.getHeadRevisionNumber();
+  }
 
-    authorManager.createAuthor('API', function(err, author) {
-      if (ERR(err, callback)) return;
-
-      pad.addSavedRevision(rev, author.authorID, 'Saved through API call');
-      callback();
-    });
-  });
-});
+  let author = authorManager.createAuthor('API');
+  pad.addSavedRevision(rev, author.authorID, 'Saved through API call');
+}
 
 /**
 getLastEdited(padID) returns the timestamp of the last revision of the pad
@@ -612,18 +465,13 @@ Example returns:
 {code: 0, message:"ok", data: {lastEdited: 1340815946602}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getLastEdited = thenify(function(padID, callback)
+exports.getLastEdited = async function(padID)
 {
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    pad.getLastEdit(function(err, value) {
-      if (ERR(err, callback)) return;
-      callback(null, {lastEdited: value});
-    });
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  let lastEdited = await pad.getLastEdit();
+  return { lastEdited };
+}
 
 /**
 createPad(padName [, text]) creates a new pad in this group
@@ -633,28 +481,23 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"pad does already exist", data: null}
 */
-exports.createPad = thenify(function(padID, text, callback)
+exports.createPad = async function(padID, text)
 {
   if (padID) {
     // ensure there is no $ in the padID
     if (padID.indexOf("$") !== -1) {
-      callback(new customError("createPad can't create group pads", "apierror"));
-      return;
+      throw new customError("createPad can't create group pads", "apierror");
     }
 
     // check for url special characters
     if (padID.match(/(\/|\?|&|#)/)) {
-      callback(new customError("malformed padID: Remove special characters", "apierror"));
-      return;
+      throw new customError("malformed padID: Remove special characters", "apierror");
     }
   }
 
   // create pad
-  getPadSafe(padID, false, text, function(err) {
-    if (ERR(err, callback)) return;
-    callback();
-  });
-});
+  await getPadSafe(padID, false, text);
+}
 
 /**
 deletePad(padID) deletes a pad
@@ -664,14 +507,12 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.deletePad = thenify(function(padID, callback)
+exports.deletePad = async function(padID)
 {
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
+  await pad.remove();
+}
 
-    pad.remove(callback);
-  });
-});
 /**
  restoreRevision(padID, [rev]) Restores revision from past as new changeset
 
@@ -680,90 +521,66 @@ exports.deletePad = thenify(function(padID, callback)
  {code:0, message:"ok", data:null}
  {code: 1, message:"padID does not exist", data: null}
  */
-exports.restoreRevision = thenify(function(padID, rev, callback)
+exports.restoreRevision = async function(padID, rev)
 {
   // check if rev is a number
-  if (rev !== undefined && typeof rev !== "number") {
-    // try to parse the number
-    if (isNaN(parseInt(rev))) {
-      callback(new customError("rev is not a number", "apierror"));
-      return;
-    }
-
-    rev = parseInt(rev);
+  if (rev === undefined) {
+    throw new customeError("rev is not defined", "apierror");
   }
-
-  // ensure this is not a negative number
-  if (rev !== undefined && rev < 0) {
-    callback(new customError("rev is a negative number", "apierror"));
-    return;
-  }
-
-  // ensure this is not a float value
-  if (rev !== undefined && !is_int(rev)) {
-    callback(new customError("rev is a float value", "apierror"));
-    return;
-  }
+  rev = checkValidRev(rev);
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
 
+  // check if this is a valid revision
+  if (rev > pad.getHeadRevisionNumber()) {
+    throw new customError("rev is higher than the head revision of the pad", "apierror");
+  }
 
-    // check if this is a valid revision
-    if (rev > pad.getHeadRevisionNumber()) {
-      callback(new customError("rev is higher than the head revision of the pad", "apierror"));
-      return;
+  let atext = await pad.getInternalRevisionAText(rev);
+
+  var oldText = pad.text();
+  atext.text += "\n";
+
+  function eachAttribRun(attribs, func) {
+    var attribsIter = Changeset.opIterator(attribs);
+    var textIndex = 0;
+    var newTextStart = 0;
+    var newTextEnd = atext.text.length;
+    while (attribsIter.hasNext()) {
+      var op = attribsIter.next();
+      var nextIndex = textIndex + op.chars;
+      if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
+        func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
+      }
+      textIndex = nextIndex;
     }
+  }
 
-    pad.getInternalRevisionAText(rev, function(err, atext) {
-      if (ERR(err, callback)) return;
+  // create a new changeset with a helper builder object
+  var builder = Changeset.builder(oldText.length);
 
-      var oldText = pad.text();
-      atext.text += "\n";
-      function eachAttribRun(attribs, func) {
-        var attribsIter = Changeset.opIterator(attribs);
-        var textIndex = 0;
-        var newTextStart = 0;
-        var newTextEnd = atext.text.length;
-        while (attribsIter.hasNext()) {
-          var op = attribsIter.next();
-          var nextIndex = textIndex + op.chars;
-          if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
-            func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
-          }
-          textIndex = nextIndex;
-        }
-      }
-
-      // create a new changeset with a helper builder object
-      var builder = Changeset.builder(oldText.length);
-
-      // assemble each line into the builder
-      eachAttribRun(atext.attribs, function(start, end, attribs) {
-        builder.insert(atext.text.substring(start, end), attribs);
-      });
-
-      var lastNewlinePos = oldText.lastIndexOf('\n');
-      if (lastNewlinePos < 0) {
-        builder.remove(oldText.length - 1, 0);
-      } else {
-        builder.remove(lastNewlinePos, oldText.match(/\n/g).length - 1);
-        builder.remove(oldText.length - lastNewlinePos - 1, 0);
-      }
-
-      var changeset = builder.toString();
-
-      // append the changeset
-      pad.appendRevision(changeset);
-
-      // update the clients on the pad
-      padMessageHandler.updatePadClients(pad, function() {});
-      callback(null, null);
-    });
-
+  // assemble each line into the builder
+  eachAttribRun(atext.attribs, function(start, end, attribs) {
+    builder.insert(atext.text.substring(start, end), attribs);
   });
-});
+
+  var lastNewlinePos = oldText.lastIndexOf('\n');
+  if (lastNewlinePos < 0) {
+    builder.remove(oldText.length - 1, 0);
+  } else {
+    builder.remove(lastNewlinePos, oldText.match(/\n/g).length - 1);
+    builder.remove(oldText.length - lastNewlinePos - 1, 0);
+  }
+
+  var changeset = builder.toString();
+
+  // append the changeset
+  pad.appendRevision(changeset);
+
+  // update the clients on the pad
+  padMessageHandler.updatePadClients(pad);
+}
 
 /**
 copyPad(sourceID, destinationID[, force=false]) copies a pad. If force is true,
@@ -774,14 +591,11 @@ Example returns:
 {code: 0, message:"ok", data: {padID: destinationID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.copyPad = thenify(function(sourceID, destinationID, force, callback)
+exports.copyPad = async function(sourceID, destinationID, force)
 {
-  getPadSafe(sourceID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    pad.copy(destinationID, force, callback);
-  });
-});
+  let pad = await getPadSafe(sourceID, true);
+  await pad.copy(destinationID, force);
+}
 
 /**
 movePad(sourceID, destinationID[, force=false]) moves a pad. If force is true,
@@ -792,17 +606,13 @@ Example returns:
 {code: 0, message:"ok", data: {padID: destinationID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.movePad = thenify(function(sourceID, destinationID, force, callback)
+exports.movePad = async function(sourceID, destinationID, force)
 {
-  getPadSafe(sourceID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(sourceID, true);
+  await pad.copy(destinationID, force);
+  await pad.remove();
+}
 
-    pad.copy(destinationID, force, function(err) {
-      if (ERR(err, callback)) return;
-      pad.remove(callback);
-    });
-  });
-});
 /**
 getReadOnlyLink(padID) returns the read only link of a pad
 
@@ -811,19 +621,16 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getReadOnlyID = thenify(function(padID, callback)
+exports.getReadOnlyID = async function(padID)
 {
   // we don't need the pad object, but this function does all the security stuff for us
-  getPadSafe(padID, true, function(err) {
-    if (ERR(err, callback)) return;
+  await getPadSafe(padID, true);
 
-    // get the readonlyId
-    readOnlyManager.getReadOnlyId(padID, function(err, readOnlyId) {
-      if (ERR(err, callback)) return;
-      callback(null, {readOnlyID: readOnlyId});
-    });
-  });
-});
+  // get the readonlyId
+  let readOnlyID = await readOnlyManager.getReadOnlyId(padID);
+
+  return { readOnlyID };
+}
 
 /**
 getPadID(roID) returns the padID of a pad based on the readonlyID(roID)
@@ -833,20 +640,16 @@ Example returns:
 {code: 0, message:"ok", data: {padID: padID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getPadID = thenify(function(roID, callback)
+exports.getPadID = async function(roID)
 {
   // get the PadId
-  readOnlyManager.getPadId(roID, function(err, retrievedPadID) {
-    if (ERR(err, callback)) return;
+  let padID = await readOnlyManager.getPadId(roID);
+  if (padID === null) {
+    throw new customError("padID does not exist", "apierror");
+  }
 
-    if (retrievedPadID === null) {
-      callback(new customError("padID does not exist", "apierror"));
-      return;
-    }
-
-    callback(null, {padID: retrievedPadID});
-  });
-});
+  return { padID };
+}
 
 /**
 setPublicStatus(padID, publicStatus) sets a boolean for the public status of a pad
@@ -856,28 +659,22 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.setPublicStatus = thenify(function(padID, publicStatus, callback)
+exports.setPublicStatus = async function(padID, publicStatus)
 {
   // ensure this is a group pad
-  if (padID && padID.indexOf("$") === -1) {
-    callback(new customError("You can only get/set the publicStatus of pads that belong to a group", "apierror"));
-    return;
-  }
+  checkGroupPad(padID, "publicStatus");
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
 
-    // convert string to boolean
-    if (typeof publicStatus === "string")
-      publicStatus = publicStatus == "true" ? true : false;
+  // convert string to boolean
+  if (typeof publicStatus === "string") {
+    publicStatus = (publicStatus.toLowerCase() === "true");
+  }
 
-    // set the password
-    pad.setPublicStatus(publicStatus);
-
-    callback();
-  });
-});
+  // set the password
+  pad.setPublicStatus(publicStatus);
+}
 
 /**
 getPublicStatus(padID) return true of false
@@ -887,21 +684,15 @@ Example returns:
 {code: 0, message:"ok", data: {publicStatus: true}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getPublicStatus = thenify(function(padID, callback)
+exports.getPublicStatus = async function(padID)
 {
   // ensure this is a group pad
-  if (padID && padID.indexOf("$") == -1) {
-    callback(new customError("You can only get/set the publicStatus of pads that belong to a group", "apierror"));
-    return;
-  }
+  checkGroupPad(padID, "publicStatus");
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {publicStatus: pad.getPublicStatus()});
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  return { publicStatus: pad.getPublicStatus() };
+}
 
 /**
 setPassword(padID, password) returns ok or a error message
@@ -911,24 +702,17 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.setPassword = thenify(function(padID, password, callback)
+exports.setPassword = async function(padID, password)
 {
   // ensure this is a group pad
-  if (padID && padID.indexOf("$") == -1) {
-    callback(new customError("You can only get/set the password of pads that belong to a group", "apierror"));
-    return;
-  }
+  checkGroupPad(padID, "password");
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
+  let pad = await getPadSafe(padID, true);
 
-    // set the password
-    pad.setPassword(password == "" ? null : password);
-
-    callback();
-  });
-});
+  // set the password
+  pad.setPassword(password == "" ? null : password);
+}
 
 /**
 isPasswordProtected(padID) returns true or false
@@ -938,21 +722,15 @@ Example returns:
 {code: 0, message:"ok", data: {passwordProtection: true}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.isPasswordProtected = thenify(function(padID, callback)
+exports.isPasswordProtected = async function(padID)
 {
   // ensure this is a group pad
-  if (padID && padID.indexOf("$") == -1) {
-    callback(new customError("You can only get/set the password of pads that belong to a group", "apierror"));
-    return;
-  }
+  checkGroupPad(padID, "password");
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {isPasswordProtected: pad.isPasswordProtected()});
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  return { isPasswordProtected: pad.isPasswordProtected() };
+}
 
 /**
 listAuthorsOfPad(padID) returns an array of authors who contributed to this pad
@@ -962,15 +740,13 @@ Example returns:
 {code: 0, message:"ok", data: {authorIDs : ["a.s8oes9dhwrvt0zif", "a.akf8finncvomlqva"]}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.listAuthorsOfPad = thenify(function(padID, callback)
+exports.listAuthorsOfPad = async function(padID)
 {
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {authorIDs: pad.getAllAuthors()});
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  let authorIDs = pad.getAllAuthors();
+  return { authorIDs };
+}
 
 /**
 sendClientsMessage(padID, msg) sends a message to all clients connected to the
@@ -995,15 +771,10 @@ Example returns:
 {code: 1, message:"padID does not exist"}
 */
 
-exports.sendClientsMessage = thenify(function(padID, msg, callback) {
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) {
-      return;
-    }
-
-    padMessageHandler.handleCustomMessage(padID, msg, callback);
-  } );
-});
+exports.sendClientsMessage = async function(padID, msg) {
+  let pad = await getPadSafe(padID, true);
+  padMessageHandler.handleCustomMessage(padID, msg);
+}
 
 /**
 checkToken() returns ok when the current api token is valid
@@ -1013,10 +784,9 @@ Example returns:
 {"code":0,"message":"ok","data":null}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
-exports.checkToken = thenify(function(callback)
+exports.checkToken = async function()
 {
-  callback();
-});
+}
 
 /**
 getChatHead(padID) returns the chatHead (last number of the last chat-message) of the pad
@@ -1026,15 +796,12 @@ Example returns:
 {code: 0, message:"ok", data: {chatHead: 42}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getChatHead = thenify(function(padID, callback)
+exports.getChatHead = async function(padID)
 {
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {chatHead: pad.chatHead});
-  });
-});
+  let pad = await getPadSafe(padID, true);
+  return { chatHead: pad.chatHead };
+}
 
 /**
 createDiffHTML(padID, startRev, endRev) returns an object of diffs from 2 points in a pad
@@ -1044,68 +811,31 @@ Example returns:
 {"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
-exports.createDiffHTML = thenify(function(padID, startRev, endRev, callback) {
-  // check if startRev is a number
-  if (startRev !== undefined && typeof startRev !== "number") {
-    // try to parse the number
-    if (isNaN(parseInt(startRev))) {
-      callback({stop: "startRev is not a number"});
-      return;
-    }
+exports.createDiffHTML = async function(padID, startRev, endRev) {
 
-    startRev = parseInt(startRev, 10);
+  // check if startRev is a number
+  if (startRev !== undefined) {
+    startRev = checkValidRev(startRev);
   }
 
   // check if endRev is a number
-  if (endRev !== undefined && typeof endRev !== "number") {
-    // try to parse the number
-    if (isNaN(parseInt(endRev))) {
-      callback({stop: "endRev is not a number"});
-      return;
-    }
-
-    endRev = parseInt(endRev, 10);
+  if (endRev !== undefined) {
+    endRev = checkValidRev(endRev);
   }
 
   // get the pad
-  getPadSafe(padID, true, function(err, pad) {
-    if (err) {
-      return callback(err);
-    }
+  let pad = await getPadSafe(padID, true);
+  try {
+    var padDiff = new PadDiff(pad, startRev, endRev);
+  } catch (e) {
+    throw { stop: e.message };
+  }
 
-    try {
-      var padDiff = new PadDiff(pad, startRev, endRev);
-    } catch(e) {
-      return callback({stop:e.message});
-    }
-    var html, authors;
+  let html = await padDiff.getHtml();
+  let authors = await padDiff.getAuthors();
 
-    async.series([
-      function(callback) {
-        padDiff.getHtml(function(err, _html) {
-          if (err) {
-            return callback(err);
-          }
-
-          html = _html;
-          callback();
-        });
-      },
-      function(callback) {
-        padDiff.getAuthors(function(err, _authors) {
-          if (err) {
-            return callback(err);
-          }
-
-          authors = _authors;
-          callback();
-        });
-      }
-    ], function(err) {
-      callback(err, {html: html, authors: authors})
-    });
-  });
-});
+  return { html, authors };
+}
 
 /******************************/
 /** INTERNAL HELPER FUNCTIONS */
@@ -1114,42 +844,70 @@ exports.createDiffHTML = thenify(function(padID, startRev, endRev, callback) {
 // checks if a number is an int
 function is_int(value)
 {
-  return (parseFloat(value) == parseInt(value)) && !isNaN(value)
+  return (parseFloat(value) == parseInt(value, 10)) && !isNaN(value)
 }
 
 // gets a pad safe
-function getPadSafe(padID, shouldExist, text, callback)
+async function getPadSafe(padID, shouldExist, text)
 {
-  if (typeof text === "function") {
-    callback = text;
-    text = null;
-  }
-
   // check if padID is a string
   if (typeof padID !== "string") {
-    callback(new customError("padID is not a string", "apierror"));
-    return;
+    throw new customError("padID is not a string", "apierror");
   }
 
   // check if the padID maches the requirements
   if (!padManager.isValidPadId(padID)) {
-    callback(new customError("padID did not match requirements", "apierror"));
-    return;
+    throw new customError("padID did not match requirements", "apierror");
   }
 
   // check if the pad exists
-  padManager.doesPadExists(padID, function(err, exists) {
-    if (ERR(err, callback)) return;
+  let exists = await padManager.doesPadExists(padID);
 
+  if (!exists && shouldExist) {
     // does not exist, but should
-    if (exists == false && shouldExist == true) {
-      callback(new customError("padID does not exist", "apierror"));
-    } else if (exists == true && shouldExist == false) {
-      // does exist, but shouldn't
-      callback(new customError("padID does already exist", "apierror"));
-    } else {
-      // pad exists, let's get it
-      padManager.getPad(padID, text, callback);
-    }
-  });
+    throw new customError("padID does not exist", "apierror");
+  }
+
+  if (exists && !shouldExist) {
+    // does exist, but shouldn't
+    throw new customError("padID does already exist", "apierror");
+  }
+
+  // pad exists, let's get it
+  return padManager.getPad(padID, text);
+}
+
+// checks if a rev is a legal number
+// pre-condition is that `rev` is not undefined
+function checkValidRev(rev)
+{
+  if (typeof rev !== "number") {
+    rev = parseInt(rev, 10);
+  }
+
+  // check if rev is a number
+  if (isNaN(rev)) {
+    throw new customError("rev is not a number", "apierror");
+  }
+
+  // ensure this is not a negative number
+  if (rev < 0) {
+    throw new customError("rev is not a negative number", "apierror");
+  }
+
+  // ensure this is not a float value
+  if (!is_int(rev)) {
+    throw new customError("rev is a float value", "apierror");
+  }
+
+  return rev;
+}
+
+// checks if a padID is part of a group
+function checkGroupPad(padID, field)
+{
+  // ensure this is a group pad
+  if (padID && padID.indexOf("$") === -1) {
+    throw new customError(`You can only get/set the ${field} of pads that belong to a group`, "apierror");
+  }
 }
