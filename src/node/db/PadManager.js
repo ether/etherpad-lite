@@ -188,7 +188,7 @@ exports.listAllPads = thenify(function(cb)
 });
 
 // checks if a pad exists
-exports.doesPadExists = thenify(function(padId, callback)
+exports.doesPadExist = thenify(function(padId, callback)
 {
   db.get("pad:" + padId, function(err, value) {
     if (ERR(err, callback)) return;
@@ -200,6 +200,9 @@ exports.doesPadExists = thenify(function(padId, callback)
     }
   });
 });
+
+// alias for backwards compatibility
+exports.doesPadExists = exports.doesPadExist;
 
 // returns a sanitized padId, respecting legacy pad id formats
 function sanitizePadId(padId, callback) {
