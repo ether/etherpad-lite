@@ -113,15 +113,6 @@ var padList = {
 // initialises the all-knowing data structure
 
 /**
- * An array of padId transformations. These represent changes in pad name policy over
- * time, and allow us to "play back" these changes so legacy padIds can be found.
- */
-var padIdTransforms = [
-  [/\s+/g, '_'],
-  [/:+/g, '_']
-];
-
-/**
  * Returns a Pad Object with the callback
  * @param id A String with the id of the pad
  * @param {Function} callback
@@ -204,45 +195,31 @@ exports.doesPadExist = thenify(function(padId, callback)
 // alias for backwards compatibility
 exports.doesPadExists = exports.doesPadExist;
 
+/**
+ * An array of padId transformations. These represent changes in pad name policy over
+ * time, and allow us to "play back" these changes so legacy padIds can be found.
+ */
+const padIdTransforms = [
+  [/\s+/g, '_'],
+  [/:+/g, '_']
+];
+
 // returns a sanitized padId, respecting legacy pad id formats
-function sanitizePadId(padId, callback) {
-  var transform_index = arguments[2] || 0;
+exports.sanitizePadId = async function sanitizePadId(padId) {
+  for (let i = 0, n = padIdTransforms.length; i < n; ++i) {
+    let exists = await exports.doesPadExist(padId);
+
+    if (exists) {
+      return padId;
+    }
+
+    let [from, to] = padIdTransforms[i];
+
+    padId = padId.replace(from, to);
+  }
 
   // we're out of possible transformations, so just return it
-  if (transform_index >= padIdTransforms.length) {
-    callback(padId);
-
-    return;
-  }
-
-  // check if padId exists
-  exports.doesPadExists(padId, function(junk, exists) {
-    if (exists) {
-      callback(padId);
-
-      return;
-    }
-
-    // get the next transformation *that's different*
-    var transformedPadId = padId;
-
-    while(transformedPadId == padId && transform_index < padIdTransforms.length) {
-      transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
-      transform_index += 1;
-    }
-
-    // check the next transform
-    sanitizePadId(transformedPadId, callback, transform_index);
-  });
-}
-
-// sanitizePadId can't use thenify: single arg callback
-exports.sanitizePadId = function(padId, callback) {
-  if (callback) {
-    return sanitizePadId(padId, callback);
-  } else {
-    return new Promise(resolve => sanitizePadId(padId, resolve));
-  }
+  return padId;
 }
 
 exports.isValidPadId = function(padId)
