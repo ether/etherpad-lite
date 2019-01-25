@@ -83,6 +83,7 @@
   "scripts": {
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api"
   },
-  "version": "1.7.0",
+  "version": "1.7.5",
   "license": "Apache-2.0"
 }
+

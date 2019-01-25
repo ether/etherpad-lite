@@ -1,3 +1,20 @@
+# 1.7.5
+* FEATURE: introduced support for multiple skins. See http://etherpad.org/doc/v1.7.5/#index_skins
+* FEATURE: added a new, optional skin. It can be activated choosing `skinName: "colibris"` in `settings.json`
+* FEATURE: allow file import using LibreOffice
+* SECURITY: updated many dependencies. No known high or moderate risk dependencies remain.
+* SECURITY: generate better random pad names
+* FIX: don't nuke all installed plugins if `npm install` fails
+* FIX: improved LibreOffice export
+* FIX: allow debug mode on node versions >= 6.3
+* MINOR: started making Etherpad less dependent on current working directory when running
+* MINOR: started simplifying the code structure, flattening complex conditions
+* MINOR: simplified a bit the startup scripts
+
+*UPGRADE NOTES*: if you have custom files in `src/static/custom`, save them
+somewhere else, revert the directory contents, update to Etherpad 1.7.5, and
+finally put them back in their new location, uder `src/static/skins/no-skin`.
+
 # 1.7.0
 * FIX: `getLineHTMLForExport()` no longer produces multiple copies of a line. **WARNING**: this could potentially break some plugins
 * FIX: authorship of bullet points no longer changes when a second author edits them
