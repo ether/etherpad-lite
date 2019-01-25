@@ -15,7 +15,7 @@ Etherpad is a really-real time collaborative editor scalable to thousands of sim
 ```
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
 sudo apt-get install -y nodejs
-git clone https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
+git clone --branch master https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
 ```
 
 ## GNU/Linux and other UNIX-like systems
@@ -23,7 +23,7 @@ You'll need git and [node.js](https://nodejs.org) installed (minimum required No
 
 **As any user (we recommend creating a separate user called etherpad):**
 
-1. Move to a folder where you want to install Etherpad. Clone the git repository: `git clone git://github.com/ether/etherpad-lite.git`
+1. Move to a folder where you want to install Etherpad. Clone the git repository: `git clone --branch master git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code: `cd etherpad-lite`
 3. run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
 
@@ -46,7 +46,7 @@ You'll need [node.js](https://nodejs.org) and (optionally, though recommended) g
 
 1. Grab the source, either
   - download <https://github.com/ether/etherpad-lite/zipball/master>
-  - or `git clone https://github.com/ether/etherpad-lite.git` (for this you need git, obviously)
+  - or `git clone --branch master https://github.com/ether/etherpad-lite.git` (for this you need git, obviously)
 2. start `bin\installOnWindows.bat`
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser.
