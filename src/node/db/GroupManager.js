@@ -21,305 +21,168 @@
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
-var db = require("./DB").db;
-var async = require("async");
+var db = require("./DB");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 const thenify = require("thenify").withCallback;
 
-exports.listAllGroups = thenify(function(callback) {
-  db.get("groups", function (err, groups) {
-    if (ERR(err, callback)) return;
-
-    if (groups == null) {
-      // there are no groups
-      callback(null, {groupIDs: []});
-
-      return;
-    }
-
-    var groupIDs = [];
-    for (var groupID in groups) {
-      groupIDs.push(groupID);
-    }
-    callback(null, {groupIDs: groupIDs});
-  });
-});
-
-exports.deleteGroup = thenify(function(groupID, callback)
+exports.listAllGroups = async function()
 {
-  var group;
+  let groups = await db.get("groups");
+  groups = groups || {};
 
-  async.series([
-    // ensure group exists
-    function (callback) {
-      // try to get the group entry
-      db.get("group:" + groupID, function (err, _group) {
-        if (ERR(err, callback)) return;
+  let groupIDs = Object.keys(groups);
+  return { groupIDs };
+}
 
-        if (_group == null) {
-          // group does not exist
-          callback(new customError("groupID does not exist", "apierror"));
-          return;
-        }
+exports.deleteGroup = async function(groupID)
+{
+  let group = await db.get("group:" + groupID);
 
-        // group exists, everything is fine
-        group = _group;
-        callback();
-      });
-    },
+  // ensure group exists
+  if (group == null) {
+    // group does not exist
+    throw new customError("groupID does not exist", "apierror");
+  }
 
-    // iterate through all pads of this group and delete them
-    function(callback) {
-      // collect all padIDs in an array, that allows us to use async.forEach
-      var padIDs = [];
-      for(var i in group.pads) {
-        padIDs.push(i);
-      }
+  // iterate through all pads of this group and delete them
+  for (let padID in group.pads) {
+    let pad = await padManager.getPad(padID);
+    await pad.remove();
+  }
 
-      // loop through all pads and delete them
-      async.forEach(padIDs, function(padID, callback) {
-        padManager.getPad(padID, function(err, pad) {
-          if (ERR(err, callback)) return;
+  // iterate through group2sessions and delete all sessions
+  let group2sessions = await db.get("group2sessions:" + groupID);
+  let sessions = group2sessions ? group2sessions.sessionsIDs : [];
 
-          pad.remove(callback);
-        });
-      }, callback);
-    },
+  // loop through all sessions and delete them
+  for (let session in sessions) {
+    await sessionManager.deleteSession(session);
+  }
 
-    // iterate through group2sessions and delete all sessions
-    function(callback)
-    {
-      // try to get the group entry
-      db.get("group2sessions:" + groupID, function (err, group2sessions) {
-        if (ERR(err, callback)) return;
+  // remove group and group2sessions entry
+  await db.remove("group2sessions:" + groupID);
+  await db.remove("group:" + groupID);
 
-        // skip if there is no group2sessions entry
-        if (group2sessions == null) { callback(); return }
+  // unlist the group
+  let groups = await exports.listAllGroups();
+  groups = groups ? groups.groupIDs : [];
 
-        // collect all sessions in an array, that allows us to use async.forEach
-        var sessions = [];
-        for (var i in group2sessions.sessionsIDs) {
-          sessions.push(i);
-        }
+  let index = groups.indexOf(groupID);
 
-        // loop through all sessions and delete them
-        async.forEach(sessions, function(session, callback) {
-          sessionManager.deleteSession(session, callback);
-        }, callback);
-      });
-    },
+  if (index === -1) {
+    // it's not listed
 
-    // remove group and group2sessions entry
-    function(callback) {
-      db.remove("group2sessions:" + groupID);
-      db.remove("group:" + groupID);
-      callback();
-    },
+    return;
+  }
 
-    // unlist the group
-    function(callback) {
-      exports.listAllGroups(function(err, groups) {
-        if (ERR(err, callback)) return;
-        groups = groups? groups.groupIDs : [];
+  // remove from the list
+  groups.splice(index, 1);
 
-        let index = groups.indexOf(groupID);
+  // regenerate group list
+  var newGroups = {};
+  groups.forEach(group => newGroups[group] = 1);
+  await db.set("groups", newGroups);
+}
 
-        if (index === -1) {
-          // it's not listed
-          callback();
-
-          return;
-        }
-
-        // remove from the list
-        groups.splice(index, 1);
-
-        // store empty group list
-        if (groups.length == 0) {
-          db.set("groups", {});
-          callback();
-          return;
-        }
-
-        // regenerate group list
-        var newGroups = {};
-        async.forEach(groups, function(group, cb) {
-          newGroups[group] = 1;
-          cb();
-        },
-        function() {
-          db.set("groups", newGroups);
-          callback();
-        });
-      });
-    }
-  ],
-  function(err) {
-    if (ERR(err, callback)) return;
-    callback();
-  });
-});
-
+// @TODO: this is the only function still called with a callback
 exports.doesGroupExist = thenify(function(groupID, callback)
 {
   // try to get the group entry
-  db.get("group:" + groupID, function (err, group) {
+  db.db.get("group:" + groupID, function (err, group) {
     if (ERR(err, callback)) return;
     callback(null, group != null);
   });
 });
 
-exports.createGroup = thenify(function(callback)
+exports.createGroup = async function()
 {
   // search for non existing groupID
   var groupID = "g." + randomString(16);
 
   // create the group
-  db.set("group:" + groupID, {pads: {}});
+  await db.set("group:" + groupID, {pads: {}});
 
   // list the group
-  exports.listAllGroups(function(err, groups) {
-    if (ERR(err, callback)) return;
+  let groups = await exports.listAllGroups();
+  groups = groups? groups.groupIDs : [];
+  groups.push(groupID);
 
-    groups = groups? groups.groupIDs : [];
-    groups.push(groupID);
+  // regenerate group list
+  var newGroups = {};
+  groups.forEach(group => newGroups[group] = 1);
+  await db.set("groups", newGroups);
 
-    // regenerate group list
-    var newGroups = {};
-    async.forEach(groups, function(group, cb) {
-      newGroups[group] = 1;
-      cb();
-    },
-    function() {
-      db.set("groups", newGroups);
-      callback(null, {groupID: groupID});
-    });
-  });
-});
+  return { groupID };
+}
 
-exports.createGroupIfNotExistsFor = thenify(function(groupMapper, callback)
+exports.createGroupIfNotExistsFor = async function(groupMapper)
 {
   // ensure mapper is optional
   if (typeof groupMapper !== "string") {
-    callback(new customError("groupMapper is not a string", "apierror"));
-    return;
+    throw new customError("groupMapper is not a string", "apierror");
   }
 
   // try to get a group for this mapper
-  db.get("mapper2group:" + groupMapper, function(err, groupID) {
-    function createGroupForMapper(cb) {
-      exports.createGroup(function(err, responseObj) {
-        if (ERR(err, cb)) return;
+  let groupID = await db.get("mapper2group:" + groupMapper);
 
-        // create the mapper entry for this group
-        db.set("mapper2group:" + groupMapper, responseObj.groupID);
+  if (groupID) {
+    // there is a group for this mapper
+    let exists = await exports.doesGroupExist(groupID);
 
-        cb(null, responseObj);
-      });
-    }
+    if (exists) return { groupID };
+  }
 
-    if (ERR(err, callback)) return;
+  // hah, the returned group doesn't exist, let's create one
+  let result = await exports.createGroup();
 
-    if (groupID) {
-      // there is a group for this mapper
-      exports.doesGroupExist(groupID, function(err, exists) {
-        if (ERR(err, callback)) return;
+  // create the mapper entry for this group
+  await db.set("mapper2group:" + groupMapper, result.groupID);
 
-        if (exists) return callback(null, {groupID: groupID});
+  return result;
+}
 
-        // hah, the returned group doesn't exist, let's create one
-        createGroupForMapper(callback)
-      });
-
-      return;
-    }
-
-    // there is no group for this mapper, let's create a group
-    createGroupForMapper(callback)
-  });
-});
-
-exports.createGroupPad = thenify(function(groupID, padName, text, callback)
+exports.createGroupPad = async function(groupID, padName, text)
 {
   // create the padID
-  var padID = groupID + "$" + padName;
+  let padID = groupID + "$" + padName;
 
-  async.series([
-    // ensure group exists
-    function (callback) {
-      exports.doesGroupExist(groupID, function(err, exists) {
-        if (ERR(err, callback)) return;
+  // ensure group exists
+  let groupExists = await exports.doesGroupExist(groupID);
 
-        if (!exists) {
-          // group does not exist
-          callback(new customError("groupID does not exist", "apierror"));
-          return;
-        }
+  if (!groupExists) {
+    throw new customError("groupID does not exist", "apierror");
+  }
 
-        // group exists, everything is fine
-        callback();
-      });
-    },
+  // ensure pad doesn't exist already
+  let padExists = await padManager.doesPadExists(padID);
 
-    // ensure pad doesn't exist already
-    function (callback) {
-      padManager.doesPadExists(padID, function(err, exists) {
-        if (ERR(err, callback)) return;
+  if (padExists) {
+    // pad exists already
+    throw new customError("padName does already exist", "apierror");
+  }
 
-        if (exists == true) {
-          // pad exists already
-          callback(new customError("padName does already exist", "apierror"));
-          return;
-        }
+  // create the pad
+  await padManager.getPad(padID, text);
 
-        // pad does not exist, everything is fine
-        callback();
-      });
-    },
+  //create an entry in the group for this pad
+  await db.setSub("group:" + groupID, ["pads", padID], 1);
 
-    // create the pad
-    function (callback) {
-      padManager.getPad(padID, text, function(err) {
-        if (ERR(err, callback)) return;
+  return { padID };
+}
 
-        callback();
-      });
-    },
-
-    // create an entry in the group for this pad
-    function (callback) {
-      db.setSub("group:" + groupID, ["pads", padID], 1);
-      callback();
-    }
-  ],
-  function(err) {
-    if (ERR(err, callback)) return;
-
-    callback(null, {padID: padID});
-  });
-});
-
-exports.listPads = thenify(function(groupID, callback)
+exports.listPads = async function(groupID)
 {
-  exports.doesGroupExist(groupID, function(err, exists) {
-    if (ERR(err, callback)) return;
+  let exists = await exports.doesGroupExist(groupID);
 
-    // ensure the group exists
-    if (!exists) {
-      callback(new customError("groupID does not exist", "apierror"));
-      return;
-    }
+  // ensure the group exists
+  if (!exists) {
+    throw new customError("groupID does not exist", "apierror");
+  }
 
-    // group exists, let's get the pads
-    db.getSub("group:" + groupID, ["pads"], function(err, result) {
-      if (ERR(err, callback)) return;
+  // group exists, let's get the pads
+  let result = await db.getSub("group:" + groupID, ["pads"]);
+  let padIDs = Object.keys(result);
 
-      var pads = [];
-      for ( var padId in result ) {
-        pads.push(padId);
-      }
-      callback(null, {padIDs: pads});
-    });
-  });
-});
+  return { padIDs };
+}
