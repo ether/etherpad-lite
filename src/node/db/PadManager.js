@@ -50,46 +50,43 @@ var globalPads = {
  *
  * Updated without db access as new pads are created/old ones removed.
  */
-var padList = {
+let padList = {
   list: [],
   sorted : false,
   initiated: false,
-  init: thenify(function(cb) {
-    db.findKeys("pad:*", "*:*:*", function(err, dbData) {
-      if (ERR(err, cb)) return;
+  init: async function() {
+    let dbData = await db.findKeys("pad:*", "*:*:*");
 
-      if (dbData != null) {
-        padList.initiated = true
-        dbData.forEach(function(val) {
-          padList.addPad(val.replace(/pad:/,""),false);
-        });
+    if (dbData != null) {
+      this.initiated = true;
 
-        cb && cb();
+      for (let val of dbData) {
+        this.addPad(val.replace(/pad:/,""), false);
       }
-    });
+    }
 
     return this;
-  }),
-  load: thenify(function(cb) {
-    if (this.initiated) {
-      cb && cb();
-    } else {
-      this.init(cb);
+  },
+  load: async function() {
+    if (!this.initiated) {
+      return this.init();
     }
-  }),
+
+    return this;
+  },
   /**
    * Returns all pads in alphabetical order as array.
    */
-  getPads: thenify(function(cb) {
-    this.load(function() {
-      if (!padList.sorted) {
-        padList.list = padList.list.sort();
-        padList.sorted = true;
-      }
+  getPads: async function() {
+    await this.load();
 
-      cb && cb(padList.list);
-    })
-  }),
+    if (!this.sorted) {
+      this.list.sort();
+      this.sorted = true;
+    }
+
+    return this.list;
+  },
   addPad: function(name) {
     if (!this.initiated) return;
 
@@ -171,12 +168,12 @@ exports.getPad = thenify(function(id, text, callback)
   });
 });
 
-exports.listAllPads = thenify(function(cb)
+exports.listAllPads = async function()
 {
-  padList.getPads(function(list) {
-    cb && cb(null, {padIDs: list});
-  });
-});
+  let padIDs = await padList.getPads();
+
+  return { padIDs };
+}
 
 // checks if a pad exists
 exports.doesPadExist = thenify(function(padId, callback)
