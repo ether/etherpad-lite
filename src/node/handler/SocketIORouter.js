@@ -19,7 +19,6 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var securityManager = require("../db/SecurityManager");
@@ -80,7 +79,7 @@ exports.setSocketIO = function(_socket) {
       components[i].handleConnect(client);
     }
 
-    client.on('message', function(message) {
+    client.on('message', async function(message) {
       if (message.protocolVersion && message.protocolVersion != 2) {
         messageLogger.warn("Protocolversion header is not correct:" + stringifyWithoutPassword(message));
         return;
@@ -92,27 +91,22 @@ exports.setSocketIO = function(_socket) {
       } else {
         // try to authorize the client
         if (message.padId !== undefined && message.sessionID !== undefined && message.token !== undefined && message.password !== undefined) {
-          var checkAccessCallback = function(err, statusObject) {
-            ERR(err);
+          // check for read-only pads
+          let padId = message.padId;
+          if (padId.indexOf("r.") === 0) {
+            padId = await readOnlyManager.getPadId(message.padId);
+          }
 
-            if (statusObject.accessStatus === "grant") {
-              // access was granted, mark the client as authorized and handle the message
-              clientAuthorized = true;
-              handleMessage(client, message);
-            } else {
-              // no access, send the client a message that tells him why
-              messageLogger.warn("Authentication try failed:" + stringifyWithoutPassword(message));
-              client.json.send({accessStatus: statusObject.accessStatus});
-            }
-          };
-          if (message.padId.indexOf("r.") === 0) {
-            readOnlyManager.getPadId(message.padId, function(err, value) {
-              ERR(err);
-              securityManager.checkAccess(value, message.sessionID, message.token, message.password, checkAccessCallback);
-            });
+          let { accessStatus } = await securityManager.checkAccess(padId, message.sessionID, message.token, message.password);
+
+          if (accessStatus === "grant") {
+            // access was granted, mark the client as authorized and handle the message
+            clientAuthorized = true;
+            handleMessage(client, message);
           } else {
-            // this message has everything to try an authorization
-            securityManager.checkAccess (message.padId, message.sessionID, message.token, message.password, checkAccessCallback);
+            // no access, send the client a message that tells him why
+            messageLogger.warn("Authentication try failed:" + stringifyWithoutPassword(message));
+            client.json.send({ accessStatus });
           }
         } else {
           // drop message

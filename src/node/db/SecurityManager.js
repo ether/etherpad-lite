@@ -18,8 +18,6 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
-var async = require("async");
 var authorManager = require("./AuthorManager");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var padManager = require("./PadManager");
@@ -35,270 +33,222 @@ const thenify = require("thenify").withCallback;
  * @param sessionCookie the session the user has (set via api)
  * @param token the token of the author (randomly generated at client side, used for public pads)
  * @param password the password the user has given to access this pad, can be null
- * @param callback will be called with (err, {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx})
+ * @return {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx})
  */
-exports.checkAccess = thenify(function(padID, sessionCookie, token, password, callback)
+exports.checkAccess = async function(padID, sessionCookie, token, password)
 {
-  var statusObject;
+  // immutable object
+  let deny = Object.freeze({ accessStatus: "deny" });
 
   if (!padID) {
-    callback(null, {accessStatus: "deny"});
-    return;
+    return deny;
   }
 
   // allow plugins to deny access
   var deniedByHook = hooks.callAll("onAccessCheck", {'padID': padID, 'password': password, 'token': token, 'sessionCookie': sessionCookie}).indexOf(false) > -1;
   if (deniedByHook) {
-    callback(null, {accessStatus: "deny"});
-    return;
+    return deny;
   }
+
+  // get author for this token
+  let tokenAuthor = await authorManager.getAuthor4Token(token);
+
+  // check if pad exists
+  let padExists = await padManager.doesPadExist(padID);
 
   if (settings.requireSession) {
     // a valid session is required (api-only mode)
     if (!sessionCookie) {
       // without sessionCookie, access is denied
-      callback(null, {accessStatus: "deny"});
-
-      return;
+      return deny;
     }
   } else {
     // a session is not required, so we'll check if it's a public pad
     if (padID.indexOf("$") === -1) {
       // it's not a group pad, means we can grant access
 
-      // get author for this token
-      authorManager.getAuthor4Token(token, function(err, author) {
-        if (ERR(err, callback)) return;
+      // assume user has access
+      let statusObject = { accessStatus: "grant", authorID: tokenAuthor };
 
-        // assume user has access
-        statusObject = { accessStatus: "grant", authorID: author };
+      if (settings.editOnly) {
+        // user can't create pads
 
-        if (settings.editOnly) {
-          // user can't create pads
-
-          // check if pad exists
-          padManager.doesPadExists(padID, function(err, exists) {
-            if (ERR(err, callback)) return;
-
-            if (!exists) {
-              // pad doesn't exist - user can't have access
-              statusObject.accessStatus = "deny";
-            }
-
-            // grant or deny access, with author of token
-            callback(null, statusObject);
-          });
-
-          return;
+        if (!padExists) {
+          // pad doesn't exist - user can't have access
+          statusObject.accessStatus = "deny";
         }
+      }
 
-        // user may create new pads - no need to check anything
-        // grant access, with author of token
-        callback(null, statusObject);
-      });
-
-      // don't continue
-      return;
+      // user may create new pads - no need to check anything
+      // grant access, with author of token
+      return statusObject;
     }
   }
 
-  var groupID = padID.split("$")[0];
-  var padExists = false;
-  var validSession = false;
-  var sessionAuthor;
-  var tokenAuthor;
-  var isPublic;
-  var isPasswordProtected;
-  var passwordStatus = password == null ? "notGiven" : "wrong"; // notGiven, correct, wrong
+  let validSession = false;
+  let sessionAuthor;
+  let isPublic;
+  let isPasswordProtected;
+  let passwordStatus = password == null ? "notGiven" : "wrong"; // notGiven, correct, wrong
 
-  async.series([
-    // get basic informations from the database
-    function(callback) {
-      async.parallel([
-        // does pad exist
-        function(callback) {
-          padManager.doesPadExists(padID, function(err, exists) {
-            if (ERR(err, callback)) return;
+  // get information about all sessions contained in this cookie
+  if (sessionCookie) {
+    let groupID = padID.split("$")[0];
+    let sessionIDs = sessionCookie.split(',');
 
-            padExists = exists;
-            callback();
-          });
-        },
+    // was previously iterated in parallel using async.forEach
+    for (let sessionID of sessionIDs) {
+      try {
+        let sessionInfo = await sessionManager.getSessionInfo(sessionID);
 
-        // get information about all sessions contained in this cookie
-        function(callback) {
-          if (!sessionCookie) {
-            callback();
-            return;
-          }
-
-          var sessionIDs = sessionCookie.split(',');
-
-          async.forEach(sessionIDs, function(sessionID, callback) {
-            sessionManager.getSessionInfo(sessionID, function(err, sessionInfo) {
-              // skip session if it doesn't exist
-              if (err && err.message == "sessionID does not exist") {
-                authLogger.debug("Auth failed: unknown session");
-                callback();
-
-                return;
-              }
-
-              if (ERR(err, callback)) return;
-
-              var now = Math.floor(Date.now()/1000);
-
-              // is it for this group?
-              if (sessionInfo.groupID != groupID) {
-                authLogger.debug("Auth failed: wrong group");
-                callback();
-
-                return;
-              }
-
-              // is validUntil still ok?
-              if (sessionInfo.validUntil <= now) {
-                authLogger.debug("Auth failed: validUntil");
-                callback();
-
-                return;
-              }
-
-              // There is a valid session
-              validSession = true;
-              sessionAuthor = sessionInfo.authorID;
-
-              callback();
-            });
-          }, callback);
-        },
-
-        // get author for token
-        function(callback) {
-          // get author for this token
-          authorManager.getAuthor4Token(token, function(err, author) {
-            if (ERR(err, callback)) return;
-
-            tokenAuthor = author;
-            callback();
-          });
-        }
-      ], callback);
-    },
-
-    // get more informations of this pad, if avaiable
-    function(callback) {
-      // skip this if the pad doesn't exist
-      if (padExists == false) {
-        callback();
-
-        return;
-      }
-
-      padManager.getPad(padID, function(err, pad) {
-        if (ERR(err, callback)) return;
-
-        // is it a public pad?
-        isPublic = pad.getPublicStatus();
-
-        // is it password protected?
-        isPasswordProtected = pad.isPasswordProtected();
-
-        // is password correct?
-        if (isPasswordProtected && password && pad.isCorrectPassword(password)) {
-          passwordStatus = "correct";
+        // is it for this group?
+        if (sessionInfo.groupID != groupID) {
+          authLogger.debug("Auth failed: wrong group");
+          continue;
         }
 
-        callback();
-      });
-    },
+        // is validUntil still ok?
+        let now = Math.floor(Date.now() / 1000);
+        if (sessionInfo.validUntil <= now) {
+          authLogger.debug("Auth failed: validUntil");
+          continue;
+        }
 
-    function(callback) {
-      if (validSession && padExists) {
-        // - a valid session for this group is avaible AND pad exists
-        if (!isPasswordProtected) {
-          // - the pad is not password protected
-
-          // --> grant access
-          statusObject = { accessStatus: "grant", authorID: sessionAuthor };
-        } else if (settings.sessionNoPassword) {
-          // - the setting to bypass password validation is set
-
-          // --> grant access
-          statusObject = { accessStatus: "grant", authorID: sessionAuthor };
-        } else if (isPasswordProtected && passwordStatus === "correct") {
-          // - the pad is password protected and password is correct
-
-          // --> grant access
-          statusObject = { accessStatus: "grant", authorID: sessionAuthor };
-        } else if (isPasswordProtected && passwordStatus === "wrong") {
-          // - the pad is password protected but wrong password given
-
-          // --> deny access, ask for new password and tell them that the password is wrong
-          statusObject = { accessStatus: "wrongPassword" };
-        } else if (isPasswordProtected && passwordStatus === "notGiven") {
-          // - the pad is password protected but no password given
-
-          // --> ask for password
-          statusObject = { accessStatus: "needPassword" };
+        // fall-through - there is a valid session
+        validSession = true;
+        sessionAuthor = sessionInfo.authorID;
+        break;
+      } catch (err) {
+        // skip session if it doesn't exist
+        if (err.message == "sessionID does not exist") {
+          authLogger.debug("Auth failed: unknown session");
         } else {
-          throw new Error("Ops, something wrong happend");
+          throw err;
         }
-      } else if (validSession && !padExists) {
-        // - a valid session for this group avaible but pad doesn't exist
-
-        // --> grant access
-        statusObject = {accessStatus: "grant", authorID: sessionAuthor};
-
-        if (settings.editOnly) {
-          // --> deny access if user isn't allowed to create the pad
-          authLogger.debug("Auth failed: valid session & pad does not exist");
-          statusObject.accessStatus = "deny";
-        }
-      } else if (!validSession && padExists) {
-        // there is no valid session avaiable AND pad exists
-
-        // -- it's public and not password protected
-        if (isPublic && !isPasswordProtected) {
-          // --> grant access, with author of token
-          statusObject = {accessStatus: "grant", authorID: tokenAuthor};
-        } else if (isPublic && isPasswordProtected && passwordStatus === "correct") {
-          // - it's public and password protected and password is correct
-
-          // --> grant access, with author of token
-          statusObject = {accessStatus: "grant", authorID: tokenAuthor};
-        } else if (isPublic && isPasswordProtected && passwordStatus === "wrong") {
-          // - it's public and the pad is password protected but wrong password given
-
-          // --> deny access, ask for new password and tell them that the password is wrong
-          statusObject = {accessStatus: "wrongPassword"};
-        } else if (isPublic && isPasswordProtected && passwordStatus === "notGiven") {
-          // - it's public and the pad is password protected but no password given
-
-          // --> ask for password
-          statusObject = {accessStatus: "needPassword"};
-        } else if (!isPublic) {
-          // - it's not public
-
-          authLogger.debug("Auth failed: invalid session & pad is not public");
-          // --> deny access
-          statusObject = {accessStatus: "deny"};
-        } else {
-          throw new Error("Ops, something wrong happend");
-        }
-      } else {
-        // there is no valid session avaiable AND pad doesn't exist
-        authLogger.debug("Auth failed: invalid session & pad does not exist");
-        // --> deny access
-        statusObject = {accessStatus: "deny"};
       }
-
-      callback();
     }
-  ],
-  function(err) {
-    if (ERR(err, callback)) return;
+  }
 
-    callback(null, statusObject);
-  });
-});
+  if (padExists) {
+    let pad = await padManager.getPad(padID);
+
+    // is it a public pad?
+    isPublic = pad.getPublicStatus();
+
+    // is it password protected?
+    isPasswordProtected = pad.isPasswordProtected();
+
+    // is password correct?
+    if (isPasswordProtected && password && pad.isCorrectPassword(password)) {
+      passwordStatus = "correct";
+    }
+  }
+
+  // - a valid session for this group is avaible AND pad exists
+  if (validSession && padExists) {
+    let authorID = sessionAuthor;
+    let grant = Object.freeze({ accessStatus: "grant", authorID });
+
+    if (!isPasswordProtected) {
+      // - the pad is not password protected
+
+      // --> grant access
+      return grant;
+    }
+
+    if (settings.sessionNoPassword) {
+      // - the setting to bypass password validation is set
+
+      // --> grant access
+      return grant;
+    }
+
+    if (isPasswordProtected && passwordStatus === "correct") {
+      // - the pad is password protected and password is correct
+
+      // --> grant access
+      return grant;
+    }
+
+    if (isPasswordProtected && passwordStatus === "wrong") {
+      // - the pad is password protected but wrong password given
+
+      // --> deny access, ask for new password and tell them that the password is wrong
+      return { accessStatus: "wrongPassword" };
+    }
+
+    if (isPasswordProtected && passwordStatus === "notGiven") {
+      // - the pad is password protected but no password given
+
+      // --> ask for password
+      return { accessStatus: "needPassword" };
+    }
+
+    throw new Error("Oops, something wrong happend");
+  }
+
+  if (validSession && !padExists) {
+    // - a valid session for this group avaible but pad doesn't exist
+
+    // --> grant access by default
+    let accessStatus = "grant";
+    let authorID = sessionAuthor;
+
+    // --> deny access if user isn't allowed to create the pad
+    if (settings.editOnly) {
+      authLogger.debug("Auth failed: valid session & pad does not exist");
+      accessStatus = "deny";
+    }
+
+    return { accessStatus, authorID };
+  }
+
+  if (!validSession && padExists) {
+    // there is no valid session avaiable AND pad exists
+
+    let authorID = tokenAuthor;
+    let grant = Object.freeze({ accessStatus: "grant", authorID });
+
+    if (isPublic && !isPasswordProtected) {
+      // -- it's public and not password protected
+
+      // --> grant access, with author of token
+      return grant;
+    }
+
+    if (isPublic && isPasswordProtected && passwordStatus === "correct") {
+      // - it's public and password protected and password is correct
+
+      // --> grant access, with author of token
+      return grant;
+    }
+
+    if (isPublic && isPasswordProtected && passwordStatus === "wrong") {
+      // - it's public and the pad is password protected but wrong password given
+
+      // --> deny access, ask for new password and tell them that the password is wrong
+      return { accessStatus: "wrongPassword" };
+    }
+
+    if (isPublic && isPasswordProtected && passwordStatus === "notGiven") {
+      // - it's public and the pad is password protected but no password given
+
+      // --> ask for password
+      return { accessStatus: "needPassword" };
+    }
+
+    if (!isPublic) {
+      // - it's not public
+
+      authLogger.debug("Auth failed: invalid session & pad is not public");
+      // --> deny access
+      return { accessStatus: "deny" };
+    }
+
+    throw new Error("Oops, something wrong happend");
+  }
+
+  // there is no valid session avaiable AND pad doesn't exist
+  authLogger.debug("Auth failed: invalid session & pad does not exist");
+  return { accessStatus: "deny" };
+}

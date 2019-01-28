@@ -164,7 +164,7 @@ exports.handleDisconnect = function(client)
  * @param client the client that send this message
  * @param message the message from the client
  */
-exports.handleMessage = function(client, message)
+exports.handleMessage = async function(client, message)
 {
   if (message == null) {
     return;
@@ -181,35 +181,33 @@ exports.handleMessage = function(client, message)
     return;
   }
 
-  var handleMessageHook = function(callback) {
+  async function handleMessageHook() {
     // Allow plugins to bypass the readonly message blocker
-    hooks.aCallAll("handleMessageSecurity", { client: client, message: message }, function( err, messages ) {
-      if(ERR(err, callback)) return;
-      _.each(messages, function(newMessage){
-        if ( newMessage === true ) {
-          thisSession.readonly = false;
-        }
-      });
-    });
+    let messages = await hooks.aCallAll("handleMessageSecurity", { client: client, message: message });
 
-    var dropMessage = false;
+    for (let message of messages) {
+      if (message === true) {
+        thisSession.readonly = false;
+        break;
+      }
+    }
+
+    let dropMessage = false;
+
     // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages
     // handleMessage will be called, even if the client is not authorized
-    hooks.aCallAll("handleMessage", { client: client, message: message }, function( err, messages ) {
-      if(ERR(err, callback)) return;
-      _.each(messages, function(newMessage){
-        if ( newMessage === null ) {
-          dropMessage = true;
-        }
-      });
+    messages = await hooks.aCallAll("handleMessage", { client: client, message: message });
+    for (let message of messages) {
+      if (message === null ) {
+        dropMessage = true;
+        break;
+      }
+    }
 
-      // If no plugins explicitly told us to drop the message, its ok to proceed
-      if(!dropMessage){ callback() };
-    });
-
+    return dropMessage;
   }
 
-  var finalHandler = function() {
+  function finalHandler() {
     // Check what type of message we get and delegate to the other methods
     if (message.type == "CLIENT_READY") {
       handleClientReady(client, message);
@@ -256,54 +254,49 @@ exports.handleMessage = function(client, message)
     return;
   }
 
-  async.series([
-    handleMessageHook,
+  let dropMessage = await handleMessageHook();
+  if (!dropMessage) {
 
     // check permissions
-    function(callback) {
-      // client tried to auth for the first time (first msg from the client)
-      if (message.type == "CLIENT_READY") {
+
+    // client tried to auth for the first time (first msg from the client)
+    if (message.type == "CLIENT_READY") {
         createSessionInfo(client, message);
-      }
+    }
 
-      // Note: message.sessionID is an entirely different kind of
-      // session from the sessions we use here! Beware!
-      // FIXME: Call our "sessions" "connections".
-      // FIXME: Use a hook instead
-      // FIXME: Allow to override readwrite access with readonly
+    // Note: message.sessionID is an entirely different kind of
+    // session from the sessions we use here! Beware!
+    // FIXME: Call our "sessions" "connections".
+    // FIXME: Use a hook instead
+    // FIXME: Allow to override readwrite access with readonly
 
-      // Simulate using the load testing tool
-      if (!sessioninfos[client.id].auth) {
-        console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
-        return;
-      }
+    // Simulate using the load testing tool
+    if (!sessioninfos[client.id].auth) {
+      console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
+      return;
+    }
 
-      var auth = sessioninfos[client.id].auth;
-      var checkAccessCallback = function(err, statusObject) {
-        if (ERR(err, callback)) return;
+    let auth = sessioninfos[client.id].auth;
 
-        if (statusObject.accessStatus == "grant") {
-          // access was granted
-          callback();
-        } else {
-          // no access, send the client a message that tells him why
-          client.json.send({accessStatus: statusObject.accessStatus})
-        }
-      };
+    // check if pad is requested via readOnly
+    let padId = auth.padID;
 
-      // check if pad is requested via readOnly
-      if (auth.padID.indexOf("r.") === 0) {
-        // Pad is readOnly, first get the real Pad ID
-        readOnlyManager.getPadId(auth.padID, function(err, value) {
-          ERR(err);
-          securityManager.checkAccess(value, auth.sessionID, auth.token, auth.password, checkAccessCallback);
-        });
-      } else {
-        securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, checkAccessCallback);
-      }
-    },
-    finalHandler
-  ]);
+    // Pad is readOnly, first get the real Pad ID
+    if (padId.indexOf("r.") === 0) {
+      padId = await readOnlyManager.getPadId(padID);
+    }
+
+    let { accessStatus } = await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password);
+
+    // no access, send the client a message that tells him why
+    if (accessStatus !== "grant") {
+      client.json.send({ accessStatus });
+      return;
+    }
+
+    // access was granted
+    finalHandler();
+  }
 }
 
 
@@ -977,7 +970,7 @@ function createSessionInfo(client, message)
  * @param client the client that send this message
  * @param message the message from the client
  */
-function handleClientReady(client, message)
+async function handleClientReady(client, message)
 {
   // check if all ok
   if (!message.token) {
@@ -1000,434 +993,319 @@ function handleClientReady(client, message)
     return;
   }
 
-  var author;
-  var authorName;
-  var authorColorId;
-  var pad;
   var historicalAuthorData = {};
-  var currentTime;
-  var padIds;
 
   hooks.callAll("clientReady", message);
 
-  async.series([
-    // Get ro/rw id:s
-    function(callback) {
-      readOnlyManager.getIds(message.padId, function(err, value) {
-        if (ERR(err, callback)) return;
+  // Get ro/rw id:s
+  let padIds = await readOnlyManager.getIds(message.padId);
 
-        padIds = value;
-        callback();
-      });
-    },
+  // check permissions
 
-    // check permissions
-    function(callback) {
-      // Note: message.sessionID is an entierly different kind of
-      // session from the sessions we use here! Beware!
-      // FIXME: Call our "sessions" "connections".
-      // FIXME: Use a hook instead
-      // FIXME: Allow to override readwrite access with readonly
-      securityManager.checkAccess(padIds.padId, message.sessionID, message.token, message.password, function(err, statusObject) {
-        if (ERR(err, callback)) return;
+  // Note: message.sessionID is an entierly different kind of
+  // session from the sessions we use here! Beware!
+  // FIXME: Call our "sessions" "connections".
+  // FIXME: Use a hook instead
+  // FIXME: Allow to override readwrite access with readonly
+  let statusObject = await securityManager.checkAccess(padIds.padId, message.sessionID, message.token, message.password);
+  let accessStatus = statusObject.accessStatus;
 
-        if (statusObject.accessStatus == "grant") {
-          // access was granted
-          author = statusObject.authorID;
-          callback();
-        } else {
-          // no access, send the client a message that tells him why
-          client.json.send({accessStatus: statusObject.accessStatus})
-        }
-      });
-    },
+  // no access, send the client a message that tells him why
+  if (accessStatus !== "grant") {
+    client.json.send({ accessStatus });
+    return;
+  }
 
-    // get all authordata of this new user, and load the pad-object from the database
-    function(callback)
-    {
-      async.parallel([
-        // get colorId and name
-        function(callback) {
-          authorManager.getAuthor(author, function(err, value) {
-            if (ERR(err, callback)) return;
+  let author = statusObject.authorID;
 
-            authorColorId = value.colorId;
-            authorName = value.name;
-            callback();
-          });
-        },
+  // get all authordata of this new user, and load the pad-object from the database
+  let value = await authorManager.getAuthor(author);
+  let authorColorId = value.colorId;
+  let authorName = value.name;
 
-        // get pad
-        function(callback) {
-          padManager.getPad(padIds.padId, function(err, value) {
-            if (ERR(err, callback)) return;
+  // get pad
+  let pad = await padManager.getPad(padIds.padId);
 
-            pad = value;
-            callback();
-          });
-        }
-      ], callback);
-    },
+  // these db requests all need the pad object (timestamp of latest revision, author data)
+  let authors = pad.getAllAuthors();
 
-    // these db requests all need the pad object (timestamp of latest revission, author data)
-    function(callback) {
-      var authors = pad.getAllAuthors();
+  // get timestamp of latest revision needed for timeslider
+  let currentTime = await pad.getRevisionDate(pad.getHeadRevisionNumber());
 
-      async.parallel([
-        // get timestamp of latest revission needed for timeslider
-        function(callback) {
-          pad.getRevisionDate(pad.getHeadRevisionNumber(), function(err, date) {
-            if (ERR(err, callback)) return;
+  // get all author data out of the database
+  for (let authorId of authors) {
+    try {
+      let author = await authorManager.getAuthor(authorId);
+      historicalAuthorData[authorId] = { name: author.name, colorId: author.colorId }; // Filter author attribs (e.g. don't send author's pads to all clients)
+    } catch (err) {
+      messageLogger.error("There is no author for authorId:", authorId);
+    }
+  }
 
-            currentTime = date;
-            callback();
-          });
-        },
+  // glue the clientVars together, send them and tell the other clients that a new one is there
 
-        // get all author data out of the database
-        function(callback) {
-          async.forEach(authors, function(authorId, callback) {
-            authorManager.getAuthor(authorId, function(err, author) {
-              if (!author && !err) {
-                messageLogger.error("There is no author for authorId:", authorId);
+  // Check that the client is still here. It might have disconnected between callbacks.
+  if (sessioninfos[client.id] === undefined) {
+    return;
+  }
 
-                return callback();
-              }
+  // Check if this author is already on the pad, if yes, kick the other sessions!
+  let roomClients = _getRoomClients(pad.id);
 
-              if (ERR(err, callback)) return;
+  for (let client of roomClients) {
+    let sinfo = sessioninfos[client.id];
+    if (sinfo && sinfo.author == author) {
+      // fix user's counter, works on page refresh or if user closes browser window and then rejoins
+      sessioninfos[client.id] = {};
+      client.leave(padIds.padId);
+      client.json.send({disconnect:"userdup"});
+    }
+  }
 
-              historicalAuthorData[authorId] = { name: author.name, colorId: author.colorId }; // Filter author attribs (e.g. don't send author's pads to all clients)
-              callback();
-            });
-          }, callback);
-        }
-      ], callback);
+  // Save in sessioninfos that this session belonges to this pad
+  sessioninfos[client.id].padId = padIds.padId;
+  sessioninfos[client.id].readOnlyPadId = padIds.readOnlyPadId;
+  sessioninfos[client.id].readonly = padIds.readonly;
 
-    },
+  // Log creation/(re-)entering of a pad
+  let ip = remoteAddress[client.id];
 
-    // glue the clientVars together, send them and tell the other clients that a new one is there
-    function(callback) {
-      // Check that the client is still here. It might have disconnected between callbacks.
-      if(sessioninfos[client.id] === undefined) {
-        return callback();
-      }
+  // Anonymize the IP address if IP logging is disabled
+  if (settings.disableIPlogging) {
+    ip = 'ANONYMOUS';
+  }
 
-      // Check if this author is already on the pad, if yes, kick the other sessions!
-      var roomClients = _getRoomClients(pad.id);
+  if (pad.head > 0) {
+    accessLogger.info('[ENTER] Pad "' + padIds.padId + '": Client ' + client.id + ' with IP "' + ip + '" entered the pad');
+  } else if (pad.head == 0) {
+    accessLogger.info('[CREATE] Pad "' + padIds.padId + '": Client ' + client.id + ' with IP "' + ip + '" created the pad');
+  }
 
-      async.forEach(roomClients, function(client, callback) {
-        var sinfo = sessioninfos[client.id];
+  if (message.reconnect) {
+    // If this is a reconnect, we don't have to send the client the ClientVars again
+    // Join the pad and start receiving updates
+    client.join(padIds.padId);
 
-        if (sinfo && sinfo.author == author) {
-          // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-          sessioninfos[client.id] = {};
-          client.leave(padIds.padId);
-          client.json.send({ disconnect:"userdup" });
-        }
-      });
+    // Save the revision in sessioninfos, we take the revision from the info the client send to us
+    sessioninfos[client.id].rev = message.client_rev;
 
-      // Save in sessioninfos that this session belonges to this pad
-      sessioninfos[client.id].padId = padIds.padId;
-      sessioninfos[client.id].readOnlyPadId = padIds.readOnlyPadId;
-      sessioninfos[client.id].readonly = padIds.readonly;
+    // During the client reconnect, client might miss some revisions from other clients. By using client revision,
+    // this below code sends all the revisions missed during the client reconnect
+    var revisionsNeeded = [];
+    var changesets = {};
 
-      // Log creation/(re-)entering of a pad
-      var ip = remoteAddress[client.id];
+    var startNum = message.client_rev + 1;
+    var endNum = pad.getHeadRevisionNumber() + 1;
 
-      // Anonymize the IP address if IP logging is disabled
-      if (settings.disableIPlogging) {
-        ip = 'ANONYMOUS';
-      }
+    var headNum = pad.getHeadRevisionNumber();
 
-      if (pad.head > 0) {
-        accessLogger.info('[ENTER] Pad "' + padIds.padId + '": Client ' + client.id + ' with IP "' + ip + '" entered the pad');
-      } else if (pad.head == 0) {
-        accessLogger.info('[CREATE] Pad "' + padIds.padId + '": Client ' + client.id + ' with IP "' + ip + '" created the pad');
-      }
+    if (endNum > headNum + 1) {
+      endNum = headNum + 1;
+    }
 
-      if (message.reconnect == true) {
-        // If this is a reconnect, we don't have to send the client the ClientVars again
-        // Join the pad and start receiving updates
-        client.join(padIds.padId);
+    if (startNum < 0) {
+      startNum = 0;
+    }
 
-        // Save the revision in sessioninfos, we take the revision from the info the client send to us
-        sessioninfos[client.id].rev = message.client_rev;
+    for (let r = startNum; r < endNum; r++) {
+      revisionsNeeded.push(r);
+      changesets[r] = {};
+    }
 
-        // During the client reconnect, client might miss some revisions from other clients. By using client revision,
-        // this below code sends all the revisions missed during the client reconnect
-        var revisionsNeeded = [];
-        var changesets = {};
+    // get changesets, author and timestamp needed for pending revisions
+    for (let revNum of revisionsNeeded) {
+       changesets[revNum]['changeset'] = await pad.getRevisionChangeset(revNum);
+       changesets[revNum]['author'] = await pad.getRevisionAuthor(revNum);
+       changesets[revNum]['timestamp'] = await pad.getRevisionDate(revNum);
+    }
 
-        var startNum = message.client_rev + 1;
-        var endNum = pad.getHeadRevisionNumber() + 1;
+    // return pending changesets
+    for (let r of revisionsNeeded) {
 
-        async.series([
-          // push all the revision numbers needed into revisionsNeeded array
-          function(callback) {
-            var headNum = pad.getHeadRevisionNumber();
-
-            if (endNum > headNum+1) {
-              endNum = headNum+1;
-            }
-
-            if (startNum < 0) {
-              startNum = 0;
-            }
-
-            for (var r = startNum; r < endNum; r++) {
-              revisionsNeeded.push(r);
-              changesets[r] = {};
-            }
-
-            callback();
-          },
-
-          // get changesets needed for pending revisions
-          function(callback) {
-            async.eachSeries(revisionsNeeded, function(revNum, callback) {
-              pad.getRevisionChangeset(revNum, function(err, value) {
-                if (ERR(err)) return;
-
-                changesets[revNum]['changeset'] = value;
-                callback();
-              });
-            }, callback);
-          },
-
-          // get author for each changeset
-          function(callback) {
-            async.eachSeries(revisionsNeeded, function(revNum, callback) {
-              pad.getRevisionAuthor(revNum, function(err, value) {
-                if (ERR(err)) return;
-
-                changesets[revNum]['author'] = value;
-                callback();
-              });
-            }, callback);
-          },
-
-          // get timestamp for each changeset
-          function(callback) {
-            async.eachSeries(revisionsNeeded, function(revNum, callback) {
-              pad.getRevisionDate(revNum, function(err, value) {
-                if (ERR(err)) return;
-
-                changesets[revNum]['timestamp'] = value;
-                callback();
-              });
-            }, callback);
-          }
-        ],
-
-        // return error and pending changesets
-        function(err) {
-          if (ERR(err, callback)) return;
-
-          async.eachSeries(revisionsNeeded, function(r, callback) {
-            var forWire = Changeset.prepareForWire(changesets[r]['changeset'], pad.pool);
-            var wireMsg = {"type":"COLLABROOM",
-                           "data":{type:"CLIENT_RECONNECT",
-                                   headRev:pad.getHeadRevisionNumber(),
-                                   newRev:r,
-                                   changeset:forWire.translated,
-                                   apool: forWire.pool,
-                                   author: changesets[r]['author'],
-                                   currentTime: changesets[r]['timestamp']
+      let forWire = Changeset.prepareForWire(changesets[r]['changeset'], pad.pool);
+      let wireMsg = {"type":"COLLABROOM",
+                     "data":{type:"CLIENT_RECONNECT",
+                             headRev:pad.getHeadRevisionNumber(),
+                             newRev:r,
+                             changeset:forWire.translated,
+                             apool: forWire.pool,
+                             author: changesets[r]['author'],
+                             currentTime: changesets[r]['timestamp']
                            }};
-            client.json.send(wireMsg);
-            callback();
-          });
+      client.json.send(wireMsg);
+    }
 
-          if (startNum == endNum) {
-            var Msg = {"type":"COLLABROOM",
-                       "data":{type:"CLIENT_RECONNECT",
-                               noChanges: true,
-                               newRev: pad.getHeadRevisionNumber()
-                       }};
-            client.json.send(Msg);
-          }
-        });
-      } else {
-        // This is a normal first connect
-        // prepare all values for the wire, there's a chance that this throws, if the pad is corrupted
-        try {
-          var atext = Changeset.cloneAText(pad.atext);
-          var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
-          var apool = attribsForWire.pool.toJsonable();
-          atext.attribs = attribsForWire.translated;
-        } catch(e) {
-          console.error(e.stack || e)
-          client.json.send({ disconnect:"corruptPad" });// pull the brakes
-          return callback();
-        }
+    if (startNum == endNum) {
+      var Msg = {"type":"COLLABROOM",
+                 "data":{type:"CLIENT_RECONNECT",
+                         noChanges: true,
+                         newRev: pad.getHeadRevisionNumber()
+                 }};
+      client.json.send(Msg);
+    }
 
-        // Warning: never ever send padIds.padId to the client. If the
-        // client is read only you would open a security hole 1 swedish
-        // mile wide...
-        var clientVars = {
-          "skinName": settings.skinName,
-          "accountPrivs": {
-              "maxRevisions": 100
-          },
-          "automaticReconnectionTimeout": settings.automaticReconnectionTimeout,
-          "initialRevisionList": [],
-          "initialOptions": {
-              "guestPolicy": "deny"
-          },
-          "savedRevisions": pad.getSavedRevisions(),
-          "collab_client_vars": {
-              "initialAttributedText": atext,
-              "clientIp": "127.0.0.1",
-              "padId": message.padId,
-              "historicalAuthorData": historicalAuthorData,
-              "apool": apool,
-              "rev": pad.getHeadRevisionNumber(),
-              "time": currentTime,
-          },
-          "colorPalette": authorManager.getColorPalette(),
+  } else {
+    // This is a normal first connect
+
+    // prepare all values for the wire, there's a chance that this throws, if the pad is corrupted
+    try {
+      var atext = Changeset.cloneAText(pad.atext);
+      var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
+      var apool = attribsForWire.pool.toJsonable();
+      atext.attribs = attribsForWire.translated;
+    } catch(e) {
+      console.error(e.stack || e)
+      client.json.send({ disconnect:"corruptPad" }); // pull the brakes
+
+      return;
+    }
+
+    // Warning: never ever send padIds.padId to the client. If the
+    // client is read only you would open a security hole 1 swedish
+    // mile wide...
+    var clientVars = {
+      "skinName": settings.skinName,
+      "accountPrivs": {
+          "maxRevisions": 100
+      },
+      "automaticReconnectionTimeout": settings.automaticReconnectionTimeout,
+      "initialRevisionList": [],
+      "initialOptions": {
+          "guestPolicy": "deny"
+      },
+      "savedRevisions": pad.getSavedRevisions(),
+      "collab_client_vars": {
+          "initialAttributedText": atext,
           "clientIp": "127.0.0.1",
-          "userIsGuest": true,
-          "userColor": authorColorId,
           "padId": message.padId,
-          "padOptions": settings.padOptions,
-          "padShortcutEnabled": settings.padShortcutEnabled,
-          "initialTitle": "Pad: " + message.padId,
-          "opts": {},
-          // tell the client the number of the latest chat-message, which will be
-          // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
-          "chatHead": pad.chatHead,
-          "numConnectedUsers": roomClients.length,
-          "readOnlyId": padIds.readOnlyPadId,
-          "readonly": padIds.readonly,
-          "serverTimestamp": Date.now(),
-          "userId": author,
-          "abiwordAvailable": settings.abiwordAvailable(),
-          "sofficeAvailable": settings.sofficeAvailable(),
-          "exportAvailable": settings.exportAvailable(),
-          "plugins": {
-            "plugins": plugins.plugins,
-            "parts": plugins.parts,
-          },
-          "indentationOnNewLine": settings.indentationOnNewLine,
-          "scrollWhenFocusLineIsOutOfViewport": {
-            "percentage" : {
-              "editionAboveViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
-              "editionBelowViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
-            },
-            "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
-            "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
-            "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
-          },
-          "initialChangesets": [] // FIXME: REMOVE THIS SHIT
+          "historicalAuthorData": historicalAuthorData,
+          "apool": apool,
+          "rev": pad.getHeadRevisionNumber(),
+          "time": currentTime,
+      },
+      "colorPalette": authorManager.getColorPalette(),
+      "clientIp": "127.0.0.1",
+      "userIsGuest": true,
+      "userColor": authorColorId,
+      "padId": message.padId,
+      "padOptions": settings.padOptions,
+      "padShortcutEnabled": settings.padShortcutEnabled,
+      "initialTitle": "Pad: " + message.padId,
+      "opts": {},
+      // tell the client the number of the latest chat-message, which will be
+      // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
+      "chatHead": pad.chatHead,
+      "numConnectedUsers": roomClients.length,
+      "readOnlyId": padIds.readOnlyPadId,
+      "readonly": padIds.readonly,
+      "serverTimestamp": Date.now(),
+      "userId": author,
+      "abiwordAvailable": settings.abiwordAvailable(),
+      "sofficeAvailable": settings.sofficeAvailable(),
+      "exportAvailable": settings.exportAvailable(),
+      "plugins": {
+        "plugins": plugins.plugins,
+        "parts": plugins.parts,
+      },
+      "indentationOnNewLine": settings.indentationOnNewLine,
+      "scrollWhenFocusLineIsOutOfViewport": {
+        "percentage" : {
+          "editionAboveViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
+          "editionBelowViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
+        },
+        "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
+        "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
+        "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
+      },
+      "initialChangesets": [] // FIXME: REMOVE THIS SHIT
+    }
+
+    // Add a username to the clientVars if one avaiable
+    if (authorName != null) {
+      clientVars.userName = authorName;
+    }
+
+    // call the clientVars-hook so plugins can modify them before they get sent to the client
+    let messages = await hooks.aCallAll("clientVars", { clientVars: clientVars, pad: pad });
+
+    // combine our old object with the new attributes from the hook
+    for (let msg of messages) {
+      Object.assign(clientVars, msg);
+    }
+
+    // Join the pad and start receiving updates
+    client.join(padIds.padId);
+
+    // Send the clientVars to the Client
+    client.json.send({type: "CLIENT_VARS", data: clientVars});
+
+    // Save the current revision in sessioninfos, should be the same as in clientVars
+    sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+
+    sessioninfos[client.id].author = author;
+
+    // prepare the notification for the other users on the pad, that this user joined
+    let messageToTheOtherUsers = {
+       "type": "COLLABROOM",
+       "data": {
+        type: "USER_NEWINFO",
+        userInfo: {
+          "ip": "127.0.0.1",
+          "colorId": authorColorId,
+          "userAgent": "Anonymous",
+          "userId": author
         }
+      }
+    };
 
-        // Add a username to the clientVars if one avaiable
-        if (authorName != null) {
-          clientVars.userName = authorName;
-        }
+    // Add the authorname of this new User, if avaiable
+    if (authorName != null) {
+      messageToTheOtherUsers.data.userInfo.name = authorName;
+    }
 
-        // call the clientVars-hook so plugins can modify them before they get sent to the client
-        hooks.aCallAll("clientVars", { clientVars: clientVars, pad: pad }, function( err, messages ) {
-          if (ERR(err, callback)) return;
+    // notify all existing users about new user
+    client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
 
-          _.each(messages, function(newVars) {
-            // combine our old object with the new attributes from the hook
-            for(var attr in newVars) {
-              clientVars[attr] = newVars[attr];
-            }
-          });
+    // Get sessions for this pad
+    roomClients = _getRoomClients(pad.id);
+    for (let roomClient of roomClients) {
 
-          // Join the pad and start receiving updates
-          client.join(padIds.padId);
-
-          // Send the clientVars to the Client
-          client.json.send({ type: "CLIENT_VARS", data: clientVars });
-
-          // Save the current revision in sessioninfos, should be the same as in clientVars
-          sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
-        });
+      // Jump over, if this session is the connection session
+      if (roomClient.id == client.id) {
+        continue;
       }
 
-      sessioninfos[client.id].author = author;
+      // Since sessioninfos might change while being enumerated, check if the
+      // sessionID is still assigned to a valid session
+      if (sessioninfos[roomClient.id] === undefined) {
+        continue;
+      }
 
-      // prepare the notification for the other users on the pad, that this user joined
-      var messageToTheOtherUsers = {
+      let author = sessioninfos[roomClient.id].author;
+
+      // get the authorname & colorId
+
+      // reuse previously created cache of author's data
+      let authorInfo = historicalAuthorData[author] || await authorManager.getAuthor(author);
+
+      // Send the new User a Notification about this other user
+      let msg = {
         "type": "COLLABROOM",
         "data": {
           type: "USER_NEWINFO",
           userInfo: {
             "ip": "127.0.0.1",
-            "colorId": authorColorId,
+            "colorId": authorInfo.colorId,
+            "name": authorInfo.name,
             "userAgent": "Anonymous",
             "userId": author
           }
         }
       };
 
-      // Add the authorname of this new User, if avaiable
-      if (authorName != null) {
-        messageToTheOtherUsers.data.userInfo.name = authorName;
-      }
-
-      // notify all existing users about new user
-      client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
-
-      // Get sessions for this pad
-      var roomClients = _getRoomClients(pad.id);
-
-      async.forEach(roomClients, function(roomClient, callback) {
-        var author;
-
-        // Jump over, if this session is the connection session
-        if (roomClient.id == client.id) {
-          return callback();
-        }
-
-        // Since sessioninfos might change while being enumerated, check if the
-        // sessionID is still assigned to a valid session
-        if (sessioninfos[roomClient.id] !== undefined) {
-          author = sessioninfos[roomClient.id].author;
-        } else {
-          // If the client id is not valid, callback();
-          return callback();
-        }
-
-        async.waterfall([
-          // get the authorname & colorId
-          function(callback) {
-            // reuse previously created cache of author's data
-            if (historicalAuthorData[author]) {
-              callback(null, historicalAuthorData[author]);
-            } else {
-              authorManager.getAuthor(author, callback);
-            }
-          },
-
-          function(authorInfo, callback) {
-            // Send the new User a Notification about this other user
-            var msg = {
-              "type": "COLLABROOM",
-              "data": {
-                type: "USER_NEWINFO",
-                userInfo: {
-                  "ip": "127.0.0.1",
-                  "colorId": authorInfo.colorId,
-                  "name": authorInfo.name,
-                  "userAgent": "Anonymous",
-                  "userId": author
-                }
-              }
-            };
-
-            client.json.send(msg);
-          }
-        ], callback);
-      }, callback);
+      client.json.send(msg);
     }
-  ],
-  function(err) {
-    ERR(err);
-  });
+  }
 }
 
 /**
@@ -1495,7 +1373,6 @@ function handleChangesetRequest(client, message)
     }
   ]);
 }
-
 
 /**
  * Tries to rebuild the getChangestInfo function of the original Etherpad
