@@ -1,0 +1,11 @@
+{
+  "name": "ep_bl_dnd",
+  "version": "1.0.0",
+  "description": "Blameless Drag and Drop",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,11 @@
+{
+  "parts": [
+    {
+      "name": "ep_bl_dnd",
+      "hooks": {},
+      "client_hooks": {
+        "postAceInit": "ep_bl_dnd/static/js/index"
+      }
+    }
+  ]
+}
