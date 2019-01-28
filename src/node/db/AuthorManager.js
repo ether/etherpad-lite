@@ -18,7 +18,6 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var db = require("./DB");
 var customError = require("../utils/customError");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
@@ -53,17 +52,14 @@ exports.doesAuthorExists = exports.doesAuthorExist;
 /**
  * Returns the AuthorID for a token.
  * @param {String} token The token
- * @param {Function} callback callback (err, author)
  */
-exports.getAuthor4Token = thenify(function(token, callback)
+exports.getAuthor4Token = async function(token)
 {
-  mapAuthorWithDBKey("token2author", token, function(err, author) {
-    if (ERR(err, callback)) return;
+  let author = await mapAuthorWithDBKey("token2author", token);
 
-    // return only the sub value authorID
-    callback(null, author ? author.authorID : author);
-  });
-});
+  // return only the sub value authorID
+  return author ? author.authorID : author;
+}
 
 /**
  * Returns the AuthorID for a mapper.
@@ -87,69 +83,63 @@ exports.createAuthorIfNotExistsFor = async function(authorMapper, name)
  * so far this is token2author and mapper2author
  * @param {String} mapperkey The database key name for this mapper
  * @param {String} mapper The mapper
- * @param {Function} callback callback (err, author)
  */
-let mapAuthorWithDBKey = thenify(function mapAuthorWithDBKey (mapperkey, mapper, callback)
+async function mapAuthorWithDBKey (mapperkey, mapper)
 {
   // try to map to an author
-  db.db.get(mapperkey + ":" + mapper, function(err, author) {
-    if (ERR(err, callback)) return;
+  let author = await db.get(mapperkey + ":" + mapper);
 
-    if (author === null) {
-      // there is no author with this mapper, so create one
-      exports.createAuthor(null, function(err, author) {
-        if (ERR(err, callback)) return;
+  if (author === null) {
+    // there is no author with this mapper, so create one
+    let author = await exports.createAuthor(null);
 
-        // create the token2author relation
-        db.db.set(mapperkey + ":" + mapper, author.authorID);
-
-        // return the author
-        callback(null, author);
-      });
-
-      return;
-    }
-
-    // there is an author with this mapper
-    // update the timestamp of this author
-    db.db.setSub("globalAuthor:" + author, ["timestamp"], Date.now());
+    // create the token2author relation
+    await db.set(mapperkey + ":" + mapper, author.authorID);
 
     // return the author
-    callback(null, {authorID: author});
-  });
-});
+    return author;
+  }
+
+  // there is an author with this mapper
+  // update the timestamp of this author
+  await db.setSub("globalAuthor:" + author, ["timestamp"], Date.now());
+
+  // return the author
+  return { authorID: author};
+}
 
 /**
  * Internal function that creates the database entry for an author
  * @param {String} name The name of the author
  */
-exports.createAuthor = thenify(function(name, callback)
+exports.createAuthor = function(name)
 {
   // create the new author name
-  var author = "a." + randomString(16);
+  let author = "a." + randomString(16);
 
   // create the globalAuthors db entry
-  var authorObj = {
+  let authorObj = {
     "colorId": Math.floor(Math.random() * (exports.getColorPalette().length)),
     "name": name,
     "timestamp": Date.now()
   };
 
   // set the global author db entry
-  db.db.set("globalAuthor:" + author, authorObj);
+  // NB: no await, since we're not waiting for the DB set to finish
+  db.set("globalAuthor:" + author, authorObj);
 
-  callback(null, {authorID: author});
-});
+  return { authorID: author };
+}
 
 /**
  * Returns the Author Obj of the author
  * @param {String} author The id of the author
- * @param {Function} callback callback(err, authorObj)
  */
-exports.getAuthor = thenify(function(author, callback)
+exports.getAuthor = function(author)
 {
-  db.db.get("globalAuthor:" + author, callback);
-});
+  // NB: result is already a Promise
+  return db.get("globalAuthor:" + author);
+}
 
 /**
  * Returns the color Id of the author
@@ -165,12 +155,11 @@ exports.getAuthorColorId = thenify(function(author, callback)
  * Sets the color Id of the author
  * @param {String} author The id of the author
  * @param {String} colorId The color id of the author
- * @param {Function} callback (optional)
  */
-exports.setAuthorColorId = thenify(function(author, colorId, callback)
+exports.setAuthorColorId = function(author, colorId)
 {
-  db.db.setSub("globalAuthor:" + author, ["colorId"], colorId, callback);
-});
+  return db.setSub("globalAuthor:" + author, ["colorId"], colorId);
+}
 
 /**
  * Returns the name of the author
@@ -186,12 +175,11 @@ exports.getAuthorName = thenify(function(author, callback)
  * Sets the name of the author
  * @param {String} author The id of the author
  * @param {String} name The name of the author
- * @param {Function} callback (optional)
  */
-exports.setAuthorName = thenify(function(author, name, callback)
+exports.setAuthorName = function(author, name)
 {
-  db.db.setSub("globalAuthor:" + author, ["name"], name, callback);
-});
+  return db.setSub("globalAuthor:" + author, ["name"], name);
+}
 
 /**
  * Returns an array of all pads this author contributed to
