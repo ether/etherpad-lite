@@ -6,7 +6,7 @@
 var ERR = require("async-stacktrace");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
-var db = require("./DB").db;
+var db = require("./DB");
 var async = require("async");
 var settings = require('../utils/Settings');
 var authorManager = require("./AuthorManager");
@@ -128,25 +128,25 @@ Pad.prototype.saveToDatabase = function saveToDatabase() {
     }
   }
 
-  db.set("pad:" + this.id, dbObject);
+  db.db.set("pad:" + this.id, dbObject);
 }
 
 // get time of last edit (changeset application)
-Pad.prototype.getLastEdit = thenify(function getLastEdit(callback) {
+Pad.prototype.getLastEdit = function getLastEdit() {
   var revNum = this.getHeadRevisionNumber();
-  db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "timestamp"], callback);
-});
+  return db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "timestamp"]);
+}
 
 Pad.prototype.getRevisionChangeset = thenify(function getRevisionChangeset(revNum, callback) {
-  db.getSub("pad:" + this.id + ":revs:" + revNum, ["changeset"], callback);
+  db.db.getSub("pad:" + this.id + ":revs:" + revNum, ["changeset"], callback);
 });
 
 Pad.prototype.getRevisionAuthor = thenify(function getRevisionAuthor(revNum, callback) {
-  db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "author"], callback);
+  db.db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "author"], callback);
 });
 
 Pad.prototype.getRevisionDate = thenify(function getRevisionDate(revNum, callback) {
-  db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "timestamp"], callback);
+  db.db.getSub("pad:" + this.id + ":revs:" + revNum, ["meta", "timestamp"], callback);
 });
 
 Pad.prototype.getAllAuthors = function getAllAuthors() {
@@ -182,7 +182,7 @@ Pad.prototype.getInternalRevisionAText = thenify(function getInternalRevisionATe
       async.parallel([
         // get the atext of the key revision
         function (callback) {
-          db.getSub("pad:" + _this.id + ":revs:" + keyRev, ["meta", "atext"], function(err, _atext) {
+          db.db.getSub("pad:" + _this.id + ":revs:" + keyRev, ["meta", "atext"], function(err, _atext) {
             if (ERR(err, callback)) return;
             try {
               atext = Changeset.cloneAText(_atext);
@@ -232,7 +232,7 @@ Pad.prototype.getInternalRevisionAText = thenify(function getInternalRevisionATe
 });
 
 Pad.prototype.getRevision = thenify(function getRevisionChangeset(revNum, callback) {
-  db.get("pad:" + this.id + ":revs:" + revNum, callback);
+  db.db.get("pad:" + this.id + ":revs:" + revNum, callback);
 });
 
 Pad.prototype.getAllAuthorColors = thenify(function getAllAuthorColors(callback) {
@@ -333,7 +333,7 @@ Pad.prototype.getChatMessage = thenify(function getChatMessage(entryNum, callbac
   async.series([
     // get the chat entry
     function(callback) {
-      db.get("pad:" + _this.id + ":chat:" + entryNum, function(err, _entry) {
+      db.db.get("pad:" + _this.id + ":chat:" + entryNum, function(err, _entry) {
         if (ERR(err, callback)) return;
         entry = _entry;
         callback();
@@ -410,7 +410,7 @@ Pad.prototype.init = thenify(function init(text, callback) {
   }
 
   // try to load the pad
-  db.get("pad:" + this.id, function(err, value) {
+  db.db.get("pad:" + this.id, function(err, value) {
     if (ERR(err, callback)) return;
 
     // if this pad exists, load it
@@ -509,7 +509,7 @@ Pad.prototype.copy = thenify(function copy(destinationID, force, callback) {
 
     // copy the 'pad' entry
     function(callback) {
-      db.get("pad:" + sourceID, function(err, pad) {
+      db.db.get("pad:" + sourceID, function(err, pad) {
         db.set("pad:" + destinationID, pad);
       });
 
@@ -524,7 +524,7 @@ Pad.prototype.copy = thenify(function copy(destinationID, force, callback) {
           var chatHead = _this.chatHead;
 
           for (var i=0; i <= chatHead; i++) {
-            db.get("pad:" + sourceID + ":chat:" + i, function (err, chat) {
+            db.db.get("pad:" + sourceID + ":chat:" + i, function (err, chat) {
               if (ERR(err, callback)) return;
               db.set("pad:" + destinationID + ":chat:" + i, chat);
             });
@@ -537,7 +537,7 @@ Pad.prototype.copy = thenify(function copy(destinationID, force, callback) {
         function(callback) {
           var revHead = _this.head;
           for (var i=0; i <= revHead; i++) {
-            db.get("pad:" + sourceID + ":revs:" + i, function (err, rev) {
+            db.db.get("pad:" + sourceID + ":revs:" + i, function (err, rev) {
               if (ERR(err, callback)) return;
               db.set("pad:" + destinationID + ":revs:" + i, rev);
             });
@@ -606,7 +606,7 @@ Pad.prototype.remove = thenify(function remove(callback) {
           // it is a group pad
           var groupID = padID.substring(0, padID.indexOf("$"));
 
-          db.get("group:" + groupID, function (err, group) {
+          db.db.get("group:" + groupID, function (err, group) {
             if (ERR(err, callback)) return;
 
             // remove the pad entry
