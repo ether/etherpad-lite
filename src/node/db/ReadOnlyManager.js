@@ -19,80 +19,47 @@
  */
 
 
-var ERR = require("async-stacktrace");
-var db = require("./DB").db;
-var async = require("async");
+var db = require("./DB");
 var randomString = require("../utils/randomstring");
-const thenify = require("thenify").withCallback;
 
 /**
  * returns a read only id for a pad
  * @param {String} padId the id of the pad
  */
-exports.getReadOnlyId = thenify(function (padId, callback)
+exports.getReadOnlyId = async function (padId)
 {
-  var readOnlyId;
+  // check if there is a pad2readonly entry
+  let readOnlyId = await db.get("pad2readonly:" + padId);
 
-  async.waterfall([
-    // check if there is a pad2readonly entry
-    function(callback) {
-      db.get("pad2readonly:" + padId, callback);
-    },
+  // there is no readOnly Entry in the database, let's create one
+  if (readOnlyId == null) {
+    readOnlyId = "r." + randomString(16);
+    db.set("pad2readonly:" + padId, readOnlyId);
+    db.set("readonly2pad:" + readOnlyId, padId);
+  }
 
-    function(dbReadOnlyId, callback) {
-      if (dbReadOnlyId == null) {
-        // there is no readOnly Entry in the database, let's create one
-        readOnlyId = "r." + randomString(16);
-
-        db.set("pad2readonly:" + padId, readOnlyId);
-        db.set("readonly2pad:" + readOnlyId, padId);
-      } else {
-        // there is a readOnly Entry in the database, let's take this one
-        readOnlyId = dbReadOnlyId;
-      }
-
-      callback();
-    }
-  ],
-  function(err) {
-    if (ERR(err, callback)) return;
-
-    // return the results
-    callback(null, readOnlyId);
-  })
-});
+  return readOnlyId;
+}
 
 /**
  * returns the padId for a read only id
  * @param {String} readOnlyId read only id
  */
-exports.getPadId = thenify(function(readOnlyId, callback)
+exports.getPadId = function(readOnlyId)
 {
-  db.get("readonly2pad:" + readOnlyId, callback);
-});
+  return db.get("readonly2pad:" + readOnlyId);
+}
 
 /**
  * returns the padId and readonlyPadId in an object for any id
  * @param {String} padIdOrReadonlyPadId read only id or real pad id
  */
-exports.getIds = thenify(function(id, callback) {
-  if (id.indexOf("r.") == 0) {
-    exports.getPadId(id, function (err, value) {
-      if (ERR(err, callback)) return;
+exports.getIds = async function(id) {
+  let readonly = (id.indexOf("r.") === 0);
 
-      callback(null, {
-        readOnlyPadId: id,
-        padId: value, // Might be null, if this is an unknown read-only id
-        readonly: true
-      });
-    });
-  } else {
-    exports.getReadOnlyId(id, function (err, value) {
-      callback(null, {
-        readOnlyPadId: value,
-        padId: id,
-        readonly: false
-      });
-    });
-  }
-});
+  // Might be null, if this is an unknown read-only id
+  let readOnlyPadId = readonly ? id : await exports.getReadOnlyId(id);
+  let padId = readonly ? await exports.getPadId(id) : id;
+
+  return { readOnlyPadId, padId, readonly };
+}

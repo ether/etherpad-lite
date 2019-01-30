@@ -19,6 +19,7 @@ var crypto = require("crypto");
 var randomString = require("../utils/randomstring");
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 const thenify = require("thenify").withCallback;
+const nodeify = require("nodeify");
 
 // serialization/deserialization attributes
 var attributeBlackList = ["id"];
@@ -621,7 +622,12 @@ Pad.prototype.remove = thenify(function remove(callback) {
 
         // remove the readonly entries
         function(callback) {
-          readOnlyManager.getReadOnlyId(padID, function(err, readonlyID) {
+          // @TODO - temporary until surrounding code is Promisified
+          function getReadOnlyId(padID, callback) {
+            return nodeify(readOnlyManager.getReadOnlyId(padID), callback);
+          }
+
+          getReadOnlyId(padID, function(err, readonlyID) {
             if (ERR(err, callback)) return;
 
             db.remove("pad2readonly:" + padID);
