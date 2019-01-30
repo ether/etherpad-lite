@@ -289,9 +289,9 @@ exports.doImport = function(req, res, padId)
           return;
         }
 
-        padMessageHandler.updatePadClients(pad, function(){
-          callback();
-        });
+        // @TODO: not waiting for updatePadClients to finish
+        padMessageHandler.updatePadClients(pad);
+        callback();
       });
 
     },
