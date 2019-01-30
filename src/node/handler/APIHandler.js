@@ -19,7 +19,6 @@
  */
 
 var absolutePaths = require('../utils/AbsolutePaths');
-var ERR = require("async-stacktrace");
 var fs = require("fs");
 var api = require("../db/API");
 var log4js = require('log4js');
@@ -152,35 +151,16 @@ exports.version = version;
  */
 exports.handle = async function(apiVersion, functionName, fields, req, res)
 {
-  //check if this is a valid apiversion
-  var isKnownApiVersion = false;
-
-  for (var knownApiVersion in version) {
-    if (knownApiVersion == apiVersion) {
-      isKnownApiVersion = true;
-      break;
-    }
-  }
-
   // say goodbye if this is an unknown API version
-  if (!isKnownApiVersion) {
+  if (!(apiVersion in version)) {
     res.statusCode = 404;
     res.send({code: 3, message: "no such api version", data: null});
     return;
   }
 
-  // check if this is a valid function name
-  var isKnownFunctionname = false;
-
-  for (var knownFunctionname in version[apiVersion]) {
-    if (knownFunctionname == functionName) {
-      isKnownFunctionname = true;
-      break;
-    }
-  }
-
   // say goodbye if this is an unknown function
-  if (!isKnownFunctionname) {
+  if (!(functionName in version[apiVersion])) {
+    // no status code?!
     res.send({code: 3, message: "no such function", data: null});
     return;
   }
@@ -194,17 +174,19 @@ exports.handle = async function(apiVersion, functionName, fields, req, res)
     return;
   }
 
-  try {
-    // sanitize any padIDs before continuing
-    if (fields["padID"]) {
-       fields["padID"] = await padManager.sanitizePadId(fields["padID"]);
-    } else if (fields["padName"]) {
-       fields["padName"] = await padManager.sanitizePadId(fields["padName"]);
-    }
-    await callAPI(apiVersion, functionName, fields, req, res);
-  } catch (e) {
-    ERR(e);
+  // sanitize any padIDs before continuing
+  if (fields["padID"]) {
+    fields["padID"] = await padManager.sanitizePadId(fields["padID"]);
   }
+  // there was an 'else' here before - removed it to ensure
+  // that this sanitize step can't be circumvented by forcing
+  // the first branch to be taken
+  if (fields["padName"]) {
+    fields["padName"] = await padManager.sanitizePadId(fields["padName"]);
+  }
+
+  // no need to await - callAPI returns a promise
+  return callAPI(apiVersion, functionName, fields, req, res);
 }
 
 // calls the api function
