@@ -75,7 +75,7 @@ exports.setSocketIO = function(_socket) {
     }
 
     // tell all components about this connect
-    for (var i in components) {
+    for (let i in components) {
       components[i].handleConnect(client);
     }
 
@@ -117,7 +117,7 @@ exports.setSocketIO = function(_socket) {
 
     client.on('disconnect', function() {
       // tell all components about this disconnect
-      for (var i in components) {
+      for (let i in components) {
         components[i].handleDisconnect(client);
       }
     });
@@ -142,14 +142,10 @@ function handleMessage(client, message)
 // this ensures there are no passwords in the log
 function stringifyWithoutPassword(message)
 {
-  var newMessage = {};
+  let newMessage = Object.assign({}, message);
 
-  for (var i in message) {
-    if (i == "password" && message[i] != null) {
-      newMessage["password"] = "xxx";
-    } else {
-      newMessage[i] = message[i];
-    }
+  if (newMessage.password != null) {
+    newMessage.password = "xxx";
   }
 
   return JSON.stringify(newMessage);
