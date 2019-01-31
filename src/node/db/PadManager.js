@@ -18,11 +18,9 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
 var Pad = require("../db/Pad").Pad;
-var db = require("./DB").db;
-const thenify = require("thenify").withCallback;
+var db = require("./DB");
 
 /**
  * A cache of all loaded Pads.
@@ -114,59 +112,43 @@ let padList = {
  * @param id A String with the id of the pad
  * @param {Function} callback
  */
-exports.getPad = thenify(function(id, text, callback)
+exports.getPad = async function(id, text)
 {
   // check if this is a valid padId
   if (!exports.isValidPadId(id)) {
-    callback(new customError(id + " is not a valid padId", "apierror"));
-
-    return;
-  }
-
-  // make text an optional parameter
-  if (typeof text == "function") {
-    callback = text;
-    text = null;
+    throw new customError(id + " is not a valid padId", "apierror");
   }
 
   // check if this is a valid text
   if (text != null) {
     // check if text is a string
     if (typeof text != "string") {
-      callback(new customError("text is not a string", "apierror"));
-
-      return;
+      throw new customError("text is not a string", "apierror");
     }
 
     // check if text is less than 100k chars
     if (text.length > 100000) {
-      callback(new customError("text must be less than 100k chars", "apierror"));
-
-      return;
+      throw new customError("text must be less than 100k chars", "apierror");
     }
   }
 
-  var pad = globalPads.get(id);
+  let pad = globalPads.get(id);
 
   // return pad if it's already loaded
   if (pad != null) {
-    callback(null, pad);
-
-    return;
+    return pad;
   }
 
   // try to load pad
   pad = new Pad(id);
 
   // initalize the pad
-  pad.init(text, function(err) {
-    if (ERR(err, callback)) return;
+  await pad.init(text);
+  globalPads.set(id, pad);
+  padList.addPad(id);
 
-    globalPads.set(id, pad);
-    padList.addPad(id);
-    callback(null, pad);
-  });
-});
+  return pad;
+}
 
 exports.listAllPads = async function()
 {
@@ -176,18 +158,12 @@ exports.listAllPads = async function()
 }
 
 // checks if a pad exists
-exports.doesPadExist = thenify(function(padId, callback)
+exports.doesPadExist = async function(padId)
 {
-  db.get("pad:" + padId, function(err, value) {
-    if (ERR(err, callback)) return;
+  let value = await db.get("pad:" + padId);
 
-    if (value != null && value.atext) {
-      callback(null, true);
-    } else {
-      callback(null, false);
-    }
-  });
-});
+  return (value != null && value.atext);
+}
 
 // alias for backwards compatibility
 exports.doesPadExists = exports.doesPadExist;

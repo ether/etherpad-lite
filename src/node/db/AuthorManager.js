@@ -144,12 +144,11 @@ exports.getAuthor = function(author)
 /**
  * Returns the color Id of the author
  * @param {String} author The id of the author
- * @param {Function} callback callback(err, colorId)
  */
-exports.getAuthorColorId = thenify(function(author, callback)
+exports.getAuthorColorId = function(author)
 {
-  db.db.getSub("globalAuthor:" + author, ["colorId"], callback);
-});
+  return db.getSub("globalAuthor:" + author, ["colorId"]);
+}
 
 /**
  * Sets the color Id of the author
@@ -164,12 +163,11 @@ exports.setAuthorColorId = function(author, colorId)
 /**
  * Returns the name of the author
  * @param {String} author The id of the author
- * @param {Function} callback callback(err, name)
  */
-exports.getAuthorName = thenify(function(author, callback)
+exports.getAuthorName = function(author)
 {
-  db.db.getSub("globalAuthor:" + author, ["name"], callback);
-});
+  return db.getSub("globalAuthor:" + author, ["name"]);
+}
 
 /**
  * Sets the name of the author

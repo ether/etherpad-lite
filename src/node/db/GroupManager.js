@@ -18,13 +18,11 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var db = require("./DB");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
-const thenify = require("thenify").withCallback;
 
 exports.listAllGroups = async function()
 {
@@ -85,15 +83,13 @@ exports.deleteGroup = async function(groupID)
   await db.set("groups", newGroups);
 }
 
-// @TODO: this is the only function still called with a callback
-exports.doesGroupExist = thenify(function(groupID, callback)
+exports.doesGroupExist = async function(groupID)
 {
   // try to get the group entry
-  db.db.get("group:" + groupID, function (err, group) {
-    if (ERR(err, callback)) return;
-    callback(null, group != null);
-  });
-});
+  let group = await db.get("group:" + groupID);
+
+  return (group != null);
+}
 
 exports.createGroup = async function()
 {
