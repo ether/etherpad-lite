@@ -268,6 +268,12 @@ exports.handleMessage = async function(client, message)
     // FIXME: Use a hook instead
     // FIXME: Allow to override readwrite access with readonly
 
+    // the session may have been dropped during earlier processing
+    if (!sessioninfos[client.id]) {
+      messageLogger.warn("Dropping message from a connection that has gone away.")
+      return;
+    }
+
     // Simulate using the load testing tool
     if (!sessioninfos[client.id].auth) {
       console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
