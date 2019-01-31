@@ -21,7 +21,6 @@
 var db = require("./DB");
 var customError = require("../utils/customError");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
-const thenify = require("thenify").withCallback;
 
 exports.getColorPalette = function() {
   return [

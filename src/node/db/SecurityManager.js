@@ -25,7 +25,6 @@ var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings");
 var log4js = require('log4js');
 var authLogger = log4js.getLogger("auth");
-const thenify = require("thenify").withCallback;
 
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.

@@ -22,11 +22,10 @@
 var ueberDB = require("ueberdb2");
 var settings = require("../utils/Settings");
 var log4js = require('log4js');
-const thenify = require("thenify").withCallback;
 const util = require("util");
 
 // set database settings
-var db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
+let db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
 
 /**
  * The UeberDB Object that provides the database functions
@@ -37,24 +36,25 @@ exports.db = null;
  * Initalizes the database with the settings provided by the settings module
  * @param {Function} callback
  */
-exports.init = thenify(function (callback) {
+exports.init = function() {
   // initalize the database async
-  db.init(function(err) {
-    if (err) {
-      // there was an error while initializing the database, output it and stop
-      console.error("ERROR: Problem while initalizing the database");
-      console.error(err.stack ? err.stack : err);
-      process.exit(1);
-    } else {
-      // everything ok
-      exports.db = db;
+  return new Promise((resolve, reject) => {
+    db.init(function(err) {
+      if (err) {
+        // there was an error while initializing the database, output it and stop
+        console.error("ERROR: Problem while initalizing the database");
+        console.error(err.stack ? err.stack : err);
+        process.exit(1);
+      } else {
+        // everything ok, set up Promise-based methods
+        ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove', 'doShutdown'].forEach(fn => {
+          exports[fn] = util.promisify(db[fn].bind(db));
+        });
 
-      // set up Promise-based methods
-      ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove', 'doShutdown'].forEach(fn => {
-        exports[fn] = util.promisify(db[fn].bind(db));
-      });
-
-      callback(null);
-    }
+        // exposed for those callers that need the underlying raw API
+        exports.db = db;
+        resolve();
+      }
+    });
   });
-});
+}

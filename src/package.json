@@ -58,7 +58,6 @@
     "slide": "1.1.6",
     "socket.io": "2.1.1",
     "swagger-node-express": "2.1.3",
-    "thenify": "^3.3.0",
     "tinycon": "0.0.1",
     "ueberdb2": "0.4.0",
     "uglify-js": "2.6.2",
