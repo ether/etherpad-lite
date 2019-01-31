@@ -21,7 +21,7 @@ exports.gracefulShutdown = function(err) {
   console.log("graceful shutdown...");
 
   // do the db shutdown
-  db.db.doShutdown(function() {
+  db.doShutdown().then(function() {
     console.log("db sucessfully closed.");
 
     process.exit(0);
