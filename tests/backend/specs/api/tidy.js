@@ -1,10 +1,12 @@
 var assert = require('assert')
+        os = require('os'),
         fs = require('fs'),
       path = require('path'),
   TidyHtml = null,
   Settings = null;
 
 var npm = require("../../../../src/node_modules/npm/lib/npm.js");
+var nodeify = require('../../../../src/node_modules/nodeify');
 
 describe('tidyHtml', function() {
   before(function(done) {
@@ -15,6 +17,10 @@ describe('tidyHtml', function() {
       return done()
     });
   });
+
+  function tidy(file, callback) {
+    return nodeify(TidyHtml.tidy(file), callback);
+  }
 
   it('Tidies HTML', function(done) {
     // If the user hasn't configured Tidy, we skip this tests as it's required for this test
@@ -27,7 +33,7 @@ describe('tidyHtml', function() {
 
     var tmpFile = path.join(tmpDir, 'tmp_' + (Math.floor(Math.random() * 1000000)) + '.html')
     fs.writeFileSync(tmpFile, '<html><body><p>a paragraph</p><li>List without outer UL</li>trailing closing p</p></body></html>');
-    TidyHtml.tidy(tmpFile, function(err){
+    tidy(tmpFile, function(err){
       assert.ok(!err);
 
       // Read the file again
@@ -56,7 +62,7 @@ describe('tidyHtml', function() {
       this.skip();
     }
 
-    TidyHtml.tidy('/some/none/existing/file.html', function(err) {
+    tidy('/some/none/existing/file.html', function(err) {
       assert.ok(err);
       return done();
     });
