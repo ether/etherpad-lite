@@ -18,46 +18,22 @@
  * limitations under the License.
  */
 
-var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
-var ERR = require("async-stacktrace");
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
-function getPadTXT(pad, revNum, callback)
+var getPadTXT = async function(pad, revNum)
 {
-  var atext = pad.atext;
-  var html;
-  async.waterfall([
+  let atext = pad.atext;
 
-  // fetch revision atext
-  function(callback) {
-    if (revNum != undefined) {
-      pad.getInternalRevisionAText(revNum, function(err, revisionAtext) {
-        if (ERR(err, callback)) return;
-
-        atext = revisionAtext;
-        callback();
-      });
-    } else {
-      callback(null);
-    }
-  },
+  if (revNum != undefined) {
+    // fetch revision atext
+    atext = await pad.getInternalRevisionAText(revNum);
+  }
 
   // convert atext to html
-  function(callback) {
-    // only this line is different to the HTML function
-    html = getTXTFromAtext(pad, atext);
-    callback(null);
-  }],
-
-  // run final callback
-  function(err) {
-    if (ERR(err, callback)) return;
-
-    callback(null, html);
-  });
+  return getTXTFromAtext(pad, atext);
 }
 
 // This is different than the functionality provided in ExportHtml as it provides formatting
@@ -244,15 +220,8 @@ function getTXTFromAtext(pad, atext, authorColors)
 
 exports.getTXTFromAtext = getTXTFromAtext;
 
-exports.getPadTXTDocument = function(padId, revNum, callback)
+exports.getPadTXTDocument = async function(padId, revNum)
 {
-  padManager.getPad(padId, function(err, pad) {
-    if (ERR(err, callback)) return;
-
-    getPadTXT(pad, revNum, function(err, html) {
-      if (ERR(err, callback)) return;
-
-      callback(null, html);
-    });
-  });
-};
+  let pad = await padManager.getPad(padId);
+  return getPadTXT(pad, revNum);
+}

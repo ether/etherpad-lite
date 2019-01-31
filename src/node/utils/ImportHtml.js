@@ -18,9 +18,8 @@ var log4js = require('log4js');
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
 var cheerio = require("cheerio");
-const thenify = require("thenify").withCallback;
 
-function setPadHTML(pad, html, callback)
+exports.setPadHTML = function(pad, html)
 {
   var apiLogger = log4js.getLogger("ImportHtml");
 
@@ -44,7 +43,7 @@ function setPadHTML(pad, html, callback)
     apiLogger.warn("HTML was not properly formed", e);
 
     // don't process the HTML because it was bad
-    return callback(e);
+    throw e;
   }
 
   var result = cc.finish();
@@ -52,7 +51,7 @@ function setPadHTML(pad, html, callback)
   apiLogger.debug('Lines:');
 
   var i;
-  for (i = 0; i < result.lines.length; i += 1) {
+  for (i = 0; i < result.lines.length; i++) {
     apiLogger.debug('Line ' + (i + 1) + ' text: ' + result.lines[i]);
     apiLogger.debug('Line ' + (i + 1) + ' attributes: ' + result.lineAttribs[i]);
   }
@@ -92,7 +91,4 @@ function setPadHTML(pad, html, callback)
   apiLogger.debug('The changeset: ' + theChangeset);
   pad.setText("\n");
   pad.appendRevision(theChangeset);
-  callback(null);
 }
-
-exports.setPadHTML = thenify(setPadHTML);

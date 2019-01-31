@@ -15,43 +15,44 @@
  */
 
 var log4js = require('log4js');
-var async = require("async");
-var db = require("../db/DB").db;
-const thenify = require("thenify").withCallback;
+const db = require("../db/DB");
 
-exports.setPadRaw = thenify(function(padId, records, callback)
+exports.setPadRaw = function(padId, records)
 {
   records = JSON.parse(records);
 
-  async.eachSeries(Object.keys(records), function(key, cb) {
-    var value = records[key];
+  Object.keys(records).forEach(async function(key) {
+    let value = records[key];
 
     if (!value) {
-      return setImmediate(cb);
+      return;
     }
+
+    let newKey;
 
     if (value.padIDs) {
       // Author data - rewrite author pad ids
       value.padIDs[padId] = 1;
-      var newKey = key;
+      newKey = key;
 
       // Does this author already exist?
-      db.get(key, function(err, author) {
-        if (author) {
-          // Yes, add the padID to the author
-          if (Object.prototype.toString.call(author) === '[object Array]') {
-            author.padIDs.push(padId);
-          }
-          value = author;
-        } else {
-          // No, create a new array with the author info in
-          value.padIDs = [padId];
+      let author = await db.get(key);
+
+      if (author) {
+        // Yes, add the padID to the author
+        if (Object.prototype.toString.call(author) === '[object Array]') {
+          author.padIDs.push(padId);
         }
-      });
+
+        value = author;
+      } else {
+        // No, create a new array with the author info in
+        value.padIDs = [ padId ];
+      }
     } else {
       // Not author data, probably pad data
       // we can split it to look to see if it's pad data
-      var oldPadId = key.split(":");
+      let oldPadId = key.split(":");
 
       // we know it's pad data
       if (oldPadId[0] === "pad") {
@@ -59,16 +60,11 @@ exports.setPadRaw = thenify(function(padId, records, callback)
         oldPadId[1] = padId;
 
         // and create the value
-        var newKey = oldPadId.join(":"); // create the new key
+        newKey = oldPadId.join(":"); // create the new key
       }
     }
 
     // Write the value to the server
-    db.set(newKey, value);
-
-    setImmediate(cb);
-  },
-  function() {
-    callback(null, true);
+    await db.set(newKey, value);
   });
-});
+}
