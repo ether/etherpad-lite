@@ -4,7 +4,10 @@
       "name": "ep_bl_dnd",
       "hooks": {},
       "client_hooks": {
-        "postAceInit": "ep_bl_dnd/static/js/index"
+        "postAceInit": "ep_bl_dnd/static/js/index",
+        "aceInitialized": "ep_bl_dnd/static/js/index",
+        "aceAttribsToClasses": "ep_bl_dnd/static/js/index",
+        "aceCreateDomLine": "ep_bl_dnd/static/js/index"
       }
     }
   ]
