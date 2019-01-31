@@ -1,7 +1,5 @@
 var Changeset = require("../../static/js/Changeset");
-var async = require("async");
 var exportHtml = require('./ExportHtml');
-const thenify = require("thenify").withCallback;
 
 function PadDiff (pad, fromRev, toRev) {
   // check parameters
@@ -79,79 +77,52 @@ PadDiff.prototype._isClearAuthorship = function(changeset) {
   return true;
 };
 
-PadDiff.prototype._createClearAuthorship = thenify(function(rev, callback) {
-  var self = this;
-  this._pad.getInternalRevisionAText(rev, function(err, atext) {
-    if (err) {
-      return callback(err);
-    }
+PadDiff.prototype._createClearAuthorship = async function(rev) {
 
-   // build clearAuthorship changeset
-   var builder = Changeset.builder(atext.text.length);
-   builder.keepText(atext.text, [['author','']], self._pad.pool);
-   var changeset = builder.toString();
+  let atext = await this._pad.getInternalRevisionAText(rev);
 
-   callback(null, changeset);
-  });
-});
+  // build clearAuthorship changeset
+  var builder = Changeset.builder(atext.text.length);
+  builder.keepText(atext.text, [['author','']], this._pad.pool);
+  var changeset = builder.toString();
 
-PadDiff.prototype._createClearStartAtext = thenify(function(rev, callback) {
-  var self = this;
+  return changeset;
+}
+
+PadDiff.prototype._createClearStartAtext = async function(rev) {
 
   // get the atext of this revision
-  this._pad.getInternalRevisionAText(rev, function(err, atext) {
-    if (err) {
-      return callback(err);
-    }
+  let atext = this._pad.getInternalRevisionAText(rev);
 
-    // create the clearAuthorship changeset
-    self._createClearAuthorship(rev, function(err, changeset) {
-      if (err) {
-        return callback(err);
-      }
+  // create the clearAuthorship changeset
+  let changeset = await this._createClearAuthorship(rev);
 
-      try {
-        // apply the clearAuthorship changeset
-        var newAText = Changeset.applyToAText(changeset, atext, self._pad.pool);
-      } catch(err) {
-        return callback(err)
-      }
+  // apply the clearAuthorship changeset
+  let newAText = Changeset.applyToAText(changeset, atext, this._pad.pool);
 
-      callback(null, newAText);
-    });
-  });
-});
+  return newAText;
+}
 
-PadDiff.prototype._getChangesetsInBulk = thenify(function(startRev, count, callback) {
-  var self = this;
+PadDiff.prototype._getChangesetsInBulk = async function(startRev, count) {
 
   // find out which revisions we need
-  var revisions = [];
-  for (var i = startRev; i < (startRev + count) && i <= this._pad.head; i++) {
+  let revisions = [];
+  for (let i = startRev; i < (startRev + count) && i <= this._pad.head; i++) {
     revisions.push(i);
   }
 
-  var changesets = [], authors = [];
-
-  // get all needed revisions
-  async.forEach(revisions, function(rev, callback) {
-    self._pad.getRevision(rev, function(err, revision) {
-      if (err) {
-        return callback(err);
-      }
-
-      var arrayNum = rev-startRev;
-
+  // get all needed revisions (in parallel)
+  let changesets = [], authors = [];
+  await Promise.all(revisions.map(rev => {
+    return this._pad.getRevision(rev).then(revision => {
+      let arrayNum = rev - startRev;
       changesets[arrayNum] = revision.changeset;
       authors[arrayNum] = revision.meta.author;
-
-      callback();
     });
-  },
-  function(err) {
-    callback(err, changesets, authors);
-  });
-});
+  }));
+
+  return { changesets, authors };
+}
 
 PadDiff.prototype._addAuthors = function(authors) {
   var self = this;
@@ -164,144 +135,91 @@ PadDiff.prototype._addAuthors = function(authors) {
   });
 };
 
-PadDiff.prototype._createDiffAtext = thenify(function(callback) {
-  var self = this;
-  var bulkSize = 100;
+PadDiff.prototype._createDiffAtext = async function() {
+
+  let bulkSize = 100;
 
   // get the cleaned startAText
-  self._createClearStartAtext(self._fromRev, function(err, atext) {
-    if (err) { return callback(err); }
+  let atext = await this._createClearStartAtext(this._fromRev);
 
-    var superChangeset = null;
+  let superChangeset = null;
+  let rev = this._fromRev + 1;
 
-    var rev = self._fromRev + 1;
+  for (let rev = this._fromRev + 1; rev <= this._toRev; rev += bulkSize) {
 
-    // async while loop
-    async.whilst(
-      // loop condition
-      function () { return rev <= self._toRev; },
+    // get the bulk
+    let { changesets, authors } = await this._getChangesetsInBulk(rev, bulkSize);
 
-      // loop body
-      function (callback) {
-        // get the bulk
-        self._getChangesetsInBulk(rev,bulkSize,function(err, changesets, authors) {
-          var addedAuthors = [];
+    let addedAuthors = [];
 
-          // run trough all changesets
-          for (var i = 0; i < changesets.length && (rev + i) <= self._toRev; i++) {
-            var changeset = changesets[i];
+    // run through all changesets
+    for (let i = 0; i < changesets.length && (rev + i) <= this._toRev; ++i) {
+      let changeset = changesets[i];
 
-            // skip clearAuthorship Changesets
-            if (self._isClearAuthorship(changeset)) {
-              continue;
-            }
-
-            changeset = self._extendChangesetWithAuthor(changeset, authors[i], self._pad.pool);
-
-            // add this author to the authorarray
-            addedAuthors.push(authors[i]);
-
-            // compose it with the superChangset
-            if (superChangeset === null) {
-              superChangeset = changeset;
-            } else {
-              superChangeset = Changeset.composeWithDeletions(superChangeset, changeset, self._pad.pool);
-            }
-          }
-
-          // add the authors to the PadDiff authorArray
-          self._addAuthors(addedAuthors);
-
-          // lets continue with the next bulk
-          rev += bulkSize;
-          callback();
-        });
-      },
-
-      // after the loop has ended
-      function (err) {
-        // if there are only clearAuthorship changesets, we don't get a superChangeset, so we can skip this step
-        if (superChangeset) {
-          var deletionChangeset = self._createDeletionChangeset(superChangeset,atext,self._pad.pool);
-
-          try {
-            // apply the superChangeset, which includes all addings
-            atext = Changeset.applyToAText(superChangeset, atext, self._pad.pool);
-            // apply the deletionChangeset, which adds a deletions
-            atext = Changeset.applyToAText(deletionChangeset, atext, self._pad.pool);
-          } catch(err) {
-           return callback(err)
-          }
-        }
-
-        callback(err, atext);
+      // skip clearAuthorship Changesets
+      if (this._isClearAuthorship(changeset)) {
+        continue;
       }
-    );
-  });
-});
 
-PadDiff.prototype.getHtml = thenify(function(callback) {
+      changeset = this._extendChangesetWithAuthor(changeset, authors[i], this._pad.pool);
+
+      // add this author to the authorarray
+      addedAuthors.push(authors[i]);
+
+      // compose it with the superChangset
+      if (superChangeset === null) {
+        superChangeset = changeset;
+      } else {
+        superChangeset = Changeset.composeWithDeletions(superChangeset, changeset, this._pad.pool);
+      }
+    }
+
+    // add the authors to the PadDiff authorArray
+    this._addAuthors(addedAuthors);
+  }
+
+  // if there are only clearAuthorship changesets, we don't get a superChangeset, so we can skip this step
+  if (superChangeset) {
+    let deletionChangeset = this._createDeletionChangeset(superChangeset, atext, this._pad.pool);
+
+    // apply the superChangeset, which includes all addings
+    atext = Changeset.applyToAText(superChangeset, atext, this._pad.pool);
+
+    // apply the deletionChangeset, which adds a deletions
+    atext = Changeset.applyToAText(deletionChangeset, atext, this._pad.pool);
+  }
+
+  return atext;
+}
+
+PadDiff.prototype.getHtml = async function() {
+
   // cache the html
   if (this._html != null) {
-    return callback(null, this._html);
+    return this._html;
   }
 
-  var self = this;
-  var atext, html, authorColors;
+  // get the diff atext
+  let atext = await this._createDiffAtext();
 
-  async.series([
-    // get the diff atext
-    function(callback) {
-      self._createDiffAtext(function(err, _atext) {
-        if (err) {
-          return callback(err);
-        }
+  // get the authorColor table
+  let authorColors = await this._pad.getAllAuthorColors();
 
-        atext = _atext;
-        callback();
-      });
-    },
+  // convert the atext to html
+  this._html = exportHtml.getHTMLFromAtext(this._pad, atext, authorColors);
 
-    // get the authorColor table
-    function(callback) {
-      self._pad.getAllAuthorColors(function(err, _authorColors) {
-        if (err) {
-          return callback(err);
-        }
+  return this._html;
+}
 
-        authorColors = _authorColors;
-        callback();
-      });
-    },
-
-    // convert the atext to html
-    function(callback) {
-      html = exportHtml.getHTMLFromAtext(self._pad, atext, authorColors);
-      self._html = html;
-      callback();
-    }
-  ],
-  function(err) {
-    callback(err, html);
-  });
-});
-
-PadDiff.prototype.getAuthors = thenify(function(callback) {
-  var self = this;
+PadDiff.prototype.getAuthors = async function() {
 
   // check if html was already produced, if not produce it, this generates the author array at the same time
-  if (self._html == null) {
-    self.getHtml(function(err) {
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, self._authors);
-    });
-  } else {
-    callback(null, self._authors);
+  if (this._html == null) {
+    await this.getHtml();
   }
-});
+
+  return self._authors;
+}
 
 PadDiff.prototype._extendChangesetWithAuthor = function(changeset, author, apool) {
   // unpack
