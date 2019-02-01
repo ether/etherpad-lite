@@ -43,20 +43,19 @@ exports.deleteGroup = async function(groupID)
     throw new customError("groupID does not exist", "apierror");
   }
 
-  // iterate through all pads of this group and delete them
-  for (let padID in group.pads) {
-    let pad = await padManager.getPad(padID);
-    await pad.remove();
-  }
+  // iterate through all pads of this group and delete them (in parallel)
+  await Promise.all(Object.keys(group.pads).map(padID => {
+    return padManager.getPad(padID).then(pad => pad.remove());
+  }));
 
   // iterate through group2sessions and delete all sessions
   let group2sessions = await db.get("group2sessions:" + groupID);
-  let sessions = group2sessions ? group2sessions.sessionsIDs : [];
+  let sessions = group2sessions ? group2sessions.sessionsIDs : {};
 
-  // loop through all sessions and delete them
-  for (let session in sessions) {
-    await sessionManager.deleteSession(session);
-  }
+  // loop through all sessions and delete them (in parallel)
+  await Promise.all(Object.keys(sessions).map(session => {
+    return sessionManager.deleteSession(session);
+  }));
 
   // remove group and group2sessions entry
   await db.remove("group2sessions:" + groupID);

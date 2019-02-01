@@ -722,6 +722,7 @@ exports.updatePadClients = async function(pad)
 
   // since all clients usually get the same set of changesets, store them in local cache
   // to remove unnecessary roundtrip to the datalayer
+  // NB: note below possibly now accommodated via the change to promises/async
   // TODO: in REAL world, if we're working without datalayer cache, all requests to revisions will be fired
   // BEFORE first result will be landed to our cache object. The solution is to replace parallel processing
   // via async.forEach with sequential for() loop. There is no real benefits of running this in parallel,
@@ -928,15 +929,16 @@ async function handleClientReady(client, message)
   // get timestamp of latest revision needed for timeslider
   let currentTime = await pad.getRevisionDate(pad.getHeadRevisionNumber());
 
-  // get all author data out of the database
-  for (let authorId of authors) {
-    try {
-      let author = await authorManager.getAuthor(authorId);
-      historicalAuthorData[authorId] = { name: author.name, colorId: author.colorId }; // Filter author attribs (e.g. don't send author's pads to all clients)
-    } catch (err) {
-      messageLogger.error("There is no author for authorId:", authorId);
-    }
-  }
+  // get all author data out of the database (in parallel)
+  await Promise.all(authors.map(authorId => {
+    return authorManager.getAuthor(authorId).then(author => {
+      if (!author) {
+        messageLogger.error("There is no author for authorId:", authorId);
+      } else {
+        historicalAuthorData[authorId] = { name: author.name, colorId: author.colorId }; // Filter author attribs (e.g. don't send author's pads to all clients)
+      }
+    });
+  }));
 
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
@@ -1162,45 +1164,47 @@ async function handleClientReady(client, message)
     // notify all existing users about new user
     client.broadcast.to(padIds.padId).json.send(messageToTheOtherUsers);
 
-    // Get sessions for this pad
+    // Get sessions for this pad and update them (in parallel)
     roomClients = _getRoomClients(pad.id);
-    for (let roomClient of roomClients) {
+    await Promise.all(_getRoomClients(pad.id).map(async roomClient => {
 
       // Jump over, if this session is the connection session
       if (roomClient.id == client.id) {
-        continue;
+        return;
       }
 
       // Since sessioninfos might change while being enumerated, check if the
       // sessionID is still assigned to a valid session
       if (sessioninfos[roomClient.id] === undefined) {
-        continue;
+        return;
       }
 
-      let author = sessioninfos[roomClient.id].author;
-
       // get the authorname & colorId
+      let author = sessioninfos[roomClient.id].author;
+      let cached = historicalAuthorData[author];
 
       // reuse previously created cache of author's data
-      let authorInfo = historicalAuthorData[author] || await authorManager.getAuthor(author);
+      let p = cached ? Promise.resolve(cached) : authorManager.getAuthor(author);
 
-      // Send the new User a Notification about this other user
-      let msg = {
-        "type": "COLLABROOM",
-        "data": {
-          type: "USER_NEWINFO",
-          userInfo: {
-            "ip": "127.0.0.1",
-            "colorId": authorInfo.colorId,
-            "name": authorInfo.name,
-            "userAgent": "Anonymous",
-            "userId": author
+      return p.then(authorInfo => {
+        // Send the new User a Notification about this other user
+        let msg = {
+          "type": "COLLABROOM",
+          "data": {
+            type: "USER_NEWINFO",
+            userInfo: {
+              "ip": "127.0.0.1",
+              "colorId": authorInfo.colorId,
+              "name": authorInfo.name,
+              "userAgent": "Anonymous",
+              "userId": author
+            }
           }
-        }
-      };
+        };
 
-      client.json.send(msg);
-    }
+        client.json.send(msg);
+      });
+    }));
   }
 }
 
@@ -1448,16 +1452,16 @@ exports.padUsers = async function(padID) {
   let padUsers = [];
   let roomClients = _getRoomClients(padID);
 
-  for (let i = 0, n = roomClients.length; i < n; ++i) {
-    let roomClient = roomClients[i];
-
+  // iterate over all clients (in parallel)
+  await Promise.all(roomClients.map(async roomClient => {
     let s = sessioninfos[roomClient.id];
     if (s) {
-      let author = await authorManager.getAuthor(s.author);
-      author.id = s.author;
-      padUsers.push(author);
+      return authorManager.getAuthor(s.author).then(author => {
+        author.id = s.author;
+        padUsers.push(author);
+      });
     }
-  }
+  }));
 
   return { padUsers };
 }
