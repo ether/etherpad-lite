@@ -169,9 +169,8 @@ Pad.prototype.getInternalRevisionAText = async function getInternalRevisionAText
 
   // get all needed data out of the database
 
-  // get the atext of the key revision
-  let _atext = await db.getSub("pad:" + this.id + ":revs:" + keyRev, ["meta", "atext"]);
-  let atext = Changeset.cloneAText(_atext);
+  // start to get the atext of the key revision
+  let p_atext = db.getSub("pad:" + this.id + ":revs:" + keyRev, ["meta", "atext"]);
 
   // get all needed changesets
   let changesets = [];
@@ -180,6 +179,10 @@ Pad.prototype.getInternalRevisionAText = async function getInternalRevisionAText
       changesets[item] = changeset;
     });
   }));
+
+  // we should have the atext by now
+  let atext = await p_atext;
+  atext = Changeset.cloneAText(atext);
 
   // apply all changesets to the key changeset
   let apool = this.apool();
@@ -455,7 +458,10 @@ Pad.prototype.remove = async function remove() {
   // kick everyone from this pad
   padMessageHandler.kickSessionsFromPad(padID);
 
-  // delete all relations
+  // delete all relations - the original code used async.parallel but
+  // none of the operations except getting the group depended on callbacks
+  // so the database operations here are just started and then left to
+  // run to completion
  
   // is it a group pad? -> delete the entry of this pad in the group
   if (padID.indexOf("$") >= 0) {

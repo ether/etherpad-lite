@@ -890,8 +890,6 @@ async function handleClientReady(client, message)
     return;
   }
 
-  var historicalAuthorData = {};
-
   hooks.callAll("clientReady", message);
 
   // Get ro/rw id:s
@@ -915,12 +913,12 @@ async function handleClientReady(client, message)
 
   let author = statusObject.authorID;
 
-  // get all authordata of this new user, and load the pad-object from the database
+  // get all authordata of this new user
   let value = await authorManager.getAuthor(author);
   let authorColorId = value.colorId;
   let authorName = value.name;
 
-  // get pad
+  // load the pad-object from the database
   let pad = await padManager.getPad(padIds.padId);
 
   // these db requests all need the pad object (timestamp of latest revision, author data)
@@ -930,6 +928,7 @@ async function handleClientReady(client, message)
   let currentTime = await pad.getRevisionDate(pad.getHeadRevisionNumber());
 
   // get all author data out of the database (in parallel)
+  let historicalAuthorData = {};
   await Promise.all(authors.map(authorId => {
     return authorManager.getAuthor(authorId).then(author => {
       if (!author) {
@@ -1010,12 +1009,15 @@ async function handleClientReady(client, message)
       changesets[r] = {};
     }
 
-    // get changesets, author and timestamp needed for pending revisions
+    // get changesets, author and timestamp needed for pending revisions (in parallel)
+    let promises = [];
     for (let revNum of revisionsNeeded) {
-       changesets[revNum]['changeset'] = await pad.getRevisionChangeset(revNum);
-       changesets[revNum]['author'] = await pad.getRevisionAuthor(revNum);
-       changesets[revNum]['timestamp'] = await pad.getRevisionDate(revNum);
+       let cs = changesets[revNum];
+       promises.push( pad.getRevisionChangeset(revNum).then(result => cs.changeset = result ));
+       promises.push(    pad.getRevisionAuthor(revNum).then(result => cs.author = result    ));
+       promises.push(      pad.getRevisionDate(revNum).then(result => cs.timestamp = result ));
     }
+    await Promise.all(promises);
 
     // return pending changesets
     for (let r of revisionsNeeded) {

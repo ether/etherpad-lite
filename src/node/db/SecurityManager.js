@@ -49,11 +49,11 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
     return deny;
   }
 
-  // get author for this token
-  let tokenAuthor = await authorManager.getAuthor4Token(token);
+  // start to get author for this token
+  let p_tokenAuthor = authorManager.getAuthor4Token(token);
 
-  // check if pad exists
-  let padExists = await padManager.doesPadExist(padID);
+  // start to check if pad exists
+  let p_padExists = padManager.doesPadExist(padID);
 
   if (settings.requireSession) {
     // a valid session is required (api-only mode)
@@ -67,10 +67,13 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
       // it's not a group pad, means we can grant access
 
       // assume user has access
-      let statusObject = { accessStatus: "grant", authorID: tokenAuthor };
+      let authorID = await p_tokenAuthor;
+      let statusObject = { accessStatus: "grant", authorID };
 
       if (settings.editOnly) {
         // user can't create pads
+
+        let padExists = await p_padExists;
 
         if (!padExists) {
           // pad doesn't exist - user can't have access
@@ -96,10 +99,13 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
     let sessionIDs = sessionCookie.split(',');
 
     // was previously iterated in parallel using async.forEach
-    for (let sessionID of sessionIDs) {
-      try {
-        let sessionInfo = await sessionManager.getSessionInfo(sessionID);
+    let sessionInfos = await Promise.all(sessionIDs.map(sessionID => {
+      return sessionManager.getSessionInfo(sessionID);
+    }));
 
+    // seperated out the iteration of sessioninfos from the (parallel) fetches from the DB
+    for (let sessionInfo of sessionInfos) {
+      try {
         // is it for this group?
         if (sessionInfo.groupID != groupID) {
           authLogger.debug("Auth failed: wrong group");
@@ -127,6 +133,8 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
       }
     }
   }
+
+  let padExists = await p_padExists;
 
   if (padExists) {
     let pad = await padManager.getPad(padID);
@@ -205,7 +213,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
   if (!validSession && padExists) {
     // there is no valid session avaiable AND pad exists
 
-    let authorID = tokenAuthor;
+    let authorID = await p_tokenAuthor;
     let grant = Object.freeze({ accessStatus: "grant", authorID });
 
     if (isPublic && !isPasswordProtected) {
