@@ -9,9 +9,9 @@
 			"Gırd"
 		]
 	},
-	"index.newPad": "Pedo newe",
-	"index.createOpenPad": "Yana eno bamaeya bloknot vıraz/ak:",
-	"pad.toolbar.bold.title": "Qalın (Ctrl-B)",
+	"index.newPad": "Bloknoto newe",
+	"index.createOpenPad": "ya zi be nê nameyi ra yew bloknot vıraze/ake:",
+	"pad.toolbar.bold.title": "Qalınd (Ctrl-B)",
 	"pad.toolbar.italic.title": "Namıte (Ctrl-I)",
 	"pad.toolbar.underline.title": "Bınxetın (Ctrl-U)",
 	"pad.toolbar.strikethrough.title": "Serxetın (Ctrl+5)",
@@ -20,7 +20,7 @@
 	"pad.toolbar.indent.title": "Serrêze (TAB)",
 	"pad.toolbar.unindent.title": "Teberdayış (Shift+TAB)",
 	"pad.toolbar.undo.title": "Meke (Ctrl-Z)",
-	"pad.toolbar.redo.title": "Fına bıke (Ctrl-Y)",
+	"pad.toolbar.redo.title": "Newe ke (Ctrl-Y)",
 	"pad.toolbar.clearAuthorship.title": "Rengê Nuştoğiê Arıstey (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Babaetna tewranê dosyaya azere/ateber ke",
 	"pad.toolbar.timeslider.title": "Ğızagê zemani",
