@@ -118,8 +118,6 @@ async function doImport(req, res, padId)
   let fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
   let fileIsTXT = (fileEnding === ".txt");
 
-  let directDatabaseAccess = false;
-
   if (fileIsEtherpad) {
     // we do this here so we can see if the pad has quite a few edits
     let _pad = await padManager.getPad(padId);
@@ -132,12 +130,12 @@ async function doImport(req, res, padId)
 
     const fsp_readFile = util.promisify(fs.readFile);
     let _text = await fsp_readFile(srcFile, "utf8");
-    directDatabaseAccess = true;
+    req.directDatabaseAccess = true;
     await importEtherpad.setPadRaw(padId, _text);
   }
 
   // convert file to html if necessary
-  if (!importHandledByPlugin && !directDatabaseAccess) {
+  if (!importHandledByPlugin && !req.directDatabaseAccess) {
     if (fileIsTXT) {
       // Don't use convertor for text files
       useConvertor = false;
@@ -162,7 +160,7 @@ async function doImport(req, res, padId)
     }
   }
 
-  if (!useConvertor && !directDatabaseAccess) {
+  if (!useConvertor && !req.directDatabaseAccess) {
     // Read the file with no encoding for raw buffer access.
     let buf = await fsp_readFile(destFile);
 
@@ -180,7 +178,7 @@ async function doImport(req, res, padId)
   // read the text
   let text;
 
-  if (!directDatabaseAccess) {
+  if (!req.directDatabaseAccess) {
     text = await fsp_readFile(destFile, "utf8");
 
     // Title needs to be stripped out else it appends it to the pad..
@@ -195,7 +193,7 @@ async function doImport(req, res, padId)
   }
 
   // change text of the pad and broadcast the changeset
-  if (!directDatabaseAccess) {
+  if (!req.directDatabaseAccess) {
     if (importHandledByPlugin || useConvertor || fileIsHTML) {
       try {
         importHtml.setPadHTML(pad, text);
@@ -214,56 +212,59 @@ async function doImport(req, res, padId)
 
   // direct Database Access means a pad user should perform a switchToPad
   // and not attempt to receive updated pad data
-  if (!directDatabaseAccess) {
-    // tell clients to update
-    await padMessageHandler.updatePadClients(pad);
+  if (req.directDatabaseAccess) {
+    return;
   }
 
-  if (!directDatabaseAccess) {
-    // clean up temporary files
+  // tell clients to update
+  await padMessageHandler.updatePadClients(pad);
 
-    /*
-     * TODO: directly delete the file and handle the eventual error. Checking
-     * before for existence is prone to race conditions, and does not handle any
-     * errors anyway.
-     */
-    if (await fsp_exists(srcFile)) {
-      fsp_unlink(srcFile);
-    }
+  // clean up temporary files
 
-    if (await fsp_exists(destFile)) {
-      fsp_unlink(destFile);
-    }
+  /*
+   * TODO: directly delete the file and handle the eventual error. Checking
+   * before for existence is prone to race conditions, and does not handle any
+   * errors anyway.
+   */
+  if (await fsp_exists(srcFile)) {
+    fsp_unlink(srcFile);
   }
 
-  return directDatabaseAccess;
+  if (await fsp_exists(destFile)) {
+    fsp_unlink(destFile);
+  }
 }
 
 exports.doImport = function (req, res, padId)
 {
+  /**
+   * NB: abuse the 'req' object by storing an additional
+   * 'directDatabaseAccess' property on it so that it can
+   * be passed back in the HTML below.
+   *
+   * this is necessary because in the 'throw' paths of
+   * the function above there's no other way to return
+   * a value to the caller.
+   */
   let status = "ok";
-  let directDatabaseAccess;
-
-  doImport(req, res, padId).then(result => {
-    directDatabaseAccess = result;
-  }).catch(err => {
+  doImport(req, res, padId).catch(err => {
     // check for known errors and replace the status
     if (err == "uploadFailed" || err == "convertFailed" || err == "padHasData") {
       status = err;
     } else {
       throw err;
     }
-  });
-
-  // close the connection
-  res.send(
+  }).then(() => {
+    // close the connection
+    res.send(
     "<head> \
       <script type='text/javascript' src='../../static/js/jquery.js'></script> \
     </head> \
     <script> \
       $(window).load(function(){ \
-        var impexp = window.parent.padimpexp.handleFrameCall('" + directDatabaseAccess +"', '" + status + "'); \
+        var impexp = window.parent.padimpexp.handleFrameCall('" + req.directDatabaseAccess +"', '" + status + "'); \
       }) \
     </script>"
-  );
+    );
+  });
 }
