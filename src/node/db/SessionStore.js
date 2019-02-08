@@ -36,18 +36,18 @@ SessionStore.prototype.set = function(sid, sess, fn) {
   messageLogger.debug('SET ' + sid);
 
   db.set("sessionstorage:" + sid, sess);
-  process.nextTick(function() {
-    if (fn) fn();
-  });
+  if (fn) {
+    process.nextTick(fn);
+  }
 };
 
 SessionStore.prototype.destroy = function(sid, fn) {
   messageLogger.debug('DESTROY ' + sid);
 
   db.remove("sessionstorage:" + sid);
-  process.nextTick(function() {
-    if (fn) fn();
-  });
+  if (fn) {
+    process.nextTick(fn);
+  }
 };
 
 SessionStore.prototype.all = function(fn) {
