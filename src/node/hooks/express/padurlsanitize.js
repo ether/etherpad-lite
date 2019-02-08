@@ -12,7 +12,10 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     }
 
     padManager.sanitizePadId(padId, function(sanitizedPadId) {
-      if (sanitizedPadId != padId) {
+      if (sanitizedPadId === padId) {
+        // the pad id was fine, so just render it
+        next();
+      } else {
         // the pad id was sanitized, so we redirect to the sanitized version
         var real_url = sanitizedPadId;
         real_url = encodeURIComponent(real_url);
@@ -20,9 +23,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         if ( query ) real_url += '?' + query;
         res.header('Location', real_url);
         res.status(302).send('You should be redirected to <a href="' + real_url + '">' + real_url + '</a>');
-      } else {
-        // the pad id was fine, so just render it
-        next();
       }
     });
   });
