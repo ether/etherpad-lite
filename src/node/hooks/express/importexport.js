@@ -13,7 +13,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       return;
     }
 
-    //if abiword is disabled, and this is a format we only support with abiword, output a message
+    // if abiword is disabled, and this is a format we only support with abiword, output a message
     if (settings.exportAvailable() == "no" &&
        ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1) {
       res.send("This export is not enabled at this Etherpad instance. Set the path to Abiword or SOffice in settings.json to enable this feature");
@@ -24,9 +24,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     hasPadAccess(req, res, function() {
       console.log('req.params.pad', req.params.pad);
-      padManager.doesPadExists(req.params.pad, function(err, exists)
-      {
-        if(!exists) {
+      padManager.doesPadExists(req.params.pad, function(err, exists) {
+        if (!exists) {
           return next();
         }
 
@@ -35,12 +34,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-  //handle import requests
+  // handle import requests
   args.app.post('/p/:pad/import', function(req, res, next) {
     hasPadAccess(req, res, function() {
-      padManager.doesPadExists(req.params.pad, function(err, exists)
-      {
-        if(!exists) {
+      padManager.doesPadExists(req.params.pad, function(err, exists) {
+        if (!exists) {
           return next();
         }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server. 
- * Static file Requests are answered directly from this module, Socket.IO messages are passed 
+ * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
+ * Static file Requests are answered directly from this module, Socket.IO messages are passed
  * to MessageHandler and minfied requests are passed to minified.
  */
 
@@ -46,8 +46,8 @@ NodeVersion.enforceMinNodeVersion('8.9.0');
  */
 var stats = require('./stats');
 stats.gauge('memoryUsage', function() {
-  return process.memoryUsage().rss
-})
+  return process.memoryUsage().rss;
+});
 
 var settings
   , db
@@ -59,8 +59,8 @@ async.waterfall([
   // load npm
   function(callback) {
     npm.load({}, function(er) {
-      callback(er)
-    })
+      callback(er);
+    });
   },
 
   // load everything
@@ -73,14 +73,13 @@ async.waterfall([
     callback();
   },
 
-  //initalize the database
-  function (callback)
-  {
+  // initalize the database
+  function (callback) {
     db.init(callback);
   },
 
   function(callback) {
-    plugins.update(callback)
+    plugins.update(callback);
   },
 
   function (callback) {
@@ -93,9 +92,8 @@ async.waterfall([
     callback();
   },
 
-  //initalize the http server
-  function (callback)
-  {
+  // initalize the http server
+  function (callback) {
     hooks.callAll("createServer", {});
     callback(null);
   }

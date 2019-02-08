@@ -32,13 +32,15 @@ var TidyHtml = require('../utils/TidyHtml');
 
 var convertor = null;
 
-//load abiword only if its enabled
-if(settings.abiword != null)
+// load abiword only if it is enabled
+if (settings.abiword != null) {
   convertor = require("../utils/Abiword");
+}
 
 // Use LibreOffice if an executable has been defined in the settings
-if(settings.soffice != null)
+if (settings.soffice != null) {
   convertor = require("../utils/LibreOffice");
+}
 
 const tempDirectory = os.tmpdir();
 
@@ -53,62 +55,55 @@ exports.doExport = function(req, res, padId, type)
   hooks.aCallFirst("exportFileName", padId,
     function(err, hookFileName){
       // if fileName is set then set it to the padId, note that fileName is returned as an array.
-      if(hookFileName.length) fileName = hookFileName;
+      if (hookFileName.length) {
+       fileName = hookFileName;
+      }
 
-      //tell the browser that this is a downloadable file
+      // tell the browser that this is a downloadable file
       res.attachment(fileName + "." + type);
 
-      //if this is a plain text export, we can do this directly
+      // if this is a plain text export, we can do this directly
       // We have to over engineer this because tabs are stored as attributes and not plain text
-      if(type == "etherpad"){
-        exportEtherpad.getPadRaw(padId, function(err, pad){
-          if(!err){
+      if (type == "etherpad") {
+        exportEtherpad.getPadRaw(padId, function(err, pad) {
+          if (!err) {
             res.send(pad);
             // return;
           }
         });
-      }
-      else if(type == "txt")
-      {
-        exporttxt.getPadTXTDocument(padId, req.params.rev, function(err, txt)
-        {
-          if(!err) {
+      } else if (type == "txt") {
+        exporttxt.getPadTXTDocument(padId, req.params.rev, function(err, txt) {
+          if (!err) {
             res.send(txt);
           }
         });
-      }
-      else
-      {
+      } else {
         var html;
         var randNum;
         var srcFile, destFile;
 
         async.series([
-          //render the html document
-          function(callback)
-          {
-            exporthtml.getPadHTMLDocument(padId, req.params.rev, function(err, _html)
-            {
-              if(ERR(err, callback)) return;
+          // render the html document
+          function(callback) {
+            exporthtml.getPadHTMLDocument(padId, req.params.rev, function(err, _html) {
+              if (ERR(err, callback)) return;
               html = _html;
               callback();
             });
           },
-          //decide what to do with the html export
-          function(callback)
-          {
-            //if this is a html export, we can send this from here directly
-            if(type == "html")
-            {
+
+          // decide what to do with the html export
+          function(callback) {
+            // if this is a html export, we can send this from here directly
+            if (type == "html") {
               // do any final changes the plugin might want to make
-              hooks.aCallFirst("exportHTMLSend", html, function(err, newHTML){
-                if(newHTML.length) html = newHTML;
+              hooks.aCallFirst("exportHTMLSend", html, function(err, newHTML) {
+                if (newHTML.length) html = newHTML;
                 res.send(html);
                 callback("stop");
               });
-            }
-            else //write the html export to a file
-            {
+            } else {
+              // write the html export to a file
               randNum = Math.floor(Math.random()*0xFFFFFFFF);
               srcFile = tempDirectory + "/etherpad_export_" + randNum + ".html";
               fs.writeFile(srcFile, html, callback);
@@ -116,64 +111,56 @@ exports.doExport = function(req, res, padId, type)
           },
 
           // Tidy up the exported HTML
-          function(callback)
-          {
-            //ensure html can be collected by the garbage collector
+          function(callback) {
+            // ensure html can be collected by the garbage collector
             html = null;
 
             TidyHtml.tidy(srcFile, callback);
           },
 
-          //send the convert job to the convertor (abiword, libreoffice, ..)
-          function(callback)
-          {
+          // send the convert job to the convertor (abiword, libreoffice, ..)
+          function(callback) {
             destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
 
             // Allow plugins to overwrite the convert in export process
-            hooks.aCallAll("exportConvert", {srcFile: srcFile, destFile: destFile, req: req, res: res}, function(err, result){
-              if(!err && result.length > 0){
+            hooks.aCallAll("exportConvert", { srcFile: srcFile, destFile: destFile, req: req, res: res }, function(err, result) {
+              if (!err && result.length > 0) {
                 // console.log("export handled by plugin", destFile);
                 handledByPlugin = true;
                 callback();
-              }else{
+              } else {
                 convertor.convertFile(srcFile, destFile, type, callback);
               }
             });
 
           },
-          //send the file
-          function(callback)
-          {
+
+          // send the file
+          function(callback) {
             res.sendFile(destFile, null, callback);
           },
-          //clean up temporary files
-          function(callback)
-          {
+
+          // clean up temporary files
+          function(callback) {
             async.parallel([
-              function(callback)
-              {
+              function(callback) {
                 fs.unlink(srcFile, callback);
               },
-              function(callback)
-              {
-                //100ms delay to accomidate for slow windows fs
-                if(os.type().indexOf("Windows") > -1)
-                {
-                  setTimeout(function()
-                  {
+              function(callback) {
+                // 100ms delay to accommodate for slow windows fs
+                if (os.type().indexOf("Windows") > -1) {
+                  setTimeout(function() {
                     fs.unlink(destFile, callback);
                   }, 100);
-                }
-                else
-                {
+                } else {
                   fs.unlink(destFile, callback);
                 }
               }
             ], callback);
           }
-        ], function(err)
-        {
-          if(err && err != "stop") ERR(err);
+        ],
+        function(err) {
+          if (err && err != "stop") ERR(err);
         })
       }
     }

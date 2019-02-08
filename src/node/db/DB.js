@@ -1,5 +1,5 @@
 /**
- * The DB Module provides a database initalized with the settings 
+ * The DB Module provides a database initalized with the settings
  * provided by the settings module
  */
 
@@ -23,7 +23,7 @@ var ueberDB = require("ueberdb2");
 var settings = require("../utils/Settings");
 var log4js = require('log4js');
 
-//set database settings
+// set database settings
 var db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
 
 /**
@@ -33,24 +33,19 @@ exports.db = null;
 
 /**
  * Initalizes the database with the settings provided by the settings module
- * @param {Function} callback 
+ * @param {Function} callback
  */
-exports.init = function(callback)
-{
-  //initalize the database async
-  db.init(function(err)
-  {
-    //there was an error while initializing the database, output it and stop 
-    if(err)
-    {
+exports.init = function(callback) {
+  // initalize the database async
+  db.init(function(err) {
+    if (err) {
+      // there was an error while initializing the database, output it and stop
       console.error("ERROR: Problem while initalizing the database");
       console.error(err.stack ? err.stack : err);
       process.exit(1);
-    }
-    //everything ok
-    else
-    {
-      exports.db = db;  
+    } else {
+      // everything ok
+      exports.db = db;
       callback(null);
     }
   });

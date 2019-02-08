@@ -55,6 +55,7 @@ exports.formatHooks = function (hook_set_name) {
 
 exports.callInit = function (cb) {
   var hooks = require("./hooks");
+
   async.map(
     Object.keys(exports.plugins),
     function (plugin_name, cb) {
@@ -83,6 +84,7 @@ exports.update = function (cb) {
   exports.getPackages(function (er, packages) {
     var parts = [];
     var plugins = {};
+
     // Load plugin metadata ep.json
     async.forEach(
       Object.keys(packages),
@@ -106,6 +108,7 @@ exports.getPackages = function (cb) {
   var dir = path.resolve(npm.dir, '..');
   readInstalled(dir, function (er, data) {
     if (er) cb(er, null);
+
     var packages = {};
     function flatten(deps) {
       _.chain(deps).keys().each(function (name) {
@@ -116,12 +119,12 @@ exports.getPackages = function (cb) {
           delete packages[name].dependencies;
           delete packages[name].parent;
         }
-      
+
         // I don't think we need recursion
         //if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
       });
     }
-  
+
     var tmp = {};
     tmp[data.name] = data;
     flatten(tmp[data.name].dependencies);

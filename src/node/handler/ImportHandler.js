@@ -37,29 +37,30 @@ var ERR = require("async-stacktrace")
 var convertor = null;
 var exportExtension = "htm";
 
-//load abiword only if its enabled and if soffice is disabled
-if(settings.abiword != null && settings.soffice === null)
+// load abiword only if it is enabled and if soffice is disabled
+if (settings.abiword != null && settings.soffice === null) {
   convertor = require("../utils/Abiword");
+}
 
-//load soffice only if its enabled
-if(settings.soffice != null) {
+// load soffice only if it is enabled
+if (settings.soffice != null) {
   convertor = require("../utils/LibreOffice");
   exportExtension = "html";
 }
 
 const tmpDirectory = os.tmpdir();
-  
+
 /**
  * do a requested import
- */ 
+ */
 exports.doImport = function(req, res, padId)
 {
   var apiLogger = log4js.getLogger("ImportHandler");
 
-  //pipe to a file
-  //convert file to html via abiword or soffice
-  //set html in the pad
-  
+  // pipe to a file
+  // convert file to html via abiword or soffice
+  // set html in the pad
+
   var srcFile, destFile
     , pad
     , text
@@ -68,69 +69,74 @@ exports.doImport = function(req, res, padId)
     , useConvertor;
 
   var randNum = Math.floor(Math.random()*0xFFFFFFFF);
-  
+
   // setting flag for whether to use convertor or not
   useConvertor = (convertor != null);
 
   async.series([
-    //save the uploaded file to /tmp
+    // save the uploaded file to /tmp
     function(callback) {
       var form = new formidable.IncomingForm();
       form.keepExtensions = true;
       form.uploadDir = tmpDirectory;
-      
-      form.parse(req, function(err, fields, files) { 
-        //the upload failed, stop at this point
-        if(err || files.file === undefined) {
-          if(err) console.warn("Uploading Error: " + err.stack);
+
+      form.parse(req, function(err, fields, files) {
+        if (err || files.file === undefined) {
+          // the upload failed, stop at this point
+          if (err) {
+            console.warn("Uploading Error: " + err.stack);
+          }
           callback("uploadFailed");
 
           return;
         }
 
-        //everything ok, continue
-        //save the path of the uploaded file
+        // everything ok, continue
+        // save the path of the uploaded file
         srcFile = files.file.path;
         callback();
       });
     },
-    
-    //ensure this is a file ending we know, else we change the file ending to .txt
-    //this allows us to accept source code files like .c or .java
+
+    // ensure this is a file ending we know, else we change the file ending to .txt
+    // this allows us to accept source code files like .c or .java
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase()
         , knownFileEndings = [".txt", ".doc", ".docx", ".pdf", ".odt", ".html", ".htm", ".etherpad", ".rtf"]
         , fileEndingKnown = (knownFileEndings.indexOf(fileEnding) > -1);
-      
-      //if the file ending is known, continue as normal
-      if(fileEndingKnown) {
+
+      // if the file ending is known, continue as normal
+      if (fileEndingKnown) {
         callback();
-        
+
         return;
       }
 
-      //we need to rename this file with a .txt ending
-      if(settings.allowUnknownFileEnds === true){
+      // we need to rename this file with a .txt ending
+      if (settings.allowUnknownFileEnds === true) {
         var oldSrcFile = srcFile;
-        srcFile = path.join(path.dirname(srcFile),path.basename(srcFile, fileEnding)+".txt");
+        srcFile = path.join(path.dirname(srcFile), path.basename(srcFile, fileEnding) + ".txt");
         fs.rename(oldSrcFile, srcFile, callback);
-      }else{
+      } else {
         console.warn("Not allowing unknown file type to be imported", fileEnding);
         callback("uploadFailed");
       }
     },
-    function(callback){
+
+    function(callback) {
       destFile = path.join(tmpDirectory, "etherpad_import_" + randNum + "." + exportExtension);
 
       // Logic for allowing external Import Plugins
-      hooks.aCallAll("import", {srcFile: srcFile, destFile: destFile}, function(err, result){
-        if(ERR(err, callback)) return callback();
-        if(result.length > 0){ // This feels hacky and wrong..
+      hooks.aCallAll("import", { srcFile: srcFile, destFile: destFile }, function(err, result) {
+        if (ERR(err, callback)) return callback();
+
+        if (result.length > 0) { // This feels hacky and wrong..
           importHandledByPlugin = true;
         }
         callback();
       });
     },
+
     function(callback) {
       var fileEnding = path.extname(srcFile).toLowerCase()
       var fileIsNotEtherpad = (fileEnding !== ".etherpad");
@@ -141,23 +147,24 @@ exports.doImport = function(req, res, padId)
         return;
       }
 
-      // we do this here so we can see if the pad has quit ea few edits
-      padManager.getPad(padId, function(err, _pad){
+      // we do this here so we can see if the pad has quite a few edits
+      padManager.getPad(padId, function(err, _pad) {
         var headCount = _pad.head;
-        if(headCount >= 10){
-          apiLogger.warn("Direct database Import attempt of a pad that already has content, we wont be doing this")
+        if (headCount >= 10) {
+          apiLogger.warn("Direct database Import attempt of a pad that already has content, we wont be doing this");
           return callback("padHasData");
         }
 
-        fs.readFile(srcFile, "utf8", function(err, _text){
+        fs.readFile(srcFile, "utf8", function(err, _text) {
           directDatabaseAccess = true;
-          importEtherpad.setPadRaw(padId, _text, function(err){
+          importEtherpad.setPadRaw(padId, _text, function(err) {
             callback();
           });
         });
       });
     },
-    //convert file to html
+
+    // convert file to html if necessary
     function(callback) {
       if (importHandledByPlugin || directDatabaseAccess) {
         callback();
@@ -168,18 +175,20 @@ exports.doImport = function(req, res, padId)
       var fileEnding = path.extname(srcFile).toLowerCase();
       var fileIsHTML = (fileEnding === ".html" || fileEnding === ".htm");
       var fileIsTXT = (fileEnding === ".txt");
+
       if (fileIsTXT) useConvertor = false; // Don't use convertor for text files
+
       // See https://github.com/ether/etherpad-lite/issues/2572
       if (fileIsHTML || (useConvertor === false)) {
         // if no convertor only rename
         fs.rename(srcFile, destFile, callback);
-        
+
         return;
       }
 
       convertor.convertFile(srcFile, destFile, exportExtension, function(err) {
-        //catch convert errors
-        if(err) {
+        // catch convert errors
+        if (err) {
           console.warn("Converting Error:", err);
           return callback("convertFailed");
         }
@@ -187,7 +196,7 @@ exports.doImport = function(req, res, padId)
         callback();
       });
     },
-    
+
     function(callback) {
       if (useConvertor || directDatabaseAccess) {
         callback();
@@ -216,17 +225,17 @@ exports.doImport = function(req, res, padId)
         callback();
       });
     },
-        
-    //get the pad object
+
+    // get the pad object
     function(callback) {
-      padManager.getPad(padId, function(err, _pad){
-        if(ERR(err, callback)) return;
+      padManager.getPad(padId, function(err, _pad) {
+        if (ERR(err, callback)) return;
         pad = _pad;
         callback();
       });
     },
-    
-    //read the text
+
+    // read the text
     function(callback) {
       if (directDatabaseAccess) {
         callback();
@@ -234,43 +243,46 @@ exports.doImport = function(req, res, padId)
         return;
       }
 
-      fs.readFile(destFile, "utf8", function(err, _text){
-        if(ERR(err, callback)) return;
+      fs.readFile(destFile, "utf8", function(err, _text) {
+        if (ERR(err, callback)) return;
         text = _text;
         // Title needs to be stripped out else it appends it to the pad..
         text = text.replace("<title>", "<!-- <title>");
         text = text.replace("</title>","</title>-->");
 
-        //node on windows has a delay on releasing of the file lock.  
-        //We add a 100ms delay to work around this
-        if(os.type().indexOf("Windows") > -1){
+        // node on windows has a delay on releasing of the file lock.
+        // We add a 100ms delay to work around this
+        if (os.type().indexOf("Windows") > -1) {
            setTimeout(function() {callback();}, 100);
         } else {
           callback();
         }
       });
     },
-    
-    //change text of the pad and broadcast the changeset
+
+    // change text of the pad and broadcast the changeset
     function(callback) {
-      if(!directDatabaseAccess){
+      if (!directDatabaseAccess) {
         var fileEnding = path.extname(srcFile).toLowerCase();
         if (importHandledByPlugin || useConvertor || fileEnding == ".htm" || fileEnding == ".html") {
           importHtml.setPadHTML(pad, text, function(e){
-            if(e) apiLogger.warn("Error importing, possibly caused by malformed HTML");
+            if (e) {
+              apiLogger.warn("Error importing, possibly caused by malformed HTML");
+            }
           });
         } else {
           pad.setText(text);
         }
       }
 
-      // Load the Pad into memory then brodcast updates to all clients
+      // Load the Pad into memory then broadcast updates to all clients
       padManager.unloadPad(padId);
-      padManager.getPad(padId, function(err, _pad){
+      padManager.getPad(padId, function(err, _pad) {
         var pad = _pad;
         padManager.unloadPad(padId);
+
         // direct Database Access means a pad user should perform a switchToPad
-        // and not attempt to recieve updated pad data..
+        // and not attempt to receive updated pad data
         if (directDatabaseAccess) {
           callback();
 
@@ -283,8 +295,8 @@ exports.doImport = function(req, res, padId)
       });
 
     },
-    
-    //clean up temporary files
+
+    // clean up temporary files
     function(callback) {
       if (directDatabaseAccess) {
         callback();
@@ -308,17 +320,16 @@ exports.doImport = function(req, res, padId)
     }
   ], function(err) {
     var status = "ok";
-    
-    //check for known errors and replace the status
-    if(err == "uploadFailed" || err == "convertFailed" || err == "padHasData")
-    {
+
+    // check for known errors and replace the status
+    if (err == "uploadFailed" || err == "convertFailed" || err == "padHasData") {
       status = err;
       err = null;
     }
 
     ERR(err);
 
-    //close the connection
+    // close the connection
     res.send(
       "<head> \
         <script type='text/javascript' src='../../static/js/jquery.js'></script> \
@@ -331,4 +342,3 @@ exports.doImport = function(req, res, padId)
     );
   });
 }
-
