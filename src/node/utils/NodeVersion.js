@@ -18,6 +18,8 @@
  * limitations under the License.
  */
 
+const semver = require('semver');
+
 /**
  * Quits if Etherpad is not running on a given minimum Node version
  *
@@ -25,7 +27,6 @@
  * @param  {Function}   callback         Standard callback function
  */
 exports.enforceMinNodeVersion = function(minNodeVersion, callback) {
-  const semver = require('semver');
   const currentNodeVersion = process.version;
 
   // we cannot use template literals, since we still do not know if we are
@@ -45,7 +46,6 @@ exports.enforceMinNodeVersion = function(minNodeVersion, callback) {
  * @param  {Function}  epRemovalVersion                 Etherpad version that will remove support for deprecated Node releases
  */
 exports.checkDeprecationStatus = function(lowestNonDeprecatedNodeVersion, epRemovalVersion, callback) {
-  const semver = require('semver');
   const currentNodeVersion = process.version;
 
   if (semver.lt(currentNodeVersion, lowestNonDeprecatedNodeVersion)) {
