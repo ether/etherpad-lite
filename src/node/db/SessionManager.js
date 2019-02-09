@@ -23,7 +23,7 @@ var customError = require("../utils/customError");
 var randomString = require("../utils/randomstring");
 var db = require("./DB").db;
 var async = require("async");
-var groupMangager = require("./GroupManager");
+var groupManager = require("./GroupManager");
 var authorMangager = require("./AuthorManager");
 
 exports.doesSessionExist = function(sessionID, callback)
@@ -47,7 +47,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
     // check if the group exists
     function(callback)
     {
-      groupMangager.doesGroupExist(groupID, function(err, exists)
+      groupManager.doesGroupExist(groupID, function(err, exists)
       {
         if(ERR(err, callback)) return;
 
@@ -271,7 +271,7 @@ exports.deleteSession = function(sessionID, callback)
 
 exports.listSessionsOfGroup = function(groupID, callback)
 {
-  groupMangager.doesGroupExist(groupID, function(err, exists)
+  groupManager.doesGroupExist(groupID, function(err, exists)
   {
     if(ERR(err, callback)) return;
 
