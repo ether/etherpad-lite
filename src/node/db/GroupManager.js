@@ -122,7 +122,9 @@ exports.deleteGroup = function(groupID, callback)
         if (ERR(err, callback)) return;
         groups = groups? groups.groupIDs : [];
 
-        if (groups.indexOf(groupID) === -1) {
+        let index = groups.indexOf(groupID);
+
+        if (index === -1) {
           // it's not listed
           callback();
 
@@ -130,7 +132,7 @@ exports.deleteGroup = function(groupID, callback)
         }
 
         // remove from the list
-        groups.splice(groups.indexOf(groupID), 1);
+        groups.splice(index, 1);
 
         // store empty group list
         if (groups.length == 0) {
