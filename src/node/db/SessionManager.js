@@ -24,7 +24,7 @@ var randomString = require("../utils/randomstring");
 var db = require("./DB").db;
 var async = require("async");
 var groupManager = require("./GroupManager");
-var authorMangager = require("./AuthorManager");
+var authorManager = require("./AuthorManager");
 
 exports.doesSessionExist = function(sessionID, callback)
 {
@@ -64,7 +64,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
     // check if the author exists
     function(callback)
     {
-      authorMangager.doesAuthorExists(authorID, function(err, exists)
+      authorManager.doesAuthorExists(authorID, function(err, exists)
       {
         if(ERR(err, callback)) return;
 
@@ -287,7 +287,7 @@ exports.listSessionsOfGroup = function(groupID, callback)
 
 exports.listSessionsOfAuthor = function(authorID, callback)
 {
-  authorMangager.doesAuthorExists(authorID, function(err, exists)
+  authorManager.doesAuthorExists(authorID, function(err, exists)
   {
     if(ERR(err, callback)) return;
 
