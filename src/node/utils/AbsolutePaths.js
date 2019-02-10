@@ -61,8 +61,8 @@ var popIfEndsWith = function(stringArray, lastDesiredElements) {
  * Heuristically computes the directory in which Etherpad is installed.
  *
  * All the relative paths have to be interpreted against this absolute base
- * path. Since the Unix and Windows install have a different layout on disk,
- * they are treated as two special cases.
+ * path. Since the Windows package install has a different layout on disk, it is
+ * dealt with as a special case.
  *
  * The path is computed only on first invocation. Subsequent invocations return
  * a cached value.
@@ -79,26 +79,27 @@ exports.findEtherpadRoot = function() {
 
   const findRoot = require('find-root');
   const foundRoot = findRoot(__dirname);
+  const splitFoundRoot = foundRoot.split(path.sep);
 
-  var directoriesToStrip;
-  if (process.platform === 'win32') {
+  /*
+   * On Unix platforms and on Windows manual installs, foundRoot's value will
+   * be:
+   *
+   *   <BASE_DIR>\src
+   */
+  var maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['src']);
+
+  if ((maybeEtherpadRoot === false) && (process.platform === 'win32')) {
     /*
-     * Given the structure of our Windows package, foundRoot's value
-     * will be the following on win32:
+     * If we did not find the path we are expecting, and we are running under
+     * Windows, we may still be running from a prebuilt package, whose directory
+     * structure is different:
      *
      *   <BASE_DIR>\node_modules\ep_etherpad-lite
      */
-    directoriesToStrip = ['node_modules', 'ep_etherpad-lite'];
-  } else {
-    /*
-     * On Unix platforms, foundRoot's value will be:
-     *
-     *   <BASE_DIR>\src
-     */
-    directoriesToStrip = ['src'];
+    maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['node_modules', 'ep_etherpad-lite']);
   }
 
-  const maybeEtherpadRoot = popIfEndsWith(foundRoot.split(path.sep), directoriesToStrip);
   if (maybeEtherpadRoot === false) {
     absPathLogger.error(`Could not identity Etherpad base path in this ${process.platform} installation in "${foundRoot}"`);
     process.exit(1);
