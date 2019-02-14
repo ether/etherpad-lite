@@ -38,7 +38,7 @@
 	"pad.noCookie": "الكوكيز غير متاحة. الرجاء السماح بتحميل الكوكيز على متصفحك!",
 	"pad.passwordRequired": "تحتاج إلى كلمة مرور للوصول إلى هذا الباد",
 	"pad.permissionDenied": "ليس لديك إذن لدخول هذا الباد",
-	"pad.wrongPassword": "كانت كلمة المرور خاطئة",
+	"pad.wrongPassword": "كانت كلمة السر خاطئة",
 	"pad.settings.padSettings": "إعدادات الباد",
 	"pad.settings.myView": "رؤيتي",
 	"pad.settings.stickychat": "الدردشة دائما على الشاشة",
