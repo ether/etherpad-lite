@@ -81,3 +81,15 @@ table#otheruserstable {
     top: initial !important;
   } 
 }
+
+#users.chatAndUsers {
+  width: 172px!important;
+  box-shadow: none;
+  border: none !important;
+  padding: 10px;
+  padding-top: 15px;  
+}
+
+#users.chatAndUsers #myusernameedit {
+  width: calc(100% - 10px);
+}
