@@ -40,13 +40,7 @@ if(settings.abiword != null)
 if(settings.soffice != null)
   convertor = require("../utils/LibreOffice");
 
-var tempDirectory = "/tmp";
-
-//tempDirectory changes if the operating system is windows
-if(os.type().indexOf("Windows") > -1)
-{
-  tempDirectory = process.env.TEMP;
-}
+const tempDirectory = os.tmpdir();
 
 /**
  * do a requested export

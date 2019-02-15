@@ -23,7 +23,8 @@ describe('tidyHtml', function() {
     }
 
     // Try to tidy up a bad HTML file
-    var tmpDir = process.env.TEMP || "/tmp";
+    const tmpDir = os.tmpdir();
+
     var tmpFile = path.join(tmpDir, 'tmp_' + (Math.floor(Math.random() * 1000000)) + '.html')
     fs.writeFileSync(tmpFile, '<html><body><p>a paragraph</p><li>List without outer UL</li>trailing closing p</p></body></html>');
     TidyHtml.tidy(tmpFile, function(err){

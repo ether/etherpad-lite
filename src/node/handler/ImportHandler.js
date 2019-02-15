@@ -47,8 +47,7 @@ if(settings.soffice != null) {
   exportExtension = "html";
 }
 
-//for node 0.6 compatibily, os.tmpDir() only works from 0.8
-var tmpDirectory = process.env.TEMP || process.env.TMPDIR || process.env.TMP || '/tmp';
+const tmpDirectory = os.tmpdir();
   
 /**
  * do a requested import
