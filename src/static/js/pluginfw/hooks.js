@@ -146,7 +146,7 @@ exports.clientPluginNames = function() {
   var client_plugin_names = _.uniq(
     exports.plugins.parts
       .filter(function(part) { return part.hasOwnProperty('client_hooks'); })
-      .map(function(part) { return part['plugin']; })
+      .map(function(part) { return 'plugin-' + part['plugin']; })
   );
 
   return client_plugin_names;
