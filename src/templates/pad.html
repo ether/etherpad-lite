@@ -6,7 +6,7 @@
 %>
 <!doctype html>
 <% e.begin_block("htmlHead"); %>
-<html>
+<html class="<%=hooks.clientPluginNames().join(' '); %>">
 <% e.end_block(); %>
 
         <title><%=settings.title%></title>
@@ -100,7 +100,7 @@
             <% e.end_block(); %>
         </div>
 
-        <div id="editorcontainerbox" class="<%=hooks.clientPluginNames().join(' '); %>">
+        <div id="editorcontainerbox">
             <div id="editorcontainer" class="editorcontainer"></div>
             <div id="editorloadingbox">
               <div id="passwordRequired">
