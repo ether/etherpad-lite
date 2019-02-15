@@ -334,7 +334,7 @@
         <div id="chatbox">
             <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span>
               <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
-              <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
+              <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" data-l10n-id="pad.chat.stick.title">█&nbsp;&nbsp;</a>
             </div>
             <div id="chattext" class="authorColors" aria-live="polite" aria-relevant="additions removals text" role="log" aria-atomic="false">
                 <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
@@ -342,7 +342,7 @@
             </div>
             <div id="chatinputbox">
                 <form>
-                    <input id="chatinput" type="text" maxlength="999">
+                    <input id="chatinput" type="text" maxlength="999" data-l10n-id="pad.chat.writeMessage.placeholder">
                 </form>
             </div>
         </div>

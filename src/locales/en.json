@@ -116,6 +116,8 @@
   "pad.chat": "Chat",
   "pad.chat.title": "Open the chat for this pad.",
   "pad.chat.loadmessages": "Load more messages",
+  "pad.chat.stick.title": "Stick chat to screen",
+  "pad.chat.writeMessage.placeholder": "Write your message here",
 
   "timeslider.pageTitle": "{{appTitle}} Timeslider",
   "timeslider.toolbar.returnbutton": "Return to pad",
