@@ -109,6 +109,8 @@
 	"pad.chat": "Clavardage",
 	"pad.chat.title": "Ouvrir le clavardoir de ce pad.",
 	"pad.chat.loadmessages": "Charger davantage de messages",
+	"pad.chat.stick.title": "Agrandir le chat",
+	"pad.chat.writeMessage.placeholder": "Entrez votre message ici",
 	"timeslider.pageTitle": "Historique dynamique de {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Retourner au pad",
 	"timeslider.toolbar.authors": "Auteurs :",
