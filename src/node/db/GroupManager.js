@@ -199,7 +199,7 @@ exports.createGroupIfNotExistsFor = function(groupMapper, callback)
 {
   // ensure mapper is optional
   if (typeof groupMapper != "string") {
-    callback(new customError("groupMapper is no string", "apierror"));
+    callback(new customError("groupMapper is not a string", "apierror"));
     return;
   }
 

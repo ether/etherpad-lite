@@ -151,7 +151,7 @@ exports.doImport = function(req, res, padId)
       padManager.getPad(padId, function(err, _pad) {
         var headCount = _pad.head;
         if (headCount >= 10) {
-          apiLogger.warn("Direct database Import attempt of a pad that already has content, we wont be doing this");
+          apiLogger.warn("Direct database Import attempt of a pad that already has content, we won't be doing this");
           return callback("padHasData");
         }
 

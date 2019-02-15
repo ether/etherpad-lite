@@ -457,7 +457,7 @@ function handleGetChatMessages(client, message)
   var count = end - start;
 
   if (count < 0 || count > 100) {
-    messageLogger.warn("Dropped message, GetChatMessages Message, client requested invalid amout of messages!");
+    messageLogger.warn("Dropped message, GetChatMessages Message, client requested invalid amount of messages!");
     return;
   }
 

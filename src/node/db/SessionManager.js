@@ -95,7 +95,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
 
       // ensure this is not a negative number
       if (validUntil < 0) {
-        callback(new customError("validUntil is a negativ number", "apierror"));
+        callback(new customError("validUntil is a negative number", "apierror"));
         return;
       }
 

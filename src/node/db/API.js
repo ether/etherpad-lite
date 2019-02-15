@@ -204,7 +204,7 @@ exports.getText = function(padID, rev, callback)
 
   // ensure this is not a negative number
   if (rev !== undefined && rev < 0) {
-    callback(new customError("rev is a negativ number", "apierror"));
+    callback(new customError("rev is a negative number", "apierror"));
     return;
   }
 
@@ -257,7 +257,7 @@ exports.setText = function(padID, text, callback)
 {
   // text is required
   if (typeof text != "string") {
-    callback(new customError("text is no string", "apierror"));
+    callback(new customError("text is not a string", "apierror"));
     return;
   }
 
@@ -286,7 +286,7 @@ exports.appendText = function(padID, text, callback)
 {
   // text is required
   if (typeof text != "string") {
-    callback(new customError("text is no string", "apierror"));
+    callback(new customError("text is not a string", "apierror"));
     return;
   }
 
@@ -376,7 +376,7 @@ exports.setHTML = function(padID, html, callback)
 {
   // html is required
   if (typeof html != "string") {
-    callback(new customError("html is no string", "apierror"));
+    callback(new customError("html is not a string", "apierror"));
     return;
   }
 
@@ -472,7 +472,7 @@ exports.appendChatMessage = function(padID, text, authorID, time, callback)
 {
   // text is required
   if (typeof text != "string") {
-    callback(new customError("text is no string", "apierror"));
+    callback(new customError("text is not a string", "apierror"));
     return;
   }
 
@@ -569,7 +569,7 @@ exports.saveRevision = function(padID, rev, callback)
 
   // ensure this is not a negative number
   if (rev !== undefined && rev < 0) {
-    callback(new customError("rev is a negativ number", "apierror"));
+    callback(new customError("rev is a negative number", "apierror"));
     return;
   }
 
@@ -694,7 +694,7 @@ exports.restoreRevision = function(padID, rev, callback)
 
   // ensure this is not a negative number
   if (rev !== undefined && rev < 0) {
-    callback(new customError("rev is a negativ number", "apierror"));
+    callback(new customError("rev is a negative number", "apierror"));
     return;
   }
 
