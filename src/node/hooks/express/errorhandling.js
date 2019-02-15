@@ -44,13 +44,27 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     stats.meter('http500').mark()
   })
 
-  //connect graceful shutdown with sigint and uncaughtexception
-  if(os.type().indexOf("Windows") == -1) {
-    //sigint is so far not working on windows
-    //https://github.com/joyent/node/issues/1553
-    process.on('SIGINT', exports.gracefulShutdown);
-    // when running as PID1 (e.g. in docker container)
-    // allow graceful shutdown on SIGTERM c.f. #3265
-    process.on('SIGTERM', exports.gracefulShutdown);
-  }
+  /*
+   * Connect graceful shutdown with sigint and uncaught exception
+   *
+   * Until Etherpad 1.7.5, process.on('SIGTERM') and process.on('SIGINT') were
+   * not hooked up under Windows, because old nodejs versions did not support
+   * them.
+   *
+   * According to nodejs 6.x documentation, it is now safe to do so. This
+   * allows to gracefully close the DB connection when hitting CTRL+C under
+   * Windows, for example.
+   *
+   * Source: https://nodejs.org/docs/latest-v6.x/api/process.html#process_signal_events
+   *
+   *   - SIGTERM is not supported on Windows, it can be listened on.
+   *   - SIGINT from the terminal is supported on all platforms, and can usually
+   *     be generated with <Ctrl>+C (though this may be configurable). It is not
+   *     generated when terminal raw mode is enabled.
+   */
+  process.on('SIGINT', exports.gracefulShutdown);
+
+  // when running as PID1 (e.g. in docker container)
+  // allow graceful shutdown on SIGTERM c.f. #3265
+  process.on('SIGTERM', exports.gracefulShutdown);
 }
