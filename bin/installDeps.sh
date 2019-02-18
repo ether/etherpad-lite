@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # minimum required node version
-REQUIRED_NODE_MAJOR=6
+REQUIRED_NODE_MAJOR=8
 REQUIRED_NODE_MINOR=9
 
 # minimum required npm version
-REQUIRED_NPM_MAJOR=3
-REQUIRED_NPM_MINOR=10
+REQUIRED_NPM_MAJOR=6
+REQUIRED_NPM_MINOR=4
 
 require_minimal_version() {
   PROGRAM_LABEL="$1"

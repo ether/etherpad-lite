@@ -9,7 +9,7 @@ Etherpad is a really-real time collaborative editor scalable to thousands of sim
 # Installation
 
 ## Requirements
-- `nodejs` >= **6.9.0** (preferred: `nodejs` >= **8.9**)
+- `nodejs` >= **8.9.0**
 
 ## Uber-Quick Ubuntu
 ```
@@ -19,7 +19,7 @@ git clone --branch master https://github.com/ether/etherpad-lite.git && cd ether
 ```
 
 ## GNU/Linux and other UNIX-like systems
-You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **6.9.0**, preferred: >= **8.9**).
+You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **8.9.0**).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
