@@ -126,13 +126,6 @@ Example returns:
 */
 exports.getRevisionChangeset = function(padID, rev, callback)
 {
-  // check if rev is set
-  if (typeof rev === "function")
-  {
-    callback = rev;
-    rev = undefined;
-  }
-
   // check if rev is a number
   if (rev !== undefined && typeof rev !== "number")
   {
@@ -206,13 +199,6 @@ Example returns:
 */
 exports.getText = function(padID, rev, callback)
 {
-  //check if rev is set
-  if(typeof rev == "function")
-  {
-    callback = rev;
-    rev = undefined;
-  }
-  
   //check if rev is a number
   if(rev !== undefined && typeof rev != "number")
   {
@@ -347,12 +333,6 @@ Example returns:
 */
 exports.getHTML = function(padID, rev, callback)
 {
-  if(typeof rev == "function")
-  {
-    callback = rev;
-    rev = undefined; 
-  }
-
   if (rev !== undefined && typeof rev != "number")
   {
     if (isNaN(parseInt(rev)))
@@ -623,13 +603,6 @@ Example returns:
 */
 exports.saveRevision = function(padID, rev, callback)
 {
-  //check if rev is set
-  if(typeof rev == "function")
-  {
-    callback = rev;
-    rev = undefined;
-  }
-
   //check if rev is a number
   if(rev !== undefined && typeof rev != "number")
   {
