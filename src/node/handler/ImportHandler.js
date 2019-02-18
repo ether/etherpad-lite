@@ -292,16 +292,19 @@ exports.doImport = function(req, res, padId)
         return;
       }
 
-      //for node < 0.7 compatible
-      var fileExists = fs.exists || path.exists;
-      async.parallel([
-        function(callback){
-          fileExists (srcFile, function(exist) { (exist)? fs.unlink(srcFile, callback): callback(); });
-        },
-        function(callback){
-          fileExists (destFile, function(exist) { (exist)? fs.unlink(destFile, callback): callback(); });
-        }
-      ], callback);
+      try {
+         fs.unlinkSync(srcFile);
+      } catch (e) {
+         console.log(e);
+      }
+
+      try {
+         fs.unlinkSync(destFile);
+      } catch (e) {
+         console.log(e);
+      }
+
+      callback();
     }
   ], function(err) {
     var status = "ok";
