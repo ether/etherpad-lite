@@ -23,12 +23,15 @@
 
 var log4js = require('log4js')
   , async = require('async')
-  , stats = require('./stats')
   , NodeVersion = require('./utils/NodeVersion')
   ;
 
 log4js.replaceConsole();
 
+/*
+ * start up stats counting system
+ */
+var stats = require('./stats');
 stats.gauge('memoryUsage', function() {
   return process.memoryUsage().rss
 })
