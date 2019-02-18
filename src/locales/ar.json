@@ -36,7 +36,7 @@
 	"pad.colorpicker.cancel": "إلغاء",
 	"pad.loading": "جارٍ التحميل...",
 	"pad.noCookie": "الكوكيز غير متاحة. الرجاء السماح بتحميل الكوكيز على متصفحك!",
-	"pad.passwordRequired": "تحتاج إلى كلمة مرور للوصول إلى هذا الباد",
+	"pad.passwordRequired": "تحتاج إلى كلمة سر للوصول إلى هذا الباد",
 	"pad.permissionDenied": "ليس لديك إذن لدخول هذا الباد",
 	"pad.wrongPassword": "كانت كلمة السر خاطئة",
 	"pad.settings.padSettings": "إعدادات الباد",

@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Bjankuloski06",
-			"Brest"
+			"Brest",
+			"Vlad5250"
 		]
 	},
 	"index.newPad": "Нова тетратка",
@@ -23,7 +24,7 @@
 	"pad.toolbar.savedRevision.title": "Зачувај преработка",
 	"pad.toolbar.settings.title": "Поставки",
 	"pad.toolbar.embed.title": "Споделете и вметнете ја тетраткава",
-	"pad.toolbar.showusers.title": "Прикаж. корисниците на тетраткава",
+	"pad.toolbar.showusers.title": "Прикажи корисниците на тетраткава",
 	"pad.colorpicker.save": "Зачувај",
 	"pad.colorpicker.cancel": "Откажи",
 	"pad.loading": "Вчитувам...",
