@@ -29,6 +29,17 @@ var log4js = require('log4js')
 log4js.replaceConsole();
 
 /*
+ * early check for version compatibility before calling
+ * any modules that require newer versions of NodeJS
+ */
+NodeVersion.enforceMinNodeVersion('6.9.0');
+
+/*
+ * Since Etherpad 1.8.0, at least NodeJS 8.9.0 will be required
+ */
+NodeVersion.checkDeprecationStatus('8.9.0', '1.8.0');
+
+/*
  * start up stats counting system
  */
 var stats = require('./stats');
@@ -43,16 +54,6 @@ var settings
 var npm = require("npm/lib/npm.js");
 
 async.waterfall([
-  function(callback)
-  {
-    NodeVersion.enforceMinNodeVersion('6.9.0', callback);
-  },
-
-  function(callback)
-  {
-    NodeVersion.checkDeprecationStatus('8.9.0', '1.8.0', callback);
-  },
-
   // load npm
   function(callback) {
     npm.load({}, function(er) {
