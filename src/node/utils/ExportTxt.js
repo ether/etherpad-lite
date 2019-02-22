@@ -68,9 +68,6 @@ function getPadTXT(pad, revNum, callback)
   });
 }
 
-exports.getPadTXT = getPadTXT;
-
-
 // This is different than the functionality provided in ExportHtml as it provides formatting
 // functionality that is designed specifically for TXT exports
 function getTXTFromAtext(pad, atext, authorColors)
