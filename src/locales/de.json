@@ -92,6 +92,8 @@
 	"pad.chat": "Unterhaltung",
 	"pad.chat.title": "Den Chat für dieses Pad öffnen.",
 	"pad.chat.loadmessages": "Weitere Nachrichten laden",
+	"pad.chat.stick.title": "Chat an den Bildschirm anheften",
+	"pad.chat.writeMessage.placeholder": "Schreibe hier deine Nachricht",
 	"timeslider.pageTitle": "{{appTitle}} Bearbeitungsverlauf",
 	"timeslider.toolbar.returnbutton": "Zurück zum Pad",
 	"timeslider.toolbar.authors": "Autoren:",

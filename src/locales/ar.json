@@ -95,6 +95,8 @@
 	"pad.chat": "دردشة",
 	"pad.chat.title": "فتح الدردشة لهذا الباد",
 	"pad.chat.loadmessages": "تحميل المزيد من الرسائل",
+	"pad.chat.stick.title": "ألصق الدردشة بالشاشة",
+	"pad.chat.writeMessage.placeholder": "اكتب رسالتك هنا",
 	"timeslider.pageTitle": "{{appTitle}} متصفح التاريخ",
 	"timeslider.toolbar.returnbutton": "العودة إلى الباد",
 	"timeslider.toolbar.authors": "المؤلفون:",

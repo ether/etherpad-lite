@@ -90,6 +90,8 @@
 	"pad.chat": "Klepet",
 	"pad.chat.title": "Odpri klepetalno okno dokumenta.",
 	"pad.chat.loadmessages": "Naloži več sporočil",
+	"pad.chat.stick.title": "Prilepi klepet na zaslon",
+	"pad.chat.writeMessage.placeholder": "Napišite sporočilo",
 	"timeslider.pageTitle": "Časovni trak {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Vrni se na dokument",
 	"timeslider.toolbar.authors": "Avtorji:",

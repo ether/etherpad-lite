@@ -91,6 +91,7 @@
 	"pad.chat": "Chat",
 	"pad.chat.title": "Apri la chat per questo Pad.",
 	"pad.chat.loadmessages": "Carica altri messaggi",
+	"pad.chat.writeMessage.placeholder": "Scrivi il tuo messaggio qui",
 	"timeslider.pageTitle": "Cronologia {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Ritorna al Pad",
 	"timeslider.toolbar.authors": "Autori:",

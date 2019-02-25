@@ -88,6 +88,8 @@
 	"pad.chat": "Разговор",
 	"pad.chat.title": "Отвори го разговорот за оваа тетратка.",
 	"pad.chat.loadmessages": "Вчитај уште пораки",
+	"pad.chat.stick.title": "Залепи го разговорот на екранот",
+	"pad.chat.writeMessage.placeholder": "Тука напишете порака",
 	"timeslider.pageTitle": "{{appTitle}} Историски преглед",
 	"timeslider.toolbar.returnbutton": "Назад на тетратката",
 	"timeslider.toolbar.authors": "Автори:",
