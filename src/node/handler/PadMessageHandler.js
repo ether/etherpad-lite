@@ -352,14 +352,14 @@ exports.handleCustomObjectMessage = function (msg, sessionID, cb) {
  * Handles a custom message (sent via HTTP API request)
  *
  * @param padID {Pad} the pad to which we're sending this message
- * @param msg {String} the message we're sending
+ * @param msgString {String} the message we're sending
  */
-exports.handleCustomMessage = function (padID, msg, cb) {
+exports.handleCustomMessage = function (padID, msgString, cb) {
   var time = new Date().getTime();
   var msg = {
     type: 'COLLABROOM',
     data: {
-      type: msg,
+      type: msgString,
       time: time
     }
   };
