@@ -204,7 +204,7 @@ function minify(req, res, next)
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
       if (settings.maxAge !== undefined) {
-        var expiresDate = new Date((new Date()).getTime()+settings.maxAge*1000);
+        var expiresDate = new Date(Date.now()+settings.maxAge*1000);
         res.setHeader('expires', expiresDate.toUTCString());
         res.setHeader('cache-control', 'max-age=' + settings.maxAge);
       }

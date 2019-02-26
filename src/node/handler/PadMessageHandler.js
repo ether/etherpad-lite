@@ -355,7 +355,7 @@ exports.handleCustomObjectMessage = function (msg, sessionID, cb) {
  * @param msgString {String} the message we're sending
  */
 exports.handleCustomMessage = function (padID, msgString, cb) {
-  var time = new Date().getTime();
+  var time = Date.now();
   var msg = {
     type: 'COLLABROOM',
     data: {
@@ -375,7 +375,7 @@ exports.handleCustomMessage = function (padID, msgString, cb) {
  */
 function handleChatMessage(client, message)
 {
-  var time = new Date().getTime();
+  var time = Date.now();
   var userId = sessioninfos[client.id].author;
   var text = message.data.text;
   var padId = sessioninfos[client.id].padId;
@@ -1313,7 +1313,7 @@ function handleClientReady(client, message)
           "numConnectedUsers": roomClients.length,
           "readOnlyId": padIds.readOnlyPadId,
           "readonly": padIds.readonly,
-          "serverTimestamp": new Date().getTime(),
+          "serverTimestamp": Date.now(),
           "userId": author,
           "abiwordAvailable": settings.abiwordAvailable(),
           "sofficeAvailable": settings.sofficeAvailable(),

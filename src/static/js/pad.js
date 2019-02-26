@@ -475,7 +475,7 @@ var pad = {
   },
   _afterHandshake: function()
   {
-    pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
+    pad.clientTimeOffset = Date.now() - clientVars.serverTimestamp;
     //initialize the chat
     chat.init(this);
     getParams();

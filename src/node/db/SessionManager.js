@@ -114,7 +114,7 @@ exports.createSession = function(groupID, authorID, validUntil, callback)
       }
     
       //check if validUntil is in the future
-      if(Math.floor(new Date().getTime()/1000) > validUntil)
+      if(Math.floor(Date.now()/1000) > validUntil)
       {
         callback(new customError("validUntil is in the past","apierror"));
         return;

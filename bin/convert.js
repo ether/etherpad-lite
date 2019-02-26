@@ -1,4 +1,4 @@
-var startTime = new Date().getTime();
+var startTime = Date.now();
 var fs = require("fs");
 var ueberDB = require("../src/node_modules/ueberDB");
 var mysql = require("../src/node_modules/ueberDB/node_modules/mysql");
@@ -43,7 +43,7 @@ var etherpadDB = mysql.createConnection({
 });
 
 //get the timestamp once
-var timestamp = new Date().getTime();
+var timestamp = Date.now();
 
 var padIDs;
 
@@ -110,7 +110,7 @@ async.series([
 
 function log(str)
 {
-  console.log((new Date().getTime() - startTime)/1000 + "\t" + str);
+  console.log((Date.now() - startTime)/1000 + "\t" + str);
 }
 
 var padsDone = 0;
@@ -121,7 +121,7 @@ function incrementPadStats()
   
   if(padsDone%100 == 0)
   {
-    var averageTime = Math.round(padsDone/((new Date().getTime() - startTime)/1000));
+    var averageTime = Math.round(padsDone/((Date.now() - startTime)/1000));
     log(padsDone + "/" + padIDs.length + "\t" + averageTime + " pad/s")
   }
 }

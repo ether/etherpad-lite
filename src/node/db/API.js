@@ -522,7 +522,7 @@ exports.appendChatMessage = function(padID, text, authorID, time, callback)
   if(time === undefined || !is_int(time))
   {
     // set time to current timestamp
-    time = new Date().getTime();
+    time = Date.now();
   }
 
   var padMessage = require("ep_etherpad-lite/node/handler/PadMessageHandler.js");

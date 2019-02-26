@@ -110,7 +110,7 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
 
     //there is a author with this mapper
     //update the timestamp of this author
-    db.setSub("globalAuthor:" + author, ["timestamp"], new Date().getTime());
+    db.setSub("globalAuthor:" + author, ["timestamp"], Date.now());
 
     //return the author
     callback(null, {authorID: author});
@@ -127,7 +127,7 @@ exports.createAuthor = function(name, callback)
   var author = "a." + randomString(16);
 
   //create the globalAuthors db entry
-  var authorObj = {"colorId" : Math.floor(Math.random()*(exports.getColorPalette().length)), "name": name, "timestamp": new Date().getTime()};
+  var authorObj = {"colorId" : Math.floor(Math.random()*(exports.getColorPalette().length)), "name": name, "timestamp": Date.now()};
 
   //set the global author db entry
   db.set("globalAuthor:" + author, authorObj);

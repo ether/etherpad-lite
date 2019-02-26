@@ -152,7 +152,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               
               if(ERR(err, callback)) return;
               
-              var now = Math.floor(new Date().getTime()/1000);
+              var now = Math.floor(Date.now()/1000);
               
               //is it for this group?
               if(sessionInfo.groupID != groupID)

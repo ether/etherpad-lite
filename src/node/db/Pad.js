@@ -86,7 +86,7 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
   newRevData.changeset = aChangeset;
   newRevData.meta = {};
   newRevData.meta.author = author;
-  newRevData.meta.timestamp = new Date().getTime();
+  newRevData.meta.timestamp = Date.now();
 
   //ex. getNumForAuthor
   if(author != '')
@@ -739,7 +739,7 @@ Pad.prototype.addSavedRevision = function addSavedRevision(revNum, savedById, la
   savedRevision.revNum = revNum;
   savedRevision.savedById = savedById;
   savedRevision.label = label || "Revision " + revNum;
-  savedRevision.timestamp = new Date().getTime();
+  savedRevision.timestamp = Date.now();
   savedRevision.id = randomString(10);
 
   //save this new saved revision

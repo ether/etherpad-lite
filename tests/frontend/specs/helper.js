@@ -41,12 +41,12 @@ describe("the test helper", function(){
   describe("the waitFor method", function(){
     it("takes a timeout and waits long enough", function(done){
       this.timeout(2000);
-      var startTime = new Date().getTime();
+      var startTime = Date.now();
 
       helper.waitFor(function(){
         return false;
       }, 1500).fail(function(){
-        var duration = new Date().getTime() - startTime;
+        var duration = Date.now() - startTime;
         expect(duration).to.be.greaterThan(1400);
         done();
       });
