@@ -531,7 +531,6 @@ function handleSuggestUserName(client, message)
     var session = sessioninfos[client.id];
     if(session && session.author == message.data.payload.unnamedId) {
       client.json.send(message);
-      return;
     }
   });
 }
