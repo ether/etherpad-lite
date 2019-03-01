@@ -6,7 +6,7 @@ module.exports = function (req, res, callback) {
   securityManager.checkAccess(req.params.pad, req.cookies.sessionID, req.cookies.token, req.cookies.password, function(err, accessObj) {
     if (ERR(err, callback)) return;
 
-    if (accessObj.accessStatus == "grant") {
+    if (accessObj.accessStatus === "grant") {
       // there is access, continue
       callback();
     } else {

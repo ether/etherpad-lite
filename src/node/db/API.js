@@ -192,7 +192,7 @@ Example returns:
 exports.getText = function(padID, rev, callback)
 {
   // check if rev is a number
-  if (rev !== undefined && typeof rev != "number") {
+  if (rev !== undefined && typeof rev !== "number") {
     // try to parse the number
     if (isNaN(parseInt(rev))) {
       callback(new customError("rev is not a number", "apierror"));
@@ -256,7 +256,7 @@ Example returns:
 exports.setText = function(padID, text, callback)
 {
   // text is required
-  if (typeof text != "string") {
+  if (typeof text !== "string") {
     callback(new customError("text is not a string", "apierror"));
     return;
   }
@@ -285,7 +285,7 @@ Example returns:
 exports.appendText = function(padID, text, callback)
 {
   // text is required
-  if (typeof text != "string") {
+  if (typeof text !== "string") {
     callback(new customError("text is not a string", "apierror"));
     return;
   }
@@ -311,7 +311,7 @@ Example returns:
 */
 exports.getHTML = function(padID, rev, callback)
 {
-  if (rev !== undefined && typeof rev != "number") {
+  if (rev !== undefined && typeof rev !== "number") {
     if (isNaN(parseInt(rev))) {
       callback(new customError("rev is not a number", "apierror"));
       return;
@@ -375,7 +375,7 @@ Example returns:
 exports.setHTML = function(padID, html, callback)
 {
   // html is required
-  if (typeof html != "string") {
+  if (typeof html !== "string") {
     callback(new customError("html is not a string", "apierror"));
     return;
   }
@@ -471,7 +471,7 @@ Example returns:
 exports.appendChatMessage = function(padID, text, authorID, time, callback)
 {
   // text is required
-  if (typeof text != "string") {
+  if (typeof text !== "string") {
     callback(new customError("text is not a string", "apierror"));
     return;
   }
@@ -557,7 +557,7 @@ Example returns:
 exports.saveRevision = function(padID, rev, callback)
 {
   // check if rev is a number
-  if (rev !== undefined && typeof rev != "number") {
+  if (rev !== undefined && typeof rev !== "number") {
     // try to parse the number
     if (isNaN(parseInt(rev))) {
       callback(new customError("rev is not a number", "apierror"));
@@ -636,7 +636,7 @@ exports.createPad = function(padID, text, callback)
 {
   if (padID) {
     // ensure there is no $ in the padID
-    if (padID.indexOf("$") != -1) {
+    if (padID.indexOf("$") !== -1) {
       callback(new customError("createPad can't create group pads", "apierror"));
       return;
     }
@@ -682,7 +682,7 @@ exports.deletePad = function(padID, callback)
 exports.restoreRevision = function(padID, rev, callback)
 {
   // check if rev is a number
-  if (rev !== undefined && typeof rev != "number") {
+  if (rev !== undefined && typeof rev !== "number") {
     // try to parse the number
     if (isNaN(parseInt(rev))) {
       callback(new customError("rev is not a number", "apierror"));
@@ -838,7 +838,7 @@ exports.getPadID = function(roID, callback)
   readOnlyManager.getPadId(roID, function(err, retrievedPadID) {
     if (ERR(err, callback)) return;
 
-    if (retrievedPadID == null) {
+    if (retrievedPadID === null) {
       callback(new customError("padID does not exist", "apierror"));
       return;
     }
@@ -858,7 +858,7 @@ Example returns:
 exports.setPublicStatus = function(padID, publicStatus, callback)
 {
   // ensure this is a group pad
-  if (padID && padID.indexOf("$") == -1) {
+  if (padID && padID.indexOf("$") === -1) {
     callback(new customError("You can only get/set the publicStatus of pads that belong to a group", "apierror"));
     return;
   }
@@ -868,7 +868,7 @@ exports.setPublicStatus = function(padID, publicStatus, callback)
     if (ERR(err, callback)) return;
 
     // convert string to boolean
-    if (typeof publicStatus == "string")
+    if (typeof publicStatus === "string")
       publicStatus = publicStatus == "true" ? true : false;
 
     // set the password
@@ -1045,7 +1045,7 @@ Example returns:
 */
 exports.createDiffHTML = function(padID, startRev, endRev, callback) {
   // check if startRev is a number
-  if (startRev !== undefined && typeof startRev != "number") {
+  if (startRev !== undefined && typeof startRev !== "number") {
     // try to parse the number
     if (isNaN(parseInt(startRev))) {
       callback({stop: "startRev is not a number"});
@@ -1056,7 +1056,7 @@ exports.createDiffHTML = function(padID, startRev, endRev, callback) {
   }
 
   // check if endRev is a number
-  if (endRev !== undefined && typeof endRev != "number") {
+  if (endRev !== undefined && typeof endRev !== "number") {
     // try to parse the number
     if (isNaN(parseInt(endRev))) {
       callback({stop: "endRev is not a number"});
@@ -1119,13 +1119,13 @@ function is_int(value)
 // gets a pad safe
 function getPadSafe(padID, shouldExist, text, callback)
 {
-  if (typeof text == "function") {
+  if (typeof text === "function") {
     callback = text;
     text = null;
   }
 
   // check if padID is a string
-  if (typeof padID != "string") {
+  if (typeof padID !== "string") {
     callback(new customError("padID is not a string", "apierror"));
     return;
   }

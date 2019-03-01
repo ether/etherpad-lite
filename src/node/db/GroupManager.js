@@ -122,7 +122,7 @@ exports.deleteGroup = function(groupID, callback)
         if (ERR(err, callback)) return;
         groups = groups? groups.groupIDs : [];
 
-        if (groups.indexOf(groupID) == -1) {
+        if (groups.indexOf(groupID) === -1) {
           // it's not listed
           callback();
 
@@ -198,7 +198,7 @@ exports.createGroup = function(callback)
 exports.createGroupIfNotExistsFor = function(groupMapper, callback)
 {
   // ensure mapper is optional
-  if (typeof groupMapper != "string") {
+  if (typeof groupMapper !== "string") {
     callback(new customError("groupMapper is not a string", "apierror"));
     return;
   }
@@ -248,7 +248,7 @@ exports.createGroupPad = function(groupID, padName, text, callback)
       exports.doesGroupExist(groupID, function(err, exists) {
         if (ERR(err, callback)) return;
 
-        if (exists == false) {
+        if (!exists) {
           // group does not exist
           callback(new customError("groupID does not exist", "apierror"));
           return;
@@ -303,7 +303,7 @@ exports.listPads = function(groupID, callback)
     if (ERR(err, callback)) return;
 
     // ensure the group exists
-    if (exists == false) {
+    if (!exists) {
       callback(new customError("groupID does not exist", "apierror"));
       return;
     }

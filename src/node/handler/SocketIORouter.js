@@ -95,7 +95,7 @@ exports.setSocketIO = function(_socket) {
           var checkAccessCallback = function(err, statusObject) {
             ERR(err);
 
-            if (statusObject.accessStatus == "grant") {
+            if (statusObject.accessStatus === "grant") {
               // access was granted, mark the client as authorized and handle the message
               clientAuthorized = true;
               handleMessage(client, message);

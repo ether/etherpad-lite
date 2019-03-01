@@ -45,7 +45,7 @@ exports.doesAuthorExists = function(authorID, callback)
   db.get("globalAuthor:" + authorID, function(err, author) {
     if (ERR(err, callback)) return;
 
-    callback(null, author != null);
+    callback(null, author !== null);
   });
 }
 
@@ -98,7 +98,7 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
   db.get(mapperkey + ":" + mapper, function(err, author) {
     if (ERR(err, callback)) return;
 
-    if (author == null) {
+    if (author === null) {
       // there is no author with this mapper, so create one
       exports.createAuthor(null, function(err, author) {
         if (ERR(err, callback)) return;
@@ -212,7 +212,7 @@ exports.listPadsOfAuthor = function(authorID, callback)
   db.get("globalAuthor:" + authorID, function(err, author) {
     if (ERR(err, callback)) return;
 
-    if (author == null) {
+    if (author === null) {
       // author does not exist
       callback(new customError("authorID does not exist", "apierror"));
 
@@ -242,7 +242,7 @@ exports.addPad = function(authorID, padID)
   // get the entry
   db.get("globalAuthor:" + authorID, function(err, author) {
     if (ERR(err)) return;
-    if (author == null) return;
+    if (author === null) return;
 
     if (author.padIDs == null) {
       // the entry doesn't exist so far, let's create it
@@ -266,9 +266,9 @@ exports.removePad = function(authorID, padID)
 {
   db.get("globalAuthor:" + authorID, function(err, author) {
     if (ERR(err)) return;
-    if (author == null) return;
+    if (author === null) return;
 
-    if (author.padIDs != null) {
+    if (author.padIDs !== null) {
       // remove pad from author
       delete author.padIDs[padID];
       db.set("globalAuthor:" + authorID, author);

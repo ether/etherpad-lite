@@ -62,7 +62,7 @@ exports.checkAccess = function(padID, sessionCookie, token, password, callback)
     }
   } else {
     // a session is not required, so we'll check if it's a public pad
-    if (padID.indexOf("$") == -1) {
+    if (padID.indexOf("$") === -1) {
       // it's not a group pad, means we can grant access
 
       // get author for this token
@@ -225,17 +225,17 @@ exports.checkAccess = function(padID, sessionCookie, token, password, callback)
 
           // --> grant access
           statusObject = { accessStatus: "grant", authorID: sessionAuthor };
-        } else if (isPasswordProtected && passwordStatus == "correct") {
+        } else if (isPasswordProtected && passwordStatus === "correct") {
           // - the pad is password protected and password is correct
 
           // --> grant access
           statusObject = { accessStatus: "grant", authorID: sessionAuthor };
-        } else if (isPasswordProtected && passwordStatus == "wrong") {
+        } else if (isPasswordProtected && passwordStatus === "wrong") {
           // - the pad is password protected but wrong password given
 
           // --> deny access, ask for new password and tell them that the password is wrong
           statusObject = { accessStatus: "wrongPassword" };
-        } else if (isPasswordProtected && passwordStatus == "notGiven") {
+        } else if (isPasswordProtected && passwordStatus === "notGiven") {
           // - the pad is password protected but no password given
 
           // --> ask for password
@@ -261,17 +261,17 @@ exports.checkAccess = function(padID, sessionCookie, token, password, callback)
         if (isPublic && !isPasswordProtected) {
           // --> grant access, with author of token
           statusObject = {accessStatus: "grant", authorID: tokenAuthor};
-        } else if (isPublic && isPasswordProtected && passwordStatus == "correct") {
+        } else if (isPublic && isPasswordProtected && passwordStatus === "correct") {
           // - it's public and password protected and password is correct
 
           // --> grant access, with author of token
           statusObject = {accessStatus: "grant", authorID: tokenAuthor};
-        } else if (isPublic && isPasswordProtected && passwordStatus == "wrong") {
+        } else if (isPublic && isPasswordProtected && passwordStatus === "wrong") {
           // - it's public and the pad is password protected but wrong password given
 
           // --> deny access, ask for new password and tell them that the password is wrong
           statusObject = {accessStatus: "wrongPassword"};
-        } else if (isPublic && isPasswordProtected && passwordStatus == "notGiven") {
+        } else if (isPublic && isPasswordProtected && passwordStatus === "notGiven") {
           // - it's public and the pad is password protected but no password given
 
           // --> ask for password
