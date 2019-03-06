@@ -19,6 +19,7 @@
  */
 
 var ERR = require("async-stacktrace");
+var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var customError = require("../utils/customError");
 var padManager = require("./PadManager");
 var padMessageHandler = require("../handler/PadMessageHandler");
@@ -739,8 +740,6 @@ exports.deletePad = function(padID, callback)
  */
 exports.restoreRevision = function (padID, rev, callback)
 {
-  var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-
   //check if rev is a number
   if (rev !== undefined && typeof rev != "number")
   {
