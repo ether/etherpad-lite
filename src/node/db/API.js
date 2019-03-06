@@ -525,9 +525,8 @@ exports.appendChatMessage = function(padID, text, authorID, time, callback)
     time = Date.now();
   }
 
-  var padMessage = require("ep_etherpad-lite/node/handler/PadMessageHandler.js");
   // save chat message to database and send message to all connected clients
-  padMessage.sendChatMessageToPadClients(time, authorID, text, padID);
+  padMessageHandler.sendChatMessageToPadClients(time, authorID, text, padID);
 
   callback();
 }
