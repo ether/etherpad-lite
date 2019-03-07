@@ -4,12 +4,14 @@ var npm = require("npm");
 var request = require("request");
 
 var npmIsLoaded = false;
-var withNpm = function (npmfn) {
-  if(npmIsLoaded) return npmfn();
-  npm.load({}, function (er) {
+var withNpm = function(npmfn) {
+  if (npmIsLoaded) return npmfn();
+
+  npm.load({}, function(er) {
     if (er) return npmfn(er);
+
     npmIsLoaded = true;
-    npm.on("log", function (message) {
+    npm.on("log", function(message) {
       console.log('npm: ',message)
     });
     npmfn();
@@ -17,42 +19,57 @@ var withNpm = function (npmfn) {
 }
 
 var tasks = 0
+
 function wrapTaskCb(cb) {
-  tasks++
+  tasks++;
+
   return function() {
     cb && cb.apply(this, arguments);
     tasks--;
-    if(tasks == 0) onAllTasksFinished();
+    if (tasks == 0) onAllTasksFinished();
   }
 }
+
 function onAllTasksFinished() {
-  hooks.aCallAll("restartServer", {}, function () {});
+  hooks.aCallAll("restartServer", {}, function() {});
 }
 
+/*
+ * We cannot use arrow functions in this file, because code in /src/static
+ * can end up being loaded in browsers, and we still support IE11.
+ */
 exports.uninstall = function(plugin_name, cb) {
   cb = wrapTaskCb(cb);
-  withNpm(function (er) {
+
+  withNpm(function(er) {
     if (er) return cb && cb(er);
-    npm.commands.uninstall([plugin_name], function (er) {
+
+    npm.commands.uninstall([plugin_name], function(er) {
       if (er) return cb && cb(er);
-      hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name}, function (er, data) {
-        if (er) return cb(er);
-        plugins.update(cb);
-      });
+      hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name})
+        .then(plugins.update)
+        .then(function() { cb(null) })
+        .catch(function(er) { cb(er) });
     });
   });
 };
 
+/*
+ * We cannot use arrow functions in this file, because code in /src/static
+ * can end up being loaded in browsers, and we still support IE11.
+ */
 exports.install = function(plugin_name, cb) {
-  cb = wrapTaskCb(cb)
-  withNpm(function (er) {
+  cb = wrapTaskCb(cb);
+
+  withNpm(function(er) {
     if (er) return cb && cb(er);
-    npm.commands.install([plugin_name], function (er) {
+
+    npm.commands.install([plugin_name], function(er) {
       if (er) return cb && cb(er);
-      hooks.aCallAll("pluginInstall", {plugin_name: plugin_name}, function (er, data) {
-        if (er) return cb(er);
-        plugins.update(cb);
-      });
+      hooks.aCallAll("pluginInstall", {plugin_name: plugin_name})
+        .then(plugins.update)
+        .then(function() { cb(null) })
+        .catch(function(er) { cb(er) });
     });
   });
 };
@@ -60,44 +77,58 @@ exports.install = function(plugin_name, cb) {
 exports.availablePlugins = null;
 var cacheTimestamp = 0;
 
-exports.getAvailablePlugins = function(maxCacheAge, cb) {
-  request("https://static.etherpad.org/plugins.json", function(er, response, plugins){
-    if (er) return cb && cb(er);
-    if(exports.availablePlugins && maxCacheAge && Math.round(+new Date/1000)-cacheTimestamp <= maxCacheAge) {
-      return cb && cb(null, exports.availablePlugins)
+exports.getAvailablePlugins = function(maxCacheAge) {
+  var nowTimestamp = Math.round(Date.now() / 1000);
+
+  return new Promise(function(resolve, reject) {
+    // check cache age before making any request
+    if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
+      return resolve(exports.availablePlugins);
     }
-    try {
-      plugins = JSON.parse(plugins);
-    } catch (err) {
-      console.error('error parsing plugins.json:', err);
-      plugins = [];
-    }
-    exports.availablePlugins = plugins;
-    cacheTimestamp = Math.round(+new Date/1000);
-    cb && cb(null, plugins)
+
+    request("https://static.etherpad.org/plugins.json", function(er, response, plugins) {
+      if (er) return reject(er);
+
+      try {
+        plugins = JSON.parse(plugins);
+      } catch (err) {
+        console.error('error parsing plugins.json:', err);
+        plugins = [];
+      }
+
+      exports.availablePlugins = plugins;
+      cacheTimestamp = nowTimestamp;
+      resolve(plugins);
+    });
   });
 };
 
 
-exports.search = function(searchTerm, maxCacheAge, cb) {
-  exports.getAvailablePlugins(maxCacheAge, function(er, results) {
-    if(er) return cb && cb(er);
+exports.search = function(searchTerm, maxCacheAge) {
+  return exports.getAvailablePlugins(maxCacheAge).then(function(results) {
     var res = {};
-    if (searchTerm)
+
+    if (searchTerm) {
       searchTerm = searchTerm.toLowerCase();
-    for (var pluginName in results) { // for every available plugin
+    }
+
+    for (var pluginName in results) {
+      // for every available plugin
       if (pluginName.indexOf(plugins.prefix) != 0) continue; // TODO: Also search in keywords here!
 
-      if(searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm)
+      if (searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm)
          && (typeof results[pluginName].description != "undefined" && !~results[pluginName].description.toLowerCase().indexOf(searchTerm) )
-           ){
-           if(typeof results[pluginName].description === "undefined"){
+           ) {
+           if (typeof results[pluginName].description === "undefined") {
              console.debug('plugin without Description: %s', results[pluginName].name);
            }
+
            continue;
       }
+
       res[pluginName] = results[pluginName];
     }
-    cb && cb(null, res)
-  })
+
+    return res;
+  });
 };

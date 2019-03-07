@@ -1,109 +1,75 @@
 /*
-  This is a debug tool. It helps to extract all datas of a pad and move it from an productive environment and to a develop environment to reproduce bugs there. It outputs a dirtydb file
-*/
+ * This is a debug tool. It helps to extract all datas of a pad and move it from
+ * a productive environment and to a develop environment to reproduce bugs
+ * there. It outputs a dirtydb file
+ */
 
-if(process.argv.length != 3)
-{
+if (process.argv.length != 3) {
   console.error("Use: node extractPadData.js $PADID");
   process.exit(1);
 }
-//get the padID
-var padId = process.argv[2];
 
-var db, dirty, padManager, pad, settings;
-var neededDBValues = ["pad:"+padId];
+// get the padID
+let padId = process.argv[2];
 
-var npm = require("../node_modules/ep_etherpad-lite/node_modules/npm");
-var async = require("../node_modules/ep_etherpad-lite/node_modules/async");
+let npm = require('../src/node_modules/npm');
 
-async.series([
-  // load npm
-  function(callback) {
-    npm.load({}, function(er) {
-      if(er)
-      {
-        console.error("Could not load NPM: " + er)
-        process.exit(1);
-      }
-      else
-      {
-        callback();
-      }
-    })
-  },
-  // load modules
-  function(callback) {
-    settings = require('../node_modules/ep_etherpad-lite/node/utils/Settings');
-    db = require('../node_modules/ep_etherpad-lite/node/db/DB');
-    dirty = require("../node_modules/ep_etherpad-lite/node_modules/ueberDB/node_modules/dirty")(padId + ".db");
-    callback();
-  },
-  //initialize the database
-  function (callback)
-  {
-    db.init(callback);
-  },
-  //get the pad 
-  function (callback)
-  {
-    padManager = require('../node_modules/ep_etherpad-lite/node/db/PadManager');
-    
-    padManager.getPad(padId, function(err, _pad)  
-    {
-      pad = _pad;
-      callback(err);
-    });
-  },
-  function (callback)
-  {
-    //add all authors
-    var authors = pad.getAllAuthors();
-    for(var i=0;i<authors.length;i++)
-    {
-      neededDBValues.push("globalAuthor:" + authors[i]);
-    }
-    
-    //add all revisions
-    var revHead = pad.head;
-    for(var i=0;i<=revHead;i++)
-    {
-      neededDBValues.push("pad:"+padId+":revs:" + i);
-    }
-    
-    //get all chat values
-    var chatHead = pad.chatHead;
-    for(var i=0;i<=chatHead;i++)
-    {
-      neededDBValues.push("pad:"+padId+":chat:" + i);
-    }
-    
-    //get and set all values
-    async.forEach(neededDBValues, function(dbkey, callback)
-    {
-      db.db.db.wrappedDB.get(dbkey, function(err, dbvalue)
-      {
-        if(err) { callback(err); return}
-
-        if(dbvalue && typeof dbvalue != 'object'){
-          dbvalue=JSON.parse(dbvalue); // if it's not json then parse it as json
-        }
-        
-        dirty.set(dbkey, dbvalue, callback);
-      });
-    }, callback);
+npm.load({}, async function(er) {
+  if (er) {
+    console.error("Could not load NPM: " + er)
+    process.exit(1);
   }
-], function (err)
-{
-  if(err) throw err;
-  else 
-  { 
-    console.log("finished");
-    process.exit();
+
+  try {
+    // initialize database
+    let settings = require('../src/node/utils/Settings');
+    let db = require('../src/node/db/DB');
+    await db.init();
+
+    // load extra modules
+    let dirtyDB = require('../src/node_modules/dirty');
+    let padManager = require('../src/node/db/PadManager');
+    let util = require('util');
+
+    // initialize output database
+    let dirty = dirtyDB(padId + '.db');
+
+    // Promise wrapped get and set function
+    let wrapped = db.db.db.wrappedDB;
+    let get = util.promisify(wrapped.get.bind(wrapped));
+    let set = util.promisify(dirty.set.bind(dirty));
+
+    // array in which required key values will be accumulated
+    let neededDBValues = ['pad:' + padId];
+
+    // get the actual pad object
+    let pad = await padManager.getPad(padId);
+
+    // add all authors
+    neededDBValues.push(...pad.getAllAuthors().map(author => 'globalAuthor:' + author));
+
+    // add all revisions
+    for (let rev = 0; rev <= pad.head; ++rev) {
+      neededDBValues.push('pad:' + padId + ':revs:' + rev);
+    }
+
+    // add all chat values
+    for (let chat = 0; chat <= pad.chatHead; ++chat) {
+      neededDBValues.push('pad:' + padId + ':chat:' + chat);
+    }
+
+    for (let dbkey of neededDBValues) {
+      let dbvalue = await get(dbkey);
+      if (dbvalue && typeof dbvalue !== 'object') {
+        dbvalue = JSON.parse(dbvalue);
+      }
+      await set(dbkey, dbvalue);
+    }
+
+    console.log('finished');
+    process.exit(0);
+  } catch (er) {
+    console.error(er);
+    process.exit(1);
   }
 });
-
-//get the pad object
-//get all revisions of this pad
-//get all authors related to this pad
-//get the readonly link related to this pad
-//get the chat entries related to this pad

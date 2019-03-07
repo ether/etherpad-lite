@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server. 
- * Static file Requests are answered directly from this module, Socket.IO messages are passed 
+ * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
+ * Static file Requests are answered directly from this module, Socket.IO messages are passed
  * to MessageHandler and minfied requests are passed to minified.
  */
 
@@ -22,7 +22,6 @@
  */
 
 var log4js = require('log4js')
-  , async = require('async')
   , NodeVersion = require('./utils/NodeVersion')
   ;
 
@@ -46,57 +45,40 @@ NodeVersion.enforceMinNodeVersion('8.9.0');
  */
 var stats = require('./stats');
 stats.gauge('memoryUsage', function() {
-  return process.memoryUsage().rss
-})
+  return process.memoryUsage().rss;
+});
 
-var settings
-  , db
-  , plugins
-  , hooks;
+/*
+ * no use of let or await here because it would cause startup
+ * to fail completely on very early versions of NodeJS
+ */
 var npm = require("npm/lib/npm.js");
 
-async.waterfall([
-  // load npm
-  function(callback) {
-    npm.load({}, function(er) {
-      callback(er)
+npm.load({}, function() {
+  var settings = require('./utils/Settings');
+  var db = require('./db/DB');
+  var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
+  var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
+  hooks.plugins = plugins;
+
+  db.init()
+    .then(plugins.update)
+    .then(function() {
+      console.info("Installed plugins: " + plugins.formatPluginsWithVersion());
+      console.debug("Installed parts:\n" + plugins.formatParts());
+      console.debug("Installed hooks:\n" + plugins.formatHooks());
+
+      // Call loadSettings hook
+      hooks.aCallAll("loadSettings", { settings: settings });
+
+      // initalize the http server
+      hooks.callAll("createServer", {});
     })
-  },
-
-  // load everything
-  function(callback) {
-    settings = require('./utils/Settings');
-    db = require('./db/DB');
-    plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-    hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-    hooks.plugins = plugins;
-    callback();
-  },
-
-  //initalize the database
-  function (callback)
-  {
-    db.init(callback);
-  },
-
-  function(callback) {
-    plugins.update(callback)
-  },
-
-  function (callback) {
-    console.info("Installed plugins: " + plugins.formatPluginsWithVersion());
-    console.debug("Installed parts:\n" + plugins.formatParts());
-    console.debug("Installed hooks:\n" + plugins.formatHooks());
-
-    // Call loadSettings hook
-    hooks.aCallAll("loadSettings", { settings: settings });
-    callback();
-  },
-
-  //initalize the http server
-  function (callback)
-  {
-    hooks.callAll("createServer", {});
-    callback(null);
-  }
-]);
+    .catch(function(e) {
+      console.error("exception thrown: " + e.message);
+      if (e.stack) {
+        console.log(e.stack);
+      }
+      process.exit(1);
+    });
+});
