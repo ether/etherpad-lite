@@ -94,6 +94,8 @@
 	"pad.chat": "Чат",
 	"pad.chat.title": "Открыть чат для этого документа.",
 	"pad.chat.loadmessages": "Еще сообщения",
+	"pad.chat.stick.title": "Закрепить чат на экране",
+	"pad.chat.writeMessage.placeholder": "Напишите своё сообщение сюда",
 	"timeslider.pageTitle": "Временная шкала {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "К документу",
 	"timeslider.toolbar.authors": "Авторы:",

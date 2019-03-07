@@ -89,6 +89,8 @@
 	"pad.chat": "שיחה",
 	"pad.chat.title": "פתיחת השיחה של הפנקס הזה.",
 	"pad.chat.loadmessages": "טעינת הודעות נוספות",
+	"pad.chat.stick.title": "הצמדת צ׳אט למסך",
+	"pad.chat.writeMessage.placeholder": "מקום לכתיבת ההודעה שלך",
 	"timeslider.pageTitle": "גולל זמן של {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "חזרה אל הפנקס",
 	"timeslider.toolbar.authors": "כותבים:",

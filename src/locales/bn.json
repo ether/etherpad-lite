@@ -75,6 +75,7 @@
 	"pad.chat": "চ্যাট",
 	"pad.chat.title": "এই প্যাডের জন্য চ্যাট চালু করুন।",
 	"pad.chat.loadmessages": "আরও বার্তা লোড করুন",
+	"pad.chat.writeMessage.placeholder": "আপনার বার্তাটি এখানে লিখুন",
 	"timeslider.toolbar.returnbutton": "প্যাডে ফিরে যাও",
 	"timeslider.toolbar.authors": "লেখকগণ:",
 	"timeslider.toolbar.authorsList": "কোনো লেখক নেই",

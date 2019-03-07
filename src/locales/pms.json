@@ -84,6 +84,8 @@
 	"pad.chat": "Ciaciarada",
 	"pad.chat.title": "Duverté la ciaciarada për cost feuj.",
 	"pad.chat.loadmessages": "Carié pi 'd mëssagi",
+	"pad.chat.stick.title": "Taché la ciaciarada an slë scren",
+	"pad.chat.writeMessage.placeholder": "Ch'a scriva sò mëssage ambelessì",
 	"timeslider.pageTitle": "Stòria dinàmica ëd {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Torné al feuj",
 	"timeslider.toolbar.authors": "Autor:",
