@@ -1,0 +1,4 @@
+THIS IS A DUMMY FILE
+
+It is used to trick Docker in doing a conditional COPY
+see: https://stackoverflow.com/questions/31528384/conditional-copy-add-in-dockerfile#46801962
