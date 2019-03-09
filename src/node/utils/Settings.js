@@ -341,6 +341,35 @@ exports.getEpVersion = function() {
   return require('ep_etherpad-lite/package.json').version;
 }
 
+/**
+ * Receives a settingsObj and, if the property name is a valid configuration
+ * item, stores it in the module's exported properties via a side effect.
+ *
+ * This code refactors a previous version that copied & pasted the same code for
+ * both "settings.json" and "credentials.json".
+ */
+function storeSettings(settingsObj) {
+  for (var i in settingsObj) {
+    // test if the setting starts with a lowercase character
+    if (i.charAt(0).search("[a-z]") !== 0) {
+      console.warn(`Settings should start with a lowercase character: '${i}'`);
+    }
+
+    // we know this setting, so we overwrite it
+    // or it's a settings hash, specific to a plugin
+    if (exports[i] !== undefined || i.indexOf('ep_') == 0) {
+      if (_.isObject(settingsObj[i]) && !_.isArray(settingsObj[i])) {
+        exports[i] = _.defaults(settingsObj[i], exports[i]);
+      } else {
+        exports[i] = settingsObj[i];
+      }
+    } else {
+      // this setting is unknown, output a warning and throw it away
+      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
+    }
+  }
+}
+
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = absolutePaths.makeAbsolute(argv.settings || "settings.json");
@@ -389,47 +418,8 @@ exports.reloadSettings = function reloadSettings() {
     process.exit(1);
   }
 
-  //loop trough the settings
-  for (var i in settings) {
-    //test if the setting start with a lowercase character
-    if (i.charAt(0).search("[a-z]") !== 0) {
-      console.warn(`Settings should start with a lowercase character: '${i}'`);
-    }
-
-    //we know this setting, so we overwrite it
-    //or it's a settings hash, specific to a plugin
-    if (exports[i] !== undefined || i.indexOf('ep_') == 0) {
-      if (_.isObject(settings[i]) && !_.isArray(settings[i])) {
-        exports[i] = _.defaults(settings[i], exports[i]);
-      } else {
-        exports[i] = settings[i];
-      }
-    } else {
-      // this setting is unknown, output a warning and throw it away
-      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
-    }
-  }
-
-  //loop trough the settings
-  for (var i in credentials) {
-    //test if the setting start with a lowercase character
-    if (i.charAt(0).search("[a-z]") !== 0) {
-      console.warn(`Settings should start with a lowercase character: '${i}'`);
-    }
-
-    //we know this setting, so we overwrite it
-    //or it's a settings hash, specific to a plugin
-    if (exports[i] !== undefined || i.indexOf('ep_') == 0) {
-      if (_.isObject(credentials[i]) && !_.isArray(credentials[i])) {
-        exports[i] = _.defaults(credentials[i], exports[i]);
-      } else {
-        exports[i] = credentials[i];
-      }
-    } else {
-      // this setting is unknown, output a warning and throw it away
-      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
-    }
-  }
+  storeSettings(settings);
+  storeSettings(credentials);
 
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
@@ -529,5 +519,3 @@ exports.reloadSettings = function reloadSettings() {
 
 // initially load settings
 exports.reloadSettings();
-
-
