@@ -370,6 +370,53 @@ function storeSettings(settingsObj) {
   }
 }
 
+/**
+ * - reads the JSON configuration file settingsFilename from disk
+ * - strips the comments
+ * - returns a parsed Javascript object
+ *
+ * The isSettings variable only controls the error logging.
+ */
+function parseSettings(settingsFilename, isSettings) {
+  let settingsStr = "";
+
+  let settingsType, notFoundMessage, notFoundFunction;
+
+  if (isSettings) {
+    settingsType = "settings";
+    notFoundMessage = "Continuing using defaults!";
+    notFoundFunction = console.warn;
+  } else {
+    settingsType = "credentials";
+    notFoundMessage = "Ignoring.";
+    notFoundFunction = console.info;
+  }
+
+  try {
+    //read the settings file
+    settingsStr = fs.readFileSync(settingsFilename).toString();
+  } catch(e) {
+    notFoundFunction(`No ${settingsType} file found in ${settingsFilename}. ${notFoundMessage}`);
+
+    // or maybe undefined!
+    return null;
+  }
+
+  try {
+    settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
+
+    const settings = JSON.parse(settingsStr);
+
+    console.info(`${settingsType} loaded from: ${settingsFilename}`);
+
+    return settings;
+  } catch(e) {
+    console.error(`There was an error processing your ${settingsType} file from ${settingsFilename}: ${e.message}`);
+
+    process.exit(1);
+  }
+}
+
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = absolutePaths.makeAbsolute(argv.settings || "settings.json");
@@ -377,46 +424,11 @@ exports.reloadSettings = function reloadSettings() {
   // Discover if a credential file exists
   var credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || "credentials.json");
 
-  var settingsStr, credentialsStr;
-  try {
-    //read the settings sync
-    settingsStr = fs.readFileSync(settingsFilename).toString();
-    console.info(`Settings loaded from: ${settingsFilename}`);
-  } catch(e) {
-    console.warn(`No settings file found in ${settingsFilename}. Continuing using defaults!`);
-  }
-
-  try {
-    //read the credentials sync
-    credentialsStr = fs.readFileSync(credentialsFilename).toString();
-    console.info(`Credentials file read from: ${credentialsFilename}`);
-  } catch(e) {
-    // Doesn't matter if no credentials file found..
-    console.info(`No credentials file found in ${credentialsFilename}. Ignoring.`);
-  }
-
   // try to parse the settings
-  var settings;
-  var credentials;
-  try {
-    if (settingsStr) {
-      settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
-      settings = JSON.parse(settingsStr);
-    }
-  } catch(e) {
-    console.error(`There was an error processing your settings file from ${settingsFilename}:` + e.message);
-    process.exit(1);
-  }
+  var settings = parseSettings(settingsFilename, true);
 
-  try {
-    if (credentialsStr) {
-      credentialsStr = jsonminify(credentialsStr).replace(",]","]").replace(",}","}");
-      credentials = JSON.parse(credentialsStr);
-    }
-  } catch(e) {
-    console.error(`There was an error processing your credentials file from ${credentialsFilename}:` + e.message);
-    process.exit(1);
-  }
+  // try to parse the credentials
+  var credentials = parseSettings(credentialsFilename, false);
 
   storeSettings(settings);
   storeSettings(credentials);
