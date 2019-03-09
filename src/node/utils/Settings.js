@@ -379,9 +379,14 @@ exports.reloadSettings = function reloadSettings() {
     process.exit(1);
   }
 
-  if (credentialsStr) {
-    credentialsStr = jsonminify(credentialsStr).replace(",]","]").replace(",}","}");
-    credentials = JSON.parse(credentialsStr);
+  try {
+    if (credentialsStr) {
+      credentialsStr = jsonminify(credentialsStr).replace(",]","]").replace(",}","}");
+      credentials = JSON.parse(credentialsStr);
+    }
+  } catch(e) {
+    console.error(`There was an error processing your credentials file from ${credentialsFilename}:` + e.message);
+    process.exit(1);
   }
 
   //loop trough the settings
