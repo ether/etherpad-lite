@@ -371,8 +371,117 @@ function storeSettings(settingsObj) {
 }
 
 /**
+ * Takes a javascript object containing Etherpad's configuration, and returns
+ * another object, in which all the string properties whose name is of the form
+ * "${ENV_VAR}", got their value replaced with the value of the given
+ * environment variable.
+ *
+ * An environment variable's value is always a string. However, the code base
+ * makes use of the various json types. To maintain compatiblity, some
+ * heuristics is applied:
+ *
+ * - if ENV_VAR does not exist in the environment, null is returned;
+ * - if ENV_VAR's value is "true" or "false", it is converted to the js boolean
+ *   values true or false;
+ * - if ENV_VAR's value looks like a number, it is converted to a js number
+ *   (details in the code).
+ *
+ * Variable substitution is performed doing a round trip conversion to/from
+ * json, using a custom replacer parameter in JSON.stringify(), and parsing the
+ * JSON back again. This ensures that environment variable replacement is
+ * performed even on nested objects.
+ *
+ * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
+ */
+function lookupEnvironmentVariables(obj) {
+  const stringifiedAndReplaced = JSON.stringify(obj, (key, value) => {
+    /*
+     * the first invocation of replacer() is with an empty key. Just go on, or
+     * we would zap the entire object.
+     */
+    if (key === '') {
+      return value;
+    }
+
+    /*
+     * If we received from the configuration file a number, a boolean or
+     * something that is not a string, we can be sure that it was a literal
+     * value. No need to perform any variable substitution.
+     *
+     * The environment variable expansion syntax "${ENV_VAR}" is just a string
+     * of specific form, after all.
+     */
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    /*
+     * Let's check if the string value looks like a variable expansion (e.g.:
+     * "${ENV_VAR}")
+     */
+    const match = value.match(/^\$\{(.*)\}$/);
+
+    if (match === null) {
+      // no match: use the value literally, without any substitution
+
+      return value;
+    }
+
+    // we found the name of an environment variable. Let's read its value.
+    const envVarName = match[1];
+    const envVarValue = process.env[envVarName];
+
+    if (envVarValue === undefined) {
+      console.warn(`Configuration key ${key} tried to read its value from environment variable ${envVarName}, but no value was found. Returning null. Please check your configuration and environment settings.`);
+
+      /*
+       * We have to return null, because if we just returned undefined, the
+       * configuration item "key" would be stripped from the returned object.
+       */
+      return null;
+    }
+
+    // envVarName contained some value.
+
+    /*
+     * For numeric and boolean strings let's convert it to proper types before
+     * returning it, in order to maintain backward compatibility.
+     */
+
+    // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
+    const isNumeric = !isNaN(envVarValue) && !isNaN(parseFloat(envVarValue) && isFinite(envVarValue));
+
+    if (isNumeric) {
+      console.debug(`Configuration key "${key}" will be read from environment variable ${envVarName}. Detected numeric string, that will be coerced to a number`);
+
+      return +envVarValue;
+    }
+
+    // the boolean literal case is easy.
+    if (envVarValue === "true" || envVarValue === "false") {
+      console.debug(`Configuration key "${key}" will be read from environment variable ${envVarName}. Detected boolean string, that will be coerced to a boolean`);
+
+      return (envVarValue === "true");
+    }
+
+    /*
+     * The only remaining case is that envVarValue is a string with no special
+     * meaning, and we just return it as-is.
+     */
+    console.debug(`Configuration key "${key}" will be read from environment variable ${envVarName}`);
+
+    return envVarValue;
+  });
+
+  const newSettings = JSON.parse(stringifiedAndReplaced);
+
+  return newSettings;
+}
+
+/**
  * - reads the JSON configuration file settingsFilename from disk
  * - strips the comments
+ * - replaces environment variables calling lookupEnvironmentVariables()
  * - returns a parsed Javascript object
  *
  * The isSettings variable only controls the error logging.
@@ -409,7 +518,9 @@ function parseSettings(settingsFilename, isSettings) {
 
     console.info(`${settingsType} loaded from: ${settingsFilename}`);
 
-    return settings;
+    const replacedSettings = lookupEnvironmentVariables(settings);
+
+    return replacedSettings;
   } catch(e) {
     console.error(`There was an error processing your ${settingsType} file from ${settingsFilename}: ${e.message}`);
 

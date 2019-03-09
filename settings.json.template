@@ -5,6 +5,39 @@
  *
  * Please note that starting from Etherpad 1.6.0 you can store DB credentials in
  * a separate file (credentials.json).
+ *
+ *
+ * ENVIRONMENT VARIABLE SUBSTITUTION
+ * =================================
+ *
+ * All the configuration values can be read from environment variables using the
+ * syntax "${ENV_VAR_NAME}".
+ * This is useful, for example, when running in a Docker container.
+ *
+ * EXAMPLE:
+ *    "port":     "${PORT}"
+ *    "minify":   "${MINIFY}"
+ *    "skinName": "${SKIN_NAME}"
+ *
+ * Would read the configuration values for those items from the environment
+ * variables PORT, MINIFY and SKIN_NAME.
+ *
+ * REMARKS:
+ * Please note that a variable substitution always needs to be quoted.
+ *    "port":   9001,          <-- Literal values. When not using substitution,
+ *    "minify": false              only strings must be quoted: booleans and
+ *    "skin":   "colibris"         numbers must not.
+ *
+ *    "port":   ${PORT}        <-- ERROR: this is not valid json
+ *    "minify": ${MINIFY}
+ *    "skin":   ${SKIN_NAME}
+ *
+ *    "port":   "${PORT}"      <-- CORRECT: if you want to use a variable
+ *    "minify": "${MINIFY}"        substitution, put quotes around its name,
+ *    "skin":   "${SKIN_NAME}"     even if the required value is a number or a
+ *                                 boolean.
+ *                                 Etherpad will take care of rewriting it to
+ *                                 the proper type if necessary.
  */
 {
   /*
