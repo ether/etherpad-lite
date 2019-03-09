@@ -472,11 +472,11 @@ exports.reloadSettings = function reloadSettings() {
     if (exports.abiword != null) {
       fs.exists(exports.abiword, function(exists) {
         if (!exists) {
-          var abiwordError = "Abiword does not exist at this path, check your settings file";
+          var abiwordError = "Abiword does not exist at this path, check your settings file.";
           if (!exports.suppressErrorsInPadText) {
             exports.defaultPadText = exports.defaultPadText + "\nError: " + abiwordError + suppressDisableMsg;
           }
-          console.error(abiwordError);
+          console.error(abiwordError + ` File location: ${exports.abiword}`);
           exports.abiword = null;
         }
       });
@@ -486,12 +486,12 @@ exports.reloadSettings = function reloadSettings() {
   if (exports.soffice) {
     fs.exists(exports.soffice, function(exists) {
       if (!exists) {
-        var sofficeError = "SOffice does not exist at this path, check your settings file";
+        var sofficeError = "soffice (libreoffice) does not exist at this path, check your settings file.";
 
         if (!exports.suppressErrorsInPadText) {
           exports.defaultPadText = exports.defaultPadText + "\nError: " + sofficeError + suppressDisableMsg;
         }
-        console.error(sofficeError);
+        console.error(sofficeError + ` File location: ${exports.soffice}`);
         exports.soffice = null;
       }
     });
