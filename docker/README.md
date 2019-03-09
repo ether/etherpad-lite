@@ -14,6 +14,8 @@ cp ../settings.json.template settings.json
 [ further edit your settings.json as needed]
 ```
 
+**Each configuration parameter can also be set via an environment variable**, using the syntax `"${ENV_VAR_NAME}"`. For details, refer to `settings.json.template`.
+
 Build the version you prefer:
 ```bash
 # builds latest development version
