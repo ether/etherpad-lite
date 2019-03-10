@@ -3,8 +3,8 @@
  *
  * Please edit settings.json, not settings.json.template
  *
- * Please note that since Etherpad 1.6.0 you can store DB credentials in a
- * separate file (credentials.json).
+ * Please note that starting from Etherpad 1.6.0 you can store DB credentials in
+ * a separate file (credentials.json).
  */
 {
   /*
