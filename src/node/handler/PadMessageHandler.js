@@ -1363,7 +1363,7 @@ async function getChangesetInfo(padId, startNum, endNum, granularity)
  */
 async function getPadLines(padId, revNum)
 {
-  let pad = padManager.getPad(padId);
+  let pad = await padManager.getPad(padId);
 
   // get the atext
   let atext;
