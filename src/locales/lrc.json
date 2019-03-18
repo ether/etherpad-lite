@@ -1,19 +1,21 @@
 {
 	"@metadata": {
 		"authors": [
-			"Mogoeilor"
+			"Mogoeilor",
+			"Lorestani"
 		]
 	},
 	"index.newPad": "دشته تازه",
 	"pad.toolbar.bold.title": "توپر",
 	"pad.toolbar.italic.title": "کج کوله(ctrl-l)",
 	"pad.toolbar.underline.title": "زیر خط دار بین (Ctrl-U)",
-	"pad.toolbar.ol.title": "نوم گه منظم",
-	"pad.toolbar.ul.title": "نوم گه بی نظم",
+	"pad.toolbar.ol.title": "نومگٱ مورٱتٱب بیٱ",
+	"pad.toolbar.ul.title": "نومگٱ مورٱتٱب ناٛیٱ",
 	"pad.toolbar.indent.title": "مئن رئته(TAB)",
 	"pad.toolbar.unindent.title": "وه در رئته (Shift+TAB)",
 	"pad.toolbar.undo.title": "رد انجوم دئین (Ctrl-Z)",
 	"pad.toolbar.redo.title": "د نو انجوم دئین(Ctrl-Y)",
+	"pad.toolbar.savedRevision.title": "ڤانری بٱلگٱ",
 	"pad.toolbar.settings.title": "میزوکاری",
 	"pad.colorpicker.save": "ذخيره كردن",
 	"pad.colorpicker.cancel": "انجوم شیو كردن",

@@ -7,7 +7,8 @@
 			"Meelo",
 			"Trockya",
 			"McAang",
-			"Vito Genovese"
+			"Vito Genovese",
+			"Hedda"
 		]
 	},
 	"index.newPad": "Yeni Bloknot",
@@ -92,6 +93,8 @@
 	"pad.chat": "Sohbet",
 	"pad.chat.title": "Bu bloknot için sohbeti açın.",
 	"pad.chat.loadmessages": "Daha fazla mesaj yükle",
+	"pad.chat.stick.title": "Sohbeti ekrana yapıştır",
+	"pad.chat.writeMessage.placeholder": "Mesajını buraya yaz",
 	"timeslider.pageTitle": "{{appTitle}} Zaman Çizelgesi",
 	"timeslider.toolbar.returnbutton": "Bloknota geri dön",
 	"timeslider.toolbar.authors": "Yazarlar:",
