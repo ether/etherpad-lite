@@ -9,14 +9,6 @@
 FROM node:latest
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
-# install supervisor
-RUN apt-get update && apt-get install -y \
-	supervisor \
-	&& rm -rf /var/lib/apt/lists/*
-
-# install supervisor.conf in a low layer of the container
-ADD supervisor.conf /etc/supervisor/supervisor.conf
-
 # git hash of the version to be built.
 # If not given, build the latest development version.
 ARG ETHERPAD_VERSION=develop
@@ -49,4 +41,5 @@ RUN /opt/etherpad-lite/bin/installDeps.sh
 COPY nop setting[s].json /opt/etherpad-lite/
 
 EXPOSE 9001
-CMD ["supervisord", "-c", "/etc/supervisor/supervisor.conf", "-n"]
+WORKDIR /opt/etherpad-lite
+CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
