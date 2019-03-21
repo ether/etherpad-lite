@@ -372,13 +372,13 @@ function storeSettings(settingsObj) {
 
 /**
  * Takes a javascript object containing Etherpad's configuration, and returns
- * another object, in which all the string properties whose name is of the form
- * "${ENV_VAR}", got their value replaced with the value of the given
+ * another object, in which all the string properties whose value is of the form
+ * "${ENV_VAR}" got their value replaced with the contents of the given
  * environment variable.
  *
- * An environment variable's value is always a string. However, the code base
- * makes use of the various json types. To maintain compatiblity, some
- * heuristics is applied:
+ * By definition, an environment variable's value is always a string. However,
+ * the code base makes use of the various json types. To maintain compatiblity,
+ * some heuristics is applied:
  *
  * - if ENV_VAR does not exist in the environment, null is returned;
  * - if ENV_VAR's value is "true" or "false", it is converted to the js boolean
@@ -386,10 +386,21 @@ function storeSettings(settingsObj) {
  * - if ENV_VAR's value looks like a number, it is converted to a js number
  *   (details in the code).
  *
- * Variable substitution is performed doing a round trip conversion to/from
- * json, using a custom replacer parameter in JSON.stringify(), and parsing the
- * JSON back again. This ensures that environment variable replacement is
- * performed even on nested objects.
+ * The following is a scheme of the behaviour of this function:
+ *
+ * +---------------------------+---------------+------------------+
+ * | Configuration string in   | Value of      | Resulting confi- |
+ * | settings.json             | ENV_VAR       | guration value   |
+ * |---------------------------|---------------|------------------|
+ * | "${ENV_VAR}"              | "some_string" | "some_string"    |
+ * | "${ENV_VAR}"              | "9001"        | 9001             |
+ * | "${ENV_VAR}"              | undefined     | null             |
+ * +---------------------------+---------------+------------------+
+ *
+ * IMPLEMENTATION NOTE: variable substitution is performed doing a round trip
+ *     conversion to/from json, using a custom replacer parameter in
+ *     JSON.stringify(), and parsing the JSON back again. This ensures that
+ *     environment variable replacement is performed even on nested objects.
  *
  * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
  */
