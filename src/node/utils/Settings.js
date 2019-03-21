@@ -370,6 +370,33 @@ function storeSettings(settingsObj) {
   }
 }
 
+/*
+ * If stringValue is a numeric string, or its value is "true" or "false", coerce
+ * them to appropriate JS types. Otherwise return stringValue as-is.
+ */
+function coerceValue(stringValue) {
+    // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
+    const isNumeric = !isNaN(stringValue) && !isNaN(parseFloat(stringValue) && isFinite(stringValue));
+
+    if (isNumeric) {
+      // detected numeric string. Coerce to a number
+
+      return +stringValue;
+    }
+
+    // the boolean literal case is easy.
+    if (stringValue === "true" ) {
+      return true;
+    }
+
+    if (stringValue === "false") {
+      return false;
+    }
+
+    // otherwise, return this value as-is
+    return stringValue;
+}
+
 /**
  * Takes a javascript object containing Etherpad's configuration, and returns
  * another object, in which all the string properties whose value is of the form
@@ -458,30 +485,9 @@ function lookupEnvironmentVariables(obj) {
      * For numeric and boolean strings let's convert it to proper types before
      * returning it, in order to maintain backward compatibility.
      */
+    console.debug(`Configuration key "${key}" will be read from environment variable "${envVarName}"`);
 
-    // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
-    const isNumeric = !isNaN(envVarValue) && !isNaN(parseFloat(envVarValue) && isFinite(envVarValue));
-
-    if (isNumeric) {
-      console.debug(`Configuration key "${key}" will be read from environment variable ${envVarName}. Detected numeric string, that will be coerced to a number`);
-
-      return +envVarValue;
-    }
-
-    // the boolean literal case is easy.
-    if (envVarValue === "true" || envVarValue === "false") {
-      console.debug(`Configuration key "${key}" will be read from environment variable ${envVarName}. Detected boolean string, that will be coerced to a boolean`);
-
-      return (envVarValue === "true");
-    }
-
-    /*
-     * The only remaining case is that envVarValue is a string with no special
-     * meaning, and we just return it as-is.
-     */
-    console.debug(`Configuration key "${key}" will be read from environment variable ${envVarName}`);
-
-    return envVarValue;
+    return coerceValue(envVarValue);
   });
 
   const newSettings = JSON.parse(stringifiedAndReplaced);
