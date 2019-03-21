@@ -443,7 +443,7 @@ function lookupEnvironmentVariables(obj) {
     const envVarValue = process.env[envVarName];
 
     if (envVarValue === undefined) {
-      console.warn(`Configuration key ${key} tried to read its value from environment variable ${envVarName}, but no value was found. Returning null. Please check your configuration and environment settings.`);
+      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}". Returning null. Please check your configuration and environment settings.`);
 
       /*
        * We have to return null, because if we just returned undefined, the
