@@ -400,8 +400,8 @@ function coerceValue(stringValue) {
 /**
  * Takes a javascript object containing Etherpad's configuration, and returns
  * another object, in which all the string properties whose value is of the form
- * "${ENV_VAR}" got their value replaced with the contents of the given
- * environment variable.
+ * "${ENV_VAR}" or "${ENV_VAR:default_value}" got their value replaced with the
+ * contents of the given environment variable, or with a default value.
  *
  * By definition, an environment variable's value is always a string. However,
  * the code base makes use of the various json types. To maintain compatiblity,
@@ -422,6 +422,8 @@ function coerceValue(stringValue) {
  * | "${ENV_VAR}"              | "some_string" | "some_string"    |
  * | "${ENV_VAR}"              | "9001"        | 9001             |
  * | "${ENV_VAR}"              | undefined     | null             |
+ * | "${ENV_VAR:some_default}" | "some_string" | "some_string"    |
+ * | "${ENV_VAR:some_default}" | undefined     | "some_default"   |
  * +---------------------------+---------------+------------------+
  *
  * IMPLEMENTATION NOTE: variable substitution is performed doing a round trip
@@ -455,9 +457,10 @@ function lookupEnvironmentVariables(obj) {
 
     /*
      * Let's check if the string value looks like a variable expansion (e.g.:
-     * "${ENV_VAR}")
+     * "${ENV_VAR}" or "${ENV_VAR:default_value}")
      */
-    const match = value.match(/^\$\{(.*)\}$/);
+    // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
+    const match = value.match(/^\$\{([^:]*)(:(.*))?\}$/);
 
     if (match === null) {
       // no match: use the value literally, without any substitution
@@ -465,18 +468,28 @@ function lookupEnvironmentVariables(obj) {
       return value;
     }
 
-    // we found the name of an environment variable. Let's read its value.
+    /*
+     * We found the name of an environment variable. Let's read its actual value
+     * and its default value, if given
+     */
     const envVarName = match[1];
     const envVarValue = process.env[envVarName];
+    const defaultValue = match[3];
 
-    if (envVarValue === undefined) {
-      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}". Returning null. Please check your configuration and environment settings.`);
+    if ((envVarValue === undefined) && (defaultValue === undefined)) {
+      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}", and no default was given. Returning null. Please check your configuration and environment settings.`);
 
       /*
        * We have to return null, because if we just returned undefined, the
        * configuration item "key" would be stripped from the returned object.
        */
       return null;
+    }
+
+    if ((envVarValue === undefined) && (defaultValue !== undefined)) {
+      console.debug(`Environment variable "${envVarName}" not found for configuration key "${key}". Falling back to default value.`);
+
+      return coerceValue(defaultValue);
     }
 
     // envVarName contained some value.

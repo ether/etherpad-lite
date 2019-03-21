@@ -11,33 +11,38 @@
  * =================================
  *
  * All the configuration values can be read from environment variables using the
- * syntax "${ENV_VAR}".
+ * syntax "${ENV_VAR}" or "${ENV_VAR:default_value}".
+ *
  * This is useful, for example, when running in a Docker container.
  *
  * EXAMPLE:
- *    "port":     "${PORT}"
+ *    "port":     "${PORT:9001}"
  *    "minify":   "${MINIFY}"
- *    "skinName": "${SKIN_NAME}"
+ *    "skinName": "${SKIN_NAME:colibris}"
  *
  * Would read the configuration values for those items from the environment
  * variables PORT, MINIFY and SKIN_NAME.
+ * If PORT and SKIN_NAME variables were not defined, the default values 9001 and
+ * "colibris" would be used. The configuration value "minify", on the other
+ * hand, does not have a default indicated. Thus, if the environment variable
+ * MINIFY were undefined, "minify" would be null (do not do this).
  *
  * REMARKS:
  * Please note that variable substitution always needs to be quoted.
  *
- *    "port":     9001,          <-- Literal values. When not using
- *    "minify":   false              substitution, only strings must be quoted.
- *    "skinName": "colibris"         Booleans and numbers must not.
+ *    "port":     9001,            <-- Literal values. When not using
+ *    "minify":   false                substitution, only strings must be
+ *    "skinName": "colibris"           quoted. Booleans and numbers must not.
  *
- *    "port":     "${PORT}"      <-- CORRECT: if you want to use a variable
- *    "minify":   "${MINIFY}"        substitution, put quotes around its name,
- *    "skinName": "${SKIN_NAME}"     even if the required value is a number or a
- *                                   boolean.
- *                                   Etherpad will take care of rewriting it to
- *                                   the proper type if necessary.
+ *    "port":     "${PORT:9001}"   <-- CORRECT: if you want to use a variable
+ *    "minify":   "${MINIFY:true}"     substitution, put quotes around its name,
+ *    "skinName": "${SKIN_NAME}"       even if the required value is a number or
+ *                                     a boolean.
+ *                                     Etherpad will take care of rewriting it
+ *                                     to the proper type if necessary.
  *
- *    "port":     ${PORT}        <-- ERROR: this is not valid json. Quotes
- *    "minify":   ${MINIFY}          around variable names are missing.
+ *    "port":     ${PORT:9001}     <-- ERROR: this is not valid json. Quotes
+ *    "minify":   ${MINIFY}            around variable names are missing.
  *    "skinName": ${SKIN_NAME}
  *
  */
