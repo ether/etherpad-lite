@@ -7,7 +7,8 @@
 			"Reza1615",
 			"ZxxZxxZ",
 			"الناز",
-			"Omid.koli"
+			"Omid.koli",
+			"FarsiNevis"
 		]
 	},
 	"index.newPad": "دفترچه یادداشت تازه",
@@ -92,6 +93,8 @@
 	"pad.chat": "گفتگو",
 	"pad.chat.title": "بازکردن گفتگو برای این دفترچه یادداشت",
 	"pad.chat.loadmessages": "بارگیری پیام‌های بیشتر",
+	"pad.chat.stick.title": "چسباندن چت به صفحه",
+	"pad.chat.writeMessage.placeholder": "پیام خود را این‌جا بنویسید",
 	"timeslider.pageTitle": "لغزندهٔ زمان {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "بازگشت به دفترچه یادداشت",
 	"timeslider.toolbar.authors": "نویسندگان:",
