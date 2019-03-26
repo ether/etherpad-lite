@@ -260,7 +260,7 @@ exports.getHTML = async function(padID, rev)
   }
 
   // get the html of this revision
-  html = await exportHtml.getPadHTML(pad, rev);
+  let html = await exportHtml.getPadHTML(pad, rev);
 
   // wrap the HTML
   html = "<!DOCTYPE HTML><html><body>" + html + "</body></html>";
