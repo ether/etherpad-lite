@@ -525,7 +525,7 @@ exports.restoreRevision = async function(padID, rev)
 {
   // check if rev is a number
   if (rev === undefined) {
-    throw new customeError("rev is not defined", "apierror");
+    throw new customError("rev is not defined", "apierror");
   }
   rev = checkValidRev(rev);
 
