@@ -393,8 +393,6 @@ Pad.prototype.copy = async function copy(destinationID, force) {
     if (!force) {
       console.error("erroring out without force");
       throw new customError("destinationID already exists", "apierror");
-
-      return;
     }
 
     // exists and forcing
