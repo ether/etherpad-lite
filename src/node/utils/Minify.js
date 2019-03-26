@@ -70,7 +70,7 @@ for (var key in tar) {
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-function requestURI(url, method, headers, callback, redirectCount) {
+function requestURI(url, method, headers, callback) {
   var parsedURL = urlutil.parse(url);
 
   var status = 500, headers = {}, content = [];
