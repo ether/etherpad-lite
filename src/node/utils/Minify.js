@@ -137,7 +137,7 @@ function requestURIs(locations, method, headers, callback) {
  * @param req the Express request
  * @param res the Express response
  */
-function minify(req, res, next)
+function minify(req, res)
 {
   var filename = req.params['filename'];
 
