@@ -399,7 +399,7 @@ Pad.prototype.copy = async function copy(destinationID, force) {
 
     // exists and forcing
     let pad = await padManager.getPad(destinationID);
-    await pad.remove(callback);
+    await pad.remove();
   }
 
   // copy the 'pad' entry
