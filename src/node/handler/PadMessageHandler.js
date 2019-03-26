@@ -287,7 +287,7 @@ exports.handleMessage = async function(client, message)
 
     if (padId.indexOf("r.") === 0) {
       // Pad is readOnly, first get the real Pad ID
-      padId = await readOnlyManager.getPadId(padID);
+      padId = await readOnlyManager.getPadId(padId);
     }
 
     let { accessStatus } = await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password);
