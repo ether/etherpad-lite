@@ -240,7 +240,7 @@ function minify(req, res)
         res.end();
       }
     }
-  });
+  }, 3);
 }
 
 // find all includes in ace.js and embed them.
@@ -287,6 +287,10 @@ function getAceFile(callback) {
 
 // Check for the existance of the file and get the last modification date.
 function statFile(filename, callback, dirStatLimit) {
+  /*
+   * The only external call to this function provides an explicit value for
+   * dirStatLimit: this check could be removed.
+   */
   if (typeof dirStatLimit === 'undefined') {
     dirStatLimit = 3;
   }
