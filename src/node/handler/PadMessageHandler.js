@@ -257,9 +257,9 @@ exports.handleMessage = async function(client, message)
 
     // check permissions
 
-    // client tried to auth for the first time (first msg from the client)
     if (message.type == "CLIENT_READY") {
-        createSessionInfo(client, message);
+      // client tried to auth for the first time (first msg from the client)
+      createSessionInfo(client, message);
     }
 
     // Note: message.sessionID is an entirely different kind of
@@ -285,15 +285,15 @@ exports.handleMessage = async function(client, message)
     // check if pad is requested via readOnly
     let padId = auth.padID;
 
-    // Pad is readOnly, first get the real Pad ID
     if (padId.indexOf("r.") === 0) {
+      // Pad is readOnly, first get the real Pad ID
       padId = await readOnlyManager.getPadId(padID);
     }
 
     let { accessStatus } = await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password);
 
-    // no access, send the client a message that tells him why
     if (accessStatus !== "grant") {
+      // no access, send the client a message that tells him why
       client.json.send({ accessStatus });
       return;
     }
