@@ -13,6 +13,10 @@ LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 # If not given, build the latest development version.
 ARG ETHERPAD_VERSION=develop
 
+# Set the following to production to avoid installing devDeps
+# this can be one with build args (and is mandatory to build ARM version
+ARG NODE_ENV=development
+
 # grab the ETHERPAD_VERSION tarball from github (no need to clone the whole
 # repository)
 RUN echo "Getting version: ${ETHERPAD_VERSION}" && \

@@ -22,10 +22,10 @@ Build the version you prefer:
 docker build --tag <YOUR_USERNAME>/etherpad .
 
 # builds latest stable version
-docker build --build-arg ETHERPAD_VERSION=master --tag <YOUR_USERNAME>/etherpad .
+docker build --build-arg ETHERPAD_VERSION=master --build-arg NODE_ENV=production --tag <YOUR_USERNAME>/etherpad .
 
 # builds a specific version
-docker build --build-arg ETHERPAD_VERSION=1.7.5 --tag <YOUR_USERNAME>/etherpad .
+docker build --build-arg ETHERPAD_VERSION=1.7.5 --build-arg NODE_ENV=production --tag <YOUR_USERNAME>/etherpad .
 
 # builds a specific git hash
 docker build --build-arg ETHERPAD_VERSION=4c45ac3cb1ae --tag <YOUR_USERNAME>/etherpad .
