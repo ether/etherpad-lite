@@ -87,6 +87,8 @@
 	"pad.chat": "Spjall",
 	"pad.chat.title": "Opna spjallið fyrir þessa skrifblokk.",
 	"pad.chat.loadmessages": "Hlaða inn fleiri skeytum",
+	"pad.chat.stick.title": "Festa spjallið á skjáinn",
+	"pad.chat.writeMessage.placeholder": "Skrifaðu skilaboðin þín hér",
 	"timeslider.pageTitle": "Tímalína {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Fara til baka í skrifblokk",
 	"timeslider.toolbar.authors": "Höfundar:",
