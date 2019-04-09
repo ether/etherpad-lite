@@ -91,7 +91,9 @@ else
     abiword.on('exit', function (code) 
     {
       spawnAbiword();
-      stdoutCallback(`Abiword died with exit code ${code}`);
+      if (stdoutCallback != null) {
+        stdoutCallback(`Abiword died with exit code ${code}`);
+      }
     });
 
     //delegate the processing of stdout to a other function
