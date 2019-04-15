@@ -75,7 +75,12 @@ exports.restartServer = function () {
     // Stop IE going into compatability mode
     // https://github.com/ether/etherpad-lite/issues/2547
     res.header("X-UA-Compatible", "IE=Edge,chrome=1");
-    res.header("Server", serverName);
+
+    // send git version in the Server response header if exposeVersion is true.
+    if (settings.exposeVersion) {
+      res.header("Server", serverName);
+    }
+
     next();
   });
 
