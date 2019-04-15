@@ -291,6 +291,13 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
   "scrollWhenCaretIsInTheLastLineOfViewport": false
 };
 
+/*
+ * Expose Etherpad version in the Server http header.
+ *
+ * Do not enable on production machines.
+ */
+exports.exposeVersion = false;
+
 // checks if abiword is avaiable
 exports.abiwordAvailable = function()
 {

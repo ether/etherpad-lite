@@ -409,6 +409,13 @@
   */
 
   /*
+   * Expose Etherpad version in the Server http header.
+   *
+   * Do not enable on production machines.
+   */
+  "exposeVersion": false,
+
+    /*
    * The log level we are using.
    *
    * Valid values: DEBUG, INFO, WARN, ERROR
