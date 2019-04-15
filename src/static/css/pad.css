@@ -938,6 +938,13 @@ input[type=checkbox] {
   outline: none;
   width: 120px;
 }
+.row {
+  float: left;
+  width: 100%;
+}
+.row + .row {
+  margin-top: 15px;
+}
 .column {
   float: left;
   width:50%;
