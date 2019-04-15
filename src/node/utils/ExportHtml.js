@@ -331,12 +331,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
         nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
       }
       hooks.aCallAll('getLineHTMLForExport', context);
-      //To create list parent elements 
+      //To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) || (prevLine && line.listTypeName !== prevLine.listTypeName))
       {
         var exists = _.find(openLists, function (item)
         {
-          return (item.level === line.listLevel && item.type === line.listTypeName); 
+          return (item.level === line.listLevel && item.type === line.listTypeName);
         });
         if (!exists) {
           var prevLevel = 0;
@@ -365,7 +365,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
             {
               pieces.push("<ul class=\"" + line.listTypeName + "\">");
             }
-          } 
+          }
         }
       }
 
@@ -398,7 +398,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           {
             pieces.push("</li>");
           }
-                  
+
           if (line.listTypeName === "number")
           {
             pieces.push("</ol>");
@@ -407,7 +407,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           {
             pieces.push("</ul>");
           }
-        } 
+        }
       }
     }
     else//outside any list, need to close line.listLevel of lists

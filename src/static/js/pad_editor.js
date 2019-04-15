@@ -142,7 +142,7 @@ var padeditor = (function()
       }
 
       var fontFamily = newOptions['padFontFamily'];
-      switch (fontFamily) { 
+      switch (fontFamily) {
         case "monospace": self.ace.setProperty("textface", "monospace"); break;
         case "montserrat": self.ace.setProperty("textface", "Montserrat"); break;
         case "opendyslexic": self.ace.setProperty("textface", "OpenDyslexic"); break;
@@ -162,7 +162,7 @@ var padeditor = (function()
         case "wingdings": self.ace.setProperty("textface", "Wingdings"); break;
         case "sansserif": self.ace.setProperty("textface", "sans-serif"); break;
         case "serif": self.ace.setProperty("textface", "serif"); break;
-        default: self.ace.setProperty("textface", "");   break; 
+        default: self.ace.setProperty("textface", "");   break;
       }
     },
     dispose: function()

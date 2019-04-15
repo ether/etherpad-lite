@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -53,7 +53,7 @@ function createCookie(name, value, days, path){ /* Used by IE */
   if(!path){ // IF the Path of the cookie isn't set then just create it on root
     path = "/";
   }
-  
+
   //Check if we accessed the pad over https
   var secure = window.location.protocol == "https:" ? ";secure" : "";
 
@@ -531,9 +531,9 @@ function setupGlobalExceptionHandler() {
       var errObj = {errorInfo: JSON.stringify({errorId: errorId, msg: msg, url: window.location.href, linenumber: linenumber, userAgent: navigator.userAgent})};
       var loc = document.location;
       var url = loc.protocol + "//" + loc.hostname + ":" + loc.port + "/" + loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "jserror";
- 
+
       $.post(url, errObj);
- 
+
       return false;
     };
     window.onerror = globalExceptionHandler;

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  
+
   var socket,
     loc = document.location,
     port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port,
@@ -23,7 +23,7 @@ $(document).ready(function () {
     search.searchTerm = searchTerm;
     socket.emit("search", {searchTerm: searchTerm, offset:search.offset, limit: limit, sortBy: search.sortBy, sortDir: search.sortDir});
     search.offset += limit;
-    
+
     $('#search-progress').show()
     search.messages.show('fetching')
     search.searching = true
@@ -76,7 +76,7 @@ $(document).ready(function () {
   function displayPluginList(plugins, container, template) {
     plugins.forEach(function(plugin) {
       var row = template.clone();
-      
+
       for (attr in plugin) {
         if(attr == "name"){ // Hack to rewrite URLS into name
           var link = $('<a>');
@@ -96,7 +96,7 @@ $(document).ready(function () {
     })
     updateHandlers();
   }
-  
+
   function sortPluginList(plugins, property, /*ASC?*/dir) {
     return plugins.sort(function(a, b) {
       if (a[property] < b[property])
@@ -113,7 +113,7 @@ $(document).ready(function () {
     $("#search-query").unbind('keyup').keyup(function () {
       search($("#search-query").val());
     });
-    
+
     // Prevent form submit
     $('#search-query').parent().bind('submit', function() {
       return false;
@@ -167,7 +167,7 @@ $(document).ready(function () {
     search.messages.hide('nothing-found')
     search.messages.hide('fetching')
     $("#search-query").removeAttr('disabled')
-    
+
     console.log('got search results', data)
 
     // add to results
@@ -218,7 +218,7 @@ $(document).ready(function () {
       installed.messages.show("nothing-installed")
     }
   });
-  
+
   socket.on('results:updatable', function(data) {
     data.updatable.forEach(function(pluginName) {
       var $row = $('#installed-plugins > tr.'+pluginName)
@@ -250,7 +250,7 @@ $(document).ready(function () {
 
     // remove plugin from installed list
     $('#installed-plugins .'+data.plugin).remove()
-    
+
     socket.emit("getInstalled");
 
     // update search results

@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -50,7 +50,7 @@ var padconnectionstatus = (function()
       status = {
         what: 'reconnecting'
       };
-      
+
       padmodals.showModal('reconnecting');
       padmodals.showOverlay();
     },
@@ -58,12 +58,12 @@ var padconnectionstatus = (function()
     {
       if(status.what == "disconnected")
         return;
-      
+
       status = {
         what: 'disconnected',
         why: msg
       };
-      
+
       var k = String(msg); // known reason why
       if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'badChangeset' || k == 'corruptPad'))
       {

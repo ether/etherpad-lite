@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -239,7 +239,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
    */
 
   function applyChangeset(changeset, revision, preventSliderMovement, timeDelta)
-  { 
+  {
     // disable the next 'gotorevision' call handled by a timeslider update
     if (!preventSliderMovement)
     {
@@ -263,12 +263,12 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
-    
+
     var authors = _.map(padContents.getActiveAuthors(), function(name)
     {
       return authorData[name];
     });
-    
+
     BroadcastSlider.setAuthors(authors);
   }
 
@@ -281,7 +281,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         str = '0' + str;
         return str;
         }
-        
+
     var date = new Date(padContents.currentTime);
     var dateFormat = function()
       {
@@ -296,15 +296,15 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
           "month": month,
           "year": year,
           "hours": hours,
-          "minutes": minutes, 
+          "minutes": minutes,
           "seconds": seconds
         }));
         }
-        
-        
-        
-        
-        
+
+
+
+
+
     $('#timer').html(dateFormat());
     var revisionDate = html10n.get("timeslider.saved", {
       "day": date.getDate(),
@@ -327,7 +327,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     $('#revision_date').html(revisionDate)
 
   }
-  
+
   updateTimer();
 
   function goToRevision(newRevision)
@@ -378,13 +378,13 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       // Loading changeset history for old revision (to make diff between old and new revision)
       loadChangesetsForRevision(padContents.currentRevision - 1);
     }
-    
+
     var authors = _.map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
     });
     BroadcastSlider.setAuthors(authors);
   }
-  
+
   function loadChangesetsForRevision(revision, callback) {
     if (BroadcastSlider.getSliderLength() > 10000)
     {
@@ -566,7 +566,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       goToRevision.apply(goToRevision, arguments);
     }
   }
-      
+
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
   var dynamicCSS = makeCSSManager('dynamicsyntax');
