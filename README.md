@@ -36,7 +36,7 @@ To update to the latest released version, execute `git pull origin`. The next st
 ### Prebuilt Windows package
 This package works out of the box on any windows machine, but it's not very useful for developing purposes...
 
-1. [Download the latest Windows package](http://etherpad.org/#download)
+1. [Download the latest Windows package](https://etherpad.org/#download)
 2. Extract the folder
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
@@ -124,7 +124,7 @@ Visit the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**.
 
 # Donate!
 * [Flattr](https://flattr.com/thing/71378/Etherpad-Foundation)
-* Paypal - Press the donate button on [etherpad.org](http://etherpad.org)
+* Paypal - Press the donate button on [etherpad.org](https://etherpad.org)
 * [Bitcoin](https://coinbase.com/checkouts/1e572bf8a82e4663499f7f1f66c2d15a)
 
 All donations go to the Etherpad foundation which is part of Software Freedom Conservency

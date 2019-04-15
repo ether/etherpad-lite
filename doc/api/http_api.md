@@ -349,7 +349,7 @@ get the changeset at a given revision, or last revision if 'rev' is not defined.
 *Example returns:*
   * `{ "code" : 0,
        "message" : "ok",
-       "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
+       "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at https://etherpad.org\n"
      }`
   * `{"code":1,"message":"padID does not exist","data":null}`
   * `{"code":1,"message":"rev is higher than the head revision of the pad","data":null}`

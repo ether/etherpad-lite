@@ -1,5 +1,5 @@
 # 1.7.5
-* FEATURE: introduced support for multiple skins. See http://etherpad.org/doc/v1.7.5/#index_skins
+* FEATURE: introduced support for multiple skins. See https://etherpad.org/doc/v1.7.5/#index_skins
 * FEATURE: added a new, optional skin. It can be activated choosing `skinName: "colibris"` in `settings.json`
 * FEATURE: allow file import using LibreOffice
 * SECURITY: updated many dependencies. No known high or moderate risk dependencies remain.

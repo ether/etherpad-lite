@@ -1,7 +1,7 @@
 {
   "name": "ep_etherpad-lite",
   "description": "A Etherpad based on node.js",
-  "homepage": "http://etherpad.org",
+  "homepage": "https://etherpad.org",
   "keywords": [
     "etherpad",
     "realtime",

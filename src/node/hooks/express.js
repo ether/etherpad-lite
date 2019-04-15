@@ -12,7 +12,7 @@ var serverName;
 exports.createServer = function () {
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
-  serverName = `Etherpad ${settings.getGitCommit()} (http://etherpad.org)`;
+  serverName = `Etherpad ${settings.getGitCommit()} (https://etherpad.org)`;
 
   console.log(`Your Etherpad version is ${settings.getEpVersion()} (${settings.getGitCommit()})`);
 
