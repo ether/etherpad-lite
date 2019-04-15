@@ -297,7 +297,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
 # 1.3
  * NEW: We now follow the semantic versioning scheme!
  * NEW: Option to disable IP logging
- * NEW: Localisation updates from http://translatewiki.net.
+ * NEW: Localisation updates from https://translatewiki.net.
  * Fix: Fix readOnly group pads
  * Fix: don't fetch padList on every request
 
