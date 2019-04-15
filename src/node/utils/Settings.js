@@ -292,7 +292,7 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
 };
 
 /*
- * Expose Etherpad version in the Server http header.
+ * Expose Etherpad version in the web interface and in the Server http header.
  *
  * Do not enable on production machines.
  */
