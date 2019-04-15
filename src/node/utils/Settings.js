@@ -231,60 +231,67 @@ exports.loadTest = false;
 exports.indentationOnNewLine = true;
 
 /*
-* log4js appender configuration
-*/
+ * log4js appender configuration
+ */
 exports.logconfig = { appenders: [{ type: "console" }]};
 
 /*
-* Session Key, do not sure this.
-*/
+ * Session Key, do not sure this.
+ */
 exports.sessionKey = false;
 
 /*
-* Trust Proxy, whether or not trust the x-forwarded-for header.
-*/
+ * Trust Proxy, whether or not trust the x-forwarded-for header.
+ */
 exports.trustProxy = false;
 
-/* This setting is used if you need authentication and/or
+/*
+ * This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
- * either authorization by a module, or a user with is_admin set */
+ * either authorization by a module, or a user with is_admin set
+ */
 exports.requireAuthentication = false;
 exports.requireAuthorization = false;
 exports.users = {};
 
 /*
-* Show settings in admin page, by default it is true
-*/
+ * Show settings in admin page, by default it is true
+ */
 exports.showSettingsInAdminPage = true;
 
 /*
-* By default, when caret is moved out of viewport, it scrolls the minimum height needed to make this
-* line visible.
-*/
+ * By default, when caret is moved out of viewport, it scrolls the minimum
+ * height needed to make this line visible.
+ */
 exports.scrollWhenFocusLineIsOutOfViewport = {
   /*
-  * Percentage of viewport height to be additionally scrolled.
-  */
+   * Percentage of viewport height to be additionally scrolled.
+   */
   "percentage": {
     "editionAboveViewport": 0,
     "editionBelowViewport": 0
   },
+
   /*
-  * Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation
-  */
+   * Time (in milliseconds) used to animate the scroll transition. Set to 0 to
+   * disable animation
+   */
   "duration": 0,
+
   /*
-  * Flag to control if it should scroll when user places the caret in the last line of the viewport
-  */
-  /*
-  * Percentage of viewport height to be additionally scrolled when user presses arrow up
-  * in the line of the top of the viewport.
+   * Percentage of viewport height to be additionally scrolled when user presses arrow up
+   * in the line of the top of the viewport.
    */
   "percentageToScrollWhenUserPressesArrowUp": 0,
+
+  /*
+   * Flag to control if it should scroll when user places the caret in the last
+   * line of the viewport
+   */
   "scrollWhenCaretIsInTheLastLineOfViewport": false
 };
 
-//checks if abiword is avaiable
+// checks if abiword is avaiable
 exports.abiwordAvailable = function()
 {
   if (exports.abiword != null) {
