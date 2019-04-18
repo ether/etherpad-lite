@@ -7,7 +7,8 @@
 			"Robin van der Vliet",
 			"Mainframe98",
 			"KlaasZ4usV",
-			"Rickvl"
+			"Rickvl",
+			"Marcelhospers"
 		]
 	},
 	"index.newPad": "Nieuw pad",
@@ -92,6 +93,8 @@
 	"pad.chat": "Chatten",
 	"pad.chat.title": "Chat voor dit pad opnenen",
 	"pad.chat.loadmessages": "Meer berichten laden",
+	"pad.chat.stick.title": "Zet de chat op het scherm",
+	"pad.chat.writeMessage.placeholder": "Schrijf je bericht hier",
 	"timeslider.pageTitle": "Tijdlijn voor {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Terug naar pad",
 	"timeslider.toolbar.authors": "Auteurs:",
