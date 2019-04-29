@@ -84,6 +84,8 @@
 	"pad.chat": "Asqerdec",
 	"pad.chat.title": "Ldi asqerdec deg upad-agi.",
 	"pad.chat.loadmessages": "Sali-d ugar n yiznan",
+	"pad.chat.stick.title": "Senṭeḍ adiwenni deg ugdil",
+	"pad.chat.writeMessage.placeholder": "Aru izen dagi",
 	"timeslider.pageTitle": "Amazray asmussan n {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Uqal ar upad",
 	"timeslider.toolbar.authors": "Imeskaren:",
