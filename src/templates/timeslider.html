@@ -221,17 +221,12 @@
 </div>
 </div>
 
-<script type="text/javascript" src="../../static/js/require-kernel.js"></script>
-<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-
-<!-- Include base packages manually (this help with debugging) -->
-<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"></script>
-<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
 
 <script type="text/javascript" src="../../static/skins/<%=encodeURI(settings.skinName)%>/timeslider.js"></script>
 
 <!-- Bootstrap -->
 <script type="text/javascript" >
+  // TODO: create an entrypoint for this
   // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
   var clientVars = {};
   var BroadcastSlider;
@@ -273,5 +268,7 @@
 </script>
 <% e.end_block(); %>
 <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
+<script type="text/javascript" src="../../static/js/bundle.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 </body>
 </html>

@@ -378,13 +378,6 @@
             // @license-end
         </script>
 
-        <script type="text/javascript" src="../static/js/require-kernel.js"></script>
-        <script type="text/javascript" src="../socket.io/socket.io.js"></script>
-
-        <!-- Include base packages manually (this help with debugging) -->
-        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"></script>
-        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"></script>
-
         <% e.begin_block("customScripts"); %>
         <script type="text/javascript" src="../static/skins/<%=encodeURI(settings.skinName)%>/pad.js"></script>
         <% e.end_block(); %>
@@ -392,4 +385,6 @@
         <!-- Page is bootstrapped by bundle.js -->
         <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
         <% e.end_block(); %>
+        <script type="text/javascript" src="../static/js/bundle.js"></script>
+        <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 </html>

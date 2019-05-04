@@ -24,8 +24,6 @@
 // requires: plugins
 // requires: undefined
 
-var KERNEL_SOURCE = '../static/js/require-kernel.js';
-
 Ace2Editor.registry = {
   nextId: 1
 };
@@ -243,14 +241,9 @@ function Ace2Editor()
 
       pushStyleTagsFor(iframeHTML, includedCSS);
 
-      if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
-        // Remotely src'd script tag will not work in IE; it must be embedded, so
-        // throw an error if it is not.
-        throw new Error("Require kernel could not be found.");
-      }
-
       iframeHTML.push(scriptTag(
-Ace2Editor.EMBEDED[KERNEL_SOURCE] + '\n\
+'var muxator = "muxator";\n\
+/* TODO: trovare un modo di caricare il bundle.js */\n\
 require.setRootURI("../javascripts/src");\n\
 require.setLibraryURI("../javascripts/lib");\n\
 require.setGlobalKeyPath("require");\n\

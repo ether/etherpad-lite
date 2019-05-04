@@ -28,7 +28,6 @@ var CleanCSS = require('clean-css');
 var uglifyJS = require("uglify-js");
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-var RequireKernel = require('etherpad-require-kernel');
 var urlutil = require('url');
 
 var ROOT_DIR = path.normalize(__dirname + "/../../static/");
@@ -253,8 +252,6 @@ function getAceFile(callback) {
     if (!settings.minify) {
       founds = [];
     }
-    // Always include the require kernel.
-    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
 
     data += ';\n';
     data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
