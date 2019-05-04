@@ -241,12 +241,17 @@ function Ace2Editor()
 
       pushStyleTagsFor(iframeHTML, includedCSS);
 
+      iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
+
+      hooks.callAll("aceInitInnerdocbodyHead", {
+        iframeHTML: iframeHTML
+      });
+
+      iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;');
+
+      iframeHTML.push('<script type="text/javascript" src="../static/js/bundle.js"></script>');
       iframeHTML.push(scriptTag(
 'var muxator = "muxator";\n\
-/* TODO: trovare un modo di caricare il bundle.js */\n\
-require.setRootURI("../javascripts/src");\n\
-require.setLibraryURI("../javascripts/lib");\n\
-require.setGlobalKeyPath("require");\n\
 \n\
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
@@ -260,14 +265,7 @@ plugins.ensure(function () {\n\
   Ace2Inner.init();\n\
 });\n\
 '));
-
-      iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
-
-      hooks.callAll("aceInitInnerdocbodyHead", {
-        iframeHTML: iframeHTML
-      });
-
-      iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</body></html>');
+      iframeHTML.push('</body></html>');
 
       // Expose myself to global for my child frame.
       var thisFunctionsName = "ChildAccessibleAce2Editor";
