@@ -43,7 +43,7 @@
     "express-session": "1.15.6",
     "find-root": "1.1.0",
     "formidable": "1.2.1",
-    "graceful-fs": "4.1.11",
+    "graceful-fs": "4.1.15",
     "jsonminify": "0.4.1",
     "languages4translatewiki": "0.1.3",
     "log4js": "0.6.35",
