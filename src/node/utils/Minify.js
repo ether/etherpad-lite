@@ -300,8 +300,6 @@ function statFile(filename, callback, dirStatLimit) {
     lastModifiedDateOfEverything(function (error, date) {
       callback(error, date, !error);
     });
-  } else if (filename == 'js/require-kernel.js') {
-    callback(null, requireLastModified(), true);
   } else {
     fs.stat(ROOT_DIR + filename, function (error, stats) {
       if (error) {
@@ -361,16 +359,6 @@ function lastModifiedDateOfEverything(callback) {
   });
 }
 
-// This should be provided by the module, but until then, just use startup
-// time.
-var _requireLastModified = new Date();
-function requireLastModified() {
-  return _requireLastModified.toUTCString();
-}
-function requireDefinition() {
-  return 'var require = ' + RequireKernel.kernelSource + ';\n';
-}
-
 function getFileCompressed(filename, contentType, callback) {
   getFile(filename, function (error, content) {
     if (error || !content || !settings.minify) {
@@ -393,8 +381,6 @@ function getFileCompressed(filename, contentType, callback) {
 function getFile(filename, callback) {
   if (filename == 'js/ace.js') {
     getAceFile(callback);
-  } else if (filename == 'js/require-kernel.js') {
-    callback(undefined, requireDefinition());
   } else {
     fs.readFile(ROOT_DIR + filename, callback);
   }
