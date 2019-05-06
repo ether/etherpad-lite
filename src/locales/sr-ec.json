@@ -6,7 +6,8 @@
 			"Милан Јелисавчић",
 			"Srdjan m",
 			"Obsuser",
-			"Acamicamacaraca"
+			"Acamicamacaraca",
+			"BadDog"
 		]
 	},
 	"index.newPad": "Нови Пад",
@@ -91,6 +92,8 @@
 	"pad.chat": "Ћаскање",
 	"pad.chat.title": "Отворите ћаскање за овај пад.",
 	"pad.chat.loadmessages": "Учитај више порука",
+	"pad.chat.stick.title": "Залепите ћаскање на екран",
+	"pad.chat.writeMessage.placeholder": "Напишите поруку овде",
 	"timeslider.pageTitle": "{{appTitle}} временска линија",
 	"timeslider.toolbar.returnbutton": "Врати се на пад",
 	"timeslider.toolbar.authors": "Аутори:",
