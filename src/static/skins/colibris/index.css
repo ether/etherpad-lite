@@ -64,6 +64,7 @@ button[type=submit] {
   color: #64d29b;
   background: #586a69;
   border: none;
+  top: 0;
 }
 
 #button:hover,
