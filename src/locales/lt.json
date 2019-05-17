@@ -5,7 +5,8 @@
 			"Mantak111",
 			"I-svetaines",
 			"Zygimantus",
-			"Vogone"
+			"Vogone",
+			"Naktis"
 		]
 	},
 	"index.newPad": "Naujas bloknotas",
@@ -59,6 +60,8 @@
 	"pad.modals.connected": "Prisijungta.",
 	"pad.modals.reconnecting": "Iš naujo prisijungiama prie Jūsų bloknoto",
 	"pad.modals.forcereconnect": "Priversti prisijungti iš naujo",
+	"pad.modals.reconnecttimer": "Bandoma vėl prisijungti",
+	"pad.modals.cancel": "Atšaukti",
 	"pad.modals.userdup": "Atidaryta kitame lange",
 	"pad.modals.userdup.explanation": "Šis bloknotas, atrodo yra atidarytas daugiau nei viename šio kompiuterio naršyklės lange.",
 	"pad.modals.userdup.advice": "Prisijunkite iš naujo, kad vietoj to naudotumėte šį langą.",
@@ -87,6 +90,8 @@
 	"pad.chat": "Pokalbiai",
 	"pad.chat.title": "Atverti šio bloknoto pokalbį.",
 	"pad.chat.loadmessages": "Įkrauti daugiau pranešimų",
+	"pad.chat.stick.title": "Priklijuoti pokalbį",
+	"pad.chat.writeMessage.placeholder": "Rašykite savo žinutę čia",
 	"timeslider.pageTitle": "{{appTitle}} Laiko slinkiklis",
 	"timeslider.toolbar.returnbutton": "Grįžti į bloknotą",
 	"timeslider.toolbar.authors": "Autoriai:",
