@@ -90,6 +90,8 @@
 	"pad.chat": "Chat",
 	"pad.chat.title": "Åpne chatten for denne blokken.",
 	"pad.chat.loadmessages": "Last flere beskjeder",
+	"pad.chat.stick.title": "Fest chatten til skjermen",
+	"pad.chat.writeMessage.placeholder": "Skriv beskjeden din her",
 	"timeslider.pageTitle": "{{appTitle}} Tidslinje",
 	"timeslider.toolbar.returnbutton": "Gå tilbake til blokk",
 	"timeslider.toolbar.authors": "Forfattere:",
