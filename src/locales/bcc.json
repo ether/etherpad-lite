@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Baloch Afghanistan"
+			"Baloch Afghanistan",
+			"Sultanselim baloch"
 		]
 	},
 	"index.newPad": "دفترچه یادداشت تازه",
@@ -30,7 +31,7 @@
 	"pad.permissionDenied": "شرمنده، شما را اجازت په دسترسی ای صفحه نیست.",
 	"pad.wrongPassword": "گذرواژه‌ی شما درست نیست",
 	"pad.settings.padSettings": "تنظیمات دفترچه یادداشت",
-	"pad.settings.myView": "نمای من",
+	"pad.settings.myView": "منی سۏج",
 	"pad.settings.stickychat": "گفتگو همیشه روی صفحه نمایش باشد",
 	"pad.settings.colorcheck": "رنگ‌های نویسندگی",
 	"pad.settings.linenocheck": "شماره‌ی خطوط",
