@@ -6,7 +6,7 @@
 #
 # Version 0.1
 
-FROM node:latest
+FROM node:alpine
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # git hash of the version to be built.
@@ -16,6 +16,9 @@ ARG ETHERPAD_VERSION=develop
 # Set the following to production to avoid installing devDeps
 # this can be done with build args (and is mandatory to build ARM version)
 ARG NODE_ENV=development
+
+# add curl to alpine
+RUN apk add --no-cache curl
 
 # grab the ETHERPAD_VERSION tarball from github (no need to clone the whole
 # repository)
