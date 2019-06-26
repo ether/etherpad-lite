@@ -40,7 +40,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //This is a api POST call, collect all post informations and pass it to the apiHandler
   args.app.post('/api/:version/:func', function(req, res) {
     new formidable.IncomingForm().parse(req, function (err, fields, files) {
-      apiCaller(req, res, fields)
+      apiCaller(req, res, Object.assign(req.query, fields))
     });
   });
 
