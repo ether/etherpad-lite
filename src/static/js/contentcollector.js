@@ -406,12 +406,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         cc: this,
         state: state,
         tname: tname,
-        node:node,
-        text:txt,
+        node: node,
+        text: txt,
         styl: null,
         cls: null
       });
-      var txt = (typeof(txtFromHook)=='object'&&txtFromHook.length==0)?dom.nodeValue(node):txtFromHook[0];
+      var txt = (typeof(txtFromHook)=='object' && txtFromHook.length==0)
+        ? dom.nodeValue(node).trim() : txtFromHook[0].trim();
 
       var rest = '';
       var x = 0; // offset into original text
