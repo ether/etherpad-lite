@@ -13,6 +13,14 @@ LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 # If not given, build the latest development version.
 ARG ETHERPAD_VERSION=develop
 
+# plugins to install while building the container. By default no plugins are
+# installed.
+# If given a value, it has to be a space-separated, quoted list of plugin names.
+#
+# EXAMPLE:
+#   ETHERPAD_PLUGINS="ep_codepad ep_author_neat"
+ARG ETHERPAD_PLUGINS=
+
 # Set the following to production to avoid installing devDeps
 # this can be done with build args (and is mandatory to build ARM version)
 ARG NODE_ENV=development
@@ -37,6 +45,12 @@ WORKDIR /opt/etherpad-lite
 
 # install node dependencies for Etherpad
 RUN bin/installDeps.sh
+
+# Install the plugins, if ETHERPAD_PLUGINS is not empty.
+#
+# Bash trick: in the for loop ${ETHERPAD_PLUGINS} is NOT quoted, in order to be
+# able to split at spaces.
+RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; done
 
 # Copy the custom configuration file, if present. The configuration file has to
 # be manually put inside the same directory containing the Dockerfile (we cannot
