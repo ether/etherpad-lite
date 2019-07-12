@@ -33,8 +33,10 @@ RUN echo "Getting version: ${ETHERPAD_VERSION}" && \
 		--strip-components=1 && \
 	rm /opt/etherpad-lite.tar.gz
 
+WORKDIR /opt/etherpad-lite
+
 # install node dependencies for Etherpad
-RUN /opt/etherpad-lite/bin/installDeps.sh
+RUN bin/installDeps.sh
 
 # Copy the custom configuration file, if present. The configuration file has to
 # be manually put inside the same directory containing the Dockerfile (we cannot
@@ -45,5 +47,4 @@ RUN /opt/etherpad-lite/bin/installDeps.sh
 COPY nop setting[s].json /opt/etherpad-lite/
 
 EXPOSE 9001
-WORKDIR /opt/etherpad-lite
 CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
