@@ -27,6 +27,12 @@ cp ../settings.json.template settings.json
 
 **Each configuration parameter can also be set via an environment variable**, using the syntax `"${ENV_VAR}"` or `"${ENV_VAR:default_value}"`. For details, refer to `settings.json.template`.
 
+## Rebuilding including some plugins
+If you want to install some plugins in your container, it is sufficient to list them in the ETHERPAD_PLUGINS build variable.
+The variable value has to be a space separated, double quoted list of plugin names (see examples).
+
+Some plugins will need personalized settings in the `settings.json` file. Just refer to the previous section, and include them in your custom `settings.json`.
+
 ## Examples
 
 Build the latest development version:
@@ -47,6 +53,11 @@ docker build --build-arg ETHERPAD_VERSION=1.7.5 --build-arg NODE_ENV=production 
 Build a specific git hash:
 ```bash
 docker build --build-arg ETHERPAD_VERSION=4c45ac3cb1ae --tag <YOUR_USERNAME>/etherpad .
+```
+
+Include two plugins in the container:
+```bash
+docker build --build-arg ETHERPAD_PLUGINS="ep_codepad ep_author_neat" --tag <YOUR_USERNAME>/etherpad .
 ```
 
 # Running your instance:
