@@ -4,7 +4,8 @@
 			"Shirayuki",
 			"Torinky",
 			"Omotecho",
-			"Aefgh39622"
+			"Aefgh39622",
+			"Afaz"
 		]
 	},
 	"index.newPad": "新規作成",
@@ -89,6 +90,8 @@
 	"pad.chat": "チャット",
 	"pad.chat.title": "このパッドのチャットを開きます。",
 	"pad.chat.loadmessages": "その他のメッセージを読み込む",
+	"pad.chat.stick.title": "チャットを画面に貼り付ける",
+	"pad.chat.writeMessage.placeholder": "ここにメッセージを書き込んでください",
 	"timeslider.pageTitle": "{{appTitle}} タイムスライダー",
 	"timeslider.toolbar.returnbutton": "パッドに戻る",
 	"timeslider.toolbar.authors": "作者:",

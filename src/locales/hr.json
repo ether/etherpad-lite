@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Bugoslav"
+			"Bugoslav",
+			"Hmxhmx"
 		]
 	},
 	"index.newPad": "Novi blokić",
@@ -84,6 +85,8 @@
 	"pad.chat": "Čavrljanje",
 	"pad.chat.title": "Otvori čavrljanje uz ovaj blokić.",
 	"pad.chat.loadmessages": "Učitaj više poruka",
+	"pad.chat.stick.title": "Prilijepi razgovor na zaslon",
+	"pad.chat.writeMessage.placeholder": "Napišite Vašu poruku ovdje",
 	"timeslider.pageTitle": "{{appTitle}} Vremenska lenta",
 	"timeslider.toolbar.returnbutton": "Vrati se natrag na blokić",
 	"timeslider.toolbar.authors": "Autori:",
