@@ -6,7 +6,8 @@
 			"George Animal",
 			"Gomada",
 			"Mehk63",
-			"Ghybu"
+			"Ghybu",
+			"MikaelF"
 		]
 	},
 	"index.newPad": "Bloknota nû",
@@ -60,14 +61,14 @@
 	"timeslider.version": "Guhertoya {{version}}",
 	"timeslider.saved": "Di dîroka {{day}} {{month}} {{year}} de hate tomarkirin",
 	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{hours}}.{{minutes}}.{{seconds}}",
-	"timeslider.month.january": "rêbendan",
-	"timeslider.month.february": "reşemî",
+	"timeslider.month.january": "kanûna paşîn",
+	"timeslider.month.february": "sibat",
 	"timeslider.month.march": "adar",
-	"timeslider.month.april": "avrêl",
+	"timeslider.month.april": "nîsan",
 	"timeslider.month.may": "gulan",
 	"timeslider.month.june": "pûşper",
 	"timeslider.month.july": "tîrmeh",
-	"timeslider.month.august": "gelawêj",
+	"timeslider.month.august": "tebax",
 	"timeslider.month.september": "rezber",
 	"timeslider.month.october": "kewçêr",
 	"timeslider.month.november": "Mijdar",
