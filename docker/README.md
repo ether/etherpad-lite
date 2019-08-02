@@ -12,6 +12,10 @@ docker pull etherpad/etherpad
 docker pull etherpad/etherpad:1.7.5
 ```
 
+# example run with var volume (default data db location)
+docker run -d -v etherpad_var:/opt/etherpad-lite/var -p 9001:9001 etherpad/etherpad
+```
+
 # Build a personalized container
 
 If you want to use a personalized settings file, **you will have to rebuild your image**.
