@@ -23,7 +23,7 @@ ARG ETHERPAD_PLUGINS=
 
 # Set the following to production to avoid installing devDeps
 # this can be done with build args (and is mandatory to build ARM version)
-ARG NODE_ENV=development
+ENV NODE_ENV=development
 
 # grab the ETHERPAD_VERSION tarball from github (no need to clone the whole
 # repository)
