@@ -66,7 +66,7 @@
 	"timeslider.toolbar.authorsList": "ڪوبه ليکڪ ناهي",
 	"timeslider.toolbar.exportlink.title": "برآمد ڪريو",
 	"timeslider.version": "ورزن {{version}}",
-	"timeslider.saved": "شانڍيل {{مهينو}} {{ڏينهن}}, {{سال}}",
+	"timeslider.saved": "سانڍيل {{month}} {{day}}، {{year}}",
 	"timeslider.dateformat": "{{مهينو}}/{{ڏينهن}}/{{سال}} {{ڪلاڪ}}:{{منٽ}}:{{سيڪنڊ}}",
 	"timeslider.month.january": "جنوري",
 	"timeslider.month.february": "فيبروري",
