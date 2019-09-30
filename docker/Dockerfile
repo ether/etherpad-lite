@@ -61,5 +61,16 @@ RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; don
 #   https://stackoverflow.com/questions/31528384/conditional-copy-add-in-dockerfile#46801962
 COPY ./settings.json /opt/etherpad-lite/
 
+# Follow the principle of least privilege: run as unprivileged user.
+#
+# Running as non-root enables running this image in platforms like OpenShift
+# that do not allow images running as root.
+RUN \
+    echo 'etherpad:x:65534:65534:etherpad:/:' > /etc/passwd && \
+    echo 'etherpad:x:65534:' > /etc/group && \
+    chown -R etherpad:etherpad ./
+
+USER etherpad
+
 EXPOSE 9001
 CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
