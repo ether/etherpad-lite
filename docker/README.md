@@ -68,3 +68,53 @@ docker run --detach --publish <DESIDERED_PORT>:9001 <YOUR_USERNAME>/etherpad
 ```
 
 And point your browser to `http://<YOUR_IP>:<DESIDERED_PORT>`
+
+# Options available by default
+
+The `settings.json` available by default enables some configuration to be set from the environment.
+
+Available options:
+* `TITLE`: The name of the instance
+* `FAVICON`: favicon default name, or a fully specified URL to your own favicon
+* `SKIN_NAME`: either `no-skin`, `colibris` or an existing directory under `src/static/skins`.
+* `IP`: IP which etherpad should bind at. Change to `::` for IPv6
+* `PORT`: port which etherpad should bind at
+* `SHOW_SETTINGS_IN_ADMIN_PAGE`: hide/show the settings.json in admin page
+* `DB_TYPE`: a database supported by https://www.npmjs.com/package/ueberdb2
+* `DB_HOST`: the host of the database
+* `DB_PORT`: the port of the database
+* `DB_NAME`: the database name
+* `DB_USER`: a database user with sufficient permissions to create tables
+* `DB_PASS`: the password for the database username
+* `DB_CHARSET`: the character set for the tables (only required for MySQL)
+* `DB_FILENAME`: in case `DB_TYPE` is `DirtyDB`, the database filename. Default: `var/dirty.db`
+* `ADMIN_PASSWORD`: the password for the `admin` user (leave unspecified if you do not want to create it)
+* `USER_PASSWORD`: the password for the first user `user` (leave unspecified if you do not want to create it)
+* `LOGLEVEL`: valid values are `DEBUG`, `INFO`, `WARN` and `ERROR`
+
+## Examples
+
+Use a Postgres database, no admin user enabled:
+
+```shell
+docker run -d \
+	--name etherpad         \
+	-p 9001:9001            \
+	-e 'DB_TYPE=postgres'   \
+	-e 'DB_HOST=db.local'   \
+	-e 'DB_PORT=4321'       \
+	-e 'DB_NAME=etherpad'   \
+	-e 'DB_USER=dbusername' \
+	-e 'DB_PASS=mypassword' \
+	etherpad/etherpad
+```
+
+Run enabling the administrative user `admin`:
+
+```shell
+docker run -d \
+	--name etherpad \
+	-p 9001:9001 \
+	-e 'ADMIN_PASSWORD=supersecret' \
+	etherpad/etherpad
+```
