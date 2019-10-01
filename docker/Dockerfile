@@ -59,7 +59,7 @@ RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; don
 #
 # For the conditional COPY trick, see:
 #   https://stackoverflow.com/questions/31528384/conditional-copy-add-in-dockerfile#46801962
-COPY nop setting[s].json /opt/etherpad-lite/
+COPY ./settings.json /opt/etherpad-lite/
 
 EXPOSE 9001
 CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
