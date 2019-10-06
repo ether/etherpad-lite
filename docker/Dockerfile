@@ -44,7 +44,8 @@ RUN echo "Getting version: ${ETHERPAD_VERSION}" && \
 WORKDIR /opt/etherpad-lite
 
 # install node dependencies for Etherpad
-RUN bin/installDeps.sh
+RUN bin/installDeps.sh && \
+	rm -rf ~/.npm/_cacache
 
 # Install the plugins, if ETHERPAD_PLUGINS is not empty.
 #
