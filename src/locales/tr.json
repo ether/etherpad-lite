@@ -8,7 +8,8 @@
 			"Trockya",
 			"McAang",
 			"Vito Genovese",
-			"Hedda"
+			"Hedda",
+			"Grkn gll"
 		]
 	},
 	"index.newPad": "Yeni Bloknot",
@@ -49,7 +50,7 @@
 	"pad.settings.fontType.monospaced": "Tek aralıklı",
 	"pad.settings.globalView": "Genel Görünüm",
 	"pad.settings.language": "Dil:",
-	"pad.importExport.import_export": "İçerik/Dışarı Aktar",
+	"pad.importExport.import_export": "İçeri aktar/Dışarı aktar",
 	"pad.importExport.import": "Herhangi bir metin dosyası ya da belgesi yükle",
 	"pad.importExport.importSuccessful": "Başarılı!",
 	"pad.importExport.export": "Mevcut bloknotu şu olarak dışa aktar:",
