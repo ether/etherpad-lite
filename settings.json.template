@@ -22,13 +22,15 @@
  *
  * Would read the configuration values for those items from the environment
  * variables PORT, MINIFY and SKIN_NAME.
+ *
  * If PORT and SKIN_NAME variables were not defined, the default values 9001 and
- * "colibris" would be used. The configuration value "minify", on the other
- * hand, does not have a default indicated. Thus, if the environment variable
- * MINIFY were undefined, "minify" would be null (do not do this).
+ * "colibris" would be used.
+ * The configuration value "minify", on the other hand, does not have a
+ * designated default value. Thus, if the environment variable MINIFY were
+ * undefined, "minify" would be null.
  *
  * REMARKS:
- * Please note that variable substitution always needs to be quoted.
+ * 1) please note that variable substitution always needs to be quoted.
  *
  *    "port":     9001,            <-- Literal values. When not using
  *    "minify":   false                substitution, only strings must be
@@ -44,6 +46,12 @@
  *    "port":     ${PORT:9001}     <-- ERROR: this is not valid json. Quotes
  *    "minify":   ${MINIFY}            around variable names are missing.
  *    "skinName": ${SKIN_NAME}
+ *
+ * 2) Beware of undefined variables and default values: nulls and empty strings
+ *    are different!
+ *
+ *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
+ *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
  *
  */
 {
