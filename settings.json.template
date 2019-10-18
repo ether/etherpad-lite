@@ -50,6 +50,9 @@
  * 2) Beware of undefined variables and default values: nulls and empty strings
  *    are different!
  *
+ *    This is particularly important for user's passwords (see the relevant
+ *    section):
+ *
  *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
  *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
  *
@@ -358,12 +361,14 @@
   /*
   "users": {
     "admin": {
-      // "password" can be replaced with "hash" if you install ep_hash_auth
+      // 1) "password" can be replaced with "hash" if you install ep_hash_auth
+      // 2) please note that if password is null, the user will not be created
       "password": "changeme1",
       "is_admin": true
     },
     "user": {
-      // "password" can be replaced with "hash" if you install ep_hash_auth
+      // 1) "password" can be replaced with "hash" if you install ep_hash_auth
+      // 2) please note that if password is null, the user will not be created
       "password": "changeme1",
       "is_admin": false
     }

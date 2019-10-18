@@ -629,6 +629,27 @@ exports.reloadSettings = function reloadSettings() {
     console.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
   }
 
+  if (exports.users) {
+    /*
+     * Prune from export.users any user that has no password attribute, or whose
+     * password attribute is "null".
+     *
+     * This is used by the settings.json in the default Dockerfile to eschew
+     * creating an admin user if no password is set.
+     */
+    var filteredUsers = _.filter(exports.users, function(user, username) {
+      if ((user.hasOwnProperty("password")) || user.password !== null) {
+        return true;
+      }
+
+      console.warn(`The password for ${username} is null. This means the user must not be created. Removing it.`);
+
+      return false;
+    });
+
+    exports.users = filteredUsers;
+  }
+
   if (exports.abiword) {
     // Check abiword actually exists
     if (exports.abiword != null) {
