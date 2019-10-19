@@ -34,11 +34,9 @@ log4js.replaceConsole();
 NodeVersion.enforceMinNodeVersion('8.9.0');
 
 /*
- * As of Etherpad 1.8.0, we do not have any further Node version deprecation in
- * place.
- *
- * NodeVersion.checkDeprecationStatus('10.13.0', '1.9.0');
+ * Etherpad 1.8.3 will require at least nodejs 10.13.0.
  */
+NodeVersion.checkDeprecationStatus('10.13.0', '1.8.3');
 
 /*
  * start up stats counting system

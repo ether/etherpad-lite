@@ -9,7 +9,7 @@ Etherpad is a real-time collaborative editor scalable to thousands of simultaneo
 # Installation
 
 ## Requirements
-- `nodejs` >= **8.9.0**
+- `nodejs` >= **8.9.0** (preferred: `nodejs` >= **10.13.0**). Please note that starting Jan 1st, 2020, nodejs 8.x is deprecated.
 
 ## GNU/Linux and other UNIX-like systems
 
@@ -21,7 +21,7 @@ git clone --branch master https://github.com/ether/etherpad-lite.git && cd ether
 ```
 
 ### Manual install
-You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **8.9.0**).
+You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **8.9.0**, preferred: >= **10.13.0**).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
