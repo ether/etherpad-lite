@@ -100,6 +100,8 @@ Read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/
 # Get in touch
 The official channel for contacting the development team is via the [Github issues](https://github.com/ether/etherpad-lite/issues).
 
+For **responsible disclosure of vulnerabilities**, please write a mail to the maintainer (a.mux@inwind.it).
+
 # HTTP API
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API)
 that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API.
