@@ -1,6 +1,6 @@
 {
   "name": "ep_etherpad-lite",
-  "description": "A Etherpad based on node.js",
+  "description": "A free and open source realtime collaborative editor",
   "homepage": "https://etherpad.org",
   "keywords": [
     "etherpad",

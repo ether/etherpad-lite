@@ -130,5 +130,4 @@ Etherpad is much more than software.  So if you aren't a developer then worry no
  * Co-Author and Publish CVEs
  * Work with SFC to maintain legal side of project
  * Maintain TODO page - https://github.com/ether/etherpad-lite/wiki/TODO#IMPORTANT_TODOS
- * Replying to messages on IRC / The Mailing list / Emails
 
