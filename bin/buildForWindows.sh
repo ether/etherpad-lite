@@ -37,6 +37,10 @@ cd $TMP_FOLDER
 rm -rf node_modules
 rm -f etherpad-lite-win.zip
 
+# setting NODE_ENV=production ensures that dev dependencies are not installed,
+# making the windows package smaller
+export NODE_ENV=production
+
 echo "do a normal unix install first..."
 bin/installDeps.sh || exit 1
 
