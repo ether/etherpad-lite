@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# IMPORTANT 
+# IMPORTANT
 # Protect against misspelling a var and rm -rf /
 set -u
 set -e

@@ -24,7 +24,7 @@
 
 .timeslider #timeslider-top {
   position: relative;
-  border-bottom: 1px solid #e4e4e4; 
+  border-bottom: 1px solid #e4e4e4;
 }
 
 .timeslider-bar { background: none; }
@@ -60,8 +60,8 @@
   background-color: transparent;
 }
 
-#timeslider, #timeslider-left, #timeslider-right { 
-  height: 57px; 
+#timeslider, #timeslider-left, #timeslider-right {
+  height: 57px;
   background-color: transparent;
 }
 
@@ -133,7 +133,7 @@
   text-align: center;
   border-radius: 50%;
   height: 25px;
-  padding-top: 2px;  
+  padding-top: 2px;
 }
 
 .timeslider #authorsList .author {

@@ -460,7 +460,7 @@ Pad.prototype.remove = async function remove() {
   // none of the operations except getting the group depended on callbacks
   // so the database operations here are just started and then left to
   // run to completion
- 
+
   // is it a group pad? -> delete the entry of this pad in the group
   if (padID.indexOf("$") >= 0) {
 

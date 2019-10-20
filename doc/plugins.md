@@ -124,7 +124,7 @@ If your plugin adds or modifies the front end HTML (e.g. adding buttons or chang
 
 ## Writing and running front-end tests for your plugin
 
-Etherpad allows you to easily create front-end tests for plugins.  
+Etherpad allows you to easily create front-end tests for plugins.
 
 1. Create a new folder
 ```

@@ -39,7 +39,7 @@ function getAllLocales() {
 
   //add core supported languages first
   extractLangs(npm.root+"/ep_etherpad-lite/locales");
-  
+
   //add plugins languages (if any)
   for(var pluginName in plugins) extractLangs(path.join(npm.root, pluginName, 'locales'));
 
@@ -94,11 +94,11 @@ exports.expressCreateServer = function(n, args) {
       res.status(404).send('Language not available');
     }
   })
-  
+
   args.app.get('/locales.json', function(req, res) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.send(localeIndex);
   })
-  
+
 }
 
