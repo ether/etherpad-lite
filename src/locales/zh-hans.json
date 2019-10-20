@@ -11,7 +11,9 @@
 			"Yfdyh000",
 			"乌拉跨氪",
 			"燃玉",
-			"JuneAugust"
+			"JuneAugust",
+			"94rain",
+			"VulpesVulpes825"
 		]
 	},
 	"index.newPad": "新记事本",
@@ -96,6 +98,8 @@
 	"pad.chat": "聊天",
 	"pad.chat.title": "打开此记事本的聊天窗口。",
 	"pad.chat.loadmessages": "加载更多信息",
+	"pad.chat.stick.title": "在屏幕上固定聊天界面",
+	"pad.chat.writeMessage.placeholder": "在此写下您的消息",
 	"timeslider.pageTitle": "{{appTitle}} 时间轴",
 	"timeslider.toolbar.returnbutton": "返回记事本",
 	"timeslider.toolbar.authors": "作者：",

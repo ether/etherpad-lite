@@ -115,7 +115,7 @@ Your plugin must also contain a [package definition file](https://docs.npmjs.com
   "author": "USERNAME (REAL NAME) <MAIL@EXAMPLE.COM>",
   "contributors": [],
   "dependencies": {"MODULE": "0.3.20"},
-  "engines": { "node": ">= 6.9.0"}
+  "engines": { "node": ">= 8.9.0"}
 }
 ```
 
@@ -124,7 +124,7 @@ If your plugin adds or modifies the front end HTML (e.g. adding buttons or chang
 
 ## Writing and running front-end tests for your plugin
 
-Etherpad allows you to easily create front-end tests for plugins.  
+Etherpad allows you to easily create front-end tests for plugins.
 
 1. Create a new folder
 ```

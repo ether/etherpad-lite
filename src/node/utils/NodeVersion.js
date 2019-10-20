@@ -18,24 +18,24 @@
  * limitations under the License.
  */
 
+const semver = require('semver');
+
 /**
  * Quits if Etherpad is not running on a given minimum Node version
  *
  * @param  {String}     minNodeVersion   Minimum required Node version
- * @param  {Function}   callback         Standard callback function
  */
-exports.enforceMinNodeVersion = function(minNodeVersion, callback) {
-  const semver = require('semver');
+exports.enforceMinNodeVersion = function(minNodeVersion) {
   const currentNodeVersion = process.version;
 
   // we cannot use template literals, since we still do not know if we are
   // running under Node >= 4.0
   if (semver.lt(currentNodeVersion, minNodeVersion)) {
     console.error('Running Etherpad on Node ' + currentNodeVersion + ' is not supported. Please upgrade at least to Node ' + minNodeVersion);
-  } else {
-    console.debug('Running on Node ' + currentNodeVersion + ' (minimum required Node version: ' + minNodeVersion + ')');
-    callback();
+    process.exit(1);
   }
+
+  console.debug('Running on Node ' + currentNodeVersion + ' (minimum required Node version: ' + minNodeVersion + ')');
 };
 
 /**
@@ -44,13 +44,10 @@ exports.enforceMinNodeVersion = function(minNodeVersion, callback) {
  * @param  {String}    lowestNonDeprecatedNodeVersion   all Node version less than this one are deprecated
  * @param  {Function}  epRemovalVersion                 Etherpad version that will remove support for deprecated Node releases
  */
-exports.checkDeprecationStatus = function(lowestNonDeprecatedNodeVersion, epRemovalVersion, callback) {
-  const semver = require('semver');
+exports.checkDeprecationStatus = function(lowestNonDeprecatedNodeVersion, epRemovalVersion) {
   const currentNodeVersion = process.version;
 
   if (semver.lt(currentNodeVersion, lowestNonDeprecatedNodeVersion)) {
     console.warn(`Support for Node ${currentNodeVersion} will be removed in Etherpad ${epRemovalVersion}. Please consider updating at least to Node ${lowestNonDeprecatedNodeVersion}`);
   }
-
-  callback();
 };

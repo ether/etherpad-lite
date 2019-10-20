@@ -49,7 +49,7 @@ describe('Responsiveness of Editor', function() {
     }).done(function(){
 
       expect( inner$('div').text().length ).to.be.greaterThan( length ); // has the text changed?
-      var start = new Date().getTime(); // get the start time
+      var start = Date.now(); // get the start time
 
       // send some new text to the screen (ensure all 3 key events are sent)
       var el = inner$('div').first();
@@ -65,7 +65,7 @@ describe('Responsiveness of Editor', function() {
       helper.waitFor(function(){ // Wait for the ability to process
         return true; // Ghetto but works for now
       }).done(function(){
-        var end = new Date().getTime(); // get the current time
+        var end = Date.now(); // get the current time
         var delay = end - start; // get the delay as the current time minus the start time
 
         console.log('delay:', delay);

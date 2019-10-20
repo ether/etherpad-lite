@@ -74,7 +74,7 @@ function randomString()
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
   { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
-  { name: "showChat",         checkVal: "false", callback: function(val) { $('#chaticon').hide(); } },
+  { name: "showChat",         checkVal: "true", callback: function(val) { $('#chaticon').show(); } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
   // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
@@ -475,7 +475,7 @@ var pad = {
   },
   _afterHandshake: function()
   {
-    pad.clientTimeOffset = new Date().getTime() - clientVars.serverTimestamp;
+    pad.clientTimeOffset = Date.now() - clientVars.serverTimestamp;
     //initialize the chat
     chat.init(this);
     getParams();

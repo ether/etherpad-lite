@@ -41,7 +41,7 @@
 .toolbar ul li a:hover,
 .toolbar ul li a.selected,
 .toolbar ul li a:focus {
-  background: none !important; 
+  background: none !important;
   border-radius: 0;
 }
 

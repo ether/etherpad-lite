@@ -3,8 +3,59 @@
  *
  * Please edit settings.json, not settings.json.template
  *
- * Please note that since Etherpad 1.6.0 you can store DB credentials in a
- * separate file (credentials.json).
+ * Please note that starting from Etherpad 1.6.0 you can store DB credentials in
+ * a separate file (credentials.json).
+ *
+ *
+ * ENVIRONMENT VARIABLE SUBSTITUTION
+ * =================================
+ *
+ * All the configuration values can be read from environment variables using the
+ * syntax "${ENV_VAR}" or "${ENV_VAR:default_value}".
+ *
+ * This is useful, for example, when running in a Docker container.
+ *
+ * EXAMPLE:
+ *    "port":     "${PORT:9001}"
+ *    "minify":   "${MINIFY}"
+ *    "skinName": "${SKIN_NAME:colibris}"
+ *
+ * Would read the configuration values for those items from the environment
+ * variables PORT, MINIFY and SKIN_NAME.
+ *
+ * If PORT and SKIN_NAME variables were not defined, the default values 9001 and
+ * "colibris" would be used.
+ * The configuration value "minify", on the other hand, does not have a
+ * designated default value. Thus, if the environment variable MINIFY were
+ * undefined, "minify" would be null.
+ *
+ * REMARKS:
+ * 1) please note that variable substitution always needs to be quoted.
+ *
+ *    "port":     9001,            <-- Literal values. When not using
+ *    "minify":   false                substitution, only strings must be
+ *    "skinName": "colibris"           quoted. Booleans and numbers must not.
+ *
+ *    "port":     "${PORT:9001}"   <-- CORRECT: if you want to use a variable
+ *    "minify":   "${MINIFY:true}"     substitution, put quotes around its name,
+ *    "skinName": "${SKIN_NAME}"       even if the required value is a number or
+ *                                     a boolean.
+ *                                     Etherpad will take care of rewriting it
+ *                                     to the proper type if necessary.
+ *
+ *    "port":     ${PORT:9001}     <-- ERROR: this is not valid json. Quotes
+ *    "minify":   ${MINIFY}            around variable names are missing.
+ *    "skinName": ${SKIN_NAME}
+ *
+ * 2) Beware of undefined variables and default values: nulls and empty strings
+ *    are different!
+ *
+ *    This is particularly important for user's passwords (see the relevant
+ *    section):
+ *
+ *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
+ *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
+ *
  */
 {
   /*
@@ -35,14 +86,14 @@
    * IP and port which etherpad should bind at
    */
   "ip": "0.0.0.0",
-  "port" : 9001,
+  "port": 9001,
 
   /*
    * Option to hide/show the settings.json in admin page.
    *
    * Default option is set to true
    */
-  "showSettingsInAdminPage" : true,
+  "showSettingsInAdminPage": true,
 
   /*
    * Node native SSL support
@@ -78,10 +129,10 @@
    * https://www.npmjs.com/package/ueberdb2
    */
 
-  "dbType" : "dirty",
-  "dbSettings" : {
-                   "filename" : "var/dirty.db"
-                 },
+  "dbType": "dirty",
+  "dbSettings": {
+    "filename": "var/dirty.db"
+  },
 
   /*
    * An Example of MySQL Configuration (commented out).
@@ -92,13 +143,13 @@
   /*
   "dbType" : "mysql",
   "dbSettings" : {
-                   "user"    : "etherpaduser",
-                   "host"    : "localhost",
-                   "port"    : 3306,
-                   "password": "PASSWORD",
-                   "database": "etherpad_lite_db",
-                   "charset" : "utf8mb4"
-                 },
+    "user":     "etherpaduser",
+    "host":     "localhost",
+    "port":     3306,
+    "password": "PASSWORD",
+    "database": "etherpad_lite_db",
+    "charset":  "utf8mb4"
+  },
   */
 
   /*
@@ -112,57 +163,57 @@
    * Change them if you want to override.
    */
   "padOptions": {
-    "noColors": false,
-    "showControls": true,
-    "showChat": true,
-    "showLineNumbers": true,
+    "noColors":         false,
+    "showControls":     true,
+    "showChat":         true,
+    "showLineNumbers":  true,
     "useMonospaceFont": false,
-    "userName": false,
-    "userColor": false,
-    "rtl": false,
-    "alwaysShowChat": false,
-    "chatAndUsers": false,
-    "lang": "en-gb"
+    "userName":         false,
+    "userColor":        false,
+    "rtl":              false,
+    "alwaysShowChat":   false,
+    "chatAndUsers":     false,
+    "lang":             "en-gb"
   },
 
   /*
    * Pad Shortcut Keys
    */
   "padShortcutEnabled" : {
-    "altF9"     : true, /* focus on the File Menu and/or editbar */
-    "altC"      : true, /* focus on the Chat window */
-    "cmdShift2" : true, /* shows a gritter popup showing a line author */
-    "delete"    : true,
-    "return"    : true,
-    "esc"       : true, /* in mozilla versions 14-19 avoid reconnecting pad */
-    "cmdS"      : true, /* save a revision */
-    "tab"       : true, /* indent */
-    "cmdZ"      : true, /* undo/redo */
-    "cmdY"      : true, /* redo */
-    "cmdI"      : true, /* italic */
-    "cmdB"      : true, /* bold */
-    "cmdU"      : true, /* underline */
-    "cmd5"      : true, /* strike through */
-    "cmdShiftL" : true, /* unordered list */
-    "cmdShiftN" : true, /* ordered list */
-    "cmdShift1" : true, /* ordered list */
-    "cmdShiftC" : true, /* clear authorship */
-    "cmdH"      : true, /* backspace */
-    "ctrlHome"  : true, /* scroll to top of pad */
-    "pageUp"    : true,
-    "pageDown"  : true
+    "altF9":     true, /* focus on the File Menu and/or editbar */
+    "altC":      true, /* focus on the Chat window */
+    "cmdShift2": true, /* shows a gritter popup showing a line author */
+    "delete":    true,
+    "return":    true,
+    "esc":       true, /* in mozilla versions 14-19 avoid reconnecting pad */
+    "cmdS":      true, /* save a revision */
+    "tab":       true, /* indent */
+    "cmdZ":      true, /* undo/redo */
+    "cmdY":      true, /* redo */
+    "cmdI":      true, /* italic */
+    "cmdB":      true, /* bold */
+    "cmdU":      true, /* underline */
+    "cmd5":      true, /* strike through */
+    "cmdShiftL": true, /* unordered list */
+    "cmdShiftN": true, /* ordered list */
+    "cmdShift1": true, /* ordered list */
+    "cmdShiftC": true, /* clear authorship */
+    "cmdH":      true, /* backspace */
+    "ctrlHome":  true, /* scroll to top of pad */
+    "pageUp":    true,
+    "pageDown":  true
   },
 
   /*
    * Should we suppress errors from being visible in the default Pad Text?
    */
-  "suppressErrorsInPadText" : false,
+  "suppressErrorsInPadText": false,
 
   /*
    * If this option is enabled, a user must have a session to access pads.
    * This effectively allows only group pads to be accessed.
    */
-  "requireSession" : false,
+  "requireSession": false,
 
   /*
    * Users may edit pads but not create new ones.
@@ -170,13 +221,13 @@
    * Pad creation is only via the API.
    * This applies both to group pads and regular pads.
    */
-  "editOnly" : false,
+  "editOnly": false,
 
   /*
    * If set to true, those users who have a valid session will automatically be
    * granted access to password protected pads.
    */
-  "sessionNoPassword" : false,
+  "sessionNoPassword": false,
 
   /*
    * If true, all css & js will be minified before sending to the client.
@@ -184,7 +235,7 @@
    * This will improve the loading performance massively, but makes it difficult
    * to debug the javascript/css
    */
-  "minify" : true,
+  "minify": true,
 
   /*
    * How long may clients use served javascript code (in seconds)?
@@ -192,7 +243,7 @@
    * Not setting this may cause problems during deployment.
    * Set to 0 to disable caching.
    */
-  "maxAge" : 21600, // 60 * 60 * 6 = 6 hours
+  "maxAge": 21600, // 60 * 60 * 6 = 6 hours
 
   /*
    * Absolute path to the Abiword executable.
@@ -201,7 +252,7 @@
    * it to null disables Abiword and will only allow plain text and HTML
    * import/exports.
    */
-  "abiword" : null,
+  "abiword": null,
 
   /*
    * This is the absolute path to the soffice executable.
@@ -209,7 +260,7 @@
    * LibreOffice can be used in lieu of Abiword to export pads.
    * Setting it to null disables LibreOffice exporting.
    */
-  "soffice" : null,
+  "soffice": null,
 
   /*
    * Path to the Tidy executable.
@@ -217,35 +268,35 @@
    * Tidy is used to improve the quality of exported pads.
    * Setting it to null disables Tidy.
    */
-  "tidyHtml" : null,
+  "tidyHtml": null,
 
   /*
    * Allow import of file types other than the supported ones:
    * txt, doc, docx, rtf, odt, html & htm
    */
-  "allowUnknownFileEnds" : true,
+  "allowUnknownFileEnds": true,
 
   /*
    * This setting is used if you require authentication of all users.
    *
    * Note: "/admin" always requires authentication.
    */
-  "requireAuthentication" : false,
+  "requireAuthentication": false,
 
   /*
    * Require authorization by a module, or a user with is_admin set, see below.
    */
-  "requireAuthorization" : false,
+  "requireAuthorization": false,
 
   /*
    * When you use NGINX or another proxy/load-balancer set this to true.
    */
-  "trustProxy" : false,
+  "trustProxy": false,
 
   /*
    * Privacy: disable IP logging
    */
-  "disableIPlogging" : false,
+  "disableIPlogging": false,
 
   /*
    * Time (in seconds) to automatically reconnect pad when a "Force reconnect"
@@ -253,7 +304,7 @@
    *
    * Set to 0 to disable automatic reconnection.
    */
-  "automaticReconnectionTimeout" : 0,
+  "automaticReconnectionTimeout": 0,
 
   /*
    * By default, when caret is moved out of viewport, it scrolls the minimum
@@ -310,12 +361,14 @@
   /*
   "users": {
     "admin": {
-      // "password" can be replaced with "hash" if you install ep_hash_auth
+      // 1) "password" can be replaced with "hash" if you install ep_hash_auth
+      // 2) please note that if password is null, the user will not be created
       "password": "changeme1",
       "is_admin": true
     },
     "user": {
-      // "password" can be replaced with "hash" if you install ep_hash_auth
+      // 1) "password" can be replaced with "hash" if you install ep_hash_auth
+      // 2) please note that if password is null, the user will not be created
       "password": "changeme1",
       "is_admin": false
     }
@@ -367,6 +420,13 @@
     ]
   },
   */
+
+  /*
+   * Expose Etherpad version in the web interface and in the Server http header.
+   *
+   * Do not enable on production machines.
+   */
+  "exposeVersion": false,
 
   /*
    * The log level we are using.

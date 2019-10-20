@@ -9,7 +9,8 @@
 			"Nzeemin",
 			"Facenapalm",
 			"Patrick Star",
-			"Movses"
+			"Movses",
+			"Diralik"
 		]
 	},
 	"index.newPad": "Создать",
@@ -82,8 +83,8 @@
 	"pad.modals.badChangeset.cause": "Это может быть из-за неправильной конфигурации сервера или некоторых других неожиданных действий. Пожалуйста, свяжитесь с администратором службы, если вы считаете, что это ошибка. Попробуйте переподключиться для того, чтобы продолжить редактирование.",
 	"pad.modals.corruptPad.explanation": "Документ, к которому вы пытаетесь получить доступ, повреждён.",
 	"pad.modals.corruptPad.cause": "Это может быть из-за неправильной конфигурации сервера или некоторых других неожиданных действий. Пожалуйста, свяжитесь с администратором службы.",
-	"pad.modals.deleted": "Удален.",
-	"pad.modals.deleted.explanation": "Этот документ был удален.",
+	"pad.modals.deleted": "Удалён.",
+	"pad.modals.deleted.explanation": "Этот документ был удалён.",
 	"pad.modals.disconnected": "Соединение разорвано.",
 	"pad.modals.disconnected.explanation": "Подключение к серверу потеряно",
 	"pad.modals.disconnected.cause": "Сервер, возможно, недоступен. Пожалуйста, сообщите администратору службы, если проблема будет повторятся.",
@@ -93,7 +94,9 @@
 	"pad.share.emebdcode": "Вставить URL",
 	"pad.chat": "Чат",
 	"pad.chat.title": "Открыть чат для этого документа.",
-	"pad.chat.loadmessages": "Еще сообщения",
+	"pad.chat.loadmessages": "Ещё сообщения",
+	"pad.chat.stick.title": "Закрепить чат на экране",
+	"pad.chat.writeMessage.placeholder": "Напишите своё сообщение сюда",
 	"timeslider.pageTitle": "Временная шкала {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "К документу",
 	"timeslider.toolbar.authors": "Авторы:",
@@ -135,5 +138,5 @@
 	"pad.impexp.uploadFailed": "Загрузка не удалась, пожалуйста, попробуйте ещё раз",
 	"pad.impexp.importfailed": "Ошибка при импорте",
 	"pad.impexp.copypaste": "Пожалуйста, скопируйте",
-	"pad.impexp.exportdisabled": "Экспорт в формате {{type}} отключен. Для подробной информации обратитесь к системному администратору."
+	"pad.impexp.exportdisabled": "Экспорт в формате {{type}} отключён. Для подробной информации обратитесь к системному администратору."
 }

@@ -6,7 +6,7 @@
 %>
 <!doctype html>
 <% e.begin_block("htmlHead"); %>
-<html>
+<html class="<%=hooks.clientPluginNames().join(' '); %>">
 <% e.end_block(); %>
 
         <title><%=settings.title%></title>
@@ -100,7 +100,7 @@
             <% e.end_block(); %>
         </div>
 
-        <div id="editorcontainerbox" class="<%=hooks.clientPluginNames().join(' '); %>">
+        <div id="editorcontainerbox">
             <div id="editorcontainer" class="editorcontainer"></div>
             <div id="editorloadingbox">
               <div id="passwordRequired">
@@ -127,80 +127,88 @@
 
         <div id="settings" class="popup">
             <h1 data-l10n-id="pad.settings.padSettings"></h1>
-            <div class="column">
-                <% e.begin_block("mySettings"); %>
-                <h2 data-l10n-id="pad.settings.myView"></h2>
-                <p>
-                    <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
-                    <label for="options-stickychat" data-l10n-id="pad.settings.stickychat"></label>
-                </p>
-                <p>
-                    <input type="checkbox" id="options-chatandusers" onClick="chat.chatAndUsers();">
-                    <label for="options-chatandusers" data-l10n-id="pad.settings.chatandusers"></label>
-                </p>
-                <p>
-                    <input type="checkbox" id="options-colorscheck">
-                    <label for="options-colorscheck" data-l10n-id="pad.settings.colorcheck"></label>
-                </p>
-                <p>
-                    <input type="checkbox" id="options-linenoscheck" checked>
-                    <label for="options-linenoscheck" data-l10n-id="pad.settings.linenocheck"></label>
-                </p>
-                <p>
-                    <input type="checkbox" id="options-rtlcheck">
-                    <label for="options-rtlcheck" data-l10n-id="pad.settings.rtlcheck"></label>
-                </p>
-                <% e.end_block(); %>
-                <table>
-                    <% e.begin_block("mySettings.dropdowns"); %>
-                    <tr>
-                        <td>
-                            <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
-                        </td>
-                        <td>
-                            <select id="viewfontmenu">
-                                <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
-                                <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
-                                <option value="montserrat" data-l10n-id="pad.settings.fontType.montserrat"></option>
-                                <option value="opendyslexic" data-l10n-id="pad.settings.fontType.opendyslexic"></option>
-                                <option value="comicsans" data-l10n-id="pad.settings.fontType.comicsans"></option>
-                                <option value="georgia" data-l10n-id="pad.settings.fontType.georgia"></option>
-                                <option value="impact" data-l10n-id="pad.settings.fontType.impact"></option>
-                                <option value="lucida" data-l10n-id="pad.settings.fontType.lucida"></option>
-                                <option value="lucidasans" data-l10n-id="pad.settings.fontType.lucidasans"></option>
-                                <option value="palatino" data-l10n-id="pad.settings.fontType.palatino"></option>
-                                <option value="robotomono" data-l10n-id="pad.settings.fontType.robotomono"></option>
-                                <option value="tahoma" data-l10n-id="pad.settings.fontType.tahoma"></option>
-                                <option value="timesnewroman" data-l10n-id="pad.settings.fontType.timesnewroman"></option>
-                                <option value="trebuchet" data-l10n-id="pad.settings.fontType.trebuchet"></option>
-                                <option value="verdana" data-l10n-id="pad.settings.fontType.verdana"></option>
-                                <option value="symbol" data-l10n-id="pad.settings.fontType.symbol"></option>
-                                <option value="webdings" data-l10n-id="pad.settings.fontType.webdings"></option>
-                                <option value="wingdings" data-l10n-id="pad.settings.fontType.wingdings"></option>
-                                <option value="sansserif" data-l10n-id="pad.settings.fontType.sansserif"></option>
-                                <option value="serif" data-l10n-id="pad.settings.fontType.serif"></option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="languagemenu" data-l10n-id="pad.settings.language">Language:</label>
-                        </td>
-                        <td>
-                            <select id="languagemenu">
-                                <% for (lang in langs) { %>
-                                <option value="<%=lang%>"><%=langs[lang].nativeName%></option>
-                                <% } %>
-                            </select>
-                        </td>
-                    </tr>
-                    <% e.end_block(); %>
-                </table>
+            <div class="row">
+              <div class="column">
+                  <% e.begin_block("mySettings"); %>
+                  <h2 data-l10n-id="pad.settings.myView"></h2>
+                  <p>
+                      <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
+                      <label for="options-stickychat" data-l10n-id="pad.settings.stickychat"></label>
+                  </p>
+                  <p>
+                      <input type="checkbox" id="options-chatandusers" onClick="chat.chatAndUsers();">
+                      <label for="options-chatandusers" data-l10n-id="pad.settings.chatandusers"></label>
+                  </p>
+                  <p>
+                      <input type="checkbox" id="options-colorscheck">
+                      <label for="options-colorscheck" data-l10n-id="pad.settings.colorcheck"></label>
+                  </p>
+                  <p>
+                      <input type="checkbox" id="options-linenoscheck" checked>
+                      <label for="options-linenoscheck" data-l10n-id="pad.settings.linenocheck"></label>
+                  </p>
+                  <p>
+                      <input type="checkbox" id="options-rtlcheck">
+                      <label for="options-rtlcheck" data-l10n-id="pad.settings.rtlcheck"></label>
+                  </p>
+                  <% e.end_block(); %>
+                  <table>
+                      <% e.begin_block("mySettings.dropdowns"); %>
+                      <tr>
+                          <td>
+                              <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
+                          </td>
+                          <td>
+                              <select id="viewfontmenu">
+                                  <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
+                                  <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
+                                  <option value="montserrat" data-l10n-id="pad.settings.fontType.montserrat"></option>
+                                  <option value="opendyslexic" data-l10n-id="pad.settings.fontType.opendyslexic"></option>
+                                  <option value="comicsans" data-l10n-id="pad.settings.fontType.comicsans"></option>
+                                  <option value="georgia" data-l10n-id="pad.settings.fontType.georgia"></option>
+                                  <option value="impact" data-l10n-id="pad.settings.fontType.impact"></option>
+                                  <option value="lucida" data-l10n-id="pad.settings.fontType.lucida"></option>
+                                  <option value="lucidasans" data-l10n-id="pad.settings.fontType.lucidasans"></option>
+                                  <option value="palatino" data-l10n-id="pad.settings.fontType.palatino"></option>
+                                  <option value="robotomono" data-l10n-id="pad.settings.fontType.robotomono"></option>
+                                  <option value="tahoma" data-l10n-id="pad.settings.fontType.tahoma"></option>
+                                  <option value="timesnewroman" data-l10n-id="pad.settings.fontType.timesnewroman"></option>
+                                  <option value="trebuchet" data-l10n-id="pad.settings.fontType.trebuchet"></option>
+                                  <option value="verdana" data-l10n-id="pad.settings.fontType.verdana"></option>
+                                  <option value="symbol" data-l10n-id="pad.settings.fontType.symbol"></option>
+                                  <option value="webdings" data-l10n-id="pad.settings.fontType.webdings"></option>
+                                  <option value="wingdings" data-l10n-id="pad.settings.fontType.wingdings"></option>
+                                  <option value="sansserif" data-l10n-id="pad.settings.fontType.sansserif"></option>
+                                  <option value="serif" data-l10n-id="pad.settings.fontType.serif"></option>
+                              </select>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              <label for="languagemenu" data-l10n-id="pad.settings.language">Language:</label>
+                          </td>
+                          <td>
+                              <select id="languagemenu">
+                                  <% for (lang in langs) { %>
+                                  <option value="<%=lang%>"><%=langs[lang].nativeName%></option>
+                                  <% } %>
+                              </select>
+                          </td>
+                      </tr>
+                      <% e.end_block(); %>
+                  </table>
+              </div>
+              <div class="column">
+                  <% e.begin_block("globalSettings"); %>
+                  <h2 data-l10n-id="pad.settings.globalView"></h2>
+                  <% e.end_block(); %>
+              </div>
             </div>
-            <div class="column">
-                <% e.begin_block("globalSettings"); %>
-                <h2 data-l10n-id="pad.settings.globalView"></h2>
-                <% e.end_block(); %>
+            <div class="row">
+              <h2 data-l10n-id="pad.settings.about">About</h2>
+              <span data-l10n-id="pad.settings.poweredBy">Powered by</span>
+              <a href="http://etherpad.org">Etherpad-lite</a>
+              <% if (settings.exposeVersion) { %>(commit <%=settings.getGitCommit()%>)<% } %>
             </div>
         </div>
 
@@ -334,7 +342,7 @@
         <div id="chatbox">
             <div id="titlebar"><span id ="titlelabel" data-l10n-id="pad.chat"></span>
               <a id="titlecross" onClick="chat.hide();return false;">-&nbsp;</a>
-              <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" title="Stick chat to screen">█&nbsp;&nbsp;</a>
+              <a id="titlesticky" onClick="chat.stickToScreen(true);$('#options-stickychat').prop('checked', true);return false;" data-l10n-id="pad.chat.stick.title">█&nbsp;&nbsp;</a>
             </div>
             <div id="chattext" class="authorColors" aria-live="polite" aria-relevant="additions removals text" role="log" aria-atomic="false">
                 <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
@@ -342,7 +350,7 @@
             </div>
             <div id="chatinputbox">
                 <form>
-                    <input id="chatinput" type="text" maxlength="999">
+                    <input id="chatinput" type="text" maxlength="999" data-l10n-id="pad.chat.writeMessage.placeholder">
                 </form>
             </div>
         </div>
@@ -353,6 +361,8 @@
 
         <% e.begin_block("scripts"); %>
         <script type="text/javascript">
+            var padutils = require('../static/js/pad_utils').padutils;
+
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             (function() {
               // Display errors on page load to the user
@@ -362,7 +372,7 @@
                 var box   = document.getElementById('editorloadingbox');
                 box.innerHTML = '<p><b>An error occurred while loading the pad</b></p>'
                               + '<p><b>'+msg+'</b> '
-                              + '<small>in '+ url +' (line '+ line +')</small></p>';
+                              + '<small>in '+ padutils.escapeHTML(url) +' (line '+ line +')</small></p>';
                 // call original error handler
                 if(typeof(originalHandler) == 'function') originalHandler.call(null, arguments);
               };

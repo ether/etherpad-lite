@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-
-var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
-var ERR = require("async-stacktrace");
 var _ = require('underscore');
 var Security = require('ep_etherpad-lite/static/js/security');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
@@ -26,45 +23,17 @@ var eejs = require('ep_etherpad-lite/node/eejs');
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
-function getPadHTML(pad, revNum, callback)
+async function getPadHTML(pad, revNum)
 {
-  var atext = pad.atext;
-  var html;
-  async.waterfall([
+  let atext = pad.atext;
+
   // fetch revision atext
-  function (callback)
-  {
-    if (revNum != undefined)
-    {
-      pad.getInternalRevisionAText(revNum, function (err, revisionAtext)
-      {
-        if(ERR(err, callback)) return;
-        atext = revisionAtext;
-        callback();
-      });
-    }
-    else
-    {
-      callback(null);
-    }
-  },
+  if (revNum != undefined) {
+    atext = await pad.getInternalRevisionAText(revNum);
+  }
 
   // convert atext to html
-
-
-  function (callback)
-  {
-    html = getHTMLFromAtext(pad, atext);
-    callback(null);
-  }],
-  // run final callback
-
-
-  function (err)
-  {
-    if(ERR(err, callback)) return;
-    callback(null, html);
-  });
+  return getHTMLFromAtext(pad, atext);
 }
 
 exports.getPadHTML = getPadHTML;
@@ -81,15 +50,16 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
   // prepare tags stored as ['tag', true] to be exported
   hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
-    newProps.forEach(function (propName, i){
+    newProps.forEach(function (propName, i) {
       tags.push(propName);
       props.push(propName);
     });
   });
+
   // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML
   // with tags like <span data-tag="value">
   hooks.aCallAll("exportHtmlAdditionalTagsWithData", pad, function(err, newProps){
-    newProps.forEach(function (propName, i){
+    newProps.forEach(function (propName, i) {
       tags.push('span data-' + propName[0] + '="' + propName[1] + '"');
       props.push(propName);
     });
@@ -361,12 +331,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
         nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
       }
       hooks.aCallAll('getLineHTMLForExport', context);
-      //To create list parent elements 
+      //To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) || (prevLine && line.listTypeName !== prevLine.listTypeName))
       {
         var exists = _.find(openLists, function (item)
         {
-          return (item.level === line.listLevel && item.type === line.listTypeName); 
+          return (item.level === line.listLevel && item.type === line.listTypeName);
         });
         if (!exists) {
           var prevLevel = 0;
@@ -395,7 +365,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
             {
               pieces.push("<ul class=\"" + line.listTypeName + "\">");
             }
-          } 
+          }
         }
       }
 
@@ -428,7 +398,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           {
             pieces.push("</li>");
           }
-                  
+
           if (line.listTypeName === "number")
           {
             pieces.push("</ol>");
@@ -437,7 +407,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           {
             pieces.push("</ul>");
           }
-        } 
+        }
       }
     }
     else//outside any list, need to close line.listLevel of lists
@@ -453,38 +423,31 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
       hooks.aCallAll("getLineHTMLForExport", context);
         pieces.push(context.lineContent, "<br>");
-      }
     }
+  }
 
   return pieces.join('');
 }
 
-exports.getPadHTMLDocument = function (padId, revNum, callback)
+exports.getPadHTMLDocument = async function (padId, revNum)
 {
-  padManager.getPad(padId, function (err, pad)
-  {
-    if(ERR(err, callback)) return;
+  let pad = await padManager.getPad(padId);
 
-    var stylesForExportCSS = "";
-    // Include some Styles into the Head for Export
-    hooks.aCallAll("stylesForExport", padId, function(err, stylesForExport){
-      stylesForExport.forEach(function(css){
-        stylesForExportCSS += css;
-      });
-
-      getPadHTML(pad, revNum, function (err, html)
-      {
-        if(ERR(err, callback)) return;
-        var exportedDoc = eejs.require("ep_etherpad-lite/templates/export_html.html", {
-          body: html,
-          padId: Security.escapeHTML(padId),
-          extraCSS: stylesForExportCSS
-        });
-        callback(null, exportedDoc);
-      });
-    });
+  // Include some Styles into the Head for Export
+  let stylesForExportCSS = "";
+  let stylesForExport = await hooks.aCallAll("stylesForExport", padId);
+  stylesForExport.forEach(function(css){
+    stylesForExportCSS += css;
   });
-};
+
+  let html = await getPadHTML(pad, revNum);
+
+  return eejs.require("ep_etherpad-lite/templates/export_html.html", {
+    body: html,
+    padId: Security.escapeHTML(padId),
+    extraCSS: stylesForExportCSS
+  });
+}
 
 // copied from ACE
 var _REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;

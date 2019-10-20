@@ -643,6 +643,7 @@ table#otheruserstable {
   border-top-right-radius: 5px;
   background-color: #fff;
   cursor: pointer;
+  display: none;
 }
 #chaticon a {
   text-decoration: none
@@ -936,6 +937,13 @@ input[type=checkbox] {
   border: 1px solid #ccc;
   outline: none;
   width: 120px;
+}
+.row {
+  float: left;
+  width: 100%;
+}
+.row + .row {
+  margin-top: 15px;
 }
 .column {
   float: left;

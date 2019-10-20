@@ -6,16 +6,16 @@ describe("urls", function(){
   });
 
   it("when you enter an url, it becomes clickable", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
-    
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
     //get the first text element out of the inner iframe
     var firstTextElement = inner$("div").first();
-    
+
     // simulate key presses to delete content
     firstTextElement.sendkeys('{selectall}'); // select all
     firstTextElement.sendkeys('{del}'); // clear the first line
-    firstTextElement.sendkeys('http://etherpad.org'); // insert a URL
+    firstTextElement.sendkeys('https://etherpad.org'); // insert a URL
 
     helper.waitFor(function(){
       return inner$("div").first().find("a").length === 1;
@@ -28,7 +28,7 @@ describe("urls", function(){
 
     //get the first text element out of the inner iframe
     var firstTextElement = inner$("div").first();
-    var url = "http://etherpad.org/!foo";
+    var url = "https://etherpad.org/!foo";
 
     // simulate key presses to delete content
     firstTextElement.sendkeys('{selectall}'); // select all
@@ -50,7 +50,7 @@ describe("urls", function(){
 
     //get the first text element out of the inner iframe
     var firstTextElement = inner$("div").first();
-    var url = "http://etherpad.org/";
+    var url = "https://etherpad.org/";
 
     // simulate key presses to delete content
     firstTextElement.sendkeys('{selectall}'); // select all

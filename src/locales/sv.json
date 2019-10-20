@@ -88,6 +88,8 @@
 	"pad.chat": "Chatt",
 	"pad.chat.title": "Öppna chatten för detta block.",
 	"pad.chat.loadmessages": "Läs in fler meddelanden",
+	"pad.chat.stick.title": "Fäst chatten på skärmen",
+	"pad.chat.writeMessage.placeholder": "Skriv ditt meddelande här",
 	"timeslider.pageTitle": "{{appTitle}} tidsreglage",
 	"timeslider.toolbar.returnbutton": "Återvänd till blocket",
 	"timeslider.toolbar.authors": "Författare:",

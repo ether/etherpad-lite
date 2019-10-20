@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -135,7 +135,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
             }
             postHtml += '</li></ol>';
           }
-        } 
+        }
         processedMarker = true;
       }
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
@@ -150,7 +150,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       if( processedMarker ){
         result.lineMarker += txt.length;
         return; // don't append any text
-      } 
+      }
     }
     var href = null;
     var simpleTags = null;

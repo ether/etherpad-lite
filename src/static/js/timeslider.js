@@ -60,10 +60,10 @@ function init() {
     var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
     //find out in which subfolder we are
     var resource = exports.baseURL.substring(1) + 'socket.io';
-    
+
     //build up the socket io connection
     socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
-    
+
     //send the ready message once we're connected
     socket.on('connect', function()
     {
@@ -126,13 +126,13 @@ function sendSocketMsg(type, data)
 }
 
 var fireWhenAllScriptsAreLoaded = [];
-  
+
 var changesetLoader;
 function handleClientVars(message)
 {
   //save the client Vars
   clientVars = message.data;
-  
+
   //load all script that doesn't work without the clientVars
   BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
   require('./broadcast_revisions').loadBroadcastRevisionsJS();

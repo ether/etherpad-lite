@@ -93,6 +93,8 @@
 	"pad.chat": "Csevegés",
 	"pad.chat.title": "A noteszhez tartozó csevegés megnyitása.",
 	"pad.chat.loadmessages": "További üzenetek betöltése",
+	"pad.chat.stick.title": "Csevegés a képernyőre",
+	"pad.chat.writeMessage.placeholder": "Írja az üzenetét ide",
 	"timeslider.pageTitle": "{{appTitle}} időcsúszka",
 	"timeslider.toolbar.returnbutton": "Vissza a noteszhez",
 	"timeslider.toolbar.authors": "Szerzők:",

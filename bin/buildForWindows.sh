@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NODE_VERSION="8.9.0"
+NODE_VERSION="10.16.3"
 
 #Move to the folder where ep-lite is installed
 cd `dirname $0`
@@ -11,21 +11,21 @@ if [ -d "../bin" ]; then
 fi
 
 #Is wget installed?
-hash wget > /dev/null 2>&1 || { 
+hash wget > /dev/null 2>&1 || {
   echo "Please install wget" >&2
-  exit 1 
+  exit 1
 }
 
 #Is zip installed?
-hash zip > /dev/null 2>&1 || { 
+hash zip > /dev/null 2>&1 || {
   echo "Please install zip" >&2
-  exit 1 
+  exit 1
 }
 
 #Is zip installed?
-hash unzip > /dev/null 2>&1 || { 
+hash unzip > /dev/null 2>&1 || {
   echo "Please install unzip" >&2
-  exit 1 
+  exit 1
 }
 
 START_FOLDER=$(pwd);
@@ -36,6 +36,10 @@ cp -ar . $TMP_FOLDER
 cd $TMP_FOLDER
 rm -rf node_modules
 rm -f etherpad-lite-win.zip
+
+# setting NODE_ENV=production ensures that dev dependencies are not installed,
+# making the windows package smaller
+export NODE_ENV=production
 
 echo "do a normal unix install first..."
 bin/installDeps.sh || exit 1

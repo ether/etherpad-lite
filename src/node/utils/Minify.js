@@ -70,7 +70,7 @@ for (var key in tar) {
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-function requestURI(url, method, headers, callback, redirectCount) {
+function requestURI(url, method, headers, callback) {
   var parsedURL = urlutil.parse(url);
 
   var status = 500, headers = {}, content = [];
@@ -137,7 +137,7 @@ function requestURIs(locations, method, headers, callback) {
  * @param req the Express request
  * @param res the Express response
  */
-function minify(req, res, next)
+function minify(req, res)
 {
   var filename = req.params['filename'];
 
@@ -204,7 +204,7 @@ function minify(req, res, next)
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
       if (settings.maxAge !== undefined) {
-        var expiresDate = new Date((new Date()).getTime()+settings.maxAge*1000);
+        var expiresDate = new Date(Date.now()+settings.maxAge*1000);
         res.setHeader('expires', expiresDate.toUTCString());
         res.setHeader('cache-control', 'max-age=' + settings.maxAge);
       }
@@ -240,7 +240,7 @@ function minify(req, res, next)
         res.end();
       }
     }
-  });
+  }, 3);
 }
 
 // find all includes in ace.js and embed them.
@@ -287,6 +287,10 @@ function getAceFile(callback) {
 
 // Check for the existance of the file and get the last modification date.
 function statFile(filename, callback, dirStatLimit) {
+  /*
+   * The only external call to this function provides an explicit value for
+   * dirStatLimit: this check could be removed.
+   */
   if (typeof dirStatLimit === 'undefined') {
     dirStatLimit = 3;
   }

@@ -113,7 +113,7 @@ var API = {
       "response": {"groupIDs":{"type":"List", "items":{"type":"string"}}}
     },
   },
-  
+
   // Author
   "author": {
     "create" : {
@@ -298,7 +298,7 @@ function capitalise(string){
 
 for (var resource in API) {
   for (var func in API[resource]) {
-    
+
     // The base response model
     var responseModel = {
       "properties": {
@@ -350,7 +350,7 @@ function newSwagger() {
 exports.expressCreateServer = function (hook_name, args, cb) {
 
   for (var version in apiHandler.version) {
-    
+
     var swagger = newSwagger();
     var basePath = "/rest/" + version;
 
@@ -437,7 +437,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     };
 
     swagger.configureSwaggerPaths("", "/api" , "");
-    
+
     swagger.configure("http://" + settings.ip + ":" + settings.port + basePath, version);
   }
 };

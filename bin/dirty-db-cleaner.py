@@ -12,9 +12,9 @@ try:
     assert(os.path.exists(dirtydb_input))
     assert(not os.path.exists(dirtydb_output))
 except:
-    print() 
+    print()
     print('Usage: %s /path/to/dirty.db' % sys.argv[0])
-    print() 
+    print()
     print('Note: Will create a file named dirty.db.new in the same folder,')
     print('      please make sure permissions are OK and a file by that')
     print('      name does not exist already. This script works by omitting')

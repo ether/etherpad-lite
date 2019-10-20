@@ -42,7 +42,7 @@ body,
 #tbl_context_menu ul .yuimenuitemlabel,
 .yui-skin-sam .yui-split-button button em:not(.color-picker-button),
 #yui-picker-panel .button-group .yui-button:first-child button,
-#newComment .sidebar-comment input[type=reset], #newComment .sidebar-comment input[type=reset]:hover, 
+#newComment .sidebar-comment input[type=reset], #newComment .sidebar-comment input[type=reset]:hover,
 #newComment .sidebar-comment input[type=submit]:hover,
 .suggestion, .comment-reply-input, .reply-suggestion p:not(.reply-comment-suggest-from-p), .comment-text,
 .sidebar-comment textarea, .reply-comment-suggest label, .comment-suggest label, .comment-reply-input
@@ -53,7 +53,7 @@ body,
 .suggestion .comment-suggest-from,
 .hyperlink-dialog>.hyperlink-url,
 .timeslider #padcontent span ,
-.exporttype, .timeslider #export > p 
+.exporttype, .timeslider #export > p
 { color: #2E3338 !important; }
 
 /* MENUS ICONS */
@@ -61,7 +61,7 @@ body,
 #tbl-menu:before
 { color: #767676 !important; }
 /* MENU BUTTONS */
-.timeslider #editbar .buttontext 
+.timeslider #editbar .buttontext
 { background-color: #767676 !important; }
 
 /* PRIMARY BUTTONS */
@@ -74,13 +74,13 @@ body,
 .comment-changeTo-approve input[type=submit],
 .hyperlink-dialog>.hyperlink-save,
 #importsubmitinput, #forcereconnect
-{ 
-  background-color: #64d29b; 
+{
+  background-color: #64d29b;
   color: white;
 }
 
 /* PRIMARY COLOR */
-h1, 
+h1,
 #titlelabel,
 .yui-skin-sam .yui-panel .hd,
 p[data-l10n-id="ep_comments_page.comment"],
@@ -88,7 +88,7 @@ p[data-l10n-id="ep_comments_page.comment"],
 .stepper, #importmessageabiword, #importmessageabiword > a
 { color: #64d29b; }
 #ui-slider-handle, #playpause_button_icon {
-  background-color: #64d29b; 
+  background-color: #64d29b;
 }
 .stepper {
   border-color: #64d29b;

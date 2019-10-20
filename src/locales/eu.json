@@ -91,6 +91,8 @@
 	"pad.chat": "Txata",
 	"pad.chat.title": "Pad honetarako txata ireki.",
 	"pad.chat.loadmessages": "Mezu gehiago kargatu",
+	"pad.chat.stick.title": "Handitu",
+	"pad.chat.writeMessage.placeholder": "Zure mezua hemen idatzi",
 	"timeslider.pageTitle": "{{appTitle}} denbora lerroa",
 	"timeslider.toolbar.returnbutton": "Padera itzuli",
 	"timeslider.toolbar.authors": "Egileak:",

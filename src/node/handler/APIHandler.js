@@ -19,7 +19,6 @@
  */
 
 var absolutePaths = require('../utils/AbsolutePaths');
-var ERR = require("async-stacktrace");
 var fs = require("fs");
 var api = require("../db/API");
 var log4js = require('log4js');
@@ -32,19 +31,17 @@ var apiHandlerLogger = log4js.getLogger('APIHandler');
 //ensure we have an apikey
 var apikey = null;
 var apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || "./APIKEY.txt");
-try
-{
+
+try {
   apikey = fs.readFileSync(apikeyFilename,"utf8");
   apiHandlerLogger.info(`Api key file read from: "${apikeyFilename}"`);
-}
-catch(e)
-{
+} catch(e) {
   apiHandlerLogger.info(`Api key file "${apikeyFilename}" not found. Creating with random contents.`);
   apikey = randomString(32);
   fs.writeFileSync(apikeyFilename,apikey,"utf8");
 }
 
-//a list of all functions
+// a list of all functions
 var version = {};
 
 version["1"] = Object.assign({},
@@ -152,110 +149,73 @@ exports.version = version;
  * @req express request object
  * @res express response object
  */
-exports.handle = function(apiVersion, functionName, fields, req, res)
+exports.handle = async function(apiVersion, functionName, fields, req, res)
 {
-  //check if this is a valid apiversion
-  var isKnownApiVersion = false;
-  for(var knownApiVersion in version)
-  {
-    if(knownApiVersion == apiVersion)
-    {
-      isKnownApiVersion = true;
-      break;
-    }
-  }
-
-  //say goodbye if this is an unknown API version
-  if(!isKnownApiVersion)
-  {
+  // say goodbye if this is an unknown API version
+  if (!(apiVersion in version)) {
     res.statusCode = 404;
     res.send({code: 3, message: "no such api version", data: null});
     return;
   }
 
-  //check if this is a valid function name
-  var isKnownFunctionname = false;
-  for(var knownFunctionname in version[apiVersion])
-  {
-    if(knownFunctionname == functionName)
-    {
-      isKnownFunctionname = true;
-      break;
-    }
-  }
-
-  //say goodbye if this is a unknown function
-  if(!isKnownFunctionname)
-  {
+  // say goodbye if this is an unknown function
+  if (!(functionName in version[apiVersion])) {
+    // no status code?!
     res.send({code: 3, message: "no such function", data: null});
     return;
   }
 
-  //check the api key!
+  // check the api key!
   fields["apikey"] = fields["apikey"] || fields["api_key"];
 
-  if(fields["apikey"] != apikey.trim())
-  {
+  if (fields["apikey"] !== apikey.trim()) {
     res.statusCode = 401;
     res.send({code: 4, message: "no or wrong API Key", data: null});
     return;
   }
 
-  //sanitize any pad id's before continuing
-  if(fields["padID"])
-  {
-    padManager.sanitizePadId(fields["padID"], function(padId)
-    {
-      fields["padID"] = padId;
-      callAPI(apiVersion, functionName, fields, req, res);
-    });
+  // sanitize any padIDs before continuing
+  if (fields["padID"]) {
+    fields["padID"] = await padManager.sanitizePadId(fields["padID"]);
   }
-  else if(fields["padName"])
-  {
-    padManager.sanitizePadId(fields["padName"], function(padId)
-    {
-      fields["padName"] = padId;
-      callAPI(apiVersion, functionName, fields, req, res);
-    });
+  // there was an 'else' here before - removed it to ensure
+  // that this sanitize step can't be circumvented by forcing
+  // the first branch to be taken
+  if (fields["padName"]) {
+    fields["padName"] = await padManager.sanitizePadId(fields["padName"]);
   }
-  else
-  {
-    callAPI(apiVersion, functionName, fields, req, res);
-  }
+
+  // no need to await - callAPI returns a promise
+  return callAPI(apiVersion, functionName, fields, req, res);
 }
 
-//calls the api function
-function callAPI(apiVersion, functionName, fields, req, res)
+// calls the api function
+async function callAPI(apiVersion, functionName, fields, req, res)
 {
-  //put the function parameters in an array
+  // put the function parameters in an array
   var functionParams = version[apiVersion][functionName].map(function (field) {
     return fields[field]
-  })
-
-  //add a callback function to handle the response
-  functionParams.push(function(err, data)
-  {
-    // no error happend, everything is fine
-    if(err == null)
-    {
-      if(!data)
-        data = null;
-
-      res.send({code: 0, message: "ok", data: data});
-    }
-    // parameters were wrong and the api stopped execution, pass the error
-    else if(err.name == "apierror")
-    {
-      res.send({code: 1, message: err.message, data: null});
-    }
-    //an unknown error happend
-    else
-    {
-      res.send({code: 2, message: "internal error", data: null});
-      ERR(err);
-    }
   });
 
-  //call the api function
-  api[functionName].apply(this, functionParams);
+  try {
+    // call the api function
+    let data = await api[functionName].apply(this, functionParams);
+
+    if (!data) {
+        data = null;
+    }
+
+    res.send({code: 0, message: "ok", data: data});
+  } catch (err) {
+    if (err.name == "apierror") {
+      // parameters were wrong and the api stopped execution, pass the error
+
+      res.send({code: 1, message: err.message, data: null});
+    } else {
+      // an unknown error happened
+
+      res.send({code: 2, message: "internal error", data: null});
+      throw err;
+    }
+  }
 }

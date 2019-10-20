@@ -1071,7 +1071,7 @@ function Ace2Inner(){
 
   function now()
   {
-    return (new Date()).getTime();
+    return Date.now();
   }
 
   function newTimeLimit(ms)

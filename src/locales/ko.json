@@ -92,6 +92,8 @@
 	"pad.chat": "대화",
 	"pad.chat.title": "이 패드에 대화를 엽니다.",
 	"pad.chat.loadmessages": "더 많은 메시지 불러오기",
+	"pad.chat.stick.title": "채팅을 화면에 고정",
+	"pad.chat.writeMessage.placeholder": "여기에 메시지를 적으십시오",
 	"timeslider.pageTitle": "{{appTitle}} 시간슬라이더",
 	"timeslider.toolbar.returnbutton": "패드로 돌아가기",
 	"timeslider.toolbar.authors": "저자:",

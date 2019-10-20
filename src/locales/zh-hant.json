@@ -93,6 +93,8 @@
 	"pad.chat": "聊天功能",
 	"pad.chat.title": "打開記事本聊天功能",
 	"pad.chat.loadmessages": "載入更多訊息",
+	"pad.chat.stick.title": "釘住聊天在螢幕上",
+	"pad.chat.writeMessage.placeholder": "在此編寫您的訊息",
 	"timeslider.pageTitle": "{{appTitle}}時間軸",
 	"timeslider.toolbar.returnbutton": "返回到記事本",
 	"timeslider.toolbar.authors": "協作者：",

@@ -6,7 +6,7 @@
   background: none !important;
   width: 18px !important;
   padding-left: 2px !important;
-}    
+}
 #tbl-menu:before {
   content: "\F0CE";
 }
@@ -51,7 +51,7 @@
   border: none;
   text-align: center;
   background-color: transparent;
-  padding-top: 4px;  
+  padding-top: 4px;
 }
 
 #tbl_insert .yuimenuitemlabel { text-align: center; }

@@ -6,7 +6,7 @@
   html10n.bind('indexed', function() {
     html10n.localize([language, navigator.language, navigator.userLanguage, 'en'])
   })
-  
+
   html10n.bind('localized', function() {
     document.documentElement.lang = html10n.getLanguage()
     document.documentElement.dir = html10n.getDirection()

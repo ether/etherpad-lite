@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Vodnokon4e",
-			"StanProg"
+			"StanProg",
+			"Vlad5250"
 		]
 	},
 	"index.newPad": "Нов пад",
@@ -46,6 +47,8 @@
 	"pad.chat": "Чат",
 	"pad.chat.title": "Отваряне на чат за този пад.",
 	"pad.chat.loadmessages": "Зареждане на повече съобщения",
+	"pad.chat.stick.title": "Залепяне на разговора на екрана",
+	"pad.chat.writeMessage.placeholder": "Тук напишете съобщение",
 	"timeslider.toolbar.returnbutton": "Връщане към пада",
 	"timeslider.toolbar.authors": "Автори:",
 	"timeslider.toolbar.authorsList": "Няма автори",

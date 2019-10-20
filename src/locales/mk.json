@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Bjankuloski06",
-			"Brest"
+			"Brest",
+			"Vlad5250"
 		]
 	},
 	"index.newPad": "Нова тетратка",
@@ -23,7 +24,7 @@
 	"pad.toolbar.savedRevision.title": "Зачувај преработка",
 	"pad.toolbar.settings.title": "Поставки",
 	"pad.toolbar.embed.title": "Споделете и вметнете ја тетраткава",
-	"pad.toolbar.showusers.title": "Прикаж. корисниците на тетраткава",
+	"pad.toolbar.showusers.title": "Прикажи корисниците на тетраткава",
 	"pad.colorpicker.save": "Зачувај",
 	"pad.colorpicker.cancel": "Откажи",
 	"pad.loading": "Вчитувам...",
@@ -87,6 +88,8 @@
 	"pad.chat": "Разговор",
 	"pad.chat.title": "Отвори го разговорот за оваа тетратка.",
 	"pad.chat.loadmessages": "Вчитај уште пораки",
+	"pad.chat.stick.title": "Залепи го разговорот на екранот",
+	"pad.chat.writeMessage.placeholder": "Тука напишете порака",
 	"timeslider.pageTitle": "{{appTitle}} Историски преглед",
 	"timeslider.toolbar.returnbutton": "Назад на тетратката",
 	"timeslider.toolbar.authors": "Автори:",
@@ -122,7 +125,7 @@
 	"pad.editbar.clearcolors": "Да ги отстранам авторските бои од целиот документ?",
 	"pad.impexp.importbutton": "Увези сега",
 	"pad.impexp.importing": "Увезувам...",
-	"pad.impexp.confirmimport": "Увезувајќи ја податотеката ќе го замените целиот досегашен текст во тетратката. Дали сте сигурни дека сакате да продолжите?",
+	"pad.impexp.confirmimport": "Увезувањето на податотека ќе го презапише тековниот текст на тетратката. Дали сте сигурни дека сакате да продолжите?",
 	"pad.impexp.convertFailed": "Не можев да ја увезам податотеката. Послужете се со поинаков формат или прекопирајте го текстот рачно.",
 	"pad.impexp.padHasData": "Не можевме да ја увеземе оваа податотека бидејќи оваа тетратка веќе има промени. Увезете ја во нова тетратка.",
 	"pad.impexp.uploadFailed": "Подигањето не успеа. Обидете се повторно.",

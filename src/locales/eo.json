@@ -4,7 +4,8 @@
 			"Eliovir",
 			"Mschmitt",
 			"Objectivesea",
-			"Robin van der Vliet"
+			"Robin van der Vliet",
+			"Mirin"
 		]
 	},
 	"index.newPad": "Nova Teksto",
@@ -89,6 +90,8 @@
 	"pad.chat": "Babilejo",
 	"pad.chat.title": "Malfermi la babilejon por ĉi tiu teksto.",
 	"pad.chat.loadmessages": "Ŝargi pliajn mesaĝojn",
+	"pad.chat.stick.title": "Alpingli babilejon al ekrano",
+	"pad.chat.writeMessage.placeholder": "Verki vian mesaĝon ĉi tie",
 	"timeslider.pageTitle": "{{appTitle}} Tempoŝovilo",
 	"timeslider.toolbar.returnbutton": "Reiri al teksto",
 	"timeslider.toolbar.authors": "Aŭtoroj:",

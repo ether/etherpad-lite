@@ -67,7 +67,28 @@ The current version can be queried via /api.
 
 ### Request Format
 
-The API is accessible via HTTP. HTTP Requests are in the format /api/$APIVERSION/$FUNCTIONNAME. Parameters are transmitted via HTTP GET. $APIVERSION depends on the endpoints you want to use.
+The API is accessible via HTTP. Starting from **1.8**, API endpoints can be invoked indifferently via GET or POST.
+
+The URL of the HTTP request is of the form: `/api/$APIVERSION/$FUNCTIONNAME`. $APIVERSION depends on the endpoint you want to use. Depending on the verb you use (GET or POST) **parameters** can be passed differently.
+
+When invoking via GET (mandatory until **1.7.5** included), parameters must be included in the query string (example: `/api/$APIVERSION/$FUNCTIONNAME?apikey=<APIKEY>&param1=value1`). Please note that starting with nodejs 8.14+ the total size of HTTP request headers has been capped to 8192 bytes. This limits the quantity of data that can be sent in an API request.
+
+Starting from Etherpad **1.8** it is also possible to invoke the HTTP API via POST. In this case, querystring parameters will still be accepted, but **any parameter with the same name sent via POST will take precedence**. If you need to send large chunks of text (for example, for `setText()`) it is advisable to invoke via POST.
+
+Example with cURL using GET (toy example, no encoding):
+```
+curl "http://pad.domain/api/1/setText?apikey=secret&padID=padname&text=this_text_will_NOT_be_encoded_by_curl_use_next_example"
+```
+
+Example with cURL using GET (better example, encodes text):
+```
+curl "http://pad.domain/api/1/setText?apikey=secret&padID=padname" --get --data-urlencode "text=Text sent via GET with proper encoding. For big documents, please use POST"
+```
+
+Example with cURL using POST:
+```
+curl "http://pad.domain/api/1/setText?apikey=secret&padID=padname" --data-urlencode "text=Text sent via POST with proper encoding. For big texts (>8 KB), use this method"
+```
 
 ### Response Format
 Responses are valid JSON in the following format:
@@ -278,7 +299,9 @@ returns the text of a pad
 #### setText(padID, text)
  * API >= 1
 
-sets the text of a pad
+Sets the text of a pad.
+
+If your text is long (>8 KB), please invoke via POST and include `text` parameter in the body of the request, not in the URL (since Etherpad **1.8**).
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`
@@ -288,7 +311,9 @@ sets the text of a pad
 #### appendText(padID, text)
  * API >= 1.2.13
 
-appends text to a pad
+Appends text to a pad.
+
+If your text is long (>8 KB), please invoke via POST and include `text` parameter in the body of the request, not in the URL (since Etherpad **1.8**).
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`
@@ -308,6 +333,8 @@ returns the text of a pad formatted as HTML
  * API >= 1
 
 sets the text of a pad based on HTML, HTML must be well-formed. Malformed HTML will send a warning to the API log.
+
+If `html` is long (>8 KB), please invoke via POST and include `html` parameter in the body of the request, not in the URL (since Etherpad **1.8**).
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`
@@ -349,7 +376,7 @@ get the changeset at a given revision, or last revision if 'rev' is not defined.
 *Example returns:*
   * `{ "code" : 0,
        "message" : "ok",
-       "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http://etherpad.org\n"
+       "data" : "Z:1>6b|5+6b$Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at https://etherpad.org\n"
      }`
   * `{"code":1,"message":"padID does not exist","data":null}`
   * `{"code":1,"message":"rev is higher than the head revision of the pad","data":null}`

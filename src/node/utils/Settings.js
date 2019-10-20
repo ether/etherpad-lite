@@ -231,85 +231,96 @@ exports.loadTest = false;
 exports.indentationOnNewLine = true;
 
 /*
-* log4js appender configuration
-*/
+ * log4js appender configuration
+ */
 exports.logconfig = { appenders: [{ type: "console" }]};
 
 /*
-* Session Key, do not sure this.
-*/
+ * Session Key, do not sure this.
+ */
 exports.sessionKey = false;
 
 /*
-* Trust Proxy, whether or not trust the x-forwarded-for header.
-*/
+ * Trust Proxy, whether or not trust the x-forwarded-for header.
+ */
 exports.trustProxy = false;
 
-/* This setting is used if you need authentication and/or
+/*
+ * This setting is used if you need authentication and/or
  * authorization. Note: /admin always requires authentication, and
- * either authorization by a module, or a user with is_admin set */
+ * either authorization by a module, or a user with is_admin set
+ */
 exports.requireAuthentication = false;
 exports.requireAuthorization = false;
 exports.users = {};
 
 /*
-* Show settings in admin page, by default it is true
-*/
+ * Show settings in admin page, by default it is true
+ */
 exports.showSettingsInAdminPage = true;
 
 /*
-* By default, when caret is moved out of viewport, it scrolls the minimum height needed to make this
-* line visible.
-*/
+ * By default, when caret is moved out of viewport, it scrolls the minimum
+ * height needed to make this line visible.
+ */
 exports.scrollWhenFocusLineIsOutOfViewport = {
   /*
-  * Percentage of viewport height to be additionally scrolled.
-  */
+   * Percentage of viewport height to be additionally scrolled.
+   */
   "percentage": {
     "editionAboveViewport": 0,
     "editionBelowViewport": 0
   },
+
   /*
-  * Time (in milliseconds) used to animate the scroll transition. Set to 0 to disable animation
-  */
+   * Time (in milliseconds) used to animate the scroll transition. Set to 0 to
+   * disable animation
+   */
   "duration": 0,
+
   /*
-  * Flag to control if it should scroll when user places the caret in the last line of the viewport
-  */
-  /*
-  * Percentage of viewport height to be additionally scrolled when user presses arrow up
-  * in the line of the top of the viewport.
+   * Percentage of viewport height to be additionally scrolled when user presses arrow up
+   * in the line of the top of the viewport.
    */
   "percentageToScrollWhenUserPressesArrowUp": 0,
+
+  /*
+   * Flag to control if it should scroll when user places the caret in the last
+   * line of the viewport
+   */
   "scrollWhenCaretIsInTheLastLineOfViewport": false
 };
 
-//checks if abiword is avaiable
+/*
+ * Expose Etherpad version in the web interface and in the Server http header.
+ *
+ * Do not enable on production machines.
+ */
+exports.exposeVersion = false;
+
+// checks if abiword is avaiable
 exports.abiwordAvailable = function()
 {
-  if(exports.abiword != null)
-  {
+  if (exports.abiword != null) {
     return os.type().indexOf("Windows") != -1 ? "withoutPDF" : "yes";
-  }
-  else
-  {
+  } else {
     return "no";
   }
 };
 
-exports.sofficeAvailable = function () {
-  if(exports.soffice != null) {
+exports.sofficeAvailable = function() {
+  if (exports.soffice != null) {
     return os.type().indexOf("Windows") != -1 ? "withoutPDF": "yes";
   } else {
     return "no";
   }
 };
 
-exports.exportAvailable = function () {
+exports.exportAvailable = function() {
   var abiword = exports.abiwordAvailable();
   var soffice = exports.sofficeAvailable();
 
-  if(abiword == "no" && soffice == "no") {
+  if (abiword == "no" && soffice == "no") {
     return "no";
   } else if ((abiword == "withoutPDF" && soffice == "no") || (abiword == "no" && soffice == "withoutPDF")) {
     return "withoutPDF";
@@ -321,8 +332,7 @@ exports.exportAvailable = function () {
 // Provide git version if available
 exports.getGitCommit = function() {
   var version = "";
-  try
-  {
+  try {
     var rootPath = path.resolve(npm.dir, '..');
     if (fs.lstatSync(rootPath + '/.git').isFile()) {
       rootPath = fs.readFileSync(rootPath + '/.git', "utf8");
@@ -334,9 +344,7 @@ exports.getGitCommit = function() {
     var refPath = rootPath + "/" + ref.substring(5, ref.indexOf("\n"));
     version = fs.readFileSync(refPath, "utf-8");
     version = version.substring(0, 7);
-  }
-  catch(e)
-  {
+  } catch(e) {
     console.warn("Can't get git version for server header\n" + e.message)
   }
   return version;
@@ -347,100 +355,238 @@ exports.getEpVersion = function() {
   return require('ep_etherpad-lite/package.json').version;
 }
 
+/**
+ * Receives a settingsObj and, if the property name is a valid configuration
+ * item, stores it in the module's exported properties via a side effect.
+ *
+ * This code refactors a previous version that copied & pasted the same code for
+ * both "settings.json" and "credentials.json".
+ */
+function storeSettings(settingsObj) {
+  for (var i in settingsObj) {
+    // test if the setting starts with a lowercase character
+    if (i.charAt(0).search("[a-z]") !== 0) {
+      console.warn(`Settings should start with a lowercase character: '${i}'`);
+    }
+
+    // we know this setting, so we overwrite it
+    // or it's a settings hash, specific to a plugin
+    if (exports[i] !== undefined || i.indexOf('ep_') == 0) {
+      if (_.isObject(settingsObj[i]) && !_.isArray(settingsObj[i])) {
+        exports[i] = _.defaults(settingsObj[i], exports[i]);
+      } else {
+        exports[i] = settingsObj[i];
+      }
+    } else {
+      // this setting is unknown, output a warning and throw it away
+      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
+    }
+  }
+}
+
+/*
+ * If stringValue is a numeric string, or its value is "true" or "false", coerce
+ * them to appropriate JS types. Otherwise return stringValue as-is.
+ */
+function coerceValue(stringValue) {
+    // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
+    const isNumeric = !isNaN(stringValue) && !isNaN(parseFloat(stringValue) && isFinite(stringValue));
+
+    if (isNumeric) {
+      // detected numeric string. Coerce to a number
+
+      return +stringValue;
+    }
+
+    // the boolean literal case is easy.
+    if (stringValue === "true" ) {
+      return true;
+    }
+
+    if (stringValue === "false") {
+      return false;
+    }
+
+    // otherwise, return this value as-is
+    return stringValue;
+}
+
+/**
+ * Takes a javascript object containing Etherpad's configuration, and returns
+ * another object, in which all the string properties whose value is of the form
+ * "${ENV_VAR}" or "${ENV_VAR:default_value}" got their value replaced with the
+ * contents of the given environment variable, or with a default value.
+ *
+ * By definition, an environment variable's value is always a string. However,
+ * the code base makes use of the various json types. To maintain compatiblity,
+ * some heuristics is applied:
+ *
+ * - if ENV_VAR does not exist in the environment, null is returned;
+ * - if ENV_VAR's value is "true" or "false", it is converted to the js boolean
+ *   values true or false;
+ * - if ENV_VAR's value looks like a number, it is converted to a js number
+ *   (details in the code).
+ *
+ * The following is a scheme of the behaviour of this function:
+ *
+ * +---------------------------+---------------+------------------+
+ * | Configuration string in   | Value of      | Resulting confi- |
+ * | settings.json             | ENV_VAR       | guration value   |
+ * |---------------------------|---------------|------------------|
+ * | "${ENV_VAR}"              | "some_string" | "some_string"    |
+ * | "${ENV_VAR}"              | "9001"        | 9001             |
+ * | "${ENV_VAR}"              | undefined     | null             |
+ * | "${ENV_VAR:some_default}" | "some_string" | "some_string"    |
+ * | "${ENV_VAR:some_default}" | undefined     | "some_default"   |
+ * +---------------------------+---------------+------------------+
+ *
+ * IMPLEMENTATION NOTE: variable substitution is performed doing a round trip
+ *     conversion to/from json, using a custom replacer parameter in
+ *     JSON.stringify(), and parsing the JSON back again. This ensures that
+ *     environment variable replacement is performed even on nested objects.
+ *
+ * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
+ */
+function lookupEnvironmentVariables(obj) {
+  const stringifiedAndReplaced = JSON.stringify(obj, (key, value) => {
+    /*
+     * the first invocation of replacer() is with an empty key. Just go on, or
+     * we would zap the entire object.
+     */
+    if (key === '') {
+      return value;
+    }
+
+    /*
+     * If we received from the configuration file a number, a boolean or
+     * something that is not a string, we can be sure that it was a literal
+     * value. No need to perform any variable substitution.
+     *
+     * The environment variable expansion syntax "${ENV_VAR}" is just a string
+     * of specific form, after all.
+     */
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    /*
+     * Let's check if the string value looks like a variable expansion (e.g.:
+     * "${ENV_VAR}" or "${ENV_VAR:default_value}")
+     */
+    // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
+    const match = value.match(/^\$\{([^:]*)(:(.*))?\}$/);
+
+    if (match === null) {
+      // no match: use the value literally, without any substitution
+
+      return value;
+    }
+
+    /*
+     * We found the name of an environment variable. Let's read its actual value
+     * and its default value, if given
+     */
+    const envVarName = match[1];
+    const envVarValue = process.env[envVarName];
+    const defaultValue = match[3];
+
+    if ((envVarValue === undefined) && (defaultValue === undefined)) {
+      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}", and no default was given. Returning null. Please check your configuration and environment settings.`);
+
+      /*
+       * We have to return null, because if we just returned undefined, the
+       * configuration item "key" would be stripped from the returned object.
+       */
+      return null;
+    }
+
+    if ((envVarValue === undefined) && (defaultValue !== undefined)) {
+      console.debug(`Environment variable "${envVarName}" not found for configuration key "${key}". Falling back to default value.`);
+
+      return coerceValue(defaultValue);
+    }
+
+    // envVarName contained some value.
+
+    /*
+     * For numeric and boolean strings let's convert it to proper types before
+     * returning it, in order to maintain backward compatibility.
+     */
+    console.debug(`Configuration key "${key}" will be read from environment variable "${envVarName}"`);
+
+    return coerceValue(envVarValue);
+  });
+
+  const newSettings = JSON.parse(stringifiedAndReplaced);
+
+  return newSettings;
+}
+
+/**
+ * - reads the JSON configuration file settingsFilename from disk
+ * - strips the comments
+ * - replaces environment variables calling lookupEnvironmentVariables()
+ * - returns a parsed Javascript object
+ *
+ * The isSettings variable only controls the error logging.
+ */
+function parseSettings(settingsFilename, isSettings) {
+  let settingsStr = "";
+
+  let settingsType, notFoundMessage, notFoundFunction;
+
+  if (isSettings) {
+    settingsType = "settings";
+    notFoundMessage = "Continuing using defaults!";
+    notFoundFunction = console.warn;
+  } else {
+    settingsType = "credentials";
+    notFoundMessage = "Ignoring.";
+    notFoundFunction = console.info;
+  }
+
+  try {
+    //read the settings file
+    settingsStr = fs.readFileSync(settingsFilename).toString();
+  } catch(e) {
+    notFoundFunction(`No ${settingsType} file found in ${settingsFilename}. ${notFoundMessage}`);
+
+    // or maybe undefined!
+    return null;
+  }
+
+  try {
+    settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
+
+    const settings = JSON.parse(settingsStr);
+
+    console.info(`${settingsType} loaded from: ${settingsFilename}`);
+
+    const replacedSettings = lookupEnvironmentVariables(settings);
+
+    return replacedSettings;
+  } catch(e) {
+    console.error(`There was an error processing your ${settingsType} file from ${settingsFilename}: ${e.message}`);
+
+    process.exit(1);
+  }
+}
+
 exports.reloadSettings = function reloadSettings() {
   // Discover where the settings file lives
   var settingsFilename = absolutePaths.makeAbsolute(argv.settings || "settings.json");
-  
+
   // Discover if a credential file exists
   var credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || "credentials.json");
 
-  var settingsStr, credentialsStr;
-  try{
-    //read the settings sync
-    settingsStr = fs.readFileSync(settingsFilename).toString();
-    console.info(`Settings loaded from: ${settingsFilename}`);
-  } catch(e){
-    console.warn(`No settings file found in ${settingsFilename}. Continuing using defaults!`);
-  }
-
-  try{
-    //read the credentials sync
-    credentialsStr = fs.readFileSync(credentialsFilename).toString();
-    console.info(`Credentials file read from: ${credentialsFilename}`);
-  } catch(e){
-    // Doesn't matter if no credentials file found..
-    console.info(`No credentials file found in ${credentialsFilename}. Ignoring.`);
-  }
-
   // try to parse the settings
-  var settings;
-  var credentials;
-  try {
-    if(settingsStr) {
-      settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
-      settings = JSON.parse(settingsStr);
-    }
-  }catch(e){
-    console.error(`There was an error processing your settings file from ${settingsFilename}:` + e.message);
-    process.exit(1);
-  }
+  var settings = parseSettings(settingsFilename, true);
 
-  if(credentialsStr) {
-    credentialsStr = jsonminify(credentialsStr).replace(",]","]").replace(",}","}");
-    credentials = JSON.parse(credentialsStr);
-  }
+  // try to parse the credentials
+  var credentials = parseSettings(credentialsFilename, false);
 
-  //loop trough the settings
-  for(var i in settings)
-  {
-    //test if the setting start with a lowercase character
-    if(i.charAt(0).search("[a-z]") !== 0)
-    {
-      console.warn(`Settings should start with a lowercase character: '${i}'`);
-    }
-
-    //we know this setting, so we overwrite it
-    //or it's a settings hash, specific to a plugin
-    if(exports[i] !== undefined || i.indexOf('ep_')==0)
-    {
-      if (_.isObject(settings[i]) && !_.isArray(settings[i])) {
-        exports[i] = _.defaults(settings[i], exports[i]);
-      } else {
-        exports[i] = settings[i];
-      }
-    }
-    //this setting is unkown, output a warning and throw it away
-    else
-    {
-      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
-    }
-  }
-
-  //loop trough the settings
-  for(var i in credentials)
-  {
-    //test if the setting start with a lowercase character
-    if(i.charAt(0).search("[a-z]") !== 0)
-    {
-      console.warn(`Settings should start with a lowercase character: '${i}'`);
-    }
-
-    //we know this setting, so we overwrite it
-    //or it's a settings hash, specific to a plugin
-    if(exports[i] !== undefined || i.indexOf('ep_')==0)
-    {
-      if (_.isObject(credentials[i]) && !_.isArray(credentials[i])) {
-        exports[i] = _.defaults(credentials[i], exports[i]);
-      } else {
-        exports[i] = credentials[i];
-      }
-    }
-    //this setting is unkown, output a warning and throw it away
-    else
-    {
-      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
-    }
-  }
+  storeSettings(settings);
+  storeSettings(credentials);
 
   log4js.configure(exports.logconfig);//Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
@@ -483,32 +629,52 @@ exports.reloadSettings = function reloadSettings() {
     console.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
   }
 
-  if(exports.abiword){
+  if (exports.users) {
+    /*
+     * Prune from export.users any user that has no password attribute, or whose
+     * password attribute is "null".
+     *
+     * This is used by the settings.json in the default Dockerfile to eschew
+     * creating an admin user if no password is set.
+     */
+    var filteredUsers = _.filter(exports.users, function(user, username) {
+      if ((user.hasOwnProperty("password")) || user.password !== null) {
+        return true;
+      }
+
+      console.warn(`The password for ${username} is null. This means the user must not be created. Removing it.`);
+
+      return false;
+    });
+
+    exports.users = filteredUsers;
+  }
+
+  if (exports.abiword) {
     // Check abiword actually exists
-    if(exports.abiword != null)
-    {
+    if (exports.abiword != null) {
       fs.exists(exports.abiword, function(exists) {
         if (!exists) {
-          var abiwordError = "Abiword does not exist at this path, check your settings file";
-          if(!exports.suppressErrorsInPadText){
+          var abiwordError = "Abiword does not exist at this path, check your settings file.";
+          if (!exports.suppressErrorsInPadText) {
             exports.defaultPadText = exports.defaultPadText + "\nError: " + abiwordError + suppressDisableMsg;
           }
-          console.error(abiwordError);
+          console.error(abiwordError + ` File location: ${exports.abiword}`);
           exports.abiword = null;
         }
       });
     }
   }
 
-  if(exports.soffice) {
-    fs.exists(exports.soffice, function (exists) {
-      if(!exists) {
-        var sofficeError = "SOffice does not exist at this path, check your settings file";
+  if (exports.soffice) {
+    fs.exists(exports.soffice, function(exists) {
+      if (!exists) {
+        var sofficeError = "soffice (libreoffice) does not exist at this path, check your settings file.";
 
-        if(!exports.suppressErrorsInPadText) {
+        if (!exports.suppressErrorsInPadText) {
           exports.defaultPadText = exports.defaultPadText + "\nError: " + sofficeError + suppressDisableMsg;
         }
-        console.error(sofficeError);
+        console.error(sofficeError + ` File location: ${exports.soffice}`);
         exports.soffice = null;
       }
     });
@@ -528,9 +694,9 @@ exports.reloadSettings = function reloadSettings() {
     console.warn("Declaring the sessionKey in the settings.json is deprecated. This value is auto-generated now. Please remove the setting from the file.");
   }
 
-  if(exports.dbType === "dirty"){
+  if (exports.dbType === "dirty") {
     var dirtyWarning = "DirtyDB is used. This is fine for testing but not recommended for production.";
-    if(!exports.suppressErrorsInPadText){
+    if (!exports.suppressErrorsInPadText) {
       exports.defaultPadText = exports.defaultPadText + "\nWarning: " + dirtyWarning + suppressDisableMsg;
     }
 
@@ -541,5 +707,3 @@ exports.reloadSettings = function reloadSettings() {
 
 // initially load settings
 exports.reloadSettings();
-
-

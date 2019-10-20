@@ -101,6 +101,8 @@
 	"pad.chat": "Bate-papo",
 	"pad.chat.title": "Abrir o bate-papo desta nota.",
 	"pad.chat.loadmessages": "Carregar mais mensagens",
+	"pad.chat.stick.title": "Cole o bate-papo na tela",
+	"pad.chat.writeMessage.placeholder": "Escreva sua mensagem aqui",
 	"timeslider.pageTitle": "Linha do tempo de {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Retornar para a nota",
 	"timeslider.toolbar.authors": "Autores:",

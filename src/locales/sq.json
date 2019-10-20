@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Besnik b",
-			"Kosovastar"
+			"Kosovastar",
+			"Liridon"
 		]
 	},
 	"index.newPad": "Bllok i ri",
@@ -87,6 +88,8 @@
 	"pad.chat": "Fjalosje",
 	"pad.chat.title": "Hapni fjalosjen për këtë bllok.",
 	"pad.chat.loadmessages": "Ngarko më tepër mesazhe",
+	"pad.chat.stick.title": "Ngjit bisedën në ekran",
+	"pad.chat.writeMessage.placeholder": "Shkruajeni mesazhin tuaj këtu",
 	"timeslider.pageTitle": "Rrjedhë kohore e {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Rikthehuni te blloku",
 	"timeslider.toolbar.authors": "Autorë:",

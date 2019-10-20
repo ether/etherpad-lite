@@ -387,7 +387,8 @@ describe('createPad', function(){
 
 describe('setText', function(){
   it('Sets text on a pad Id', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text="+text)
+    api.post(endPoint('setText')+"&padID="+testPadId)
+    .send({text: text})
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Set Text failed")
     })
@@ -410,7 +411,8 @@ describe('getText', function(){
 
 describe('setText', function(){
   it('Sets text on a pad Id including an explicit newline', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text="+text+'%0A')
+    api.post(endPoint('setText')+"&padID="+testPadId)
+    .send({text: text+'\n'})
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Set Text failed")
     })

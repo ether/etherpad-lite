@@ -1,5 +1,22 @@
+# 1.8
+* FEATURE: code was migrated to `async`/`await`, getting rid of a lot of callbacks (see https://github.com/ether/etherpad-lite/issues/3540)
+* FEATURE: support configuration via environment variables
+* FEATURE: include an official Dockerfile in the main repository
+* FEATURE: support including plugins in custom Docker builds
+* REQUIREMENTS: minimum required Node version is **8.9.0 LTS**. Release 1.8.3 will require at least Node **10.13.0** LTS
+* MINOR: in the HTTP API, allow URL parameters and POST bodies to co-exist
+* MINOR: fix Unicode bug in HTML export
+* MINOR: bugfixes to colibris chat window
+* MINOR: code simplification (avoided double negations, introduced early exits, ...)
+* MINOR: reduced the size of the Windows package
+* MINOR: upgraded the nodejs runtime to 10.16.3 in the Windows package
+* SECURITY: avoided XSS in IE11
+* SECURITY: the version is exposed in http header only when configured
+* SECURITY: updated vendored jQuery version
+* SECURITY: bumped dependencies
+
 # 1.7.5
-* FEATURE: introduced support for multiple skins. See http://etherpad.org/doc/v1.7.5/#index_skins
+* FEATURE: introduced support for multiple skins. See https://etherpad.org/doc/v1.7.5/#index_skins
 * FEATURE: added a new, optional skin. It can be activated choosing `skinName: "colibris"` in `settings.json`
 * FEATURE: allow file import using LibreOffice
 * SECURITY: updated many dependencies. No known high or moderate risk dependencies remain.
@@ -297,7 +314,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
 # 1.3
  * NEW: We now follow the semantic versioning scheme!
  * NEW: Option to disable IP logging
- * NEW: Localisation updates from http://translatewiki.net.
+ * NEW: Localisation updates from https://translatewiki.net.
  * Fix: Fix readOnly group pads
  * Fix: don't fetch padList on every request
 

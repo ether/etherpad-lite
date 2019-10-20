@@ -99,6 +99,8 @@
 	"pad.chat": "Chat",
 	"pad.chat.title": "Abrir el chat para este pad.",
 	"pad.chat.loadmessages": "Cargar más mensajes",
+	"pad.chat.stick.title": "Ampliar",
+	"pad.chat.writeMessage.placeholder": "Enviar un mensaje",
 	"timeslider.pageTitle": "{{appTitle}} Línea de tiempo",
 	"timeslider.toolbar.returnbutton": "Volver al pad",
 	"timeslider.toolbar.authors": "Autores:",

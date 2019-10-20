@@ -1,106 +1,78 @@
 /*
-  This is a repair tool. It extracts all datas of a pad, removes and inserts them again.
-*/
+ * This is a repair tool. It extracts all datas of a pad, removes and inserts them again.
+ */
 
 console.warn("WARNING: This script must not be used while etherpad is running!");
 
-if(process.argv.length != 3)
-{
+if (process.argv.length != 3) {
   console.error("Use: node bin/repairPad.js $PADID");
   process.exit(1);
 }
-//get the padID
+
+// get the padID
 var padId = process.argv[2];
 
-var db, padManager, pad, settings;
-var neededDBValues = ["pad:"+padId];
+let npm = require("../src/node_modules/npm");
+npm.load({}, async function(er) {
+  if (er) {
+    console.error("Could not load NPM: " + er)
+    process.exit(1);
+  }
 
-var npm = require("../src/node_modules/npm");
-var async = require("../src/node_modules/async");
+  try {
+    // intialize database
+    let settings = require('../src/node/utils/Settings');
+    let db = require('../src/node/db/DB');
+    await db.init();
 
-async.series([
-  // load npm
-  function(callback) {
-    npm.load({}, function(er) {
-      if(er)
-      {
-        console.error("Could not load NPM: " + er)
-        process.exit(1);
-      }
-      else
-      {
-        callback();
-      }
-    })
-  },
-  // load modules
-  function(callback) {
-    settings = require('../src/node/utils/Settings');
-    db = require('../src/node/db/DB');
-    callback();
-  },
-  //initialize the database
-  function (callback)
-  {
-    db.init(callback);
-  },
-  //get the pad 
-  function (callback)
-  {
-    padManager = require('../src/node/db/PadManager');
-    
-    padManager.getPad(padId, function(err, _pad)  
-    {
-      pad = _pad;
-      callback(err);
-    });
-  },
-  function (callback)
-  {
-    //add all authors
-    var authors = pad.getAllAuthors();
-    for(var i=0;i<authors.length;i++)
-    {
-      neededDBValues.push("globalAuthor:" + authors[i]);
+    // get the pad
+    let padManager = require('../src/node/db/PadManager');
+    let pad = await padManager.getPad(padId);
+
+    // accumulate the required keys
+    let neededDBValues = ["pad:" + padId];
+
+    // add all authors
+    neededDBValues.push(...pad.getAllAuthors().map(author => "globalAuthor:"));
+
+    // add all revisions
+    for (let rev = 0; rev <= pad.head; ++rev) {
+      neededDBValues.push("pad:" + padId + ":revs:" + rev);
     }
-    
-    //add all revisions
-    var revHead = pad.head;
-    for(var i=0;i<=revHead;i++)
-    {
-      neededDBValues.push("pad:"+padId+":revs:" + i);
+
+    // add all chat values
+    for (let chat = 0; chat <= pad.chatHead; ++chat) {
+      neededDBValues.push("pad:" + padId + ":chat:" + chat);
     }
-    
-    //get all chat values
-    var chatHead = pad.chatHead;
-    for(var i=0;i<=chatHead;i++)
-    {
-      neededDBValues.push("pad:"+padId+":chat:" + i);
-    }
-    callback();
-  },
-  function (callback) {
-    db = db.db;
+
+    //
+    // NB: this script doesn't actually does what's documented
+    //     since the `value` fields in the following `.forEach`
+    //     block are just the array index numbers
+    //
+    //     the script therefore craps out now before it can do
+    //     any damage.
+    //
+    //     See gitlab issue #3545
+    //
+    console.info("aborting [gitlab #3545]");
+    process.exit(1);
+
+    // now fetch and reinsert every key
     neededDBValues.forEach(function(key, value) {
-      console.debug("Key: "+key+", value: "+value);
+      console.log("Key: " + key+ ", value: " + value);
       db.remove(key);
       db.set(key, value);
     });
-    callback();
-  }
-], function (err)
-{
-  if(err) throw err;
-  else 
-  { 
+
     console.info("finished");
-    process.exit();
+    process.exit(0);
+
+  } catch (er) {
+    if (er.name === "apierror") {
+      console.error(er);
+    } else {
+      console.trace(er);
+    }
   }
 });
-
-//get the pad object
-//get all revisions of this pad
-//get all authors related to this pad
-//get the readonly link related to this pad
-//get the chat entries related to this pad
-//remove all keys from database and insert them again

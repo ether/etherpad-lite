@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -163,7 +163,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
       else
       {
 
-        // add forEach function to Array.prototype for IE8      
+        // add forEach function to Array.prototype for IE8
         if (!('forEach' in Array.prototype)) {
           Array.prototype.forEach= function(action, that /*opt*/) {
             for (var i= 0, n= this.length; i<n; i++)
@@ -199,7 +199,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
                 if(!attr) return
                 if('author' == attr[0])  {
                   // replace that author with the current one
-                  newAttrs += '*'+authorAttr; 
+                  newAttrs += '*'+authorAttr;
                 }
                 else newAttrs += '*'+attrNum // overtake all other attribs as is
               })

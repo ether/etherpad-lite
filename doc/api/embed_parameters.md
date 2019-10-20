@@ -62,7 +62,7 @@ Example: `lang=ar` (translates the interface into Arabic)
 
 ## rtl
  * Boolean
- 
+
 Default: true
 Displays pad text from right to left.
 

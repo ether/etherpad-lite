@@ -83,6 +83,8 @@
 	"pad.chat": "Used as button text and as title of Chat window.\n{{Identical|Chat}}",
 	"pad.chat.title": "Used as tooltip for the Chat button",
 	"pad.chat.loadmessages": "chat messages",
+	"pad.chat.stick.title": "Tooltip for the stick chat button",
+	"pad.chat.writeMessage.placeholder": "Placeholder for the chat input",
 	"timeslider.pageTitle": "{{doc-important|Please leave <code><nowiki>{{appTitle}}</nowiki></code> parameter untouched. It will be replaced by app title.}}\nInserted into HTML title tag.",
 	"timeslider.toolbar.returnbutton": "Used as link title",
 	"timeslider.toolbar.authors": "A list of Authors follows after the colon.\n{{Identical|Author}}",

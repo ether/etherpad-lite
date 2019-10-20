@@ -95,6 +95,8 @@
 	"pad.chat": "Чат",
 	"pad.chat.title": "Відкрити чат для цього документа.",
 	"pad.chat.loadmessages": "Завантажити більше повідомлень",
+	"pad.chat.stick.title": "Закріпити чат на екрані",
+	"pad.chat.writeMessage.placeholder": "Напишіть своє повідомлення сюди",
 	"timeslider.pageTitle": "Часова шкала {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Повернутись до документа",
 	"timeslider.toolbar.authors": "Автори:",

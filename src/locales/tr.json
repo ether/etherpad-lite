@@ -7,7 +7,9 @@
 			"Meelo",
 			"Trockya",
 			"McAang",
-			"Vito Genovese"
+			"Vito Genovese",
+			"Hedda",
+			"Grkn gll"
 		]
 	},
 	"index.newPad": "Yeni Bloknot",
@@ -48,7 +50,7 @@
 	"pad.settings.fontType.monospaced": "Tek aralıklı",
 	"pad.settings.globalView": "Genel Görünüm",
 	"pad.settings.language": "Dil:",
-	"pad.importExport.import_export": "İçerik/Dışarı Aktar",
+	"pad.importExport.import_export": "İçeri aktar/Dışarı aktar",
 	"pad.importExport.import": "Herhangi bir metin dosyası ya da belgesi yükle",
 	"pad.importExport.importSuccessful": "Başarılı!",
 	"pad.importExport.export": "Mevcut bloknotu şu olarak dışa aktar:",
@@ -92,6 +94,8 @@
 	"pad.chat": "Sohbet",
 	"pad.chat.title": "Bu bloknot için sohbeti açın.",
 	"pad.chat.loadmessages": "Daha fazla mesaj yükle",
+	"pad.chat.stick.title": "Sohbeti ekrana yapıştır",
+	"pad.chat.writeMessage.placeholder": "Mesajını buraya yaz",
 	"timeslider.pageTitle": "{{appTitle}} Zaman Çizelgesi",
 	"timeslider.toolbar.returnbutton": "Bloknota geri dön",
 	"timeslider.toolbar.authors": "Yazarlar:",

@@ -28,8 +28,8 @@ var chat = (function()
   var historyPointer = 0;
   var chatMentions = 0;
   var self = {
-    show: function () 
-    {      
+    show: function ()
+    {
       $("#chaticon").hide();
       $("#chatbox").show();
       $("#gritter-notice-wrapper").hide();
@@ -37,7 +37,7 @@ var chat = (function()
       chatMentions = 0;
       Tinycon.setBubble(0);
     },
-    focus: function () 
+    focus: function ()
     {
       setTimeout(function(){
         $("#chatinput").focus();
@@ -83,14 +83,14 @@ var chat = (function()
         $("#chatbox").removeClass("chatAndUsersChat");
       }
     },
-    hide: function () 
+    hide: function ()
     {
-      // decide on hide logic based on chat window being maximized or not 
+      // decide on hide logic based on chat window being maximized or not
       if ($('#options-stickychat').prop('checked')) {
         chat.stickToScreen();
         $('#options-stickychat').prop('checked', false);
       }
-      else {  
+      else {
         $("#chatcounter").text("0");
         $("#chaticon").show();
         $("#chatbox").hide();
@@ -108,7 +108,7 @@ var chat = (function()
           self.lastMessage = $('#chattext > p').eq(-1);
         }
       }
-    }, 
+    },
     send: function()
     {
       var text = $("#chatinput").val();
@@ -121,7 +121,7 @@ var chat = (function()
     {
       //correct the time
       msg.time += this._pad.clientTimeOffset;
-      
+
       //create the time string
       var minutes = "" + new Date(msg.time).getMinutes();
       var hours = "" + new Date(msg.time).getHours();
@@ -130,7 +130,7 @@ var chat = (function()
       if(hours.length == 1)
         hours = "0" + hours ;
       var timeStr = hours + ":" + minutes;
-        
+
       //create the authorclass
       var authorClass = "author-" + msg.userId.replace(/[^a-y0-9]/g, function(c)
       {
