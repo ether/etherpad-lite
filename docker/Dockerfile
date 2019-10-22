@@ -6,7 +6,7 @@
 #
 # Version 0.1
 
-FROM node:buster-slim
+FROM node:10-buster-slim
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # git hash of the version to be built.
