@@ -110,7 +110,7 @@ exports.padOptions = {
   "alwaysShowChat": false,
   "chatAndUsers": false,
   "lang": "en-gb"
-},
+};
 
 /**
  * Whether certain shortcut keys are enabled for a user in the pad
@@ -137,8 +137,8 @@ exports.padShortcutEnabled = {
   "cmdH" : true,
   "ctrlHome" : true,
   "pageUp" : true,
-  "pageDown" : true,
-},
+  "pageDown" : true
+};
 
 /**
  * The toolbar buttons and order.
@@ -158,7 +158,7 @@ exports.toolbar = {
   timeslider: [
     ["timeslider_export", "timeslider_settings", "timeslider_returnToPad"]
   ]
-}
+};
 
 /**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
@@ -345,15 +345,15 @@ exports.getGitCommit = function() {
     version = fs.readFileSync(refPath, "utf-8");
     version = version.substring(0, 7);
   } catch(e) {
-    console.warn("Can't get git version for server header\n" + e.message)
+    console.warn("Can't get git version for server header\n" + e.message);
   }
   return version;
-}
+};
 
 // Return etherpad version from package.json
 exports.getEpVersion = function() {
   return require('ep_etherpad-lite/package.json').version;
-}
+};
 
 /**
  * Receives a settingsObj and, if the property name is a valid configuration
