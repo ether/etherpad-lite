@@ -53,12 +53,7 @@ RUN bin/installDeps.sh && \
 # able to split at spaces.
 RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; done
 
-# Copy the custom configuration file, if present. The configuration file has to
-# be manually put inside the same directory containing the Dockerfile (we cannot
-# directly point to "../settings.json" for Docker's security restrictions).
-#
-# For the conditional COPY trick, see:
-#   https://stackoverflow.com/questions/31528384/conditional-copy-add-in-dockerfile#46801962
+# Copy the configuration file.
 COPY ./settings.json /opt/etherpad-lite/
 
 # Follow the principle of least privilege: run as unprivileged user.
