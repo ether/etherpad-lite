@@ -3,6 +3,7 @@
 * FEATURE: support configuration via environment variables
 * FEATURE: include an official Dockerfile in the main repository
 * FEATURE: support including plugins in custom Docker builds
+* FEATURE: conditional creation of users: when its password is null, a user is not created. This helps, for example, in advanced configuration of Docker images.
 * REQUIREMENTS: minimum required Node version is **8.9.0 LTS**. Release 1.8.3 will require at least Node **10.13.0** LTS
 * MINOR: in the HTTP API, allow URL parameters and POST bodies to co-exist
 * MINOR: fix Unicode bug in HTML export
