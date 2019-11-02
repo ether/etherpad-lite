@@ -6,7 +6,7 @@
 #
 # Version 0.1
 
-FROM node:buster-slim
+FROM node:10-buster-slim
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # git hash of the version to be built.
@@ -53,13 +53,19 @@ RUN bin/installDeps.sh && \
 # able to split at spaces.
 RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; done
 
-# Copy the custom configuration file, if present. The configuration file has to
-# be manually put inside the same directory containing the Dockerfile (we cannot
-# directly point to "../settings.json" for Docker's security restrictions).
-#
-# For the conditional COPY trick, see:
-#   https://stackoverflow.com/questions/31528384/conditional-copy-add-in-dockerfile#46801962
+# Copy the configuration file.
 COPY ./settings.json /opt/etherpad-lite/
+
+# Follow the principle of least privilege: run as unprivileged user.
+#
+# Running as non-root enables running this image in platforms like OpenShift
+# that do not allow images running as root.
+RUN \
+    echo 'etherpad:x:65534:65534:etherpad:/:' > /etc/passwd && \
+    echo 'etherpad:x:65534:' > /etc/group && \
+    chown -R etherpad:etherpad ./
+
+USER etherpad
 
 EXPOSE 9001
 CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
