@@ -1,4 +1,4 @@
-# 1.8
+# 1.8-beta.1
 * FEATURE: code was migrated to `async`/`await`, getting rid of a lot of callbacks (see https://github.com/ether/etherpad-lite/issues/3540)
 * FEATURE: support configuration via environment variables
 * FEATURE: include an official Dockerfile in the main repository
