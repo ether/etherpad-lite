@@ -637,8 +637,8 @@ exports.reloadSettings = function reloadSettings() {
      * This is used by the settings.json in the default Dockerfile to eschew
      * creating an admin user if no password is set.
      */
-    var filteredUsers = _.filter(exports.users, function(user, username) {
-      if ((user.hasOwnProperty("password")) || user.password !== null) {
+    var filteredUsers = _.filter(exports.users, function(userProperties, username) {
+      if ((userProperties.hasOwnProperty("password")) || userProperties.password !== null) {
         return true;
       }
 
