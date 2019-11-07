@@ -64,10 +64,10 @@ docker build --build-arg ETHERPAD_PLUGINS="ep_codepad ep_author_neat" --tag <YOU
 
 To run your instance:
 ```bash
-docker run --detach --publish <DESIDERED_PORT>:9001 <YOUR_USERNAME>/etherpad
+docker run --detach --publish <DESIRED_PORT>:9001 <YOUR_USERNAME>/etherpad
 ```
 
-And point your browser to `http://<YOUR_IP>:<DESIDERED_PORT>`
+And point your browser to `http://<YOUR_IP>:<DESIRED_PORT>`
 
 # Options available by default
 
