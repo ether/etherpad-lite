@@ -65,7 +65,7 @@ RUN \
     echo 'etherpad:x:65534:' > /etc/group && \
     chown -R etherpad:etherpad ./
 
-USER etherpad
+USER etherpad:etherpad
 
 EXPOSE 9001
 CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
