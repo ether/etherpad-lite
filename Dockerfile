@@ -3,15 +3,9 @@
 # https://github.com/ether/etherpad-lite
 #
 # Author: muxator
-#
-# Version 0.1
 
 FROM node:10-buster-slim
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
-
-# git hash of the version to be built.
-# If not given, build the latest development version.
-ARG ETHERPAD_VERSION=develop
 
 # plugins to install while building the container. By default no plugins are
 # installed.
@@ -25,23 +19,9 @@ ARG ETHERPAD_PLUGINS=
 # this can be done with build args (and is mandatory to build ARM version)
 ENV NODE_ENV=development
 
-# grab the ETHERPAD_VERSION tarball from github (no need to clone the whole
-# repository)
-RUN echo "Getting version: ${ETHERPAD_VERSION}" && \
-	curl \
-		--location \
-		--fail \
-		--silent \
-		--show-error \
-		--output /opt/etherpad-lite.tar.gz \
-		https://github.com/ether/etherpad-lite/archive/"${ETHERPAD_VERSION}".tar.gz && \
-	mkdir /opt/etherpad-lite && \
-	tar xf /opt/etherpad-lite.tar.gz \
-		--directory /opt/etherpad-lite \
-		--strip-components=1 && \
-	rm /opt/etherpad-lite.tar.gz
-
 WORKDIR /opt/etherpad-lite
+
+COPY ./ ./
 
 # install node dependencies for Etherpad
 RUN bin/installDeps.sh && \
@@ -54,7 +34,7 @@ RUN bin/installDeps.sh && \
 RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; done
 
 # Copy the configuration file.
-COPY ./settings.json /opt/etherpad-lite/
+COPY ./docker/settings.json /opt/etherpad-lite/settings.json
 
 # Follow the principle of least privilege: run as unprivileged user.
 #

@@ -35,24 +35,9 @@ Some plugins will need personalized settings in the `settings.json` file. Just r
 
 ### Examples
 
-Build the latest development version:
+Build a Docker image from the currently checked-out code:
 ```bash
 docker build --tag <YOUR_USERNAME>/etherpad .
-```
-
-Build the latest stable version:
-```bash
-docker build --build-arg ETHERPAD_VERSION=master --build-arg NODE_ENV=production --tag <YOUR_USERNAME>/etherpad .
-```
-
-Build a specific tagged version:
-```bash
-docker build --build-arg ETHERPAD_VERSION=1.7.5 --build-arg NODE_ENV=production --tag <YOUR_USERNAME>/etherpad .
-```
-
-Build a specific git hash:
-```bash
-docker build --build-arg ETHERPAD_VERSION=4c45ac3cb1ae --tag <YOUR_USERNAME>/etherpad .
 ```
 
 Include two plugins in the container:
