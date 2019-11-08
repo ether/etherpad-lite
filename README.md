@@ -61,6 +61,10 @@ If cloning to a subdirectory within another project, you may need to do the foll
 2. Edit the db `filename` in `settings.json` to the relative directory with the file (e.g. `application/lib/etherpad-lite/var/dirty.db`)
 3. Add auto-generated files to the main project `.gitignore`
 
+## Docker container
+
+Find [here](doc/docker.md) information on running Etherpad in a container.
+
 # Next Steps
 
 ## Tweak the settings

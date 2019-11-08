@@ -2,7 +2,7 @@
 
 The official Docker image is available on https://hub.docker.com/r/etherpad/etherpad.
 
-# Downloading from Docker Hub
+## Downloading from Docker Hub
 If you are ok downloading a [prebuilt image from Docker Hub](https://hub.docker.com/r/etherpad/etherpad), these are the commands:
 ```bash
 # gets the latest published version
@@ -12,12 +12,12 @@ docker pull etherpad/etherpad
 docker pull etherpad/etherpad:1.8.0
 ```
 
-# Build a personalized container
+## Build a personalized container
 
 If you want to use a personalized settings file, **you will have to rebuild your image**.
 All of the following instructions are as a member of the `docker` group.
 
-## Rebuilding with custom settings
+### Rebuilding with custom settings
 Prepare your custom `settings.json` file:
 ```bash
 cd <BASEDIR>/docker
@@ -27,13 +27,13 @@ cp ../settings.json.template settings.json
 
 **Each configuration parameter can also be set via an environment variable**, using the syntax `"${ENV_VAR}"` or `"${ENV_VAR:default_value}"`. For details, refer to `settings.json.template`.
 
-## Rebuilding including some plugins
+### Rebuilding including some plugins
 If you want to install some plugins in your container, it is sufficient to list them in the ETHERPAD_PLUGINS build variable.
 The variable value has to be a space separated, double quoted list of plugin names (see examples).
 
 Some plugins will need personalized settings in the `settings.json` file. Just refer to the previous section, and include them in your custom `settings.json`.
 
-## Examples
+### Examples
 
 Build the latest development version:
 ```bash
@@ -60,7 +60,7 @@ Include two plugins in the container:
 docker build --build-arg ETHERPAD_PLUGINS="ep_codepad ep_author_neat" --tag <YOUR_USERNAME>/etherpad .
 ```
 
-# Running your instance:
+## Running your instance:
 
 To run your instance:
 ```bash
@@ -69,7 +69,7 @@ docker run --detach --publish <DESIRED_PORT>:9001 <YOUR_USERNAME>/etherpad
 
 And point your browser to `http://<YOUR_IP>:<DESIRED_PORT>`
 
-# Options available by default
+## Options available by default
 
 The `settings.json` available by default enables some configuration to be set from the environment.
 
@@ -93,7 +93,7 @@ Available options:
 * `USER_PASSWORD`: the password for the first user `user` (leave unspecified if you do not want to create it)
 * `LOGLEVEL`: valid values are `DEBUG`, `INFO`, `WARN` and `ERROR`
 
-## Examples
+### Examples
 
 Use a Postgres database, no admin user enabled:
 
