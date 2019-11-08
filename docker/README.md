@@ -1,6 +1,6 @@
-# Docker image
+# Docker
 
-This directory contains the files that are used to build the official Docker image on https://hub.docker.com/r/etherpad/etherpad.
+The official Docker image is available on https://hub.docker.com/r/etherpad/etherpad.
 
 # Downloading from Docker Hub
 If you are ok downloading a [prebuilt image from Docker Hub](https://hub.docker.com/r/etherpad/etherpad), these are the commands:
@@ -9,7 +9,7 @@ If you are ok downloading a [prebuilt image from Docker Hub](https://hub.docker.
 docker pull etherpad/etherpad
 
 # gets a specific version
-docker pull etherpad/etherpad:1.7.5
+docker pull etherpad/etherpad:1.8.0
 ```
 
 # Build a personalized container
@@ -22,7 +22,7 @@ Prepare your custom `settings.json` file:
 ```bash
 cd <BASEDIR>/docker
 cp ../settings.json.template settings.json
-[ further edit your settings.json as needed]
+[ further edit your settings.json as needed ]
 ```
 
 **Each configuration parameter can also be set via an environment variable**, using the syntax `"${ENV_VAR}"` or `"${ENV_VAR:default_value}"`. For details, refer to `settings.json.template`.
@@ -74,6 +74,7 @@ And point your browser to `http://<YOUR_IP>:<DESIRED_PORT>`
 The `settings.json` available by default enables some configuration to be set from the environment.
 
 Available options:
+
 * `TITLE`: The name of the instance
 * `FAVICON`: favicon default name, or a fully specified URL to your own favicon
 * `SKIN_NAME`: either `no-skin`, `colibris` or an existing directory under `src/static/skins`.

@@ -1,6 +1,6 @@
 # Etherpad Lite Dockerfile
 #
-# https://github.com/ether/etherpad-docker
+# https://github.com/ether/etherpad-lite
 #
 # Author: muxator
 #
