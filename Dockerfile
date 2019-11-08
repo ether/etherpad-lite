@@ -34,7 +34,7 @@ RUN bin/installDeps.sh && \
 RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; done
 
 # Copy the configuration file.
-COPY ./docker/settings.json /opt/etherpad-lite/settings.json
+COPY ./settings.json.docker /opt/etherpad-lite/settings.json
 
 # Follow the principle of least privilege: run as unprivileged user.
 #

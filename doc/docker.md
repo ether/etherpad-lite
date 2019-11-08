@@ -18,12 +18,7 @@ If you want to use a personalized settings file, **you will have to rebuild your
 All of the following instructions are as a member of the `docker` group.
 
 ### Rebuilding with custom settings
-Prepare your custom `settings.json` file:
-```bash
-cd <BASEDIR>/docker
-cp ../settings.json.template settings.json
-[ further edit your settings.json as needed ]
-```
+Edit `<BASEDIR>/settings.json.docker` at your will. When rebuilding the image, this file will be copied inside your image and renamed to `setting.json`.
 
 **Each configuration parameter can also be set via an environment variable**, using the syntax `"${ENV_VAR}"` or `"${ENV_VAR:default_value}"`. For details, refer to `settings.json.template`.
 
@@ -31,7 +26,7 @@ cp ../settings.json.template settings.json
 If you want to install some plugins in your container, it is sufficient to list them in the ETHERPAD_PLUGINS build variable.
 The variable value has to be a space separated, double quoted list of plugin names (see examples).
 
-Some plugins will need personalized settings in the `settings.json` file. Just refer to the previous section, and include them in your custom `settings.json`.
+Some plugins will need personalized settings. Just refer to the previous section, and include them in your custom `settings.json.docker`.
 
 ### Examples
 
@@ -56,7 +51,7 @@ And point your browser to `http://<YOUR_IP>:<DESIRED_PORT>`
 
 ## Options available by default
 
-The `settings.json` available by default enables some configuration to be set from the environment.
+The `settings.json.docker` available by default enables some configuration to be set from the environment.
 
 Available options:
 
