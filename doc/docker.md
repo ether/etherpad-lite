@@ -100,3 +100,12 @@ docker run -d \
 	-e 'ADMIN_PASSWORD=supersecret' \
 	etherpad/etherpad
 ```
+
+Run a test instance running DirtyDB on a persistent volume:
+
+```
+docker run -d \
+	-v etherpad_data:/opt/etherpad-lite/var \
+	-p 9001:9001 \
+	etherpad/etherpad
+```
