@@ -1,3 +1,6 @@
+# 1.8
+* SECURITY: change referrer policy so that Etherpad addresses aren't leaked when links are clicked (discussion: https://github.com/ether/etherpad-lite/pull/3636)
+
 # 1.8-beta.1
 * FEATURE: code was migrated to `async`/`await`, getting rid of a lot of callbacks (see https://github.com/ether/etherpad-lite/issues/3540)
 * FEATURE: support configuration via environment variables
