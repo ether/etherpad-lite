@@ -200,8 +200,12 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         }
         // Using rel="noreferrer" stops leaking the URL/location of the pad when clicking links in the document.
         // Not all browsers understand this attribute, but it's part of the HTML5 standard.
-        // http://www.w3.org/TR/html5/links.html#link-type-noreferrer
-        extraOpenTags = extraOpenTags + '<a href="' + Security.escapeHTMLAttribute(href) + '" rel="noreferrer">';
+        // https://html.spec.whatwg.org/multipage/links.html#link-type-noreferrer
+        // Additionally, we do rel="noopener" to ensure a higher level of referrer security.
+        // https://html.spec.whatwg.org/multipage/links.html#link-type-noopener
+        // https://mathiasbynens.github.io/rel-noopener/
+        // https://github.com/ether/etherpad-lite/pull/3636
+        extraOpenTags = extraOpenTags + '<a href="' + Security.escapeHTMLAttribute(href) + '" rel="noreferrer noopener">';
         extraCloseTags = '</a>' + extraCloseTags;
       }
       if (simpleTags)
