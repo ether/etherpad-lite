@@ -41,7 +41,7 @@ COPY ./settings.json.docker /opt/etherpad-lite/settings.json
 # Running as non-root enables running this image in platforms like OpenShift
 # that do not allow images running as root.
 RUN \
-    echo 'etherpad:x:65534:65534:etherpad:/:' > /etc/passwd && \
+    echo 'etherpad:x:65534:65534:etherpad:/opt/etherpad-lite/:' > /etc/passwd && \
     echo 'etherpad:x:65534:' > /etc/group && \
     chown -R etherpad:etherpad ./
 
