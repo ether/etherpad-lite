@@ -364,6 +364,16 @@
         <script type="text/javascript" src="../static/js/require-kernel.js"></script>
           
         <script type="text/javascript">
+          
+            var pathComponents = location.pathname.split('/');
+
+            // Strip 'p' and the padname from the pathname and set as baseURL
+            var baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/';
+
+            require.setRootURI(baseURL + "javascripts/src");
+            require.setLibraryURI(baseURL + "javascripts/lib");
+            require.setGlobalKeyPath("require");
+          
             var padutils = require('../static/js/pad_utils').padutils;
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             (function() {
@@ -397,15 +407,7 @@
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             var clientVars = {};
             (function () {
-              var pathComponents = location.pathname.split('/');
-
-              // Strip 'p' and the padname from the pathname and set as baseURL
-              var baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/';
-
-              require.setRootURI(baseURL + "javascripts/src");
-              require.setLibraryURI(baseURL + "javascripts/lib");
-              require.setGlobalKeyPath("require");
-
+          
               $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
               browser = require('ep_etherpad-lite/static/js/browser');
 
