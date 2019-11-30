@@ -360,9 +360,13 @@
         <% e.end_block(); %>
 
         <% e.begin_block("scripts"); %>
-        <script type="text/javascript">
-            var padutils = require('../static/js/pad_utils').padutils;
 
+        <script type="text/javascript" src="../static/js/require-kernel.js"></script>
+
+        <!-- Include pad_utils manually -->
+        <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad_utils.js?callback=require.define"></script>
+
+        <script type="text/javascript">
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             (function() {
               // Display errors on page load to the user
@@ -380,7 +384,6 @@
             // @license-end
         </script>
 
-        <script type="text/javascript" src="../static/js/require-kernel.js"></script>
         <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 
         <!-- Include base packages manually (this help with debugging) -->
