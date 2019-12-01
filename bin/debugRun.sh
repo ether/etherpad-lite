@@ -17,4 +17,4 @@ echo "Open 'chrome://inspect' on Chrome to start debugging."
 
 #Use 0.0.0.0 to allow external connections to the debugger
 #(ex: running Etherpad on a docker container). Use default port # (9229)
-node --inspect=0.0.0.0:9229 node_modules/ep_etherpad-lite/node/server.js $*
+node --inspect=0.0.0.0:9229 node_modules/ep_etherpad-lite/node/server.js "$@"
