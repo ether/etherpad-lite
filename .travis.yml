@@ -21,8 +21,12 @@ jobs:
       script:
         - "tests/frontend/travis/runner.sh"
     - name: "Test the Dockerfile"
+      install:
+        - "cd src && npm install && cd -"
       script:
-        - "docker build ."
+        - "docker build -t etherpad:test ."
+        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+        - "cd src && npm run test-container"
 
 notifications:
   irc:

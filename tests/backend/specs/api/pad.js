@@ -1,3 +1,10 @@
+/*
+ * ACHTUNG: there is a copied & modified version of this file in
+ * <basedir>/tests/container/spacs/api/pad.js
+ *
+ * TODO: unify those two files, and merge in a single one.
+ */
+
 const assert = require('assert');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
 const fs = require('fs');
@@ -204,7 +211,7 @@ describe('getText', function(){
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.data.text !== "testText\n") throw new Error("Pad Creation with text")
-    }) 
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -573,7 +580,7 @@ describe('createPad', function(){
   it('errors if pad can be created', function(done) {
     var badUrlChars = ["/", "%23", "%3F", "%26"];
     async.map(
-      badUrlChars, 
+      badUrlChars,
       function (badUrlChar, cb) {
         api.get(endPoint('createPad')+"&padID="+badUrlChar)
         .expect(function(res){

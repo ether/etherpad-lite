@@ -82,7 +82,8 @@
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api"
+    "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
+    "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
   "version": "1.8.0",
   "license": "Apache-2.0"
