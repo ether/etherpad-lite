@@ -1,3 +1,12 @@
+/**
+ * THIS IS THE SETTINGS FILE THAT IS COPIED INSIDE THE DOCKER CONTAINER.
+ *
+ * By default, some runtime customizations are supported (see the
+ * documentation).
+ *
+ * If you need more control, edit this file and rebuild the container.
+ */
+
 /*
  * This file must be valid JSON. But comments are allowed
  *
@@ -278,8 +287,14 @@
 
   /*
    * When you use NGINX or another proxy/load-balancer set this to true.
+   *
+   * This is especially necessary when the reverse proxy performs SSL
+   * termination, otherwise the cookies will not have the "secure" flag.
+   *
+   * The other effect will be that the logs will contain the real client's IP,
+   * instead of the reverse proxy's IP.
    */
-  "trustProxy": false,
+  "trustProxy": "${TRUST_PROXY:false}",
 
   /*
    * Privacy: disable IP logging

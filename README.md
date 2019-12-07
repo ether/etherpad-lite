@@ -1,4 +1,5 @@
 # A real-time collaborative editor for the web
+<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
 ![Demo Etherpad Animated Jif](https://i.imgur.com/zYrGkg3.gif "Etherpad in action")
 
 # About
@@ -60,6 +61,10 @@ If cloning to a subdirectory within another project, you may need to do the foll
 1. Start the server manually (e.g. `node/node_modules/ep_etherpad-lite/node/server.js`)
 2. Edit the db `filename` in `settings.json` to the relative directory with the file (e.g. `application/lib/etherpad-lite/var/dirty.db`)
 3. Add auto-generated files to the main project `.gitignore`
+
+## Docker container
+
+Find [here](doc/docker.md) information on running Etherpad in a container.
 
 # Next Steps
 

@@ -83,7 +83,7 @@ require_minimal_version "nodejs" "$NODE_VERSION_STRING" "$REQUIRED_NODE_MAJOR" "
 #Get the name of the settings file
 settings="settings.json"
 a='';
-for arg in $*; do
+for arg in "$@"; do
   if [ "$a" = "--settings" ] || [ "$a" = "-s" ]; then settings=$arg; fi
   a=$arg
 done

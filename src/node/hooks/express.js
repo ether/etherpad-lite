@@ -76,6 +76,15 @@ exports.restartServer = function () {
     // https://github.com/ether/etherpad-lite/issues/2547
     res.header("X-UA-Compatible", "IE=Edge,chrome=1");
 
+    // Enable a strong referrer policy. Same-origin won't drop Referers when
+    // loading local resources, but it will drop them when loading foreign resources.
+    // It's still a last bastion of referrer security. External URLs should be
+    // already marked with rel="noreferer" and user-generated content pages are already
+    // marked with <meta name="referrer" content="no-referrer">
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+    // https://github.com/ether/etherpad-lite/pull/3636
+    res.header("Referrer-Policy", "same-origin");
+
     // send git version in the Server response header if exposeVersion is true.
     if (settings.exposeVersion) {
       res.header("Server", serverName);
