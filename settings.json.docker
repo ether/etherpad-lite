@@ -287,8 +287,14 @@
 
   /*
    * When you use NGINX or another proxy/load-balancer set this to true.
+   *
+   * This is especially necessary when the reverse proxy performs SSL
+   * termination, otherwise the cookies will not have the "secure" flag.
+   *
+   * The other effect will be that the logs will contain the real client's IP,
+   * instead of the reverse proxy's IP.
    */
-  "trustProxy": false,
+  "trustProxy": "${TRUST_PROXY:false}",
 
   /*
    * Privacy: disable IP logging
