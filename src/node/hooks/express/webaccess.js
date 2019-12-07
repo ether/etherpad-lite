@@ -123,7 +123,17 @@ exports.expressConfigure = function (hook_name, args, cb) {
   }
 
   args.app.sessionStore = exports.sessionStore;
-  args.app.use(sessionModule({secret: exports.secret, store: args.app.sessionStore, resave: true, saveUninitialized: true, name: 'express_sid', proxy: true, cookie: { secure: !!settings.ssl }}));
+  args.app.use(sessionModule({
+    secret: exports.secret,
+    store: args.app.sessionStore,
+    resave: true,
+    saveUninitialized: true,
+    name: 'express_sid',
+    proxy: true,
+    cookie: {
+      secure: !!settings.ssl,
+    }
+  }));
 
   args.app.use(cookieParser(settings.sessionKey, {}));
 
