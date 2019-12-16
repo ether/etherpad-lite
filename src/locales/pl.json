@@ -9,7 +9,8 @@
 			"Pan Cube",
 			"Mateon1",
 			"Teeed",
-			"DeRudySoulStorm"
+			"DeRudySoulStorm",
+			"WaldiSt"
 		]
 	},
 	"index.newPad": "Nowy dokument",
@@ -94,6 +95,8 @@
 	"pad.chat": "Czat",
 	"pad.chat.title": "Otwórz czat dla tego dokumentu.",
 	"pad.chat.loadmessages": "Załaduj więcej wiadomości",
+	"pad.chat.stick.title": "Przyklej czat do ekranu",
+	"pad.chat.writeMessage.placeholder": "Napisz swoją wiadomość tutaj",
 	"timeslider.pageTitle": "Oś czasu {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Powróć do dokumentu",
 	"timeslider.toolbar.authors": "Autorzy:",
