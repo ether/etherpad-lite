@@ -49,7 +49,7 @@
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
     "nodeify": "^1.0.1",
-    "npm": "6.13.1",
+    "npm": "6.13.4",
     "object.values": "^1.0.4",
     "request": "2.88.0",
     "resolve": "1.1.7",
