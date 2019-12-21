@@ -1,5 +1,11 @@
 #!/bin/bash
 # download and unzip the sauce connector
+#
+# ACHTUNG: as of 2019-12-21, downloading sc-latest-linux.tar.gz does not work.
+#          It is necessary to explicitly download a specific version, for
+#          example https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz
+#          Supported versions are currently listed at:
+#          https://wiki.saucelabs.com/display/DOCS/Downloading+Sauce+Connect+Proxy
 curl https://saucelabs.com/downloads/sc-latest-linux.tar.gz > /tmp/sauce.tar.gz
 tar zxf /tmp/sauce.tar.gz --directory /tmp
 mv /tmp/sc-*-linux /tmp/sauce_connect
