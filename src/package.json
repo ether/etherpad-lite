@@ -34,7 +34,7 @@
     "async-stacktrace": "0.0.2",
     "channels": "0.0.4",
     "cheerio": "0.20.0",
-    "clean-css": "3.4.19",
+    "clean-css": "4.1.11",
     "cookie-parser": "1.4.4",
     "ejs": "2.6.1",
     "etherpad-require-kernel": "1.0.9",
