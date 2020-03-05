@@ -97,49 +97,15 @@
 }
 
 @media (max-width: 720px) {
-.toolbar ul {
-    height: 39px;
-    background: none;
-    background-color: transparent;
-    border: none !important;
-    padding: 0 !important;
-    overflow-x: visible;
-  }
-  .toolbar ul.menu_left {
-    padding-top: 2px !important;
-  }
-  .toolbar ul.menu_right {
-    left: 0;
-    padding-left: 8px !important;
-    padding-top: 8px !important;
-    height: 35px !important;
-    border-top: 1px solid #d2d2d2 !important;
-    background-color: white;
-  }
-  .toolbar ul li a {
-    padding: 4px 5px !important;
-  }
-
-  .toolbar ul li[data-key=showusers] {
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-  .toolbar ul li[data-key=showusers] a {
-    padding-top: 9px !important;
-  }
-  .toolbar ul li a:hover { background-color: transparent; }
-
   #connectivity, #embed, #import_export, #settings { bottom: 42px; }
-
-  li.superscript,
-  li.subscript,
-  li[data-key="undo"],
-  li[data-key="redo"] {
-    display: none;
-  }
 
   .toolbar ul li.separator { margin: 0; }
 }
 
-
+@media (max-width: 630px) {
+  .toolbar ul.menu_left {
+    position: relative;
+    padding-top: 0;
+    left: 0;
+  }
+}

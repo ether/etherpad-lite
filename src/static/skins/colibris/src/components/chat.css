@@ -99,7 +99,7 @@
   right: 30px;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 630px) {
   #chaticon {
     right: 0;
     bottom: 44px;
