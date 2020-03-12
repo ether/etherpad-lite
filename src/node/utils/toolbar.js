@@ -68,7 +68,7 @@ ButtonsGroup.prototype.addButton = function (button) {
 };
 
 ButtonsGroup.prototype.render = function () {
-  if (this.buttons.length == 1) {
+  if (this.buttons && this.buttons.length == 1) {
     this.buttons[0].grouping = "";
   }
   else {
@@ -80,7 +80,7 @@ ButtonsGroup.prototype.render = function () {
   }
 
   return _.map(this.buttons, function (btn) {
-    return btn.render();
+    if(btn) return btn.render();
   }).join("\n");
 };
 
@@ -90,11 +90,16 @@ Button = function (attributes) {
 
 Button.load = function (btnName) {
   var button = module.exports.availableButtons[btnName];
-  if (button.constructor === Button || button.constructor === SelectButton) {
-    return button;
-  }
-  else {
-    return new Button(button);
+  try{
+    if (button.constructor === Button || button.constructor === SelectButton) {
+      return button;
+    }
+    else {
+      return new Button(button);
+    }
+  }catch(e){
+    console.warn("Error loading button", btnName);
+    return false;
   }
 };
 
