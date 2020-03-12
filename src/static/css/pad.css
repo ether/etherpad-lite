@@ -1063,9 +1063,6 @@ input[type=checkbox] {
     right:100px;
   }
 
-  .toolbar ul.menu_right {
-    right:0px;
-  }
   .popup {
     width:100%;
     max-width:300px;
@@ -1074,7 +1071,7 @@ input[type=checkbox] {
 }
 
 /* Mobile devices */
-@media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
+@media only screen and (max-width: 720px) {
     #users {
       top: auto;
       right:0px !important;
@@ -1108,9 +1105,11 @@ input[type=checkbox] {
     }
     .toolbar ul.menu_left {
       right:0px;
-      position: fixed;
+      position: relative;
+      display: flex;
       top: 0;
-      padding-top: 4px;
+      overflow-x: auto;
+      padding: 4px 0 0 0;
       border-bottom: 1px solid #ccc;
       z-index: 10;
     }

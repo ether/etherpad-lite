@@ -67,7 +67,7 @@
 }
 
 .toolbar ul.menu_left {
-  left: 8px;
+  padding-left: 8px;
 }
 
 .toolbar ul.menu_right {
@@ -97,23 +97,21 @@
 }
 
 @media (max-width: 720px) {
-.toolbar ul {
+  .toolbar ul {
     height: 39px;
     background: none;
     background-color: transparent;
-    border: none !important;
-    padding: 0 !important;
     overflow-x: visible;
   }
   .toolbar ul.menu_left {
-    padding-top: 2px !important;
+    padding: 2px 0 0 0;
   }
   .toolbar ul.menu_right {
     left: 0;
-    padding-left: 8px !important;
-    padding-top: 8px !important;
+    padding-left: 8px;
+    padding-top: 8px;
     height: 35px !important;
-    border-top: 1px solid #d2d2d2 !important;
+    border-top: 1px solid #d2d2d2;
     background-color: white;
   }
   .toolbar ul li a {
