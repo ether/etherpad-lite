@@ -160,7 +160,7 @@ exports.handle = async function(apiVersion, functionName, fields, req, res)
 
   // say goodbye if this is an unknown function
   if (!(functionName in version[apiVersion])) {
-    // no status code?!
+    res.statusCode = 404;
     res.send({code: 3, message: "no such function", data: null});
     return;
   }
