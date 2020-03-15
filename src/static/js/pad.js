@@ -74,7 +74,7 @@ function randomString()
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
   { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
-  { name: "showChat",         checkVal: "true", callback: function(val) { $('#chaticon').show(); } },
+  { name: "showChat",         checkVal: null,    callback: function(val) { if(val === "true"){$('#chaticon').show();} if(val==="false"){chat.hide();$('#chaticon').hide()} } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
   // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
@@ -92,7 +92,7 @@ function getParams()
   // Tries server enforced options first..
   for(var i = 0; i < getParameters.length; i++)
   {
-   var setting = getParameters[i];
+    var setting = getParameters[i];
     var value = clientVars.padOptions[setting.name];
     if(value.toString() === setting.checkVal)
     {
@@ -102,12 +102,10 @@ function getParams()
 
   // Then URL applied stuff
   var params = getUrlVars()
-
   for(var i = 0; i < getParameters.length; i++)
   {
     var setting = getParameters[i];
     var value = params[setting.name];
-
     if(value && (value == setting.checkVal || setting.checkVal == null))
     {
       setting.callback(value);
