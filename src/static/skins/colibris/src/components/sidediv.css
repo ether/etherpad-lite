@@ -1,0 +1,30 @@
+#sidediv {
+  background-color: transparent;
+  border: none;
+}
+
+#sidedivinner>div:before {
+  font-size: 13px;
+  padding-right: 18px !important;
+  color: #6a6a6b;
+  text-transform: uppercase;
+  font-size: 11px !important;
+  font-weight: bold;
+}
+
+#sidedivinner>div,
+#sidedivinner.authorColors>div,
+#sidedivinner.authorColors>div.primary-none {
+  padding-right: 5px !important;
+  border-right: 5px solid transparent;
+}
+
+#sidedivinner>div {
+  line-height: 24px;
+  font-size: 10px !important;
+  color: #a0a0a0;
+}
+
+#sidedivinner.authorColors>div, #sidedivinner.authorColors>div.primary-none, #sidedivinner>div {
+  padding-right: 8px !important;
+}

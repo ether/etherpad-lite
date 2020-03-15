@@ -52,7 +52,7 @@ describe("embed links", function(){
     //create a new pad before each test run
     beforeEach(function(cb){
       helper.newPad(cb);
-      this.timeout(5000);
+      this.timeout(60000);
     });
 
     describe("the share link", function(){
@@ -91,7 +91,7 @@ describe("embed links", function(){
   describe("when read only option is set", function(){
     beforeEach(function(cb){
       helper.newPad(cb);
-      this.timeout(5000);
+      this.timeout(60000);
     });
 
     describe("the share link", function(){
@@ -100,8 +100,8 @@ describe("embed links", function(){
 
         //open share dropdown
         chrome$(".buttonicon-embed").click();
-        //check read only checkbox, a bit hacky
-        chrome$('#readonlyinput').attr('checked','checked').click().attr('checked','checked');
+        chrome$('#readonlyinput').click();
+        chrome$('#readonlyinput:checkbox:not(:checked)').attr('checked', 'checked');
 
         //get the link of the share field + the actual pad url and compare them
         var shareLink = chrome$("#linkinput").val();
@@ -119,7 +119,9 @@ describe("embed links", function(){
         //open share dropdown
         chrome$(".buttonicon-embed").click();
         //check read only checkbox, a bit hacky
-        chrome$('#readonlyinput').attr('checked','checked').click().attr('checked','checked');
+        chrome$('#readonlyinput').click();
+        chrome$('#readonlyinput:checkbox:not(:checked)').attr('checked', 'checked');
+
 
         //get the link of the share field + the actual pad url and compare them
         var embedCode = chrome$("#embedinput").val();
@@ -129,5 +131,6 @@ describe("embed links", function(){
         done();
       });
     });
+
   });
 });

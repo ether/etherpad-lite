@@ -1,6 +1,6 @@
 html {
   height: 100%;
-} 
+}
 
 body {
   padding: 0px;
@@ -8,15 +8,22 @@ body {
   height: 100%;
 }
 
+#console {
+  display: none;
+}
+
 #iframe-container {
   width: 50%;
   height: 100%;
-  float:right;
 }
 
 #iframe-container iframe {
-  width: 100%;
   height: 100%;
+  position:absolute;
+  min-width:500px;
+  max-width:800px;
+  left:50%;
+  width:100%;
 }
 
 #mocha {
@@ -52,13 +59,9 @@ body {
   font-weight: 200;
 }
 
-#mocha h1 a {
-  text-decoration: none;
-  color: inherit;
-}
-
-#mocha h1 a:hover {
-  text-decoration: underline;
+#mocha h1 a:visited
+{
+  color: #00E;
 }
 
 #mocha .suite .suite h1 {
@@ -188,9 +191,9 @@ body {
 }
 
 #stats {
-  position: absolute;
+  position: fixed;
   top: 15px;
-  right: 10px;
+  right: 52%;
   font-size: 12px;
   margin: 0;
   color: #888;

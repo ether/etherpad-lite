@@ -2,6 +2,7 @@
   "pad.js": [
     "pad.js"
   , "pad_utils.js"
+  , "browser.js"
   , "pad_cookie.js"
   , "pad_editor.js"
   , "pad_editbar.js"
@@ -14,6 +15,7 @@
   , "pad_savedrevs.js"
   , "pad_connectionstatus.js"
   , "chat.js"
+  , "gritter.js"
   , "$tinycon/tinycon.js"
   , "excanvas.js"
   , "farbtastic.js"
@@ -23,6 +25,7 @@
   , "colorutils.js"
   , "draggable.js"
   , "pad_utils.js"
+  , "browser.js"
   , "pad_cookie.js"
   , "pad_editor.js"
   , "pad_editbar.js"
@@ -41,11 +44,11 @@
   ]
 , "ace2_inner.js": [
     "ace2_inner.js"
+  , "browser.js"
   , "AttributePool.js"
   , "Changeset.js"
   , "ChangesetUtils.js"
   , "skiplist.js"
-  , "virtual_lines.js"
   , "cssmanager.js"
   , "colorutils.js"
   , "undomodule.js"
@@ -58,6 +61,7 @@
   ]
 , "ace2_common.js": [
     "ace2_common.js"
+  , "browser.js"
   , "jquery.js"
   , "rjquery.js"
   , "$async.js"

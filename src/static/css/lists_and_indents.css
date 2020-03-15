@@ -1,0 +1,195 @@
+/*
+ * These are the common definitions for the styling of bulleted lists, numbered
+ * lists, and plain indented blocks, shared by the editor and timeslider pages.
+ */
+
+ul, ol, li {
+  padding: 0;
+  margin: 0;
+}
+
+ul { margin-left: 1.5em; }
+ul ul { margin-left: 0 !important; }
+ul.list-bullet1 { margin-left: 1.5em; }
+ul.list-bullet2 { margin-left: 3em; }
+ul.list-bullet3 { margin-left: 4.5em; }
+ul.list-bullet4 { margin-left: 6em; }
+ul.list-bullet5 { margin-left: 7.5em; }
+ul.list-bullet6 { margin-left: 9em; }
+ul.list-bullet7 { margin-left: 10.5em; }
+ul.list-bullet8 { margin-left: 12em; }
+ul.list-bullet9 { margin-left: 13.5em; }
+ul.list-bullet10 { margin-left: 15em; }
+ul.list-bullet11 { margin-left: 16.5em; }
+ul.list-bullet12 { margin-left: 18em; }
+ul.list-bullet13 { margin-left: 19.5em; }
+ul.list-bullet14 { margin-left: 21em; }
+ul.list-bullet15 { margin-left: 22.5em; }
+ul.list-bullet16 { margin-left: 24em; }
+
+ul { list-style-type: disc; }
+ul.list-bullet1 { list-style-type: disc; }
+ul.list-bullet2 { list-style-type: circle; }
+ul.list-bullet3 { list-style-type: square; }
+ul.list-bullet4 { list-style-type: disc; }
+ul.list-bullet5 { list-style-type: circle; }
+ul.list-bullet6 { list-style-type: square; }
+ul.list-bullet7 { list-style-type: disc; }
+ul.list-bullet8 { list-style-type: circle; }
+ul.list-bullet9 { list-style-type: disc; }
+ul.list-bullet10 { list-style-type: circle; }
+ul.list-bullet11 { list-style-type: square; }
+ul.list-bullet12 { list-style-type: disc; }
+ul.list-bullet13 { list-style-type: circle; }
+ul.list-bullet14 { list-style-type: square; }
+ul.list-bullet15 { list-style-type: disc; }
+ul.list-bullet16 { list-style-type: circle; }
+
+ul.list-indent1 { margin-left: 1.5em; }
+ul.list-indent2 { margin-left: 3em; }
+ul.list-indent3 { margin-left: 4.5em; }
+ul.list-indent4 { margin-left: 6em; }
+ul.list-indent5 { margin-left: 7.5em; }
+ul.list-indent6 { margin-left: 9em; }
+ul.list-indent7 { margin-left: 10.5em; }
+ul.list-indent8 { margin-left: 12em; }
+ul.list-indent9 { margin-left: 13.5em; }
+ul.list-indent10 { margin-left: 15em; }
+ul.list-indent11 { margin-left: 16.5em; }
+ul.list-indent12 { margin-left: 18em; }
+ul.list-indent13 { margin-left: 19.5em; }
+ul.list-indent14 { margin-left: 21em; }
+ul.list-indent15 { margin-left: 22.5em; }
+ul.list-indent16 { margin-left: 24em; }
+
+ul.list-indent1, ul.list-indent2, ul.list-indent3, ul.list-indent4, ul.list-indent5,
+ul.list-indent6, ul.list-indent7, ul.list-indent8, ul.list-indent9, ul.list-indent10,
+ul.list-indent11, ul.list-indent12, ul.list-indent13,
+ul.list-indent14, ul.list-indent15, ul.list-indent16 { list-style-type: none; }
+
+ol {
+  list-style-type: decimal;
+}
+
+/* Fixes #2223 and #1836 */
+ol > li {
+  display:block;
+}
+
+/* Set the indentation */
+ol.list-number1{ text-indent: 0px; }
+ol.list-number2{ text-indent: 10px; }
+ol.list-number3{ text-indent: 20px; }
+ol.list-number4{ text-indent: 30px; }
+ol.list-number5{ text-indent: 40px; }
+ol.list-number6{ text-indent: 50px; }
+ol.list-number7{ text-indent: 60px; }
+ol.list-number8{ text-indent: 70px; }
+ol.list-number9{ text-indent: 80px; }
+ol.list-number10{ text-indent: 90px; }
+ol.list-number11{ text-indent: 100px; }
+ol.list-number12{ text-indent: 110px; }
+ol.list-number13{ text-indent: 120px; }
+ol.list-number14{ text-indent: 130px; }
+ol.list-number15{ text-indent: 140px; }
+ol.list-number16{ text-indent: 150px; }
+
+/* Add styling to the first item in a list */
+
+.list-start-number1 { counter-reset: first second; }
+.list-start-number2 { counter-reset: second; }
+.list-start-number3 { counter-reset: third; }
+.list-start-number4 { counter-reset: fourth; }
+.list-start-number5 { counter-reset: fifth; }
+.list-start-number6 { counter-reset: sixth; }
+.list-start-number7 { counter-reset: seventh; }
+.list-start-number8 { counter-reset: eighth; }
+.list-start-number9 { counter-reset: ninth; }
+.list-start-number10 { counter-reset: tenth; }
+.list-start-number11 { counter-reset: eleventh; }
+.list-start-number12 { counter-reset: twelfth; }
+.list-start-number13 { counter-reset: thirteenth; }
+.list-start-number14 { counter-reset: fourteenth; }
+.list-start-number15 { counter-reset: fifteenth; }
+.list-start-number16 { counter-reset: sixteenth; }
+
+/* The behavior for incrementing and the prefix */
+.list-number1 li:before {
+  content: counter(first) ". " ;
+  counter-increment: first;
+}
+
+.list-number2 li:before {
+  content: counter(first) "." counter(second) ". ";
+  counter-increment: second;
+}
+
+.list-number3 li:before {
+  content: counter(first) "." counter(second) "." counter(third) ". ";
+  counter-increment: third 1;
+}
+
+.list-number4 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";
+  counter-increment: fourth 1;
+}
+
+.list-number5 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";
+  counter-increment: fifth 1;
+}
+
+.list-number6 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";
+  counter-increment: sixth 1;
+}
+
+.list-number7 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";
+  counter-increment: seventh 1;
+}
+
+.list-number8 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) ". " ;
+  counter-increment: eighth 1;
+}
+
+.list-number9 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) ". ";
+  counter-increment: ninth 1;
+}
+
+.list-number10 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) ". ";
+  counter-increment: tenth 1;
+}
+
+.list-number11 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";
+  counter-increment: eleventh 1;
+}
+
+.list-number12 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) ". ";
+  counter-increment: twelfth 1;
+}
+
+.list-number13 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) ". ";
+  counter-increment: thirteenth 1;
+}
+
+.list-number14 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) ". ";
+  counter-increment: fourteenth 1;
+}
+
+.list-number15 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) ". ";
+  counter-increment: fifteenth 1;
+}
+
+.list-number16 li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) "." counter(sixteenth) ". ";
+  counter-increment: sixteenth 1;
+}

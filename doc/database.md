@@ -6,14 +6,14 @@
 A list of all existing groups (a JSON object with groupIDs as keys and `1` as values).
 
 ### pad:$PADID
-Saves all informations about pads
+Contains all information about pads
 
 * **atext** - the latest attributed text
 * **pool** - the attribute pool
 * **head** - the number of the latest revision
 * **chatHead** - the number of the latest chat entry
 * **public** - flag that disables security for this pad
-* **passwordHash** - string that contains a bcrypt hashed password for this pad
+* **passwordHash** - string that contains a salted sha512 sum of this pad's password
 
 ### pad:$PADID:revs:$REVNUM
 Saves a revision $REVNUM of pad $PADID
@@ -24,10 +24,10 @@ Saves a revision $REVNUM of pad $PADID
 * **changeset** - the changeset of this revision
 
 ### pad:$PADID:chat:$CHATNUM
-Saves a chatentry with num $CHATNUM of pad $PADID
+Saves a chat entry with num $CHATNUM of pad $PADID
 
 * **text** - the text of this chat entry
-* **userId** - the autorID of this chat entry
+* **userId** - the authorID of this chat entry
 * **time** - the timestamp of this chat entry
 
 ### pad2readonly:$PADID
@@ -43,9 +43,9 @@ Information about an author
 * **colorID** - the colorID of this author as shown in the pad
 
 ### mapper2group:$MAPPER
-Maps an external application identifier to an internal group 
+Maps an external application identifier to an internal group
 ### mapper2author:$MAPPER
-Maps an external application identifier to an internal author 
+Maps an external application identifier to an internal author
 ### group:$GROUPID
 a group of pads
 

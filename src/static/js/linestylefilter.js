@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -34,7 +34,6 @@ var linestylefilter = {};
 var _ = require('./underscore');
 var AttributeManager = require('./AttributeManager');
 
-
 linestylefilter.ATTRIB_CLASSES = {
   'bold': 'tag:b',
   'italic': 'tag:i',
@@ -59,6 +58,13 @@ linestylefilter.getAuthorClassName = function(author)
 linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFunc, apool)
 {
 
+  // Plugin Hook to add more Attrib Classes
+  hooks.aCallAll('aceAttribClasses', linestylefilter.ATTRIB_CLASSES, function(err, ATTRIB_CLASSES){
+    if(ATTRIB_CLASSES.length >= 1){
+      linestylefilter.ATTRIB_CLASSES = ATTRIB_CLASSES[0];
+    }
+  });
+
   if (lineLength == 0) return textAndClassFunc;
 
   var nextAfterAuthorColors = textAndClassFunc;
@@ -74,10 +80,10 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
     {
       var classes = '';
       var isLineAttribMarker = false;
-      
+
       Changeset.eachAttribNumber(attribs, function(n)
       {
-        var key = apool.getAttribKey(n);  
+        var key = apool.getAttribKey(n);
         if (key)
         {
           var value = apool.getAttribValue(n);
@@ -109,11 +115,11 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
                 key: key,
                 value: value
               }, " ", " ", "");
-            }            
+            }
           }
         }
       });
-      
+
       if(isLineAttribMarker) classes += ' ' + lineAttributeMarker;
       return classes.substring(1);
     }
@@ -146,12 +152,12 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
 
     return function(txt, cls)
     {
-	
+
       var disableAuthColorForThisLine = hooks.callAll("disableAuthorColorsForThisLine", {
         linestylefilter: linestylefilter,
         text: txt,
         "class": cls
-      }, " ", " ", "");   
+      }, " ", " ", "");
       var disableAuthors = (disableAuthColorForThisLine==null||disableAuthColorForThisLine.length==0)?false:disableAuthColorForThisLine[0];
       while (txt.length > 0)
       {
@@ -259,8 +265,8 @@ linestylefilter.getRegexpFilter = function(regExp, tag)
 
 
 linestylefilter.REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;
-linestylefilter.REGEX_URLCHAR = new RegExp('(' + /[-:@a-zA-Z0-9_.,~%+\/\\?=&#;()$]/.source + '|' + linestylefilter.REGEX_WORDCHAR.source + ')');
-linestylefilter.REGEX_URL = new RegExp(/(?:(?:https?|s?ftp|ftps|file|smb|afp|nfs|(x-)?man|gopher|txmt):\/\/|mailto:|www\.)/.source + linestylefilter.REGEX_URLCHAR.source + '*(?![:.,;])' + linestylefilter.REGEX_URLCHAR.source, 'g');
+linestylefilter.REGEX_URLCHAR = new RegExp('(' + /[-:@a-zA-Z0-9_.,~%+\/\\?=&#!;()$]/.source + '|' + linestylefilter.REGEX_WORDCHAR.source + ')');
+linestylefilter.REGEX_URL = new RegExp(/(?:(?:https?|s?ftp|ftps|file|nfs):\/\/|(about|geo|mailto|tel):|www\.)/.source + linestylefilter.REGEX_URLCHAR.source + '*(?![:.,;])' + linestylefilter.REGEX_URLCHAR.source, 'g');
 linestylefilter.getURLFilter = linestylefilter.getRegexpFilter(
 linestylefilter.REGEX_URL, 'url');
 
@@ -312,20 +318,20 @@ linestylefilter.textAndClassFuncSplitter = function(func, splitPointsOpt)
   return spanHandler;
 };
 
-linestylefilter.getFilterStack = function(lineText, textAndClassFunc, browser)
+linestylefilter.getFilterStack = function(lineText, textAndClassFunc, abrowser)
 {
   var func = linestylefilter.getURLFilter(lineText, textAndClassFunc);
 
   var hookFilters = hooks.callAll("aceGetFilterStack", {
     linestylefilter: linestylefilter,
-    browser: browser
+    browser: abrowser
   });
   _.map(hookFilters ,function(hookFilter)
   {
     func = hookFilter(lineText, func);
   });
 
-  if (browser !== undefined && browser.msie)
+  if (abrowser !== undefined && abrowser.msie)
   {
     // IE7+ will take an e-mail address like <foo@bar.com> and linkify it to foo@bar.com.
     // We then normalize it back to text with no angle brackets.  It's weird.  So always

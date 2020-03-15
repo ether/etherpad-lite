@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -20,13 +20,32 @@
  * limitations under the License.
  */
 
-function makeCSSManager(emptyStylesheetTitle)
+function makeCSSManager(emptyStylesheetTitle, doc)
 {
+  if (doc === true)
+  {
+    doc = 'parent';
+  } else if (!doc) {
+    doc = 'inner';
+  }
 
   function getSheetByTitle(title)
   {
-    var allSheets = document.styleSheets;
-    
+    if (doc === 'parent')
+    {
+      win = window.parent.parent;
+    }
+    else if (doc === 'inner') {
+      win = window;
+    }
+    else if (doc === 'outer') {
+      win = window.parent;
+    }
+    else {
+        throw "Unknown dynamic style container";
+    }
+    var allSheets = win.document.styleSheets;
+
     for (var i = 0; i < allSheets.length; i++)
     {
       var s = allSheets[i];
@@ -37,7 +56,7 @@ function makeCSSManager(emptyStylesheetTitle)
     }
     return null;
   }
-  
+
   var browserSheet = getSheetByTitle(emptyStylesheetTitle);
 
   function browserRules()

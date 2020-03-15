@@ -6,11 +6,11 @@ var helper = {};
   helper.init = function(cb){
     $iframeContainer = $("#iframe-container");
 
-    $.get('/static/js/jquery.js').done(function(code){ 
+    $.get('/static/js/jquery.js').done(function(code){
       // make sure we don't override existing jquery
       jsLibraries["jquery"] = "if(typeof $ === 'undefined') {\n" + code + "\n}";
 
-      $.get('/tests/frontend/lib/sendkeys.js').done(function(code){ 
+      $.get('/tests/frontend/lib/sendkeys.js').done(function(code){
         jsLibraries["sendkeys"] = code;
 
         cb();
@@ -32,7 +32,7 @@ var helper = {};
 
   var getFrameJQuery = function($iframe){
     /*
-      I tried over 9000 ways to inject javascript into iframes. 
+      I tried over 9000 ways to inject javascript into iframes.
       This is the only way I found that worked in IE 7+8+9, FF and Chrome
     */
 
@@ -45,37 +45,60 @@ var helper = {};
 
     win.eval(jsLibraries["jquery"]);
     win.eval(jsLibraries["sendkeys"]);
-    
+
     win.$.window = win;
     win.$.document = doc;
 
     return win.$;
   }
 
-  helper.newPad = function(cb){
-    var padName = "FRONTEND_TEST_" + helper.randomString(20);
+  helper.clearCookies = function(){
+    window.document.cookie = "";
+  }
+
+  helper.newPad = function(cb, padName){
+    //build opts object
+    var opts = {clearCookies: true}
+    if(typeof cb === 'function'){
+      opts.cb = cb
+    } else {
+      opts = _.defaults(cb, opts);
+    }
+
+    //clear cookies
+    if(opts.clearCookies){
+      helper.clearCookies();
+    }
+
+    if(!padName)
+      padName = "FRONTEND_TEST_" + helper.randomString(20);
     $iframe = $("<iframe src='/p/" + padName + "'></iframe>");
-    
+
     //clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
 
     //clean up iframes properly to prevent IE from memoryleaking
     $iframeContainer.find("iframe").purgeFrame().done(function(){
       $iframeContainer.append($iframe);
-      $iframe.one('load', function(){  
+      $iframe.one('load', function(){
         helper.waitFor(function(){
           return !$iframe.contents().find("#editorloadingbox").is(":visible");
-        }, 4000).done(function(){
+        }, 50000).done(function(){
           helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
-          helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe.[name="ace_outer"]'));
-          helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe.[name="ace_inner"]'));
-          
-          cb();
+          helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
+          helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
+
+          //disable all animations, this makes tests faster and easier
+          helper.padChrome$.fx.off = true;
+          helper.padOuter$.fx.off = true;
+          helper.padInner$.fx.off = true;
+
+          opts.cb();
         }).fail(function(){
           throw new Error("Pad never loaded");
         });
       });
-    }); 
+    });
 
     return padName;
   }
@@ -85,7 +108,7 @@ var helper = {};
     var intervalTime = _intervalTime || 10;
 
     var deferred = $.Deferred();
-    
+
     var _fail = deferred.fail;
     var listenForFail = false;
     deferred.fail = function(){
@@ -117,6 +140,65 @@ var helper = {};
     }, timeoutTime);
 
     return deferred;
+  }
+
+  helper.selectLines = function($startLine, $endLine, startOffset, endOffset){
+    // if no offset is provided, use beginning of start line and end of end line
+    startOffset = startOffset || 0;
+    endOffset   = endOffset === undefined ? $endLine.text().length : endOffset;
+
+    var inner$    = helper.padInner$;
+    var selection = inner$.document.getSelection();
+    var range     = selection.getRangeAt(0);
+
+    var start = getTextNodeAndOffsetOf($startLine, startOffset);
+    var end   = getTextNodeAndOffsetOf($endLine, endOffset);
+
+    range.setStart(start.node, start.offset);
+    range.setEnd(end.node, end.offset);
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  var getTextNodeAndOffsetOf = function($targetLine, targetOffsetAtLine){
+    var $textNodes = $targetLine.find('*').contents().filter(function(){
+      return this.nodeType === Node.TEXT_NODE;
+    });
+
+    // search node where targetOffsetAtLine is reached, and its 'inner offset'
+    var textNodeWhereOffsetIs = null;
+    var offsetBeforeTextNode = 0;
+    var offsetInsideTextNode = 0;
+    $textNodes.each(function(index, element){
+      var elementTotalOffset = element.textContent.length;
+      textNodeWhereOffsetIs = element;
+      offsetInsideTextNode = targetOffsetAtLine - offsetBeforeTextNode;
+
+      var foundTextNode = offsetBeforeTextNode + elementTotalOffset >= targetOffsetAtLine;
+      if (foundTextNode){
+        return false; //stop .each by returning false
+      }
+
+      offsetBeforeTextNode += elementTotalOffset;
+    });
+
+    // edge cases
+    if (textNodeWhereOffsetIs === null){
+      // there was no text node inside $targetLine, so it is an empty line (<br>).
+      // Use beginning of line
+      textNodeWhereOffsetIs = $targetLine.get(0);
+      offsetInsideTextNode = 0;
+    }
+    // avoid errors if provided targetOffsetAtLine is higher than line offset (maxOffset).
+    // Use max allowed instead
+    var maxOffset = textNodeWhereOffsetIs.textContent.length;
+    offsetInsideTextNode = Math.min(offsetInsideTextNode, maxOffset);
+
+    return {
+      node: textNodeWhereOffsetIs,
+      offset: offsetInsideTextNode,
+    };
   }
 
   /* Ensure console.log doesn't blow up in IE, ugly but ok for a test framework imho*/

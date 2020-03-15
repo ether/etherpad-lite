@@ -6,14 +6,14 @@ describe("the test helper", function(){
       var times = 10;
 
       var loadPad = function(){
-      	helper.newPad(function(){
+        helper.newPad(function(){
           times--;
           if(times > 0){
             loadPad();
           } else {
             done();
           }
-      	})
+        })
       }
 
       loadPad();
@@ -22,8 +22,8 @@ describe("the test helper", function(){
     it("gives me 3 jquery instances of chrome, outer and inner", function(done){
       this.timeout(5000);
 
-    	helper.newPad(function(){
-    		//check if the jquery selectors have the desired elements
+      helper.newPad(function(){
+        //check if the jquery selectors have the desired elements
         expect(helper.padChrome$("#editbar").length).to.be(1);
         expect(helper.padOuter$("#outerdocbody").length).to.be(1);
         expect(helper.padInner$("#innerdocbody").length).to.be(1);
@@ -39,61 +39,175 @@ describe("the test helper", function(){
   });
 
   describe("the waitFor method", function(){
-  	it("takes a timeout and waits long enough", function(done){
-  		this.timeout(2000);
-      var startTime = new Date().getTime();
+    it("takes a timeout and waits long enough", function(done){
+      this.timeout(2000);
+      var startTime = Date.now();
 
       helper.waitFor(function(){
-        return false;	
+        return false;
       }, 1500).fail(function(){
-      	var duration = new Date().getTime() - startTime;
+        var duration = Date.now() - startTime;
         expect(duration).to.be.greaterThan(1400);
         done();
       });
-  	});
+    });
 
-  	it("takes an interval and checks on every interval", function(done){
+    it("takes an interval and checks on every interval", function(done){
       this.timeout(4000);
       var checks = 0;
- 
+
       helper.waitFor(function(){
         checks++;
-        return false;	
+        return false;
       }, 2000, 100).fail(function(){
-        expect(checks).to.be.greaterThan(18);
-        expect(checks).to.be.lessThan(22);
+        expect(checks).to.be.greaterThan(10);
+        expect(checks).to.be.lessThan(30);
         done();
       });
-  	});
+    });
 
-  	describe("returns a deferred object", function(){
+    describe("returns a deferred object", function(){
       it("it calls done after success", function(done){
         helper.waitFor(function(){
-	        return true;	
-	      }).done(function(){
+          return true;
+        }).done(function(){
           done();
-	      });
+        });
       });
 
       it("calls fail after failure", function(done){
-				helper.waitFor(function(){
-	        return false;	
-	      },0).fail(function(){
+        helper.waitFor(function(){
+          return false;
+        },0).fail(function(){
           done();
-	      });
+        });
       });
 
       xit("throws if you don't listen for fails", function(done){
-	      var onerror = window.onerror;
-				window.onerror = function(){
+        var onerror = window.onerror;
+        window.onerror = function(){
           window.onerror = onerror;
-					done();
-				}
+          done();
+        }
 
-				helper.waitFor(function(){
-	        return false;	
-	      },100);
+        helper.waitFor(function(){
+          return false;
+        },100);
       });
-  	});
+    });
+  });
+
+  describe("the selectLines method", function(){
+    // function to support tests, use a single way to represent whitespaces
+    var cleanText = function(text){
+      return text
+      // IE replaces line breaks with a whitespace, so we need to unify its behavior
+      // for other browsers, to have all tests running for all browsers
+      .replace(/\n/gi, "")
+      .replace(/\s/gi, " ");
+    }
+
+    before(function(done){
+      helper.newPad(function() {
+        // create some lines to be used on the tests
+        var $firstLine = helper.padInner$("div").first();
+        $firstLine.sendkeys("{selectall}some{enter}short{enter}lines{enter}to test{enter}{enter}");
+
+        // wait for lines to be split
+        helper.waitFor(function(){
+          var $fourthLine = helper.padInner$("div").eq(3);
+          return $fourthLine.text() === "to test";
+        }).done(done);
+      });
+
+      this.timeout(60000);
+    });
+
+    it("changes editor selection to be between startOffset of $startLine and endOffset of $endLine", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 4;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort lines to t");
+
+      done();
+    });
+
+    it("ends selection at beginning of $endLine when it is an empty line", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 1;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(4);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort lines to test");
+
+      done();
+    });
+
+    it("ends selection at beginning of $endLine when its offset is zero", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 0;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort lines ");
+
+      done();
+    });
+
+    it("selects full line when offset is longer than line content", function(done){
+      var inner$ = helper.padInner$;
+
+      var startOffset = 2;
+      var endOffset   = 50;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
+
+      helper.selectLines($startLine, $endLine, startOffset, endOffset);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("ort lines to test");
+
+      done();
+    });
+
+    it("selects all text between beginning of $startLine and end of $endLine when no offset is provided", function(done){
+      var inner$ = helper.padInner$;
+
+      var $lines     = inner$("div");
+      var $startLine = $lines.eq(1);
+      var $endLine   = $lines.eq(3);
+
+      helper.selectLines($startLine, $endLine);
+
+      var selection = inner$.document.getSelection();
+      expect(cleanText(selection.toString())).to.be("short lines to test");
+
+      done();
+    });
   });
 });

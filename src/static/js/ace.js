@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -86,7 +86,7 @@ function Ace2Editor()
     });
     actionsPendingInit = [];
   }
-  
+
   ace2.registry[info.id] = info;
 
   // The following functions (prefixed by 'ace_')  are exposed by editor, but
@@ -97,7 +97,7 @@ function Ace2Editor()
   'applyChangesToBase', 'applyPreparedChangesetToBase',
   'setUserChangeNotificationCallback', 'setAuthorInfo',
   'setAuthorSelectionRange', 'callWithAce', 'execCommand', 'replaceRange'];
-  
+
   _.each(aceFunctionsPendingInit, function(fnName,i){
     var prefix = 'ace_';
     var name = prefix + fnName;
@@ -105,21 +105,27 @@ function Ace2Editor()
       info[prefix + fnName].apply(this, arguments);
     });
   });
-  
+
   editor.exportText = function()
   {
     if (!loaded) return "(awaiting init)\n";
     return info.ace_exportText();
   };
-  
+
   editor.getFrame = function()
   {
     return info.frame || null;
   };
-  
+
   editor.getDebugProperty = function(prop)
   {
     return info.ace_getDebugProperty(prop);
+  };
+
+  editor.getInInternationalComposition = function()
+  {
+    if (!loaded) return false;
+    return info.ace_getInInternationalComposition();
   };
 
   // prepareUserChangeset:
@@ -180,7 +186,7 @@ function Ace2Editor()
     }
     for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
       var file = remoteFiles[i];
-      buffer.push('<link rel="stylesheet" type="text/css" href="' + file + '"\/>');
+      buffer.push('<link rel="stylesheet" type="text/css" href="' + encodeURI(file) + '"\/>');
     }
   }
 
@@ -216,16 +222,25 @@ function Ace2Editor()
       // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
       // and compressed, putting the compressed code from the named file directly into the
       // source here.
-      // these lines must conform to a specific format because they are passed by the build script:      
+      // these lines must conform to a specific format because they are passed by the build script:
       var includedCSS = [];
       var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
-      $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/custom/pad.css");
-      
-      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+
+      // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
+      if(!clientVars.disableCustomScriptsAndStyles){
+        $$INCLUDE_CSS("../static/css/pad.css");
+      }
+
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
+        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+          return path;
+        }
+        return '../static/plugins/' + path;
+      });
       includedCSS = includedCSS.concat(additionalCSS);
-      
+      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
+
       pushStyleTagsFor(iframeHTML, includedCSS);
 
       if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
@@ -259,7 +274,7 @@ plugins.ensure(function () {\n\
         iframeHTML: iframeHTML
       });
 
-      iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
+      iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
       // Expose myself to global for my child frame.
       var thisFunctionsName = "ChildAccessibleAce2Editor";
@@ -273,6 +288,7 @@ window.onload = function () {\n\
   setTimeout(function () {\n\
     var iframe = document.createElement("IFRAME");\n\
     iframe.name = "ace_inner";\n\
+    iframe.title = "pad";\n\
     iframe.scrolling = "no";\n\
     var outerdocbody = document.getElementById("outerdocbody");\n\
     iframe.frameBorder = 0;\n\
@@ -298,21 +314,27 @@ window.onload = function () {\n\
       var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
       $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/custom/pad.css");
-      
-      
-      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+
+
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
+        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+          return path;
+        }
+        return '../static/plugins/' + path }
+      );
       includedCSS = includedCSS.concat(additionalCSS);
-            
+      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
+
       pushStyleTagsFor(outerHTML, includedCSS);
 
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
-      outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/>', scriptTag(outerScript), '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>');
+      outerHTML.push('<style type="text/css" title="dynamicsyntax"></style>', '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', scriptTag(outerScript), '</head><body id="outerdocbody" class="outerdocbody ', hooks.clientPluginNames().join(' '),'"><div id="sidediv" class="sidediv"><!-- --></div><div id="linemetricsdiv">x</div></body></html>');
 
       var outerFrame = document.createElement("IFRAME");
       outerFrame.name = "ace_outer";
       outerFrame.frameBorder = 0; // for IE
+      outerFrame.title = "Ether";
       info.frame = outerFrame;
       document.getElementById(containerId).appendChild(outerFrame);
 

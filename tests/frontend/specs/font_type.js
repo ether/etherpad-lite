@@ -2,7 +2,7 @@ describe("font select", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
-    this.timeout(5000);
+    this.timeout(60000);
   });
 
   it("makes text monospace", function(done) {
@@ -19,11 +19,13 @@ describe("font select", function(){
 
     //select monospace and fire change event
     $monospaceoption.attr('selected','selected');
+    $viewfontmenu.val("monospace");
     $viewfontmenu.change();
 
     //check if font changed to monospace
     var fontFamily = inner$("body").css("font-family").toLowerCase();
-    expect(fontFamily).to.be("monospace");
+    var containsStr = fontFamily.indexOf("monospace");
+    expect(containsStr).to.not.be(-1);
 
     done();
   });

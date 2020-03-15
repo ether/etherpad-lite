@@ -1,7 +1,7 @@
 /**
- * This Module manages all /minified/* requests. It controls the 
- * minification && compression of Javascript and CSS. 
- */ 
+ * This Module manages all /minified/* requests. It controls the
+ * minification && compression of Javascript and CSS.
+ */
 
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
@@ -23,12 +23,12 @@ var ERR = require("async-stacktrace");
 var settings = require('./Settings');
 var async = require('async');
 var fs = require('fs');
-var cleanCSS = require('clean-css');
-var jsp = require("uglify-js").parser;
-var pro = require("uglify-js").uglify;
+var StringDecoder = require('string_decoder').StringDecoder;
+var CleanCSS = require('clean-css');
+var uglifyJS = require("uglify-js");
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-var RequireKernel = require('require-kernel');
+var RequireKernel = require('etherpad-require-kernel');
 var urlutil = require('url');
 
 var ROOT_DIR = path.normalize(__dirname + "/../../static/");
@@ -70,7 +70,7 @@ for (var key in tar) {
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-function requestURI(url, method, headers, callback, redirectCount) {
+function requestURI(url, method, headers, callback) {
   var parsedURL = urlutil.parse(url);
 
   var status = 500, headers = {}, content = [];
@@ -125,11 +125,11 @@ function requestURIs(locations, method, headers, callback) {
   }
 
   function completed() {
-    var statuss = responses.map(function (x) {return x[0]});
-    var headerss = responses.map(function (x) {return x[1]});
-    var contentss = responses.map(function (x) {return x[2]});
+    var statuss = responses.map(function (x) {return x[0];});
+    var headerss = responses.map(function (x) {return x[1];});
+    var contentss = responses.map(function (x) {return x[2];});
     callback(statuss, headerss, contentss);
-  };
+  }
 }
 
 /**
@@ -137,19 +137,21 @@ function requestURIs(locations, method, headers, callback) {
  * @param req the Express request
  * @param res the Express response
  */
-function minify(req, res, next)
+function minify(req, res)
 {
   var filename = req.params['filename'];
 
   // No relative paths, especially if they may go up the file hierarchy.
   filename = path.normalize(path.join(ROOT_DIR, filename));
+  filename = filename.replace(/\.\./g, '')
+
   if (filename.indexOf(ROOT_DIR) == 0) {
     filename = filename.slice(ROOT_DIR.length);
-    filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
+    filename = filename.replace(/\\/g, '/')
   } else {
     res.writeHead(404, {});
     res.end();
-    return; 
+    return;
   }
 
   /* Handle static files for plugins/libraries:
@@ -166,7 +168,7 @@ function minify(req, res, next)
       var plugin = plugins.plugins[library];
       var pluginPath = plugin.package.realPath;
       filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
-      filename = filename.replace(/\\/g, '/'); // Windows (safe generally?)
+      filename = filename.replace(/\\/g, '/'); // windows path fix
     } else if (LIBRARY_WHITELIST.indexOf(library) != -1) {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
@@ -202,7 +204,7 @@ function minify(req, res, next)
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
       if (settings.maxAge !== undefined) {
-        var expiresDate = new Date((new Date()).getTime()+settings.maxAge*1000);
+        var expiresDate = new Date(Date.now()+settings.maxAge*1000);
         res.setHeader('expires', expiresDate.toUTCString());
         res.setHeader('cache-control', 'max-age=' + settings.maxAge);
       }
@@ -238,7 +240,7 @@ function minify(req, res, next)
         res.end();
       }
     }
-  });
+  }, 3);
 }
 
 // find all includes in ace.js and embed them.
@@ -261,9 +263,9 @@ function getAceFile(callback) {
     // them into the file.
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
-      var request = require('request');
 
-      var baseURI = 'http://localhost:' + settings.port
+      // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
+      var baseURI = 'http://invalid.invalid';
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
@@ -285,6 +287,10 @@ function getAceFile(callback) {
 
 // Check for the existance of the file and get the last modification date.
 function statFile(filename, callback, dirStatLimit) {
+  /*
+   * The only external call to this function provides an explicit value for
+   * dirStatLimit: this check could be removed.
+   */
   if (typeof dirStatLimit === 'undefined') {
     dirStatLimit = 3;
   }
@@ -370,20 +376,18 @@ function requireDefinition() {
 
 function getFileCompressed(filename, contentType, callback) {
   getFile(filename, function (error, content) {
-    if (error || !content) {
+    if (error || !content || !settings.minify) {
       callback(error, content);
-    } else {
-      if (settings.minify) {
-        if (contentType == 'text/javascript') {
-          try {
-            content = compressJS([content]);
-          } catch (error) {
-            // silence
-          }
-        } else if (contentType == 'text/css') {
-          content = compressCSS([content]);
-        }
+    } else if (contentType == 'text/javascript') {
+      try {
+        content = compressJS(content);
+      } catch (error) {
+        // silence
       }
+      callback(null, content);
+    } else if (contentType == 'text/css') {
+      compressCSS(filename, content, callback);
+    } else {
       callback(null, content);
     }
   });
@@ -399,19 +403,30 @@ function getFile(filename, callback) {
   }
 }
 
-function compressJS(values)
+function compressJS(content)
 {
-  var complete = values.join("\n");
-  var ast = jsp.parse(complete); // parse code and get the initial AST
-  ast = pro.ast_mangle(ast); // get a new AST with mangled names
-  ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
-  return pro.gen_code(ast); // compressed code here
+  var decoder = new StringDecoder('utf8');
+  var code = decoder.write(content); // convert from buffer to string
+  var codeMinified = uglifyJS.minify(code, {fromString: true}).code;
+  return codeMinified;
 }
 
-function compressCSS(values)
+function compressCSS(filename, content, callback)
 {
-  var complete = values.join("\n");
-  return cleanCSS.process(complete);
+  try {
+    var base = path.join(ROOT_DIR, path.dirname(filename));
+    new CleanCSS({relativeTo: base}).minify(content, function (errors, minified) {
+      if (errors) {
+        // On error, just yield the un-minified original.
+        callback(null, content);
+      } else {
+        callback(null, minified.styles);
+      }
+    });
+  } catch (error) {
+    // On error, just yield the un-minified original.
+    callback(null, content);
+  }
 }
 
 exports.minify = minify;

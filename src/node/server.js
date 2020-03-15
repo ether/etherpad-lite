@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server. 
- * Static file Requests are answered directly from this module, Socket.IO messages are passed 
+ * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
+ * Static file Requests are answered directly from this module, Socket.IO messages are passed
  * to MessageHandler and minfied requests are passed to minified.
  */
 
@@ -21,47 +21,62 @@
  * limitations under the License.
  */
 
-// set up logger
-var log4js = require('log4js');
+var log4js = require('log4js')
+  , NodeVersion = require('./utils/NodeVersion')
+  ;
+
 log4js.replaceConsole();
 
-var settings = require('./utils/Settings');
+/*
+ * early check for version compatibility before calling
+ * any modules that require newer versions of NodeJS
+ */
+NodeVersion.enforceMinNodeVersion('8.9.0');
 
-//set loglevel
-log4js.setGlobalLogLevel(settings.loglevel);
+/*
+ * Etherpad 1.8.3 will require at least nodejs 10.13.0.
+ */
+NodeVersion.checkDeprecationStatus('10.13.0', '1.8.3');
 
-var db = require('./db/DB');
-var async = require('async');
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
+/*
+ * start up stats counting system
+ */
+var stats = require('./stats');
+stats.gauge('memoryUsage', function() {
+  return process.memoryUsage().rss;
+});
+
+/*
+ * no use of let or await here because it would cause startup
+ * to fail completely on very early versions of NodeJS
+ */
 var npm = require("npm/lib/npm.js");
 
-hooks.plugins = plugins;
+npm.load({}, function() {
+  var settings = require('./utils/Settings');
+  var db = require('./db/DB');
+  var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
+  var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
+  hooks.plugins = plugins;
 
-async.waterfall([
-  //initalize the database
-  function (callback)
-  {
-    db.init(callback);
-  },
+  db.init()
+    .then(plugins.update)
+    .then(function() {
+      console.info("Installed plugins: " + plugins.formatPluginsWithVersion());
+      console.debug("Installed parts:\n" + plugins.formatParts());
+      console.debug("Installed hooks:\n" + plugins.formatHooks());
 
-  plugins.update,
+      // Call loadSettings hook
+      hooks.aCallAll("loadSettings", { settings: settings });
 
-  function (callback) {
-    console.info("Installed plugins: " + plugins.formatPlugins());
-    console.debug("Installed parts:\n" + plugins.formatParts());
-    console.debug("Installed hooks:\n" + plugins.formatHooks());
-
-    // Call loadSettings hook
-    hooks.aCallAll("loadSettings", { settings: settings });
-
-    callback();
-  },
-
-  //initalize the http server
-  function (callback)
-  {
-    hooks.callAll("createServer", {});
-    callback(null);  
-  }
-]);
+      // initalize the http server
+      hooks.callAll("createServer", {});
+    })
+    .catch(function(e) {
+      console.error("exception thrown: " + e.message);
+      if (e.stack) {
+        console.log(e.stack);
+      }
+      process.exit(1);
+    });
+});

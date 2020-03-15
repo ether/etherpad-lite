@@ -1,5 +1,5 @@
 
 // Proviedes a require'able version of jQuery without leaking $ and jQuery;
-
-require('./jquery');
-exports.jQuery = exports.$ = $.noConflict(true);
+window.$ = require('./jquery');
+var jq = window.$.noConflict(true);
+exports.jQuery = exports.$ = jq;
