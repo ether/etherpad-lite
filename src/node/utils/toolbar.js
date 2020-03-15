@@ -260,6 +260,19 @@ module.exports = {
         // Remove Save Revision from the right menu
         removeItem(buttons[0],"savedrevision");
       }
+    }else{
+      /* This pad is not read only
+       *
+       * Readd the savedrevision button (the "star") if is not already there.
+       *
+       * This is a quick fix for #3702: it was sufficient to visit a single read
+       * only pad to cause the disappearence of the star button from all the
+       * pads.
+       */
+      if(buttons[0].indexOf("savedrevision") === -1){
+        // Add item back in for savedrevision
+        buttons[0].push("savedrevision");
+      }
     }
 
     var groups = _.map(buttons, function (group) {
