@@ -1,0 +1,34 @@
+#pad_title {
+  margin-bottom: 15px !important;
+  margin-top: 5px !important;
+  display: none; /* display only when page is loaded via javascript */
+}
+
+@media (max-width:720px) {
+  #pad_title { display: none !important; }
+}
+
+#edit_title {
+  color: white;
+}
+#edit_title:before {
+  font-family: fontawesome-etherpad;
+  position: absolute;
+  top: 20px;
+  font-size: 14px;
+  content: "\E839";
+  margin-left: 10px;
+}
+
+#input_title {
+  background-color: #f9f9f9 !important;
+  height: auto !important;
+  margin-top: 3px;
+  width: calc(100% - 110px) !important;
+  padding: 8px 10px !important;
+}
+
+#save_title button {
+  height: 30px !important;
+  padding: 5px 20px !important;
+}

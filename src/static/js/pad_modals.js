@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -19,9 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-var padutils = require('./pad_utils').padutils;
+
 var padeditbar = require('./pad_editbar').padeditbar;
+var automaticReconnect = require('./pad_automatic_reconnect');
 
 var padmodals = (function()
 {
@@ -36,26 +36,18 @@ var padmodals = (function()
       padeditbar.toggleDropDown("none", function() {
         $("#connectivity .visible").removeClass('visible');
         $("#connectivity ."+messageId).addClass('visible');
+
+        var $modal = $('#connectivity .' + messageId);
+        automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
+
         padeditbar.toggleDropDown("connectivity");
       });
     },
-    showOverlay: function(duration) {
-      $("#overlay").show().css(
-      {
-        'opacity': 0
-      }).animate(
-      {
-        'opacity': 1
-      }, duration);
+    showOverlay: function() {
+      $("#overlay").show();
     },
-    hideOverlay: function(duration) {
-      $("#overlay").animate(
-      {
-        'opacity': 0
-      }, duration, function()
-      {
-        $("#modaloverlay").hide();
-      });
+    hideOverlay: function() {
+      $("#overlay").hide();
     }
   };
   return self;

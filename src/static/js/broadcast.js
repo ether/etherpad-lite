@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -27,6 +27,7 @@ var Changeset = require('./Changeset');
 var linestylefilter = require('./linestylefilter').linestylefilter;
 var colorutils = require('./colorutils').colorutils;
 var _ = require('./underscore');
+var hooks = require('./pluginfw/hooks');
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
@@ -65,19 +66,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   }
 
-  // for IE
-  if ($.browser.msie)
-  {
-    try
-    {
-      document.execCommand("BackgroundImageCache", false, true);
-    }
-    catch (e)
-    {}
-  }
-
-
-  var socketId;
   //var socket;
   var channelState = "DISCONNECTED";
 
@@ -244,7 +232,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     if (broadcasting) applyChangeset(changesetForward, revision + 1, false, timeDelta);
   }
 
-/*
+   /*
    At this point, we must be certain that the changeset really does map from
    the current revision to the specified revision.  Any mistakes here will
    cause the whole slider to get out of sync.
@@ -271,15 +259,16 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     Changeset.mutateTextLines(changeset, padContents);
     padContents.currentRevision = revision;
-    padContents.currentTime += timeDelta;
+    padContents.currentTime += timeDelta * 1000;
+
     debugLog('Time Delta: ', timeDelta)
     updateTimer();
-    
+
     var authors = _.map(padContents.getActiveAuthors(), function(name)
     {
       return authorData[name];
     });
-    
+
     BroadcastSlider.setAuthors(authors);
   }
 
@@ -292,9 +281,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         str = '0' + str;
         return str;
         }
-        
-        
-        
+
     var date = new Date(padContents.currentTime);
     var dateFormat = function()
       {
@@ -304,20 +291,43 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         var hours = zpad(date.getHours(), 2);
         var minutes = zpad(date.getMinutes(), 2);
         var seconds = zpad(date.getSeconds(), 2);
-        return ([month, '/', day, '/', year, ' ', hours, ':', minutes, ':', seconds].join(""));
+        return (html10n.get("timeslider.dateformat", {
+          "day": day,
+          "month": month,
+          "year": year,
+          "hours": hours,
+          "minutes": minutes,
+          "seconds": seconds
+        }));
         }
-        
-        
-        
-        
-        
-    $('#timer').html(dateFormat());
 
-    var revisionDate = ["Saved", ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"][date.getMonth()], date.getDate() + ",", date.getFullYear()].join(" ")
+
+
+
+
+    $('#timer').html(dateFormat());
+    var revisionDate = html10n.get("timeslider.saved", {
+      "day": date.getDate(),
+      "month": [
+                html10n.get("timeslider.month.january"),
+                html10n.get("timeslider.month.february"),
+                html10n.get("timeslider.month.march"),
+                html10n.get("timeslider.month.april"),
+                html10n.get("timeslider.month.may"),
+                html10n.get("timeslider.month.june"),
+                html10n.get("timeslider.month.july"),
+                html10n.get("timeslider.month.august"),
+                html10n.get("timeslider.month.september"),
+                html10n.get("timeslider.month.october"),
+                html10n.get("timeslider.month.november"),
+                html10n.get("timeslider.month.december")
+               ][date.getMonth()],
+      "year": date.getFullYear()
+    });
     $('#revision_date').html(revisionDate)
 
   }
-  
+
   updateTimer();
 
   function goToRevision(newRevision)
@@ -363,28 +373,34 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       }
       if (changeset) applyChangeset(changeset, path.rev, true, timeDelta);
 
-
-      if (BroadcastSlider.getSliderLength() > 10000)
-      {
-        var start = (Math.floor((newRevision) / 10000) * 10000); // revision 0 to 10
-        changesetLoader.queueUp(start, 100);
-      }
-
-      if (BroadcastSlider.getSliderLength() > 1000)
-      {
-        var start = (Math.floor((newRevision) / 1000) * 1000); // (start from -1, go to 19) + 1
-        changesetLoader.queueUp(start, 10);
-      }
-
-      start = (Math.floor((newRevision) / 100) * 100);
-
-      changesetLoader.queueUp(start, 1, update);
+      // Loading changeset history for new revision
+      loadChangesetsForRevision(newRevision, update);
+      // Loading changeset history for old revision (to make diff between old and new revision)
+      loadChangesetsForRevision(padContents.currentRevision - 1);
     }
-    
+
     var authors = _.map(padContents.getActiveAuthors(), function(name){
       return authorData[name];
     });
     BroadcastSlider.setAuthors(authors);
+  }
+
+  function loadChangesetsForRevision(revision, callback) {
+    if (BroadcastSlider.getSliderLength() > 10000)
+    {
+      var start = (Math.floor((revision) / 10000) * 10000); // revision 0 to 10
+      changesetLoader.queueUp(start, 100);
+    }
+
+    if (BroadcastSlider.getSliderLength() > 1000)
+    {
+      var start = (Math.floor((revision) / 1000) * 1000); // (start from -1, go to 19) + 1
+      changesetLoader.queueUp(start, 10);
+    }
+
+    start = (Math.floor((revision) / 100) * 100);
+
+    changesetLoader.queueUp(start, 1, callback);
   }
 
   changesetLoader = {
@@ -461,7 +477,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         var astart = start + i * granularity - 1; // rev -1 is a blank single line
         var aend = start + (i + 1) * granularity - 1; // totalRevs is the most recent revision
         if (aend > data.actualEndNum - 1) aend = data.actualEndNum - 1;
-        debugLog("adding changeset:", astart, aend);
+        //debugLog("adding changeset:", astart, aend);
         var forwardcs = Changeset.moveOpsToNewPool(data.forwardsChangesets[i], pool, padContents.apool);
         var backwardcs = Changeset.moveOpsToNewPool(data.backwardsChangesets[i], pool, padContents.apool);
         revisionInfo.addChangeset(astart, aend, forwardcs, backwardcs, data.timeDeltas[i]);
@@ -507,6 +523,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
           var savedRev = obj.savedRev;
           BroadcastSlider.addSavedRevision(savedRev.revNum, savedRev);
         }
+        hooks.callAll('handleClientTimesliderMessage_' + obj.type, {payload: obj});
       }
       else if(obj.type == "CHANGESET_REQ")
       {
@@ -549,7 +566,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       goToRevision.apply(goToRevision, arguments);
     }
   }
-      
+
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
   var dynamicCSS = makeCSSManager('dynamicsyntax');

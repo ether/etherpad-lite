@@ -1,21 +1,20 @@
-var ERR = require("async-stacktrace");
 var securityManager = require('./db/SecurityManager');
 
-//checks for padAccess
-module.exports = function (req, res, callback) {
+// checks for padAccess
+module.exports = async function (req, res) {
+  try {
+    let accessObj = await securityManager.checkAccess(req.params.pad, req.cookies.sessionID, req.cookies.token, req.cookies.password);
 
-  // FIXME: Why is this ever undefined??
-  if (req.cookies === undefined) req.cookies = {};
-
-  securityManager.checkAccess(req.params.pad, req.cookies.sessionid, req.cookies.token, req.cookies.password, function(err, accessObj) {
-    if(ERR(err, callback)) return;
-
-    //there is access, continue
-    if(accessObj.accessStatus == "grant") {
-      callback();
-    //no access
+    if (accessObj.accessStatus === "grant") {
+      // there is access, continue
+      return true;
     } else {
-      res.send("403 - Can't touch this", 403);
+      // no access
+      res.status(403).send("403 - Can't touch this");
+      return false;
     }
-  });
+  } catch (err) {
+    // @TODO - send internal server error here?
+    throw err;
+  }
 }

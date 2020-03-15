@@ -19,11 +19,9 @@ var Buffer = require('buffer').Buffer;
 var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
-var util = require('util');
 var settings = require('./Settings');
 var semver = require('semver');
-
-var existsSync = (semver.satisfies(process.version, '>=0.8.0')) ? fs.existsSync : path.existsSync
+var existsSync = require('./path_exists');
 
 var CACHE_DIR = path.normalize(path.join(settings.root, 'var/'));
 CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
@@ -48,10 +46,10 @@ CachingMiddleware.prototype = new function () {
     var old_res = {};
 
     var supportsGzip =
-        req.header('Accept-Encoding', '').indexOf('gzip') != -1;
+        (req.get('Accept-Encoding') || '').indexOf('gzip') != -1;
 
     var path = require('url').parse(req.url).path;
-    var cacheKey = (new Buffer(path)).toString('base64').replace(/[\/\+=]/g, '');
+    var cacheKey = Buffer.from(path).toString('base64').replace(/[/+=]/g, '');
 
     fs.stat(CACHE_DIR + 'minified_' + cacheKey, function (error, stats) {
       var modifiedSince = (req.headers['if-modified-since']
@@ -133,7 +131,7 @@ CachingMiddleware.prototype = new function () {
           old_res.write = res.write;
           old_res.end = res.end;
           res.write = function(data, encoding) {};
-          res.end = function(data, encoding) { respond() };
+          res.end = function(data, encoding) { respond(); };
         } else {
           res.writeHead(status, headers);
         }
@@ -168,7 +166,7 @@ CachingMiddleware.prototype = new function () {
         } else if (req.method == 'GET') {
           var readStream = fs.createReadStream(pathStr);
           res.writeHead(statusCode, headers);
-          util.pump(readStream, res);
+          readStream.pipe(res);
         } else {
           res.writeHead(statusCode, headers);
           res.end();

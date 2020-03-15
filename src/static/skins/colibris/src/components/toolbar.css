@@ -1,0 +1,145 @@
+.toolbar {
+  height: 39px !important;
+  padding-top: 0;
+  margin: 0;
+  background-color: white !important;
+  background: none;
+  border: 1px solid #d2d2d2
+}
+
+.toolbar .buttonicon {
+  background-color: transparent;
+  font-size: 14px;
+  color: #767676;
+}
+
+.toolbar ul li.separator {
+  padding: 0;
+  visibility: visible;
+  width: 1px;
+  margin: 0 10px;
+  margin-right: 6px;
+  height: 39px;
+  background-color: rgba(78, 85, 92, 0.22);
+}
+
+.toolbar.condensed ul li {
+  margin-left: 0;
+}
+
+.toolbar.condensed ul li.separator {
+  margin: 0 5px;
+}
+
+.toolbar ul li a {
+  background-color: transparent;
+  background: none;
+  border: none;
+  margin-top: 6px;
+}
+
+.toolbar ul li a:hover,
+.toolbar ul li a.selected,
+.toolbar ul li a:focus {
+  background: none !important;
+  border-radius: 0;
+}
+
+.toolbar ul li a:hover {
+  background:#f7f7f7!important
+}
+
+.toolbar ul li a.selected,
+.toolbar ul li a:focus {
+   background: #eaeaea!important;
+}
+
+.toolbar ul li select {
+  border: none;
+  border-bottom: 1px solid #d7d8da;
+  border-radius: 0;
+  width: 90px;
+  margin-top: 5px;
+}
+
+.toolbar ul {
+  height: 39px;
+}
+
+.toolbar ul.menu_left {
+  left: 8px;
+}
+
+.toolbar ul.menu_right {
+  right: 0;
+  padding: 0;
+}
+
+.toolbar ul li[data-key=showusers] a {
+  margin: 0;
+  height: 59px;
+  line-height: 25px;
+  width: 45px;
+  margin-left: -10px;
+  border-radius: 0;
+}
+
+@media (max-width: 1000px) {
+  .toolbar ul li.separator {
+    margin: 0 2px;
+    background: none;
+    display: block;
+  }
+
+  .toolbar ul li[data-key=showusers] a {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 720px) {
+.toolbar ul {
+    height: 39px;
+    background: none;
+    background-color: transparent;
+    border: none !important;
+    padding: 0 !important;
+    overflow-x: visible;
+  }
+  .toolbar ul.menu_left {
+    padding-top: 2px !important;
+  }
+  .toolbar ul.menu_right {
+    left: 0;
+    padding-left: 8px !important;
+    padding-top: 8px !important;
+    height: 35px !important;
+    border-top: 1px solid #d2d2d2 !important;
+    background-color: white;
+  }
+  .toolbar ul li a {
+    padding: 4px 5px !important;
+  }
+
+  .toolbar ul li[data-key=showusers] {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .toolbar ul li[data-key=showusers] a {
+    padding-top: 9px !important;
+  }
+  .toolbar ul li a:hover { background-color: transparent; }
+
+  #connectivity, #embed, #import_export, #settings { bottom: 42px; }
+
+  li.superscript,
+  li.subscript,
+  li[data-key="undo"],
+  li[data-key="redo"] {
+    display: none;
+  }
+
+  .toolbar ul li.separator { margin: 0; }
+}
+
+

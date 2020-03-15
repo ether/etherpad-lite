@@ -1,0 +1,32 @@
+li.acl-write.font-color-icon.plugin-ep_font_color {
+  display: none;
+}
+
+#font-color {
+  display: list-item !important;
+}
+
+.color\:red,
+[data-color=red] {
+    color: #F44336;
+}
+
+.color\:green,
+[data-color=green] {
+    color: #66d29c;
+}
+
+.color\:blue,
+[data-color=blue] {
+    color: #2196f3;
+}
+
+.color\:yellow,
+[data-color=yellow] {
+    color: #e0d776;
+}
+
+.color\:orange,
+[data-color=orange] {
+    color: #d2a564;
+}

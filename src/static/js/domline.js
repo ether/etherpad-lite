@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -30,8 +30,7 @@ var Security = require('./security');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
 var lineAttributeMarker = require('./linestylefilter').lineAttributeMarker;
-var Ace2Common = require('./ace2_common');
-var noop = Ace2Common.noop;
+var noop = function(){};
 
 
 var domline = {};
@@ -66,7 +65,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     lineMarker: 0
   };
 
-  var browser = (optBrowser || {});
   var document = optDocument;
 
   if (document)
@@ -82,7 +80,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   }
 
   var html = [];
-  var preHtml = '', 
+  var preHtml = '',
   postHtml = '';
   var curHTML = null;
 
@@ -94,34 +92,52 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   var perTextNodeProcess = (doesWrap ? _.identity : processSpaces);
   var perHtmlLineProcess = (doesWrap ? processSpaces : _.identity);
   var lineClass = 'ace-line';
+
   result.appendSpan = function(txt, cls)
   {
+
     var processedMarker = false;
     // Handle lineAttributeMarker, if present
     if (cls.indexOf(lineAttributeMarker) >= 0)
     {
       var listType = /(?:^| )list:(\S+)/.exec(cls);
       var start = /(?:^| )start:(\S+)/.exec(cls);
+
+      _.map(hooks.callAll("aceDomLinePreProcessLineAttributes", {
+        domline: domline,
+        cls: cls
+      }), function(modifier)
+      {
+        preHtml += modifier.preHtml;
+        postHtml += modifier.postHtml;
+        processedMarker |= modifier.processedMarker;
+      });
+
       if (listType)
       {
         listType = listType[1];
-        start = start?'start="'+Security.escapeHTMLAttribute(start[1])+'"':'';
         if (listType)
         {
           if(listType.indexOf("number") < 0)
           {
-            preHtml = '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ul>';
+            preHtml += '<ul class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            postHtml = '</li></ul>' + postHtml;
           }
           else
           {
-            preHtml = '<ol '+start+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
-            postHtml = '</li></ol>';
+            if(start){ // is it a start of a list with more than one item in?
+              if(start[1] == 1){ // if its the first one at this level?
+                lineClass = lineClass + " " + "list-start-" + listType; // Add start class to DIV node
+              }
+              preHtml += '<ol start='+start[1]+' class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>';
+            }else{
+              preHtml += '<ol class="list-' + Security.escapeHTMLAttribute(listType) + '"><li>'; // Handles pasted contents into existing lists
+            }
+            postHtml += '</li></ol>';
           }
-        } 
+        }
         processedMarker = true;
       }
-      
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
         domline: domline,
         cls: cls
@@ -131,13 +147,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         postHtml += modifier.postHtml;
         processedMarker |= modifier.processedMarker;
       });
-      
       if( processedMarker ){
         result.lineMarker += txt.length;
         return; // don't append any text
-      } 
-
-
+      }
     }
     var href = null;
     var simpleTags = null;
@@ -180,11 +193,19 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     {
       if (href)
       {
-        if(!~href.indexOf("http")) // if the url doesn't include http or https etc prefix it.
+        urn_schemes = new RegExp("^(about|geo|mailto|tel):");
+        if(!~href.indexOf("://") && !urn_schemes.test(href)) // if the url doesn't include a protocol prefix, assume http
         {
           href = "http://"+href;
         }
-        extraOpenTags = extraOpenTags + '<a href="' + Security.escapeHTMLAttribute(href) + '">';
+        // Using rel="noreferrer" stops leaking the URL/location of the pad when clicking links in the document.
+        // Not all browsers understand this attribute, but it's part of the HTML5 standard.
+        // https://html.spec.whatwg.org/multipage/links.html#link-type-noreferrer
+        // Additionally, we do rel="noopener" to ensure a higher level of referrer security.
+        // https://html.spec.whatwg.org/multipage/links.html#link-type-noopener
+        // https://mathiasbynens.github.io/rel-noopener/
+        // https://github.com/ether/etherpad-lite/pull/3636
+        extraOpenTags = extraOpenTags + '<a href="' + Security.escapeHTMLAttribute(href) + '" rel="noreferrer noopener">';
         extraCloseTags = '</a>' + extraCloseTags;
       }
       if (simpleTags)
@@ -200,7 +221,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   result.clearSpans = function()
   {
     html = [];
-    lineClass = ''; // non-null to cause update
+    lineClass = 'ace-line';
     result.lineMarker = 0;
   };
 
@@ -213,7 +234,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       {
         newHTML += '&nbsp;';
       }
-      else if (!browser.msie)
+      else if (!optBrowser.msie)
       {
         newHTML += '<br/>';
       }
@@ -229,10 +250,10 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       result.node.innerHTML = curHTML;
     }
     if (lineClass !== null) result.node.className = lineClass;
-	
-	hooks.callAll("acePostWriteDomLineHTML", {
-        node: result.node
-	});
+
+    hooks.callAll("acePostWriteDomLineHTML", {
+      node: result.node
+    });
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;
@@ -240,7 +261,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   {
     return curHTML || '';
   };
-
   return result;
 };
 

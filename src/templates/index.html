@@ -1,17 +1,49 @@
+<%
+  var settings = require("ep_etherpad-lite/node/utils/Settings");
+%>
 <!doctype html>
 <html>
 
-        <title>Etherpad Lite</title>
+        <title><%=settings.title%></title>
+    <script>
+      /*
+      |@licstart  The following is the entire license notice for the
+      JavaScript code in this page.|
 
-        <meta charset="utf-8"> 
+      Copyright 2011 Peter Martischka, Primary Technology.
+
+      Licensed under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License.
+      You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+      Unless required by applicable law or agreed to in writing, software
+      distributed under the License is distributed on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+      See the License for the specific language governing permissions and
+      limitations under the License.
+
+      |@licend  The above is the entire license notice
+      for the JavaScript code in this page.|
+      */
+    </script>
+
+        <meta charset="utf-8">
+        <meta name="referrer" content="no-referrer">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+        <link rel="shortcut icon" href="<%=settings.favicon%>">
 
-        <link rel="shortcut icon" href="favicon.ico">
+        <link rel="localizations" type="application/l10n+json" href="locales.json">
+        <script type="text/javascript" src="static/js/html10n.js"></script>
+        <script type="text/javascript" src="static/js/l10n.js"></script>
 
         <style>
+            html, body {
+              height: 100%;
+            }
             body {
               margin: 0;
-              height: 100%;
               color: #333;
               font: 14px helvetica, sans-serif;
               background: #ddd;
@@ -30,18 +62,19 @@
               background: -moz-linear-gradient(#fff,#ccc);
               background: -ms-linear-gradient(#fff,#ccc);
               background: -o-linear-gradient(#fff,#ccc);
-              opacity: .9;
               box-shadow: 0px 1px 8px rgba(0,0,0,0.3);
             }
             #inner {
-              width: 300px;
+              position:relative;
+              max-width: 300px;
               margin: 0 auto;
             }
             #button {
               margin: 0 auto;
-              border-radius: 3px;
               text-align: center;
               font: 36px verdana,arial,sans-serif;
+              width:300px;
+              border:none;
               color: white;
               text-shadow: 0 -1px 0 rgba(0,0,0,.8);
               height: 70px;
@@ -69,6 +102,11 @@
               text-align: left;
               text-shadow: 0 1px 1px #fff;
               margin: 16px auto 0;
+              display:block;
+            }
+            #padname{
+              height:38px;
+              max-width:280px;
             }
             form {
               height: 38px;
@@ -84,8 +122,9 @@
             input[type="text"] {
               border-radius: 3px;
               box-sizing: border-box;
-              -moz-box-sizing: border-box;   
-              padding: 0 45px 0 10px;
+              -moz-box-sizing: border-box;
+              line-height:36px; /* IE8 hack */
+              padding: 0px 45px 0 10px;
               *padding: 0; /* IE7 hack */
               width: 100%;
               height: 100%;
@@ -95,7 +134,7 @@
             }
             button[type="submit"] {
               position: absolute;
-              right: 0;
+              left:253px;
               width: 45px;
               height: 38px;
             }
@@ -110,55 +149,69 @@
                 margin-top: 0;
               }
               #inner {
-                width: 95%;        
+                width: 95%;
               }
               #label {
                 text-align: center;
               }
             }
         </style>
-        <link href="static/custom/index.css" rel="stylesheet"> 
+        <link href="static/skins/<%=encodeURI(settings.skinName)%>/index.css" rel="stylesheet">
 
         <div id="wrapper">
+        <% e.begin_block("indexWrapper"); %>
             <div id="inner">
-                <div id="button" onclick="go2Random()" class="translate">New Pad</div>
-                <div id="label" class="translate">or create/open a Pad with the name</div> 
-                <form action="#" onsubmit="go2Name();return false;"> 
-                    <input type="text" id="padname" autofocus x-webkit-speech> 
+                <button id="button" onclick="go2Random()" data-l10n-id="index.newPad"></button>
+                <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
+                <form action="#" onsubmit="go2Name();return false;">
+                    <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
                     <button type="submit">OK</button>
                 </form>
             </div>
+        <% e.end_block(); %>
         </div>
 
-        <script src="static/custom/index.js"></script>
-        <script> 
-      
-            function go2Name() 
+        <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js"></script>
+        <script>
+            // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
+            function go2Name()
             {
                 var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
+                padname.length > 0 ? window.location = "p/" + encodeURIComponent(padname.trim()) : alert("Please enter a name")
             }
- 
-            function go2Random() 
+
+            function go2Random()
             {
                 window.location = "p/" + randomPadName();
             }
- 
-            function randomPadName() 
+
+            function randomPadName()
             {
-                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-                var string_length = 10;
+                // the number of distinct chars (64) is chosen to ensure that
+                // the selection will be uniform when using the PRNG below
+                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+                // the length of the pad name is chosen to get 120-bit security:
+                // log2(64^20) = 120
+                var string_length = 20;
+                // make room for 8-bit integer values that span from 0 to 255.
+                var randomarray = new Uint8Array(string_length);
+                // use browser's PRNG to generate a "unique" sequence
+                var cryptoObj = window.crypto || window.msCrypto; // for IE 11
+                cryptoObj.getRandomValues(randomarray);
                 var randomstring = '';
-                for (var i = 0; i < string_length; i++) 
+                for (var i = 0; i < string_length; i++)
                 {
-                    var rnum = Math.floor(Math.random() * chars.length);
+                    // instead of writing "Math.floor(randomarray[i]/256*64)"
+                    // we can save some cycles.
+                    var rnum = Math.floor(randomarray[i]/4);
                     randomstring += chars.substring(rnum, rnum + 1);
                 }
                 return randomstring;
             }
-            
+
             // start the custom js
             if (typeof customStart == "function") customStart();
+            // @license-end
         </script>
-
+        <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
 </html>

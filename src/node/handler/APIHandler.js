@@ -18,28 +18,33 @@
  * limitations under the License.
  */
 
-
-var ERR = require("async-stacktrace");
+var absolutePaths = require('../utils/AbsolutePaths');
 var fs = require("fs");
 var api = require("../db/API");
+var log4js = require('log4js');
 var padManager = require("../db/PadManager");
-var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+var randomString = require("../utils/randomstring");
+var argv = require('../utils/Cli').argv;
+
+var apiHandlerLogger = log4js.getLogger('APIHandler');
 
 //ensure we have an apikey
 var apikey = null;
-try
-{
-  apikey = fs.readFileSync("./APIKEY.txt","utf8");
-}
-catch(e) 
-{
+var apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || "./APIKEY.txt");
+
+try {
+  apikey = fs.readFileSync(apikeyFilename,"utf8");
+  apiHandlerLogger.info(`Api key file read from: "${apikeyFilename}"`);
+} catch(e) {
+  apiHandlerLogger.info(`Api key file "${apikeyFilename}" not found. Creating with random contents.`);
   apikey = randomString(32);
-  fs.writeFileSync("./APIKEY.txt",apikey,"utf8");
+  fs.writeFileSync(apikeyFilename,apikey,"utf8");
 }
 
-//a list of all functions
-var version =
-{ "1":
+// a list of all functions
+var version = {};
+
+version["1"] = Object.assign({},
   { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
@@ -68,11 +73,74 @@ var version =
   , "isPasswordProtected"       : ["padID"]
   , "listAuthorsOfPad"          : ["padID"]
   , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
+  }
+);
+
+version["1.1"] = Object.assign({}, version["1"],
+  { "getAuthorName"             : ["authorID"]
   , "padUsers"                  : ["padID"]
   , "sendClientsMessage"        : ["padID", "msg"]
+  , "listAllGroups"             : []
   }
-};
+);
+
+version["1.2"] = Object.assign({}, version["1.1"],
+  { "checkToken"                : []
+  }
+);
+
+version["1.2.1"] = Object.assign({}, version["1.2"],
+  { "listAllPads"               : []
+  }
+);
+
+version["1.2.7"] = Object.assign({}, version["1.2.1"],
+  { "createDiffHTML"            : ["padID", "startRev", "endRev"]
+  , "getChatHistory"            : ["padID", "start", "end"]
+  , "getChatHead"               : ["padID"]
+  }
+);
+
+version["1.2.8"] = Object.assign({}, version["1.2.7"],
+  { "getAttributePool"          : ["padID"]
+  , "getRevisionChangeset"      : ["padID", "rev"]
+  }
+);
+
+version["1.2.9"] = Object.assign({}, version["1.2.8"],
+  { "copyPad"                   : ["sourceID", "destinationID", "force"]
+  , "movePad"                   : ["sourceID", "destinationID", "force"]
+  }
+);
+
+version["1.2.10"] = Object.assign({}, version["1.2.9"],
+  { "getPadID"                  : ["roID"]
+  }
+);
+
+version["1.2.11"] = Object.assign({}, version["1.2.10"],
+  { "getSavedRevisionsCount"    : ["padID"]
+  , "listSavedRevisions"        : ["padID"]
+  , "saveRevision"              : ["padID", "rev"]
+  , "restoreRevision"           : ["padID", "rev"]
+  }
+);
+
+version["1.2.12"] = Object.assign({}, version["1.2.11"],
+  { "appendChatMessage"         : ["padID", "text", "authorID", "time"]
+  }
+);
+
+version["1.2.13"] = Object.assign({}, version["1.2.12"],
+  { "appendText"                : ["padID", "text"]
+  }
+);
+
+// set the latest available API version here
+exports.latestApiVersion = '1.2.13';
+
+// exports the versions so it can be used by the new Swagger endpoint
+exports.version = version;
 
 /**
  * Handles a HTTP API call
@@ -81,109 +149,73 @@ var version =
  * @req express request object
  * @res express response object
  */
-exports.handle = function(apiVersion, functionName, fields, req, res)
+exports.handle = async function(apiVersion, functionName, fields, req, res)
 {
-  //check if this is a valid apiversion
-  var isKnownApiVersion = false;
-  for(var knownApiVersion in version)
-  {
-    if(knownApiVersion == apiVersion)
-    {
-      isKnownApiVersion = true;
-      break;
-    }
-  }
-  
-  //say goodbye if this is an unkown API version
-  if(!isKnownApiVersion)
-  {
+  // say goodbye if this is an unknown API version
+  if (!(apiVersion in version)) {
     res.statusCode = 404;
     res.send({code: 3, message: "no such api version", data: null});
     return;
   }
-  
-  //check if this is a valid function name
-  var isKnownFunctionname = false;
-  for(var knownFunctionname in version[apiVersion])
-  {
-    if(knownFunctionname == functionName)
-    {
-      isKnownFunctionname = true;
-      break;
-    }
-  }
-  
-  //say goodbye if this is a unkown function
-  if(!isKnownFunctionname)
-  {
+
+  // say goodbye if this is an unknown function
+  if (!(functionName in version[apiVersion])) {
+    // no status code?!
     res.send({code: 3, message: "no such function", data: null});
     return;
   }
-  
-  //check the api key!
-  if(fields["apikey"] != apikey.trim())
-  {
+
+  // check the api key!
+  fields["apikey"] = fields["apikey"] || fields["api_key"];
+
+  if (fields["apikey"] !== apikey.trim()) {
+    res.statusCode = 401;
     res.send({code: 4, message: "no or wrong API Key", data: null});
     return;
   }
 
-  //sanitize any pad id's before continuing
-  if(fields["padID"])
-  {
-    padManager.sanitizePadId(fields["padID"], function(padId)
-    {
-      fields["padID"] = padId;
-      callAPI(apiVersion, functionName, fields, req, res);
-    });
+  // sanitize any padIDs before continuing
+  if (fields["padID"]) {
+    fields["padID"] = await padManager.sanitizePadId(fields["padID"]);
   }
-  else if(fields["padName"])
-  {
-    padManager.sanitizePadId(fields["padName"], function(padId)
-    {
-      fields["padName"] = padId;
-      callAPI(apiVersion, functionName, fields, req, res);
-    });
+  // there was an 'else' here before - removed it to ensure
+  // that this sanitize step can't be circumvented by forcing
+  // the first branch to be taken
+  if (fields["padName"]) {
+    fields["padName"] = await padManager.sanitizePadId(fields["padName"]);
   }
-  else
-  {
-    callAPI(apiVersion, functionName, fields, req, res);
-  }
+
+  // no need to await - callAPI returns a promise
+  return callAPI(apiVersion, functionName, fields, req, res);
 }
 
-//calls the api function
-function callAPI(apiVersion, functionName, fields, req, res)
+// calls the api function
+async function callAPI(apiVersion, functionName, fields, req, res)
 {
-  //put the function parameters in an array
-  var functionParams = [];
-  for(var i=0;i<version[apiVersion][functionName].length;i++)
-  {
-    functionParams.push(fields[ version[apiVersion][functionName][i] ]);
-  }
-  
-  //add a callback function to handle the response
-  functionParams.push(function(err, data)
-  {  
-    // no error happend, everything is fine
-    if(err == null)
-    {
-      if(!data)
-        data = null;
-    
-      res.send({code: 0, message: "ok", data: data});
-    }
-    // parameters were wrong and the api stopped execution, pass the error
-    else if(err.name == "apierror")
-    {
-      res.send({code: 1, message: err.message, data: null});
-    }
-    //an unkown error happend
-    else
-    {
-      res.send({code: 2, message: "internal error", data: null});
-      ERR(err);
-    }
+  // put the function parameters in an array
+  var functionParams = version[apiVersion][functionName].map(function (field) {
+    return fields[field]
   });
-  
-  //call the api function
-  api[functionName](functionParams[0],functionParams[1],functionParams[2],functionParams[3],functionParams[4]);
+
+  try {
+    // call the api function
+    let data = await api[functionName].apply(this, functionParams);
+
+    if (!data) {
+        data = null;
+    }
+
+    res.send({code: 0, message: "ok", data: data});
+  } catch (err) {
+    if (err.name == "apierror") {
+      // parameters were wrong and the api stopped execution, pass the error
+
+      res.send({code: 1, message: err.message, data: null});
+    } else {
+      // an unknown error happened
+
+      res.send({code: 2, message: "internal error", data: null});
+      throw err;
+    }
+  }
 }

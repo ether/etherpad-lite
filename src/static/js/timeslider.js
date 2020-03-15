@@ -28,9 +28,9 @@ JSON = require('./json2');
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
-var _ = require('./underscore');
+var hooks = require('./pluginfw/hooks');
 
-var socket, token, padId, export_links;
+var token, padId, export_links;
 
 function init() {
   $(document).ready(function ()
@@ -60,9 +60,9 @@ function init() {
     var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
     //find out in which subfolder we are
     var resource = exports.baseURL.substring(1) + 'socket.io';
-    
+
     //build up the socket io connection
-    socket = io.connect(url, {resource: resource});
+    socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
 
     //send the ready message once we're connected
     socket.on('connect', function()
@@ -95,24 +95,22 @@ function init() {
     //get all the export links
     export_links = $('#export > .exportlink')
 
-    if(document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf("/")-1,document.referrer.lastIndexOf("/")) === "p") {
-      $("#returnbutton").attr("href", document.referrer);
-    } else {
-      $("#returnbutton").attr("href", document.location.href.substring(0,document.location.href.lastIndexOf("/")));
-    }
-
     $('button#forcereconnect').click(function()
     {
       window.location.reload();
     });
 
+    exports.socket = socket; // make the socket available
+    exports.BroadcastSlider = BroadcastSlider; // Make the slider available
+
+    hooks.aCallAll("postTimesliderInit");
   });
 }
 
 //sends a message over the socket
 function sendSocketMsg(type, data)
 {
-  var sessionID = readCookie("sessionID");
+  var sessionID = decodeURIComponent(readCookie("sessionID"));
   var password = readCookie("password");
 
   var msg = { "component" : "pad", // FIXME: Remove this stupidity!
@@ -128,13 +126,13 @@ function sendSocketMsg(type, data)
 }
 
 var fireWhenAllScriptsAreLoaded = [];
-  
-var BroadcastSlider, changesetLoader;
+
+var changesetLoader;
 function handleClientVars(message)
 {
   //save the client Vars
   clientVars = message.data;
-  
+
   //load all script that doesn't work without the clientVars
   BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
   require('./broadcast_revisions').loadBroadcastRevisionsJS();
@@ -144,13 +142,12 @@ function handleClientVars(message)
   require('./pad_impexp').padimpexp.init();
 
   //change export urls when the slider moves
-  var export_rev_regex = /(\/\d+)?\/export/
   BroadcastSlider.onSlider(function(revno)
   {
     // export_links is a jQuery Array, so .each is allowed.
     export_links.each(function()
     {
-      this.setAttribute('href', this.href.replace(export_rev_regex, '/' + revno + '/export'));
+      this.setAttribute('href', this.href.replace( /(.+?)\/[^\/]+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
     });
   });
 
@@ -159,6 +156,41 @@ function handleClientVars(message)
   {
     fireWhenAllScriptsAreLoaded[i]();
   }
+  $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
+
+  // Translate some strings where we only want to set the title not the actual values
+  $('#playpause_button_icon').attr("title", html10n.get("timeslider.playPause"));
+  $('#leftstep').attr("title", html10n.get("timeslider.backRevision"));
+  $('#rightstep').attr("title", html10n.get("timeslider.forwardRevision"));
+
+  // font family change
+  $("#viewfontmenu").change(function(){
+    var font = $("#viewfontmenu").val();
+    switch (font) {
+      case "monospace": setFont("Courier new");break;
+      case "opendyslexic": setFont("OpenDyslexic");break;
+      case "comicsans": setFont("Comic Sans MS");break;
+      case "georgia": setFont("Georgia");break;
+      case "impact": setFont("Impact");break;
+      case "lucida": setFont("Lucida");break;
+      case "lucidasans": setFont("Lucida Sans Unicode");break;
+      case "palatino": setFont("Palatino Linotype");break;
+      case "tahoma": setFont("Tahoma");break;
+      case "timesnewroman": setFont("Times New Roman");break;
+      case "trebuchet": setFont("Trebuchet MS");break;
+      case "verdana": setFont("Verdana");break;
+      case "symbol": setFont("Symbol");break;
+      case "webdings": setFont("Webdings");break;
+      case "wingdings": setFont("Wingdings");break;
+      case "sansserif": setFont("MS Sans Serif");break;
+      case "serif": setFont("MS Serif");break;
+      default: setFont("");break;
+    }
+  });
+}
+
+function setFont(font){
+  $('#padcontent').css("font-family", font);
 }
 
 exports.baseURL = '';

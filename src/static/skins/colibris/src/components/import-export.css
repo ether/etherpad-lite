@@ -1,0 +1,33 @@
+#exportColumn {
+  margin-top: 0;
+  padding-left: 20px;
+  width: calc(50% - 20px);
+}
+
+#importmessageabiword {
+  font-style: italic;
+  font-size: 13px;
+}
+#importmessageabiword > a {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.exportlink {
+  font-size: 14px;
+  margin: 0;
+  margin-bottom: 7px;
+  margin-left: 10px;
+}
+
+.exporttype {
+  margin-left: 5px;
+  font-size: 14px;
+}
+
+#importmessagefail {
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+#importsubmitinput[disabled] { opacity: .6; }

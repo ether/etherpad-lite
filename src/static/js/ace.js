@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -24,12 +24,22 @@
 // requires: plugins
 // requires: undefined
 
+var KERNEL_SOURCE = '../static/js/require-kernel.js';
+
 Ace2Editor.registry = {
   nextId: 1
 };
 
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
+
+function scriptTag(source) {
+  return (
+    '<script type="text/javascript">\n'
+    + source.replace(/<\//g, '<\\/') +
+    '</script>'
+  )
+}
 
 function Ace2Editor()
 {
@@ -76,7 +86,7 @@ function Ace2Editor()
     });
     actionsPendingInit = [];
   }
-  
+
   ace2.registry[info.id] = info;
 
   // The following functions (prefixed by 'ace_')  are exposed by editor, but
@@ -87,7 +97,7 @@ function Ace2Editor()
   'applyChangesToBase', 'applyPreparedChangesetToBase',
   'setUserChangeNotificationCallback', 'setAuthorInfo',
   'setAuthorSelectionRange', 'callWithAce', 'execCommand', 'replaceRange'];
-  
+
   _.each(aceFunctionsPendingInit, function(fnName,i){
     var prefix = 'ace_';
     var name = prefix + fnName;
@@ -95,21 +105,27 @@ function Ace2Editor()
       info[prefix + fnName].apply(this, arguments);
     });
   });
-  
+
   editor.exportText = function()
   {
     if (!loaded) return "(awaiting init)\n";
     return info.ace_exportText();
   };
-  
+
   editor.getFrame = function()
   {
     return info.frame || null;
   };
-  
+
   editor.getDebugProperty = function(prop)
   {
     return info.ace_getDebugProperty(prop);
+  };
+
+  editor.getInInternationalComposition = function()
+  {
+    if (!loaded) return false;
+    return info.ace_getInInternationalComposition();
   };
 
   // prepareUserChangeset:
@@ -155,24 +171,6 @@ function Ace2Editor()
 
     return {embeded: embededFiles, remote: remoteFiles};
   }
-  function pushRequireScriptTo(buffer) {
-    var KERNEL_SOURCE = '../static/js/require-kernel.js';
-    var KERNEL_BOOT = '\
-require.setRootURI("../javascripts/src");\n\
-require.setLibraryURI("../javascripts/lib");\n\
-require.setGlobalKeyPath("require");\n\
-';
-    if (Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
-      buffer.push('<script type="text/javascript">');
-      buffer.push(Ace2Editor.EMBEDED[KERNEL_SOURCE]);
-      buffer.push(KERNEL_BOOT);
-      buffer.push('<\/script>');
-    } else {
-      // Remotely src'd script tag will not work in IE; it must be embedded, so
-      // throw an error if it is not.
-      throw new Error("Require script could not be embedded.");
-    } 
-  }
   function pushStyleTagsFor(buffer, files) {
     var sorted = sortFilesByEmbeded(files);
     var embededFiles = sorted.embeded;
@@ -188,7 +186,7 @@ require.setGlobalKeyPath("require");\n\
     }
     for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
       var file = remoteFiles[i];
-      buffer.push('<link rel="stylesheet" type="text/css" href="' + file + '"\/>');
+      buffer.push('<link rel="stylesheet" type="text/css" href="' + encodeURI(file) + '"\/>');
     }
   }
 
@@ -224,35 +222,51 @@ require.setGlobalKeyPath("require");\n\
       // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
       // and compressed, putting the compressed code from the named file directly into the
       // source here.
-      // these lines must conform to a specific format because they are passed by the build script:      
+      // these lines must conform to a specific format because they are passed by the build script:
       var includedCSS = [];
       var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
-      $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/custom/pad.css");
-      
-      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+
+      // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
+      if(!clientVars.disableCustomScriptsAndStyles){
+        $$INCLUDE_CSS("../static/css/pad.css");
+      }
+
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
+        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+          return path;
+        }
+        return '../static/plugins/' + path;
+      });
       includedCSS = includedCSS.concat(additionalCSS);
-      
+      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
+
       pushStyleTagsFor(iframeHTML, includedCSS);
 
-      var includedJS = [];
-      pushRequireScriptTo(iframeHTML);
+      if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
+        // Remotely src'd script tag will not work in IE; it must be embedded, so
+        // throw an error if it is not.
+        throw new Error("Require kernel could not be found.");
+      }
 
-      // Inject my plugins into my child.
-      iframeHTML.push('\
-<script type="text/javascript">\n\
-  var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
-  var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
-  hooks.plugins = plugins;\n\
-  plugins.adoptPluginsFromAncestorsOf(window);\n\
-</script>\
-');
-
-      iframeHTML.push('<script type="text/javascript">');
-      iframeHTML.push('$ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK');
-      iframeHTML.push('require("ep_etherpad-lite/static/js/ace2_inner");');
-      iframeHTML.push('<\/script>');
+      iframeHTML.push(scriptTag(
+Ace2Editor.EMBEDED[KERNEL_SOURCE] + '\n\
+require.setRootURI("../javascripts/src");\n\
+require.setLibraryURI("../javascripts/lib");\n\
+require.setGlobalKeyPath("require");\n\
+\n\
+var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
+hooks.plugins = plugins;\n\
+plugins.adoptPluginsFromAncestorsOf(window);\n\
+\n\
+$ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
+var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
+\n\
+plugins.ensure(function () {\n\
+  Ace2Inner.init();\n\
+});\n\
+'));
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
 
@@ -260,14 +274,39 @@ require.setGlobalKeyPath("require");\n\
         iframeHTML: iframeHTML
       });
 
-      iframeHTML.push('</head><body id="innerdocbody" class="syntax" spellcheck="false">&nbsp;</body></html>');
+      iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
       // Expose myself to global for my child frame.
       var thisFunctionsName = "ChildAccessibleAce2Editor";
       (function () {return this}())[thisFunctionsName] = Ace2Editor;
 
-      var outerScript = 'editorId = "' + info.id + '"; editorInfo = parent.' + thisFunctionsName + '.registry[editorId]; ' + 'window.onload = function() ' + '{ window.onload = null; setTimeout' + '(function() ' + '{ var iframe = document.createElement("IFRAME"); iframe.name = "ace_inner";' + 'iframe.scrolling = "no"; var outerdocbody = document.getElementById("outerdocbody"); ' + 'iframe.frameBorder = 0; iframe.allowTransparency = true; ' + // for IE
-      'outerdocbody.insertBefore(iframe, outerdocbody.firstChild); ' + 'iframe.ace_outerWin = window; ' + 'readyFunc = function() { editorInfo.onEditorReady(); readyFunc = null; editorInfo = null; }; ' + 'var doc = iframe.contentWindow.document; doc.open(); var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');doc.write(text); doc.close(); ' + '}, 0); }';
+      var outerScript = '\
+editorId = ' + JSON.stringify(info.id) + ';\n\
+editorInfo = parent[' + JSON.stringify(thisFunctionsName) + '].registry[editorId];\n\
+window.onload = function () {\n\
+  window.onload = null;\n\
+  setTimeout(function () {\n\
+    var iframe = document.createElement("IFRAME");\n\
+    iframe.name = "ace_inner";\n\
+    iframe.title = "pad";\n\
+    iframe.scrolling = "no";\n\
+    var outerdocbody = document.getElementById("outerdocbody");\n\
+    iframe.frameBorder = 0;\n\
+    iframe.allowTransparency = true; // for IE\n\
+    outerdocbody.insertBefore(iframe, outerdocbody.firstChild);\n\
+    iframe.ace_outerWin = window;\n\
+    readyFunc = function () {\n\
+      editorInfo.onEditorReady();\n\
+      readyFunc = null;\n\
+      editorInfo = null;\n\
+    };\n\
+    var doc = iframe.contentWindow.document;\n\
+    doc.open();\n\
+    var text = (' + JSON.stringify(iframeHTML.join('\n')) + ');\n\
+    doc.write(text);\n\
+    doc.close();\n\
+  }, 0);\n\
+}';
 
       var outerHTML = [doctype, '<html><head>']
 
@@ -275,21 +314,27 @@ require.setGlobalKeyPath("require");\n\
       var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
       $$INCLUDE_CSS("../static/css/pad.css");
-      $$INCLUDE_CSS("../static/custom/pad.css");
-      
-      
-      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){ return '../static/plugins/' + path });
+
+
+      var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
+        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+          return path;
+        }
+        return '../static/plugins/' + path }
+      );
       includedCSS = includedCSS.concat(additionalCSS);
-            
+      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
+
       pushStyleTagsFor(outerHTML, includedCSS);
 
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
-      outerHTML.push('<link rel="stylesheet" type="text/css" href="data:text/css,"/>', '\x3cscript>\n', outerScript.replace(/<\//g, '<\\/'), '\n\x3c/script>', '</head><body id="outerdocbody"><div id="sidediv"><!-- --></div><div id="linemetricsdiv">x</div><div id="overlaysdiv"><!-- --></div></body></html>');
+      outerHTML.push('<style type="text/css" title="dynamicsyntax"></style>', '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', scriptTag(outerScript), '</head><body id="outerdocbody" class="outerdocbody ', hooks.clientPluginNames().join(' '),'"><div id="sidediv" class="sidediv"><!-- --></div><div id="linemetricsdiv">x</div></body></html>');
 
       var outerFrame = document.createElement("IFRAME");
       outerFrame.name = "ace_outer";
       outerFrame.frameBorder = 0; // for IE
+      outerFrame.title = "Ether";
       info.frame = outerFrame;
       document.getElementById(containerId).appendChild(outerFrame);
 

@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -28,6 +28,7 @@ var padeditor = (function()
   var Ace2Editor = undefined;
   var pad = undefined;
   var settings = undefined;
+
   var self = {
     ace: null,
     // this is accessed directly from other files
@@ -62,18 +63,53 @@ var padeditor = (function()
     },
     initViewOptions: function()
     {
+      // Line numbers
       padutils.bindCheckboxChange($("#options-linenoscheck"), function()
       {
         pad.changeViewOption('showLineNumbers', padutils.getCheckbox($("#options-linenoscheck")));
       });
+
+      // Author colors
       padutils.bindCheckboxChange($("#options-colorscheck"), function()
       {
         padcookie.setPref('showAuthorshipColors', padutils.getCheckbox("#options-colorscheck"));
         pad.changeViewOption('showAuthorColors', padutils.getCheckbox("#options-colorscheck"));
       });
+
+      // Right to left
+      padutils.bindCheckboxChange($("#options-rtlcheck"), function()
+      {
+        pad.changeViewOption('rtlIsTrue', padutils.getCheckbox($("#options-rtlcheck")))
+      });
+      html10n.bind('localized', function() {
+        pad.changeViewOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
+        padutils.setCheckbox($("#options-rtlcheck"), ('rtl' == html10n.getDirection()));
+      })
+
+      // font family change
       $("#viewfontmenu").change(function()
       {
-        pad.changeViewOption('useMonospaceFont', $("#viewfontmenu").val() == 'monospace');
+        pad.changeViewOption('padFontFamily', $("#viewfontmenu").val());
+      });
+
+      // Language
+      html10n.bind('localized', function() {
+        $("#languagemenu").val(html10n.getLanguage());
+        // translate the value of 'unnamed' and 'Enter your name' textboxes in the userlist
+        // this does not interfere with html10n's normal value-setting because html10n just ingores <input>s
+        // also, a value which has been set by the user will be not overwritten since a user-edited <input>
+        // does *not* have the editempty-class
+        $('input[data-l10n-id]').each(function(key, input){
+          input = $(input);
+          if(input.hasClass("editempty")){
+            input.val(html10n.get(input.attr("data-l10n-id")));
+          }
+        });
+      })
+      $("#languagemenu").val(html10n.getLanguage());
+      $("#languagemenu").change(function() {
+        pad.createCookie("language",$("#languagemenu").val(),null,'/');
+        window.html10n.localize([$("#languagemenu").val(), 'en']);
       });
     },
     setViewOptions: function(newOptions)
@@ -86,9 +122,11 @@ var padeditor = (function()
         return defaultValue;
       }
 
-      self.ace.setProperty("rtlIsTrue", settings.rtlIsTrue);
-
       var v;
+
+      v = getOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
+      self.ace.setProperty("rtlIsTrue", v);
+      padutils.setCheckbox($("#options-rtlcheck"), v);
 
       v = getOption('showLineNumbers', true);
       self.ace.setProperty("showslinenumbers", v);
@@ -97,13 +135,35 @@ var padeditor = (function()
       v = getOption('showAuthorColors', true);
       self.ace.setProperty("showsauthorcolors", v);
       padutils.setCheckbox($("#options-colorscheck"), v);
-      // Override from parameters if true
-      if (settings.noColors !== false)
-        self.ace.setProperty("showsauthorcolors", !settings.noColors);
 
-      v = getOption('useMonospaceFont', false);
-      self.ace.setProperty("textface", (v ? "monospace" : "Arial, sans-serif"));
-      $("#viewfontmenu").val(v ? "monospace" : "normal");
+      // Override from parameters if true
+      if (settings.noColors !== false){
+        self.ace.setProperty("showsauthorcolors", !settings.noColors);
+      }
+
+      var fontFamily = newOptions['padFontFamily'];
+      switch (fontFamily) {
+        case "monospace": self.ace.setProperty("textface", "monospace"); break;
+        case "montserrat": self.ace.setProperty("textface", "Montserrat"); break;
+        case "opendyslexic": self.ace.setProperty("textface", "OpenDyslexic"); break;
+        case "comicsans": self.ace.setProperty("textface", "'Comic Sans MS','Comic Sans',cursive"); break;
+        case "georgia": self.ace.setProperty("textface", "Georgia,'Bitstream Charter',serif"); break;
+        case "impact": self.ace.setProperty("textface", "Impact,Haettenschweiler,'Arial Black',sans-serif"); break;
+        case "lucida": self.ace.setProperty("textface", "Lucida,'Lucida Serif','Lucida Bright',serif"); break;
+        case "lucidasans": self.ace.setProperty("textface", "'Lucida Sans','Lucida Grande','Lucida Sans Unicode','Luxi Sans',sans-serif"); break;
+        case "palatino": self.ace.setProperty("textface", "Palatino,'Palatino Linotype','URW Palladio L',Georgia,serif"); break;
+        case "robotomono": self.ace.setProperty("textface", "RobotoMono"); break;
+        case "tahoma": self.ace.setProperty("textface", "Tahoma,sans-serif"); break;
+        case "timesnewroman": self.ace.setProperty("textface", "'Times New Roman',Times,serif"); break;
+        case "trebuchet": self.ace.setProperty("textface", "'Trebuchet MS',sans-serif"); break;
+        case "verdana": self.ace.setProperty("textface", "Verdana,'DejaVu Sans',sans-serif"); break;
+        case "symbol": self.ace.setProperty("textface", "Symbol"); break;
+        case "webdings": self.ace.setProperty("textface", "Webdings"); break;
+        case "wingdings": self.ace.setProperty("textface", "Wingdings"); break;
+        case "sansserif": self.ace.setProperty("textface", "sans-serif"); break;
+        case "serif": self.ace.setProperty("textface", "serif"); break;
+        default: self.ace.setProperty("textface", "");   break;
+      }
     },
     dispose: function()
     {
@@ -111,6 +171,13 @@ var padeditor = (function()
       {
         self.ace.destroy();
         self.ace = null;
+      }
+    },
+    enable: function()
+    {
+      if (self.ace)
+      {
+        self.ace.setEditable(true);
       }
     },
     disable: function()

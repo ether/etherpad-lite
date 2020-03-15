@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -23,6 +23,13 @@
  */
 
 var colorutils = {};
+
+// Check that a given value is a css hex color value, e.g.
+// "#ffffff" or "#fff"
+colorutils.isCssHex = function(cssColor)
+{
+  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(cssColor);
+}
 
 // "#ffffff" or "#fff" or "ffffff" or "fff" to [1.0, 1.0, 1.0]
 colorutils.css2triple = function(cssColor)

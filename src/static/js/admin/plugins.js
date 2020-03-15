@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  
+
   var socket,
     loc = document.location,
     port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port,
@@ -10,135 +10,262 @@ $(document).ready(function () {
     resource = baseURL.substring(1) + "socket.io";
 
   //connect
-  socket = io.connect(url, {resource : resource}).of("/pluginfw/installer");
+  var room = url + "pluginfw/installer";
+  socket = io.connect(room, {path: baseURL + "socket.io", resource : resource});
 
-  $('.search-results').data('query', {
-    pattern: '',
-    offset: 0,
-    limit: 4,
-  });
+  function search(searchTerm, limit) {
+    if(search.searchTerm != searchTerm) {
+      search.offset = 0
+      search.results = []
+      search.end = false
+    }
+    limit = limit? limit : search.limit
+    search.searchTerm = searchTerm;
+    socket.emit("search", {searchTerm: searchTerm, offset:search.offset, limit: limit, sortBy: search.sortBy, sortDir: search.sortDir});
+    search.offset += limit;
 
-  var doUpdate = false;
+    $('#search-progress').show()
+    search.messages.show('fetching')
+    search.searching = true
+  }
+  search.searching = false;
+  search.offset = 0;
+  search.limit = 999;
+  search.results = [];
+  search.sortBy = 'name';
+  search.sortDir = /*DESC?*/true;
+  search.end = true;// have we received all results already?
+  search.messages = {
+    show: function(msg) {
+      //$('.search-results .messages').show()
+      $('.search-results .messages .'+msg+'').show()
+      $('.search-results .messages .'+msg+' *').show()
+    },
+    hide: function(msg) {
+      $('.search-results .messages').hide()
+      $('.search-results .messages .'+msg+'').hide()
+      $('.search-results .messages .'+msg+' *').hide()
+    }
+  }
 
-  var search = function () {
-    socket.emit("search", $('.search-results').data('query'));
+  var installed = {
+    progress: {
+      show: function(plugin, msg) {
+        $('.installed-results .'+plugin+' .progress').show()
+        $('.installed-results .'+plugin+' .progress .message').text(msg)
+        if($(window).scrollTop() > $('.'+plugin).offset().top)$(window).scrollTop($('.'+plugin).offset().top-100)
+      },
+      hide: function(plugin) {
+        $('.installed-results .'+plugin+' .progress').hide()
+        $('.installed-results .'+plugin+' .progress .message').text('')
+      }
+    },
+    messages: {
+      show: function(msg) {
+        $('.installed-results .messages').show()
+        $('.installed-results .messages .'+msg+'').show()
+      },
+      hide: function(msg) {
+        $('.installed-results .messages').hide()
+        $('.installed-results .messages .'+msg+'').hide()
+      }
+    },
+    list: []
+  }
+
+  function displayPluginList(plugins, container, template) {
+    plugins.forEach(function(plugin) {
+      var row = template.clone();
+
+      for (attr in plugin) {
+        if(attr == "name"){ // Hack to rewrite URLS into name
+          var link = $('<a>');
+          link.attr('href', 'https://npmjs.org/package/'+plugin['name']);
+          link.attr('plugin', 'Plugin details');
+          link.attr('target', '_blank');
+          link.text(plugin['name'].substr(3));
+          row.find('.name').append(link);
+        } else {
+          row.find("." + attr).text(plugin[attr]);
+        }
+      }
+      row.find(".version").text(plugin.version);
+      row.addClass(plugin.name)
+      row.data('plugin', plugin.name)
+      container.append(row);
+    })
+    updateHandlers();
+  }
+
+  function sortPluginList(plugins, property, /*ASC?*/dir) {
+    return plugins.sort(function(a, b) {
+      if (a[property] < b[property])
+         return dir? -1 : 1;
+      if (a[property] > b[property])
+         return dir? 1 : -1;
+      // a must be equal to b
+      return 0;
+    })
   }
 
   function updateHandlers() {
-    $("#progress.dialog .close").unbind('click').click(function () {
-      $("#progress.dialog").hide();
+    // Search
+    $("#search-query").unbind('keyup').keyup(function () {
+      search($("#search-query").val());
     });
 
-    $("#do-search").unbind('click').click(function () {
-      var query = $('.search-results').data('query');
-      query.pattern = $("#search-query")[0].value;
-      query.offset = 0;
-      search();
+    // Prevent form submit
+    $('#search-query').parent().bind('submit', function() {
+      return false;
     });
 
-    $(".do-install").unbind('click').click(function (e) {
-      var row = $(e.target).closest("tr");
-      doUpdate = true;
-      socket.emit("install", row.find(".name").html());
+    // update & install
+    $(".do-install, .do-update").unbind('click').click(function (e) {
+      var $row = $(e.target).closest("tr")
+        , plugin = $row.data('plugin');
+      if($(this).hasClass('do-install')) {
+        $row.remove().appendTo('#installed-plugins')
+        installed.progress.show(plugin, 'Installing')
+      }else{
+        installed.progress.show(plugin, 'Updating')
+      }
+      socket.emit("install", plugin);
+      installed.messages.hide("nothing-installed")
     });
 
+    // uninstall
     $(".do-uninstall").unbind('click').click(function (e) {
-      var row = $(e.target).closest("tr");
-      doUpdate = true;
-      socket.emit("uninstall", row.find(".name").html());
+      var $row = $(e.target).closest("tr")
+        , pluginName = $row.data('plugin');
+      socket.emit("uninstall", pluginName);
+      installed.progress.show(pluginName, 'Uninstalling')
+      installed.list = installed.list.filter(function(plugin) {
+        return plugin.name != pluginName
+      })
     });
 
-    $(".do-prev-page").unbind('click').click(function (e) {
-      var query = $('.search-results').data('query');
-      query.offset -= query.limit;
-      if (query.offset < 0) {
-        query.offset = 0;
-      }
-      search();
-    });
-    $(".do-next-page").unbind('click').click(function (e) {
-      var query = $('.search-results').data('query');
-      var total = $('.search-results').data('total');
-      if (query.offset + query.limit < total) {
-        query.offset += query.limit;
-      }
-      search();
-    });
+    // Sort
+    $('.sort.up').unbind('click').click(function() {
+      search.sortBy = $(this).attr('data-label').toLowerCase();
+      search.sortDir = false;
+      search.offset = 0;
+      search(search.searchTerm, search.results.length);
+      search.results = [];
+    })
+    $('.sort.down, .sort.none').unbind('click').click(function() {
+      search.sortBy = $(this).attr('data-label').toLowerCase();
+      search.sortDir = true;
+      search.offset = 0;
+      search(search.searchTerm, search.results.length);
+      search.results = [];
+    })
   }
 
+  socket.on('results:search', function (data) {
+    if(!data.results.length) search.end = true;
+    if(data.query.offset == 0) search.results = [];
+    search.messages.hide('nothing-found')
+    search.messages.hide('fetching')
+    $("#search-query").removeAttr('disabled')
+
+    console.log('got search results', data)
+
+    // add to results
+    search.results = search.results.concat(data.results);
+
+    // Update sorting head
+    $('.sort')
+      .removeClass('up down')
+      .addClass('none');
+    $('.search-results thead th[data-label='+data.query.sortBy+']')
+      .removeClass('none')
+      .addClass(data.query.sortDir? 'up' : 'down');
+
+    // re-render search results
+    var searchWidget = $(".search-results");
+    searchWidget.find(".results *").remove();
+    if(search.results.length > 0) {
+      displayPluginList(search.results, searchWidget.find(".results"), searchWidget.find(".template tr"))
+    }else {
+      search.messages.show('nothing-found')
+    }
+    search.messages.hide('fetching')
+    $('#search-progress').hide()
+    search.searching = false
+  });
+
+  socket.on('results:installed', function (data) {
+    installed.messages.hide("fetching")
+    installed.messages.hide("nothing-installed")
+
+    installed.list = data.installed
+    sortPluginList(installed.list, 'name', /*ASC?*/true);
+
+    // filter out epl
+    installed.list = installed.list.filter(function(plugin) {
+      return plugin.name != 'ep_etherpad-lite'
+    })
+
+    // remove all installed plugins (leave plugins that are still being installed)
+    installed.list.forEach(function(plugin) {
+      $('#installed-plugins .'+plugin.name).remove()
+    })
+
+    if(installed.list.length > 0) {
+      displayPluginList(installed.list, $("#installed-plugins"), $("#installed-plugin-template"));
+      socket.emit('checkUpdates');
+    }else {
+      installed.messages.show("nothing-installed")
+    }
+  });
+
+  socket.on('results:updatable', function(data) {
+    data.updatable.forEach(function(pluginName) {
+      var $row = $('#installed-plugins > tr.'+pluginName)
+        , actions = $row.find('.actions')
+      actions.append('<input class="do-update" type="button" value="Update" />')
+    })
+    updateHandlers();
+  })
+
+  socket.on('finished:install', function(data) {
+    if(data.error) {
+      if(data.code === "EPEERINVALID"){
+        alert("This plugin requires that you update Etherpad so it can operate in it's true glory");
+      }
+      alert('An error occurred while installing '+data.plugin+' \n'+data.error)
+      $('#installed-plugins .'+data.plugin).remove()
+    }
+
+    socket.emit("getInstalled");
+
+    // update search results
+    search.offset = 0;
+    search(search.searchTerm, search.results.length);
+    search.results = [];
+  })
+
+  socket.on('finished:uninstall', function(data) {
+    if(data.error) alert('An error occurred while uninstalling the '+data.plugin+' \n'+data.error)
+
+    // remove plugin from installed list
+    $('#installed-plugins .'+data.plugin).remove()
+
+    socket.emit("getInstalled");
+
+    // update search results
+    search.offset = 0;
+    search(search.searchTerm, search.results.length);
+    search.results = [];
+  })
+
+  // init
   updateHandlers();
+  socket.emit("getInstalled");
+  search('');
 
-  socket.on('progress', function (data) {
-    if (data.progress > 0 && $('#progress.dialog').data('progress') > data.progress) return;
-
-    $("#progress.dialog .close").hide();
-    $("#progress.dialog").show();
-
-    $('#progress.dialog').data('progress', data.progress);
-
-    var message = "Unknown status";
-    if (data.message) {
-      message = "<span class='status'>" + data.message.toString() + "</span>";
-    }
-    if (data.error) {
-      message = "<span class='error'>" + data.error.toString() + "<span>";            
-    }
-    $("#progress.dialog .message").html(message);
-    $("#progress.dialog .history").append("<div>" + message + "</div>");
-
-    if (data.progress >= 1) {
-      if (data.error) {
-        $("#progress.dialog .close").show();
-      } else {
-        if (doUpdate) {
-          doUpdate = false;
-          socket.emit("load");
-        }
-        $("#progress.dialog").hide();
-      }
-    }
-  });
-
-  socket.on('search-result', function (data) {
-    var widget=$(".search-results");
-
-    widget.data('query', data.query);
-    widget.data('total', data.total);
-
-    widget.find('.offset').html(data.query.offset);
-    widget.find('.limit').html(data.query.offset + data.query.limit);
-    widget.find('.total').html(data.total);
-
-    widget.find(".results *").remove();
-    for (plugin_name in data.results) {
-      var plugin = data.results[plugin_name];
-      var row = widget.find(".template tr").clone();
-
-      for (attr in plugin) {
-        row.find("." + attr).html(plugin[attr]);
-      }
-      widget.find(".results").append(row);
-    }
-
-    updateHandlers();
-  });
-
-  socket.on('installed-results', function (data) {
-    $("#installed-plugins *").remove();
-    for (plugin_name in data.results) {
-      if (plugin_name == "ep_etherpad-lite") continue; // Hack...
-      var plugin = data.results[plugin_name];
-      var row = $("#installed-plugin-template").clone();
-
-      for (attr in plugin.package) {
-        row.find("." + attr).html(plugin.package[attr]);
-      }
-      $("#installed-plugins").append(row);
-    }
-    updateHandlers();
-  });
-
-  socket.emit("load");
-  search();
-
+  // check for updates every 5mins
+  setInterval(function() {
+    socket.emit('checkUpdates');
+  }, 1000*60*5)
 });

@@ -4,15 +4,15 @@
 "Z:z>1|2=m=b*0|1+1$\n"
 ```
 
-This is a Changeset. Its just a string and its very difficult to read in this form. But the Changeset Library gives us some tools to read it.
+This is a Changeset. It's just a string and it's very difficult to read in this form. But the Changeset Library gives us some tools to read it.
 
-A changeset describes the diff between two revisions of the document. The Browser sends changesets to the server and the server sends them to the clients to update them. This Changesets gets also saved into the history of a pad. Which allows us to go back to every revision from the past.
+A changeset describes the diff between two revisions of the document. The Browser sends changesets to the server and the server sends them to the clients to update them. These Changesets also get saved into the history of a pad. This allows us to go back to every revision from the past.
 
 ## Changeset.unpack(changeset)
 
  * `changeset` {String}
 
-This functions returns an object representaion of the changeset, similar to this:
+This function returns an object representation of the changeset, similar to this:
 
 ```
 { oldLen: 35, newLen: 36, ops: '|2=m=b*0|1+1', charBank: '\n' }
@@ -65,16 +65,16 @@ There are 3 types of operators: `+`,`-` and `=`. These operators describe differ
   fromJsonable: [Function] }
 ```
 
-This creates an empty apool. A apool saves which attributes were used during the history of a pad. There is one apool for each pad. It only saves the attributes that were really used, it doesn't save unused attributes. Lets fill this apool with some values
+This creates an empty apool. An apool saves which attributes were used during the history of a pad. There is one apool for each pad. It only saves the attributes that were really used, it doesn't save unused attributes. Let's fill this apool with some values
 
 ```
 > apool.fromJsonable({"numToAttrib":{"0":["author","a.kVnWeomPADAT2pn9"],"1":["bold","true"],"2":["italic","true"]},"nextNum":3});
 > console.log(apool)
-{ numToAttrib: 
+{ numToAttrib:
    { '0': [ 'author', 'a.kVnWeomPADAT2pn9' ],
      '1': [ 'bold', 'true' ],
      '2': [ 'italic', 'true' ] },
-  attribToNum: 
+  attribToNum:
    { 'author,a.kVnWeomPADAT2pn9': 0,
      'bold,true': 1,
      'italic,true': 2 },
@@ -88,7 +88,7 @@ This creates an empty apool. A apool saves which attributes were used during the
   fromJsonable: [Function] }
 ```
 
-We used the fromJsonable function to fill the empty apool with values. the fromJsonable and toJsonable functions are used to serialize and deserialize an apool. You can see that it stores the relation between numbers and attributes. So for example the attribute 1 is the attribute bold and vise versa. A attribute is always a key value pair. For stuff like bold and italic its just  'italic':'true'. For authors its author:$AUTHORID. So a character can be bold and italic. But it can't belong to multiple authors
+We used the fromJsonable function to fill the empty apool with values. the fromJsonable and toJsonable functions are used to serialize and deserialize an apool. You can see that it stores the relation between numbers and attributes. So for example the attribute 1 is the attribute bold and vise versa. An attribute is always a key value pair. For stuff like bold and italic it's just  'italic':'true'. For authors it's author:$AUTHORID. So a character can be bold and italic. But it can't belong to multiple authors
 
 ```
 > apool.getAttrib(1)

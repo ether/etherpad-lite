@@ -1,5 +1,5 @@
 # Embed parameters
-You can easily embed your etherpad-lite into any webpage by using iframes. You can configure the embedded pad using embed paramters.
+You can easily embed your etherpad-lite into any webpage by using iframes. You can configure the embedded pad using embed parameters.
 
 Example:
 
@@ -36,6 +36,13 @@ Default: "unnamed"
 
 Example: `userName=Etherpad%20User`
 
+## userColor
+ * String (css hex color value)
+
+Default: randomly chosen by pad server
+
+Example: `userColor=%23ff9900`
+
 ## noColors
  * Boolean
 
@@ -45,3 +52,17 @@ Default: false
  * Boolean
 
 Default: false
+
+## lang
+ * String
+
+Default: en
+
+Example: `lang=ar` (translates the interface into Arabic)
+
+## rtl
+ * Boolean
+
+Default: true
+Displays pad text from right to left.
+

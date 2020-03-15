@@ -1,6 +1,8 @@
 node_modules
-settings.json
+/settings.json
+!settings.json.template
 APIKEY.txt
+SESSIONKEY.txt
 bin/abiword.exe
 bin/node.exe
 etherpad-lite-win.zip
@@ -12,3 +14,8 @@ src/static/js/jquery.js
 npm-debug.log
 *.DS_Store
 .ep_initialized
+*.crt
+*.key
+bin/etherpad-1.deb
+credentials.json
+out/

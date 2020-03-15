@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -29,6 +29,9 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 {
   var BroadcastSlider;
 
+  // Hack to ensure timeslider i18n values are in
+  $("[data-key='timeslider_returnToPad'] > a > span").html(html10n.get("timeslider.toolbar.returnbutton"));
+
   (function()
   { // wrap this code in its own namespace
     var sliderLength = 1000;
@@ -56,7 +59,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           slidercallbacks[i](newval);
         }
       }
-        
+
     var updateSliderElements = function()
       {
         for (var i = 0; i < savedRevisions.length; i++)
@@ -65,7 +68,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           savedRevisions[i].css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
         }
         $("#ui-slider-handle").css('left', sliderPos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
-      }  
+      }
 
     var addSavedRevision = function(position, info)
       {
@@ -107,12 +110,17 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     {
       newpos = Number(newpos);
       if (newpos < 0 || newpos > sliderLength) return;
+      if(!newpos){
+        newpos = 0; // stops it from displaying NaN if newpos isn't set
+      }
+      window.location.hash = "#" + newpos;
       $("#ui-slider-handle").css('left', newpos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
       $("a.tlink").map(function()
       {
         $(this).attr('href', $(this).attr('thref').replace("%revision%", newpos));
       });
-      $("#revision_label").html("Version " + newpos);
+
+      $("#revision_label").html(html10n.get("timeslider.version", { "version": newpos}));
 
       if (newpos == 0)
       {
@@ -158,11 +166,12 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       padmodals.showModal("disconnected");
     }
 
+    // Throttle seems like overkill here...  Not sure why we do it!
     var fixPadHeight = _.throttle(function(){
       var height = $('#timeslider-top').height();
       $('#editorcontainerbox').css({marginTop: height});
     }, 600);
-    
+
     function setAuthors(authors)
     {
       var authorsList = $("#authorsList");
@@ -172,38 +181,42 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       var colorsAnonymous = [];
       _.each(authors, function(author)
       {
-        var authorColor =  clientVars.colorPalette[author.colorId] || author.colorId;
-        if (author.name)
+        if(author)
         {
-          if (numNamed !== 0) authorsList.append(', ');
-          
-          $('<span />')
-            .text(author.name || "unnamed")
-            .css('background-color', authorColor)
-            .addClass('author')
-            .appendTo(authorsList);
+          var authorColor = clientVars.colorPalette[author.colorId] || author.colorId;
+          if (author.name)
+          {
+            if (numNamed !== 0) authorsList.append(', ');
 
-          numNamed++;
-        }
-        else
-        {
-          numAnonymous++;
-          if(authorColor) colorsAnonymous.push(authorColor);
+            $('<span />')
+              .text(author.name || "unnamed")
+              .css('background-color', authorColor)
+              .addClass('author')
+              .appendTo(authorsList);
+
+            numNamed++;
+          }
+          else
+          {
+            numAnonymous++;
+            if(authorColor) colorsAnonymous.push(authorColor);
+          }
         }
       });
       if (numAnonymous > 0)
       {
-        var anonymousAuthorString = numAnonymous + " unnamed author" + (numAnonymous > 1 ? "s" : "")
+        var anonymousAuthorString = html10n.get("timeslider.unnamedauthors", { num: numAnonymous });
+
         if (numNamed !== 0){
           authorsList.append(' + ' + anonymousAuthorString);
         } else {
           authorsList.append(anonymousAuthorString);
         }
-        
+
         if(colorsAnonymous.length > 0){
           authorsList.append(' (');
           _.each(colorsAnonymous, function(color, i){
-            if( i > 0 ) authorsList.append(' '); 
+            if( i > 0 ) authorsList.append(' ');
             $('<span>&nbsp;</span>')
               .css('background-color', color)
               .addClass('author author-anonymous')
@@ -211,13 +224,13 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           });
           authorsList.append(')');
         }
-        
+
       }
       if (authors.length == 0)
       {
-        authorsList.append("No Authors");
+        authorsList.append(html10n.get("timeslider.toolbar.authorsList"));
       }
-      
+
       fixPadHeight();
     }
 
@@ -275,9 +288,14 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     {
       disableSelection($("#playpause_button")[0]);
       disableSelection($("#timeslider")[0]);
-      
+
       $(document).keyup(function(e)
       {
+        // If focus is on editbar, don't do anything
+        var target = $(':focus');
+        if($(target).parents(".toolbar").length === 1){
+            return;
+        }
         var code = -1;
         if (!e) var e = window.event;
         if (e.keyCode) code = e.keyCode;
@@ -318,9 +336,8 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           }
         }
         else if (code == 32) playpause();
-
       });
-      
+
       $(window).resize(function()
       {
         updateSliderElements();
@@ -328,7 +345,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
       $("#ui-slider-bar").mousedown(function(evt)
       {
-        setSliderPosition(Math.floor((evt.clientX - $("#ui-slider-bar").offset().left) * sliderLength / 742));
         $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
         $("#ui-slider-handle").trigger(evt);
       });
@@ -346,7 +362,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           var newloc = self.currentLoc + (evt2.clientX - self.startLoc);
           if (newloc < 0) newloc = 0;
           if (newloc > ($("#ui-slider-bar").width() - 2)) newloc = ($("#ui-slider-bar").width() - 2);
-          $("#revision_label").html("Version " + Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)));
+          $("#revision_label").html(html10n.get("timeslider.version", { "version": Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))}));
           $(self).css('left', newloc);
           if (getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))) _callSliderCallbacks(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
         });
@@ -361,7 +377,11 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           $(self).css('left', newloc);
           // if(getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width()-2)))
           setSliderPosition(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
-          self.currentLoc = parseInt($(self).css('left'));
+          if(parseInt($(self).css('left')) < 2){
+            $(self).css('left', '2px');
+          }else{
+            self.currentLoc = parseInt($(self).css('left'));
+          }
         });
       })
 
@@ -370,16 +390,16 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       {
         var self = this;
 
-        $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
+        // $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
         $(self).mouseup(function(evt2)
         {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
           $(self).unbind('mouseup');
           BroadcastSlider.playpause();
         });
         $(document).mouseup(function(evt2)
         {
-          $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
+          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
           $(document).unbind('mouseup');
         });
       });
@@ -446,40 +466,27 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
       if (clientVars)
       {
-        if (clientVars.fullWidth)
+        $("#timeslider").show();
+
+        var startPos = clientVars.collab_client_vars.rev;
+        if(window.location.hash.length > 1)
         {
-          $("#padpage").css('width', '100%');
-          $("#revision").css('position', "absolute")
-          $("#revision").css('right', "20px")
-          $("#revision").css('top', "20px")
-          $("#padmain").css('left', '0px');
-          $("#padmain").css('right', '197px');
-          $("#padmain").css('width', 'auto');
-          $("#rightbars").css('right', '7px');
-          $("#rightbars").css('margin-right', '0px');
-          $("#timeslider").css('width', 'auto');
+          var hashRev = Number(window.location.hash.substr(1));
+          if(!isNaN(hashRev))
+          {
+            // this is necessary because of the socket.io-event which loads the changesets
+            setTimeout(function() { setSliderPosition(hashRev); }, 1);
+          }
         }
 
-        if (clientVars.disableRightBar)
-        {
-          $("#rightbars").css('display', 'none');
-          $('#padmain').css('width', 'auto');
-          if (clientVars.fullWidth) $("#padmain").css('right', '7px');
-          else $("#padmain").css('width', '860px');
-          $("#revision").css('position', "absolute");
-          $("#revision").css('right', "20px");
-          $("#revision").css('top', "20px");
-        }
-        
-        $("#timeslider").show();
         setSliderLength(clientVars.collab_client_vars.rev);
         setSliderPosition(clientVars.collab_client_vars.rev);
-        
+
         _.each(clientVars.savedRevisions, function(revision)
         {
           addSavedRevision(revision.revNum, revision);
         })
-        
+
       }
     });
   })();

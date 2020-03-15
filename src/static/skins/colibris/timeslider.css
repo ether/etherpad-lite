@@ -1,0 +1,142 @@
+@media (max-width: 600px) { html { overflow: hidden } }
+
+@media (max-width: 1100px) {
+  .timeslider #padeditor {
+    padding: 0 !important;
+  }
+}
+
+.timeslider #import_export, .timeslider #settings{
+  top: 108px !important;
+  right: 55px;
+}
+
+.timeslider #export > p {
+  font-size: 15px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.timeslider #padpage {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeslider #timeslider-top {
+  position: relative;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+.timeslider-bar { background: none; }
+.timeslider-bar p { margin: 8px; font-size: 12px;}
+
+.timeslider-bar #editbar {
+  border: none;
+  background: none !important;
+  margin-right: 10px;
+}
+
+.timeslider #padmain {
+  position: relative;
+  top: 0 !important;
+  flex: 1 auto;
+  overflow: auto;
+}
+
+.timeslider #padeditor {
+  height: 100%;
+  padding-top: 30px;
+}
+
+.timeslider #editorcontainerbox {
+  height: 100%;
+  overflow: visible;
+  margin-top: 0 !important;
+}
+
+#timeslider {
+  margin-top: -20px;
+  margin-left: 0;
+  background-color: transparent;
+}
+
+#timeslider, #timeslider-left, #timeslider-right {
+  height: 57px;
+  background-color: transparent;
+}
+
+#timeslider #timer {
+  opacity: 0.8;
+  font-style: italic;
+  right: 158px;
+  top: -3px;
+  left: initial;
+  background: none;
+}
+
+#timeslider #timeslider-slider { margin-left: 4px; }
+
+#ui-slider-handle {
+  z-index: 5;
+  border-radius: 3px;
+  height: 28px;
+  top: 19px;
+}
+
+#ui-slider-bar {
+  height: 10px;
+  margin-top: 28px;
+  margin-right: 180px;
+  border-radius: 3px;
+  background-color: #e4e4e4;
+}
+
+#timeslider .star {
+  top: 25px;
+}
+#timeslider .star:before {
+  color: #da9700;
+  content: "\e836";
+}
+
+.timeslider #editbar .buttontext {
+  color: white;
+  margin: 0;
+}
+.timeslider #editbar .grouped-right {
+  margin: 0; padding: 0;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+.timeslider #playpause_button {
+  right: 95px;
+  top: 1px;
+}
+#playpause_button_icon {
+  border:none;
+}
+#playpause_button_icon:before { color: white; }
+
+.timeslider #leftstep {
+  right: 60px;
+  top: 12px;
+}
+
+.timeslider #rightstep {
+  top: 12px;
+  right: 30px;
+}
+
+.stepper {
+  border: 2px solid;
+  text-align: center;
+  border-radius: 50%;
+  height: 25px;
+  padding-top: 2px;
+}
+
+.timeslider #authorsList .author {
+  padding: 2px 5px;
+  border-radius: 3px;
+}
