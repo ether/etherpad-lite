@@ -415,7 +415,7 @@ function compressCSS(filename, content, callback)
 {
   try {
     var base = path.join(ROOT_DIR, path.dirname(filename));
-    new CleanCSS({relativeTo: base}).minify(content, function (errors, minified) {
+    new CleanCSS(base).minify(content, function (errors, minified) {
       if (errors) {
         // on error, just yield the un-minified original, but write a log message
         console.error(`CleanCSS.minify() returned an error on ${filename} (base CSS path: ${base}): ${errors}`);
