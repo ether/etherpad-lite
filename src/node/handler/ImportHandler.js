@@ -101,7 +101,7 @@ async function doImport(req, res, padId)
       let oldSrcFile = srcFile;
 
       srcFile = path.join(path.dirname(srcFile), path.basename(srcFile, fileEnding) + ".txt");
-      await fs.rename(oldSrcFile, srcFile);
+      await fsp_rename(oldSrcFile, srcFile);
     } else {
       console.warn("Not allowing unknown file type to be imported", fileEnding);
       throw "uploadFailed";
