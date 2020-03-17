@@ -809,6 +809,7 @@ function closeColorPicker(accept)
 function showColorPicker()
 {
   previousColorId = myUserInfo.colorId;
+  $.farbtastic('#colorpicker').setColor(myUserInfo.colorId)
 
   if (!colorPickerOpen)
   {
