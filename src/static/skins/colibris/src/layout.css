@@ -28,6 +28,14 @@
 #outerdocbody.plugin-ep_author_neat {
   padding-left: 120px; /* more space for sidediv */
 }
+@media (max-width: 720px) {
+  #editorcontainer {
+    width: 100% !important;
+    right: 0 !important;
+    left: 0 !important;
+  }
+}
+
 @media (max-width:600px) {
   #outerdocbody.plugin-ep_author_neat { padding-left: 0; }
   #options-linenoscheck { display:none; }

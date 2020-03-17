@@ -18,6 +18,7 @@
 
 .popup h1 {
   margin-bottom: 15px;
+  font-size: 2em !important;
 }
 
 .popup h2 {
@@ -26,5 +27,39 @@
 
 .popup p {
   margin: 10px 0;
+}
+
+@media (max-width: 720px) {
+  .popup .column {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .popup #exportColumn {
+    padding: 0;
+    width: 100%;
+  }
+  .popup .exportlink {
+    margin: 0 0 10px 0;
+  }
+
+  .popup h1 { font-size: 1.8em !important; }
+
+  #connectivity, #embed, #import_export, #settings, #users, #mycolorpicker, #chatbox {
+    bottom: 44px  !important;
+    box-shadow: 0 0 0 1px rgba(99,114,130,.16), 3px -7px 20px 6px rgba(27, 39, 51, 0.16);
+    border-radius: 0 !important;
+  }
+  #connectivity, #embed, #import_export, #settings, #users, #mycolorpicker {
+    right: 0 !important;
+    overflow-y: auto;
+    top: initial !important;
+    max-height: 70%;
+  }
+  #users {
+    height: auto !important;
+  }
+  #embed { padding-bottom: 30px; }
+
+  #embedreadonly { margin-top: 8px; }
 }
 

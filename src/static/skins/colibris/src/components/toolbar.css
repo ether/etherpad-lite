@@ -103,6 +103,9 @@
     background-color: transparent;
     overflow-x: visible;
   }
+  .toolbar ul.menu_right li {
+    margin-left: 10px;
+  }
   .toolbar ul.menu_left {
     padding: 2px 0 0 0;
   }
@@ -127,8 +130,6 @@
     padding-top: 9px !important;
   }
   .toolbar ul li a:hover { background-color: transparent; }
-
-  #connectivity, #embed, #import_export, #settings { bottom: 42px; }
 
   li.superscript,
   li.subscript,

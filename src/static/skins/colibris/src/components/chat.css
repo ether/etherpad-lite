@@ -105,8 +105,10 @@
     bottom: 44px;
   }
 
-  #chatbox {
-    width: 100%;
+  #chatbox, #chatbox.stickyChat {
+    width: 100% !important;
+    height: 50% !important;
+    top: initial !important;
     right: 0;
   }
 
