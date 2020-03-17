@@ -209,9 +209,8 @@ var padeditbar = (function()
     redrawHeight: function(){
       var minimunEditbarHeight = self.calculateEditbarHeight();
       var editbarHeight = minimunEditbarHeight + 1 + "px";
-      var containerTop = minimunEditbarHeight + 6 + "px";
+      var containerTop = minimunEditbarHeight + 1 + "px";
       $('#editbar').css("height", editbarHeight);
-
       $('#editorcontainer').css("top", containerTop);
 
       // make sure pop ups are in the right place

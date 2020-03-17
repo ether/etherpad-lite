@@ -85,7 +85,8 @@ h1,
 .yui-skin-sam .yui-panel .hd,
 p[data-l10n-id="ep_comments_page.comment"],
 .comment-reply-input-label span,
-.stepper, #importmessageabiword, #importmessageabiword > a
+.stepper, #importmessageabiword, #importmessageabiword > a,
+.toolbar .show-more-icon-btn
 { color: #64d29b; }
 #ui-slider-handle, #playpause_button_icon {
   background-color: #64d29b;

@@ -4,7 +4,8 @@
   margin: 0;
   background-color: white !important;
   background: none;
-  border: 1px solid #d2d2d2
+  border: none;
+  border-bottom: 1px solid #d2d2d2
 }
 
 .toolbar .buttonicon {
@@ -101,7 +102,6 @@
     height: 39px;
     background: none;
     background-color: transparent;
-    overflow-x: visible;
   }
   .toolbar ul.menu_right li {
     margin-left: 10px;
@@ -140,6 +140,50 @@
   }
 
   .toolbar ul li.separator { margin: 0; }
+
+  .toolbar .show-more-icon-btn {
+    display:none;
+    height: 39px;
+    width: 39px;
+    line-height: 39px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 2rem;
+    background-color: white;
+    z-index: 20;
+  }
+
+  .toolbar.cropped .menu_left {
+    width: calc(100% - 39px); /* Space for show-more-icon-button */
+    display: block;
+  }
+  .toolbar.cropped .show-more-icon-btn {
+    display: block;
+    position: absolute;
+    border-bottom: 1px solid #d2d2d2;
+    right: 0;
+    top: 0;
+  }
+  .toolbar.cropped .show-more-icon-btn:after {
+    content: "+";
+  }
+
+  .toolbar.full-icons {
+    height: auto !important;
+  }
+  .toolbar.full-icons .show-more-icon-btn  {
+    border-bottom: none;
+  }
+  .toolbar.full-icons .show-more-icon-btn:after {
+    content: "-";
+  }
+  .toolbar.full-icons .menu_left {
+    display: flex;
+    flex-wrap: wrap;
+    height: auto;
+    width: 100%;
+    background-color: white;
+  }
 }
 
 
