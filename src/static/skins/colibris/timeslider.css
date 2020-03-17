@@ -6,9 +6,11 @@
   }
 }
 
-.timeslider #import_export, .timeslider #settings{
-  top: 108px !important;
-  right: 55px;
+@media (min-width: 721px) {
+  .timeslider #import_export, .timeslider #settings{
+    top: 108px !important;
+    right: 55px;
+  }
 }
 
 .timeslider #export > p {
@@ -30,10 +32,12 @@
 .timeslider-bar { background: none; }
 .timeslider-bar p { margin: 8px; font-size: 12px;}
 
-.timeslider-bar #editbar {
-  border: none;
-  background: none !important;
-  margin-right: 10px;
+@media (min-width: 721px) {
+  .timeslider-bar #editbar {
+    border: none;
+    background: none !important;
+    margin-right: 10px;
+  }
 }
 
 .timeslider #padmain {
@@ -49,7 +53,7 @@
 }
 
 .timeslider #editorcontainerbox {
-  height: 100%;
+  min-height: 100%;
   overflow: visible;
   margin-top: 0 !important;
 }
@@ -139,4 +143,41 @@
 .timeslider #authorsList .author {
   padding: 2px 5px;
   border-radius: 3px;
+}
+
+@media (max-width: 720px) {
+  .timeslider-bar #editbar {
+    padding: 3px 0px 5px 10px;
+  }
+  .timeslider-bar #editbar ul {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .timeslider-bar #editbar ul li {
+    margin-left: 10px;
+  }
+  .timeslider #editbar .grouped-right {
+    margin: 0 !important;
+  }
+  .editbar-title h1 {
+    font-size: 1.8em !important;
+  }
+  #timeslider {
+    margin: -5px 0 -2px 0 !important;
+  }
+  #timeslider #timeslider-slider { margin: 0; }
+  #ui-slider-bar {
+    margin-right: 130px;
+  }
+  .timeslider #leftstep { right: 35px; }
+  .timeslider #rightstep { right: 5px; }
+  .timeslider #playpause_button { right: 65px; }
+  #timeslider #timer {
+    top: 5px;
+    left: 5px;
+    text-align: left;
+  }
+  .timeslider #editorcontainerbox {
+    padding-bottom: 55px !important;
+  }
 }

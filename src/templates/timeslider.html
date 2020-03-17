@@ -45,6 +45,7 @@
   <% e.begin_block("timesliderScripts"); %>
   <script type="text/javascript" src="../../static/js/html10n.js"></script>
   <script type="text/javascript" src="../../static/js/l10n.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <% e.end_block(); %>
 </head>
 
@@ -87,12 +88,12 @@
             <% e.end_block(); %>
           </div>
 
-          <div>
+          <div class="editbar-title">
               <h1>
                 <span id="revision_label"></span>
                 <span id="revision_date"></span>
               </h1>
-              <p>
+              <p class="subtitle">
                 <span data-l10n-id="timeslider.toolbar.authors"></span>
                 <span id="authorsList" data-l10n-id="timeslider.toolbar.authorsList"></span>
               </span> </p>

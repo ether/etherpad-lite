@@ -72,6 +72,7 @@ a img {
   float: left;
   margin-left: 2px;
   height:32px;
+  cursor: pointer;
 }
 .toolbar ul li.separator {
   border: inherit;
@@ -1113,7 +1114,7 @@ input[type=checkbox] {
       border-bottom: 1px solid #ccc;
       z-index: 10;
     }
-    .toolbar ul.menu_right {
+    .toolbar ul.menu_right, .timeslider-bar .editbarright {
       right:0px !important;
       height: 32px;
       position: fixed;

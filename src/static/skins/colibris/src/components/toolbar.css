@@ -109,11 +109,12 @@
   .toolbar ul.menu_left {
     padding: 2px 0 0 0;
   }
-  .toolbar ul.menu_right {
+  .toolbar ul.menu_right, .timeslider-bar .editbarright {
     left: 0;
     padding-left: 8px;
     padding-top: 8px;
     height: 35px !important;
+    border: none;
     border-top: 1px solid #d2d2d2;
     background-color: white;
   }
