@@ -4,3 +4,14 @@
   margin-right: 0;
   margin-left: 2px;
 }
+@media (max-width: 720px) {
+  .hyperlink-dialog {
+    left: 0 !important;
+    right: 0 !important;
+    padding: 10px;
+    display: flex;
+  }
+  .hyperlink-dialog .hyperlink-url {
+    flex: 1 auto;
+  }
+}
