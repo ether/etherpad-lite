@@ -3,3 +3,8 @@
     display: none !important;
   }
 }
+@media only screen and (max-width: 720px) {
+  .toolbar ul.menu_left {
+      flex-wrap: wrap;
+  }
+}
