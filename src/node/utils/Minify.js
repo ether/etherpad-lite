@@ -275,7 +275,7 @@ function getAceFile(callback) {
           data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
               +  JSON.stringify(status == 200 ? body || '' : null) + ';\n';
         } else {
-          // Silence?
+          console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
         }
         callback();
       });
@@ -382,7 +382,7 @@ function getFileCompressed(filename, contentType, callback) {
       try {
         content = compressJS(content);
       } catch (error) {
-        // silence
+        console.error(`getFile() returned an error in getFileCompressed(${filename}, ${contentType}): ${error}`);
       }
       callback(null, content);
     } else if (contentType == 'text/css') {
@@ -417,14 +417,16 @@ function compressCSS(filename, content, callback)
     var base = path.join(ROOT_DIR, path.dirname(filename));
     new CleanCSS({relativeTo: base}).minify(content, function (errors, minified) {
       if (errors) {
-        // On error, just yield the un-minified original.
+        // on error, just yield the un-minified original, but write a log message
+        console.error(`CleanCSS.minify() returned an error on ${filename} (base CSS path: ${base}): ${errors}`);
         callback(null, content);
       } else {
         callback(null, minified.styles);
       }
     });
   } catch (error) {
-    // On error, just yield the un-minified original.
+    // on error, just yield the un-minified original, but write a log message
+    console.error(`Unexpected error minifying ${filename} (base CSS path: ${base}): ${error}`);
     callback(null, content);
   }
 }
