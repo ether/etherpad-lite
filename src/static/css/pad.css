@@ -39,7 +39,6 @@ a img {
   /* Not sure why important is required here but it is */
   border: 1px solid #666 !important;
 }
-
 .time {
   float: right;
   color: #333;
@@ -48,19 +47,6 @@ a img {
   margin-left: 3px;
   margin-right: 3px;
   margin-top: 2px;
-}
-#focusprotector {
-  z-index: 100;
-  position: absolute;
-  bottom: 0px;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  background-color: white;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=1)";
-  filter: alpha(opacity=1);
-  opacity: 0.01;
-  display: none;
 }
 .rtl {
   direction: RTL

@@ -421,20 +421,6 @@ var paduserlist = (function()
     jqueryNode.removeAttr('disabled').addClass('editable');
   }
 
-  function updateInviteNotice()
-  {
-    if (otherUsersInfo.length == 0)
-    {
-      $("#otheruserstable").hide();
-      $("#nootherusers").show();
-    }
-    else
-    {
-      $("#nootherusers").hide();
-      $("#otheruserstable").show();
-    }
-  }
-
   var knocksToIgnore = {};
   var guestPromptFlashState = 0;
   var guestPromptFlash = padutils.makeAnimationScheduler(
@@ -619,8 +605,6 @@ var paduserlist = (function()
         rowManager.insertRow(newIndex, userData);
       }
 
-      updateInviteNotice();
-
       self.updateNumberOfOnlineUsers();
     },
     updateNumberOfOnlineUsers: function()
@@ -668,13 +652,11 @@ var paduserlist = (function()
               hooks.callAll('userLeave', {
                 userInfo: info
               });
-              updateInviteNotice();
             }
           }
         }, 8000); // how long to wait
         userData.leaveTimer = thisLeaveTimer;
       }
-      updateInviteNotice();
 
       self.updateNumberOfOnlineUsers();
     },

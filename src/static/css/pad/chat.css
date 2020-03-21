@@ -167,27 +167,7 @@
   padding:5px !important;
   border-left: 1px solid #ccc !important;
 }
-#chatthrob {
-  display: none;
-  position: absolute;
-  bottom: 40px;
-  font-size: 14px;
-  width: 150px;
-  height: 40px;
-  right: 20px;
-  z-index: 200;
-  background-color: #000;
-  color: white;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.7);
-  padding: 10px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-  filter: alpha(opacity=80);
-  opacity: .8;
-}
+
 @media only screen and (max-width: 720px) {
   #chaticon {
     position:fixed;
