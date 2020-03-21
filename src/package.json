@@ -68,7 +68,7 @@
     "etherpad-lite": "./node/server.js"
   },
   "devDependencies": {
-    "mocha": "5.2.0",
+    "mocha": "7.1.1",
     "nyc": "15.0.0",
     "supertest": "4.0.2",
     "wd": "1.11.4"
