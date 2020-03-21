@@ -111,7 +111,7 @@ async function doImport(req, res, padId)
   let destFile = path.join(tmpDirectory, "etherpad_import_" + randNum + "." + exportExtension);
 
   // Logic for allowing external Import Plugins
-  let result = await hooks.aCallAll("import", { srcFile, destFile });
+  let result = await hooks.aCallAll("import", { srcFile, destFile, fileEnding });
   let importHandledByPlugin = (result.length > 0);  // This feels hacky and wrong..
 
   let fileIsEtherpad = (fileEnding === ".etherpad");
