@@ -70,7 +70,7 @@
   "devDependencies": {
     "mocha": "5.2.0",
     "nyc": "14.1.0",
-    "supertest": "3.0.0",
+    "supertest": "4.0.2",
     "wd": "1.11.4"
   },
   "engines": {
