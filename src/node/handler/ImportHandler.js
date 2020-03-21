@@ -171,18 +171,6 @@ async function doImport(req, res, padId)
     }
   }
 
-  if (!useConvertor && !req.directDatabaseAccess) {
-    // Read the file with no encoding for raw buffer access.
-    let buf = await fsp_readFile(destFile);
-
-    // Check if there are only ascii chars in the uploaded file
-    let isAscii = ! Array.prototype.some.call(buf, c => (c > 240));
-
-    if (!isAscii) {
-      throw "uploadFailed";
-    }
-  }
-
   // get the pad object
   let pad = await padManager.getPad(padId);
 
@@ -191,6 +179,9 @@ async function doImport(req, res, padId)
 
   if (!req.directDatabaseAccess) {
     text = await fsp_readFile(destFile, "utf8");
+
+    let bytelike = unescape(encodeURIComponent(text));
+    text = decodeURIComponent(escape(bytelike));
 
     /*
      * The <title> tag needs to be stripped out, otherwise it is appended to the
