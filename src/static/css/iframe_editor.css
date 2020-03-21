@@ -110,11 +110,6 @@ body.doesWrap:not(.noprewrap) > div{
   height: 1px; /* changed programmatically */
 }
 
-#outerdocbody .hotrect {
-  border: 1px solid #999;
-  position: absolute;
-}
-
 /* cause "body" area (e.g. where clicks are heard) to grow horizontally with text */
 body.mozilla, body.safari {
   display: table-cell;
