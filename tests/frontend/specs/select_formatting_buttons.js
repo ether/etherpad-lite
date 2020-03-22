@@ -91,7 +91,12 @@ describe("select formatting buttons when selection has style applied", function(
     if(inner$(window)[0].bowser.modernIE){ // if it's IE
       var evtType = "keypress";
     }else{
-      var evtType = "keydown";
+      // Edge also requires keypress.
+      if(window.navigator.userAgent.indexOf("Edge") > -1){
+        var evtType = "keypress";
+      }else{
+        var evtType = "keydown";
+      }
     }
 
     var e = inner$.Event(evtType);
