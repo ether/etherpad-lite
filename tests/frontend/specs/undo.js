@@ -44,7 +44,7 @@ describe("undo button", function(){
     var modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's IE
+    if(inner$(window)[0].bowser.modernIE){ // if it's IE
       var evtType = "keypress";
     }else{
       // Edge also requires keypress.
