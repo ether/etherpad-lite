@@ -12,6 +12,10 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     // merge the two sets of results
     let files = [].concat(coreTests, pluginTests).sort();
+
+    // Remove swap files from tests
+    files = files.filter(el => !/\.swp$/.test(el))
+
     console.debug("Sent browser the following test specs:", files);
     res.send("var specs_list = " + JSON.stringify(files) + ";\n");
   });
