@@ -20,7 +20,7 @@ describe("the test helper", function(){
     });
 
     it("gives me 3 jquery instances of chrome, outer and inner", function(done){
-      this.timeout(5000);
+      this.timeout(10000);
 
       helper.newPad(function(){
         //check if the jquery selectors have the desired elements
