@@ -1,0 +1,196 @@
+#users {
+  background: #f7f7f7;
+  background: -webkit-linear-gradient( #F7F7F7,#EEE);
+  background: -moz-linear-gradient( #F7F7F7,#EEE);
+  background: -ms-linear-gradient( #F7F7F7,#EEE);
+  background: -o-linear-gradient( #F7F7F7,#EEE);
+  background: linear-gradient( #F7F7F7,#EEE);
+  width: 160px;
+  color: #fff;
+  padding: 5px;
+  border-radius: 0 0 6px 6px;
+  border: 1px solid #ccc;
+}
+#otherusers {
+  max-height: 400px;
+  overflow: auto;
+}
+#myswatchbox {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #000;
+  background: transparent;
+  cursor: pointer;
+}
+#myswatch {
+  width: 100%;
+  height: 100%;
+  background: transparent; /*...initially*/
+}
+#mycolorpicker {
+  width: 232px;
+  height: 265px;
+  position: absolute;
+  left: -250px;
+  top: 0px;
+  z-index: 101;
+  display: none;
+  border-radius: 0 0 6px 6px;
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  border-top: 0;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+#mycolorpickersave {
+  left: 10px;
+  font-weight: bold;
+}
+#mycolorpickercancel {
+  left: 85px
+}
+#mycolorpickersave,
+#mycolorpickercancel {
+  background: #fff;
+  background: -webkit-linear-gradient(#fff, #ccc);
+  background: -moz-linear-gradient(#fff, #ccc);
+  background: -o-linear-gradient(#fff, #ccc);
+  background: -ms-linear-gradient(#fff, #ccc);
+  background: linear-gradient(#fff, #ccc);
+  border: 1px solid #ccc;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #000;
+  overflow: hidden;
+  padding: 4px;
+  top: 240px;
+  text-align: center;
+  position: absolute;
+  width: 60px;
+}
+#mycolorpickerpreview {
+  position: absolute;
+  left: 207px;
+  top: 240px;
+  width: 16px;
+  height: 16px;
+  padding: 4px;
+  overflow: hidden;
+  color: #fff;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+#myusernameform {
+  margin-left: 30px
+}
+#myusernameedit {
+  font-size: 1.3em;
+  color: #fff;
+  padding: 3px;
+  height: 18px;
+  margin: 0;
+  border: 0;
+  width: 122px;
+  background: transparent;
+}
+#myusernameform input.editable {
+  border: 1px solid #444
+}
+#myuser .myusernameedithoverable:hover {
+  background: white;
+  color: black;
+}
+#mystatusform {
+  margin-left: 35px;
+  margin-top: 5px;
+}
+#mystatusedit {
+  font-size: 1.2em;
+  color: #777;
+  font-style: italic;
+  display: none;
+  padding: 2px;
+  height: 14px;
+  margin: 0;
+  border: 1px solid #bbb;
+  width: 199px;
+  background: transparent;
+}
+#myusernameform .editactive,
+#myusernameform .editempty {
+  background: white;
+  border-left: 1px solid #c3c3c3;
+  border-top: 1px solid #c3c3c3;
+  border-right: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
+  color: #000;
+}
+#myusernameform .editempty {
+  color: #333
+}
+#myswatchbox, #myusernameedit, #otheruserstable .swatch {
+  border: 1px solid #ccc !important;
+  color: #333;
+}
+table#otheruserstable {
+  display: none
+}
+#otheruserstable td {
+  height: 26px;
+  vertical-align: middle;
+  padding: 0 2px;
+  color: #333;
+}
+#otheruserstable .swatch {
+  border: 1px solid #000;
+  width: 13px;
+  height: 13px;
+  overflow: hidden;
+  margin: 0 4px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.usertdswatch {
+  width: 1%
+}
+.usertdname {
+  font-size: 1.3em;
+  color: #444;
+}
+.usertdstatus {
+  font-size: 1.1em;
+  font-style: italic;
+  color: #999;
+}
+.usertdactivity {
+  font-size: 1.1em;
+  color: #777;
+}
+.usertdname input {
+  border: 1px solid #bbb;
+  width: 80px;
+  padding: 2px;
+}
+.usertdname input.editactive,
+.usertdname input.editempty {
+  background: white;
+  border-left: 1px solid #c3c3c3;
+  border-top: 1px solid #c3c3c3;
+  border-right: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
+}
+.usertdname input.editempty {
+  color: #888;
+  font-style: italic;
+}

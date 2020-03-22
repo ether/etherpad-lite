@@ -1,0 +1,114 @@
+.popup {
+  font-size: 12px;
+  width: 80%;
+  max-width: 500px;
+  padding: 10px;
+  border-radius: 0 0 6px 6px;
+  border: 1px solid #ccc;
+  border-top: none;
+  background: #f7f7f7;
+  background: -webkit-linear-gradient(#F7F7F7, #EEE);
+  background: -moz-linear-gradient(#F7F7F7, #EEE);
+  background: -ms-linear-gradient(#F7F7F7, #EEE);
+  background: -o-linear-gradient(#F7F7F7, #EEE);
+  background: linear-gradient(#F7F7F7, #EEE);
+  -webkit-box-shadow: 0 0 8px #888;
+  -moz-box-shadow: 0 0 8px #888;
+  box-shadow: 0 2px 4px #ddd;
+  color: #222;
+}
+.popup input[type=text] {
+  width: 100%;
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+  margin-top: 10px;
+}
+.popup input[type=text], #users input[type=text] {
+  outline: none;
+}
+.popup button {
+  padding: 5px;
+  font-size: 14px;
+}
+.popup a {
+  text-decoration: none
+}
+.popup h1 {
+  color: #555;
+  font-size: 18px
+}
+.popup h2 {
+  color: #777;
+  font-size: 15px
+}
+.popup p {
+  margin: 5px 0
+}
+.popup select {
+  background: #fff;
+  padding: 2px;
+  height: 24px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  outline: none;
+  width: 120px;
+}
+#settings,
+#import_export,
+#embed,
+#connectivity,
+#users {
+  position: absolute;
+  top: 38px;
+  right: 20px;
+  display: none;
+  z-index: 500;
+}
+
+@media all and (max-width: 400px){
+  .popup {
+    width:100%;
+    max-width:300px;
+    top: 72px !important;
+  }
+}
+
+/* Mobile devices */
+@media only screen and (max-width: 720px) {
+  #users {
+    top: auto;
+    right:0px !important;
+    bottom: 33px;
+    border-radius: 0px !important;
+    height: 55px !important;
+    overflow: auto;
+  }
+  #mycolorpicker {
+    left: 0px;
+    top:37px !important;
+    position:fixed;
+  }
+  .popup {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #settings,
+  #import_export,
+  #connectivity,
+  #embed {
+    top:auto;
+    left: 0;
+    bottom: 33px;
+    right: 0;
+  }
+}
