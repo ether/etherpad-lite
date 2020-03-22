@@ -9,6 +9,29 @@ p.pblort {
   top: 40px;
   position: static;
 }
+#padpage {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  width: 100%;
+}
+#padmain {
+  margin-top: 0px;
+  position: absolute;
+  top: 63px !important;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  zoom: 1;
+}
+#padeditor {
+  bottom: 0px;
+  left: 0;
+  position: absolute;
+  right: 0px;
+  top: 0;
+  zoom: 1;
+}
 #padcontent {
   font-size: 12px;
   padding: 10px;

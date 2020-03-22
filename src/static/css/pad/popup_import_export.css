@@ -1,0 +1,59 @@
+#exportColumn{
+  margin-top:20px;
+}
+.exporttype {
+  margin-top: 4px;
+  background-repeat: no-repeat;
+  padding-left: 25px;
+  color: #333;
+  text-decoration: none;
+  padding-bottom:2px;
+  display:inline;
+  padding-left:5px;
+  font-family: "Arial";
+}
+.exportlink{
+  font-family: "fontawesome-etherpad";
+  display:block;
+  margin:5px;
+  color:#666;
+}
+#exporthtmla:before {
+  content: "\e826";
+}
+#exportplaina:before {
+  content: "\e802";
+}
+#exportworda:before {
+  content: "\e804";
+}
+#exportpdfa:before {
+  content: "\e803";
+}
+#exportetherpada:before {
+  content: "\e806";
+}
+#exportopena:before {
+  content: "\e805";
+}
+
+/* hidden element */
+#importstatusball,
+#importmessagesuccess,
+#importmessageabiword {
+  display: none;
+}
+
+#importsubmitinput.throbbold{
+  font-weight:bold;
+}
+
+#importmessageabiword {
+  color: #900;
+  font-size: small;
+}
+
+#importsubmitinput {
+  margin-top: 12px;
+  padding:2px 4px 2px 4px;
+}

@@ -1,0 +1,41 @@
+html {
+  font-size: 62.5%;
+  width: 100%;
+}
+#editorcontainerbox {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  width: 100%;
+}
+#editorcontainer {
+  position: absolute;
+  top: 37px; /* + 1px border */
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 1;
+
+  /* Required to be able to scroll on iOS: */
+  -webkit-overflow-scrolling: touch;
+}
+#editorcontainer iframe {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  left: 0; /* Required for safari fixes RTL */
+}
+iframe {
+  position: absolute
+}
+@media all and (max-width: 400px) {
+  #editorcontainer {
+    top: 68px;
+  }
+}
+@media only screen and (max-width: 720px) {
+  #editorcontainer {
+    margin-bottom: 33px
+  }
+}

@@ -1,0 +1,34 @@
+/* Montserrat Font */
+@font-face {
+  font-family: "Montserrat";
+  src: url("../../../static/font/Montserrat-Light.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+    font-family: "Montserrat";
+    src: url("../../../static/font/Montserrat-Regular.otf") format("opentype");
+    font-weight: bold;
+    font-style: normal;
+}
+/* End of Monterrat Font */
+
+@font-face {
+  font-family: opendyslexic;
+  src: url("../../../static/font/opendyslexic.otf") format("opentype");
+}
+
+/* Roboto Mono */
+@font-face {
+    font-family: "RobotoMono";
+    src: url("../../../static/font/RobotoMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "RobotoMono";
+    src: url("../../../static/font/RobotoMono-Bold.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+/* End of Roboto Mono */

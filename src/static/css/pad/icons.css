@@ -1,0 +1,108 @@
+@font-face {
+  font-family: "fontawesome-etherpad";
+  src:url("../../../static/font/fontawesome-etherpad.eot");
+  src:url("../../../static/font/fontawesome-etherpad.eot?#iefix") format("embedded-opentype"),
+    url("../../../static/font/fontawesome-etherpad.woff") format("woff"),
+    url("../../../static/font/fontawesome-etherpad.ttf") format("truetype"),
+    url("../../../static/font/fontawesome-etherpad.svg#fontawesome-etherpad") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+[data-icon]:before,
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "fontawesome-etherpad" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.buttonicon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  border: none;
+  padding: 0;
+  background: none;
+  font-family: "fontawesome-etherpad";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: normal;
+  color: #666;
+  cursor: pointer;
+}
+
+.buttonicon::-moz-focus-inner {
+  padding: 0;
+  border: 0
+}
+
+.buttonicon:before  {
+  font-family: "fontawesome-etherpad";
+}
+
+.buttonicon:focus{
+  border: 1px solid #666;
+}
+.buttonicon-bold:before {
+  content: "\e81c";
+}
+.buttonicon-italic:before {
+  content: "\e81d";
+}
+.buttonicon-underline:before {
+  content: "\e817";
+}
+.buttonicon-strikethrough:before {
+  content: "\e818";
+}
+.buttonicon-insertorderedlist:before {
+  content: "\e816";
+}
+.buttonicon-insertunorderedlist:before {
+  content: "\e815";
+}
+.buttonicon-indent:before {
+  content: "\e814";
+}
+.buttonicon-outdent:before {
+  content: "\e813";
+}
+.buttonicon-undo:before {
+  content: "\e823";
+}
+.buttonicon-redo:before {
+  content: "\e824";
+}
+.buttonicon-clearauthorship:before {
+  content: "\e80d";
+}
+.buttonicon-settings:before {
+  content: "\e833";
+}
+.buttonicon-import_export:before {
+  content: "\e834";
+}
+.buttonicon-embed:before {
+  content: "\e827";
+}
+.buttonicon-history:before {
+  content: "\e837";
+}
+.buttonicon-chat:before {
+  content: "\e829";
+}
+.buttonicon-showusers:before {
+  content: "\e808";
+}
+.buttonicon-savedRevision:before {
+  content: "\e835";
+}
