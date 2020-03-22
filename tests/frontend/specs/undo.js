@@ -44,11 +44,16 @@ describe("undo button", function(){
     var modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    /*
-     * ACHTUNG: this is the only place in the test codebase in which a keydown
-     * is sent for IE. Everywhere else IE uses keypress.
-     */
-    var evtType = "keydown";
+    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's IE
+      var evtType = "keypress";
+    }else{
+      // Edge also requires keypress.
+      if(window.navigator.userAgent.indexOf("Edge") > -1){
+        var evtType = "keypress";
+      }else{
+        var evtType = "keydown";
+      }
+    }
 
     var e = inner$.Event(evtType);
     e.ctrlKey = true; // Control key
