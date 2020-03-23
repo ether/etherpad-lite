@@ -3,7 +3,8 @@
 		"authors": [
 			"सरोज कुमार ढकाल",
 			"Nirjal stha",
-			"राम प्रसाद जोशी"
+			"राम प्रसाद जोशी",
+			"हिमाल सुबेदी"
 		]
 	},
 	"index.newPad": "नयाँ प्याड",
@@ -26,7 +27,7 @@
 	"pad.toolbar.showusers.title": "यस प्याडमा रहेका प्रयोगकर्ता देखाउने",
 	"pad.colorpicker.save": "सङ्ग्रह गर्ने",
 	"pad.colorpicker.cancel": "रद्द",
-	"pad.loading": "लोड हुदैछ...",
+	"pad.loading": "खुल्दै छ…",
 	"pad.passwordRequired": "यो प्यड खोल्न पासवर्ड चाहिन्छ",
 	"pad.permissionDenied": "तपाईंलाई यो प्याड खोल्न अनुमति छैन",
 	"pad.wrongPassword": "तपाईंको पासवर्ड गलत थियो",
@@ -37,7 +38,7 @@
 	"pad.settings.colorcheck": "लेखकीय रङ्ग",
 	"pad.settings.linenocheck": "हरफ संख्या",
 	"pad.settings.rtlcheck": "के सामग्री दाहिने देखि देब्रे पढ्ने हो ?",
-	"pad.settings.fontType": "फन्ट प्रकार:",
+	"pad.settings.fontType": "लिपि प्रकार:",
 	"pad.settings.fontType.normal": "सामान्य",
 	"pad.settings.fontType.monospaced": "मोनोस्पेस",
 	"pad.settings.globalView": "विश्वव्यापी दृष्य",

@@ -1,10 +1,17 @@
-var assert = require('assert')
- supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
-        fs = require('fs'),
-  settings = require(__dirname+'/../../loadSettings').loadSettings(),
-       api = supertest('http://'+settings.ip+":"+settings.port),
-      path = require('path'),
-     async = require(__dirname+'/../../../../src/node_modules/async');
+/*
+ * ACHTUNG: there is a copied & modified version of this file in
+ * <basedir>/tests/container/spacs/api/pad.js
+ *
+ * TODO: unify those two files, and merge in a single one.
+ */
+
+const assert = require('assert');
+const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
+const fs = require('fs');
+const settings = require(__dirname+'/../../loadSettings').loadSettings();
+const api = supertest('http://'+settings.ip+":"+settings.port);
+const path = require('path');
+const async = require(__dirname+'/../../../../src/node_modules/async');
 
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
@@ -29,7 +36,7 @@ var ulHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two<
 var expectedHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</ol></li></ol></body></html>';
 
 describe('Connectivity', function(){
-  it('errors if can not connect', function(done) {
+  it('can connect', function(done) {
     api.get('/api/')
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -37,7 +44,7 @@ describe('Connectivity', function(){
 })
 
 describe('API Versioning', function(){
-  it('errors if can not connect', function(done) {
+  it('finds the version tag', function(done) {
     api.get('/api/')
     .expect(function(res){
       apiVersion = res.body.currentVersion;
@@ -49,7 +56,7 @@ describe('API Versioning', function(){
 })
 
 describe('Permission', function(){
-  it('errors if can connect without correct APIKey', function(done) {
+  it('errors with invalid APIKey', function(done) {
     // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
     // If your APIKey is password you deserve to fail all tests anyway
     var permErrorURL = '/api/'+apiVersion+'/createPad?apikey=password&padID=test';
@@ -204,7 +211,7 @@ describe('getText', function(){
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.data.text !== "testText\n") throw new Error("Pad Creation with text")
-    }) 
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -573,7 +580,7 @@ describe('createPad', function(){
   it('errors if pad can be created', function(done) {
     var badUrlChars = ["/", "%23", "%3F", "%26"];
     async.map(
-      badUrlChars, 
+      badUrlChars,
       function (badUrlChar, cb) {
         api.get(endPoint('createPad')+"&padID="+badUrlChar)
         .expect(function(res){

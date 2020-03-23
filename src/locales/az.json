@@ -92,6 +92,8 @@
 	"pad.chat": "Söhbət",
 	"pad.chat.title": "Bu lövhə üçün çat açın.",
 	"pad.chat.loadmessages": "Daha çox mesaj yüklə",
+	"pad.chat.stick.title": "Yazışmanı ekrana kilidlə",
+	"pad.chat.writeMessage.placeholder": "Mesajını bura yaz",
 	"timeslider.pageTitle": "{{appTitle}} Vaxt cədvəli",
 	"timeslider.toolbar.returnbutton": "Lövhəyə qayıt",
 	"timeslider.toolbar.authors": "Müəlliflər:",

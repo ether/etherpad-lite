@@ -50,7 +50,7 @@ You'll need [node.js](https://nodejs.org) and (optionally, though recommended) g
 1. Grab the source, either
   - download <https://github.com/ether/etherpad-lite/zipball/master>
   - or `git clone --branch master https://github.com/ether/etherpad-lite.git`
-2. start `bin\installOnWindows.bat`
+2. With a "Run as administrator" command prompt execute `bin\installOnWindows.bat`
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser.
 

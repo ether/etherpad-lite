@@ -99,13 +99,13 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
     let sessionIDs = sessionCookie.split(',');
 
     // was previously iterated in parallel using async.forEach
-    let sessionInfos = await Promise.all(sessionIDs.map(sessionID => {
-      return sessionManager.getSessionInfo(sessionID);
-    }));
+    try {
+      let sessionInfos = await Promise.all(sessionIDs.map(sessionID => {
+        return sessionManager.getSessionInfo(sessionID);
+      }));
 
-    // seperated out the iteration of sessioninfos from the (parallel) fetches from the DB
-    for (let sessionInfo of sessionInfos) {
-      try {
+      // seperated out the iteration of sessioninfos from the (parallel) fetches from the DB
+      for (let sessionInfo of sessionInfos) {
         // is it for this group?
         if (sessionInfo.groupID != groupID) {
           authLogger.debug("Auth failed: wrong group");
@@ -123,13 +123,13 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
         validSession = true;
         sessionAuthor = sessionInfo.authorID;
         break;
-      } catch (err) {
-        // skip session if it doesn't exist
-        if (err.message == "sessionID does not exist") {
-          authLogger.debug("Auth failed: unknown session");
-        } else {
-          throw err;
-        }
+      }
+    } catch (err) {
+      // skip session if it doesn't exist
+      if (err.message == "sessionID does not exist") {
+        authLogger.debug("Auth failed: unknown session");
+      } else {
+        throw err;
       }
     }
   }

@@ -32,6 +32,7 @@
   #outerdocbody.plugin-ep_author_neat { padding-left: 0; }
   #options-linenoscheck { display:none; }
   #options-linenoscheck ~ label { display:none; }
+  #outerdocbody { padding-left: 0; } /* side div is hidden now */
 }
 
 #outerdocbody.sidediv-hidden {

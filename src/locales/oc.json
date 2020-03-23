@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Cedric31"
+			"Cedric31",
+			"Quentí"
 		]
 	},
 	"index.newPad": "Pad novèl",
@@ -86,6 +87,8 @@
 	"pad.chat": "Chat",
 	"pad.chat.title": "Dobrir lo chat associat a aqueste pad.",
 	"pad.chat.loadmessages": "Cargar mai de messatges.",
+	"pad.chat.stick.title": "Ancorar la discussion a l’ecran",
+	"pad.chat.writeMessage.placeholder": "Escrivètz lo vòstre messatge aicí",
 	"timeslider.pageTitle": "Istoric dinamic de {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Retorn a aqueste Pad.",
 	"timeslider.toolbar.authors": "Autors :",

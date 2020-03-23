@@ -101,7 +101,7 @@ async function doImport(req, res, padId)
       let oldSrcFile = srcFile;
 
       srcFile = path.join(path.dirname(srcFile), path.basename(srcFile, fileEnding) + ".txt");
-      await fs.rename(oldSrcFile, srcFile);
+      await fsp_rename(oldSrcFile, srcFile);
     } else {
       console.warn("Not allowing unknown file type to be imported", fileEnding);
       throw "uploadFailed";
@@ -111,7 +111,7 @@ async function doImport(req, res, padId)
   let destFile = path.join(tmpDirectory, "etherpad_import_" + randNum + "." + exportExtension);
 
   // Logic for allowing external Import Plugins
-  let result = await hooks.aCallAll("import", { srcFile, destFile });
+  let result = await hooks.aCallAll("import", { srcFile, destFile, fileEnding });
   let importHandledByPlugin = (result.length > 0);  // This feels hacky and wrong..
 
   let fileIsEtherpad = (fileEnding === ".etherpad");

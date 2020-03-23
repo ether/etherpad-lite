@@ -24,7 +24,7 @@
 	"pad.colorpicker.save": "Späicheren",
 	"pad.colorpicker.cancel": "Ofbriechen",
 	"pad.loading": "Lueden...",
-	"pad.noCookie": "Cookie gouf net fonnt. Erlaabt w.e.g. Cookien an Ärem Browser!",
+	"pad.noCookie": "Cookie gouf net fonnt. Erlaabt wgl. Cookien an Ärem Browser!",
 	"pad.passwordRequired": "Dir braucht ee Passwuert fir dëse Pad opzemaachen",
 	"pad.permissionDenied": "Dir hutt net déi néideg Rechter fir dëse Pad opzemaachen",
 	"pad.wrongPassword": "Äert Passwuert ass falsch",
@@ -87,6 +87,6 @@
 	"pad.userlist.approve": "Zoustëmmen",
 	"pad.impexp.importbutton": "Elo importéieren",
 	"pad.impexp.importing": "Importéieren...",
-	"pad.impexp.uploadFailed": "D'Eroplueden huet net funktionéiert, probéiert w.e.g. nach eng Kéier",
+	"pad.impexp.uploadFailed": "D'Eroplueden huet net funktionéiert, probéiert wgl. nach eng Kéier",
 	"pad.impexp.importfailed": "Den Import huet net funktionéiert"
 }
