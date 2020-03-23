@@ -33,8 +33,8 @@
     "async": "0.9.0",
     "async-stacktrace": "0.0.2",
     "channels": "0.0.4",
-    "cheerio": "0.20.0",
-    "clean-css": "3.4.19",
+    "cheerio": "0.22.0",
+    "clean-css": "4.2.3",
     "cookie-parser": "1.4.4",
     "ejs": "2.6.1",
     "etherpad-require-kernel": "1.0.9",
@@ -49,7 +49,7 @@
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
     "nodeify": "^1.0.1",
-    "npm": "6.13.4",
+    "npm": "6.14.3",
     "object.values": "^1.0.4",
     "request": "2.88.0",
     "resolve": "1.1.7",
@@ -68,9 +68,9 @@
     "etherpad-lite": "./node/server.js"
   },
   "devDependencies": {
-    "mocha": "5.2.0",
-    "nyc": "14.1.0",
-    "supertest": "3.0.0",
+    "mocha": "7.1.1",
+    "nyc": "15.0.0",
+    "supertest": "4.0.2",
     "wd": "1.11.4"
   },
   "engines": {
