@@ -201,6 +201,7 @@ function minify(req, res)
   statFile(filename, function (error, date, exists) {
     if (date) {
       date = new Date(date);
+      date.setMilliseconds(0);
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
       if (settings.maxAge !== undefined) {
