@@ -23,7 +23,7 @@ describe('scroll when focus line is out of viewport', function () {
         placeCaretInTheBeginningOfLine(lineCloseOfTopOfPad, function(){ // place caret in the 10th line
           // warning: even pressing right arrow, the caret does not change of position
           // the column where the caret is, it has not importance, only the line
-          pressAndReleaseRightArrow();
+          pressAndReleaseRightArrow(); // I don't think this is working in Edge.
           done();
         });
       });
@@ -512,8 +512,14 @@ describe('scroll when focus line is out of viewport', function () {
 
   var pressKey = function(keyCode, shiftIsPressed){
     var inner$ = helper.padInner$;
-    var e = inner$.Event(helper.evtType);
-    e.shiftKey = shiftIsPressed;
+
+    /*
+     * These events use keydown and up, not keypress.
+     * Do not change. Changing to keypress will break Edge.
+     */
+    var e = inner$.Event("keydown");
+
+    e.shiftKey = shiftIsPressed || false;
     e.keyCode = keyCode;
     e.which = keyCode; // etherpad listens to 'which'
     inner$('#innerdocbody').trigger(e);
@@ -521,8 +527,13 @@ describe('scroll when focus line is out of viewport', function () {
 
   var releaseKey = function(keyCode){
     var inner$ = helper.padInner$;
-    var evtType = 'keyup';
-    var e = inner$.Event(evtType);
+
+    /*
+     * These events use keydown and up, not keypress.
+     * Do not change. Changing to keypress will break Edge.
+     */
+    var e = inner$.Event("keyup");
+
     e.keyCode = keyCode;
     e.which = keyCode; // etherpad listens to 'which'
     inner$('#innerdocbody').trigger(e);
