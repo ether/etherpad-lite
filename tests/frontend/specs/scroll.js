@@ -82,7 +82,7 @@ describe('scroll when focus line is out of viewport', function () {
           // warning: even pressing up arrow, the caret does not change of position
           pressAndReleaseUpArrow();
           done();
-        }, 1000);
+        }, 2000);
       });
 
       it('keeps the focus line scrolled 30% of the top of the viewport', function (done) {
