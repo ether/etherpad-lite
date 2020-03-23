@@ -15,18 +15,7 @@ describe("indentation button", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(inner$(window)[0].bowser.modernIE){ // if it's IE
-      var evtType = "keypress";
-    }else{
-      // Edge also requires keypress.
-      if(window.navigator.userAgent.indexOf("Edge") > -1){
-        var evtType = "keypress";
-      }else{
-        var evtType = "keydown";
-      }
-    }
-
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.keyCode = 9; // tab :|
     inner$("#innerdocbody").trigger(e);
 
@@ -330,12 +319,7 @@ describe("indentation button", function(){
 
 function pressEnter(){
   var inner$ = helper.padInner$;
-  if(inner$(window)[0].bowser.modernIE){ // if it's IE
-    var evtType = "keypress";
-  }else{
-    var evtType = "keydown";
-  }
-  var e = inner$.Event(evtType);
+  var e = inner$.Event(helper.evtType);
   e.keyCode = 13; // enter :|
   inner$("#innerdocbody").trigger(e);
 }

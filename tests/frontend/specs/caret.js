@@ -297,20 +297,8 @@ function prepareDocument(n, target){ // generates a random document with random 
 }
 
 function keyEvent(target, charCode, ctrl, shift){ // sends a charCode to the window
-  if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's IE
-    var evtType = "keypress";
-  }else{
-    // Edge also requires keypress.
-    if(window.navigator.userAgent.indexOf("Edge") > -1){
-      var evtType = "keypress";
-    }else{
-      var evtType = "keydown";
-    }
-  }
 
-
-  var e = target.Event(evtType);
-  console.log(e);
+  var e = target.Event(helper.evtType);
   if(ctrl){
     e.ctrlKey = true; // Control key
   }

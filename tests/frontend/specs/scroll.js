@@ -512,20 +512,7 @@ describe('scroll when focus line is out of viewport', function () {
 
   var pressKey = function(keyCode, shiftIsPressed){
     var inner$ = helper.padInner$;
-    var evtType;
-
-    if(inner$(window)[0].bowser.modernIE){ // if it's IE
-      var evtType = "keypress";
-    }else{
-      // Edge also requires keypress.
-      if(window.navigator.userAgent.indexOf("Edge") > -1){
-        var evtType = "keypress";
-      }else{
-        var evtType = "keydown";
-      }
-    }
-
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.shiftKey = shiftIsPressed;
     e.keyCode = keyCode;
     e.which = keyCode; // etherpad listens to 'which'

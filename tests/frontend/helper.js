@@ -56,6 +56,22 @@ var helper = {};
     window.document.cookie = "";
   }
 
+  // Functionality for knowing what key event type is required for tests
+  var evtType = "keydown";
+  // if it's IE require keypress
+  if(window.navigator.userAgent.indexOf("MSIE") > -1){
+    evtType = "keypress";
+  }
+  // Edge also requires keypress.
+  if(window.navigator.userAgent.indexOf("Edge") > -1){
+    evtType = "keypress";
+  }
+  // Opera also requires keypress.
+  if(window.navigator.userAgent.indexOf("OPR") > -1){
+    evtType = "keypress";
+  }
+  helper.evtType = evtType;
+
   helper.newPad = function(cb, padName){
     //build opts object
     var opts = {clearCookies: true}
