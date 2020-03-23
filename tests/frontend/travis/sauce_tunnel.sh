@@ -11,7 +11,7 @@ tar zxf /tmp/sauce.tar.gz --directory /tmp
 mv /tmp/sc-*-linux /tmp/sauce_connect
 
 # start the sauce connector in background and make sure it doesn't output the secret key
-(/tmp/sauce_connect/bin/sc --user $SAUCE_USERNAME --key $SAUCE_ACCESS_KEY --pidfile /tmp/sauce.pid --readyfile /tmp/tunnel > /dev/null )&
+(/tmp/sauce_connect/bin/sc --user "${SAUCE_USERNAME}" --key "${SAUCE_ACCESS_KEY}" --pidfile /tmp/sauce.pid --readyfile /tmp/tunnel > /dev/null )&
 
 # wait for the tunnel to build up
 while [ ! -e "/tmp/tunnel" ]
