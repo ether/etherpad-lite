@@ -47,18 +47,7 @@ describe("undo button then redo button", function(){
     var modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's IE
-      var evtType = "keypress";
-    }else{
-      // Edge also requires keypress.
-      if(window.navigator.userAgent.indexOf("Edge") > -1){
-        var evtType = "keypress";
-      }else{
-        var evtType = "keydown";
-      }
-    }
-
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 90; // z
     inner$("#innerdocbody").trigger(e);

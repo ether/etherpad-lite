@@ -111,17 +111,7 @@ describe("assign ordered list", function(){
 
   var triggerCtrlShiftShortcut = function(shortcutChar) {
     var inner$ = helper.padInner$;
-    if(inner$(window)[0].bowser.modernIE){ // if it's IE
-      var evtType = "keypress";
-    }else{
-      // Edge also requires keypress.
-      if(window.navigator.userAgent.indexOf("Edge") > -1){
-        var evtType = "keypress";
-      }else{
-        var evtType = "keydown";
-      }
-    }
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.ctrlKey = true;
     e.shiftKey = true;
     e.which = shortcutChar.toString().charCodeAt(0);
