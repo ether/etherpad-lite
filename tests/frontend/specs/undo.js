@@ -4,7 +4,6 @@ describe("undo button", function(){
     this.timeout(60000);
   });
 
-/*
   it("undo some typing by clicking undo button", function(done){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
@@ -30,7 +29,6 @@ describe("undo button", function(){
       done();
     });
   });
-*/
 
   it("undo some typing using a keypress", function(done){
     var inner$ = helper.padInner$;
