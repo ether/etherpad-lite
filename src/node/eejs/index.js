@@ -128,7 +128,7 @@ exports.require = function (name, args, mod) {
   exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath, inherit: []});
 
-  var res = ejs.render(template, args);
+  var res = ejs.render(template, args, { cache: true, filename: ejspath });
   exports.info.file_stack.pop();
   exports.info.args.pop();
 
