@@ -6,8 +6,8 @@ describe("Chat messages and UI", function(){
   });
 
   it("opens chat, sends a message and makes sure it exists on the page", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
     var chatValue = "JohnMcLear";
 
     //click on the chat button to make chat visible
@@ -39,8 +39,8 @@ describe("Chat messages and UI", function(){
   });
 
   it("makes sure that an empty message can't be sent", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
 
     //click on the chat button to make chat visible
     var $chatButton = chrome$("#chaticon");
@@ -65,8 +65,8 @@ describe("Chat messages and UI", function(){
   });
 
   it("makes chat stick to right side of the screen", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
 
     //click on the settings button to make settings visible
     var $settingsButton = chrome$(".buttonicon-settings");
@@ -98,8 +98,8 @@ describe("Chat messages and UI", function(){
   });
 
   it("makes chat stick to right side of the screen then makes it one step smaller", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
 
     //click on the settings button to make settings visible
     var $settingsButton = chrome$(".buttonicon-settings");

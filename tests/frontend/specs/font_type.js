@@ -6,8 +6,8 @@ describe("font select", function(){
   });
 
   it("makes text monospace", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
 
     //click on the settings button to make settings visible
     var $settingsButton = chrome$(".buttonicon-settings");

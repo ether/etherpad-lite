@@ -52,7 +52,7 @@ $(function(){
   }
 
   /*
-    This reporter wraps the original html reporter plus reports plain text into a hidden div. 
+    This reporter wraps the original html reporter plus reports plain text into a hidden div.
     This allows the webdriver client to pick up the test results
   */
   var WebdriverAndHtmlReporter = function(html_reporter){
@@ -170,7 +170,7 @@ $(function(){
 
   //get the list of specs and filter it if requested
   var specs = specs_list.slice();
-  
+
   //inject spec scripts into the dom
   var $body = $('body');
   $.each(specs, function(i, spec){
@@ -195,4 +195,4 @@ $(function(){
 
     mocha.run();
   });
-});       
+});

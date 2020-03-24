@@ -7,7 +7,7 @@ describe("undo button then redo button", function(){
   it("redo some typing with button", function(done){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
-    
+
     // get the first text element inside the editable space
     var $firstTextElement = inner$("div span").first();
     var originalValue = $firstTextElement.text(); // get the original value
@@ -47,7 +47,7 @@ describe("undo button then redo button", function(){
     var modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE  
+    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE
       var evtType = "keypress";
     }else{
       var evtType = "keydown";
