@@ -59,7 +59,7 @@ let padList = {
       this.initiated = true;
 
       for (let val of dbData) {
-        this.addPad(val.replace(/pad:/,""), false);
+        this.addPad(val.replace(/^pad:/,""), false);
       }
     }
 
