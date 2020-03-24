@@ -49,7 +49,8 @@ var globalPads = {
  * Updated without db access as new pads are created/old ones removed.
  */
 let padList = {
-  list: [],
+  list: new Set(),
+  cachedList: [],
   sorted : false,
   initiated: false,
   init: async function() {
@@ -59,7 +60,7 @@ let padList = {
       this.initiated = true;
 
       for (let val of dbData) {
-        this.addPad(val.replace(/^pad:/,""), false);
+        this.addPad(val.replace(/^pad:/,""),false);
       }
     }
 
@@ -79,27 +80,25 @@ let padList = {
     await this.load();
 
     if (!this.sorted) {
-      this.list.sort();
+      this.cachedList = Array.from(this.list).sort();
       this.sorted = true;
     }
 
-    return this.list;
+    return this.cachedList;
   },
   addPad: function(name) {
     if (!this.initiated) return;
 
-    if (this.list.indexOf(name) == -1) {
-      this.list.push(name);
+    if (!this.list.has(name)) {
+      this.list.add(name);
       this.sorted = false;
     }
   },
   removePad: function(name) {
     if (!this.initiated) return;
 
-    var index = this.list.indexOf(name);
-
-    if (index > -1) {
-      this.list.splice(index, 1);
+    if (this.list.has(name)) {
+      this.list.delete(name);
       this.sorted = false;
     }
   }
