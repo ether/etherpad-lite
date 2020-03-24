@@ -25,6 +25,8 @@ var path = require("path");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var resolve = require("resolve");
 
+const templateCache = new Map()
+
 exports.info = {
   __output_stack: [],
   block_stack: [],
@@ -114,8 +116,15 @@ exports.require = function (name, args, mod) {
 
   args.e = exports;
   args.require = require;
-  var template = '<% e._init(__output); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
-  
+
+  let template
+  if (!templateCache.has(ejspath)) {
+    template = '<% e._init(__output); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
+    templateCache.set(ejspath, template)
+  } else {
+    template = templateCache.get(ejspath)
+  }
+
   exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath, inherit: []});
 
