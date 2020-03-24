@@ -6,9 +6,9 @@ describe("timeslider", function(){
   });
 
   it("Shows a date and time in the timeslider and make sure it doesn't include NaN", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
-    
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
     // make some changes to produce 100 revisions
     var revs = 10;
     this.timeout(60000);
@@ -18,15 +18,15 @@ describe("timeslider", function(){
         inner$("div").first().sendkeys('a');
       }, 200);
     }
-    
+
     setTimeout(function() {
       // go to timeslider
       $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider');
-      
+
       setTimeout(function() {
         var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
         var $sliderBar = timeslider$('#ui-slider-bar');
-        
+
         var latestContents = timeslider$('#padcontent').text();
 
         // Expect the date and time to be shown
@@ -36,17 +36,17 @@ describe("timeslider", function(){
         e.clientX = e.pageX = 150;
         e.clientY = e.pageY = 45;
         $sliderBar.trigger(e);
-        
+
         e = new jQuery.Event('mousedown');
         e.clientX = e.pageX = 150;
         e.clientY = e.pageY = 40;
         $sliderBar.trigger(e);
-        
+
         e = new jQuery.Event('mousedown');
         e.clientX = e.pageX = 150;
         e.clientY = e.pageY = 50;
         $sliderBar.trigger(e);
-        
+
         $sliderBar.trigger('mouseup')
 
         setTimeout(function() {

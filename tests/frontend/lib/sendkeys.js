@@ -305,11 +305,11 @@ var     START_TO_END                   = 1;
 var     END_TO_END                     = 2;
 var     END_TO_START                   = 3;
 // from the Mozilla documentation, for range.compareBoundaryPoints(how, sourceRange)
-// -1, 0, or 1, indicating whether the corresponding boundary-point of range is respectively before, equal to, or after the corresponding boundary-point of sourceRange. 
+// -1, 0, or 1, indicating whether the corresponding boundary-point of range is respectively before, equal to, or after the corresponding boundary-point of sourceRange.
     // * Range.END_TO_END compares the end boundary-point of sourceRange to the end boundary-point of range.
     // * Range.END_TO_START compares the end boundary-point of sourceRange to the start boundary-point of range.
     // * Range.START_TO_END compares the start boundary-point of sourceRange to the end boundary-point of range.
-    // * Range.START_TO_START compares the start boundary-point of sourceRange to the start boundary-point of range. 
+    // * Range.START_TO_START compares the start boundary-point of sourceRange to the start boundary-point of range.
 function w3cstart(rng, constraint){
   if (rng.compareBoundaryPoints (START_TO_START, constraint) <= 0) return 0; // at or before the beginning
   if (rng.compareBoundaryPoints (END_TO_START, constraint) >= 0) return constraint.toString().length;
