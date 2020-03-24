@@ -4,11 +4,10 @@ describe("undo button", function(){
     this.timeout(60000);
   });
 
-/*
   it("undo some typing by clicking undo button", function(done){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
-    
+
     // get the first text element inside the editable space
     var $firstTextElement = inner$("div span").first();
     var originalValue = $firstTextElement.text(); // get the original value
@@ -30,7 +29,6 @@ describe("undo button", function(){
       done();
     });
   });
-*/
 
   it("undo some typing using a keypress", function(done){
     var inner$ = helper.padInner$;
@@ -44,13 +42,7 @@ describe("undo button", function(){
     var modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    /*
-     * ACHTUNG: this is the only place in the test codebase in which a keydown
-     * is sent for IE. Everywhere else IE uses keypress.
-     */
-    var evtType = "keydown";
-
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 90; // z
     inner$("#innerdocbody").trigger(e);

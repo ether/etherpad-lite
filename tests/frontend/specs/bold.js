@@ -6,22 +6,22 @@ describe("bold button", function(){
   });
 
   it("makes text bold on click", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
 
     //get the first text element out of the inner iframe
     var $firstTextElement = inner$("div").first();
-    
+
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
     //get the bold button and click it
     var $boldButton = chrome$(".buttonicon-bold");
     $boldButton.click();
-    
+
     //ace creates a new dom element when you press a button, so just get the first text element again
     var $newFirstTextElement = inner$("div").first();
-    
+
     // is there a <b> element now?
     var isBold = $newFirstTextElement.find("b").length === 1;
 
@@ -44,13 +44,7 @@ describe("bold button", function(){
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(inner$(window)[0].bowser.modernIE){ // if it's IE
-      var evtType = "keypress";
-    }else{
-      var evtType = "keydown";
-    }
-
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 66; // b
     inner$("#innerdocbody").trigger(e);

@@ -6,12 +6,12 @@ describe("delete keystroke", function(){
   });
 
   it("makes text delete", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
-    
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
     //get the first text element out of the inner iframe
     var $firstTextElement = inner$("div").first();
-    
+
     // get the original length of this element
     var elementLength = $firstTextElement.text().length;
 
@@ -25,7 +25,7 @@ describe("delete keystroke", function(){
 
     //ace creates a new dom element when you press a keystroke, so just get the first text element again
     var $newFirstTextElement = inner$("div").first();
-    
+
     // get the new length of this element
     var newElementLength = $newFirstTextElement.text().length;
 

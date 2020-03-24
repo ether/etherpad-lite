@@ -193,6 +193,16 @@ Called from: src/static/js/timeslider.js
 
 There doesn't appear to be any example available of this particular hook being used, but it gets fired after the timeslider is all set up.
 
+## goToRevisionEvent
+Called from: src/static/js/broadcast.js
+
+Things in context:
+
+1. rev - The newRevision
+
+This hook gets fired both on timeslider load (as timeslider shows a new revision) and when the new revision is showed to a user.
+There doesn't appear to be any example available of this particular hook being used.
+
 ## userJoinOrUpdate
 Called from: src/static/js/pad_userlist.js
 
