@@ -85,7 +85,7 @@ sauceTestWorker.push({
 sauceTestWorker.push({
     'platform'       : 'OS X 10.15'
   , 'browserName'    : 'safari'
-  , 'version'        : '13'
+  , 'version'        : 'latest'
 });
 
 // 4) IE 10 on Win 8
