@@ -8,7 +8,7 @@ xdescribe("timeslider button takes you to the timeslider of a pad", function(){
   it("timeslider contained in URL", function(done){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
-    
+
     // get the first text element inside the editable space
     var $firstTextElement = inner$("div span").first();
     var originalValue = $firstTextElement.text(); // get the original value

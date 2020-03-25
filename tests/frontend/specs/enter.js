@@ -6,12 +6,12 @@ describe("enter keystroke", function(){
   });
 
   it("creates a new line & puts cursor onto a new line", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
-    
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
     //get the first text element out of the inner iframe
     var $firstTextElement = inner$("div").first();
-    
+
     // get the original string value minus the last char
     var originalTextValue = $firstTextElement.text();
 
@@ -20,7 +20,7 @@ describe("enter keystroke", function(){
 
     //ace creates a new dom element when you press a keystroke, so just get the first text element again
     var $newFirstTextElement = inner$("div").first();
-    
+
     helper.waitFor(function(){
       return inner$("div").first().text() === "";
     }).done(function(){
