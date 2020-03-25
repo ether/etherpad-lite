@@ -75,20 +75,25 @@ var helper = {};
   helper.newPad = function(cb, padName){
     //build opts object
     var opts = {clearCookies: true}
+
     if(typeof cb === 'function'){
       opts.cb = cb
     } else {
       opts = _.defaults(cb, opts);
     }
 
+    // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
+    if(opts.params){
+      var encodedParams = "?" + $.param(opts.params);
+    }
+
     //clear cookies
     if(opts.clearCookies){
       helper.clearCookies();
     }
-
     if(!padName)
       padName = "FRONTEND_TEST_" + helper.randomString(20);
-    $iframe = $("<iframe src='/p/" + padName + "'></iframe>");
+    $iframe = $("<iframe src='/p/" + padName + (encodedParams || '') + "'></iframe>");
 
     //clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
