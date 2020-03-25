@@ -45,6 +45,9 @@ var chat = (function()
     },
     stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
+      if(pad.settings.hideChat){
+        return;
+      }
       chat.show();
       if(!isStuck || fromInitialCall) { // Stick it to
         padcookie.setPref("chatAlwaysVisible", true);

@@ -643,7 +643,6 @@ table#otheruserstable {
   border-top-right-radius: 5px;
   background-color: #fff;
   cursor: pointer;
-  display: none;
 }
 #chaticon a {
   text-decoration: none
