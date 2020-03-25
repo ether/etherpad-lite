@@ -12,7 +12,7 @@ describe("change username value", function(){
     //click on the settings button to make settings visible
     var $userButton = chrome$(".buttonicon-showusers");
     $userButton.click();
-    
+
     var $usernameInput = chrome$("#myusernameedit");
     $usernameInput.click();
 
@@ -45,7 +45,7 @@ describe("change username value", function(){
     //click on the settings button to make settings visible
     var $userButton = chrome$(".buttonicon-showusers");
     $userButton.click();
-    
+
     var $usernameInput = chrome$("#myusernameedit");
     $usernameInput.click();
 

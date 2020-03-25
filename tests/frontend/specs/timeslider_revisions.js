@@ -6,9 +6,9 @@ describe("timeslider", function(){
   });
 
   it("loads adds a hundred revisions", function(done) { // passes
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
-    
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
     // make some changes to produce 100 revisions
     var timePerRev = 900
       , revs = 100;
@@ -20,15 +20,15 @@ describe("timeslider", function(){
       }, timePerRev*i);
     }
     chrome$('.buttonicon-savedRevision').click();
-    
+
     setTimeout(function() {
       // go to timeslider
       $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider');
-      
+
       setTimeout(function() {
         var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
         var $sliderBar = timeslider$('#ui-slider-bar');
-        
+
         var latestContents = timeslider$('#padcontent').text();
 
         // Click somewhere on the timeslider
@@ -36,17 +36,17 @@ describe("timeslider", function(){
         e.clientX = e.pageX = 150;
         e.clientY = e.pageY = 45;
         $sliderBar.trigger(e);
-        
+
         e = new jQuery.Event('mousedown');
         e.clientX = e.pageX = 150;
         e.clientY = e.pageY = 40;
         $sliderBar.trigger(e);
-        
+
         e = new jQuery.Event('mousedown');
         e.clientX = e.pageX = 150;
         e.clientY = e.pageY = 50;
         $sliderBar.trigger(e);
-        
+
         $sliderBar.trigger('mouseup')
 
         setTimeout(function() {
@@ -56,7 +56,7 @@ describe("timeslider", function(){
           expect( starIsVisible ).to.eql( true );
           done();
         }, 1000);
-        
+
       }, 6000);
     }, revs*timePerRev);
   });
@@ -64,9 +64,9 @@ describe("timeslider", function(){
 
   // Disabled as jquery trigger no longer works properly
   xit("changes the url when clicking on the timeslider", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
-    
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
     // make some changes to produce 7 revisions
     var timePerRev = 1000
       , revs = 20;
@@ -77,24 +77,24 @@ describe("timeslider", function(){
         inner$("div").first().sendkeys('a');
       }, timePerRev*i);
     }
-    
+
     setTimeout(function() {
       // go to timeslider
       $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider');
-      
+
       setTimeout(function() {
         var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
         var $sliderBar = timeslider$('#ui-slider-bar');
-        
+
         var latestContents = timeslider$('#padcontent').text();
         var oldUrl = $('#iframe-container iframe')[0].contentWindow.location.hash;
-        
+
         // Click somewhere on the timeslider
         var e = new jQuery.Event('mousedown');
         e.clientX = e.pageX = 150;
         e.clientY = e.pageY = 60;
         $sliderBar.trigger(e);
-        
+
         helper.waitFor(function(){
           return $('#iframe-container iframe')[0].contentWindow.location.hash != oldUrl;
         }, 6000).always(function(){
@@ -105,7 +105,7 @@ describe("timeslider", function(){
     }, revs*timePerRev);
   });
   it("jumps to a revision given in the url", function(done) {
-    var inner$ = helper.padInner$; 
+    var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
     this.timeout(20000);
 
@@ -118,7 +118,7 @@ describe("timeslider", function(){
       expect( oldLength ).to.not.eql( 0 );
       inner$("div").first().sendkeys('a');
       var timeslider$;
-      
+
       // wait for our additional revision to be added
       helper.waitFor(function(){
         // newLines takes the new lines into account which are strippen when using
@@ -131,7 +131,7 @@ describe("timeslider", function(){
       }, 6000).always(function() {
         // go to timeslider with a specific revision set
         $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
-        
+
         // wait for the timeslider to be loaded
         helper.waitFor(function(){
           try {
@@ -149,17 +149,17 @@ describe("timeslider", function(){
   });
 
   it("checks the export url", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
     this.timeout(11000);
     inner$("div").first().sendkeys('a');
-    
+
     setTimeout(function() {
       // go to timeslider
       $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
       var timeslider$;
       var exportLink;
-      
+
       helper.waitFor(function(){
         try{
           timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;

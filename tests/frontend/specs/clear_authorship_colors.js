@@ -6,8 +6,8 @@ describe("clear authorship colors button", function(){
   });
 
   it("makes text clear authorship colors", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
 
     // override the confirm dialogue functioon
     helper.padChrome$.window.confirm = function(){
@@ -19,7 +19,7 @@ describe("clear authorship colors button", function(){
 
     // Get the original text
     var originalText = inner$("div").first().text();
-    
+
     // Set some new text
     var sentText = "Hello";
 

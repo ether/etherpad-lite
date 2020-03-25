@@ -159,7 +159,7 @@ describe("import functionality", function(){
 //<ul class="list-bullet4"><li><span class="">bullet4 line 2</span></li></ul>\n\
 //<br>\n')
     })
-    
+
     var results = exportfunc(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li><ul><ul class="bullet"><li>bullet4 line 2</li><li>bullet4 line 2</li><li>bullet4 line 2</li></ul><li>bullet3 line 1</li></ul></ul><li>bullet2 line 1</li></ul><br>')
     expect(results[1][1]).to.be('\t* bullet line 1\n\t* bullet line 2\n\t\t* bullet2 line 1\n\t\t\t\t* bullet4 line 2\n\t\t\t\t* bullet4 line 2\n\t\t\t\t* bullet4 line 2\n\t\t\t* bullet3 line 1\n\t* bullet2 line 1\n\n')
@@ -183,11 +183,11 @@ describe("import functionality", function(){
 <br>\n')
     })
     var results = exportfunc(helper.padChrome$.window.location.href)
-    expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li></ul><br><ul class="bullet"><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li></ul></ul><br><ul><ul><ul><ul class="bullet"><li><strong><em><s><u>bullet4 line 2 bisu</u></s></em></strong></li><li><strong><s>bullet4 line 2 bs</s></strong></li><li><u>bullet4 line 2 u<em><s>uis</s></em></u></li><ul><ul><ul><ul class="bullet"><li>foo</li><li><strong><s>foobar bs</s></strong></li></ul></ul></ul><li>foobar</li></ul></ul></ul></ul></ul><br>') 
+    expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li></ul><br><ul class="bullet"><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li></ul></ul><br><ul><ul><ul><ul class="bullet"><li><strong><em><s><u>bullet4 line 2 bisu</u></s></em></strong></li><li><strong><s>bullet4 line 2 bs</s></strong></li><li><u>bullet4 line 2 u<em><s>uis</s></em></u></li><ul><ul><ul><ul class="bullet"><li>foo</li><li><strong><s>foobar bs</s></strong></li></ul></ul></ul><li>foobar</li></ul></ul></ul></ul></ul><br>')
     expect(results[1][1]).to.be('\t* bullet line 1\n\n\t* bullet line 2\n\t\t* bullet2 line 1\n\n\t\t\t\t* bullet4 line 2 bisu\n\t\t\t\t* bullet4 line 2 bs\n\t\t\t\t* bullet4 line 2 uuis\n\t\t\t\t\t\t\t\t* foo\n\t\t\t\t\t\t\t\t* foobar bs\n\t\t\t\t\t* foobar\n\n')
     done()
   })
- 
+
   xit("import a pad with ordered lists from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ol class="list-number1" start="1"><li>number 1 line 1</li></ol><ol class="list-number1" start="2"><li>number 2 line 2</li></ol></body></html>'
