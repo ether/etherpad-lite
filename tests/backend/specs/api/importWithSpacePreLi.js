@@ -32,7 +32,7 @@ var html = '<html><body><ul> <li>FOO</li></ul></body></html>';
  * textually, but at least it remains standard compliant and has an equal DOM
  * structure.
  */
-var expectedHtml = '<!doctype html><html><body><ul class="bullet"><li>FOO</li></ul></body></html>';
+var expectedHtml = '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>';
 
 describe('createPad', function(){
   it('creates a new Pad', function(done) {
@@ -44,6 +44,8 @@ describe('createPad', function(){
     .expect(200, done)
   });
 })
+
+console.log("padID", testPadId)
 
 describe('getHTML', function(){
   it('get the HTML of Pad', function(done) {
