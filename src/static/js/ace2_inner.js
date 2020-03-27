@@ -3698,7 +3698,11 @@ function Ace2Inner(){
     // 224 is the command-key under Mac Firefox.
     // 91 is the Windows key in IE; it is ASCII for open-bracket but isn't the keycode for that key
     // 20 is capslock in IE.
-    var isModKey = ((!charCode) && ((type == "keyup") || (type == "keydown")) && (keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 20 || keyCode == 224 || keyCode == 91));
+    // If AltGr is down it can never be a Mod Key
+    var isAltGr = evt.key === "AltGraph";
+    if(!isAltGr){
+      var isModKey = ((!charCode) && ((type == "keyup") || (type == "keydown")) && (keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 20 || keyCode == 224 || keyCode == 91));
+    }
     if (isModKey) return;
 
     // If the key is a keypress and the browser is opera and the key is enter, do nothign at all as this fires twice.
