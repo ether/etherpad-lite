@@ -428,10 +428,20 @@ var pad = {
   },
   switchToPad: function(padId)
   {
-    var options = document.location.href.split('?')[1];
-    var newHref = padId;
-    if (typeof options != "undefined" && options != null){
-      newHref = newHref + '?' + options;
+    var newHref = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
+    newHref = newHref[0];
+
+    var options = clientVars.padOptions;
+    if (typeof options != "undefined" && options != null)
+    {
+        var option_str = [];
+        $.each(options, function(k,v) {
+          var str = k + "=" + v;
+          option_str.push(str);
+        });
+        var option_str = option_str.join("&");
+
+      newHref = newHref + '?' + option_str;
     }
 
     if(window.history && window.history.pushState)
