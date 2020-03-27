@@ -474,7 +474,7 @@ function lookupEnvironmentVariables(obj) {
      * "${ENV_VAR}" or "${ENV_VAR:default_value}")
      */
     // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
-    const match = value.match(/^\$\{([^:]*)(:(.*))?\}$/);
+    const match = value.match(/^\$\{([^:]*)(:((.|\n)*))?\}$/);
 
     if (match === null) {
       // no match: use the value literally, without any substitution
