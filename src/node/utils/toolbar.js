@@ -251,7 +251,10 @@ module.exports = {
     return new SelectButton(attributes);
   },
 
-  menu: function (buttons, isReadOnly) {
+  /*
+   * Valid values for whichMenu: 'left' | 'right' | 'timeslider-right'
+   */
+  menu: function (buttons, isReadOnly, whichMenu) {
     if (isReadOnly) {
       // The best way to detect if it's the left editbar is to check for a bold button
       if (buttons[0].indexOf("bold") !== -1) {
@@ -265,13 +268,14 @@ module.exports = {
       /*
        * This pad is not read only
        *
-       * Add back the savedrevision button (the "star") if is not already there.
+       * Add back the savedrevision button (the "star") if is not already there,
+       * but only on the right toolbar.
        *
        * This is a quick fix for #3702: it was sufficient to visit a single read
        * only pad to cause the disappearence of the star button from all the
        * pads.
        */
-      if ((buttons[0].indexOf("savedrevision") === -1)) {
+      if ((buttons[0].indexOf("savedrevision") === -1) && (whichMenu === "right")) {
         buttons[0].push("savedrevision");
       }
     }
