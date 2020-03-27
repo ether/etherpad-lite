@@ -219,10 +219,10 @@ Things in context:
 
 1. authorName - The user that wrote this message
 2. author - The authorID of the user that wrote the message
-2. text - the message text
-3. sticky (boolean) - if you want the gritter notification bubble to fade out on its own or just sit there
-3. timestamp - the timestamp of the chat message
-4. timeStr - the timestamp as a formatted string
+3. text - the message text
+4. sticky (boolean) - if you want the gritter notification bubble to fade out on its own or just sit there
+5. timestamp - the timestamp of the chat message
+6. timeStr - the timestamp as a formatted string
 
 This hook is called on the client side whenever a chat message is received from the server. It can be used to create different notifications for chat messages.
 
