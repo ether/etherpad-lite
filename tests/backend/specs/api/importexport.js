@@ -18,86 +18,71 @@ var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 apiKey = apiKey.replace(/\n$/, "");
 var apiVersion = 1;
-var testPadId = makeid();
 var lastEdited = "";
-var text = generateLongText();
 
-/*
- * Html document with weird HTML, make sure its imported and exported prpoerly
- */
-var html = '<html><body><ul> <li>FOO</li></ul></body></html>';
+var testImports = {
+  "malformed": {
+    input: '<html><body><li>wtf</ul></body></html>',
+    expected: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>'
+  },
+  "whitespaceinlist":{
+    input: '<html><body><ul> <li>FOO</li></ul></body></html>',
+    expected: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>'
+  }
+}
 
-/*
- * When exported back, Etherpad produces an html which is not exactly the same
- * textually, but at least it remains standard compliant and has an equal DOM
- * structure.
- */
-var expectedHtml = '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>';
+Object.keys(testImports).forEach(function (testName) {
+  var testPadId = makeid();
+  test = testImports[testName];
+  describe('createPad', function(){
+    it('creates a new Pad', function(done) {
+      api.get(endPoint('createPad')+"&padID="+testPadId)
+      .expect(function(res){
+        if(res.body.code !== 0) throw new Error("Unable to create new Pad");
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+    });
+  })
 
-describe('createPad', function(){
-  it('creates a new Pad', function(done) {
-    api.get(endPoint('createPad')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to create new Pad");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
+  describe('setHTML', function(){
+    it('Sets the HTML', function(done) {
+      api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+test.input)
+      .expect(function(res){
+        if(res.body.code !== 0) throw new Error("Error:"+testName)
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+    });
+  })
 
-console.log("padID", testPadId)
+  describe('getHTML', function(){
 
-describe('getHTML', function(){
-  it('get the HTML of Pad', function(done) {
-    api.get(endPoint('getHTML')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.html.length <= 1) throw new Error("Unable to get the HTML");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
+    it('Gets back the HTML of a Pad', function(done) {
+      api.get(endPoint('getHTML')+"&padID="+testPadId)
+      .expect(function(res){
+        var receivedHtml = res.body.data.html;
+        if (receivedHtml !== test.expected) {
+          throw new Error(`HTML received from export is not the one we were expecting.
+             Test Name:
+             ${testName}
 
-describe('setHTML', function(){
-  it('Sets the HTML of a Pad with space before first li', function(done) {
-    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("List HTML cant be imported")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
+             Received:
+             ${receivedHtml}
 
-describe('getHTML', function(){
-  it('Gets back the HTML of a Pad with weird lists and make sure its what we expect', function(done) {
-    api.get(endPoint('getHTML')+"&padID="+testPadId)
-    .expect(function(res){
-      var receivedHtml = res.body.data.html;
-console.log("received" , receivedHtml);
-      if (receivedHtml !== expectedHtml) {
-        throw new Error(`HTML received from export is not the one we were expecting.
-           Received:
-           ${receivedHtml}
+             Expected:
+             ${test.expected}
 
-           Expected:
-           ${expectedHtml}
+             Which is a different version of the originally imported one:
+             ${test.input}`);
+        }
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+    });
+  })
+});
 
-           Which is a slightly modified version of the originally imported one:
-           ${html}`);
-      }
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-
-
-/*
-                          -> movePadForce Test
-
-*/
 
 var endPoint = function(point, version){
   version = version || apiVersion;
