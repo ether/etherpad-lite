@@ -143,3 +143,36 @@ describe("Pressing Tab in an UL increases and decreases indentation", function()
 
 });
 
+describe("Pressing indent/outdent button in an UL increases and decreases indentation and bullet / ol formatting", function(){
+  //create a new pad before each test run
+  beforeEach(function(cb){
+    helper.newPad(cb);
+    this.timeout(60000);
+  });
+
+  it("indent and de-indent list item with indent button", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //get the first text element out of the inner iframe
+    var $firstTextElement = inner$("div").first();
+
+    //select this text element
+    $firstTextElement.sendkeys('{selectall}');
+
+    var $insertunorderedlistButton = chrome$(".buttonicon-insertunorderedlist");
+    $insertunorderedlistButton.click();
+
+    var $indentButton = chrome$(".buttonicon-indent");
+    $indentButton.click(); // make it indented twice
+
+    expect(inner$("div").first().find(".list-bullet2").length === 1).to.be(true);
+    var $outdentButton = chrome$(".buttonicon-outdent");
+    $outdentButton.click(); // make it deindented to 1
+
+    helper.waitFor(function(){
+      return inner$("div").first().find(".list-bullet1").length === 1;
+    }).done(done);
+  });
+});
+
