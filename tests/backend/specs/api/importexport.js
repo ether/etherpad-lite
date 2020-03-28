@@ -23,28 +23,29 @@ var lastEdited = "";
 var testImports = {
   "malformed": {
     input: '<html><body><li>wtf</ul></body></html>',
-    expectedHTML: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>',
-    expectedText: '* FOO\n'
-  },
-  "nonelistiteminlist":{
+    expectedHTML: '<!DOCTYPE HTML><html><body>wtf<br><br></body></html>',
+    expectedText: 'wtf\n\n'
+  }
+,
+  "nonelistiteminlist #3620":{
     input: '<html><body><ul>test<li>FOO</li></ul></body></html>',
     expectedHTML: '<!DOCTYPE HTML><html><body><ul class="bullet">test<li>FOO</ul><br></body></html>',
-    expectedText: 'test\n* FOO\n'
+    expectedText: '\ttest\n\t* FOO\n\n'
   },
-  "whitespaceinlist":{
+  "whitespaceinlist #3620":{
     input: '<html><body><ul> <li>FOO</li></ul></body></html>',
     expectedHTML: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>',
-    expectedText: '1. should be 1\ntest\n2. should be 2'
+    expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
   },
-  "prefixcorrectlinenumber":{
+  "prefixcorrectlinenumber #3450":{
     input: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
     expectedHTML: '<!DOCTYPE HTML><html><body><ol class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
-    expectedText: '1. should be 1\ntest\n2. should be 2'
+    expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
   },
-  "newlinesshouldntresetlinenumber":{
+  "newlinesshouldntresetlinenumber #2194":{
     input: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
     expectedHTML: '<!DOCTYPE HTML><html><body><ol class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
-    expectedText: '1. should be 1\ntest\n2. should be 2'
+    expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
   }
 }
 
@@ -87,7 +88,7 @@ Object.keys(testImports).forEach(function (testName) {
              ${receivedHtml}
 
              Expected:
-             ${test.expectedText}
+             ${test.expectedHTML}
 
              Which is a different version of the originally imported one:
              ${test.input}`);
