@@ -698,7 +698,7 @@ exports.reloadSettings = function reloadSettings() {
       fs.writeFileSync(sessionkeyFilename,exports.sessionKey,"utf8");
     }
   } else {
-    console.warn("Declaring the sessionKey in the settings.json is deprecated. This value is auto-generated now. Please remove the setting from the file.");
+    console.warn("Declaring the sessionKey in the settings.json is deprecated. This value is auto-generated now. Please remove the setting from the file. -- If you are seeing this error after restarting using the Admin User Interface then you can ignore this message.");
   }
 
   if (exports.dbType === "dirty") {
