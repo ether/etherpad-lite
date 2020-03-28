@@ -250,27 +250,28 @@ module.exports = {
   selectButton: function (attributes) {
     return new SelectButton(attributes);
   },
+
   menu: function (buttons, isReadOnly) {
-    if(isReadOnly){
+    if (isReadOnly) {
       // The best way to detect if it's the left editbar is to check for a bold button
-      if(buttons[0].indexOf("bold") !== -1){
+      if (buttons[0].indexOf("bold") !== -1) {
         // Clear all formatting buttons
-        buttons = []
-      }else{
+        buttons = [];
+      } else {
         // Remove Save Revision from the right menu
         removeItem(buttons[0],"savedrevision");
       }
-    }else{
-      /* This pad is not read only
+    } else {
+      /*
+       * This pad is not read only
        *
-       * Readd the savedrevision button (the "star") if is not already there.
+       * Add back the savedrevision button (the "star") if is not already there.
        *
        * This is a quick fix for #3702: it was sufficient to visit a single read
        * only pad to cause the disappearence of the star button from all the
        * pads.
        */
-      if(buttons[0].indexOf("savedrevision") === -1){
-        // Add item back in for savedrevision
+      if ((buttons[0].indexOf("savedrevision") === -1)) {
         buttons[0].push("savedrevision");
       }
     }
