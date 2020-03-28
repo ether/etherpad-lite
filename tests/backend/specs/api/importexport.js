@@ -23,11 +23,28 @@ var lastEdited = "";
 var testImports = {
   "malformed": {
     input: '<html><body><li>wtf</ul></body></html>',
-    expected: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>'
+    expectedHTML: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>',
+    expectedText: '* FOO\n'
+  },
+  "nonelistiteminlist":{
+    input: '<html><body><ul>test<li>FOO</li></ul></body></html>',
+    expectedHTML: '<!DOCTYPE HTML><html><body><ul class="bullet">test<li>FOO</ul><br></body></html>',
+    expectedText: 'test\n* FOO\n'
   },
   "whitespaceinlist":{
     input: '<html><body><ul> <li>FOO</li></ul></body></html>',
-    expected: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>'
+    expectedHTML: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>',
+    expectedText: '1. should be 1\ntest\n2. should be 2'
+  },
+  "prefixcorrectlinenumber":{
+    input: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
+    expectedHTML: '<!DOCTYPE HTML><html><body><ol class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
+    expectedText: '1. should be 1\ntest\n2. should be 2'
+  },
+  "newlinesshouldntresetlinenumber":{
+    input: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
+    expectedHTML: '<!DOCTYPE HTML><html><body><ol class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
+    expectedText: '1. should be 1\ntest\n2. should be 2'
   }
 }
 
@@ -57,12 +74,11 @@ Object.keys(testImports).forEach(function (testName) {
   })
 
   describe('getHTML', function(){
-
     it('Gets back the HTML of a Pad', function(done) {
       api.get(endPoint('getHTML')+"&padID="+testPadId)
       .expect(function(res){
         var receivedHtml = res.body.data.html;
-        if (receivedHtml !== test.expected) {
+        if (receivedHtml !== test.expectedHTML) {
           throw new Error(`HTML received from export is not the one we were expecting.
              Test Name:
              ${testName}
@@ -71,7 +87,32 @@ Object.keys(testImports).forEach(function (testName) {
              ${receivedHtml}
 
              Expected:
-             ${test.expected}
+             ${test.expectedText}
+
+             Which is a different version of the originally imported one:
+             ${test.input}`);
+        }
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+    });
+  })
+
+  describe('getText', function(){
+    it('Gets back the Text of a Pad', function(done) {
+      api.get(endPoint('getText')+"&padID="+testPadId)
+      .expect(function(res){
+        var receivedText = res.body.data.text;
+        if (receivedText !== test.expectedText) {
+          throw new Error(`Text received from export is not the one we were expecting.
+             Test Name:
+             ${testName}
+
+             Received:
+             ${receivedText}
+
+             Expected:
+             ${test.expectedText}
 
              Which is a different version of the originally imported one:
              ${test.input}`);
