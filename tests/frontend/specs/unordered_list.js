@@ -34,7 +34,7 @@ describe("assign unordered list", function(){
 
 });
 
-describe("assign unordered list", function(){
+describe("unassign unordered list", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
@@ -66,6 +66,41 @@ describe("assign unordered list", function(){
         done();
       });
 
+    });
+  });
+});
+
+
+describe("keep unordered list on enter key", function(){
+  //create a new pad before each test run
+  beforeEach(function(cb){
+    helper.newPad(cb);
+    this.timeout(60000);
+  });
+
+  it("Keeps the unordered list on enter for the new line", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    var $insertorderedlistButton = chrome$(".buttonicon-insertunorderedlist");
+    $insertorderedlistButton.click();
+
+    //type a bit, make a line break and type again
+    var $firstTextElement = inner$("div span").first();
+    $firstTextElement.sendkeys('line 1');
+    $firstTextElement.sendkeys('{enter}');
+    $firstTextElement.sendkeys('line 2');
+    $firstTextElement.sendkeys('{enter}');
+
+    helper.waitFor(function(){
+      return inner$("div span").first().text().indexOf("line 2") === -1;
+    }).done(function(){
+      var $newSecondLine = inner$("div").first().next();
+      var hasULElement = $newSecondLine.find("ul li").length === 1;
+      console.log($newSecondLine.find("ul").length);
+      expect(hasULElement).to.be(true);
+      expect($newSecondLine.text()).to.be("line 2");
+      done();
     });
   });
 
