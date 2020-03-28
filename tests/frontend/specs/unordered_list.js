@@ -105,3 +105,41 @@ describe("keep unordered list on enter key", function(){
   });
 
 });
+
+describe("Pressing Tab in an UL increases and decreases indentation", function(){
+  //create a new pad before each test run
+  beforeEach(function(cb){
+    helper.newPad(cb);
+    this.timeout(60000);
+  });
+
+  it("indent and de-indent list item with keypress", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //get the first text element out of the inner iframe
+    var $firstTextElement = inner$("div").first();
+
+    //select this text element
+    $firstTextElement.sendkeys('{selectall}');
+
+    var $insertorderedlistButton = chrome$(".buttonicon-insertunorderedlist");
+    $insertorderedlistButton.click();
+
+    var e = inner$.Event(helper.evtType);
+    e.keyCode = 9; // tab
+    inner$("#innerdocbody").trigger(e);
+
+    expect(inner$("div").first().find(".list-bullet2").length === 1).to.be(true);
+    e.shiftKey = true; // shift
+    e.keyCode = 9; // tab
+    inner$("#innerdocbody").trigger(e);
+
+    helper.waitFor(function(){
+      return inner$("div").first().find(".list-bullet1").length === 1;
+    }).done(done);
+
+  });
+
+});
+
