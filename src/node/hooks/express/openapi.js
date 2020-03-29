@@ -19,6 +19,7 @@ const cloneDeep = require('lodash.clonedeep');
 
 const apiHandler = require('../../handler/APIHandler');
 const settings = require('../../utils/Settings');
+const isValidJSONPName = require('./isValidJSONPName');
 
 const log4js = require('log4js');
 const apiLogger = log4js.getLogger('API');
@@ -582,11 +583,11 @@ exports.expressCreateServer = async (_, args) => {
       api.register({
         notFound: (c, req, res) => {
           res.statusCode = 404;
-          return { code: 3, message: 'no such function', data: null };
+          res.send({ code: 3, message: 'no such function', data: null });
         },
         notImplemented: (c, req, res) => {
           res.statusCode = 501;
-          return { code: 3, message: 'not implemented', data: null };
+          res.send({ code: 3, message: 'not implemented', data: null });
         },
       });
 
@@ -616,12 +617,18 @@ exports.expressCreateServer = async (_, args) => {
           }
 
           // return in common format
-          const response = { code: 0, message: 'ok', data };
+          let response = { code: 0, message: 'ok', data };
 
           // log response
           apiLogger.info(`RESPONSE, ${funcName}, ${JSON.stringify(response)}`);
 
-          return response;
+          // is this a jsonp call, add the function call
+          if (query.jsonp && isValidJSONPName.check(query.jsonp)) {
+            res.header('Content-Type', 'application/javascript');
+            response = `${req.query.jsonp}(${JSON.stringify(response)}`;
+          }
+
+          res.send(response);
         };
 
         // each operation can be called with either GET or POST
@@ -635,7 +642,7 @@ exports.expressCreateServer = async (_, args) => {
         try {
           // allow cors
           res.header('Access-Control-Allow-Origin', '*');
-          res.send(await api.handleRequest(req, req, res));
+          await api.handleRequest(req, req, res);
         } catch (err) {
           if (err.name == 'apierror') {
             // parameters were wrong and the api stopped execution, pass the error
