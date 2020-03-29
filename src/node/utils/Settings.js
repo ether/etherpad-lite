@@ -710,6 +710,11 @@ exports.reloadSettings = function reloadSettings() {
     exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
     console.warn(dirtyWarning + ` File location: ${exports.dbSettings.filename}`);
   }
+
+  if (exports.ip === "") {
+    // using Unix socket for connectivity
+    console.warn(`The settings file contains an empty string ("") for the "ip" parameter. The "port" parameter will be interpreted as the path to a Unix socket to bind at.`);
+  }
 };
 
 // initially load settings
