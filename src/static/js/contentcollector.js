@@ -526,6 +526,16 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         if (isPre) cc.incrementFlag(state, 'preMode');
         var oldListTypeOrNull = null;
         var oldAuthorOrNull = null;
+
+        // LibreOffice Writer puts in weird items during import or copy/paste, we should drop them.
+        if (cls === "Numbering_20_Symbols" || cls === "Bullet_20_Symbols") {
+          styl = null;
+          cls = null;
+
+          // We have to return here but this could break things in the future, for now it shows how to fix the problem
+          return;
+        }
+
         if (collectStyles)
         {
           hooks.callAll('collectContentPre', {
