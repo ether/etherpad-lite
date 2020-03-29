@@ -17,6 +17,13 @@ echo "Search ended"
 sleep 10
 
 #start remote runner
+
+cd "${MY_DIR}"
+
+# On the Travs VM, remote_runner.js is found on
+# /home/travis/build/ether/[secure]/tests/frontend/travis/remote_runner.js
+# probably it is injected by travis or Saucelabs
+
 node remote_runner.js
 exit_code=$?
 
