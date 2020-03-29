@@ -21,8 +21,9 @@ node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
 (timeout 15 bash -c 'until echo > /dev/tcp/localhost/9001; do sleep 0.5; done') || \
     (echo "Could not connect to Etherpad on http://localhost:9001" ; exit 1)
 
-# We successfully connected to Etherpad.
-# Just in case, let's wait for another second before going on
+echo "Successfully connected to Etherpad on http://localhost:9001"
+
+# just in case, let's wait for another second before going on
 sleep 1
 
 # On the Travis VM, remote_runner.js is found at
