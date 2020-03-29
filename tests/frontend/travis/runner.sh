@@ -9,7 +9,10 @@ MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 # reliably move to the etherpad base folder before running it
 cd "${MY_DIR}/../../../"
 
-# start Etherpad assuming all dependencies are already installed
+# start Etherpad, assuming all dependencies are already installed.
+#
+# This is possible because the "install" section of .travis.yml already contains
+# a call to bin/installDeps.sh
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
 
