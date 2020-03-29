@@ -41,6 +41,11 @@ exports.convertFile = function(srcFile, destFile, type, callback) {
   // Used for the moving of the file, not the conversion
   var fileExtension = type;
 
+  if (type === "html") {
+    // "html:XHTML Writer File:UTF8" does a better job than normal html exports
+    type = "html:XHTML Writer File:UTF8";
+  }
+
   // soffice can't convert from html to doc directly (verified with LO 5 and 6)
   // we need to convert to odt first, then to doc
   // to avoid `Error: no export filter for /tmp/xxxx.doc` error
