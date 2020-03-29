@@ -1,10 +1,15 @@
 #!/bin/sh
 
-#Move to the base folder
-cd `dirname $0`
+# source: https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself#246128
+MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-#start Etherpad
-../../../bin/run.sh > /dev/null &
+# reliably move to the etherpad base folder
+cd "${MY_DIR}/../../../"
+
+# start Etherpad assuming all dependencies are already installed
+echo "Running Etherpad directly, without checking/installing dependencies"
+node "${MY_DIR}/node_modules/ep_etherpad-lite/node/server.js" "${@}" > /dev/null &
+
 sleep 10
 
 #start remote runner
