@@ -8,7 +8,7 @@ cd "${MY_DIR}/../../../"
 
 # start Etherpad assuming all dependencies are already installed
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
-node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
+node node_modules/ep_etherpad-lite/node/server_XXX.js "${@}" > /dev/null &
 
 sleep 10
 
