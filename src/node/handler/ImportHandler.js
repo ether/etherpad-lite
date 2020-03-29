@@ -181,8 +181,15 @@ async function doImport(req, res, padId)
   if (!req.directDatabaseAccess) {
     text = await fsp_readFile(destFile, "utf8");
 
-    // Title needs to be stripped out else it appends it to the pad..
-    text = text.replace("<title>", "<!-- <title>");
+    /*
+     * The <title> tag needs to be stripped out, otherwise it is appended to the
+     * pad.
+     *
+     * Moreover, when using LibreOffice to convert the file, some classes are
+     * added to the <title> tag. This is a quick & dirty way of matching the
+     * title and comment it out independently on the classes that are set on it.
+     */
+    text = text.replace("<title", "<!-- <title");
     text = text.replace("</title>","</title>-->");
 
     // node on windows has a delay on releasing of the file lock.
