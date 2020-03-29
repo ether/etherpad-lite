@@ -111,6 +111,8 @@ For **responsible disclosure of vulnerabilities**, please write a mail to the ma
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API)
 that allows your web application to manage pads, users and groups. It is recommended to use the [available client implementations](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) in order to interact with this API.
 
+OpenAPI (previously swagger) definitions for the API are exposed under `/api/openapi.json`.
+
 # jQuery plugin
 There is a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
