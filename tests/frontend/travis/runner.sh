@@ -8,6 +8,12 @@ cd "${MY_DIR}/../../../"
 
 # start Etherpad assuming all dependencies are already installed
 echo "Running Etherpad directly, without checking/installing dependencies"
+echo "Current directory: "
+pwd
+echo "Contents:"
+find . -type f
+exit 1
+
 node "${MY_DIR}/node_modules/ep_etherpad-lite/node/server.js" "${@}" > /dev/null &
 
 sleep 10
