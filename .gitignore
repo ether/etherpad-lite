@@ -19,3 +19,5 @@ npm-debug.log
 bin/etherpad-1.deb
 credentials.json
 out/
+.nyc_output
+./package-lock.json
