@@ -3,27 +3,24 @@
 # source: https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself#246128
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-# reliably move to the etherpad base folder
+# reliably move to the etherpad base folder before running it
 cd "${MY_DIR}/../../../"
 
 # start Etherpad assuming all dependencies are already installed
 echo "Running Etherpad directly, without checking/installing any dependencies"
 node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
 
-echo "Look for remote_runner.js"
-find / -name remote_runner.js
-echo "Search ended"
-
 sleep 10
 
-#start remote runner
-
+# On the Travis VM, remote_runner.js is found at
+# /home/travis/build/ether/[secure]/tests/frontend/travis/remote_runner.js
+# which is the same directory that contains this script.
+# Let's move back there.
+#
+# Probably remote_runner.js is injected by Saucelabs.
 cd "${MY_DIR}"
 
-# On the Travs VM, remote_runner.js is found on
-# /home/travis/build/ether/[secure]/tests/frontend/travis/remote_runner.js
-# probably it is injected by travis or Saucelabs
-
+# start the remote runner
 node remote_runner.js
 exit_code=$?
 
