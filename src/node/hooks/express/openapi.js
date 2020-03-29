@@ -11,22 +11,30 @@ const apiLogger = log4js.getLogger('API');
 // https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v3.0
 const OPENAPI_VERSION = '3.0.2'; // Swagger/OAS version
 
-// enum for two different styles of API paths used for etherpad
+const info = {
+  title: 'Etherpad API',
+  description:
+    'Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on your server, under your control.',
+  termsOfService: 'https://etherpad.org/',
+  contact: {
+    name: 'The Etherpad Foundation',
+    url: 'https://etherpad.org/',
+    email: 'support@example.com',
+  },
+  license: {
+    name: 'Apache 2.0',
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
+  },
+  version: apiHandler.latestApiVersion,
+};
+
 const APIPathStyle = {
   FLAT: 'api', // flat paths e.g. /api/createGroup
   REST: 'rest', // restful paths e.g. /rest/group/create
 };
 
-// helper to get api root
-const getApiRootForVersion = (version, style = APIPathStyle.FLAT) => `/${style}/${version}`;
-
-// helper to generate an OpenAPI server object when serving definitions
-const generateServerForApiVersion = (apiRoot, req) => ({
-  url: `${settings.ssl ? 'https' : 'http'}://${req.headers.host}${apiRoot}`,
-});
-
-// operations
-const API = {
+// API resources
+const resources = {
   // Group
   group: {
     create: {
@@ -46,7 +54,7 @@ const API = {
     listPads: {
       func: 'listPads',
       description: 'returns all pads of this group',
-      response: { padIDs: { type: 'List', items: { type: 'string' } } },
+      response: { padIDs: { type: 'array', items: { type: 'string' } } },
     },
     createPad: {
       func: 'createGroupPad',
@@ -55,12 +63,12 @@ const API = {
     listSessions: {
       func: 'listSessionsOfGroup',
       description: '',
-      response: { sessions: { type: 'List', items: { type: 'SessionInfo' } } },
+      response: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
     },
     list: {
       func: 'listAllGroups',
       description: '',
-      response: { groupIDs: { type: 'List', items: { type: 'string' } } },
+      response: { groupIDs: { type: 'array', items: { type: 'string' } } },
     },
   },
 
@@ -79,18 +87,18 @@ const API = {
     listPads: {
       func: 'listPadsOfAuthor',
       description: 'returns an array of all pads this author contributed to',
-      response: { padIDs: { type: 'List', items: { type: 'string' } } },
+      response: { padIDs: { type: 'array', items: { type: 'string' } } },
     },
     listSessions: {
       func: 'listSessionsOfAuthor',
       description: 'returns all sessions of an author',
-      response: { sessions: { type: 'List', items: { type: 'SessionInfo' } } },
+      response: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
     },
     // We need an operation that return a UserInfo so it can be picked up by the codegen :(
     getName: {
       func: 'getAuthorName',
       description: 'Returns the Author Name of the author',
-      response: { info: { type: 'UserInfo' } },
+      response: { info: { $ref: '#/components/schemas/UserInfo' } },
     },
   },
 
@@ -109,7 +117,7 @@ const API = {
     info: {
       func: 'getSessionInfo',
       description: 'returns informations about a session',
-      response: { info: { type: 'SessionInfo' } },
+      response: { info: { $ref: '#/components/schemas/SessionInfo' } },
     },
   },
 
@@ -118,7 +126,7 @@ const API = {
     listAll: {
       func: 'listAllPads',
       description: 'list all the pads',
-      response: { padIDs: { type: 'List', items: { type: 'string' } } },
+      response: { padIDs: { type: 'array', items: { type: 'string' } } },
     },
     createDiffHTML: {
       func: 'createDiffHTML',
@@ -188,7 +196,7 @@ const API = {
     authors: {
       func: 'listAuthorsOfPad',
       description: 'returns an array of authors who contributed to this pad',
-      response: { authorIDs: { type: 'List', items: { type: 'string' } } },
+      response: { authorIDs: { type: 'array', items: { type: 'string' } } },
     },
     usersCount: {
       func: 'padUsersCount',
@@ -198,7 +206,7 @@ const API = {
     users: {
       func: 'padUsers',
       description: 'returns the list of users that are currently editing this pad',
-      response: { padUsers: { type: 'List', items: { type: 'UserInfo' } } },
+      response: { padUsers: { type: 'array', items: { $ref: '#/components/schemas/UserInfo' } } },
     },
     sendClientsMessage: {
       func: 'sendClientsMessage',
@@ -211,13 +219,13 @@ const API = {
     getChatHistory: {
       func: 'getChatHistory',
       description: 'returns the chat history',
-      response: { messages: { type: 'List', items: { type: 'Message' } } },
+      response: { messages: { type: 'array', items: { $ref: '#/components/schemas/Message' } } },
     },
     // We need an operation that returns a Message so it can be picked up by the codegen :(
     getChatHead: {
       func: 'getChatHead',
       description: 'returns the chatHead (chat-message) of the pad',
-      response: { chatHead: { type: 'Message' } },
+      response: { chatHead: { $ref: '#/components/schemas/Message' } },
     },
     appendChatMessage: {
       func: 'appendChatMessage',
@@ -227,20 +235,181 @@ const API = {
 };
 
 const defaultResponses = {
+  Success: {
+    description: 'ok (code 0)',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            code: {
+              type: 'integer',
+              example: 0,
+            },
+            message: {
+              type: 'string',
+              example: 'ok',
+            },
+            data: {
+              type: 'object',
+              example: null,
+            },
+          },
+        },
+      },
+    },
+  },
+  ApiError: {
+    description: 'generic api error (code 1)',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            code: {
+              type: 'integer',
+              example: 1,
+            },
+            message: {
+              type: 'string',
+              example: 'error message',
+            },
+            data: {
+              type: 'object',
+              example: null,
+            },
+          },
+        },
+      },
+    },
+  },
+  InternalError: {
+    description: 'internal api error (code 2)',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            code: {
+              type: 'integer',
+              example: 2,
+            },
+            message: {
+              type: 'string',
+              example: 'internal error',
+            },
+            data: {
+              type: 'object',
+              example: null,
+            },
+          },
+        },
+      },
+    },
+  },
+  NotFound: {
+    description: 'no such function (code 4)',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            code: {
+              type: 'integer',
+              example: 3,
+            },
+            message: {
+              type: 'string',
+              example: 'no such function',
+            },
+            data: {
+              type: 'object',
+              example: null,
+            },
+          },
+        },
+      },
+    },
+  },
+  Unauthorized: {
+    description: 'no or wrong API key (code 4)',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            code: {
+              type: 'integer',
+              example: 4,
+            },
+            message: {
+              type: 'string',
+              example: 'no or wrong API key',
+            },
+            data: {
+              type: 'object',
+              example: null,
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const defaultResponseRefs = {
   200: {
-    description: 'ok',
+    $ref: '#/components/responses/Success',
+  },
+  400: {
+    $ref: '#/components/responses/ApiError',
+  },
+  401: {
+    $ref: '#/components/responses/Unauthorized',
+  },
+  500: {
+    $ref: '#/components/responses/InternalError',
   },
 };
 
 // convert to a flat list of OAS Operation objects
 const operations = [];
-for (const resource in API) {
-  for (const action in API[resource]) {
-    const { func: operationId, description, response } = API[resource][action];
+for (const resource in resources) {
+  for (const action in resources[resource]) {
+    const { func: operationId, description, response } = resources[resource][action];
+
+    const responses = { ...defaultResponseRefs };
+    if (response) {
+      responses[200] = {
+        description: 'ok (code 0)',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                code: {
+                  type: 'integer',
+                  example: 0,
+                },
+                message: {
+                  type: 'string',
+                  example: 'ok',
+                },
+                data: {
+                  type: 'object',
+                  properties: response,
+                },
+              },
+            },
+          },
+        },
+      };
+    }
+
     const operation = {
       operationId,
       summary: description,
-      responses: defaultResponses,
+      responses,
       tags: [resource],
       _restPath: `/${resource}/${action}`,
     };
@@ -251,15 +420,9 @@ for (const resource in API) {
 const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
   const definition = {
     openapi: OPENAPI_VERSION,
-    info: {
-      title: 'Etherpad API',
-      description:
-        'Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on your server, under your control.',
-      version,
-    },
+    info,
     paths: {},
     components: {
-      responses: {},
       parameters: {},
       schemas: {
         SessionInfo: {
@@ -314,6 +477,9 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
           },
         },
       },
+      responses: {
+        ...defaultResponses,
+      },
       securitySchemes: {
         ApiKey: {
           type: 'apiKey',
@@ -334,7 +500,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
       // console.warn(`No operation found for function: ${funcName}`);
       operation = {
         operationId: funcName,
-        responses: defaultResponses,
+        responses: defaultResponseRefs,
       };
     }
 
@@ -390,12 +556,14 @@ exports.expressCreateServer = (_, args) => {
 
       // serve openapi definition file
       app.get(`${apiRoot}/openapi.json`, (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
         res.json({ ...definition, servers: [generateServerForApiVersion(apiRoot, req)] });
       });
 
       // serve latest openapi definition file under /api/openapi.json
       if (version === apiHandler.latestApiVersion) {
         app.get(`/${style}/openapi.json`, (req, res) => {
+          res.header('Access-Control-Allow-Origin', '*');
           res.json({ ...definition, servers: [generateServerForApiVersion(apiRoot, req)] });
         });
       }
@@ -449,7 +617,19 @@ exports.expressCreateServer = (_, args) => {
 
       // start and bind to express
       api.init();
-      app.use(apiRoot, async (req, res) => api.handleRequest(req, req, res));
+      app.use(apiRoot, async (req, res) => {
+        // allow cors
+        res.header('Access-Control-Allow-Origin', '*');
+        return api.handleRequest(req, req, res);
+      });
     }
   }
 };
+
+// helper to get api root
+const getApiRootForVersion = (version, style = APIPathStyle.FLAT) => `/${style}/${version}`;
+
+// helper to generate an OpenAPI server object when serving definitions
+const generateServerForApiVersion = (apiRoot, req) => ({
+  url: `${settings.ssl ? 'https' : 'http'}://${req.headers.host}${apiRoot}`,
+});
