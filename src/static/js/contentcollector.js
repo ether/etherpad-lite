@@ -655,7 +655,8 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       if (lines.length() - 1 == startLine)
       {
-        cc.startNewLine(state);
+        // commented out to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
+        // cc.startNewLine(state);
       }
       else
       {
