@@ -92,7 +92,14 @@
   "skinName": "${SKIN_NAME:colibris}",
 
   /*
-   * IP and port which etherpad should bind at
+   * IP and port which Etherpad should bind at.
+   *
+   * Binding to a Unix socket is also supported: just use an empty string for
+   * the ip, and put the full path to the socket in the port parameter.
+   *
+   * EXAMPLE USING UNIX SOCKET:
+   *    "ip": "",                             // <-- has to be an empty string
+   *    "port" : "/somepath/etherpad.socket", // <-- path to a Unix socket
    */
   "ip": "${IP:0.0.0.0}",
   "port": "${PORT:9001}",
