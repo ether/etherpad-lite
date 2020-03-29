@@ -7,14 +7,12 @@ MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd "${MY_DIR}/../../../"
 
 # start Etherpad assuming all dependencies are already installed
-echo "Running Etherpad directly, without checking/installing dependencies"
-echo "Current directory: "
-pwd
-echo "Contents:"
-find . -maxdepth 3
-exit 1
+echo "Running Etherpad directly, without checking/installing any dependencies"
+node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
 
-node "${MY_DIR}/node_modules/ep_etherpad-lite/node/server.js" "${@}" > /dev/null &
+echo "Look for remote_runner.js"
+find / -name remote_runner.js
+echo "Search ended"
 
 sleep 10
 
