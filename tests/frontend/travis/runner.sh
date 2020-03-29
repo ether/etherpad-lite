@@ -13,7 +13,17 @@ cd "${MY_DIR}/../../../"
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server_XXX.js "${@}" > /dev/null &
 
-sleep 10
+# wait for at most 15 seconds until Etherpad starts accepting connections
+#
+# modified from:
+# https://unix.stackexchange.com/questions/5277/how-do-i-tell-a-script-to-wait-for-a-process-to-start-accepting-requests-on-a-po#349138
+#
+(timeout 15 bash -c 'until echo > /dev/tcp/localhost/9001; do sleep 0.5; done') || \
+    (echo "Could not connect to Etherpad on http://localhost:9001" ; exit 1)
+
+# We successfully connected to Etherpad.
+# Just in case, let's wait for another second before going on
+sleep 1
 
 # On the Travis VM, remote_runner.js is found at
 # /home/travis/build/ether/[secure]/tests/frontend/travis/remote_runner.js
