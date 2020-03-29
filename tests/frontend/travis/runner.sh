@@ -13,6 +13,8 @@ cd "${MY_DIR}/../../../"
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
 
+echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9001"
+
 # wait for at most 15 seconds until Etherpad starts accepting connections
 #
 # modified from:
