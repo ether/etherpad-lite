@@ -11,7 +11,19 @@ const apiLogger = log4js.getLogger('API');
 // https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v3.0
 const OPENAPI_VERSION = '3.0.2'; // Swagger/OAS version
 
-// We'll add some more info to the API methods
+// enum for two different styles of API paths used for etherpad
+const APIPathStyle = {
+  FLAT: 'api', // flat paths e.g. /api/createGroup
+  REST: 'rest', // restful paths e.g. /rest/group/create
+};
+
+// helper to get api root
+const getApiRootForVersion = (version, style = APIPathStyle.FLAT) => `/${style}/${version}`;
+
+// helper to generate an OpenAPI server object when serving definitions
+const generateServerForApiVersion = (apiRoot, req) => ({
+  url: `${settings.ssl ? 'https' : 'http'}://${req.headers.host}${apiRoot}`,
+});
 
 // operations
 const API = {
@@ -214,20 +226,6 @@ const API = {
   },
 };
 
-// enum for two different styles of API paths used for etherpad
-const APIPathStyle = {
-  FLAT: 'api', // flat paths e.g. /api/createGroup
-  REST: 'rest', // restful paths e.g. /rest/group/create
-};
-
-// helper to get api root
-const getApiRootForVersion = (version, style = APIPathStyle.FLAT) => `/${style}/${version}`;
-
-// helper to generate an OpenAPI server object when serving definitions
-const generateServerForApiVersion = (apiRoot, req) => ({
-  url: `${settings.ssl ? 'https' : 'http'}://${req.headers.host}${apiRoot}`,
-});
-
 const defaultResponses = {
   200: {
     description: 'ok',
@@ -407,7 +405,7 @@ exports.expressCreateServer = (_, args) => {
         apiRoot,
         definition,
         validate: false,
-        strict: true,
+        quick: true, // recommended when running multiple instances in parallel
       });
 
       // register default handlers
