@@ -7,7 +7,7 @@ MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd "${MY_DIR}/../../../"
 
 # start Etherpad assuming all dependencies are already installed
-echo "Running Etherpad directly, without checking/installing any dependencies"
+echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
 
 sleep 10
@@ -21,6 +21,7 @@ sleep 10
 cd "${MY_DIR}"
 
 # start the remote runner
+echo "Now starting the remote runner"
 node remote_runner.js
 exit_code=$?
 
