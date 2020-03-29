@@ -33,7 +33,21 @@ const APIPathStyle = {
   REST: 'rest', // restful paths e.g. /rest/group/create
 };
 
+function sessionListResponseProcessor(res) {
+  if (res.data) {
+    var sessions = [];
+    for (var sessionId in res.data) {
+      var sessionInfo = res.data[sessionId];
+      sessionId['id'] = sessionId;
+      sessions.push(sessionInfo);
+    }
+    res.data = sessions;
+  }
+  return res;
+}
+
 // API resources
+// add your operations here
 const resources = {
   // Group
   group: {
@@ -64,6 +78,7 @@ const resources = {
       func: 'listSessionsOfGroup',
       description: '',
       response: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
+      responseProcessor: sessionListResponseProcessor,
     },
     list: {
       func: 'listAllGroups',
@@ -93,12 +108,19 @@ const resources = {
       func: 'listSessionsOfAuthor',
       description: 'returns all sessions of an author',
       response: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
+      responseProcessor: sessionListResponseProcessor,
     },
     // We need an operation that return a UserInfo so it can be picked up by the codegen :(
     getName: {
       func: 'getAuthorName',
       description: 'Returns the Author Name of the author',
-      response: { info: { $ref: '#/components/schemas/UserInfo' } },
+      responseProcessor: function(response) {
+        if (response.data) {
+          response['info'] = { name: response.data.authorName };
+          delete response['data'];
+        }
+      },
+      response: { info: { type: 'UserInfo' } },
     },
   },
 
@@ -225,7 +247,14 @@ const resources = {
     getChatHead: {
       func: 'getChatHead',
       description: 'returns the chatHead (chat-message) of the pad',
-      response: { chatHead: { $ref: '#/components/schemas/Message' } },
+      responseProcessor: function(response) {
+        // move this to info
+        if (response.data) {
+          response['chatHead'] = { time: response.data['chatHead'] };
+          delete response['data'];
+        }
+      },
+      response: { chatHead: { type: 'Message' } },
     },
     appendChatMessage: {
       func: 'appendChatMessage',
@@ -374,9 +403,10 @@ const defaultResponseRefs = {
 
 // convert to a flat list of OAS Operation objects
 const operations = [];
+const responseProcessors = {};
 for (const resource in resources) {
   for (const action in resources[resource]) {
-    const { func: operationId, description, response } = resources[resource][action];
+    const { func: operationId, description, response, responseProcessor } = resources[resource][action];
 
     const responses = { ...defaultResponseRefs };
     if (response) {
@@ -412,6 +442,7 @@ for (const resource in resources) {
       responses,
       tags: [resource],
       _restPath: `/${resource}/${action}`,
+      _responseProcessor: responseProcessor,
     };
     operations[operationId] = operation;
   }
@@ -526,6 +557,10 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
     }
     delete operation._restPath;
 
+    // set up response processor
+    responseProcessors[funcName] = operation._responseProcessor;
+    delete operation._responseProcessor;
+
     // add to definition
     // NOTE: It may be confusing that every operation can be called with both GET and POST
     definition.paths[path] = {
@@ -580,11 +615,11 @@ exports.expressCreateServer = (_, args) => {
       api.register({
         notFound: (c, req, res) => {
           res.statusCode = 404;
-          res.send({ code: 3, message: 'no such function', data: null });
+          return { code: 3, message: 'no such function', data: null };
         },
         notImplemented: (c, req, res) => {
           res.statusCode = 501;
-          res.send({ code: 3, message: 'not implemented', data: null });
+          return { code: 3, message: 'not implemented', data: null };
         },
       });
 
@@ -607,7 +642,24 @@ exports.expressCreateServer = (_, args) => {
           apiLogger.info(`REQUEST, v${version}:${funcName}, ${JSON.stringify(fields)}`);
 
           // pass to api handler
-          return apiHandler.handle(version, funcName, fields, req, res);
+          let data = await apiHandler.handle(version, funcName, fields, req, res);
+          if (!data) {
+            data = null;
+          }
+
+          // return in common format
+          const response = { code: 0, message: 'ok', data };
+
+          // NOTE: the original swagger implementation had response processors, but the tests
+          // clearly assume the processors are turned off
+          /*if (responseProcessors[funcName]) {
+            response = responseProcessors[funcName](response);
+          }*/
+
+          // log response
+          apiLogger.info(`RESPONSE, ${funcName}, ${JSON.stringify(response)}`);
+
+          return response;
         };
 
         // each operation can be called with either GET or POST
@@ -618,9 +670,20 @@ exports.expressCreateServer = (_, args) => {
       // start and bind to express
       api.init();
       app.use(apiRoot, async (req, res) => {
-        // allow cors
-        res.header('Access-Control-Allow-Origin', '*');
-        return api.handleRequest(req, req, res);
+        try {
+          // allow cors
+          res.header('Access-Control-Allow-Origin', '*');
+          res.send(await api.handleRequest(req, req, res));
+        } catch (err) {
+          if (err.name == 'apierror') {
+            // parameters were wrong and the api stopped execution, pass the error
+            res.send({ code: 1, message: err.message, data: null });
+          } else {
+            // an unknown error happened
+            res.send({ code: 2, message: 'internal error', data: null });
+            throw err;
+          }
+        }
       });
     }
   }
