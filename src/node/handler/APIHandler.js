@@ -185,37 +185,11 @@ exports.handle = async function(apiVersion, functionName, fields, req, res)
     fields["padName"] = await padManager.sanitizePadId(fields["padName"]);
   }
 
-  // no need to await - callAPI returns a promise
-  return callAPI(apiVersion, functionName, fields, req, res);
-}
-
-// calls the api function
-async function callAPI(apiVersion, functionName, fields, req, res)
-{
   // put the function parameters in an array
   var functionParams = version[apiVersion][functionName].map(function (field) {
     return fields[field]
   });
 
-  try {
-    // call the api function
-    let data = await api[functionName].apply(this, functionParams);
-
-    if (!data) {
-        data = null;
-    }
-
-    res.send({code: 0, message: "ok", data: data});
-  } catch (err) {
-    if (err.name == "apierror") {
-      // parameters were wrong and the api stopped execution, pass the error
-
-      res.send({code: 1, message: err.message, data: null});
-    } else {
-      // an unknown error happened
-
-      res.send({code: 2, message: "internal error", data: null});
-      throw err;
-    }
-  }
+  // call the api function
+  return api[functionName].apply(this, functionParams);
 }
