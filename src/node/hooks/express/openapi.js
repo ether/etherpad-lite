@@ -1,6 +1,21 @@
+/**
+ * node/hooks/express/openapi.js
+ *
+ * This module generates OpenAPI definitions for each API version defined by
+ * APIHandler.js and hooks into express to route the API using openapi-backend.
+ *
+ * The openapi definition files are publicly available under:
+ *
+ * - /api/openapi.json
+ * - /rest/openapi.json
+ * - /api/{version}/openapi.json
+ * - /rest/{version}/openapi.json
+ */
+
 const OpenAPIBackend = require('openapi-backend').default;
 const formidable = require('formidable');
 const { promisify } = require('util');
+const cloneDeep = require('lodash.clonedeep');
 
 const apiHandler = require('../../handler/APIHandler');
 const settings = require('../../utils/Settings');
@@ -33,232 +48,203 @@ const APIPathStyle = {
   REST: 'rest', // restful paths e.g. /rest/group/create
 };
 
-function sessionListResponseProcessor(res) {
-  if (res.data) {
-    var sessions = [];
-    for (var sessionId in res.data) {
-      var sessionInfo = res.data[sessionId];
-      sessionId['id'] = sessionId;
-      sessions.push(sessionInfo);
-    }
-    res.data = sessions;
-  }
-  return res;
-}
-
-// API resources
-// add your operations here
+// API resources - describe your API endpoints here
 const resources = {
   // Group
   group: {
     create: {
-      func: 'createGroup',
-      description: 'creates a new group',
-      response: { groupID: { type: 'string' } },
+      operationId: 'createGroup',
+      summary: 'creates a new group',
+      responseSchema: { groupID: { type: 'string' } },
     },
     createIfNotExistsFor: {
-      func: 'createGroupIfNotExistsFor',
-      description: 'this functions helps you to map your application group ids to Etherpad group ids',
-      response: { groupID: { type: 'string' } },
+      operationId: 'createGroupIfNotExistsFor',
+      summary: 'this functions helps you to map your application group ids to Etherpad group ids',
+      responseSchema: { groupID: { type: 'string' } },
     },
     delete: {
-      func: 'deleteGroup',
-      description: 'deletes a group',
+      operationId: 'deleteGroup',
+      summary: 'deletes a group',
     },
     listPads: {
-      func: 'listPads',
-      description: 'returns all pads of this group',
-      response: { padIDs: { type: 'array', items: { type: 'string' } } },
+      operationId: 'listPads',
+      summary: 'returns all pads of this group',
+      responseSchema: { padIDs: { type: 'array', items: { type: 'string' } } },
     },
     createPad: {
-      func: 'createGroupPad',
-      description: 'creates a new pad in this group',
+      operationId: 'createGroupPad',
+      summary: 'creates a new pad in this group',
     },
     listSessions: {
-      func: 'listSessionsOfGroup',
-      description: '',
-      response: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
-      responseProcessor: sessionListResponseProcessor,
+      operationId: 'listSessionsOfGroup',
+      summary: '',
+      responseSchema: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
     },
     list: {
-      func: 'listAllGroups',
-      description: '',
-      response: { groupIDs: { type: 'array', items: { type: 'string' } } },
+      operationId: 'listAllGroups',
+      summary: '',
+      responseSchema: { groupIDs: { type: 'array', items: { type: 'string' } } },
     },
   },
 
   // Author
   author: {
     create: {
-      func: 'createAuthor',
-      description: 'creates a new author',
-      response: { authorID: { type: 'string' } },
+      operationId: 'createAuthor',
+      summary: 'creates a new author',
+      responseSchema: { authorID: { type: 'string' } },
     },
     createIfNotExistsFor: {
-      func: 'createAuthorIfNotExistsFor',
-      description: 'this functions helps you to map your application author ids to Etherpad author ids',
-      response: { authorID: { type: 'string' } },
+      operationId: 'createAuthorIfNotExistsFor',
+      summary: 'this functions helps you to map your application author ids to Etherpad author ids',
+      responseSchema: { authorID: { type: 'string' } },
     },
     listPads: {
-      func: 'listPadsOfAuthor',
-      description: 'returns an array of all pads this author contributed to',
-      response: { padIDs: { type: 'array', items: { type: 'string' } } },
+      operationId: 'listPadsOfAuthor',
+      summary: 'returns an array of all pads this author contributed to',
+      responseSchema: { padIDs: { type: 'array', items: { type: 'string' } } },
     },
     listSessions: {
-      func: 'listSessionsOfAuthor',
-      description: 'returns all sessions of an author',
-      response: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
-      responseProcessor: sessionListResponseProcessor,
+      operationId: 'listSessionsOfAuthor',
+      summary: 'returns all sessions of an author',
+      responseSchema: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
     },
     // We need an operation that return a UserInfo so it can be picked up by the codegen :(
     getName: {
-      func: 'getAuthorName',
-      description: 'Returns the Author Name of the author',
-      responseProcessor: function(response) {
-        if (response.data) {
-          response['info'] = { name: response.data.authorName };
-          delete response['data'];
-        }
-      },
-      response: { info: { type: 'UserInfo' } },
+      operationId: 'getAuthorName',
+      summary: 'Returns the Author Name of the author',
+      responseSchema: { info: { $ref: '#/components/schemas/UserInfo' } },
     },
   },
 
   // Session
   session: {
     create: {
-      func: 'createSession',
-      description: 'creates a new session. validUntil is an unix timestamp in seconds',
-      response: { sessionID: { type: 'string' } },
+      operationId: 'createSession',
+      summary: 'creates a new session. validUntil is an unix timestamp in seconds',
+      responseSchema: { sessionID: { type: 'string' } },
     },
     delete: {
-      func: 'deleteSession',
-      description: 'deletes a session',
+      operationId: 'deleteSession',
+      summary: 'deletes a session',
     },
     // We need an operation that returns a SessionInfo so it can be picked up by the codegen :(
     info: {
-      func: 'getSessionInfo',
-      description: 'returns informations about a session',
-      response: { info: { $ref: '#/components/schemas/SessionInfo' } },
+      operationId: 'getSessionInfo',
+      summary: 'returns informations about a session',
+      responseSchema: { info: { $ref: '#/components/schemas/SessionInfo' } },
     },
   },
 
   // Pad
   pad: {
     listAll: {
-      func: 'listAllPads',
-      description: 'list all the pads',
-      response: { padIDs: { type: 'array', items: { type: 'string' } } },
+      operationId: 'listAllPads',
+      summary: 'list all the pads',
+      responseSchema: { padIDs: { type: 'array', items: { type: 'string' } } },
     },
     createDiffHTML: {
-      func: 'createDiffHTML',
-      description: '',
-      response: {},
+      operationId: 'createDiffHTML',
+      summary: '',
+      responseSchema: {},
     },
     create: {
-      func: 'createPad',
+      operationId: 'createPad',
       description:
         'creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad',
     },
     getText: {
-      func: 'getText',
-      description: 'returns the text of a pad',
-      response: { text: { type: 'string' } },
+      operationId: 'getText',
+      summary: 'returns the text of a pad',
+      responseSchema: { text: { type: 'string' } },
     },
     setText: {
-      func: 'setText',
-      description: 'sets the text of a pad',
+      operationId: 'setText',
+      summary: 'sets the text of a pad',
     },
     getHTML: {
-      func: 'getHTML',
-      description: 'returns the text of a pad formatted as HTML',
-      response: { html: { type: 'string' } },
+      operationId: 'getHTML',
+      summary: 'returns the text of a pad formatted as HTML',
+      responseSchema: { html: { type: 'string' } },
     },
     setHTML: {
-      func: 'setHTML',
-      description: 'sets the text of a pad with HTML',
+      operationId: 'setHTML',
+      summary: 'sets the text of a pad with HTML',
     },
     getRevisionsCount: {
-      func: 'getRevisionsCount',
-      description: 'returns the number of revisions of this pad',
-      response: { revisions: { type: 'integer' } },
+      operationId: 'getRevisionsCount',
+      summary: 'returns the number of revisions of this pad',
+      responseSchema: { revisions: { type: 'integer' } },
     },
     getLastEdited: {
-      func: 'getLastEdited',
-      description: 'returns the timestamp of the last revision of the pad',
-      response: { lastEdited: { type: 'integer' } },
+      operationId: 'getLastEdited',
+      summary: 'returns the timestamp of the last revision of the pad',
+      responseSchema: { lastEdited: { type: 'integer' } },
     },
     delete: {
-      func: 'deletePad',
-      description: 'deletes a pad',
+      operationId: 'deletePad',
+      summary: 'deletes a pad',
     },
     getReadOnlyID: {
-      func: 'getReadOnlyID',
-      description: 'returns the read only link of a pad',
-      response: { readOnlyID: { type: 'string' } },
+      operationId: 'getReadOnlyID',
+      summary: 'returns the read only link of a pad',
+      responseSchema: { readOnlyID: { type: 'string' } },
     },
     setPublicStatus: {
-      func: 'setPublicStatus',
-      description: 'sets a boolean for the public status of a pad',
+      operationId: 'setPublicStatus',
+      summary: 'sets a boolean for the public status of a pad',
     },
     getPublicStatus: {
-      func: 'getPublicStatus',
-      description: 'return true of false',
-      response: { publicStatus: { type: 'boolean' } },
+      operationId: 'getPublicStatus',
+      summary: 'return true of false',
+      responseSchema: { publicStatus: { type: 'boolean' } },
     },
     setPassword: {
-      func: 'setPassword',
-      description: 'returns ok or a error message',
+      operationId: 'setPassword',
+      summary: 'returns ok or a error message',
     },
     isPasswordProtected: {
-      func: 'isPasswordProtected',
-      description: 'returns true or false',
-      response: { passwordProtection: { type: 'boolean' } },
+      operationId: 'isPasswordProtected',
+      summary: 'returns true or false',
+      responseSchema: { passwordProtection: { type: 'boolean' } },
     },
     authors: {
-      func: 'listAuthorsOfPad',
-      description: 'returns an array of authors who contributed to this pad',
-      response: { authorIDs: { type: 'array', items: { type: 'string' } } },
+      operationId: 'listAuthorsOfPad',
+      summary: 'returns an array of authors who contributed to this pad',
+      responseSchema: { authorIDs: { type: 'array', items: { type: 'string' } } },
     },
     usersCount: {
-      func: 'padUsersCount',
-      description: 'returns the number of user that are currently editing this pad',
-      response: { padUsersCount: { type: 'integer' } },
+      operationId: 'padUsersCount',
+      summary: 'returns the number of user that are currently editing this pad',
+      responseSchema: { padUsersCount: { type: 'integer' } },
     },
     users: {
-      func: 'padUsers',
-      description: 'returns the list of users that are currently editing this pad',
-      response: { padUsers: { type: 'array', items: { $ref: '#/components/schemas/UserInfo' } } },
+      operationId: 'padUsers',
+      summary: 'returns the list of users that are currently editing this pad',
+      responseSchema: { padUsers: { type: 'array', items: { $ref: '#/components/schemas/UserInfo' } } },
     },
     sendClientsMessage: {
-      func: 'sendClientsMessage',
-      description: 'sends a custom message of type msg to the pad',
+      operationId: 'sendClientsMessage',
+      summary: 'sends a custom message of type msg to the pad',
     },
     checkToken: {
-      func: 'checkToken',
-      description: 'returns ok when the current api token is valid',
+      operationId: 'checkToken',
+      summary: 'returns ok when the current api token is valid',
     },
     getChatHistory: {
-      func: 'getChatHistory',
-      description: 'returns the chat history',
-      response: { messages: { type: 'array', items: { $ref: '#/components/schemas/Message' } } },
+      operationId: 'getChatHistory',
+      summary: 'returns the chat history',
+      responseSchema: { messages: { type: 'array', items: { $ref: '#/components/schemas/Message' } } },
     },
     // We need an operation that returns a Message so it can be picked up by the codegen :(
     getChatHead: {
-      func: 'getChatHead',
-      description: 'returns the chatHead (chat-message) of the pad',
-      responseProcessor: function(response) {
-        // move this to info
-        if (response.data) {
-          response['chatHead'] = { time: response.data['chatHead'] };
-          delete response['data'];
-        }
-      },
-      response: { chatHead: { type: 'Message' } },
+      operationId: 'getChatHead',
+      summary: 'returns the chatHead (chat-message) of the pad',
+      responseSchema: { chatHead: { $ref: '#/components/schemas/Message' } },
     },
     appendChatMessage: {
-      func: 'appendChatMessage',
-      description: 'appends a chat message',
+      operationId: 'appendChatMessage',
+      summary: 'appends a chat message',
     },
   },
 };
@@ -401,50 +387,30 @@ const defaultResponseRefs = {
   },
 };
 
-// convert to a flat list of OAS Operation objects
-const operations = [];
-const responseProcessors = {};
+// convert to a dictionary of operation objects
+const operations = {};
 for (const resource in resources) {
   for (const action in resources[resource]) {
-    const { func: operationId, description, response, responseProcessor } = resources[resource][action];
+    const { operationId, responseSchema, ...operation } = resources[resource][action];
 
+    // add response objects
     const responses = { ...defaultResponseRefs };
-    if (response) {
-      responses[200] = {
-        description: 'ok (code 0)',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                code: {
-                  type: 'integer',
-                  example: 0,
-                },
-                message: {
-                  type: 'string',
-                  example: 'ok',
-                },
-                data: {
-                  type: 'object',
-                  properties: response,
-                },
-              },
-            },
-          },
-        },
+    if (responseSchema) {
+      responses[200] = cloneDeep(defaultResponses.Success);
+      responses[200].content['application/json'].schema.properties.data = {
+        type: 'object',
+        properties: responseSchema,
       };
     }
 
-    const operation = {
+    // add final operation object to dictionary
+    operations[operationId] = {
       operationId,
-      summary: description,
+      ...operation,
       responses,
       tags: [resource],
       _restPath: `/${resource}/${action}`,
-      _responseProcessor: responseProcessor,
     };
-    operations[operationId] = operation;
   }
 }
 
@@ -557,10 +523,6 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
     }
     delete operation._restPath;
 
-    // set up response processor
-    responseProcessors[funcName] = operation._responseProcessor;
-    delete operation._responseProcessor;
-
     // add to definition
     // NOTE: It may be confusing that every operation can be called with both GET and POST
     definition.paths[path] = {
@@ -574,29 +536,32 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
       },
     };
   }
-
   return definition;
 };
 
-exports.expressCreateServer = (_, args) => {
+exports.expressCreateServer = async (_, args) => {
   const { app } = args;
 
+  // create openapi-backend handlers for each api version under /api/{version}/*
   for (const version in apiHandler.version) {
-    // create two different styles of api: flat + rest
+    // we support two different styles of api: flat + rest
+    // TODO: do we really want to support both?
+
     for (const style of [APIPathStyle.FLAT, APIPathStyle.REST]) {
       const apiRoot = getApiRootForVersion(version, style);
 
       // generate openapi definition for this API version
       const definition = generateDefinitionForVersion(version, style);
 
-      // serve openapi definition file
+      // serve version specific openapi definition
       app.get(`${apiRoot}/openapi.json`, (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
         res.json({ ...definition, servers: [generateServerForApiVersion(apiRoot, req)] });
       });
 
       // serve latest openapi definition file under /api/openapi.json
-      if (version === apiHandler.latestApiVersion) {
+      const isLatestAPIVersion = version === apiHandler.latestApiVersion;
+      if (isLatestAPIVersion) {
         app.get(`/${style}/openapi.json`, (req, res) => {
           res.header('Access-Control-Allow-Origin', '*');
           res.json({ ...definition, servers: [generateServerForApiVersion(apiRoot, req)] });
@@ -605,10 +570,12 @@ exports.expressCreateServer = (_, args) => {
 
       // build openapi-backend instance for this api version
       const api = new OpenAPIBackend({
-        apiRoot,
+        apiRoot, // each api version has its own root
         definition,
         validate: false,
-        quick: true, // recommended when running multiple instances in parallel
+        // for a small optimisation, we can run the quick startup for older
+        // API versions since they are subsets of the latest api definition
+        quick: !isLatestAPIVersion,
       });
 
       // register default handlers
@@ -629,6 +596,7 @@ exports.expressCreateServer = (_, args) => {
           // parse fields from request
           const { header, params, query } = c.request;
 
+          // read form data if method was POST
           let formData = {};
           if (c.request.method === 'post') {
             const form = new formidable.IncomingForm();
@@ -649,12 +617,6 @@ exports.expressCreateServer = (_, args) => {
 
           // return in common format
           const response = { code: 0, message: 'ok', data };
-
-          // NOTE: the original swagger implementation had response processors, but the tests
-          // clearly assume the processors are turned off
-          /*if (responseProcessors[funcName]) {
-            response = responseProcessors[funcName](response);
-          }*/
 
           // log response
           apiLogger.info(`RESPONSE, ${funcName}, ${JSON.stringify(response)}`);
