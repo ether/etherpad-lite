@@ -126,7 +126,7 @@ exports.expressConfigure = function (hook_name, args, cb) {
   args.app.use(sessionModule({
     secret: exports.secret,
     store: args.app.sessionStore,
-    resave: true,
+    resave: false,
     saveUninitialized: true,
     name: 'express_sid',
     proxy: true,
