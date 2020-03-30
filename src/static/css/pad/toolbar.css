@@ -32,18 +32,18 @@
   width: 10px;
 }
 .toolbar ul li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 26px;
   border: 1px solid #ccc;
-  cursor: pointer;
   border-radius: 3px;
   background: #fff;
   color: #ccc;
   cursor: pointer;
-  min-height: 18px;
   overflow: hidden;
-  padding: 4px 5px;
-  text-align: center;
   text-decoration: none;
-  min-width: 18px;
   transition: background-color .1s;
 }
 .toolbar ul li button:active, .toolbar ul li button:focus {
@@ -133,7 +133,8 @@
     margin: 0;
   }
   .toolbar ul.menu_right > li[data-key="showusers"] a {
-    padding-top: 10px;
+    height: 100%;
+    width: 40px;
     border-radius: 0;
   }
 }
