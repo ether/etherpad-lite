@@ -1,6 +1,6 @@
 /*
  * ACHTUNG: there is a copied & modified version of this file in
- * <basedir>/tests/container/spacs/api/pad.js
+ * <basedir>/tests/container/specs/api/pad.js
  *
  * TODO: unify those two files, and merge in a single one.
  */
@@ -219,7 +219,11 @@ describe('getText', function(){
 
 describe('setText', function(){
   it('creates a new Pad with text', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text=testTextTwo")
+    api.post(endPoint('setText'))
+    .send({
+      "padID": testPadId,
+      "text":  "testTextTwo",
+    })
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad setting text failed");
     })
@@ -334,7 +338,11 @@ describe('getLastEdited', function(){
 
 describe('setText', function(){
   it('creates a new Pad with text', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text=testTextTwo")
+    api.post(endPoint('setText'))
+    .send({
+      "padID": testPadId,
+      "text":  "testTextTwo",
+    })
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad setting text failed");
     })
@@ -394,8 +402,11 @@ describe('createPad', function(){
 
 describe('setText', function(){
   it('Sets text on a pad Id', function(done) {
-    api.post(endPoint('setText')+"&padID="+testPadId)
-    .send({text: text})
+    api.post(endPoint('setText'))
+    .send({
+      "padID": testPadId,
+      "text":  text,
+    })
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Set Text failed")
     })
@@ -533,7 +544,11 @@ describe('getText', function(){
 describe('setHTML', function(){
   it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
     var html = "<div><b>Hello HTML</title></head></div>";
-    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
+    api.post(endPoint('setHTML'))
+    .send({
+      "padID": testPadId,
+      "html":  html,
+    })
     .expect(function(res){
       if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
     })
@@ -544,7 +559,11 @@ describe('setHTML', function(){
 
 describe('setHTML', function(){
   it('Sets the HTML of a Pad with complex nested lists of different types', function(done) {
-    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+ulHtml)
+    api.post(endPoint('setHTML'))
+    .send({
+      "padID": testPadId,
+      "html":  ulHtml,
+    })
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("List HTML cant be imported")
     })
