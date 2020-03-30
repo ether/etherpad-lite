@@ -556,6 +556,7 @@ exports.expressCreateServer = async (_, args) => {
 
       // serve version specific openapi definition
       app.get(`${apiRoot}/openapi.json`, (req, res) => {
+        // For openapi definitions, wide CORS is probably fine
         res.header('Access-Control-Allow-Origin', '*');
         res.json({ ...definition, servers: [generateServerForApiVersion(apiRoot, req)] });
       });
@@ -640,8 +641,11 @@ exports.expressCreateServer = async (_, args) => {
       api.init();
       app.use(apiRoot, async (req, res) => {
         try {
-          // allow cors
-          res.header('Access-Control-Allow-Origin', '*');
+          if (style === APIPathStyle.REST) {
+            // @TODO: Don't allow CORS from everywhere
+            // This is purely to maintain compatibility with old swagger-node-express
+            res.header('Access-Control-Allow-Origin', '*');
+          }
           await api.handleRequest(req, req, res);
         } catch (err) {
           if (err.name == 'apierror') {
