@@ -10,11 +10,7 @@
 
 }
 
-.buttonicon{
-  width: 16px;
-  height: 16px;
-  display: inline-block;
-  vertical-align: middle;
+.buttonicon {
   border: none;
   padding: 0;
   background: none;
@@ -25,10 +21,8 @@
   font-weight: normal;
   color: #666;
   cursor: pointer;
-
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  display: inline-block;
   font-style: normal;
   font-variant: normal;
   text-rendering: auto;
@@ -43,7 +37,7 @@
   display: inline-block;
   text-decoration: inherit;
   width: 1em;
-  margin-right: .2em;
+  margin: 0;
   text-align: center;
 
   /* For safety - reset parent styles, that can break glyph codes*/
@@ -178,10 +172,10 @@
   -webkit-animation: spinAnimation 2s infinite linear;
   animation: spinAnimation 2s infinite linear;
   font-family: "fontawesome-etherpad";
-  font-size:22px;
-  z-index:150;
-  width:22px;
-  height:22px;
+  font-size: 22px;
+  z-index: 150;
+  width: 22px;
+  height: 22px;
 }
 
 @-webkit-keyframes spinAnimation {
