@@ -23,12 +23,6 @@
 
 /* NEUTRAL COLOR */
 body,
-#innerdocbody
-#users,
-#chattext,
-#chatinput,
-#chatlabel,
-#toc,
 #tocItems a,
 .toolbar ul li a:hover .buttonicon,
 .toolbar ul li a,
@@ -37,8 +31,6 @@ body,
 .btn-default,
 .color\:black,
 [data-color=black],
-#chattext.authorColors p, #chattext.authorColors span,
-#chattext .time,
 #tbl_context_menu ul .yuimenuitemlabel,
 .yui-skin-sam .yui-split-button button em:not(.color-picker-button),
 #yui-picker-panel .button-group .yui-button:first-child button,
@@ -87,7 +79,7 @@ p[data-l10n-id="ep_comments_page.comment"],
 .comment-reply-input-label span,
 .stepper, #importmessageabiword, #importmessageabiword > a
 { color: #64d29b; }
-#ui-slider-handle, #playpause_button_icon {
+#ui-slider-handle, #playpause_button_icon, .gritter-item:not(.error) {
   background-color: #64d29b;
 }
 .stepper {
@@ -101,16 +93,7 @@ p[data-l10n-id="ep_comments_page.comment"],
 
 
 /* NEUTRAL FONT */
-body,
-#innerdocbody,
-#chatinput,
-.toolbar ul li select,
-button, input, select, textarea,
-td[name=tData],
-#comments, #newComments,
-#sidediv,
-#comments .sidebar-comment,
-#timeslider #timer, .exporttype
+body
 { font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }
 
 /* PRIMARY FONT */

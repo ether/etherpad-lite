@@ -1,13 +1,8 @@
-#pad_title {
-  margin-bottom: 15px !important;
-  margin-top: 5px !important;
-  display: none; /* display only when page is loaded via javascript */
+@media (max-width: 720px) {
+  #pad_title {
+      display: none !important;
+  }
 }
-
-@media (max-width:720px) {
-  #pad_title { display: none !important; }
-}
-
 #edit_title {
   color: white;
 }

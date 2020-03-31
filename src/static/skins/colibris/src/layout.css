@@ -1,17 +1,3 @@
-#connectivity,
-#embed,
-#import_export,
-#settings,
-#users {
-  top: 38px;
-  right: 30px;
-}
-
-#editorcontainer {
-  top: 41px !important;
-  padding-top: 0 !important;
-}
-
 #outerdocbody, .timeslider #editorcontainerbox {
   max-width: 900px;
   margin: 0 auto;
@@ -20,14 +6,12 @@
 
 #outerdocbody {
   overflow-y: auto;
-  position: relative;
-  background-color: transparent;
-  padding-left: 40px; /* space for side div */
 }
 
-#outerdocbody.plugin-ep_author_neat {
-  padding-left: 120px; /* more space for sidediv */
+#editorcontainerbox .sticky-container {
+  width: 250px;
 }
+
 @media (max-width:600px) {
   #outerdocbody.plugin-ep_author_neat { padding-left: 0; }
   #options-linenoscheck { display:none; }
@@ -39,32 +23,12 @@
   padding-left: 0; /* sidediv hidden */
 }
 
-#outerdocbody iframe {
-  display: block;
-  position: relative;
-  left: 0 !important;
-  top: 0;
-}
-
 #outerdocbody iframe, .timeslider #editorcontainerbox {
   padding: 55px;
   box-shadow: 0 0 0 0.5px rgba(209, 209, 209, 0.32), 0 0 7pt 0pt rgba(204, 204, 204, 0.52);
   border: 0;
   border-radius: 5px;
   background-color: white;
-  width: calc(100% - 110px) !important; /* 100% - padding */
-}
-
-#sidediv {
-  position: absolute;
-  right: calc(100% - 35px);
-  left: initial;
-  top: 74px !important;
-  padding: 0;
-}
-
-#outerdocbody.plugin-ep_author_neat #sidediv {
-  right: calc(100% - 113px);
 }
 
 /* Fixs comments_page & author_hover does not take in account the document padding */
@@ -92,6 +56,11 @@
   #outerdocbody.plugin-ep_comments_page  { padding-right: 0px; }
 }
 
+@media (min-width: 999px) {
+  #outerdocbody {
+    min-height: calc(100vh - 20px);
+  }
+}
 @media (max-width:1000px) {
   #outerdocbody {
     max-width: none;
@@ -100,7 +69,6 @@
   #outerdocbody iframe, .timeslider #editorcontainerbox {
     padding: 20px !important;
     border-radius: 0;
-    width: calc(100% - 40px) !important; /* 100% - padding */
   }
   #sidediv {
     top: 20px !important; /* = #outerdocbody iframe padding-top */
@@ -124,7 +92,6 @@
   }
   #outerdocbody iframe, .timeslider #editorcontainerbox {
     padding: 15px !important;
-    width: calc(100% - 30px) !important; /* 100% - padding */
   }
   #sidediv {
     display: none;

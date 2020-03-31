@@ -10,20 +10,16 @@
 }
 
 #chatbox.stickyChat {
-  width: 193px !important;
-  border: none !important;
+  border: none;
 }
 
 #chatbox.stickyChat.chatAndUsersChat{
-  margin-top: 181px;
   box-shadow: none;
-  border-top: 1px solid #d2d2d2 !important;
-  padding: 0!important;
 }
 
 #titlebar {
   bottom: 0;
-  line-height: 39px;
+  line-height: 44px;
   height: 44px;
   padding: 0 7px;
   z-index: 20000;
@@ -39,13 +35,8 @@
 #chatlabel { margin-right: 15px; }
 
 #chattext {
-  top: 45px;
-  font-size: 13px;
-  bottom: 52px;
-  overflow-y: auto;
-  padding: 0;
-  border: none;
   border-bottom: 1px solid #cccccc;
+  background-color: #fcfcfc;
 }
 
 .plugin-ep_author_neat #chattext {
@@ -83,7 +74,7 @@
   padding: 8px;
 }
 
-#chatinput {
+#chatinputbox #chatinput {
   width: calc(100% - 20px);
   float: right;
 }
@@ -102,7 +93,6 @@
 @media (max-width: 720px) {
   #chaticon {
     right: 0;
-    bottom: 44px;
   }
 
   #chatbox {

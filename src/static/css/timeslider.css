@@ -3,7 +3,9 @@
 p.pblort {
   height: 100px;
 }
-
+.timeslider-bar #editbar {
+  display: block;
+}
 #editorcontainerbox {
   overflow: auto;
   top: 40px;
