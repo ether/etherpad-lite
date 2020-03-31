@@ -364,12 +364,6 @@ function handshake()
   });
 }
 
-$.extend($.gritter.options, {
-  position: 'bottom-right', // defaults to 'top-right' but can be 'bottom-left', 'bottom-right', 'top-left', 'top-right' (added in 1.7.1)
-  fade: false, // dont fade, too jerky on mobile
-  time: 6000 // hang on the screen for...
-});
-
 var pad = {
   // don't access these directly from outside this file, except
   // for debugging

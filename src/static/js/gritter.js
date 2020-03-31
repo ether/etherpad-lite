@@ -7,6 +7,8 @@
  *
  * Date: February 24, 2012
  * Version: 1.7.4
+ *
+ * Edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-03-31
  */
 
 (function($){
@@ -66,19 +68,26 @@
 	var Gritter = {
 
 		// Public - options to over-ride with $.gritter.options in "add"
-		position: '',
-		fade_in_speed: '',
-		fade_out_speed: '',
+		fade_in_speed: '300',
+		fade_out_speed: '200',
 		time: '',
 
 		// Private - no touchy the private parts
 		_custom_timer: 0,
 		_item_count: 0,
 		_is_setup: 0,
-		_tpl_close: '<div class="gritter-close"></div>',
-		_tpl_title: '<span class="gritter-title">[[title]]</span>',
-		_tpl_item: '<div id="gritter-item-[[number]]" class="gritter-item-wrapper [[item_class]]" style="display:none"><div class="gritter-top"></div><div class="gritter-item">[[close]][[image]]<div class="[[class_name]]">[[title]]<p>[[text]]</p></div><div style="clear:both"></div></div><div class="gritter-bottom"></div></div>',
-		_tpl_wrap: '<div id="gritter-notice-wrapper" aria-live="polite" aria-atomic="false" aria-relevant="additions" role="log"></div>',
+		_tpl_wrap: '<div id="gritter-container"></div>',
+		_tpl_close: '',
+		_tpl_title: '<h3 class="gritter-title">[[title]]</h3>',
+		_tpl_item: [
+			'<div id="gritter-item-[[number]]" class="popup gritter-item [[item_class]]">',
+				'<div class="gritter-content">',
+					'[[title]]',
+					'<p>[[text]]</p>',
+				'</div>',
+				'<div class="gritter-close"><i class="buttonicon buttonicon-cancel"></i></div>',
+			'</div>'].join(''),
+
 
 		/**
 		* Add a gritter notification to the screen
@@ -107,10 +116,13 @@
 				image = params.image || '',
 				sticky = params.sticky || false,
 				item_class = params.class_name || $.gritter.options.class_name,
-				position = $.gritter.options.position,
 				time_alive = params.time || '';
 
 			this._verifyWrapper();
+
+			if (sticky) {
+				item_class += " sticky";
+			}
 
 			this._item_count++;
 			var number = this._item_count,
@@ -129,9 +141,6 @@
 				this._custom_timer = time_alive;
 			}
 
-			var image_str = (image != '') ? '<img src="' + image + '" class="gritter-image" />' : '',
-				class_name = (image != '') ? 'gritter-with-image' : 'gritter-without-image';
-
 			// String replacements on the template
 			if(title){
 				title = this._str_replace('[[title]]',title,this._tpl_title);
@@ -140,8 +149,8 @@
 			}
 
 			tmp = this._str_replace(
-				['[[title]]', '[[text]]', '[[close]]', '[[image]]', '[[number]]', '[[class_name]]', '[[item_class]]'],
-				[title, text, this._tpl_close, image_str, this._item_count, class_name, item_class], tmp
+				['[[title]]', '[[text]]', '[[number]]', '[[item_class]]'],
+				[title, text, this._item_count, item_class], tmp
 			);
 
 			// If it's false, don't show another gritter message
@@ -149,7 +158,7 @@
 				return false;
 			}
 
-			$('#gritter-notice-wrapper').addClass(position).append(tmp);
+			$('#gritter-container').append(tmp);
 
 			var item = $('#gritter-item-' + this._item_count);
 
@@ -173,7 +182,6 @@
 						Gritter._setFadeTimer($(this), number);
 					}
 				}
-				Gritter._hoverState($(this), event.type);
 			});
 
 			// Clicking (X) makes the perdy thing close
@@ -200,7 +208,7 @@
 
 			// Check if the wrapper is empty, if it is.. remove the wrapper
 			if($('.gritter-item-wrapper').length == 0){
-				$('#gritter-notice-wrapper').remove();
+				$('#gritter-container').remove();
 			}
 
 		},
@@ -242,35 +250,6 @@
 			else {
 
 				this._countRemoveWrapper(unique_id, e);
-
-			}
-
-		},
-
-		/**
-		* Perform actions based on the type of bind (mouseenter, mouseleave)
-		* @private
-		* @param {Object} e The jQuery element
-		* @param {String} type The type of action we're performing: mouseenter or mouseleave
-		*/
-		_hoverState: function(e, type){
-
-			// Change the border styles and add the (X) close button when you hover
-			if(type == 'mouseenter'){
-
-				e.addClass('hover');
-
-				// Show close button
-				e.find('.gritter-close').show();
-
-			}
-			// Remove the border styles and hide (X) close button when you mouse out
-			else {
-
-				e.removeClass('hover');
-
-				// Hide close button
-				e.find('.gritter-close').hide();
 
 			}
 
@@ -346,7 +325,7 @@
 			var before_close = ($.isFunction(params.before_close)) ? params.before_close : function(){};
 			var after_close = ($.isFunction(params.after_close)) ? params.after_close : function(){};
 
-			var wrap = $('#gritter-notice-wrapper');
+			var wrap = $('#gritter-container');
 			before_close(wrap);
 			wrap.fadeOut(function(){
 				$(this).remove();
@@ -404,8 +383,8 @@
 		*/
 		_verifyWrapper: function(){
 
-			if($('#gritter-notice-wrapper').length == 0){
-				$('body').append(this._tpl_wrap);
+			if($('#gritter-container').length == 0){
+				$('#editorcontainerbox').append(this._tpl_wrap);
 			}
 
 		}

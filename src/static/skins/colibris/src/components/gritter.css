@@ -4,7 +4,7 @@
   text-shadow: none;
 }
 
-#gritter-notice-wrapper {
+#gritter-container {
   background-color: #fff;
   box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
   border-radius: 3px;
@@ -14,7 +14,7 @@
 }
 
 @media (max-width: 1100px) {
-  #gritter-notice-wrapper {
+  #gritter-container {
     display: none;
   }
 }

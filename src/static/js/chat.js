@@ -32,7 +32,7 @@ var chat = (function()
     {
       $("#chaticon").hide();
       $("#chatbox").css('display', 'flex');
-      $("#gritter-notice-wrapper").hide();
+      $("#gritter-container").hide();
       self.scrollDown();
       chatMentions = 0;
       Tinycon.setBubble(0);
@@ -81,7 +81,7 @@ var chat = (function()
         $("#chaticon").show();
         $("#chatbox").hide();
         $.gritter.removeAll();
-        $("#gritter-notice-wrapper").show();
+        $("#gritter-container").show();
       }
     },
     scrollDown: function()
