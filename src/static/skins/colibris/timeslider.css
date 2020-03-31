@@ -34,6 +34,7 @@
   border: none;
   background: none !important;
   margin-right: 10px;
+  margin-top: 10px;
 }
 
 .timeslider #padmain {
@@ -104,8 +105,8 @@
   margin: 0;
 }
 .timeslider #editbar .grouped-right {
-  margin: 0; padding: 0;
-  margin-top: 5px;
+  margin: 0;
+  border-radius: 3px;
   margin-left: 5px;
 }
 

@@ -94,14 +94,9 @@ input#myusernameedit:not(.editable) {
 
 #mycolorpicker {
   display: none;
-  width: 232px;
-  height: 265px;
   position: absolute;
   right: calc(100% + 15px);
-  top: 0;
   z-index: 101;
-  padding-left: 10px;
-  padding-top: 10px;
 }
 #mycolorpickersave {
   left: 10px;

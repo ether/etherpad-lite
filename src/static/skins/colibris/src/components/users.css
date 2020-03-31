@@ -17,26 +17,11 @@ table#otheruserstable {
 }
 
 #myusernameedit {
-  width: 110px;
-}
-
-#myswatchbox {
-  background: none;
-  float: left;
-  position: relative;
-  left: 0;
-  top: 0;
-  border: none !important;
+  min-width: 110px;
 }
 
 #myswatch {
   border-radius: 50%;
-}
-
-#mycolorpicker {
-  width: auto;
-  height: auto;
-  left: -280px;
 }
 
 #colorpicker {
@@ -62,30 +47,8 @@ table#otheruserstable {
 }
 
 @media (max-width: 720px) {
-  #users {
-    bottom: 42px;
-    top: initial !important;
-    height: auto !important;
-  }
-
   #mycolorpicker {
-    width: auto;
-    height: auto;
     right: 0;
-    bottom: 42px;
     left: initial;
-    top: initial !important;
   }
-}
-
-#users.chatAndUsers {
-  width: 172px!important;
-  box-shadow: none;
-  border: none !important;
-  padding: 10px;
-  padding-top: 15px;
-}
-
-#users.chatAndUsers #myusernameedit {
-  width: calc(100% - 10px);
 }

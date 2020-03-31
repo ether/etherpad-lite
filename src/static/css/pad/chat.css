@@ -46,6 +46,7 @@
 #titlebar .stick-to-screen-btn,
 #titlebar .hide-reduce-btn {
   font-size: 25px;
+  color: inherit;
   float: right;
   text-align: right;
   text-decoration: none;
