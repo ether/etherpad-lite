@@ -1,4 +1,6 @@
 #!/bin/bash
+if [ -z ${SAUCE_USERNAME} ]; then echo "SAUCE_USERNAME is unset - exiting"; exit 1; fi
+if [ -z ${SAUCE_ACCESS_KEY} ]; then echo "SAUCE_ACCESS_KEY is unset - exiting"; exit 1; fi
 
 # do not continue if there is an error
 set -eu
