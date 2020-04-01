@@ -406,10 +406,7 @@ function getFile(filename, callback) {
 
 function compressJS(content)
 {
-  var decoder = new StringDecoder('utf8');
-  var code = decoder.write(content); // convert from buffer to string
-  var codeMinified = uglifyJS.minify(code, {fromString: true}).code;
-  return codeMinified;
+  return UglifyJS.minify(content);
 }
 
 function compressCSS(filename, content, callback)
