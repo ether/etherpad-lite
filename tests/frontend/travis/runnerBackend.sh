@@ -41,6 +41,7 @@ cd "${MY_DIR}"
 
 # start the remote runner
 echo "Now run the tests?"
+cd src
 npm run test
 exit_code=$?
 
