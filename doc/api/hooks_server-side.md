@@ -1,6 +1,10 @@
 # Server-side hooks
 These hooks are called on server-side.
 
+## Ordering execution of plugins
+There is basic regexp support for ep.json post and pre values.  That means that if a plugin should be run after all other plugins then, it can be done by using: ``pre: ["ep_*"]``. 
+If there is a conflict for example pre: ``["ep_*", post: ["ep_etherpad-lite/static"]`` then value that is stricter is used in that case all other plugins will be loaded before except for ``ep_etherpad-lite/static``
+
 ## loadSettings
 Called from: src/node/server.js
 
