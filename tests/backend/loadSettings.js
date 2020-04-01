@@ -9,7 +9,7 @@ var jsonminify = require(__dirname+"/../../src/node_modules/jsonminify");
 const fs = require('fs');
 
 function loadSettings(){
-  var settingsStr = fs.readFileSync(__dirname+"/../../settings.json.docker").toString();
+  var settingsStr = fs.readFileSync(__dirname+"/../../settings.json").toString();
   // try to parse the settings
   try {
     if(settingsStr) {
@@ -21,12 +21,6 @@ function loadSettings(){
   }catch(e){
     console.error("whoops something is bad with settings");
   }
-
-  // Write a temp APIKey
-  fs.writeFile(__dirname+"/../../APIKEY.txt", "helloderpyfacecurious", { flag: 'wx' }, function (err) {
-    if (err) throw err;
-    console.log("APIKey saved");
-  });
 
 }
 
