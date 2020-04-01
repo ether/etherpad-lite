@@ -21,6 +21,13 @@ function loadSettings(){
   }catch(e){
     console.error("whoops something is bad with settings");
   }
+
+  // Write a temp APIKey
+  fs.writeFile(__dirname+"/../../APIKEY.txt", "helloderpyfacecurious", { flag: 'wx' }, function (err) {
+    if (err) throw err;
+    console.log("APIKey saved");
+  });
+
 }
 
 exports.loadSettings = loadSettings;
