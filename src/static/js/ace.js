@@ -102,7 +102,15 @@ function Ace2Editor()
     var prefix = 'ace_';
     var name = prefix + fnName;
     editor[fnName] = pendingInit(function(){
-      info[prefix + fnName].apply(this, arguments);
+      if(fnName === "setAuthorInfo"){
+        if(!arguments[0]){
+          top.console.warn("setAuthorInfo AuthorId not set for some reason", arguments);
+        }else{
+          info[prefix + fnName].apply(this, arguments);
+        }
+      }else{
+        info[prefix + fnName].apply(this, arguments);
+      }
     });
   });
 
