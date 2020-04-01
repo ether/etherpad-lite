@@ -37,7 +37,7 @@ sleep 1
 # Let's move back there.
 #
 # Probably remote_runner.js is injected by Saucelabs.
-cd "${MY_DIR}"
+# cd "${MY_DIR}"
 
 # start the remote runner
 echo "Now run the tests?"
