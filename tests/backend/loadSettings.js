@@ -21,7 +21,6 @@ function loadSettings(){
   }catch(e){
     console.error("whoops something is bad with settings");
   }
-
 }
 
 exports.loadSettings = loadSettings;
