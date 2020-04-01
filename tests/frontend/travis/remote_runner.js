@@ -102,6 +102,28 @@ sauceTestWorker.push({
   , 'version'        : 'latest'
 });
 
+// Pinned
+// 6) Firefox on Linux
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'firefox'
+  , 'version'        : '45.0'
+});
+
+// 7) Chrome on Linux
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'googlechrome'
+  , 'version'        : '48.0'
+});
+
+// 8) Safari on OSX 10.15
+sauceTestWorker.push({
+    'platform'       : 'OS X 10.15'
+  , 'browserName'    : 'safari'
+  , 'version'        : '13.0'
+});
+
 sauceTestWorker.drain = function() {
   setTimeout(function(){
     process.exit(allTestsPassed ? 0 : 1);
