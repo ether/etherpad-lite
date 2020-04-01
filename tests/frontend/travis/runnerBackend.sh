@@ -41,6 +41,7 @@ sleep 1
 
 # start the remote runner
 echo "Now run the tests?"
+cp settings.json.template settings.json
 cd src
 npm run test
 exit_code=$?
