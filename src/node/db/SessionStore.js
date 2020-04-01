@@ -38,6 +38,11 @@ SessionStore.prototype.get = function(sid, fn) {
 SessionStore.prototype.set = function(sid, sess, fn) {
   messageLogger.debug('SET ' + sid);
 
+  // don't store passwords in DB
+  if (sess.user && sess.user.password) {
+    sess.user.password = "PASSWORD_HIDDEN";
+  }
+
   db.set("sessionstorage:" + sid, sess);
   if (fn) {
     process.nextTick(fn);
