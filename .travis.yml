@@ -24,20 +24,6 @@ env:
 
 jobs:
   include:
-    - name: "Test the Frontend"
-      install:
-        - "bin/installDeps.sh"
-        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-        - "npm install ep_test_line_attrib"
-      script:
-        - "tests/frontend/travis/runner.sh"
-    - name: "Test the Dockerfile"
-      install:
-        - "cd src && npm install && cd -"
-      script:
-        - "docker build -t etherpad:test ."
-        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-        - "cd src && npm run test-container"
     - name: "Run the Backend"
       install:
         - "cd src && npm install && cd -"
@@ -46,6 +32,20 @@ jobs:
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
         - "cd src && npm run test-container"
         - "npm run test"
+#    - name: "Test the Frontend"
+#      install:
+#        - "bin/installDeps.sh"
+#        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+#        - "npm install ep_test_line_attrib"
+#      script:
+#        - "tests/frontend/travis/runner.sh"
+#    - name: "Test the Dockerfile"
+#      install:
+#        - "cd src && npm install && cd -"
+#      script:
+#        - "docker build -t etherpad:test ."
+#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+#        - "cd src && npm run test-container"
 
 notifications:
   irc:
