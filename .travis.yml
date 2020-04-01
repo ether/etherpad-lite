@@ -30,8 +30,8 @@ jobs:
       script:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-        - "cd src && npm run test-container"
-        - "npm run test"
+        - "cd src && npm run test"
+#        - "npm run test"
 #    - name: "Test the Frontend"
 #      install:
 #        - "bin/installDeps.sh"
