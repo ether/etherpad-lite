@@ -18,7 +18,13 @@ exports.createServer = function () {
 
   exports.restartServer();
 
-  console.log(`You can access your Etherpad instance at http://${settings.ip}:${settings.port}/`);
+  if (settings.ip === "") {
+    // using Unix socket for connectivity
+    console.log(`You can access your Etherpad instance using the Unix socket at ${settings.port}`);
+  } else {
+    console.log(`You can access your Etherpad instance at http://${settings.ip}:${settings.port}/`);
+  }
+
   if (!_.isEmpty(settings.users)) {
     console.log(`The plugin admin page is at http://${settings.ip}:${settings.port}/admin/plugins`);
   } else {
