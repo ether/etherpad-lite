@@ -61,7 +61,7 @@ Portal submits content into new blog post
 ## Usage
 
 ### API version
-The latest version is `1.2.13`
+The latest version is `1.2.14`
 
 The current version can be queried via /api.
 
@@ -630,3 +630,14 @@ lists all pads on this epl instance
 
 *Example returns:*
  * `{code: 0, message:"ok", data: {padIDs: ["testPad", "thePadsOfTheOthers"]}}`
+
+### Global
+
+#### getStats()
+ *  API >= 1.2.14
+
+get stats of the etherpad instance
+
+*Example returns*
+ * `{"code":0,"message":"ok","data":{"totalPads":3,"totalSessions": 2,"totalActivePads": 1}}`
+

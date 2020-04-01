@@ -136,8 +136,13 @@ version["1.2.13"] = Object.assign({}, version["1.2.12"],
   }
 );
 
+version["1.2.14"] = Object.assign({}, version["1.2.13"],
+  { "getStats"                : []
+  }
+);
+
 // set the latest available API version here
-exports.latestApiVersion = '1.2.13';
+exports.latestApiVersion = '1.2.14';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
