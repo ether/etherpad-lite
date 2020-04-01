@@ -16,6 +16,7 @@ const OpenAPIBackend = require('openapi-backend').default;
 const formidable = require('formidable');
 const { promisify } = require('util');
 const cloneDeep = require('lodash.clonedeep');
+const createHTTPError = require('http-errors');
 
 const apiHandler = require('../../handler/APIHandler');
 const settings = require('../../utils/Settings');
@@ -582,17 +583,15 @@ exports.expressCreateServer = async (_, args) => {
 
       // register default handlers
       api.register({
-        notFound: (c, req, res) => {
-          res.statusCode = 404;
-          res.send({ code: 3, message: 'no such function', data: null });
+        notFound: () => {
+          throw new createHTTPError.notFound('no such function');
         },
-        notImplemented: (c, req, res) => {
-          res.statusCode = 501;
-          res.send({ code: 3, message: 'not implemented', data: null });
+        notImplemented: () => {
+          throw new createHTTPError.notImplemented('function not implemented');
         },
       });
 
-      // register operation handlers (calls apiHandler.handle)
+      // register operation handlers
       for (const funcName in apiHandler.version[version]) {
         const handler = async (c, req, res) => {
           // parse fields from request
@@ -612,24 +611,31 @@ exports.expressCreateServer = async (_, args) => {
           apiLogger.info(`REQUEST, v${version}:${funcName}, ${JSON.stringify(fields)}`);
 
           // pass to api handler
-          let data = await apiHandler.handle(version, funcName, fields, req, res);
-          if (!data) {
-            data = null;
-          }
+          let data = await apiHandler.handle(version, funcName, fields, req, res).catch((err) => {
+            // convert all errors to http errors
+            if (err instanceof createHTTPError.HttpError) {
+              // pass http errors thrown by handler forward
+              throw err;
+            } else if (err.name == 'apierror') {
+              // parameters were wrong and the api stopped execution, pass the error
+              // convert to http error
+              throw new createHTTPError.BadRequest(err.message);
+            } else {
+              // an unknown error happened
+              // log it and throw internal error
+              apiLogger.error(err);
+              throw new createHTTPError.InternalError('internal error');
+            }
+          });
 
           // return in common format
-          let response = { code: 0, message: 'ok', data };
+          let response = { code: 0, message: 'ok', data: data || null };
 
           // log response
           apiLogger.info(`RESPONSE, ${funcName}, ${JSON.stringify(response)}`);
 
-          // is this a jsonp call, add the function call
-          if (query.jsonp && isValidJSONPName.check(query.jsonp)) {
-            res.header('Content-Type', 'application/javascript');
-            response = `${req.query.jsonp}(${JSON.stringify(response)}`;
-          }
-
-          res.send(response);
+          // return the response data
+          return response;
         };
 
         // each operation can be called with either GET or POST
@@ -640,23 +646,53 @@ exports.expressCreateServer = async (_, args) => {
       // start and bind to express
       api.init();
       app.use(apiRoot, async (req, res) => {
+        let response = null;
         try {
           if (style === APIPathStyle.REST) {
             // @TODO: Don't allow CORS from everywhere
             // This is purely to maintain compatibility with old swagger-node-express
             res.header('Access-Control-Allow-Origin', '*');
           }
-          await api.handleRequest(req, req, res);
+          // pass to openapi-backend handler
+          response = await api.handleRequest(req, req, res);
         } catch (err) {
-          if (err.name == 'apierror') {
-            // parameters were wrong and the api stopped execution, pass the error
-            res.send({ code: 1, message: err.message, data: null });
-          } else {
-            // an unknown error happened
-            res.send({ code: 2, message: 'internal error', data: null });
-            throw err;
+          // handle http errors
+          res.statusCode = err.statusCode || 500;
+
+          // convert to our json response format
+          // https://github.com/ether/etherpad-lite/tree/master/doc/api/http_api.md#response-format
+          switch (res.statusCode) {
+            case 403: // forbidden
+              response = { code: 4, message: err.message, data: null };
+              break;
+            case 401: // unauthorized (no or wrong api key)
+              response = { code: 4, message: err.message, data: null };
+              break;
+            case 404: // not found (no such function)
+              response = { code: 3, message: err.message, data: null };
+              break;
+            case 500: // server error (internal error)
+              response = { code: 2, message: err.message, data: null };
+              break;
+            case 400: // bad request (wrong parameters)
+              // respond with 200 OK to keep old behavior and pass tests
+              res.statusCode = 200; // @TODO: this is bad api design
+              response = { code: 1, message: err.message, data: null };
+              break;
+            default:
+              response = { code: 1, message: err.message, data: null };
+              break;
           }
         }
+
+        // support jsonp response format
+        if (req.query.jsonp && isValidJSONPName.check(req.query.jsonp)) {
+          res.header('Content-Type', 'application/javascript');
+          response = `${req.query.jsonp}(${JSON.stringify(response)}`;
+        }
+
+        // send response
+        return res.send(response);
       });
     }
   }

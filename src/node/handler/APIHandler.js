@@ -25,6 +25,7 @@ var log4js = require('log4js');
 var padManager = require("../db/PadManager");
 var randomString = require("../utils/randomstring");
 var argv = require('../utils/Cli').argv;
+var createHTTPError = require('http-errors');
 
 var apiHandlerLogger = log4js.getLogger('APIHandler');
 
@@ -153,25 +154,19 @@ exports.handle = async function(apiVersion, functionName, fields, req, res)
 {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
-    res.statusCode = 404;
-    res.send({code: 3, message: "no such api version", data: null});
-    return;
+    throw new createHTTPError.NotFound('no such api version');
   }
 
   // say goodbye if this is an unknown function
   if (!(functionName in version[apiVersion])) {
-    res.statusCode = 404;
-    res.send({code: 3, message: "no such function", data: null});
-    return;
+    throw new createHTTPError.NotFound('no such function');
   }
 
   // check the api key!
   fields["apikey"] = fields["apikey"] || fields["api_key"];
 
   if (fields["apikey"] !== apikey.trim()) {
-    res.statusCode = 401;
-    res.send({code: 4, message: "no or wrong API Key", data: null});
-    return;
+    throw new createHTTPError.Unauthorized('no or wrong API Key');
   }
 
   // sanitize any padIDs before continuing
