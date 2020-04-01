@@ -29,7 +29,6 @@ jobs:
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-        - "npm run test"
     - name: "Test the Frontend"
       install:
         - "bin/installDeps.sh"
