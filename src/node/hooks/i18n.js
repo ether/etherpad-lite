@@ -61,9 +61,28 @@ function getAllLocales() {
 // e.g. { es: {nativeName: "español", direction: "ltr"}, ... }
 function getAvailableLangs(locales) {
   var result = {};
+
+  // Set priority Languages (Worlds top 10) most used according to the Internet...
+  var priorityLanguages = ["en-gb", "de", "es", "zh-hans", "hi", "ar", "ms", "ru", "bn"];
+
+  // I hate that we iterate this twice but I can't think of a better way :(
+  // Push priority languages first
   _.each(_.keys(locales), function(langcode) {
-    result[langcode] = languages.getLanguageInfo(langcode);
+    if(priorityLanguages.includes(langcode)){
+      // console.warn("priority", langcode);
+      result[langcode] = languages.getLanguageInfo(langcode);
+    }
   });
+
+  // Other languages..
+  _.each(_.keys(locales), function(langcode) {
+    if(!priorityLanguages.includes(langcode)){
+      // console.warn("notpriority", langcode);
+      result[langcode] = languages.getLanguageInfo(langcode);
+    }
+  });
+
+  // Move some results to the top..
   return result;
 }
 
