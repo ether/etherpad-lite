@@ -3,6 +3,12 @@
  * to fix a window.
  */
 
+const request = require('../src/node_modules/request');
+const settings = require(__dirname+'/../tests/backend/loadSettings').loadSettings();
+const supertest = require(__dirname+'/../src/node_modules/supertest');
+const api = supertest('http://'+settings.ip+":"+settings.port);
+const path = require('path');
+const fs = require('fs');
 if (process.argv.length != 3) {
   console.error("Use: node deletePad.js $PADID");
   process.exit(1);
@@ -11,31 +17,34 @@ if (process.argv.length != 3) {
 // get the padID
 let padId = process.argv[2];
 
-let npm = require('../src/node_modules/npm');
+// get the API Key
+var filePath = path.join(__dirname, '../APIKEY.txt');
+var apikey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 
-npm.load({}, async function(er) {
-  if (er) {
-    console.error("Could not load NPM: " + er)
-    process.exit(1);
-  }
+// Set apiVersion to base value, we change this later.
+var apiVersion = 1;
 
-  try {
-    let settings = require('../src/node/utils/Settings');
-    let db = require('../src/node/db/DB');
-    await db.init();
+// Update the apiVersion
+api.get('/api/')
+  .expect(function(res){
+    apiVersion = res.body.currentVersion;
+    if (!res.body.currentVersion) throw new Error("No version set in API");
+    return;
+  })
+  .end(function(err, res){
 
-    padManager = require('../src/node/db/PadManager');
-    await padManager.removePad(padId);
+    // Now we know the latest API version, let's delete pad
+    var uri = '/api/'+apiVersion+'/deletePad?apikey='+apikey+'&padID='+padId;
+    api.post(uri)
+      .expect(function(res){
+        if (res.body.code === 1){
+          console.error("Error deleting pad", res.body);
+        }else{
+          console.log("Deleted pad", res.body);
+        }
+        return;
+      })
+      .end(function(){})
+  });
+// end
 
-    console.log("Finished deleting padId: " + padId);
-    process.exit(0);
-
-  } catch (e) {
-    if (err.name === "apierror") {
-      console.error(e);
-    } else {
-      console.trace(e);
-    }
-    process.exit(1);
-  }
-});

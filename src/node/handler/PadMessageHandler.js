@@ -1193,7 +1193,7 @@ async function handleClientReady(client, message)
         const defaultColor = "#daf0b2";
 
         if (!authorInfo) {
-          console.warn(`handleClientReady(): no authorInfo parameter was received. Default values are going to be used. See issue #3612`);
+          console.warn(`handleClientReady(): no authorInfo parameter was received. Default values are going to be used. See issue #3612.  This can be caused by a user clicking undo after clearing all authorship colors see #2802`);
           authorInfo = {};
         }
 
