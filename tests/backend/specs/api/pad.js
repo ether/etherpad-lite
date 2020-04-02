@@ -111,7 +111,7 @@ describe('deletePad', function(){
   it('deletes a Pad', function(done) {
     api.get(endPoint('deletePad')+"&padID="+testPadId)
     .expect('Content-Type', /json/)
-    .expect(200, done)
+    .expect(200, done) // @TODO: we shouldn't expect 200 here since the pad may not exist
   });
 })
 

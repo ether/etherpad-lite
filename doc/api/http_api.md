@@ -11,6 +11,10 @@ The API is designed in a way, so you can reuse your existing user system with th
 
 Take a look at [HTTP API client libraries](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) to check if a library in your favorite programming language is available.
 
+### OpenAPI
+
+OpenAPI (formerly swagger) definitions are exposed under `/api/openapi.json` (latest) and `/api/{version}/openapi.json`. You can use official tools like [Swagger Editor](https://editor.swagger.io/) to view and explore them.
+
 ## Examples
 
 ### Example 1
