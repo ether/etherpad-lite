@@ -60,7 +60,9 @@ function getAllLocales() {
 // returns a hash of all available languages availables with nativeName and direction
 // e.g. { es: {nativeName: "español", direction: "ltr"}, ... }
 function getAvailableLangs(locales) {
-  var result = {};
+  var priority = {};
+  var nonPriority = {};
+  var sortedNonPriority = {};
 
   // Set priority Languages (Worlds top 10) most used according to the Internet...
   var priorityLanguages = ["en-gb", "de", "es", "zh-hans", "hi", "ar", "ms", "ru", "bn"];
@@ -69,21 +71,25 @@ function getAvailableLangs(locales) {
   // Push priority languages first
   _.each(_.keys(locales), function(langcode) {
     if(priorityLanguages.includes(langcode)){
-      // console.warn("priority", langcode);
-      result[langcode] = languages.getLanguageInfo(langcode);
+      priority[langcode] = languages.getLanguageInfo(langcode);
     }
   });
 
   // Other languages..
   _.each(_.keys(locales), function(langcode) {
     if(!priorityLanguages.includes(langcode)){
-      // console.warn("notpriority", langcode);
-      result[langcode] = languages.getLanguageInfo(langcode);
+      nonPriority[langcode] = languages.getLanguageInfo(langcode);
     }
   });
 
-  // Move some results to the top..
-  return result;
+  // Sort by keys, not ideal because Traditional Chinese for example has a key of "zt..."
+  Object.keys(nonPriority).sort().forEach(function(v, i) {
+    sortedNonPriority[v] = nonPriority[v];
+  });
+
+  // Merge the two objects putting Top 10 languages at the top of the select
+  var merged = {...priority,...sortedNonPriority};
+  return merged;
 }
 
 // returns locale index that will be served in /locales.json
