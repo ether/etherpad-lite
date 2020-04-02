@@ -141,11 +141,6 @@ var padeditbar = (function()
     init: function() {
       var self = this;
       self.dropdowns = [];
-      // Listen for resize events (sucks but needed as iFrame ace_inner has to be position absolute
-      // A CSS fix for this would be nice but I'm not sure how we'd do it.
-      $(window).resize(function(){
-        self.redrawHeight();
-      });
 
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
@@ -160,10 +155,6 @@ var padeditbar = (function()
         bodyKeyEvent(evt);
       });
 
-      $('#editbar').show();
-
-      this.redrawHeight();
-
       registerDefaultCommands(self);
 
       hooks.callAll("postToolbarInit", {
@@ -173,7 +164,6 @@ var padeditbar = (function()
     },
     isEnabled: function()
     {
-//      return !$("#editbar").hasClass('disabledtoolbar');
       return true;
     },
     disable: function()
@@ -184,55 +174,6 @@ var padeditbar = (function()
     registerCommand: function (cmd, callback) {
       this.commands[cmd] = callback;
       return this;
-    },
-    calculateEditbarHeight: function() {
-      // if we're on timeslider, there is nothing on editbar, so we just use zero
-      var onTimeslider = $('.menu_left').length === 0;
-      if (onTimeslider) return 0;
-
-      // if editbar has both menu left and right, its height must be
-      // the max between the height of these two parts
-      var leftMenuPosition = $('.menu_left').offset().top;
-      var rightMenuPosition = $('.menu_right').offset().top;
-      var editbarHasMenuLeftAndRight = (leftMenuPosition === rightMenuPosition);
-
-      var height;
-      if (editbarHasMenuLeftAndRight) {
-        height = Math.max($('.menu_left').height(), $('.menu_right').height());
-      }
-      else {
-        height = $('.menu_left').height();
-      }
-
-      return height;
-    },
-    redrawHeight: function(){
-      var minimunEditbarHeight = self.calculateEditbarHeight();
-      var editbarHeight = minimunEditbarHeight + 1 + "px";
-      var containerTop = minimunEditbarHeight + 6 + "px";
-      $('#editbar').css("height", editbarHeight);
-
-      $('#editorcontainer').css("top", containerTop);
-
-      // make sure pop ups are in the right place
-      if($('#editorcontainer').offset()){
-        $('.popup').css("top", $('#editorcontainer').offset().top + "px");
-      }
-
-      // If sticky chat is enabled..
-      if($('#options-stickychat').is(":checked")){
-        if($('#editorcontainer').offset()){
-          $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
-        }
-      };
-
-      // If chat and Users is enabled..
-      if($('#options-chatandusers').is(":checked")){
-        if($('#editorcontainer').offset()){
-          $('#users').css("top", $('#editorcontainer').offset().top + "px");
-        }
-      }
-
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
@@ -256,6 +197,11 @@ var padeditbar = (function()
     },
     toggleDropDown: function(moduleName, cb)
     {
+      // do nothing if users are sticked
+      if (moduleName === "users" && $('#users').hasClass('stickyUsers')) {
+        return;
+      }
+
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {

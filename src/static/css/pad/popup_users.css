@@ -1,27 +1,50 @@
-#users {
-  background: #f7f7f7;
-  background: -webkit-linear-gradient( #F7F7F7,#EEE);
-  background: -moz-linear-gradient( #F7F7F7,#EEE);
-  background: -ms-linear-gradient( #F7F7F7,#EEE);
-  background: -o-linear-gradient( #F7F7F7,#EEE);
-  background: linear-gradient( #F7F7F7,#EEE);
-  width: 160px;
-  color: #fff;
-  padding: 5px;
-  border-radius: 0 0 6px 6px;
-  border: 1px solid #ccc;
+/* --------------- */
+/* --- LAYOUT ---- */
+/* --------------- */
+
+.popup#users {
+  flex-direction: column;
+  max-height: 500px;
+  height: auto;
 }
-#otherusers {
-  max-height: 400px;
+.popup#users #myuser {
+  flex-shrink: 0;
+}
+.popup#users #otherusers {
+  flex: 1 auto;
   overflow: auto;
+  max-height: 200px;
 }
+
+.popup#users.chatAndUsers {
+  display: flex !important; /* always visible */
+  position: relative;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: auto;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-right: 0;
+  border-radius: 0;
+  box-shadow: none;
+  height: 200px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+
+/* --------------- */
+/* --- MY USER --- */
+/* --------------- */
+
 #myswatchbox {
-  position: absolute;
-  left: 5px;
-  top: 5px;
+  float: left;
   width: 24px;
   height: 24px;
-  border: 1px solid #000;
+  border: 1px solid #ccc
   background: transparent;
   cursor: pointer;
 }
@@ -30,18 +53,53 @@
   height: 100%;
   background: transparent; /*...initially*/
 }
+
+#myusernameform {
+  margin-left: 30px;
+}
+input#myusernameedit {
+  height: 26px;
+  font-size: 1.3em;
+  padding: 3px;
+  border: 1px solid #ccc;
+  background-color: transparent;
+  margin: 0;
+}
+input#myusernameedit:not(.editable) {
+  color: grey;
+}
+#myuser .myusernameedithoverable:hover {
+  background: white;
+}
+#myusernameform .editactive,
+#myusernameform .editempty {
+  background: white;
+  border-left: 1px solid #c3c3c3;
+  border-top: 1px solid #c3c3c3;
+  border-right: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
+  color: #000;
+}
+#myusernameform .editempty {
+  color: #333
+}
+#myusernameedit, #otheruserstable .swatch {
+  border: 1px solid #ccc;
+}
+
+
+/* --------------------------- */
+/* --- MY USER COLORPICKER --- */
+/* --------------------------- */
+
 #mycolorpicker {
+  display: none;
   width: 232px;
   height: 265px;
   position: absolute;
-  left: -250px;
-  top: 0px;
+  right: calc(100% + 15px);
+  top: 0;
   z-index: 101;
-  display: none;
-  border-radius: 0 0 6px 6px;
-  background: #f7f7f7;
-  border: 1px solid #ccc;
-  border-top: 0;
   padding-left: 10px;
   padding-top: 10px;
 }
@@ -55,14 +113,7 @@
 #mycolorpickersave,
 #mycolorpickercancel {
   background: #fff;
-  background: -webkit-linear-gradient(#fff, #ccc);
-  background: -moz-linear-gradient(#fff, #ccc);
-  background: -o-linear-gradient(#fff, #ccc);
-  background: -ms-linear-gradient(#fff, #ccc);
-  background: linear-gradient(#fff, #ccc);
   border: 1px solid #ccc;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;
@@ -87,110 +138,24 @@
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
-#myusernameform {
-  margin-left: 30px
-}
-#myusernameedit {
-  font-size: 1.3em;
-  color: #fff;
-  padding: 3px;
-  height: 18px;
-  margin: 0;
-  border: 0;
-  width: 122px;
-  background: transparent;
-}
-#myusernameform input.editable {
-  border: 1px solid #444
-}
-#myuser .myusernameedithoverable:hover {
-  background: white;
-  color: black;
-}
-#mystatusform {
-  margin-left: 35px;
-  margin-top: 5px;
-}
-#mystatusedit {
-  font-size: 1.2em;
-  color: #777;
-  font-style: italic;
-  display: none;
-  padding: 2px;
-  height: 14px;
-  margin: 0;
-  border: 1px solid #bbb;
-  width: 199px;
-  background: transparent;
-}
-#myusernameform .editactive,
-#myusernameform .editempty {
-  background: white;
-  border-left: 1px solid #c3c3c3;
-  border-top: 1px solid #c3c3c3;
-  border-right: 1px solid #e6e6e6;
-  border-bottom: 1px solid #e6e6e6;
-  color: #000;
-}
-#myusernameform .editempty {
-  color: #333
-}
-#myswatchbox, #myusernameedit, #otheruserstable .swatch {
-  border: 1px solid #ccc !important;
-  color: #333;
-}
-table#otheruserstable {
-  display: none
-}
+
+
+/* ------------------- */
+/* --- OTHER USERS --- */
+/* ------------------- */
+
 #otheruserstable td {
   height: 26px;
-  vertical-align: middle;
   padding: 0 2px;
-  color: #333;
 }
 #otheruserstable .swatch {
-  border: 1px solid #000;
+  border: 1px solid #ccc;
   width: 13px;
   height: 13px;
   overflow: hidden;
   margin: 0 4px;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
-.usertdswatch {
-  width: 1%
-}
 .usertdname {
-  font-size: 1.3em;
-  color: #444;
-}
-.usertdstatus {
-  font-size: 1.1em;
-  font-style: italic;
-  color: #999;
-}
-.usertdactivity {
-  font-size: 1.1em;
-  color: #777;
-}
-.usertdname input {
-  border: 1px solid #bbb;
-  width: 80px;
-  padding: 2px;
-}
-.usertdname input.editactive,
-.usertdname input.editempty {
-  background: white;
-  border-left: 1px solid #c3c3c3;
-  border-top: 1px solid #c3c3c3;
-  border-right: 1px solid #e6e6e6;
-  border-bottom: 1px solid #e6e6e6;
-}
-.usertdname input.editempty {
-  color: #888;
-  font-style: italic;
+  font-size: 1.2rem;
 }

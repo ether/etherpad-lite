@@ -44,10 +44,10 @@ var padmodals = (function()
       });
     },
     showOverlay: function() {
-      $("#overlay").show();
+      $("#toolbar-overlay").show();
     },
     hideOverlay: function() {
-      $("#overlay").hide();
+      $("#toolbar-overlay").hide();
     }
   };
   return self;

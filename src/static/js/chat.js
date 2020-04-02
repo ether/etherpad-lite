@@ -31,7 +31,7 @@ var chat = (function()
     show: function ()
     {
       $("#chaticon").hide();
-      $("#chatbox").show();
+      $("#chatbox").css('display', 'flex');
       $("#gritter-notice-wrapper").hide();
       self.scrollDown();
       chatMentions = 0;
@@ -46,42 +46,28 @@ var chat = (function()
     stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
       chat.show();
-      if(!isStuck || fromInitialCall) { // Stick it to
-        padcookie.setPref("chatAlwaysVisible", true);
-        $('#chatbox').addClass("stickyChat");
-        $('#titlesticky').hide();
-        $('#editorcontainer').css({"right":"192px"});
-        $('.stickyChat').css("top",$('#editorcontainer').offset().top+"px");
-        isStuck = true;
-      } else { // Unstick it
-        padcookie.setPref("chatAlwaysVisible", false);
-        $('.stickyChat').css("top", "auto");
-        $('#chatbox').removeClass("stickyChat");
-        $('#titlesticky').show();
-        $('#editorcontainer').css({"right":"0px"});
-        isStuck = false;
-      }
+      isStuck = (!isStuck || fromInitialCall);
+
+      $('#chatbox, .sticky-container').toggleClass("stickyChat", isStuck);
+      padcookie.setPref("chatAlwaysVisible", isStuck);
+      $('#options-stickychat').prop('checked', isStuck);
     },
     chatAndUsers: function(fromInitialCall)
     {
       var toEnable = $('#options-chatandusers').is(":checked");
       if(toEnable || !userAndChat || fromInitialCall){
-        padcookie.setPref("chatAndUsers", true);
         chat.stickToScreen(true);
         $('#options-stickychat').prop('checked', true)
         $('#options-chatandusers').prop('checked', true)
         $('#options-stickychat').prop("disabled", "disabled");
-        $('#users').addClass("chatAndUsers");
-        $("#chatbox").addClass("chatAndUsersChat");
-        // redraw
         userAndChat = true;
-        padeditbar.redrawHeight()
       }else{
-        padcookie.setPref("chatAndUsers", false);
         $('#options-stickychat').prop("disabled", false);
-        $('#users').removeClass("chatAndUsers");
-        $("#chatbox").removeClass("chatAndUsersChat");
+        userAndChat = false;
       }
+      padcookie.setPref("chatAndUsers", userAndChat);
+      $('#users, .sticky-container').toggleClass("chatAndUsers stickyUsers", userAndChat);
+      $("#chatbox").toggleClass("chatAndUsersChat", userAndChat);
     },
     hide: function ()
     {

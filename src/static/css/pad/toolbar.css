@@ -1,129 +1,78 @@
-/* menu */
 .toolbar {
-  display:none; /* hidden by default */
-}
-.toolbar {
-  background: #f7f7f7;
-  background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-  background: linear-gradient(#f7f7f7, #f1f1f1 80%);
+  display: none;
+  background-color: #f4f4f4;
   border-bottom: 1px solid #ccc;
   overflow: hidden;
-  padding-top: 4px;
-  width: 100%;
-  white-space: nowrap;
-  height: 32px;
+  justify-content: space-between;
+  padding: 0px 5px 5px 5px;
+  flex-shrink: 0;
 }
 .toolbar ul {
-  position: absolute;
   list-style: none;
-  padding-right: 3px;
-  padding-left: 1px;
   z-index: 2;
   overflow: hidden;
-  float: left
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.toolbar ul.menu_left {
+  flex-wrap: wrap; /* wrap left toolbar so if a lot of icons are present it goes on multiple lines */
+}
+.toolbar ul.menu_right {
+  flex-shrink: 0; /* prevent from shrinking */
+}
+.toolbar ul li, .toolbar ul > div {
+  display: flex; /* transfer flexbox positionning to children */
 }
 .toolbar ul li {
-  float: left;
-  margin-left: 2px;
-  height:32px;
-  cursor: pointer;
+  margin-top: 5px; /* when icons goes multi rows, have space betwwen each row */
 }
 .toolbar ul li.separator {
-  border: inherit;
-  background: inherit;
   visibility: hidden;
-  width: 0px;
-  padding: 5px;
-  height:22px;
-}
-.toolbar ul li a:hover {
-  text-decoration: none;
-}
-.toolbar ul li a:hover {
-  background: #fff;
-  background: -webkit-linear-gradient(#f4f4f4, #e4e4e4);
-  background: -moz-linear-gradient(#f4f4f4, #e4e4e4);
-  background: -o-linear-gradient(#f4f4f4, #e4e4e4);
-  background: -ms-linear-gradient(#f4f4f4, #e4e4e4);
-  background: linear-gradient(#f4f4f4, #e4e4e4);
-}
-.toolbar ul li a:active {
-  background: #eee;
-  background: -webkit-linear-gradient(#ddd, #fff);
-  background: -moz-linear-gradient(#ddd, #fff);
-  background: -o-linear-gradient(#ddd, #fff);
-  background: -ms-linear-gradient(#ddd, #fff);
-  background: linear-gradient(#ddd, #fff);
-  -webkit-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-  -moz-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-}
-.toolbar ul li .activeButton {
-  background: #eee;
-  background: -webkit-linear-gradient(#ddd, #fff);
-  background: -moz-linear-gradient(#ddd, #fff);
-  background: -o-linear-gradient(#ddd, #fff);
-  background: -ms-linear-gradient(#ddd, #fff);
-  background: linear-gradient(#ddd, #fff);
-  -webkit-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-  -moz-box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
-  box-shadow: 0 0 8px rgba(0,0,0,.1) inset;
+  width: 10px;
 }
 .toolbar ul li a {
-  background: #fff;
-  background: -webkit-linear-gradient(#fff, #f0f0f0);
-  background: -moz-linear-gradient(#fff, #f0f0f0);
-  background: -o-linear-gradient(#fff, #f0f0f0);
-  background: -ms-linear-gradient(#fff, #f0f0f0);
-  background: linear-gradient(#fff, #f0f0f0);
   border: 1px solid #ccc;
+  cursor: pointer;
   border-radius: 3px;
+  background: #fff;
   color: #ccc;
   cursor: pointer;
-  display: inline-block;
   min-height: 18px;
   overflow: hidden;
   padding: 4px 5px;
   text-align: center;
   text-decoration: none;
   min-width: 18px;
+  transition: background-color .1s;
 }
-.toolbar ul li a .buttonicon {
-  position: relative;
-  top: 1px;
+.toolbar ul li button:active, .toolbar ul li button:focus {
+  outline: 0;
+  border: none;
 }
-.toolbar ul li a .buttontext {
-  color: #666;
-  font-size: 14px;
-  border:none;
-  background:none;
-  margin-top:1px;
-  color:#666;
+.toolbar ul li a:hover {
+  text-decoration: none;
+  background-color: #f2f2f2;
 }
+.toolbar ul li a:active, .toolbar ul li a:focus {
+  background: #ddd;
+}
+.toolbar ul li a.selected {
+  background: #dadada !important;
+}
+
 .toolbar ul li a.grouped-left {
   border-radius: 3px 0 0 3px;
 }
 .toolbar ul li a.grouped-middle {
   border-radius: 0;
-  margin-left: -2px;
   border-left: 0;
 }
 .toolbar ul li a.grouped-right {
   border-radius: 0 3px 3px 0;
-  margin-left: -2px;
   border-left: 0;
 }
-.toolbar ul li a.selected {
-  background: #eee !important;
-  background: -webkit-linear-gradient(#EEE, #F0F0F0) !important;
-  background: -moz-linear-gradient(#EEE, #F0F0F0) !important;
-  background: -o-linear-gradient(#EEE, #F0F0F0) !important;
-  background: -ms-linear-gradient(#EEE, #F0F0F0) !important;
-  background: linear-gradient(#EEE, #F0F0F0) !important;
-}
+
 .toolbar ul li select {
   background: #fff;
   padding: 4px;
@@ -133,121 +82,58 @@
   border: 1px solid #ccc;
   outline: none;
 }
-.toolbar ul.menu_left {
-  left: 0px;
-  right: 210px;
-}
 
-.toolbar ul.menu_right {
-  right:0px;
-}
-li[data-key=showusers] > a {
+.toolbar ul li[data-key=showusers] > a {
   min-width: 30px;
-  text-align: left;
 }
-li[data-key=showusers] > a #online_count {
+.toolbar ul li[data-key=showusers] > a #online_count {
   color: #777;
   font-size: 11px;
   position: relative;
   top: 2px;
   padding-left: 2px;
 }
-.toolbar #overlay {
+
+.toolbar #toolbar-overlay {
   z-index: 500;
   display: none;
-  background-repeat: repeat-both;
   width: 100%;
   position: absolute;
   height: inherit;
   left: 0;
   top: 0;
-}
-* html #overlay {
-  /* for IE 6+ */
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-  filter: alpha(opacity=100);
-  opacity: 1; /* in case this is looked at */
-  background-image: none;
-  background-repeat: no-repeat; /* scale the image */
+  bottom: 0;
+  right: 0;
 }
 
-@media all and (max-width: 400px){
-  .toolbar {
-    height: 62px;
-  }
-  .toolbar ul.menu_left {
-    left:0px;
-    right:100px;
-  }
-}
-@media screen and (max-width: 600px) {
-  .toolbar ul li.separator {
-    display: none;
-  }
-  .toolbar ul li a {
-    padding: 4px 1px
-  }
-  .toolbar ul.menu_left {
-    left:0px;
-    right:150px;
-  }
-}
 @media only screen and (max-width: 720px) {
-  /* cancel non-mobile border (will be defined on ".toolbar ul.menu_left" bellow) */
-  .toolbar {
-    border-bottom: 0;
+  .toolbar ul li.separator {
+    width: 5px;
   }
-  .toolbar ul {
-    background: #f7f7f7;
-    background: -webkit-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -moz-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -o-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: -ms-linear-gradient(#f7f7f7, #f1f1f1 80%);
-    background: linear-gradient(#f7f7f7, #f1f1f1 80%);
-    width: 100%;
-    overflow: hidden;
-  }
-  .toolbar ul.menu_left {
-    right:0px;
-    position: relative;
-    display: flex;
-    top: 0;
-    overflow-x: auto;
-    padding: 4px 0 0 0;
-    border-bottom: 1px solid #ccc;
-    z-index: 10;
-  }
+  /* menu_right act like a new toolbar on the bottom of the screen */
   .toolbar ul.menu_right, .timeslider-bar .editbarright {
-    right:0px !important;
-    height: 32px;
     position: fixed;
     bottom: 0;
+    right: 0;
+    left: 0;
     border-top: 1px solid #ccc;
-  }
-  .toolbar ul.menu_right > li:last-child {
-    float: right;
+    background-color: #f4f4f4;
+    padding: 0 5px 5px 5px;
   }
   .toolbar ul.menu_right > li a {
-    border-radius: 0;
     border: none;
-    background: none;
+    background-color: transparent;
+    margin-left: 5px;
+  }
+  .toolbar ul.menu_right > li[data-key="showusers"] {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
     margin: 0;
-    padding: 8px;
   }
-  .toolbar ul li a.selected {
-    background: none !important
-  }
-  li[data-key="showusers"] > a {
-
-    margin-top:-10px;
-    padding-top:2px !important;
-    line-height:20px;
-    vertical-align:top !important;
-  }
-  .toolbar ul li .separator {
-    display: none
-  }
-  .toolbar #online_count {
-    line-height: 24px
+  .toolbar ul.menu_right > li[data-key="showusers"] a {
+    padding-top: 10px;
+    border-radius: 0;
   }
 }

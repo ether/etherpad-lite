@@ -1,38 +1,113 @@
-#chatbox {
+#chaticon, #chatbox {
+  z-index: 400;
   position: absolute;
   bottom: 0px;
   right: 20px;
-  width: 180px;
-  height: 200px;
-  z-index: 400;
-  background-color: #f7f7f7;
-  border-left: 1px solid #999;
-  border-right: 1px solid #999;
-  border-top: 1px solid #999;
-  padding: 3px;
-  padding-bottom: 10px;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   display: none;
+  border: 1px solid #ccc;
+  border-bottom: none;
 }
+#chatbox {
+  width: 400px;
+  height: 300px;
+  z-index: 401;
+  background-color: #f7f7f7;
+  flex-direction: column;
+}
+
+#chatbox.stickyChat {
+  position: relative;
+  width: auto;
+  flex: 1 auto; /* take reminaning vertical space */
+  height: auto;
+  right: 0;
+  background-color: #f1f1f1;
+  border-radius: 0;
+  border: none;
+  border-left: 1px solid #ccc;
+}
+#chatbox.stickyChat .stick-to-screen-btn {
+  display: none;
+}
+#chatbox.stickyChat.chatAndUsersChat .hide-reduce-btn {
+  display:none;
+}
+
+/* -- TITLE BAR -- */
+#titlebar {
+  font-weight: bold;
+  padding: 5px;
+}
+#titlebar #titlelabel {
+  margin: 4px 0 0 4px;
+}
+#titlebar .stick-to-screen-btn,
+#titlebar .hide-reduce-btn {
+  font-size: 25px;
+  float: right;
+  text-align: right;
+  text-decoration: none;
+  cursor: pointer;
+}
+#titlebar .stick-to-screen-btn {
+  font-size: 10px;
+  padding-top: 2px;
+}
+
+/* -- MESSAGES -- */
 #chattext {
   background-color: white;
-  border: 1px solid white;
-  -ms-overflow-y: scroll;
-  overflow-y: scroll;
-  font-size: 12px;
-  position: absolute;
-  right: 0px;
-  left: 0px;
-  top: 25px;
-  bottom: 25px;
-  z-index: 1002;
+  overflow-y: auto;
+  flex: 1 auto;
 }
 #chattext p {
   padding: 3px;
-  -ms-overflow-x: hidden;
   overflow-x: hidden;
+  word-wrap: break-word;
 }
+#chattext .time {
+  float: right;
+  font-style: italic;
+  font-size: .85rem;
+  opacity: .8;
+  margin-left: 3px;
+  margin-right: 2px;
+}
+
+/* -- INPUT BOX -- */
+#chatinputbox {
+  padding: 5px;
+}
+#chatinputbox #chatinput {
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+
+/* -- CHAT ICON -- */
+#chaticon {
+  background-color: #fff;
+  cursor: pointer;
+  display: none;
+  padding: 5px;
+}
+#chaticon a {
+  text-decoration: none
+}
+#chaticon #chatlabel {
+  font-weight: bold;
+  text-decoration: none;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+#chaticon #chatcounter {
+  font-size: .8rem;
+  vertical-align: middle;
+}
+
+/* -- LOAD MESSAGES -- */
 .chatloadmessages
 {
   margin-bottom: 5px;
@@ -49,133 +124,10 @@
 {
   display: none;
 }
-#chatinputbox {
-  padding: 3px 2px;
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  left: 3px;
-}
-#chatlabel {
-  font-size: 13px;
-  font-weight: bold;
-  color: #555;
-  text-decoration: none;
-  margin-right: 3px;
-  vertical-align: middle;
-}
-#chatinput {
-  border: 1px solid #BBBBBB;
-  width: 100%;
-  float: right;
-}
-#chaticon {
-  z-index: 400;
-  position: fixed;
-  bottom: 0px;
-  right: 20px;
-  padding: 5px;
-  border-left: 1px solid #999;
-  border-right: 1px solid #999;
-  border-top: 1px solid #999;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  background-color: #fff;
-  cursor: pointer;
-  display: none;
-}
-#chaticon a {
-  text-decoration: none
-}
-#chatcounter {
-  color: #777;
-  font-size: 10px;
-  vertical-align: middle;
-}
-#chattext p {
-  word-wrap: break-word
-}
-
-#titlebar {
-  line-height: 16px;
-  font-weight: bold;
-  color: #555;
-  position: relative;
-  bottom: 2px;
-}
-#titlelabel {
-  font-size: 13px;
-  margin: 4px 0 0 4px;
-  position: absolute;
-}
-#titlesticky{
-  font-size: 10px;
-  padding-top:2px;
-  float: right;
-  text-align: right;
-  text-decoration: none;
-  cursor: pointer;
-  color: #555;
-}
-#titlecross {
-  font-size: 25px;
-  float: right;
-  text-align: right;
-  text-decoration: none;
-  cursor: pointer;
-  color: #555;
-}
-
-.stickyChat {
-  background-color: #f1f1f1 !important;
-  right: 0px !important;
-  top: 37px;
-  -webkit-border-radius: 0px !important;
-  -moz-border-radius: 0px !important;
-  border-radius: 0px !important;
-  height: auto !important;
-  border: none !important;
-  border-left: 1px solid #ccc !important;
-  width: 185px !important;
-}
-.chatAndUsers{
-  display:block !important;
-  right:0px !important;
-  border-radius:0px !important;
-  width:182px !important;
-/* Below makes UI look weird when X makes editbar flow onto two lines */
-/*  margin:2px 0 0 0 !important;*/
-  border: none !important;
-  border-bottom: 1px solid #ccc !important;
-  height:155px !important;
-  border-left: 1px solid #ccc !important;
-}
-.chatAndUsers > #otherusers{
-  max-height: 100px;
-  overflow-y: auto;
-}
-.chatAndUsersChat > div > #titlecross{
-  display:none;
-}
-.chatAndUsersChat{
-  bottom:0px !important;
-  padding:0 !important;
-  margin: 165px 0px 0px 0px;
-  right:0 !important;
-  width:182px !important;
-  border: none !important;
-  padding:5px !important;
-  border-left: 1px solid #ccc !important;
-}
 
 @media only screen and (max-width: 720px) {
-  #chaticon {
-    position:fixed;
-    right:48px;
-  }
   #chatbox {
-    position:fixed;
-    bottom:33px !important;
-    margin: 65px 0 0 0;
+    right: 0;
+    width: 80%;
   }
 }
