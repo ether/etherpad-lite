@@ -225,7 +225,7 @@ function Ace2Editor()
       var iframeHTML = [];
 
       iframeHTML.push(doctype);
-      iframeHTML.push("<html><head>");
+      iframeHTML.push("<html class='inner-editor'><head>");
 
       // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
       // and compressed, putting the compressed code from the named file directly into the
@@ -316,7 +316,7 @@ window.onload = function () {\n\
   }, 0);\n\
 }';
 
-      var outerHTML = [doctype, '<html><head>']
+      var outerHTML = [doctype, '<html class="inner-editor outerdoc"><head>']
 
       var includedCSS = [];
       var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};

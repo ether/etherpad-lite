@@ -201,7 +201,6 @@ stepper:active{
   background: linear-gradient(#F7F7F7, #F1F1F1 80%) repeat scroll 0% 0% transparent;
   padding:2px;
   border-radius:2px;
-  font-family: Arial, sans-serif;
   font-size: 11px;
   left: 7px;
   position: absolute;

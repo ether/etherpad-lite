@@ -69,12 +69,6 @@ function Ace2Inner(){
   var THE_TAB = '    '; //4
   var MAX_LIST_LEVEL = 16;
 
-  var LINE_NUMBER_PADDING_RIGHT = 4;
-  var LINE_NUMBER_PADDING_LEFT = 4;
-  var MIN_LINEDIV_WIDTH = 20;
-  var EDIT_BODY_PADDING_TOP = 8;
-  var EDIT_BODY_PADDING_LEFT = 8;
-
   var FORMATTING_STYLES = ['bold', 'italic', 'underline', 'strikethrough'];
   var SELECT_BUTTON_CLASS = 'selected';
 
@@ -126,12 +120,6 @@ function Ace2Inner(){
   var doesWrap = true;
   var hasLineNumbers = true;
   var isStyled = true;
-
-  // space around the innermost iframe element
-  var iframePadLeft = MIN_LINEDIV_WIDTH + LINE_NUMBER_PADDING_RIGHT + EDIT_BODY_PADDING_LEFT;
-  var iframePadTop = EDIT_BODY_PADDING_TOP;
-  var iframePadBottom = 0,
-      iframePadRight = 0;
 
   var console = (DEBUG && window.console);
   var documentAttributeManager;
@@ -4766,70 +4754,7 @@ function Ace2Inner(){
       return;
     }
 
-    function setIfNecessary(obj, prop, value)
-    {
-      if (obj[prop] != value)
-      {
-        obj[prop] = value;
-      }
-    }
-
-    var lineNumberWidth = sideDiv.firstChild.offsetWidth;
-    var newSideDivWidth = lineNumberWidth + LINE_NUMBER_PADDING_LEFT;
-    if (newSideDivWidth < MIN_LINEDIV_WIDTH) newSideDivWidth = MIN_LINEDIV_WIDTH;
-    iframePadLeft = EDIT_BODY_PADDING_LEFT;
-    if (hasLineNumbers) iframePadLeft += newSideDivWidth + LINE_NUMBER_PADDING_RIGHT;
-    setIfNecessary(iframe.style, "left", iframePadLeft + "px");
-    setIfNecessary(sideDiv.style, "width", newSideDivWidth + "px");
-
-    for (var i = 0; i < 2; i++)
-    {
-      var newHeight = root.clientHeight;
-      var newWidth = (browser.msie ? root.createTextRange().boundingWidth : root.clientWidth);
-      var viewHeight = getInnerHeight() - iframePadBottom - iframePadTop;
-      var viewWidth = getInnerWidth() - iframePadLeft - iframePadRight;
-      if (newHeight < viewHeight)
-      {
-        newHeight = viewHeight;
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'auto');
-      }
-      else
-      {
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'scroll');
-      }
-      if (doesWrap)
-      {
-        newWidth = viewWidth;
-      }
-      else
-      {
-        if (newWidth < viewWidth) newWidth = viewWidth;
-      }
-      setIfNecessary(iframe.style, "height", newHeight + "px");
-      setIfNecessary(iframe.style, "width", newWidth + "px");
-      setIfNecessary(sideDiv.style, "height", newHeight + "px");
-    }
-    if (browser.firefox)
-    {
-      if (!doesWrap)
-      {
-        // the body:display:table-cell hack makes mozilla do scrolling
-        // correctly by shrinking the <body> to fit around its content,
-        // but mozilla won't act on clicks below the body.  We keep the
-        // style.height property set to the viewport height (editor height
-        // not including scrollbar), so it will never shrink so that part of
-        // the editor isn't clickable.
-        var body = root;
-        var styleHeight = viewHeight + "px";
-        setIfNecessary(body.style, "height", styleHeight);
-      }
-      else
-      {
-        setIfNecessary(root.style, "height", "");
-      }
-    }
     var win = outerWin;
-    var r = 20;
 
     enforceEditability();
 
@@ -5160,7 +5085,6 @@ function Ace2Inner(){
   {
     var win = outerWin;
     var odoc = outerWin.document;
-    pixelX += iframePadLeft;
     var distInsideLeft = pixelX - win.scrollX;
     var distInsideRight = win.scrollX + getInnerWidth() - pixelX;
     if (distInsideLeft < 0)
@@ -5358,7 +5282,7 @@ function Ace2Inner(){
   function initLineNumbers()
   {
     lineNumbersShown = 1;
-    sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner" class="sidedivinner"><div>1</div></td></tr></table>';
+    sideDiv.innerHTML = '<div id="sidedivinner" class="sidedivinner"><div>1</div></div>';
     sideDivInner = outerWin.document.getElementById("sidedivinner");
     $(sideDiv).addClass("sidediv");
   }

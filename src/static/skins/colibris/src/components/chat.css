@@ -110,5 +110,5 @@
     right: 0;
   }
 
-  #titlesticky { display: none; }
+  .stick-to-screen-btn { display: none; }
 }

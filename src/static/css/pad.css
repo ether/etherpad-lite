@@ -10,22 +10,22 @@
 @import url("pad/gritter.css");
 @import url("pad/loadingbox.css");
 
-*,
-html,
-body,
-p {
+html {
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  line-height: 16px;
+  background-color: white;
+  color: #3e3e3e;
+}
+*, p {
   margin: 0;
-  padding: 0px;
+  padding: 0;
 }
 .clear {
   clear: both
 }
-body,
-textarea {
-  font-family: Helvetica, Arial, sans-serif
-}
-.readonly .acl-write {
-  display: none;
+a {
+  color: inherit;
 }
 a img {
   border: 0
@@ -34,19 +34,9 @@ a img {
   padding: 0;
   border: 0;
 }
-
 .buttontext:focus{
   /* Not sure why important is required here but it is */
   border: 1px solid #666 !important;
-}
-.time {
-  float: right;
-  color: #333;
-  font-style: italic;
-  font-size: 10px;
-  margin-left: 3px;
-  margin-right: 3px;
-  margin-top: 2px;
 }
 .rtl {
   direction: RTL
@@ -56,29 +46,9 @@ a img {
 input[type=checkbox] {
   vertical-align: -1px
 }
+input {
+  color: inherit;
+}
 .right {
   float: right
-}
-
-.row {
-  float: left;
-  width: 100%;
-}
-.row + .row {
-  margin-top: 15px;
-}
-.column {
-  float: left;
-  width:50%;
-}
-
-#passwordRequired, #permissionDenied, #wrongPassword, #noCookie {
-  display:none;
-}
-
-.hideControlsEditor{
-  top:0px !important;
-}
-.hideControlsEditbar{
-  display:none !important;
 }

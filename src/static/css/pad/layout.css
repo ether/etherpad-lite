@@ -1,41 +1,45 @@
-html {
-  font-size: 62.5%;
+html, body {
   width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+#editbar {
+  height: auto;
 }
 #editorcontainerbox {
-  position: absolute;
-  bottom: 0;
-  top: 0;
-  width: 100%;
-}
-#editorcontainer {
-  position: absolute;
-  top: 37px; /* + 1px border */
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  z-index: 1;
+  flex: 1 auto;
+  position: relative; /* for nested popup to use absolute positionning */
 
-  /* Required to be able to scroll on iOS: */
-  -webkit-overflow-scrolling: touch;
+  /* For sticky chat */
+  display: flex;
+  flex-direction: row;
 }
-#editorcontainer iframe {
+#editorcontainerbox #editorcontainer {
+  display: flex; /* transfer flex properties to nested elements, here the iframe */
   height: 100%;
+  flex: 1 auto;
+}
+#editorcontainerbox #editorcontainer iframe {
   width: 100%;
-  padding: 0;
-  margin: 0;
-  left: 0; /* Required for safari fixes RTL */
 }
-iframe {
-  position: absolute
+#editorcontainerbox .sticky-container { /* container for #users, #chat, #toc (table of content) and so on... */
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  max-width: 40%;
+  flex-shrink: 0;
 }
-@media all and (max-width: 400px) {
-  #editorcontainer {
-    top: 68px;
-  }
+#editorcontainerbox .sticky-container:not(.stikyUsers):not(.stickyChat) {
+  width: 0; /* hide when the container is empty */
 }
+
 @media only screen and (max-width: 720px) {
-  #editorcontainer {
-    margin-bottom: 33px
+  #editorcontainerbox {
+    margin-bottom: 37px; /* Leave space for the bottom toolbar on mobile */
   }
 }
