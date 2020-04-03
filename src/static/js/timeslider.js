@@ -190,7 +190,7 @@ function handleClientVars(message)
 }
 
 function setFont(font){
-  $('#padcontent').css("font-family", font);
+  $('#innerdocbody').css("font-family", font);
 }
 
 exports.baseURL = '';
