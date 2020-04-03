@@ -31,6 +31,9 @@ echo "Successfully connected to Etherpad on http://localhost:9001"
 # just in case, let's wait for another second before going on
 sleep 1
 
+# a copy of settings.json is necessary for the backend tests to work
+cp settings.json.template settings.json
+
 # run the backend tests
 echo "Now run the backend tests"
 cd src
