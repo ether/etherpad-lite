@@ -170,11 +170,18 @@ describe('Imports and Exports', function(){
           if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
             throw new Error("Failed Doc import", testPadId);
           }
-          api.get(endPoint('getText')+"&padID="+testPadId)
-          .expect(function(res){
-            if(res.body.code !== 0) throw new Error("Could not get pad");
-          })
-          .expect(200, done)
+
+          request(host + '/p/'+testPadId+'/export/doc', function (errE, resE, bodyE) {
+            if(resE.body.indexOf("Hello World") === -1) throw new Error("Could not find Hello World in exported contents");
+
+            api.get(endPoint('getText')+"&padID="+testPadId)
+            .expect(function(res){
+              if(res.body.code !== 0) throw new Error("Could not get pad");
+              // Not graceflu but it works
+              console.warn("HERE");
+            })
+            .expect(200, done);
+          });
         }
       });
 
@@ -184,8 +191,6 @@ describe('Imports and Exports', function(){
         filename: '/test.doc',
         contentType: 'application/msword'
       });
-
-      // return done();
 
     });
   }
