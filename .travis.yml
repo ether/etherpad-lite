@@ -24,7 +24,7 @@ env:
 
 jobs:
   include:
-    - name: "Run the Backend"
+    - name: "Run the Backend tests"
       install:
         - "cd src && npm install && cd -"
       script:
