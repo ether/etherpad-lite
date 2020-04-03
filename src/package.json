@@ -32,7 +32,6 @@
   "dependencies": {
     "async": "0.9.0",
     "async-stacktrace": "0.0.2",
-    "bent": "^7.1.2",
     "channels": "0.0.4",
     "cheerio": "0.22.0",
     "clean-css": "4.2.3",
