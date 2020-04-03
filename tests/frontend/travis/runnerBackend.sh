@@ -31,23 +31,13 @@ echo "Successfully connected to Etherpad on http://localhost:9001"
 # just in case, let's wait for another second before going on
 sleep 1
 
-# On the Travis VM, remote_runner.js is found at
-# /home/travis/build/ether/[secure]/tests/frontend/travis/remote_runner.js
-# which is the same directory that contains this script.
-# Let's move back there.
-#
-# Probably remote_runner.js is injected by Saucelabs.
-# cd "${MY_DIR}"
-
-# start the remote runner
-echo "Now run the tests?"
-cp settings.json.template settings.json
+# run the backend tests
+echo "Now run the backend tests"
 cd src
 npm run test
 exit_code=$?
 
 kill $!
-kill $(cat /tmp/sauce.pid)
-sleep 30
+sleep 5
 
 exit $exit_code
