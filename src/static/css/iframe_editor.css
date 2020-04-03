@@ -38,6 +38,17 @@ body.grayedout { background-color: #eee !important }
   color: black;
 }
 
+@media screen and (-webkit-min-device-pixel-ratio:0){
+  /*
+    Chrome will remove spaces before new line breaks: 
+    https://github.com/ether/etherpad-lite/issues/3487 
+  */
+
+  body.doesWrap {
+    white-space: pre-wrap !important;
+  }
+}
+
 body.doesWrap {
   /* white-space: pre-wrap; */
 
