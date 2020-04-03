@@ -1,19 +1,15 @@
-#innerdocbody, #padcontent {
+#innerdocbody, #innerdocbody {
   font-size: 15px;
   line-height: 25px;
   padding: 0;
 }
 
-#innerdocbody span, #padcontent span {
+#innerdocbody span, #innerdocbody span {
   padding: 4px 0 !important;
 }
 
-#innerdocbody h1 span, #padcontent h1 span {
+#innerdocbody h1 span, #innerdocbody h1 span {
   padding: 0;
-}
-
-body {
-  overflow: hidden;
 }
 
 option {

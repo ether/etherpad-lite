@@ -113,8 +113,8 @@
 
 /* PAD CONTENT */
 
-#editorcontainerbox {
-  overflow-y: scroll;
+#outerdocbody {
+  display: block;
 }
 
 #innerdocbody {

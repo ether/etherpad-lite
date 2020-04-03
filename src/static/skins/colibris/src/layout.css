@@ -1,11 +1,8 @@
-#outerdocbody, .timeslider #editorcontainerbox {
+#outerdocbody {
   max-width: 900px;
   margin: 0 auto;
   padding-top: 20px;
-}
-
-#outerdocbody {
-  overflow-y: auto;
+  width: 100%;
 }
 
 #editorcontainerbox .sticky-container {
@@ -23,12 +20,15 @@
   padding-left: 0; /* sidediv hidden */
 }
 
-#outerdocbody iframe, .timeslider #editorcontainerbox {
+#outerdocbody iframe, #outerdocbody > #innerdocbody {
   padding: 55px;
   box-shadow: 0 0 0 0.5px rgba(209, 209, 209, 0.32), 0 0 7pt 0pt rgba(204, 204, 204, 0.52);
   border: 0;
   border-radius: 5px;
   background-color: white;
+}
+#sidediv {
+  padding-top: 55px; /* = #outerdocbody iframe padding-top */
 }
 
 /* Fixs comments_page & author_hover does not take in account the document padding */
@@ -66,12 +66,12 @@
     max-width: none;
     padding-top: 0;
   }
-  #outerdocbody iframe, .timeslider #editorcontainerbox {
-    padding: 20px !important;
+  #outerdocbody iframe, #outerdocbody > #innerdocbody {
+    padding: 20px;
     border-radius: 0;
   }
   #sidediv {
-    top: 20px !important; /* = #outerdocbody iframe padding-top */
+    padding-top: 20px !important; /* = #outerdocbody iframe padding-top */
   }
 
   .comment-modal, .authortooltip { margin-top: 20px !important; }
@@ -90,12 +90,11 @@
   #outerdocbody {
     width: 100%;
   }
-  #outerdocbody iframe, .timeslider #editorcontainerbox {
-    padding: 15px !important;
+  #outerdocbody iframe, #outerdocbody > #innerdocbody {
+    padding: 15px;
   }
   #sidediv {
     display: none;
-    top: 15px !important; /* = #outerdocbody iframe padding-top */
   }
 }
 
