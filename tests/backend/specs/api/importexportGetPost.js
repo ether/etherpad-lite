@@ -13,6 +13,7 @@ const path = require('path');
 const async = require(__dirname+'/../../../../src/node_modules/async');
 const request = require('request');
 const padText = fs.readFileSync("../tests/backend/specs/api/test.txt");
+const wordDoc = fs.readFileSync("../tests/backend/specs/api/test.doc");
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
@@ -56,26 +57,23 @@ Test.
   / Try to export a pad that doesn't exist // Expect failure
 
 Test.
-  Try to import an unsupported file to a pad that exists
-  Get pad contents and ensure it matches imported contents
+  / Try to import an unsupported file to a pad that exists
 
-Test.
-  Change unsupported file support to true
-  Try to import an unsupported(but now supported) file to a pad that exists
-  Get pad contents and ensure it matches imported contents
+TODO: Test.
+  / Try to import a file that depends on Abiword / soffice if it exists
+  / Try to export a file that depends on Abiword / soffice if it exists
 
-Test.
-  Try to import to a pad that doesn't exist
-
-Test.
+-- TODO: Test.
   Try to import to a pad without a session (currently will pass but IMHO in future should fail)
 
-Test.
+-- TODO: Test.
   Try to import to a file and abort it half way through
 
 Test.
   Try to import to files of varying size.
 
+Example Curl command for testing import URI:
+  curl -s -v --form file=@/home/jose/test.txt http://127.0.0.1:9001/p/foo/import
 */
 
 describe('Imports and Exports', function(){
@@ -154,17 +152,43 @@ describe('Imports and Exports', function(){
     });
 
     let form = req.form();
-
     form.append('file', padText, {
       filename: '/test.xasdasdxx',
       contentType: 'weirdness/jobby'
     });
-
   });
 
+  if(!settings.abiword && !settings.soffice){
+    console.warn("Did not test abiword or soffice");
+  }else{
+    it('Tries to import file type that uses soffice or abioffice', function(done) {
 
+      var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+        if (err) {
+          throw new Error("Failed to import", err);
+        } else {
+          if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
+            throw new Error("Failed Doc import", testPadId);
+          }
+          api.get(endPoint('getText')+"&padID="+testPadId)
+          .expect(function(res){
+            if(res.body.code !== 0) throw new Error("Could not get pad");
+          })
+          .expect(200, done)
+        }
+      });
 
+      let form = req.form();
 
+      form.append('file', wordDoc, {
+        filename: '/test.doc',
+        contentType: 'application/msword'
+      });
+
+      // return done();
+
+    });
+  }
 
 
 // end of tests
@@ -173,553 +197,6 @@ describe('Imports and Exports', function(){
 
 
 
-
-
-
-
-
-
-
-
-
-/*
-  request({
-    method: 'POST',
-    uri: host + '/p/'+testPadId+'/import',
-    multipart: [
-      {
-        'content-type': 'multipart/form-data',
-        body: JSON.stringify({foo: 'bar', _attachments: {'message.txt': {follows: true, length: 18, 'content_type': 'text/plain' }}})
-      },
-      { body: 'I am an attachment' },
-      { body: fs.createReadStream('../tests/backend/specs/api/image.png') }
-    ]
-  },
-  function (error, response, body) {
-    if (error) {
-      done();
-      return console.error('Upload failed:', error);
-    }else{
-      done();
-      console.log('Upload successful!  Server responded with:', body, response, body);
-    }
-  })
-*/
-
-/*
-  request({
-    method: 'PUT',
-    preambleCRLF: true,
-    postambleCRLF: true,
-    uri: host + '/p/'+testPadId+'/import',
-    multipart: [
-      {
-        'content-type': 'application/json',
-        body: JSON.stringify({foo: 'bar', _attachments: {'message.txt': {follows: true, length: 18, 'content_type': 'text/plain' }}})
-      },
-      { body: 'I am an attachment' },
-      { body: fs.createReadStream('../tests/backend/specs/api/image.png') }
-    ]
-  },
-  function (error, response, body) {
-    if (error) {
-      return console.error('Upload failed:', error);
-    }
-    console.log('Upload successful!  Server responded with:', body);
-  })
-*/
-/*
-describe('getRevisionsCount', function(){
-  it('gets revision count of Pad', function(done) {
-    api.get(endPoint('getRevisionsCount')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to get Revision Count");
-      if(res.body.data.revisions !== 0) throw new Error("Incorrect Revision Count");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getSavedRevisionsCount', function(){
-  it('gets saved revisions count of Pad', function(done) {
-    api.get(endPoint('getSavedRevisionsCount')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to get Saved Revisions Count");
-      if(res.body.data.savedRevisions !== 0) throw new Error("Incorrect Saved Revisions Count");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('listSavedRevisions', function(){
-  it('gets saved revision list of Pad', function(done) {
-    api.get(endPoint('listSavedRevisions')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to get Saved Revisions List");
-      if(!res.body.data.savedRevisions.equals([])) throw new Error("Incorrect Saved Revisions List");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getHTML', function(){
-  it('get the HTML of Pad', function(done) {
-    api.get(endPoint('getHTML')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.html.length <= 1) throw new Error("Unable to get the HTML");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('deletePad', function(){
-  it('deletes a Pad', function(done) {
-    api.get(endPoint('deletePad')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Deletion failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getHTML', function(){
-  it('get the HTML of a Pad -- Should return a failure', function(done) {
-    api.get(endPoint('getHTML')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 1) throw new Error("Pad deletion failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('createPad', function(){
-  it('creates a new Pad with text', function(done) {
-    api.get(endPoint('createPad')+"&padID="+testPadId+"&text=testText")
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Creation failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getText', function(){
-  it('gets the Pad text and expect it to be testText with \n which is a line break', function(done) {
-    api.get(endPoint('getText')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.text !== "testText\n") throw new Error("Pad Creation with text")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('setText', function(){
-  it('creates a new Pad with text', function(done) {
-    api.post(endPoint('setText'))
-    .send({
-      "padID": testPadId,
-      "text":  "testTextTwo",
-    })
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad setting text failed");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getText', function(){
-  it('gets the Pad text', function(done) {
-    api.get(endPoint('getText')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.text !== "testTextTwo\n") throw new Error("Setting Text")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getRevisionsCount', function(){
-  it('gets Revision Count of a Pad', function(done) {
-    api.get(endPoint('getRevisionsCount')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.revisions !== 1) throw new Error("Unable to get text revision count")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('saveRevision', function(){
-  it('saves Revision', function(done) {
-    api.get(endPoint('saveRevision')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to save Revision");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getSavedRevisionsCount', function(){
-  it('gets saved revisions count of Pad', function(done) {
-    api.get(endPoint('getSavedRevisionsCount')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to get Saved Revisions Count");
-      if(res.body.data.savedRevisions !== 1) throw new Error("Incorrect Saved Revisions Count");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('listSavedRevisions', function(){
-  it('gets saved revision list of Pad', function(done) {
-    api.get(endPoint('listSavedRevisions')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to get Saved Revisions List");
-      if(!res.body.data.savedRevisions.equals([1])) throw new Error("Incorrect Saved Revisions List");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-describe('padUsersCount', function(){
-  it('gets User Count of a Pad', function(done) {
-    api.get(endPoint('padUsersCount')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.padUsersCount !== 0) throw new Error("Incorrect Pad User count")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getReadOnlyID', function(){
-  it('Gets the Read Only ID of a Pad', function(done) {
-    api.get(endPoint('getReadOnlyID')+"&padID="+testPadId)
-    .expect(function(res){
-      if(!res.body.data.readOnlyID) throw new Error("No Read Only ID for Pad")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('listAuthorsOfPad', function(){
-  it('Get Authors of the Pad', function(done) {
-    api.get(endPoint('listAuthorsOfPad')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.authorIDs.length !== 0) throw new Error("# of Authors of pad is not 0")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getLastEdited', function(){
-  it('Get When Pad was left Edited', function(done) {
-    api.get(endPoint('getLastEdited')+"&padID="+testPadId)
-    .expect(function(res){
-      if(!res.body.data.lastEdited){
-        throw new Error("# of Authors of pad is not 0")
-      }else{
-        lastEdited = res.body.data.lastEdited;
-      }
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('setText', function(){
-  it('creates a new Pad with text', function(done) {
-    api.post(endPoint('setText'))
-    .send({
-      "padID": testPadId,
-      "text":  "testTextTwo",
-    })
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad setting text failed");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getLastEdited', function(){
-  it('Get When Pad was left Edited', function(done) {
-    api.get(endPoint('getLastEdited')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.lastEdited <= lastEdited){
-        throw new Error("Editing A Pad is not updating when it was last edited")
-      }
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('padUsers', function(){
-  it('gets User Count of a Pad', function(done) {
-    api.get(endPoint('padUsers')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.padUsers.length !== 0) throw new Error("Incorrect Pad Users")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('deletePad', function(){
-  it('deletes a Pad', function(done) {
-    api.get(endPoint('deletePad')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Deletion failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-var originalPadId = testPadId;
-var newPadId = makeid();
-
-describe('createPad', function(){
-  it('creates a new Pad with text', function(done) {
-    api.get(endPoint('createPad')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Creation failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('setText', function(){
-  it('Sets text on a pad Id', function(done) {
-    api.post(endPoint('setText'))
-    .send({
-      "padID": testPadId,
-      "text":  text,
-    })
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Set Text failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getText', function(){
-  it('Gets text on a pad Id', function(done) {
-    api.get(endPoint('getText')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Get Text failed")
-      if(res.body.data.text !== text+"\n") throw new Error("Pad Text not set properly");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('setText', function(){
-  it('Sets text on a pad Id including an explicit newline', function(done) {
-    api.post(endPoint('setText')+"&padID="+testPadId)
-    .send({text: text+'\n'})
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Set Text failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getText', function(){
-  it("Gets text on a pad Id and doesn't have an excess newline", function(done) {
-    api.get(endPoint('getText')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Get Text failed")
-      if(res.body.data.text !== text+"\n") throw new Error("Pad Text not set properly");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getLastEdited', function(){
-  it('Gets when pad was last edited', function(done) {
-    api.get(endPoint('getLastEdited')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.lastEdited === 0) throw new Error("Get Last Edited Failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('movePad', function(){
-  it('Move a Pad to a different Pad ID', function(done) {
-    api.get(endPoint('movePad')+"&sourceID="+testPadId+"&destinationID="+newPadId+"&force=true")
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Moving Pad Failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getText', function(){
-  it('Gets text on a pad Id', function(done) {
-    api.get(endPoint('getText')+"&padID="+newPadId)
-    .expect(function(res){
-      if(res.body.data.text !== text+"\n") throw new Error("Pad Get Text failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('movePad', function(){
-  it('Move a Pad to a different Pad ID', function(done) {
-    api.get(endPoint('movePad')+"&sourceID="+newPadId+"&destinationID="+testPadId+"&force=false")
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Moving Pad Failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getText', function(){
-  it('Gets text on a pad Id', function(done) {
-    api.get(endPoint('getText')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.data.text !== text+"\n") throw new Error("Pad Get Text failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getLastEdited', function(){
-  it('Gets when pad was last edited', function(done) {
-    api.get(endPoint('getLastEdited')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.lastEdited === 0) throw new Error("Get Last Edited Failed")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('appendText', function(){
-  it('Append text to a pad Id', function(done) {
-    api.get(endPoint('appendText', '1.2.13')+"&padID="+testPadId+"&text=hello")
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Append Text failed");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done);
-  });
-});
-
-describe('getText', function(){
-  it('Gets text on a pad Id', function(done) {
-    api.get(endPoint('getText')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Pad Get Text failed");
-      if(res.body.data.text !== text+"hello\n") throw new Error("Pad Text not set properly");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done);
-  });
-});
-
-
-describe('setHTML', function(){
-  it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
-    var html = "<div><b>Hello HTML</title></head></div>";
-    api.post(endPoint('setHTML'))
-    .send({
-      "padID": testPadId,
-      "html":  html,
-    })
-    .expect(function(res){
-      if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('setHTML', function(){
-  it('Sets the HTML of a Pad with complex nested lists of different types', function(done) {
-    api.post(endPoint('setHTML'))
-    .send({
-      "padID": testPadId,
-      "html":  ulHtml,
-    })
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("List HTML cant be imported")
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('getHTML', function(){
-  it('Gets back the HTML of a Pad with complex nested lists of different types', function(done) {
-    api.get(endPoint('getHTML')+"&padID="+testPadId)
-    .expect(function(res){
-      var receivedHtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
-
-      if (receivedHtml !== expectedHtml) {
-        throw new Error(`HTML received from export is not the one we were expecting.
-           Received:
-           ${receivedHtml}
-
-           Expected:
-           ${expectedHtml}
-
-           Which is a slightly modified version of the originally imported one:
-           ${ulHtml}`);
-      }
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
-  });
-})
-
-describe('createPad', function(){
-  it('errors if pad can be created', function(done) {
-    var badUrlChars = ["/", "%23", "%3F", "%26"];
-    async.map(
-      badUrlChars,
-      function (badUrlChar, cb) {
-        api.get(endPoint('createPad')+"&padID="+badUrlChar)
-        .expect(function(res){
-          if(res.body.code !== 1) throw new Error("Pad with bad characters was created");
-        })
-        .expect('Content-Type', /json/)
-        .end(cb);
-      },
-      done);
-  });
-})
-
-*/
-/*
-                          -> movePadForce Test
-
-*/
 
 var endPoint = function(point, version){
   version = version || apiVersion;
