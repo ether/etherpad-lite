@@ -298,7 +298,7 @@ var padeditbar = (function()
           // Timeslider probably..
           // Shift focus away from any drop downs
           $(':focus').blur(); // required to do not try to remove!
-          $('#padmain').focus(); // Focus back onto the pad
+          $('#editorcontainerbox').focus(); // Focus back onto the pad
         }else{
           // Shift focus away from any drop downs
           $(':focus').blur(); // required to do not try to remove!

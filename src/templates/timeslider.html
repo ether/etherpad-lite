@@ -35,6 +35,7 @@
   <link rel="shortcut icon" href="<%=settings.faviconTimeslider%>">
   <% e.begin_block("timesliderStyles"); %>
   <link rel="stylesheet" href="../../static/css/pad.css">
+  <link rel="stylesheet" href="../../static/css/iframe_editor.css">
   <link rel="stylesheet" href="../../static/css/timeslider.css">
   <link rel="stylesheet" href="../../static/skins/<%=encodeURI(settings.skinName)%>/pad.css">
   <link rel="stylesheet" href="../../static/skins/<%=encodeURI(settings.skinName)%>/timeslider.css">
@@ -50,143 +51,170 @@
 
 <% e.begin_block("timesliderBody"); %>
 <body id="padbody" class="timeslider limwidth">
-  <div id="padpage">
-    <div id="timeslider-top">
-      <% e.begin_block("timesliderTop"); %>
-      <div id="timeslider-wrapper">
-        <div id="timeslider" unselectable="on" style="display: none">
-          <div id="timeslider-left"></div>
-          <div id="timeslider-right"></div>
-          <div id="timer"></div>
-          <div id="timeslider-slider">
-            <div id="ui-slider-handle"></div>
-            <div id="ui-slider-bar"></div>
-          </div>
-          <div id="playpause_button">
-            <button id="playpause_button_icon" class=""></button>
-          </div>
-          <div id="steppers">
-            <button class="stepper" id="leftstep"></button>
-            <button class="stepper" id="rightstep"></button>
-          </div>
-        </div>
 
-        <div id="overlay">
-          <div id="overlay-inner">
-            <!-- -->
-          </div>
-        </div>
+  <!----------------------------->
+  <!--------- TOOLBAR ----------->
+  <!----------------------------->
+  <div id="editbar" class="toolbar">
+    <% e.begin_block("timesliderTop"); %>
+
+    <!-- TITLE & TOOLBAR -->
+    <div class="timeslider-bar">
+
+      <div class="timeslider-title-container">
+        <h1 class="timeslider-title">
+          <span id="revision_label"></span>
+          <span id="revision_date"></span>
+        </h1>
+        <p class="timeslider-subtitle">
+          <span data-l10n-id="timeslider.toolbar.authors"></span>
+          <span id="authorsList" data-l10n-id="timeslider.toolbar.authorsList"></span>
+        </p>
       </div>
 
-      <div class="timeslider-bar">
-          <div class="editbarright toolbar" id="editbar">
-            <% e.begin_block("timesliderEditbarRight"); %>
-            <ul>
-              <%- toolbar.menu(settings.toolbar.timeslider, true, 'timeslider-right', 'timeslider') %>
-            </ul>
-            <% e.end_block(); %>
-          </div>
-
-          <div>
-              <h1>
-                <span id="revision_label"></span>
-                <span id="revision_date"></span>
-              </h1>
-              <p>
-                <span data-l10n-id="timeslider.toolbar.authors"></span>
-                <span id="authorsList" data-l10n-id="timeslider.toolbar.authorsList"></span>
-              </span> </p>
-          </div>
+      <div class="editbarright">
+        <% e.begin_block("timesliderEditbarRight"); %>
+        <ul>
+          <%- toolbar.menu(settings.toolbar.timeslider, true, 'timeslider-right', 'timeslider') %>
+        </ul>
+        <% e.end_block(); %>
       </div>
+    </div>
+
+    <!-- SLIDER -->
+    <div id="timeslider-wrapper">
+      <div id="timeslider-slider">
+        <div id="ui-slider-handle"></div>
+        <div id="ui-slider-bar"></div>
+        <div id="timer"></div>
+      </div>
+
+      <div id="slider-btn-container">
+        <button id="playpause_button_icon" class="buttonicon buttonicon-play"></button>
+        <button id="leftstep"  class="stepper buttonicon buttonicon-to-start"></button>
+        <button id="rightstep" class="stepper buttonicon buttonicon-to-end"></button>
+        <!-- Left and Right star button are actually not displayed to the screen -->
+        <button id="leftstar"  class="stepper buttonicon buttonicon-to-start" style="display:none"></button>
+        <button id="rightstar" class="stepper buttonicon buttonicon-to-end"   style="display:none"></button>
+      </div>
+    </div>
+
+
+  <% e.end_block(); %>
+  </div>
+
+
+  <div id="editorcontainerbox">
+
+    <!----------------------------->
+    <!------- PAD CONTENT --------->
+    <!----------------------------->
+
+    <div id="outerdocbody">
+      <div id="innerdocbody">
+      </div>
+    </div>
+
+
+    <!------------------------->
+    <!-- IMPORT EXPORT POPUP -->
+    <!------------------------->
+
+    <div id="import_export" class="popup" >
+      <div id="export">
+        <p data-l10n-id="timeslider.exportCurrent"></p>
+        <a id="exportetherpada" target="_blank" class="exportlink"><div class="exporttype" id="exportetherpad" data-l10n-id="pad.importExport.exportetherpad"></div></a>
+        <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
+        <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain" data-l10n-id="pad.importExport.exportplain"></div></a>
+        <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>
+        <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></div></a>
+        <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen" data-l10n-id="pad.importExport.exportopen"></div></a>
+      </div>
+    </div>
+
+
+    <!---------------------------------------------------->
+    <!-- CONNECTIVITY POPUP (when you get disconnected) -->
+    <!---------------------------------------------------->
+
+    <div id="connectivity" class="popup">
+    <% e.begin_block("modals"); %>
+      <div class="connected visible">
+        <h2 data-l10n-id="pad.modals.connected"></h2>
+      </div>
+      <div class="reconnecting">
+        <h1 data-l10n-id="pad.modals.reconnecting"></h1>
+        <p class="loadingAnimation"></p>
+      </div>
+      <div class="userdup">
+        <h1 data-l10n-id="pad.modals.userdup"></h1>
+        <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
+        <p data-l10n-id="pad.modals.userdup.advice"></p>
+        <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      </div>
+      <div class="unauth">
+        <h1 data-l10n-id="pad.modals.unauth"></h1>
+        <p data-l10n-id="pad.modals.unauth.explanation"></p>
+        <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      </div>
+      <div class="looping">
+        <h1 data-l10n-id="pad.modals.disconnected"></h1>
+        <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
+        <p data-l10n-id="pad.modals.looping.cause"></p>
+      </div>
+      <div class="initsocketfail">
+        <h1 data-l10n-id="pad.modals.initsocketfail"></h1>
+        <h2 data-l10n-id="pad.modals.initsocketfail.explanation"></h2>
+        <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
+      </div>
+      <div class="slowcommit">
+        <h1 data-l10n-id="pad.modals.disconnected"></h1>
+        <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
+        <p data-l10n-id="pad.modals.slowcommit.cause"></p>
+        <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      </div>
+      <div class="badChangeset">
+        <h1 data-l10n-id="pad.modals.disconnected"></h1>
+        <h2 data-l10n-id="pad.modals.badChangeset.explanation"></h2>
+        <p data-l10n-id="pad.modals.badChangeset.cause"></p>
+        <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+      </div>
+      <div class="corruptPad">
+        <h1 data-l10n-id="pad.modals.disconnected"></h1>
+        <h2 data-l10n-id="pad.modals.corruptPad.explanation"></h2>
+        <p data-l10n-id="pad.modals.corruptPad.cause"></p>
+      </div>
+      <div class="deleted">
+        <h1 data-l10n-id="pad.modals.deleted"></h1>
+        <p data-l10n-id="pad.modals.deleted.explanation"></p>
+      </div>
+      <div class="disconnected">
+        <% e.begin_block("disconnected"); %>
+        <h1 data-l10n-id="pad.modals.disconnected"></h1>
+        <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
+        <p data-l10n-id="pad.modals.disconnected.cause"></p>
+        <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
+        <% e.end_block(); %>
+      </div>
+      <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
+          <input type="hidden" class="padId" name="padId">
+          <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
+          <input type="hidden" class="missedChanges" name="missedChanges">
+      </form>
     <% e.end_block(); %>
     </div>
 
-    <div id="padmain">
-      <div id="padeditor">
-        <div id="editorcontainerbox">
-          <div id="padcontent">
-          </div>
-        </div>
-      </div><!-- /padeditor -->
-    </div><!-- /padmain -->
-  </div><!-- /padpage -->
 
-<div id="connectivity" class="popup">
-<% e.begin_block("modals"); %>
-    <div class="connected visible">
-      <h2 data-l10n-id="pad.modals.connected"></h2>
-    </div>
-    <div class="reconnecting">
-      <h1 data-l10n-id="pad.modals.reconnecting"></h1>
-      <p class="loadingAnimation"></p>
-    </div>
-    <div class="userdup">
-      <h1 data-l10n-id="pad.modals.userdup"></h1>
-      <h2 data-l10n-id="pad.modals.userdup.explanation"></h2>
-      <p data-l10n-id="pad.modals.userdup.advice"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
-    </div>
-    <div class="unauth">
-      <h1 data-l10n-id="pad.modals.unauth"></h1>
-      <p data-l10n-id="pad.modals.unauth.explanation"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
-    </div>
-    <div class="looping">
-      <h1 data-l10n-id="pad.modals.disconnected"></h1>
-      <h2 data-l10n-id="pad.modals.looping.explanation"></h2>
-      <p data-l10n-id="pad.modals.looping.cause"></p>
-    </div>
-    <div class="initsocketfail">
-      <h1 data-l10n-id="pad.modals.initsocketfail"></h1>
-      <h2 data-l10n-id="pad.modals.initsocketfail.explanation"></h2>
-      <p data-l10n-id="pad.modals.initsocketfail.cause"></p>
-    </div>
-    <div class="slowcommit">
-      <h1 data-l10n-id="pad.modals.disconnected"></h1>
-      <h2 data-l10n-id="pad.modals.slowcommit.explanation"></h2>
-      <p data-l10n-id="pad.modals.slowcommit.cause"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
-    </div>
-    <div class="badChangeset">
-      <h1 data-l10n-id="pad.modals.disconnected"></h1>
-      <h2 data-l10n-id="pad.modals.badChangeset.explanation"></h2>
-      <p data-l10n-id="pad.modals.badChangeset.cause"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
-    </div>
-    <div class="corruptPad">
-      <h1 data-l10n-id="pad.modals.disconnected"></h1>
-      <h2 data-l10n-id="pad.modals.corruptPad.explanation"></h2>
-      <p data-l10n-id="pad.modals.corruptPad.cause"></p>
-    </div>
-    <div class="deleted">
-      <h1 data-l10n-id="pad.modals.deleted"></h1>
-      <p data-l10n-id="pad.modals.deleted.explanation"></p>
-    </div>
-    <div class="disconnected">
-      <% e.begin_block("disconnected"); %>
-      <h1 data-l10n-id="pad.modals.disconnected"></h1>
-      <h2 data-l10n-id="pad.modals.disconnected.explanation"></h2>
-      <p data-l10n-id="pad.modals.disconnected.cause"></p>
-      <button id="forcereconnect" data-l10n-id="pad.modals.forcereconnect"></button>
-      <% e.end_block(); %>
-    </div>
-    <form id="reconnectform" method="post" action="/ep/pad/reconnect" accept-charset="UTF-8" style="display: none;">
-        <input type="hidden" class="padId" name="padId">
-        <input type="hidden" class="diagnosticInfo" name="diagnosticInfo">
-        <input type="hidden" class="missedChanges" name="missedChanges">
-    </form>
-<% e.end_block(); %>
-</div>
+    <!---------------------------------->
+    <!-- SETTINGS POPUP (change font) -->
+    <!---------------------------------->
 
-<div class="popup" id="settings">
-  <tr>
-    <td>
+    <div id="settings" class="popup" >
       <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
-    </td>
-    <td>
       <select id="viewfontmenu">
         <option value="normal" data-l10n-id="pad.settings.fontType.normal"></option>
         <option value="monospace" data-l10n-id="pad.settings.fontType.monospaced"></option>
+        <option value="montserrat" data-l10n-id="pad.settings.fontType.montserrat"></option>
         <option value="opendyslexic" data-l10n-id="pad.settings.fontType.opendyslexic"></option>
         <option value="comicsans" data-l10n-id="pad.settings.fontType.comicsans"></option>
         <option value="georgia" data-l10n-id="pad.settings.fontType.georgia"></option>
@@ -194,6 +222,7 @@
         <option value="lucida" data-l10n-id="pad.settings.fontType.lucida"></option>
         <option value="lucidasans" data-l10n-id="pad.settings.fontType.lucidasans"></option>
         <option value="palatino" data-l10n-id="pad.settings.fontType.palatino"></option>
+        <option value="robotomono" data-l10n-id="pad.settings.fontType.robotomono"></option>
         <option value="tahoma" data-l10n-id="pad.settings.fontType.tahoma"></option>
         <option value="timesnewroman" data-l10n-id="pad.settings.fontType.timesnewroman"></option>
         <option value="trebuchet" data-l10n-id="pad.settings.fontType.trebuchet"></option>
@@ -204,22 +233,13 @@
         <option value="sansserif" data-l10n-id="pad.settings.fontType.sansserif"></option>
         <option value="serif" data-l10n-id="pad.settings.fontType.serif"></option>
       </select>
-    </td>
-  </tr>
-</div>
+    </div>
+  </div>
+</body>
 
-<!-- export code -->
-<div id="import_export">
-<div id="export" class="popup">
-  <p data-l10n-id="timeslider.exportCurrent"></p>
-  <a id="exportetherpada" target="_blank" class="exportlink"><div class="exporttype" id="exportetherpad" data-l10n-id="pad.importExport.exportetherpad"></div></a>
-  <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
-  <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain" data-l10n-id="pad.importExport.exportplain"></div></a>
-  <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>
-  <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></div></a>
-  <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen" data-l10n-id="pad.importExport.exportopen"></div></a>
-</div>
-</div>
+<!----------------------------->
+<!-------- JAVASCRIPT --------->
+<!----------------------------->
 
 <script type="text/javascript" src="../../static/js/require-kernel.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
@@ -273,5 +293,4 @@
 </script>
 <% e.end_block(); %>
 <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
-</body>
 </html>
