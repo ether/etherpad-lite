@@ -6,11 +6,13 @@
 
 html.inner-editor {
   height: auto !important;
+  background-color: transparent !important;
 }
 #outerdocbody {
   display: flex;
   flex-direction: row;
   min-height: 100vh; /* take at least full height */
+  background-color: #F4F4F4;
 }
 #outerdocbody iframe {
   flex: 1 auto;
@@ -25,6 +27,7 @@ html.inner-editor {
   padding: 10px;
   overflow: hidden;
   box-sizing: border-box;
+  background-color: white;
 }
 #innerdocbody, #sidediv {
   padding-top: 10px; /* Both must have same top padding, so line number are aligned with the rows */
@@ -42,7 +45,7 @@ body.mozilla, body.safari {
   padding-right: 1px; /* prevents the caret from disappearing on the longest line of the doc */
 }
 html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
-span { cursor: auto; }
+span { cursor: auto; line-height: 125%; }
 
 
 /* -------------- */
@@ -86,7 +89,7 @@ body.doesWrap:not(.noprewrap) > div {
   font-family: monospace;
   padding-right: 5px;
   padding-left: 5px;
-  background-color: #eee;
+  background-color: transparent;
   border-right: 1px solid #ccc;
 }
 #sidedivinner {
