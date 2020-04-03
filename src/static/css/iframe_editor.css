@@ -12,7 +12,6 @@ html.inner-editor {
   display: flex;
   flex-direction: row;
   min-height: 100vh; /* take at least full height */
-  background-color: #F4F4F4;
 }
 #outerdocbody iframe {
   flex: 1 auto;
