@@ -83,7 +83,11 @@ async function doImport(req, res, padId)
         }
         reject("uploadFailed");
       }
-      resolve(files.file.path);
+      if(!files.file){ // might not be a graceful fix but it works
+        reject("uploadFailed");
+      }else{
+        resolve(files.file.path);
+      }
     });
   });
 
@@ -148,6 +152,9 @@ async function doImport(req, res, padId)
     } else {
       // @TODO - no Promise interface for convertors (yet)
       await new Promise((resolve, reject) => {
+        // Why are we running convertFile if it's been rejected?
+        console.warn("john debug", reject);
+
         convertor.convertFile(srcFile, destFile, exportExtension, function(err) {
           // catch convert errors
           if (err) {
