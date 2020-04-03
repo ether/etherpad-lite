@@ -14,6 +14,7 @@ body {
 #editorcontainerbox {
   flex: 1 auto;
   position: relative; /* for nested popup to use absolute positionning */
+  background-color: #eee;
 
   /* For sticky chat */
   display: flex;
