@@ -138,7 +138,7 @@
   content: "-";
 }
 .toolbar.full-icons .menu_left {
-  height: auto;
+  height: auto !important;
   overflow: visible;
 }
 

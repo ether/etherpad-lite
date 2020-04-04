@@ -23,10 +23,6 @@
 .popup input[type=text], #users input[type=text] {
   outline: none;
 }
-.popup button {
-  padding: 5px;
-  font-size: 14px;
-}
 .popup a {
   text-decoration: none
 }
@@ -69,5 +65,10 @@
     border: 1px solid #ccc;
     border-bottom: none;
     box-shadow: 0 -2px 4px #ddd;
+  }
+
+  .toolbar-popup, .hyperlink-dialog {
+    left: 0 !important; /* overide javascript positionning */
+    right: 0 !important;
   }
 }
