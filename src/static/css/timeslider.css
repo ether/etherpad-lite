@@ -1,5 +1,6 @@
 #editbar {
   padding: 10px;
+  display: block;
 }
 
 .timeslider-bar {
@@ -12,15 +13,15 @@
 .timeslider-title-container {
   flex: 1 auto;
 }
+.timeslider-title {
+  font-size: 1.5rem;
+}
 .timeslider-subtitle {
   margin-top: 10px;
 }
 
 /* RIGHT TOOLBAR (export, settings, back to pad) */
 
-.editbarright ul li {
-  margin-top: 0;
-}
 .editbarright ul li a {
   background-color: transparent;
   border: none;
@@ -113,6 +114,9 @@
 
 /* PAD CONTENT */
 
+#editorcontainerbox {
+  overflow-y: auto;
+}
 #outerdocbody {
   display: block;
 }
@@ -120,4 +124,14 @@
 #innerdocbody {
   white-space: normal;
   word-break: break-word;
+}
+
+@media (max-width: 720px) {
+  #timeslider-slider #timer { display: none; }
+
+  .editbarright [data-key="timeslider_returnToPad"] {
+    position: absolute;
+    right: 10px;
+    top: 0;
+  }
 }
