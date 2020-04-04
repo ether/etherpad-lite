@@ -26,7 +26,7 @@ button {
   margin-right: 5px;
 }
 #slider-btn-container .stepper {
-  border: 2px solid;
+  border: 2px solid !important;
   height: 25px;
   width: 25px;
   margin-left: 5px;

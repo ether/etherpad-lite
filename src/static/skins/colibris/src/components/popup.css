@@ -32,6 +32,8 @@
 
 @media (max-width: 720px) {
   .popup {
-    top: auto;
+    right: 0;
+    border-radius: 0 !important;
+    border: none !important;
   }
 }

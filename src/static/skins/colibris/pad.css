@@ -73,7 +73,8 @@ h1,
 .yui-skin-sam .yui-panel .hd,
 p[data-l10n-id="ep_comments_page.comment"],
 .comment-reply-input-label span,
-#slider-btn-container .stepper, #importmessageabiword, #importmessageabiword > a
+#slider-btn-container .stepper, #importmessageabiword, #importmessageabiword > a,
+.toolbar .show-more-icon-btn
 { color: #64d29b; }
 #timeslider-slider #ui-slider-handle, #playpause_button_icon, .gritter-item:not(.error) {
   background-color: #64d29b;

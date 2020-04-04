@@ -11,3 +11,9 @@
 .gritter-item .gritter-close .buttonicon {
   color: white;
 }
+@media (max-width: 720px) {
+  .gritter-item {
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+}

@@ -14,7 +14,7 @@
   flex: 1 auto;
 }
 .timeslider-title {
-  font-size: 1.5rem;
+  font-size: 1.8rem !important;
 }
 .timeslider-subtitle {
   margin-top: 10px;
@@ -26,9 +26,6 @@
   background-color: transparent;
   border: none;
   margin-left: 10px
-}
-.editbarright .buttontext {
-  padding: 2px 5px;
 }
 
 
@@ -133,5 +130,8 @@
     position: absolute;
     right: 10px;
     top: 0;
+  }
+  .timeslider-title {
+    font-size: 1.5rem !important;
   }
 }
