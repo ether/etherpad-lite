@@ -15,9 +15,6 @@
   flex-direction: row;
   align-items: flex-start;
 }
-.toolbar ul.menu_left {
-  flex-wrap: wrap; /* wrap left toolbar so if a lot of icons are present it goes on multiple lines */
-}
 .toolbar ul.menu_right {
   flex-shrink: 0; /* prevent from shrinking */
 }
@@ -76,8 +73,8 @@
 .toolbar ul li select {
   background: #fff;
   padding: 4px;
-  line-height: 22px; /* fix for safari (win/mac) */
-  height: 28px; /* fix for chrome (mac) */
+  line-height: 22px;
+  height: 28px;
   border-radius: 3px;
   border: 1px solid #ccc;
   outline: none;
@@ -104,6 +101,44 @@
   top: 0;
   bottom: 0;
   right: 0;
+}
+
+.toolbar .show-more-icon-btn {
+  display:none;
+  cursor: pointer;
+  height: 39px;
+  width: 39px;
+  line-height: 39px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 2rem;
+  z-index: 20;
+}
+
+.toolbar.cropped .menu_left {
+  width: calc(100% - 39px);
+  height: 33px;
+  flex-wrap: wrap;
+}
+.toolbar.cropped .show-more-icon-btn {
+  display: block;
+  position: absolute;
+  /*border-bottom: 1px solid #d2d2d2;*/
+  right: 0;
+  top: 0;
+}
+.toolbar.cropped .show-more-icon-btn:after {
+  content: "+";
+}
+.toolbar.full-icons .show-more-icon-btn {
+  line-height: 35px;
+}
+.toolbar.full-icons .show-more-icon-btn:after {
+  content: "-";
+}
+.toolbar.full-icons .menu_left {
+  height: auto;
+  overflow: visible;
 }
 
 @media only screen and (max-width: 720px) {

@@ -24,6 +24,7 @@ var hooks = require('./pluginfw/hooks');
 var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
 var padsavedrevs = require('./pad_savedrevs');
+var _ = require('ep_etherpad-lite/static/js/underscore');
 
 var ToolbarItem = function (element) {
   this.$el = element;
@@ -155,6 +156,12 @@ var padeditbar = (function()
         bodyKeyEvent(evt);
       });
 
+      $('.show-more-icon-btn').click(function() {
+        $('.toolbar').toggleClass('full-icons');
+      });
+      self.checkAllIconsAreDisplayedInToolbar();
+      $(window).resize(_.debounce( self.checkAllIconsAreDisplayedInToolbar, 100 ) );
+
       registerDefaultCommands(self);
 
       hooks.callAll("postToolbarInit", {
@@ -277,6 +284,15 @@ var padeditbar = (function()
         var padurl = window.location.href.split("?")[0];
         $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
         $('#linkinput').val(padurl);
+      }
+    },
+    checkAllIconsAreDisplayedInToolbar: function()
+    {
+      // reset style
+      $('.toolbar').removeClass('cropped')
+      var menu_left = $('.toolbar .menu_left')[0];
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
+        $('.toolbar').addClass('cropped');
       }
     }
   };
