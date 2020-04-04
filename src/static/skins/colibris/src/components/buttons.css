@@ -19,3 +19,9 @@
 .btn:hover, #mycolorpickercancel:hover, #mycolorpickersave:hover, #save_title button:hover, .hyperlink-dialog>.hyperlink-save:hover, #importsubmitinput:hover, #forcereconnect:hover {
   cursor: pointer;
 }
+
+button, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
