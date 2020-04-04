@@ -36,18 +36,17 @@ Scroll.prototype.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary = functio
   }
 }
 
-Scroll.prototype.scrollWhenPressArrowKeys = function(arrowUp, rep, innerHeight)
+Scroll.prototype.scrollWhenPressArrowKeys = function(arrowUp, rep, innerHeight, whichKey)
 {
   // if percentageScrollArrowUp is 0, let the scroll to be handled as default, put the previous
   // rep line on the top of the viewport
   if(this._arrowUpWasPressedInTheFirstLineOfTheViewport(arrowUp, rep)){
     var pixelsToScroll = this._getPixelsToScrollWhenUserPressesArrowUp(innerHeight);
-
     // by default, the browser scrolls to the middle of the viewport. To avoid the twist made
     // when we apply a second scroll, we made it immediately (without animation)
     this._scrollYPageWithoutAnimation(-pixelsToScroll);
   }else{
-    this.scrollNodeVerticallyIntoView(rep, innerHeight);
+    this.scrollNodeVerticallyIntoView(rep, innerHeight, arrowUp, whichKey);
   }
 }
 
@@ -278,7 +277,7 @@ Scroll.prototype._triggerScrollWithAnimation = function($elem, pixelsToScroll, d
 // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
 // besides of scrolling the minimum needed to be visible, it scrolls additionally
 // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
-Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight)
+Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight, arrowUp, whichKey)
 {
   var viewport = this._getViewPortTopBottom();
   var isPartOfRepLineOutOfViewport = this._partOfRepLineIsOutOfViewport(viewport, rep);
@@ -286,12 +285,16 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight)
   // when the selection changes outside of the viewport the browser automatically scrolls the line
   // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
   // So, when the line scrolled gets outside of the viewport we let the browser handle it.
-  var linePosition = caretPosition.getPosition();
+
+  // whichKey is the arrow key
+  var linePosition = caretPosition.getPosition(whichKey); // poss this?
+
   if(linePosition){
     var distanceOfTopOfViewport = linePosition.top - viewport.top;
     var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
     var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
     var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
+
     if(caretIsAboveOfViewport){
       var pixelsToScroll = distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
       this._scrollYPage(pixelsToScroll);
@@ -302,6 +305,7 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight)
       this.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, true, innerHeight);
     }
   }
+
 }
 
 Scroll.prototype._partOfRepLineIsOutOfViewport = function(viewportPosition, rep)

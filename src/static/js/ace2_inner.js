@@ -4049,7 +4049,7 @@ function Ace2Inner(){
             if(selection){
               var arrowUp = evt.which === 38;
               var innerHeight = getInnerHeight();
-              scroll.scrollWhenPressArrowKeys(arrowUp, rep, innerHeight);
+              scroll.scrollWhenPressArrowKeys(arrowUp, rep, innerHeight, evt.which);
             }
           }
         }

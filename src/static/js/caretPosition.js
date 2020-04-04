@@ -1,13 +1,12 @@
 // One rep.line(div) can be broken in more than one line in the browser.
 // This function is useful to get the caret position of the line as
 // is represented by the browser
-exports.getPosition = function ()
+exports.getPosition = function (whichKey)
 {
   var rect, line;
   var editor = $('#innerdocbody')[0];
   var range = getSelectionRange();
   var isSelectionInsideTheEditor = range && $(range.endContainer).closest('body')[0].id === 'innerdocbody';
-
   if(isSelectionInsideTheEditor){
     // when we have the caret in an empty line, e.g. a line with only a <br>,
     // getBoundingClientRect() returns all dimensions value as 0
@@ -21,7 +20,13 @@ exports.getPosition = function ()
     // when there's a <br> or any element that has no height, we can't get
     // the dimension of the element where the caret is
     if(!rect || rect.height === 0){
-      var clonedRange = createSelectionRange(range);
+
+
+if(whichKey !== 39){ // if it's not a right key
+top.console.log("here");
+
+// The below code stops going right from working, so if we are trying to go right then don't run it?
+      var clonedRange = createSelectionRange(range); // not offending line
 
       // as we can't get the element height, we create a text node to get the dimensions
       // on the position
@@ -32,7 +37,10 @@ exports.getPosition = function ()
       line = getPositionOfElementOrSelection(clonedRange);
       clonedRange.detach()
       shadowCaret.remove();
+      return line;
+}
     }
+
   }
   return line;
 }
