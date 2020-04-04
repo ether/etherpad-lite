@@ -83,7 +83,11 @@ async function doImport(req, res, padId)
         }
         reject("uploadFailed");
       }
-      resolve(files.file.path);
+      if(!files.file){ // might not be a graceful fix but it works
+        reject("uploadFailed");
+      }else{
+        resolve(files.file.path);
+      }
     });
   });
 
