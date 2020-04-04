@@ -16,14 +16,17 @@
 @import url("src/plugins/brightcolorpicker.css");
 @import url("src/plugins/comments_page.css");
 @import url("src/plugins/font_color.css");
-@import url("src/plugins/set_title_on_pad.css");
 @import url("src/plugins/tables2.css");
-@import url("src/plugins/embedded_hyperlinks.css");
 @import url("src/plugins/author_hover.css");
+
+/* -----------------------------------------------------------------
+ * COLORS
+ * If you want to change main colors, please replace following rules
+ * -----------------------------------------------------------------
+ */
 
 /* NEUTRAL COLOR */
 body,
-#mycolorpickercancel,
 .btn-default,
 .color\:black,
 [data-color=black],
@@ -38,10 +41,7 @@ body,
 .comment-changeFrom-value,
 .comment-changeTo-value,
 .reply-suggestion .reply-comment-suggest-from,
-.suggestion .comment-suggest-from,
-.hyperlink-dialog>.hyperlink-url,
-.timeslider #innerdocbody span ,
-.exporttype, .timeslider #export > p
+.suggestion .comment-suggest-from
 { color: #2E3338 !important; }
 
 /* MENUS ICONS */
@@ -53,15 +53,11 @@ body,
 { background-color: #767676 !important; }
 
 /* PRIMARY BUTTONS */
-#mycolorpickersave,
 .btn-primary,
 #tbl_btn_close,
-#save_title button,
 #yui-picker-panel .button-group .yui-button:last-child button,
 #newComment.sidebar-comment input[type=submit],
-.comment-changeTo-approve input[type=submit],
-.hyperlink-dialog>.hyperlink-save,
-#importsubmitinput, #forcereconnect
+.comment-changeTo-approve input[type=submit]
 {
   background-color: #64d29b;
   color: white;
@@ -114,7 +110,6 @@ h1,
 p[data-l10n-id="ep_comments_page.comment"],
 #newComment.sidebar-comment input[type=submit],
 .comment-changeTo-approve input[type=submit],
-.hyperlink-dialog>.hyperlink-save,
 #sidedivinner>div:before
 { font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;  }
 

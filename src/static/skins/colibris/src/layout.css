@@ -9,13 +9,6 @@
   width: 250px;
 }
 
-@media (max-width:600px) {
-  #outerdocbody.plugin-ep_author_neat { padding-left: 0; }
-  #options-linenoscheck { display:none; }
-  #options-linenoscheck ~ label { display:none; }
-  #outerdocbody { padding-left: 0; } /* side div is hidden now */
-}
-
 #outerdocbody.sidediv-hidden {
   padding-left: 0; /* sidediv hidden */
 }
@@ -35,7 +28,6 @@
 .comment-modal { margin-top: 75px !important; margin-left: 45px; }
 .authortooltip { margin-top: 65px !important; margin-left: 60px; }
 .caretindicator { margin-top: 61px!important; margin-left: 52px; }
-
 #outerdocbody.plugin-ep_author_neat .authortooltip{ margin-left: 145px; }
 #outerdocbody.plugin-ep_author_neat .caretindicator{ margin-left: 52px; margin-top: 65px!important;}
 @media (max-width:1000px) {
@@ -44,6 +36,7 @@
   #outerdocbody.plugin-ep_author_neat .caretindicator{ margin-left: 17px; }
 }
 
+/* Fix comments_page */
 @media (min-width: 1381px) {
   #outerdocbody.plugin-ep_comments_page  { padding-right: 150px; } }
   #outerdocbody.plugin-ep_comments_page #comments { left: calc(100% - 150px) }
@@ -55,6 +48,7 @@
   #outerdocbody.plugin-ep_comments_page #comments { display: none; }
   #outerdocbody.plugin-ep_comments_page  { padding-right: 0px; }
 }
+
 
 @media (min-width: 999px) {
   #outerdocbody {
@@ -86,10 +80,6 @@
 }
 
 @media (max-width:600px) {
-  html { overflow: scroll; }
-  #outerdocbody {
-    width: 100%;
-  }
   #outerdocbody iframe, #outerdocbody > #innerdocbody {
     padding: 15px;
   }

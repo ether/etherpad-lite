@@ -28,22 +28,8 @@ table#otheruserstable {
   margin-bottom: 25px;
 }
 
-#mycolorpickercancel {
-  padding-left: 3px;
-}
-
-#mycolorpickersave {
-  color: #fff;
-}
-
 #mycolorpickerpreview {
-  float: right;
-  top: 0;
-  left: 0;
-  position: relative;
   border-radius: 50%;
-  height: 20px;
-  width: 20px;
 }
 
 @media (max-width: 720px) {
