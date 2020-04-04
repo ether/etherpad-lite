@@ -306,6 +306,23 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
 exports.exposeVersion = false;
 
 /*
+ * From Etherpad 1.8.3 onwards, import and export of pads is always rate
+ * limited.
+ *
+ * The default is to allow at most 10 requests per IP in a 90 seconds window.
+ * After that the import/export request is rejected.
+ *
+ * See https://github.com/nfriedly/express-rate-limit for more options
+ */
+exports.importExportRateLimiting = {
+  // duration of the rate limit window (milliseconds)
+  "windowMs": 90000,
+
+  // maximum number of requests per IP to allow during the rate limit window
+  "max": 10
+};
+
+/*
  * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
  * file is always bounded.
  *

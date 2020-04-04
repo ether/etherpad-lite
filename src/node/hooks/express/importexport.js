@@ -4,10 +4,19 @@ var exportHandler = require('../../handler/ExportHandler');
 var importHandler = require('../../handler/ImportHandler');
 var padManager = require("../../db/PadManager");
 var authorManager = require("../../db/AuthorManager");
+const rateLimit = require("express-rate-limit");
+
+settings.importExportRateLimiting.onLimitReached = function(req, res, options) {
+  // when the rate limiter triggers, write a warning in the logs
+  console.warn(`Import/Export rate limiter triggered on "${req.originalUrl}" for IP address ${req.ip}`);
+}
+
+var limiter = rateLimit(settings.importExportRateLimiting);
 
 exports.expressCreateServer = function (hook_name, args, cb) {
 
   // handle export requests
+  args.app.use('/p/:pad/:rev?/export/:type', limiter);
   args.app.get('/p/:pad/:rev?/export/:type', async function(req, res, next) {
     var types = ["pdf", "doc", "txt", "html", "odt", "etherpad"];
     //send a 404 if we don't support this filetype
@@ -40,6 +49,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   // handle import requests
+  args.app.use('/p/:pad/import', limiter);
   args.app.post('/p/:pad/import', async function(req, res, next) {
     if (await hasPadAccess(req, res)) {
       let exists = await padManager.doesPadExists(req.params.pad);
