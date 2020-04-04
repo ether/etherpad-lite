@@ -8,7 +8,7 @@
   margin-left: 10px;
   margin-right: -5px;
 }
-.gritter-item .gritter-close .buttonicon {
+.gritter-item:not(.error) .gritter-close .buttonicon {
   color: white;
 }
 @media (max-width: 720px) {

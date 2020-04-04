@@ -83,8 +83,5 @@
   #outerdocbody iframe, #outerdocbody > #innerdocbody {
     padding: 15px;
   }
-  #sidediv {
-    display: none;
-  }
 }
 

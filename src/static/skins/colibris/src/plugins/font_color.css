@@ -1,5 +1,5 @@
-li.acl-write.font-color-icon.plugin-ep_font_color {
-  display: none;
+.font-color-icon {
+  display: none !important;
 }
 
 #font-color {

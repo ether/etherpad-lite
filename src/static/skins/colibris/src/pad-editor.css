@@ -16,24 +16,15 @@ option {
   text-transform: capitalize;
 }
 
-h1 {
+#innerdocbody h1 {
   font-size: 2.5em !important;
 }
 
-h3 {
+#innerdocbody h3 {
   font-size: 1.15em;
   letter-spacing: 1px;
 }
 
-a {
+#innerdocbody a {
   color: #3f51b5;
 }
-
-h1, h2, h3, h4, h5, h6 {
-  line-height: 120%;
-}
-
-
-
-
-
