@@ -92,48 +92,26 @@ input#myusernameedit:not(.editable) {
 /* --- MY USER COLORPICKER --- */
 /* --------------------------- */
 
-#mycolorpicker {
-  display: none;
-  position: absolute;
+#mycolorpicker.popup {
+  min-width: 0;
   right: calc(100% + 15px);
   z-index: 101;
 }
-#mycolorpickersave {
-  left: 10px;
-  font-weight: bold;
+@media (max-width: 720px) {
+  #mycolorpicker.popup {
+    right: 0;
+    left: auto;
+  }
 }
-#mycolorpickercancel {
-  left: 85px
-}
-#mycolorpickersave,
-#mycolorpickercancel {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  color: #000;
-  overflow: hidden;
-  padding: 4px;
-  top: 240px;
-  text-align: center;
-  position: absolute;
-  width: 60px;
+#mycolorpicker.popup .btn-container {
+  margin-top: 10px;
 }
 #mycolorpickerpreview {
-  position: absolute;
-  left: 207px;
-  top: 240px;
-  width: 16px;
-  height: 16px;
-  padding: 4px;
-  overflow: hidden;
-  color: #fff;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
+  width: 24px;
+  height: 24px;
   border-radius: 5px;
+  float: right;
 }
-
 
 /* ------------------- */
 /* --- OTHER USERS --- */
