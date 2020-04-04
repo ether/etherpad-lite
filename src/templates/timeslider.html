@@ -32,6 +32,7 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <link rel="shortcut icon" href="<%=settings.faviconTimeslider%>">
   <% e.begin_block("timesliderStyles"); %>
   <link rel="stylesheet" href="../../static/css/pad.css">
@@ -72,7 +73,7 @@
         </p>
       </div>
 
-      <div class="editbarright">
+      <div class="editbarright menu_right">
         <% e.begin_block("timesliderEditbarRight"); %>
         <ul>
           <%- toolbar.menu(settings.toolbar.timeslider, true, 'timeslider-right', 'timeslider') %>

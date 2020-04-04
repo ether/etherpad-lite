@@ -11,7 +11,6 @@
   position: relative;
   max-width: 400px;
   min-width: 0;
-  width: 100%;
   margin: 0 auto;
   display: flex;
 }
