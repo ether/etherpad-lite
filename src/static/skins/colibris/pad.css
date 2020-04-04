@@ -23,10 +23,6 @@
 
 /* NEUTRAL COLOR */
 body,
-#tocItems a,
-.toolbar ul li a:hover .buttonicon,
-.toolbar ul li a,
-.toolbar ul li select,
 #mycolorpickercancel,
 .btn-default,
 .color\:black,
@@ -85,6 +81,17 @@ p[data-l10n-id="ep_comments_page.comment"],
 #slider-btn-container button {
   border-color: #64d29b;
 }
+/* PRIMARY-COLOR VARIANT */
+.toolbar ul li a.selected,
+.toolbar ul li a.pressed,
+.toolbar ul li select:active {
+  background-color: #f0faf6 !important;
+}
+.toolbar ul li a.selected .buttonicon,
+.toolbar ul li a.pressed .buttonicon,
+.toolbar ul li select:active {
+  color: #5abb89;
+}
 
 /* BACKGROUND COLOR */
 #editorcontainerbox {
@@ -109,3 +116,4 @@ p[data-l10n-id="ep_comments_page.comment"],
 .hyperlink-dialog>.hyperlink-save,
 #sidedivinner>div:before
 { font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;  }
+

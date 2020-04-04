@@ -15,7 +15,7 @@
 .toolbar .buttonicon {
   background-color: transparent;
   font-size: 14px;
-  color: #767676;
+  color: #5f6368;
 }
 
 .toolbar ul li.separator {
@@ -50,29 +50,27 @@
   background-color: transparent;
   background: none;
   border: none;
+  border-radius: 3px !important;
 }
 
-.toolbar ul li a:hover,
-.toolbar ul li a.selected,
-.toolbar ul li a:focus {
-  background: none;
-  border-radius: 0;
+.toolbar ul li a:hover, .toolbar ul li select:hover  {
+  background-color: #f1f3f3;
 }
 
-.toolbar ul li a:hover {
-  background-color: #f7f7f7;
-}
-
-.toolbar ul li a.selected,
-.toolbar ul li a:focus {
-   background-color: #eaeaea;
+.toolbar ul li select:active option {
+  background-color: white !important;
+  color: #44464a;
+  padding: 5px;
 }
 
 .toolbar ul li select {
+  cursor: pointer;
   border: none;
-  border-bottom: 1px solid #d7d8da;
-  border-radius: 0;
-  width: 90px;
+  border-radius: 3px;
+  width: auto;
+  font-weight: bold;
+  color: #6d7075;
+  font-size: 14px;
 }
 
 .toolbar ul li[data-key=showusers] {
@@ -84,7 +82,7 @@
 .toolbar ul li[data-key=showusers] > a {
   width: 100%;
   height: 100%;
-  border-radius: 0;
+  border-radius: 0 !important;
 }
 
 @media (max-width: 1000px) {
