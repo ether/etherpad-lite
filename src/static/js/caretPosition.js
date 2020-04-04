@@ -23,7 +23,6 @@ exports.getPosition = function (whichKey)
 
 
 if(whichKey !== 39){ // if it's not a right key
-top.console.log("here");
 
 // The below code stops going right from working, so if we are trying to go right then don't run it?
       var clonedRange = createSelectionRange(range); // not offending line
