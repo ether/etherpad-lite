@@ -56,13 +56,15 @@
 @media only screen and (max-width: 720px) {
   .popup {
     border-radius: 0;
-    top: auto;
     left: 0;
-    bottom: 0;
     right: 0;
     max-height: 80vh;
-    max-width: none;
-
+    max-width: none !important;
+  }
+  /* Move popup to the bottom, except popup linked to left toolbar, like hyperklink popup */
+  .popup:not(.hyperlink-dialog):not(.toolbar-popup) {
+    top: auto;
+    bottom: 0;
     border-radius: 6px 6px 0 0;
     border: 1px solid #ccc;
     border-bottom: none;
