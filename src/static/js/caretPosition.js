@@ -11,7 +11,10 @@ exports.getPosition = function (whichKey)
     // when we have the caret in an empty line, e.g. a line with only a <br>,
     // getBoundingClientRect() returns all dimensions value as 0
     var selectionIsInTheBeginningOfLine = range.endOffset > 0;
+    // This whole selcetion is in the beginning of a line thing seems really buggy
+    // It's ALWAYS returning true!!
     if (selectionIsInTheBeginningOfLine) {
+      console.warn("sel is begin");
       var clonedRange = createSelectionRange(range);
       line = getPositionOfElementOrSelection(clonedRange);
       clonedRange.detach()
@@ -19,18 +22,31 @@ exports.getPosition = function (whichKey)
 
     // when there's a <br> or any element that has no height, we can't get
     // the dimension of the element where the caret is
+
     // We also don't process this on right arrow key.
     // See https://github.com/ether/etherpad-lite/pull/3087
     if((!rect || rect.height === 0) && (whichKey !== 39)){
 
+      // create a selection range
+console.warn(range); // compare this between FF and Chrome
       var clonedRange = createSelectionRange(range);
 
       // as we can't get the element height, we create a text node to get the dimensions
       // on the position
       var shadowCaret = $(document.createTextNode("|"));
+
       clonedRange.insertNode(shadowCaret[0]);
+      // Inserts a node at the start of
+      // a range that includes a "|" character
+      // details at https://developer.mozilla.org/en-US/docs/Web/API/Range/insertNode
+
+      // Sets the Range to contain the Node and its contents.
+      // The parent Node of the start and end of the Range will be the same
+      // as the parent of shadowCaret[0].
+      // https://developer.mozilla.org/en-US/docs/Web/API/Range/selectNode
       clonedRange.selectNode(shadowCaret[0]);
 
+      // Now we get the position of this cloned Range
       line = getPositionOfElementOrSelection(clonedRange);
       clonedRange.detach();
       shadowCaret.remove();
