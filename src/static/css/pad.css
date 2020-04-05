@@ -16,6 +16,9 @@ html {
   line-height: 16px;
   color: #3e3e3e;
 }
+html, *, *:after, *:before {
+  box-sizing: border-box;
+}
 *, p {
   margin: 0;
   padding: 0;
