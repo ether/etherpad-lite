@@ -19,13 +19,11 @@ exports.getPosition = function (whichKey)
 
     // when there's a <br> or any element that has no height, we can't get
     // the dimension of the element where the caret is
-    if(!rect || rect.height === 0){
+    // We also don't process this on right arrow key.
+    // See https://github.com/ether/etherpad-lite/pull/3087
+    if((!rect || rect.height === 0) && (whichKey !== 39)){
 
-
-if(whichKey !== 39){ // if it's not a right key
-
-// The below code stops going right from working, so if we are trying to go right then don't run it?
-      var clonedRange = createSelectionRange(range); // not offending line
+      var clonedRange = createSelectionRange(range);
 
       // as we can't get the element height, we create a text node to get the dimensions
       // on the position
@@ -34,10 +32,9 @@ if(whichKey !== 39){ // if it's not a right key
       clonedRange.selectNode(shadowCaret[0]);
 
       line = getPositionOfElementOrSelection(clonedRange);
-      clonedRange.detach()
+      clonedRange.detach();
       shadowCaret.remove();
       return line;
-}
     }
 
   }

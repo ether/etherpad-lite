@@ -630,9 +630,6 @@ function Ace2Inner(){
     // Sadly this will mean you get a walking Caret in Chrome when clicking on a URL
     // So this has to be set to pre-wrap ;(
     // We need to file a bug w/ the Chromium team.
-    if(browser.chrome){
-      $("#innerdocbody").addClass("noprewrap");
-    }
 
   }
 
