@@ -291,7 +291,6 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight, arrow
     var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
     var caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
     var caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
-
     if(caretIsAboveOfViewport){
       var pixelsToScroll = distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
       this._scrollYPage(pixelsToScroll);
@@ -302,7 +301,6 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight, arrow
       this.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, true, innerHeight);
     }
   }
-
 }
 
 Scroll.prototype._partOfRepLineIsOutOfViewport = function(viewportPosition, rep)
