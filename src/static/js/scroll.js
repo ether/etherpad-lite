@@ -285,10 +285,7 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight, arrow
   // when the selection changes outside of the viewport the browser automatically scrolls the line
   // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
   // So, when the line scrolled gets outside of the viewport we let the browser handle it.
-
-  // whichKey is the arrow key
-  var linePosition = caretPosition.getPosition(whichKey); // poss this?
-
+  var linePosition = caretPosition.getPosition(whichKey);
   if(linePosition){
     var distanceOfTopOfViewport = linePosition.top - viewport.top;
     var distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
