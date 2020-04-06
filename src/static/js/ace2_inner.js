@@ -292,6 +292,7 @@ function Ace2Inner(){
   {
     if ((typeof author) != "string")
     {
+      top.console.error("Going to throw new error, potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
       throw new Error("setAuthorInfo: author (" + author + ") is not a string");
     }
     if (!info)

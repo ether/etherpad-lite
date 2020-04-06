@@ -253,7 +253,15 @@ var undoModule = (function()
       }
       if (!merged)
       {
-        stack.pushEvent(event);
+        /*
+         * Push the event on the undo stack only if it exists, and if it's
+         * not a "clearauthorship". This disallows undoing the removal of the
+         * authorship colors, but is a necessary stopgap measure against
+         * https://github.com/ether/etherpad-lite/issues/2802
+         */
+        if (event && (event.eventType !== "clearauthorship")) {
+          stack.pushEvent(event);
+        }
       }
       undoPtr = 0;
     }
