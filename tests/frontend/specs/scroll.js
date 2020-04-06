@@ -1,3 +1,16 @@
+/*
+
+ACH MOTHER TRUCKING TUNG:
+
+Browsers no longer allow us to send arrow keys directly.
+Sendkeys does work.   See: https://stackoverflow.com/a/19883789/695411
+
+This means some of these tests will always be buggy.
+
+A fix using selenium or so might work?
+
+*/
+
 describe('scroll when focus line is out of viewport', function () {
   before(function (done) {
     helper.newPad(function(){
@@ -12,7 +25,6 @@ describe('scroll when focus line is out of viewport', function () {
     });
     this.timeout(20000);
   });
-
   context('when user presses any arrow keys on a line above the viewport', function(){
     context('and scroll percentage config is set to 0.2 on settings.json', function(){
       var lineCloseOfTopOfPad = 10;
@@ -50,7 +62,7 @@ describe('scroll when focus line is out of viewport', function () {
         placeCaretAtTheEndOfLine(lineCloseToBottomOfPad); // place caret in the 50th line
         setTimeout(function() {
           // warning: even pressing right arrow, the caret does not change of position
-          pressAndReleaseLeftArrow();
+          pressAndReleaseLeftArrow(); // THIS WONT WORK
           done();
         }, 1000);
       });

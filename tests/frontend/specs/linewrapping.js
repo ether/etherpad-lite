@@ -4,7 +4,6 @@ describe('Line wrapping ability to navigate through text and modify appropriatel
     helper.newPad(cb);
     this.timeout(6000);
   });
-/*
   it('Tests line wrapping and caret positioning', function (done) {
     var chrome$ = helper.padChrome$;
     var inner$ = helper.padInner$;
@@ -72,10 +71,9 @@ describe('Line wrapping ability to navigate through text and modify appropriatel
       done();
     });
   });
-*/
 
   // This fails in Firefox, see https://github.com/ether/etherpad-lite/issues/3087
-  it('Tests caret traversal over wrapped lines', function (done) {
+  xit('Tests caret traversal over wrapped lines', function (done) {
     var chrome$ = helper.padChrome$;
     var inner$ = helper.padInner$;
     chrome$('#editorcontainer').css('width', '200px');
@@ -113,16 +111,13 @@ describe('Line wrapping ability to navigate through text and modify appropriatel
       // Now we simulate our failure experience of going to position 16, back to 14 then forward to 16.
       // We will do that in a seperate test that can be ignored and test enabled once the proper fix lands
 
-      // caret should be after " " and before I
-      // simulate a keypress of the left arrow key
-      // inner$('div').first().sendkeys('{leftarrow}');
+      // using sendkeys doesn't actually trigger the failure event and we can't use browser to send keystrokes
+      // any more, see: https://stackoverflow.com/a/19883789/695411
+
+      // This means writing tests for this are impossible without an OS passing the arrow keys
+      // Afaik Selenium or so can do this?
 
       setTimeout(function(){
-  pressAndReleaseRightArrow();
-  pressAndReleaseRightArrow();
-  pressAndReleaseRightArrow();
-  pressAndReleaseRightArrow();
-/*
         inner$('div').first().sendkeys('{leftarrow}');
 
       setTimeout(function(){
@@ -143,7 +138,6 @@ describe('Line wrapping ability to navigate through text and modify appropriatel
 
       }, 1000);
 
-*/
       }, 1000);
 
       done();
