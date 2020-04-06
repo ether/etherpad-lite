@@ -72,6 +72,7 @@ async function doImport(req, res, padId)
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
   form.uploadDir = tmpDirectory;
+  form.maxFileSize = settings.importMaxFileSize;
 
   // locally wrapped Promise, since form.parse requires a callback
   let srcFile = await new Promise((resolve, reject) => {

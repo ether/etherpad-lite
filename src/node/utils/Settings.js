@@ -305,6 +305,14 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
  */
 exports.exposeVersion = false;
 
+/*
+ * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
+ * file is always bounded.
+ *
+ * File size is specified in bytes. Default is 50 MB.
+ */
+exports.importMaxFileSize = 50 * 1024 * 1024;
+
 // checks if abiword is avaiable
 exports.abiwordAvailable = function()
 {
