@@ -81,11 +81,13 @@
 		_tpl_title: '<h3 class="gritter-title">[[title]]</h3>',
 		_tpl_item: [
 			'<div id="gritter-item-[[number]]" class="popup gritter-item [[item_class]]">',
-				'<div class="gritter-content">',
-					'[[title]]',
-					'<p>[[text]]</p>',
+				'<div class="popup-content">',
+					'<div class="gritter-content">',
+						'[[title]]',
+						'<p>[[text]]</p>',
+					'</div>',
+					'<div class="gritter-close"><i class="buttonicon buttonicon-cancel"></i></div>',
 				'</div>',
-				'<div class="gritter-close"><i class="buttonicon buttonicon-cancel"></i></div>',
 			'</div>'].join(''),
 
 
@@ -162,7 +164,7 @@
 
 			var item = $('#gritter-item-' + this._item_count);
 
-			item.fadeIn(this.fade_in_speed, function(){
+			item.addClass('popup-show').fadeIn(this.fade_in_speed, function(){
 				Gritter['_after_open_' + number]($(this));
 			});
 
@@ -244,7 +246,7 @@
 					e.animate({ height: 0 }, 300, function(){
 						Gritter._countRemoveWrapper(unique_id, e, manual_close);
 					})
-				})
+				}).removeClass('popup-show')
 
 			}
 			else {

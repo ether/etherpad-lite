@@ -231,8 +231,7 @@ var padeditbar = (function()
           if(module.css('display') != "none")
           {
             $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
-            module.slideUp("fast", cb);
-            returned = true;
+            module.removeClass("popup-show");
           }
         }
         if(!returned && cb) return cb();
@@ -246,15 +245,16 @@ var padeditbar = (function()
           var thisModuleName = self.dropdowns[i];
           var module = $("#" + thisModuleName);
 
-          if(module.css('display') != "none")
+          if(module.hasClass('popup-show'))
           {
             $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
-            module.slideUp("fast");
+            module.removeClass("popup-show");
           }
           else if(thisModuleName==moduleName)
           {
             $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
-            module.slideDown("fast", cb);
+            module.addClass("popup-show")
+            cb();
           }
         }
       }
