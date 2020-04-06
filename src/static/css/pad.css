@@ -14,10 +14,15 @@
 
 html {
   font-size: 14px;
-  font-family: Cantarell, Roboto, "Open Sans", "Helvetica Neue", Arial, sans-serif;
   line-height: 20px;
   color: #3e3e3e;
 }
+
+html,
+#sidedivinner > div:before {
+  font-family: Cantarell, Roboto, "Open Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
 .clear {
   clear: both
 }

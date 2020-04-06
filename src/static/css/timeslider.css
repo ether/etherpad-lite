@@ -71,7 +71,7 @@
 #timeslider-slider .star {
   cursor: pointer;
   position: absolute;
-  top: -6px
+  top: -8px
 }
 #timeslider-slider .star:before{
   font-family: fontawesome-etherpad;

@@ -92,7 +92,7 @@ body.doesWrap:not(.noprewrap) > div {
 }
 #sidedivinner {
   text-align: right;
-  opacity: .7;
+  opacity: .9;
 }
 #sidediv:not(.sidedivdelayed) { /* before sidediv get initialized, hide text */
   color: transparent;
@@ -132,7 +132,7 @@ body.doesWrap:not(.noprewrap) > div {
 ::-moz-selection {
   background: #acf;
 }
-a {
+#innerdocbody a {
   cursor: pointer !important;
   white-space:pre-wrap;
 }

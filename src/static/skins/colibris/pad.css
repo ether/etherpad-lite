@@ -78,16 +78,20 @@ p[data-l10n-id="ep_comments_page.comment"],
 #slider-btn-container button {
   border-color: #64d29b;
 }
+
+h2 {
+  opacity: .9 !important; /* make it a bit less agressive */
+}
 /* PRIMARY-COLOR VARIANT */
 .toolbar ul li a.selected,
 .toolbar ul li a.pressed,
 .toolbar ul li select:active {
-  background-color: #f0faf6 !important;
+  background-color: #f0faf6 !important; /* primary light */
 }
 .toolbar ul li a.selected .buttonicon,
 .toolbar ul li a.pressed .buttonicon,
 .toolbar ul li select:active {
-  color: #5abb89;
+  color: #5abb89; /* primary a bit darker */
 }
 
 /* BACKGROUND COLOR */
@@ -96,4 +100,6 @@ p[data-l10n-id="ep_comments_page.comment"],
 }
 
 /* FONT */
-body { font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }
+body,
+#sidedivinner > div:before
+{ font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }

@@ -42,6 +42,7 @@
 }
 #titlebar #titlelabel {
   margin: 4px 0 0 4px;
+  display: inline;
 }
 #titlebar .stick-to-screen-btn,
 #titlebar .hide-reduce-btn {
@@ -106,6 +107,7 @@
 #chaticon #chatcounter {
   font-size: .8rem;
   vertical-align: middle;
+  margin-left: 5px;
 }
 
 /* -- LOAD MESSAGES -- */

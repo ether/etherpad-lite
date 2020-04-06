@@ -115,7 +115,9 @@ input#myusernameedit:not(.editable) {
 /* ------------------- */
 /* --- OTHER USERS --- */
 /* ------------------- */
-
+#otheruserstable {
+  display: none;
+}
 #otheruserstable td {
   height: 26px;
   padding: 0 2px;

@@ -6,7 +6,7 @@
 #sidedivinner>div:before {
   font-size: 13px;
   padding-right: 18px !important;
-  color: #6a6a6b;
+  color: #818188;
   text-transform: uppercase;
   font-size: 11px !important;
   font-weight: bold;
@@ -22,7 +22,7 @@
 #sidedivinner>div {
   line-height: 24px;
   font-size: 10px !important;
-  color: #7b7878;
+  color: #b2aaaa;
 }
 
 #sidedivinner.authorColors>div, #sidedivinner.authorColors>div.primary-none, #sidedivinner>div {
