@@ -11,6 +11,7 @@ html.inner-editor {
 #outerdocbody {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   min-height: 100vh; /* take at least full height */
 }
 #outerdocbody iframe {

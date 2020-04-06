@@ -1,5 +1,4 @@
 #outerdocbody {
-  max-width: 900px;
   margin: 0 auto;
   padding-top: 20px;
   width: 100%;
@@ -14,6 +13,7 @@
 }
 
 #outerdocbody iframe, #outerdocbody > #innerdocbody {
+  max-width: 900px;
   padding: 55px;
   box-shadow: 0 0 0 0.5px rgba(209, 209, 209, 0.32), 0 0 7pt 0pt rgba(204, 204, 204, 0.52);
   border: 0;
