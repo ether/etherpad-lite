@@ -932,7 +932,7 @@ async function handleClientReady(client, message)
   await Promise.all(authors.map(authorId => {
     return authorManager.getAuthor(authorId).then(author => {
       if (!author) {
-        messageLogger.error("There is no author for authorId:", authorId);
+        messageLogger.error("There is no author for authorId: ", authorId, ". This is possibly related to https://github.com/ether/etherpad-lite/issues/2802");
       } else {
         historicalAuthorData[authorId] = { name: author.name, colorId: author.colorId }; // Filter author attribs (e.g. don't send author's pads to all clients)
       }
