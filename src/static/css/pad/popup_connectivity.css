@@ -1,8 +1,4 @@
-#connectivity {
-  z-index: 600 !important;
-}
-
-#connectivity * {
+#connectivity .popup-content * {
   display: none;
 }
 
