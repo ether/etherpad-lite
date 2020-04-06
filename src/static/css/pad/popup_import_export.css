@@ -2,11 +2,11 @@
   display: none;
 }
 .exportlink {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   display: block;
 }
 .exporttype:before {
-  margin-right: 5px !important;
+  margin-right: 10px !important;
 }
 
 /* hidden element */
@@ -22,6 +22,5 @@
 }
 
 #importsubmitinput {
-  margin-top: 12px;
-  padding: 2px 4px 2px 4px;
+  margin-top: 10px;
 }

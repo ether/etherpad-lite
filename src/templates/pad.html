@@ -143,26 +143,32 @@
           </p>
           <% e.end_block(); %>
 
-          <% e.begin_block("mySettings.dropdowns"); %>
-          <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
-          <select id="viewfontmenu">
-            <option value="" data-l10n-id="pad.settings.fontType.normal">Normal</option>
-            <%= fonts = [
-                      "Quicksand", "Roboto", "Montserrat", "OpenDyslexic", "monospace", "RobotoMono",
-                      "Arial", "Georgia", "Times New Roman", "Verdana", "Courrier New",
-                      "Open Sans", "Lato", "Helvetica" ] %>
-            <% for(var i=0; i < fonts.length; i++) { %>
-              <option value="<%=fonts[i]%>"><%=fonts[i]%></option>
-            <% } %>
-          </select>
+          <div class="dropdowns-container">
+            <% e.begin_block("mySettings.dropdowns"); %>
+            <p class="dropdown-line">
+              <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
+              <select id="viewfontmenu">
+                <option value="" data-l10n-id="pad.settings.fontType.normal">Normal</option>
+                <%= fonts = [
+                          "Quicksand", "Roboto", "Montserrat", "OpenDyslexic", "monospace", "RobotoMono",
+                          "Arial", "Georgia", "Times New Roman", "Verdana", "Courrier New",
+                          "Open Sans", "Lato", "Helvetica" ] %>
+                <% for(var i=0; i < fonts.length; i++) { %>
+                  <option value="<%=fonts[i]%>"><%=fonts[i]%></option>
+                <% } %>
+              </select>
+            </p>
 
-          <label for="languagemenu" data-l10n-id="pad.settings.language">Language:</label>
-          <select id="languagemenu">
-              <% for (lang in langs) { %>
-              <option value="<%=lang%>"><%=langs[lang].nativeName%></option>
-              <% } %>
-          </select>
-          <% e.end_block(); %>
+            <p class="dropdown-line">
+              <label for="languagemenu" data-l10n-id="pad.settings.language">Language:</label>
+              <select id="languagemenu">
+                  <% for (lang in langs) { %>
+                  <option value="<%=lang%>"><%=langs[lang].nativeName%></option>
+                  <% } %>
+              </select>
+            </p>
+            <% e.end_block(); %>
+          </div>
 
           <h2 data-l10n-id="pad.settings.about">About</h2>
           <span data-l10n-id="pad.settings.poweredBy">Powered by</span>
