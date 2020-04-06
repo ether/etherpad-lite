@@ -92,11 +92,11 @@
 
       <div id="slider-btn-container">
         <button id="playpause_button_icon" class="buttonicon buttonicon-play"></button>
-        <button id="leftstep"  class="stepper buttonicon buttonicon-to-start"></button>
-        <button id="rightstep" class="stepper buttonicon buttonicon-to-end"></button>
+        <button id="leftstep"  class="stepper buttonicon buttonicon-step-backward"></button>
+        <button id="rightstep" class="stepper buttonicon buttonicon-step-forward"></button>
         <!-- Left and Right star button are actually not displayed to the screen -->
-        <button id="leftstar"  class="stepper buttonicon buttonicon-to-start" style="display:none"></button>
-        <button id="rightstar" class="stepper buttonicon buttonicon-to-end"   style="display:none"></button>
+        <button id="leftstar"  class="stepper buttonicon" style="display:none"></button>
+        <button id="rightstar" class="stepper buttonicon" style="display:none"></button>
       </div>
     </div>
 
@@ -123,13 +123,27 @@
 
     <div id="import_export" class="popup" ><div class="popup-content">
       <div id="export">
-        <p data-l10n-id="timeslider.exportCurrent"></p>
-        <a id="exportetherpada" target="_blank" class="exportlink"><div class="exporttype" id="exportetherpad" data-l10n-id="pad.importExport.exportetherpad"></div></a>
-        <a id="exporthtmla" target="_blank" class="exportlink"><div class="exporttype" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></div></a>
-        <a id="exportplaina" target="_blank" class="exportlink"><div class="exporttype" id="exportplain" data-l10n-id="pad.importExport.exportplain"></div></a>
-        <a id="exportworda" target="_blank" class="exportlink"><div class="exporttype" id="exportword" data-l10n-id="pad.importExport.exportword"></div></a>
-        <a id="exportpdfa" target="_blank" class="exportlink"><div class="exporttype" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></div></a>
-        <a id="exportopena" target="_blank" class="exportlink"><div class="exporttype" id="exportopen" data-l10n-id="pad.importExport.exportopen"></div></a>
+        <h2 data-l10n-id="timeslider.exportCurrent"></h2>
+        <% e.begin_block("exportColumn"); %>
+        <a id="exportetherpada" target="_blank" class="exportlink">
+          <span class="exporttype buttonicon buttonicon-file-powerpoint" id="exportetherpad" data-l10n-id="pad.importExport.exportetherpad"></span>
+        </a>
+        <a id="exporthtmla" target="_blank" class="exportlink">
+          <span class="exporttype buttonicon buttonicon-file-code" id="exporthtml" data-l10n-id="pad.importExport.exporthtml"></span>
+        </a>
+        <a id="exportplaina" target="_blank" class="exportlink">
+          <span class="exporttype buttonicon buttonicon-file" id="exportplain" data-l10n-id="pad.importExport.exportplain"></span>
+        </a>
+        <a id="exportworda" target="_blank" class="exportlink">
+          <span class="exporttype buttonicon buttonicon-file-word" id="exportword" data-l10n-id="pad.importExport.exportword"></span>
+        </a>
+        <a id="exportpdfa" target="_blank" class="exportlink">
+          <span class="exporttype buttonicon buttonicon-file-pdf" id="exportpdf" data-l10n-id="pad.importExport.exportpdf"></span>
+        </a>
+        <a id="exportopena" target="_blank" class="exportlink">
+          <span class="exporttype buttonicon buttonicon-file-alt" id="exportopen" data-l10n-id="pad.importExport.exportopen"></span>
+        </a>
+        <% e.end_block(); %>
       </div>
     </div></div>
 

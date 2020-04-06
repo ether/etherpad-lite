@@ -71,15 +71,15 @@
 #timeslider-slider .star {
   cursor: pointer;
   position: absolute;
-  top: -4px
+  top: -6px
 }
 #timeslider-slider .star:before{
   font-family: fontawesome-etherpad;
   color: #da9700;
-  content: "\e836";
+  content: "\e856";
   vertical-align:middle;
   font-size:16px;
-  margin-left: -1px;
+  margin-left: -2px;
 }
 
 /* BUTTONS TO MOVE SLIDER (Play/Pause, Next, Prev)*/
@@ -99,11 +99,13 @@
 #slider-btn-container #playpause_button_icon {
   width: 40px;
   height: 40px;
-  font-size: 22px;
   padding-left: 2px;
 }
+#slider-btn-container #playpause_button_icon:before {
+  font-size: 22px;
+}
 #slider-btn-container #playpause_button_icon.pause:before {
-  content: "\e82e";
+  content: "\e829";
   padding-left: 0;
   padding-right: 2px;
 }

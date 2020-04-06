@@ -18,8 +18,14 @@
 
 .toolbar .buttonicon {
   background-color: transparent;
-  font-size: 14px;
+  font-size: 15px;
   color: #5f6368;
+}
+.buttonicon-insertorderedlist,
+.buttonicon-insertunorderedlist,
+.buttonicon-indent,
+.buttonicon-outdent {
+  font-size: 16px !important;
 }
 
 .toolbar ul li.separator {
@@ -75,7 +81,7 @@
 
 .toolbar ul li[data-key=showusers] {
   margin: 0;
-  margin-left: -10px;
+  margin-left: 10px;
   width: 45px;
   height: 100%;
 }
@@ -83,6 +89,13 @@
   width: 100%;
   height: 100%;
   border-radius: 0 !important;
+}
+
+.toolbar .menu_right .separator {
+  display: none;
+}
+.toolbar .menu_right li {
+  margin-left: 8px;
 }
 
 .toolbar.cropped .menu_left {
