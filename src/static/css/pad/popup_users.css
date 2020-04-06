@@ -31,7 +31,6 @@
   box-shadow: none;
   height: 200px;
   min-width: 0;
-  box-sizing: border-box;
   padding: 5px;
 }
 

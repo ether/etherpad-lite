@@ -74,11 +74,6 @@
   padding: 8px;
 }
 
-#chatinputbox #chatinput {
-  width: calc(100% - 20px);
-  float: right;
-}
-
 .plugin-ep_author_neat #chatbox.stickyChat #chattext {
   padding: 5px 3px;
 }
