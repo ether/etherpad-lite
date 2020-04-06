@@ -253,8 +253,10 @@ var padeditbar = (function()
           else if(thisModuleName==moduleName)
           {
             $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
-            module.addClass("popup-show")
-            cb();
+            module.addClass("popup-show");
+            if (cb) {
+              cb();
+            }
           }
         }
       }

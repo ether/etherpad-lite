@@ -2,6 +2,15 @@ table#otheruserstable {
   margin-top: 20px;
 }
 
+.popup#users.chatAndUsers .popup-content {
+  padding: 20px 10px;
+  height: 250px;
+  background-color: white;
+  color: #374256;
+  border-left: none;
+  transition: none;
+}
+
 #otheruserstable .swatch {
   border: none !important;
   border-radius: 50%;
@@ -19,6 +28,7 @@ table#otheruserstable {
 input#myusernameedit {
   min-width: 110px;
   border: none !important;
+  background-color: transparent !important;
   border-bottom: 1px solid #ddd !important;
   border-radius: 0;
   padding-bottom: 5px;

@@ -66,7 +66,7 @@ var chat = (function()
         userAndChat = false;
       }
       padcookie.setPref("chatAndUsers", userAndChat);
-      $('#users, .sticky-container').toggleClass("chatAndUsers stickyUsers", userAndChat);
+      $('#users, .sticky-container').toggleClass("chatAndUsers popup-show stickyUsers", userAndChat);
       $("#chatbox").toggleClass("chatAndUsersChat", userAndChat);
     },
     hide: function ()
