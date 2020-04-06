@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: center;
   min-width: 28px;
-  height: 26px;
+  height: 28px;
   border: 1px solid #ccc;
   border-radius: 3px;
   background: #fff;
@@ -82,14 +82,16 @@
 }
 
 .toolbar ul li[data-key=showusers] > a {
-  min-width: 30px;
+  min-width: 35px;
+}
+.toolbar ul li[data-key=showusers] > a .buttonicon-showusers {
+  padding-left: 3px;
 }
 .toolbar ul li[data-key=showusers] > a #online_count {
   color: #777;
   font-size: 11px;
   position: relative;
-  top: 2px;
-  padding-left: 2px;
+  padding-left: 5px;
 }
 
 .toolbar #toolbar-overlay {
