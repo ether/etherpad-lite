@@ -194,7 +194,7 @@ exports.getText = async function(padID, rev)
   }
 
   // the client wants the latest text, lets return it to him
-  let html = await exportHtml.getPadHTML(pad, false);
+  let html = await exportHtml.getPadHTML(pad);
   let text = htmlToText.fromString(html, {
     format: {
       unorderedList: function(elem, fn, options){
