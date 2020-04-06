@@ -1,19 +1,20 @@
 #gritter-container {
   position: absolute;
   bottom: 0;
-  right: 0;
-  left: 0;
+  right: 50%;
+  transform: translateX(50%);
   text-align: center;
   z-index: 9999;
 }
 
 .gritter-item.popup {
   position: relative;
-  max-width: 400px;
-  min-width: 0;
-  margin: 0 auto;
+  max-width: 450px;
   visibility: visible;
+  right: auto;
+  left: auto;
   top: auto;
+  bottom: auto;
 }
 .gritter-item .popup-content {
   display: flex;
@@ -24,12 +25,7 @@
 }
 
 .gritter-item .gritter-close {
-  display: none;
   align-self: center;
-}
-
-.gritter-item.sticky .gritter-close {
-  display: block;
 }
 
 .gritter-item.error .popup-content {
