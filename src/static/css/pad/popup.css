@@ -1,15 +1,38 @@
+.popup.popup-show {
+  visibility: visible;
+}
+
+.popup > .popup-content {
+  transform: scale(0.7);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.74, -0.05, 0.27, 1.75)
+}
+
+.popup.popup-show > .popup-content {
+  transform: scale(1);
+  opacity: 1;
+}
+
 .popup {
   position: absolute;
-  top: 0;
-  right: 20px;
-  display: none;
+  top: 10px;
+  right: 30px;
+  visibility: hidden;
   z-index: 500;
   min-width: 300px;
   max-width: 600px;
+}
+#mycolorpicker {
+  top: 0;
+}
+.popup.toolbar-popup {
+  right: auto;
+  margin-left: -10px;
+}
+.popup-content {
   padding: 10px;
-  border-radius: 0 0 6px 6px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-top: none;
   box-shadow: 0 2px 4px #ddd;
   background: #f7f7f7;
 }
@@ -58,7 +81,7 @@
     max-width: none !important;
   }
   /* Move popup to the bottom, except popup linked to left toolbar, like hyperklink popup */
-  .popup:not(.hyperlink-dialog):not(.toolbar-popup) {
+  .popup:not(.toolbar-popup) {
     top: auto;
     bottom: 0;
     border-radius: 6px 6px 0 0;
@@ -67,7 +90,7 @@
     box-shadow: 0 -2px 4px #ddd;
   }
 
-  .toolbar-popup, .hyperlink-dialog {
+  .toolbar-popup {
     left: 0 !important; /* overide javascript positionning */
     right: 0 !important;
   }

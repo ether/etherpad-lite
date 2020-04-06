@@ -7,14 +7,17 @@
   z-index: 9999;
 }
 
-.gritter-item {
+.gritter-item.popup {
   position: relative;
   max-width: 400px;
   min-width: 0;
   margin: 0 auto;
+  visibility: visible;
+  top: auto;
+}
+.gritter-item .popup-content {
   display: flex;
 }
-
 .gritter-item .gritter-content {
   flex: 1 auto;
   text-align: center;
@@ -29,7 +32,7 @@
   display: block;
 }
 
-.gritter-item.error {
+.gritter-item.error .popup-content {
   color: #a84341;
   background-color: #eed3d4;
 }

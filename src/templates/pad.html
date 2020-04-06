@@ -117,7 +117,7 @@
       <!-- SETTINGS POPUP (change font, language, chat parameters) -->
       <!------------------------------------------------------------->
 
-      <div id="settings" class="popup">
+      <div id="settings" class="popup"><div class="popup-content">
           <h1 data-l10n-id="pad.settings.padSettings"></h1>
           <% e.begin_block("mySettings"); %>
           <h2 data-l10n-id="pad.settings.myView"></h2>
@@ -180,14 +180,14 @@
           <span data-l10n-id="pad.settings.poweredBy">Powered by</span>
           <a href="http://etherpad.org">Etherpad-lite</a>
           <% if (settings.exposeVersion) { %>(commit <%=settings.getGitCommit()%>)<% } %>
-      </div>
+      </div></div>
 
 
       <!------------------------->
       <!-- IMPORT EXPORT POPUP -->
       <!------------------------->
 
-      <div id="import_export" class="popup">
+      <div id="import_export" class="popup"><div class="popup-content">
           <h1 data-l10n-id="pad.importExport.import_export"></h1>
           <div class="acl-write">
               <% e.begin_block("importColumn"); %>
@@ -232,14 +232,14 @@
               </a>
               <% e.end_block(); %>
           </div>
-      </div>
+      </div></div>
 
 
       <!---------------------------------------------------->
       <!-- CONNECTIVITY POPUP (when you get disconnected) -->
       <!---------------------------------------------------->
 
-      <div id="connectivity" class="popup">
+      <div id="connectivity" class="popup"><div class="popup-content">
           <% e.begin_block("modals"); %>
           <div class="connected visible">
             <h2 data-l10n-id="pad.modals.connected"></h2>
@@ -304,14 +304,14 @@
               <input type="hidden" class="missedChanges" name="missedChanges">
           </form>
           <% e.end_block(); %>
-      </div>
+      </div></div>
 
 
       <!-------------------------------->
       <!-- EMBED POPUP (Share, embed) -->
       <!-------------------------------->
 
-      <div id="embed" class="popup">
+      <div id="embed" class="popup"><div class="popup-content">
           <% e.begin_block("embedPopup"); %>
           <h1 data-l10n-id="pad.share"></h1>
           <div id="embedreadonly" class="acl-write">
@@ -327,7 +327,7 @@
               <input id="embedinput" type="text" value="" onclick="this.select()">
           </div>
           <% e.end_block(); %>
-      </div>
+      </div></div>
 
       <div class="sticky-container">
 
@@ -335,18 +335,18 @@
         <!-- USERS POPUP (set username, color, see other users names & color) -->
         <!---------------------------------------------------------------------->
 
-        <div id="users" class="popup">
+        <div id="users" class="popup"><div class="popup-content">
             <% e.begin_block("userlist"); %>
             <div id="connectionstatus"></div>
             <div id="myuser">
-                <div id="mycolorpicker" class="popup">
+                <div id="mycolorpicker" class="popup"><div class="popup-content">
                     <div id="colorpicker"></div>
                     <div class="btn-container">
                       <button id="mycolorpickersave" data-l10n-id="pad.colorpicker.save" class="btn btn-primary"></button>
                       <button id="mycolorpickercancel" data-l10n-id="pad.colorpicker.cancel" class="btn btn-default"></button>
                       <span id="mycolorpickerpreview" class="myswatchboxhoverable"></span>
                     </div>
-                </div>
+                </div></div>
                 <div id="myswatchbox"><div id="myswatch"></div></div>
                 <div id="myusernameform">
                   <input type="text" id="myusernameedit" disabled="disabled" data-l10n-id="pad.userlist.entername">
@@ -360,7 +360,7 @@
             </div>
             <div id="userlistbuttonarea"></div>
             <% e.end_block(); %>
-        </div>
+        </div></div>
 
 
         <!----------------------------->
