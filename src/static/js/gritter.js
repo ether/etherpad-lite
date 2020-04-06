@@ -23,7 +23,7 @@
 	$.gritter.options = {
 		position: '',
 		class_name: '', // could be set to 'gritter-light' to use white notifications
-		time: 6000 // hang on the screen for...
+		time: 3000 // hang on the screen for...
 	}
 
 	/**
@@ -68,8 +68,6 @@
 	var Gritter = {
 
 		// Public - options to over-ride with $.gritter.options in "add"
-		fade_in_speed: '300',
-		fade_out_speed: '200',
 		time: '',
 
 		// Private - no touchy the private parts
@@ -86,7 +84,7 @@
 						'[[title]]',
 						'<p>[[text]]</p>',
 					'</div>',
-					'<div class="gritter-close"><i class="buttonicon buttonicon-cancel"></i></div>',
+					'<div class="gritter-close"><i class="buttonicon buttonicon-times"></i></div>',
 				'</div>',
 			'</div>'].join(''),
 
@@ -164,27 +162,19 @@
 
 			var item = $('#gritter-item-' + this._item_count);
 
-			item.addClass('popup-show').fadeIn(this.fade_in_speed, function(){
-				Gritter['_after_open_' + number]($(this));
-			});
+			setTimeout(function() { item.addClass('popup-show'); }, 0);
+			Gritter['_after_open_' + number](item);
 
 			if(!sticky){
 				this._setFadeTimer(item, number);
+				// Bind the hover/unhover states
+				$(item).on('mouseenter', function(event) {
+					Gritter._restoreItemIfFading($(this), number);
+				});
+				$(item).on('mouseleave', function(event) {
+					Gritter._setFadeTimer($(this), number);
+				});
 			}
-
-			// Bind the hover/unhover states
-			$(item).bind('mouseenter mouseleave', function(event){
-				if(event.type == 'mouseenter'){
-					if(!sticky){
-						Gritter._restoreItemIfFading($(this), number);
-					}
-				}
-				else {
-					if(!sticky){
-						Gritter._setFadeTimer($(this), number);
-					}
-				}
-			});
 
 			// Clicking (X) makes the perdy thing close
 			$(item).find('.gritter-close').click(function(){
@@ -208,11 +198,10 @@
 			e.remove();
 			this['_after_close_' + unique_id](e, manual_close);
 
-			// Check if the wrapper is empty, if it is.. remove the wrapper
-			if($('.gritter-item-wrapper').length == 0){
+			// Remove container if empty
+			if ($('#gritter-container .gritter-item').length == 0) {
 				$('#gritter-container').remove();
 			}
-
 		},
 
 		/**
@@ -220,14 +209,13 @@
 		* @private
 		* @param {Object} e The jQuery element to get rid of
 		* @param {Integer} unique_id The id of the element to remove
-		* @param {Object} params An optional list of params to set fade speeds etc.
+		* @param {Object} params An optional list of params.
 		* @param {Boolean} unbind_events Unbind the mouseenter/mouseleave events if they click (X)
 		*/
 		_fade: function(e, unique_id, params, unbind_events){
 
 			var params = params || {},
 				fade = (typeof(params.fade) != 'undefined') ? params.fade : true,
-				fade_out_speed = params.speed || this.fade_out_speed,
 				manual_close = unbind_events;
 
 			this['_before_close_' + unique_id](e, manual_close);
@@ -239,15 +227,10 @@
 
 			// Fade it out or remove it
 			if(fade){
-
-				e.animate({
-					opacity: 0
-				}, fade_out_speed, function(){
-					e.animate({ height: 0 }, 300, function(){
-						Gritter._countRemoveWrapper(unique_id, e, manual_close);
-					})
-				}).removeClass('popup-show')
-
+				e.removeClass('popup-show');
+				setTimeout(function() {
+					Gritter._countRemoveWrapper(unique_id, e, manual_close);
+				}, 300)
 			}
 			else {
 
@@ -308,11 +291,11 @@
 		* @param {Object} item The HTML element we're dealing with
 		* @param {Integer} unique_id The ID of the element
 		*/
-		_setFadeTimer: function(e, unique_id){
+		_setFadeTimer: function(item, unique_id){
 
 			var timer_str = (this._custom_timer) ? this._custom_timer : this.time;
 			this['_int_id_' + unique_id] = setTimeout(function(){
-				Gritter._fade(e, unique_id);
+				Gritter._fade(item, unique_id);
 			}, timer_str);
 
 		},
