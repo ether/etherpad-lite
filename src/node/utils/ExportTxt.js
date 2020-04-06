@@ -30,9 +30,9 @@ var getPadTXT = async function(pad, revNum)
   if (revNum != undefined) {
     var html = await ExportHtml.getPadHTML(pad, revNum);
   }else{
-    var html = await ExportHtml.getPadHTML(pad, revNum);
-
+    var html = await ExportHtml.getPadHTML(pad);
   }
+
   let text = htmlToText.fromString(html, {
     format: {
       unorderedList: function(elem, fn, options){

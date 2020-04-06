@@ -31,6 +31,7 @@ var exportTxt = require("../utils/ExportTxt");
 var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
+const htmlToText = require('@mxiii/html-to-text');
 
 /**********************/
 /**GROUP FUNCTIONS*****/
@@ -165,7 +166,6 @@ exports.getText = async function(padID, rev)
   // get the pad
   let pad = await getPadSafe(padID, true);
   let head = pad.getHeadRevisionNumber();
-
   // the client asked for a special revision
   if (rev !== undefined) {
 
@@ -174,13 +174,40 @@ exports.getText = async function(padID, rev)
       throw new customError("rev is higher than the head revision of the pad", "apierror");
     }
 
+    let html = await exportHtml.getPadHTML(pad, revNum);
+
     // get the text of this revision
-    let text = await pad.getInternalRevisionAText(rev);
+    let text = htmlToText.fromString(html, {
+      format: {
+        unorderedList: function(elem, fn, options){
+          var h = fn(elem.children, options);
+          if(elem.attribs && (elem.attribs.class === 'indent')){
+            return '    ' + h + '\n';
+          }else{
+            return h;
+          }
+        }
+      },
+      wordwrap: 130
+    });
     return { text };
   }
 
   // the client wants the latest text, lets return it to him
-  let text = exportTxt.getTXTFromAtext(pad, pad.atext);
+  let html = await exportHtml.getPadHTML(pad, false);
+  let text = htmlToText.fromString(html, {
+    format: {
+      unorderedList: function(elem, fn, options){
+        var h = fn(elem.children, options);
+        if(elem.attribs && (elem.attribs.class === 'indent')){
+          return '    ' + h + '\n';
+        }else{
+          return h;
+        }
+      }
+    },
+    wordwrap: 130
+  });
   return { text };
 }
 
