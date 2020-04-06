@@ -12,9 +12,9 @@ exports.getPosition = function (whichKey)
     // getBoundingClientRect() returns all dimensions value as 0
     var selectionIsInTheBeginningOfLine = range.endOffset > 0;
     // This whole selcetion is in the beginning of a line thing seems really buggy
-    // It's ALWAYS returning true!!
+
     if (selectionIsInTheBeginningOfLine) {
-      console.warn("sel is begin");
+      // console.debug("sel is begin");
       var clonedRange = createSelectionRange(range);
       line = getPositionOfElementOrSelection(clonedRange);
       clonedRange.detach()
@@ -28,7 +28,7 @@ exports.getPosition = function (whichKey)
     if((!rect || rect.height === 0) && (whichKey !== 39)){
 
       // create a selection range
-console.warn(range); // compare this between FF and Chrome
+      // console.debug(range); // compare this between FF and Chrome
       var clonedRange = createSelectionRange(range);
 
       // as we can't get the element height, we create a text node to get the dimensions
