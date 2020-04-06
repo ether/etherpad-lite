@@ -14,7 +14,6 @@
 @import url("src/components/import-export.css");
 
 @import url("src/plugins/brightcolorpicker.css");
-@import url("src/plugins/comments_page.css");
 @import url("src/plugins/font_color.css");
 @import url("src/plugins/tables2.css");
 @import url("src/plugins/author_hover.css");
@@ -29,20 +28,8 @@
 body,
 .btn-default,
 .color\:black,
-[data-color=black],
-#tbl_context_menu ul .yuimenuitemlabel,
-.yui-skin-sam .yui-split-button button em:not(.color-picker-button),
-#yui-picker-panel .button-group .yui-button:first-child button,
-#newComment .sidebar-comment input[type=reset], #newComment .sidebar-comment input[type=reset]:hover,
-#newComment .sidebar-comment input[type=submit]:hover,
-.suggestion, .comment-reply-input, .reply-suggestion p:not(.reply-comment-suggest-from-p), .comment-text,
-.sidebar-comment textarea, .reply-comment-suggest label, .comment-suggest label, .comment-reply-input
-#comments, #newComments, .reply-comment-suggest-from-p,
-.comment-changeFrom-value,
-.comment-changeTo-value,
-.reply-suggestion .reply-comment-suggest-from,
-.suggestion .comment-suggest-from
-{ color: #2E3338 !important; }
+[data-color=black]
+{ color: #41484e !important; }
 
 /* MENUS ICONS */
 #edit_title:before,
@@ -53,11 +40,7 @@ body,
 { background-color: #767676 !important; }
 
 /* PRIMARY BUTTONS */
-.btn-primary,
-#tbl_btn_close,
-#yui-picker-panel .button-group .yui-button:last-child button,
-#newComment.sidebar-comment input[type=submit],
-.comment-changeTo-approve input[type=submit]
+.btn-primary
 {
   background-color: #64d29b;
   color: white;
@@ -65,10 +48,6 @@ body,
 
 /* PRIMARY COLOR */
 h1,
-#titlelabel,
-.yui-skin-sam .yui-panel .hd,
-p[data-l10n-id="ep_comments_page.comment"],
-.comment-reply-input-label span,
 #slider-btn-container .stepper, #importmessageabiword, #importmessageabiword > a,
 .toolbar .show-more-icon-btn
 { color: #64d29b; }
