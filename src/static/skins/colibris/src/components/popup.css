@@ -11,11 +11,6 @@
   min-width: 0;
 }
 
-.popup input[type=text] {
-  border: none !important;
-  border-bottom: 1px solid #d7d8da !important;
-}
-
 .popup h1 {
   margin-bottom: 15px;
 }

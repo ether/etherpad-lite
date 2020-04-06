@@ -1,3 +1,5 @@
+@import url("pad/normalize.css");
+
 @import url("pad/layout.css");
 @import url("pad/fonts.css");
 @import url("pad/toolbar.css");
@@ -15,13 +17,6 @@ html {
   font-family: Arial, sans-serif;
   line-height: 16px;
   color: #3e3e3e;
-}
-html, *, *:after, *:before {
-  box-sizing: border-box;
-}
-*, p {
-  margin: 0;
-  padding: 0;
 }
 .clear {
   clear: both
