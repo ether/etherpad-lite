@@ -13,7 +13,6 @@
 .buttonicon {
   border: none;
   padding: 0;
-  color: #666;
   background: none;
   text-align: center;
   font-style: normal;
@@ -164,7 +163,7 @@
 .buttonicon-table:before { content: '\f0ce'; } /* '' */
 /* END Of FONTELLO GENERATED CSS */
 
-.icon-spin {
+.icon-spin:before {
   -webkit-animation: spinAnimation 2s infinite linear;
   animation: spinAnimation 2s infinite linear;
   font-family: "fontawesome-etherpad";

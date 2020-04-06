@@ -14,7 +14,7 @@
 }
 
 .toolbar ul li {
-  margin: 5px 1px;
+  margin: 7px 1px;
 }
 .toolbar ul li a, .toolbar .buttonicon {
   color: inherit;
@@ -75,6 +75,7 @@
 .toolbar ul li select {
   cursor: pointer;
   border: none;
+  background-color: inherit;
   border-radius: 3px;
   width: auto;
   font-weight: bold;

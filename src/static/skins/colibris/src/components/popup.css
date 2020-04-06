@@ -1,5 +1,5 @@
 .popup-content {
-  border-radius: 3px;
+  border-radius: 5px;
   padding: 25px;
   background: none;
   background-color: white;
@@ -31,4 +31,15 @@
     border-radius: 0 !important;
     border: none !important;
   }
+}
+
+.popup .dropdowns-container .dropdown-line {
+  margin-top: 15px;
+}
+.popup .dropdowns-container label {
+  width: 120px;
+  display: inline-block;
+}
+.popup .dropdowns-container select {
+  min-width: 180px;
 }
