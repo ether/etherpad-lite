@@ -2,6 +2,7 @@
   background-color: white;
   border-bottom: 1px solid #d2d2d2;
   padding: 0;
+  color: #5f6368;
 }
 
 .toolbar ul {
@@ -15,16 +16,18 @@
 .toolbar ul li {
   margin: 5px 1px;
 }
+.toolbar ul li a, .toolbar .buttonicon {
+  color: inherit;
+}
 
 .toolbar .buttonicon {
   background-color: transparent;
   font-size: 15px;
-  color: #5f6368;
 }
-.buttonicon-insertorderedlist,
-.buttonicon-insertunorderedlist,
-.buttonicon-indent,
-.buttonicon-outdent {
+.buttonicon-insertorderedlist:before,
+.buttonicon-insertunorderedlist:before,
+.buttonicon-indent:before,
+.buttonicon-outdent:before {
   font-size: 16px !important;
 }
 
@@ -75,7 +78,6 @@
   border-radius: 3px;
   width: auto;
   font-weight: bold;
-  color: #6d7075;
   font-size: 14px;
 }
 
@@ -96,6 +98,7 @@
 }
 .toolbar .menu_right li {
   margin-left: 8px;
+  opacity: .9;
 }
 
 .toolbar.cropped .menu_left {
@@ -113,10 +116,6 @@
     margin: 0 5px;
     background: none;
     display: block;
-  }
-
-  .toolbar ul li[data-key=showusers] {
-    margin-left: -5px !important;
   }
 }
 

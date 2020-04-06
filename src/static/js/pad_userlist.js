@@ -207,6 +207,7 @@ var paduserlist = (function()
         tr = $(getRowHtml(domId, getEmptyRowHtml(getAnimationHeight(ANIMATION_START)), authorId));
       }
       handleRowNode(tr, data);
+      $("table#otheruserstable").show();
       if (position == 0)
       {
         $("table#otheruserstable").prepend(tr);
@@ -262,6 +263,9 @@ var paduserlist = (function()
           rowsFadingOut.push(row);
           scheduleAnimation();
         }
+      }
+      if (rowsPresent.length === 0) {
+        $("table#otheruserstable").hide();
       }
     }
 

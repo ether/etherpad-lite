@@ -1,11 +1,14 @@
-.gritter-item {
-  margin-bottom: 10px;
-}
 .gritter-item .popup-content {
   color: white;
+  margin-bottom: 10px;
   box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
 }
-
+.gritter-item p {
+  margin: 0;
+}
+.gritter-item .gritter-title {
+  margin-bottom: 20px;
+}
 .gritter-item .gritter-close {
   margin-left: 10px;
   margin-right: -5px;

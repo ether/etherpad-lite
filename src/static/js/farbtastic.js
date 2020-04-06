@@ -1,4 +1,5 @@
 // Farbtastic 2.0 alpha
+// edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-04-06
 (function ($) {
 
 var __debug = false;
@@ -304,19 +305,17 @@ $._farbtastic = function (container, options) {
    */
   fb.drawMarkers = function () {
     // Determine marker dimensions
-    var sz = options.width, lw = Math.ceil(fb.markerSize / 4), r = fb.markerSize - lw + 1;
+    var sz = options.width;
     var angle = fb.hsl[0] * 6.28,
         x1 =  Math.sin(angle) * fb.radius,
         y1 = -Math.cos(angle) * fb.radius,
         x2 = 2 * fb.square * (.5 - fb.hsl[1]),
-        y2 = 2 * fb.square * (.5 - fb.hsl[2]),
-        c1 = fb.invert ? '#fff' : '#000',
-        c2 = fb.invert ? '#000' : '#fff';
+        y2 = 2 * fb.square * (.5 - fb.hsl[2]);
     var circles = [
-      { x: x1, y: y1, r: r,             c: '#000', lw: lw + 1 },
-      { x: x1, y: y1, r: fb.markerSize, c: '#fff', lw: lw },
-      { x: x2, y: y2, r: r,             c: c2,     lw: lw + 1 },
-      { x: x2, y: y2, r: fb.markerSize, c: c1,     lw: lw },
+      { x: x1, y: y1, r: fb.markerSize + 1, c: 'rgb(0,0,0,.4)', lw: 2 },
+      { x: x1, y: y1, r: fb.markerSize, c: '#fff', lw: 2 },
+      { x: x2, y: y2, r: fb.markerSize + 1, c: 'rgb(0,0,0,.4)', lw: 2 },
+      { x: x2, y: y2, r: fb.markerSize, c: '#fff',     lw: 2 },
     ];
 
     // Update the overlay canvas.

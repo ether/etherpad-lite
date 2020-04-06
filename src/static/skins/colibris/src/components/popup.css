@@ -12,11 +12,13 @@
 }
 
 .popup h1 {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  font-size: 1.6rem;
 }
 
 .popup h2 {
   margin-bottom: 15px;
+  margin-top: 20px;
 }
 
 .popup p {

@@ -1,5 +1,5 @@
 table#otheruserstable {
-  margin-top: 10px !important;
+  margin-top: 20px;
 }
 
 #otheruserstable .swatch {
@@ -16,8 +16,12 @@ table#otheruserstable {
   margin-left: 35px;
 }
 
-#myusernameedit {
+input#myusernameedit {
   min-width: 110px;
+  border: none !important;
+  border-bottom: 1px solid #ddd !important;
+  border-radius: 0;
+  padding-bottom: 5px;
 }
 
 #myswatch {
