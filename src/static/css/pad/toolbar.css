@@ -78,10 +78,10 @@
   padding-left: 3px;
 }
 .toolbar ul li[data-key=showusers] > a #online_count {
-  color: #777;
+  font-weight: bold;
   font-size: 11px;
   position: relative;
-  padding-left: 5px;
+  padding-left: 7px;
 }
 
 .toolbar #toolbar-overlay {

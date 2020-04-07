@@ -2,6 +2,9 @@
   padding: 10px;
   display: block;
 }
+#innerdocbody {
+  margin: 0 auto;
+}
 
 .timeslider-bar {
   display: flex;

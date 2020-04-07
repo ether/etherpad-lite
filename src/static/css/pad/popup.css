@@ -65,23 +65,19 @@
 @media only screen and (max-width: 720px) {
   .popup {
     border-radius: 0;
-    left: 0;
-    right: 0;
-    max-height: 80vh;
+    top: 1rem;
+    margin: 0 !important;
+    right: 1rem !important;
+    left: 1rem !important;
     max-width: none !important;
+  }
+  .popup-content {
+    max-height: 80vh;
+    overflow: auto;
   }
   /* Move popup to the bottom, except popup linked to left toolbar, like hyperklink popup */
   .popup:not(.toolbar-popup) {
     top: auto;
-    bottom: 0;
-    border-radius: 6px 6px 0 0;
-    border: 1px solid #ccc;
-    border-bottom: none;
-    box-shadow: 0 -2px 4px #ddd;
-  }
-
-  .toolbar-popup {
-    left: 0 !important; /* overide javascript positionning */
-    right: 0 !important;
+    bottom: 1rem;
   }
 }
