@@ -1,4 +1,4 @@
-.popup.popup-show {
+.popup.popup-show, .popup#users.chatAndUsers {
   visibility: visible;
 }
 
@@ -8,7 +8,7 @@
   transition: all 0.3s cubic-bezier(0.74, -0.05, 0.27, 1.75)
 }
 
-.popup.popup-show > .popup-content {
+.popup.popup-show > .popup-content, .popup#users.chatAndUsers > .popup-content {
   transform: scale(1);
   opacity: 1;
 }

@@ -24,7 +24,7 @@
   right: 0;
   left: auto;
 }
-.popup#users.chatAndUsers .popup-content {
+.popup#users.chatAndUsers > .popup-content {
   border: none;
   border-bottom: 1px solid #ccc;
   border-left: 1px solid #ccc;
