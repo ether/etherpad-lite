@@ -1,9 +1,79 @@
-input[type="text"], #input_title, #chatinput, .hyperlink-dialog>.hyperlink-url {
-  border: 1px solid #d2d2d2;
+input[type="text"], #input_title, #chatinput, .hyperlink-dialog>.hyperlink-url, select {
+  border: none !important;
   border-radius: 3px;
   padding: 8px 10px;
   height: 28px;
   background: none !important;
-  background-color: white !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
   box-shadow: none !important;
+}
+
+
+/* Checkboxes
+   ========================================================================== */
+/* Remove default checkbox */
+[type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+[type="checkbox"] + label {
+  position: relative;
+  padding-left: 3rem;
+  cursor: pointer;
+  display: inline-block;
+  height: 1.4rem;
+  line-height: 1.4rem;
+  font-size: 1rem;
+}
+
+[type="checkbox"] + label:before,
+[type="checkbox"] + label:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 4px;
+  border-radius: 1rem;
+  transition: all .2s ease-in-out;
+}
+
+/* BEFORE, the container*/
+[type="checkbox"] + label:before {
+  width: 1.8rem;
+  height: 1rem;
+  border: 2px solid #999ea9;
+  background-color: transparent;
+}
+[type="checkbox"]:not(:checked) + label:before {
+
+}
+[type="checkbox"]:checked + label:before {
+  background-color: #808894;
+  border-color: white;
+}
+
+/* AFTER, the circle moving */
+[type="checkbox"] + label:after {
+  width: calc(1rem - 4px);
+  height: calc(1rem - 4px);
+  background-color: #999ea9;
+  top: 2px;
+  left: 2px;
+}
+[type="checkbox"]:not(:checked) + label:after {
+
+}
+[type="checkbox"]:checked + label:after {
+  background-color: white;
+  transform: translateX(.9rem);
+}
+
+[type="checkbox"]:checked:disabled + label,
+[type="checkbox"]:checked:disabled + label:before,
+[type="checkbox"]:checked:disabled + label:after {
+  cursor: not-allowed;
+  opacity: .4;
 }
