@@ -2,13 +2,22 @@ table#otheruserstable {
   margin-top: 20px;
 }
 
-.popup#users.chatAndUsers .popup-content {
+.popup#users.chatAndUsers > .popup-content {
   padding: 20px 10px;
   height: 250px;
-  background-color: white;
-  color: #374256;
   border-left: none;
   transition: none;
+}
+.popup#users.chatAndUsers .popup-content {
+  background-color: white;
+  color: #374256;
+}
+.popup#users.chatAndUsers #mycolorpicker.popup {
+  right: calc(100% + 30px);
+  top: 15px;
+}
+.popup#users.chatAndUsers #mycolorpicker.popup .btn-default {
+  color: #374256;
 }
 
 #otheruserstable .swatch {
