@@ -6,7 +6,7 @@
   box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
   width: 400px;
   height: 300px;
-  background-color: #f9f9f9 !important;
+  background-color: var(--bg-soft-color);
 }
 
 #chatbox.stickyChat {
@@ -23,7 +23,7 @@
   height: 44px;
   padding: 0 7px;
   z-index: 20000;
-  border-bottom: 1px solid #d2d2d2;
+  border-bottom: 1px solid var(--border-color);
 }
 
 #titlelabel, #chatlabel {
@@ -35,8 +35,7 @@
 #chatlabel { margin-right: 15px; }
 
 #chattext {
-  border-bottom: 1px solid #cccccc;
-  background-color: #fcfcfc;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .plugin-ep_author_neat #chattext {

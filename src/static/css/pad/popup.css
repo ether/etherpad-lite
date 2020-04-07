@@ -60,15 +60,6 @@
 .popup p {
   margin: 5px 0;
 }
-.popup select {
-  background: #fff;
-  padding: 2px;
-  height: 24px;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-  outline: none;
-  width: 120px;
-}
 
 /* Mobile devices */
 @media only screen and (max-width: 720px) {

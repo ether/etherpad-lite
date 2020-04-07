@@ -1,10 +1,10 @@
-button, .btn, #yui-picker-panel .button-group .yui-button button
+button, .btn
 {
   padding: 5px 20px;
   border-radius: 4px;
   line-height: 1.5;
   width: auto;
-  border: none !important;
+  border: none;
   font-weight: bold;
   text-transform: uppercase;
   position: relative;
@@ -12,10 +12,13 @@ button, .btn, #yui-picker-panel .button-group .yui-button button
   cursor: pointer;
 }
 
-button, select {
-  font-family: inherit;
-  font-size: inherit;
-  cursor: pointer;
+.btn-primary
+{
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+}
+.btn-default {
+  color: var(--text-color);
 }
 
 

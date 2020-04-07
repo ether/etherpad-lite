@@ -19,67 +19,46 @@
 @import url("src/plugins/tables2.css");
 @import url("src/plugins/author_hover.css");
 
+html {
+  font-size: 15px;
+}
+
 /* -----------------------------------------------------------------
  * COLORS
  * If you want to change main colors, please replace following rules
  * -----------------------------------------------------------------
  */
 
-/* NEUTRAL COLOR */
-body,
-.btn-default,
-.color\:black,
-[data-color=black]
-{ color: #41484e !important; }
+:root {
+  --dark-color: #374256;
+  --dark-soft-color: #576273;
+  --primary-color: #64d29b;
+  --middle-color: #d2d2d2; /* between light-soft-color and dark-soft-color, use for border for examples */
+  --light-soft-color: #f2f3f4; /*#f9f9f9;*/
+  --light-color: white;
 
-/* MENUS ICONS */
-#edit_title:before,
-#tbl-menu:before
-{ color: #767676 !important; }
-/* MENU BUTTONS */
-.timeslider #editbar .buttontext
-{ background-color: #767676 !important; }
+  --text-color: var(--dark-color);
+  --text-soft-color: var(--dark-soft-color);
+  --border-color: var(--middle-color);
+  --bg-soft-color: var(--light-soft-color);
+  --bg-color: var(--light-color);
 
-/* PRIMARY BUTTONS */
-.btn-primary
-{
-  background-color: #64d29b;
-  color: white;
+  --main-font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
+
+
+body {
+  color: var(--text-color);
+  font-family: var(--main-font-family);
+}
+
 
 /* PRIMARY COLOR */
-h1,
-#slider-btn-container .stepper, #importmessageabiword, #importmessageabiword > a,
-.toolbar .show-more-icon-btn
-{ color: #64d29b; }
-#timeslider-slider #ui-slider-handle, #playpause_button_icon, .gritter-item:not(.error) .popup-content{
-  background-color: #64d29b;
-}
-#slider-btn-container button {
-  border-color: #64d29b;
-}
-
-h2 {
-  opacity: .9 !important; /* make it a bit less agressive */
-}
-/* PRIMARY-COLOR VARIANT */
-.toolbar ul li a.selected,
-.toolbar ul li a.pressed,
-.toolbar ul li select:active {
-  background-color: #f0faf6 !important; /* primary light */
-}
-.toolbar ul li a.selected .buttonicon,
-.toolbar ul li a.pressed .buttonicon,
-.toolbar ul li select:active {
-  color: #5abb89; /* primary a bit darker */
+h1 {
+  color: var(--primary-color);
 }
 
 /* BACKGROUND COLOR */
 #editorcontainerbox {
-  background-color: #f9f9f9 !important;
+  background-color: var(--bg-soft-color);
 }
-
-/* FONT */
-body,
-#sidedivinner > div:before
-{ font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }

@@ -56,7 +56,7 @@
   background: #ddd;
 }
 .toolbar ul li a.selected {
-  background: #dadada !important;
+  background: #dadada;
 }
 
 .toolbar ul li a.grouped-left {
@@ -69,15 +69,6 @@
 .toolbar ul li a.grouped-right {
   border-radius: 0 3px 3px 0;
   border-left: 0;
-}
-
-.toolbar ul li select {
-  padding: 4px;
-  line-height: 22px;
-  height: 28px;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-  outline: none;
 }
 
 .toolbar ul li[data-key=showusers] > a {

@@ -16,9 +16,11 @@
   top: auto;
   bottom: auto;
 }
+
 .gritter-item .popup-content {
   display: flex;
 }
+
 .gritter-item .gritter-content {
   flex: 1 auto;
   text-align: center;

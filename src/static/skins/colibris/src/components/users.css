@@ -8,16 +8,9 @@ table#otheruserstable {
   border-left: none;
   transition: none;
 }
-.popup#users.chatAndUsers .popup-content {
-  background-color: white;
-  color: #374256;
-}
 .popup#users.chatAndUsers #mycolorpicker.popup {
   right: calc(100% + 30px);
   top: 15px;
-}
-.popup#users.chatAndUsers #mycolorpicker.popup .btn-default {
-  color: #374256;
 }
 
 #otheruserstable .swatch {
@@ -38,7 +31,7 @@ input#myusernameedit {
   min-width: 110px;
   border: none !important;
   background-color: transparent !important;
-  border-bottom: 1px solid #ddd !important;
+  border-bottom: 1px solid var(--border-color) !important;
   border-radius: 0;
   padding-bottom: 5px;
 }

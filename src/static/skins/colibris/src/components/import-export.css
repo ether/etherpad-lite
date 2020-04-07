@@ -1,9 +1,11 @@
 #importmessageabiword {
   font-style: italic;
+  color: var(--primary-color);
 }
 #importmessageabiword > a {
   font-weight: bold;
   text-decoration: underline;
+  color: var(--primary-color);
 }
 
 #importmessagefail {

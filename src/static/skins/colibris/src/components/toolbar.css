@@ -1,8 +1,9 @@
 .toolbar {
-  background-color: white;
-  border-bottom: 1px solid #d2d2d2;
+  border-bottom: none;
   padding: 0;
-  color: #5f6368;
+  background-color: var(--bg-color);
+  color: var(--text-soft-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .toolbar ul {
@@ -16,6 +17,7 @@
 .toolbar ul li {
   margin: 7px 1px;
 }
+
 .toolbar ul li a, .toolbar .buttonicon {
   color: inherit;
 }
@@ -41,10 +43,10 @@
 .toolbar ul li.separator:after {
   content: "";
   position: absolute;
-  top: -20px;
-  height: 40px;
+  top: -25px;
+  height: 50px;
   width: 1px;
-  background-color: rgba(78, 85, 92, 0.22);
+  background-color: var(--border-color);
 }
 
 .toolbar.condensed ul li {
@@ -60,26 +62,30 @@
   background: none;
   border: none;
   border-radius: 3px !important;
+  transition: background-color .1s;
 }
 
 .toolbar ul li a:hover, .toolbar ul li select:hover  {
-  background-color: #f1f3f3;
+  background-color: var(--bg-soft-color);
+  color: var(--text-color);
+}
+.toolbar ul li a.selected {
+  background-color: var(--bg-soft-color);
+}
+.toolbar ul li a.pressed,
+.toolbar ul li select:active {
+  color: var(--primary-color);
 }
 
 .toolbar ul li select:active option {
-  background-color: white !important;
-  color: #44464a;
+  background-color: var(--bg-color);
+  color: var(--text-soft-color);
   padding: 5px;
 }
 
-.toolbar ul li select {
-  cursor: pointer;
-  border: none;
-  background-color: inherit;
-  border-radius: 3px;
-  width: auto;
-  font-weight: bold;
-  font-size: 14px;
+.toolbar .menu_right li a.selected {
+  background-color: var(--text-soft-color);
+  color: var(--bg-color);
 }
 
 .toolbar ul li[data-key=showusers] {
@@ -87,6 +93,8 @@
   margin-left: 10px;
   width: 45px;
   height: 100%;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 .toolbar ul li[data-key=showusers] > a {
   width: 100%;
@@ -98,8 +106,7 @@
   display: none;
 }
 .toolbar .menu_right li {
-  margin-left: 8px;
-  opacity: .9;
+  margin-left: 10px;
 }
 
 .toolbar.cropped .menu_left {
@@ -110,6 +117,7 @@
   width: 35px;
   line-height: 35px;
   font-size: 1.8rem;
+  color: var(--primary-color);
 }
 
 @media (max-width: 1000px) {
@@ -122,9 +130,13 @@
 
 @media (max-width: 720px) {
 
+  .toolbar ul li {
+    margin: 5px 1px;
+  }
+
   .toolbar .menu_right {
-    border-top: 1px solid #d2d2d2;
-    background-color: white;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-color);
     padding: 0;
   }
 
