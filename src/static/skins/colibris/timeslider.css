@@ -2,24 +2,26 @@
   border-radius: 3px;
   width: 12px;
   height: 28px;
+  background-color: var(--primary-color);
 }
 
 #timeslider-slider #ui-slider-bar {
   border-radius: 3px;
-  background-color: #e4e4e4;
+  background-color: var(--border-color);
 }
 #slider-btn-container {
   margin: -18px 15px 0 20px;
 }
 #slider-btn-container #playpause_button_icon {
-  color: white;
+  color: var(--bg-color);
+  background-color: var(--primary-color);
+  border: none;
   margin-right: 5px;
   padding-top: 3px;
   width: 45px;
   height: 45px;
 }
 #slider-btn-container #playpause_button_icon:not(.pause) {
-
   padding-left: 4px;
 }
 #slider-btn-container .stepper {
@@ -29,13 +31,16 @@
   line-height: 28px;
   margin-left: 5px;
   font-size: 13px;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 #slider-btn-container .stepper.disabled {
   opacity: .5;
 }
 
 .timeslider #editbar .buttontext {
-  color: white;
+  background-color: var(--text-soft-color);
+  color: var(--bg-color);
   margin: 0;
 }
 

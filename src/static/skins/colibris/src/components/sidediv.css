@@ -1,12 +1,14 @@
 #sidediv {
   background-color: transparent;
   border: none;
+  opacity: .8;
 }
 
 #sidedivinner>div:before {
+  font-family: var(--main-font-family); /* the parent div have font-family monospace (line number) */
+  color: var(--text-color);
   font-size: 13px;
   padding-right: 18px !important;
-  color: #818188;
   text-transform: uppercase;
   font-size: 11px !important;
   font-weight: bold;
@@ -22,7 +24,7 @@
 #sidedivinner>div {
   line-height: 24px;
   font-size: 10px !important;
-  color: #b2aaaa;
+  color: var(--text-soft-color);
 }
 
 #sidedivinner.authorColors>div, #sidedivinner.authorColors>div.primary-none, #sidedivinner>div {

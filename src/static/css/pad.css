@@ -23,6 +23,14 @@ html,
   font-family: Cantarell, Roboto, "Open Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
+select {
+  padding: 2px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  outline: none;
+  width: 120px;
+}
+
 .clear {
   clear: both
 }

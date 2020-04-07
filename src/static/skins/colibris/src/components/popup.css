@@ -2,7 +2,8 @@
   border-radius: 5px;
   padding: 25px;
   background: none;
-  background-color: white;
+  background-color: var(--bg-color);
+  color: var(--text-soft-color);
   border: none;
   box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
 }
@@ -19,6 +20,7 @@
 .popup h2 {
   margin-bottom: 15px;
   margin-top: 20px;
+  color: var(--text-color);
 }
 
 .popup p {

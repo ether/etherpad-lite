@@ -2,8 +2,11 @@
   top: 20px;
   bottom: auto;
 }
+.gritter-item:not(.error) .popup-content{
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+}
 .gritter-item .popup-content {
-  color: white;
   margin-bottom: 10px;
   box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
 }
@@ -18,13 +21,7 @@
   margin-right: -5px;
 }
 .gritter-item:not(.error) .gritter-close .buttonicon {
-  color: white;
-}
-@media (max-width: 720px) {
-  .gritter-item {
-    margin-top: 10px;
-    margin-bottom: 0;
-  }
+  color: var(--bg-color);
 }
 
 .gritter-item.popup > .popup-content {
