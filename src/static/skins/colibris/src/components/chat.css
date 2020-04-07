@@ -11,6 +11,7 @@
 
 #chatbox.stickyChat {
   border: none;
+  background-color: var(--bg-soft-color);
 }
 
 #chatbox.stickyChat.chatAndUsersChat{
@@ -36,6 +37,8 @@
 
 #chattext {
   border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .plugin-ep_author_neat #chattext {
@@ -60,9 +63,10 @@
 }
 
 #chaticon {
-  box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
   border: none;
   padding: 10px 20px;
+  background-color: var(--bg-soft-color);
+  color: var(--text-color);
   right: 30px;
 }
 
