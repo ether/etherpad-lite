@@ -1,6 +1,7 @@
 @import url("src/layout.css");
 @import url("src/pad-editor.css");
 
+@import url("src/components/scrollbars.css");
 @import url("src/components/buttons.css");
 @import url("src/components/popup.css");
 
