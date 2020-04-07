@@ -400,6 +400,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (dom.isNodeText(node))
     {
       var txt = dom.nodeValue(node);
+console.warn("txt", txt);
       var tname = dom.nodeAttr(node.parentNode,"name");
 
       var txtFromHook = hooks.callAll('collectContentLineText', {
@@ -411,7 +412,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         styl: null,
         cls: null
       });
-      var txt = (typeof(txtFromHook)=='object'&&txtFromHook.length==0)?dom.nodeValue(node):txtFromHook[0];
+
+      if(typeof(txtFromHook)=='object'){
+        txt = dom.nodeValue(node)
+      }else{
+        if(txtFromHook){
+          txt = txtFromHook
+        };
+      }
 
       var rest = '';
       var x = 0; // offset into original text
