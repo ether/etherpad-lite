@@ -18,7 +18,8 @@
   box-shadow: 0 0 0 0.5px rgba(209, 209, 209, 0.32), 0 0 7pt 0pt rgba(204, 204, 204, 0.52);
   border: 0;
   border-radius: 5px;
-  background-color: white;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 #sidediv {
   padding-top: 55px; /* = #innerdocbody iframe padding-top */

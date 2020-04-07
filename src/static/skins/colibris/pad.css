@@ -19,6 +19,8 @@
 @import url("src/plugins/tables2.css");
 @import url("src/plugins/author_hover.css");
 
+@import url("src/pad-variants.css");
+
 html {
   font-size: 15px;
 }
@@ -30,18 +32,24 @@ html {
  */
 
 :root {
-  --dark-color: #374256;
-  --dark-soft-color: #576273;
+  --super-dark-color: #374256;
+  --dark-color: #576273; /*#4d5d77*/
+  --dark-soft-color: #6d7684; /*#606978;*/
+
   --primary-color: #64d29b;
   --middle-color: #d2d2d2; /* between light-soft-color and dark-soft-color, use for border for examples */
-  --light-soft-color: #f2f3f4; /*#f9f9f9;*/
-  --light-color: white;
 
-  --text-color: var(--dark-color);
-  --text-soft-color: var(--dark-soft-color);
+  --light-soft-color: #d8dade;
+  --light-color: #f2f3f4; /*#f9f9f9;*/
+  --super-light-color: white;
+}
+
+html {
+  --text-color: var(--super-dark-color);
+  --text-soft-color: var(--dark-color);
   --border-color: var(--middle-color);
-  --bg-soft-color: var(--light-soft-color);
-  --bg-color: var(--light-color);
+  --bg-soft-color: var(--light-color);
+  --bg-color: var(--super-light-color);
 
   --main-font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
@@ -60,5 +68,5 @@ h1 {
 
 /* BACKGROUND COLOR */
 #editorcontainerbox {
-  background-color: var(--bg-soft-color);
+  background-color: #f2f3f4; /* default */
 }

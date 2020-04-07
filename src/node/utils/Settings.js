@@ -62,6 +62,8 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  */
 exports.skinName = null;
 
+exports.skinVariants = "super-light-toolbar super-light-editor light-background";
+
 /**
  * The IP ep-lite should listen to
  */

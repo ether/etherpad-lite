@@ -1,7 +1,9 @@
-#innerdocbody, #innerdocbody {
+#innerdocbody {
   font-size: 15px;
   line-height: 25px;
   padding: 0;
+  background: transparent;
+  color: var(--text-color);
 }
 
 #innerdocbody span, #innerdocbody span {
@@ -26,5 +28,5 @@ option {
 }
 
 #innerdocbody a {
-  color: #3f51b5;
+  color: var(--primary-color);
 }
