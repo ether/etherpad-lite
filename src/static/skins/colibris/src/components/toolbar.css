@@ -34,19 +34,10 @@
 }
 
 .toolbar ul li.separator {
-  visibility: visible;
+  visibility: hidden;
   width: 1px;
   margin: 0 10px;
   position: relative;
-}
-
-.toolbar ul li.separator:after {
-  content: "";
-  position: absolute;
-  top: -25px;
-  height: 50px;
-  width: 1px;
-  background-color: var(--border-color);
 }
 
 .toolbar.condensed ul li {
@@ -90,7 +81,7 @@
 
 .toolbar ul li[data-key=showusers] {
   margin: 0;
-  margin-left: 10px;
+  margin-left: 15px;
   width: 45px;
   height: 100%;
   background-color: var(--bg-color);
@@ -110,12 +101,10 @@
 }
 
 .toolbar.cropped .menu_left {
-  height: 35px;
+  height: 39px;
+  padding-top: 1px;
 }
 .toolbar .show-more-icon-btn {
-  height: 35px;
-  width: 35px;
-  line-height: 35px;
   font-size: 1.8rem;
   color: var(--primary-color);
 }
@@ -131,7 +120,7 @@
 @media (max-width: 720px) {
 
   .toolbar ul li {
-    margin: 5px 1px;
+    margin: 5px 2px;
   }
 
   .toolbar .menu_right {

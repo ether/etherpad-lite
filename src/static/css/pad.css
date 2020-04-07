@@ -29,6 +29,7 @@ select {
   border: 1px solid #ccc;
   outline: none;
   width: 120px;
+  cursor: pointer;
 }
 
 .clear {

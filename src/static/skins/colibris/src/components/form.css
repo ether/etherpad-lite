@@ -2,6 +2,7 @@ input[type="text"], select {
   border-radius: 3px;
   box-shadow: none;
   border: none;
+  outline: 0;
 }
 
 input[type="text"] {

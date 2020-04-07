@@ -37,18 +37,18 @@
 }
 
 
-@media (min-width: 999px) {
+@media (min-width: 1001px) {
   #outerdocbody {
     min-height: calc(100vh - 20px);
   }
 }
 @media (max-width:1000px) {
   #outerdocbody {
-    max-width: none;
     padding-top: 0;
   }
   #outerdocbody iframe, #outerdocbody > #innerdocbody {
     padding: 20px;
+    max-width: none;
     border-radius: 0;
   }
   #sidediv {
@@ -71,5 +71,10 @@
     padding: 15px;
   }
   /* #sidediv is hidden at this size of screen */
+}
+@media only screen and (max-width: 720px) {
+  #editorcontainerbox {
+    margin-bottom: 39px; /* margin for bottom toolbar */
+  }
 }
 
