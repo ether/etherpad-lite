@@ -1,8 +1,9 @@
-const Changeset = require("../../../../src/static/js/Changeset");
+const Changeset        = require("../../../../src/static/js/Changeset");
 const contentcollector = require("../../../../src/static/js/contentcollector");
-const AttributePool = require("../../../../src/static/js/AttributePool");
-const cheerio = require("../../../../src/node_modules/cheerio");
-const util = require('util');
+const AttributePool    = require("../../../../src/static/js/AttributePool");
+// const AttributeManager = require('../../../../src/static/js/AttributeManager');
+const cheerio          = require("../../../../src/node_modules/cheerio");
+const util             = require('util');
 
 //    html : "<html><body><ol class='list-number1' start='1'><li>a</li></ol><ol class='list-number1' start='2'><li>b</li></ol><ol class='list-number1' start='3'><li>c</li></ol><ol class='list-number1' start='4'><li>defg</li></ol></body></html>",
 // Test.html requires trailing <p></p>, I'm not sure why.
@@ -32,13 +33,18 @@ for (var test in tests){
   // Convert a dom tree into a list of lines and attribute liens
   // using the content collector object
   var cc = contentcollector.makeContentCollector(true, null, apool);
+  console.warn("derp");
   cc.collectContent(doc);
-
   var result = cc.finish();
   var recievedAttributes = result.lineAttribs;
   var expectedAttributes = tests[test].expectedLineAttribs;
   var recievedText = new Array(result.lines)
   var expectedText = tests[test].expectedText;
+
+  // We use the document Attribute Manager to store and process line number details
+  // This might be overkill but it means we can keep the same logic as the contentcollector.js file.
+  // var documentAttributeManager = new AttributeManager();
+  // Commented out for now because I don#t want to use this
 
   // Check recieved text matches the expected text
   if(arraysEqual(recievedText[0], expectedText)){
