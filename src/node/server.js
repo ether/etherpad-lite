@@ -31,7 +31,7 @@ log4js.replaceConsole();
  * early check for version compatibility before calling
  * any modules that require newer versions of NodeJS
  */
-NodeVersion.enforceMinNodeVersion('8.9.0');
+NodeVersion.enforceMinNodeVersion('10.13.0');
 
 /*
  * Etherpad 1.8.3 will require at least nodejs 10.13.0.

@@ -1,4 +1,6 @@
 # 1.8.3
+* REQUIREMENTS: minimum required Node version is **10.13.0 LTS**.
+
 *BREAKING CHANGE*: undoing the "clear authorship colors" command is no longer supported (see https://github.com/ether/etherpad-lite/issues/2802)
 
 # 1.8

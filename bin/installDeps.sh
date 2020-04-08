@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # minimum required node version
-REQUIRED_NODE_MAJOR=8
-REQUIRED_NODE_MINOR=9
+REQUIRED_NODE_MAJOR=10
+REQUIRED_NODE_MINOR=13
 
 # minimum required npm version
 REQUIRED_NPM_MAJOR=5
