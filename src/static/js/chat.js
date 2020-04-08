@@ -30,9 +30,8 @@ var chat = (function()
   var self = {
     show: function ()
     {
-      $("#chaticon").hide();
-      $("#chatbox").css('display', 'flex');
-      $("#gritter-container").hide();
+      $("#chaticon").removeClass('visible');
+      $("#chatbox").addClass('visible');
       self.scrollDown();
       chatMentions = 0;
       Tinycon.setBubble(0);
@@ -47,8 +46,13 @@ var chat = (function()
     {
       chat.show();
       isStuck = (!isStuck || fromInitialCall);
+      $('#chatbox').hide();
+      // Add timeout to disable the chatbox animations
+      setTimeout(function() {
+        $('#chatbox, .sticky-container').toggleClass("stickyChat", isStuck);
+        $('#chatbox').css('display', 'flex');
+      }, 0);
 
-      $('#chatbox, .sticky-container').toggleClass("stickyChat", isStuck);
       padcookie.setPref("chatAlwaysVisible", isStuck);
       $('#options-stickychat').prop('checked', isStuck);
     },
@@ -78,15 +82,13 @@ var chat = (function()
       }
       else {
         $("#chatcounter").text("0");
-        $("#chaticon").show();
-        $("#chatbox").hide();
-        $.gritter.removeAll();
-        $("#gritter-container").show();
+        $("#chaticon").addClass('visible');
+        $("#chatbox").removeClass('visible');
       }
     },
     scrollDown: function()
     {
-      if($('#chatbox').css("display") != "none"){
+      if($('.chat-content').is(':visible')){
         if(!self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < $('#chattext').height()) {
           // if we use a slow animate here we can have a race condition when a users focus can not be moved away
           // from the last message recieved.
@@ -153,7 +155,7 @@ var chat = (function()
       var alreadyFocused = $("#chatinput").is(":focus");
 
       // does the user already have the chatbox open?
-      var chatOpen = $("#chatbox").is(":visible");
+      var chatOpen = $(".chat-content").is(":visible");
 
       // does this message contain this user's name? (is the curretn user mentioned?)
       var myName = $('#myusernameedit').val();

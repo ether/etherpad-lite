@@ -1,4 +1,4 @@
-#chatbox {
+.chat-content {
   background: none;
   padding: 0;
   background-color: white;
@@ -9,12 +9,12 @@
   background-color: var(--bg-soft-color);
 }
 
-#chatbox.stickyChat {
+#chatbox.stickyChat .chat-content {
   border: none;
   background-color: var(--bg-soft-color);
 }
 
-#chatbox.stickyChat.chatAndUsersChat{
+#chatbox.stickyChat.chatAndUsersChat .chat-content {
   box-shadow: none;
 }
 
@@ -50,7 +50,7 @@
   background-color: transparent !important;
 }
 
-#chatbox.stickyChat #chattext {
+#chatbox.stickyChat .chat-content #chattext {
   padding: 0px;
 }
 
@@ -58,7 +58,7 @@
   padding: 8px;
 }
 
-.plugin-ep_author_neat #chatbox.stickyChat #chattext {
+.plugin-ep_author_neat #chatbox.stickyChat .chat-content #chattext {
   padding: 5px 3px;
 }
 
@@ -72,11 +72,6 @@
 
 @media (max-width: 720px) {
   #chaticon {
-    right: 0;
-  }
-
-  #chatbox {
-    width: 100%;
     right: 0;
   }
 

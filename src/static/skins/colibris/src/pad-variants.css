@@ -73,11 +73,11 @@
 .super-light-background.super-light-toolbar .toolbar {
   --border-color: var(--super-light-color);
 }
-.super-light-background #chatbox, .super-light-background #chatbox.stickyChat {
+.super-light-background .chat-content, .super-light-background #chatbox.stickyChat .chat-content {
   --bg-color: var(--super-light-color);
   --bg-soft-color: var(--super-light-color);
 }
-.super-light-background #chatbox.stickyChat {
+.super-light-background #chatbox.stickyChat .chat-content {
   box-shadow: none;
 }
 /* ====================== */
@@ -102,14 +102,14 @@
 .light-background input[type="text"] {
   background-color: var(--super-light-color);
 }
-.light-background #chatbox, .light-background #chatbox.stickyChat {
+.light-background .chat-content, .light-background #chatbox.stickyChat .chat-content {
   --bg-color: var(--super-light-color);
   --bg-soft-color: var(--light-color);
   --scrollbar-bg: var(--super-light-color);
   --scrollbar-track: var(--light-color);
   --scrollbar-thumb: var(--middle-color);
 }
-.light-background #chatbox.stickyChat {
+.light-background #chatbox.stickyChat .chat-content {
   box-shadow: none;
 }
 /* Special combinaison with toolbar */
@@ -148,7 +148,7 @@
   border: none;
   border-radius: 8px;
 }
-.super-dark-background #chatbox, .super-dark-background #chatbox.stickyChat {
+.super-dark-background .chat-content, .super-dark-background #chatbox.stickyChat .chat-content {
   background-color: var(--super-dark-color);
   color: var(--light-color);
 }
@@ -160,7 +160,7 @@
 .super-dark-background input[type="text"]::placeholder {
   color: var(--middle-color);
 }
-.super-dark-background #chatbox:not(.stickyChat) {
+.super-dark-background #chatbox:not(.stickyChat) .chat-content {
   border: 1px solid var(--dark-color);
 }
 /* Special combinaison with toolbar */
@@ -196,7 +196,7 @@
   border: none;
   border-radius: 8px;
 }
-.dark-background #chatbox, .dark-background #chatbox.stickyChat {
+.dark-background .chat-content, .dark-background #chatbox.stickyChat .chat-content {
   background-color: var(--dark-color);
   color: var(--super-light-color);
   --border-color: var(--dark-soft-color);
@@ -209,7 +209,7 @@
 .dark-background input[type="text"]::placeholder {
   color: var(--middle-color);
 }
-.dark-background .popup-content, .dark-background #chatbox:not(.stickyChat) {
+.dark-background .popup-content, .dark-background #chatbox:not(.stickyChat) .chat-content {
   box-shadow: 0 0 14px 0px var(--super-dark-color);
 }
 /* Special combinaison with toolbar */
