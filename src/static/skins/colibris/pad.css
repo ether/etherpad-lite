@@ -39,7 +39,7 @@ html {
   --primary-color: #64d29b;
   --middle-color: #d2d2d2; /* between light-soft-color and dark-soft-color, use for border for examples */
 
-  --light-soft-color: #d8dade;
+  --light-soft-color: #e5e6e6;
   --light-color: #f2f3f4; /*#f9f9f9;*/
   --super-light-color: white;
 }
@@ -52,6 +52,21 @@ html {
   --bg-color: var(--super-light-color);
 
   --main-font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+  --editor-padding: 40px 55px;
+  --editor-padding-top: 40px;
+}
+
+/* Default scrollbar values */
+body {
+  --scrollbar-bg: var(--light-color);
+  --scrollbar-track: var(--light-soft-color);
+  --scrollbar-thumb: var(--dark-soft-color);
+}
+#chatbox {
+  --scrollbar-bg: var(--super-light-color);
+  --scrollbar-track: var(--light-color);
+  --scrollbar-thumb: var(--middle-color);
 }
 
 

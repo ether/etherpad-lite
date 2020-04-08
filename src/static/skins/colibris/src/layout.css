@@ -14,15 +14,18 @@
 
 #outerdocbody iframe, #outerdocbody > #innerdocbody {
   max-width: 900px;
-  padding: 55px;
-  box-shadow: 0 0 0 0.5px rgba(209, 209, 209, 0.32), 0 0 7pt 0pt rgba(204, 204, 204, 0.52);
+  padding: 40px 55px;
+  padding: var(--editor-padding);
+  padding-top: var(--editor-padding-top);
+  box-shadow: none;
   border: 0;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
 #sidediv {
-  padding-top: 55px; /* = #innerdocbody iframe padding-top */
+  padding-top: 40px; /* = #innerdocbody iframe padding-top */
+  padding-top: var(--editor-padding-top);
 }
 
 /* Fixs author_hover does not take in account the document padding */
@@ -36,12 +39,6 @@
   #outerdocbody.plugin-ep_author_neat .caretindicator{ margin-left: 17px; }
 }
 
-
-@media (min-width: 1001px) {
-  #outerdocbody {
-    min-height: calc(100vh - 20px);
-  }
-}
 @media (max-width:1000px) {
   #outerdocbody {
     padding-top: 0;
