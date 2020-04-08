@@ -47,3 +47,20 @@
     min-width: 0;
   }
 }
+
+/* SKIN Variants Popup */
+#skin-variants {
+  bottom: 0;
+  left: 0;
+  right: auto;
+  top: auto;
+}
+#skin-variants .popup-content > p {
+  margin-top: 25px;
+}
+#skin-variants-result{
+  background-color: var(--bg-soft-color)
+}
+.skin-variant-container {
+  text-transform: capitalize;
+}

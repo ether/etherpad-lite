@@ -87,7 +87,7 @@ body.doesWrap:not(.noprewrap) > div {
   font-size: 11px;
   font-family: monospace;
   padding-right: 5px;
-  padding-left: 5px;
+  padding-left: 12px;
   background-color: transparent;
   border-right: 1px solid #ccc;
 }
@@ -99,7 +99,11 @@ body.doesWrap:not(.noprewrap) > div {
   color: transparent;
 }
 .sidedivhidden {
-  display: none;
+  /* Do not use display: none to hide the sidediv, otherwise the parent container does not
+       get its height properly calculated by flexboxes */
+  visibility: hidden;
+  width: 0;
+  padding: 0;
 }
 #linemetricsdiv {
   position: absolute;

@@ -49,11 +49,6 @@
   --bg-soft-color: var(--dark-soft-color);
   --bg-color: var(--dark-color);
 }
-.dark-toolbar #outerdocbody iframe, .dark-toolbar #outerdocbody > #innerdocbody {
-  box-shadow: none;
-  border: 1px solid #ececec;
-  border-radius: 8px;
-}
 
 
 
@@ -80,6 +75,11 @@
 .super-light-background #chatbox.stickyChat .chat-content {
   box-shadow: none;
 }
+.super-light-background  body, .full-width-editor.super-light-editor body {
+  --scrollbar-bg: var(--super-light-color);
+  --scrollbar-track: var(--light-color);
+  --scrollbar-thumb: var(--dark-soft-color);
+}
 /* ====================== */
 /* == Light Background == */
 /* ====================== */
@@ -91,7 +91,7 @@
   --bg-color: var(--light-color);
   background-color: var(--light-color);
 }
-.light-background  body {
+.light-background  body, .full-width-editor.light-editor body {
   --scrollbar-bg: var(--light-color);
   --scrollbar-track: var(--light-soft-color);
   --scrollbar-thumb: var(--dark-soft-color);
@@ -135,22 +135,17 @@
 .super-dark-background #editorcontainerbox {
   background-color: var(--super-dark-color);
 }
-.super-dark-background body {
+.super-dark-background body, .full-width-editor.super-dark-editor body {
   --scrollbar-bg: var(--super-dark-color);
   --scrollbar-track: var(--dark-color);
   --scrollbar-thumb: var(--light-soft-color);
 }
-.super-dark-background .toolbar {
-  border-bottom: 1px solid var(--super-dark-color);
-}
-.super-dark-background #outerdocbody iframe, .super-dark-background #outerdocbody > #innerdocbody {
-  box-shadow: none;
-  border: none;
-  border-radius: 8px;
-}
 .super-dark-background .chat-content, .super-dark-background #chatbox.stickyChat .chat-content {
   background-color: var(--super-dark-color);
   color: var(--light-color);
+  --scrollbar-bg: var(--super-dark-color);
+  --scrollbar-track: var(--dark-color);
+  --scrollbar-thumb: var(--light-soft-color);
 }
 .super-dark-background input[type="text"] {
   background-color: var(--bg-soft-color);
@@ -183,23 +178,18 @@
 .dark-background #editorcontainerbox {
   background-color: var(--dark-color);
 }
-.dark-background  body {
+.dark-background  body, .full-width-editor.dark-editor body {
   --scrollbar-bg: var(--dark-color);
   --scrollbar-track: var(--dark-soft-color);
   --scrollbar-thumb: var(--light-soft-color);
-}
-.dark-background .toolbar {
-  border-bottom: 1px solid var(--dark-color);
-}
-.dark-background #outerdocbody iframe, .dark-background #outerdocbody > #innerdocbody {
-  box-shadow: none;
-  border: none;
-  border-radius: 8px;
 }
 .dark-background .chat-content, .dark-background #chatbox.stickyChat .chat-content {
   background-color: var(--dark-color);
   color: var(--super-light-color);
   --border-color: var(--dark-soft-color);
+  --scrollbar-bg: var(--dark-color);
+  --scrollbar-track: var(--dark-soft-color);
+  --scrollbar-thumb: var(--light-soft-color);
 }
 .dark-background input[type="text"] {
   background-color: var(--dark-soft-color);
@@ -213,7 +203,7 @@
   box-shadow: 0 0 14px 0px var(--super-dark-color);
 }
 /* Special combinaison with toolbar */
-.dark-background.dark-toolbar .popup-content {
+.dark-background.dark-toolbar .popup-content, .dark-editor.dark-toolbar .popup-content {
   box-shadow: 0 0 14px 0px var(--super-dark-color);
 }
 .dark-background.dark-toolbar .toolbar {
@@ -265,17 +255,6 @@
 /* ============================= */
 /* == Combinaison with editor == */
 /* ============================= */
-.super-light-editor.super-light-background #outerdocbody iframe,
-.super-light-editor.super-light-background #outerdocbody > #innerdocbody,
-.light-editor.light-background #outerdocbody iframe,
-.light-editor.light-background #outerdocbody > #innerdocbody,
-.super-dark-editor.super-dark-background #outerdocbody iframe,
-.super-dark-editor.super-dark-background #outerdocbody > #innerdocbody,
-.dark-editor.dark-background #outerdocbody iframe,
-.dark-editor.dark-background #outerdocbody > #innerdocbody {
-  box-shadow: none;
-  border: none;
-}
 .super-light-editor.super-light-background #outerdocbody,
 .light-editor.light-background #outerdocbody,
 .super-dark-editor.super-dark-background #outerdocbody,
@@ -283,36 +262,29 @@
   padding-top: 0;
 }
 @media (min-width: 1001px) {
-  .super-light-editor.super-light-background #outerdocbody iframe,
-  .super-light-editor.super-light-background #outerdocbody > #innerdocbody,
-  .super-light-editor.super-light-background #sidediv,
-  .light-editor.light-background #outerdocbody iframe,
-  .light-editor.light-background #outerdocbody > #innerdocbody,
-  .light-editor.light-background #sidediv,
-  .super-dark-editor.super-dark-background #outerdocbody iframe,
-  .super-dark-editor.super-dark-background #outerdocbody > #innerdocbody,
-  .super-dark-editor.super-dark-background #sidediv,
-  .dark-editor.dark-background #outerdocbody iframe,
-  .dark-editor.dark-background #outerdocbody > #innerdocbody,
-  .dark-editor.dark-background #sidediv {
-    padding-top: 35px;
+  .super-light-editor.super-light-background,
+  .light-editor.light-background,
+  .super-dark-editor.super-dark-background,
+  .dark-editor.dark-background {
+    --editor-padding: 20px 35px;
+    --editor-padding-top: 20px;
   }
 }
 
 .super-light-editor.super-light-background #chaticon {
-  --bg-color: var(--light-color);
+  --bg-soft-color: var(--light-color);
   --text-color: var(--dark-color);
 }
 .light-editor.light-background #chaticon {
-  --bg-color: var(--super-light-color);
+  --bg-soft-color: var(--super-light-color);
   --text-color: var(--dark-color);
 }
 .super-dark-editor.super-dark-background #chaticon {
-  --bg-color: var(--dark-color);
+  --bg-soft-color: var(--dark-color);
   --text-color: var(--light-color);
 }
 .dark-editor.dark-background #chaticon {
-  --bg-color: var(--light-color);
+  --bg-soft-color: var(--light-color);
   --text-color: var(--dark-color);
 }
 
@@ -323,9 +295,19 @@
 /* ======================= */
 .full-width-editor #outerdocbody iframe, .full-width-editor #outerdocbody > #innerdocbody {
   max-width: none !important;
+  border-radius: 0;
 }
-@media (min-width: 721px) {
-  .full-width-editor #chaticon {
-    right: 15px;
+.full-width-editor #outerdocbody {
+  padding: 0;
+  margin: 0;
+}
+@media (min-width: 1001px) {
+  .full-width-editor {
+    --editor-padding: 20px 35px;
+    --editor-padding-top: 20px;
   }
+}
+.full-width-editor ::-webkit-scrollbar-track,
+.full-width-editor ::-webkit-scrollbar-thumb {
+  border-radius: 0px;
 }
