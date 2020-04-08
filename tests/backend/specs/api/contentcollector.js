@@ -18,7 +18,7 @@ const tests = {
   ol: {
     description : "Tests if ols properly get line numbers when in a normal OL",
     html : "<html><body><ol><li>a</li><li>b</li><li>c</li><p></p></body></html>",
-    expectedLineAttribs : ['derp'],
+    expectedLineAttribs : [ '*0*1*2*3*4+1*0|1+2', '*0*1*2*3*5+1*0|1+2', '*0*1*2*3*6+1*0|1+2' ],
     expectedText: ["*a","*b","*c"]
   }
 }
@@ -51,7 +51,7 @@ for (var test in tests){
   if(arraysEqual(recievedAttributes, expectedAttributes)){
     console.log("PASS: Recieved Attributes matched Expected Attributes");
   }else{
-    console.error("FAIL: Recieved Text did not match Expected Attributes", recievedAttributes, expectedAttributes)
+    console.error("FAIL: Recieved Attributes did not match Expected Attributes\nRecieved: ", recievedAttributes, "\nExpected: ", expectedAttributes)
   }
 
   // console.warn(recievedAttributes, recievedText);
