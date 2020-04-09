@@ -204,7 +204,7 @@ function getTXTFromAtext(pad, atext, authorColors)
       }
 
       if (line.listTypeName == "number") {
-        pieces.push(line.listLevel + ". ");
+        pieces.push(line.startNumber + ". ");
         // This is bad because it doesn't truly reflect what the user
         // sees because browsers do magic on nested <ol><li>s
       }

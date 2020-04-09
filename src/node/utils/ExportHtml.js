@@ -314,7 +314,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
   for (var i = 0; i < textLines.length; i++)
   {
     var context;
+console.warn(attribLines[i]);
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
+console.warn("line from analyze line", line);
     var lineContent = getLineHTML(line.text, line.aline);
 
     if (line.listLevel)//If we are inside a list
@@ -376,7 +378,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
         }
       }
 
-      pieces.push("<li>", context.lineContent);
+      pieces.push("<li start-number='"+line.startNumber+"'>", context.lineContent);
 
       // To close list elements
       if (nextLine && nextLine.listLevel === line.listLevel && line.listTypeName === nextLine.listTypeName)

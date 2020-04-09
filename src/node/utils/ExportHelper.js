@@ -54,6 +54,16 @@ exports._analyzeLine = function(text, aline, apool){
     var opIter = Changeset.opIterator(aline);
     if (opIter.hasNext()){
       var listType = Changeset.opAttributeValue(opIter.next(), 'list', apool);
+
+      if(listType){
+        var listStart = listType.split("::")[1].replace("startNumber", "");
+      }
+
+      if(listStart){
+        listStart = parseInt(listStart); // parsing for safety
+        line.startNumber = listStart;
+      }
+
       if (listType){
         lineMarker = 1;
         listType = /([a-z]+)([0-9]+)/.exec(listType);
@@ -62,6 +72,7 @@ exports._analyzeLine = function(text, aline, apool){
           line.listLevel = Number(listType[2]);
         }
       }
+
     }
   }
   if (lineMarker){
