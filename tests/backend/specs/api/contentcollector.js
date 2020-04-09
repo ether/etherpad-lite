@@ -11,7 +11,7 @@ const tests = {
 /*
   ul: {
     description : "Tests if uls properly get attributes",
-    html : "<html><body><ul><li>a</li><li>b</li></ul><p></p></body></html>",
+    html : "<html><body><ul><li>a</li><li>b</li></ul><div>div</div><p>foo</p></body></html>",
     expectedLineAttribs : [ '*0*1*2+1+1', '*0*1*2+1+1' ],
     expectedText: ["*a","*b"]
   },
@@ -33,18 +33,12 @@ for (var test in tests){
   // Convert a dom tree into a list of lines and attribute liens
   // using the content collector object
   var cc = contentcollector.makeContentCollector(true, null, apool);
-  console.warn("derp");
   cc.collectContent(doc);
   var result = cc.finish();
   var recievedAttributes = result.lineAttribs;
   var expectedAttributes = tests[test].expectedLineAttribs;
   var recievedText = new Array(result.lines)
   var expectedText = tests[test].expectedText;
-
-  // We use the document Attribute Manager to store and process line number details
-  // This might be overkill but it means we can keep the same logic as the contentcollector.js file.
-  // var documentAttributeManager = new AttributeManager();
-  // Commented out for now because I don#t want to use this
 
   // Check recieved text matches the expected text
   if(arraysEqual(recievedText[0], expectedText)){
@@ -59,8 +53,6 @@ for (var test in tests){
   }else{
     console.error("FAIL: Recieved Attributes did not match Expected Attributes\nRecieved: ", recievedAttributes, "\nExpected: ", expectedAttributes)
   }
-
-  // console.warn(recievedAttributes, recievedText);
 
 }
 

@@ -62,6 +62,7 @@ function sanitizeUnicode(s)
 function makeContentCollector(collectStyles, abrowser, apool, domInterface, className2Author)
 {
   var lineNumber = 0;
+  var prevState;
   abrowser = abrowser || {};
   // I don't like the above.
 
@@ -284,7 +285,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     else{
       state.lineAttributes['list'] = listType;
     }
-console.log(state);
     _recalcAttribString(state);
     return oldListType;
   }
@@ -595,6 +595,28 @@ console.log(state);
           {
             cc.doAttrib(state, "strikethrough");
           }
+          if (tname == "li"){
+
+              if(state.lineAttributes.list && state.lineAttributes.list.indexOf("number") === -1){
+                // It's an UL not an OL, we don't have start numbers for UL
+              }else{
+                // prevState is the line before the current line
+                if(prevState){
+                  var prevListItemStart = (prevState.lineAttributes.start);
+                }else{
+                  var prevListItemStart = 0;
+                }
+                // It's an OL
+                // console.log("prevListItemStart", prevListItemStart);
+                // Time to increment ours..
+                var thisListItemStart = prevListItemStart +1;
+                state.lineAttributes.start = thisListItemStart;
+                cc.doAttrib(state, "start");
+                // console.warn("this list item start", thisListItemStart);
+              }
+
+              prevState = state;
+          }
           if (tname == "ul" || tname == "ol")
           {
             if(node.attribs){
@@ -631,7 +653,10 @@ console.log(state);
                   type = "bullet"
                 }
               } else {
-                type = "number"
+                type = "number" // enter a UL
+                if(prevState && prevState.lineAttributes && prevState.lineAttributes.list){
+                  state.lineAttributes.list === "number"
+                }
               }
               type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             }
@@ -723,6 +748,7 @@ console.log(state);
       _reachBlockPoint(node, 1, state);
     }
     state.localAttribs = localAttribs;
+    prevState = state;
   };
   // can pass a falsy value for end of doc
   cc.notifyNextNode = function(node)
@@ -755,16 +781,12 @@ console.log(state);
     return lines.textLines();
   };
 
-  cc.finish = function()
-  {
+  cc.finish = function(){ // run at start
     lines.flush();
     var lineAttribs = lines.attribLines();
     var lineStrings = cc.getLines();
-    lineAttribs = renumberList(lineAttribs);
-
     lineStrings.length--;
     lineAttribs.length--;
-
 
     var ss = getSelectionStart();
     var se = getSelectionEnd();
@@ -778,8 +800,6 @@ console.log(state);
       var numLinesAfter = 0;
       for (var i = lineStrings.length - 1; i >= 0; i--)
       {
-        // console.warn(lineAttribs[i]);
-        // 
         var oldString = lineStrings[i];
         var oldAttribString = lineAttribs[i];
         if (oldString.length > lineLimit + buffer)
@@ -850,110 +870,6 @@ console.log(state);
       lines: lineStrings,
       lineAttribs: lineAttribs
     };
-  }
-
-  // Goes through every line and renumbers, this is obviously not good.
-  function renumberList(lineAttribs){
-    var lineCount = 0;
-    _.each(lineWithNumber, function( v , line){
-      line = parseInt(line);
-      if(v.number){
-        console.log("item to modify", line , v);
-        // we need to count the above lines to know how many were numbers
-        if(line !== 0){
-          var prevLine = lineWithNumber[line-1];
-          console.log("previous line", line-1, prevLine);
-        }
-        var oldAttribs = lineAttribs[line]; // we need to modify
-        console.log("old Attribs", oldAttribs);
-        var newAttribs = Changeset.makeAttribsString('+1', null, apool);
-        console.log("new attribs");
-        lineAttribs[line] = newAttribs;
-
-        lineCount++;
-        console.log("current line count", lineCount);
-      }else{
-        lineCount = 0;
-        return;
-      }
-    });
-console.log("returning line attribs", lineAttribs);
-    return lineAttribs;
-
-/*
-    //1-check we are in a list
-    var type = getLineListType(lineNum);
-    if(!type)
-    {
-      return null;
-    }
-    type = /([a-z]+)[0-9]+/.exec(type);
-    if(type[1] == "indent")
-    {
-      return null;
-    }
-
-    //2-find the first line of the list
-    while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
-    {
-      type = /([a-z]+)[0-9]+/.exec(type);
-      if(type[1] == "indent")
-        break;
-      lineNum--;
-    }
-
-    //3-renumber every list item of the same level from the beginning, level 1
-    //IMPORTANT: never skip a level because there imbrication may be arbitrary
-    var builder = Changeset.builder(rep.lines.totalWidth());
-    var loc = [0,0];
-    function applyNumberList(line, level)
-    {
-      //init
-      var position = 1;
-      var curLevel = level;
-      var listType;
-      //loop over the lines
-      while(listType = getLineListType(line))
-      {
-        //apply new num
-        listType = /([a-z]+)([0-9]+)/.exec(listType);
-        curLevel = Number(listType[2]);
-        if(isNaN(curLevel) || listType[0] == "indent")
-        {
-          return line;
-        }
-        else if(curLevel == level)
-        {
-          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
-          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
-            ['start', position]
-          ], rep.apool);
-
-          position++;
-          line++;
-        }
-        else if(curLevel < level)
-        {
-          return line;//back to parent
-        }
-        else
-        {
-          line = applyNumberList(line, level+1);//recursive call
-        }
-      }
-      return line;
-    }
-
-    applyNumberList(lineNum, 1);
-    var cs = builder.toString();
-    if (!Changeset.isIdentity(cs))
-    {
-      performDocumentApplyChangeset(cs);
-    }
-
-    //4-apply the modifications
-*/
-
   }
 
   return cc;
