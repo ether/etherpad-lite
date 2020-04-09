@@ -387,6 +387,40 @@
         </div>
       </div>
 
+      <!------------------------------------------------------------------>
+      <!-- SKIN VARIANTS BUILDER (Customize rendering, only for admins) -->
+      <!------------------------------------------------------------------>
+      <% if (settings.skinName == 'colibris') { %>
+      <div id="skin-variants" class="popup"><div class="popup-content">
+        <h1>Skin Builder</h1>
+
+        <div class="dropdowns-container">
+        <% containers = [ "toolbar", "background", "editor" ]; %>
+        <% for(var i=0; i < containers.length; i++) { %>
+          <p class="dropdown-line">
+            <label class="skin-variant-container"><%=containers[i]%></label>
+            <select class="skin-variant skin-variant-color" data-container="<%=containers[i]%>">
+              <option value="super-light">Super Light</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="super-dark">Super Dark</option>
+            </select>
+          </p>
+        <% } %>
+        </div>
+
+        <p>
+            <input type="checkbox" id="skin-variant-full-width" class="skin-variant"/>
+            <label for="skin-variant-full-width">Full Width Editor</label>
+        </p>
+
+        <p>
+          <label>Result to copy in settings.json</label>
+          <input id="skin-variants-result" type="text" readonly class="disabled" />
+        </p>
+      </div></div>
+      <% } %>
+
       <% e.end_block(); %>
 
   </div> <!-- End of #editorcontainerbox -->
@@ -472,6 +506,8 @@
         chat = require('ep_etherpad-lite/static/js/chat').chat;
         padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
         padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+        require('ep_etherpad-lite/static/js/skin_variants');
+
       }());
       // @license-end
   </script>
