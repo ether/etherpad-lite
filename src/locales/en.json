@@ -154,7 +154,7 @@
   "pad.userlist.guest": "Guest",
   "pad.userlist.deny": "Deny",
   "pad.userlist.approve": "Approve",
-  "pad.editbar.clearcolors": "Clear authorship colors on entire document?",
+  "pad.editbar.clearcolors": "Clear authorship colors on entire document? This cannot be undone",
 
   "pad.impexp.importbutton": "Import Now",
   "pad.impexp.importing": "Importing...",

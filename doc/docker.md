@@ -69,6 +69,7 @@ Available options:
 * `DB_PASS`: the password for the database username
 * `DB_CHARSET`: the character set for the tables (only required for MySQL)
 * `DB_FILENAME`: in case `DB_TYPE` is `DirtyDB`, the database filename. Default: `var/dirty.db`
+* `DEFAULT_PAD_TEXT`: The default text of a pad
 * `ADMIN_PASSWORD`: the password for the `admin` user (leave unspecified if you do not want to create it)
 * `USER_PASSWORD`: the password for the first user `user` (leave unspecified if you do not want to create it)
 * `TRUST_PROXY`: set to `true` if you are using a reverse proxy in front of Etherpad (for example: Traefik for SSL termination via Let's Encrypt). This will affect security and correctness of the logs if not done
