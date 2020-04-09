@@ -1,6 +1,7 @@
 .toolbar {
   display: none;
   background-color: #f4f4f4;
+  color: #666;
   border-bottom: 1px solid #ccc;
   overflow: hidden;
   justify-content: space-between;
@@ -38,7 +39,6 @@
   border: 1px solid #ccc;
   border-radius: 3px;
   background: #fff;
-  color: #ccc;
   cursor: pointer;
   overflow: hidden;
   text-decoration: none;

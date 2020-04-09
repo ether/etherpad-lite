@@ -19,8 +19,6 @@
   right: 30px;
   visibility: hidden;
   z-index: 500;
-  min-width: 300px;
-  max-width: 600px;
 }
 #mycolorpicker {
   top: 0;
@@ -35,6 +33,8 @@
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px #ddd;
   background: #f7f7f7;
+  min-width: 300px;
+  max-width: 600px;
 }
 .popup input[type=text] {
   width: 100%;

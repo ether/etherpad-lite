@@ -24,12 +24,13 @@ html,
 }
 
 select {
-  padding: 2px;
+  padding: 3px;
   border-radius: 3px;
   border: 1px solid #ccc;
   outline: none;
   width: 120px;
   cursor: pointer;
+  background-color: white;
 }
 
 .clear {
