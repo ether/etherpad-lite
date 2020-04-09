@@ -32,7 +32,7 @@
   font-weight: bold;
 }
 
-#titlelabel { font-size: 16px; }
+#titlebar #titlelabel { font-size: 16px; }
 #chatlabel { margin-right: 15px; }
 
 #chattext {

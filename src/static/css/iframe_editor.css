@@ -98,7 +98,7 @@ body.doesWrap:not(.noprewrap) > div {
 #sidediv:not(.sidedivdelayed) { /* before sidediv get initialized, hide text */
   color: transparent;
 }
-.sidedivhidden {
+#sidediv.sidedivhidden {
   /* Do not use display: none to hide the sidediv, otherwise the parent container does not
        get its height properly calculated by flexboxes */
   visibility: hidden;

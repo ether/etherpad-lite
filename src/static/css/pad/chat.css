@@ -66,6 +66,7 @@
 #titlebar #titlelabel {
   margin: 4px 0 0 4px;
   display: inline;
+  font-size: 1.4rem;
 }
 #titlebar .stick-to-screen-btn,
 #titlebar .hide-reduce-btn {
