@@ -13,9 +13,9 @@
 @import url("pad/loadingbox.css");
 
 html {
-  font-size: 13px;
-  font-family: Arial, sans-serif;
-  line-height: 16px;
+  font-size: 14px;
+  font-family: Cantarell, Roboto, "Open Sans", "Helvetica Neue", Arial, sans-serif;
+  line-height: 20px;
   color: #3e3e3e;
 }
 .clear {
