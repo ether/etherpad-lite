@@ -1,5 +1,7 @@
 {
-	"@metadata": [],
+	"@metadata": {
+		"authors": []
+	},
 	"index.newPad": "Novi Pad",
 	"index.createOpenPad": "ili napravite/otvorite pad sledećeg naziva:",
 	"pad.toolbar.bold.title": "Podebljano (Ctrl+B)",
