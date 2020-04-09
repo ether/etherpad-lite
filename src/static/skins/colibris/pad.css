@@ -95,21 +95,5 @@ p[data-l10n-id="ep_comments_page.comment"],
   background-color: #f9f9f9 !important;
 }
 
-
-/* NEUTRAL FONT */
-body
-{ font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }
-
-/* PRIMARY FONT */
-h1,
-#titlelabel,
-#chatlabel,
-.btn,
-.yui-skin-sam .yui-panel .hd,
-.reply-suggestion p:not(.reply-comment-suggest-from-p),
-p[data-l10n-id="ep_comments_page.comment"],
-#newComment.sidebar-comment input[type=submit],
-.comment-changeTo-approve input[type=submit],
-#sidedivinner>div:before
-{ font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;  }
-
+/* FONT */
+body { font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; }
