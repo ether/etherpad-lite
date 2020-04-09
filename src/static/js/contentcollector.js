@@ -29,6 +29,30 @@ var UNorm = require('unorm');
 var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
+var lineWithNumber = {
+/*
+  1: {
+    number: true,
+    indent: 0
+  }, // line number 1
+  2: {
+    number: false,
+    indent: 1
+  }, // dont stop being a number item
+  3: { // line number  2
+    number: true,
+    indent: 0
+  },
+  5: { // line number 1
+    number: true,
+    indent: 0
+  },
+  6: { // line number 1.1
+    number: true,
+    indent: 1
+  }
+*/
+}
 
 function sanitizeUnicode(s)
 {
@@ -37,6 +61,7 @@ function sanitizeUnicode(s)
 
 function makeContentCollector(collectStyles, abrowser, apool, domInterface, className2Author)
 {
+  var lineNumber = 0;
   abrowser = abrowser || {};
   // I don't like the above.
 
@@ -259,7 +284,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     else{
       state.lineAttributes['list'] = listType;
     }
-
+console.log(state);
     _recalcAttribString(state);
     return oldListType;
   }
@@ -341,6 +366,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         return [key, value];
       })
     );
+
     lines.appendText('*', Changeset.makeAttribsString('+', attributes , apool));
   }
   cc.startNewLine = function(state)
@@ -354,6 +380,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       }
     }
     lines.startNew();
+    lineNumber++;
   }
   cc.notifySelection = function(sel)
   {
@@ -400,7 +427,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (dom.isNodeText(node))
     {
       var txt = dom.nodeValue(node);
-console.warn("txt", txt);
       var tname = dom.nodeAttr(node.parentNode,"name");
 
       var txtFromHook = hooks.callAll('collectContentLineText', {
@@ -570,6 +596,12 @@ console.warn("txt", txt);
             // lists do not need to have a type, so before we make a wrong guess, check if we find a better hint within the node's children
             if(!rr && !type){
               for (var i in node.children){
+
+                // make child li's flagged as list items
+                var lineNumberWithChild = parseInt(lineNumber)+parseInt(i);
+                if(!lineWithNumber[lineNumberWithChild]) lineWithNumber[lineNumberWithChild] = {};
+                lineWithNumber[lineNumberWithChild]["number"] = true;
+
                 if(node.children[i] && node.children[i].name=='ul'){
                   type = node.children[i].attribs.class
                   if(type){
@@ -578,6 +610,7 @@ console.warn("txt", txt);
                 }
               }
             }
+
             if(rr && rr[1]){
               type = rr[1]
             } else {
@@ -600,6 +633,7 @@ console.warn("txt", txt);
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
             if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
+
           if (className2Author && cls)
           {
             var classes = cls.match(/\S+/g);
@@ -617,6 +651,8 @@ console.warn("txt", txt);
               }
             }
           }
+
+
         }
 
         var nc = dom.nodeNumChildren(node);
@@ -714,9 +750,11 @@ console.warn("txt", txt);
     lines.flush();
     var lineAttribs = lines.attribLines();
     var lineStrings = cc.getLines();
+    lineAttribs = renumberList(lineAttribs);
 
     lineStrings.length--;
     lineAttribs.length--;
+
 
     var ss = getSelectionStart();
     var se = getSelectionEnd();
@@ -730,6 +768,8 @@ console.warn("txt", txt);
       var numLinesAfter = 0;
       for (var i = lineStrings.length - 1; i >= 0; i--)
       {
+        // console.warn(lineAttribs[i]);
+        // 
         var oldString = lineStrings[i];
         var oldAttribString = lineAttribs[i];
         if (oldString.length > lineLimit + buffer)
@@ -800,6 +840,110 @@ console.warn("txt", txt);
       lines: lineStrings,
       lineAttribs: lineAttribs
     };
+  }
+
+  // Goes through every line and renumbers, this is obviously not good.
+  function renumberList(lineAttribs){
+    var lineCount = 0;
+    _.each(lineWithNumber, function( v , line){
+      line = parseInt(line);
+      if(v.number){
+        console.log("item to modify", line , v);
+        // we need to count the above lines to know how many were numbers
+        if(line !== 0){
+          var prevLine = lineWithNumber[line-1];
+          console.log("previous line", line-1, prevLine);
+        }
+        var oldAttribs = lineAttribs[line]; // we need to modify
+        console.log("old Attribs", oldAttribs);
+        var newAttribs = Changeset.makeAttribsString('+1', null, apool);
+        console.log("new attribs");
+        lineAttribs[line] = newAttribs;
+
+        lineCount++;
+        console.log("current line count", lineCount);
+      }else{
+        lineCount = 0;
+        return;
+      }
+    });
+console.log("returning line attribs", lineAttribs);
+    return lineAttribs;
+
+/*
+    //1-check we are in a list
+    var type = getLineListType(lineNum);
+    if(!type)
+    {
+      return null;
+    }
+    type = /([a-z]+)[0-9]+/.exec(type);
+    if(type[1] == "indent")
+    {
+      return null;
+    }
+
+    //2-find the first line of the list
+    while(lineNum-1 >= 0 && (type=getLineListType(lineNum-1)))
+    {
+      type = /([a-z]+)[0-9]+/.exec(type);
+      if(type[1] == "indent")
+        break;
+      lineNum--;
+    }
+
+    //3-renumber every list item of the same level from the beginning, level 1
+    //IMPORTANT: never skip a level because there imbrication may be arbitrary
+    var builder = Changeset.builder(rep.lines.totalWidth());
+    var loc = [0,0];
+    function applyNumberList(line, level)
+    {
+      //init
+      var position = 1;
+      var curLevel = level;
+      var listType;
+      //loop over the lines
+      while(listType = getLineListType(line))
+      {
+        //apply new num
+        listType = /([a-z]+)([0-9]+)/.exec(listType);
+        curLevel = Number(listType[2]);
+        if(isNaN(curLevel) || listType[0] == "indent")
+        {
+          return line;
+        }
+        else if(curLevel == level)
+        {
+          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
+          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
+            ['start', position]
+          ], rep.apool);
+
+          position++;
+          line++;
+        }
+        else if(curLevel < level)
+        {
+          return line;//back to parent
+        }
+        else
+        {
+          line = applyNumberList(line, level+1);//recursive call
+        }
+      }
+      return line;
+    }
+
+    applyNumberList(lineNum, 1);
+    var cs = builder.toString();
+    if (!Changeset.isIdentity(cs))
+    {
+      performDocumentApplyChangeset(cs);
+    }
+
+    //4-apply the modifications
+*/
+
   }
 
   return cc;
