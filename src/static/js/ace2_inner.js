@@ -292,6 +292,7 @@ function Ace2Inner(){
   {
     if ((typeof author) != "string")
     {
+      top.console.error("Going to throw new error, potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
       throw new Error("setAuthorInfo: author (" + author + ") is not a string");
     }
     if (!info)
@@ -624,15 +625,6 @@ function Ace2Inner(){
         fixView();
       });
     }, 0);
-
-    // Chrome can't handle the truth..  If CSS rule white-space:pre-wrap
-    // is true then any paste event will insert two lines..
-    // Sadly this will mean you get a walking Caret in Chrome when clicking on a URL
-    // So this has to be set to pre-wrap ;(
-    // We need to file a bug w/ the Chromium team.
-    if(browser.chrome){
-      $("#innerdocbody").addClass("noprewrap");
-    }
 
   }
 

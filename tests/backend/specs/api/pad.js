@@ -173,6 +173,19 @@ describe('getHTML', function(){
   });
 })
 
+describe('listAllPads', function () {
+  it('list all pads', function (done) {
+    api.get(endPoint('listAllPads'))
+      .expect(function (res) {
+        if (res.body.data.padIDs.includes(testPadId) !== true) {
+          throw new Error('Unable to find pad in pad list')
+        }
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+  })
+})
+
 describe('deletePad', function(){
   it('deletes a Pad', function(done) {
     api.get(endPoint('deletePad')+"&padID="+testPadId)
@@ -182,6 +195,19 @@ describe('deletePad', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
+})
+
+describe('listAllPads', function () {
+  it('list all pads', function (done) {
+    api.get(endPoint('listAllPads'))
+      .expect(function (res) {
+        if (res.body.data.padIDs.includes(testPadId) !== false) {
+          throw new Error('Test pad should not be in pads list')
+        }
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+  })
 })
 
 describe('getHTML', function(){
@@ -402,11 +428,8 @@ describe('createPad', function(){
 
 describe('setText', function(){
   it('Sets text on a pad Id', function(done) {
-    api.post(endPoint('setText'))
-    .send({
-      "padID": testPadId,
-      "text":  text,
-    })
+    api.post(endPoint('setText')+"&padID="+testPadId)
+    .field({text: text})
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Set Text failed")
     })
@@ -430,7 +453,7 @@ describe('getText', function(){
 describe('setText', function(){
   it('Sets text on a pad Id including an explicit newline', function(done) {
     api.post(endPoint('setText')+"&padID="+testPadId)
-    .send({text: text+'\n'})
+    .field({text: text+'\n'})
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Set Text failed")
     })
