@@ -98,6 +98,8 @@
   /*
    * Skin Variants
    *
+   * Use the UI skin variants builder at /p/test#skinvariantsbuilder
+   *
    * For the colibris skin only, you can choose how to render the three main
    * containers:
    * - toolbar (top menu with icons)
