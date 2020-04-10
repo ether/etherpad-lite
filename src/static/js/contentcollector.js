@@ -277,19 +277,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (listType != 'none')
     {
       state.listNesting = (state.listNesting || 0) + 1;
-      // may not ever be used
-      state.startNumber = (state.startNumber || 1) + 1;
+      // may not ever be used -- start number for OLs
+      state.start = (state.start || 1) + 1;
     }
-
-    // the start number for any list is 1.
-    // never actually used
-    // if(!state.lineAttributes.startNumber) state.lineAttributes['startNumber'] = 1;
 
     if(listType === 'none' || !listType ){
       delete state.lineAttributes['list'];
     }
     else{
-console.warn("setting line attr in enter list", listType);
       state.lineAttributes['list'] = listType;
     }
     _recalcAttribString(state);
@@ -301,7 +296,7 @@ console.warn("setting line attr in enter list", listType);
     if (state.lineAttributes['list'])
     {
       state.listNesting--;
-      state.startNumber--;
+      state.start--;
     }
     if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
     else { delete state.lineAttributes['list']; }
@@ -610,18 +605,19 @@ console.warn("setting line attr in enter list", listType);
               }else{
                 // prevState is the line before the current line
                 if(prevState){
-                  var prevListItemStart = prevState.lineAttributes.startNumber;
+                  var prevListItemStart = prevState.lineAttributes.start;
                 }else{
                   var prevListItemStart = 0;
                 }
                 // It's an OL
                 var thisListItemStart = prevListItemStart +1;
-                state.lineAttributes.startNumber = thisListItemStart;
+                state.lineAttributes.start = thisListItemStart;
                 var level = (Math.min(_MAX_LIST_LEVEL, (state.listNesting || 1)));
 //console.warn("level", level);
-              var type = "number"+level+"::startNumber"+parseInt(state.lineAttributes.startNumber);
+              var type = "number"+level+"::start"+parseInt(state.lineAttributes.start);
                 // I'm not sure on the below...
-                oldListTypeOrNull = (_enterList(state, type) || 'none');
+                state.lineAttributes['list'] = type;
+                _recalcAttribString(state);
                 // I think this can be refined cake todo
               }
 
@@ -670,7 +666,7 @@ console.warn("setting line attr in enter list", listType);
               }
 // CAKE TODO BELOW BRING IDENT IN above during the li operation.
 //              type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
-//              type = type + "::startNumber"+parseInt(state.lineAttributes.startNumber);
+//              type = type + "::start"+parseInt(state.lineAttributes.start);
 //console.warn("set type to", type);
             }
             oldListTypeOrNull = (_enterList(state, type) || 'none');

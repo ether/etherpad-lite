@@ -3414,7 +3414,7 @@ function Ace2Inner(){
         else
         {
           setLineListType(lineNum, '');//remove the list
-          renumberList(lineNum + 1);//trigger renumbering of list that may be right after
+          // renumberList(lineNum + 1);//trigger renumbering of list that may be right after
         }
       }
       else if (lineNum + 1 <= rep.lines.length())
@@ -3466,6 +3466,8 @@ function Ace2Inner(){
     }
 
     _.each(mods, function(mod){
+
+top.console.warn("cake", mod);
       setLineListType(mod[0], mod[1]);
     });
     return true;
@@ -3579,10 +3581,10 @@ function Ace2Inner(){
     //separated. If it returns null, it means that the list was not cut, try
     //from the current one.
     var line = caretLine();
-    if(line != -1 && renumberList(line+1) === null)
-    {
-      renumberList(line);
-    }
+//    if(line != -1 && renumberList(line+1) === null)
+//    {
+//      renumberList(line);
+//    }
   }
 
   // set of "letter or digit" chars is based on section 20.5.16 of the original Java Language Spec
@@ -5205,17 +5207,18 @@ function Ace2Inner(){
       documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
       documentAttributeManager.removeAttributeOnLine(lineNum, 'start');
     }else{
-      documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType);
+ top.console.warn("cake", lineNum, listAttributeName, listType);
+      documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType+"::start1"); // for start-number
     }
 
     //if the list has been removed, it is necessary to renumber
     //starting from the *next* line because the list may have been
     //separated. If it returns null, it means that the list was not cut, try
     //from the current one.
-    if(renumberList(lineNum+1)==null)
-    {
-      renumberList(lineNum);
-    }
+//    if(renumberList(lineNum+1)==null)
+//    {
+//      renumberList(lineNum);
+//    }
   }
 
   function renumberList(lineNum){
@@ -5262,6 +5265,7 @@ function Ace2Inner(){
         }
         else if(curLevel == level)
         {
+          // for start-number
           ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
           ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
             ['start', position]
@@ -5282,7 +5286,7 @@ function Ace2Inner(){
       return line;
     }
 
-    applyNumberList(lineNum, 1);
+    // applyNumberList(lineNum, 1);
     var cs = builder.toString();
     if (!Changeset.isIdentity(cs))
     {

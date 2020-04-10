@@ -55,13 +55,14 @@ exports._analyzeLine = function(text, aline, apool){
     if (opIter.hasNext()){
       var listType = Changeset.opAttributeValue(opIter.next(), 'list', apool);
 
+console.warn("listType", listType);
       if(listType){
-        var listStart = listType.split("::")[1].replace("startNumber", "");
+        var listStart = listType.split("::")[1].replace("start", "");
       }
 
       if(listStart){
         listStart = parseInt(listStart); // parsing for safety
-        line.startNumber = listStart;
+        line.start = listStart;
       }
 
       if (listType){
