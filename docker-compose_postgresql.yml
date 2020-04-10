@@ -1,0 +1,73 @@
+version: "2"
+
+services:
+  # https://docs.docker.com/docker-hub/builds/automated-testing/
+  #sut:
+  #  build:
+  #    context: ./test
+  #    dockerfile: Dockerfile
+  #  depends_on:
+  #    - etherpad_postgres
+  #    - etherpad
+  #  volumes_from:
+  #    - etherpad
+  #  volumes:
+  #    - /etc/localtime:/etc/localtime:ro
+  #    - /etc/timezone:/etc/timezone:ro
+
+  etherpad:
+    # For development or CI, tag build from local Dockerfile
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      #args:
+      #  - ETHERPAD_PLUGINS=
+      #  - TAG=${TAG}
+      #  - VCS_REF=${VCS_REF}
+      #  - BUILD_DATE=${BUILD_DATE}
+    # For production, download prebuilt image
+    image: ${IMAGE_NAME}
+    container_name: etherpad
+    #restart: always
+    #command: /wait-for-service.sh node node_modules/ep_etherpad-lite/node/server.js
+    depends_on:
+      - etherpad_postgres
+    links:
+      - etherpad_postgres
+    volumes:
+      # Persist settings.conf
+      #- /srv/etherpad/data:/opt/etherpad-lite/var
+      # If you wish to provide your own API key
+      #- ./APIKEY.txt:/opt/etherpad-lite/APIKEY.txt
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      # Set the following to production to avoid installing devDeps
+      # this can be done with build args (and is mandatory to build ARM version)
+      - NODE_ENV=development
+      # Etherpad configuration
+      - TITLE=Test Etherpad
+      # Database configuration
+      - DB_TYPE=postgres
+      - DB_HOST=etherpad_postgres # same as pgsql container name
+      - DB_PORT=5432
+      - DB_NAME=${ETHERPAD_DB_NAME}
+      - DB_USER=${ETHERPAD_DB_USER}
+      - DB_PASS=${ETHERPAD_DB_PASSWORD}
+      # Custom wait script env var
+      - WAIT_FOR_SERVICES=etherpad_postgres:5432
+
+  etherpad_postgres:
+    image: postgres:latest
+    container_name: etherpad_postgres
+    restart: always
+    #ports:
+    #  - 5432:5432
+    volumes:
+      - /srv/etherpad/postgres:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - POSTGRES_DB=${ETHERPAD_DB_NAME}
+      - POSTGRES_USER=${ETHERPAD_DB_USER}
+      - POSTGRES_PASSWORD=${ETHERPAD_DB_PASSWORD}

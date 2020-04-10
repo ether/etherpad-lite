@@ -1,0 +1,76 @@
+version: "2"
+
+services:
+  # https://docs.docker.com/docker-hub/builds/automated-testing/
+  #sut:
+  #  build:
+  #    context: ./test
+  #    dockerfile: Dockerfile
+  #  depends_on:
+  #    - etherpad_mariadb
+  #    - etherpad
+  #  volumes_from:
+  #    - etherpad
+  #  volumes:
+  #    - /etc/localtime:/etc/localtime:ro
+  #    - /etc/timezone:/etc/timezone:ro
+
+  etherpad:
+    # For development or CI, tag build from local Dockerfile
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      #args:
+      #  - ETHERPAD_PLUGINS=
+      #  - TAG=${TAG}
+      #  - VCS_REF=${VCS_REF}
+      #  - BUILD_DATE=${BUILD_DATE}
+    # For production, download prebuilt image
+    image: ${IMAGE_NAME}
+    container_name: etherpad
+    #restart: always
+    #command: /wait-for-service.sh node node_modules/ep_etherpad-lite/node/server.js
+    depends_on:
+      - etherpad_mariadb
+    links:
+      - etherpad_mariadb
+    volumes:
+      # Persist settings.conf
+      #- /srv/etherpad/data:/opt/etherpad-lite/var
+      # If you wish to provide your own API key
+      #- ./APIKEY.txt:/opt/etherpad-lite/APIKEY.txt
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      # Set the following to production to avoid installing devDeps
+      # this can be done with build args (and is mandatory to build ARM version)
+      - NODE_ENV=development
+      # Etherpad configuration
+      - TITLE=Test Etherpad
+      # Database configuration
+      - DB_TYPE=mysql
+      - DB_HOST=etherpad_mariadb # same as mariadb container name
+      - DB_PORT=3306
+      - DB_NAME=${ETHERPAD_DB_NAME}
+      - DB_USER=${ETHERPAD_DB_USER}
+      - DB_PASS=${ETHERPAD_DB_PASSWORD}
+      - DB_CHARSET=utf8mb4
+      # Custom wait script env var
+      - WAIT_FOR_SERVICES=etherpad_mariadb:3306
+
+  etherpad_mariadb:
+    image: mariadb:latest
+    container_name: etherpad_mariadb
+    restart: always
+    command: --character_set_client=utf8 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake=FALSE
+    #ports:
+    #  - 3306:3306
+    volumes:
+      - /srv/etherpad/mysql:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysqlrootpassword
+      - MYSQL_DATABASE=${ETHERPAD_DB_NAME}
+      - MYSQL_USER=${ETHERPAD_DB_USER}
+      - MYSQL_PASSWORD=${ETHERPAD_DB_PASSWORD}
