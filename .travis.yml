@@ -41,8 +41,8 @@ jobs:
       install:
         - "cd src && npm install && cd -"
       script:
-        - "docker build -t "${IMAGE_NAME}" ."
-        - "docker run -d -p 9001:9001 "${IMAGE_NAME}" && sleep 3"
+        - "docker build -t ${IMAGE_NAME} ."
+        - "docker run -d -p 9001:9001 ${IMAGE_NAME} && sleep 3"
         - "cd src && npm run test-container"
     - name: "Test a docker-compose with MySQL"
       install:
