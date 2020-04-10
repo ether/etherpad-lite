@@ -484,12 +484,12 @@ Pad.prototype.remove = async function remove() {
 
   // delete all chat messages
   promises.timesLimit(this.chatHead + 1, 500, function (i) {
-    return db.remove("pad:" + padID + ":chat:" + i);
+    return db.remove("pad:" + padID + ":chat:" + i, null);
   })
 
   // delete all revisions
   promises.timesLimit(this.head + 1, 500, function (i) {
-    return db.remove("pad:" + padID + ":revs:" + i);
+    return db.remove("pad:" + padID + ":revs:" + i, null);
   })
 
   // remove pad from all authors who contributed
