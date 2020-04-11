@@ -17,8 +17,8 @@ const tests = {
   ulIndented: {
     description : "Tests if indented uls properly get attributes",
     html : "<html><body><ul><li>a</li><ul><li>b</li></ul><li>a</li></ul><p>foo</p></body></html>",
-    expectedLineAttribs : [ '*0*1*2+1+1', '*0*1*2+1+1', '+3' ],
-    expectedText: ["*a","*b", "*b", "*a"]
+    expectedLineAttribs : [ '*0*1*2+1+1', '*0*3*2+1+1', '*0*1*2+1+1' ],
+    expectedText: ["*a","*b", "*a"]
   },
   ol: {
     description : "Tests if ols properly get line numbers when in a normal OL",
@@ -48,7 +48,7 @@ for (var test in tests){
   if(arraysEqual(recievedText[0], expectedText)){
     console.log("PASS: Recieved Text matched Expected Text");
   }else{
-    console.error("FAIL: Recieved Text did not match Expected Text", recievedText[0], tests[test].expectedText)
+    console.error("FAIL: Recieved Text did not match Expected Text\nRecieved:", recievedText[0], "\nExpected:", tests[test].expectedText)
   }
 
   // Check recieved attributes matches the expected attributes
