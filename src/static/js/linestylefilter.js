@@ -98,9 +98,13 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
             }
             else if (key == 'list')
             {
-              classes += ' list:' + value;
+              if(value.indexOf("::") !== -1){
+                classes += ' list:' + value.split("::")[0];
+              }else{
+                classes += value;
+              }
             }
-            else if (key == 'start')
+            if (key == 'start')
             {
               classes += ' start:' + value;
             }
