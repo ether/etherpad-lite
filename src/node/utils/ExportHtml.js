@@ -377,8 +377,12 @@ console.warn("line from analyze line", line);
           }
         }
       }
-
-      pieces.push("<li start-number='"+line.start+"'>", context.lineContent);
+console.warn("derp", line);
+      if(line.start){
+        pieces.push("<li start-number='"+line.start+"'>", context.lineContent);
+      }else{
+        pieces.push("<li>", context.lineContent);
+      }
 
       // To close list elements
       if (nextLine && nextLine.listLevel === line.listLevel && line.listTypeName === nextLine.listTypeName)

@@ -63,6 +63,18 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 {
   var lineNumber = 0;
   var prevState;
+  var prevPrevState;
+
+  /*
+  /  prevPrevState is used to look 2 items before in a list.
+  /  For example:
+  /  1. Hello
+  /  world
+  /  2. Ohi <-- we can continue this list because the above content is populated
+  /  and because prevprevState.lineType is number
+  /  This prevPrevState would be applied on "Ohi" or line 3 in this case.
+  */
+
   abrowser = abrowser || {};
   // I don't like the above.
 
@@ -297,13 +309,21 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
   function _exitList(state, oldListType)
   {
+    // if it's a <p> within list contents!
+    if (!state.lineAttributes) return;
+
     if (state.lineAttributes['list'])
     {
       state.listNesting--;
       state.start--;
     }
-    if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
-    else { delete state.lineAttributes['list']; }
+    if (oldListType && oldListType != 'none') {
+      state.lineAttributes['list'] = oldListType;
+    }
+    else {
+      delete state.lineAttributes['list'];
+      delete state.lineAttributes['start'];
+    }
     _recalcAttribString(state);
   }
 
@@ -373,7 +393,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         return [key, value];
       })
     );
-
     lines.appendText('*', Changeset.makeAttribsString('+', attributes , apool));
   }
   cc.startNewLine = function(state)
@@ -424,6 +443,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         }
       };
     }
+
     var localAttribs = state.localAttribs;
     state.localAttribs = null;
     var isBlock = isBlockElement(node);
@@ -534,7 +554,15 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         delete state.lineAttributes.img
       }
 
-      if (tname == "br")
+      if (tname === "p"){
+        // CAKE todo, we should iterate over each item
+        if(node.children && node.children[0]) txt = node.children[0].data;
+      }else{
+        txt = false;
+      }
+
+      // A blank <p></p> and a <br> should induce a line break
+      if ((tname === "p" && !txt) || tname == "br")
       {
         this.breakLine = true;
         var tvalue = dom.nodeAttr(node, 'value');
@@ -546,8 +574,20 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           styl: null,
           cls: null
         });
-        var startNewLine= (typeof(induceLineBreak)=='object'&&induceLineBreak.length==0)?true:induceLineBreak[0];
-        if(startNewLine){
+        if(typeof(induceLineBreak)=='object' && induceLineBreak.length === 0){
+          var startNewLine = true;
+        }else{
+          var startNewLine = true;
+// this line break shouldn't b ea list item
+          if(induceLineBreak){
+            startNewLine = induceLineBreak[0];
+          }
+        }
+        if(startNewLine || tname === "p"){ // empty p always creates new line
+          console.log(state);
+          // cake this might be a bit agressive..
+          delete state.lineAttributes;
+          delete state.start;
           cc.startNewLine(state);
         }
       }
@@ -609,7 +649,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             }else{
               // prevState is the line before the current line
               if(prevState){
-                var prevListItemStart = prevState.lineAttributes.start;
+                var prevListItemStart = prevState.lineAttributes.start || 1;
               }else{
                 var prevListItemStart = 0;
               }
@@ -668,7 +708,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
               if(type === "bullet"){
                 type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
               }
-              // type = type + "::start"+parseInt(state.lineAttributes.start);
             }
             oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
@@ -677,6 +716,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             // This has undesirable behavior in Chrome but is right in other browsers.
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
             if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
+            console.log("p inside a list");
           }
 
           if (className2Author && cls)
@@ -758,6 +798,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       _reachBlockPoint(node, 1, state);
     }
     state.localAttribs = localAttribs;
+    prevPrevState = prevState; // Save 2 items before
     prevState = state;
   };
   // can pass a falsy value for end of doc
