@@ -8,18 +8,22 @@ const util             = require('util');
 //    html : "<html><body><ol class='list-number1' start='1'><li>a</li></ol><ol class='list-number1' start='2'><li>b</li></ol><ol class='list-number1' start='3'><li>c</li></ol><ol class='list-number1' start='4'><li>defg</li></ol></body></html>",
 // Test.html requires trailing <p></p>, I'm not sure why.
 const tests = {
-/*
   ul: {
     description : "Tests if uls properly get attributes",
     html : "<html><body><ul><li>a</li><li>b</li></ul><div>div</div><p>foo</p></body></html>",
-    expectedLineAttribs : [ '*0*1*2+1+1', '*0*1*2+1+1' ],
-    expectedText: ["*a","*b"]
+    expectedLineAttribs : [ '*0*1*2+1+1', '*0*1*2+1+1', '+3' ],
+    expectedText: ["*a","*b", "div"]
   },
-*/
+  ulIndented: {
+    description : "Tests if indented uls properly get attributes",
+    html : "<html><body><ul><li>a</li><ul><li>b</li></ul><li>a</li></ul><p>foo</p></body></html>",
+    expectedLineAttribs : [ '*0*1*2+1+1', '*0*1*2+1+1', '+3' ],
+    expectedText: ["*a","*b", "*b", "*a"]
+  },
   ol: {
     description : "Tests if ols properly get line numbers when in a normal OL",
     html : "<html><body><ol><li>a</li><li>b</li><li>c</li><p></p></body></html>",
-    expectedLineAttribs : [ '*0*1*2*3*4+1*0|1+2', '*0*1*2*3*5+1*0|1+2', '*0*1*2*3*6+1*0|1+2' ],
+    expectedLineAttribs : [ '*0*1*2*3+1+1', '*0*4*2*5+1+1', '*0*6*2*7+1+1' ],
     expectedText: ["*a","*b","*c"]
   }
 }

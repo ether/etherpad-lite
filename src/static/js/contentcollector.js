@@ -277,8 +277,12 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (listType != 'none')
     {
       state.listNesting = (state.listNesting || 0) + 1;
-      // may not ever be used -- start number for OLs
-      state.start = (state.start || 1) + 1;
+
+      // bullets never have start numbers
+      if(listType !== "bullet"){
+        // may not ever be used -- start number for OLs
+        state.start = (state.start || 1) + 1;
+      }
     }
 
     if(listType === 'none' || !listType ){
@@ -600,28 +604,25 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           }
           if (tname == "li"){
 
-              if(state.lineAttributes.list && state.lineAttributes.list.indexOf("number") === -1){
-                // It's an UL not an OL, we don't have start numbers for UL
+            if(state.lineAttributes.list && state.lineAttributes.list.indexOf("number") === -1){
+              // It's an UL not an OL, we don't have start numbers for UL
+            }else{
+              // prevState is the line before the current line
+              if(prevState){
+                var prevListItemStart = prevState.lineAttributes.start;
               }else{
-                // prevState is the line before the current line
-                if(prevState){
-                  var prevListItemStart = prevState.lineAttributes.start;
-                }else{
-                  var prevListItemStart = 0;
-                }
-                // It's an OL
-                var thisListItemStart = prevListItemStart +1;
-                state.lineAttributes.start = thisListItemStart;
-                var level = (Math.min(_MAX_LIST_LEVEL, (state.listNesting || 1)));
-//console.warn("level", level);
-              var type = "number"+level+"::start"+parseInt(state.lineAttributes.start);
-                // I'm not sure on the below...
-                state.lineAttributes['list'] = type;
-                _recalcAttribString(state);
-                // I think this can be refined cake todo
+                var prevListItemStart = 0;
               }
+              // It's an OL
+              var thisListItemStart = prevListItemStart +1;
+              state.lineAttributes.start = thisListItemStart;
+              var level = (Math.min(_MAX_LIST_LEVEL, (state.listNesting || 1)));
+              var type = "number"+level+"::start"+parseInt(state.lineAttributes.start);
+              state.lineAttributes['list'] = type;
+              _recalcAttribString(state);
+            }
+            prevState = state;
 
-              prevState = state;
           }
           if (tname == "ul" || tname == "ol")
           {
@@ -664,10 +665,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
                   state.lineAttributes.list === "number"
                 }
               }
-// CAKE TODO BELOW BRING IDENT IN above during the li operation.
-//              type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
-//              type = type + "::start"+parseInt(state.lineAttributes.start);
-//console.warn("set type to", type);
+              if(type === "bullet"){
+                type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
+              }
+              // type = type + "::start"+parseInt(state.lineAttributes.start);
             }
             oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
@@ -790,7 +791,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     return lines.textLines();
   };
 
-  cc.finish = function(){ // run at start
+  cc.finish = function(){
     lines.flush();
     var lineAttribs = lines.attribLines();
     var lineStrings = cc.getLines();
