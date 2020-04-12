@@ -290,8 +290,8 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       state.listNesting = (state.listNesting || 0) + 1;
 
-      // bullets never have start numbers
-      if(listType !== "bullet"){
+      // If this is a number
+      if(listType.indexOf("number") !== -1){
         // may not ever be used -- start number for OLs
         state.start = (state.start || 1) + 1;
       }
@@ -722,7 +722,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             // This has undesirable behavior in Chrome but is right in other browsers.
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
             if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
-            console.log("p inside a list");
           }
 
           if (className2Author && cls)

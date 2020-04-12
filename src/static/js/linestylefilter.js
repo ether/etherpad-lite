@@ -101,7 +101,7 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
               if(value.indexOf("::") !== -1){
                 classes += ' list:' + value.split("::")[0];
               }else{
-                classes += value;
+                classes += ' list:' + value;
               }
             }
             if (key == 'start')
@@ -125,6 +125,7 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
       });
 
       if(isLineAttribMarker) classes += ' ' + lineAttributeMarker;
+
       return classes.substring(1);
     }
 
