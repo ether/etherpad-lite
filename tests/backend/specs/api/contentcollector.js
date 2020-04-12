@@ -38,7 +38,7 @@ const tests = {
     html : "<html><body><ol><li>should be 1</li><p></p><li>should be 2</li><li>should be 3</li></ol><p></p></body></html>",
     expectedLineAttribs : [ ],
     expectedText: ["*should be 1","*should be 2","*should be 3"],
-    noteToSelf: "<p></p>should create a line break but not break numbering"
+    noteToSelf: "<p></p>should create a line break but not break numbering -- This is what I can't get working!"
   },
 */
   lineDoBreakInOl:{
@@ -57,8 +57,8 @@ const tests = {
   testP:{
     description : "A single <p></p> should create a new line",
     html : "<html><body><p></p><p></p></body></html>",
-    expectedLineAttribs : [ ],
-    expectedText: [""],
+    expectedLineAttribs : [ '', ''],
+    expectedText: ["", ""],
     noteToSelf: "<p></p>should create a line break but not break numbering"
   },
 }
