@@ -414,7 +414,7 @@
    *
    * File size is specified in bytes. Default is 50 MB.
    */
-  "importMaxFileSize": 52428800, // 50 * 1024 * 1024
+  "importMaxFileSize": "${IMPORT_MAX_FILE_SIZE:52428800}", // 50 * 1024 * 1024
 
   /*
    * Toolbar buttons configuration.

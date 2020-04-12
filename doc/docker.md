@@ -73,6 +73,7 @@ Available options:
 * `ADMIN_PASSWORD`: the password for the `admin` user (leave unspecified if you do not want to create it)
 * `USER_PASSWORD`: the password for the first user `user` (leave unspecified if you do not want to create it)
 * `TRUST_PROXY`: set to `true` if you are using a reverse proxy in front of Etherpad (for example: Traefik for SSL termination via Let's Encrypt). This will affect security and correctness of the logs if not done
+* `IMPORT_MAX_FILE_SIZE`: maximum allowed file size when importing a pad, in bytes. Default: 52428800 (50 MB)
 * `LOGLEVEL`: valid values are `DEBUG`, `INFO`, `WARN` and `ERROR`
 
 ### Examples
