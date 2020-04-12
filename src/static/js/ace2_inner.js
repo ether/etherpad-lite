@@ -5221,6 +5221,8 @@ top.console.warn("cake", mod);
 //    }
   }
 
+  // CAKE TODO remove all this logic and references to it.  It's now handled
+  // in contentcollector.js
   function renumberList(lineNum){
     //1-check we are in a list
     var type = getLineListType(lineNum);

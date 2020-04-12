@@ -551,7 +551,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         });
       }else{
         // THIS SEEMS VERY HACKY! -- Please submit a better fix!
-        delete state.lineAttributes.img
+        if(state.lineAttributes) delete state.lineAttributes.img
       }
 
       if (tname === "p"){
@@ -584,7 +584,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           }
         }
         if(startNewLine || tname === "p"){ // empty p always creates new line
-          console.log(state);
+          // console.log(state);
           // cake this might be a bit agressive..
           delete state.lineAttributes;
           delete state.start;
@@ -644,22 +644,28 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           }
           if (tname == "li"){
 
-            if(state.lineAttributes.list && state.lineAttributes.list.indexOf("number") === -1){
+            if(state.lineAttributes && state.lineAttributes.list && state.lineAttributes.list.indexOf("number") === -1){
               // It's an UL not an OL, we don't have start numbers for UL
             }else{
               // prevState is the line before the current line
               if(prevState){
-                var prevListItemStart = prevState.lineAttributes.start || 1;
+                if(prevState.lineAttributes){
+                  var prevListItemStart = prevState.lineAttributes.start || 1;
+                }else{
+                  var prevListItemStart = 1;
+                }
               }else{
                 var prevListItemStart = 0;
               }
               // It's an OL
               var thisListItemStart = prevListItemStart +1;
-              state.lineAttributes.start = thisListItemStart;
-              var level = (Math.min(_MAX_LIST_LEVEL, (state.listNesting || 1)));
-              var type = "number"+level+"::start"+parseInt(state.lineAttributes.start);
-              state.lineAttributes['list'] = type;
-              _recalcAttribString(state);
+              if(state.lineAttributes){
+                state.lineAttributes.start = thisListItemStart;
+                 var level = (Math.min(_MAX_LIST_LEVEL, (state.listNesting || 1)));
+                var type = "number"+level+"::start"+parseInt(state.lineAttributes.start);
+                state.lineAttributes['list'] = type;
+                _recalcAttribString(state);
+              }
             }
             prevState = state;
 
