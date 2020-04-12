@@ -5,6 +5,8 @@ var importHandler = require('../../handler/ImportHandler');
 var padManager = require("../../db/PadManager");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
+
+  // handle export requests
   args.app.get('/p/:pad/:rev?/export/:type', async function(req, res, next) {
     var types = ["pdf", "doc", "txt", "html", "odt", "etherpad"];
     //send a 404 if we don't support this filetype
@@ -15,19 +17,23 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     // if abiword is disabled, and this is a format we only support with abiword, output a message
     if (settings.exportAvailable() == "no" &&
        ["odt", "pdf", "doc"].indexOf(req.params.type) !== -1) {
-      res.send("This export is not enabled at this Etherpad instance. Set the path to Abiword or SOffice in settings.json to enable this feature");
+      console.error(`Impossible to export pad "${req.params.pad}" in ${req.params.type} format. There is no converter configured`);
+
+      // ACHTUNG: do not include req.params.type in res.send() because there is no HTML escaping and it would lead to an XSS
+      res.send("This export is not enabled at this Etherpad instance. Set the path to Abiword or soffice (LibreOffice) in settings.json to enable this feature");
       return;
     }
 
     res.header("Access-Control-Allow-Origin", "*");
 
     if (await hasPadAccess(req, res)) {
-      console.log('req.params.pad', req.params.pad);
       let exists = await padManager.doesPadExists(req.params.pad);
       if (!exists) {
+        console.warn(`Someone tried to export a pad that doesn't exist (${req.params.pad})`);
         return next();
       }
 
+      console.log(`Exporting pad "${req.params.pad}" in ${req.params.type} format`);
       exportHandler.doExport(req, res, req.params.pad, req.params.type);
     }
   });
@@ -37,6 +43,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     if (await hasPadAccess(req, res)) {
       let exists = await padManager.doesPadExists(req.params.pad);
       if (!exists) {
+        console.warn(`Someone tried to import into a pad that doesn't exist (${req.params.pad})`);
         return next();
       }
 
