@@ -737,6 +737,22 @@ function Ace2Inner(){
 
   function setDocAText(atext)
   {
+    if (atext.text === "") {
+      /*
+       * The server is fine with atext.text being an empty string, but the front
+       * end is not, and crashes.
+       *
+       * It is not clear if this is a problem in the server or in the client
+       * code, and this is a client-side hack fix. The underlying problem needs
+       * to be investigated.
+       *
+       * See for reference:
+       * - https://github.com/ether/etherpad-lite/issues/3861
+       */
+      console.warn('atext.text is an empty string(""). Replacing with "\\n". See issue #3861.');
+      atext.text = "\n";
+    }
+
     fastIncorp(8);
 
     var oldLen = rep.lines.totalWidth();
