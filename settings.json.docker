@@ -419,10 +419,10 @@
    */
   "importExportRateLimiting": {
     // duration of the rate limit window (milliseconds)
-    "windowMs": 90000,
+    "windowMs": "${IMPORT_EXPORT_RATE_LIMIT_WINDOW:90000}",
 
     // maximum number of requests per IP to allow during the rate limit window
-    "max": 10
+    "max": "${IMPORT_EXPORT_MAX_REQ_PER_IP:10}"
   },
 
   /*
