@@ -1,6 +1,13 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides
+ * The Settings module reads the settings out of settings.json and provides
  * this information to the other modules
+ *
+ * TODO muxator 2020-04-14:
+ *
+ * 1) get rid of the reloadSettings() call at module loading;
+ * 2) provide a factory method that configures the settings module at runtime,
+ *    reading the file name either from command line parameters, from a function
+ *    argument, or falling back to a default.
  */
 
 /*
