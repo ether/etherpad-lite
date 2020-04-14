@@ -24,7 +24,7 @@
 .comment-actions-wrapper .comment-edit {
   margin-right: 5px;
 }
-[type="checkbox"] + label[for="suggestion-checkbox"] {
+[type="checkbox"] + label.label-suggestion-checkbox {
   margin-left: 5px;
   padding-left: 2.4rem;
 }

@@ -175,9 +175,6 @@
   --scrollbar-track: var(--dark-soft-color);
   --scrollbar-thumb: var(--light-soft-color);
 }
-.dark-background .popup-content, .dark-background #chatbox:not(.stickyChat) .chat-content {
-  box-shadow: 0 0 14px 0px var(--super-dark-color);
-}
 .dark-background .compact-display-content {
   background-color: var(--dark-color);
 }

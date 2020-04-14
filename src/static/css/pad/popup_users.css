@@ -79,7 +79,6 @@ input#myusernameedit:not(.editable) {
   border-top: 1px solid #c3c3c3;
   border-right: 1px solid #e6e6e6;
   border-bottom: 1px solid #e6e6e6;
-  color: #000;
 }
 #myusernameform .editempty {
   color: #333
