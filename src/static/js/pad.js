@@ -555,6 +555,7 @@ var pad = {
         pad.changeViewOption('rtlIsTrue', true);
       }
       pad.changeViewOption('padFontFamily', padcookie.getPref("padFontFamily"));
+      $('#viewfontmenu').val(padcookie.getPref("padFontFamily")).niceSelect('update');
 
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }

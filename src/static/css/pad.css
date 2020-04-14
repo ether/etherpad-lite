@@ -11,6 +11,7 @@
 @import url("pad/chat.css");
 @import url("pad/gritter.css");
 @import url("pad/loadingbox.css");
+@import url("pad/form.css");
 
 html {
   font-size: 14px;
@@ -21,16 +22,6 @@ html {
 html,
 #sidedivinner > div:before {
   font-family: Cantarell, Roboto, "Open Sans", "Helvetica Neue", Arial, sans-serif;
-}
-
-select {
-  padding: 3px;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-  outline: none;
-  width: 120px;
-  cursor: pointer;
-  background-color: white;
 }
 
 .clear {

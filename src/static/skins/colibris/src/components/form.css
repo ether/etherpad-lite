@@ -1,20 +1,35 @@
-input[type="text"], select {
+input[type="text"], select, textarea, .nice-select {
   border-radius: 3px;
   box-shadow: none;
   border: none;
   outline: 0;
 }
 
-input[type="text"] {
+input[type="text"], textarea {
   padding: 8px 10px;
   background-color: var(--bg-color);
   border: 1px solid var(--border-color);
 }
-select {
+select, .nice-select {
   background-color: var(--bg-soft-color);
   border: none;
   padding: 4px 10px;
+  padding-right: 25px;
   font-weight: bold;
+  line-height: inherit;
+}
+.nice-select .list {
+  background-color: var(--bg-soft-color);
+}
+.nice-select .option:hover,.nice-select .option.focus,.nice-select .option.selected.focus {
+  background-color: var(--bg-color);
+}
+.nice-select .option {
+  padding: 0 15px;
+}
+.popup .nice-select .list {
+  right: 0;
+  left: auto;
 }
 
 

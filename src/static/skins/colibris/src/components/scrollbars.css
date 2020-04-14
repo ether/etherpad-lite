@@ -31,3 +31,17 @@
   background-color: var(--scrollbar-thumb);
   border: 5px solid var(--scrollbar-bg);
 }
+
+.nice-select .list::-webkit-scrollbar-track {
+  background-color: var(--bg-soft-color);
+  border: 0px solid var(--bg-soft-color);
+}
+
+.nice-select .list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nice-select .list::-webkit-scrollbar-thumb {
+  background-color: var(--text-soft-color);
+  border: 0px solid var(--bg-soft-color);
+}
