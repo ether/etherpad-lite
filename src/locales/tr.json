@@ -1,16 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"BaRaN6161 TURK",
 			"Emperyan",
 			"Erdemaslancan",
+			"Grkn gll",
+			"Hedda",
 			"Joseph",
+			"McAang",
 			"Meelo",
 			"Trockya",
-			"McAang",
-			"Vito Genovese",
-			"Hedda",
-			"Grkn gll",
-			"BaRaN6161 TURK"
+			"Vito Genovese"
 		]
 	},
 	"index.newPad": "Yeni Bloknot",
@@ -129,7 +129,7 @@
 	"pad.userlist.guest": "Misafir",
 	"pad.userlist.deny": "Reddet",
 	"pad.userlist.approve": "Onayla",
-	"pad.editbar.clearcolors": "Bütün belgedeki yazarlık renkleri silinsin mi?",
+	"pad.editbar.clearcolors": "Bütün belgedeki yazarlık renkleri silinsin mi? Bu işlem geri alınamaz",
 	"pad.impexp.importbutton": "Şimdi İçe Aktar",
 	"pad.impexp.importing": "İçe aktarıyor...",
 	"pad.impexp.confirmimport": "Bir dosya içe aktarılırken bloknotun mevcut metninin üzerine yazdırılır. Devam etmek istediğinizden emin misiniz?",

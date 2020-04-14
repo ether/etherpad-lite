@@ -1,6 +1,13 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides
+ * The Settings module reads the settings out of settings.json and provides
  * this information to the other modules
+ *
+ * TODO muxator 2020-04-14:
+ *
+ * 1) get rid of the reloadSettings() call at module loading;
+ * 2) provide a factory method that configures the settings module at runtime,
+ *    reading the file name either from command line parameters, from a function
+ *    argument, or falling back to a default.
  */
 
 /*
@@ -297,6 +304,31 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
  * Do not enable on production machines.
  */
 exports.exposeVersion = false;
+
+/*
+ * From Etherpad 1.8.3 onwards, import and export of pads is always rate
+ * limited.
+ *
+ * The default is to allow at most 10 requests per IP in a 90 seconds window.
+ * After that the import/export request is rejected.
+ *
+ * See https://github.com/nfriedly/express-rate-limit for more options
+ */
+exports.importExportRateLimiting = {
+  // duration of the rate limit window (milliseconds)
+  "windowMs": 90000,
+
+  // maximum number of requests per IP to allow during the rate limit window
+  "max": 10
+};
+
+/*
+ * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
+ * file is always bounded.
+ *
+ * File size is specified in bytes. Default is 50 MB.
+ */
+exports.importMaxFileSize = 50 * 1024 * 1024;
 
 // checks if abiword is avaiable
 exports.abiwordAvailable = function()

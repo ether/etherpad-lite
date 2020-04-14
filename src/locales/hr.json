@@ -119,7 +119,7 @@
 	"pad.userlist.guest": "Gost",
 	"pad.userlist.deny": "Odbij",
 	"pad.userlist.approve": "Odobri",
-	"pad.editbar.clearcolors": "Ukloniti boje autorstva u cijelom blokiću?",
+	"pad.editbar.clearcolors": "Ukloniti boje autorstva u cijelom blokiću? Radnju nije moguće poništiti jednom kad je izvršena.",
 	"pad.impexp.importbutton": "Uvezi odmah",
 	"pad.impexp.importing": "Uvoženje...",
 	"pad.impexp.confirmimport": "Uvoženje datoteke presnimit će trenutačni sadržaj blokića.\nJeste li sigurni da želite nastaviti?",

@@ -409,6 +409,31 @@
   */
 
   /*
+   * From Etherpad 1.8.3 onwards, import and export of pads is always rate
+   * limited.
+   *
+   * The default is to allow at most 10 requests per IP in a 90 seconds window.
+   * After that the import/export request is rejected.
+   *
+   * See https://github.com/nfriedly/express-rate-limit for more options
+   */
+  "importExportRateLimiting": {
+    // duration of the rate limit window (milliseconds)
+    "windowMs": "${IMPORT_EXPORT_RATE_LIMIT_WINDOW:90000}",
+
+    // maximum number of requests per IP to allow during the rate limit window
+    "max": "${IMPORT_EXPORT_MAX_REQ_PER_IP:10}"
+  },
+
+  /*
+   * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
+   * file is always bounded.
+   *
+   * File size is specified in bytes. Default is 50 MB.
+   */
+  "importMaxFileSize": "${IMPORT_MAX_FILE_SIZE:52428800}", // 50 * 1024 * 1024
+
+  /*
    * Toolbar buttons configuration.
    *
    * Uncomment to customize.
