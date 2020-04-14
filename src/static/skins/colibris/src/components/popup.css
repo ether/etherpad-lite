@@ -34,7 +34,7 @@
   width: 120px;
   display: inline-block;
 }
-.popup .dropdowns-container select {
+.popup .dropdowns-container .nice-select {
   min-width: 180px;
 }
 

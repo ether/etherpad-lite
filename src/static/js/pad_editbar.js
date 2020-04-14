@@ -25,6 +25,7 @@ var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
 var padsavedrevs = require('./pad_savedrevs');
 var _ = require('ep_etherpad-lite/static/js/underscore');
+require('ep_etherpad-lite/static/js/vendors/nice-select');
 
 var ToolbarItem = function (element) {
   this.$el = element;
@@ -168,6 +169,8 @@ var padeditbar = (function()
         toolbar: self,
         ace: padeditor.ace
       });
+
+      $('select').niceSelect();
     },
     isEnabled: function()
     {
