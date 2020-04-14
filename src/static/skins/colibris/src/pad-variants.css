@@ -57,7 +57,7 @@
 /* ============================ */
 /* == Super Light Background == */
 /* ============================ */
-.super-light-background #editorcontainerbox, .super-light-background #sidediv  {
+.super-light-background #editorcontainerbox, .super-light-background #sidediv, .super-light-background, .light-background.super-light-editor  {
   --text-color: var(--dark-color);
   --text-soft-color: var(--dark-soft-color);
   --border-color: var(--light-soft-color);
@@ -75,15 +75,18 @@
 .super-light-background #chatbox.stickyChat .chat-content {
   box-shadow: none;
 }
-.super-light-background  body, .full-width-editor.super-light-editor body {
+.super-light-background  body, .full-width-editor.super-light-editor body:not(.plugin-ep_comments_page) {
   --scrollbar-bg: var(--super-light-color);
   --scrollbar-track: var(--light-color);
   --scrollbar-thumb: var(--dark-soft-color);
 }
+.super-light-background .compact-display-content {
+  background-color: var(--super-light-color);
+}
 /* ====================== */
 /* == Light Background == */
 /* ====================== */
-.light-background #editorcontainerbox, .light-background #sidediv  {
+.light-background #editorcontainerbox, .light-background #sidediv, .light-background  {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
   --border-color: var(--light-soft-color);
@@ -91,7 +94,7 @@
   --bg-color: var(--light-color);
   background-color: var(--light-color);
 }
-.light-background  body, .full-width-editor.light-editor body {
+.light-background  body, .full-width-editor.light-editor body:not(.plugin-ep_comments_page) {
   --scrollbar-bg: var(--light-color);
   --scrollbar-track: var(--light-soft-color);
   --scrollbar-thumb: var(--dark-soft-color);
@@ -122,10 +125,13 @@
   --scrollbar-track: var(--light-soft-color);
   --scrollbar-thumb: var(--dark-soft-color);
 }
+.light-background .compact-display-content {
+  background-color: var(--light-color);
+}
 /* =========================== */
 /* == Super Dark Background == */
 /* =========================== */
-.super-dark-background #editorcontainerbox, .super-dark-background #sidediv  {
+.super-dark-background #editorcontainerbox, .super-dark-background #sidediv, .super-dark-background  {
   --text-color: var(--light-color);
   --text-soft-color: var(--light-soft-color);
   --border-color: var(--dark-color);
@@ -135,7 +141,7 @@
 .super-dark-background #editorcontainerbox {
   background-color: var(--super-dark-color);
 }
-.super-dark-background body, .full-width-editor.super-dark-editor body {
+.super-dark-background body, .full-width-editor.super-dark-editor body:not(.plugin-ep_comments_page) {
   --scrollbar-bg: var(--super-dark-color);
   --scrollbar-track: var(--dark-color);
   --scrollbar-thumb: var(--light-soft-color);
@@ -147,7 +153,7 @@
   --scrollbar-track: var(--dark-color);
   --scrollbar-thumb: var(--light-soft-color);
 }
-.super-dark-background input[type="text"] {
+.super-dark-background input[type="text"]:not(.comment-content) {
   background-color: var(--bg-soft-color);
   border: none;
   color: var(--text-color);
@@ -159,16 +165,20 @@
   border: 1px solid var(--dark-color);
 }
 /* Special combinaison with toolbar */
-.super-dark-background.super-dark-toolbar .popup-content {
+.super-dark-background.super-dark-toolbar .popup-content, .super-dark-background .full-display-content {
   border: 1px solid var(--dark-color);
+  box-shadow: none;
 }
 .super-dark-background.super-dark-toolbar .toolbar {
   --border-color: var(--super-dark-color);
 }
+.super-dark-background .compact-display-content {
+  background-color: var(--super-dark-color);
+}
 /* ===================== */
 /* == Dark Background == */
 /* ===================== */
-.dark-background #editorcontainerbox, .dark-background #sidediv  {
+.dark-background #editorcontainerbox, .dark-background #sidediv, .dark-background  {
   --text-color: var(--super-light-color);
   --text-soft-color: var(--light-color);
   --border-color: var(--dark-soft-color);
@@ -178,7 +188,7 @@
 .dark-background #editorcontainerbox {
   background-color: var(--dark-color);
 }
-.dark-background  body, .full-width-editor.dark-editor body {
+.dark-background  body, .full-width-editor.dark-editor body:not(.plugin-ep_comments_page) {
   --scrollbar-bg: var(--dark-color);
   --scrollbar-track: var(--dark-soft-color);
   --scrollbar-thumb: var(--light-soft-color);
@@ -191,7 +201,7 @@
   --scrollbar-track: var(--dark-soft-color);
   --scrollbar-thumb: var(--light-soft-color);
 }
-.dark-background input[type="text"] {
+.dark-background input[type="text"]:not(.comment-content) {
   background-color: var(--dark-soft-color);
   border: none;
   color: var(--text-color);
@@ -201,6 +211,13 @@
 }
 .dark-background .popup-content, .dark-background #chatbox:not(.stickyChat) .chat-content {
   box-shadow: 0 0 14px 0px var(--super-dark-color);
+}
+.dark-background .compact-display-content {
+  background-color: var(--dark-color);
+}
+.dark-background .full-display-content {
+  box-shadow: none;
+  border: 1px solid var(--dark-soft-color);
 }
 /* Special combinaison with toolbar */
 .dark-background.dark-toolbar .popup-content, .dark-editor.dark-toolbar .popup-content {

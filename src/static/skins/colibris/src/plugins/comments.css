@@ -1,0 +1,76 @@
+.sidebar-comment .btn {
+  margin-top: 10px;
+  padding: 3px 8px;
+  font-size: .9rem;
+  margin: 10px 0 5px 0;
+}
+.sidebar-comment .suggestion-create {
+  margin-top: 10px;
+}
+.suggestion-display .from-value, .suggestion-display .to-value {
+  color: var(--primary-color);
+  font-weight: bold;
+  opacity: 1;
+}
+.suggestion-display .from-value {
+  margin-right: 5px;
+}
+.comment-actions-wrapper .buttonicon {
+  opacity: .8;
+}
+.comment-actions-wrapper .buttonicon:hover {
+  opacity: 1;
+}
+.comment-actions-wrapper .comment-edit {
+  margin-right: 5px;
+}
+[type="checkbox"] + label[for="suggestion-checkbox"] {
+  margin-left: 5px;
+  padding-left: 2.4rem;
+}
+.sidebar-comment .full-display-content {
+  margin-left: -10px;
+  box-shadow: 0 2px 9px 2px rgba(130, 130, 130, 0.2);
+  background-color: var(--bg-color);
+}
+.comment-reply {
+  background-color: var(--bg-soft-color);
+  border: none;
+}
+.comment-reply textarea, .comment-reply input[type="text"] {
+  background-color: var(--bg-color);
+}
+.btn.revert-suggestion-btn {
+  padding-left: 0;
+}
+.comment-edit-form {
+  margin-top: 15px;
+}
+.comment-modal .full-display-content {
+  box-shadow: none;
+  margin: 0 !important;
+}
+.comment-modal .comment-modal-comment {
+  padding: 0;
+}
+.ace-line .comment {
+  background-color: rgba(255, 235, 59, 0.5);
+}
+.new-comment-popup textarea {
+  background-color: var(--bg-soft-color);
+}
+.new-comment-popup .suggestion {
+  margin-bottom: 10px;
+}
+
+@media (min-width: 1200px) {
+  #comments {
+    width: 300px;
+  }
+  .sidebar-comment .full-display-content {
+    margin-left: 10px;
+  }
+  .compact-display-content {
+    padding-left: 20px;
+  }
+}
