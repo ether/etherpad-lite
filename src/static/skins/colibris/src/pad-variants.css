@@ -21,9 +21,6 @@
   --bg-soft-color: var(--light-soft-color);
   --bg-color: var(--light-color);
 }
-.popup input[type="text"] {
-  background-color: var(--super-light-color);
-}
 /* ========================== */
 /* === Super Dark Toolbar === */
 /* ========================== */
@@ -65,9 +62,6 @@
   --bg-color: var(--super-light-color);
   background-color: var(--super-light-color);
 }
-.super-light-background.super-light-toolbar .toolbar {
-  --border-color: var(--super-light-color);
-}
 .super-light-background .chat-content, .super-light-background #chatbox.stickyChat .chat-content {
   --bg-color: var(--super-light-color);
   --bg-soft-color: var(--super-light-color);
@@ -99,12 +93,6 @@
   --scrollbar-track: var(--light-soft-color);
   --scrollbar-thumb: var(--dark-soft-color);
 }
-.light-background.light-toolbar .toolbar {
-  --border-color: var(--light-color);
-}
-.light-background input[type="text"] {
-  background-color: var(--super-light-color);
-}
 .light-background .chat-content, .light-background #chatbox.stickyChat .chat-content {
   --bg-color: var(--super-light-color);
   --bg-soft-color: var(--light-color);
@@ -116,9 +104,6 @@
   box-shadow: none;
 }
 /* Special combinaison with toolbar */
-.light-background.light-toolbar .toolbar {
-  --border-color: var(--light-color);
-}
 .light-background.light-editor #chattext {
   background-color: var(--light-color);
   --scrollbar-bg: var(--light-color);
@@ -153,14 +138,6 @@
   --scrollbar-track: var(--dark-color);
   --scrollbar-thumb: var(--light-soft-color);
 }
-.super-dark-background input[type="text"]:not(.comment-content) {
-  background-color: var(--bg-soft-color);
-  border: none;
-  color: var(--text-color);
-}
-.super-dark-background input[type="text"]::placeholder {
-  color: var(--middle-color);
-}
 .super-dark-background #chatbox:not(.stickyChat) .chat-content {
   border: 1px solid var(--dark-color);
 }
@@ -168,9 +145,6 @@
 .super-dark-background.super-dark-toolbar .popup-content, .super-dark-background .full-display-content {
   border: 1px solid var(--dark-color);
   box-shadow: none;
-}
-.super-dark-background.super-dark-toolbar .toolbar {
-  --border-color: var(--super-dark-color);
 }
 .super-dark-background .compact-display-content {
   background-color: var(--super-dark-color);
@@ -201,14 +175,6 @@
   --scrollbar-track: var(--dark-soft-color);
   --scrollbar-thumb: var(--light-soft-color);
 }
-.dark-background input[type="text"]:not(.comment-content) {
-  background-color: var(--dark-soft-color);
-  border: none;
-  color: var(--text-color);
-}
-.dark-background input[type="text"]::placeholder {
-  color: var(--middle-color);
-}
 .dark-background .popup-content, .dark-background #chatbox:not(.stickyChat) .chat-content {
   box-shadow: 0 0 14px 0px var(--super-dark-color);
 }
@@ -222,9 +188,6 @@
 /* Special combinaison with toolbar */
 .dark-background.dark-toolbar .popup-content, .dark-editor.dark-toolbar .popup-content {
   box-shadow: 0 0 14px 0px var(--super-dark-color);
-}
-.dark-background.dark-toolbar .toolbar {
-  --border-color: var(--dark-color);
 }
 
 

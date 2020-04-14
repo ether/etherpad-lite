@@ -7,8 +7,12 @@ input[type="text"], select, textarea, .nice-select {
 
 input[type="text"], textarea {
   padding: 8px 10px;
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--bg-soft-color);
+  border: none;
+  color: var(--text-color);
+}
+input[type="text"]::placeholder, textarea::placeholder {
+  color: var(--text-soft-color);
 }
 select, .nice-select {
   background-color: var(--bg-soft-color);
