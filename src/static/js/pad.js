@@ -210,6 +210,7 @@ function handshake()
   });
 
   socket.on('reconnecting', function() {
+    padeditor.disable();
     pad.collabClient.setStateIdle();
     pad.collabClient.setIsPendingRevision(true);
     pad.collabClient.setChannelState("RECONNECTING");
