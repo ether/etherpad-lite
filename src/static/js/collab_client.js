@@ -313,6 +313,16 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
     else if (msg.type == "ACCEPT_COMMIT")
     {
+      /*
+       * this is the first time this user contributed to this pad. Let's record
+       * it, because it will be used for allowing import.
+       *
+       * TODO: here, we are changing this variable on the client side only. The
+       *       server has all the informations to make the same deduction, and
+       *       broadcast to the client.
+       */
+      clientVars.thisUserHasEditedThisPad = true;
+
       var newRev = msg.newRev;
       if (msgQueue.length > 0)
       {
