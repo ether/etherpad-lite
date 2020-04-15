@@ -100,6 +100,12 @@ exports.restartServer = function () {
   });
 
   if (settings.trustProxy) {
+    /*
+     * If 'trust proxy' === true, the client’s IP address in req.ip will be the
+     * left-most entry in the X-Forwarded-* header.
+     *
+     * Source: https://expressjs.com/en/guide/behind-proxies.html
+     */
     app.enable('trust proxy');
   }
 
