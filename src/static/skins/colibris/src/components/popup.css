@@ -23,7 +23,7 @@
   color: var(--text-color);
 }
 
-.popup p {
+.popup:not(.comment-modal) p {
   margin: 10px 0;
 }
 

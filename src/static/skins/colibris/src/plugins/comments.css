@@ -4,6 +4,9 @@
   font-size: .9rem;
   margin: 10px 0 5px 0;
 }
+.sidebar-comment .btn.btn-primary:not(#comment-create-btn) {
+  background-color: var(--text-soft-color);
+}
 .sidebar-comment .suggestion-create {
   margin-top: 10px;
 }
