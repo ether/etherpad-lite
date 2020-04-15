@@ -57,7 +57,7 @@
   margin: 10px 0;
   font-size: 1.2rem;
 }
-.popup p {
+.popup:not(.comment-modal) p {
   margin: 5px 0;
 }
 
