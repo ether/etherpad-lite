@@ -557,6 +557,17 @@ var pad = {
       pad.changeViewOption('padFontFamily', padcookie.getPref("padFontFamily"));
       $('#viewfontmenu').val(padcookie.getPref("padFontFamily")).niceSelect('update');
 
+      // Prevent sticky chat or chat and users to be checked for mobiles
+      function checkChatAndUsersVisibility(x) {
+        if (x.matches) { // If media query matches
+          $('#options-chatandusers:checked').click();
+          $('#options-stickychat:checked').click();
+        }
+      }
+      var mobileMatch = window.matchMedia("(max-width: 800px)");
+      mobileMatch.addListener(checkChatAndUsersVisibility); // check if window resized
+      setTimeout(function() { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
+
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },
