@@ -43,8 +43,7 @@ body.mozilla, body.safari {
 .safari div {
   padding-right: 1px; /* prevents the caret from disappearing on the longest line of the doc */
 }
-html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
-span { cursor: auto; line-height: 125%; }
+span { line-height: 125%; }
 
 
 /* -------------- */
