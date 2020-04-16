@@ -2,18 +2,22 @@
   border-radius: 3px;
   width: 12px;
   height: 28px;
+  background-color: #64d29b;
   background-color: var(--primary-color);
 }
 
 #timeslider-slider #ui-slider-bar {
   border-radius: 3px;
+  background-color: #d2d2d2;
   background-color: var(--border-color);
 }
 #slider-btn-container {
   margin: -18px 15px 0 20px;
 }
 #slider-btn-container #playpause_button_icon {
+  color: #ffffff;
   color: var(--bg-color);
+  background-color: #64d29b;
   background-color: var(--primary-color);
   border: none;
   margin-right: 5px;
@@ -31,7 +35,9 @@
   line-height: 28px;
   margin-left: 5px;
   font-size: 13px;
+  color: #64d29b;
   color: var(--primary-color);
+  border-color: #64d29b;
   border-color: var(--primary-color);
 }
 #slider-btn-container .stepper.disabled {
@@ -39,7 +45,9 @@
 }
 
 .timeslider #editbar .buttontext {
+  background-color: #576273;
   background-color: var(--text-soft-color);
+  color: #ffffff;
   color: var(--bg-color);
   margin: 0;
 }

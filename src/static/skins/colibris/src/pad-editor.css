@@ -3,6 +3,7 @@
   line-height: 25px;
   padding: 0;
   background: transparent;
+  color: #485365;
   color: var(--text-color);
 }
 
@@ -28,5 +29,6 @@ option {
 }
 
 #innerdocbody a {
+  color: #64d29b;
   color: var(--primary-color);
 }

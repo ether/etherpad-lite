@@ -2,7 +2,9 @@
   border-radius: 5px;
   padding: 25px;
   background: none;
+  background-color: #ffffff;
   background-color: var(--bg-color);
+  color: #576273;
   color: var(--text-soft-color);
   border: none;
   box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), 0 8px 16px rgba(27, 39, 51, 0.08);
@@ -20,6 +22,7 @@
 .popup h2 {
   margin-bottom: 15px;
   margin-top: 20px;
+  color: #485365;
   color: var(--text-color);
 }
 
@@ -59,7 +62,8 @@
   margin-top: 25px;
 }
 #skin-variants-result{
-  background-color: var(--bg-soft-color)
+  background-color: #f2f3f4;
+  background-color: var(--bg-soft-color);
 }
 .skin-variant-container {
   text-transform: capitalize;

@@ -1,3 +1,4 @@
+@import url("src/general.css");
 @import url("src/layout.css");
 @import url("src/pad-editor.css");
 
@@ -22,13 +23,9 @@
 
 @import url("src/pad-variants.css");
 
-html {
-  font-size: 15px;
-}
-
 /* -----------------------------------------------------------------
  * COLORS
- * If you want to change main colors, please replace following rules
+ * If you want to change main colors, please replace following CSS variables
  * -----------------------------------------------------------------
  */
 
@@ -41,9 +38,7 @@ html {
 
   --light-color: #f2f3f4; /*#f9f9f9;*/
   --super-light-color: white;
-}
 
-html {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
   --border-color: var(--middle-color);
@@ -59,18 +54,6 @@ html {
 /* Default scrollbar values */
 body {
   --scrollbar-bg: var(--light-color);
-  --scrollbar-track: var(--light-color);
+  --scrollbar-track: var(--super-light-color);
   --scrollbar-thumb: var(--dark-color);
-}
-
-
-body {
-  color: var(--text-color);
-  font-family: var(--main-font-family);
-}
-
-
-/* PRIMARY COLOR */
-h1 {
-  color: var(--primary-color);
 }

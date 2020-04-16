@@ -1,7 +1,9 @@
 .toolbar {
   border-bottom: none;
   padding: 0;
+  background-color: #ffffff;
   background-color: var(--bg-color);
+  color: #576273;
   color: var(--text-soft-color);
   border-bottom: none;
 }
@@ -57,25 +59,33 @@
 }
 
 .toolbar ul li a:hover, .toolbar ul li select:hover  {
+  background-color: #f2f3f4;
   background-color: var(--bg-soft-color);
+  color: #485365;
   color: var(--text-color);
 }
 .toolbar ul li a.selected {
+  background-color: #f2f3f4;
   background-color: var(--bg-soft-color);
 }
 .toolbar ul li a.pressed,
 .toolbar ul li select:active {
+  color: #64d29b;
   color: var(--primary-color);
 }
 
 .toolbar ul li select:active option {
+  background-color: #ffffff;
   background-color: var(--bg-color);
+  color: #576273;
   color: var(--text-soft-color);
   padding: 5px;
 }
 
 .toolbar .menu_right li a.selected {
+  background-color: #576273;
   background-color: var(--text-soft-color);
+  color: #ffffff;
   color: var(--bg-color);
 }
 
@@ -104,6 +114,7 @@
 }
 .toolbar .show-more-icon-btn {
   font-size: 1.8rem;
+  color: #64d29b;
   color: var(--primary-color);
 }
 
@@ -122,7 +133,9 @@
   }
 
   .toolbar .menu_right {
+    border-top: 1px solid #d2d2d2;
     border-top: 1px solid var(--border-color);
+    background-color: #ffffff;
     background-color: var(--bg-color);
     padding: 0;
   }

@@ -14,10 +14,13 @@ button, .btn
 
 .btn-primary
 {
+  background-color: #64d29b;
   background-color: var(--primary-color);
+  color: #ffffff;
   color: var(--bg-color);
 }
 .btn-default {
+  color: #485365;
   color: var(--text-color);
 }
 
