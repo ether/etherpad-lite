@@ -33,14 +33,12 @@ html {
  */
 
 :root {
-  --super-dark-color: #374256;
+  --super-dark-color: #485365; /*#374256;*/
   --dark-color: #576273; /*#4d5d77*/
-  --dark-soft-color: #6d7684; /*#606978;*/
 
   --primary-color: #64d29b;
   --middle-color: #d2d2d2; /* between light-soft-color and dark-soft-color, use for border for examples */
 
-  --light-soft-color: #e5e6e6;
   --light-color: #f2f3f4; /*#f9f9f9;*/
   --super-light-color: white;
 }
@@ -61,13 +59,8 @@ html {
 /* Default scrollbar values */
 body {
   --scrollbar-bg: var(--light-color);
-  --scrollbar-track: var(--light-soft-color);
-  --scrollbar-thumb: var(--dark-soft-color);
-}
-#chatbox {
-  --scrollbar-bg: var(--super-light-color);
   --scrollbar-track: var(--light-color);
-  --scrollbar-thumb: var(--middle-color);
+  --scrollbar-thumb: var(--dark-color);
 }
 
 
@@ -80,9 +73,4 @@ body {
 /* PRIMARY COLOR */
 h1 {
   color: var(--primary-color);
-}
-
-/* BACKGROUND COLOR */
-#editorcontainerbox {
-  background-color: #f2f3f4; /* default */
 }

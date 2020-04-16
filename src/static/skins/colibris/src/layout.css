@@ -4,6 +4,10 @@
   width: 100%;
 }
 
+#editorcontainerbox {
+  background-color: var(--bg-color);
+}
+
 #editorcontainerbox .sticky-container {
   width: 250px;
 }

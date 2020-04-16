@@ -33,12 +33,13 @@
 }
 .sidebar-comment .full-display-content {
   margin-left: -10px;
-  box-shadow: 0 2px 9px 2px rgba(130, 130, 130, 0.2);
-  background-color: var(--bg-color);
+  box-shadow: none;
+  background-color: var(--bg-soft-color);
+  border: 1px solid var(--bg-color);
 }
 .comment-reply {
-  background-color: var(--bg-soft-color);
-  border: none;
+  border-top: 1px solid var(--bg-color);
+  background-color: inherit;
 }
 .comment-reply textarea, .comment-reply input[type="text"] {
   background-color: var(--bg-color);
@@ -52,13 +53,20 @@
 .comment-modal .full-display-content {
   box-shadow: none;
   margin: 0 !important;
+  border: none;
+  background-color: var(--bg-color)
 }
 .comment-modal .comment-modal-comment {
   padding: 0;
 }
-.ace-line .comment {
-  background-color: rgba(255, 235, 59, 0.5);
+.comment-modal .comment-reply textarea, .comment-modal .comment-reply input[type="text"] {
+  background-color: var(--bg-soft-color);
 }
+.comment-modal .comment-reply {
+  border-top: 1px solid var(--bg-soft-color);
+}
+
+
 .new-comment-popup textarea {
   background-color: var(--bg-soft-color);
 }
