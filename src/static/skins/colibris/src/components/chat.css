@@ -27,10 +27,6 @@
   background-color: var(--bg-soft-color);
 }
 
-#chatbox.stickyChat.chatAndUsersChat .chat-content {
-
-}
-
 #titlebar {
   bottom: 0;
   line-height: 44px;
@@ -48,14 +44,20 @@
 #chatlabel { margin-right: 15px; }
 
 #chattext {
-  padding: 10px;
+  padding: 0;
   border-top: 1px solid var(--bg-color);
   border-bottom: 1px solid var(--bg-color); /*#e5e7ea;*/
   background-color: inherit;
   color: inherit;
 }
-#chattext.authorColors {
-  padding: 0;
+#chattext p {
+  padding: 4px 10px;
+}
+#chattext p:first-child {
+  padding-top: 10px;
+}
+#chattext p:last-child {
+  padding-bottom: 10px;
 }
 
 .plugin-ep_author_neat #chattext.authorColors p,

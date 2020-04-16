@@ -87,6 +87,7 @@
   background-color: white;
   overflow-y: auto;
   flex: 1 auto;
+  height: 0; /* strange bug on firefox, if height is not set, the chattext grow bigger than the maximum height */
 }
 #chattext p {
   padding: 3px;

@@ -50,6 +50,8 @@
 .comment-edit-form {
   margin-top: 15px;
 }
+
+/* MODAL */
 .comment-modal .full-display-content {
   box-shadow: none;
   margin: 0 !important;
@@ -65,8 +67,13 @@
 .comment-modal .comment-reply {
   border-top: 1px solid var(--bg-soft-color);
 }
+.comment-modal .full-display-content .comment-title-wrapper,
+.comment-modal .full-display-content .comment-reply {
+  padding: 15px;
+}
 
 
+/* NEW COMMENT POPUP */
 .new-comment-popup textarea {
   background-color: var(--bg-soft-color);
 }
@@ -75,10 +82,12 @@
 }
 
 
+/* EDITOR COMMENTEED LINE */
 #innerdocbody .ace-line .comment {
   background-color: #fffacc;
   color: var(--super-dark-color);
 }
+
 
 @media (min-width: 1200px) {
   #comments {
