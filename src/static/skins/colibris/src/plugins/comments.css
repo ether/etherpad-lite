@@ -66,6 +66,12 @@
   margin-bottom: 10px;
 }
 
+
+#innerdocbody .ace-line .comment {
+  background-color: #fffacc;
+  color: var(--super-dark-color);
+}
+
 @media (min-width: 1200px) {
   #comments {
     width: 300px;
