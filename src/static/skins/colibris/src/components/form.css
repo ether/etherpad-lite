@@ -49,7 +49,7 @@ select, .nice-select {
 
 [type="checkbox"] + label {
   position: relative;
-  padding-left: 3rem;
+  padding-left: 2.5rem;
   cursor: pointer;
   display: inline-block;
   height: 1.4rem;
