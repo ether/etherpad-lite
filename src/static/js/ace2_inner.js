@@ -255,15 +255,9 @@ function Ace2Inner(){
         authorStyle.backgroundColor = bgcolor;
         parentAuthorStyle.backgroundColor = bgcolor;
 
-        // text contrast
-        if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
-        {
-          authorStyle.color = '#ffffff';
-          parentAuthorStyle.color = '#ffffff';
-        }else{
-          authorStyle.color = null;
-          parentAuthorStyle.color = null;
-        }
+        var textColor = colorutils.textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
+        authorStyle.color = textColor;
+        parentAuthorStyle.color = textColor;
 
         // anchor text contrast
         if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.55)
