@@ -1,15 +1,12 @@
 /* =========================== */
 /* === Super Light Toolbar === */
 /* =========================== */
-.super-light-toolbar .toolbar, .super-light-toolbar .popup-content {
-  --text-color: var(--dark-color);
-  --text-soft-color: var(--dark-soft-color);
+.super-light-toolbar .toolbar, .super-light-toolbar .popup-content  {
+  --text-color: var(--super-dark-color);
+  --text-soft-color: var(--dark-color);
   --border-color: var(--middle-color);
   --bg-soft-color: var(--light-color);
   --bg-color: var(--super-light-color);
-}
-.super-light-toolbar #chat {
-  background-color: var(--light-color);
 }
 /* ===================== */
 /* === Light Toolbar === */
@@ -18,19 +15,18 @@
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
   --border-color: var(--middle-color);
-  --bg-soft-color: var(--light-soft-color);
+  --bg-soft-color: var(--super-light-color);
   --bg-color: var(--light-color);
 }
 /* ========================== */
 /* === Super Dark Toolbar === */
 /* ========================== */
 .super-dark-toolbar .toolbar, .super-dark-toolbar .popup-content {
-  --text-color: var(--light-color);
-  --text-soft-color: var(--middle-color);
-  --border-color: var(--dark-soft-color);
+  --text-color: var(--super-light-color);
+  --text-soft-color: var(--light-color);
+  --border-color: var(--middle-color);
   --bg-soft-color: var(--dark-color);
   --bg-color: var(--super-dark-color);
-  border: none;
 }
 .super-dark-toolbar.super-dark-editor .popup-content {
   border: 1px solid var(--dark-color);
@@ -42,8 +38,8 @@
 .dark-toolbar .toolbar, .dark-toolbar .popup-content  {
   --text-color: var(--super-light-color);
   --text-soft-color: var(--light-color);
-  --border-color: var(--dark-soft-color);
-  --bg-soft-color: var(--dark-soft-color);
+  --border-color: var(--middle-color);
+  --bg-soft-color: var(--super-dark-color);
   --bg-color: var(--dark-color);
 }
 
@@ -54,25 +50,18 @@
 /* ============================ */
 /* == Super Light Background == */
 /* ============================ */
-.super-light-background #editorcontainerbox, .super-light-background #sidediv, .super-light-background, .light-background.super-light-editor  {
-  --text-color: var(--dark-color);
-  --text-soft-color: var(--dark-soft-color);
-  --border-color: var(--light-soft-color);
+.super-light-background #editorcontainerbox, .super-light-background #sidediv,
+.super-light-background #chatbox, .super-light-background {
+  --text-color: var(--super-dark-color);
+  --text-soft-color: var(--dark-color);
+  --border-color: var(--middle-color);
   --bg-soft-color: var(--light-color);
   --bg-color: var(--super-light-color);
-  background-color: var(--super-light-color);
 }
-.super-light-background .chat-content, .super-light-background #chatbox.stickyChat .chat-content {
-  --bg-color: var(--super-light-color);
-  --bg-soft-color: var(--super-light-color);
-}
-.super-light-background #chatbox.stickyChat .chat-content {
-  box-shadow: none;
-}
-.super-light-background  body, .full-width-editor.super-light-editor body:not(.plugin-ep_comments_page) {
+.super-light-background  body, .full-width-editor.super-light-editor body:not(.comments-active) {
   --scrollbar-bg: var(--super-light-color);
   --scrollbar-track: var(--light-color);
-  --scrollbar-thumb: var(--dark-soft-color);
+  --scrollbar-thumb: var(--dark-color);
 }
 .super-light-background .compact-display-content {
   background-color: var(--super-light-color);
@@ -80,35 +69,18 @@
 /* ====================== */
 /* == Light Background == */
 /* ====================== */
-.light-background #editorcontainerbox, .light-background #sidediv, .light-background  {
+.light-background #editorcontainerbox, .light-background #sidediv,
+.light-background #chatbox, .light-background  {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
-  --border-color: var(--light-soft-color);
-  --bg-soft-color: var(--light-soft-color);
+  --border-color: var(--middle-color);
+  --bg-soft-color: var(--super-light-color);
   --bg-color: var(--light-color);
-  background-color: var(--light-color);
 }
-.light-background  body, .full-width-editor.light-editor body:not(.plugin-ep_comments_page) {
+.light-background  body, .full-width-editor.light-editor body:not(.comments-active) {
   --scrollbar-bg: var(--light-color);
-  --scrollbar-track: var(--light-soft-color);
-  --scrollbar-thumb: var(--dark-soft-color);
-}
-.light-background .chat-content, .light-background #chatbox.stickyChat .chat-content {
-  --bg-color: var(--super-light-color);
-  --bg-soft-color: var(--light-color);
-  --scrollbar-bg: var(--super-light-color);
-  --scrollbar-track: var(--light-color);
-  --scrollbar-thumb: var(--middle-color);
-}
-.light-background #chatbox.stickyChat .chat-content {
-  box-shadow: none;
-}
-/* Special combinaison with toolbar */
-.light-background.light-editor #chattext {
-  background-color: var(--light-color);
-  --scrollbar-bg: var(--light-color);
-  --scrollbar-track: var(--light-soft-color);
-  --scrollbar-thumb: var(--dark-soft-color);
+  --scrollbar-track: var(--super-light-color);
+  --scrollbar-thumb: var(--dark-color);
 }
 .light-background .compact-display-content {
   background-color: var(--light-color);
@@ -116,71 +88,45 @@
 /* =========================== */
 /* == Super Dark Background == */
 /* =========================== */
-.super-dark-background #editorcontainerbox, .super-dark-background #sidediv, .super-dark-background  {
-  --text-color: var(--light-color);
-  --text-soft-color: var(--light-soft-color);
-  --border-color: var(--dark-color);
+.super-dark-background #editorcontainerbox, .super-dark-background #sidediv,
+.super-dark-background #chatbox, .super-dark-background  {
+  --text-color: var(--super-light-color);
+  --text-soft-color: var(--light-color);
+  --border-color: var(--middle-color);
   --bg-soft-color: var(--dark-color);
   --bg-color: var(--super-dark-color);
 }
-.super-dark-background #editorcontainerbox {
-  background-color: var(--super-dark-color);
-}
-.super-dark-background body, .full-width-editor.super-dark-editor body:not(.plugin-ep_comments_page) {
+.super-dark-background body, .full-width-editor.super-dark-editor body:not(.comments-active) {
   --scrollbar-bg: var(--super-dark-color);
   --scrollbar-track: var(--dark-color);
-  --scrollbar-thumb: var(--light-soft-color);
-}
-.super-dark-background .chat-content, .super-dark-background #chatbox.stickyChat .chat-content {
-  background-color: var(--super-dark-color);
-  color: var(--light-color);
-  --scrollbar-bg: var(--super-dark-color);
-  --scrollbar-track: var(--dark-color);
-  --scrollbar-thumb: var(--light-soft-color);
-}
-.super-dark-background #chatbox:not(.stickyChat) .chat-content {
-  border: 1px solid var(--dark-color);
-}
-/* Special combinaison with toolbar */
-.super-dark-background.super-dark-toolbar .popup-content, .super-dark-background .full-display-content {
-  border: 1px solid var(--dark-color);
-  box-shadow: none;
+  --scrollbar-thumb: var(--light-color);
 }
 .super-dark-background .compact-display-content {
   background-color: var(--super-dark-color);
 }
+/* Special combinaison with toolbar */
+.super-dark-background.super-dark-toolbar .popup-content {
+  border: 1px solid var(--dark-color);
+  box-shadow: none;
+}
 /* ===================== */
 /* == Dark Background == */
 /* ===================== */
-.dark-background #editorcontainerbox, .dark-background #sidediv, .dark-background  {
+.dark-background #editorcontainerbox, .dark-background #sidediv,
+.dark-background #chatbox, .dark-background  {
   --text-color: var(--super-light-color);
   --text-soft-color: var(--light-color);
-  --border-color: var(--dark-soft-color);
-  --bg-soft-color: var(--dark-soft-color);
+  --border-color: var(--middle-color);
+  --bg-soft-color: var(--super-dark-color);
   --bg-color: var(--dark-color);
 }
-.dark-background #editorcontainerbox {
-  background-color: var(--dark-color);
-}
-.dark-background  body, .full-width-editor.dark-editor body:not(.plugin-ep_comments_page) {
+.dark-background  body, .full-width-editor.dark-editor body:not(.comments-active) {
   --scrollbar-bg: var(--dark-color);
-  --scrollbar-track: var(--dark-soft-color);
-  --scrollbar-thumb: var(--light-soft-color);
-}
-.dark-background .chat-content, .dark-background #chatbox.stickyChat .chat-content {
-  background-color: var(--dark-color);
-  color: var(--super-light-color);
-  --border-color: var(--dark-soft-color);
-  --scrollbar-bg: var(--dark-color);
-  --scrollbar-track: var(--dark-soft-color);
-  --scrollbar-thumb: var(--light-soft-color);
+  --scrollbar-track: var(--super-dark-color);
+  --scrollbar-thumb: var(--light-color);
 }
 .dark-background .compact-display-content {
   background-color: var(--dark-color);
-}
-.dark-background .full-display-content {
-  box-shadow: none;
-  border: 1px solid var(--dark-soft-color);
 }
 /* Special combinaison with toolbar */
 .dark-background.dark-toolbar .popup-content, .dark-editor.dark-toolbar .popup-content {
@@ -247,24 +193,6 @@
     --editor-padding-top: 20px;
   }
 }
-
-.super-light-editor.super-light-background #chaticon {
-  --bg-soft-color: var(--light-color);
-  --text-color: var(--dark-color);
-}
-.light-editor.light-background #chaticon {
-  --bg-soft-color: var(--super-light-color);
-  --text-color: var(--dark-color);
-}
-.super-dark-editor.super-dark-background #chaticon {
-  --bg-soft-color: var(--dark-color);
-  --text-color: var(--light-color);
-}
-.dark-editor.dark-background #chaticon {
-  --bg-soft-color: var(--light-color);
-  --text-color: var(--dark-color);
-}
-
 
 
 /* ======================= */
