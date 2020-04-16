@@ -84,8 +84,6 @@
   margin-left: 15px;
   width: 45px;
   height: 100%;
-  background-color: var(--bg-color);
-  color: var(--text-color);
 }
 .toolbar ul li[data-key=showusers] > a {
   width: 100%;

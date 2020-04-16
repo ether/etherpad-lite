@@ -142,4 +142,12 @@ colorutils.complementary = function(c)
   ];
 }
 
+colorutils.textColorFromBackgroundColor = function(bgcolor, skinName)
+{
+  var white = skinName == 'colibris' ? 'var(--super-light-color)' : '#fff';
+  var black = skinName == 'colibris' ? 'var(--super-dark-color)' : '#222';
+
+  return colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5 ? white : black;
+}
+
 exports.colorutils = colorutils;
