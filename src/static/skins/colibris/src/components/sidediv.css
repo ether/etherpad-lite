@@ -6,6 +6,7 @@
 
 #sidedivinner>div:before {
   font-family: var(--main-font-family); /* the parent div have font-family monospace (line number) */
+  color: #485365;
   color: var(--text-color);
   font-size: 13px;
   padding-right: 18px !important;
@@ -24,6 +25,7 @@
 #sidedivinner>div {
   line-height: 24px;
   font-size: 10px !important;
+  color: #576273;
   color: var(--text-soft-color);
 }
 

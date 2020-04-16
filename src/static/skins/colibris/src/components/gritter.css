@@ -3,7 +3,9 @@
   bottom: auto;
 }
 .gritter-item:not(.error) .popup-content{
+  background-color: #64d29b;
   background-color: var(--primary-color);
+  color: #ffffff;
   color: var(--bg-color);
 }
 .gritter-item .popup-content {
@@ -21,6 +23,7 @@
   margin-right: -5px;
 }
 .gritter-item:not(.error) .gritter-close .buttonicon {
+  color: #ffffff;
   color: var(--bg-color);
 }
 

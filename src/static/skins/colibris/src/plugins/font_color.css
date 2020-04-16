@@ -8,6 +8,7 @@
 
 .color\:black,
 [data-color=black] {
+  color: #485365;
   color: var(--text-color);
 }
 

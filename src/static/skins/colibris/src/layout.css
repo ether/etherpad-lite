@@ -5,6 +5,7 @@
 }
 
 #editorcontainerbox {
+  background-color: #ffffff;
   background-color: var(--bg-color);
 }
 
@@ -20,11 +21,14 @@
   max-width: 900px;
   padding: 40px 55px;
   padding: var(--editor-padding);
+  padding-top: 40px;
   padding-top: var(--editor-padding-top);
   box-shadow: none;
   border: 0;
   border-radius: 8px;
+  background-color: #ffffff;
   background-color: var(--bg-color);
+  color: #485365;
   color: var(--text-color);
 }
 #sidediv {

@@ -6,6 +6,7 @@
   padding: 0;
   width: 400px;
   height: 300px;
+  background-color: #f2f3f4;
   background-color: var(--bg-soft-color);
 }
 
@@ -16,7 +17,9 @@
 
 #chaticon {
   padding: 10px 20px;
+  background-color: #f2f3f4;
   background-color: var(--bg-soft-color);
+  color: #485365;
   color: var(--text-color);
   right: 30px;
 }
@@ -24,6 +27,7 @@
 #chatbox.stickyChat .chat-content {
   border: none;
   box-shadow: none;
+  background-color: #f2f3f4;
   background-color: var(--bg-soft-color);
 }
 
@@ -45,8 +49,10 @@
 
 #chattext {
   padding: 0;
+  border-top: 1px solid #ffffff;
   border-top: 1px solid var(--bg-color);
-  border-bottom: 1px solid var(--bg-color); /*#e5e7ea;*/
+  border-bottom: 1px solid #ffffff;
+  border-bottom: 1px solid var(--bg-color);
   background-color: inherit;
   color: inherit;
 }
@@ -69,6 +75,7 @@
   padding: 8px;
 }
 #chatinputbox #chatinput {
+  background-color: #ffffff;
   background-color: var(--bg-color);
 }
 
