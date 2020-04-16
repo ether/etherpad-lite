@@ -17,12 +17,27 @@ const tests = {
     expectedText: ["*a","*b", "div", "foo"]
   }
 ,
+  ulSpace: {
+    description : "Tests if white space / empty line inside a uls are removed",
+    html : "<html><body><ul> <li>a</li></ul></body></html>",
+    expectedLineAttribs : [ '*0*1*2+1+1' ],
+    expectedText: ["*a"]
+  }
+,
+  ulNoneListContent: {
+    description : "Tests if content within an UL is respected",
+    html : "<html><body><ul>foo<li>FOO</li></ul></body></html>",
+    expectedLineAttribs : [ '+3', '*0*1*2+1+1' ],
+    expectedText: ["foo", "*FOO"]
+  }
+,
   ulIndented: {
     description : "Tests if indented uls properly get attributes",
     html : "<html><body><ul><li>a</li><ul><li>b</li></ul><li>a</li></ul><p>foo</p></body></html>",
     expectedLineAttribs : [ '*0*1*2+1+1', '*0*3*2+1+1', '*0*1*2+1+1', '+3' ],
     expectedText: ["*a","*b", "*a", "foo"]
-  },
+  }
+,
   ol: {
     description : "Tests if ols properly get line numbers when in a normal OL",
     html : "<html><body><ol><li>a</li><li>b</li><li>c</li><p></p></body></html>",
