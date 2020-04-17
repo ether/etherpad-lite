@@ -1,5 +1,6 @@
 #chatbox {
   background-color: transparent !important;
+  color: var(--text-color);
 }
 .chat-content {
   background: none;
