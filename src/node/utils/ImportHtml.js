@@ -14,17 +14,32 @@
  * limitations under the License.
  */
 
-var log4js = require('log4js');
-var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
-var cheerio = require("cheerio");
+const log4js            = require('log4js');
+const Changeset         = require("ep_etherpad-lite/static/js/Changeset");
+const contentcollector  = require("ep_etherpad-lite/static/js/contentcollector");
+const cheerio           = require("cheerio");
+const rehype            = require("rehype")
+const format            = require("rehype-format")
+
 
 exports.setPadHTML = function(pad, html)
 {
   var apiLogger = log4js.getLogger("ImportHtml");
 
-  var $ = cheerio.load(html);
+  var opts = {
+    indentInitial: false,
+    indent: -1
+  }
 
+  rehype()
+    .use(format, opts)
+    .process(html, function(err, output){
+      if(err) console.error("Error making HTML nice");
+      html = String(output);
+      html = html.replace(/(\r\n|\n|\r)/gm,"");
+  });
+console.warn("html", html);
+  var $ = cheerio.load(html);
   // Appends a line break, used by Etherpad to ensure a caret is available
   // below the last line of an import
   $('body').append("<p></p>");
@@ -91,4 +106,5 @@ exports.setPadHTML = function(pad, html)
   apiLogger.debug('The changeset: ' + theChangeset);
   pad.setText("\n");
   pad.appendRevision(theChangeset);
+//  })
 }
