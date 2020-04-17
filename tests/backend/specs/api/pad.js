@@ -35,6 +35,19 @@ var ulHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two<
  */
 var expectedHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</ol></li></ol></body></html>';
 
+/*
+ * Html document with space between list items, to test its import and
+ * verify it is exported back correctly
+ */
+var ulSpaceHtml = '<!doctype html><html><body><ul class="bullet"> <li>one</li></ul></body></html>';
+
+/*
+ * When exported back, Etherpad produces an html which is not exactly the same
+ * textually, but at least it remains standard compliant and has an equal DOM
+ * structure.
+ */
+var expectedSpaceHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li></ul></body></html>';
+
 describe('Connectivity', function(){
   it('can connect', function(done) {
     api.get('/api/')
@@ -569,6 +582,40 @@ describe('getHTML', function(){
 
            Which is a slightly modified version of the originally imported one:
            ${ulHtml}`);
+      }
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('setHTML', function(){
+  it('Sets the HTML of a Pad with white space between list items', function(done) {
+    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+ulSpaceHtml)
+    .expect(function(res){
+      if(res.body.code !== 0) throw new Error("List HTML cant be imported")
+    })
+    .expect('Content-Type', /json/)
+    .expect(200, done)
+  });
+})
+
+describe('getHTML', function(){
+  it('Gets back the HTML of a Pad with complex nested lists of different types', function(done) {
+    api.get(endPoint('getHTML')+"&padID="+testPadId)
+    .expect(function(res){
+      var receivedHtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
+console.log(receivedHtml);
+      if (receivedHtml !== expectedSpaceHtml) {
+        throw new Error(`HTML received from export is not the one we were expecting.
+           Received:
+           ${receivedHtml}
+
+           Expected:
+           ${expectedSpaceHtml}
+
+           Which is a slightly modified version of the originally imported one:
+           ${ulSpaceHtml}`);
       }
     })
     .expect('Content-Type', /json/)
