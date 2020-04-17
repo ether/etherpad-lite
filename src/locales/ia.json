@@ -118,7 +118,7 @@
 	"pad.userlist.guest": "Invitato",
 	"pad.userlist.deny": "Refusar",
 	"pad.userlist.approve": "Approbar",
-	"pad.editbar.clearcolors": "Rader le colores de autor in tote le documento?",
+	"pad.editbar.clearcolors": "Rader le colores de autor in tote le documento? Isto non pote esser disfacite",
 	"pad.impexp.importbutton": "Importar ora",
 	"pad.impexp.importing": "Importation in curso…",
 	"pad.impexp.confirmimport": "Le importation de un file superscribera le texto actual del pad. Es tu secur de voler continuar?",

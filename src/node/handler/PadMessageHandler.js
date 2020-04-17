@@ -1429,11 +1429,12 @@ async function composePadChangesets (padId, startNum, endNum)
   }));
 
   // compose Changesets
+  let r;
   try {
     let changeset = changesets[startNum];
     let pool = pad.apool();
 
-    for (let r = startNum + 1; r < endNum; r++) {
+    for (r = startNum + 1; r < endNum; r++) {
       let cs = changesets[r];
       changeset = Changeset.compose(changeset, cs, pool);
     }
