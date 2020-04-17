@@ -34,7 +34,7 @@
   --dark-color: #576273; /*#4d5d77*/
 
   --primary-color: #64d29b;
-  --middle-color: #d2d2d2; /* between light-soft-color and dark-soft-color, use for border for examples */
+  --middle-color: #d2d2d2; /* kind of grey, use for border for examples */
 
   --light-color: #f2f3f4; /*#f9f9f9;*/
   --super-light-color: white;
@@ -44,6 +44,8 @@
   --border-color: var(--middle-color);
   --bg-soft-color: var(--light-color);
   --bg-color: var(--super-light-color);
+
+  --toolbar-border: none;
 
   --main-font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 

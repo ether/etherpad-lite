@@ -171,6 +171,11 @@ var padeditbar = (function()
       });
 
       $('select').niceSelect();
+
+      // When editor is scrolled, we add a class to style the editbar differently
+      $('iframe[name="ace_outer"]').contents().scroll(function() {
+        $('#editbar').toggleClass('editor-scrolled', $(this).scrollTop() > 2);
+      })
     },
     isEnabled: function()
     {
