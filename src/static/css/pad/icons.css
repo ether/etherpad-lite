@@ -42,9 +42,6 @@
   font-variant: normal;
   text-transform: none;
 
-  /* fix buttons height, for twitter bootstrap */
-  line-height: 1em;
-
   /* Font smoothing. That was taken from TWBS */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -60,7 +57,7 @@
   content: "\e843";
   left: -9px;
   position: absolute;
-  top: -7px;
+  top: -9px;
 }
 .buttonicon-settings:before {
   content: "\e851";
@@ -90,7 +87,7 @@
 .ep_font_color .buttonicon:before { content: '\e84e' !important; border-bottom: solid 2px #e42a2a;  }
 
 .buttonicon-underline:before {
-  top: -7px;
+  top: -8px;
   left: -8px;
   position: absolute;
 }
