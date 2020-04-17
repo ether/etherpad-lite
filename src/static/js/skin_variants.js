@@ -28,7 +28,7 @@ if (window.location.hash.toLowerCase() == "#skinvariantsbuilder") {
     domsToUpdate.forEach(function(el) { el.removeClass('full-width-editor'); });
 
     var new_classes = [];
-    $('.skin-variant-color').each(function() {
+    $('select.skin-variant-color').each(function() {
       new_classes.push($(this).val() + "-" + $(this).data('container'));
     })
     if ($('#skin-variant-full-width').is(':checked')) new_classes.push("full-width-editor");
