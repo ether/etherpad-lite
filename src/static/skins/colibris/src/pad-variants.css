@@ -4,7 +4,7 @@
 .super-light-toolbar .toolbar, .super-light-toolbar .popup-content  {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
-  --border-color: var(--middle-color);
+  --border-color: #e4e6e9;
   --bg-soft-color: var(--light-color);
   --bg-color: var(--super-light-color);
 }
@@ -24,7 +24,7 @@
 .super-dark-toolbar .toolbar, .super-dark-toolbar .popup-content {
   --text-color: var(--super-light-color);
   --text-soft-color: var(--light-color);
-  --border-color: var(--middle-color);
+  --border-color: var(--dark-color);
   --bg-soft-color: var(--dark-color);
   --bg-color: var(--super-dark-color);
 }
@@ -38,7 +38,7 @@
 .dark-toolbar .toolbar, .dark-toolbar .popup-content  {
   --text-color: var(--super-light-color);
   --text-soft-color: var(--light-color);
-  --border-color: var(--middle-color);
+  --border-color: var(--super-dark-color);
   --bg-soft-color: var(--super-dark-color);
   --bg-color: var(--dark-color);
 }
@@ -54,7 +54,7 @@
 .super-light-background #chatbox, .super-light-background #outerdocbody, .super-light-background {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
-  --border-color: var(--middle-color);
+  --border-color: #e4e6e9;
   --bg-soft-color: var(--light-color);
   --bg-color: var(--super-light-color);
 }
@@ -175,9 +175,9 @@
 }
 
 
-/* ============================= */
-/* == Combinaison with editor == */
-/* ============================= */
+/* ======================================== */
+/* == Combinaison with background/editor == */
+/* ======================================== */
 .super-light-editor.super-light-background #outerdocbody,
 .light-editor.light-background #outerdocbody,
 .super-dark-editor.super-dark-background #outerdocbody,
@@ -192,6 +192,16 @@
     --editor-padding: 20px 35px;
     --editor-padding-top: 20px;
   }
+}
+
+/* ===================================== */
+/* == Combinaison with toolbar/editor == */
+/* ===================================== */
+.super-light-editor.super-light-toolbar .toolbar,
+.light-editor.light-toolbar .toolbar,
+.super-dark-editor.super-dark-toolbar .toolbar,
+.dark-editor.dark-toolbar .toolbar {
+  --toolbar-border: 1px solid var(--border-color);
 }
 
 
