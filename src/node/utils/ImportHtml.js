@@ -31,14 +31,17 @@ exports.setPadHTML = function(pad, html)
     indent: -1
   }
 
+  // Sanitize the HTML in an agressive format by parsing it then stringifying it
+  // Uses rehype, which is part of a standard for this type of work..
   rehype()
     .use(format, opts)
     .process(html, function(err, output){
+      // TODO possibly support this better?
       if(err) console.error("Error making HTML nice");
       html = String(output);
       html = html.replace(/(\r\n|\n|\r)/gm,"");
   });
-console.warn("html", html);
+
   var $ = cheerio.load(html);
   // Appends a line break, used by Etherpad to ensure a caret is available
   // below the last line of an import
@@ -106,5 +109,4 @@ console.warn("html", html);
   apiLogger.debug('The changeset: ' + theChangeset);
   pad.setText("\n");
   pad.appendRevision(theChangeset);
-//  })
 }
