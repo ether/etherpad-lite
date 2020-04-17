@@ -24,4 +24,8 @@ button, .btn
   color: var(--text-color);
 }
 
+.buttonicon:before, [class^="buttonicon-"]:before, [class*=" buttonicon-"]:before {
+  line-height: 18px;
+}
+
 
