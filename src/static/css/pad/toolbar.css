@@ -1,5 +1,6 @@
 .toolbar {
   display: none;
+  position: relative;
   background-color: #f4f4f4;
   color: #666;
   border-bottom: 1px solid #ccc;
