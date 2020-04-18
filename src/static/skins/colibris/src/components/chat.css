@@ -60,16 +60,11 @@
 #chattext p {
   padding: 4px 10px;
 }
-#chattext p:first-child {
+#chattext:not(.authorColors) p:first-child {
   padding-top: 10px;
 }
-#chattext p:last-child {
+#chattext:not(.authorColors) p:last-child {
   padding-bottom: 10px;
-}
-
-.plugin-ep_author_neat #chattext.authorColors p,
-.plugin-ep_author_neat #chattext.authorColors span {
-  background-color: transparent !important;
 }
 
 #chatinputbox {
@@ -78,10 +73,6 @@
 #chatinputbox #chatinput {
   background-color: #ffffff;
   background-color: var(--bg-color);
-}
-
-.plugin-ep_author_neat #chatbox.stickyChat .chat-content #chattext {
-  padding: 5px 3px;
 }
 
 @media (max-width: 720px) {
