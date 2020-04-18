@@ -8,10 +8,9 @@
   font-family: var(--main-font-family); /* the parent div have font-family monospace (line number) */
   color: #485365;
   color: var(--text-color);
-  font-size: 13px;
   padding-right: 18px !important;
-  text-transform: uppercase;
-  font-size: 11px !important;
+  text-transform: capitalize;
+  font-size: 12px !important;
   font-weight: bold;
 }
 
@@ -24,7 +23,8 @@
 
 #sidedivinner>div {
   line-height: 24px;
-  font-size: 10px !important;
+  font-size: 9px !important;
+  font-family: RobotoMono;
   color: #576273;
   color: var(--text-soft-color);
 }
