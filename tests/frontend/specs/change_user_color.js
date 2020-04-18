@@ -12,7 +12,7 @@ describe("change user color", function(){
     //click on the settings button to make settings visible
     var $userButton = chrome$(".buttonicon-showusers");
     $userButton.click();
-    
+
     var $userSwatch = chrome$("#myswatch");
     $userSwatch.click();
 
@@ -66,7 +66,7 @@ describe("change user color", function(){
     //click on the settings button to make settings visible
     var $userButton = chrome$(".buttonicon-showusers");
     $userButton.click();
-    
+
     var $userSwatch = chrome$("#myswatch");
     $userSwatch.click();
 
