@@ -1,18 +1,23 @@
 #gritter-container {
   position: absolute;
-  bottom: 20px;
   right: 50%;
   transform: translateX(50%);
   text-align: center;
   z-index: 9999;
+}
+#gritter-container.top {
+  top: 20px;
+}
+#gritter-container.bottom {
+  bottom: 20px;
 }
 
 .gritter-item.popup {
   position: relative;
   max-width: 450px;
   visibility: visible;
-  right: auto;
-  left: auto;
+  right: auto !important;
+  left: auto !important;
   top: auto;
   bottom: auto;
 }
@@ -33,4 +38,12 @@
 .gritter-item.error .popup-content {
   color: #a84341;
   background-color: #eed3d4;
+}
+
+@media (max-width: 720px) {
+  #gritter-container {
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+  }
 }

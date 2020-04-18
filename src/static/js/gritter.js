@@ -50,7 +50,7 @@
 	* @see Gritter#removeSpecific();
 	*/
 	$.gritter.remove = function(id, params){
-		Gritter.removeSpecific(id, params || {});
+		Gritter.removeSpecific(id.split('gritter-item-')[1], params || {});
 	}
 
 	/**
@@ -74,7 +74,8 @@
 		_custom_timer: 0,
 		_item_count: 0,
 		_is_setup: 0,
-		_tpl_wrap: '<div id="gritter-container"></div>',
+		_tpl_wrap_top: '<div id="gritter-container" class="top"></div>',
+		_tpl_wrap_bottom: '<div id="gritter-container" class="bottom"></div>',
 		_tpl_close: '',
 		_tpl_title: '<h3 class="gritter-title">[[title]]</h3>',
 		_tpl_item: [
@@ -114,6 +115,7 @@
 			var title = params.title,
 				text = params.text,
 				image = params.image || '',
+				position = params.position || 'top',
 				sticky = params.sticky || false,
 				item_class = params.class_name || $.gritter.options.class_name,
 				time_alive = params.time || '';
@@ -158,7 +160,11 @@
 				return false;
 			}
 
-			$('#gritter-container').append(tmp);
+			if (['top', 'bottom'].indexOf(position) == -1) {
+				position = 'top';
+			}
+
+			$('#gritter-container.' + position).append(tmp);
 
 			var item = $('#gritter-item-' + this._item_count);
 
@@ -199,9 +205,11 @@
 			this['_after_close_' + unique_id](e, manual_close);
 
 			// Remove container if empty
-			if ($('#gritter-container .gritter-item').length == 0) {
-				$('#gritter-container').remove();
-			}
+			$('#gritter-container').each(function() {
+				if ($(this).find('.gritter-item').length == 0) {
+					$(this).remove();
+				}
+			})
 		},
 
 		/**
@@ -367,11 +375,13 @@
 		* @private
 		*/
 		_verifyWrapper: function(){
-
-			if($('#gritter-container').length == 0){
-				$('#editorcontainerbox').append(this._tpl_wrap);
+			if ($('#gritter-container.top').length === 0) {
+				$('#editorcontainerbox').append(this._tpl_wrap_top);
 			}
 
+			if ($('#gritter-container.bottom').length === 0) {
+				$('#editorcontainerbox').append(this._tpl_wrap_bottom);
+			}
 		}
 
 	}

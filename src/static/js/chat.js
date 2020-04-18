@@ -32,9 +32,12 @@ var chat = (function()
     {
       $("#chaticon").removeClass('visible');
       $("#chatbox").addClass('visible');
-      self.scrollDown();
+      self.scrollDown(true);
       chatMentions = 0;
       Tinycon.setBubble(0);
+      $('.chat-gritter-msg').each(function() {
+        $.gritter.remove(this.id);
+      });
     },
     focus: function ()
     {
@@ -86,10 +89,10 @@ var chat = (function()
         $("#chatbox").removeClass('visible');
       }
     },
-    scrollDown: function()
+    scrollDown: function(force)
     {
-      if($('.chat-content').is(':visible')){
-        if(!self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
+      if ($('#chatbox').hasClass('visible')) {
+        if (force || !self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
           // if we use a slow animate here we can have a race condition when a users focus can not be moved away
           // from the last message recieved.
           $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, { duration: 400, queue: false });
@@ -155,14 +158,14 @@ var chat = (function()
       var alreadyFocused = $("#chatinput").is(":focus");
 
       // does the user already have the chatbox open?
-      var chatOpen = $(".chat-content").is(":visible");
+      var chatOpen = $("#chatbox").hasClass("visible");
 
       // does this message contain this user's name? (is the curretn user mentioned?)
       var myName = $('#myusernameedit').val();
       var wasMentioned = (text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName != "undefined");
 
       if(wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen)
-      { // If the user was mentioned show for twice as long and flash the browser window
+      { // If the user was mentioned, make the message sticky
         chatMentions++;
         Tinycon.setBubble(chatMentions);
         ctx.sticky = true;
@@ -187,14 +190,11 @@ var chat = (function()
 
           if(!chatOpen && ctx.duration > 0) {
             $.gritter.add({
-              // (string | mandatory) the heading of the notification
-              title: ctx.authorName,
-              // (string | mandatory) the text inside the notification
-              text: ctx.text,
-              // (bool | optional) if you want it to fade out on its own or just sit there
+              text: '<span class="author-name">' + ctx.authorName + '</span>' + ctx.text,
               sticky: ctx.sticky,
-              // (int | optional) the time you want it to be alive for before fading out
-              time: ctx.duration
+              time: 5000,
+              position: 'bottom',
+              class_name: 'chat-gritter-msg'
             });
           }
         }

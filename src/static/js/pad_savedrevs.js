@@ -24,7 +24,9 @@ exports.saveNow = function(){
     // (string | mandatory) the text inside the notification
     text: _("pad.savedrevs.timeslider") || "You can view saved revisions in the timeslider",
     // (bool | optional) if you want it to fade out on its own or just sit there
-    sticky: false
+    sticky: false,
+    time: 3000,
+    class_name: "saved-revision",
   });
 }
 
