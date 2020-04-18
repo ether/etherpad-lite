@@ -63,6 +63,11 @@ describe("change user color", function(){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
+    var $colorOption = helper.padChrome$('#options-colorscheck');
+    if (!$colorOption.is(':checked')) {
+      $colorOption.click();
+    }
+
     //click on the settings button to make settings visible
     var $userButton = chrome$(".buttonicon-showusers");
     $userButton.click();
