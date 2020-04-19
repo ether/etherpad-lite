@@ -22,17 +22,22 @@ exports.update = function (cb) {
   // of execution on Firefox. This schedules the response in the run-loop,
   // which appears to fix the issue.
   var callback = function () {setTimeout(cb, 0);};
-
-  jQuery.getJSON(exports.baseURL + 'pluginfw/plugin-definitions.json', function(data) {
+  $.ajaxSetup({ cache: false });
+  jQuery.getJSON(exports.baseURL + 'pluginfw/plugin-definitions.json').done(function(data) {
     exports.plugins = data.plugins;
     exports.parts = data.parts;
     exports.hooks = pluginUtils.extractHooks(exports.parts, "client_hooks");
     exports.loaded = true;
     callback();
-   }).error(function(xhr, s, err){
+  }).fail(function(e){
+    console.warn("Error loading plugin-definitions");
+  });
+/*
+.(function(xhr, s, err){
      console.error("Failed to load plugin-definitions: " + err);
      callback();
    });
+*/
 };
 
 function adoptPlugins(plugins) {
