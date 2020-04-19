@@ -1065,6 +1065,7 @@ async function handleClientReady(client, message)
     // mile wide...
     var clientVars = {
       "skinName": settings.skinName,
+      "skinVariants": settings.skinVariants,
       "accountPrivs": {
           "maxRevisions": 100
       },

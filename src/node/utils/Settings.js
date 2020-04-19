@@ -62,6 +62,8 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  */
 exports.skinName = null;
 
+exports.skinVariants = "super-light-toolbar super-light-editor light-background";
+
 /**
  * The IP ep-lite should listen to
  */
@@ -365,7 +367,7 @@ exports.exportAvailable = function() {
 exports.getGitCommit = function() {
   var version = "";
   try {
-    var rootPath = path.resolve(npm.dir, '..');
+    var rootPath = exports.root;
     if (fs.lstatSync(rootPath + '/.git').isFile()) {
       rootPath = fs.readFileSync(rootPath + '/.git', "utf8");
       rootPath = rootPath.split(' ').pop().trim();
@@ -626,19 +628,19 @@ exports.reloadSettings = function reloadSettings() {
   log4js.replaceConsole();
 
   if (!exports.skinName) {
-    console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "no-skin".`);
-    exports.skinName = "no-skin";
+    console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "colibris".`);
+    exports.skinName = "colibris";
   }
 
-  // checks if skinName has an acceptable value, otherwise falls back to "no-skin"
+  // checks if skinName has an acceptable value, otherwise falls back to "colibris"
   if (exports.skinName) {
     const skinBasePath = path.join(exports.root, "src", "static", "skins");
     const countPieces = exports.skinName.split(path.sep).length;
 
     if (countPieces != 1) {
-      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "no-skin".`);
+      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "colibris".`);
 
-      exports.skinName = "no-skin";
+      exports.skinName = "colibris";
     }
 
     // informative variable, just for the log messages
@@ -646,15 +648,15 @@ exports.reloadSettings = function reloadSettings() {
 
     // what if someone sets skinName == ".." or "."? We catch him!
     if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
-      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. Falling back to the default "no-skin".`);
+      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. Falling back to the default "colibris".`);
 
-      exports.skinName = "no-skin";
+      exports.skinName = "colibris";
       skinPath = path.join(skinBasePath, exports.skinName);
     }
 
     if (fs.existsSync(skinPath) === false) {
-      console.error(`Skin path ${skinPath} does not exist. Falling back to the default "no-skin".`);
-      exports.skinName = "no-skin";
+      console.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
+      exports.skinName = "colibris";
       skinPath = path.join(skinBasePath, exports.skinName);
     }
 

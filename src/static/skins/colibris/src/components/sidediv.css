@@ -1,14 +1,16 @@
 #sidediv {
   background-color: transparent;
   border: none;
+  opacity: .8;
 }
 
 #sidedivinner>div:before {
-  font-size: 13px;
+  font-family: var(--main-font-family); /* the parent div have font-family monospace (line number) */
+  color: #485365;
+  color: var(--text-color);
   padding-right: 18px !important;
-  color: #6a6a6b;
-  text-transform: uppercase;
-  font-size: 11px !important;
+  text-transform: capitalize;
+  font-size: 12px !important;
   font-weight: bold;
 }
 
@@ -21,8 +23,10 @@
 
 #sidedivinner>div {
   line-height: 24px;
-  font-size: 10px !important;
-  color: #a0a0a0;
+  font-size: 9px !important;
+  font-family: RobotoMono;
+  color: #576273;
+  color: var(--text-soft-color);
 }
 
 #sidedivinner.authorColors>div, #sidedivinner.authorColors>div.primary-none, #sidedivinner>div {

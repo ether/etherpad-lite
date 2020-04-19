@@ -16,6 +16,7 @@ docker pull etherpad/etherpad:1.8.0
 
 If you want to use a personalized settings file, **you will have to rebuild your image**.
 All of the following instructions are as a member of the `docker` group.
+By default, the Etherpad Docker image is built and run in `production` mode: no development dependencies are installed, and asset bundling speeds up page load time.
 
 ### Rebuilding with custom settings
 Edit `<BASEDIR>/settings.json.docker` at your will. When rebuilding the image, this file will be copied inside your image and renamed to `setting.json`.

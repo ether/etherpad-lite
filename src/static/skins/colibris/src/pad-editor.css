@@ -1,43 +1,34 @@
-#innerdocbody, #padcontent {
+#innerdocbody {
   font-size: 15px;
   line-height: 25px;
   padding: 0;
+  background: transparent;
+  color: #485365;
+  color: var(--text-color);
 }
 
-#innerdocbody span, #padcontent span {
+#innerdocbody span, #innerdocbody span {
   padding: 4px 0 !important;
 }
 
-#innerdocbody h1 span, #padcontent h1 span {
+#innerdocbody h1 span, #innerdocbody h1 span {
   padding: 0;
-}
-
-body {
-  overflow: hidden;
 }
 
 option {
   text-transform: capitalize;
 }
 
-h1 {
+#innerdocbody h1 {
   font-size: 2.5em !important;
 }
 
-h3 {
+#innerdocbody h3 {
   font-size: 1.15em;
   letter-spacing: 1px;
 }
 
-a {
-  color: #3f51b5;
+#innerdocbody a {
+  color: #64d29b;
+  color: var(--primary-color);
 }
-
-h1, h2, h3, h4, h5, h6 {
-  line-height: 120%;
-}
-
-
-
-
-
