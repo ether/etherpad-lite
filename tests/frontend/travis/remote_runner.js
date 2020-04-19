@@ -115,14 +115,14 @@ sauceTestWorker.push({
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'googlechrome'
-  , 'version'        : '48.0'
+  , 'version'        : '47.0'
 });
 
 // 8) Safari on OSX 10.15
 sauceTestWorker.push({
     'platform'       : 'OS X 10.15'
   , 'browserName'    : 'safari'
-  , 'version'        : '13.0'
+  , 'version'        : '12.0'
 });
 
 sauceTestWorker.drain = function() {
