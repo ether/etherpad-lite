@@ -117,14 +117,14 @@ sauceTestWorker.push({
   , 'browserName'    : 'googlechrome'
   , 'version'        : '47.0'
 });
-
+/*
 // 8) Safari on OSX 10.15
 sauceTestWorker.push({
     'platform'       : 'OS X 10.15'
   , 'browserName'    : 'safari'
   , 'version'        : '12.0'
 });
-
+*/
 sauceTestWorker.drain = function() {
   setTimeout(function(){
     process.exit(allTestsPassed ? 0 : 1);
