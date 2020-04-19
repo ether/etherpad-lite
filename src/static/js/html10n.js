@@ -179,18 +179,40 @@ window.html10n = (function(window, document, undefined) {
       return
     }
 
-    // dat alng ain't here, man!
+    // Check if lang exists
     if (!data[lang]) {
-      var msg = 'Couldn\'t find translations for '+lang
-        , l
-      if(~lang.indexOf('-')) lang = lang.split('-')[0] // then let's try related langs
-      for(l in data) {
-        if(lang != l && l.indexOf(lang) === 0 && data[l]) {
-          lang = l
-          break;
+      // lang not found
+      // This may be due to formatting (expected 'ru' but browser sent 'ru-RU')
+      // Set err msg before mutating lang (we may need this later)
+      var msg = 'Couldn\'t find translations for ' + lang;
+
+      // Check for '-' ('ROOT-VARIANT')
+      if (lang.indexOf('-') > -1) {
+        // ROOT-VARIANT formatting detected
+        lang = lang.split('-')[0]; // set lang to ROOT lang
+      }
+
+      // Check if ROOT lang exists (e.g 'ru')
+      if (!data[lang]) {
+        // ROOT lang not found. (e.g 'zh')
+        // Loop through langs data. Maybe we have a variant? e.g (zh-hans)
+        var l; // langs item. Declare outside of loop
+
+        for (l in data) {
+          // Is not ROOT?
+          // And index of ROOT equals 0?
+          // And is known lang?
+          if (lang != l && l.indexOf(lang) === 0 && data[l]) {
+            lang = l; // set lang to ROOT-VARIANT (e.g 'zh-hans')
+            break;
+          }
+        }
+
+        // Did we find a variant? If not, return err.
+        if (lang != l) {
+          return cb(new Error(msg));
         }
       }
-      if(lang != l) return cb(new Error(msg))
     }
 
     if ('string' == typeof data[lang]) {
