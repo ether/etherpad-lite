@@ -65,8 +65,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       });
     }, 5000);
   });
-}, 5); //run 5 tests in parrallel
-
+}, 3); //run 3 tests in parrallel -- This doesn't seem to affect reliability and I'm not sure it's even handled..
+/*
 // 1) Firefox on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
@@ -101,7 +101,32 @@ sauceTestWorker.push({
   , 'browserName'    : 'microsoftedge'
   , 'version'        : 'latest'
 });
+*/
 
+// Pinned
+// Only run on a set Firefox version for now until the Sauce Labs bugs are resolved
+// 6) Firefox on Linux
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'firefox'
+  , 'version'        : '45.0'
+});
+
+/*
+// 7) Chrome on Linux
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'googlechrome'
+  , 'version'        : '47.0'
+});
+/*
+// 8) Safari on OSX 10.15
+sauceTestWorker.push({
+    'platform'       : 'OS X 10.15'
+  , 'browserName'    : 'safari'
+  , 'version'        : '12.0'
+});
+*/
 sauceTestWorker.drain = function() {
   setTimeout(function(){
     process.exit(allTestsPassed ? 0 : 1);
