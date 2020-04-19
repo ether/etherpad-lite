@@ -9,6 +9,7 @@ services:
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+  - "npm install ep_test_line_attrib"
 
 before_script:
   - "tests/frontend/travis/sauce_tunnel.sh"
@@ -37,6 +38,7 @@ jobs:
     - name: "Test the Dockerfile"
       install:
         - "cd src && npm install && cd -"
+        - "npm install ep_test_line_attrib"
       script:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
