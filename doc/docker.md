@@ -58,11 +58,11 @@ The `settings.json.docker` available by default enables some configuration to be
 
 | Variable           | Description                                                                                | Default                                                                                                                                                                                                                             |
 | ------------------ | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TITLE`            | The name of the instance                                                                   |                                                                                                                                                                                                                                     |
-| `FAVICON`          | favicon default name, or a fully specified URL to your own favicon                         |                                                                                                                                                                                                                                     |
-| `DEFAULT_PAD_TEXT` | The default text of a pad                                                                  |                                                                                                                                                                                                                                     |
-| `IP`               | IP which etherpad should bind at. Change to `::` for IPv6                                  |                                                                                                                                                                                                                                     |
-| `PORT`             | port which etherpad should bind at                                                         |                                                                                                                                                                                                                                     |
+| `TITLE`            | The name of the instance                                                                   | `Etherpad`                                                                                                                                                                                                                          |
+| `FAVICON`          | favicon default name, or a fully specified URL to your own favicon                         | `favicon.ico`                                                                                                                                                                                                                       |
+| `DEFAULT_PAD_TEXT` | The default text of a pad                                                                  | `Welcome to Etherpad! This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents! Get involved with Etherpad at https://etherpad.org` |
+| `IP`               | IP which etherpad should bind at. Change to `::` for IPv6                                  | `0.0.0.0`                                                                                                                                                                                                                           |
+| `PORT`             | port which etherpad should bind at                                                         | `9001`                                                                                                                                                                                                                              |
 | `ADMIN_PASSWORD`   | the password for the `admin` user (leave unspecified if you do not want to create it)      |                                                                                                                                                                                                                                     |
 | `USER_PASSWORD`    | the password for the first user `user` (leave unspecified if you do not want to create it) |                                                                                                                                                                                                                                     |
 
@@ -71,14 +71,14 @@ The `settings.json.docker` available by default enables some configuration to be
 
 | Variable      | Description                                                    | Default                                                               |
 | ------------- | -------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `DB_TYPE`     | a database supported by https://www.npmjs.com/package/ueberdb2 |                                                                       |
+| `DB_TYPE`     | a database supported by https://www.npmjs.com/package/ueberdb2 | not set, thus will fall back to `DirtyDB` (please choose one instead) |
 | `DB_HOST`     | the host of the database                                       |                                                                       |
 | `DB_PORT`     | the port of the database                                       |                                                                       |
 | `DB_NAME`     | the database name                                              |                                                                       |
 | `DB_USER`     | a database user with sufficient permissions to create tables   |                                                                       |
 | `DB_PASS`     | the password for the database username                         |                                                                       |
 | `DB_CHARSET`  | the character set for the tables (only required for MySQL)     |                                                                       |
-| `DB_FILENAME` | in case `DB_TYPE` is `DirtyDB`, the database filename.         |                                                                       |
+| `DB_FILENAME` | in case `DB_TYPE` is `DirtyDB`, the database filename.         | `var/dirty.db`                                                        |
 
 If your database needs additional settings, you will have to use a personalized `settings.json.docker` and rebuild the container (or otherwise put the updated `settings.json` inside your image).
 
@@ -87,25 +87,25 @@ If your database needs additional settings, you will have to use a personalized 
 
 | Variable        | Description                                                                    | Default                                                   |
 | --------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------- |
-| `SKIN_NAME`     | either `no-skin`, `colibris` or an existing directory under `src/static/skins` |                                                           |
+| `SKIN_NAME`     | either `no-skin`, `colibris` or an existing directory under `src/static/skins` | `colibris`                                                |
 
 
 ### Logging
 
 | Variable             | Description                                          | Default |
 | -------------------- | ---------------------------------------------------- | ------- |
-| `LOGLEVEL`           | valid values are `DEBUG`, `INFO`, `WARN` and `ERROR` |         |
+| `LOGLEVEL`           | valid values are `DEBUG`, `INFO`, `WARN` and `ERROR` | `INFO`  |
 
 
 ### Advanced
 
 | Variable                          | Description                                                                                                                                                                                            | Default            |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
-| `SHOW_SETTINGS_IN_ADMIN_PAGE`     | hide/show the settings.json in admin page                                                                                                                                                              |                    |
-| `TRUST_PROXY`                     | set to `true` if you are using a reverse proxy in front of Etherpad (for example: Traefik for SSL termination via Let's Encrypt). This will affect security and correctness of the logs if not done    |                    |
-| `IMPORT_MAX_FILE_SIZE`            | maximum allowed file size when importing a pad, in bytes.                                                                                                                                              |                    |
-| `IMPORT_EXPORT_MAX_REQ_PER_IP`    | maximum number of import/export calls per IP.                                                                                                                                                          |                    |
-| `IMPORT_EXPORT_RATE_LIMIT_WINDOW` | the call rate for import/export requests will be estimated in this time window (in milliseconds)                                                                                                       |                    |
+| `SHOW_SETTINGS_IN_ADMIN_PAGE`     | hide/show the settings.json in admin page                                                                                                                                                              | `true`             |
+| `TRUST_PROXY`                     | set to `true` if you are using a reverse proxy in front of Etherpad (for example: Traefik for SSL termination via Let's Encrypt). This will affect security and correctness of the logs if not done    | `false`            |
+| `IMPORT_MAX_FILE_SIZE`            | maximum allowed file size when importing a pad, in bytes.                                                                                                                                              | `52428800` (50 MB) |
+| `IMPORT_EXPORT_MAX_REQ_PER_IP`    | maximum number of import/export calls per IP.                                                                                                                                                          | `10`               |
+| `IMPORT_EXPORT_RATE_LIMIT_WINDOW` | the call rate for import/export requests will be estimated in this time window (in milliseconds)                                                                                                       | `90000`            |
 
 
 ### Examples
