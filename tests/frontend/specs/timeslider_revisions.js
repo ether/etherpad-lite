@@ -11,7 +11,7 @@ describe("timeslider", function(){
 
     // make some changes to produce 100 revisions
     var timePerRev = 900
-      , revs = 4;
+      , revs = 99;
     this.timeout(revs*timePerRev+10000);
     for(var i=0; i < revs; i++) {
       setTimeout(function() {
