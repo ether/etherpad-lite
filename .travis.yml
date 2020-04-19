@@ -39,7 +39,7 @@ jobs:
         - "cd src && npm install && cd -"
       script:
         - "docker build -t etherpad:test ."
-        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+        - "docker run -d -p 9001:9001 etherpad:test && sleep 4"
         - "cd src && npm run test-container"
 
 notifications:
