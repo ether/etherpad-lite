@@ -98,6 +98,8 @@ Documentation can be found in `doc/`.
 ## Things you should know
 You can debug Etherpad using `bin/debugRun.sh`.
 
+You can run Etherpad quickly launching `bin/fastRun.sh`. It's convenient for developers and advanced users. Be aware that it will skip the dependencies update, so remember to run `bin/installDeps.sh` after installing a new dependency or upgrading version.
+
 If you want to find out how Etherpad's `Easysync` works (the library that makes it really realtime), start with this [PDF](https://github.com/ether/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading).
 
 ## Contributing

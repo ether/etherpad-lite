@@ -1,0 +1,24 @@
+#connectivity .popup-content * {
+  display: none;
+}
+
+#connectivity .visible,
+#connectivity .visible * {
+  display: block;
+}
+
+/* styles for the automatic reconnection timer: */
+#connectivity .visible.with_reconnect_timer button,
+#connectivity .visible.with_reconnect_timer .reconnecttimer * {
+  display: inline-block;
+}
+
+#connectivity .with_reconnect_timer .hidden,
+#connectivity .with_reconnect_timer #defaulttext.hidden,
+#connectivity .with_reconnect_timer button.hidden {
+  display: none;
+}
+
+#connectivity .with_reconnect_timer #cancelreconnect {
+  margin-left: 10px;
+}
