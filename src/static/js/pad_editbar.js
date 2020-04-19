@@ -221,25 +221,27 @@ var padeditbar = (function()
       if(moduleName == "none")
       {
         var returned = false;
-        for(var i=0;i<self.dropdowns.length;i++)
-        {
-          var thisModuleName = self.dropdowns[i];
-
-          //skip the userlist
-          if(thisModuleName == "users")
-            continue;
-
-          var module = $("#" + thisModuleName);
-
-          //skip any "force reconnect" message
-          var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
-          if(isAForceReconnectMessage)
-            continue;
-
-          if(module.css('display') != "none")
+        if(self.dropdowns){
+          for(var i=0;i<self.dropdowns.length;i++)
           {
-            $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
-            module.removeClass("popup-show");
+            var thisModuleName = self.dropdowns[i];
+
+            //skip the userlist
+            if(thisModuleName == "users")
+              continue;
+
+            var module = $("#" + thisModuleName);
+
+            //skip any "force reconnect" message
+            var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
+            if(isAForceReconnectMessage)
+              continue;
+
+            if(module.css('display') != "none")
+            {
+              $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
+              module.removeClass("popup-show");
+            }
           }
         }
         if(!returned && cb) return cb();
@@ -248,22 +250,24 @@ var padeditbar = (function()
       {
         // hide all modules that are not selected and remove highlighting
         // respectively add highlighting to the corresponding button
-        for(var i=0;i<self.dropdowns.length;i++)
-        {
-          var thisModuleName = self.dropdowns[i];
-          var module = $("#" + thisModuleName);
+        if(self.dropdowns){
+          for(var i=0;i<self.dropdowns.length;i++)
+          {
+            var thisModuleName = self.dropdowns[i];
+            var module = $("#" + thisModuleName);
 
-          if(module.hasClass('popup-show'))
-          {
-            $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
-            module.removeClass("popup-show");
-          }
-          else if(thisModuleName==moduleName)
-          {
-            $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
-            module.addClass("popup-show");
-            if (cb) {
-              cb();
+            if(module.hasClass('popup-show'))
+            {
+              $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
+              module.removeClass("popup-show");
+            }
+            else if(thisModuleName==moduleName)
+            {
+              $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
+              module.addClass("popup-show");
+              if (cb) {
+                cb();
+              }
             }
           }
         }
