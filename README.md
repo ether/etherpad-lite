@@ -1,7 +1,7 @@
 # A real-time collaborative editor for the web
 <a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
 [![Travis (.org)](https://img.shields.io/travis/ether/etherpad-lite)](https://travis-ci.org/github/ether/etherpad-lite)
-![Demo Etherpad Animated Jif](https://i.imgur.com/zYrGkg3.gif "Etherpad in action")
+![Demo Etherpad Animated Jif](doc/images/etherpad_demo.gif "Etherpad in action")
 
 # About
 Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on _your_ server, under _your_ control.
@@ -84,9 +84,19 @@ If you have enabled authentication in `users` section in `settings.json`, it is 
 Please install [ep_hash_auth plugin](https://www.npmjs.com/package/ep_hash_auth) and configure it.
 If you prefer, `ep_hash_auth` also gives you the option of storing the users in a custom directory in the file system, without having to edit `settings.json` and restart Etherpad each time.
 
-## Plugins and themes
+## Customize functionalities with plugins
+
+![Basic install](doc/images/etherpad_basic.png "Basic Installation")
+
+![Full Features](doc/images/etherpad_full_features.png "You can add a lot of plugins !")
 
 Etherpad is very customizable through plugins. Instructions for installing themes and plugins can be found in [the plugin wiki article](https://github.com/ether/etherpad-lite/wiki/Available-Plugins).
+
+## Customize the style with skin variants
+
+Open <http://127.0.0.1:9001/p/test#skinvariantsbuilder> in your browser and start playing !
+
+![Skin Variant](doc/images/etherpad_skin_variants.gif "Skin variants")
 
 ## Helpful resources
 The [wiki](https://github.com/ether/etherpad-lite/wiki) is your one-stop resource for Tutorials and How-to's.
