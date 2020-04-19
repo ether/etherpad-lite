@@ -34,7 +34,8 @@ jobs:
       install:
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-        - "npm install ep_test_line_attrib"
+#        - "npm install ep_test_line_attrib"
+# remove above comment once we have published the module to npm
       script:
         - "tests/frontend/travis/runner.sh"
     - name: "Test the Dockerfile"
