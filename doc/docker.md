@@ -54,14 +54,19 @@ And point your browser to `http://<YOUR_IP>:<DESIRED_PORT>`
 
 The `settings.json.docker` available by default enables some configuration to be set from the environment.
 
-Available options:
+### General
 
 * `TITLE`: The name of the instance
 * `FAVICON`: favicon default name, or a fully specified URL to your own favicon
-* `SKIN_NAME`: either `no-skin`, `colibris` or an existing directory under `src/static/skins`.
+* `DEFAULT_PAD_TEXT`: The default text of a pad
 * `IP`: IP which etherpad should bind at. Change to `::` for IPv6
 * `PORT`: port which etherpad should bind at
-* `SHOW_SETTINGS_IN_ADMIN_PAGE`: hide/show the settings.json in admin page
+* `ADMIN_PASSWORD`: the password for the `admin` user (leave unspecified if you do not want to create it)
+* `USER_PASSWORD`: the password for the first user `user` (leave unspecified if you do not want to create it)
+
+
+### Database
+
 * `DB_TYPE`: a database supported by https://www.npmjs.com/package/ueberdb2
 * `DB_HOST`: the host of the database
 * `DB_PORT`: the port of the database
@@ -70,14 +75,26 @@ Available options:
 * `DB_PASS`: the password for the database username
 * `DB_CHARSET`: the character set for the tables (only required for MySQL)
 * `DB_FILENAME`: in case `DB_TYPE` is `DirtyDB`, the database filename. Default: `var/dirty.db`
-* `DEFAULT_PAD_TEXT`: The default text of a pad
-* `ADMIN_PASSWORD`: the password for the `admin` user (leave unspecified if you do not want to create it)
-* `USER_PASSWORD`: the password for the first user `user` (leave unspecified if you do not want to create it)
+
+
+### Skins
+
+* `SKIN_NAME`: either `no-skin`, `colibris` or an existing directory under `src/static/skins`.
+
+
+### Logging
+
+* `LOGLEVEL`: valid values are `DEBUG`, `INFO`, `WARN` and `ERROR`
+
+
+### Advanced
+
+* `SHOW_SETTINGS_IN_ADMIN_PAGE`: hide/show the settings.json in admin page
 * `TRUST_PROXY`: set to `true` if you are using a reverse proxy in front of Etherpad (for example: Traefik for SSL termination via Let's Encrypt). This will affect security and correctness of the logs if not done
 * `IMPORT_MAX_FILE_SIZE`: maximum allowed file size when importing a pad, in bytes. Default: 52428800 (50 MB)
 * `IMPORT_EXPORT_MAX_REQ_PER_IP`: maximum number of import/export calls per IP. Default: 10
 * `IMPORT_EXPORT_RATE_LIMIT_WINDOW`: the call rate for import/export requests will be estimated in this time window (in milliseconds). Default: 90000 ms
-* `LOGLEVEL`: valid values are `DEBUG`, `INFO`, `WARN` and `ERROR`
+
 
 ### Examples
 
