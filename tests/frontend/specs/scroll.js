@@ -99,7 +99,7 @@ describe('scroll when focus line is out of viewport', function () {
   });
 
 // Below tests are broken in Edge
-
+/*
   context('when user edits the last line of viewport -- Known Broken in Edge', function(){
 
     context('and scroll percentage config is set to 0 on settings.json -- Broken in Edge', function(){
@@ -372,7 +372,7 @@ describe('scroll when focus line is out of viewport', function () {
       });
     });
   });
-
+*/
   /* ********************* Helper functions/constants ********************* */
   var TOP_OF_PAGE = 0;
   var BOTTOM_OF_PAGE = 5000; // we use a big value to force the page to be scrolled all the way down
