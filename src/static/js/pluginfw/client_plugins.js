@@ -30,14 +30,9 @@ exports.update = function (cb) {
     exports.loaded = true;
     callback();
   }).fail(function(e){
-    console.warn("Error loading plugin-definitions");
+    console.error("Failed to load plugin-definitions: " + err);
+    callback();
   });
-/*
-.(function(xhr, s, err){
-     console.error("Failed to load plugin-definitions: " + err);
-     callback();
-   });
-*/
 };
 
 function adoptPlugins(plugins) {
