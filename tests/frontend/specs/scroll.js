@@ -326,7 +326,7 @@ describe('scroll when focus line is out of viewport', function () {
     });
 
     // as the editor.line is inside of the viewport, it should not scroll
-    it('should not scroll', function (done) {
+    xit('should not scroll', function (done) {
       var scrollOfEditorAfterPressKey = getEditorScroll();
       expect(scrollOfEditorAfterPressKey).to.be(scrollOfEditorBeforePressKey);
       done();
