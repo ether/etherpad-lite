@@ -287,7 +287,7 @@ describe('scroll when focus line is out of viewport', function () {
       done();
     });
   });
-
+/*
   // In this scenario we avoid the bouncing scroll. E.g Let's suppose we have a big line that is
   // the size of the viewport, and its top is above the viewport. When user presses '<-', this line
   // will scroll down because the top is out of the viewport. When it scrolls down, the bottom of
@@ -332,7 +332,7 @@ describe('scroll when focus line is out of viewport', function () {
       done();
     });
   });
-
+*/
   // Some plugins, for example the ep_page_view, change the editor dimensions. This plugin, for example,
   // adds padding-top to the ace_outer, which changes the viewport height
   describe('integration with plugins which changes the margin of editor', function(){
