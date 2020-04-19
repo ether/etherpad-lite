@@ -65,7 +65,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       });
     }, 5000);
   });
-}, 3); //run 3 tests in parrallel -- This doesn't seem to affect reliability and I'm not sure it's even handled..
+}, 2); //run 3 tests in parrallel -- This doesn't seem to affect reliability and I'm not sure it's even handled..
 /*
 // 1) Firefox on Linux
 sauceTestWorker.push({
