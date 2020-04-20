@@ -19,6 +19,7 @@ body {
   /* For sticky chat */
   display: flex;
   flex-direction: row;
+  height: 0; /* strange bug some browser need this to be working ok */
 }
 #editorcontainerbox #editorcontainer {
   display: flex; /* transfer flex properties to nested elements, here the iframe */
@@ -27,6 +28,7 @@ body {
 }
 #editorcontainerbox #editorcontainer iframe {
   width: 100%;
+  height: 100%;
 }
 #editorcontainerbox .sticky-container { /* container for #users, #chat, #toc (table of content) and so on... */
   display: flex;
