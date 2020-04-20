@@ -49,8 +49,22 @@
 
   --main-font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 
-  --editor-padding: 40px 55px;
-  --editor-padding-top: 40px;
+  --editor-horizontal-padding: 55px;
+  --editor-vertical-padding: 40px;
+}
+
+@media (max-width:1000px) {
+  :root {
+    --editor-horizontal-padding: 15px;
+    --editor-vertical-padding: 15px;
+  }
+}
+
+@media (max-width:600px) {
+  :root {
+    --editor-horizontal-padding: 15px;
+    --editor-vertical-padding: 15px;
+  }
 }
 
 /* Default scrollbar values */
