@@ -3855,6 +3855,9 @@ function Ace2Inner(){
           fastIncorp(4);
           evt.preventDefault();
           specialHandled = true;
+
+          // close all gritters when the user hits escape key
+          parent.parent.$.gritter.removeAll();
         }
         if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == "s" && (evt.metaKey || evt.ctrlKey) && !evt.altKey && padShortcutEnabled.cmdS) /* Do a saved revision on ctrl S */
         {
