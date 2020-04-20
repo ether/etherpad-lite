@@ -17,6 +17,7 @@ html.inner-editor {
 #outerdocbody iframe {
   flex: 1 auto;
   display: flex;
+  width: 100%;
 }
 #outerdocbody #sidediv {
   order: -1; /* display it on the first row positionning, i.e. on the left */

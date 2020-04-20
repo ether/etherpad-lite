@@ -20,9 +20,10 @@
 #outerdocbody iframe, #outerdocbody > #innerdocbody {
   max-width: 900px;
   padding: 40px 55px;
-  padding: var(--editor-padding);
-  padding-top: 40px;
-  padding-top: var(--editor-padding-top);
+  padding-left: var(--editor-horizontal-padding);
+  padding-right: var(--editor-horizontal-padding);
+  padding-top: var(--editor-vertical-padding);
+  padding-bottom: var(--editor-vertical-padding);
   box-shadow: none;
   border: 0;
   border-radius: 8px;
@@ -32,8 +33,11 @@
   color: var(--text-color);
 }
 #sidediv {
-  padding-top: 40px; /* = #innerdocbody iframe padding-top */
-  padding-top: var(--editor-padding-top);
+  /* Padding must be the same than editor, otherwise it creates problem */
+  padding-top: 40px; /* = #innerdocbody iframe vertical padding */
+  padding-bottom: 40px;
+  padding-top: var(--editor-vertical-padding);
+  padding-bottom: var(--editor-vertical-padding);
 }
 
 /* Fixs author_hover does not take in account the document padding */
@@ -52,12 +56,8 @@
     padding-top: 0;
   }
   #outerdocbody iframe, #outerdocbody > #innerdocbody {
-    padding: 20px;
     max-width: none;
     border-radius: 0;
-  }
-  #sidediv {
-    padding-top: 20px !important; /* = #outerdocbody iframe padding-top */
   }
 
   .authortooltip { margin-top: 20px !important; }
@@ -71,12 +71,6 @@
   #outerdocbody.plugin-ep_author_neat #sidediv { padding-right: 0 !important; }
 }
 
-@media (max-width:600px) {
-  #outerdocbody iframe, #outerdocbody > #innerdocbody {
-    padding: 15px;
-  }
-  /* #sidediv is hidden at this size of screen */
-}
 @media only screen and (max-width: 720px) {
   #editorcontainerbox {
     margin-bottom: 39px; /* margin for bottom toolbar */
