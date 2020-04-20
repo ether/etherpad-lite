@@ -39,8 +39,6 @@
 	"pad.settings.rtlcheck": "Leger le contento de dextra a sinistra?",
 	"pad.settings.fontType": "Typo de litteras:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospatial",
-	"pad.settings.globalView": "Vista global",
 	"pad.settings.language": "Lingua:",
 	"pad.importExport.import_export": "Importar/Exportar",
 	"pad.importExport.import": "Incargar qualcunque file de texto o documento",

@@ -45,8 +45,6 @@
 	"pad.settings.rtlcheck": "Mühtəviyyat sağdan sola doğru oxunsunmu?",
 	"pad.settings.fontType": "Şriftin tipi:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monoboşluq",
-	"pad.settings.globalView": "Ümumi görünüş",
 	"pad.settings.language": "Dil:",
 	"pad.importExport.import_export": "İdxal/İxrac",
 	"pad.importExport.import": "Hər hansı bir mətn faylı və ya sənəd yüklə",

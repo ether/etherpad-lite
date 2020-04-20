@@ -44,8 +44,6 @@
 	"pad.settings.rtlcheck": "Edukia eskubitik ezkerrera irakurri?",
 	"pad.settings.fontType": "Tipografia:",
 	"pad.settings.fontType.normal": "Arrunta",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Ikuspegi Globala",
 	"pad.settings.language": "Hizkuntza:",
 	"pad.importExport.import_export": "Inportatu/Esportatu",
 	"pad.importExport.import": "Igo edozein testu fitxategi edo dokumentu",

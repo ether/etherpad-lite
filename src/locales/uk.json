@@ -48,8 +48,6 @@
 	"pad.settings.rtlcheck": "Читати вміст з права на ліво?",
 	"pad.settings.fontType": "Тип шрифту:",
 	"pad.settings.fontType.normal": "Звичайний",
-	"pad.settings.fontType.monospaced": "Моноширинний",
-	"pad.settings.globalView": "Загальний вигляд",
 	"pad.settings.language": "Мова:",
 	"pad.importExport.import_export": "Імпорт/Експорт",
 	"pad.importExport.import": "Завантажити будь-який текстовий файл або документ",

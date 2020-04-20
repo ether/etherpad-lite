@@ -45,8 +45,6 @@
 	"pad.settings.rtlcheck": "Inhalt von rechts nach links lesen?",
 	"pad.settings.fontType": "Schriftart:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Gemeinsame Ansicht",
 	"pad.settings.language": "Sprache:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Text-Datei oder Dokument hochladen",
