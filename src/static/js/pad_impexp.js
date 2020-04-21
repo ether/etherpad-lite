@@ -255,8 +255,12 @@ var padimpexp = (function()
 
       // directDatabaseAccess is a string not a boolean
       if (directDatabaseAccess !== 'undefined') {
+        // commented out for now.  This needs a proper fix after 1.8.3
+        // TODO: pad.switchToPad() should not require a reload of the page.
         // Switch to the pad without redrawing the page
-        pad.switchToPad(clientVars.padId);
+        // pad.switchToPad(clientVars.padId);
+
+        location.reload();
         $('#import_export').removeClass('popup-show');
       }
 
