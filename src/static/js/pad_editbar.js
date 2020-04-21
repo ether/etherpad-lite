@@ -217,6 +217,9 @@ var padeditbar = (function()
         return;
       }
 
+      $('.nice-select').removeClass('open');
+      $('.toolbar-popup').removeClass("popup-show");
+
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
@@ -235,13 +238,12 @@ var padeditbar = (function()
           var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
           if(isAForceReconnectMessage)
             continue;
-
-          if(module.css('display') != "none")
-          {
+          if (module.hasClass('popup-show')) {
             $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
             module.removeClass("popup-show");
           }
         }
+
         if(!returned && cb) return cb();
       }
       else
