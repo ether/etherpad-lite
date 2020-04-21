@@ -76,6 +76,8 @@ The `settings.json.docker` available by default enables some configuration to be
 * `DB_CHARSET`: the character set for the tables (only required for MySQL)
 * `DB_FILENAME`: in case `DB_TYPE` is `DirtyDB`, the database filename. Default: `var/dirty.db`
 
+If your database needs additional settings, you will have to use a personalized `settings.json.docker` and rebuild the container (or otherwise put the updated `settings.json` inside your image).
+
 
 ### Skins
 
