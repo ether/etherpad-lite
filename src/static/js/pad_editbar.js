@@ -282,18 +282,20 @@ var padeditbar = (function()
     },
     setEmbedLinks: function()
     {
+      var padUrl = window.location.href.split("?")[0];
+
       if ($('#readonlyinput').is(':checked'))
       {
-        var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
-        var readonlyLink = basePath + "/p/" + clientVars.readOnlyId;
+        var urlParts = padUrl.split("/");
+        urlParts.pop();
+        var readonlyLink = urlParts.join("/") + "/" + clientVars.readOnlyId;
         $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
         $('#linkinput').val(readonlyLink);
       }
       else
       {
-        var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
-        $('#linkinput').val(padurl);
+        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padUrl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
+        $('#linkinput').val(padUrl);
       }
     },
     checkAllIconsAreDisplayedInToolbar: function()
