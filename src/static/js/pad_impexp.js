@@ -248,10 +248,15 @@ var padimpexp = (function()
       {
         importFailed(status);
       }
+      else
+      {
+        $('#import_export').removeClass('popup-show');
+      }
 
       if (directDatabaseAccess) {
         // Switch to the pad without redrawing the page
         pad.switchToPad(clientVars.padId);
+        $('#import_export').removeClass('popup-show');
       }
 
       importDone();
