@@ -253,7 +253,8 @@ var padimpexp = (function()
         $('#import_export').removeClass('popup-show');
       }
 
-      if (directDatabaseAccess) {
+      // directDatabaseAccess is a string not a boolean
+      if (directDatabaseAccess !== 'undefined') {
         // Switch to the pad without redrawing the page
         pad.switchToPad(clientVars.padId);
         $('#import_export').removeClass('popup-show');
