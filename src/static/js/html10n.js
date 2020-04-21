@@ -854,7 +854,8 @@ window.html10n = (function(window, document, undefined) {
        , "value": 1
        , "placeholder": 1
        }
-    if (index > 0 && str.id.substr(index + 1) in attrList) { // an attribute has been specified
+    if (index > 0 && str.id.substr(index + 1) in attrList) {
+      // an attribute has been specified (example: "my_translation_key.placeholder")
       prop = str.id.substr(index + 1)
     } else { // no attribute: assuming text content by default
       prop = document.body.textContent ? 'textContent' : 'innerText'

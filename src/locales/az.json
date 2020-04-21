@@ -2,12 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"AZISS",
-			"Khan27",
-			"Mushviq Abdulla",
-			"Wertuose",
-			"Mastizada",
 			"Archaeodontosaurus",
-			"Neriman2003"
+			"Khan27",
+			"Mastizada",
+			"Mushviq Abdulla",
+			"Neriman2003",
+			"Wertuose"
 		]
 	},
 	"index.newPad": "Yeni lövhə",
@@ -45,8 +45,6 @@
 	"pad.settings.rtlcheck": "Mühtəviyyat sağdan sola doğru oxunsunmu?",
 	"pad.settings.fontType": "Şriftin tipi:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monoboşluq",
-	"pad.settings.globalView": "Ümumi görünüş",
 	"pad.settings.language": "Dil:",
 	"pad.importExport.import_export": "İdxal/İxrac",
 	"pad.importExport.import": "Hər hansı bir mətn faylı və ya sənəd yüklə",
@@ -92,6 +90,8 @@
 	"pad.chat": "Söhbət",
 	"pad.chat.title": "Bu lövhə üçün çat açın.",
 	"pad.chat.loadmessages": "Daha çox mesaj yüklə",
+	"pad.chat.stick.title": "Yazışmanı ekrana kilidlə",
+	"pad.chat.writeMessage.placeholder": "Mesajını bura yaz",
 	"timeslider.pageTitle": "{{appTitle}} Vaxt cədvəli",
 	"timeslider.toolbar.returnbutton": "Lövhəyə qayıt",
 	"timeslider.toolbar.authors": "Müəlliflər:",

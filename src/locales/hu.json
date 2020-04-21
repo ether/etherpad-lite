@@ -1,13 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
+			"BanKris",
+			"Bencemac",
+			"Csega",
 			"Dj",
 			"Misibacsi",
+			"Notramo",
 			"R-Joe",
-			"Tgr",
-			"Csega",
-			"BanKris",
-			"Notramo"
+			"Tgr"
 		]
 	},
 	"index.newPad": "Új notesz",
@@ -45,8 +46,6 @@
 	"pad.settings.rtlcheck": "Tartalom olvasása balról jobbra?",
 	"pad.settings.fontType": "Betűtípus:",
 	"pad.settings.fontType.normal": "Szokásos",
-	"pad.settings.fontType.monospaced": "Írógépes",
-	"pad.settings.globalView": "Globális nézet",
 	"pad.settings.language": "Nyelv:",
 	"pad.importExport.import_export": "Import/export",
 	"pad.importExport.import": "Tetszőleges szövegfájl vagy dokumentum feltöltése",
@@ -58,7 +57,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document formátum)",
-	"pad.importExport.abiword.innerHTML": "Csak szöveges, vagy HTML formátumokból importálhatsz. A speciális importálási funkciókért kérjük <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">telepítsd az abiword-öt</a>.",
+	"pad.importExport.abiword.innerHTML": "Csak szöveges, vagy HTML formátumokból importálhatsz. A speciális importálási funkciókért kérjük <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">telepítsd az AbiWord-öt</a>.",
 	"pad.modals.connected": "Kapcsolódva.",
 	"pad.modals.reconnecting": "Újrakapcsolódás a noteszhez...",
 	"pad.modals.forcereconnect": "Újrakapcsolódás kényszerítése",
@@ -92,6 +91,8 @@
 	"pad.chat": "Csevegés",
 	"pad.chat.title": "A noteszhez tartozó csevegés megnyitása.",
 	"pad.chat.loadmessages": "További üzenetek betöltése",
+	"pad.chat.stick.title": "Csevegés a képernyőre",
+	"pad.chat.writeMessage.placeholder": "Írja az üzenetét ide",
 	"timeslider.pageTitle": "{{appTitle}} időcsúszka",
 	"timeslider.toolbar.returnbutton": "Vissza a noteszhez",
 	"timeslider.toolbar.authors": "Szerzők:",

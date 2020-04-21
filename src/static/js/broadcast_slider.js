@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -41,16 +41,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     var savedRevisions = [];
     var sliderPlaying = false;
 
-    function disableSelection(element)
-    {
-      element.onselectstart = function()
-      {
-        return false;
-      };
-      element.unselectable = "on";
-      element.style.MozUserSelect = "none";
-      element.style.cursor = "default";
-    }
     var _callSliderCallbacks = function(newval)
       {
         sliderPos = newval;
@@ -59,7 +49,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           slidercallbacks[i](newval);
         }
       }
-        
+
     var updateSliderElements = function()
       {
         for (var i = 0; i < savedRevisions.length; i++)
@@ -68,7 +58,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           savedRevisions[i].css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
         }
         $("#ui-slider-handle").css('left', sliderPos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
-      }  
+      }
 
     var addSavedRevision = function(position, info)
       {
@@ -76,9 +66,8 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         newSavedRevision.addClass("star");
 
         newSavedRevision.attr('pos', position);
-        newSavedRevision.css('position', 'absolute');
         newSavedRevision.css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
-        $("#timeslider-slider").append(newSavedRevision);
+        $("#ui-slider-bar").append(newSavedRevision);
         newSavedRevision.mouseup(function(evt)
         {
           BroadcastSlider.setSliderPosition(position);
@@ -122,27 +111,8 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
       $("#revision_label").html(html10n.get("timeslider.version", { "version": newpos}));
 
-      if (newpos == 0)
-      {
-        $("#leftstar").css('opacity', .5);
-        $("#leftstep").css('opacity', .5);
-      }
-      else
-      {
-        $("#leftstar").css('opacity', 1);
-        $("#leftstep").css('opacity', 1);
-      }
-
-      if (newpos == sliderLength)
-      {
-        $("#rightstar").css('opacity', .5);
-        $("#rightstep").css('opacity', .5);
-      }
-      else
-      {
-        $("#rightstar").css('opacity', 1);
-        $("#rightstep").css('opacity', 1);
-      }
+      $("#leftstar, #leftstep").toggleClass('disabled', newpos == 0);
+      $("#rightstar, #rightstep").toggleClass('disabled', newpos == sliderLength);
 
       sliderPos = newpos;
       _callSliderCallbacks(newpos);
@@ -166,12 +136,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       padmodals.showModal("disconnected");
     }
 
-    // Throttle seems like overkill here...  Not sure why we do it!
-    var fixPadHeight = _.throttle(function(){
-      var height = $('#timeslider-top').height();
-      $('#editorcontainerbox').css({marginTop: height});
-    }, 600);
-    
     function setAuthors(authors)
     {
       var authorsList = $("#authorsList");
@@ -187,7 +151,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           if (author.name)
           {
             if (numNamed !== 0) authorsList.append(', ');
-            
+
             $('<span />')
               .text(author.name || "unnamed")
               .css('background-color', authorColor)
@@ -206,17 +170,17 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       if (numAnonymous > 0)
       {
         var anonymousAuthorString = html10n.get("timeslider.unnamedauthors", { num: numAnonymous });
-        
+
         if (numNamed !== 0){
           authorsList.append(' + ' + anonymousAuthorString);
         } else {
           authorsList.append(anonymousAuthorString);
         }
-        
+
         if(colorsAnonymous.length > 0){
           authorsList.append(' (');
           _.each(colorsAnonymous, function(color, i){
-            if( i > 0 ) authorsList.append(' '); 
+            if( i > 0 ) authorsList.append(' ');
             $('<span>&nbsp;</span>')
               .css('background-color', color)
               .addClass('author author-anonymous')
@@ -224,14 +188,12 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           });
           authorsList.append(')');
         }
-        
+
       }
       if (authors.length == 0)
       {
         authorsList.append(html10n.get("timeslider.toolbar.authorsList"));
       }
-      
-      fixPadHeight();
     }
 
     BroadcastSlider = {
@@ -283,66 +245,42 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     }
 
     // assign event handlers to html UI elements after page load
-    //$(window).load(function ()
     fireWhenAllScriptsAreLoaded.push(function()
     {
-      disableSelection($("#playpause_button")[0]);
-      disableSelection($("#timeslider")[0]);
-      
       $(document).keyup(function(e)
       {
-        // If focus is on editbar, don't do anything
-        var target = $(':focus');
-        if($(target).parents(".toolbar").length === 1){
-            return;
-        }
-        var code = -1;
         if (!e) var e = window.event;
-        if (e.keyCode) code = e.keyCode;
-        else if (e.which) code = e.which;
+        var code = e.keyCode || e.which;
 
         if (code == 37)
         { // left
-          if (!e.shiftKey)
-          {
-            setSliderPosition(getSliderPosition() - 1);
-          }
-          else
-          {
-            var nextStar = 0; // default to first revision in document
-            for (var i = 0; i < savedRevisions.length; i++)
-            {
-              var pos = parseInt(savedRevisions[i].attr('pos'));
-              if (pos < getSliderPosition() && nextStar < pos) nextStar = pos;
-            }
-            setSliderPosition(nextStar);
+          if (e.shiftKey) {
+            $('#leftstar').click();
+          } else {
+            $('#leftstep').click();
           }
         }
         else if (code == 39)
-        {
-          if (!e.shiftKey)
-          {
-            setSliderPosition(getSliderPosition() + 1);
-          }
-          else
-          {
-            var nextStar = sliderLength; // default to last revision in document
-            for (var i = 0; i < savedRevisions.length; i++)
-            {
-              var pos = parseInt(savedRevisions[i].attr('pos'));
-              if (pos > getSliderPosition() && nextStar > pos) nextStar = pos;
-            }
-            setSliderPosition(nextStar);
+        { // right
+          if (e.shiftKey) {
+            $('#rightstar').click();
+          } else {
+            $('#rightstep').click();
           }
         }
-        else if (code == 32) playpause();
+        else if (code == 32)
+        { // spacebar
+          $("#playpause_button_icon").trigger('click');
+        }
       });
-      
+
+      // Resize
       $(window).resize(function()
       {
         updateSliderElements();
       });
 
+      // Slider click
       $("#ui-slider-bar").mousedown(function(evt)
       {
         $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
@@ -386,57 +324,22 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       })
 
       // play/pause toggling
-      $("#playpause_button").mousedown(function(evt)
+      $("#playpause_button_icon").click(function(evt)
       {
-        var self = this;
-
-        // $(self).css('background-image', 'url(/static/img/crushed_button_depressed.png)');
-        $(self).mouseup(function(evt2)
-        {
-          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
-          $(self).unbind('mouseup');
-          BroadcastSlider.playpause();
-        });
-        $(document).mouseup(function(evt2)
-        {
-          // $(self).css('background-image', 'url(/static/img/crushed_button_undepressed.png)');
-          $(document).unbind('mouseup');
-        });
+        BroadcastSlider.playpause();
       });
 
       // next/prev saved revision and changeset
-      $('.stepper').mousedown(function(evt)
+      $('.stepper').click(function(evt)
       {
-        var self = this;
-        var origcss = $(self).css('background-position');
-        if (!origcss)
-        {
-          origcss = $(self).css('background-position-x') + " " + $(self).css('background-position-y');
-        }
-        var origpos = parseInt(origcss.split(" ")[1]);
-        var newpos = (origpos - 43);
-        if (newpos < 0) newpos += 87;
-
-        var newcss = (origcss.split(" ")[0] + " " + newpos + "px");
-        if ($(self).css('opacity') != 1.0) newcss = origcss;
-
-        $(self).css('background-position', newcss)
-
-        $(self).mouseup(function(evt2)
-        {
-          $(self).css('background-position', origcss);
-          $(self).unbind('mouseup');
-          $(document).unbind('mouseup');
-          if ($(self).attr("id") == ("leftstep"))
-          {
+        switch ($(this).attr("id")) {
+          case "leftstep":
             setSliderPosition(getSliderPosition() - 1);
-          }
-          else if ($(self).attr("id") == ("rightstep"))
-          {
+            break;
+          case "rightstep":
             setSliderPosition(getSliderPosition() + 1);
-          }
-          else if ($(self).attr("id") == ("leftstar"))
-          {
+            break;
+          case "leftstar":
             var nextStar = 0; // default to first revision in document
             for (var i = 0; i < savedRevisions.length; i++)
             {
@@ -444,9 +347,8 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
               if (pos < getSliderPosition() && nextStar < pos) nextStar = pos;
             }
             setSliderPosition(nextStar);
-          }
-          else if ($(self).attr("id") == ("rightstar"))
-          {
+            break;
+          case "rightstar":
             var nextStar = sliderLength; // default to last revision in document
             for (var i = 0; i < savedRevisions.length; i++)
             {
@@ -454,20 +356,14 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
               if (pos > getSliderPosition() && nextStar > pos) nextStar = pos;
             }
             setSliderPosition(nextStar);
-          }
-        });
-        $(document).mouseup(function(evt2)
-        {
-          $(self).css('background-position', origcss);
-          $(self).unbind('mouseup');
-          $(document).unbind('mouseup');
-        });
+            break;
+        }
       })
 
       if (clientVars)
       {
-        $("#timeslider").show();
-        
+        $("#timeslider-wrapper").show();
+
         var startPos = clientVars.collab_client_vars.rev;
         if(window.location.hash.length > 1)
         {
@@ -478,15 +374,15 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
             setTimeout(function() { setSliderPosition(hashRev); }, 1);
           }
         }
-        
+
         setSliderLength(clientVars.collab_client_vars.rev);
         setSliderPosition(clientVars.collab_client_vars.rev);
-        
+
         _.each(clientVars.savedRevisions, function(revision)
         {
           addSavedRevision(revision.revNum, revision);
         })
-        
+
       }
     });
   })();

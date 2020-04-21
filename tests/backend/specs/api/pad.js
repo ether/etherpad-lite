@@ -1,10 +1,17 @@
-var assert = require('assert')
- supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
-        fs = require('fs'),
-  settings = require(__dirname+'/../../loadSettings').loadSettings(),
-       api = supertest('http://'+settings.ip+":"+settings.port),
-      path = require('path'),
-     async = require(__dirname+'/../../../../src/node_modules/async');
+/*
+ * ACHTUNG: there is a copied & modified version of this file in
+ * <basedir>/tests/container/specs/api/pad.js
+ *
+ * TODO: unify those two files, and merge in a single one.
+ */
+
+const assert = require('assert');
+const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
+const fs = require('fs');
+const settings = require(__dirname + '/../../../../src/node/utils/Settings');
+const api = supertest('http://'+settings.ip+":"+settings.port);
+const path = require('path');
+const async = require(__dirname+'/../../../../src/node_modules/async');
 
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
@@ -14,11 +21,22 @@ var apiVersion = 1;
 var testPadId = makeid();
 var lastEdited = "";
 var text = generateLongText();
-var ULhtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</li></ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</li></ol></li></ol></body></html>';
-var resLHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</ol></li></ol></body></html>';
-//Different result because export is done by standard while input might not
+
+/*
+ * Html document with nested lists of different types, to test its import and
+ * verify it is exported back correctly
+ */
+var ulHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</li></ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</li></ol></li></ol></body></html>';
+
+/*
+ * When exported back, Etherpad produces an html which is not exactly the same
+ * textually, but at least it remains standard compliant and has an equal DOM
+ * structure.
+ */
+var expectedHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</ol></li></ol></body></html>';
+
 describe('Connectivity', function(){
-  it('errors if can not connect', function(done) {
+  it('can connect', function(done) {
     api.get('/api/')
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -26,7 +44,7 @@ describe('Connectivity', function(){
 })
 
 describe('API Versioning', function(){
-  it('errors if can not connect', function(done) {
+  it('finds the version tag', function(done) {
     api.get('/api/')
     .expect(function(res){
       apiVersion = res.body.currentVersion;
@@ -38,7 +56,7 @@ describe('API Versioning', function(){
 })
 
 describe('Permission', function(){
-  it('errors if can connect without correct APIKey', function(done) {
+  it('errors with invalid APIKey', function(done) {
     // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
     // If your APIKey is password you deserve to fail all tests anyway
     var permErrorURL = '/api/'+apiVersion+'/createPad?apikey=password&padID=test';
@@ -93,7 +111,7 @@ describe('deletePad', function(){
   it('deletes a Pad', function(done) {
     api.get(endPoint('deletePad')+"&padID="+testPadId)
     .expect('Content-Type', /json/)
-    .expect(200, done)
+    .expect(200, done) // @TODO: we shouldn't expect 200 here since the pad may not exist
   });
 })
 
@@ -155,6 +173,19 @@ describe('getHTML', function(){
   });
 })
 
+describe('listAllPads', function () {
+  it('list all pads', function (done) {
+    api.get(endPoint('listAllPads'))
+      .expect(function (res) {
+        if (res.body.data.padIDs.includes(testPadId) !== true) {
+          throw new Error('Unable to find pad in pad list')
+        }
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+  })
+})
+
 describe('deletePad', function(){
   it('deletes a Pad', function(done) {
     api.get(endPoint('deletePad')+"&padID="+testPadId)
@@ -164,6 +195,19 @@ describe('deletePad', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
+})
+
+describe('listAllPads', function () {
+  it('list all pads', function (done) {
+    api.get(endPoint('listAllPads'))
+      .expect(function (res) {
+        if (res.body.data.padIDs.includes(testPadId) !== false) {
+          throw new Error('Test pad should not be in pads list')
+        }
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+  })
 })
 
 describe('getHTML', function(){
@@ -193,7 +237,7 @@ describe('getText', function(){
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
       if(res.body.data.text !== "testText\n") throw new Error("Pad Creation with text")
-    }) 
+    })
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
@@ -201,7 +245,11 @@ describe('getText', function(){
 
 describe('setText', function(){
   it('creates a new Pad with text', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text=testTextTwo")
+    api.post(endPoint('setText'))
+    .send({
+      "padID": testPadId,
+      "text":  "testTextTwo",
+    })
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad setting text failed");
     })
@@ -316,7 +364,11 @@ describe('getLastEdited', function(){
 
 describe('setText', function(){
   it('creates a new Pad with text', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text=testTextTwo")
+    api.post(endPoint('setText'))
+    .send({
+      "padID": testPadId,
+      "text":  "testTextTwo",
+    })
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad setting text failed");
     })
@@ -376,7 +428,8 @@ describe('createPad', function(){
 
 describe('setText', function(){
   it('Sets text on a pad Id', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text="+text)
+    api.post(endPoint('setText')+"&padID="+testPadId)
+    .field({text: text})
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Set Text failed")
     })
@@ -399,7 +452,8 @@ describe('getText', function(){
 
 describe('setText', function(){
   it('Sets text on a pad Id including an explicit newline', function(done) {
-    api.get(endPoint('setText')+"&padID="+testPadId+"&text="+text+'%0A')
+    api.post(endPoint('setText')+"&padID="+testPadId)
+    .field({text: text+'\n'})
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Pad Set Text failed")
     })
@@ -513,7 +567,11 @@ describe('getText', function(){
 describe('setHTML', function(){
   it('Sets the HTML of a Pad attempting to pass ugly HTML', function(done) {
     var html = "<div><b>Hello HTML</title></head></div>";
-    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+html)
+    api.post(endPoint('setHTML'))
+    .send({
+      "padID": testPadId,
+      "html":  html,
+    })
     .expect(function(res){
       if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
     })
@@ -523,8 +581,12 @@ describe('setHTML', function(){
 })
 
 describe('setHTML', function(){
-  it('Sets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
-    api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+ULhtml)
+  it('Sets the HTML of a Pad with complex nested lists of different types', function(done) {
+    api.post(endPoint('setHTML'))
+    .send({
+      "padID": testPadId,
+      "html":  ulHtml,
+    })
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("List HTML cant be imported")
     })
@@ -534,12 +596,22 @@ describe('setHTML', function(){
 })
 
 describe('getHTML', function(){
-  it('Gets the HTML of a Pad with a bunch of weird unordered lists inserted', function(done) {
+  it('Gets back the HTML of a Pad with complex nested lists of different types', function(done) {
     api.get(endPoint('getHTML')+"&padID="+testPadId)
     .expect(function(res){
-      var ehtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
-      var uhtml = resLHtml.toLowerCase();
-      if(ehtml !== uhtml) throw new Error("Expected HTML does not match served HTML.\nExpected:\n" + uhtml + "\n\nReceived:\n" + ehtml)
+      var receivedHtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
+
+      if (receivedHtml !== expectedHtml) {
+        throw new Error(`HTML received from export is not the one we were expecting.
+           Received:
+           ${receivedHtml}
+
+           Expected:
+           ${expectedHtml}
+
+           Which is a slightly modified version of the originally imported one:
+           ${ulHtml}`);
+      }
     })
     .expect('Content-Type', /json/)
     .expect(200, done)
@@ -550,7 +622,7 @@ describe('createPad', function(){
   it('errors if pad can be created', function(done) {
     var badUrlChars = ["/", "%23", "%3F", "%26"];
     async.map(
-      badUrlChars, 
+      badUrlChars,
       function (badUrlChar, cb) {
         api.get(endPoint('createPad')+"&padID="+badUrlChar)
         .expect(function(res){

@@ -1,5 +1,5 @@
 node_modules
-settings.json
+/settings.json
 !settings.json.template
 APIKEY.txt
 SESSIONKEY.txt
@@ -19,4 +19,5 @@ npm-debug.log
 bin/etherpad-1.deb
 credentials.json
 out/
-.idea/
+.nyc_output
+./package-lock.json

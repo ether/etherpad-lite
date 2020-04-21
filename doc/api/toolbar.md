@@ -40,7 +40,7 @@ Returns: {SelectButton}
  * {String} value - The value of this option
  * {String} text - the label text used for this option
  * {Object} attributes - any additional html attributes go here (e.g. `data-l10n-id`)
-   
+
 ## registerButton(name, item)
   * {String} name - used to reference the item in the toolbar config in settings.json
   * {Button|SelectButton} item - the button to add

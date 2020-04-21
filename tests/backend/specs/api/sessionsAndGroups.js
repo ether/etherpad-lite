@@ -1,7 +1,7 @@
 var assert = require('assert')
  supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
         fs = require('fs'),
-  settings = require(__dirname+'/../../loadSettings').loadSettings(),
+  settings = require(__dirname + '/../../../../src/node/utils/Settings'),
        api = supertest('http://'+settings.ip+":"+settings.port),
       path = require('path');
 

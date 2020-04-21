@@ -1,15 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"DeRudySoulStorm",
+			"Macofe",
+			"Mateon1",
+			"Pan Cube",
 			"Rezonansowy",
+			"Teeed",
 			"Ty221",
 			"WTM",
-			"Woytecr",
-			"Macofe",
-			"Pan Cube",
-			"Mateon1",
-			"Teeed",
-			"DeRudySoulStorm"
+			"WaldiSt",
+			"Woytecr"
 		]
 	},
 	"index.newPad": "Nowy dokument",
@@ -47,8 +48,6 @@
 	"pad.settings.rtlcheck": "Czytasz treść od prawej do lewej?",
 	"pad.settings.fontType": "Rodzaj czcionki:",
 	"pad.settings.fontType.normal": "Normalna",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Widok ogólny",
 	"pad.settings.language": "Język:",
 	"pad.importExport.import_export": "Import/eksport",
 	"pad.importExport.import": "Prześlij dowolny plik tekstowy lub dokument",
@@ -94,6 +93,8 @@
 	"pad.chat": "Czat",
 	"pad.chat.title": "Otwórz czat dla tego dokumentu.",
 	"pad.chat.loadmessages": "Załaduj więcej wiadomości",
+	"pad.chat.stick.title": "Przyklej czat do ekranu",
+	"pad.chat.writeMessage.placeholder": "Napisz swoją wiadomość tutaj",
 	"timeslider.pageTitle": "Oś czasu {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Powróć do dokumentu",
 	"timeslider.toolbar.authors": "Autorzy:",

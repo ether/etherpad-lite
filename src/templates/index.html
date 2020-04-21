@@ -156,7 +156,7 @@
               }
             }
         </style>
-        <link href="static/custom/index.css" rel="stylesheet">
+        <link href="static/skins/<%=encodeURI(settings.skinName)%>/index.css" rel="stylesheet">
 
         <div id="wrapper">
         <% e.begin_block("indexWrapper"); %>
@@ -171,13 +171,13 @@
         <% e.end_block(); %>
         </div>
 
-        <script src="static/custom/index.js"></script>
+        <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js"></script>
         <script>
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             function go2Name()
             {
                 var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = "p/" + padname : alert("Please enter a name")
+                padname.length > 0 ? window.location = "p/" + encodeURIComponent(padname.trim()) : alert("Please enter a name")
             }
 
             function go2Random()
@@ -187,12 +187,23 @@
 
             function randomPadName()
             {
-                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-                var string_length = 10;
+                // the number of distinct chars (64) is chosen to ensure that
+                // the selection will be uniform when using the PRNG below
+                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+                // the length of the pad name is chosen to get 120-bit security:
+                // log2(64^20) = 120
+                var string_length = 20;
+                // make room for 8-bit integer values that span from 0 to 255.
+                var randomarray = new Uint8Array(string_length);
+                // use browser's PRNG to generate a "unique" sequence
+                var cryptoObj = window.crypto || window.msCrypto; // for IE 11
+                cryptoObj.getRandomValues(randomarray);
                 var randomstring = '';
                 for (var i = 0; i < string_length; i++)
                 {
-                    var rnum = Math.floor(Math.random() * chars.length);
+                    // instead of writing "Math.floor(randomarray[i]/256*64)"
+                    // we can save some cycles.
+                    var rnum = Math.floor(randomarray[i]/4);
                     randomstring += chars.substring(rnum, rnum + 1);
                 }
                 return randomstring;

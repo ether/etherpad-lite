@@ -1,0 +1,31 @@
+button, .btn
+{
+  padding: 5px 20px;
+  border-radius: 4px;
+  line-height: 1.5;
+  width: auto;
+  border: none;
+  font-weight: bold;
+  text-transform: uppercase;
+  position: relative;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-primary
+{
+  background-color: #64d29b;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  color: var(--bg-color);
+}
+.btn-default {
+  color: #485365;
+  color: var(--text-color);
+}
+
+.buttonicon:before, [class^="buttonicon-"]:before, [class*=" buttonicon-"]:before {
+  line-height: 18px;
+}
+
+

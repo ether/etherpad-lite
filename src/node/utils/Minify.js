@@ -70,7 +70,7 @@ for (var key in tar) {
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-function requestURI(url, method, headers, callback, redirectCount) {
+function requestURI(url, method, headers, callback) {
   var parsedURL = urlutil.parse(url);
 
   var status = 500, headers = {}, content = [];
@@ -137,7 +137,7 @@ function requestURIs(locations, method, headers, callback) {
  * @param req the Express request
  * @param res the Express response
  */
-function minify(req, res, next)
+function minify(req, res)
 {
   var filename = req.params['filename'];
 
@@ -201,10 +201,11 @@ function minify(req, res, next)
   statFile(filename, function (error, date, exists) {
     if (date) {
       date = new Date(date);
+      date.setMilliseconds(0);
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
       if (settings.maxAge !== undefined) {
-        var expiresDate = new Date((new Date()).getTime()+settings.maxAge*1000);
+        var expiresDate = new Date(Date.now()+settings.maxAge*1000);
         res.setHeader('expires', expiresDate.toUTCString());
         res.setHeader('cache-control', 'max-age=' + settings.maxAge);
       }
@@ -240,7 +241,7 @@ function minify(req, res, next)
         res.end();
       }
     }
-  });
+  }, 3);
 }
 
 // find all includes in ace.js and embed them.
@@ -264,7 +265,8 @@ function getAceFile(callback) {
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
 
-      var baseURI = 'http://localhost:' + settings.port;
+      // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
+      var baseURI = 'http://invalid.invalid';
       var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
@@ -274,7 +276,7 @@ function getAceFile(callback) {
           data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
               +  JSON.stringify(status == 200 ? body || '' : null) + ';\n';
         } else {
-          // Silence?
+          console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
         }
         callback();
       });
@@ -286,6 +288,10 @@ function getAceFile(callback) {
 
 // Check for the existance of the file and get the last modification date.
 function statFile(filename, callback, dirStatLimit) {
+  /*
+   * The only external call to this function provides an explicit value for
+   * dirStatLimit: this check could be removed.
+   */
   if (typeof dirStatLimit === 'undefined') {
     dirStatLimit = 3;
   }
@@ -376,8 +382,14 @@ function getFileCompressed(filename, contentType, callback) {
     } else if (contentType == 'text/javascript') {
       try {
         content = compressJS(content);
+        if (content.error) {
+          console.error(`Error compressing JS (${filename}) using UglifyJS`, content.error);
+          callback('compressionError', content.error);
+        } else {
+          content = content.code.toString(); // Convert content obj code to string
+        }
       } catch (error) {
-        // silence
+        console.error(`getFile() returned an error in getFileCompressed(${filename}, ${contentType}): ${error}`);
       }
       callback(null, content);
     } else if (contentType == 'text/css') {
@@ -400,26 +412,53 @@ function getFile(filename, callback) {
 
 function compressJS(content)
 {
-  var decoder = new StringDecoder('utf8');
-  var code = decoder.write(content); // convert from buffer to string
-  var codeMinified = uglifyJS.minify(code, {fromString: true}).code;
-  return codeMinified;
+  const contentAsString = content.toString();
+  const codeObj = uglifyJS.minify(contentAsString);
+
+  return codeObj;
 }
 
 function compressCSS(filename, content, callback)
 {
   try {
-    var base = path.join(ROOT_DIR, path.dirname(filename));
-    new CleanCSS({relativeTo: base}).minify(content, function (errors, minified) {
+    const absPath = path.join(ROOT_DIR, filename);
+
+    /*
+     * Changes done to migrate CleanCSS 3.x -> 4.x:
+     *
+     * 1. Disabling rebase is necessary because otherwise the URLs for the web
+     *    fonts become wrong.
+     *
+     *    EXAMPLE 1:
+     *        /static/css/src/static/font/fontawesome-etherpad.woff
+     *      instead of
+     *        /static/font/fontawesome-etherpad.woff
+     *    EXAMPLE 2 (this is more surprising):
+     *        /p/src/static/font/opendyslexic.otf
+     *      instead of
+     *        /static/font/opendyslexic.otf
+     *
+     * 2. CleanCSS.minify() can either receive a string containing the CSS, or
+     *    an array of strings. In that case each array element is interpreted as
+     *    an absolute local path from which the CSS file is read.
+     *
+     *    In version 4.x, CleanCSS API was simplified, eliminating the
+     *    relativeTo parameter, and thus we cannot use our already loaded
+     *    "content" argument, but we have to wrap the absolute path to the CSS
+     *    in an array and ask the library to read it by itself.
+     */
+    new CleanCSS({rebase: false}).minify([absPath], function (errors, minified) {
       if (errors) {
-        // On error, just yield the un-minified original.
+        // on error, just yield the un-minified original, but write a log message
+        console.error(`CleanCSS.minify() returned an error on ${filename} (${absPath}): ${errors}`);
         callback(null, content);
       } else {
         callback(null, minified.styles);
       }
     });
   } catch (error) {
-    // On error, just yield the un-minified original.
+    // on error, just yield the un-minified original, but write a log message
+    console.error(`Unexpected error minifying ${filename} (${absPath}): ${error}`);
     callback(null, content);
   }
 }

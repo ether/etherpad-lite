@@ -1,5 +1,10 @@
 #!/bin/bash
 #
+# WARNING: since Etherpad 1.7.0 (2018-08-17), this script is DEPRECATED, and
+#          will be removed/modified in a future version.
+#          It's left here just for documentation.
+#          The branching policies for releases have been changed.
+#
 # This script is used to publish a new release/version of etherpad on github
 #
 # Work that is done by this script:
@@ -15,6 +20,16 @@
 # - Push this branch and merge it to master
 # ETHER_REPO:
 # - Create a new release on github
+
+printf "WARNING: since Etherpad 1.7.0 this script is DEPRECATED, and will be removed/modified in a future version.\n\n"
+while true; do
+    read -p "Do you want to continue? This is discouraged. [y/N]" yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) exit;;
+        * ) printf "Please answer yes or no.\n\n";;
+    esac
+done
 
 ETHER_REPO="https://github.com/ether/etherpad-lite.git"
 ETHER_WEB_REPO="https://github.com/ether/ether.github.com.git"

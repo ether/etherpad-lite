@@ -1,0 +1,555 @@
+/**
+ * THIS IS THE SETTINGS FILE THAT IS COPIED INSIDE THE DOCKER CONTAINER.
+ *
+ * By default, some runtime customizations are supported (see the
+ * documentation).
+ *
+ * If you need more control, edit this file and rebuild the container.
+ */
+
+/*
+ * This file must be valid JSON. But comments are allowed
+ *
+ * Please edit settings.json, not settings.json.template
+ *
+ * Please note that starting from Etherpad 1.6.0 you can store DB credentials in
+ * a separate file (credentials.json).
+ *
+ *
+ * ENVIRONMENT VARIABLE SUBSTITUTION
+ * =================================
+ *
+ * All the configuration values can be read from environment variables using the
+ * syntax "${ENV_VAR}" or "${ENV_VAR:default_value}".
+ *
+ * This is useful, for example, when running in a Docker container.
+ *
+ * EXAMPLE:
+ *    "port":     "${PORT:9001}"
+ *    "minify":   "${MINIFY}"
+ *    "skinName": "${SKIN_NAME:colibris}"
+ *
+ * Would read the configuration values for those items from the environment
+ * variables PORT, MINIFY and SKIN_NAME.
+ *
+ * If PORT and SKIN_NAME variables were not defined, the default values 9001 and
+ * "colibris" would be used.
+ * The configuration value "minify", on the other hand, does not have a
+ * designated default value. Thus, if the environment variable MINIFY were
+ * undefined, "minify" would be null.
+ *
+ * REMARKS:
+ * 1) please note that variable substitution always needs to be quoted.
+ *
+ *    "port":     9001,            <-- Literal values. When not using
+ *    "minify":   false                substitution, only strings must be
+ *    "skinName": "colibris"           quoted. Booleans and numbers must not.
+ *
+ *    "port":     "${PORT:9001}"   <-- CORRECT: if you want to use a variable
+ *    "minify":   "${MINIFY:true}"     substitution, put quotes around its name,
+ *    "skinName": "${SKIN_NAME}"       even if the required value is a number or
+ *                                     a boolean.
+ *                                     Etherpad will take care of rewriting it
+ *                                     to the proper type if necessary.
+ *
+ *    "port":     ${PORT:9001}     <-- ERROR: this is not valid json. Quotes
+ *    "minify":   ${MINIFY}            around variable names are missing.
+ *    "skinName": ${SKIN_NAME}
+ *
+ * 2) Beware of undefined variables and default values: nulls and empty strings
+ *    are different!
+ *
+ *    This is particularly important for user's passwords (see the relevant
+ *    section):
+ *
+ *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
+ *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
+ *
+ *    If you want to use an empty value (null) as default value for a variable,
+ *    simply do not set it, without putting any colons: "${ABIWORD}".
+ *
+ * 3) if you want to use newlines in the default value of a string parameter,
+ *    use "\n" as usual.
+ *
+ *    "defaultPadText" : "${DEFAULT_PAD_TEXT}Line 1\nLine 2"
+ */
+{
+  /*
+   * Name your instance!
+   */
+  "title": "${TITLE:Etherpad}",
+
+  /*
+   * favicon default name
+   * alternatively, set up a fully specified Url to your own favicon
+   */
+  "favicon": "${FAVICON:favicon.ico}",
+
+  /*
+   * Skin name.
+   *
+   * Its value has to be an existing directory under src/static/skins.
+   * You can write your own, or use one of the included ones:
+   *
+   * - "no-skin":  an empty skin (default). This yields the unmodified,
+   *               traditional Etherpad theme.
+   * - "colibris": the new experimental skin (since Etherpad 1.8), candidate to
+   *               become the default in Etherpad 2.0
+   */
+  "skinName": "${SKIN_NAME:colibris}",
+
+  /*
+   * Skin Variants
+   *
+   * Use the UI skin variants builder at /p/test#skinvariantsbuilder
+   *
+   * For the colibris skin only, you can choose how to render the three main
+   * containers:
+   * - toolbar (top menu with icons)
+   * - editor (containing the text of the pad)
+   * - background (area outside of editor, mostly visible when using page style)
+   *
+   * For each of the 3 containers you can choose 4 color combinations:
+   * super-light, light, dark, super-dark.
+   *
+   * For example, to make the toolbar dark, you will include "dark-toolbar" into
+   * skinVariants.
+   *
+   * You can provide multiple skin variants separated by spaces. Default
+   * skinVariant is "super-light-toolbar super-light-editor light-background".
+   *
+   * For the editor container, you can also make it full width by adding
+   * "full-width-editor" variant (by default editor is rendered as a page, with
+   * a max-width of 900px).
+   */
+  "skinVariants": "${SKIN_VARIANTS:super-light-toolbar super-light-editor light-background}",
+
+  /*
+   * IP and port which Etherpad should bind at.
+   *
+   * Binding to a Unix socket is also supported: just use an empty string for
+   * the ip, and put the full path to the socket in the port parameter.
+   *
+   * EXAMPLE USING UNIX SOCKET:
+   *    "ip": "",                             // <-- has to be an empty string
+   *    "port" : "/somepath/etherpad.socket", // <-- path to a Unix socket
+   */
+  "ip": "${IP:0.0.0.0}",
+  "port": "${PORT:9001}",
+
+  /*
+   * Option to hide/show the settings.json in admin page.
+   *
+   * Default option is set to true
+   */
+  "showSettingsInAdminPage": "${SHOW_SETTINGS_IN_ADMIN_PAGE:true}",
+
+  /*
+   * Node native SSL support
+   *
+   * This is disabled by default.
+   * Make sure to have the minimum and correct file access permissions set so
+   * that the Etherpad server can access them
+   */
+
+  /*
+  "ssl" : {
+            "key"  : "/path-to-your/epl-server.key",
+            "cert" : "/path-to-your/epl-server.crt",
+            "ca": ["/path-to-your/epl-intermediate-cert1.crt", "/path-to-your/epl-intermediate-cert2.crt"]
+          },
+  */
+
+  /*
+   * The type of the database.
+   *
+   * You can choose between many DB drivers, for example: dirty, postgres,
+   * sqlite, mysql.
+   *
+   * You shouldn't use "dirty" for for anything else than testing or
+   * development.
+   *
+   *
+   * Database specific settings are dependent on dbType, and go in dbSettings.
+   * Remember that since Etherpad 1.6.0 you can also store these informations in
+   * credentials.json.
+   *
+   * For a complete list of the supported drivers, please refer to:
+   * https://www.npmjs.com/package/ueberdb2
+   */
+
+  "dbType": "${DB_TYPE:dirty}",
+  "dbSettings": {
+    "host":     "${DB_HOST}",
+    "port":     "${DB_PORT}",
+    "database": "${DB_NAME}",
+    "user":     "${DB_USER}",
+    "password": "${DB_PASS}",
+    "charset":  "${DB_CHARSET}",
+    "filename": "${DB_FILENAME:var/dirty.db}"
+  },
+
+  /*
+   * The default text of a pad
+   */
+  "defaultPadText" : "${DEFAULT_PAD_TEXT:Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at https:\/\/etherpad.org\n}",
+
+  /*
+   * Default Pad behavior.
+   *
+   * Change them if you want to override.
+   */
+  "padOptions": {
+    "noColors":         "${PAD_OPTIONS_NO_COLORS:false}",
+    "showControls":     "${PAD_OPTIONS_SHOW_CONTROLS:true}",
+    "showChat":         "${PAD_OPTIONS_SHOW_CHAT:true}",
+    "showLineNumbers":  "${PAD_OPTIONS_SHOW_LINE_NUMBERS:true}",
+    "useMonospaceFont": "${PAD_OPTIONS_USE_MONOSPACE_FONT:false}",
+    "userName":         "${PAD_OPTIONS_USER_NAME:false}",
+    "userColor":        "${PAD_OPTIONS_USER_COLOR:false}",
+    "rtl":              "${PAD_OPTIONS_RTL:false}",
+    "alwaysShowChat":   "${PAD_OPTIONS_ALWAYS_SHOW_CHAT:false}",
+    "chatAndUsers":     "${PAD_OPTIONS_CHAT_AND_USERS:false}",
+    "lang":             "${PAD_OPTIONS_LANG:en-gb}"
+  },
+
+  /*
+   * Pad Shortcut Keys
+   */
+  "padShortcutEnabled" : {
+    "altF9":     "${PAD_SHORTCUTS_ENABLED_ALT_F9:true}",      /* focus on the File Menu and/or editbar */
+    "altC":      "${PAD_SHORTCUTS_ENABLED_ALT_C:true}",       /* focus on the Chat window */
+    "cmdShift2": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_2:true}", /* shows a gritter popup showing a line author */
+    "delete":    "${PAD_SHORTCUTS_ENABLED_DELETE:true}",
+    "return":    "${PAD_SHORTCUTS_ENABLED_RETURN:true}",
+    "esc":       "${PAD_SHORTCUTS_ENABLED_ESC:true}",         /* in mozilla versions 14-19 avoid reconnecting pad */
+    "cmdS":      "${PAD_SHORTCUTS_ENABLED_CMD_S:true}",       /* save a revision */
+    "tab":       "${PAD_SHORTCUTS_ENABLED_TAB:true}",         /* indent */
+    "cmdZ":      "${PAD_SHORTCUTS_ENABLED_CMD_Z:true}",       /* undo/redo */
+    "cmdY":      "${PAD_SHORTCUTS_ENABLED_CMD_Y:true}",       /* redo */
+    "cmdI":      "${PAD_SHORTCUTS_ENABLED_CMD_I:true}",       /* italic */
+    "cmdB":      "${PAD_SHORTCUTS_ENABLED_CMD_B:true}",       /* bold */
+    "cmdU":      "${PAD_SHORTCUTS_ENABLED_CMD_U:true}",       /* underline */
+    "cmd5":      "${PAD_SHORTCUTS_ENABLED_CMD_5:true}",       /* strike through */
+    "cmdShiftL": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_L:true}", /* unordered list */
+    "cmdShiftN": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_N:true}", /* ordered list */
+    "cmdShift1": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_1:true}", /* ordered list */
+    "cmdShiftC": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_C:true}", /* clear authorship */
+    "cmdH":      "${PAD_SHORTCUTS_ENABLED_CMD_H:true}",       /* backspace */
+    "ctrlHome":  "${PAD_SHORTCUTS_ENABLED_CTRL_HOME:true}",   /* scroll to top of pad */
+    "pageUp":    "${PAD_SHORTCUTS_ENABLED_PAGE_UP:true}",
+    "pageDown":  "${PAD_SHORTCUTS_ENABLED_PAGE_DOWN:true}"
+  },
+
+  /*
+   * Should we suppress errors from being visible in the default Pad Text?
+   */
+  "suppressErrorsInPadText": "${SUPPRESS_ERRORS_IN_PAD_TEXT:false}",
+
+  /*
+   * If this option is enabled, a user must have a session to access pads.
+   * This effectively allows only group pads to be accessed.
+   */
+  "requireSession": "${REQUIRE_SESSION:false}",
+
+  /*
+   * Users may edit pads but not create new ones.
+   *
+   * Pad creation is only via the API.
+   * This applies both to group pads and regular pads.
+   */
+  "editOnly": "${EDIT_ONLY:false}",
+
+  /*
+   * If set to true, those users who have a valid session will automatically be
+   * granted access to password protected pads.
+   */
+  "sessionNoPassword": "${SESSION_NO_PASSWORD:false}",
+
+  /*
+   * If true, all css & js will be minified before sending to the client.
+   *
+   * This will improve the loading performance massively, but makes it difficult
+   * to debug the javascript/css
+   */
+  "minify": "${MINIFY:true}",
+
+  /*
+   * How long may clients use served javascript code (in seconds)?
+   *
+   * Not setting this may cause problems during deployment.
+   * Set to 0 to disable caching.
+   */
+  "maxAge": "${MAX_AGE:21600}", // 60 * 60 * 6 = 6 hours
+
+  /*
+   * Absolute path to the Abiword executable.
+   *
+   * Abiword is needed to get advanced import/export features of pads. Setting
+   * it to null disables Abiword and will only allow plain text and HTML
+   * import/exports.
+   */
+  "abiword": "${ABIWORD}",
+
+  /*
+   * This is the absolute path to the soffice executable.
+   *
+   * LibreOffice can be used in lieu of Abiword to export pads.
+   * Setting it to null disables LibreOffice exporting.
+   */
+  "soffice": "${SOFFICE}",
+
+  /*
+   * Path to the Tidy executable.
+   *
+   * Tidy is used to improve the quality of exported pads.
+   * Setting it to null disables Tidy.
+   */
+  "tidyHtml": "${TIDY_HTML}",
+
+  /*
+   * Allow import of file types other than the supported ones:
+   * txt, doc, docx, rtf, odt, html & htm
+   */
+  "allowUnknownFileEnds": "${ALLOW_UNKNOWN_FILE_ENDS:true}",
+
+  /*
+   * This setting is used if you require authentication of all users.
+   *
+   * Note: "/admin" always requires authentication.
+   */
+  "requireAuthentication": "${REQUIRE_AUTHENTICATION:false}",
+
+  /*
+   * Require authorization by a module, or a user with is_admin set, see below.
+   */
+  "requireAuthorization": "${REQUIRE_AUTHORIZATION:false}",
+
+  /*
+   * When you use NGINX or another proxy/load-balancer set this to true.
+   *
+   * This is especially necessary when the reverse proxy performs SSL
+   * termination, otherwise the cookies will not have the "secure" flag.
+   *
+   * The other effect will be that the logs will contain the real client's IP,
+   * instead of the reverse proxy's IP.
+   */
+  "trustProxy": "${TRUST_PROXY:false}",
+
+  /*
+   * Privacy: disable IP logging
+   */
+  "disableIPlogging": "${DISABLE_IP_LOGGING:false}",
+
+  /*
+   * Time (in seconds) to automatically reconnect pad when a "Force reconnect"
+   * message is shown to user.
+   *
+   * Set to 0 to disable automatic reconnection.
+   */
+  "automaticReconnectionTimeout": "${AUTOMATIC_RECONNECTION_TIMEOUT:0}",
+
+  /*
+   * By default, when caret is moved out of viewport, it scrolls the minimum
+   * height needed to make this line visible.
+   */
+  "scrollWhenFocusLineIsOutOfViewport": {
+
+    /*
+     * Percentage of viewport height to be additionally scrolled.
+     *
+     * E.g.: use "percentage.editionAboveViewport": 0.5, to place caret line in
+     *       the middle of viewport, when user edits a line above of the
+     *       viewport
+     *
+     * Set to 0 to disable extra scrolling
+     */
+    "percentage": {
+      "editionAboveViewport": "${FOCUS_LINE_PERCENTAGE_ABOVE:0}",
+      "editionBelowViewport": "${FOCUS_LINE_PERCENTAGE_BELOW:0}"
+    },
+
+    /*
+     * Time (in milliseconds) used to animate the scroll transition.
+     * Set to 0 to disable animation
+     */
+    "duration": "${FOCUS_LINE_DURATION:0}",
+
+    /*
+     * Flag to control if it should scroll when user places the caret in the
+     * last line of the viewport
+     */
+    "scrollWhenCaretIsInTheLastLineOfViewport": "${FOCUS_LINE_CARET_SCROLL:false}",
+
+    /*
+     * Percentage of viewport height to be additionally scrolled when user
+     * presses arrow up in the line of the top of the viewport.
+     *
+     * Set to 0 to let the scroll to be handled as default by Etherpad
+     */
+    "percentageToScrollWhenUserPressesArrowUp": "${FOCUS_LINE_PERCENTAGE_ARROW_UP:0}"
+  },
+
+  /*
+   * Users for basic authentication.
+   *
+   * is_admin = true gives access to /admin.
+   * If you do not uncomment this, /admin will not be available!
+   *
+   * WARNING: passwords should not be stored in plaintext in this file.
+   *          If you want to mitigate this, please install ep_hash_auth and
+   *          follow the section "secure your installation" in README.md
+   */
+
+  "users": {
+    "admin": {
+      // 1) "password" can be replaced with "hash" if you install ep_hash_auth
+      // 2) please note that if password is null, the user will not be created
+      "password": "${ADMIN_PASSWORD}",
+      "is_admin": true
+    },
+    "user": {
+      // 1) "password" can be replaced with "hash" if you install ep_hash_auth
+      // 2) please note that if password is null, the user will not be created
+      "password": "${USER_PASSWORD}",
+      "is_admin": false
+    }
+  },
+
+  /*
+   * Restrict socket.io transport methods
+   */
+  "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
+
+  /*
+   * Allow Load Testing tools to hit the Etherpad Instance.
+   *
+   * WARNING: this will disable security on the instance.
+   */
+  "loadTest": "${LOAD_TEST:false}",
+
+  /*
+   * Disable indentation on new line when previous line ends with some special
+   * chars (':', '[', '(', '{')
+   */
+
+  /*
+  "indentationOnNewLine": false,
+  */
+
+  /*
+   * From Etherpad 1.8.3 onwards, import and export of pads is always rate
+   * limited.
+   *
+   * The default is to allow at most 10 requests per IP in a 90 seconds window.
+   * After that the import/export request is rejected.
+   *
+   * See https://github.com/nfriedly/express-rate-limit for more options
+   */
+  "importExportRateLimiting": {
+    // duration of the rate limit window (milliseconds)
+    "windowMs": "${IMPORT_EXPORT_RATE_LIMIT_WINDOW:90000}",
+
+    // maximum number of requests per IP to allow during the rate limit window
+    "max": "${IMPORT_EXPORT_MAX_REQ_PER_IP:10}"
+  },
+
+  /*
+   * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
+   * file is always bounded.
+   *
+   * File size is specified in bytes. Default is 50 MB.
+   */
+  "importMaxFileSize": "${IMPORT_MAX_FILE_SIZE:52428800}", // 50 * 1024 * 1024
+
+  /*
+   * Toolbar buttons configuration.
+   *
+   * Uncomment to customize.
+   */
+
+  /*
+  "toolbar": {
+    "left": [
+      ["bold", "italic", "underline", "strikethrough"],
+      ["orderedlist", "unorderedlist", "indent", "outdent"],
+      ["undo", "redo"],
+      ["clearauthorship"]
+    ],
+    "right": [
+      ["importexport", "timeslider", "savedrevision"],
+      ["settings", "embed"],
+      ["showusers"]
+    ],
+    "timeslider": [
+      ["timeslider_export", "timeslider_returnToPad"]
+    ]
+  },
+  */
+
+  /*
+   * Expose Etherpad version in the web interface and in the Server http header.
+   *
+   * Do not enable on production machines.
+   */
+  "exposeVersion": "${EXPOSE_VERSION:false}",
+
+  /*
+   * The log level we are using.
+   *
+   * Valid values: DEBUG, INFO, WARN, ERROR
+   */
+  "loglevel": "${LOGLEVEL:INFO}",
+
+  /*
+   * Logging configuration. See log4js documentation for further information:
+   * https://github.com/nomiddlename/log4js-node
+   *
+   * You can add as many appenders as you want here.
+   */
+  "logconfig" :
+    { "appenders": [
+        { "type": "console"
+        //, "category": "access"// only logs pad access
+        }
+
+      /*
+      , { "type": "file"
+      , "filename": "your-log-file-here.log"
+      , "maxLogSize": 1024
+      , "backups": 3 // how many log files there're gonna be at max
+      //, "category": "test" // only log a specific category
+        }
+      */
+
+      /*
+      , { "type": "logLevelFilter"
+        , "level": "warn" // filters out all log messages that have a lower level than "error"
+        , "appender":
+          {  Use whatever appender you want here  }
+        }
+      */
+
+      /*
+      , { "type": "logLevelFilter"
+        , "level": "error" // filters out all log messages that have a lower level than "error"
+        , "appender":
+          { "type": "smtp"
+          , "subject": "An error occurred in your EPL instance!"
+          , "recipients": "bar@blurdybloop.com, baz@blurdybloop.com"
+          , "sendInterval": 300 // 60 * 5 = 5 minutes -- will buffer log messages; set to 0 to send a mail for every message
+          , "transport": "SMTP", "SMTP": { // see https://github.com/andris9/Nodemailer#possible-transport-methods
+              "host": "smtp.example.com", "port": 465,
+              "secureConnection": true,
+              "auth": {
+                  "user": "foo@example.com",
+                  "pass": "bar_foo"
+              }
+            }
+          }
+        }
+      */
+
+      ]
+    } // logconfig
+}

@@ -18,30 +18,34 @@
  * limitations under the License.
  */
 
-
-var ERR = require("async-stacktrace");
+var absolutePaths = require('../utils/AbsolutePaths');
 var fs = require("fs");
 var api = require("../db/API");
+var log4js = require('log4js');
 var padManager = require("../db/PadManager");
 var randomString = require("../utils/randomstring");
 var argv = require('../utils/Cli').argv;
+var createHTTPError = require('http-errors');
+
+var apiHandlerLogger = log4js.getLogger('APIHandler');
 
 //ensure we have an apikey
 var apikey = null;
-var apikeyFilename = argv.apikey || "./APIKEY.txt";
-try
-{
+var apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || "./APIKEY.txt");
+
+try {
   apikey = fs.readFileSync(apikeyFilename,"utf8");
-}
-catch(e)
-{
+  apiHandlerLogger.info(`Api key file read from: "${apikeyFilename}"`);
+} catch(e) {
+  apiHandlerLogger.info(`Api key file "${apikeyFilename}" not found. Creating with random contents.`);
   apikey = randomString(32);
   fs.writeFileSync(apikeyFilename,apikey,"utf8");
 }
 
-//a list of all functions
-var version =
-{ "1":
+// a list of all functions
+var version = {};
+
+version["1"] = Object.assign({},
   { "createGroup"               : []
   , "createGroupIfNotExistsFor" : ["groupMapper"]
   , "deleteGroup"               : ["groupID"]
@@ -71,436 +75,75 @@ var version =
   , "listAuthorsOfPad"          : ["padID"]
   , "padUsersCount"             : ["padID"]
   }
-, "1.1":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
+);
+
+version["1.1"] = Object.assign({}, version["1"],
+  { "getAuthorName"             : ["authorID"]
   , "padUsers"                  : ["padID"]
   , "sendClientsMessage"        : ["padID", "msg"]
   , "listAllGroups"             : []
   }
-, "1.2":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
+);
+
+version["1.2"] = Object.assign({}, version["1.1"],
+  { "checkToken"                : []
   }
-, "1.2.1":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
+);
+
+version["1.2.1"] = Object.assign({}, version["1.2"],
+  { "listAllPads"               : []
   }
-, "1.2.7":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  , "getChatHistory"            : ["padID"]
+);
+
+version["1.2.7"] = Object.assign({}, version["1.2.1"],
+  { "createDiffHTML"            : ["padID", "startRev", "endRev"]
   , "getChatHistory"            : ["padID", "start", "end"]
   , "getChatHead"               : ["padID"]
   }
-, "1.2.8":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getAttributePool"          : ["padID"]
-  , "getRevisionsCount"         : ["padID"]
+);
+
+version["1.2.8"] = Object.assign({}, version["1.2.7"],
+  { "getAttributePool"          : ["padID"]
   , "getRevisionChangeset"      : ["padID", "rev"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  , "getChatHistory"            : ["padID"]
-  , "getChatHistory"            : ["padID", "start", "end"]
-  , "getChatHead"               : ["padID"]
   }
-, "1.2.9":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getAttributePool"          : ["padID"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getRevisionChangeset"      : ["padID", "rev"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "copyPad"                   : ["sourceID", "destinationID", "force"]
+);
+
+version["1.2.9"] = Object.assign({}, version["1.2.8"],
+  { "copyPad"                   : ["sourceID", "destinationID", "force"]
   , "movePad"                   : ["sourceID", "destinationID", "force"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  , "getChatHistory"            : ["padID"]
-  , "getChatHistory"            : ["padID", "start", "end"]
-  , "getChatHead"               : ["padID"]
   }
-, "1.2.10":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getAttributePool"          : ["padID"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getRevisionChangeset"      : ["padID", "rev"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "copyPad"                   : ["sourceID", "destinationID", "force"]
-  , "movePad"                   : ["sourceID", "destinationID", "force"]
-  , "getReadOnlyID"             : ["padID"]
-  , "getPadID"                  : ["roID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  , "getChatHistory"            : ["padID"]
-  , "getChatHistory"            : ["padID", "start", "end"]
-  , "getChatHead"               : ["padID"]
+);
+
+version["1.2.10"] = Object.assign({}, version["1.2.9"],
+  { "getPadID"                  : ["roID"]
   }
-, "1.2.11":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getAttributePool"          : ["padID"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getSavedRevisionsCount"    : ["padID"]
+);
+
+version["1.2.11"] = Object.assign({}, version["1.2.10"],
+  { "getSavedRevisionsCount"    : ["padID"]
   , "listSavedRevisions"        : ["padID"]
   , "saveRevision"              : ["padID", "rev"]
-  , "getRevisionChangeset"      : ["padID", "rev"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "copyPad"                   : ["sourceID", "destinationID", "force"]
-  , "movePad"                   : ["sourceID", "destinationID", "force"]
-  , "getReadOnlyID"             : ["padID"]
-  , "getPadID"                  : ["roID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  , "getChatHistory"            : ["padID"]
-  , "getChatHistory"            : ["padID", "start", "end"]
-  , "getChatHead"               : ["padID"]
   , "restoreRevision"           : ["padID", "rev"]
   }
-, "1.2.12":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getAttributePool"          : ["padID"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getSavedRevisionsCount"    : ["padID"]
-  , "listSavedRevisions"        : ["padID"]
-  , "saveRevision"              : ["padID", "rev"]
-  , "getRevisionChangeset"      : ["padID", "rev"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "copyPad"                   : ["sourceID", "destinationID", "force"]
-  , "movePad"                   : ["sourceID", "destinationID", "force"]
-  , "getReadOnlyID"             : ["padID"]
-  , "getPadID"                  : ["roID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  , "appendChatMessage"         : ["padID", "text", "authorID", "time"]
-  , "getChatHistory"            : ["padID"]
-  , "getChatHistory"            : ["padID", "start", "end"]
-  , "getChatHead"               : ["padID"]
-  , "restoreRevision"           : ["padID", "rev"]
+);
+
+version["1.2.12"] = Object.assign({}, version["1.2.11"],
+  { "appendChatMessage"         : ["padID", "text", "authorID", "time"]
   }
-, "1.2.13":
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "listAllPads"               : []
-  , "createDiffHTML"            : ["padID", "startRev", "endRev"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getAttributePool"          : ["padID"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getSavedRevisionsCount"    : ["padID"]
-  , "listSavedRevisions"        : ["padID"]
-  , "saveRevision"              : ["padID", "rev"]
-  , "getRevisionChangeset"      : ["padID", "rev"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "copyPad"                   : ["sourceID", "destinationID", "force"]
-  , "movePad"                   : ["sourceID", "destinationID", "force"]
-  , "getReadOnlyID"             : ["padID"]
-  , "getPadID"                  : ["roID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  , "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  , "checkToken"                : []
-  , "appendChatMessage"         : ["padID", "text", "authorID", "time"]
-  , "getChatHistory"            : ["padID"]
-  , "getChatHistory"            : ["padID", "start", "end"]
-  , "getChatHead"               : ["padID"]
-  , "restoreRevision"           : ["padID", "rev"]
-  , "appendText"                : ["padID", "text"]
+);
+
+version["1.2.13"] = Object.assign({}, version["1.2.12"],
+  { "appendText"                : ["padID", "text"]
   }
-};
+);
+
+version["1.2.14"] = Object.assign({}, version["1.2.13"],
+  { "getStats"                : []
+  }
+);
 
 // set the latest available API version here
-exports.latestApiVersion = '1.2.13';
+exports.latestApiVersion = '1.2.14';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
@@ -512,110 +155,41 @@ exports.version = version;
  * @req express request object
  * @res express response object
  */
-exports.handle = function(apiVersion, functionName, fields, req, res)
+exports.handle = async function(apiVersion, functionName, fields, req, res)
 {
-  //check if this is a valid apiversion
-  var isKnownApiVersion = false;
-  for(var knownApiVersion in version)
-  {
-    if(knownApiVersion == apiVersion)
-    {
-      isKnownApiVersion = true;
-      break;
-    }
+  // say goodbye if this is an unknown API version
+  if (!(apiVersion in version)) {
+    throw new createHTTPError.NotFound('no such api version');
   }
 
-  //say goodbye if this is an unkown API version
-  if(!isKnownApiVersion)
-  {
-    res.statusCode = 404;
-    res.send({code: 3, message: "no such api version", data: null});
-    return;
+  // say goodbye if this is an unknown function
+  if (!(functionName in version[apiVersion])) {
+    throw new createHTTPError.NotFound('no such function');
   }
 
-  //check if this is a valid function name
-  var isKnownFunctionname = false;
-  for(var knownFunctionname in version[apiVersion])
-  {
-    if(knownFunctionname == functionName)
-    {
-      isKnownFunctionname = true;
-      break;
-    }
-  }
-
-  //say goodbye if this is a unkown function
-  if(!isKnownFunctionname)
-  {
-    res.send({code: 3, message: "no such function", data: null});
-    return;
-  }
-
-  //check the api key!
+  // check the api key!
   fields["apikey"] = fields["apikey"] || fields["api_key"];
 
-  if(fields["apikey"] != apikey.trim())
-  {
-    res.statusCode = 401;
-    res.send({code: 4, message: "no or wrong API Key", data: null});
-    return;
+  if (fields["apikey"] !== apikey.trim()) {
+    throw new createHTTPError.Unauthorized('no or wrong API Key');
   }
 
-  //sanitize any pad id's before continuing
-  if(fields["padID"])
-  {
-    padManager.sanitizePadId(fields["padID"], function(padId)
-    {
-      fields["padID"] = padId;
-      callAPI(apiVersion, functionName, fields, req, res);
-    });
+  // sanitize any padIDs before continuing
+  if (fields["padID"]) {
+    fields["padID"] = await padManager.sanitizePadId(fields["padID"]);
   }
-  else if(fields["padName"])
-  {
-    padManager.sanitizePadId(fields["padName"], function(padId)
-    {
-      fields["padName"] = padId;
-      callAPI(apiVersion, functionName, fields, req, res);
-    });
+  // there was an 'else' here before - removed it to ensure
+  // that this sanitize step can't be circumvented by forcing
+  // the first branch to be taken
+  if (fields["padName"]) {
+    fields["padName"] = await padManager.sanitizePadId(fields["padName"]);
   }
-  else
-  {
-    callAPI(apiVersion, functionName, fields, req, res);
-  }
-}
 
-//calls the api function
-function callAPI(apiVersion, functionName, fields, req, res)
-{
-  //put the function parameters in an array
+  // put the function parameters in an array
   var functionParams = version[apiVersion][functionName].map(function (field) {
     return fields[field]
-  })
-
-  //add a callback function to handle the response
-  functionParams.push(function(err, data)
-  {
-    // no error happend, everything is fine
-    if(err == null)
-    {
-      if(!data)
-        data = null;
-
-      res.send({code: 0, message: "ok", data: data});
-    }
-    // parameters were wrong and the api stopped execution, pass the error
-    else if(err.name == "apierror")
-    {
-      res.send({code: 1, message: err.message, data: null});
-    }
-    //an unkown error happend
-    else
-    {
-      res.send({code: 2, message: "internal error", data: null});
-      ERR(err);
-    }
   });
 
-  //call the api function
-  api[functionName].apply(this, functionParams);
+  // call the api function
+  return api[functionName].apply(this, functionParams);
 }

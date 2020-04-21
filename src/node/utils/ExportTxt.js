@@ -18,58 +18,23 @@
  * limitations under the License.
  */
 
-var async = require("async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var padManager = require("../db/PadManager");
-var ERR = require("async-stacktrace");
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
-function getPadTXT(pad, revNum, callback)
+var getPadTXT = async function(pad, revNum)
 {
-  var atext = pad.atext;
-  var html;
-  async.waterfall([
-  // fetch revision atext
+  let atext = pad.atext;
 
-
-  function (callback)
-  {
-    if (revNum != undefined)
-    {
-      pad.getInternalRevisionAText(revNum, function (err, revisionAtext)
-      {
-        if(ERR(err, callback)) return;
-        atext = revisionAtext;
-        callback();
-      });
-    }
-    else
-    {
-      callback(null);
-    }
-  },
+  if (revNum != undefined) {
+    // fetch revision atext
+    atext = await pad.getInternalRevisionAText(revNum);
+  }
 
   // convert atext to html
-
-
-  function (callback)
-  {
-    html = getTXTFromAtext(pad, atext); // only this line is different to the HTML function
-    callback(null);
-  }],
-  // run final callback
-
-
-  function (err)
-  {
-    if(ERR(err, callback)) return;
-    callback(null, html);
-  });
+  return getTXTFromAtext(pad, atext);
 }
-
-exports.getPadTXT = getPadTXT;
-
 
 // This is different than the functionality provided in ExportHtml as it provides formatting
 // functionality that is designed specifically for TXT exports
@@ -83,17 +48,14 @@ function getTXTFromAtext(pad, atext, authorColors)
   var anumMap = {};
   var css = "";
 
-  props.forEach(function (propName, i)
-  {
+  props.forEach(function(propName, i) {
     var propTrueNum = apool.putAttrib([propName, true], true);
-    if (propTrueNum >= 0)
-    {
+    if (propTrueNum >= 0) {
       anumMap[propTrueNum] = i;
     }
   });
 
-  function getLineTXT(text, attribs)
-  {
+  function getLineTXT(text, attribs) {
     var propVals = [false, false, false];
     var ENTER = 1;
     var STAY = 2;
@@ -109,94 +71,77 @@ function getTXTFromAtext(pad, atext, authorColors)
 
     var idx = 0;
 
-    function processNextChars(numChars)
-    {
-      if (numChars <= 0)
-      {
+    function processNextChars(numChars) {
+      if (numChars <= 0) {
         return;
       }
 
       var iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
-      while (iter.hasNext())
-      {
+      while (iter.hasNext()) {
         var o = iter.next();
         var propChanged = false;
-        Changeset.eachAttribNumber(o.attribs, function (a)
-        {
-          if (a in anumMap)
-          {
+
+        Changeset.eachAttribNumber(o.attribs, function(a) {
+          if (a in anumMap) {
             var i = anumMap[a]; // i = 0 => bold, etc.
-            if (!propVals[i])
-            {
+
+            if (!propVals[i]) {
               propVals[i] = ENTER;
               propChanged = true;
-            }
-            else
-            {
+            } else {
               propVals[i] = STAY;
             }
           }
         });
-        for (var i = 0; i < propVals.length; i++)
-        {
-          if (propVals[i] === true)
-          {
+
+        for (var i = 0; i < propVals.length; i++) {
+          if (propVals[i] === true) {
             propVals[i] = LEAVE;
             propChanged = true;
-          }
-          else if (propVals[i] === STAY)
-          {
-            propVals[i] = true; // set it back
+          } else if (propVals[i] === STAY) {
+            // set it back
+            propVals[i] = true;
           }
         }
+
         // now each member of propVal is in {false,LEAVE,ENTER,true}
         // according to what happens at start of span
-        if (propChanged)
-        {
+        if (propChanged) {
           // leaving bold (e.g.) also leaves italics, etc.
           var left = false;
-          for (var i = 0; i < propVals.length; i++)
-          {
+
+          for (var i = 0; i < propVals.length; i++) {
             var v = propVals[i];
-            if (!left)
-            {
-              if (v === LEAVE)
-              {
+
+            if (!left) {
+              if (v === LEAVE) {
                 left = true;
               }
-            }
-            else
-            {
-              if (v === true)
-              {
-                propVals[i] = STAY; // tag will be closed and re-opened
+            } else {
+              if (v === true) {
+                // tag will be closed and re-opened
+                propVals[i] = STAY;
               }
             }
           }
 
           var tags2close = [];
 
-          for (var i = propVals.length - 1; i >= 0; i--)
-          {
-            if (propVals[i] === LEAVE)
-            {
+          for (var i = propVals.length - 1; i >= 0; i--) {
+            if (propVals[i] === LEAVE) {
               //emitCloseTag(i);
               tags2close.push(i);
               propVals[i] = false;
-            }
-            else if (propVals[i] === STAY)
-            {
+            } else if (propVals[i] === STAY) {
               //emitCloseTag(i);
               tags2close.push(i);
             }
           }
 
-          for (var i = 0; i < propVals.length; i++)
-          {
-            if (propVals[i] === ENTER || propVals[i] === STAY)
-            {
+          for (var i = 0; i < propVals.length; i++) {
+            if (propVals[i] === ENTER || propVals[i] === STAY) {
               propVals[i] = true;
             }
           }
@@ -204,9 +149,9 @@ function getTXTFromAtext(pad, atext, authorColors)
         } // end if (propChanged)
 
         var chars = o.chars;
-        if (o.lines)
-        {
-          chars--; // exclude newline at end of line, if present
+        if (o.lines) {
+          // exclude newline at end of line, if present
+          chars--;
         }
 
         var s = taker.take(chars);
@@ -223,19 +168,19 @@ function getTXTFromAtext(pad, atext, authorColors)
       } // end iteration over spans in line
 
       var tags2close = [];
-      for (var i = propVals.length - 1; i >= 0; i--)
-      {
-        if (propVals[i])
-        {
+      for (var i = propVals.length - 1; i >= 0; i--) {
+        if (propVals[i]) {
           tags2close.push(i);
           propVals[i] = false;
         }
       }
 
     } // end processNextChars
+
     processNextChars(text.length - idx);
     return(assem.toString());
   } // end getLineHTML
+
   var pieces = [css];
 
   // Need to deal with constraints imposed on HTML lists; can
@@ -245,42 +190,38 @@ function getTXTFromAtext(pad, atext, authorColors)
   // so we want to do something reasonable there.  We also
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
-  for (var i = 0; i < textLines.length; i++)
-  {
+  for (var i = 0; i < textLines.length; i++) {
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineTXT(line.text, line.aline);
-    if(line.listTypeName == "bullet"){
+
+    if (line.listTypeName == "bullet") {
       lineContent = "* " + lineContent; // add a bullet
     }
-    if(line.listLevel > 0){
-      for (var j = line.listLevel - 1; j >= 0; j--){
+
+    if (line.listLevel > 0) {
+      for (var j = line.listLevel - 1; j >= 0; j--) {
         pieces.push('\t');
       }
-      if(line.listTypeName == "number"){
+
+      if (line.listTypeName == "number") {
         pieces.push(line.listLevel + ". ");
         // This is bad because it doesn't truly reflect what the user
         // sees because browsers do magic on nested <ol><li>s
       }
+
       pieces.push(lineContent, '\n');
-    }else{
+    } else {
       pieces.push(lineContent, '\n');
     }
   }
 
   return pieces.join('');
 }
+
 exports.getTXTFromAtext = getTXTFromAtext;
 
-exports.getPadTXTDocument = function (padId, revNum, callback)
+exports.getPadTXTDocument = async function(padId, revNum)
 {
-  padManager.getPad(padId, function (err, pad)
-  {
-    if(ERR(err, callback)) return;
-
-    getPadTXT(pad, revNum, function (err, html)
-    {
-      if(ERR(err, callback)) return;
-      callback(null, html);
-    });
-  });
-};
+  let pad = await padManager.getPad(padId);
+  return getPadTXT(pad, revNum);
+}

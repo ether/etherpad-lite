@@ -4,10 +4,10 @@
 			"Metalhead64",
 			"Mklehr",
 			"Nipsky",
-			"Wikinaut",
-			"Thargon",
 			"Predatorix",
-			"Sebastian Wallroth"
+			"Sebastian Wallroth",
+			"Thargon",
+			"Wikinaut"
 		]
 	},
 	"index.newPad": "Neues Pad",
@@ -45,8 +45,6 @@
 	"pad.settings.rtlcheck": "Inhalt von rechts nach links lesen?",
 	"pad.settings.fontType": "Schriftart:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Gemeinsame Ansicht",
 	"pad.settings.language": "Sprache:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Text-Datei oder Dokument hochladen",
@@ -92,6 +90,8 @@
 	"pad.chat": "Unterhaltung",
 	"pad.chat.title": "Den Chat für dieses Pad öffnen.",
 	"pad.chat.loadmessages": "Weitere Nachrichten laden",
+	"pad.chat.stick.title": "Chat an den Bildschirm anheften",
+	"pad.chat.writeMessage.placeholder": "Schreibe hier deine Nachricht",
 	"timeslider.pageTitle": "{{appTitle}} Bearbeitungsverlauf",
 	"timeslider.toolbar.returnbutton": "Zurück zum Pad",
 	"timeslider.toolbar.authors": "Autoren:",

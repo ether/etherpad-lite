@@ -1,145 +1,94 @@
 /*
-  This is a debug tool. It checks all revisions for data corruption
-*/
+ * This is a debug tool. It checks all revisions for data corruption
+ */
 
-if(process.argv.length != 2)
-{
+if (process.argv.length != 2) {
   console.error("Use: node bin/checkAllPads.js");
   process.exit(1);
 }
 
-//initalize the variables
-var db, settings, padManager;
-var npm = require("../src/node_modules/npm");
-var async = require("../src/node_modules/async");
+// load and initialize NPM
+let npm = require('../src/node_modules/npm');
+npm.load({}, async function() {
 
-var Changeset = require("../src/static/js/Changeset");
+  try {
+    // initialize the database
+    let settings = require('../src/node/utils/Settings');
+    let db = require('../src/node/db/DB');
+    await db.init();
 
-async.series([
-  //load npm
-  function(callback) {
-    npm.load({}, callback);
-  },
-  //load modules
-  function(callback) {
-    settings = require('../src/node/utils/Settings');
-    db = require('../src/node/db/DB');
+    // load modules
+    let Changeset = require('../src/static/js/Changeset');
+    let padManager = require('../src/node/db/PadManager');
 
-    //initalize the database
-    db.init(callback);
-  },
-  //load pads
-  function (callback)
-  {
-    padManager = require('../src/node/db/PadManager');
-    
-    padManager.listAllPads(function(err, res)
-    {
-      padIds = res.padIDs;
-      callback(err);
-    });
-  },
-  function (callback)
-  {
-    async.forEach(padIds, function(padId, callback)
-    {
-        padManager.getPad(padId, function(err, pad) {
-            if (err) {
-                callback(err);
-            }
-   
-            //check if the pad has a pool
-            if(pad.pool === undefined )
-            {
-                console.error("[" + pad.id + "] Missing attribute pool");
-                callback();
-                return;
-            }
+    // get all pads
+    let res = await padManager.listAllPads();
 
-            //create an array with key kevisions
-            //key revisions always save the full pad atext
-            var head = pad.getHeadRevisionNumber();
-            var keyRevisions = [];
-            for(var i=0;i<head;i+=100)
-            {
-                keyRevisions.push(i);
-            }
-            
-            //run trough all key revisions
-            async.forEachSeries(keyRevisions, function(keyRev, callback)
-            {
-                //create an array of revisions we need till the next keyRevision or the End
-                var revisionsNeeded = [];
-                for(var i=keyRev;i<=keyRev+100 && i<=head; i++)
-                {
-                    revisionsNeeded.push(i);
-                }
-                
-                //this array will hold all revision changesets
-                var revisions = [];
-                
-                //run trough all needed revisions and get them from the database
-                async.forEach(revisionsNeeded, function(revNum, callback)
-                {
-                    db.db.get("pad:"+pad.id+":revs:" + revNum, function(err, revision)
-                    {
-                        revisions[revNum] = revision;
-                        callback(err);
-                    });
-                }, function(err)
-                {
-                    if(err)
-                    {
-                        callback(err);
-                        return;
-                    }
+    for (let padId of res.padIDs) {
 
-                    //check if the revision exists
-                    if (revisions[keyRev] == null) {
-                        console.error("[" + pad.id + "] Missing revision " + keyRev);
-                        callback();
-                        return;
-                    }
-                    
-                    //check if there is a atext in the keyRevisions
-                    if(revisions[keyRev].meta === undefined || revisions[keyRev].meta.atext === undefined)
-                    {
-                        console.error("[" + pad.id + "] Missing atext in revision " + keyRev);
-                        callback();
-                        return;
-                    }
-                    
-                    var apool = pad.pool;
-                    var atext = revisions[keyRev].meta.atext;
-                    
-                    for(var i=keyRev+1;i<=keyRev+100 && i<=head; i++)
-                    {
-                        try
-                        {
-                            //console.log("[" + pad.id + "] check revision " + i);
-                            var cs = revisions[i].changeset;
-                            atext = Changeset.applyToAText(cs, atext, apool);
-                        }
-                        catch(e)
-                        {
-                            console.error("[" + pad.id + "] Bad changeset at revision " + i + " - " + e.message);
-                            callback();
-                            return;
-                        }
-                    }
-                    
-                    callback();
-                });
-            }, callback);
-        });
-    }, callback);
-  }
-], function (err)
-{
-  if(err) throw err;
-  else 
-  { 
-    console.log("finished");
-    process.exit(0);
+      let pad = await padManager.getPad(padId);
+
+      // check if the pad has a pool
+      if (pad.pool === undefined) {
+        console.error("[" + pad.id + "] Missing attribute pool");
+        continue;
+      }
+
+      // create an array with key kevisions
+      // key revisions always save the full pad atext
+      let head = pad.getHeadRevisionNumber();
+      let keyRevisions = [];
+      for (let rev = 0; rev < head; rev += 100) {
+        keyRevisions.push(rev);
+      }
+
+      // run through all key revisions
+      for (let keyRev of keyRevisions) {
+
+        // create an array of revisions we need till the next keyRevision or the End
+        var revisionsNeeded = [];
+        for (let rev = keyRev ; rev <= keyRev + 100 && rev <= head; rev++) {
+          revisionsNeeded.push(rev);
+        }
+
+        // this array will hold all revision changesets
+        var revisions = [];
+
+        // run through all needed revisions and get them from the database
+        for (let revNum of revisionsNeeded) {
+           let revision = await db.get("pad:" + pad.id + ":revs:" + revNum);
+           revisions[revNum] = revision;
+        }
+
+        // check if the revision exists
+        if (revisions[keyRev] == null) {
+          console.error("[" + pad.id + "] Missing revision " + keyRev);
+          continue;
+        }
+
+        // check if there is a atext in the keyRevisions
+        if (revisions[keyRev].meta === undefined || revisions[keyRev].meta.atext === undefined) {
+          console.error("[" + pad.id + "] Missing atext in revision " + keyRev);
+          continue;
+        }
+
+        let apool = pad.pool;
+        let atext = revisions[keyRev].meta.atext;
+
+        for (let rev = keyRev + 1; rev <= keyRev + 100 && rev <= head; rev++) {
+          try {
+            let cs = revisions[rev].changeset;
+            atext = Changeset.applyToAText(cs, atext, apool);
+          } catch (e) {
+            console.error("[" + pad.id + "] Bad changeset at revision " + i + " - " + e.message);
+          }
+        }
+      }
+      console.log("finished");
+      process.exit(0);
+    }
+  } catch (err) {
+    console.trace(err);
+    process.exit(1);
   }
 });

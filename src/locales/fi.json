@@ -2,19 +2,19 @@
 	"@metadata": {
 		"authors": [
 			"Artnay",
+			"Espeox",
 			"Jl",
 			"Lliehu",
+			"Macofe",
+			"MrTapsa",
 			"Nedergard",
 			"Nike",
+			"Pyscowicz",
+			"Silvonen",
 			"Stryn",
 			"Tomi Toivio",
 			"Veikk0.ma",
-			"VezonThunder",
-			"Macofe",
-			"MrTapsa",
-			"Silvonen",
-			"Espeox",
-			"Pyscowicz"
+			"VezonThunder"
 		]
 	},
 	"index.newPad": "Uusi muistio",
@@ -52,8 +52,6 @@
 	"pad.settings.rtlcheck": "Luetaanko sisältö oikealta vasemmalle?",
 	"pad.settings.fontType": "Fonttityyppi:",
 	"pad.settings.fontType.normal": "normaali",
-	"pad.settings.fontType.monospaced": "tasalevyinen",
-	"pad.settings.globalView": "Yleisnäkymä",
 	"pad.settings.language": "Kieli:",
 	"pad.importExport.import_export": "Tuonti/vienti",
 	"pad.importExport.import": "Lähetä mikä tahansa tekstitiedosto tai asiakirja",
@@ -99,6 +97,8 @@
 	"pad.chat": "Keskustelu",
 	"pad.chat.title": "Avaa keskustelu nykyisestä muistiosta.",
 	"pad.chat.loadmessages": "Lataa lisää viestejä",
+	"pad.chat.stick.title": "Liimaa chatti ruutuun",
+	"pad.chat.writeMessage.placeholder": "Kirjoita viestisi tähän",
 	"timeslider.pageTitle": "{{appTitle}} -aikajana",
 	"timeslider.toolbar.returnbutton": "Palaa muistioon",
 	"timeslider.toolbar.authors": "Tekijät:",

@@ -193,6 +193,16 @@ Called from: src/static/js/timeslider.js
 
 There doesn't appear to be any example available of this particular hook being used, but it gets fired after the timeslider is all set up.
 
+## goToRevisionEvent
+Called from: src/static/js/broadcast.js
+
+Things in context:
+
+1. rev - The newRevision
+
+This hook gets fired both on timeslider load (as timeslider shows a new revision) and when the new revision is showed to a user.
+There doesn't appear to be any example available of this particular hook being used.
+
 ## userJoinOrUpdate
 Called from: src/static/js/pad_userlist.js
 
@@ -209,10 +219,11 @@ Things in context:
 
 1. authorName - The user that wrote this message
 2. author - The authorID of the user that wrote the message
-2. text - the message text
-3. sticky (boolean) - if you want the gritter notification bubble to fade out on its own or just sit there
-3. timestamp - the timestamp of the chat message
-4. timeStr - the timestamp as a formatted string
+3. text - the message text
+4. sticky (boolean) - if you want the gritter notification bubble to fade out on its own or just sit there
+5. timestamp - the timestamp of the chat message
+6. timeStr - the timestamp as a formatted string
+7. duration - for how long in milliseconds should the gritter notification appear (0 to disable)
 
 This hook is called on the client side whenever a chat message is received from the server. It can be used to create different notifications for chat messages.
 
@@ -356,7 +367,7 @@ Called from: src/static/js/ace2_inner.js
 
 Things in context:
 
-1. dynamicCSS - css manger for inner ace
+1. dynamicCSS - css manager for inner ace
 2. outerDynamicCSS - css manager for outer ace
 3. parentDynamicCSS - css manager for parent document
 4. info - author style info

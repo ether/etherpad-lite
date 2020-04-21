@@ -26,13 +26,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve robots.txt
   args.app.get('/robots.txt', function(req, res)
   {
-    var filePath = path.normalize(__dirname + "/../../../static/custom/robots.txt");
+    var filePath = path.join(settings.root, "src", "static", "skins", settings.skinName, "robots.txt");
     res.sendFile(filePath, function(err)
     {
       //there is no custom favicon, send the default robots.txt which dissallows all
       if(err)
       {
-        filePath = path.normalize(__dirname + "/../../../static/robots.txt");
+        filePath = path.join(settings.root, "src", "static", "robots.txt");
         res.sendFile(filePath);
       }
     });
@@ -45,7 +45,24 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     // Or if language cookie doesn't exist
     if (req.cookies.language === undefined)
     {
-      res.cookie('language', settings.padOptions.lang);
+      cookieOptions = {
+        /* req.protocol may be 'https' because either:
+         *
+         * 1. we are directly serving the nodejs application over SSL, using
+         *    the "ssl" options in settings.json
+         *
+         * 2. we are serving the nodejs application in plaintext, but we are
+         *    using a reverse proxy that terminates SSL for us. In this case,
+         *    the user has to set trustProxy = true in settings.json, and thus
+         *    req.protocol will reflect the value of the X-Forwarded-Proto HTTP
+         *    header
+         *
+         * Please note that this will not be compatible with applications being
+         * served over http and https at the same time.
+         */
+        secure: (req.protocol === 'https'),
+      }
+      res.cookie('language', settings.padOptions.lang, cookieOptions);
     }
 
     // The below might break for pads being rewritten
@@ -79,13 +96,14 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve favicon.ico from all path levels except as a pad name
   args.app.get( /\/favicon.ico$/, function(req, res)
   {
-    var filePath = path.normalize(__dirname + "/../../../static/custom/favicon.ico");
+    var filePath = path.join(settings.root, "src", "static", "skins", settings.skinName, "favicon.ico");
+
     res.sendFile(filePath, function(err)
     {
       //there is no custom favicon, send the default favicon
       if(err)
       {
-        filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
+        filePath = path.join(settings.root, "src", "static", "favicon.ico");
         res.sendFile(filePath);
       }
     });

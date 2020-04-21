@@ -17,11 +17,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
+  // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
   var jsServer = new (Yajsml.Server)({
     rootPath: 'javascripts/src/'
-  , rootURI: 'http://localhost:' + settings.port + '/static/js/'
+  , rootURI: 'http://invalid.invalid/static/js/'
   , libraryPath: 'javascripts/lib/'
-  , libraryURI: 'http://localhost:' + settings.port + '/static/plugins/'
+  , libraryURI: 'http://invalid.invalid/static/plugins/'
   , requestURIs: minify.requestURIs // Loop-back is causing problems, this is a workaround.
   });
 
@@ -39,9 +40,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     var clientParts = _(plugins.parts)
       .filter(function(part){ return _(part).has('client_hooks') });
-      
+
     var clientPlugins = {};
-    
+
     _(clientParts).chain()
       .map(function(part){ return part.plugin })
       .uniq()
@@ -49,7 +50,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         clientPlugins[name] = _(plugins.plugins[name]).clone();
         delete clientPlugins[name]['package'];
       });
-      
+
     res.header("Content-Type","application/json; charset=utf-8");
     res.write(JSON.stringify({"plugins": clientPlugins, "parts": clientParts}));
     res.end();

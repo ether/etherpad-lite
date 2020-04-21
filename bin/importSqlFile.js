@@ -1,4 +1,4 @@
-var startTime = new Date().getTime();
+var startTime = Date.now();
 
 require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
 
@@ -73,7 +73,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
 
 function log(str)
 {
-  console.log((new Date().getTime() - startTime)/1000 + "\t" + str);
+  console.log((Date.now() - startTime)/1000 + "\t" + str);
 }
 
 unescape = function(val) {

@@ -1,12 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Acamicamacaraca",
 			"Aktron",
+			"BadDog",
 			"Milicevic01",
-			"Милан Јелисавчић",
-			"Srdjan m",
 			"Obsuser",
-			"Acamicamacaraca"
+			"Srdjan m",
+			"Милан Јелисавчић"
 		]
 	},
 	"index.newPad": "Нови Пад",
@@ -44,8 +45,6 @@
 	"pad.settings.rtlcheck": "Читај садржај с десна на лево?",
 	"pad.settings.fontType": "Врста фонта:",
 	"pad.settings.fontType.normal": "Нормално",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Глобални приказ",
 	"pad.settings.language": "Језик:",
 	"pad.importExport.import_export": "Увоз/извоз",
 	"pad.importExport.import": "Отпремите било коју текстуалну датотеку или документ",
@@ -91,6 +90,8 @@
 	"pad.chat": "Ћаскање",
 	"pad.chat.title": "Отворите ћаскање за овај пад.",
 	"pad.chat.loadmessages": "Учитај више порука",
+	"pad.chat.stick.title": "Залепите ћаскање на екран",
+	"pad.chat.writeMessage.placeholder": "Напишите поруку овде",
 	"timeslider.pageTitle": "{{appTitle}} временска линија",
 	"timeslider.toolbar.returnbutton": "Врати се на пад",
 	"timeslider.toolbar.authors": "Аутори:",

@@ -1,9 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Jopparn",
 			"Lokal Profil",
-			"WikiPhoenix",
-			"Jopparn"
+			"WikiPhoenix"
 		]
 	},
 	"index.newPad": "Nytt block",
@@ -41,8 +41,6 @@
 	"pad.settings.rtlcheck": "Vill du läsa innehållet från höger till vänster?",
 	"pad.settings.fontType": "Typsnitt:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Fast breddsteg",
-	"pad.settings.globalView": "Global vy",
 	"pad.settings.language": "Språk:",
 	"pad.importExport.import_export": "Importera/Exportera",
 	"pad.importExport.import": "Ladda upp textfiler eller dokument",
@@ -88,6 +86,8 @@
 	"pad.chat": "Chatt",
 	"pad.chat.title": "Öppna chatten för detta block.",
 	"pad.chat.loadmessages": "Läs in fler meddelanden",
+	"pad.chat.stick.title": "Fäst chatten på skärmen",
+	"pad.chat.writeMessage.placeholder": "Skriv ditt meddelande här",
 	"timeslider.pageTitle": "{{appTitle}} tidsreglage",
 	"timeslider.toolbar.returnbutton": "Återvänd till blocket",
 	"timeslider.toolbar.authors": "Författare:",

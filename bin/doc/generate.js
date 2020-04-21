@@ -65,7 +65,7 @@ function processIncludes(inputFile, input, cb) {
   console.error(includes);
   var incCount = includes.length;
   if (incCount === 0) cb(null, input);
-  
+
   includes.forEach(function(include) {
     var fname = include.replace(/^@include\s+/, '');
     if (!fname.match(/\.md$/)) fname += '.md';

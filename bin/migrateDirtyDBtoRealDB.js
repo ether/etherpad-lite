@@ -6,12 +6,17 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
   // to work with a real database.  Please make a backup of your dirty.db
   // file before using this script, just to be safe.
 
+  // It might be necessary to run the script using more memory:
+  // `node --max-old-space-size=4096 bin/migrateDirtyDBtoRealDB.js`
+
+
   var settings = require("ep_etherpad-lite/node/utils/Settings");
   var dirty = require("../src/node_modules/dirty")('var/dirty.db');
   var ueberDB = require("../src/node_modules/ueberdb2");
   var log4js = require("../src/node_modules/log4js");
   var dbWrapperSettings = {
       "cache": "0",         // The cache slows things down when you're mostly writing.
+      "writeInterval": 0    // Write directly to the database, don't buffer
   };
   var db = new ueberDB.database(settings.dbType, settings.dbSettings, dbWrapperSettings, log4js.getLogger("ueberDB"));
 

@@ -1,46 +1,63 @@
-/* These CSS rules are included in both the outer and inner ACE iframe.
-   Also see inner.css, included only in the inner one.
+/*
+  These CSS rules are included in both the outer and inner ACE iframe (pad editor)
 */
 
 @import url('./lists_and_indents.css');
 
-html { cursor: text; } /* in Safari, produces text cursor for whole doc (inc. below body) */
-span { cursor: auto; }
+html.inner-editor {
+  height: auto !important;
+  background-color: transparent !important;
+}
+#outerdocbody {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  min-height: 100vh; /* take at least full height */
+}
+#outerdocbody iframe {
+  flex: 1 auto;
+  display: flex;
+  width: 100%;
+}
+#outerdocbody #sidediv {
+  order: -1; /* display it on the first row positionning, i.e. on the left */
+}
 
-::selection {
-  background: #acf;
+/* ACE-PAD Container (i.e. where the text is displayed) */
+#innerdocbody {
+  padding: 10px;
+  overflow: hidden;
+  background-color: white;
 }
-::-moz-selection {
-  background: #acf;
+#innerdocbody, #sidediv {
+  padding-top: 10px; /* Both must have same top padding, so line number are aligned with the rows */
+  padding-bottom: 10px; /* some space when we scroll to the bottom */
 }
 
-a {
-  cursor: pointer !important;
-  white-space:pre-wrap;
+/* --------------------- */
+/* -- BROWSER SUPPORT -- */
+/* --------------------- */
+
+body.mozilla, body.safari {
+  display: table-cell; /* cause "body" area (e.g. where clicks are heard) to grow horizontally with text */
 }
+.safari div {
+  padding-right: 1px; /* prevents the caret from disappearing on the longest line of the doc */
+}
+span { line-height: 125%; }
+
+
+/* -------------- */
+/* -- WRAPPING -- */
+/* -------------- */
 
 body {
-  margin: 0;
   white-space: nowrap;
   word-wrap: normal;
 }
-
-#outerdocbody {
-  background-color: #fff;
-}
-body.grayedout { background-color: #eee !important }
-
-#innerdocbody {
-  font-size: 12px; /* overridden by body.style */
-  font-family:Arial, sans-serif; /* overridden by body.style */
-  line-height: 16px; /* overridden by body.style */
-  background-color: white;
-  color: black;
-}
-
 body.doesWrap {
+  display: block !important;
   /* white-space: pre-wrap; */
-
   /*
     Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret,
     walking around your screen (see #1766).
@@ -53,86 +70,41 @@ body.doesWrap {
   */
   word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
 }
-
 .noprewrap{
   white-space: normal;
 }
-
-body.doesWrap:not(.noprewrap) > div{
+body.doesWrap:not(.noprewrap) > div {
   /* Related to #1766 */
   white-space: pre-wrap;
 }
 
-#innerdocbody {
-  padding-top: 1px; /* important for some reason? */
-  padding-right: 10px;
-  padding-bottom: 8px;
-  padding-left: 1px /* prevents characters from looking chopped off in FF3 -- Removed because it added too much whitespace */;
-  overflow: hidden;
-  /* blank 1x1 gif, so that IE8 doesn't consider the body transparent */
-  background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==);
-}
+
+/* ------------------------------------------ */
+/* -- SIDEDIV (line number, text author..) -- */
+/* ------------------------------------------ */
 
 #sidediv {
   font-size: 11px;
   font-family: monospace;
-  line-height: 16px; /* overridden by sideDiv.style */
-  padding-top: 8px; /* EDIT_BODY_PADDING_TOP */
-  padding-right: 3px; /* LINE_NUMBER_PADDING_RIGHT - 1 */
-  position: absolute;
-  width: 20px; /* MIN_LINEDIV_WIDTH */
-  top: 0;
-  left: 0;
-  cursor: default;
-  color: white;
-}
-
-#sidedivinner {
-  text-align: right;
-}
-
-.sidedivdelayed { /* class set after sizes are set */
-  background-color: #eee;
-  color: #888 !important;
+  padding-right: 5px;
+  padding-left: 12px;
+  background-color: transparent;
   border-right: 1px solid #ccc;
 }
-.sidedivhidden {
-  display: none;
+#sidedivinner {
+  text-align: right;
+  opacity: .9;
 }
-
-#outerdocbody iframe {
-  display: block; /* codemirror says it suppresses bugs */
-  position: relative;
-  left: 32px; /* MIN_LINEDIV_WIDTH + LINE_NUMBER_PADDING_RIGHT + EDIT_BODY_PADDING_LEFT */
-  top: 7px; /* EDIT_BODY_PADDING_TOP - 1*/
-  border: 0;
-  width: 1px; /* changed programmatically */
-  height: 1px; /* changed programmatically */
+#sidediv:not(.sidedivdelayed) { /* before sidediv get initialized, hide text */
+  color: transparent;
 }
-
-#outerdocbody .hotrect {
-  border: 1px solid #999;
-  position: absolute;
+#sidediv.sidedivhidden {
+  /* Do not use display: none to hide the sidediv, otherwise the parent container does not
+       get its height properly calculated by flexboxes */
+  visibility: hidden;
+  width: 0;
+  padding: 0;
 }
-
-/* cause "body" area (e.g. where clicks are heard) to grow horizontally with text */
-body.mozilla, body.safari {
-  display: table-cell;
-}
-
-body.doesWrap {
-  display: block !important;
-}
-
-.safari div {
-  /* prevents the caret from disappearing on the longest line of the doc */
-  padding-right: 1px;
-}
-
-p {
-  margin: 0;
-}
-
 #linemetricsdiv {
   position: absolute;
   left: -1000px;
@@ -142,11 +114,33 @@ p {
   font-size: 12px; /* overridden by lineMetricsDiv.style */
   font-family: monospace; /* overridden by lineMetricsDiv.style */
 }
-
-/* Stops super long lines without being spaces such as aaaaaaaaaaaaaa*100 breaking the editor
-   Commented out because it stops IE from being able to render the document, crazy IE bug is crazy. */
-/*
-.ace-line{
-  overflow:hidden;
+@media (max-width: 720px) {
+  #sidediv {
+    /* Do not use display: none to hide the sidediv, otherwise the parent container does not
+       get its height properly calculated by flexboxes */
+    visibility: hidden;
+    width: 0;
+    padding: 0;
+  }
 }
-*/
+
+
+
+
+/* ----------- */
+/* -- OTHER -- */
+/* ----------- */
+
+::selection {
+  background: #acf;
+}
+::-moz-selection {
+  background: #acf;
+}
+#innerdocbody a {
+  cursor: pointer !important;
+  white-space:pre-wrap;
+}
+body.grayedout {
+  background-color: #eee !important
+}

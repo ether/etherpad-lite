@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Besnik b",
-			"Kosovastar"
+			"Kosovastar",
+			"Liridon"
 		]
 	},
 	"index.newPad": "Bllok i ri",
@@ -40,8 +41,6 @@
 	"pad.settings.rtlcheck": "Të lexohet lënda nga e djathta në të majtë?",
 	"pad.settings.fontType": "Lloj shkronjash:",
 	"pad.settings.fontType.normal": "Normale",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Pamje e Përgjithshme",
 	"pad.settings.language": "Gjuhë:",
 	"pad.importExport.import_export": "Import/Eksport",
 	"pad.importExport.import": "Ngarkoni cilëndo kartelë teksti ose dokument",
@@ -53,10 +52,12 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Mund të importoni vetëm prej formati tekst i thjeshtë ose html. Për veçori më të thelluara importimi, ju lutemi, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">instaloni Abiword-in</a>.",
+	"pad.importExport.abiword.innerHTML": "Mund të importoni vetëm prej formati tekst i thjeshtë ose HTML. Për veçori më të thelluara importimi, ju lutemi, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instaloni Abiword-in</a>.",
 	"pad.modals.connected": "I lidhur.",
 	"pad.modals.reconnecting": "Po rilidheni te blloku juaj…",
 	"pad.modals.forcereconnect": "Rilidhje e detyruar",
+	"pad.modals.reconnecttimer": "Provë për rilidhje pas",
+	"pad.modals.cancel": "Anuloje",
 	"pad.modals.userdup": "Hapur në një tjetër dritare",
 	"pad.modals.userdup.explanation": "Ky bllok duket se gjendet i hapur në më shumë se një dritare shfletuesi në këtë kompjuter.",
 	"pad.modals.userdup.advice": "Rilidhuni që të përdoret kjo dritare.",
@@ -85,6 +86,8 @@
 	"pad.chat": "Fjalosje",
 	"pad.chat.title": "Hapni fjalosjen për këtë bllok.",
 	"pad.chat.loadmessages": "Ngarko më tepër mesazhe",
+	"pad.chat.stick.title": "Ngjit bisedën në ekran",
+	"pad.chat.writeMessage.placeholder": "Shkruajeni mesazhin tuaj këtu",
 	"timeslider.pageTitle": "Rrjedhë kohore e {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Rikthehuni te blloku",
 	"timeslider.toolbar.authors": "Autorë:",

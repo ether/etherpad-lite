@@ -2,9 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Christian List",
+			"Joedalton",
 			"Peter Alberti",
-			"Steenth",
-			"Joedalton"
+			"Saederup92",
+			"Steenth"
 		]
 	},
 	"index.newPad": "Ny Pad",
@@ -42,8 +43,6 @@
 	"pad.settings.rtlcheck": "Læse indhold fra højre mod venstre?",
 	"pad.settings.fontType": "Skrifttype:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Fastbredde",
-	"pad.settings.globalView": "Global visning",
 	"pad.settings.language": "Sprog:",
 	"pad.importExport.import_export": "Import/Eksport",
 	"pad.importExport.import": "Uploade en tekstfil eller dokument",

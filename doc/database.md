@@ -13,7 +13,7 @@ Contains all information about pads
 * **head** - the number of the latest revision
 * **chatHead** - the number of the latest chat entry
 * **public** - flag that disables security for this pad
-* **passwordHash** - string that contains a bcrypt hashed password for this pad
+* **passwordHash** - string that contains a salted sha512 sum of this pad's password
 
 ### pad:$PADID:revs:$REVNUM
 Saves a revision $REVNUM of pad $PADID

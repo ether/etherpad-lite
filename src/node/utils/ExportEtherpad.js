@@ -15,58 +15,48 @@
  */
 
 
-var async = require("async");
-var db = require("../db/DB").db;
-var ERR = require("async-stacktrace");
+let db = require("../db/DB");
 
-exports.getPadRaw = function(padId, callback){
-  async.waterfall([
-  function(cb){
-    db.get("pad:"+padId, cb);
-  },
-  function(padcontent,cb){
-    var records = ["pad:"+padId];
-    for (var i = 0; i <= padcontent.head; i++) {
-      records.push("pad:"+padId+":revs:" + i);
-    }
+exports.getPadRaw = async function(padId) {
 
-    for (var i = 0; i <= padcontent.chatHead; i++) {
-      records.push("pad:"+padId+":chat:" + i);
-    }
+  let padKey = "pad:" + padId;
+  let padcontent = await db.get(padKey);
 
-    var data = {};
-
-    async.forEachSeries(Object.keys(records), function(key, r){
-
-      // For each piece of info about a pad.
-      db.get(records[key], function(err, entry){
-        data[records[key]] = entry;
-
-        // Get the Pad Authors
-        if(entry.pool && entry.pool.numToAttrib){
-          var authors = entry.pool.numToAttrib;
-          async.forEachSeries(Object.keys(authors), function(k, c){
-            if(authors[k][0] === "author"){
-              var authorId = authors[k][1];
-
-              // Get the author info
-              db.get("globalAuthor:"+authorId, function(e, authorEntry){
-                if(authorEntry && authorEntry.padIDs) authorEntry.padIDs = padId;
-                if(!e) data["globalAuthor:"+authorId] = authorEntry;
-              });
-
-            }
-            // console.log("authorsK", authors[k]);
-            c(null);
-          });
-        }
-        r(null); // callback;
-      });
-    }, function(err){
-      cb(err, data);
-    })
+  let records = [ padKey ];
+  for (let i = 0; i <= padcontent.head; i++) {
+    records.push(padKey + ":revs:" + i);
   }
-  ], function(err, data){
-    callback(null, data);
-  });
+
+  for (let i = 0; i <= padcontent.chatHead; i++) {
+    records.push(padKey + ":chat:" + i);
+  }
+
+  let data = {};
+  for (let key of records)  {
+
+    // For each piece of info about a pad.
+    let entry = data[key] = await db.get(key);
+
+    // Get the Pad Authors
+    if (entry.pool && entry.pool.numToAttrib) {
+      let authors = entry.pool.numToAttrib;
+
+      for (let k of Object.keys(authors)) {
+        if (authors[k][0] === "author") {
+          let authorId = authors[k][1];
+
+          // Get the author info
+          let authorEntry = await db.get("globalAuthor:" + authorId);
+          if (authorEntry) {
+            data["globalAuthor:" + authorId] = authorEntry;
+            if (authorEntry.padIDs) {
+              authorEntry.padIDs = padId;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return data;
 }

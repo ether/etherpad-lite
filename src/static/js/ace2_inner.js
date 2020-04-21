@@ -69,12 +69,6 @@ function Ace2Inner(){
   var THE_TAB = '    '; //4
   var MAX_LIST_LEVEL = 16;
 
-  var LINE_NUMBER_PADDING_RIGHT = 4;
-  var LINE_NUMBER_PADDING_LEFT = 4;
-  var MIN_LINEDIV_WIDTH = 20;
-  var EDIT_BODY_PADDING_TOP = 8;
-  var EDIT_BODY_PADDING_LEFT = 8;
-
   var FORMATTING_STYLES = ['bold', 'italic', 'underline', 'strikethrough'];
   var SELECT_BUTTON_CLASS = 'selected';
 
@@ -126,12 +120,6 @@ function Ace2Inner(){
   var doesWrap = true;
   var hasLineNumbers = true;
   var isStyled = true;
-
-  // space around the innermost iframe element
-  var iframePadLeft = MIN_LINEDIV_WIDTH + LINE_NUMBER_PADDING_RIGHT + EDIT_BODY_PADDING_LEFT;
-  var iframePadTop = EDIT_BODY_PADDING_TOP;
-  var iframePadBottom = 0,
-      iframePadRight = 0;
 
   var console = (DEBUG && window.console);
   var documentAttributeManager;
@@ -267,15 +255,9 @@ function Ace2Inner(){
         authorStyle.backgroundColor = bgcolor;
         parentAuthorStyle.backgroundColor = bgcolor;
 
-        // text contrast
-        if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
-        {
-          authorStyle.color = '#ffffff';
-          parentAuthorStyle.color = '#ffffff';
-        }else{
-          authorStyle.color = null;
-          parentAuthorStyle.color = null;
-        }
+        var textColor = colorutils.textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
+        authorStyle.color = textColor;
+        parentAuthorStyle.color = textColor;
 
         // anchor text contrast
         if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.55)
@@ -292,6 +274,7 @@ function Ace2Inner(){
   {
     if ((typeof author) != "string")
     {
+      top.console.error("Going to throw new error, potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
       throw new Error("setAuthorInfo: author (" + author + ") is not a string");
     }
     if (!info)
@@ -625,15 +608,6 @@ function Ace2Inner(){
       });
     }, 0);
 
-    // Chrome can't handle the truth..  If CSS rule white-space:pre-wrap
-    // is true then any paste event will insert two lines..
-    // Sadly this will mean you get a walking Caret in Chrome when clicking on a URL
-    // So this has to be set to pre-wrap ;(
-    // We need to file a bug w/ the Chromium team.
-    if(browser.chrome){
-      $("#innerdocbody").addClass("noprewrap");
-    }
-
   }
 
   function setStyled(newVal)
@@ -763,6 +737,22 @@ function Ace2Inner(){
 
   function setDocAText(atext)
   {
+    if (atext.text === "") {
+      /*
+       * The server is fine with atext.text being an empty string, but the front
+       * end is not, and crashes.
+       *
+       * It is not clear if this is a problem in the server or in the client
+       * code, and this is a client-side hack fix. The underlying problem needs
+       * to be investigated.
+       *
+       * See for reference:
+       * - https://github.com/ether/etherpad-lite/issues/3861
+       */
+      console.warn('atext.text is an empty string(""). Replacing with "\\n". See issue #3861.');
+      atext.text = "\n";
+    }
+
     fastIncorp(8);
 
     var oldLen = rep.lines.totalWidth();
@@ -975,9 +965,8 @@ function Ace2Inner(){
       showsuserselections: setClassPresenceNamed(root, "userSelections"),
       showslinenumbers : function(value){
         hasLineNumbers = !! value;
-        // disable line numbers on mobile devices
-        if (browser.mobile) hasLineNumbers = false;
         setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
+        setClassPresence(sideDiv.parentNode, "sidediv-hidden", !hasLineNumbers);
         fixView();
       },
       grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
@@ -1072,7 +1061,7 @@ function Ace2Inner(){
 
   function now()
   {
-    return (new Date()).getTime();
+    return Date.now();
   }
 
   function newTimeLimit(ms)
@@ -3375,8 +3364,7 @@ function Ace2Inner(){
       {
         try
         {
-          var newWindow = window.open(n.href, '_blank');
-          newWindow.focus();
+          window.open(n.href, '_blank', 'noopener,noreferrer');
         }
         catch (e)
         {
@@ -3680,17 +3668,6 @@ function Ace2Inner(){
       var lineHeight = myselection.focusNode.parentNode.offsetHeight; // line height of populated links
     }else{
       var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
-    }
-
-    var heightOfChatIcon = parent.parent.$('#chaticon').height(); // height of the chat icon button
-    lineHeight = (lineHeight *2) + heightOfChatIcon;
-    var viewport = getViewPortTopBottom();
-    var viewportHeight = viewport.bottom - viewport.top - lineHeight;
-    var relCaretOffsetTop = caretOffsetTop - viewport.top; // relative Caret Offset Top to viewport
-    if (viewportHeight < relCaretOffsetTop){
-      parent.parent.$("#chaticon").css("opacity",".3"); // make chaticon opacity low when user types near it
-    }else{
-      parent.parent.$("#chaticon").css("opacity","1"); // make chaticon opacity back to full (so fully visible)
     }
 
     //dmesg("keyevent type: "+type+", which: "+which);
@@ -4776,70 +4753,7 @@ function Ace2Inner(){
       return;
     }
 
-    function setIfNecessary(obj, prop, value)
-    {
-      if (obj[prop] != value)
-      {
-        obj[prop] = value;
-      }
-    }
-
-    var lineNumberWidth = sideDiv.firstChild.offsetWidth;
-    var newSideDivWidth = lineNumberWidth + LINE_NUMBER_PADDING_LEFT;
-    if (newSideDivWidth < MIN_LINEDIV_WIDTH) newSideDivWidth = MIN_LINEDIV_WIDTH;
-    iframePadLeft = EDIT_BODY_PADDING_LEFT;
-    if (hasLineNumbers) iframePadLeft += newSideDivWidth + LINE_NUMBER_PADDING_RIGHT;
-    setIfNecessary(iframe.style, "left", iframePadLeft + "px");
-    setIfNecessary(sideDiv.style, "width", newSideDivWidth + "px");
-
-    for (var i = 0; i < 2; i++)
-    {
-      var newHeight = root.clientHeight;
-      var newWidth = (browser.msie ? root.createTextRange().boundingWidth : root.clientWidth);
-      var viewHeight = getInnerHeight() - iframePadBottom - iframePadTop;
-      var viewWidth = getInnerWidth() - iframePadLeft - iframePadRight;
-      if (newHeight < viewHeight)
-      {
-        newHeight = viewHeight;
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'auto');
-      }
-      else
-      {
-        if (browser.msie) setIfNecessary(outerWin.document.documentElement.style, 'overflowY', 'scroll');
-      }
-      if (doesWrap)
-      {
-        newWidth = viewWidth;
-      }
-      else
-      {
-        if (newWidth < viewWidth) newWidth = viewWidth;
-      }
-      setIfNecessary(iframe.style, "height", newHeight + "px");
-      setIfNecessary(iframe.style, "width", newWidth + "px");
-      setIfNecessary(sideDiv.style, "height", newHeight + "px");
-    }
-    if (browser.firefox)
-    {
-      if (!doesWrap)
-      {
-        // the body:display:table-cell hack makes mozilla do scrolling
-        // correctly by shrinking the <body> to fit around its content,
-        // but mozilla won't act on clicks below the body.  We keep the
-        // style.height property set to the viewport height (editor height
-        // not including scrollbar), so it will never shrink so that part of
-        // the editor isn't clickable.
-        var body = root;
-        var styleHeight = viewHeight + "px";
-        setIfNecessary(body.style, "height", styleHeight);
-      }
-      else
-      {
-        setIfNecessary(root.style, "height", "");
-      }
-    }
     var win = outerWin;
-    var r = 20;
 
     enforceEditability();
 
@@ -5170,7 +5084,6 @@ function Ace2Inner(){
   {
     var win = outerWin;
     var odoc = outerWin.document;
-    pixelX += iframePadLeft;
     var distInsideLeft = pixelX - win.scrollX;
     var distInsideRight = win.scrollX + getInnerWidth() - pixelX;
     if (distInsideLeft < 0)
@@ -5368,7 +5281,7 @@ function Ace2Inner(){
   function initLineNumbers()
   {
     lineNumbersShown = 1;
-    sideDiv.innerHTML = '<table border="0" cellpadding="0" cellspacing="0" align="right"><tr><td id="sidedivinner" class="sidedivinner"><div>1</div></td></tr></table>';
+    sideDiv.innerHTML = '<div id="sidedivinner" class="sidedivinner"><div>1</div></div>';
     sideDivInner = outerWin.document.getElementById("sidedivinner");
     $(sideDiv).addClass("sidediv");
   }
@@ -5404,7 +5317,7 @@ function Ace2Inner(){
             // didn't do this special case, we would miss out on any top margin
             // included on the first line. The default stylesheet doesn't add
             // extra margins/padding, but plugins might.
-            h = b.nextSibling.offsetTop - window.getComputedStyle(doc.body).getPropertyValue("padding-top");
+            h = b.nextSibling.offsetTop - parseInt(window.getComputedStyle(doc.body).getPropertyValue("padding-top").split('px')[0]);
           } else {
             h = b.nextSibling.offsetTop - b.offsetTop;
           }

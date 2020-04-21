@@ -67,41 +67,39 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   });
 }, 5); //run 5 tests in parrallel
 
-// Firefox
+// 1) Firefox on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
-  , 'version'        : ''
+  , 'version'        : 'latest'
 });
 
-// Chrome
+// 2) Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'googlechrome'
-  , 'version'        : ''
+  , 'version'        : 'latest'
 });
 
-/*
-// IE 8
+// 3) Safari on OSX 10.15
 sauceTestWorker.push({
-    'platform'       : 'Windows 2003'
-  , 'browserName'    : 'iexplore'
-  , 'version'        : '8'
-});
-*/
-
-// IE 9
-sauceTestWorker.push({
-    'platform'       : 'Windows XP'
-  , 'browserName'    : 'iexplore'
-  , 'version'        : '9'
+    'platform'       : 'OS X 10.15'
+  , 'browserName'    : 'safari'
+  , 'version'        : 'latest'
 });
 
-// IE 10
+// 4) IE 10 on Win 8
 sauceTestWorker.push({
-    'platform'       : 'Windows 2012'
+    'platform'       : 'Windows 8'
   , 'browserName'    : 'iexplore'
-  , 'version'        : '10'
+  , 'version'        : '10.0'
+});
+
+// 5) Edge on Win 10
+sauceTestWorker.push({
+    'platform'       : 'Windows 10'
+  , 'browserName'    : 'microsoftedge'
+  , 'version'        : 'latest'
 });
 
 sauceTestWorker.drain = function() {

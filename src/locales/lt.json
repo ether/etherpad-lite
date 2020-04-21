@@ -2,8 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Eitvys200",
-			"Mantak111",
 			"I-svetaines",
+			"Mantak111",
+			"Naktis",
+			"Vogone",
 			"Zygimantus"
 		]
 	},
@@ -42,7 +44,6 @@
 	"pad.settings.rtlcheck": "Skaityti turinį iš dešinės į kairę?",
 	"pad.settings.fontType": "Šrifto tipas:",
 	"pad.settings.fontType.normal": "Normalus",
-	"pad.settings.globalView": "Bendras Vaizdas",
 	"pad.settings.language": "Kalba:",
 	"pad.importExport.import_export": "Importuoti/Eksportuoti",
 	"pad.importExport.import": "Įkelkite bet kokį tekstinį failą arba dokumentą",
@@ -54,10 +55,12 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Atvirasis dokumento formatas)",
-	"pad.importExport.abiword.innerHTML": "Galite importuoti tik iš paprasto teksto ar HTML formato. Dėl išplėstinių importavimo funkcijų prašome <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">įdiegti abiword</a>.",
+	"pad.importExport.abiword.innerHTML": "Galite importuoti tik iš paprasto teksto ar HTML formato. Dėl išplėstinių importavimo funkcijų prašome <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">įdiegti AbiWord</a>.",
 	"pad.modals.connected": "Prisijungta.",
 	"pad.modals.reconnecting": "Iš naujo prisijungiama prie Jūsų bloknoto",
 	"pad.modals.forcereconnect": "Priversti prisijungti iš naujo",
+	"pad.modals.reconnecttimer": "Bandoma vėl prisijungti",
+	"pad.modals.cancel": "Atšaukti",
 	"pad.modals.userdup": "Atidaryta kitame lange",
 	"pad.modals.userdup.explanation": "Šis bloknotas, atrodo yra atidarytas daugiau nei viename šio kompiuterio naršyklės lange.",
 	"pad.modals.userdup.advice": "Prisijunkite iš naujo, kad vietoj to naudotumėte šį langą.",
@@ -86,6 +89,8 @@
 	"pad.chat": "Pokalbiai",
 	"pad.chat.title": "Atverti šio bloknoto pokalbį.",
 	"pad.chat.loadmessages": "Įkrauti daugiau pranešimų",
+	"pad.chat.stick.title": "Priklijuoti pokalbį",
+	"pad.chat.writeMessage.placeholder": "Rašykite savo žinutę čia",
 	"timeslider.pageTitle": "{{appTitle}} Laiko slinkiklis",
 	"timeslider.toolbar.returnbutton": "Grįžti į bloknotą",
 	"timeslider.toolbar.authors": "Autoriai:",

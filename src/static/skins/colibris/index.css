@@ -1,0 +1,83 @@
+#button,
+body,
+form {
+  border: none
+}
+
+body {
+  background: url(images/fond.jpg) center center no-repeat fixed #fff;
+  font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;
+  font-size: 16px;
+  line-height: 1.42857143;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+}
+
+#wrapper {
+  border-top: none;
+  margin-top: 0;
+  padding: 0;
+  background: 0 0;
+  box-shadow: none
+}
+
+#inner {
+  background: transparent;
+  padding-top: 0;
+  width: 350px;
+  max-width: 350px;
+  text-align: center;
+  color:#FFF;
+}
+
+#label {
+  text-shadow: none;
+  color: #FFF;
+  font-weight: normal;
+  text-align: center;
+}
+
+#button {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  text-shadow: none;
+  font-size: 23px;
+  line-height: 1.8;
+  color: #64d29b;
+  background: #586a69;
+  border-radius: 3px;
+  box-shadow: none;
+  height: 53px;
+  border: none;
+  display: block;
+}
+
+
+button[type=submit] {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  left: 305px;
+  color: #64d29b;
+  background: #586a69;
+  border: none;
+  top: 0;
+}
+
+#button:hover,
+button[type=submit]:hover {
+  cursor: pointer;
+  background: #64d29b;
+  border: 2px solid #586a69;
+  color: #586a69;
+}
+
+#padname {
+  height: 38px;
+  max-width: 350px;
+  padding: 0 12px;
+  position: relative;
+}

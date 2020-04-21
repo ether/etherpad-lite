@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Chase me ladies, I'm the Cavalry",
-			"Shirayuki",
 			"Andibing",
-			"HairyFotr"
+			"Cblair91",
+			"Chase me ladies, I'm the Cavalry",
+			"HairyFotr",
+			"Shirayuki"
 		]
 	},
 	"index.newPad": "New Pad",
@@ -42,8 +43,6 @@
 	"pad.settings.rtlcheck": "Read content from right to left?",
 	"pad.settings.fontType": "Font type:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Global View",
 	"pad.settings.language": "Language:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Upload any text file or document",
@@ -89,6 +88,8 @@
 	"pad.chat": "Chat",
 	"pad.chat.title": "Open the chat for this pad.",
 	"pad.chat.loadmessages": "Load more messages",
+	"pad.chat.stick.title": "Stick chat to screen",
+	"pad.chat.writeMessage.placeholder": "Write your message here",
 	"timeslider.pageTitle": "{{appTitle}} Timeslider",
 	"timeslider.toolbar.returnbutton": "Return to pad",
 	"timeslider.toolbar.authors": "Authors:",

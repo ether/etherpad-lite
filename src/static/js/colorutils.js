@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -140,6 +140,14 @@ colorutils.complementary = function(c)
     (inv[1] >= c[1]) ? Math.min(inv[1] * 1.59, 1) : (c[1] * 0.59),
     (inv[2] >= c[2]) ? Math.min(inv[2] * 1.11, 1) : (c[2] * 0.11)
   ];
+}
+
+colorutils.textColorFromBackgroundColor = function(bgcolor, skinName)
+{
+  var white = skinName == 'colibris' ? 'var(--super-light-color)' : '#fff';
+  var black = skinName == 'colibris' ? 'var(--super-dark-color)' : '#222';
+
+  return colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5 ? white : black;
 }
 
 exports.colorutils = colorutils;

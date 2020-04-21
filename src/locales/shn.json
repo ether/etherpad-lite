@@ -1,6 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ninjastrikers",
+			"Saimawnkham",
 			"Saosukham"
 		]
 	},
@@ -38,7 +40,6 @@
 	"pad.settings.linenocheck": "တူဝ်လိၵ်ႈႁေႈႁၢႆး",
 	"pad.settings.rtlcheck": "လူၵႂၢမ်းၼၢမ်း တႄႇၶႂႃတေႃႇသၢႆႉ",
 	"pad.settings.fontType": "ၾွၼ်ႉတူဝ်လိၵ်ႈ",
-	"pad.settings.globalView": "ဝိဝ်းတင်းလူၵ်ႈ",
 	"pad.settings.language": "ၽႃႇသႃႇၵႂၢမ်း:",
 	"pad.importExport.import_export": "သူင်ႇၶဝ်/သူင်ႇဢွၵ်ႇ",
 	"pad.importExport.import": "လူတ်ႇၶိုၼ်ႈ ၾၢႆႇလိၵ်ႈၵမ်ႈၽွင်ႈ ဢမ်ႇၼၼ် ပွင်ႈလိၵ်ႈ",
@@ -50,10 +51,12 @@
 	"pad.importExport.exportword": "မၢႆႇၶရူဝ်ႇသွပ်ႉဝၢတ်ႉ",
 	"pad.importExport.exportpdf": "ၽီႇတီႇဢႅပ်ႉၾ်",
 	"pad.importExport.exportopen": "ဢူဝ်တီႇဢႅပ်ႉၾ် (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "ၸဝ်ႈၵဝ်ႇၸၢင်ႈလုၵ်ႉတီႈ လိၵ်ႈပဝ်ႇသေ သူင်ႇၶဝ်ႈၵႂႃႇ ဢမ်ႇၼၼ် ပိူင်လၢႆႈ HTML. ပုၼ်ႈတႃႇ ၸိူဝ်းပိူင်မႂ်ႇ ဢၼ်သူင်ႇၶဝ်ႈမႃးၼၼ်ႉ ၶွပ်ႈၸႂ်သေ <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
+	"pad.importExport.abiword.innerHTML": "ၸဝ်ႈၵဝ်ႇတေ ၸၢင်ႈလုၵ်ႉတီႈ တူဝ်လိၵ်ႈလွၼ်ႉလွၼ်ႉ ဢမ်ႇၼၼ် HTML သေ သူင်ႇၶဝ်ႈၵႂႃႇၵူၺ်း။ တွၼ်ႈတႃႇ လၢႆးၵၢၼ်သူင်ႇၶဝ်ႈၶိုၵ်ႉတွၼ်းတၢင်ႇၸိူဝ်းၼၼ်ႉ ၶႅၼ်းတေႃႈ <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">ဢူၼ်းသႂ်ႇ AbiWord</a>.",
 	"pad.modals.connected": "ၵွင်ႉသၢၼ်ယဝ်ႉ",
 	"pad.modals.reconnecting": "ၶိုၼ်းၵွင်ႉသၢၼ်ၸူး ၽႅတ်ႉၸဝ်ႈၵဝ်ႇယူႇ",
 	"pad.modals.forcereconnect": "တဵၵ်းၸႂ်ႉ ၶိုၼ်းၵွင်ႉသၢၼ်",
+	"pad.modals.reconnecttimer": "ၶတ်းၸႂ်တူၺ်း တႃႇၶိုၼ်းၵွင်ႉသိုပ်ႇၸူး",
+	"pad.modals.cancel": "ဢမ်ႇႁဵတ်း",
 	"pad.modals.userdup": "ပိုတ်ႇတမ်ႈတီႈ ၼႃႈတူမႂ်ႇ",
 	"pad.modals.userdup.explanation": "တမ်ႈတီႈၼႂ်းၶွမ်းတၢင်ႇဢၼ်ၼၼ်ႉ ၽႅတ်ႉဢၼ်ၼႆႉ လႅပ်ႉပိုတ်ႇဝႆႉ တမ်ႈတီႈ ပရၢဝ်ႇသႃႇတၢင်ႇတီႈယူႇ",
 	"pad.modals.userdup.advice": "ၶိုၼ်းၵွင်ႉသၢၼ်တၢင် တမ်ႈတီႈ ဝိၼ်းတူဝ်းၼႆႉ",
@@ -67,6 +70,7 @@
 	"pad.modals.slowcommit.explanation": "သႃႇဝႃႇ ဢမ်ႇတွပ်ႇပၼ်",
 	"pad.modals.slowcommit.cause": "ၼႆႉပူပ်ႉၺႃး ပၼ်ႁႃ ၵိုၵ်းလူၺ်ႈ သၢႆၼႅင်ႈၵွင်ႉသၢၼ်",
 	"pad.modals.badChangeset.explanation": "ၶေႃႈထတ်း ဢၼ်ၸဝ်ႈၵဝ်ႇႁဵတ်းၼၼ်ႉ မၼ်းဢမ်ႇႁူမ်ႈၶဝ်ႈၶႂၢင်ႇ ၸွမ်းၼင်ႇ သႃႇဝႃႇဢၼ် ၸၼ်ထိင်းဝႆႉ",
+	"pad.modals.badChangeset.cause": "ၼႆႉမၼ်းၸၢင်ႈပဵၼ်ယွၼ်ႉပိူဝ်ႈ လွင်ႈၵုမ်းၵၢၼ်သႃႇပိူဝ်ႇ ၽိတ်းပိူင်ႈဝႆႉ ဢမ်ႇၼၼ် ပဵၼ်ယွၼ်ႉလွင်ႈဢၼ်ဢမ်ႇမုင်ႈမွင်းဝႆႉ။ သင်ၸိူဝ်ႉဝႃႈ ၸဝ်ႈၵဝ်ႇယိၼ်းဝႃႈပဵၼ်လွင်ႈၽိတ်းပိူင်ႈၼႆ ၶႅၼ်းတေႃႈၵပ်းသိုပ်ႇၸူးတင်း ၽူႈၵုမ်းၵၢၼ် ၵၢၼ်ၸွႆႈသၢင်ႈလႄႈ။ ၶိုၼ်းၶတ်းၸႂ်ၵွင်ႉသိုပ်ႇသေ တွၼ်ႈတႃႇ သိုပ်ႇႁဵတ်းလွင်ႈမႄးထတ်း။",
 	"pad.modals.corruptPad.explanation": "ၽႅတ်ႉဢၼ်ၸဝ်ႈၵဝ်ႇပေႃႉၼၼ်ႉ ၶဝ်ႈၽိတ်းဝႆႉ",
 	"pad.modals.corruptPad.cause": "ဢၼ်ၼႆႉ သႃႇဝႃႇဢၼ်ၸၼ်ထိင်းမၼ်း ၽိတ်းဝႆႉ ဢမ်ႇၼၼ် ဢမ်ႇမုင်ႈမွင်းသေ ၽိတ်းပိူင်ႈဝႆႉယဝ်ႉ။ ၶႅၼ်းတေႃႈ ၵပ်းသိုပ်ႇတမ်ႈတီႈ ၽူႈၵုမ်းၵၢၼ်.",
 	"pad.modals.deleted": "ယႃႉ",
@@ -103,7 +107,7 @@
 	"timeslider.month.august": "ဢေႃးၵၢတ်ႉ",
 	"timeslider.month.september": "သႅပ်ႉထိမ်ႇပႃႇ",
 	"timeslider.month.october": "ဢွၵ်ႇထူဝ်ႇပႃႇ",
-	"timeslider.month.november": "ၼူဝ်ႇ​ဝႅမ်ႇ​ပႃႇ",
+	"timeslider.month.november": "ၼူဝ်ႇဝႅမ်ႇပႃႇ",
 	"timeslider.month.december": "တီႇသႅမ်ႇပႃႇ",
 	"timeslider.unnamedauthors": "{{num}} ဢမ်ႇသႂ်ႇၸိုဝ်ႈ {[plural(num) ၼိုင်ႈ: ၽူႈတႅမ်ႈလိၵ်ႈ, တၢင်ႇၸိူဝ်း: ၽူႈတႅမ်ႈလိၵ်ႈၶဝ် ]}",
 	"pad.savedrevs.marked": "ဢၼ်မႄးဝႆႉၼႆႉ ယၢမ်းလဵဝ် ၶိုၼ်းမႄး ၵဵပ်းသိမ်းဝႆႉ ၸိူင်ႉၼင်ႇဢၼ်ၼိုင်ႈ",

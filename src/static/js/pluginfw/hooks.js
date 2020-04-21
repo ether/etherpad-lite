@@ -78,7 +78,7 @@ exports.callAll = function (hook_name, args) {
   }
 }
 
-exports.aCallAll = function (hook_name, args, cb) {
+function aCallAll(hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
   if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
@@ -93,6 +93,19 @@ exports.aCallAll = function (hook_name, args, cb) {
   );
 }
 
+/* return a Promise if cb is not supplied */
+exports.aCallAll = function (hook_name, args, cb) {
+  if (cb === undefined) {
+    return new Promise(function(resolve, reject) {
+      aCallAll(hook_name, args, function(err, res) {
+	return err ? reject(err) : resolve(res);
+      });
+    });
+  } else {
+    return aCallAll(hook_name, args, cb);
+  }
+}
+
 exports.callFirst = function (hook_name, args) {
   if (!args) args = {};
   if (exports.plugins.hooks[hook_name] === undefined) return [];
@@ -101,7 +114,7 @@ exports.callFirst = function (hook_name, args) {
   });
 }
 
-exports.aCallFirst = function (hook_name, args, cb) {
+function aCallFirst(hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
   if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
@@ -114,6 +127,19 @@ exports.aCallFirst = function (hook_name, args, cb) {
   );
 }
 
+/* return a Promise if cb is not supplied */
+exports.aCallFirst = function (hook_name, args, cb) {
+  if (cb === undefined) {
+    return new Promise(function(resolve, reject) {
+      aCallFirst(hook_name, args, function(err, res) {
+	return err ? reject(err) : resolve(res);
+      });
+    });
+  } else {
+    return aCallFirst(hook_name, args, cb);
+  }
+}
+
 exports.callAllStr = function(hook_name, args, sep, pre, post) {
   if (sep == undefined) sep = '';
   if (pre == undefined) pre = '';
@@ -124,4 +150,30 @@ exports.callAllStr = function(hook_name, args, sep, pre, post) {
     newCallhooks[i] = pre + callhooks[i] + post;
   }
   return newCallhooks.join(sep || "");
+}
+
+/*
+ * Returns an array containing the names of the installed client-side plugins
+ *
+ * If no client-side plugins are installed, returns an empty array.
+ * Duplicate names are always discarded.
+ *
+ * A client-side plugin is a plugin that implements at least one client_hook
+ *
+ * EXAMPLE:
+ *   No plugins:   []
+ *   Some plugins: [ 'ep_adminpads', 'ep_add_buttons', 'ep_activepads' ]
+ */
+exports.clientPluginNames = function() {
+  if (!(exports.plugins)) {
+    return [];
+  }
+
+  var client_plugin_names = _.uniq(
+    exports.plugins.parts
+      .filter(function(part) { return part.hasOwnProperty('client_hooks'); })
+      .map(function(part) { return 'plugin-' + part['plugin']; })
+  );
+
+  return client_plugin_names;
 }

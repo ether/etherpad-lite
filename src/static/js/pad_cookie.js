@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -82,7 +82,7 @@ var padcookie = (function()
       alreadyWarnedAboutNoCookies = true;
     }
   }
-  
+
   function isHttpsScheme() {
     return window.location.protocol == "https:";
   }

@@ -19,169 +19,122 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var exporthtml = require("../utils/ExportHtml");
 var exporttxt = require("../utils/ExportTxt");
 var exportEtherpad = require("../utils/ExportEtherpad");
-var async = require("async");
 var fs = require("fs");
 var settings = require('../utils/Settings');
 var os = require('os');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var TidyHtml = require('../utils/TidyHtml');
+const util = require("util");
 
-var convertor = null;
+const fsp_writeFile = util.promisify(fs.writeFile);
+const fsp_unlink = util.promisify(fs.unlink);
 
-//load abiword only if its enabled
-if(settings.abiword != null)
+let convertor = null;
+
+// load abiword only if it is enabled
+if (settings.abiword != null) {
   convertor = require("../utils/Abiword");
+}
 
 // Use LibreOffice if an executable has been defined in the settings
-if(settings.soffice != null)
+if (settings.soffice != null) {
   convertor = require("../utils/LibreOffice");
-
-var tempDirectory = "/tmp";
-
-//tempDirectory changes if the operating system is windows
-if(os.type().indexOf("Windows") > -1)
-{
-  tempDirectory = process.env.TEMP;
 }
+
+const tempDirectory = os.tmpdir();
 
 /**
  * do a requested export
  */
-exports.doExport = function(req, res, padId, type)
+async function doExport(req, res, padId, type)
 {
   var fileName = padId;
 
   // allow fileName to be overwritten by a hook, the type type is kept static for security reasons
-  hooks.aCallFirst("exportFileName", padId,
-    function(err, hookFileName){
-      // if fileName is set then set it to the padId, note that fileName is returned as an array.
-      if(hookFileName.length) fileName = hookFileName;
+  let hookFileName = await hooks.aCallFirst("exportFileName", padId);
 
-      //tell the browser that this is a downloadable file
-      res.attachment(fileName + "." + type);
+  // if fileName is set then set it to the padId, note that fileName is returned as an array.
+  if (hookFileName.length) {
+    fileName = hookFileName;
+  }
 
-      //if this is a plain text export, we can do this directly
-      // We have to over engineer this because tabs are stored as attributes and not plain text
-      if(type == "etherpad"){
-        exportEtherpad.getPadRaw(padId, function(err, pad){
-          if(!err){
-            res.send(pad);
-            // return;
-          }
-        });
-      }
-      else if(type == "txt")
-      {
-        exporttxt.getPadTXTDocument(padId, req.params.rev, function(err, txt)
-        {
-          if(!err) {
-            res.send(txt);
-          }
-        });
-      }
-      else
-      {
-        var html;
-        var randNum;
-        var srcFile, destFile;
+  // tell the browser that this is a downloadable file
+  res.attachment(fileName + "." + type);
 
-        async.series([
-          //render the html document
-          function(callback)
-          {
-            exporthtml.getPadHTMLDocument(padId, req.params.rev, function(err, _html)
-            {
-              if(ERR(err, callback)) return;
-              html = _html;
-              callback();
-            });
-          },
-          //decide what to do with the html export
-          function(callback)
-          {
-            //if this is a html export, we can send this from here directly
-            if(type == "html")
-            {
-              // do any final changes the plugin might want to make
-              hooks.aCallFirst("exportHTMLSend", html, function(err, newHTML){
-                if(newHTML.length) html = newHTML;
-                res.send(html);
-                callback("stop");
-              });
-            }
-            else //write the html export to a file
-            {
-              randNum = Math.floor(Math.random()*0xFFFFFFFF);
-              srcFile = tempDirectory + "/etherpad_export_" + randNum + ".html";
-              fs.writeFile(srcFile, html, callback);
-            }
-          },
+  // if this is a plain text export, we can do this directly
+  // We have to over engineer this because tabs are stored as attributes and not plain text
+  if (type === "etherpad") {
+    let pad = await exportEtherpad.getPadRaw(padId);
+    res.send(pad);
+  } else if (type === "txt") {
+    let txt = await exporttxt.getPadTXTDocument(padId, req.params.rev);
+    res.send(txt);
+  } else {
+    // render the html document
+    let html = await exporthtml.getPadHTMLDocument(padId, req.params.rev);
 
-          // Tidy up the exported HTML
-          function(callback)
-          {
-            //ensure html can be collected by the garbage collector
-            html = null;
+    // decide what to do with the html export
 
-            TidyHtml.tidy(srcFile, callback);
-          },
-
-          //send the convert job to the convertor (abiword, libreoffice, ..)
-          function(callback)
-          {
-            destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
-
-            // Allow plugins to overwrite the convert in export process
-            hooks.aCallAll("exportConvert", {srcFile: srcFile, destFile: destFile, req: req, res: res}, function(err, result){
-              if(!err && result.length > 0){
-                // console.log("export handled by plugin", destFile);
-                handledByPlugin = true;
-                callback();
-              }else{
-                convertor.convertFile(srcFile, destFile, type, callback);
-              }
-            });
-
-          },
-          //send the file
-          function(callback)
-          {
-            res.sendFile(destFile, null, callback);
-          },
-          //clean up temporary files
-          function(callback)
-          {
-            async.parallel([
-              function(callback)
-              {
-                fs.unlink(srcFile, callback);
-              },
-              function(callback)
-              {
-                //100ms delay to accomidate for slow windows fs
-                if(os.type().indexOf("Windows") > -1)
-                {
-                  setTimeout(function()
-                  {
-                    fs.unlink(destFile, callback);
-                  }, 100);
-                }
-                else
-                {
-                  fs.unlink(destFile, callback);
-                }
-              }
-            ], callback);
-          }
-        ], function(err)
-        {
-          if(err && err != "stop") ERR(err);
-        })
-      }
+    // if this is a html export, we can send this from here directly
+    if (type === "html") {
+      // do any final changes the plugin might want to make
+      let newHTML = await hooks.aCallFirst("exportHTMLSend", html);
+      if (newHTML.length) html = newHTML;
+      res.send(html);
+      throw "stop";
     }
-  );
-};
+
+    // else write the html export to a file
+    let randNum = Math.floor(Math.random()*0xFFFFFFFF);
+    let srcFile = tempDirectory + "/etherpad_export_" + randNum + ".html";
+    await fsp_writeFile(srcFile, html);
+
+    // Tidy up the exported HTML
+    // ensure html can be collected by the garbage collector
+    html = null;
+    await TidyHtml.tidy(srcFile);
+
+    // send the convert job to the convertor (abiword, libreoffice, ..)
+    let destFile = tempDirectory + "/etherpad_export_" + randNum + "." + type;
+
+    // Allow plugins to overwrite the convert in export process
+    let result = await hooks.aCallAll("exportConvert", { srcFile, destFile, req, res });
+    if (result.length > 0) {
+      // console.log("export handled by plugin", destFile);
+      handledByPlugin = true;
+    } else {
+      // @TODO no Promise interface for convertors (yet)
+      await new Promise((resolve, reject) => {
+        convertor.convertFile(srcFile, destFile, type, function(err) {
+          err ?  reject("convertFailed") : resolve();
+        });
+      });
+    }
+
+    // send the file
+    let sendFile = util.promisify(res.sendFile);
+    await res.sendFile(destFile, null);
+
+    // clean up temporary files
+    await fsp_unlink(srcFile);
+
+    // 100ms delay to accommodate for slow windows fs
+    if (os.type().indexOf("Windows") > -1) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    await fsp_unlink(destFile);
+  }
+}
+
+exports.doExport = function(req, res, padId, type)
+{
+  doExport(req, res, padId, type).catch(err => {
+    if (err !== "stop") {
+      throw err;
+    }
+  });
+}

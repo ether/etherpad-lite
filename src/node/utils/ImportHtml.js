@@ -19,7 +19,7 @@ var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
 var cheerio = require("cheerio");
 
-function setPadHTML(pad, html, callback)
+exports.setPadHTML = function(pad, html)
 {
   var apiLogger = log4js.getLogger("ImportHtml");
 
@@ -36,19 +36,22 @@ function setPadHTML(pad, html, callback)
   // Convert a dom tree into a list of lines and attribute liens
   // using the content collector object
   var cc = contentcollector.makeContentCollector(true, null, pad.pool);
-  try{ // we use a try here because if the HTML is bad it will blow up
+  try {
+    // we use a try here because if the HTML is bad it will blow up
     cc.collectContent(doc);
-  }catch(e){
+  } catch(e) {
     apiLogger.warn("HTML was not properly formed", e);
-    return callback(e); // We don't process the HTML because it was bad..
+
+    // don't process the HTML because it was bad
+    throw e;
   }
 
   var result = cc.finish();
 
   apiLogger.debug('Lines:');
+
   var i;
-  for (i = 0; i < result.lines.length; i += 1)
-  {
+  for (i = 0; i < result.lines.length; i++) {
     apiLogger.debug('Line ' + (i + 1) + ' text: ' + result.lines[i]);
     apiLogger.debug('Line ' + (i + 1) + ' attributes: ' + result.lineAttribs[i]);
   }
@@ -59,18 +62,15 @@ function setPadHTML(pad, html, callback)
   apiLogger.debug(newText);
   var newAttribs = result.lineAttribs.join('|1+1') + '|1+1';
 
-  function eachAttribRun(attribs, func /*(startInNewText, endInNewText, attribs)*/ )
-  {
+  function eachAttribRun(attribs, func /*(startInNewText, endInNewText, attribs)*/ ) {
     var attribsIter = Changeset.opIterator(attribs);
     var textIndex = 0;
     var newTextStart = 0;
     var newTextEnd = newText.length;
-    while (attribsIter.hasNext())
-    {
+    while (attribsIter.hasNext()) {
       var op = attribsIter.next();
       var nextIndex = textIndex + op.chars;
-      if (!(nextIndex <= newTextStart || textIndex >= newTextEnd))
-      {
+      if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
         func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
       }
       textIndex = nextIndex;
@@ -81,17 +81,14 @@ function setPadHTML(pad, html, callback)
   var builder = Changeset.builder(1);
 
   // assemble each line into the builder
-  eachAttribRun(newAttribs, function(start, end, attribs)
-  {
+  eachAttribRun(newAttribs, function(start, end, attribs) {
     builder.insert(newText.substring(start, end), attribs);
   });
 
   // the changeset is ready!
   var theChangeset = builder.toString();
+
   apiLogger.debug('The changeset: ' + theChangeset);
   pad.setText("\n");
   pad.appendRevision(theChangeset);
-  callback(null);
 }
-
-exports.setPadHTML = setPadHTML;

@@ -68,7 +68,7 @@ ButtonsGroup.prototype.addButton = function (button) {
 };
 
 ButtonsGroup.prototype.render = function () {
-  if (this.buttons.length == 1) {
+  if (this.buttons && this.buttons.length == 1) {
     this.buttons[0].grouping = "";
   }
   else {
@@ -80,7 +80,7 @@ ButtonsGroup.prototype.render = function () {
   }
 
   return _.map(this.buttons, function (btn) {
-    return btn.render();
+    if(btn) return btn.render();
   }).join("\n");
 };
 
@@ -90,11 +90,16 @@ Button = function (attributes) {
 
 Button.load = function (btnName) {
   var button = module.exports.availableButtons[btnName];
-  if (button.constructor === Button || button.constructor === SelectButton) {
-    return button;
-  }
-  else {
-    return new Button(button);
+  try{
+    if (button.constructor === Button || button.constructor === SelectButton) {
+      return button;
+    }
+    else {
+      return new Button(button);
+    }
+  }catch(e){
+    console.warn("Error loading button", btnName);
+    return false;
   }
 };
 
@@ -116,7 +121,7 @@ _.extend(Button.prototype, {
 
 
 
-SelectButton = function (attributes) {
+var SelectButton = function (attributes) {
   this.attributes = attributes;
   this.options = [];
 };
@@ -245,15 +250,35 @@ module.exports = {
   selectButton: function (attributes) {
     return new SelectButton(attributes);
   },
-  menu: function (buttons, isReadOnly) {
-    if(isReadOnly){
+
+  /*
+   * Valid values for whichMenu: 'left' | 'right' | 'timeslider-right'
+   * Valid values for page:      'pad'  | 'timeslider'
+   */
+  menu: function (buttons, isReadOnly, whichMenu, page) {
+    if (isReadOnly) {
       // The best way to detect if it's the left editbar is to check for a bold button
-      if(buttons[0].indexOf("bold") !== -1){
+      if (buttons[0].indexOf("bold") !== -1) {
         // Clear all formatting buttons
-        buttons = []
-      }else{
+        buttons = [];
+      } else {
         // Remove Save Revision from the right menu
         removeItem(buttons[0],"savedrevision");
+      }
+    } else {
+      /*
+       * This pad is not read only
+       *
+       * Add back the savedrevision button (the "star") if is not already there,
+       * but only on the right toolbar, and only if we are showing a pad (dont't
+       * do it in the timeslider).
+       *
+       * This is a quick fix for #3702 (and subsequent issue #3767): it was
+       * sufficient to visit a single read only pad to cause the disappearence
+       * of the star button from all the pads.
+       */
+      if ((buttons[0].indexOf("savedrevision") === -1) && (whichMenu === "right") && (page === "pad")) {
+        buttons[0].push("savedrevision");
       }
     }
 

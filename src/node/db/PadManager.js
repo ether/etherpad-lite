@@ -18,12 +18,11 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
 var Pad = require("../db/Pad").Pad;
-var db = require("./DB").db;
+var db = require("./DB");
 
-/** 
+/**
  * A cache of all loaded Pads.
  *
  * Provides "get" and "set" functions,
@@ -35,12 +34,11 @@ var db = require("./DB").db;
  * that's defined somewhere more sensible.
  */
 var globalPads = {
-    get: function (name) { return this[':'+name]; },
-    set: function (name, value) 
-    {
+    get: function(name) { return this[':'+name]; },
+    set: function(name, value) {
       this[':'+name] = value;
     },
-    remove: function (name) {
+    remove: function(name) {
       delete this[':'+name];
     }
 };
@@ -50,186 +48,148 @@ var globalPads = {
  *
  * Updated without db access as new pads are created/old ones removed.
  */
-var padList = {
-  list: [],
-  sorted : false,
+let padList = {
+  list: new Set(),
+  cachedList: undefined,
   initiated: false,
-  init: function(cb)
-  {
-    db.findKeys("pad:*", "*:*:*", function(err, dbData)
-    {
-      if(ERR(err, cb)) return;
-      if(dbData != null){
-        padList.initiated = true
-        dbData.forEach(function(val){
-          padList.addPad(val.replace(/pad:/,""),false);
-        });
-        cb && cb()
+  init: async function() {
+    let dbData = await db.findKeys("pad:*", "*:*:*");
+
+    if (dbData != null) {
+      this.initiated = true;
+
+      for (let val of dbData) {
+        this.addPad(val.replace(/^pad:/,""), false);
       }
-    });
+    }
+
     return this;
   },
-  load: function(cb) {
-    if(this.initiated) cb && cb()
-    else this.init(cb)
+  load: async function() {
+    if (!this.initiated) {
+      return this.init();
+    }
+
+    return this;
   },
   /**
    * Returns all pads in alphabetical order as array.
    */
-  getPads: function(cb){
-    this.load(function() {
-      if(!padList.sorted){
-        padList.list = padList.list.sort();
-        padList.sorted = true;
-      }
-      cb && cb(padList.list);
-    })
+  getPads: async function() {
+    await this.load();
+
+    if (!this.cachedList) {
+      this.cachedList = Array.from(this.list).sort();
+    }
+
+    return this.cachedList;
   },
-  addPad: function(name)
-  {
-    if(!this.initiated) return;
-    if(this.list.indexOf(name) == -1){
-      this.list.push(name);
-      this.sorted=false;
+  addPad: function(name) {
+    if (!this.initiated) return;
+
+    if (!this.list.has(name)) {
+      this.list.add(name);
+      this.cachedList = undefined;
     }
   },
-  removePad: function(name)
-  {
-    if(!this.initiated) return;
-    var index = this.list.indexOf(name);
-    if(index>-1){
-      this.list.splice(index,1);
-      this.sorted=false;
+  removePad: function(name) {
+    if (!this.initiated) return;
+
+    if (this.list.has(name)) {
+      this.list.delete(name);
+      this.cachedList = undefined;
     }
   }
 };
-//initialises the allknowing data structure
+
+// initialises the all-knowing data structure
+
+/**
+ * Returns a Pad Object with the callback
+ * @param id A String with the id of the pad
+ * @param {Function} callback
+ */
+exports.getPad = async function(id, text)
+{
+  // check if this is a valid padId
+  if (!exports.isValidPadId(id)) {
+    throw new customError(id + " is not a valid padId", "apierror");
+  }
+
+  // check if this is a valid text
+  if (text != null) {
+    // check if text is a string
+    if (typeof text != "string") {
+      throw new customError("text is not a string", "apierror");
+    }
+
+    // check if text is less than 100k chars
+    if (text.length > 100000) {
+      throw new customError("text must be less than 100k chars", "apierror");
+    }
+  }
+
+  let pad = globalPads.get(id);
+
+  // return pad if it's already loaded
+  if (pad != null) {
+    return pad;
+  }
+
+  // try to load pad
+  pad = new Pad(id);
+
+  // initalize the pad
+  await pad.init(text);
+  globalPads.set(id, pad);
+  padList.addPad(id);
+
+  return pad;
+}
+
+exports.listAllPads = async function()
+{
+  let padIDs = await padList.getPads();
+
+  return { padIDs };
+}
+
+// checks if a pad exists
+exports.doesPadExist = async function(padId)
+{
+  let value = await db.get("pad:" + padId);
+
+  return (value != null && value.atext);
+}
+
+// alias for backwards compatibility
+exports.doesPadExists = exports.doesPadExist;
 
 /**
  * An array of padId transformations. These represent changes in pad name policy over
  * time, and allow us to "play back" these changes so legacy padIds can be found.
  */
-var padIdTransforms = [
+const padIdTransforms = [
   [/\s+/g, '_'],
   [/:+/g, '_']
 ];
 
-/**
- * Returns a Pad Object with the callback
- * @param id A String with the id of the pad
- * @param {Function} callback 
- */
-exports.getPad = function(id, text, callback)
-{    
-  //check if this is a valid padId
-  if(!exports.isValidPadId(id))
-  {
-    callback(new customError(id + " is not a valid padId","apierror"));
-    return;
-  }
-  
-  //make text an optional parameter
-  if(typeof text == "function")
-  {
-    callback = text;
-    text = null;
-  }
-  
-  //check if this is a valid text
-  if(text != null)
-  {
-    //check if text is a string
-    if(typeof text != "string")
-    {
-      callback(new customError("text is not a string","apierror"));
-      return;
-    }
-    
-    //check if text is less than 100k chars
-    if(text.length > 100000)
-    {
-      callback(new customError("text must be less than 100k chars","apierror"));
-      return;
-    }
-  }
-  
-  var pad = globalPads.get(id);
-  
-  //return pad if its already loaded
-  if(pad != null)
-  {
-    callback(null, pad);
-  }
-  //try to load pad
-  else
-  {
-    pad = new Pad(id);
+// returns a sanitized padId, respecting legacy pad id formats
+exports.sanitizePadId = async function sanitizePadId(padId) {
+  for (let i = 0, n = padIdTransforms.length; i < n; ++i) {
+    let exists = await exports.doesPadExist(padId);
 
-    //initalize the pad
-    pad.init(text, function(err)
-    {
-      if(ERR(err, callback)) return;
-      globalPads.set(id, pad);
-      padList.addPad(id);
-      callback(null, pad);
-    });
-  }
-}
-
-exports.listAllPads = function(cb)
-{
-  padList.getPads(function(list) {
-    cb && cb(null, {padIDs: list});
-  });
-}
-
-//checks if a pad exists
-exports.doesPadExists = function(padId, callback)
-{
-  db.get("pad:"+padId, function(err, value)
-  {
-    if(ERR(err, callback)) return;
-    if(value != null && value.atext){
-      callback(null, true);
+    if (exists) {
+      return padId;
     }
-    else
-    {
-      callback(null, false); 
-    }
-  });
-}
 
-//returns a sanitized padId, respecting legacy pad id formats
-exports.sanitizePadId = function(padId, callback) {
-  var transform_index = arguments[2] || 0;
-  //we're out of possible transformations, so just return it
-  if(transform_index >= padIdTransforms.length)
-  {
-    callback(padId);
+    let [from, to] = padIdTransforms[i];
+
+    padId = padId.replace(from, to);
   }
-  //check if padId exists
-  else
-  {
-    exports.doesPadExists(padId, function(junk, exists)
-    {
-      if(exists)
-      {
-        callback(padId);
-      }
-      else
-      {
-        //get the next transformation *that's different*
-        var transformedPadId = padId;
-        while(transformedPadId == padId && transform_index < padIdTransforms.length)
-        {
-          transformedPadId = padId.replace(padIdTransforms[transform_index][0], padIdTransforms[transform_index][1]);
-          transform_index += 1;
-        }
-        //check the next transform
-        exports.sanitizePadId(transformedPadId, callback, transform_index);
-      }
-    });
-  }
+
+  // we're out of possible transformations, so just return it
+  return padId;
 }
 
 exports.isValidPadId = function(padId)
@@ -240,13 +200,13 @@ exports.isValidPadId = function(padId)
 /**
  * Removes the pad from database and unloads it.
  */
-exports.removePad = function(padId){
-  db.remove("pad:"+padId);
+exports.removePad = function(padId) {
+  db.remove("pad:" + padId);
   exports.unloadPad(padId);
   padList.removePad(padId);
 }
 
-//removes a pad from the cache
+// removes a pad from the cache
 exports.unloadPad = function(padId)
 {
   globalPads.remove(padId);

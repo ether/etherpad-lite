@@ -1,0 +1,75 @@
+@import url("src/general.css");
+@import url("src/layout.css");
+@import url("src/pad-editor.css");
+
+@import url("src/components/scrollbars.css");
+@import url("src/components/buttons.css");
+@import url("src/components/popup.css");
+
+@import url("src/components/chat.css");
+@import url("src/components/sidediv.css");
+@import url("src/components/gritter.css");
+@import url("src/components/table-of-content.css");
+@import url("src/components/toolbar.css");
+@import url("src/components/users.css");
+@import url("src/components/form.css");
+@import url("src/components/import-export.css");
+
+@import url("src/plugins/brightcolorpicker.css");
+@import url("src/plugins/font_color.css");
+@import url("src/plugins/tables2.css");
+@import url("src/plugins/author_hover.css");
+@import url("src/plugins/comments.css");
+
+@import url("src/pad-variants.css");
+
+/* -----------------------------------------------------------------
+ * COLORS
+ * If you want to change main colors, please replace following CSS variables
+ * -----------------------------------------------------------------
+ */
+
+:root {
+  --super-dark-color: #485365; /*#374256;*/
+  --dark-color: #576273; /*#4d5d77*/
+
+  --primary-color: #64d29b;
+  --middle-color: #d2d2d2; /* kind of grey, use for border for examples */
+
+  --light-color: #f2f3f4; /*#f9f9f9;*/
+  --super-light-color: white;
+
+  --text-color: var(--super-dark-color);
+  --text-soft-color: var(--dark-color);
+  --border-color: var(--middle-color);
+  --bg-soft-color: var(--light-color);
+  --bg-color: var(--super-light-color);
+
+  --toolbar-border: none;
+
+  --main-font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+  --editor-horizontal-padding: 55px;
+  --editor-vertical-padding: 40px;
+}
+
+@media (max-width:1000px) {
+  :root {
+    --editor-horizontal-padding: 15px;
+    --editor-vertical-padding: 15px;
+  }
+}
+
+@media (max-width:600px) {
+  :root {
+    --editor-horizontal-padding: 15px;
+    --editor-vertical-padding: 15px;
+  }
+}
+
+/* Default scrollbar values */
+body {
+  --scrollbar-bg: var(--light-color);
+  --scrollbar-track: var(--super-light-color);
+  --scrollbar-thumb: var(--dark-color);
+}

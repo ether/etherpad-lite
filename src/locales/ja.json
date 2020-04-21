@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Shirayuki",
-			"Torinky",
+			"Aefgh39622",
+			"Afaz",
 			"Omotecho",
-			"Aefgh39622"
+			"Shirayuki",
+			"Torinky"
 		]
 	},
 	"index.newPad": "新規作成",
@@ -42,8 +43,6 @@
 	"pad.settings.rtlcheck": "右横書きにする",
 	"pad.settings.fontType": "フォントの種類:",
 	"pad.settings.fontType.normal": "通常",
-	"pad.settings.fontType.monospaced": "固定幅",
-	"pad.settings.globalView": "グローバル設定",
 	"pad.settings.language": "言語:",
 	"pad.importExport.import_export": "インポート/エクスポート",
 	"pad.importExport.import": "あらゆるテキストファイルや文書をアップロードできます",
@@ -89,6 +88,8 @@
 	"pad.chat": "チャット",
 	"pad.chat.title": "このパッドのチャットを開きます。",
 	"pad.chat.loadmessages": "その他のメッセージを読み込む",
+	"pad.chat.stick.title": "チャットを画面に貼り付ける",
+	"pad.chat.writeMessage.placeholder": "ここにメッセージを書き込んでください",
 	"timeslider.pageTitle": "{{appTitle}} タイムスライダー",
 	"timeslider.toolbar.returnbutton": "パッドに戻る",
 	"timeslider.toolbar.authors": "作者:",

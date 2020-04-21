@@ -1,5 +1,5 @@
 /**
- * This code is mostly from the old Etherpad. Please help us to comment this code. 
+ * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
@@ -135,7 +135,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
             }
             postHtml += '</li></ol>';
           }
-        } 
+        }
         processedMarker = true;
       }
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
@@ -150,7 +150,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       if( processedMarker ){
         result.lineMarker += txt.length;
         return; // don't append any text
-      } 
+      }
     }
     var href = null;
     var simpleTags = null;
@@ -198,7 +198,14 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
         {
           href = "http://"+href;
         }
-        extraOpenTags = extraOpenTags + '<a href="' + Security.escapeHTMLAttribute(href) + '">';
+        // Using rel="noreferrer" stops leaking the URL/location of the pad when clicking links in the document.
+        // Not all browsers understand this attribute, but it's part of the HTML5 standard.
+        // https://html.spec.whatwg.org/multipage/links.html#link-type-noreferrer
+        // Additionally, we do rel="noopener" to ensure a higher level of referrer security.
+        // https://html.spec.whatwg.org/multipage/links.html#link-type-noopener
+        // https://mathiasbynens.github.io/rel-noopener/
+        // https://github.com/ether/etherpad-lite/pull/3636
+        extraOpenTags = extraOpenTags + '<a href="' + Security.escapeHTMLAttribute(href) + '" rel="noreferrer noopener">';
         extraCloseTags = '</a>' + extraCloseTags;
       }
       if (simpleTags)

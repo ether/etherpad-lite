@@ -1,63 +1,50 @@
 /*
-  A tool for deleting pads from the CLI, because sometimes a brick is required to fix a window.
-*/
+ * A tool for deleting pads from the CLI, because sometimes a brick is required
+ * to fix a window.
+ */
 
-if(process.argv.length != 3)
-{
+const request = require('../src/node_modules/request');
+const settings = require(__dirname+'/../tests/backend/loadSettings').loadSettings();
+const supertest = require(__dirname+'/../src/node_modules/supertest');
+const api = supertest('http://'+settings.ip+":"+settings.port);
+const path = require('path');
+const fs = require('fs');
+if (process.argv.length != 3) {
   console.error("Use: node deletePad.js $PADID");
   process.exit(1);
 }
-//get the padID
-var padId = process.argv[2];
 
-var db, padManager, pad, settings;
-var neededDBValues = ["pad:"+padId];
+// get the padID
+let padId = process.argv[2];
 
-var npm = require("../src/node_modules/npm");
-var async = require("../src/node_modules/async");
+// get the API Key
+var filePath = path.join(__dirname, '../APIKEY.txt');
+var apikey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 
-async.series([
-  // load npm
-  function(callback) {
-    npm.load({}, function(er) {
-      if(er)
-      {
-        console.error("Could not load NPM: " + er)
-        process.exit(1);
-      }
-      else
-      {
-        callback();
-      }
-    })
-  },
-  // load modules
-  function(callback) {
-    settings = require('../src/node/utils/Settings');
-    db = require('../src/node/db/DB');
-    callback();
-  },
-  // initialize the database
-  function (callback)
-  {
-    db.init(callback);
-  },
-  // delete the pad and its links
-  function (callback)
-  {
-    padManager = require('../src/node/db/PadManager');
-    
-    padManager.removePad(padId, function(err){
-      callback(err);
-    }); 
-    callback();
-  }
-], function (err)
-{
-  if(err) throw err;
-  else 
-  { 
-    console.log("Finished deleting padId: "+padId);
-    process.exit();
-  }
-});
+// Set apiVersion to base value, we change this later.
+var apiVersion = 1;
+
+// Update the apiVersion
+api.get('/api/')
+  .expect(function(res){
+    apiVersion = res.body.currentVersion;
+    if (!res.body.currentVersion) throw new Error("No version set in API");
+    return;
+  })
+  .end(function(err, res){
+
+    // Now we know the latest API version, let's delete pad
+    var uri = '/api/'+apiVersion+'/deletePad?apikey='+apikey+'&padID='+padId;
+    api.post(uri)
+      .expect(function(res){
+        if (res.body.code === 1){
+          console.error("Error deleting pad", res.body);
+        }else{
+          console.log("Deleted pad", res.body);
+        }
+        return;
+      })
+      .end(function(){})
+  });
+// end
+
