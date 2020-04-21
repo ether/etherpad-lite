@@ -19,3 +19,4 @@ npm-debug.log
 bin/etherpad-1.deb
 credentials.json
 out/
+.idea/
