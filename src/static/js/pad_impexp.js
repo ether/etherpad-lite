@@ -248,7 +248,12 @@ var padimpexp = (function()
       {
         importFailed(status);
       }
-      if(directDatabaseAccess) pad.switchToPad(clientVars.padId);
+
+      if (directDatabaseAccess) {
+        // Switch to the pad without redrawing the page
+        pad.switchToPad(clientVars.padId);
+      }
+
       importDone();
     },
     disable: function()
