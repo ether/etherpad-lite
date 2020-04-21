@@ -108,10 +108,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     return dom.nodeProp(node, "_magicdom_" + name);
   }
 
+  var orderedListArray = [];
+
   var lines = (function()
   {
     var textArray = [];
     var attribsArray = [];
+    var isOrderedList = false;
     var attribsBuilder = null;
     var op = Changeset.newOp('+');
     var self = {
@@ -148,6 +151,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       attribLines: function()
       {
         return attribsArray;
+      },
+      orderedListLines: function()
+      {
+        return orderedListArray;
       },
       // call flush only when you're done
       flush: function(withNewline)
@@ -485,7 +492,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
-
       if (tname == "img"){
         var collectContentImage = hooks.callAll('collectContentImage', {
           cc: cc,
@@ -535,6 +541,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         var oldAuthorOrNull = null;
         if (collectStyles)
         {
+
           hooks.callAll('collectContentPre', {
             cc: cc,
             state: state,
@@ -589,6 +596,9 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
               } else {
                 type = "number"
               }
+              if(type === "number"){
+                // orderedListArray.push((state.listNesting || 0) + 1)
+              }
               type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             }
             oldListTypeOrNull = (_enterList(state, type) || 'none');
@@ -598,6 +608,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             // This has undesirable behavior in Chrome but is right in other browsers.
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
             if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
+          }
+          else if ((tname === "li")){
+            orderedListArray.push(state.listNesting)
+          }else{
+            if(isBlock){
+              orderedListArray.push(false);
+            }
           }
           if (className2Author && cls)
           {
@@ -674,6 +691,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       // in IE, a point immediately after a DIV appears on the next line
       _reachBlockPoint(node, 1, state);
     }
+    state.foo = "BAR"
     state.localAttribs = localAttribs;
   };
   // can pass a falsy value for end of doc
@@ -711,6 +729,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
   {
     lines.flush();
     var lineAttribs = lines.attribLines();
+    var orderedListLines = lines.orderedListLines();
     var lineStrings = cc.getLines();
 
     lineStrings.length--;
@@ -718,6 +737,48 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
     var ss = getSelectionStart();
     var se = getSelectionEnd();
+
+    // ace2_inner handles renumbering lists for browsers
+    // content collector handles it for Imports
+    let shouldRenumberLists = true;
+    if(typeof window === 'undefined') shouldRenumberLists = false;
+    if(!shouldRenumberLists){
+      lineAttribs = renumberListItems();
+      console.log("new line Attribs", lineAttribs)
+    }
+
+    function renumberListItems(){
+      var lineAttribs = [];
+      // for each line
+      prevLine = false;
+      for (let i = 0; i < orderedListLines.length; i++){
+        var line = orderedListLines[i];
+        // console.log(line);
+        // Is it a list item?
+        if(line){
+          // If previous line has a start value, increase this lines by 1
+          if(prevLine) line = prevLine +  1;
+
+          var lineAttributes = ['start', line];
+          // console.log(lineAttributes)
+          var attributes = [
+            ['lmkr', '1'],
+            ['insertorder', 'first']
+          ].concat(
+            _.map(lineAttributes,function(value,key){
+              return [key, value];
+            })
+          );
+
+          lineAttribs.push(Changeset.makeAttribsString('+', attributes , apool));
+        }else{
+          // not a list item, drop.
+          lineAttribs.push("") // Todo, use original value.
+        }
+        prevLine = line;
+      }
+      return lineAttribs;
+    }
 
     function fixLongLines()
     {
