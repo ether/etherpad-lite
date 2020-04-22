@@ -740,7 +740,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
     // ace2_inner handles renumbering lists for browsers
     // content collector handles it for Imports
-    let shouldRenumberLists = true;
+    var shouldRenumberLists = true;
     if(typeof window === 'undefined') shouldRenumberLists = false;
     if(!shouldRenumberLists){
       lineAttribs = renumberListItems();
@@ -751,7 +751,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       var lineAttribs = [];
       // for each line
       prevLine = false;
-      for (let i = 0; i < orderedListLines.length; i++){
+      for (var i = 0; i < orderedListLines.length; i++){
         var line = orderedListLines[i];
         // console.log(line);
         // Is it a list item?
@@ -759,8 +759,11 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           // If previous line has a start value, increase this lines by 1
           if(prevLine) line = prevLine +  1;
 
+          // I'm not convinced this is working properly...
           var lineAttributes = ['start', line];
-          // console.log(lineAttributes)
+
+          // we're adding the below attributes to the above attributes
+          // but what if it has attributes already IE h1?
           var attributes = [
             ['lmkr', '1'],
             ['insertorder', 'first']
