@@ -34,6 +34,9 @@ WORKDIR /opt/etherpad-lite
 
 COPY --chown=etherpad:0 ./ ./
 
+# Remove the git objects, logs, etc. to make final image smaller
+RUN rm -Rf .git/branches  .git/COMMIT_EDITMSG  .git/config  .git/description  .git/FETCH_HEAD  .git/hooks  .git/index  .git/info  .git/logs  .git/objects  .git/ORIG_HEAD  .git/packed-refs .git/refs/remotes/
+
 # install node dependencies for Etherpad
 RUN bin/installDeps.sh && \
 	rm -rf ~/.npm/_cacache
