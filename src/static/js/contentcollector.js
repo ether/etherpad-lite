@@ -740,9 +740,9 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
     // ace2_inner handles renumbering lists for browsers
     // content collector handles it for Imports
-    var shouldRenumberLists = true;
-    if(typeof window === 'undefined') shouldRenumberLists = false;
-    if(!shouldRenumberLists){
+    var shouldRenumberLists = false;
+    if(typeof window !== 'undefined') shouldRenumberLists = true;
+    if(shouldRenumberLists){
       lineAttribs = renumberListItems();
       console.log("new line Attribs", lineAttribs)
     }

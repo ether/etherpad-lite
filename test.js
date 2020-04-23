@@ -57,7 +57,7 @@ console.log(test, testObj.description, testObj.expectedText);
 
     }else{
       console.error("FAIL: Recieved Text did not match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
-      throw new Error();
+//      throw new Error();
 
     }
 
@@ -68,9 +68,8 @@ console.log(test, testObj.description, testObj.expectedText);
       console.error("FAIL", test, testObj.description);
       console.error("FAIL: Recieved Attributes did not match Expected Attributes\nRecieved: ", recievedAttributes, "\nExpected: ", expectedAttributes)
       console.error("FAILING HTML", testObj.html);
-      throw new Error();
+//      throw new Error();
     }
-    done();
     console.log("\n\n");
 
 };
