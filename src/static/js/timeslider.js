@@ -117,7 +117,7 @@ function sendSocketMsg(type, data)
               "type": type,
               "data": data,
               "padId": padId,
-              "token": token,
+              "token": token + ".timeslider",
               "sessionID": sessionID,
               "password": password,
               "protocolVersion": 2};
