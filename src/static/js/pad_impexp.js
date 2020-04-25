@@ -111,6 +111,10 @@ var padimpexp = (function()
       msg = html10n.get("pad.impexp.uploadFailed");
     } else if(status === "padHasData"){
       msg = html10n.get("pad.impexp.padHasData");
+    } else if(status === "maxFileSize"){
+      msg = html10n.get("pad.impexp.maxFileSize");
+    } else if(status === "permission"){
+      msg = html10n.get("pad.impexp.permission");
     }
 
     function showError(fade)

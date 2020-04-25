@@ -50,10 +50,3 @@ input#myusernameedit {
 #mycolorpickerpreview {
   border-radius: 50%;
 }
-
-@media (max-width: 720px) {
-  #mycolorpicker {
-    right: 0;
-    left: initial;
-  }
-}

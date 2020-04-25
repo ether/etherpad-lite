@@ -142,4 +142,12 @@
   .timeslider-title {
     font-size: 1.5rem !important;
   }
+  .timeslider-title-container {
+    width: 100%;
+  }
+  .authors-label { display: none; }
+  #authorsList {
+    display: flex;
+    flex-wrap: wrap;
+  }
 }

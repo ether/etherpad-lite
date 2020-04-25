@@ -100,8 +100,10 @@ input#myusernameedit:not(.editable) {
 }
 @media (max-width: 720px) {
   #mycolorpicker.popup {
-    right: 0;
-    left: auto;
+    top: auto;
+    bottom: 0;
+    left: auto !important;
+    right: 0 !important;
   }
 }
 #mycolorpicker.popup .btn-container {

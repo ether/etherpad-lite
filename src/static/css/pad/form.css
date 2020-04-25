@@ -158,6 +158,9 @@ select, .nice-select {
 .nice-select .option:hover,.nice-select .option.focus,.nice-select .option.selected.focus {
   background-color: #f6f6f6;
 }
+.nice-select .option[data-value="dummy"] {
+  display: none;
+}
 .nice-select .option.selected {
   font-weight: bold;
 }

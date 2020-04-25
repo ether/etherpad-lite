@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "Διαβάζεται το περιεχόμενο από δεξιά προς τα αριστερά;",
 	"pad.settings.fontType": "Τύπος γραμματοσειράς:",
 	"pad.settings.fontType.normal": "Κανονική",
-	"pad.settings.fontType.monospaced": "Καθορισμένου πλάτους",
-	"pad.settings.globalView": "Καθολική Προβολή",
 	"pad.settings.language": "Γλώσσα:",
 	"pad.importExport.import_export": "Εισαγωγή/Εξαγωγή",
 	"pad.importExport.import": "Αποστολή οποιουδήποτε αρχείου κειμένου ή εγγράφου",

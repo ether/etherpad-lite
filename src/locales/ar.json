@@ -49,8 +49,6 @@
 	"pad.settings.rtlcheck": "قراءة المحتويات من اليمين إلى اليسار؟",
 	"pad.settings.fontType": "نوع الخط:",
 	"pad.settings.fontType.normal": "عادي",
-	"pad.settings.fontType.monospaced": "ثابت العرض",
-	"pad.settings.globalView": "الرؤية الشاملة",
 	"pad.settings.language": "اللغة:",
 	"pad.importExport.import_export": "استيراد/تصدير",
 	"pad.importExport.import": "تحميل أي ملف نصي أو وثيقة",

@@ -75,6 +75,9 @@
     max-height: 80vh;
     overflow: auto;
   }
+  .popup#users .popup-content {
+    overflow: visible;
+  }
   /* Move popup to the bottom, except popup linked to left toolbar, like hyperklink popup */
   .popup:not(.toolbar-popup) {
     top: auto;

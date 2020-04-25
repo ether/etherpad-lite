@@ -40,8 +40,6 @@
 	"pad.settings.rtlcheck": "के सामग्री दाहिने देखि देब्रे पढ्ने हो ?",
 	"pad.settings.fontType": "लिपि प्रकार:",
 	"pad.settings.fontType.normal": "सामान्य",
-	"pad.settings.fontType.monospaced": "मोनोस्पेस",
-	"pad.settings.globalView": "विश्वव्यापी दृष्य",
 	"pad.settings.language": "भाषा:",
 	"pad.importExport.import_export": "आयात/निर्यात",
 	"pad.importExport.import": "कुनै पनि पाठ रहेको फाइल या कागजात अपलोड गर्नुहोस्",

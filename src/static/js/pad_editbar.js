@@ -217,6 +217,9 @@ var padeditbar = (function()
         return;
       }
 
+      $('.nice-select').removeClass('open');
+      $('.toolbar-popup').removeClass("popup-show");
+
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
@@ -235,13 +238,12 @@ var padeditbar = (function()
           var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
           if(isAForceReconnectMessage)
             continue;
-
-          if(module.css('display') != "none")
-          {
+          if (module.hasClass('popup-show')) {
             $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
             module.removeClass("popup-show");
           }
         }
+
         if(!returned && cb) return cb();
       }
       else
@@ -392,6 +394,17 @@ var padeditbar = (function()
 
     toolbar.registerCommand("import_export", function () {
       toolbar.toggleDropDown("import_export", function(){
+
+        if (clientVars.thisUserHasEditedThisPad) {
+          // the user has edited this pad historically or in this session
+          $('#importform').show();
+          $('#importmessagepermission').hide();
+        } else {
+          // this is the first time this user visits this pad
+          $('#importform').hide();
+          $('#importmessagepermission').show();
+        }
+
         // If Import file input exists then focus on it..
         if($('#importfileinput').length !== 0){
           setTimeout(function(){
